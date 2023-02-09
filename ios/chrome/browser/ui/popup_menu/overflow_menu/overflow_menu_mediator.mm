@@ -293,7 +293,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   self.followBrowserAgent = nullptr;
 
-  [self.destinationUsageHistory disconnect];
+  [self.destinationUsageHistory stop];
   self.destinationUsageHistory = nil;
 
   self.webState = nullptr;
@@ -394,8 +394,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   _localStatePrefs = localStatePrefs;
 
   if (!self.isIncognito) {
-    _destinationUsageHistory =
+    self.destinationUsageHistory =
         [[DestinationUsageHistory alloc] initWithPrefService:localStatePrefs];
+    self.destinationUsageHistory.visibleDestinationsCount =
+        self.visibleDestinationsCount;
+    [self.destinationUsageHistory start];
   }
 }
 
@@ -967,9 +970,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     overflow_menu::RecordUmaActionForDestination(destination);
 
     if (IsSmartSortingNewOverflowMenuEnabled()) {
-      [weakSelf.destinationUsageHistory
-             trackDestinationClick:destination
-          numAboveFoldDestinations:weakSelf.numAboveFoldDestinations];
+      [weakSelf.destinationUsageHistory recordClickForDestination:destination];
     }
 
     handler();
@@ -983,8 +984,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                             accessibilityIdentifier:accessibilityID
                                  enterpriseDisabled:NO
                                             handler:handlerWithMetrics];
-  result.destinationName = base::SysUTF8ToNSString(
-      overflow_menu::StringNameForDestination(destination));
+
+  result.destination = static_cast<NSInteger>(destination);
+
   return result;
 }
 // Creates an OverflowMenuDestination to be displayed in the destinations
@@ -1004,9 +1006,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     overflow_menu::RecordUmaActionForDestination(destination);
 
     if (IsSmartSortingNewOverflowMenuEnabled()) {
-      [weakSelf.destinationUsageHistory
-             trackDestinationClick:destination
-          numAboveFoldDestinations:weakSelf.numAboveFoldDestinations];
+      [weakSelf.destinationUsageHistory recordClickForDestination:destination];
     }
 
     handler();
@@ -1018,8 +1018,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       accessibilityIdentifier:accessibilityID
            enterpriseDisabled:NO
                       handler:handlerWithMetrics];
-  result.destinationName = base::SysUTF8ToNSString(
-      overflow_menu::StringNameForDestination(destination));
+
+  result.destination = static_cast<NSInteger>(destination);
+
   return result;
 }
 
@@ -1033,7 +1034,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       accessibilityIdentifier:@"Spotlight Debugger"
            enterpriseDisabled:NO
                       handler:handler];
-  result.destinationName = @"Spotlight Debugger";
+  result.destination =
+      static_cast<NSInteger>(overflow_menu::Destination::SpotlightDebugger);
   return result;
 }
 
@@ -1140,7 +1142,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   if (self.destinationUsageHistory && IsSmartSortingNewOverflowMenuEnabled()) {
     baseDestinations = [self.destinationUsageHistory
-        generateDestinationsList:baseDestinations];
+        sortedDestinationsFromCarouselDestinations:baseDestinations];
   }
 
   // What's New defies the smart sorting rules of the overflow menu to appear

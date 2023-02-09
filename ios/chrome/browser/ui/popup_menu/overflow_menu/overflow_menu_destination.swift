@@ -18,6 +18,6 @@ import SwiftUI
 
   public var badge: BadgeType = .none
 
-  /// The uniquely-identifying name of the destination.
-  public var destinationName: String = ""
+  /// The uniquely-identifying overflow_menu::Destination of the destination.
+  public var destination: Int = 0
 }

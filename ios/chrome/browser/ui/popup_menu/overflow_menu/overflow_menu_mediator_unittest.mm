@@ -171,6 +171,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
 
   void CreateLocalStatePrefs() {
     localStatePrefs_ = std::make_unique<TestingPrefServiceSimple>();
+    localStatePrefs_->registry()->RegisterListPref(
+        prefs::kOverflowMenuNewDestinations, PrefRegistry::LOSSY_PREF);
     localStatePrefs_->registry()->RegisterDictionaryPref(
         prefs::kOverflowMenuDestinationUsageHistory, PrefRegistry::LOSSY_PREF);
   }

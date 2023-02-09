@@ -52,6 +52,8 @@ GREYLayoutConstraint* RightConstraint() {
   [super setUp];
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kOverflowMenuDestinationUsageHistory];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:prefs::kOverflowMenuNewDestinations];
 }
 
 - (void)tearDown {
@@ -62,7 +64,7 @@ GREYLayoutConstraint* RightConstraint() {
 
 #pragma mark - Helpers
 
-// Tests the destination carousel displays the default sort order, which is:
+// Verifies the destination carousel displays the default sort order, which is:
 // 1. Bookmarks
 // 2. History
 // 3. Reading List
@@ -139,8 +141,8 @@ GREYLayoutConstraint* RightConstraint() {
   [ChromeEarlGreyUI closeToolsMenu];
 }
 
-// Tests the destination carousel displays the default sort order for incognito,
-// which is:
+// Verifies the destination carousel displays the default sort order for
+// incognito, which is:
 // 1. Bookmarks
 // 2. Reading List
 // 3. Password Manager
@@ -215,6 +217,11 @@ GREYLayoutConstraint* RightConstraint() {
 // 7. Site Information
 // 8. Settings
 - (void)testDefaultCarouselSortOrderDisplayed {
+  if (@available(iOS 15.0, *)) {
+  } else {
+    return;
+  }
+
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
   [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:NO];
 }
@@ -231,6 +238,11 @@ GREYLayoutConstraint* RightConstraint() {
 // NOTE: By design, the Site Information destination is removed from the
 // destinations carousel on the NTP.
 - (void)testDefaultCarouselSortOrderDisplayedOnNTP {
+  if (@available(iOS 15.0, *)) {
+  } else {
+    return;
+  }
+
   [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 }
 
@@ -243,6 +255,11 @@ GREYLayoutConstraint* RightConstraint() {
 // 5. Site Information
 // 6. Settings
 - (void)testDefaultCarouselSortOrderDisplayedForIncognito {
+  if (@available(iOS 15.0, *)) {
+  } else {
+    return;
+  }
+
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
   [DestinationUsageHistoryCase
@@ -260,6 +277,11 @@ GREYLayoutConstraint* RightConstraint() {
 // NOTE: By design, the Site Information destination is removed from the
 // destinations carousel on the NTP.
 - (void)testDefaultCarouselSortOrderDisplayedOnNTPForIncognito {
+  if (@available(iOS 15.0, *)) {
+  } else {
+    return;
+  }
+
   [ChromeEarlGrey openNewIncognitoTab];
   [DestinationUsageHistoryCase
       verifyCarouselHasDefaultSortOrderOnNTPForIncognito:YES];
@@ -270,9 +292,14 @@ GREYLayoutConstraint* RightConstraint() {
 // non-visible "below-the-fold" destinations; "below-the-fold" destinations are
 // made visible to the user when they scroll the carousel.
 
-// Tests an above-the-fold destination never moves within group (A), regardless
-// of usage.
+// Tests an above-the-fold destination never moves within group (A),
+// regardless of usage.
 - (void)testAboveFoldDestinationNeverPromotes {
+  if (@available(iOS 15.0, *)) {
+  } else {
+    return;
+  }
+
   // Tap the above-fold destination, Password Manager, 5 times.
   for (int i = 0; i < 5; i++) {
     [ChromeEarlGreyUI openToolsMenu];
@@ -288,6 +315,11 @@ GREYLayoutConstraint* RightConstraint() {
 
 // Tests a below-the-fold destination gets promoted.
 - (void)testBelowFoldDestinationPromotes {
+  if (@available(iOS 15.0, *)) {
+  } else {
+    return;
+  }
+
   // Tap the below-fold destination, Settings, 5 times.
   for (int i = 0; i < 5; i++) {
     [ChromeEarlGreyUI openToolsMenu];
@@ -342,9 +374,14 @@ GREYLayoutConstraint* RightConstraint() {
                             chrome_test_util::RecentTabsDestinationButton())];
 }
 
-// Tests a below-the-fold destination is not promoted until the third click for
-// a fresh destination usage history.
-- (void)testNoSwapUntilMinNumClicksReached {
+// Tests a below-the-fold destination is not promoted until the third click
+// for a fresh destination usage history.
+- (void)testNoSwapUntilMinClickCountReached {
+  if (@available(iOS 15.0, *)) {
+  } else {
+    return;
+  }
+
   [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 
   // 1st Settings tap (no promotion expected after this tap)
@@ -425,6 +462,11 @@ GREYLayoutConstraint* RightConstraint() {
 // initially, and, with enough usage, is promoted to group (A)—the
 // "above-the-fold" destinations.
 - (void)testLastImmediatelyVisibleDestinationPromotes {
+  if (@available(iOS 15.0, *)) {
+  } else {
+    return;
+  }
+
   [DestinationUsageHistoryCase verifyCarouselHasDefaultSortOrderOnNTP:YES];
 
   // 1st Downloads tap (no promotion expected after this tap)

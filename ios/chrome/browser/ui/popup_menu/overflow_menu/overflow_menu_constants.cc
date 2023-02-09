@@ -9,10 +9,6 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace overflow_menu {
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
@@ -35,6 +31,8 @@ Destination DestinationForStringName(std::string destination) {
     return overflow_menu::Destination::Settings;
   } else if (destination == "overflow_menu::Destination::WhatsNew") {
     return overflow_menu::Destination::WhatsNew;
+  } else if (destination == "overflow_menu::Destination::SpotlightDebugger") {
+    return overflow_menu::Destination::SpotlightDebugger;
   } else {
     NOTREACHED();
     // Randomly chosen destination which should never be returned due to
@@ -43,12 +41,8 @@ Destination DestinationForStringName(std::string destination) {
   }
 }
 
-Destination DestinationForNSStringName(NSString* destination) {
-  std::string name = base::SysNSStringToUTF8(destination);
-
-  return DestinationForStringName(name);
-}
-
+// WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
+// very careful when updating this method to ensure all enums are accounted for.
 std::string StringNameForDestination(Destination destination) {
   switch (destination) {
     case overflow_menu::Destination::Bookmarks:
@@ -74,12 +68,8 @@ std::string StringNameForDestination(Destination destination) {
   }
 }
 
-NSString* NSStringNameForDestination(Destination destination) {
-  std::string name = StringNameForDestination(destination);
-
-  return base::SysUTF8ToNSString(name);
-}
-
+// WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
+// very careful when updating this method to ensure all enums are accounted for.
 void RecordUmaActionForDestination(Destination destination) {
   switch (destination) {
     case Destination::Bookmarks:

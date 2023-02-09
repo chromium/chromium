@@ -95,7 +95,7 @@ class FollowBrowserAgent;
 
 // The number of destinations immediately visible to the user when opening the
 // new overflow menu (i.e. the number of "above-the-fold" destinations).
-@property(nonatomic, assign) int numAboveFoldDestinations;
+@property(nonatomic, assign) int visibleDestinationsCount;
 
 // Disconnect the mediator.
 - (void)disconnect;

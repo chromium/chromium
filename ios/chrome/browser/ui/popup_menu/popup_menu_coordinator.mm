@@ -397,7 +397,7 @@ enum class IOSOverflowMenuActionType {
                 .preferredContentSizeCategory;
 
         self.overflowMenuMediator
-            .numAboveFoldDestinations = [OverflowMenuUIConfiguration
+            .visibleDestinationsCount = [OverflowMenuUIConfiguration
             numDestinationsVisibleWithoutHorizontalScrollingForScreenWidth:
                 screenWidth
                                                     forContentSizeCategory:

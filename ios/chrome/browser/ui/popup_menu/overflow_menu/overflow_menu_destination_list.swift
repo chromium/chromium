@@ -118,7 +118,7 @@ struct OverflowMenuDestinationList: View {
               OverflowMenuDestinationView(
                 destination: destination, layoutParameters: layoutParameters,
                 metricsHandler: metricsHandler
-              ).id(destination.destinationName)
+              ).id(destination.destination)
             }
           }
 
@@ -137,7 +137,7 @@ struct OverflowMenuDestinationList: View {
       }
       .onAppear {
         if layoutDirection == .rightToLeft {
-          proxy.scrollTo(destinations.first?.destinationName)
+          proxy.scrollTo(destinations.first?.destination)
         }
         uiConfiguration.destinationListScreenFrame = geometry.frame(in: .global)
       }
