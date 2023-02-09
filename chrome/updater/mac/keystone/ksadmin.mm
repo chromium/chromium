@@ -247,7 +247,7 @@ class KSAdminApp : public App {
   static KSTicket* TicketFromAppState(
       const updater::UpdateService::AppState& state);
   int PrintKeystoneTag(const std::string& app_id) const;
-  void PrintKeystoneTickets(const std::string& app_id) const;
+  bool PrintKeystoneTickets(const std::string& app_id) const;
 
   scoped_refptr<UpdateService> ServiceProxy(UpdaterScope scope) const;
   void ChooseService(
@@ -521,7 +521,7 @@ void KSAdminApp::PrintVersion() {
   Shutdown(0);
 }
 
-void KSAdminApp::PrintKeystoneTickets(const std::string& app_id) const {
+bool KSAdminApp::PrintKeystoneTickets(const std::string& app_id) const {
   // Print all tickets if `app_id` is empty. Otherwise only print ticket for
   // the given app id.
   @autoreleasepool {
@@ -532,18 +532,19 @@ void KSAdminApp::PrintKeystoneTickets(const std::string& app_id) const {
           printf("%s\n",
                  base::SysNSStringToUTF8([store[key] description]).c_str());
         }
-        return;
+        return true;
       }
     } else {
       KSTicket* ticket = [store
           objectForKey:[base::SysUTF8ToNSString(app_id) lowercaseString]];
       if (ticket) {
         printf("%s\n", base::SysNSStringToUTF8([ticket description]).c_str());
-        return;
+        return true;
       }
     }
 
     printf("No tickets.\n");
+    return false;
   }
 }
 
@@ -554,7 +555,7 @@ void KSAdminApp::PrintTickets() {
 void KSAdminApp::DoPrintTickets(UpdaterScope scope) {
   const std::string app_id = SwitchValue(kCommandProductId);
   ServiceProxy(scope)->GetAppStates(base::BindOnce(
-      [](const std::string& app_id, base::OnceCallback<void()> fallback_cb,
+      [](const std::string& app_id, base::OnceCallback<bool()> fallback_cb,
          base::OnceCallback<void(int)> done_cb,
          const std::vector<updater::UpdateService::AppState>& states) {
         bool ticket_printed = false;
@@ -571,9 +572,9 @@ void KSAdminApp::DoPrintTickets(UpdaterScope scope) {
         // Fallback to print legacy Keystone tickets if there's no app
         // registered with the new updater.
         if (!ticket_printed) {
-          std::move(fallback_cb).Run();
+          ticket_printed = std::move(fallback_cb).Run();
         }
-        std::move(done_cb).Run(0);
+        std::move(done_cb).Run(ticket_printed || app_id.empty() ? 0 : 1);
       },
       app_id, base::BindOnce(&KSAdminApp::PrintKeystoneTickets, this, app_id),
       base::BindOnce(&KSAdminApp::Shutdown, this)));
