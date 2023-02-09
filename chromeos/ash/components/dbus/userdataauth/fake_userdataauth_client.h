@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace ash {
 
@@ -37,6 +38,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     kPrepareVaultForMigration,
     kAddAuthFactor,
     kListAuthFactors,
+    kStartMigrateToDircrypto,
   };
 
   // The method by which a user's home directory can be encrypted.
@@ -265,41 +267,66 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       const ::user_data_auth::TerminateAuthFactorRequest& request,
       TerminateAuthFactorCallback callback) override;
 
-  // Sets the CryptohomeError value to return during next operation.
-  void SetNextOperationError(Operation operation,
-                             ::user_data_auth::CryptohomeErrorCode error);
-
   // Returns the `unlock_webauthn_secret` parameter passed in the last
   // CheckKeyEx call (either successful or not).
   bool get_last_unlock_webauthn_secret() {
     return last_unlock_webauthn_secret_;
   }
 
-  // Getter for the AccountIdentifier() that was passed to the last
-  // StartMigrateToDircrypto() call.
-  const cryptohome::AccountIdentifier& get_id_for_disk_migrated_to_dircrypto()
-      const {
-    return last_migrate_to_dircrypto_request_.account_id();
-  }
-  // Whether the last StartMigrateToDircrypto() call indicates minimal
-  // migration.
-  bool minimal_migration() const {
-    return last_migrate_to_dircrypto_request_.minimal_migration();
-  }
-
   int get_prepare_guest_request_count() const {
     return prepare_guest_request_count_;
   }
 
-  const ::user_data_auth::AddAuthFactorRequest&
-  get_last_add_authfactor_request() const {
-    return last_add_auth_factor_request_;
+  // Per-operation API:
+  template <Operation>
+  struct ProtobufTypes;
+
+  // Template magic to have mapping from operation to
+  // associated types for protobufs.
+#define FUDAC_OPERATION_TYPES(OPERATION, REQUEST)  \
+  template <>                                      \
+  struct ProtobufTypes<Operation::OPERATION> {     \
+    using RequestType = ::user_data_auth::REQUEST; \
   }
 
-  const ::user_data_auth::AuthenticateAuthFactorRequest&
-  get_last_authenticate_auth_factor_request() const {
-    return last_authenticate_auth_factor_request_;
+  FUDAC_OPERATION_TYPES(kStartAuthSession, StartAuthSessionRequest);
+  FUDAC_OPERATION_TYPES(kAuthenticateAuthFactor, AuthenticateAuthFactorRequest);
+  FUDAC_OPERATION_TYPES(kPrepareGuestVault, PrepareGuestVaultRequest);
+  FUDAC_OPERATION_TYPES(kPrepareEphemeralVault, PrepareEphemeralVaultRequest);
+  FUDAC_OPERATION_TYPES(kCreatePersistentUser, CreatePersistentUserRequest);
+  FUDAC_OPERATION_TYPES(kPreparePersistentVault, PreparePersistentVaultRequest);
+  FUDAC_OPERATION_TYPES(kPrepareVaultForMigration,
+                        PrepareVaultForMigrationRequest);
+  FUDAC_OPERATION_TYPES(kAddAuthFactor, AddAuthFactorRequest);
+  FUDAC_OPERATION_TYPES(kListAuthFactors, ListAuthFactorsRequest);
+  FUDAC_OPERATION_TYPES(kStartMigrateToDircrypto,
+                        StartMigrateToDircryptoRequest);
+
+#undef FUDAC_OPERATION_TYPES
+
+  // Sets the CryptohomeError value to return during next operation.
+  void SetNextOperationError(Operation operation,
+                             ::user_data_auth::CryptohomeErrorCode error);
+
+  // Checks if operation was called.
+  template <Operation Op>
+  bool WasCalled() {
+    const auto op_request = operation_requests_.find(Op);
+    return op_request != std::end(operation_requests_);
   }
+
+  // Provides request protobuf passed to last call of operation.
+  // Would crash if operation was not called before, use `WasCalled()` to
+  // check.
+  template <Operation Op>
+  const typename ProtobufTypes<Op>::RequestType& GetLastRequest() {
+    const auto op_request = operation_requests_.find(Op);
+    CHECK(op_request != std::end(operation_requests_));
+    return *static_cast<const typename ProtobufTypes<Op>::RequestType*>(
+        op_request->second.get());
+  }
+
+  // See also `RememberRequest` in private section.
 
   // Calls DircryptoMigrationProgress() on Observer instances.
   void NotifyDircryptoMigrationProgress(
@@ -321,6 +348,14 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     kFactorNotFound,
     kAuthFailed,
   };
+
+  // Utility method to remember request passed to operation in a
+  // type-safe way.
+  template <Operation Op>
+  void RememberRequest(const typename ProtobufTypes<Op>::RequestType& request) {
+    operation_requests_[Op] =
+        std::make_unique<typename ProtobufTypes<Op>::RequestType>(request);
+  }
 
   // Helper that returns the protobuf reply.
   template <typename ReplyType>
@@ -369,6 +404,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   base::flat_map<Operation, ::user_data_auth::CryptohomeErrorCode>
       operation_errors_;
 
+  // Remembered requests.
+  base::flat_map<Operation, std::unique_ptr<::google::protobuf::MessageLite>>
+      operation_requests_;
+
   // The collection of users we know about.
   base::flat_map<cryptohome::AccountIdentifier, UserCryptohomeState> users_;
 
@@ -378,19 +417,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // The current dircrypto migration progress indicator, used when we trigger
   // the migration progress signal.
   uint64_t dircrypto_migration_progress_ = 0;
-
-  // The StartMigrateToDircryptoRequest passed in for the last
-  // StartMigrateToDircrypto() call.
-  ::user_data_auth::StartMigrateToDircryptoRequest
-      last_migrate_to_dircrypto_request_;
-
-  // The AuthenticateAuthFactorRequest passed in for the last
-  // AuthenticateAuthFactor() call.
-  ::user_data_auth::AuthenticateAuthFactorRequest
-      last_authenticate_auth_factor_request_;
-
-  // The AddAuthFactorRequest passed in for the last AddAuthFactor() call.
-  ::user_data_auth::AddAuthFactorRequest last_add_auth_factor_request_;
 
   // The auth sessions on file.
   base::flat_map<std::string, AuthSessionData> auth_sessions_;

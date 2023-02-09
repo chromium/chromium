@@ -716,9 +716,9 @@ void FakeUserDataAuthClient::EndFingerprintAuthSession(
 void FakeUserDataAuthClient::StartMigrateToDircrypto(
     const ::user_data_auth::StartMigrateToDircryptoRequest& request,
     StartMigrateToDircryptoCallback callback) {
-  last_migrate_to_dircrypto_request_ = request;
   ::user_data_auth::StartMigrateToDircryptoReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kStartMigrateToDircrypto>(request);
 
   dircrypto_migration_progress_ = 0;
 
@@ -773,6 +773,7 @@ void FakeUserDataAuthClient::StartAuthSession(
     StartAuthSessionCallback callback) {
   ::user_data_auth::StartAuthSessionReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kStartAuthSession>(request);
 
   if (auto error = TakeOperationError(Operation::kStartAuthSession);
       error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -847,6 +848,7 @@ void FakeUserDataAuthClient::ListAuthFactors(
     ListAuthFactorsCallback callback) {
   ::user_data_auth::ListAuthFactorsReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kListAuthFactors>(request);
 
   if (auto error = TakeOperationError(Operation::kListAuthFactors);
       error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -910,6 +912,7 @@ void FakeUserDataAuthClient::PrepareGuestVault(
     PrepareGuestVaultCallback callback) {
   ::user_data_auth::PrepareGuestVaultReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kPrepareGuestVault>(request);
 
   if (auto error = TakeOperationError(Operation::kPrepareGuestVault);
       error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -929,6 +932,7 @@ void FakeUserDataAuthClient::PrepareEphemeralVault(
     PrepareEphemeralVaultCallback callback) {
   ::user_data_auth::PrepareEphemeralVaultReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kPrepareEphemeralVault>(request);
 
   if (auto error = TakeOperationError(Operation::kPrepareEphemeralVault);
       error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -977,6 +981,7 @@ void FakeUserDataAuthClient::CreatePersistentUser(
     CreatePersistentUserCallback callback) {
   ::user_data_auth::CreatePersistentUserReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kCreatePersistentUser>(request);
 
   if (auto error = TakeOperationError(Operation::kCreatePersistentUser);
       error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -1017,6 +1022,7 @@ void FakeUserDataAuthClient::PreparePersistentVault(
     PreparePersistentVaultCallback callback) {
   ::user_data_auth::PreparePersistentVaultReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kPreparePersistentVault>(request);
 
   if (auto error = TakeOperationError(Operation::kPreparePersistentVault);
       error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -1068,6 +1074,7 @@ void FakeUserDataAuthClient::PrepareVaultForMigration(
     PrepareVaultForMigrationCallback callback) {
   ::user_data_auth::PrepareVaultForMigrationReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kPrepareVaultForMigration>(request);
 
   if (auto error = TakeOperationError(Operation::kPrepareVaultForMigration);
       error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -1122,7 +1129,7 @@ void FakeUserDataAuthClient::AddAuthFactor(
     AddAuthFactorCallback callback) {
   ::user_data_auth::AddAuthFactorReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
-  last_add_auth_factor_request_ = request;
+  RememberRequest<Operation::kAddAuthFactor>(request);
 
   if (auto error = TakeOperationError(Operation::kAddAuthFactor);
       error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -1155,6 +1162,7 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
     AuthenticateAuthFactorCallback callback) {
   ::user_data_auth::AuthenticateAuthFactorReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kAuthenticateAuthFactor>(request);
 
   if (auto error = TakeOperationError(Operation::kAuthenticateAuthFactor);
       error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -1492,8 +1500,8 @@ void FakeUserDataAuthClient::OnDircryptoMigrationProgressUpdated() {
     NotifyDircryptoMigrationProgress(
         ::user_data_auth::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS,
         dircrypto_migration_progress_, kDircryptoMigrationMaxProgress);
-    const auto user_it =
-        users_.find(last_migrate_to_dircrypto_request_.account_id());
+    const auto user_it = users_.find(
+        GetLastRequest<Operation::kStartMigrateToDircrypto>().account_id());
     DCHECK(user_it != std::end(users_))
         << "User for dircrypto migration does not exist";
 

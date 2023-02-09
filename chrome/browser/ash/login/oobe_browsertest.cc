@@ -110,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(OobeTest, NewUser) {
 
   // Verify the parameters that were passed to the latest AddAuthFactor call.
   const user_data_auth::AddAuthFactorRequest& request =
-      FakeUserDataAuthClient::Get()->get_last_add_authfactor_request();
+      FakeUserDataAuthClient::Get()
+          ->GetLastRequest<FakeUserDataAuthClient::Operation::kAddAuthFactor>();
   EXPECT_EQ(request.auth_factor().label(), kCryptohomeGaiaKeyLabel);
   EXPECT_FALSE(request.auth_input().password_input().secret().empty());
   EXPECT_EQ(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD,
