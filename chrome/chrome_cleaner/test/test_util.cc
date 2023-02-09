@@ -415,17 +415,16 @@ bool CheckTestPrivileges() {
 }
 
 bool ResetAclForUcrtbase() {
+#ifdef NDEBUG
+  return true;
+#else
   base::FilePath exe_path;
   if (!base::PathService::Get(base::BasePathKey::DIR_EXE, &exe_path)) {
     LOG(ERROR) << "Failed to get directory path.";
     return false;
   }
   base::FilePath abs_path = base::MakeAbsoluteFilePath(exe_path);
-#ifdef NDEBUG
-  base::FilePath ucrt_path = abs_path.Append(L"ucrtbase.dll");
-#else
   base::FilePath ucrt_path = abs_path.Append(L"ucrtbased.dll");
-#endif
   base::CommandLine cmd({L"icacls"});
   cmd.AppendArgPath(ucrt_path);
   cmd.AppendArg("/reset");
@@ -443,6 +442,7 @@ bool ResetAclForUcrtbase() {
                << " with exit code " << exit_code;
   }
   return !exit_code;
+#endif
 }
 
 }  // namespace chrome_cleaner
