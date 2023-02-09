@@ -309,6 +309,8 @@ public class AccountSelectionControllerTest {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
+        // Do not let test inputs be ignored.
+        mMediator.setComponentShowTime(-1000);
         assertFalse(mMediator.wasDismissed());
         assertNotNull(mModel.get(ItemProperties.CONTINUE_BUTTON)
                               .get(ContinueButtonProperties.ON_CLICK_LISTENER));
@@ -327,6 +329,8 @@ public class AccountSelectionControllerTest {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA, CARL),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
+        // Do not let test inputs be ignored.
+        mMediator.setComponentShowTime(-1000);
         assertFalse(mMediator.wasDismissed());
         assertNotNull(mSheetAccountItems.get(0).model.get(AccountProperties.ON_CLICK_LISTENER));
 

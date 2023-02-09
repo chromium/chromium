@@ -8,9 +8,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
@@ -60,6 +62,11 @@ class AccountSelectionMediator {
     // proceed. Eventually this should be specified by IDPs.
     private static final int AUTO_SIGN_IN_CANCELLATION_TIMER_MS = 5000;
 
+    // Amount of time during which we ignore inputs. Note that this is timed from when we invoke the
+    // methods to show the accounts, so it does include any time spent animating the sheet into
+    // view.
+    public static final long POTENTIALLY_UNINTENDED_INPUT_THRESHOLD = 500;
+
     private HeaderType mHeaderType;
     private String mRpForDisplay;
     private String mIdpForDisplay;
@@ -72,6 +79,10 @@ class AccountSelectionMediator {
 
     // The account that the user has selected.
     private Account mSelectedAccount;
+
+    // Stores the value of SystemClock.elapsedRealtime() at the time in which the accounts are shown
+    // to the user.
+    private long mComponentShowTime;
 
     private KeyboardVisibilityListener mKeyboardVisibilityListener =
             new KeyboardVisibilityListener() {
@@ -159,6 +170,15 @@ class AccountSelectionMediator {
         }
     }
 
+    /* Returns whether an input event being processed should be ignored due to it occurring too
+     * close in time to the time in which the dialog was shown.
+     */
+    private boolean shouldInputBeProcessed() {
+        assert mComponentShowTime != 0;
+        long currentTime = SystemClock.elapsedRealtime();
+        return currentTime - mComponentShowTime > POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
+    }
+
     void showVerifySheet(Account account) {
         mHeaderType = HeaderType.VERIFY;
         updateSheet(Arrays.asList(account), /*areAccountsClickable=*/false,
@@ -183,6 +203,7 @@ class AccountSelectionMediator {
         mSelectedAccount = accounts.size() == 1 ? accounts.get(0) : null;
         showAccountsInternal(rpForDisplay, idpForDisplay, accounts, idpMetadata, clientMetadata,
                 isAutoSignIn, /*focusItem=*/ItemProperties.HEADER);
+        setComponentShowTime(SystemClock.elapsedRealtime());
 
         if (!TextUtils.isEmpty(idpMetadata.getBrandIconUrl())) {
             int brandIconIdealSize = AccountSelectionBridge.getBrandIconIdealSize();
@@ -199,6 +220,11 @@ class AccountSelectionMediator {
                 }
             });
         }
+    }
+
+    @VisibleForTesting
+    void setComponentShowTime(long componentShowTime) {
+        mComponentShowTime = componentShowTime;
     }
 
     private void showAccountsInternal(String rpForDisplay, String idpForDisplay,
@@ -315,6 +341,11 @@ class AccountSelectionMediator {
         return mWasDismissed;
     }
 
+    void onClickAccountSelected(Account selectedAccount) {
+        if (!shouldInputBeProcessed()) return;
+        onAccountSelected(selectedAccount);
+    }
+
     void onAccountSelected(Account selectedAccount) {
         if (mWasDismissed) return;
 
@@ -346,7 +377,7 @@ class AccountSelectionMediator {
         return new PropertyModel.Builder(AccountProperties.ALL_KEYS)
                 .with(AccountProperties.ACCOUNT, account)
                 .with(AccountProperties.ON_CLICK_LISTENER,
-                        isAccountClickable ? this::onAccountSelected : null)
+                        isAccountClickable ? this::onClickAccountSelected : null)
                 .build();
     }
 
@@ -355,7 +386,7 @@ class AccountSelectionMediator {
         return new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                 .with(ContinueButtonProperties.IDP_METADATA, idpMetadata)
                 .with(ContinueButtonProperties.ACCOUNT, account)
-                .with(ContinueButtonProperties.ON_CLICK_LISTENER, this::onAccountSelected)
+                .with(ContinueButtonProperties.ON_CLICK_LISTENER, this::onClickAccountSelected)
                 .build();
     }
 
