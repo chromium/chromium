@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/token.h"
 #include "components/unexportable_keys/background_long_task_scheduler.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
@@ -24,12 +25,14 @@ namespace unexportable_keys {
 
 namespace {
 scoped_refptr<RefCountedUnexportableSigningKey> MakeSigningKeyRefCounted(
+    const base::Token& key_id,
     std::unique_ptr<crypto::UnexportableSigningKey> key) {
   if (!key) {
     return nullptr;
   }
 
-  return base::MakeRefCounted<RefCountedUnexportableSigningKey>(std::move(key));
+  return base::MakeRefCounted<RefCountedUnexportableSigningKey>(std::move(key),
+                                                                key_id);
 }
 }  // namespace
 
@@ -60,12 +63,14 @@ void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
 
   auto task = std::make_unique<GenerateKeyTask>(
       std::move(key_provider), acceptable_algorithms,
-      base::BindOnce(&MakeSigningKeyRefCounted).Then(std::move(callback)));
+      base::BindOnce(&MakeSigningKeyRefCounted, base::Token::CreateRandom())
+          .Then(std::move(callback)));
   task_scheduler_.PostTask(std::move(task), priority);
 }
 
 void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
     base::span<const uint8_t> wrapped_key,
+    const base::Token& key_id,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(scoped_refptr<RefCountedUnexportableSigningKey>)>
         callback) {
@@ -79,7 +84,8 @@ void UnexportableKeyTaskManager::FromWrappedSigningKeySlowlyAsync(
 
   auto task = std::make_unique<FromWrappedKeyTask>(
       std::move(key_provider), wrapped_key,
-      base::BindOnce(&MakeSigningKeyRefCounted).Then(std::move(callback)));
+      base::BindOnce(&MakeSigningKeyRefCounted, key_id)
+          .Then(std::move(callback)));
   task_scheduler_.PostTask(std::move(task), priority);
 }
 

@@ -15,6 +15,10 @@
 
 namespace unexportable_keys {
 
+namespace {
+constexpr base::Token kTestToken{1234, 5678};
+}  // namespace
+
 class UnexportableKeyTaskManagerTest : public testing::Test {
  public:
   UnexportableKeyTaskManagerTest() = default;
@@ -75,15 +79,14 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
   base::test::TestFuture<scoped_refptr<RefCountedUnexportableSigningKey>>
       unwrap_key_future;
   task_manager().FromWrappedSigningKeySlowlyAsync(
-      wrapped_key, BackgroundTaskPriority::kBestEffort,
+      wrapped_key, kTestToken, BackgroundTaskPriority::kBestEffort,
       unwrap_key_future.GetCallback());
   EXPECT_FALSE(unwrap_key_future.IsReady());
   RunBackgroundTasks();
   EXPECT_TRUE(unwrap_key_future.IsReady());
   auto unwrapped_key = unwrap_key_future.Get();
   EXPECT_NE(unwrapped_key, nullptr);
-  // Keys should have different ids since they point to different objects.
-  EXPECT_NE(key->id(), unwrapped_key->id());
+  EXPECT_EQ(unwrapped_key->id(), kTestToken);
   // Public key should be the same for both keys.
   EXPECT_EQ(key->key().GetSubjectPublicKeyInfo(),
             unwrapped_key->key().GetSubjectPublicKeyInfo());
@@ -94,7 +97,7 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync_Failure) {
       future;
   std::vector<uint8_t> empty_wrapped_key;
   task_manager().FromWrappedSigningKeySlowlyAsync(
-      empty_wrapped_key, BackgroundTaskPriority::kBestEffort,
+      empty_wrapped_key, kTestToken, BackgroundTaskPriority::kBestEffort,
       future.GetCallback());
   RunBackgroundTasks();
   EXPECT_EQ(future.Get(), nullptr);

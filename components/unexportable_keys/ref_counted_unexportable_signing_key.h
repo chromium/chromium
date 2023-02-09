@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/types/strong_alias.h"
+#include "base/token.h"
 
 namespace crypto {
 class UnexportableSigningKey;
@@ -20,18 +20,18 @@ namespace unexportable_keys {
 
 // RefCounted wrapper around `crypto::UnexportableSigningKey`.
 //
-// Also contains a unique id that identifies a class instance. It doesn't
-// guarantee that two objects with different ids have different underlying keys.
+// Also contains a unique id token that identifies a class instance. This id can
+// be used for a faster key comparison (as opposed to comparing public key
+// infos). It doesn't guarantee that two objects with different ids have
+// different underlying keys.
+// This id can be written to disk and re-used across browser sessions.
 class RefCountedUnexportableSigningKey
     : public base::RefCountedThreadSafe<RefCountedUnexportableSigningKey> {
  public:
-  // A unique id that identifies a class instance. Can be used for a faster key
-  // comparison (as opposed to comparing public key infos).
-  using KeyId = base::StrongAlias<class KeyIdTag, uint32_t>;
-
   // `key` must be non-null.
   explicit RefCountedUnexportableSigningKey(
-      std::unique_ptr<crypto::UnexportableSigningKey> key);
+      std::unique_ptr<crypto::UnexportableSigningKey> key,
+      const base::Token& key_id);
 
   RefCountedUnexportableSigningKey(const RefCountedUnexportableSigningKey&) =
       delete;
@@ -39,14 +39,14 @@ class RefCountedUnexportableSigningKey
       const RefCountedUnexportableSigningKey&) = delete;
 
   crypto::UnexportableSigningKey& key() const { return *key_; }
-  KeyId id() const { return key_id_; }
+  base::Token id() const { return id_; }
 
  private:
   friend class base::RefCountedThreadSafe<RefCountedUnexportableSigningKey>;
   ~RefCountedUnexportableSigningKey();
 
   const std::unique_ptr<crypto::UnexportableSigningKey> key_;
-  const KeyId key_id_;
+  const base::Token id_;
 };
 
 }  // namespace unexportable_keys
