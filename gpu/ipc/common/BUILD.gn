@@ -151,7 +151,7 @@ source_set("ipc_common_sources") {
     "//ui/gl",
   ]
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "gpu_memory_buffer_impl_io_surface.cc",
       "gpu_memory_buffer_impl_io_surface.h",

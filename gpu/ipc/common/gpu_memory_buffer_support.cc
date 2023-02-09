@@ -12,7 +12,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
 #endif
 
@@ -46,7 +46,7 @@ GpuMemoryBufferSupport::~GpuMemoryBufferSupport() {}
 
 gfx::GpuMemoryBufferType
 GpuMemoryBufferSupport::GetNativeGpuMemoryBufferType() {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   return gfx::IO_SURFACE_BUFFER;
 #elif BUILDFLAG(IS_ANDROID)
   return gfx::ANDROID_HARDWARE_BUFFER;
@@ -64,7 +64,7 @@ bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
     gfx::BufferUsage usage) {
   DCHECK_NE(gfx::SHARED_MEMORY_BUFFER, GetNativeGpuMemoryBufferType());
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   switch (usage) {
     case gfx::BufferUsage::GPU_READ:
     case gfx::BufferUsage::SCANOUT:
@@ -175,7 +175,7 @@ GpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
     case gfx::SHARED_MEMORY_BUFFER:
       return GpuMemoryBufferImplSharedMemory::CreateFromHandle(
           std::move(handle), size, format, usage, std::move(callback));
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     case gfx::IO_SURFACE_BUFFER:
       return GpuMemoryBufferImplIOSurface::CreateFromHandle(
           std::move(handle), size, format, usage, std::move(callback));

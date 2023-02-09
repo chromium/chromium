@@ -40,7 +40,7 @@ gfx::mojom::GpuMemoryBufferPlatformHandlePtr StructTraits<
       break;
 #endif
     case gfx::IO_SURFACE_BUFFER: {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
       gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port(
           IOSurfaceCreateMachPort(handle.io_surface.get()));
       return gfx::mojom::GpuMemoryBufferPlatformHandle::NewMachPort(
