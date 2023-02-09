@@ -6,26 +6,64 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGES_ANNOTATION_STORAGE_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/ash/app_list/search/local_images/local_image_search_provider.h"
-#include "net/extras/sqlite/sqlite_persistent_store_backend_base.h"
-
-namespace base {
-class FilePath;
-}  // namespace base
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 
 class ImageAnnotationWorker;
+class SqlDatabase;
+
+// Image metadata retrieved from the database.
+struct ImageInfo {
+  // All the annotations attributed to the image.
+  std::set<std::string> annotations;
+  // The full path to the image.
+  base::FilePath path;
+  // The image's last modified time.
+  base::Time last_modified;
+
+  ImageInfo(const std::set<std::string>& annotations,
+            const base::FilePath& path,
+            const base::Time& last_modified);
+
+  ~ImageInfo();
+  ImageInfo(const ImageInfo&);
+  ImageInfo& operator=(const ImageInfo&) = delete;
+};
+
+// A search result with `relevance` to the supplied query.
+struct FileSearchResult {
+  // THe full path to the file.
+  base::FilePath path;
+  // The file's last modified time.
+  base::Time last_modified;
+  // The file's relevance on the scale from 0-1. It represents how closely a
+  // query matches the file's annotation.
+  double relevance;
+
+  FileSearchResult(const base::FilePath& path,
+                   const base::Time& last_modified,
+                   double relevance);
+
+  ~FileSearchResult();
+  FileSearchResult(const FileSearchResult&);
+  FileSearchResult& operator=(const FileSearchResult&) = delete;
+};
 
 // A persistent storage to efficiently store, retrieve and search annotations.
 // It maintains and runs tasks on its own background task runner.
 // Constructor and all *Async() methods can be called on any sequence.
 // TODO(b/260646344): Pass SQL review.
-class AnnotationStorage : public net::SQLitePersistentStoreBackendBase {
+class AnnotationStorage : public base::RefCountedThreadSafe<AnnotationStorage> {
  public:
   enum class TableColumnName {
     kLabel,
@@ -36,7 +74,6 @@ class AnnotationStorage : public net::SQLitePersistentStoreBackendBase {
   AnnotationStorage(const base::FilePath& path,
                     const std::string& histogram_tag,
                     int current_version_number,
-                    int compatible_version_number,
                     std::unique_ptr<ImageAnnotationWorker> annotation_worker);
   AnnotationStorage(const AnnotationStorage&) = delete;
   AnnotationStorage& operator=(const AnnotationStorage&) = delete;
@@ -63,23 +100,17 @@ class AnnotationStorage : public net::SQLitePersistentStoreBackendBase {
       base::FilePath image_path,
       base::OnceCallback<void(std::vector<ImageInfo>)> callback);
 
-  // Searches annotations using FuzzyTokenizedStringMatch.
-  // Can be called from any sequence.
+  // Searches for annotations using FuzzyTokenizedStringMatch with relevance to
+  // `query` above a fixed threshold. Can be called from any sequence.
   bool LinearSearchAnnotationsAsync(
       std::u16string query,
-      base::OnceCallback<void(std::vector<ImageInfo>)> callback);
-
-  // SQLitePersistentStoreBackendBase overrides:
-  absl::optional<int> DoMigrateDatabaseSchema() override;
-  bool CreateDatabaseSchema() override;
-  void DoCommit() override;
-
- protected:
-  ~AnnotationStorage() override;
+      base::OnceCallback<void(std::vector<FileSearchResult>)> callback);
 
  private:
-  // Runs the worker after the db initialization.
-  void OnInitializationComplete(bool status);
+  friend class base::RefCountedThreadSafe<AnnotationStorage>;
+  ~AnnotationStorage();
+  // Runs the worker in the background.
+  void StartWorkerOnBackgroundSequence(bool is_error);
   bool InsertOnBackgroundSequence(ImageInfo image_info);
   bool RemoveOnBackgroundSequence(base::FilePath image_path);
 
@@ -90,10 +121,15 @@ class AnnotationStorage : public net::SQLitePersistentStoreBackendBase {
       absl::optional<std::string> value);
 
   // Searches annotations using FuzzyTokenizedStringMatch.
-  std::vector<ImageInfo> LinearSearchAnnotationsOnBackgroundSequence(
+  std::vector<FileSearchResult> LinearSearchAnnotationsOnBackgroundSequence(
       std::u16string query);
 
+  // Initialized and operates in the background sequence.
   std::unique_ptr<ImageAnnotationWorker> annotation_worker_;
+
+  std::unique_ptr<SqlDatabase> sql_database_;
+
+  const scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
