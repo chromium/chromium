@@ -5,6 +5,10 @@
 var firstWindowId;
 var testTabId;
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
+loadScript.then(async function() {
 function resolveOnMessage(resolve) {
   chrome.runtime.onMessage.addListener(function local(message) {
     chrome.runtime.onMessage.removeListener(local);
@@ -61,4 +65,4 @@ chrome.test.runTests([
     Promise.all([onMessagePromise, createPromise]).then(chrome.test.succeed);
   }
 
-]);
+])});
