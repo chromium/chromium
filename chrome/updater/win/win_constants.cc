@@ -6,8 +6,13 @@
 
 namespace updater {
 
-const wchar_t kLegacyGoogleUpdaterAppID[] =
+const wchar_t kLegacyGoogleUpdateAppID[] =
     L"{430FD4D0-B729-4F61-AA34-91526481799D}";
+
+const wchar_t kGoogleUpdate3WebSystemClassProgId[] =
+    COMPANY_SHORTNAME_STRING L"Update.Update3WebMachine";
+const wchar_t kGoogleUpdate3WebUserClassProgId[] =
+    COMPANY_SHORTNAME_STRING L"Update.Update3WebUser";
 
 const wchar_t kGlobalPrefix[] = L"Global\\G";
 
@@ -46,6 +51,6 @@ const wchar_t kWindowsInternalServiceName[] = L"InternalService";
 
 const wchar_t kShutdownEvent[] = L"{A0C1F415-D2CE-4ddc-9B48-14E56FD55162}";
 
-const wchar_t kLegacyExeName[] = L"GoogleUpdate.exe";
+const wchar_t kLegacyExeName[] = COMPANY_SHORTNAME_STRING L"Update.exe";
 
 }  // namespace updater

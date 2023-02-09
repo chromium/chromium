@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <cstring>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -18,6 +19,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -66,7 +68,7 @@ std::wstring CreateRandomTaskName(UpdaterScope scope) {
 void AddInstallComProgIdWorkItems(UpdaterScope scope,
                                   CLSID clsid,
                                   WorkItemList* list) {
-  const std::wstring progid(GetProgIdForClsid(scope, clsid));
+  const std::wstring progid(GetProgIdForClsid(clsid));
   if (!progid.empty()) {
     const HKEY root = UpdaterScopeToHKeyRoot(scope);
     const std::wstring progid_reg_path(GetComProgIdRegistryPath(progid));
@@ -370,17 +372,21 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   }
 }
 
-std::wstring GetProgIdForClsid(UpdaterScope scope, CLSID clsid) {
-  switch (scope) {
-    case UpdaterScope::kUser:
-      return clsid == __uuidof(GoogleUpdate3WebUserClass)
-                 ? L"GoogleUpdate.Update3WebUser"
-                 : L"";
-    case UpdaterScope::kSystem:
-      return clsid == __uuidof(GoogleUpdate3WebSystemClass)
-                 ? L"GoogleUpdate.Update3WebMachine"
-                 : L"";
-  }
+std::wstring GetProgIdForClsid(REFCLSID clsid) {
+  auto clsid_comparator = [](REFCLSID a, REFCLSID b) {
+    return std::memcmp(&a, &b, sizeof(a)) < 0;
+  };
+
+  const base::flat_map<CLSID, std::wstring, decltype(clsid_comparator)>
+      kClsidToProgId = {
+          {__uuidof(GoogleUpdate3WebSystemClass),
+           kGoogleUpdate3WebSystemClassProgId},
+          {__uuidof(GoogleUpdate3WebUserClass),
+           kGoogleUpdate3WebUserClassProgId},
+      };
+
+  const auto progid = kClsidToProgId.find(clsid);
+  return progid != kClsidToProgId.end() ? progid->second : L"";
 }
 
 std::wstring GetComProgIdRegistryPath(const std::wstring& progid) {

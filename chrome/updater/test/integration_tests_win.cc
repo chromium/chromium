@@ -266,7 +266,7 @@ void CheckInstallation(UpdaterScope scope,
                 RegKeyExistsCOM(root, GetComServerAppidRegistryPath(clsid)));
     }
 
-    const std::wstring progid(GetProgIdForClsid(scope, clsid));
+    const std::wstring progid(GetProgIdForClsid(clsid));
     if (!progid.empty()) {
       EXPECT_EQ(is_installed,
                 RegKeyExistsCOM(root, GetComProgIdRegistryPath(progid)));
@@ -565,7 +565,7 @@ void Clean(UpdaterScope scope) {
     if (IsSystemInstall(scope))
       EXPECT_TRUE(DeleteRegKeyCOM(root, GetComServerAppidRegistryPath(clsid)));
 
-    const std::wstring progid(GetProgIdForClsid(scope, clsid));
+    const std::wstring progid(GetProgIdForClsid(clsid));
     if (!progid.empty()) {
       EXPECT_TRUE(DeleteRegKeyCOM(root, GetComProgIdRegistryPath(progid)));
     }
@@ -783,8 +783,8 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
     // Verifies that the progid for the legacy clsid is registered.
     CLSID expected_clsid = {};
     EXPECT_HRESULT_SUCCEEDED(::CLSIDFromProgID(
-        IsSystemInstall(scope) ? L"GoogleUpdate.Update3WebMachine"
-                               : L"GoogleUpdate.Update3WebUser",
+        IsSystemInstall(scope) ? kGoogleUpdate3WebSystemClassProgId
+                               : kGoogleUpdate3WebUserClassProgId,
         &expected_clsid));
     EXPECT_EQ(expected_clsid, IsSystemInstall(scope)
                                   ? __uuidof(GoogleUpdate3WebSystemClass)
@@ -1446,10 +1446,9 @@ void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
   base::win::RegKey key;
-  ASSERT_EQ(
-      key.Create(root, GetAppClientsKey(kLegacyGoogleUpdaterAppID).c_str(),
-                 Wow6432(KEY_WRITE)),
-      ERROR_SUCCESS);
+  ASSERT_EQ(key.Create(root, GetAppClientsKey(kLegacyGoogleUpdateAppID).c_str(),
+                       Wow6432(KEY_WRITE)),
+            ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValuePV, L"1.1.1.1"), ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GOOG"), ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
@@ -1484,7 +1483,7 @@ void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
 
   // Legacy updater itself should not be migrated.
   const std::string kLegacyUpdaterAppId =
-      base::SysWideToUTF8(kLegacyGoogleUpdaterAppID);
+      base::SysWideToUTF8(kLegacyGoogleUpdateAppID);
   EXPECT_FALSE(
       persisted_data->GetProductVersion(kLegacyUpdaterAppId).IsValid());
   EXPECT_TRUE(persisted_data->GetAP(kLegacyUpdaterAppId).empty());

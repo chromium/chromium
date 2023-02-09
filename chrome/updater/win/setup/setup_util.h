@@ -38,7 +38,7 @@ enum class UpdaterScope;
 bool RegisterWakeTask(const base::CommandLine& run_command, UpdaterScope scope);
 void UnregisterWakeTask(UpdaterScope scope);
 
-std::wstring GetProgIdForClsid(UpdaterScope scope, CLSID clsid);
+std::wstring GetProgIdForClsid(REFCLSID clsid);
 std::wstring GetComProgIdRegistryPath(const std::wstring& progid);
 std::wstring GetComServerClsidRegistryPath(REFCLSID clsid);
 std::wstring GetComServerAppidRegistryPath(REFGUID appid);

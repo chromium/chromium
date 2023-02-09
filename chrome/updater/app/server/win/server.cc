@@ -291,7 +291,7 @@ bool ComServerApp::MigrateLegacyUpdaters(
     const std::wstring app_id = it.Name();
 
     // Skip importing legacy updater.
-    if (base::EqualsCaseInsensitiveASCII(app_id, kLegacyGoogleUpdaterAppID)) {
+    if (base::EqualsCaseInsensitiveASCII(app_id, kLegacyGoogleUpdateAppID)) {
       continue;
     }
 

@@ -12,7 +12,10 @@
 
 namespace updater {
 
-extern const wchar_t kLegacyGoogleUpdaterAppID[];
+extern const wchar_t kLegacyGoogleUpdateAppID[];
+
+extern const wchar_t kGoogleUpdate3WebSystemClassProgId[];
+extern const wchar_t kGoogleUpdate3WebUserClassProgId[];
 
 // The prefix to use for global names in WIN32 API's. The prefix is necessary
 // to avoid collision on kernel object names.
