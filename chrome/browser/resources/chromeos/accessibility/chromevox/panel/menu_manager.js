@@ -96,6 +96,18 @@ export class MenuManager {
     return specifiedMenu || this.searchMenu_ || this.menus_[0];
   }
 
+  /**
+   * Activate a menu whose title has been clicked. Stop event propagation at
+   * this point so we don't close the ChromeVox menus and restore focus.
+   * @param {PanelMenu} menu The menu we would like to activate.
+   * @param {Event} mouseUpEvent The mouseup event.
+   */
+  onMouseUpOnMenuTitle(menu, mouseUpEvent) {
+    this.activateMenu(menu, true /* activateFirstItem */);
+    mouseUpEvent.preventDefault();
+    mouseUpEvent.stopPropagation();
+  }
+
   // The following getters and setters are temporary during the migration from
   // panel.js.
 

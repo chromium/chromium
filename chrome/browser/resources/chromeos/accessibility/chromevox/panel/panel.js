@@ -557,7 +557,8 @@ export class Panel extends PanelInterface {
             this.menuManager_.activateMenu(menu, true /* activateFirstItem */),
         false);
     menu.menuBarItemElement.addEventListener(
-        'mouseup', event => this.onMouseUpOnMenuTitle_(menu, event), false);
+        'mouseup', event => this.menuManager_.onMouseUpOnMenuTitle(menu, event),
+        false);
     $('menus_background').appendChild(menu.menuContainerElement);
     this.menuManager_.menus.push(menu);
     return menu;
@@ -717,7 +718,8 @@ export class Panel extends PanelInterface {
         () =>
             this.menuManager_.activateMenu(menu, true /* activateFirstItem */));
     menu.menuBarItemElement.addEventListener(
-        'mouseup', event => this.onMouseUpOnMenuTitle_(menu, event));
+        'mouseup',
+        event => this.menuManager_.onMouseUpOnMenuTitle(menu, event));
     $('menus_background').appendChild(menu.menuContainerElement);
     this.menuManager_.menus.push(menu);
     this.nodeMenuDictionary_[menuData.menuId] = menu;
@@ -759,8 +761,8 @@ export class Panel extends PanelInterface {
         false);
     this.menuManager_.searchMenu.menuBarItemElement.addEventListener(
         'mouseup',
-        event =>
-            this.onMouseUpOnMenuTitle_(this.menuManager_.searchMenu, event),
+        event => this.menuManager_.onMouseUpOnMenuTitle(
+            this.menuManager_.searchMenu, event),
         false);
     $('menus_background')
         .appendChild(this.menuManager_.searchMenu.menuContainerElement);
@@ -877,19 +879,6 @@ export class Panel extends PanelInterface {
           this.menuManager_.activeMenu.getCallbackForElement(target);
     }
     this.closeMenusAndRestoreFocus();
-  }
-
-  /**
-   * Activate a menu whose title has been clicked. Stop event propagation at
-   * this point so we don't close the ChromeVox menus and restore focus.
-   * @param {PanelMenu} menu The menu we would like to activate.
-   * @param {Event} mouseUpEvent The mouseup event.
-   * @private
-   */
-  onMouseUpOnMenuTitle_(menu, mouseUpEvent) {
-    this.menuManager_.activateMenu(menu, true /* activateFirstItem */);
-    mouseUpEvent.preventDefault();
-    mouseUpEvent.stopPropagation();
   }
 
   /**
