@@ -4,6 +4,7 @@
 
 package org.chromium.components.permissions;
 
+import android.Manifest;
 import android.os.Build;
 
 import androidx.core.app.NotificationManagerCompat;
@@ -12,7 +13,10 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.location.LocationUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
+import org.chromium.ui.permissions.PermissionCallback;
 
 import java.util.Arrays;
 
@@ -128,5 +132,59 @@ public class PermissionUtil {
         NotificationManagerCompat manager =
                 NotificationManagerCompat.from(ContextUtils.getApplicationContext());
         return manager.areNotificationsEnabled();
+    }
+
+    public static boolean hasSystemPermissionsForBluetooth(WindowAndroid windowAndroid) {
+        return !needsNearbyDevicesPermissionForBluetooth(windowAndroid)
+                && !needsLocationPermissionForBluetooth(windowAndroid);
+    }
+
+    public static boolean needsLocationPermissionForBluetooth(WindowAndroid windowAndroid) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+                && !windowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+
+    public static boolean needsNearbyDevicesPermissionForBluetooth(WindowAndroid windowAndroid) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && (!windowAndroid.hasPermission(Manifest.permission.BLUETOOTH_SCAN)
+                        || !windowAndroid.hasPermission(Manifest.permission.BLUETOOTH_CONNECT));
+    }
+
+    public static boolean needsLocationServicesForBluetooth() {
+        // Location services are not required on Android S+ to use Bluetooth if the application has
+        // Nearby Devices permission and has set the neverForLocation flag on the BLUETOOTH_SCAN
+        // permission in its manifest.
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+                && !LocationUtils.getInstance().isSystemLocationSettingEnabled();
+    }
+
+    public static boolean canRequestSystemPermissionsForBluetooth(WindowAndroid windowAndroid) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return windowAndroid.canRequestPermission(Manifest.permission.BLUETOOTH_SCAN)
+                    && windowAndroid.canRequestPermission(Manifest.permission.BLUETOOTH_CONNECT);
+        }
+
+        return windowAndroid.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+
+    public static void requestSystemPermissionsForBluetooth(
+            WindowAndroid windowAndroid, PermissionCallback callback) {
+        String[] requiredPermissions;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requiredPermissions = new String[] {
+                    Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT};
+        } else {
+            requiredPermissions = new String[] {Manifest.permission.ACCESS_FINE_LOCATION};
+        }
+        // TODO(crbug.com/1412290): Removes this checking for null callback.
+        if (callback == null) {
+            callback = (permissions, grantResults) -> {};
+        }
+        windowAndroid.requestPermissions(requiredPermissions, callback);
+    }
+
+    public static void requestLocationServices(WindowAndroid windowAndroid) {
+        windowAndroid.getActivity().get().startActivity(
+                LocationUtils.getInstance().getSystemLocationSettingsIntent());
     }
 }
