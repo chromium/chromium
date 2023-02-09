@@ -17,6 +17,9 @@
               "source_event_id": "123",
               "aggregation_keys": {
                 "a": "0x159"
+              },
+              "filter_data": {
+                "x": ["y", "z"]
               }
             }
           }
@@ -50,7 +53,27 @@
               "aggregatable_values": {
                 "a": 123
               },
-              "aggregatable_deduplication_key": "1"
+              "aggregatable_deduplication_keys": [
+                {
+                  "deduplication_key": "0",
+                  "filters": {
+                    "x": ["x"]
+                  }
+                },
+                // Selected dedup key.
+                {
+                  "deduplication_key": "1",
+                  "filters": {
+                    "x": ["y"]
+                  }
+                },
+                {
+                  "deduplication_key": "2",
+                  "filters": {
+                    "x": ["z"]
+                  }
+                }
+              ]
             }
           }
         }]
@@ -79,9 +102,16 @@
                 }
               ],
               "aggregatable_values": {
-                "a": 456
+                "a": 654
               },
-              "aggregatable_deduplication_key": "1"
+              "aggregatable_deduplication_keys": [
+                {
+                  "deduplication_key": "1",
+                  "filters": {
+                    "x": ["z"]
+                  }
+                }
+              ]
             }
           }
         }]
@@ -107,7 +137,71 @@
               "aggregatable_values": {
                 "a": 456
               },
-              "aggregatable_deduplication_key": "2"
+              "aggregatable_deduplication_keys": [
+                {
+                  "deduplication_key": "2"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      // Should result in an aggregatable report as the deduplication key is
+      // filtered.
+      {
+        "timestamp": "1643235577000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["a"],
+                  "key_piece": "0x400"
+                }
+              ],
+              "aggregatable_values": {
+                "a": 789
+              },
+              "aggregatable_deduplication_keys": [{
+                "deduplication_key": "1",
+                "not_filters": {
+                  "x": ["y"]
+                }
+              }]
+            }
+          }
+        }]
+      },
+      // Should result in an aggregatable report as the deduplication key is null.
+      {
+        "timestamp": "1643235578000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["a"],
+                  "key_piece": "0x400"
+                }
+              ],
+              "aggregatable_values": {
+                "a": 987
+              },
+              "aggregatable_deduplication_keys": [{
+                "filters": {
+                  "x": ["y"]
+                }
+              }]
             }
           }
         }]
@@ -167,6 +261,32 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "1643239176000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [
+            {
+              "key": "0x559",
+              "value": 789
+            }
+          ]
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "1643239177000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [
+            {
+              "key": "0x559",
+              "value": 987
+            }
+          ]
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "1643239178000"
       }
     ]
   }

@@ -8,61 +8,163 @@
 <script src="resources/helpers.js"></script>
 <script>
 
-attribution_reporting_promise_test(async t => {
-  const host = `https://{{host}}`;
+const aggregatable_dedup_promise_test = (testCase) => {
+  attribution_reporting_promise_test(async t => {
+    const host = `https://{{host}}`;
 
-  await registerAttributionSrc(t, {
-    source: {
-      destination: host,
-      source_event_id: '123',
-      aggregation_keys: {
-        campaignCounts: '0x159',
+    await registerAttributionSrc(t, {
+      source: {
+        destination: host,
+        source_event_id: '123',
+        aggregation_keys: {
+          campaignCounts: '0x159',
+        },
+        debug_key: '456',
+        filter_data: {
+          'x': ['y', 'z'],
+        }
       },
-      debug_key: '456',
-    },
-    method: 'open',
-    cookie: attributionDebugCookie,
-  });
+      method: 'open',
+      cookie: attributionDebugCookie,
+    });
 
-  const trigger = {
-    aggregatable_trigger_data: [{
-      key_piece: '0x400',
-      source_keys: ['campaignCounts'],
-    }],
-    aggregatable_values: {
-      campaignCounts: 32768,
-    },
-    aggregatable_deduplication_key: '666',
-    debug_reporting: true,
-  };
+    const trigger = {
+      aggregatable_trigger_data: [{
+        key_piece: '0x400',
+        source_keys: ['campaignCounts'],
+      }],
+      aggregatable_values: {
+        campaignCounts: 32768,
+      },
+      aggregatable_deduplication_keys: [{
+        'deduplication_key': '666',
+      }],
+      debug_reporting: true,
+    };
 
-  await registerAttributionSrc(t, {
-    trigger,
-  });
+    await registerAttributionSrc(t, {
+      trigger,
+    });
 
-  const payload = await pollAggregatableReports();
-  assert_equals(payload.reports.length, 1);
-  const report = JSON.parse(payload.reports[0].body);
-  assert_own_property(report, 'shared_info');
-  const shared_info = JSON.parse(report.shared_info);
-  assert_equals(shared_info.attribution_destination, host);
+    const payload = await pollAggregatableReports();
+    assert_equals(payload.reports.length, 1);
+    const report = JSON.parse(payload.reports[0].body);
+    assert_own_property(report, 'shared_info');
+    const shared_info = JSON.parse(report.shared_info);
+    assert_equals(shared_info.attribution_destination, host);
 
-  await registerAttributionSrc(t, {
-    trigger,
-    cookie: attributionDebugCookie,
-  });
+    trigger.aggregatable_deduplication_keys =
+        testCase.aggregatable_deduplication_keys;
 
-  const debugPayload = await pollVerboseDebugReports();
-  assert_equals(debugPayload.reports.length, 1);
-  const debugReport = JSON.parse(debugPayload.reports[0].body);
-  assert_equals(debugReport.length, 1);
-  assert_equals(debugReport[0].type, 'trigger-aggregate-deduplicated');
-  assert_own_property(debugReport[0], 'body');
-  const debugReportBody = debugReport[0].body;
-  assert_equals(debugReportBody.attribution_destination, host);
-  assert_equals(debugReportBody.source_event_id, '123');
-  assert_equals(debugReportBody.source_site, host);
-  assert_equals(debugReportBody.source_debug_key, '456');
-  assert_not_own_property(debugReportBody, 'trigger_debug_key');
-}, 'Aggregatable report is deduplicated.');
+    await registerAttributionSrc(t, {
+      trigger,
+      cookie: attributionDebugCookie,
+    });
+
+    if (testCase.expectDeduplicated) {
+      const debugPayload = await pollVerboseDebugReports();
+      assert_equals(debugPayload.reports.length, 1);
+      const debugReport = JSON.parse(debugPayload.reports[0].body);
+      assert_equals(debugReport.length, 1);
+      assert_equals(debugReport[0].type, 'trigger-aggregate-deduplicated');
+      assert_own_property(debugReport[0], 'body');
+      const debugReportBody = debugReport[0].body;
+      assert_equals(debugReportBody.attribution_destination, host);
+      assert_equals(debugReportBody.source_event_id, '123');
+      assert_equals(debugReportBody.source_site, host);
+      assert_equals(debugReportBody.source_debug_key, '456');
+      assert_not_own_property(debugReportBody, 'trigger_debug_key');
+      return;
+    }
+
+    const payload2 = await pollAggregatableReports();
+    assert_equals(payload2.reports.length, 1);
+  }, testCase.testName);
+};
+
+[
+  {
+    testName: 'No deduplication key',
+    aggregatable_deduplication_keys: [],
+    expectDeduplicated: false,
+  },
+  {
+    testName: 'Filters match',
+    aggregatable_deduplication_keys: [
+      {
+        'deduplication_key': '666',
+        'filters': {'x': ['y']},
+      }
+    ],
+    expectDeduplicated: true,
+  },
+  {
+    testName: 'Filters does not match',
+    aggregatable_deduplication_keys: [
+      {
+        'deduplication_key': '666',
+        'filters': {'x': ['x']},
+      }
+    ],
+    expectDeduplicated: false,
+  },
+  {
+    testName: 'Negated filters match',
+    aggregatable_deduplication_keys: [
+      {
+        'deduplication_key': '666',
+        'not_filters': {'x': ['y']},
+      }
+    ],
+    expectDeduplicated: false,
+  },
+  {
+    testName: 'Negated filters does not match',
+    aggregatable_deduplication_keys: [
+      {
+        'deduplication_key': '666',
+        'not_filters': {'x': ['x']},
+      }
+    ],
+    expectDeduplicated: true,
+  },
+  {
+    testName: 'Different deduplication key',
+    aggregatable_deduplication_keys: [
+      {
+        'deduplication_key': '456',
+        'filters': {'x': ['y']}
+      }
+    ],
+    expectDeduplicated: false,
+  },
+  {
+    testName: 'Null deduplication key',
+    aggregatable_deduplication_keys: [
+      {
+        'filters': {'x': ['y']}
+      }
+    ],
+    expectDeduplicated: false,
+  },
+  {
+    testName: 'Multiple deduplication keys',
+    aggregatable_deduplication_keys: [
+      {
+        'deduplication_key': '555',
+        'filters': {'x': ['x']},
+      },
+      {
+        'deduplication_key': '666',
+        'filters': {'x': ['y']},
+      },
+      {
+        'deduplication_key': '777',
+        'filters': {'x': ['z']},
+      },
+    ],
+    expectDeduplicated: true,
+  },
+].forEach(aggregatable_dedup_promise_test);
+
 </script>

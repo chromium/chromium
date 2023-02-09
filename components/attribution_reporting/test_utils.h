@@ -21,6 +21,7 @@ class FilterData;
 class Filters;
 class SuitableOrigin;
 
+struct AggregatableDedupKey;
 struct EventTriggerData;
 struct SourceRegistration;
 struct TriggerRegistration;
@@ -60,6 +61,10 @@ std::ostream& operator<<(std::ostream&, const TriggerRegistration&);
 bool operator==(const SuitableOrigin&, const SuitableOrigin&);
 
 std::ostream& operator<<(std::ostream&, const SuitableOrigin&);
+
+bool operator==(const AggregatableDedupKey&, const AggregatableDedupKey&);
+
+std::ostream& operator<<(std::ostream&, const AggregatableDedupKey&);
 
 template <typename T, size_t kMaxSize>
 bool operator==(const BoundedList<T, kMaxSize>& a,

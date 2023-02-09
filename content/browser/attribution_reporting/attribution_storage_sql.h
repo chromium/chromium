@@ -372,6 +372,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const AttributionInfo& attribution_info,
       const AttributionTrigger& trigger,
       absl::optional<AttributionReport>& report,
+      absl::optional<uint64_t>& dedup_key,
       absl::optional<int>& max_aggregatable_reports_per_destination)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 

@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/constants.h"
@@ -118,22 +119,6 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "debug_key_wrong_type",
           R"json({"debug_key":5})json",
-          TriggerRegistration(),
-      },
-      {
-          "aggregatable_dedup_key_valid",
-          R"json({"aggregatable_deduplication_key":"10"})json",
-          TriggerRegistrationWith(
-              [](TriggerRegistration& r) { r.aggregatable_dedup_key = 10; }),
-      },
-      {
-          "aggregatable_dedup_key_invalid",
-          R"json({"aggregatable_deduplication_key":"-10"})json",
-          TriggerRegistration(),
-      },
-      {
-          "aggregatable_dedup_key_wrong_type",
-          R"json({"aggregatable_deduplication_key": 10})json",
           TriggerRegistration(),
       },
       {
@@ -245,10 +230,38 @@ TEST(TriggerRegistrationTest, Parse) {
           base::unexpected(
               TriggerRegistrationError::kAggregationCoordinatorUnknownValue),
       },
+      {
+          "aggregatable_dedup_keys_valid",
+          R"json({
+            "aggregatable_deduplication_keys":[
+              {},
+              {"deduplication_key":"5"}
+            ]
+          })json",
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.aggregatable_dedup_keys = *AggregatableDedupKeyList::Create(
+                {AggregatableDedupKey(),
+                 AggregatableDedupKey(/*dedup_key=*/5,
+                                      /*filters=*/Filters(),
+                                      /*not_filters=*/Filters())});
+          }),
+      },
+      {
+          "aggregatable_dedup_keys_wrong_type",
+          R"json({"aggregatable_deduplication_keys":{}})json",
+          base::unexpected(
+              TriggerRegistrationError::kAggregatableDedupKeyListWrongType),
+      },
+      {
+          "aggregatable_dedup_key_wrong_type",
+          R"json({"aggregatable_deduplication_keys":["abc"]})json",
+          base::unexpected(
+              TriggerRegistrationError::kAggregatableDedupKeyWrongType),
+      },
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError";
+      "Conversions.TriggerRegistrationError2";
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
@@ -298,6 +311,27 @@ TEST(TriggerRegistrationTest, Parse_AggregatableTriggerDataCount) {
                 TriggerRegistrationError::kAggregatableTriggerDataListTooLong));
 }
 
+TEST(TriggerRegistrationTest, Parse_AggregatableDedupKeyCount) {
+  const auto parse_with_aggregatable_dedup_key = [&](size_t n) {
+    base::Value::List list;
+    for (size_t i = 0; i < n; ++i) {
+      list.Append(base::Value::Dict());
+    }
+
+    base::Value::Dict dict;
+    dict.Set("aggregatable_deduplication_keys", std::move(list));
+    return TriggerRegistration::Parse(std::move(dict));
+  };
+
+  for (size_t count = 0; count <= kMaxAggregatableDedupKeys; ++count) {
+    EXPECT_TRUE(parse_with_aggregatable_dedup_key(count).has_value());
+  }
+
+  EXPECT_EQ(parse_with_aggregatable_dedup_key(kMaxAggregatableDedupKeys + 1),
+            base::unexpected(
+                TriggerRegistrationError::kAggregatableDedupKeyListTooLong));
+}
+
 TEST(TriggerRegistrationTest, Parse_RecordsMetrics) {
   using ::base::Bucket;
   using ::testing::ElementsAre;
@@ -336,7 +370,9 @@ TEST(TriggerRegistrationTest, ToJson) {
       },
       {
           TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregatable_dedup_key = 1;
+            r.aggregatable_dedup_keys = *AggregatableDedupKeyList::Create(
+                {AggregatableDedupKey(/*dedup_key=*/1, /*filters=*/Filters(),
+                                      /*not_filters=*/Filters())});
             r.aggregatable_trigger_data = *AggregatableTriggerDataList::Create(
                 {AggregatableTriggerData()});
             r.aggregatable_values = *AggregatableValues::Create({{"a", 2}});
@@ -349,7 +385,7 @@ TEST(TriggerRegistrationTest, ToJson) {
           }),
           R"json({
             "aggregation_coordinator_identifier": "aws-cloud",
-            "aggregatable_deduplication_key": "1",
+            "aggregatable_deduplication_keys": [{"deduplication_key":"1"}],
             "aggregatable_trigger_data": [{"key_piece":"0x0"}],
             "aggregatable_values": {"a": 2},
             "debug_key": "3",

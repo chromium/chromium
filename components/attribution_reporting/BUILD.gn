@@ -19,6 +19,8 @@ mojom("mojom") {
 
 component("attribution_reporting") {
   sources = [
+    "aggregatable_dedup_key.cc",
+    "aggregatable_dedup_key.h",
     "aggregatable_trigger_data.cc",
     "aggregatable_trigger_data.h",
     "aggregatable_values.cc",
@@ -66,6 +68,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "aggregatable_dedup_key_unittest.cc",
     "aggregatable_trigger_data_unittest.cc",
     "aggregatable_values_unittest.cc",
     "aggregation_keys_unittest.cc",
@@ -233,6 +236,12 @@ mojom("registration_mojom") {
           mojom = "attribution_reporting.mojom.AggregatableTriggerData"
           cpp = "::attribution_reporting::AggregatableTriggerData"
           forward_declaration = "namespace attribution_reporting { struct AggregatableTriggerData; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.AggregatableDedupKey"
+          cpp = "::attribution_reporting::AggregatableDedupKey"
+          forward_declaration =
+              "namespace attribution_reporting { struct AggregatableDedupKey; }"
         },
         {
           mojom = "attribution_reporting.mojom.TriggerRegistration"

@@ -16,6 +16,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -1007,7 +1008,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                 /*filters=*/*AttributionFilters::Create({{"a", {"b"}}}),
                 /*not_filters=*/*AttributionFilters::Create({{"g", {"h"}}}),
                 /*debug_key=*/1,
-                /*aggregatable_dedup_key=*/18,
+                *attribution_reporting::AggregatableDedupKeyList::Create(
+                    {attribution_reporting::AggregatableDedupKey(
+                        /*dedup_key=*/18,
+                        /*filters=*/AttributionFilters(),
+                        /*not_filters=*/AttributionFilters())}),
                 *attribution_reporting::EventTriggerDataList::Create({
                     attribution_reporting::EventTriggerData(
                         /*data=*/2,

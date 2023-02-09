@@ -19,6 +19,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -994,8 +995,8 @@ struct TriggerRegistrationMatcherConfig {
   ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
   ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
       event_triggers = ::testing::_;
-  ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
-      ::testing::_;
+  ::testing::Matcher<const attribution_reporting::AggregatableDedupKeyList&>
+      aggregatable_dedup_keys = ::testing::_;
   ::testing::Matcher<bool> debug_reporting = ::testing::_;
   ::testing::Matcher<const attribution_reporting::AggregatableTriggerDataList&>
       aggregatable_trigger_data = ::testing::_;
@@ -1013,8 +1014,8 @@ struct TriggerRegistrationMatcherConfig {
       ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
       ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
           event_triggers = ::testing::_,
-      ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
-          ::testing::_,
+      ::testing::Matcher<const attribution_reporting::AggregatableDedupKeyList&>
+          aggregatable_dedup_keys = ::testing::_,
       ::testing::Matcher<bool> debug_reporting = ::testing::_,
       ::testing::Matcher<
           const attribution_reporting::AggregatableTriggerDataList&>

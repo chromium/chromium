@@ -41,4 +41,8 @@ enum TriggerRegistrationError {
 
   kAggregationCoordinatorWrongType,
   kAggregationCoordinatorUnknownValue,
+
+  kAggregatableDedupKeyListWrongType,
+  kAggregatableDedupKeyListTooLong,
+  kAggregatableDedupKeyWrongType,
 };

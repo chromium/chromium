@@ -23,6 +23,7 @@ namespace attribution_reporting {
 namespace {
 constexpr char kDebugKey[] = "debug_key";
 constexpr char kDebugReporting[] = "debug_reporting";
+constexpr char kDeduplicationKey[] = "deduplication_key";
 constexpr char kPriority[] = "priority";
 }  // namespace
 
@@ -80,6 +81,10 @@ absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict) {
   return ParseUint64(dict, kDebugKey);
 }
 
+absl::optional<uint64_t> ParseDeduplicationKey(const base::Value::Dict& dict) {
+  return ParseUint64(dict, kDeduplicationKey);
+}
+
 bool ParseDebugReporting(const base::Value::Dict& dict) {
   return dict.FindBool(kDebugReporting).value_or(false);
 }
@@ -109,6 +114,13 @@ void SerializeDebugKey(base::Value::Dict& dict,
 
 void SerializeDebugReporting(base::Value::Dict& dict, bool debug_reporting) {
   dict.Set(kDebugReporting, debug_reporting);
+}
+
+void SerializeDeduplicationKey(base::Value::Dict& dict,
+                               absl::optional<uint64_t> dedup_key) {
+  if (dedup_key) {
+    SerializeUint64(dict, kDeduplicationKey, *dedup_key);
+  }
 }
 
 }  // namespace attribution_reporting

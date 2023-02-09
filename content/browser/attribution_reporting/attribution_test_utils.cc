@@ -758,7 +758,11 @@ AttributionTrigger TriggerBuilder::Build(
       attribution_reporting::TriggerRegistration(
           /*filters=*/attribution_reporting::Filters(),
           /*not_filters=*/attribution_reporting::Filters(), debug_key_,
-          aggregatable_dedup_key_,
+          *attribution_reporting::AggregatableDedupKeyList::Create(
+              {attribution_reporting::AggregatableDedupKey(
+                  /*dedup_key=*/aggregatable_dedup_key_,
+                  /*filters=*/attribution_reporting::Filters(),
+                  /*not_filters=*/attribution_reporting::Filters())}),
           *attribution_reporting::EventTriggerDataList::Create(
               std::move(event_triggers)),
           *attribution_reporting::AggregatableTriggerDataList::Create(
@@ -1331,7 +1335,8 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
     ::testing::Matcher<const attribution_reporting::EventTriggerDataList&>
         event_triggers,
-    ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key,
+    ::testing::Matcher<const attribution_reporting::AggregatableDedupKeyList&>
+        aggregatable_dedup_keys,
     ::testing::Matcher<bool> debug_reporting,
     ::testing::Matcher<
         const attribution_reporting::AggregatableTriggerDataList&>
@@ -1344,7 +1349,7 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
       not_filters(std::move(not_filters)),
       debug_key(std::move(debug_key)),
       event_triggers(std::move(event_triggers)),
-      aggregatable_dedup_key(std::move(aggregatable_dedup_key)),
+      aggregatable_dedup_keys(std::move(aggregatable_dedup_keys)),
       debug_reporting(std::move(debug_reporting)),
       aggregatable_trigger_data(std::move(aggregatable_trigger_data)),
       aggregatable_values(std::move(aggregatable_values)),
@@ -1365,9 +1370,10 @@ TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
       Field("event_triggers",
             &attribution_reporting::TriggerRegistration::event_triggers,
             cfg.event_triggers),
-      Field("aggregatable_dedup_key",
-            &attribution_reporting::TriggerRegistration::aggregatable_dedup_key,
-            cfg.aggregatable_dedup_key),
+      Field(
+          "aggregatable_dedup_keys",
+          &attribution_reporting::TriggerRegistration::aggregatable_dedup_keys,
+          cfg.aggregatable_dedup_keys),
       Field("debug_reporting",
             &attribution_reporting::TriggerRegistration::debug_reporting,
             cfg.debug_reporting),

@@ -298,9 +298,28 @@ The JSON schema is as follows.
                   "d": []
                 },
 
-                // Optional uint64 formatted as a base-10 string. Defaults to
-                // null.
-                "aggregatable_deduplication_key": "456"
+                // Optional list of zero or more aggregatable dedup keys.
+                "aggregatable_deduplication_keys": [
+                  {
+                    // Optional uint64 formatted as a base-10 string. Defaults to
+                    // null.
+                    "deduplication_key": "654",
+
+                    // Optional dictionary of filters and corresponding values.
+                    // Defaults to empty.
+                    "filters": {
+                      "a": ["b", "c"],
+                      "d": []
+                    },
+
+                    // Optional dictionary of negated filters and corresponding
+                    // values. Defaults to empty.
+                    "not_filters": {
+                      "x": ["y"],
+                      "z": []
+                    }
+                  }
+                ],
               }
             }
           }

@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -35,7 +36,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   TriggerRegistration(Filters filters,
                       Filters not_filters,
                       absl::optional<uint64_t> debug_key,
-                      absl::optional<uint64_t> aggregatable_dedup_key,
+                      AggregatableDedupKeyList aggregatable_dedup_keys,
                       EventTriggerDataList event_triggers,
                       AggregatableTriggerDataList aggregatable_trigger_data,
                       AggregatableValues aggregatable_values,
@@ -56,7 +57,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   Filters filters;
   Filters not_filters;
   absl::optional<uint64_t> debug_key;
-  absl::optional<uint64_t> aggregatable_dedup_key;
+  AggregatableDedupKeyList aggregatable_dedup_keys;
   EventTriggerDataList event_triggers;
   AggregatableTriggerDataList aggregatable_trigger_data;
   AggregatableValues aggregatable_values;

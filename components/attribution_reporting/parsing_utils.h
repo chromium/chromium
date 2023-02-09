@@ -40,6 +40,8 @@ absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict);
 
 bool ParseDebugReporting(const base::Value::Dict& dict);
 
+absl::optional<uint64_t> ParseDeduplicationKey(const base::Value::Dict& dict);
+
 void SerializeUint64(base::Value::Dict&, base::StringPiece key, uint64_t value);
 
 void SerializeInt64(base::Value::Dict&, base::StringPiece key, int64_t value);
@@ -49,6 +51,9 @@ void SerializePriority(base::Value::Dict&, int64_t priority);
 void SerializeDebugKey(base::Value::Dict&, absl::optional<uint64_t> debug_key);
 
 void SerializeDebugReporting(base::Value::Dict&, bool debug_reporting);
+
+void SerializeDeduplicationKey(base::Value::Dict&,
+                               absl::optional<uint64_t> dedup_key);
 
 }  // namespace attribution_reporting
 

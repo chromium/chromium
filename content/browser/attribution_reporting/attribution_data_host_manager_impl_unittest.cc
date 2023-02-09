@@ -276,6 +276,13 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
   auto event_trigger_data_not_filters =
       *AttributionFilters::Create({{"e", {"f"}}});
 
+  auto aggregatable_dedup_keys =
+      *attribution_reporting::AggregatableDedupKeyList::Create(
+          {attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123,
+              /*filters=*/AttributionFilters(),
+              /*not_filters=*/AttributionFilters())});
+
   EXPECT_CALL(
       mock_manager_,
       HandleTrigger(
@@ -291,7 +298,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
                           EventTriggerDataMatches(EventTriggerDataMatcherConfig(
                               4, 5, Eq(absl::nullopt), AttributionFilters(),
                               AttributionFilters()))))),
-                  Optional(123),
+                  aggregatable_dedup_keys,
                   /*debug_reporting=*/true,
                   attribution_reporting::AggregatableTriggerDataList(),
                   attribution_reporting::AggregatableValues(),
@@ -322,7 +329,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
                  /*dedup_key=*/absl::nullopt, /*filters=*/AttributionFilters(),
                  /*not_filters=*/AttributionFilters())});
 
-    trigger_data.aggregatable_dedup_key = 123;
+    trigger_data.aggregatable_dedup_keys = aggregatable_dedup_keys;
     trigger_data.debug_reporting = true;
 
     data_host_remote.data_host->TriggerDataAvailable(

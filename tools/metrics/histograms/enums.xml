@@ -19510,6 +19510,9 @@ Called by update_net_error_codes.py.-->
   <int value="26" label="event_trigger_data value has wrong type"/>
   <int value="27" label="aggregation_coordinator_identifier has wrong type"/>
   <int value="28" label="aggregation_coordinator_identifier has unknown value"/>
+  <int value="29" label="aggregatable_deduplication_keys has wrong type"/>
+  <int value="30" label="aggregatable_deduplication_keys too long"/>
+  <int value="31" label="aggregatable_deduplication_keys value has wrong type"/>
 </enum>
 
 <enum name="CookieAccessType">

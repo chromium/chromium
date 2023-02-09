@@ -122,6 +122,20 @@ struct EventTriggerData {
   Filters not_filters;
 };
 
+struct AggregatableDedupKey {
+  // Key which allows deduplication against existing attributions for the same
+  // source.
+  TriggerDedupKey? dedup_key;
+
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data matches.
+  Filters filters;
+
+  // If non-empty, this trigger will be ignored unless the attributed source's
+  // filter data does *NOT* match.
+  Filters not_filters;
+};
+
 // Represents a request from a reporting origin to trigger attribution on a
 // given site. See:
 // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#triggering-attribution
@@ -149,9 +163,9 @@ struct TriggerRegistration {
   // debugging purposes.
   DebugKey? debug_key;
 
-  // Key which allows deduplication against existing aggregatable reports for
-  // the same source.
-  TriggerDedupKey? aggregatable_dedup_key;
+  // List of all aggregatable dedup keys for deduplication against existing
+  // aggregatable reports for the same source.
+  array<AggregatableDedupKey> aggregatable_dedup_keys;
 
   // Specifies whether to enable verbose debug reporting.
   bool debug_reporting = false;

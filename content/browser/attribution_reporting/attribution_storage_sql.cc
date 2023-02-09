@@ -29,6 +29,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
@@ -880,10 +881,12 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     }
   }
 
+  absl::optional<uint64_t> aggregatable_dedup_key;
   if (!aggregatable_status.has_value()) {
     if (AggregatableResult create_aggregatable_status =
             MaybeCreateAggregatableAttributionReport(
                 *attribution_info, trigger, new_aggregatable_report,
+                aggregatable_dedup_key,
                 limits.max_aggregatable_reports_per_destination);
         create_aggregatable_status != AggregatableResult::kSuccess) {
       aggregatable_status = create_aggregatable_status;
@@ -945,8 +948,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     store_aggregatable_status = MaybeStoreAggregatableAttributionReport(
         *new_aggregatable_report,
         source_to_attribute->source.aggregatable_budget_consumed(),
-        trigger_registration.aggregatable_dedup_key,
-        limits.aggregatable_budget_per_source);
+        aggregatable_dedup_key, limits.aggregatable_budget_per_source);
   }
 
   if (store_event_level_status == EventLevelResult::kInternalError ||
@@ -2668,6 +2670,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     const AttributionInfo& attribution_info,
     const AttributionTrigger& trigger,
     absl::optional<AttributionReport>& report,
+    absl::optional<uint64_t>& dedup_key,
     absl::optional<int>& max_aggregatable_reports_per_destination) {
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
@@ -2678,9 +2681,11 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     return AggregatableResult::kReportWindowPassed;
   }
 
+  const AttributionSourceType source_type = common_info.source_type();
+
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
-          common_info.filter_data(), common_info.source_type(),
+          common_info.filter_data(), source_type,
           common_info.aggregation_keys(),
           trigger_registration.aggregatable_trigger_data,
           trigger_registration.aggregatable_values);
@@ -2688,9 +2693,22 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     return AggregatableResult::kNoHistograms;
   }
 
+  auto matched_dedup_key = base::ranges::find_if(
+      trigger.registration().aggregatable_dedup_keys.vec(),
+      [&](const attribution_reporting::AggregatableDedupKey&
+              aggregatable_dedup_key) {
+        return common_info.filter_data().Matches(
+            source_type, aggregatable_dedup_key.filters,
+            aggregatable_dedup_key.not_filters);
+      });
+
+  if (matched_dedup_key !=
+      trigger.registration().aggregatable_dedup_keys.vec().end()) {
+    dedup_key = matched_dedup_key->dedup_key;
+  }
+
   switch (
-      ReportAlreadyStored(attribution_info.source.source_id(),
-                          trigger_registration.aggregatable_dedup_key,
+      ReportAlreadyStored(attribution_info.source.source_id(), dedup_key,
                           AttributionReport::Type::kAggregatableAttribution)) {
     case ReportAlreadyStoredStatus::kNotStored:
       break;

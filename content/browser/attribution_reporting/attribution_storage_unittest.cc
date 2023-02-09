@@ -2013,6 +2013,138 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_EventLevelReportNotDedups) {
             result.aggregatable_status());
 }
 
+TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
+  const auto origin = *SuitableOrigin::Deserialize("https://r.test");
+
+  std::vector<attribution_reporting::AggregatableTriggerData>
+      aggregatable_trigger_data{
+          *attribution_reporting::AggregatableTriggerData::Create(
+              absl::MakeUint128(/*high=*/1, /*low=*/0),
+              /*source_keys=*/{"0"},
+              /*filters=*/AttributionFilters(),
+              /*not_filters=*/AttributionFilters())};
+
+  auto aggregatable_values =
+      *attribution_reporting::AggregatableValues::Create({{"0", 1}});
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetDestinationOrigin(origin)
+          .SetReportingOrigin(origin)
+          .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
+          .SetAggregationKeys(
+              *attribution_reporting::AggregationKeys::FromKeys({{"0", 1}}))
+          .Build());
+
+  AttributionTrigger trigger1(
+      /*reporting_origin=*/origin,
+      attribution_reporting::TriggerRegistration(
+          /*filters=*/AttributionFilters(),
+          /*not_filters=*/AttributionFilters(),
+          /*debug_key=*/absl::nullopt,
+          *attribution_reporting::AggregatableDedupKeyList::Create(
+              {attribution_reporting::AggregatableDedupKey(
+                  /*dedup_key=*/123,
+                  /*filters=*/AttributionFilters(),
+                  /*not_filters=*/AttributionFilters())}),
+          attribution_reporting::EventTriggerDataList(),
+          *attribution_reporting::AggregatableTriggerDataList::Create(
+              aggregatable_trigger_data),
+          aggregatable_values,
+          /*debug_reporting=*/false,
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+      /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
+      /*is_within_fenced_frame=*/false);
+
+  EXPECT_EQ(AttributionTrigger::AggregatableResult::kSuccess,
+            MaybeCreateAndStoreAggregatableReport(trigger1));
+
+  const struct {
+    const char* desc;
+    attribution_reporting::AggregatableDedupKey aggregatable_dedup_key;
+    bool expectDeduplicated;
+  } kTestCases[] = {
+      {
+          "filter mismatch",
+          attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123,
+              /*filters=*/
+              *AttributionFilters::Create({
+                  {"abc", {"456"}},
+              }),
+              /*not_filters=*/AttributionFilters()),
+          false,
+      },
+      {
+          "filter match",
+          attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123,
+              /*filters=*/
+              *AttributionFilters::Create({
+                  {"abc", {"123"}},
+              }),
+              /*not_filters=*/AttributionFilters()),
+          true,
+      },
+      {
+          "negated filters match",
+          attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123,
+              /*filters=*/AttributionFilters(),
+              /*not_filters=*/
+              attribution_reporting::Filters::ForSourceTypeForTesting(
+                  AttributionSourceType::kNavigation)),
+          false,
+      },
+      {
+          "negated filters mismatch",
+          attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/123,
+              /*filters=*/AttributionFilters(),
+              /*not_filters=*/
+              attribution_reporting::Filters::ForSourceTypeForTesting(
+                  AttributionSourceType::kEvent)),
+          true,
+      },
+      {
+          "null dedup key",
+          attribution_reporting::AggregatableDedupKey(
+              /*dedup_key=*/absl::nullopt,
+              /*filters=*/
+              *AttributionFilters::Create({
+                  {"abc", {"123"}},
+              }),
+              /*not_filters=*/AttributionFilters()),
+          false,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    AttributionTrigger trigger2(
+        /*reporting_origin=*/origin,
+        attribution_reporting::TriggerRegistration(
+            /*filters=*/AttributionFilters(),
+            /*not_filters=*/AttributionFilters(),
+            /*debug_key=*/absl::nullopt,
+            *attribution_reporting::AggregatableDedupKeyList::Create(
+                {test_case.aggregatable_dedup_key}),
+            attribution_reporting::EventTriggerDataList(),
+            *attribution_reporting::AggregatableTriggerDataList::Create(
+                aggregatable_trigger_data),
+            aggregatable_values,
+            /*debug_reporting=*/false,
+            ::aggregation_service::mojom::AggregationCoordinator::kDefault),
+        /*destination_origin=*/origin, /*attestation=*/absl::nullopt,
+        /*is_within_fenced_frame=*/false);
+
+    EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(trigger2),
+              test_case.expectDeduplicated
+                  ? AttributionTrigger::AggregatableResult::kDeduplicated
+                  : AttributionTrigger::AggregatableResult::kSuccess)
+        << test_case.desc;
+  }
+}
+
 TEST_F(AttributionStorageTest, GetAttributionReports_SetsPriority) {
   storage()->StoreSource(SourceBuilder().Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
@@ -2749,7 +2881,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
               /*filters=*/AttributionFilters(),
               /*not_filters=*/AttributionFilters(),
               /*debug_key=*/absl::nullopt,
-              /*aggregatable_dedup_key=*/absl::nullopt,
+              attribution_reporting::AggregatableDedupKeyList(),
               *attribution_reporting::EventTriggerDataList::Create(
                   {attribution_reporting::EventTriggerData(
                       /*data=*/11,
@@ -2850,7 +2982,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
               /*filters=*/AttributionFilters(),
               /*not_filters=*/AttributionFilters(),
               /*debug_key=*/absl::nullopt,
-              /*aggregatable_dedup_key=*/absl::nullopt,
+              attribution_reporting::AggregatableDedupKeyList(),
               *attribution_reporting::EventTriggerDataList::Create(
                   event_triggers),
               /*aggregatable_trigger_data=*/
@@ -2911,7 +3043,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           }),
           /*not_filters=*/AttributionFilters(),
           /*debug_key=*/absl::nullopt,
-          /*aggregatable_dedup_key=*/absl::nullopt, event_triggers,
+          attribution_reporting::AggregatableDedupKeyList(), event_triggers,
           *attribution_reporting::AggregatableTriggerDataList::Create(
               aggregatable_trigger_data),
           aggregatable_values,
@@ -2929,7 +3061,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           }),
           /*not_filters=*/AttributionFilters(),
           /*debug_key=*/absl::nullopt,
-          /*aggregatable_dedup_key=*/absl::nullopt, event_triggers,
+          attribution_reporting::AggregatableDedupKeyList(), event_triggers,
           *attribution_reporting::AggregatableTriggerDataList::Create(
               aggregatable_trigger_data),
           aggregatable_values,
@@ -2946,7 +3078,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
           attribution_reporting::Filters::ForSourceTypeForTesting(
               AttributionSourceType::kNavigation),
           /*debug_key=*/absl::nullopt,
-          /*aggregatable_dedup_key=*/absl::nullopt, event_triggers,
+          attribution_reporting::AggregatableDedupKeyList(), event_triggers,
           *attribution_reporting::AggregatableTriggerDataList::Create(
               aggregatable_trigger_data),
           aggregatable_values,

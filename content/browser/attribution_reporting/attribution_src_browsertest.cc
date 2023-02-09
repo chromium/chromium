@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -846,7 +847,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
           EventTriggerDataListMatches(EventTriggerDataListMatcherConfig(
               ElementsAre(EventTriggerDataMatches(EventTriggerDataMatcherConfig(
                   /*data=*/7))))),
-          /*aggregatable_dedup_key=*/Eq(absl::nullopt),
+          attribution_reporting::AggregatableDedupKeyList(),
           /*debug_reporting=*/false,
           /*aggregatable_trigger_data=*/
           attribution_reporting::AggregatableTriggerDataList(),
@@ -924,7 +925,11 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                       /*not_filters=*/
                       *attribution_reporting::Filters::Create(
                           {{"d", {"e", "f"}}, {"g", {}}}))))),
-          /*aggregatable_dedup_key=*/Optional(123),
+          *attribution_reporting::AggregatableDedupKeyList::Create(
+              {attribution_reporting::AggregatableDedupKey(
+                  /*dedup_key=*/123,
+                  /*filters=*/attribution_reporting::Filters(),
+                  /*not_filters=*/attribution_reporting::Filters())}),
           /*debug_reporting=*/true,
           /*aggregatable_trigger_data=*/
           *attribution_reporting::AggregatableTriggerDataList::Create(
