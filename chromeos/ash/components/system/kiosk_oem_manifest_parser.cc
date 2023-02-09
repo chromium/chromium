@@ -29,28 +29,32 @@ bool KioskOemManifestParser::Load(const base::FilePath& kiosk_oem_file,
                                   KioskOemManifestParser::Manifest* manifest) {
   int error_code = JSONFileValueDeserializer::JSON_NO_ERROR;
   std::string error_msg;
-  std::unique_ptr<JSONFileValueDeserializer> deserializer(
-      new JSONFileValueDeserializer(kiosk_oem_file));
+  auto deserializer =
+      std::make_unique<JSONFileValueDeserializer>(kiosk_oem_file);
   std::unique_ptr<base::Value> value =
       deserializer->Deserialize(&error_code, &error_msg);
   if (error_code != JSONFileValueDeserializer::JSON_NO_ERROR || !value ||
-      !value->is_dict())
+      !value->is_dict()) {
     return false;
+  }
 
-  if (auto* v = value->GetDict().FindString(kDeviceRequisition))
+  base::Value::Dict& value_dict = value->GetDict();
+
+  if (auto* v = value_dict.FindString(kDeviceRequisition)) {
     manifest->device_requisition = *v;
+  }
 
-  if (absl::optional<bool> v = value->GetDict().FindBool(kKeyboardDrivenOobe)) {
+  if (absl::optional<bool> v = value_dict.FindBool(kKeyboardDrivenOobe)) {
     manifest->keyboard_driven_oobe = *v;
   }
 
-  if (absl::optional<bool> v = value->GetDict().FindBool(kEnterpriseManaged)) {
+  if (absl::optional<bool> v = value_dict.FindBool(kEnterpriseManaged)) {
     manifest->enterprise_managed = *v;
   } else {
     return false;
   }
 
-  if (absl::optional<bool> v = value->GetDict().FindBool(kAllowReset)) {
+  if (absl::optional<bool> v = value_dict.FindBool(kAllowReset)) {
     manifest->can_exit_enrollment = *v;
   } else {
     return false;
