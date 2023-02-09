@@ -145,4 +145,5 @@ export interface InputDeviceSettingsProviderInterface {
   getConnectedPointingStickSettings(): Promise<PointingStick[]>;
   setKeyboardSettings(id: number, settings: KeyboardSettings): void;
   setMouseSettings(id: number, settings: MouseSettings): void;
+  setTouchpadSettings(id: number, settings: TouchpadSettings): void;
 }

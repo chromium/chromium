@@ -69,4 +69,18 @@ suite('FakeInputDeviceSettings', function() {
     return provider.getConnectedMouseSettings().then(
         result => assertDeepEquals(updatedFirstMouse, result[0]));
   });
+
+  test('setTouchpadSettings', () => {
+    provider.setFakeTouchpads(fakeTouchpads);
+    // Update the first touchpad settings with the second touchpad settings.
+    const updatedFirstTouchpad = {
+      ...fakeTouchpads[0],
+      settings: {...fakeTouchpads[1].settings},
+    };
+    provider.setTouchpadSettings(
+        updatedFirstTouchpad.id, updatedFirstTouchpad.settings);
+    // Verify if the first touchpad settings are updated.
+    return provider.getConnectedTouchpadSettings().then(
+        result => assertDeepEquals(updatedFirstTouchpad, result[0]));
+  });
 });
