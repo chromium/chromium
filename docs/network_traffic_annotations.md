@@ -201,6 +201,11 @@ all other fields bundled together as a serialized protobuf string.
             "suggested spellings, which will be displayed in the context menu."
           trigger: "User types text into a text field or asks to correct a "
                    "misspelled word."
+          internal {
+            contacts {
+                email: "chrome-spellcheck@google.com"
+            }
+          }
           user_data {
             type: USER_CONTENT
           }
@@ -245,6 +250,10 @@ all other fields bundled together as a serialized protobuf string.
                 email: "chrome-safebrowsing@google.com"
             }
           }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-01-01"
         }
         policy {
           cookies_allowed: YES

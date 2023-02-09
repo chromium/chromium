@@ -22,6 +22,18 @@ void network_traffic_annotation_template() {
           trigger: "..."
           data: "..."
           destination: WEBSITE/GOOGLE_OWNED_SERVICE/OTHER
+          internal {
+            contacts {
+              email: "..."
+            }
+            contacts {
+              email: "..."
+            }
+          }
+          user_data {
+            type: ...
+          }
+          last_reviewed: "YYYY-MM-DD"
         }
         policy {
           cookies_allowed: NO/YES
@@ -57,6 +69,18 @@ void network_traffic_annotation_sample() {
           data: "Text a user has typed into a text field. No user identifier "
                 "is sent along with the text."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "john-doe@chromium.org"
+            }
+            contacts {
+              email: "spellcheck-team@google.com"
+            }
+          }
+          user_data {
+            type: USER_CONTENT
+          }
+          last_reviewed: "2023-01-01"
         }
         policy {
           cookies_allowed: NO
@@ -98,6 +122,18 @@ void PrefetchImage1(const GURL& url) {
             "weather is sunny or rainy in the user's current location) from "
             "the name of the image in the path."
           destination: WEBSITE
+          internal {
+            contacts {
+              email: "john-doe@chromium.org"
+            }
+            contacts {
+              email: "omnibox-team@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-01-01"
         }
         policy {
           setting:
@@ -133,6 +169,19 @@ void PrefetchImage2(const GURL& url) {
             "Assuming there are matching credentials in the Chromium password "
             "store, the avatars are retrieved."
           destination: WEBSITE
+          internal {
+            contacts {
+              email: "john-doe@chromium.org"
+            }
+            contacts {
+              email: "password-manager-team@google.com"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+            type: ACCESS_TOKEN
+          }
+          last_reviewed: "2023-01-01"
         }
         policy {
           setting:
@@ -220,6 +269,18 @@ void UploadLog(const bool& uma_service_type) {
           data:
             "A protocol buffer with usage statistics and crash related data."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "john-doe@chromium.org"
+            }
+            contacts {
+              email: "metrics-team@google.com"
+            }
+          }
+          user_data {
+            type: OTHER
+          }
+          last_reviewed: "2023-01-01"
         }
         policy {
           cookies_allowed: NO
