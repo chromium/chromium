@@ -24,6 +24,8 @@ class SyncSetupService : public KeyedService {
   using SyncServiceState = enum {
     kNoSyncServiceError,
     kSyncServiceSignInNeedsUpdate,
+    kSyncServiceCouldNotConnect,
+    kSyncServiceServiceUnavailable,
     kSyncServiceNeedsPassphrase,
     kSyncServiceNeedsTrustedVaultKey,
     kSyncServiceTrustedVaultRecoverabilityDegraded,

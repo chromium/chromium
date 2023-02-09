@@ -195,7 +195,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     // With pre-MICE, the sync status should be kSyncEnabled to show the same
     // value than the sync toggle.
     return kSyncEnabledWithNoSelectedTypes;
-  } else if (errorState != SyncSetupService::kNoSyncServiceError) {
+  } else if (!IsTransientSyncError(errorState)) {
     // Sync error.
     return kSyncEnabledWithError;
   }

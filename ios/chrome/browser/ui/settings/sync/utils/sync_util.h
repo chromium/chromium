@@ -46,4 +46,7 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
                        web::WebState* web_state,
                        id<SyncPresenter> presenter);
 
+// Returns true if `errorState` corresponds to a transient sync error.
+bool IsTransientSyncError(SyncSetupService::SyncServiceState errorState);
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SYNC_UTILS_SYNC_UTIL_H_
