@@ -623,12 +623,16 @@ void WaylandToplevelWindow::ShowTooltip(
         // not be larger than what can be handled in int32_t
         base::saturated_cast<uint32_t>(show_delay.InMilliseconds()),
         base::saturated_cast<uint32_t>(hide_delay.InMilliseconds()));
+
+    connection()->Flush();
   }
 }
 
 void WaylandToplevelWindow::HideTooltip() {
   if (IsSupportedOnAuraSurface(ZAURA_SURFACE_HIDE_TOOLTIP_SINCE_VERSION)) {
     zaura_surface_hide_tooltip(aura_surface());
+
+    connection()->Flush();
   }
 }
 
