@@ -864,8 +864,8 @@ command lines can be registered per `app_id`.
 
 This feature is only for system applications.
 
-The program path is always an absolute path. Additionally, the program path is
-also a child of %ProgramFiles% or %ProgramFiles(x86)%. For instance:
+The program path is always an absolute path. Additionally, the program path has
+to be a child of %ProgramFiles% or %ProgramFiles(x86)%. For instance:
 * `c:\path-to-exe\exe.exe` is an invalid path.
 * `"c:\Program Files\subdir\exe.exe"` is a valid path.
 * `"c:\Program Files (x86)\subdir\exe.exe"` is also a valid path.
@@ -887,7 +887,7 @@ parameters substituted at runtime. Multiple app commands can be registered per
 `app_id`.
 
 The program path is always an absolute path. Additionally, for system
-applications,  the program path is also a child of %ProgramFiles% or
+applications,  the program path has to be a child of %ProgramFiles% or
 %ProgramFiles(x86)%. For instance:
 * `c:\path-to-exe\exe.exe` is an invalid path.
 * `"c:\Program Files\subdir\exe.exe"` is a valid path.
@@ -963,8 +963,8 @@ using the `status` method of `IAppCommandWeb`. When the status is
 exit code.
 
 #### Command-Line Format
-* for system applications, the executable path is in a secure location such
-as `%ProgramFiles%` for security, since it runs elevated.
+* for system applications, the executable path has to be a child of
+`%ProgramFiles%` or `%ProgramFiles(x86)%` for security, since it runs elevated.
 * placeholders are not permitted in the executable path.
 * placeholders take the form of a percent character `%` followed by a digit.
 Literal `%` characters are escaped by doubling them.
