@@ -1040,7 +1040,7 @@ void TaskQueueImpl::RemoveFence() {
   front_task_unblocked |= main_thread_only().delayed_work_queue->RemoveFence();
 
   {
-    base::internal::CheckedAutoLock lock(any_thread_lock_);
+    recordreplay::AutoLockMaybeEventsDisallowed lock(any_thread_lock_);
     if (!front_task_unblocked && previous_fence) {
       if (!any_thread_.immediate_incoming_queue.empty() &&
           any_thread_.immediate_incoming_queue.front().task_order() >
