@@ -163,7 +163,7 @@ InputDeviceSettingsControllerImpl::GetConnectedMice() {
 std::vector<mojom::PointingStickPtr>
 InputDeviceSettingsControllerImpl::GetConnectedPointingSticks() {
   std::vector<mojom::PointingStickPtr> pointing_stick_vector;
-  pointing_stick_vector.reserve(mice_.size());
+  pointing_stick_vector.reserve(pointing_sticks_.size());
 
   for (const auto& [_, pointing_stick] : pointing_sticks_) {
     pointing_stick_vector.push_back(pointing_stick->Clone());
