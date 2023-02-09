@@ -908,6 +908,15 @@ BASE_DECLARE_FEATURE(kUseWebAppDBInsteadOfExternalPrefs);
 // an app window.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kWebAuthFlowInBrowserTab);
+enum class WebAuthFlowInBrowserTabMode {
+  // Auth flow is presented in a new tab attached to a new/existing browser.
+  kNewTab,
+  // Auth flow is presented in a browser popup window.
+  kPopupWindow
+};
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<WebAuthFlowInBrowserTabMode>
+    kWebAuthFlowInBrowserTabMode;
 
 bool PrefServiceEnabled();
 

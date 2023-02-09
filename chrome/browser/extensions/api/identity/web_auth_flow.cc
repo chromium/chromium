@@ -41,6 +41,8 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -282,10 +284,26 @@ void WebAuthFlow::AfterUrlLoaded() {
   // already been opened once.
   if (delegate_ && using_auth_with_browser_tab_ && web_contents_ &&
       mode_ == WebAuthFlow::INTERACTIVE) {
-    chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile_);
-    NavigateParams params(browser_displayer.browser(),
-                          std::move(web_contents_));
-    Navigate(&params);
+    switch (features::kWebAuthFlowInBrowserTabMode.Get()) {
+      case features::WebAuthFlowInBrowserTabMode::kNewTab: {
+        // Displays the auth page in a new tab attached to an existing/new
+        // browser.
+        chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile_);
+        NavigateParams params(browser_displayer.browser(),
+                              std::move(web_contents_));
+        Navigate(&params);
+        break;
+      }
+      case features::WebAuthFlowInBrowserTabMode::kPopupWindow: {
+        // Displays the auth page in a browser popup window.
+        NavigateParams params(profile_, GURL(),
+                              ui::PageTransition::PAGE_TRANSITION_FIRST);
+        params.contents_to_insert = std::move(web_contents_);
+        params.disposition = WindowOpenDisposition::NEW_POPUP;
+        Navigate(&params);
+        break;
+      }
+    }
 
     DisplayInfoBar();
   }

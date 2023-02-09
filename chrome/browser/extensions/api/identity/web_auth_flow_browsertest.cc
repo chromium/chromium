@@ -339,6 +339,7 @@ INSTANTIATE_TEST_SUITE_P(,
 class WebAuthFlowWithBrowserTabBrowserTest : public WebAuthFlowBrowserTest {
  public:
   WebAuthFlowWithBrowserTabBrowserTest() {
+    // By default the feature param is {{"browser_tab_mode", "new_tab"}}.
     scoped_feature_list_.InitAndEnableFeature(
         features::kWebAuthFlowInBrowserTab);
   }
@@ -484,6 +485,53 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
 
   // Tab not created, tab count did not increase.
   EXPECT_EQ(tabs->count(), initial_tab_count);
+}
+
+class WebAuthFlowWithBrowserTabInPopupWindowBrowserTest
+    : public WebAuthFlowBrowserTest {
+ public:
+  WebAuthFlowWithBrowserTabInPopupWindowBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kWebAuthFlowInBrowserTab,
+        {{"browser_tab_mode", "popup_window"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabInPopupWindowBrowserTest,
+                       PopupWindowOpened_ThenCloseWindow) {
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
+
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  StartWebAuthFlow(auth_url, WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::Mode::INTERACTIVE);
+
+  navigation_observer.Wait();
+
+  // New popup window is a browser, browser count should increment by 1.
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), initial_browser_count + 1);
+
+  // Retrieve the browser used in the WebAuthFlow, the popup window.
+  Browser* popup_window_browser =
+      chrome::FindBrowserWithWebContents(web_contents());
+  EXPECT_NE(popup_window_browser, browser());
+
+  TabStripModel* popup_tabs = popup_window_browser->tab_strip_model();
+  EXPECT_EQ(popup_tabs->count(), 1);
+  EXPECT_EQ(popup_tabs->GetActiveWebContents()->GetLastCommittedURL(),
+            auth_url);
+
+  //---------------------------------------------------------------------
+  // Closing the browser popup window, simulating declining the consent.
+  //---------------------------------------------------------------------
+  EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::Failure::WINDOW_CLOSED));
+  CloseBrowserSynchronously(popup_window_browser);
 }
 
 }  //  namespace extensions
