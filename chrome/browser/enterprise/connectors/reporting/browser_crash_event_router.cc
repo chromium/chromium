@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
@@ -36,8 +37,32 @@ constexpr char kKeyReportId[] = "reportId";
 constexpr char kKeyPlatform[] = "platform";
 constexpr char kKeyProfileUserName[] = "profileUserName";
 
+constexpr char kCrashpadPollingIntervalFlag[] = "crashpad-polling-interval";
+constexpr int kDefaultCrashpadPollingIntervalSeconds = 3600;
+
 constexpr base::FilePath::CharType LATEST_CRASH_REPORT[] =
     FILE_PATH_LITERAL("LatestCrashReport");
+
+// Get polling interval for crashpad database. This is factored into a
+// function to allow for a dev-only command-line option for ease of
+// manual testing
+base::TimeDelta GetCrashpadPollingInterval() {
+  if (!g_browser_process || !g_browser_process->browser_policy_connector()
+                                 ->IsCommandLineSwitchSupported()) {
+    return base::Seconds(kDefaultCrashpadPollingIntervalSeconds);
+  }
+  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  if (cmd->HasSwitch(kCrashpadPollingIntervalFlag)) {
+    int crashpad_polling_interval_seconds;
+    if (base::StringToInt(
+            cmd->GetSwitchValueASCII(kCrashpadPollingIntervalFlag),
+            &crashpad_polling_interval_seconds) &&
+        crashpad_polling_interval_seconds > 0) {
+      return base::Seconds(crashpad_polling_interval_seconds);
+    }
+  }
+  return base::Seconds(kDefaultCrashpadPollingIntervalSeconds);
+}
 
 // Copy new reports (i.e. reports that have not been sent to the
 // reporting server) from `reports_to_be_copied` to `reports`
@@ -170,7 +195,6 @@ void BrowserCrashEventRouter::UploadToReportingServer(
   if (reports.empty()) {
     return;
   }
-
   const std::string version = version_info::GetVersionNumber();
   const std::string channel =
       version_info::GetChannelString(chrome::GetChannel());
@@ -219,7 +243,11 @@ void BrowserCrashEventRouter::ReportCrashes() {
 
 void BrowserCrashEventRouter::OnCloudReportingLaunched(
     enterprise_reporting::ReportScheduler* report_scheduler) {
+  // An initial call to ReportCrashes() is required because the first call
+  // in the repeating callback happens after the delay.
   ReportCrashes();
+  repeating_crash_report_.Start(FROM_HERE, GetCrashpadPollingInterval(), this,
+                                &BrowserCrashEventRouter::ReportCrashes);
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 

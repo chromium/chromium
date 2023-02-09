@@ -47,11 +47,10 @@ class BrowserCrashEventRouter
       controller_ = nullptr;
 
 #if !BUILDFLAG(IS_FUCHSIA)
+  base::RepeatingTimer repeating_crash_report_;
   // ReportCrashes() checks the enterprise policy settings, retrieves crash
   // reports from the crashpad local database and sends reports that have not
   // been sent to the reporting server.
-  // TODO(b/238427661): Add a background thread that periodically report
-  // crashes.
   void ReportCrashes();
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 };
