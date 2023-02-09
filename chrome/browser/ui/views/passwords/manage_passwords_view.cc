@@ -28,6 +28,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -37,6 +38,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -181,6 +183,39 @@ std::unique_ptr<views::Label> CreateNoteLabel(
   return note_label;
 }
 
+std::unique_ptr<views::View> CreateEditNoteRow(
+    const password_manager::PasswordForm& form,
+    views::Textarea** textarea) {
+  auto row = std::make_unique<views::FlexLayoutView>();
+  row->SetCollapseMargins(true);
+  row->SetDefault(
+      views::kMarginsKey,
+      gfx::Insets::VH(0, ChromeLayoutProvider::Get()->GetDistanceMetric(
+                             views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+  row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+
+  // TODO(crbug.com/1408790): Use a different icon for the notes to match the
+  // mocks.
+  row->AddChildView(CreateWrappedView(CreateIconView(kAccountCircleIcon)));
+
+  *textarea = row->AddChildView(std::make_unique<views::Textarea>());
+  (*textarea)->SetText(
+      form.GetNoteWithEmptyUniqueDisplayName().value_or(std::u16string()));
+  // TODO(crbug.com/1382017): use internationalized string.
+  (*textarea)->SetAccessibleName(u"Password Note");
+  int line_height = views::style::GetLineHeight(views::style::CONTEXT_TEXTFIELD,
+                                                views::style::STYLE_PRIMARY);
+  (*textarea)->SetPreferredSize(
+      gfx::Size(0, kMaxLinesVisibleFromPasswordNote * line_height +
+                       2 * ChromeLayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING)));
+  (*textarea)->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  return row;
+}
+
 }  // namespace
 
 ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
@@ -240,6 +275,31 @@ void ManagePasswordsView::AddedToWidget() {
   // BubbleDialogDelegateView::CreateBubble() *after* the construction of the
   // ManagePasswordsView, the title view cannot be set in the constructor.
   GetBubbleFrameView()->SetTitleView(CreatePasswordListTitleView());
+}
+
+bool ManagePasswordsView::Accept() {
+  // Accept button is only visible in the details page where a password is
+  // selected.
+  DCHECK(currently_selected_password_.has_value());
+  DCHECK(note_textarea_);
+  currently_selected_password_->SetNoteWithEmptyUniqueDisplayName(
+      note_textarea_->GetText());
+  // TODO(crbug.com/1408790): invoke the controller to update the note in the
+  // storage.
+  SwitchToDisplayMode();
+  // Return false such that the bubble doesn't get closed upon clicking the
+  // button.
+  return false;
+}
+
+bool ManagePasswordsView::Cancel() {
+  // Cancel button is only visible in the details page where a password is
+  // selected.
+  DCHECK(currently_selected_password_.has_value());
+  SwitchToDisplayMode();
+  // Return false such that the bubble doesn't get closed upon clicking the
+  // button.
+  return false;
 }
 
 std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListTitleView()
@@ -346,8 +406,7 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
   return container_view;
 }
 
-std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordDetailsView()
-    const {
+std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordDetailsView() {
   DCHECK(currently_selected_password_.has_value());
   auto container_view = std::make_unique<views::BoxLayoutView>();
   container_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
@@ -373,12 +432,19 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordDetailsView()
 
   // TODO(crbug.com/1408790): Use a different icon for the notes to match the
   // mocks.
-  // TODO(crbug.com/1408790): Assign action to the note action button.
   // TODO(crbug.com/1408790): use internationalized string for the note action
   // button tooltip text.
-  container_view->AddChildView(CreateDetailsRow(
+  // Add two rows: one for displaying the note which is visible by default, and
+  // another to edit the note, which is hidden by default. Clicking the Edit
+  // icon next to the note row will hide the display row, and show the edit row.
+  display_note_row_ = container_view->AddChildView(CreateDetailsRow(
       kAccountCircleIcon, CreateNoteLabel(*currently_selected_password_),
-      vector_icons::kEditIcon, u"Edit Note", views::Button::PressedCallback()));
+      vector_icons::kEditIcon, u"Edit Note",
+      base::BindRepeating(&ManagePasswordsView::SwitchToEditNoteMode,
+                          base::Unretained(this))));
+  edit_note_row_ = container_view->AddChildView(
+      CreateEditNoteRow(*currently_selected_password_, &note_textarea_));
+  edit_note_row_->SetVisible(false);
   return container_view;
 }
 
@@ -427,13 +493,38 @@ void ManagePasswordsView::RecreateLayout() {
     frame_view->SetTitleView(CreatePasswordDetailsTitleView());
     frame_view->SetFootnoteView(nullptr);
     page_container_->SwitchToPage(CreatePasswordDetailsView());
+    page_container_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets().set_bottom(ChromeLayoutProvider::Get()
+                                     ->GetInsetsMetric(views::INSETS_DIALOG)
+                                     .bottom()));
   } else {
     frame_view->SetTitleView(CreatePasswordListTitleView());
     frame_view->SetFootnoteView(CreateFooterView());
     page_container_->SwitchToPage(CreatePasswordListView());
+    page_container_->SetProperty(views::kMarginsKey, gfx::Insets());
   }
   PreferredSizeChanged();
   SizeToContents();
+}
+
+void ManagePasswordsView::SwitchToEditNoteMode() {
+  display_note_row_->SetVisible(false);
+  edit_note_row_->SetVisible(true);
+  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  // TODO(crbug.com/1408790): use internationalized string.
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, u"Update");
+  PreferredSizeChanged();
+  SizeToContents();
+  DCHECK(note_textarea_);
+  note_textarea_->RequestFocus();
+}
+
+void ManagePasswordsView::SwitchToDisplayMode() {
+  display_note_row_->SetVisible(true);
+  edit_note_row_->SetVisible(false);
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+  RecreateLayout();
 }
 
 void ManagePasswordsView::OnFaviconReady(const gfx::Image& favicon) {
