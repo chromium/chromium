@@ -6,6 +6,7 @@
  * @fileoverview Watches the currently focused URL to verify if logging should
  * occur.
  */
+import {CursorRange} from '../../../common/cursors/range.js';
 import {ChromeVoxRange, ChromeVoxRangeObserver} from '../chromevox_range.js';
 
 import {LogStore} from './log_store.js';
@@ -30,7 +31,11 @@ export class LogUrlWatcher {
     LogUrlWatcher.instance = null;
   }
 
-  /** @override */
+  /**
+   * @param {?CursorRange} range The new range.
+   * @param {boolean=} opt_fromEditing
+   * @override
+   */
   onCurrentRangeChanged(range, opt_fromEditing) {
     if (range && range.start && range.start.node && range.start.node.root) {
       LogStore.shouldSkipOutput =

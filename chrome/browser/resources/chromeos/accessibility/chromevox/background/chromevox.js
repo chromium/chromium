@@ -6,8 +6,10 @@
  * @fileoverview Defines a global object that holds references to the three
  * different output engines.
  */
+import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
+import {Spannable} from '../common/spannable.js';
 import {TtsInterface} from '../common/tts_interface.js';
 
 import {AbstractEarcons} from './abstract_earcons.js';
@@ -31,3 +33,16 @@ BridgeHelper.registerHandler(
         return Promise.resolve(null);
       }
     });
+
+BridgeHelper.registerHandler(
+    BridgeConstants.TtsBackground.TARGET,
+    BridgeConstants.TtsBackground.Action.SPEAK,
+    (text, queueMode, properties) => {
+      ChromeVox.tts.speak(text, queueMode, properties);
+    });
+
+BridgeHelper.registerHandler(
+    BridgeConstants.BrailleBackground.TARGET,
+    BridgeConstants.BrailleBackground.Action.WRITE,
+    text =>
+        ChromeVox.braille.write(new NavBraille({text: new Spannable(text)})));

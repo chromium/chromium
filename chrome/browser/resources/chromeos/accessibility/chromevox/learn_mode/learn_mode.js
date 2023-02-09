@@ -10,14 +10,12 @@
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {BrailleKeyCommand, BrailleKeyEvent} from '../common/braille/braille_key_types.js';
-import {NavBraille} from '../common/braille/nav_braille.js';
 import {Command, CommandStore} from '../common/command_store.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
 import {KeyUtil} from '../common/key_util.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {Msgs} from '../common/msgs.js';
-import {Spannable} from '../common/spannable.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 /**
@@ -30,7 +28,6 @@ export class LearnMode {
   static async init() {
     // Export global objects from the background page context into this one.
     window.backgroundWindow = chrome.extension.getBackgroundPage();
-    window.ChromeVox = window.backgroundWindow['ChromeVox'];
 
     window.backgroundWindow.addEventListener(
         'keydown', LearnMode.onKeyDown, true);
@@ -275,18 +272,20 @@ export class LearnMode {
 
   /**
    * @param {string} text
-   * @param {function()=} opt_speakCallback A callback to run when speech
-   *     finishes.
+   * @param {function()=} opt_outputCallback A callback to run after output is
+   *     requested.
    */
-  static output(text, opt_speakCallback) {
-    const ChromeVox = window.ChromeVox;
-    ChromeVox.tts.speak(
+  static output(text, opt_outputCallback) {
+    BackgroundBridge.TtsBackground.speak(
         text,
         LearnMode.shouldFlushSpeech_ ? QueueMode.CATEGORY_FLUSH :
                                        QueueMode.QUEUE,
-        new TtsSpeechProperties({endCallback: opt_speakCallback}));
-    ChromeVox.braille.write(new NavBraille({text: new Spannable(text)}));
+        new TtsSpeechProperties({endCallback: opt_outputCallback}));
+    BackgroundBridge.BrailleBackground.write(text);
     LearnMode.shouldFlushSpeech_ = false;
+    if (opt_outputCallback) {
+      opt_outputCallback();
+    }
   }
 
   /** Clears ChromeVox range. */

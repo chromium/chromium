@@ -47,6 +47,7 @@ BridgeConstants.BrailleBackground = {
   TARGET: 'BrailleBackground',
   Action: {
     REFRESH_BRAILLE_TABLE: 'refreshBrailleTable',
+    WRITE: 'write',
   },
 };
 
