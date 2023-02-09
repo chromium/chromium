@@ -40,6 +40,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
@@ -612,6 +613,8 @@ void AutofillAgent::ClearPreviewedForm() {
 
   // |password_generation_agent_| can be null in android_webview & weblayer.
   if (password_generation_agent_ &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationPreviewOnHover) &&
       password_generation_agent_->DidClearGenerationSuggestion(element_)) {
     return;
   }

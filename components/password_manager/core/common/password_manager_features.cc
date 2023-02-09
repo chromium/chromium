@@ -265,6 +265,12 @@ BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,
              "UsernameFirstFlowFallbackCrowdsourcing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables previewing password generation suggestion in the target form in
+// cleartext.
+BASE_FEATURE(kPasswordGenerationPreviewOnHover,
+             "PasswordGenerationPreviewOnHover",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Current migration version to Google Mobile Services. If version saved in pref
 // is lower than 'kMigrationVersion' passwords will be re-uploaded.
