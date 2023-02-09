@@ -26,8 +26,7 @@ ReadAnythingContainerView::ReadAnythingContainerView(
   auto layout = std::make_unique<views::FlexLayout>();
   layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetInteriorMargin(gfx::Insets(kInternalInsets));
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
   SetLayoutManager(std::move(layout));
   SetBackground(
