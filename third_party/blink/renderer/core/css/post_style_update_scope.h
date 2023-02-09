@@ -63,7 +63,7 @@ class CORE_EXPORT PostStyleUpdateScope {
     friend class PostStyleUpdateScope;
     friend class ContainerQueryTest;
 
-    HeapHashSet<Member<Element>> elements_with_pending_updates_;
+    HeapHashSet<Member<Element>, WTF::MemberHashRecordReplayId<Element>> elements_with_pending_updates_;
     HeapHashMap<Member<Element>, scoped_refptr<const ComputedStyle>>
         old_styles_;
   };

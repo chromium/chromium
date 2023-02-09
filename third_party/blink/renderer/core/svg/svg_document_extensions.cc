@@ -61,10 +61,7 @@ void SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(
 
 bool SVGDocumentExtensions::ServiceSmilAnimations() {
   bool did_schedule_animation_frame = false;
-  HeapVector<Member<SVGSVGElement>> time_containers(time_containers_);
-  std::sort(time_containers.begin(), time_containers.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
-  for (const auto& container : time_containers) {
+  for (const auto& container : time_containers_) {
     did_schedule_animation_frame |=
         container->TimeContainer()->ServiceAnimations();
   }
@@ -92,10 +89,7 @@ void SVGDocumentExtensions::StartAnimations() {
   // FIXME: We hold a ref pointers to prevent a shadow tree from getting removed
   // out from underneath us.  In the future we should refactor the use-element
   // to avoid this. See https://webkit.org/b/53704
-  HeapVector<Member<SVGSVGElement>> time_containers(time_containers_);
-  std::sort(time_containers.begin(), time_containers.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
-  for (const auto& container : time_containers) {
+  for (const auto& container : time_containers_) {
     SMILTimeContainer* time_container = container->TimeContainer();
     if (!time_container->IsStarted())
       time_container->Start();
@@ -116,10 +110,7 @@ bool SVGDocumentExtensions::HasSmilAnimations() const {
 }
 
 void SVGDocumentExtensions::DispatchSVGLoadEventToOutermostSVGElements() {
-  HeapVector<Member<SVGSVGElement>> time_containers(time_containers_);
-  std::sort(time_containers.begin(), time_containers.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
-  for (const auto& container : time_containers) {
+  for (const auto& container : time_containers_) {
     SVGSVGElement* outer_svg = container.Get();
     if (!outer_svg->IsOutermostSVGSVGElement())
       continue;
@@ -156,13 +147,7 @@ void SVGDocumentExtensions::InvalidateSVGRootsWithRelativeLengthDescendents(
       &in_relative_length_svg_roots_invalidation_, true);
 #endif
 
-  HeapVector<Member<SVGSVGElement>> relative_length_svg_roots_vector;
   for (SVGSVGElement* element : relative_length_svg_roots_)
-    relative_length_svg_roots_vector.push_back(element);
-  std::sort(relative_length_svg_roots_vector.begin(), relative_length_svg_roots_vector.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<SVGSVGElement>>());
-
-  for (SVGSVGElement* element : relative_length_svg_roots_vector)
     element->InvalidateRelativeLengthClients(scope);
 }
 

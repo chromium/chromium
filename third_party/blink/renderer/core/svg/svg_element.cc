@@ -549,17 +549,10 @@ void SVGElement::InvalidateRelativeLengthClients(
     }
   }
 
-  HeapVector<Member<SVGElement>> elements_with_relative_lengths_vector;
   for (SVGElement* element : elements_with_relative_lengths_) {
-    if (element != this)
-      elements_with_relative_lengths_vector.push_back(element);
-  }
-  std::sort(elements_with_relative_lengths_vector.begin(),
-            elements_with_relative_lengths_vector.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<SVGElement>>());
-
-  for (SVGElement* element : elements_with_relative_lengths_vector) {
-    element->InvalidateRelativeLengthClients(layout_scope);
+    if (element != this) {
+      element->InvalidateRelativeLengthClients(layout_scope);
+    }
   }
 }
 

@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
@@ -2447,7 +2448,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HeapTaskRunnerTimer<Document> did_associate_form_controls_timer_;
 
-  HeapHashSet<Member<SVGUseElement>> use_elements_needing_update_;
+  HeapHashSet<Member<SVGUseElement>, WTF::MemberHashRecordReplayId<SVGUseElement>> use_elements_needing_update_;
 
   ParserSynchronizationPolicy parser_sync_policy_;
 

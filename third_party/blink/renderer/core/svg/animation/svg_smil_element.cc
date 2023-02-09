@@ -1232,10 +1232,7 @@ void SVGSMILElement::NotifyDependents(const NotifyDependentsInfo& info) {
   if (is_notifying_dependents_)
     return;
   base::AutoReset<bool> reentrancy_guard(&is_notifying_dependents_, true);
-  HeapVector<Member<SVGSMILElement>> dependents_vector(sync_base_dependents_);
-  std::sort(dependents_vector.begin(), dependents_vector.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<SVGSMILElement>>());
-  for (SVGSMILElement* element : dependents_vector)
+  for (SVGSMILElement* element : sync_base_dependents_)
     element->CreateInstanceTimesFromSyncBase(this, info);
 }
 

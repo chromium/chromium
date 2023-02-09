@@ -168,19 +168,6 @@ struct CompareMemberByPointerId {
   }
 };
 
-// For use with blink WeakMember and Member.
-template <typename T>
-struct CompareMemberByRecordReplayId {
-  bool operator()(const T& a, const T& b) const {
-    if (IsRecordingOrReplaying("pointer-ids")) {
-      int ida = a.Get()->RecordReplayId();
-      int idb = b.Get()->RecordReplayId();
-      CHECK(ida && idb);
-      return ida < idb;
-    }
-    return a < b;
-  }
-};
 
 // For taking ordered locks when events might be disallowed. Passes through
 // events during the acquire to avoid generating a warning.

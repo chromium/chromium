@@ -39,15 +39,10 @@ void PostStyleUpdateScope::Apply() {
   StyleEngine::InApplyAnimationUpdateScope in_apply_animation_update_scope(
       document_.GetStyleEngine());
 
-  HeapHashSet<Member<Element>> pending;
+  HeapHashSet<Member<Element>, WTF::MemberHashRecordReplayId<Element>> pending;
   std::swap(pending, animation_data_.elements_with_pending_updates_);
 
-  HeapVector<Member<Element>> pending_vector;
-  for (auto& element : pending)
-    pending_vector.push_back(element);
-  std::sort(pending_vector.begin(), pending_vector.end(),
-            recordreplay::CompareMemberByRecordReplayId<Member<Element>>());
-  for (auto& element : pending_vector) {
+  for (auto& element : pending) {
     ElementAnimations* element_animations = element->GetElementAnimations();
     if (!element_animations)
       continue;
