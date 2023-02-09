@@ -26,7 +26,7 @@ class ChromeFileManagerUIDelegate : public ash::FileManagerUIDelegate {
   base::Value::Dict GetLoadTimeData() const override;
 
   // Calls volume manager io_task_controller ProgressPausedTasks API to make
-  // all I/O state::PAUSED tasks emit their IOTask progress status.
+  // I/O state::PAUSED tasks emit their IOTask progress status.
   void ProgressPausedTasks() const override;
 
  private:

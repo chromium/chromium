@@ -1849,8 +1849,8 @@ interface Functions {
   // each I/O task's progress status.
   static void resumeIOTask(long taskId, ResumeParams params);
 
-  // Makes all I/O tasks in state::PAUSED emit (broadcast) their current I/O
-  // task progress status.
+  // Makes I/O tasks in state::PAUSED emit (broadcast) their current I/O task
+  // progress status.
   static void progressPausedTasks();
 
   // Lists mountable Guest OSs.

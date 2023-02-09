@@ -51,7 +51,7 @@ class IOTaskController {
   // Cancels or removes a task from the queue.
   void Cancel(IOTaskId task_id);
 
-  // Makes all tasks in state::PAUSED emit (broadcast) their progress status.
+  // Makes tasks in state::PAUSED emit (broadcast) their progress status.
   void ProgressPausedTasks();
 
   // For tests only; returns the current wake lock counter. This counter is
