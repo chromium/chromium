@@ -269,12 +269,8 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
     command_line->AppendSwitch(ash::switches::kLoginManager);
     command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
     // The test app has to be allowlisted for sign-in screen.
-    // This test is intentionally not migrated to the new
-    // kAllowlistedExtensionID switch to test that the deprecated one keeps
-    // working.
     command_line->AppendSwitchASCII(
-        extensions::switches::kDEPRECATED_AllowlistedExtensionID,
-        kTestExtensionId);
+        extensions::switches::kAllowlistedExtensionID, kTestExtensionId);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

@@ -132,16 +132,10 @@ Browser* GetLastActiveBrowser(const Profile* profile,
   return target_browser;
 }
 
-// Get the id of the allowlisted extension. At the moment two switches can
-// contain it. Prioritize the non-deprecated one.
+// Get the id of the allowlisted extension.
 std::string GetAllowlistedExtensionID() {
-  std::string id = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
       switches::kAllowlistedExtensionID);
-  if (id.empty()) {
-    id = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-        switches::kDEPRECATED_AllowlistedExtensionID);
-  }
-  return id;
 }
 
 }  // namespace

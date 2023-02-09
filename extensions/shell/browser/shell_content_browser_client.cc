@@ -401,7 +401,6 @@ void ShellContentBrowserClient::AppendRendererSwitches(
     base::CommandLine* command_line) {
   static const char* const kSwitchNames[] = {
       switches::kAllowlistedExtensionID,
-      switches::kDEPRECATED_AllowlistedExtensionID,
       // TODO(jamescook): Should we check here if the process is in the
       // extension service process map, or can we assume all renderers are
       // extension renderers?

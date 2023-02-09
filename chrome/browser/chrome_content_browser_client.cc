@@ -719,6 +719,13 @@ using plugins::ChromeContentBrowserClientPluginsPart;
 
 namespace {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Provides the same functionality as kAllowlistedExtensionID.
+// TODO(b/204179234): Remove at the end of the deprecation period. Deprecated on
+// 10/2021.
+const char kDEPRECATED_AllowlistedExtensionID[] = "whitelisted-extension-id";
+#endif
+
 #if BUILDFLAG(IS_WIN) && !defined(COMPONENT_BUILD) && \
     !defined(ADDRESS_SANITIZER)
 // Enables pre-launch Code Integrity Guard (CIG) for Chrome renderers, when
@@ -2839,7 +2846,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       extensions::switches::kExtensionsOnChromeURLs,
       extensions::switches::kSetExtensionThrottleTestParams,  // For tests only.
       extensions::switches::kAllowlistedExtensionID,
-      extensions::switches::kDEPRECATED_AllowlistedExtensionID,
 #endif
       switches::kAllowInsecureLocalhost,
       switches::kAppsGalleryURL,
@@ -2870,6 +2876,16 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       translate::switches::kTranslateSecurityOrigin,
     };
 
+    // TODO(b/204179234): Remove after M114 (after ~Apr'23).
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    if (browser_command_line.HasSwitch(kDEPRECATED_AllowlistedExtensionID)) {
+      LOG(FATAL) << "\"" << kDEPRECATED_AllowlistedExtensionID
+                 << "\" switch is deprecated, please use \""
+                 << extensions::switches::kAllowlistedExtensionID
+                 << "\" instead";
+    }
+#endif
+
     command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
                                    std::size(kSwitchNames));
   } else if (process_type == switches::kUtilityProcess) {
@@ -2879,8 +2895,15 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         extensions::switches::kEnableExperimentalExtensionApis,
         extensions::switches::kExtensionsOnChromeURLs,
         extensions::switches::kAllowlistedExtensionID,
-        extensions::switches::kDEPRECATED_AllowlistedExtensionID,
     };
+
+    // TODO(b/204179234): Remove after M114 (after ~Apr'23).
+    if (browser_command_line.HasSwitch(kDEPRECATED_AllowlistedExtensionID)) {
+      LOG(FATAL) << "\"" << kDEPRECATED_AllowlistedExtensionID
+                 << "\" switch is deprecated, please use \""
+                 << extensions::switches::kAllowlistedExtensionID
+                 << "\" instead";
+    }
 
     command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
                                    std::size(kSwitchNames));

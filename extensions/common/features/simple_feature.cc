@@ -39,16 +39,7 @@ struct AllowlistInfo {
     const std::string& allowlisted_extension_id =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kAllowlistedExtensionID);
-
-    if (!allowlisted_extension_id.empty()) {
-      hashed_id = HashedIdInHex(allowlisted_extension_id);
-    } else {
-      // Check the deprecated switch if the main one is not set. If both of them
-      // are empty, `hash_id` will contain the hash of an empty string.
-      hashed_id = HashedIdInHex(
-          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-              switches::kDEPRECATED_AllowlistedExtensionID));
-    }
+    hashed_id = HashedIdInHex(allowlisted_extension_id);
   }
   std::string hashed_id;
 };
