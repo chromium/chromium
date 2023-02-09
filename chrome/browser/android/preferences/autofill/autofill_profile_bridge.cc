@@ -116,9 +116,13 @@ JNI_AutofillProfileBridge_GetAddressUiComponents(
   }
 
   std::string country_code = ConvertJavaStringToUTF8(env, j_country_code);
-  std::vector<AddressUiComponent> ui_components = BuildComponents(
-      country_code, localization, language_code, &best_language_tag);
-  ExtendAddressComponents(ui_components, country_code, localization,
+  AutofillCountry country(country_code);
+  std::vector<ExtendedAddressUiComponent> ui_components =
+      ConvertAddressUiComponents(
+          BuildComponents(country_code, localization, language_code,
+                          &best_language_tag),
+          country);
+  ExtendAddressComponents(ui_components, country, localization,
                           /*include_literals=*/false);
 
   for (const auto& ui_component : ui_components) {

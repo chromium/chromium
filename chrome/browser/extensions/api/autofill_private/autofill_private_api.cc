@@ -99,7 +99,7 @@ const char* GetStringFromAddressField(i18n::addressinput::AddressField type) {
 
 // Serializes the AddressUiComponent a map from string to base::Value().
 base::Value::Dict AddressUiComponentAsValueMap(
-    const i18n::addressinput::AddressUiComponent& address_ui_component) {
+    const autofill::ExtendedAddressUiComponent& address_ui_component) {
   base::Value::Dict info;
   info.Set(kFieldNameKey, address_ui_component.name);
   info.Set(kFieldTypeKey,
@@ -335,7 +335,7 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
           api::autofill_private::GetAddressComponents::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> lines;
+  std::vector<std::vector<autofill::ExtendedAddressUiComponent>> lines;
   std::string language_code;
 
   autofill::GetAddressComponents(
@@ -348,7 +348,7 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
 
   for (auto& line : lines) {
     base::Value::List row_values;
-    for (const ::i18n::addressinput::AddressUiComponent& component : line) {
+    for (const autofill::ExtendedAddressUiComponent& component : line) {
       row_values.Append(AddressUiComponentAsValueMap(component));
     }
     base::Value::Dict row;
