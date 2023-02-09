@@ -91,6 +91,11 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
+    self.backgroundColor = GetInterfaceStyleDarkColor(
+        [UIColor colorNamed:kSecondaryBackgroundColor]);
+    self.layer.cornerRadius = kPinnedCellCornerRadius;
+    self.layer.masksToBounds = NO;
+
     self.contentView.layer.cornerRadius = kPinnedCellCornerRadius;
     self.contentView.layer.masksToBounds = YES;
     self.contentView.backgroundColor = GetInterfaceStyleDarkColor(
@@ -116,6 +121,10 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 #pragma mark - Public
+
+- (void)setHighlighted:(BOOL)highlighted {
+  // NO-OP to disable highlighting and only allow selection.
+}
 
 - (UIImage*)icon {
   return _faviconView.image;
