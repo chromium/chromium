@@ -56,13 +56,13 @@ std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
 // |ui_data|. Sets the ONCSource property in |shill_dictionary|,
 // derived from |ui_data|.
 void SetUIDataAndSource(const NetworkUIData& ui_data,
-                        base::Value* shill_dictionary);
+                        base::Value::Dict* shill_dictionary);
 
 // Sets the RandomMACPolicy property in |shill_dictionary|.
 // This is only a temporary logic, until UI is present.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void SetRandomMACPolicy(::onc::ONCSource onc_source,
-                        base::Value* shill_dictionary);
+                        base::Value::Dict* shill_dictionary);
 
 // Copy configuration properties required by Shill to identify a network in the
 // format that Shill expects on writes.

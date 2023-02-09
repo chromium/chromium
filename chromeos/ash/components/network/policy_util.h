@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/values.h"
 
 namespace base {
 class Value;
@@ -39,9 +40,10 @@ base::Value CreateManagedONC(const base::Value* global_policy,
 // Adds properties to |shill_properties_to_update|, which are enforced on an
 // unmanaged network by the global config |global_network_policy| of the policy.
 // |shill_dictionary| are the network's current properties read from Shill.
-void SetShillPropertiesForGlobalPolicy(const base::Value& shill_dictionary,
-                                       const base::Value& global_network_policy,
-                                       base::Value* shill_properties_to_update);
+void SetShillPropertiesForGlobalPolicy(
+    const base::Value::Dict& shill_dictionary,
+    const base::Value& global_network_policy,
+    base::Value::Dict* shill_properties_to_update);
 
 // Creates a Shill property dictionary from the given arguments. The resulting
 // dictionary will be sent to Shill by the caller. Depending on the profile

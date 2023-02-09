@@ -225,9 +225,9 @@ std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
 }
 
 void SetRandomMACPolicy(::onc::ONCSource onc_source,
-                        base::Value* shill_dictionary) {
+                        base::Value::Dict* shill_dictionary) {
   std::string* service_type =
-      shill_dictionary->FindStringKey(shill::kTypeProperty);
+      shill_dictionary->FindString(shill::kTypeProperty);
   DCHECK(service_type);
   if (*service_type != shill::kTypeWifi) {
     // For non-wifi types we don't set MAC policy at all.
@@ -238,8 +238,8 @@ void SetRandomMACPolicy(::onc::ONCSource onc_source,
   // to Hardware (non-randomized).
   if (!base::FeatureList::IsEnabled(
           features::kWifiConnectMacAddressRandomization)) {
-    shill_dictionary->SetKey(shill::kWifiRandomMACPolicy,
-                             base::Value(shill::kWifiRandomMacPolicyHardware));
+    shill_dictionary->Set(shill::kWifiRandomMACPolicy,
+                          base::Value(shill::kWifiRandomMacPolicyHardware));
     return;
   }
 
@@ -250,23 +250,23 @@ void SetRandomMACPolicy(::onc::ONCSource onc_source,
       // User Import is not policy per se, but we use it to have some means
       // to force Hardware address by user in experimental mode.
       onc_source == ::onc::ONCSource::ONC_SOURCE_USER_IMPORT) {
-    shill_dictionary->SetKey(shill::kWifiRandomMACPolicy,
-                             base::Value(shill::kWifiRandomMacPolicyHardware));
+    shill_dictionary->Set(shill::kWifiRandomMACPolicy,
+                          base::Value(shill::kWifiRandomMacPolicyHardware));
     return;
   }
 
   // In all other cases, set the MAC Address Policy
   // to Persistant-Random (Randomized per SSID, but persistent
   // once randomized).
-  shill_dictionary->SetKey(
+  shill_dictionary->Set(
       shill::kWifiRandomMACPolicy,
       base::Value(shill::kWifiRandomMacPolicyPersistentRandom));
 }
 
 void SetUIDataAndSource(const NetworkUIData& ui_data,
-                        base::Value* shill_dictionary) {
-  shill_dictionary->SetKey(shill::kUIDataProperty,
-                           base::Value(ui_data.GetAsJson()));
+                        base::Value::Dict* shill_dictionary) {
+  shill_dictionary->Set(shill::kUIDataProperty,
+                        base::Value(ui_data.GetAsJson()));
   std::string source;
   switch (ui_data.onc_source()) {
     case ::onc::ONC_SOURCE_UNKNOWN:
@@ -285,7 +285,7 @@ void SetUIDataAndSource(const NetworkUIData& ui_data,
       source = shill::kONCSourceUserPolicy;
       break;
   }
-  shill_dictionary->SetKey(shill::kONCSourceProperty, base::Value(source));
+  shill_dictionary->Set(shill::kONCSourceProperty, base::Value(source));
 }
 
 bool CopyIdentifyingProperties(const base::Value& service_properties,

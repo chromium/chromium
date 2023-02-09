@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -336,10 +337,12 @@ void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The entry wasn't managed and doesn't match any current policy. Global
   // network settings have to be applied.
-  base::Value shill_properties_to_update(base::Value::Type::DICT);
-  policy_util::SetShillPropertiesForGlobalPolicy(
-      entry_properties, global_network_config_, &shill_properties_to_update);
-  if (shill_properties_to_update.DictEmpty()) {
+  base::Value::Dict shill_properties_to_update;
+  DCHECK(entry_properties.is_dict());
+  policy_util::SetShillPropertiesForGlobalPolicy(entry_properties.GetDict(),
+                                                 global_network_config_,
+                                                 &shill_properties_to_update);
+  if (shill_properties_to_update.empty()) {
     VLOG(2) << "Ignore unmanaged entry.";
     // Calling a SetProperties of Shill with an empty dictionary is a no op.
     std::move(callback).Run();
@@ -348,7 +351,8 @@ void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
   NET_LOG(EVENT) << "Apply global network config to unmanaged entry "
                  << entry_identifier << ".";
   handler_->UpdateExistingConfigurationWithPropertiesFromPolicy(
-      entry_properties, shill_properties_to_update, std::move(callback));
+      entry_properties, base::Value(std::move(shill_properties_to_update)),
+      std::move(callback));
 }
 
 void PolicyApplicator::DeleteEntry(const std::string& entry_identifier,
