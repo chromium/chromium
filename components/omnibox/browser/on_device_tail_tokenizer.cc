@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 
 namespace {
 // Maximum vocabulary file size that will be loaded in bytes.
@@ -236,6 +237,10 @@ void OnDeviceTailTokenizer::TokenizePrevQuery(
   std::vector<std::pair<std::string, TokenId>> token_and_ids;
   EncodeRawString(prev_query, &token_and_ids);
 
+  if (OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest()) {
+    prev_query_token_ids->push_back(TokenToId(" "));
+  }
+
   for (const auto& pair : token_and_ids) {
     prev_query_token_ids->push_back(pair.second);
   }
@@ -261,6 +266,11 @@ void OnDeviceTailTokenizer::CreatePrefixTokenization(
 
   // Always add begin query token at the front of the prefix.
   tokenization->unambiguous_ids.push_back(TokenToId(kBeginQueryToken));
+
+  if (OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest()) {
+    tokenization->unambiguous_ids.push_back(TokenToId(" "));
+  }
+
   for (size_t i = 0; i < num_unambiguous; ++i) {
     tokenization->unambiguous_prefix += token_and_ids[i].first;
     tokenization->unambiguous_ids.push_back(token_and_ids[i].second);

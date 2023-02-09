@@ -649,6 +649,12 @@ bool OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled() {
          IsOnDeviceHeadSuggestEnabledForAnyMode();
 }
 
+bool OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest() {
+  return base::GetFieldTrialParamByFeatureAsBool(omnibox::kOnDeviceTailModel,
+                                                 "ShouldEncodeLeadingSpace",
+                                                 /*default_value=*/false);
+}
+
 std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
     bool is_incognito) {
   const base::Feature* feature =

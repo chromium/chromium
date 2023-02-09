@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite/src/tensorflow/lite/c/c_api_types.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/register.h"
@@ -577,8 +578,18 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
     }
 
     std::string suggestion;
-    for (size_t i = 1; i < beam.token_ids.size() - 1; ++i) {
-      suggestion += tokenizer_->IdToToken(beam.token_ids[i]);
+    // Skip the first leading space (i.e. the second token) if it is explicitly
+    // added during encoding. Note the first token is always the begin query
+    // token.
+    size_t index;
+    if (OmniboxFieldTrial::ShouldEncodeLeadingSpaceForOnDeviceTailSuggest()) {
+      index = 2;
+    } else {
+      index = 1;
+    }
+
+    for (; index < beam.token_ids.size() - 1; ++index) {
+      suggestion += tokenizer_->IdToToken(beam.token_ids[index]);
     }
 
     // Remove echo suggestion.
