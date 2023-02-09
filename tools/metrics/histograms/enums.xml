@@ -106506,6 +106506,13 @@ others/histograms.xml -->
   <int value="4" label="STORAGE"/>
 </enum>
 
+<enum name="WebApkUpdateManifestResult">
+  <int value="0" label="Treated as another WebAPK"/>
+  <int value="1"
+      label="Treated as another WebAPK for legacy WebAPK(without ID)"/>
+  <int value="2" label="Found a manifest for update"/>
+</enum>
+
 <enum name="WebApkUpdateRequestQueued">
   <int value="0" label="Queued for the first time"/>
   <int value="1" label="Queued for the second time"/>
