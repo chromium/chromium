@@ -227,8 +227,7 @@ TEST_F(DeviceConversionUtilTest, TestConversion_DefaultDeviceImage) {
   DeviceImageInfo images = DeviceImageInfo(
       /*default_image=*/kTestDefaultImage, /*left_bud_image=*/"",
       /*right_bud_image=*/"", /*case_image=*/"");
-  // MockBluetoothDevice sets identifier as |address|-Identifier.
-  fake_fast_pair_delegate()->SetDeviceImageInfo("address-Identifier", images);
+  fake_fast_pair_delegate()->SetDeviceImageInfo("address", images);
 
   mojom::BluetoothDevicePropertiesPtr properties =
       GenerateBluetoothDeviceMojoProperties(device, fake_fast_pair_delegate());
@@ -249,8 +248,7 @@ TEST_F(DeviceConversionUtilTest, TestConversion_TrueWirelessImages) {
   DeviceImageInfo images = DeviceImageInfo(
       /*default_image=*/kTestDefaultImage, /*left_bud_image=*/kTestLeftBudImage,
       /*right_bud_image=*/kTestRightBudImage, /*case_image=*/kTestCaseImage);
-  // MockBluetoothDevice sets identifier as |address|-Identifier.
-  fake_fast_pair_delegate()->SetDeviceImageInfo("address-Identifier", images);
+  fake_fast_pair_delegate()->SetDeviceImageInfo("address", images);
 
   mojom::BluetoothDevicePropertiesPtr properties =
       GenerateBluetoothDeviceMojoProperties(device, fake_fast_pair_delegate());
@@ -276,8 +274,7 @@ TEST_F(DeviceConversionUtilTest, TestConversion_PartialTrueWirelessImages) {
   DeviceImageInfo images = DeviceImageInfo(
       /*default_image=*/kTestDefaultImage, /*left_bud_image=*/kTestLeftBudImage,
       /*right_bud_image=*/kTestRightBudImage, /*case_image=*/"");
-  // MockBluetoothDevice sets identifier as |address|-Identifier.
-  fake_fast_pair_delegate()->SetDeviceImageInfo("address-Identifier", images);
+  fake_fast_pair_delegate()->SetDeviceImageInfo("address", images);
 
   mojom::BluetoothDevicePropertiesPtr properties =
       GenerateBluetoothDeviceMojoProperties(device, fake_fast_pair_delegate());

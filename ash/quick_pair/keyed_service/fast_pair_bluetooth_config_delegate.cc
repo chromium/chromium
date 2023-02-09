@@ -26,8 +26,8 @@ void FastPairBluetoothConfigDelegate::RemoveObserver(Observer* observer) {
 
 absl::optional<bluetooth_config::DeviceImageInfo>
 FastPairBluetoothConfigDelegate::GetDeviceImageInfo(
-    const std::string& device_id) {
-  return FastPairRepository::Get()->GetImagesForDevice(device_id);
+    const std::string& mac_address) {
+  return FastPairRepository::Get()->GetImagesForDevice(mac_address);
 }
 
 void FastPairBluetoothConfigDelegate::ForgetDevice(

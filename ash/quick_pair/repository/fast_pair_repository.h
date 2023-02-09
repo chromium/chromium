@@ -117,9 +117,9 @@ class FastPairRepository {
   // disk, if model ID is not in use by other mac addresses.
   virtual bool EvictDeviceImages(const std::string& mac_address) = 0;
 
-  // Returns device images belonging to |device_id|, if found.
+  // Returns device images belonging to |mac_address|, if found.
   virtual absl::optional<bluetooth_config::DeviceImageInfo> GetImagesForDevice(
-      const std::string& device_id) = 0;
+      const std::string& mac_address) = 0;
 
   // Fetches the opt in status from Footprints to determine the status for
   // saving a user's devices to their account, which is synced all across a

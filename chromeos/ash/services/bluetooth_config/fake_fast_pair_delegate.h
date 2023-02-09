@@ -24,9 +24,9 @@ class FakeFastPairDelegate : public FastPairDelegate {
 
   DeviceNameManager* device_name_manager() { return device_name_manager_; }
 
-  // Sets |images| for |device_id| that will be returned
-  // by GetDeviceImageInfo(|device_id|).
-  void SetDeviceImageInfo(const std::string& device_id,
+  // Sets |images| for |mac_address| that will be returned
+  // by GetDeviceImageInfo(|mac_address|).
+  void SetDeviceImageInfo(const std::string& mac_address,
                           DeviceImageInfo& images);
 
   std::vector<std::string> forgotten_device_addresses() {
@@ -35,14 +35,14 @@ class FakeFastPairDelegate : public FastPairDelegate {
 
   // FastPairDelegate:
   absl::optional<DeviceImageInfo> GetDeviceImageInfo(
-      const std::string& device_id) override;
+      const std::string& mac_address) override;
   void ForgetDevice(const std::string& mac_address) override;
   void SetAdapterStateController(
       AdapterStateController* adapter_state_controller) override;
   void SetDeviceNameManager(DeviceNameManager* device_name_manager) override;
 
  private:
-  base::flat_map<std::string, DeviceImageInfo> device_id_to_images_;
+  base::flat_map<std::string, DeviceImageInfo> mac_address_to_images_;
   std::vector<std::string> forgotten_device_addresses_;
   AdapterStateController* adapter_state_controller_ = nullptr;
   DeviceNameManager* device_name_manager_ = nullptr;

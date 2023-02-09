@@ -12,7 +12,7 @@ FakeFastPairDelegate::~FakeFastPairDelegate() = default;
 
 void FakeFastPairDelegate::SetDeviceImageInfo(const std::string& device_id,
                                               DeviceImageInfo& images) {
-  device_id_to_images_[device_id] = images;
+  mac_address_to_images_[device_id] = images;
 }
 
 void FakeFastPairDelegate::SetAdapterStateController(
@@ -26,10 +26,11 @@ void FakeFastPairDelegate::SetDeviceNameManager(
 }
 
 absl::optional<DeviceImageInfo> FakeFastPairDelegate::GetDeviceImageInfo(
-    const std::string& device_id) {
-  const auto it = device_id_to_images_.find(device_id);
-  if (it == device_id_to_images_.end())
+    const std::string& mac_address) {
+  const auto it = mac_address_to_images_.find(mac_address);
+  if (it == mac_address_to_images_.end()) {
     return absl::nullopt;
+  }
   return it->second;
 }
 

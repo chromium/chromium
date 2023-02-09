@@ -178,7 +178,7 @@ mojom::DeviceImageInfoPtr ComputeImageInfo(
     const device::BluetoothDevice* device,
     FastPairDelegate* fast_pair_delegate) {
   absl::optional<DeviceImageInfo> images =
-      fast_pair_delegate->GetDeviceImageInfo(device->GetIdentifier());
+      fast_pair_delegate->GetDeviceImageInfo(device->GetAddress());
   if (!images) {
     return nullptr;
   }

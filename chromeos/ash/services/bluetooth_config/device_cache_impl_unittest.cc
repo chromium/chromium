@@ -119,7 +119,7 @@ class DeviceCacheImplTest : public testing::Test {
         .WillByDefault(testing::Return(device_type));
 
     if (image_info)
-      fake_fast_pair_delegate_.SetDeviceImageInfo(*id_out, *image_info);
+      fake_fast_pair_delegate_.SetDeviceImageInfo(address, *image_info);
 
     device::BluetoothDevice* device = mock_device.get();
     mock_devices_.push_back(std::move(mock_device));

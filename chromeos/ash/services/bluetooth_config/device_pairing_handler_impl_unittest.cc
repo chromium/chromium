@@ -334,9 +334,9 @@ TEST_F(DevicePairingHandlerImplTest, FetchDeviceExists) {
   DeviceImageInfo image_info = DeviceImageInfo(
       /*default_image=*/kTestDefaultImage, /*left_bud_image=*/"",
       /*right_bud_image=*/"", /*case_image=*/"");
-  fake_fast_pair_delegate()->SetDeviceImageInfo(device_id, image_info);
-
   std::string device_address = GetDeviceAddress(device_id);
+  fake_fast_pair_delegate()->SetDeviceImageInfo(device_address, image_info);
+
   mojom::BluetoothDevicePropertiesPtr device = FetchDevice(device_address);
   EXPECT_TRUE(device);
   EXPECT_EQ(device->id, device_id);

@@ -84,7 +84,7 @@ class FastPairRepositoryImpl : public FastPairRepository,
   bool PersistDeviceImages(scoped_refptr<Device> device) override;
   bool EvictDeviceImages(const std::string& mac_address) override;
   absl::optional<bluetooth_config::DeviceImageInfo> GetImagesForDevice(
-      const std::string& device_id) override;
+      const std::string& mac_address) override;
   void CheckOptInStatus(CheckOptInStatusCallback callback) override;
   void UpdateOptInStatus(nearby::fastpair::OptInStatus opt_in_status,
                          UpdateOptInStatusCallback callback) override;

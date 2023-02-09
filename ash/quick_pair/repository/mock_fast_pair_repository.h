@@ -62,7 +62,7 @@ class MockFastPairRepository : public FastPairRepository {
               (override));
   MOCK_METHOD(absl::optional<bluetooth_config::DeviceImageInfo>,
               GetImagesForDevice,
-              (const std::string& device_id),
+              (const std::string& mac_address),
               (override));
   MOCK_METHOD(void,
               CheckOptInStatus,

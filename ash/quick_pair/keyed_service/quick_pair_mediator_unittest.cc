@@ -658,7 +658,7 @@ TEST_F(MediatorTest, FastPairBluetoothConfigDelegate) {
   delegate->SetDeviceNameManager(nullptr);
   delegate->SetAdapterStateController(nullptr);
   EXPECT_TRUE(delegate);
-  EXPECT_EQ(delegate->GetDeviceImageInfo(kTestMetadataId), absl::nullopt);
+  EXPECT_EQ(delegate->GetDeviceImageInfo(kTestAddress), absl::nullopt);
 }
 
 TEST_F(MediatorTest,

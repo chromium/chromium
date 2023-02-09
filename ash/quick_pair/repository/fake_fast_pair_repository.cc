@@ -154,7 +154,7 @@ bool FakeFastPairRepository::EvictDeviceImages(const std::string& mac_address) {
 
 // Unimplemented.
 absl::optional<bluetooth_config::DeviceImageInfo>
-FakeFastPairRepository::GetImagesForDevice(const std::string& device_id) {
+FakeFastPairRepository::GetImagesForDevice(const std::string& mac_address) {
   return absl::nullopt;
 }
 
