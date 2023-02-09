@@ -77,10 +77,6 @@ class GLImageD3DTestDelegate : public GLImageTestDelegateBase {
     return image;
   }
 
-  bool BindImageToTarget(GLImage* image, unsigned target) {
-    return static_cast<gl::GLImageD3D*>(image)->BindTexImage(target);
-  }
-
   unsigned GetTextureTarget() const { return GL_TEXTURE_2D; }
 
   const uint8_t* GetImageColor() const { return kImageColor; }
@@ -91,8 +87,8 @@ class GLImageD3DTestDelegate : public GLImageTestDelegateBase {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
 };
 
-template <typename GLImageTestDelegate>
-class GLImageBindTest : public GLImageTest<GLImageTestDelegate> {};
+template <typename GLImageD3DTestDelegate>
+class GLImageBindTest : public GLImageTest<GLImageD3DTestDelegate> {};
 
 TYPED_TEST_SUITE_P(GLImageBindTest);
 
@@ -112,7 +108,7 @@ TYPED_TEST_P(GLImageBindTest, BindTexImage) {
 
   // Create a solid color green image of preferred format. This must succeed
   // in order for a GLImage to be conformant.
-  scoped_refptr<GLImage> image =
+  scoped_refptr<GLImageD3D> image =
       this->delegate_.CreateSolidColorImage(image_size, image_color);
   ASSERT_TRUE(image);
 
@@ -122,7 +118,8 @@ TYPED_TEST_P(GLImageBindTest, BindTexImage) {
   glBindTexture(target, texture);
 
   // Bind |image| to |texture|.
-  bool rv = this->delegate_.BindImageToTarget(image.get(), target);
+  bool rv = image->BindTexImage(target);
+
   EXPECT_TRUE(rv);
 
   glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
@@ -142,8 +139,8 @@ TYPED_TEST_P(GLImageBindTest, BindTexImage) {
 
 REGISTER_TYPED_TEST_SUITE_P(GLImageBindTest, BindTexImage);
 
-template <typename GLImageTestDelegate>
-class GLImageZeroInitializeTest : public GLImageTest<GLImageTestDelegate> {};
+template <typename GLImageD3DTestDelegate>
+class GLImageZeroInitializeTest : public GLImageTest<GLImageD3DTestDelegate> {};
 
 // This test verifies that if an uninitialized image is bound to a texture, the
 // result is zero-initialized.
@@ -163,7 +160,7 @@ TYPED_TEST_P(GLImageZeroInitializeTest, ZeroInitialize) {
   glViewport(0, 0, image_size.width(), image_size.height());
 
   // Create an uninitialized image of preferred format.
-  scoped_refptr<GLImage> image = this->delegate_.CreateImage(image_size);
+  scoped_refptr<GLImageD3D> image = this->delegate_.CreateImage(image_size);
 
   // Create a texture that |image| will be bound to.
   GLenum target = this->delegate_.GetTextureTarget();
@@ -171,7 +168,7 @@ TYPED_TEST_P(GLImageZeroInitializeTest, ZeroInitialize) {
   glBindTexture(target, texture);
 
   // Bind |image| to |texture|.
-  bool rv = this->delegate_.BindImageToTarget(image.get(), target);
+  bool rv = image->BindTexImage(target);
   EXPECT_TRUE(rv);
 
   // Draw |texture| to viewport.
