@@ -216,8 +216,8 @@ export class DocumentCornerOverlay {
   /**
    * Detaches from previous attached camera.
    */
-  async detach(): Promise<void> {
-    await this.stop();
+  detach(): void {
+    this.stop();
     this.deviceId = null;
   }
 
@@ -248,7 +248,7 @@ export class DocumentCornerOverlay {
     this.setNoDocumentTimer();
   }
 
-  async stop(): Promise<void> {
+  stop(): void {
     if (this.observer === null) {
       return;
     }
