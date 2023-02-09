@@ -48,7 +48,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorSliderTrack] = {kColorSysOnPrimary};
   mixer[kColorSliderTrackMinimal] = {kColorSysOnSecondary};
   mixer[kColorTextfieldBackground] = {kColorSysSurface};
-  mixer[kColorTextfieldBackgroundDisabled] = {kColorSysSurface};
+  mixer[kColorTextfieldBackgroundDisabled] = {kColorSysStateDisabledContainer};
   mixer[kColorTextfieldForeground] = {kColorSysOnSurface};
   mixer[kColorTextfieldForegroundInvalid] = {
       BlendForMinContrast(kColorSysError, kColorTextfieldBackground)};
