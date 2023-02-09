@@ -26,6 +26,9 @@ FormFactorMetricsProvider::GetFormFactor() const {
   // ui/base/device_form_factor_android.cc.
   if (base::android::BuildInfo::GetInstance()->is_tv())
     return SystemProfileProto::Hardware::FORM_FACTOR_TV;
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    return SystemProfileProto::Hardware::FORM_FACTOR_AUTOMOTIVE;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(PLATFORM_CFM)

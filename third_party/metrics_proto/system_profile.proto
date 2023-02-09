@@ -268,8 +268,11 @@ message SystemProfileProto {
   // Information on the user's hardware.
   // Next tag: 27
   message Hardware {
-    // OS CPU architecture. Common options are: x86, x86_64, armv7l, armv8l,
-    // and aarch64.
+    // OS CPU architecture. Common options are: x86, x86_64, arm64, armv7,
+    // armv7l, armv8l and aarch64.
+    // Note: On Windows, this is not the true OS CPU architecture in the case
+    // of running under emulation (e.g. on Windows on ARM, which would report
+    // either x86 or x86_64, depending on the bitness of the exe being run).
     // Started being correctly recorded on iOS in M90: crrev/c/2723012.
     optional string cpu_architecture = 1;
 
@@ -341,6 +344,7 @@ message SystemProfileProto {
       FORM_FACTOR_TABLET = 3;
       FORM_FACTOR_TV = 4;
       FORM_FACTOR_MEET_DEVICE = 5;
+      FORM_FACTOR_AUTOMOTIVE = 6;
     }
     optional FormFactor form_factor = 22;
 

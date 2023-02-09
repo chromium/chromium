@@ -11,6 +11,8 @@ package ukm;
 
 // Types of source ids defined by
 // https://cs.chromium.org/chromium/src/services/metrics/public/cpp/ukm_source_id.h
+// WARNING: Please update both the internal version and the Chromium version of
+// this file when new enum values are added.
 enum SourceType {
   DEFAULT = 0;
   NAVIGATION_ID = 1;
