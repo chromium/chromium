@@ -630,6 +630,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool allow_set_bounds_direct_ = false;
   bool is_moving_to_another_display_ = false;
 
+  bool is_handling_float_event_ = false;
+
   // Contains the window's target snap ratio if it's going to be snapped by a
   // WMEvent, and the updated window snap ratio if the snapped window's bounds
   // are changed while it remains snapped. It will be used to calculate the

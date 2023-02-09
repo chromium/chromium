@@ -172,6 +172,23 @@ TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
   EXPECT_TRUE(maximized_window->layer()->GetAnimator()->is_animating());
 }
 
+// Tests that a floated window animates when a state change causes it to
+// unfloat. Regression test for b/252505434.
+TEST_F(WindowFloatTest, FloatToMaximizeWindowAnimates) {
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  WindowState::Get(window.get())->OnWMEvent(&maximize_event);
+  // `WindowState::SetBoundsDirectCrossFade` still starts an animation if the
+  // source and destination bounds are the same. Therefore, it is not enough to
+  // just check if its animating.
+  EXPECT_TRUE(window->layer()->GetAnimator()->is_animating());
+  EXPECT_NE(window->layer()->transform(),
+            window->layer()->GetTargetTransform());
+}
+
 // Test when float a window in clamshell mode, window will change to default
 // float bounds in certain conditions.
 TEST_F(WindowFloatTest, WindowFloatingResize) {

@@ -143,7 +143,7 @@ bool ShouldEnterNextState(WindowStateType current_state,
 }  // namespace
 
 DefaultState::DefaultState(WindowStateType initial_state_type)
-    : BaseState(initial_state_type), stored_window_state_(nullptr) {}
+    : BaseState(initial_state_type) {}
 
 DefaultState::~DefaultState() = default;
 
@@ -507,7 +507,6 @@ void DefaultState::EnterToNextState(WindowState* window_state,
 
   // Unfloat floated window when exiting float state to another state.
   if (previous_state_type == WindowStateType::kFloated) {
-    // Remove float window from float container.
     float_controller->UnfloatImpl(window);
   }
 

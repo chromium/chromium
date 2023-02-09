@@ -82,7 +82,7 @@ class DefaultState : public BaseState {
   display::Display stored_display_state_;
 
   // The window state only gets remembered for DCHECK reasons.
-  WindowState* stored_window_state_;
+  WindowState* stored_window_state_ = nullptr;
 };
 
 }  // namespace ash
