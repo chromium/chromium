@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 407 tests; 223 PASS, 184 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 409 tests; 223 PASS, 186 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: builder.buildSync is not a function"
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -150,6 +150,8 @@ FAIL MLActivation interface object name assert_own_property: self does not have 
 FAIL MLActivation interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
 FAIL MLActivation interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
 FAIL MLActivation interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
+FAIL MLActivation must be primary interface of relu assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
+FAIL Stringification of relu assert_class_string: class string of relu expected "[object MLActivation]" but got "[object MLOperator]"
 PASS MLContext interface: existence and properties of interface object
 PASS MLContext interface object length
 PASS MLContext interface object name

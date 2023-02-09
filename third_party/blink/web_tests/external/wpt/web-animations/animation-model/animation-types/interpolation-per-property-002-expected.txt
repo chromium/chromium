@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 329 tests; 317 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 336 tests; 324 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -27,6 +27,13 @@ PASS lighting-color supports animating as color of hsl()
 PASS lighting-color supports animating as color of #RGBa
 PASS lighting-color supports animating as color of rgba()
 PASS lighting-color supports animating as color of hsla()
+PASS line-height (type: discrete) has testInterpolation function
+PASS line-height uses discrete animation when animating between "normal" and "10px" with linear easing
+PASS line-height uses discrete animation when animating between "normal" and "10px" with effect easing
+PASS line-height uses discrete animation when animating between "normal" and "10px" with keyframe easing
+PASS line-height uses discrete animation when animating between "normal" and "10" with linear easing
+PASS line-height uses discrete animation when animating between "normal" and "10" with effect easing
+PASS line-height uses discrete animation when animating between "normal" and "10" with keyframe easing
 PASS list-style-image (type: discrete) has testInterpolation function
 FAIL list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing assert_equals: The value should be url("http://localhost/test-1") at 499ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.499)"
 FAIL list-style-image uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing assert_equals: The value should be url("http://localhost/test-1") at 940ms expected "url(\"http://localhost/test-1\")" but got "-webkit-cross-fade(url(\"http://localhost/test-1\"), url(\"http://localhost/test-2\"), 0.428259)"
