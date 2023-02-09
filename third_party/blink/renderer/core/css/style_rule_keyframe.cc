@@ -26,8 +26,9 @@ String StyleRuleKeyframe::KeyText() const {
     if (i) {
       key_text.Append(", ");
     }
-    if (keys_.at(i).name != Timing::TimelineNamedRange::kNone) {
-      key_text.Append(Timing::TimelineRangeNameToString(keys_.at(i).name));
+    if (keys_.at(i).name != TimelineOffset::NamedRange::kNone) {
+      key_text.Append(
+          TimelineOffset::TimelineRangeNameToString(keys_.at(i).name));
       key_text.Append(" ");
     }
     key_text.AppendNumber(keys_.at(i).percent * 100);

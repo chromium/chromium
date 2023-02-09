@@ -358,10 +358,14 @@ CSSNumericValue* ViewTimeline::getCurrentTime(const String& rangeName) {
     range_start.name = TimelineOffset::NamedRange::kCover;
   } else if (rangeName == "contain") {
     range_start.name = TimelineOffset::NamedRange::kContain;
-  } else if (rangeName == "enter") {
-    range_start.name = TimelineOffset::NamedRange::kEnter;
+  } else if (rangeName == "entry") {
+    range_start.name = TimelineOffset::NamedRange::kEntry;
+  } else if (rangeName == "entry-crossing") {
+    range_start.name = TimelineOffset::NamedRange::kEntryCrossing;
   } else if (rangeName == "exit") {
     range_start.name = TimelineOffset::NamedRange::kExit;
+  } else if (rangeName == "exit-crossing") {
+    range_start.name = TimelineOffset::NamedRange::kExitCrossing;
   } else {
     return nullptr;
   }
@@ -447,7 +451,7 @@ double ViewTimeline::ToFractionalOffset(
           std::max(align_subject_start_view_start, align_subject_end_view_end);
       break;
 
-    case TimelineOffset::NamedRange::kEnter:
+    case TimelineOffset::NamedRange::kEntry:
       // Represents the range during which the principal box is entering the
       // view progress visibility range.
       //   0% is equivalent to 0% of the cover range.
@@ -457,6 +461,14 @@ double ViewTimeline::ToFractionalOffset(
           std::min(align_subject_start_view_start, align_subject_end_view_end);
       break;
 
+    case TimelineOffset::NamedRange::kEntryCrossing:
+      // Represents the range during which the principal box is crossing the
+      // entry edge of the viewport.
+      //   0% is equivalent to 0% of the cover range.
+      range_start = align_subject_start_view_end;
+      range_end = align_subject_end_view_end;
+      break;
+
     case TimelineOffset::NamedRange::kExit:
       // Represents the range during which the principal box is exiting the view
       // progress visibility range.
@@ -464,6 +476,14 @@ double ViewTimeline::ToFractionalOffset(
       //   100% is equivalent to 100% of the cover range.
       range_start =
           std::max(align_subject_start_view_start, align_subject_end_view_end);
+      range_end = align_subject_end_view_start;
+      break;
+
+    case TimelineOffset::NamedRange::kExitCrossing:
+      // Represents the range during which the principal box is exiting the view
+      // progress visibility range.
+      //   100% is equivalent to 100% of the cover range.
+      range_start = align_subject_start_view_start;
       range_end = align_subject_end_view_start;
       break;
   }

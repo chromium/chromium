@@ -30,6 +30,8 @@ struct TimelineOffset {
     return !(*this == other);
   }
 
+  static String TimelineRangeNameToString(NamedRange range_name);
+
   static absl::optional<TimelineOffset> Create(Element* element,
                                                String value,
                                                ExceptionState& exception_state);

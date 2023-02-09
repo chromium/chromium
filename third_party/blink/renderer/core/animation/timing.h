@@ -91,8 +91,6 @@ struct CORE_EXPORT Timing {
   };
 
   using V8Delay = V8UnionCSSNumericValueOrDouble;
-  using V8TimelineRangeOffset = V8UnionStringOrTimelineRangeOffset;
-  using TimelineNamedRange = V8TimelineRange::Enum;
 
   // Delay can be directly expressed as time delays or calculated based on a
   // position on a view timeline. As part of the normalization process, a
@@ -178,8 +176,6 @@ struct CORE_EXPORT Timing {
 
   V8CSSNumberish* ToComputedValue(absl::optional<AnimationTimeDelta>,
                                   absl::optional<AnimationTimeDelta>) const;
-
-  static String TimelineRangeNameToString(TimelineNamedRange range_name);
 
   Delay start_delay;
   Delay end_delay;

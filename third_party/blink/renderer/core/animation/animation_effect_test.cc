@@ -43,15 +43,6 @@
 
 namespace blink {
 
-Timing::V8TimelineRangeOffset* CreateTimelineOffset(String range,
-                                                    double percent) {
-  TimelineRangeOffset* timeline_range_offset = TimelineRangeOffset::Create();
-  timeline_range_offset->setRangeName(range);
-  timeline_range_offset->setOffset(CSSUnitValues::percent(percent));
-  return MakeGarbageCollected<Timing::V8TimelineRangeOffset>(
-      timeline_range_offset);
-}
-
 Timing::V8Delay* CreateTimeDelay(double delay_in_ms) {
   return MakeGarbageCollected<Timing::V8Delay>(delay_in_ms);
 }

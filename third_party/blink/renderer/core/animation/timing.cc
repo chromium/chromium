@@ -15,26 +15,6 @@
 
 namespace blink {
 
-String Timing::TimelineRangeNameToString(
-    Timing::TimelineNamedRange range_name) {
-  switch (range_name) {
-    case Timing::TimelineNamedRange::kNone:
-      return "none";
-
-    case Timing::TimelineNamedRange::kCover:
-      return "cover";
-
-    case Timing::TimelineNamedRange::kContain:
-      return "contain";
-
-    case Timing::TimelineNamedRange::kEnter:
-      return "enter";
-
-    case Timing::TimelineNamedRange::kExit:
-      return "exit";
-  }
-}
-
 Timing::V8Delay* Timing::Delay::ToV8Delay() const {
   // TODO(crbug.com/1216527) support delay as percentage.
   return MakeGarbageCollected<V8Delay>(AsTimeValue().InMillisecondsF());

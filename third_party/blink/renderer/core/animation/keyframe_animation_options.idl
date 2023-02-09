@@ -7,7 +7,14 @@
 // TODO(kevers): Add scroll-animations-1 link once range(Start|End) are fully
 // speced.
 
-enum TimelineRange { "none", "cover", "contain", "enter", "exit" };
+enum TimelineRange {
+  "none",
+  "cover",
+  "contain",
+  "entry",
+  "entry-crossing",
+  "exit",
+  "exit-crossing" };
 
 dictionary TimelineRangeOffset {
     TimelineRange rangeName;

@@ -1607,8 +1607,10 @@
     // animation-[end-]delay
     // contain
     // cover
-    "enter",
+    "entry",
     "exit",
+    "entry-crossing",
+    "exit-crossing",
 
     // scroll()
     "root",

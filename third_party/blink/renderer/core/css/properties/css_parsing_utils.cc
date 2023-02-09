@@ -4083,7 +4083,8 @@ CSSValue* ConsumeAnimationDuration(CSSParserTokenRange& range,
 
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange& range) {
   return ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover,
-                      CSSValueID::kEnter, CSSValueID::kExit>(range);
+                      CSSValueID::kEntry, CSSValueID::kEntryCrossing,
+                      CSSValueID::kExit, CSSValueID::kExitCrossing>(range);
 }
 
 CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenRange& range,

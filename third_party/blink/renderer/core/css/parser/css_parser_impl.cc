@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -2187,15 +2188,15 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
     const CSSParserToken& token = range.Peek();
     if (token.GetType() == kPercentageToken && token.NumericValue() >= 0 &&
         token.NumericValue() <= 100) {
-      result->push_back(KeyframeOffset(Timing::TimelineNamedRange::kNone,
+      result->push_back(KeyframeOffset(TimelineOffset::NamedRange::kNone,
                                        token.NumericValue() / 100));
       range.ConsumeIncludingWhitespace();
     } else if (token.GetType() == kIdentToken) {
       if (EqualIgnoringASCIICase(token.Value(), "from")) {
-        result->push_back(KeyframeOffset(Timing::TimelineNamedRange::kNone, 0));
+        result->push_back(KeyframeOffset(TimelineOffset::NamedRange::kNone, 0));
         range.ConsumeIncludingWhitespace();
       } else if (EqualIgnoringASCIICase(token.Value(), "to")) {
-        result->push_back(KeyframeOffset(Timing::TimelineNamedRange::kNone, 1));
+        result->push_back(KeyframeOffset(TimelineOffset::NamedRange::kNone, 1));
         range.ConsumeIncludingWhitespace();
       } else {
         auto* range_name_percent = To<CSSValueList>(
@@ -2206,12 +2207,12 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
         }
 
         auto range_name = To<CSSIdentifierValue>(range_name_percent->Item(0))
-                              .ConvertTo<Timing::TimelineNamedRange>();
+                              .ConvertTo<TimelineOffset::NamedRange>();
         auto percent =
             To<CSSPrimitiveValue>(range_name_percent->Item(1)).GetFloatValue();
 
         if (!RuntimeEnabledFeatures::CSSViewTimelineEnabled() &&
-            range_name != Timing::TimelineNamedRange::kNone) {
+            range_name != TimelineOffset::NamedRange::kNone) {
           return nullptr;
         }
 

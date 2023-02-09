@@ -1746,11 +1746,17 @@ inline CSSIdentifierValue::CSSIdentifierValue(
     case TimelineOffset::NamedRange::kContain:
       value_id_ = CSSValueID::kContain;
       break;
-    case TimelineOffset::NamedRange::kEnter:
-      value_id_ = CSSValueID::kEnter;
+    case TimelineOffset::NamedRange::kEntry:
+      value_id_ = CSSValueID::kEntry;
+      break;
+    case TimelineOffset::NamedRange::kEntryCrossing:
+      value_id_ = CSSValueID::kEntryCrossing;
       break;
     case TimelineOffset::NamedRange::kExit:
       value_id_ = CSSValueID::kExit;
+      break;
+    case TimelineOffset::NamedRange::kExitCrossing:
+      value_id_ = CSSValueID::kExitCrossing;
       break;
     default:
       NOTREACHED();
@@ -1766,10 +1772,14 @@ inline TimelineOffset::NamedRange CSSIdentifierValue::ConvertTo() const {
       return TimelineOffset::NamedRange::kCover;
     case CSSValueID::kContain:
       return TimelineOffset::NamedRange::kContain;
-    case CSSValueID::kEnter:
-      return TimelineOffset::NamedRange::kEnter;
+    case CSSValueID::kEntry:
+      return TimelineOffset::NamedRange::kEntry;
+    case CSSValueID::kEntryCrossing:
+      return TimelineOffset::NamedRange::kEntryCrossing;
     case CSSValueID::kExit:
       return TimelineOffset::NamedRange::kExit;
+    case CSSValueID::kExitCrossing:
+      return TimelineOffset::NamedRange::kExitCrossing;
     default:
       break;
   }

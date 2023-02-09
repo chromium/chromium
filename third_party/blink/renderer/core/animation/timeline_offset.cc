@@ -26,6 +26,33 @@ void ThrowExcpetionForInvalidTimelineOffset(ExceptionState& exception_state) {
 
 }  // anonymous namespace
 
+/* static */
+String TimelineOffset::TimelineRangeNameToString(
+    TimelineOffset::NamedRange range_name) {
+  switch (range_name) {
+    case NamedRange::kNone:
+      return "none";
+
+    case NamedRange::kCover:
+      return "cover";
+
+    case NamedRange::kContain:
+      return "contain";
+
+    case NamedRange::kEntry:
+      return "entry";
+
+    case NamedRange::kEntryCrossing:
+      return "entry-crossing";
+
+    case NamedRange::kExit:
+      return "exit";
+
+    case NamedRange::kExitCrossing:
+      return "exit-crossing";
+  }
+}
+
 String TimelineOffset::ToString() const {
   if (name == NamedRange::kNone) {
     return "auto";
@@ -46,6 +73,11 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
   const CSSValue* value_list = CSSParser::ParseSingleValue(
       CSSPropertyID::kAnimationRangeStart, css_text,
       document.ElementSheet().Contents()->ParserContext());
+
+  if (!value_list) {
+    ThrowExcpetionForInvalidTimelineOffset(exception_state);
+    return absl::nullopt;
+  }
 
   if (To<CSSValueList>(value_list)->length() != 1) {
     ThrowExcpetionForInvalidTimelineOffset(exception_state);
@@ -73,7 +105,7 @@ absl::optional<TimelineOffset> TimelineOffset::Create(
   // TODO(kevers): Keep track of style dependent lengths in order
   // to re-resolve on a style update.
   const auto& range_name = To<CSSIdentifierValue>(list.Item(0));
-  return TimelineOffset(range_name.ConvertTo<Timing::TimelineNamedRange>(),
+  return TimelineOffset(range_name.ConvertTo<NamedRange>(),
                         ResolveLength(element, &list.Item(1)));
 }
 
