@@ -385,6 +385,23 @@ class BaselineOptimizerTest(unittest.TestCase):
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
+    @unittest.skip('linux/virtual is not removed because it is not unpatched; '
+                   'reenable after patching is removed (crbug.com/1375568).')
+    def test_virtual_test_redundant_with_nonvirtual_successor(self):
+        self._assert_optimization(
+            {
+                'platform/win/fast/canvas': '1',
+                'platform/linux/fast/canvas': '2',
+                'platform/mac/fast/canvas': '3',
+                'platform/linux/virtual/gpu/fast/canvas': '2',
+            }, {
+                'platform/win/fast/canvas': '1',
+                'platform/linux/fast/canvas': '2',
+                'platform/mac/fast/canvas': '3',
+                'platform/linux/virtual/gpu/fast/canvas': None,
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
+
     def test_virtual_baseline_not_redundant_with_actual_root(self):
         # baseline optimization supprisingly added one baseline in this case.
         # This is because we are patching the virtual subtree first.
