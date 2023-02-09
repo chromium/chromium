@@ -601,8 +601,11 @@ config("nominmax") {
   defines = [ "NOMINMAX" ]
 }
 
-# Some binaries create PDBs larger than 4 GiB. Increasing the PDB page
-# size to allow larger PDBs.
+# Some binaries create PDBs larger than 4 GiB. Increasing the PDB page size
+# to 8 KiB allows 8 GiB PDBs. The larger page size also allows larger block maps
+# which is a PDB limit that was hit in https://crbug.com/1406510. The page size
+# can easily be increased in the future to allow even larger PDBs or larger
+# block maps.
 config("pdb_larger_than_4gb") {
   if (!defined(ldflags)) {
     ldflags = []
