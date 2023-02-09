@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
@@ -618,6 +619,7 @@ void TransformTree::UndoSnapping(TransformNode* node) {
   // We need to undo it and use the un-snapped transform to compute current
   // target and screen space transforms.
   node->to_parent.Translate(-node->snap_amount.x(), -node->snap_amount.y());
+  node->snap_amount = gfx::Vector2dF();
 }
 
 void TransformTree::UpdateSnapping(TransformNode* node) {
