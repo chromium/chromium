@@ -4123,11 +4123,14 @@ static void fromJsGetMatchedStylesForNode(
   Maybe<protocol::Array<protocol::CSS::RuleMatch>> matchedRules;
   Maybe<protocol::Array<protocol::CSS::PseudoElementMatches>> pseudoIdMatches;
   Maybe<protocol::Array<protocol::CSS::InheritedStyleEntry>> inheritedEntries;
+  Maybe<protocol::Array<protocol::CSS::InheritedPseudoElementMatches>> inherited_pseudo_id_matches;
   Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>> keyframesRules;
+  Maybe<int> parentLayoutNodeId;
 
   auto response = cssAgent->getMatchedStylesForNode(
-      nodeId, &inlineStyle, &attributesStyle, &matchedRules,
-      &pseudoIdMatches, &inheritedEntries, nullptr, &keyframesRules, nullptr);
+      nodeId, &inlineStyle, &attributesStyle, &matchedRules, &pseudoIdMatches,
+      &inheritedEntries, &inherited_pseudo_id_matches, &keyframesRules,
+      &parentLayoutNodeId);
 
   // WIP: will fix everything up and clean up when done w/ RUN-981
 
