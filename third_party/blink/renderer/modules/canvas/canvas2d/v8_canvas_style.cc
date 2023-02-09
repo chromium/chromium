@@ -19,6 +19,16 @@ bool ExtractV8CanvasStyle(v8::Isolate* isolate,
                           v8::Local<v8::Value> value,
                           V8CanvasStyle& style,
                           ExceptionState& exception_state) {
+  // Check for string first as it's the most common.
+  if (value->IsString()) {
+    style.string = NativeValueTraits<IDLString>::NativeValue(isolate, value,
+                                                             exception_state);
+    if (UNLIKELY(exception_state.HadException())) {
+      return false;
+    }
+    style.type = V8CanvasStyleType::kString;
+    return true;
+  }
   if (V8CanvasPattern::HasInstance(isolate, value)) {
     style.pattern = V8CanvasPattern::ToWrappableUnsafe(value.As<v8::Object>());
     style.type = V8CanvasStyleType::kPattern;
@@ -38,6 +48,9 @@ bool ExtractV8CanvasStyle(v8::Isolate* isolate,
             .Rgb();
     return true;
   }
+
+  // This case also handles non-string types that may be converted to strings
+  // (such as numbers).
   style.string = NativeValueTraits<IDLString>::NativeValue(isolate, value,
                                                            exception_state);
   if (UNLIKELY(exception_state.HadException()))
