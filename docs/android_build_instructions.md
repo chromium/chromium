@@ -379,6 +379,12 @@ complete successfully. By offloading analysis build steps to a separate build
 server to be run lazily at a low priority when the machine is idle, the actual
 build can complete up to 50-80% faster.
 
+**Note**: Since the build completes before the analysis checks finish, the build
+will not fail if an analysis check fails. Make sure to check the server's output
+at regular intervals to fix outstanding issues caught by these analysis checks.
+
+##### First way (by running it manually)
+
 There are **two** steps to using the build server.
 1. Add the gn arg `android_static_analysis = "build_server"`
 2. Run the script at
@@ -388,6 +394,9 @@ All your local builds will now forward analysis steps to this server, including
 android lint, errorprone, bytecode processor.
 
 If you run (2) in a terminal, the output of the checks will be displayed there.
+
+##### Second way (using systemd)
+
 Alternatively, you can set up the server as a Linux service, so it runs on the
 background and starts on boot. If you're using systemd:
 
@@ -416,11 +425,6 @@ The output can be inspected with
 ```
 journalctl --user -e -u fast-local-dev-server
 ```
-
-**Note**: Since the build completes before the analysis checks finish, the build
-will not fail if an analysis check fails. Make sure to check the terminal that
-the server is running in at regular intervals to fix outstanding issues caught
-by these analysis checks.
 
 [fast_local_dev]: https://source.chromium.org/chromium/chromium/src/+/main:build/android/fast_local_dev_server.py
 
