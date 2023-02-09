@@ -56344,6 +56344,15 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
   <int value="1" label="Not from icon"/>
 </enum>
 
+<enum name="LaunchWebAuthFlowResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="kOffTheRecord"/>
+  <int value="2" label="kUserRejected"/>
+  <int value="3" label="kInteractionRequired"/>
+  <int value="4" label="kPageLoadFailure"/>
+  <int value="5" label="kUnexpectedError"/>
+</enum>
+
 <enum name="LazyCSSParseUsage">
   <int value="0" label="&gt;= 0%"/>
   <int value="1" label="&gt; 10%"/>

@@ -19,6 +19,20 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   DECLARE_EXTENSION_FUNCTION("identity.launchWebAuthFlow",
                              EXPERIMENTAL_IDENTITY_LAUNCHWEBAUTHFLOW)
 
+  // Used to track error state of the function call and for the histogram
+  // exposure.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Error {
+    kNone = 0,
+    kOffTheRecord = 1,
+    kUserRejected = 2,
+    kInteractionRequired = 3,
+    kPageLoadFailure = 4,
+    kUnexpectedError = 5,
+    kMaxValue = kUnexpectedError,
+  };
+
   IdentityLaunchWebAuthFlowFunction();
 
   // Tests may override extension_id.

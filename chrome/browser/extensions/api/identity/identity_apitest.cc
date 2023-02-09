@@ -130,6 +130,9 @@ const char kGetAuthTokenResultHistogramName[] =
 const char kGetAuthTokenResultAfterConsentApprovedHistogramName[] =
     "Signin.Extensions.GetAuthTokenResult.RemoteConsentApproved";
 
+const char kLaunchWebAuthFlowResultHistogramName[] =
+    "Signin.Extensions.LaunchWebAuthFlowResult";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void InitNetwork() {
   const ash::NetworkState* default_network =
@@ -3429,8 +3432,11 @@ class LaunchWebAuthFlowFunctionTest : public AsyncExtensionBrowserTest {
     return manager;
   }
 
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
  private:
   TestGuestViewManagerFactory factory_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
@@ -3461,6 +3467,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, UserCloseWindow) {
   embedder_web_contents->Close();
 
   EXPECT_EQ(std::string(errors::kUserRejected), WaitForError(function.get()));
+  histogram_tester()->ExpectUniqueSample(
+      kLaunchWebAuthFlowResultHistogramName,
+      IdentityLaunchWebAuthFlowFunction::Error::kUserRejected, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, InteractionRequired) {
@@ -3482,6 +3491,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, InteractionRequired) {
       utils::RunFunctionAndReturnError(function.get(), args, browser());
 
   EXPECT_EQ(std::string(errors::kInteractionRequired), error);
+  histogram_tester()->ExpectUniqueSample(
+      kLaunchWebAuthFlowResultHistogramName,
+      IdentityLaunchWebAuthFlowFunction::Error::kInteractionRequired, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, LoadFailed) {
@@ -3503,6 +3515,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, LoadFailed) {
       utils::RunFunctionAndReturnError(function.get(), args, browser());
 
   EXPECT_EQ(std::string(errors::kPageLoadFailure), error);
+  histogram_tester()->ExpectUniqueSample(
+      kLaunchWebAuthFlowResultHistogramName,
+      IdentityLaunchWebAuthFlowFunction::Error::kPageLoadFailure, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, NonInteractiveSuccess) {
@@ -3522,6 +3537,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest, NonInteractiveSuccess) {
   EXPECT_TRUE(value->is_string());
   EXPECT_EQ(std::string("https://abcdefghij.chromiumapp.org/callback#test"),
             value->GetString());
+  histogram_tester()->ExpectUniqueSample(
+      kLaunchWebAuthFlowResultHistogramName,
+      IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
@@ -3542,6 +3560,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
   EXPECT_TRUE(value->is_string());
   EXPECT_EQ(std::string("https://abcdefghij.chromiumapp.org/callback#test"),
             value->GetString());
+  histogram_tester()->ExpectUniqueSample(
+      kLaunchWebAuthFlowResultHistogramName,
+      IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
@@ -3567,6 +3588,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTest,
   EXPECT_TRUE(value->is_string());
   EXPECT_EQ(std::string("https://abcdefghij.chromiumapp.org/callback#test"),
             value->GetString());
+  histogram_tester()->ExpectUniqueSample(
+      kLaunchWebAuthFlowResultHistogramName,
+      IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
 }
 
 class ClearAllCachedAuthTokensFunctionTest : public AsyncExtensionBrowserTest {

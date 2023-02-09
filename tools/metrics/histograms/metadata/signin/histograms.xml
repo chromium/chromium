@@ -460,9 +460,21 @@ prefs when the profile is loaded.  -->
 
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Result of the chrome.identity.getAuthToken() extension API call. Recorded
     right before returning the result to an extension. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Signin.Extensions.LaunchWebAuthFlowResult"
+    enum="LaunchWebAuthFlowResult" expires_after="2023-06-04">
+  <owner>alexilin@chromium.org</owner>
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Result of the chrome.identity.launchWebAuthFlow() extension API call.
+    Recorded right before returning the result to an extension. Desktop only.
   </summary>
 </histogram>
 
