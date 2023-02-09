@@ -210,7 +210,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const linkColor = this.getLinkColor_(backgroundColor);
 
     this.updateStyles({
-      '--background-color': skColorToRgba(backgroundColor),
       '--font-family': this.validatedFontName_(),
       '--font-size': chrome.readAnything.fontSize + 'em',
       '--foreground-color': skColorToRgba(foregroundColor),
@@ -219,6 +218,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       '--link-color': linkColor.default,
       '--visited-link-color': linkColor.visited,
     });
+    document.body.style.background = skColorToRgba(backgroundColor);
   }
 }
 

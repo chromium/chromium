@@ -102,10 +102,9 @@ suite('ReadAnythingAppTest', () => {
   test('updateTheme backgroundColor', () => {
     chrome.readAnything.setThemeForTesting(
         'f', 1, 0, /* SkColorSetRGB(0xFD, 0xE2, 0x93) = */ 4294828691, 1, 0);
-    const container = readAnythingApp.shadowRoot!.getElementById('container');
     assertEquals(
         /* #FDE293 = */ 'rgb(253, 226, 147)',
-        getComputedStyle(container!).backgroundColor);
+        getComputedStyle(document.body).backgroundColor);
   });
 
   test('updateTheme lineSpacing', () => {
