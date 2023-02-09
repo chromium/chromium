@@ -283,7 +283,6 @@ js_type_check("closure_compile_local_module") {
   closure_flags = os_settings_closure_flags
 
   deps = [
-    ":deep_linking_behavior",
     ":lazy_load",
     ":metrics_recorder",
     ":os_page_visibility",
@@ -307,15 +306,6 @@ js_library("os_settings") {
 }
 
 js_library("lazy_load") {
-}
-
-js_library("deep_linking_behavior") {
-  deps = [
-    ":router",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
-  ]
 }
 
 js_library("metrics_recorder") {

@@ -163,11 +163,11 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kSetUpParentalControls,
 
           // Perform Sync page deep links here since it's a shared page.

@@ -9,15 +9,15 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {assertExists} from '../assert_extras.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_sync_browser_proxy.js';
@@ -51,15 +51,8 @@ const SyncPrefsIndividualDataTypes: Array<keyof OsSyncPrefs> = [
  * @fileoverview
  * 'os-sync-controls' contains all OS sync data type controls.
  */
-const OsSyncControlsElementBase =
-    mixinBehaviors(
-        [DeepLinkingBehavior],
-        WebUiListenerMixin(RouteObserverMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & I18nMixinInterface &
-          RouteObserverMixinInterface & WebUiListenerMixinInterface &
-          DeepLinkingBehaviorInterface,
-    };
-
+const OsSyncControlsElementBase = DeepLinkingMixin(
+    WebUiListenerMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
 class OsSyncControlsElement extends OsSyncControlsElementBase {
   static get is() {
@@ -102,11 +95,11 @@ class OsSyncControlsElement extends OsSyncControlsElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([Setting.kSplitSyncOnOff]),
+        value: () => new Set<Setting>([Setting.kSplitSyncOnOff]),
       },
     };
   }

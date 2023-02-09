@@ -52,7 +52,7 @@ export const DeepLinkingMixin = dedupingMixin(
              */
             supportedSettingIds: {
               type: Object,
-              value: () => new Set(),
+              value: () => new Set<Setting>(),
             },
           };
         }

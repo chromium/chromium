@@ -212,11 +212,11 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       showDisableRecoveryDialog_: Boolean,
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kLockScreenV2,
           Setting.kChangeAuthPinV2,
         ]),

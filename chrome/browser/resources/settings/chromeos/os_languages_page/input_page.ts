@@ -112,7 +112,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kShowInputOptionsInShelf,
           Setting.kAddInputMethod,
           Setting.kSpellCheck,
@@ -196,7 +196,7 @@ class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   // Internal properties for mixins.
   // From DeepLinkingMixin.
-  // override supportedSettingIds = new Set([
+  // override supportedSettingIds = new Set<Setting>([
   //   Setting.kShowInputOptionsInShelf,
   //   Setting.kAddInputMethod,
   //   Setting.kSpellCheck,

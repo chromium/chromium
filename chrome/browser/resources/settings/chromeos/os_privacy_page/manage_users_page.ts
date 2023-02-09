@@ -73,11 +73,11 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kGuestBrowsingV2,
           Setting.kShowUsernamesAndPhotosAtSignInV2,
           Setting.kRestrictSignInV2,

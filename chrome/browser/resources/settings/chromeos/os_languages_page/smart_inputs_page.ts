@@ -67,7 +67,7 @@ class OsSettingsSmartInputsPageElement extends
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kShowPersonalInformationSuggestions,
           Setting.kShowEmojiSuggestions,
         ]),
@@ -80,7 +80,7 @@ class OsSettingsSmartInputsPageElement extends
 
   // Internal properties for mixins.
   // From DeepLinkingMixin.
-  // override supportedSettingIds = new Set([
+  // override supportedSettingIds = new Set<Setting>([
   //   Setting.kShowPersonalInformationSuggestions,
   //   Setting.kShowEmojiSuggestions,
   // ]);

@@ -135,7 +135,7 @@ class OsSettingsLanguagesPageV2Element extends
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kAddLanguage,
           Setting.kChangeDeviceLanguage,
           Setting.kOfferTranslation,
@@ -163,7 +163,7 @@ class OsSettingsLanguagesPageV2Element extends
 
   // Internal properties for mixins.
   // From DeepLinkingMixin.
-  // override supportedSettingIds = new Set([
+  // override supportedSettingIds = new Set<Setting>([
   //   Setting.kAddLanguage,
   //   Setting.kChangeDeviceLanguage,
   //   Setting.kOfferTranslation,
