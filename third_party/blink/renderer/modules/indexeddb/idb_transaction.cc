@@ -96,8 +96,7 @@ IDBTransaction::IDBTransaction(
       event_queue_(
           MakeGarbageCollected<EventQueue>(ExecutionContext::From(script_state),
                                            TaskType::kDatabaseAccess)) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAllowPageWithIDBTransactionInBFCache)) {
+  if (!features::IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled()) {
     feature_handle_for_scheduler_ =
         ExecutionContext::From(script_state)
             ->GetScheduler()
@@ -397,8 +396,7 @@ void IDBTransaction::commit(ExceptionState& exception_state) {
   if (transaction_backend())
     transaction_backend()->Commit(num_errors_handled_);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kAllowPageWithIDBTransactionInBFCache)) {
+  if (!features::IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled()) {
     // Once IDBtransaction.commit() is called, the page should no longer be
     // prevented from entering back/forward cache for having outstanding IDB
     // connections. Commit ends the inflight IDB transactions.
