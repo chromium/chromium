@@ -1206,7 +1206,6 @@ const LayoutBox* PaintLayer::GetLayoutBoxWithBlockFragments() const {
   if (!layout_box->CanTraversePhysicalFragments())
     return nullptr;
   if (!layout_box->PhysicalFragmentCount()) {
-    NOTREACHED();
     // TODO(crbug.com/1273068): The box has no fragments. This is
     // unexpected, and we must have failed a bunch of DCHECKs (if enabled)
     // on our way here. If the LayoutBox has never been laid out, it will
