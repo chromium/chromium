@@ -331,7 +331,7 @@ non_web_component_files = [
   "chromeos/kerberos_page/kerberos_accounts_browser_proxy.ts",
   "chromeos/lazy_load.js",
   "chromeos/main_page_mixin.ts",
-  "chromeos/metrics_recorder.js",
+  "chromeos/metrics_recorder.ts",
   "chromeos/metrics_utils.ts",
   "chromeos/multidevice_page/multidevice_browser_proxy.ts",
   "chromeos/multidevice_page/multidevice_constants.ts",

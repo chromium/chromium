@@ -284,7 +284,6 @@ js_type_check("closure_compile_local_module") {
 
   deps = [
     ":lazy_load",
-    ":metrics_recorder",
     ":os_page_visibility",
     ":os_route",
     ":os_settings",
@@ -305,13 +304,6 @@ js_library("os_settings") {
 }
 
 js_library("lazy_load") {
-}
-
-js_library("metrics_recorder") {
-  deps = [
-    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_webui_js",
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_webui_js",
-  ]
 }
 
 js_library("os_page_visibility") {

@@ -12,20 +12,14 @@
 import {SettingChangeValue, UserActionRecorder, UserActionRecorderInterface} from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
-/** @type {?UserActionRecorderInterface} */
-let userActionRecorder = null;
+let userActionRecorder: UserActionRecorderInterface|null = null;
 
-/**
- * @param {!UserActionRecorderInterface} testRecorder
- */
-export function setUserActionRecorderForTesting(testRecorder) {
+export function setUserActionRecorderForTesting(
+    testRecorder: UserActionRecorderInterface): void {
   userActionRecorder = testRecorder;
 }
 
-/**
- * @return {!UserActionRecorderInterface}
- */
-function getRecorder() {
+function getRecorder(): UserActionRecorderInterface {
   if (userActionRecorder) {
     return userActionRecorder;
   }
@@ -34,40 +28,37 @@ function getRecorder() {
   return userActionRecorder;
 }
 
-export function recordPageFocus() {
+export function recordPageFocus(): void {
   getRecorder().recordPageFocus();
 }
 
-export function recordPageBlur() {
+export function recordPageBlur(): void {
   getRecorder().recordPageBlur();
 }
 
-export function recordClick() {
+export function recordClick(): void {
   getRecorder().recordClick();
 }
 
-export function recordNavigation() {
+export function recordNavigation(): void {
   getRecorder().recordNavigation();
 }
 
-export function recordSearch() {
+export function recordSearch(): void {
   getRecorder().recordSearch();
 }
 
 /**
- * All new code should pass a value for |opt_setting| and, if applicable,
- * |opt_value|. The zero-parameter version of this function is reserved for
+ * All new code should pass a value for |setting| and, if applicable, |value|.
+ * The zero-parameter version of this function is reserved for
  * legacy code which has not yet been converted.
- * TODO(https://crbug.com/1133553): make |opt_setting| non-optional when
- * migration is complete.
- * @param {!Setting=} opt_setting
- * @param {!SettingChangeValue=} opt_value
+ * TODO(b/263414450): make |setting| non-optional when migration is complete.
  */
-export function recordSettingChange(opt_setting, opt_value) {
-  if (opt_setting === undefined) {
+export function recordSettingChange(
+    setting?: Setting, value?: SettingChangeValue) {
+  if (setting === undefined) {
     getRecorder().recordSettingChange();
   } else {
-    getRecorder().recordSettingChangeWithDetails(
-        opt_setting, opt_value || null);
+    getRecorder().recordSettingChangeWithDetails(setting, value || null);
   }
 }
