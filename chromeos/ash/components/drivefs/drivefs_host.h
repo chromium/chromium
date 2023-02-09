@@ -68,10 +68,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
     virtual base::FilePath GetMyFilesPath() = 0;
     virtual std::string GetLostAndFoundDirectoryName() = 0;
     virtual bool IsVerboseLoggingEnabled() = 0;
-    virtual mojom::ExtensionConnectionStatus ConnectToExtension(
+    virtual void ConnectToExtension(
         mojom::ExtensionConnectionParamsPtr params,
         mojo::PendingReceiver<mojom::NativeMessagingPort> port,
-        mojo::PendingRemote<mojom::NativeMessagingHost> host) = 0;
+        mojo::PendingRemote<mojom::NativeMessagingHost> host,
+        mojom::DriveFsDelegate::ConnectToExtensionCallback callback) = 0;
     virtual const std::string GetMachineRootID() = 0;
     virtual void PersistMachineRootID(const std::string& id) = 0;
   };

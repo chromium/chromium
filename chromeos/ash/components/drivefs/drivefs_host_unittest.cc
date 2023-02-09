@@ -143,7 +143,7 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
     verbose_logging_enabled_ = enabled;
   }
 
-  drivefs::mojom::ExtensionConnectionParams& get_last_extension_params() {
+  mojom::ExtensionConnectionParams& get_last_extension_params() {
     return *extension_params_;
   }
 
@@ -189,12 +189,14 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
 
   bool IsVerboseLoggingEnabled() override { return verbose_logging_enabled_; }
 
-  drivefs::mojom::ExtensionConnectionStatus ConnectToExtension(
-      drivefs::mojom::ExtensionConnectionParamsPtr params,
-      mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort> port,
-      mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> host) override {
+  void ConnectToExtension(
+      mojom::ExtensionConnectionParamsPtr params,
+      mojo::PendingReceiver<mojom::NativeMessagingPort> port,
+      mojo::PendingRemote<mojom::NativeMessagingHost> host,
+      mojom::DriveFsDelegate::ConnectToExtensionCallback callback) override {
     extension_params_ = std::move(params);
-    return drivefs::mojom::ExtensionConnectionStatus::kExtensionNotFound;
+    std::move(callback).Run(
+        mojom::ExtensionConnectionStatus::kExtensionNotFound);
   }
 
   const std::string GetMachineRootID() override { return ""; }
@@ -207,7 +209,7 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
   bool verbose_logging_enabled_ = false;
   invalidation::FakeInvalidationService invalidation_service_;
   drive::DriveNotificationManager drive_notification_manager_;
-  drivefs::mojom::ExtensionConnectionParamsPtr extension_params_;
+  mojom::ExtensionConnectionParamsPtr extension_params_;
 };
 
 class MockDriveFsHostObserver : public DriveFsHostObserver {
@@ -897,21 +899,18 @@ TEST_F(DriveFsHostTest, Remount_RequestInflightCompleteAfterMount) {
 TEST_F(DriveFsHostTest, ConnectToExtension) {
   ASSERT_NO_FATAL_FAILURE(DoMount());
 
-  mojo::Remote<drivefs::mojom::NativeMessagingPort> remote;
-  mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> host_remote;
+  mojo::Remote<mojom::NativeMessagingPort> remote;
+  mojo::PendingRemote<mojom::NativeMessagingHost> host_remote;
   auto receiver = host_remote.InitWithNewPipeAndPassReceiver();
 
   base::RunLoop run_loop;
   delegate_->ConnectToExtension(
-      drivefs::mojom::ExtensionConnectionParams::New("foo"),
+      mojom::ExtensionConnectionParams::New("foo"),
       remote.BindNewPipeAndPassReceiver(), std::move(host_remote),
-      base::BindLambdaForTesting(
-          [&](drivefs::mojom::ExtensionConnectionStatus status) {
-            EXPECT_EQ(
-                drivefs::mojom::ExtensionConnectionStatus::kExtensionNotFound,
-                status);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::ExtensionConnectionStatus status) {
+        EXPECT_EQ(mojom::ExtensionConnectionStatus::kExtensionNotFound, status);
+        run_loop.Quit();
+      }));
   run_loop.Run();
   EXPECT_EQ("foo", host_delegate_->get_last_extension_params().extension_id);
 }

@@ -611,12 +611,14 @@ class DriveIntegrationService::DriveFsHolder
         prefs::kDriveFsEnableVerboseLogging);
   }
 
-  drivefs::mojom::ExtensionConnectionStatus ConnectToExtension(
+  void ConnectToExtension(
       drivefs::mojom::ExtensionConnectionParamsPtr params,
       mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort> port,
-      mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> host) override {
-    return ConnectToDriveFsNativeMessageExtension(
-        profile_, params->extension_id, std::move(port), std::move(host));
+      mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> host,
+      drivefs::mojom::DriveFsDelegate::ConnectToExtensionCallback callback)
+      override {
+    std::move(callback).Run(ConnectToDriveFsNativeMessageExtension(
+        profile_, params->extension_id, std::move(port), std::move(host)));
   }
 
   const std::string GetMachineRootID() override {

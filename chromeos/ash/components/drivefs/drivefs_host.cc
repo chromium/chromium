@@ -294,8 +294,8 @@ class DriveFsHost::MountState : public DriveFsSession,
       mojo::PendingReceiver<mojom::NativeMessagingPort> port,
       mojo::PendingRemote<mojom::NativeMessagingHost> host,
       ConnectToExtensionCallback callback) override {
-    std::move(callback).Run(host_->delegate_->ConnectToExtension(
-        std::move(params), std::move(port), std::move(host)));
+    host_->delegate_->ConnectToExtension(std::move(params), std::move(port),
+                                         std::move(host), std::move(callback));
   }
 
   void DisplayConfirmDialog(mojom::DialogReasonPtr error,
