@@ -560,10 +560,8 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     // there is no ongoing re-registration attempt, and behind a feature toggle,
     // trigger a procedure to verify that the server has a consistent state
     // (i.e. downloading of new keys should succeed but return no new keys).
-    if ((*registration_state ==
-             TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV0 ||
-         *registration_state ==
-             TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1) &&
+    if (*registration_state ==
+            TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1 &&
         base::FeatureList::IsEnabled(
             kSyncTrustedVaultVerifyDeviceRegistration)) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -814,11 +812,6 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
           kCurrentDeviceRegistrationVersion) {
     static_assert(kCurrentDeviceRegistrationVersion == 1);
     return TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1;
-  }
-
-  if (per_user_vault->local_device_registration_info().device_registered() &&
-      !base::FeatureList::IsEnabled(kSyncTrustedVaultRedoDeviceRegistration)) {
-    return TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV0;
   }
 
   if (per_user_vault->local_device_registration_info()

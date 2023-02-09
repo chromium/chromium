@@ -74,10 +74,6 @@ BASE_FEATURE(kSyncTrustedVaultVerifyDeviceRegistration,
              "SyncTrustedVaultVerifyDeviceRegistration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncTrustedVaultRedoDeviceRegistration,
-             "SyncTrustedVaultRedoDeviceRegistration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncTrustedVaultResetKeysAreStale,
              "SyncTrustedVaultResetKeysAreStale",
              base::FEATURE_ENABLED_BY_DEFAULT);

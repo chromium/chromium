@@ -102,10 +102,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // being registered is consistent with the server-side state.
 BASE_DECLARE_FEATURE(kSyncTrustedVaultVerifyDeviceRegistration);
 
-// Triggers another device registration attempt if the device was registered
-// before this feature was introduced.
-BASE_DECLARE_FEATURE(kSyncTrustedVaultRedoDeviceRegistration);
-
 // Triggers one-off reset of `keys_are_stale`, allowing another device
 // registration attempt if previous was failed.
 BASE_DECLARE_FEATURE(kSyncTrustedVaultResetKeysAreStale);
