@@ -304,6 +304,8 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
   }
 }
 
+// TODO(b/263310512) Move translator functions to another file and add unit
+// tests for them.
 arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
     const ash::NetworkState* network_state,
     const base::Value* shill_dict) {
@@ -325,6 +327,14 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
   mojo->is_metered =
       shill_dict &&
       shill_dict->FindBoolPath(shill::kMeteredProperty).value_or(false);
+  if (network_state->max_uplink_speed_kbps().has_value() &&
+      network_state->max_downlink_speed_kbps().has_value()) {
+    mojo->link_speed = arc::mojom::LinkSpeed::New();
+    mojo->link_speed->uplink_speed_kbps =
+        network_state->max_uplink_speed_kbps().value();
+    mojo->link_speed->downlink_speed_kbps =
+        network_state->max_downlink_speed_kbps().value();
+  }
 
   // IP configuration data is added from the properties of the underlying shill
   // Device and shill Service attached to the Device. Device properties are

@@ -127,6 +127,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::string GetGateway() const;
   GURL GetWebProxyAutoDiscoveryUrl() const;
 
+  // Network service property accessors.
+  // Link speeds are set when service is connected or link speeds get updated
+  // during the connection. When link speeds are not set, absl::nullopt is
+  // returned.
+  const absl::optional<uint32_t> max_uplink_speed_kbps() const {
+    return max_uplink_speed_kbps_;
+  }
+  const absl::optional<uint32_t> max_downlink_speed_kbps() const {
+    return max_downlink_speed_kbps_;
+  }
+
   // Wireless property accessors
   bool connectable() const { return connectable_; }
   void set_connectable(bool connectable) { connectable_ = connectable; }
@@ -329,6 +340,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::vector<uint8_t> raw_ssid_;  // Unknown encoding. Not necessarily UTF-8.
   int priority_ = 0;  // kPriority, used for organizing known networks.
   ::onc::ONCSource onc_source_ = ::onc::ONC_SOURCE_UNKNOWN;
+  absl::optional<uint32_t> max_uplink_speed_kbps_;
+  absl::optional<uint32_t> max_downlink_speed_kbps_;
 
   // Last non empty Service.Error property. Expected to be cleared via
   // ClearError() when a connection attempt is initiated and when an associated

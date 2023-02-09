@@ -227,6 +227,26 @@ bool NetworkState::PropertyChanged(const std::string& key,
       return false;
     probe_url_ = GURL(probe_url_string);
     return true;
+  } else if (key == shill::kUplinkSpeedPropertyKbps) {
+    uint32_t max_uplink_speed_kbps;
+    if (!GetUInt32Value(key, value, &max_uplink_speed_kbps))
+      return false;
+    if (max_uplink_speed_kbps_.has_value() &&
+        max_uplink_speed_kbps == max_uplink_speed_kbps_.value()) {
+      return false;
+    }
+    max_uplink_speed_kbps_ = max_uplink_speed_kbps;
+    return true;
+  } else if (key == shill::kDownlinkSpeedPropertyKbps) {
+    uint32_t max_downlink_speed_kbps;
+    if (!GetUInt32Value(key, value, &max_downlink_speed_kbps))
+      return false;
+    if (max_downlink_speed_kbps_.has_value() &&
+        max_downlink_speed_kbps == max_downlink_speed_kbps_.value()) {
+      return false;
+    }
+    max_downlink_speed_kbps_ = max_downlink_speed_kbps;
+    return true;
   }
   return false;
 }

@@ -469,6 +469,15 @@ struct NetworkConfiguration {
   // IPv4 and IPv6 addresses of DNS proxy. When this field is not empty ARC
   // overrides the network DNS addresses with these addresses.
   [MinVersion=19] array<string>? dns_proxy_addresses;
+
+  // Available maximal uplink and downlink speeds for the network in kbps.
+  [MinVersion=26] LinkSpeed? link_speed;
+};
+
+// Uplink and downlink speeds in Kbps for the network.
+struct LinkSpeed {
+  uint32 uplink_speed_kbps@0;
+  uint32 downlink_speed_kbps@1;
 };
 
 // Describes a Wifi network configuration that ARC has requested the host to
