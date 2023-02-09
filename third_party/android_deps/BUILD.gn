@@ -7,22 +7,12 @@ import("//build/config/android/rules.gni")
 # Library groups
 if (!limit_android_deps) {
   java_group("dagger_java") {
-    if (defined(dagger_java_target)) {
-      deps = [ dagger_java_target ]
-    } else {
-      deps = [ "//third_party/android_deps:com_google_dagger_dagger_java" ]
-    }
+    deps = [ dagger_java_target ]
   }
 
   java_annotation_processor("dagger_processor") {
     main_class = "dagger.internal.codegen.ComponentProcessor"
-    if (defined(dagger_annotation_processor_target)) {
-      deps = [ dagger_annotation_processor_target ]
-    } else {
-      deps = [
-        "//third_party/android_deps:com_google_dagger_dagger_compiler_java",
-      ]
-    }
+    deps = [ dagger_annotation_processor_target ]
   }
 
   java_group("espresso_java") {
@@ -34,12 +24,7 @@ if (!limit_android_deps) {
   }
 
   java_group("guava_android_java") {
-    if (defined(guava_android_target)) {
-      deps = [ guava_android_target ]
-    } else {
-      deps =
-          [ "//third_party/android_deps:com_google_guava_guava_android_java" ]
-    }
+    deps = [ guava_android_target ]
   }
 
   java_group("robolectric_all_java") {
@@ -60,17 +45,11 @@ if (!limit_android_deps) {
   }
 
   java_group("material_design_java") {
-    if (defined(material_design_target)) {
-      deps = [ material_design_target ]
-    } else {
-      deps = [
-        "//third_party/android_deps:com_google_android_material_material_java",
-      ]
-    }
+    deps = [ "$material_design_target" ]
   }
 
   java_group("protobuf_lite_runtime_java") {
-    deps = [ android_proto_runtime ]
+    deps = [ "$android_proto_runtime" ]
   }
 
   android_library("chromium_play_services_availability_java") {
@@ -87,14 +66,6 @@ if (!limit_android_deps) {
   # been updated to //third_party/kotlin_stdlib:kotlin_stdlib_java.
   java_group("org_jetbrains_kotlin_kotlin_stdlib_java") {
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
-  }
-
-  java_group("playcore_java") {
-    if (defined(playcore_target)) {
-      deps = [ playcore_target ]
-    } else {
-      deps = [ "//third_party/android_deps:com_google_android_play_feature_delivery_java" ]
-    }
   }
 }
 
@@ -1015,7 +986,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("google_play_services_basement_java") {
-    aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-18.1.0.aar"
+    aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-18.0.1.aar"
     info_path = "libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
     deps = [
       "//third_party/androidx:androidx_collection_collection_java",
@@ -1135,7 +1106,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("google_play_services_tasks_java") {
-    aar_path = "libs/com_google_android_gms_play_services_tasks/play-services-tasks-18.0.2.aar"
+    aar_path = "libs/com_google_android_gms_play_services_tasks/play-services-tasks-18.0.1.aar"
     info_path = "libs/com_google_android_gms_play_services_tasks/com_google_android_gms_play_services_tasks.info"
     deps = [ ":google_play_services_basement_java" ]
   }
@@ -1210,14 +1181,10 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_google_android_play_feature_delivery_java") {
-    aar_path = "libs/com_google_android_play_feature_delivery/feature-delivery-2.0.1.aar"
-    info_path = "libs/com_google_android_play_feature_delivery/com_google_android_play_feature_delivery.info"
-    deps = [
-      ":com_google_android_play_core_common_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_tasks_java",
-    ]
+  android_aar_prebuilt("com_google_android_play_core_java") {
+    aar_path = "libs/com_google_android_play_core/core-1.10.0.aar"
+    info_path =
+        "libs/com_google_android_play_core/com_google_android_play_core.info"
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1999,19 +1966,6 @@ if (!limit_android_deps) {
     deps = [
       ":google_play_services_basement_java",
       "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("com_google_android_play_core_common_java") {
-    aar_path = "libs/com_google_android_play_core_common/core-common-2.0.2.aar"
-    info_path = "libs/com_google_android_play_core_common/com_google_android_play_core_common.info"
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
     ]
   }
 
