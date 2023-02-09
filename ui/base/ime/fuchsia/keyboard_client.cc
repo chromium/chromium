@@ -22,22 +22,91 @@ namespace ui {
 
 namespace {
 
+// Adds `flag` to `event_flags` if `modifier` is present. Also removes handled
+// modifiers from `unhandled_modifiers`.
+inline void MaybeAddFlag(fuchsia::ui::input3::Modifiers modifier,
+                         EventFlags flag,
+                         EventFlags& event_flags,
+                         fuchsia::ui::input3::Modifiers& unhandled_modifiers) {
+  if (unhandled_modifiers & modifier) {
+    event_flags |= flag;
+    // Remove modifier from unhandled.
+    unhandled_modifiers &= ~modifier;
+  }
+}
+
 // Converts the state of modifiers managed by Fuchsia (e.g. Caps and Num Lock)
 // into ui::Event flags.
-int ModifiersToEventFlags(const fuchsia::ui::input3::Modifiers& modifiers) {
-  int event_flags = 0;
-  if ((modifiers & fuchsia::ui::input3::Modifiers::CAPS_LOCK) ==
-      fuchsia::ui::input3::Modifiers::CAPS_LOCK) {
-    event_flags |= EF_CAPS_LOCK_ON;
+int ModifiersToEventFlags(fuchsia::ui::input3::Modifiers modifiers) {
+  EventFlags event_flags = EF_NONE;
+  MaybeAddFlag(fuchsia::ui::input3::Modifiers::CAPS_LOCK, EF_CAPS_LOCK_ON,
+               event_flags, modifiers);
+  MaybeAddFlag(fuchsia::ui::input3::Modifiers::NUM_LOCK, EF_NUM_LOCK_ON,
+               event_flags, modifiers);
+  MaybeAddFlag(fuchsia::ui::input3::Modifiers::SCROLL_LOCK, EF_SCROLL_LOCK_ON,
+               event_flags, modifiers);
+
+  // This mapping is present in case blink adds support in the future, but blink
+  // doesn't currently output the Function modifier. See
+  // https://crsrc.org/c/ui/events/blink/blink_event_util.cc;l=268?q=EventFlagsToWebEventModifiers
+  MaybeAddFlag(fuchsia::ui::input3::Modifiers::FUNCTION, EF_FUNCTION_DOWN,
+               event_flags, modifiers);
+  if (modifiers & fuchsia::ui::input3::Modifiers::SYMBOL) {
+    // fuchsia::ui::input3::Modifiers::SYMBOL has no equivalent in
+    // //ui/events/event_constants.h.
+    DLOG(WARNING) << "Ignoring unsupported Symbol modifier.";
+    modifiers &= ~fuchsia::ui::input3::Modifiers::SYMBOL;
   }
-  if ((modifiers & fuchsia::ui::input3::Modifiers::NUM_LOCK) ==
-      fuchsia::ui::input3::Modifiers::NUM_LOCK) {
-    event_flags |= EF_NUM_LOCK_ON;
+
+  MaybeAddFlag(fuchsia::ui::input3::Modifiers::SHIFT, EF_SHIFT_DOWN,
+               event_flags, modifiers);
+  if (modifiers & (fuchsia::ui::input3::Modifiers::LEFT_SHIFT |
+                   fuchsia::ui::input3::Modifiers::RIGHT_SHIFT)) {
+    DCHECK(event_flags & EF_SHIFT_DOWN)
+        << "Fuchsia is expected to provide an agnostic SHIFT modifier for both "
+           "LEFT and RIGHT SHIFT";
+    modifiers &= ~fuchsia::ui::input3::Modifiers::LEFT_SHIFT &
+                 ~fuchsia::ui::input3::Modifiers::RIGHT_SHIFT;
   }
-  if ((modifiers & fuchsia::ui::input3::Modifiers::SCROLL_LOCK) ==
-      fuchsia::ui::input3::Modifiers::SCROLL_LOCK) {
-    event_flags |= EF_SCROLL_LOCK_ON;
+
+  MaybeAddFlag(fuchsia::ui::input3::Modifiers::ALT, EF_ALT_DOWN, event_flags,
+               modifiers);
+  if (modifiers & (fuchsia::ui::input3::Modifiers::LEFT_ALT |
+                   fuchsia::ui::input3::Modifiers::RIGHT_ALT)) {
+    DCHECK(event_flags & EF_ALT_DOWN)
+        << "Fuchsia is expected to provide an agnostic ALT modifier for both "
+           "LEFT and RIGHT ALT";
+    modifiers &= ~fuchsia::ui::input3::Modifiers::LEFT_ALT &
+                 ~fuchsia::ui::input3::Modifiers::RIGHT_ALT;
   }
+
+  MaybeAddFlag(fuchsia::ui::input3::Modifiers::ALT_GRAPH, EF_ALTGR_DOWN,
+               event_flags, modifiers);
+
+  MaybeAddFlag(fuchsia::ui::input3::Modifiers::META, EF_COMMAND_DOWN,
+               event_flags, modifiers);
+  if (modifiers & (fuchsia::ui::input3::Modifiers::LEFT_META |
+                   fuchsia::ui::input3::Modifiers::RIGHT_META)) {
+    DCHECK(event_flags & EF_COMMAND_DOWN)
+        << "Fuchsia is expected to provide an agnostic META modifier for both "
+           "LEFT and RIGHT META";
+    modifiers &= ~fuchsia::ui::input3::Modifiers::LEFT_META &
+                 ~fuchsia::ui::input3::Modifiers::RIGHT_META;
+  }
+
+  MaybeAddFlag(fuchsia::ui::input3::Modifiers::CTRL, EF_CONTROL_DOWN,
+               event_flags, modifiers);
+  if (modifiers & (fuchsia::ui::input3::Modifiers::LEFT_CTRL |
+                   fuchsia::ui::input3::Modifiers::RIGHT_CTRL)) {
+    DCHECK(event_flags & EF_CONTROL_DOWN)
+        << "Fuchsia is expected to provide an agnostic CTRL modifier for both "
+           "LEFT and RIGHT CTRL";
+    modifiers &= ~fuchsia::ui::input3::Modifiers::LEFT_CTRL &
+                 ~fuchsia::ui::input3::Modifiers::RIGHT_CTRL;
+  }
+
+  DLOG_IF(WARNING, modifiers)
+      << "Unkown Modifier received: " << static_cast<uint64_t>(modifiers);
   return event_flags;
 }
 
@@ -107,14 +176,12 @@ bool KeyboardClient::IsValid(const fuchsia::ui::input3::KeyEvent& key_event) {
 
 bool KeyboardClient::ProcessKeyEvent(
     const fuchsia::ui::input3::KeyEvent& key_event) {
-  UpdateCachedModifiers(key_event);
-
   absl::optional<EventType> event_type = ConvertKeyEventType(key_event.type());
   if (!event_type)
     return false;
 
   // Convert |key_event| to a ui::KeyEvent.
-  int event_flags = EventFlagsForCachedModifiers();
+  int event_flags = EF_NONE;
   if (key_event.has_modifiers())
     event_flags |= ModifiersToEventFlags(key_event.modifiers());
   if (key_event.has_repeat_sequence()) {
@@ -163,55 +230,6 @@ bool KeyboardClient::ProcessKeyEvent(
       base::TimeTicks::FromZxTime(key_event.timestamp()));
   event_sink_->DispatchEvent(&converted_event);
   return converted_event.handled();
-}
-
-// TODO(https://crbug.com/850697): Add additional modifiers as they become
-// supported.
-void KeyboardClient::UpdateCachedModifiers(
-    const fuchsia::ui::input3::KeyEvent& key_event) {
-  if (!key_event.has_key())
-    return;
-
-  // A SYNC event indicates that the key was pressed while the view gained input
-  // focus. A CANCEL event indicates the key was held when the view lost input
-  // focus. In both cases, the state of locally tracked modifiers should be
-  // updated.
-  bool modifier_active =
-      key_event.type() == fuchsia::ui::input3::KeyEventType::PRESSED ||
-      key_event.type() == fuchsia::ui::input3::KeyEventType::SYNC;
-  switch (key_event.key()) {
-    case fuchsia::input::Key::LEFT_SHIFT:
-      left_shift_ = modifier_active;
-      break;
-    case fuchsia::input::Key::RIGHT_SHIFT:
-      right_shift_ = modifier_active;
-      break;
-    case fuchsia::input::Key::LEFT_ALT:
-      left_alt_ = modifier_active;
-      break;
-    case fuchsia::input::Key::RIGHT_ALT:
-      right_alt_ = modifier_active;
-      break;
-    case fuchsia::input::Key::LEFT_CTRL:
-      left_ctrl_ = modifier_active;
-      break;
-    case fuchsia::input::Key::RIGHT_CTRL:
-      right_ctrl_ = modifier_active;
-      break;
-    default:
-      break;
-  }
-}
-
-int KeyboardClient::EventFlagsForCachedModifiers() {
-  int event_flags = 0;
-  if (left_shift_ || right_shift_)
-    event_flags |= EF_SHIFT_DOWN;
-  if (left_alt_ || right_alt_)
-    event_flags |= EF_ALT_DOWN;
-  if (left_ctrl_ || right_ctrl_)
-    event_flags |= EF_CONTROL_DOWN;
-  return event_flags;
 }
 
 }  // namespace ui

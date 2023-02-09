@@ -54,14 +54,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) KeyboardClient
   // Dispatches events into Chromium once they have been converted to
   // ui::KeyEvents.
   InputEventSink* const event_sink_;
-
-  // Tracks the activation state of the named modifier keys.
-  bool left_shift_ = false;
-  bool right_shift_ = false;
-  bool left_alt_ = false;
-  bool right_alt_ = false;
-  bool left_ctrl_ = false;
-  bool right_ctrl_ = false;
 };
 
 }  // namespace ui
