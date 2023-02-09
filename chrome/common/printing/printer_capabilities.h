@@ -47,7 +47,6 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
     const std::string& device_name,
     const PrinterBasicInfo& basic_info,
     PrinterSemanticCapsAndDefaults::Papers user_defined_papers,
-    bool has_secure_protocol,
     scoped_refptr<PrintBackend> print_backend);
 #endif  // !BUILDFLAG(IS_CHROMEOS) || defined(UNIT_TEST)
 

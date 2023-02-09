@@ -200,8 +200,7 @@ LocalPrinterHandlerDefault::FetchCapabilitiesOnBlockingTaskRunner(
   }
 
   return GetSettingsOnBlockingTaskRunner(
-      device_name, basic_info, std::move(user_defined_papers),
-      /*has_secure_protocol=*/false, print_backend);
+      device_name, basic_info, std::move(user_defined_papers), print_backend);
 }
 
 // static

@@ -82,8 +82,7 @@ class PrinterCapabilitiesTest : public testing::Test {
     blocking_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&GetSettingsOnBlockingTaskRunner, printer_name,
-                       basic_info, std::move(papers),
-                       /*has_secure_protocol=*/false, test_backend_),
+                       basic_info, std::move(papers), test_backend_),
         base::BindOnce(&GetSettingsDone, run_loop.QuitClosure(), &settings));
 
     run_loop.Run();

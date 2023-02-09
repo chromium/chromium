@@ -203,7 +203,6 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
     const std::string& device_name,
     const PrinterBasicInfo& basic_info,
     PrinterSemanticCapsAndDefaults::Papers user_defined_papers,
-    bool has_secure_protocol,
     scoped_refptr<PrintBackend> print_backend) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -222,7 +221,7 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
   }
 
   return AssemblePrinterSettings(device_name, basic_info, user_defined_papers,
-                                 has_secure_protocol,
+                                 /*has_secure_protocol=*/false,
                                  base::OptionalToPtr(caps));
 }
 
