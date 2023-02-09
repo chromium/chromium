@@ -70,8 +70,7 @@ struct GradientData {
 
 LayoutSVGResourceGradient::LayoutSVGResourceGradient(SVGGradientElement* node)
     : LayoutSVGResourcePaintServer(node),
-      should_collect_gradient_attributes_(true),
-      gradient_map_(MakeGarbageCollected<GradientMap>()) {}
+      should_collect_gradient_attributes_(true) {}
 
 void LayoutSVGResourceGradient::Trace(Visitor* visitor) const {
   visitor->Trace(gradient_map_);
@@ -80,7 +79,7 @@ void LayoutSVGResourceGradient::Trace(Visitor* visitor) const {
 
 void LayoutSVGResourceGradient::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
-  gradient_map_->clear();
+  gradient_map_.clear();
   should_collect_gradient_attributes_ = true;
   To<SVGGradientElement>(*GetElement()).InvalidateDependentGradients();
   MarkAllClientsForInvalidation(kPaintInvalidation);
@@ -89,10 +88,11 @@ void LayoutSVGResourceGradient::RemoveAllClientsFromCache() {
 bool LayoutSVGResourceGradient::RemoveClientFromCache(
     SVGResourceClient& client) {
   NOT_DESTROYED();
-  auto entry = gradient_map_->find(&client);
-  if (entry == gradient_map_->end())
+  auto entry = gradient_map_.find(&client);
+  if (entry == gradient_map_.end()) {
     return false;
-  gradient_map_->erase(entry);
+  }
+  gradient_map_.erase(entry);
   return true;
 }
 
@@ -144,7 +144,7 @@ bool LayoutSVGResourceGradient::ApplyShader(
   ClearInvalidationMask();
 
   std::unique_ptr<GradientData>& gradient_data =
-      gradient_map_->insert(&client, nullptr).stored_value->value;
+      gradient_map_.insert(&client, nullptr).stored_value->value;
   if (!gradient_data)
     gradient_data = BuildGradientData(reference_box);
 

@@ -70,7 +70,7 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
   bool should_collect_gradient_attributes_ : 1;
   using GradientMap = HeapHashMap<Member<const SVGResourceClient>,
                                   std::unique_ptr<GradientData>>;
-  Member<GradientMap> gradient_map_;
+  GradientMap gradient_map_;
 };
 
 }  // namespace blink

@@ -87,7 +87,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   // would avoid re-recording when multiple clients share the same pattern.
   using PatternMap = HeapHashMap<Member<const SVGResourceClient>,
                                  std::unique_ptr<PatternData>>;
-  Member<PatternMap> pattern_map_;
+  PatternMap pattern_map_;
 };
 
 }  // namespace blink
