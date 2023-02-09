@@ -94,19 +94,10 @@
     </activity>  # DIFF-ANCHOR: ea1a94af
     <activity  # DIFF-ANCHOR: a2bae37c
         android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
-        android:enabled="false"
         android:exported="false"
         android:stateNotNeeded="true"
         android:theme="@style/Theme.PlayCore.Transparent">
     </activity>  # DIFF-ANCHOR: a2bae37c
-    <activity  # DIFF-ANCHOR: 53a4871f
-        android:name="com.google.android.play.core.missingsplits.PlayCoreMissingSplitsActivity"
-        android:enabled="false"
-        android:exported="false"
-        android:launchMode="singleInstance"
-        android:process=":playcore_missing_splits_activity"
-        android:stateNotNeeded="true">
-    </activity>  # DIFF-ANCHOR: 53a4871f
     <activity  # DIFF-ANCHOR: 28dc9019
         android:name="com.google.ar.core.InstallActivity"
         android:configChanges="keyboardHidden|orientation|screenSize"

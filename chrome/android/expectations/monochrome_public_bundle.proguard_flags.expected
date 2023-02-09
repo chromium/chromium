@@ -698,9 +698,6 @@
     @com.google.vr.dynamite.client.UsedByReflection *;
 }
 
-# File: obj/third_party/android_deps/com_google_android_play_core_java/proguard.txt
--keepnames class com.google.android.play.core.review.ReviewInfo
-
 # File: obj/third_party/android_deps/google_android_datatransport_transport_api_java/proguard.txt
 -dontwarn com.google.auto.value.AutoValue
 -dontwarn com.google.auto.value.AutoValue$Builder
@@ -754,6 +751,8 @@
 # non-required dependencies.
 -dontwarn javax.annotation.**
 -dontwarn org.checkerframework.**
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn org.jspecify.nullness.NullMarked
 
 # Proguard flags for consumers of the Google Play services SDK
 # https://developers.google.com/android/guides/setup#add_google_play_services_to_your_project
