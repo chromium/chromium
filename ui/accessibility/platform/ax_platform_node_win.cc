@@ -7231,6 +7231,20 @@ bool AXPlatformNodeWin::IsUIAControl() const {
         if (IsUIACellOrTableHeader(ancestor->GetRole()))
           return false;
         switch (ancestor->GetRole()) {
+          // There are elements inside the `kColorWell` element that we want
+          // exposed as UIA Control even if they are inside other elements that
+          // are not exposed as UIA Controls. Like for example the text live
+          // regions of the RGB channels inside the `kColorWell`. Without this
+          // case, if we have a `kColorWell` inside a table cell, the RGB
+          // channels text does not get announced by Narrator since we would
+          // break and return false on the condition above this one when going
+          // up the ancestor nodes.
+          // TODO(accessibility): This is a special case mitigation for
+          // `kColorWell`, there is a broader bug https://crbug.com/1414227 with
+          // live region elements inside these elements that are not exposed as
+          // UIA Controls that will require more work and investigation.
+          case ax::mojom::Role::kColorWell:
+            return true;
           case ax::mojom::Role::kListItem:
             // We only want to hide in the case that the list item is able
             // to have its name generated from its children.

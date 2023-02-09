@@ -4168,6 +4168,98 @@ TEST_F(AXPlatformNodeWinTest, UIAControlContentPropertyForTableElements) {
                      false);
 }
 
+TEST_F(AXPlatformNodeWinTest, IsUIAControlColorWellInsideTable) {
+  // ++1 kRootWebArea
+  // ++++2 kTable
+  // ++++++3 kLayoutTableCell
+  // ++++++++4 kColorWell
+  // ++++++++++5 kStaticText
+  // ++++++6 kColumnHeader
+  // ++++++++7 kColorWell
+  // ++++++++++8 kStaticText
+  // ++++++9 kRowHeader
+  // ++++++++10 kColorWell
+  // ++++++++++11 kStaticText
+
+  AXNodeData root_1;
+  AXNodeData table_2;
+  AXNodeData cell_3;
+  AXNodeData color_4;
+  AXNodeData st_5;
+  AXNodeData column_header_6;
+  AXNodeData color_7;
+  AXNodeData st_8;
+  AXNodeData row_header_9;
+  AXNodeData color_10;
+  AXNodeData st_11;
+
+  root_1.id = 1;
+  table_2.id = 2;
+  cell_3.id = 3;
+  color_4.id = 4;
+  st_5.id = 5;
+  column_header_6.id = 6;
+  color_7.id = 7;
+  st_8.id = 8;
+  row_header_9.id = 9;
+  color_10.id = 10;
+  st_11.id = 11;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {table_2.id};
+
+  table_2.role = ax::mojom::Role::kTable;
+  table_2.child_ids = {cell_3.id, column_header_6.id, row_header_9.id};
+
+  cell_3.role = ax::mojom::Role::kLayoutTableCell;
+  cell_3.child_ids = {color_4.id};
+
+  color_4.role = ax::mojom::Role::kColorWell;
+  color_4.child_ids = {st_5.id};
+
+  st_5.role = ax::mojom::Role::kStaticText;
+
+  column_header_6.role = ax::mojom::Role::kColumnHeader;
+  column_header_6.child_ids = {color_7.id};
+
+  color_7.role = ax::mojom::Role::kColorWell;
+  color_7.child_ids = {st_8.id};
+
+  st_8.role = ax::mojom::Role::kStaticText;
+
+  row_header_9.role = ax::mojom::Role::kRowHeader;
+  row_header_9.child_ids = {color_10.id};
+
+  color_10.role = ax::mojom::Role::kColorWell;
+  color_10.child_ids = {st_11.id};
+
+  st_11.role = ax::mojom::Role::kStaticText;
+
+  Init(root_1, table_2, cell_3, color_4, st_5, column_header_6, color_7, st_8,
+       row_header_9, color_10, st_11);
+
+  // Turn on web content mode for the AXTree.
+  TestAXNodeWrapper::SetGlobalIsWebContent(true);
+
+  AXNode* root_node = GetRoot();
+  AXNode* table_node = root_node->children()[0];
+  AXNode* st_5_node = table_node->children()[0]->children()[0]->children()[0];
+  AXNode* st_8_node = table_node->children()[1]->children()[0]->children()[0];
+  AXNode* st_11_node = table_node->children()[2]->children()[0]->children()[0];
+
+  ComPtr<IRawElementProviderSimple> st_5_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(st_5_node);
+  EXPECT_UIA_BOOL_EQ(st_5_provider, UIA_IsControlElementPropertyId, true);
+
+  ComPtr<IRawElementProviderSimple> st_8_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(st_8_node);
+  EXPECT_UIA_BOOL_EQ(st_8_provider, UIA_IsControlElementPropertyId, true);
+
+  ComPtr<IRawElementProviderSimple> st_11_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(st_11_node);
+  EXPECT_UIA_BOOL_EQ(st_11_provider, UIA_IsControlElementPropertyId, true);
+}
+
 TEST_F(AXPlatformNodeWinTest, IsUIAControlForTextNodes) {
   // ++1 root
   // ++++2 kGenericContainer
