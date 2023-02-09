@@ -260,6 +260,14 @@ class _BuildHelper:
     return [to_mapping_path(x) for x in self.abs_apk_paths]
 
   @property
+  def abs_extra_paths(self):
+    def to_extra_paths(p):
+      aab_path = p.replace('.minimal.apks', '.aab')
+      return [aab_path + '.unused_resources', aab_path + '.R.txt']
+
+    return [p for x in self.abs_apk_paths for p in to_extra_paths(x)]
+
+  @property
   def apk_name(self):
     if self.apk_name_override:
       return self.apk_name_override
@@ -426,6 +434,9 @@ class _BuildArchive:
         self._ArchiveFile(path)
       for path in self.build.abs_mapping_paths:
         # Some apks have no .mapping files.
+        self._ArchiveFile(path, missing_ok=True)
+      for path in self.build.abs_extra_paths:
+        # These are useful for debugging but not necessary.
         self._ArchiveFile(path, missing_ok=True)
       self._ArchiveResourceSizes()
     self._ArchiveSizeFile()
