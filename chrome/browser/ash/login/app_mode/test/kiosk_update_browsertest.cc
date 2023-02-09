@@ -843,7 +843,9 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_UpdateMultiAppKioskRemoveOneApp) {
 
 // Update the primary app to version 2 which removes one of the secondary app
 // from its manifest.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UpdateMultiAppKioskRemoveOneApp) {
+// TODO(https://crbug.com/1413090): test is flaky.
+IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
+                       DISABLED_UpdateMultiAppKioskRemoveOneApp) {
   TestAppInfo primary_app(kTestPrimaryKioskApp, "2.0.0",
                           std::string(kTestPrimaryKioskApp) + "-2.0.0.crx",
                           extensions::Manifest::TYPE_PLATFORM_APP);
