@@ -64,7 +64,7 @@ namespace {
 
 BASE_FEATURE(kWin10UnattendedDefault,
              "Win10UnattendedDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool CanSetAsDefaultDirectly() {
   return base::FeatureList::IsEnabled(kWin10UnattendedDefault);
