@@ -61,6 +61,12 @@ constexpr char kMailUrl[] = "https://mail.google.com";
 constexpr char kDocsUrl[] = "https://docs.google.com";
 constexpr char kExampleUrl[] = "https://example.com";
 
+constexpr char kRuleName1[] = "rule #1";
+constexpr char kRuleId1[] = "testid1";
+
+constexpr char kRuleName2[] = "rule #2";
+constexpr char kRuleId2[] = "testid2";
+
 class FakeClipboardNotifier : public DlpClipboardNotifier {
  public:
   views::Widget* GetWidget() { return widget_.get(); }
@@ -283,10 +289,11 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, EmptyPolicy) {
 IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
   {  // Do not remove the brackets, policy update is triggered on
      // ScopedListPrefUpdate destructor.
-    dlp_test_util::DlpRule rule1("rule #1", "Block Gmail");
+    dlp_test_util::DlpRule rule1(kRuleName1, "Block Gmail", kRuleId1);
     rule1.AddSrcUrl(kMailUrl).AddDstUrl("*").AddRestriction(
         dlp::kClipboardRestriction, dlp::kBlockLevel);
-    dlp_test_util::DlpRule rule2("rule #2", "Allow Gmail for work purposes");
+    dlp_test_util::DlpRule rule2(kRuleName2, "Allow Gmail for work purposes",
+                                 kRuleId2);
     rule2.AddSrcUrl(kMailUrl).AddDstUrl(kDocsUrl).AddRestriction(
         dlp::kClipboardRestriction, dlp::kAllowLevel);
 
@@ -348,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
 
   {  // Do not remove the brackets, policy update is triggered on
      // ScopedListPrefUpdate destructor.
-    dlp_test_util::DlpRule rule;
+    dlp_test_util::DlpRule rule(kRuleName1, "description", kRuleId1);
     rule.AddSrcUrl(kMailUrl).AddDstUrl("*").AddRestriction(
         dlp::kClipboardRestriction, dlp::kWarnLevel);
     ScopedListPrefUpdate update(g_browser_process->local_state(),
@@ -497,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
 
   {  // Do not remove the brackets, policy update is triggered on
      // ScopedListPrefUpdate destructor.
-    dlp_test_util::DlpRule rule;
+    dlp_test_util::DlpRule rule(kRuleName1, "description", kRuleId1);
     rule.AddSrcUrl(kMailUrl).AddDstUrl("*").AddRestriction(
         dlp::kClipboardRestriction, dlp::kWarnLevel);
     ScopedListPrefUpdate update(g_browser_process->local_state(),
@@ -571,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
 
   {  // Do not remove the brackets, policy update is triggered on
      // ScopedListPrefUpdate destructor.
-    dlp_test_util::DlpRule rule;
+    dlp_test_util::DlpRule rule(kRuleName1, "description", kRuleId1);
     rule.AddSrcUrl(kMailUrl).AddDstUrl("*").AddRestriction(
         dlp::kClipboardRestriction, dlp::kWarnLevel);
     ScopedListPrefUpdate update(g_browser_process->local_state(),
@@ -704,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
 
   {  // Do not remove the brackets, policy update is triggered on
      // ScopedListPrefUpdate destructor.
-    dlp_test_util::DlpRule rule;
+    dlp_test_util::DlpRule rule(kRuleName1, "description", kRuleId1);
     rule.AddSrcUrl(kMailUrl).AddDstUrl("*").AddRestriction(
         dlp::kClipboardRestriction, dlp::kReportLevel);
     ScopedListPrefUpdate update(g_browser_process->local_state(),

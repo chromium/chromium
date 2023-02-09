@@ -594,7 +594,7 @@ class RenderViewContextMenuDlpPrefsTest
       const RenderViewContextMenuDlpPrefsTest&) = delete;
 
   void SetDlpClipboardRestriction() {
-    policy::dlp_test_util::DlpRule rule("Rule #1", "Block");
+    policy::dlp_test_util::DlpRule rule("Rule #1", "Block", "testid1");
     rule.AddSrcUrl(PAGE_URL)
         .AddDstUrl(RESTRICTED_URL)
         .AddRestriction(policy::dlp::kClipboardRestriction,

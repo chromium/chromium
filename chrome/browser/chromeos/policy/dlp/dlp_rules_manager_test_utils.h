@@ -14,7 +14,9 @@ namespace policy::dlp_test_util {
 // Data structure representing a DLP rule.
 class DlpRule {
  public:
-  DlpRule(const std::string& name, const std::string& description);
+  DlpRule(const std::string& name,
+          const std::string& description,
+          const std::string& id);
   DlpRule();
   ~DlpRule();
   DlpRule(const DlpRule& other);
@@ -30,6 +32,7 @@ class DlpRule {
  private:
   const std::string name;
   const std::string description;
+  const std::string id;
   std::vector<std::string> src_urls;
   std::vector<std::string> dst_urls;
   std::vector<std::string> dst_components;

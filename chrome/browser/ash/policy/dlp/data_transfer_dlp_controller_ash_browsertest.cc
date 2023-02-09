@@ -51,6 +51,8 @@ namespace {
 constexpr char16_t kClipboardText116[] = u"Hello World";
 
 constexpr char kMailUrl[] = "https://mail.google.com";
+constexpr char kRuleName[] = "rule #1";
+constexpr char kRuleId[] = "testid1";
 
 class FakeClipboardNotifier : public DlpClipboardNotifier {
  public:
@@ -235,8 +237,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_BlockComponent) {
      // ScopedListPrefUpdate destructor.
     ScopedListPrefUpdate update(g_browser_process->local_state(),
                                 policy_prefs::kDlpRulesList);
-
-    dlp_test_util::DlpRule rule("rule #1", "Block Gmail");
+    dlp_test_util::DlpRule rule(kRuleName, "Block Gmail", kRuleId);
     rule.AddSrcUrl(kMailUrl)
         .AddDstComponent(dlp::kArc)
         .AddDstComponent(dlp::kCrostini)
@@ -293,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpAshBrowserTest, MAYBE_WarnComponent) {
     ScopedListPrefUpdate update(g_browser_process->local_state(),
                                 policy_prefs::kDlpRulesList);
 
-    dlp_test_util::DlpRule rule;
+    dlp_test_util::DlpRule rule(kRuleName, "Block Gmail", kRuleId);
     rule.AddSrcUrl(kMailUrl)
         .AddDstComponent(dlp::kArc)
         .AddDstComponent(dlp::kCrostini)

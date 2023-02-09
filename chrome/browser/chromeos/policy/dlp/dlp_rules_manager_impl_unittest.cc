@@ -53,6 +53,13 @@ constexpr char kWrongRestriction[] = "WrongRestriction";
 constexpr char kWrongComponent[] = "WrongComponent";
 constexpr char kWrongLevel[] = "kWrongLevel";
 
+constexpr char kRuleId1[] = "testid1";
+constexpr char kRuleId2[] = "testid2";
+constexpr char kRuleId3[] = "testid3";
+
+constexpr char kRuleName1[] = "rule #1";
+constexpr char kRuleName2[] = "rule #2";
+constexpr char kRuleName3[] = "rule #3";
 class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
   explicit MockDlpRulesManager(PrefService* local_state)
@@ -101,7 +108,7 @@ TEST_F(DlpRulesManagerImplTest, EmptyPref) {
 }
 
 TEST_F(DlpRulesManagerImplTest, UnknownRestriction) {
-  dlp_test_util::DlpRule rule("rule #1", "Unknown");
+  dlp_test_util::DlpRule rule(kRuleName1, "Unknown", kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kWildCardMatching)
       .AddRestriction(kWrongRestriction, dlp::kBlockLevel);
@@ -115,7 +122,7 @@ TEST_F(DlpRulesManagerImplTest, UnknownRestriction) {
 
 // Unknown Components should be allowed, (b/267622459).
 TEST_F(DlpRulesManagerImplTest, UnknownComponent) {
-  dlp_test_util::DlpRule rule("rule #1", "Unknown");
+  dlp_test_util::DlpRule rule(kRuleName1, "Unknown", kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstComponent(kWrongComponent)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
@@ -136,7 +143,7 @@ TEST_F(DlpRulesManagerImplTest, UnknownComponent) {
 }
 
 TEST_F(DlpRulesManagerImplTest, UnknownLevel) {
-  dlp_test_util::DlpRule rule("rule #1", "Unknown");
+  dlp_test_util::DlpRule rule(kRuleName1, "Unknown", kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kWildCardMatching)
       .AddRestriction(dlp::kClipboardRestriction, kWrongLevel);
@@ -149,13 +156,13 @@ TEST_F(DlpRulesManagerImplTest, UnknownLevel) {
 }
 
 TEST_F(DlpRulesManagerImplTest, BlockPriority) {
-  dlp_test_util::DlpRule rule1("rule #1", "Block");
+  dlp_test_util::DlpRule rule1(kRuleName1, "Block", kRuleId1);
   rule1.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kWildCardMatching)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel)
       .AddRestriction(dlp::kScreenshotRestriction, dlp::kBlockLevel);
 
-  dlp_test_util::DlpRule rule2("rule #2", "Exceptional allow");
+  dlp_test_util::DlpRule rule2(kRuleName2, "Exceptional allow", kRuleId2);
   rule2.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kGoogleUrl)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kAllowLevel);
@@ -231,7 +238,7 @@ TEST_F(DlpRulesManagerImplTest, BlockPriority) {
 }
 
 TEST_F(DlpRulesManagerImplTest, UpdatePref) {
-  dlp_test_util::DlpRule rule1("rule #1", "Block");
+  dlp_test_util::DlpRule rule1(kRuleName1, "Block", kRuleId1);
   rule1.AddSrcUrl(kExampleUrl)
       .AddRestriction(dlp::kScreenshotRestriction, dlp::kBlockLevel);
 
@@ -241,7 +248,7 @@ TEST_F(DlpRulesManagerImplTest, UpdatePref) {
             dlp_rules_manager_.IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
 
-  dlp_test_util::DlpRule rule2("rule #2", "Exceptional allow");
+  dlp_test_util::DlpRule rule2(kRuleName2, "Exceptional allow", kRuleId2);
   rule2.AddSrcUrl(kGoogleUrl)
       .AddRestriction(dlp::kScreenshotRestriction, dlp::kBlockLevel);
 
@@ -256,7 +263,7 @@ TEST_F(DlpRulesManagerImplTest, UpdatePref) {
 }
 
 TEST_F(DlpRulesManagerImplTest, IsRestrictedComponent_Clipboard) {
-  dlp_test_util::DlpRule rule("rule #1", "Block");
+  dlp_test_util::DlpRule rule(kRuleName1, "Block", kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstComponent(dlp::kArc)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
@@ -280,7 +287,7 @@ TEST_F(DlpRulesManagerImplTest, IsRestrictedComponent_Clipboard) {
 }
 
 TEST_F(DlpRulesManagerImplTest, SameSrcDst_Clipboard) {
-  dlp_test_util::DlpRule rule("rule #1", "Block");
+  dlp_test_util::DlpRule rule(kRuleName1, "Block", kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kWildCardMatching)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
@@ -299,12 +306,12 @@ TEST_F(DlpRulesManagerImplTest, SameSrcDst_Clipboard) {
 }
 
 TEST_F(DlpRulesManagerImplTest, EmptyUrl_Clipboard) {
-  dlp_test_util::DlpRule rule1("rule #1", "Block");
+  dlp_test_util::DlpRule rule1(kRuleName1, "Block", kRuleId1);
   rule1.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kWildCardMatching)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
 
-  dlp_test_util::DlpRule rule2("rule #2", "Block");
+  dlp_test_util::DlpRule rule2(kRuleName2, "Block", kRuleId2);
   rule2.AddSrcUrl(kGmailUrl)
       .AddDstUrl(kGoogleUrl)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
@@ -337,15 +344,15 @@ TEST_F(DlpRulesManagerImplTest, IsRestricted_MultipleURLs) {
                                          kDocsPattern, kDrivePattern,
                                          kCompanyPattern};
 
-  dlp_test_util::DlpRule rule1("Support agent work flows",
-                               "Allow copy and paste for work purposes");
+  dlp_test_util::DlpRule rule1(
+      kRuleName1, "Allow copy and paste for work purposes", kRuleId1);
   for (const std::string& url : urls) {
     rule1.AddSrcUrl(url).AddDstUrl(url);
   }
   rule1.AddRestriction(dlp::kClipboardRestriction, dlp::kAllowLevel);
 
-  dlp_test_util::DlpRule rule2("Block non-agent work flows",
-                               "Disallow copy and paste for non-work purposes");
+  dlp_test_util::DlpRule rule2(
+      kRuleName2, "Disallow copy and paste for non-work purposes", kRuleId2);
   for (const std::string& url : urls) {
     rule2.AddSrcUrl(url);
   }
@@ -440,7 +447,7 @@ TEST_F(DlpRulesManagerImplTest, IsRestricted_MultipleURLs) {
 }
 
 TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
-  dlp_test_util::DlpRule rule1("rule #1", "Block");
+  dlp_test_util::DlpRule rule1(kRuleName1, "Block", kRuleId1);
   rule1.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kWildCardMatching)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel)
@@ -467,7 +474,7 @@ TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
   scoped_feature_list.InitAndDisableFeature(
       features::kDataLeakPreventionPolicy);
 
-  dlp_test_util::DlpRule rule2("rule #1", "Block");
+  dlp_test_util::DlpRule rule2(kRuleName2, "Block", kRuleId2);
   rule2.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kWildCardMatching)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
@@ -486,21 +493,22 @@ TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
 }
 
 TEST_F(DlpRulesManagerImplTest, WarnPriority) {
-  dlp_test_util::DlpRule rule1("rule #1", "Warn on every copy from google.com");
+  dlp_test_util::DlpRule rule1(kRuleName1, "Warn on every copy from google.com",
+                               kRuleId1);
   rule1.AddSrcUrl(kGooglePattern)
       .AddDstUrl(kWildCardMatching)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kWarnLevel);
 
-  dlp_test_util::DlpRule rule2("rule #2",
-                               "Block copy/paste from docs, drive, gmail");
+  dlp_test_util::DlpRule rule2(
+      kRuleName2, "Block copy/paste from docs, drive, gmail", kRuleId2);
   rule2.AddSrcUrl(kDocsPattern)
       .AddSrcUrl(kDrivePattern)
       .AddSrcUrl(kMailPattern)
       .AddDstUrl(kWildCardMatching)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
 
-  dlp_test_util::DlpRule rule3("rule #3",
-                               "Allow copy/paste inside docs, drive, gmail");
+  dlp_test_util::DlpRule rule3(
+      kRuleName3, "Allow copy/paste inside docs, drive, gmail", kRuleId3);
   rule3.AddSrcUrl(kDocsPattern)
       .AddSrcUrl(kDrivePattern)
       .AddSrcUrl(kMailPattern)
@@ -559,7 +567,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
                    ->GetTestInterface()
                    ->GetSetDlpFilesPolicyCount());
 
-  dlp_test_util::DlpRule rule("rule #1", "Block Files");
+  dlp_test_util::DlpRule rule(kRuleName1, "Block Files", kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kExampleUrl)
       .AddRestriction(dlp::kFilesRestriction, dlp::kBlockLevel);
@@ -600,7 +608,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_FeatureNotEnabled) {
                    ->GetTestInterface()
                    ->GetSetDlpFilesPolicyCount());
 
-  dlp_test_util::DlpRule rule("rule #1", "Block Files");
+  dlp_test_util::DlpRule rule(kRuleName1, "Block Files", kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kExampleUrl)
       .AddRestriction(dlp::kFilesRestriction, dlp::kBlockLevel);
@@ -615,8 +623,8 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_FeatureNotEnabled) {
 }
 
 TEST_F(DlpRulesManagerImplTest, GetSourceUrlPattern) {
-  dlp_test_util::DlpRule rule1("Block screenshots",
-                               "Block screenshots of work urls");
+  dlp_test_util::DlpRule rule1(kRuleName1, "Block screenshots of work urls",
+                               kRuleId1);
   rule1.AddSrcUrl(kChatPattern)
       .AddSrcUrl(kSalesforcePattern)
       .AddSrcUrl(kDocsPattern)
@@ -624,7 +632,7 @@ TEST_F(DlpRulesManagerImplTest, GetSourceUrlPattern) {
       .AddSrcUrl(kCompanyPattern)
       .AddRestriction(dlp::kScreenshotRestriction, dlp::kBlockLevel);
 
-  dlp_test_util::DlpRule rule2("Block any printing", "Block printing any docs");
+  dlp_test_util::DlpRule rule2(kRuleName2, "Block printing any docs", kRuleId2);
   rule2.AddSrcUrl(kWildCardMatching)
       .AddRestriction(dlp::kPrintingRestriction, dlp::kBlockLevel);
 
@@ -664,19 +672,19 @@ TEST_F(DlpRulesManagerImplTest, GetSourceUrlPattern) {
 }
 
 TEST_F(DlpRulesManagerImplTest, ReportPriority) {
-  dlp_test_util::DlpRule rule1("Report screensharing",
-                               "Report any screensharing");
+  dlp_test_util::DlpRule rule1(kRuleName1, "Report any screensharing",
+                               kRuleId1);
   rule1.AddSrcUrl(kWildCardMatching)
       .AddRestriction(dlp::kScreenShareRestriction, dlp::kReportLevel);
 
-  dlp_test_util::DlpRule rule2("Block screensharing",
-                               "Block screensharing of company urls");
+  dlp_test_util::DlpRule rule2(kRuleName2,
+                               "Block screensharing of company urls", kRuleId2);
   rule2.AddSrcUrl(kDrivePattern)
       .AddSrcUrl(kDocsPattern)
       .AddRestriction(dlp::kScreenShareRestriction, dlp::kBlockLevel);
 
-  dlp_test_util::DlpRule rule3("Allow screensharing",
-                               "Allow screensharing for chat urls");
+  dlp_test_util::DlpRule rule3(kRuleName3, "Allow screensharing for chat urls",
+                               kRuleId3);
   rule3.AddSrcUrl(kChatPattern)
       .AddRestriction(dlp::kScreenShareRestriction, dlp::kAllowLevel);
 
@@ -724,7 +732,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedDestinations) {
       features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
-  dlp_test_util::DlpRule rule1("rule #1", "Block Files");
+  dlp_test_util::DlpRule rule1(kRuleName1, "Block Files", kRuleId1);
   rule1.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kGoogleUrl)
       .AddDstUrl(kGoogleUrl)  // Duplicates should be ignored.
@@ -732,7 +740,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedDestinations) {
       .AddDstUrl(kGmailUrl)
       .AddRestriction(dlp::kFilesRestriction, dlp::kBlockLevel);
 
-  dlp_test_util::DlpRule rule2("rule #2", "Explicit Allow Files");
+  dlp_test_util::DlpRule rule2(kRuleName2, "Explicit Allow Files", kRuleId2);
   rule2.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kGmailUrl)
       .AddRestriction(dlp::kFilesRestriction, dlp::kAllowLevel);
@@ -766,7 +774,8 @@ TEST_F(DlpRulesManagerImplTest,
       features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
-  dlp_test_util::DlpRule rule("rule #1", "Block Files for all destinations");
+  dlp_test_util::DlpRule rule(kRuleName1, "Block Files for all destinations",
+                              kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kWildCardMatching)
       .AddDstUrl(kCompanyUrl)  // Since there is a wildcard, all specific
@@ -793,19 +802,19 @@ TEST_F(DlpRulesManagerImplTest,
 }
 
 TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_MixedLevels) {
-  dlp_test_util::DlpRule rule1("rule #1", "Block Clipboard");
+  dlp_test_util::DlpRule rule1(kRuleName1, "Block Clipboard", kRuleId1);
   rule1.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kCompanyUrl)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
 
-  dlp_test_util::DlpRule rule2("rule #2", "Warn Clipboard");
+  dlp_test_util::DlpRule rule2(kRuleName2, "Warn Clipboard", kRuleId1);
   rule2.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kCompanyUrl)  // Ignored because of a block restriction for the
                                // same destination.
       .AddDstUrl(kGmailUrl)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kWarnLevel);
 
-  dlp_test_util::DlpRule rule3("rule #3", "Report Clipboard");
+  dlp_test_util::DlpRule rule3(kRuleName3, "Report Clipboard", kRuleId3);
   rule3.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kGoogleUrl)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kReportLevel);
@@ -823,17 +832,17 @@ TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_MixedLevels) {
 }
 
 TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_MixedWithWildcard) {
-  dlp_test_util::DlpRule rule1("rule #1", "Block Clipboard");
+  dlp_test_util::DlpRule rule1(kRuleName1, "Block Clipboard", kRuleId1);
   rule1.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kCompanyUrl)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kBlockLevel);
 
-  dlp_test_util::DlpRule rule2("rule #2", "Warn Clipboard");
+  dlp_test_util::DlpRule rule2(kRuleName2, "Warn Clipboard", kRuleId2);
   rule2.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kWildCardMatching)
       .AddRestriction(dlp::kClipboardRestriction, dlp::kWarnLevel);
 
-  dlp_test_util::DlpRule rule3("rule #3", "Report Clipboard");
+  dlp_test_util::DlpRule rule3(kRuleName3, "Report Clipboard", kRuleId3);
   rule3.AddSrcUrl(kExampleUrl)
       .AddDstUrl(kGoogleUrl)  // Ignored because of "*" at warn level.
       .AddDstUrl(kWildCardMatching)
@@ -868,7 +877,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedComponents) {
       features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
-  dlp_test_util::DlpRule rule("rule #1", "Block Files");
+  dlp_test_util::DlpRule rule(kRuleName1, "Block Files", kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstComponent(dlp::kArc)
       .AddDstComponent(dlp::kCrostini)
@@ -911,7 +920,7 @@ TEST_F(DlpRulesManagerImplTest, SetFilesPolicyWithOnlyComponents) {
       features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
-  dlp_test_util::DlpRule rule("rule #1", "Block Files");
+  dlp_test_util::DlpRule rule(kRuleName1, "Block Files", kRuleId1);
   rule.AddSrcUrl(kExampleUrl)
       .AddDstComponent(dlp::kArc)
       .AddDstComponent(dlp::kCrostini)

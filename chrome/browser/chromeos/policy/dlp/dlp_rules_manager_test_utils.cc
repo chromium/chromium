@@ -14,6 +14,7 @@ namespace {
 
 const char kName[] = "name";
 const char kDescription[] = "description";
+const char kRuleId[] = "rule_id";
 const char kSources[] = "sources";
 const char kUrls[] = "urls";
 const char kDestinations[] = "destinations";
@@ -53,6 +54,7 @@ base::Value::Dict CreateRestrictionWithLevel(const std::string& restriction,
 
 base::Value::Dict CreateRule(const std::string& name,
                              const std::string& desc,
+                             const std::string& rule_id,
                              base::Value::List src_urls,
                              absl::optional<base::Value::List> dst_urls,
                              absl::optional<base::Value::List> dst_components,
@@ -60,6 +62,9 @@ base::Value::Dict CreateRule(const std::string& name,
   base::Value::Dict rule;
   rule.Set(kName, name);
   rule.Set(kDescription, desc);
+  if (!rule_id.empty()) {
+    rule.Set(kRuleId, rule_id);
+  }
   rule.Set(kSources, CreateSources(std::move(src_urls)));
   rule.Set(kDestinations,
            CreateDestinations(std::move(dst_urls), std::move(dst_components)));
@@ -67,8 +72,10 @@ base::Value::Dict CreateRule(const std::string& name,
   return rule;
 }
 
-DlpRule::DlpRule(const std::string& name, const std::string& description)
-    : name(name), description(description) {}
+DlpRule::DlpRule(const std::string& name,
+                 const std::string& description,
+                 const std::string& id)
+    : name(name), description(description), id(id) {}
 DlpRule::DlpRule() = default;
 DlpRule::~DlpRule() = default;
 DlpRule::DlpRule(const DlpRule& other) = default;
@@ -114,7 +121,7 @@ base::Value::Dict DlpRule::Create() const {
     restrictions_list.Append(std::move(class_level_dict));
   }
 
-  return CreateRule(name, description, std::move(src_urls_list),
+  return CreateRule(name, description, id, std::move(src_urls_list),
                     std::move(dst_urls_list), std::move(dst_components_list),
                     std::move(restrictions_list));
 }

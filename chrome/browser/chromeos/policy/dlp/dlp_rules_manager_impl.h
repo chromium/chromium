@@ -115,11 +115,14 @@ class DlpRulesManagerImpl : public DlpRulesManager,
 
   // Map from the URL matching conditions IDs of the sources to their string
   // patterns.
-  std::map<UrlConditionId, std::string> src_pattterns_mapping_;
+  std::map<UrlConditionId, std::string> src_patterns_mapping_;
 
   // Map from the URL matching conditions IDs of the destinations to their
   // string patterns.
-  std::map<UrlConditionId, std::string> dst_pattterns_mapping_;
+  std::map<UrlConditionId, std::string> dst_patterns_mapping_;
+
+  // Map from RuleIds to the rule metadata.
+  std::map<RuleId, RuleMetadata> rules_id_metadata_mapping_;
 
   // System-wide singleton instantiated when required by rules configuration.
   std::unique_ptr<DlpReportingManager> reporting_manager_;

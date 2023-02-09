@@ -252,7 +252,7 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedByAnyRule(
 
   if (level_url_pair.second.has_value() && out_source_pattern) {
     UrlConditionId src_condition_id = level_url_pair.second.value();
-    *out_source_pattern = src_pattterns_mapping_.at(src_condition_id);
+    *out_source_pattern = src_patterns_mapping_.at(src_condition_id);
   }
 
   return level_url_pair.first;
@@ -308,9 +308,9 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
     UrlConditionId src_condition_id = level_urls_pair.second.value().first;
     UrlConditionId dst_condition_id = level_urls_pair.second.value().second;
     if (out_source_pattern)
-      *out_source_pattern = src_pattterns_mapping_.at(src_condition_id);
+      *out_source_pattern = src_patterns_mapping_.at(src_condition_id);
     if (out_destination_pattern)
-      *out_destination_pattern = dst_pattterns_mapping_.at(dst_condition_id);
+      *out_destination_pattern = dst_patterns_mapping_.at(dst_condition_id);
   }
   return level_urls_pair.first;
 }
@@ -358,7 +358,7 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
                                  restrictions_map_);
   if (level_url_pair.second.has_value() && out_source_pattern) {
     UrlConditionId src_condition_id = level_url_pair.second.value();
-    *out_source_pattern = src_pattterns_mapping_.at(src_condition_id);
+    *out_source_pattern = src_patterns_mapping_.at(src_condition_id);
   }
   return level_url_pair.first;
 }
@@ -399,7 +399,7 @@ DlpRulesManagerImpl::GetAggregatedDestinations(const GURL& source,
     }
     UrlConditionId dst_condition_id = dst_map_itr.first;
     std::string destination_pattern =
-        dst_pattterns_mapping_.at(dst_condition_id);
+        dst_patterns_mapping_.at(dst_condition_id);
     Level level = restriction_rule_itr->second;
     auto it = destination_level_map.find(destination_pattern);
     if (it == destination_level_map.end() || level > it->second) {
@@ -497,9 +497,10 @@ std::string DlpRulesManagerImpl::GetSourceUrlPattern(const GURL& source_url,
     auto rule_condition_itr = rules_conditions_map.find(rule_id);
     if (lvl == level && rule_condition_itr != rules_conditions_map.end()) {
       auto condition_id = rule_condition_itr->second;
-      auto condition_pattern_itr = src_pattterns_mapping_.find(condition_id);
-      if (condition_pattern_itr != src_pattterns_mapping_.end())
+      auto condition_pattern_itr = src_patterns_mapping_.find(condition_id);
+      if (condition_pattern_itr != src_patterns_mapping_.end()) {
         return condition_pattern_itr->second;
+      }
     }
   }
   return std::string();
@@ -530,8 +531,8 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   dst_url_rules_mapping_.clear();
   src_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   dst_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
-  src_pattterns_mapping_.clear();
-  dst_pattterns_mapping_.clear();
+  src_patterns_mapping_.clear();
+  dst_patterns_mapping_.clear();
   src_conditions_.clear();
   dst_conditions_.clear();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -567,7 +568,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
                            // supported as sources.
 
     AddUrlConditions(src_url_matcher_.get(), src_url_condition_id, sources_urls,
-                     src_conditions_, src_pattterns_mapping_, rules_counter,
+                     src_conditions_, src_patterns_mapping_, rules_counter,
                      src_url_rules_mapping_);
 
     const auto* destinations = rule.FindDictKey("destinations");
@@ -576,7 +577,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     if (destinations_urls) {
       AddUrlConditions(dst_url_matcher_.get(), dst_url_condition_id,
                        destinations_urls, dst_conditions_,
-                       dst_pattterns_mapping_, rules_counter,
+                       dst_patterns_mapping_, rules_counter,
                        dst_url_rules_mapping_);
     }
     const auto* destinations_components =
@@ -587,6 +588,15 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
         components_rules_[GetComponentMapping(component.GetString())].insert(
             rules_counter);
       }
+    }
+
+    const auto* rule_name = rule.FindStringKey("name");
+    const auto* rule_id = rule.FindStringKey("rule_id");
+    // Only add to metadata if both fields are set, so we can control behaviour
+    // from the server side.
+    if (rule_name && rule_id) {
+      rules_id_metadata_mapping_.emplace(rules_counter,
+                                         RuleMetadata(*rule_name, *rule_id));
     }
 
     const auto* restrictions = rule.FindListKey("restrictions");

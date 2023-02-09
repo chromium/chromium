@@ -93,6 +93,19 @@ class DlpRulesManager : public KeyedService {
     GURL source;     // File source URL.
   };
 
+  // Represents rule metadata that is used for reporting.
+  struct RuleMetadata {
+    RuleMetadata(const std::string& name, const std::string& obfuscated_id)
+        : name(name), obfuscated_id(obfuscated_id) {}
+    RuleMetadata(const RuleMetadata&) = default;
+    RuleMetadata() = default;
+    RuleMetadata& operator=(const RuleMetadata&) = default;
+    ~RuleMetadata() = default;
+
+    std::string name;
+    std::string obfuscated_id;
+  };
+
   // Mapping from a level to the set of destination URLs for which that level is
   // enforced.
   using AggregatedDestinations = std::map<Level, std::set<std::string>>;

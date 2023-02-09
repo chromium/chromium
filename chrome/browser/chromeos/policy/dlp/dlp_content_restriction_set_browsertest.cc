@@ -77,22 +77,22 @@ IN_PROC_BROWSER_TEST_F(DlpContentRestrictionSetBrowserTest,
     ScopedListPrefUpdate update(g_browser_process->local_state(),
                                 policy_prefs::kDlpRulesList);
 
-    dlp_test_util::DlpRule rule1("rule #1", "Block");
+    dlp_test_util::DlpRule rule1("rule #1", "Block", "testid1");
     rule1.AddSrcUrl(kUrl1).AddRestriction(dlp::kScreenshotRestriction,
                                           dlp::kBlockLevel);
     update->Append(rule1.Create());
 
-    dlp_test_util::DlpRule rule2("rule #2", "Block");
+    dlp_test_util::DlpRule rule2("rule #2", "Block", "testid2");
     rule2.AddSrcUrl(kUrl2).AddRestriction(dlp::kPrivacyScreenRestriction,
                                           dlp::kBlockLevel);
     update->Append(rule2.Create());
 
-    dlp_test_util::DlpRule rule3("rule #3", "Block");
+    dlp_test_util::DlpRule rule3("rule #3", "Block", "testid3");
     rule3.AddSrcUrl(kUrl3).AddRestriction(dlp::kPrintingRestriction,
                                           dlp::kBlockLevel);
     update->Append(rule3.Create());
 
-    dlp_test_util::DlpRule rule4("rule #4", "Block");
+    dlp_test_util::DlpRule rule4("rule #4", "Block", "testid4");
     rule4.AddSrcUrl(kUrl4).AddRestriction(dlp::kScreenShareRestriction,
                                           dlp::kBlockLevel);
     update->Append(rule4.Create());
