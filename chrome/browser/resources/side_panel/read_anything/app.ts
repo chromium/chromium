@@ -190,14 +190,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     container.appendChild(node);
   }
 
-  validatedFontName(): string {
+  private validatedFontName_(): string {
     // Validate that the given font name is a valid choice, or use the default.
     const validFontName = this.validFontNames_.find(
         (f: {name: string}) => f.name === chrome.readAnything.fontName);
     return validFontName ? validFontName.css : this.defaultFontName_;
   }
 
-  private getLinkColor(backgroundSkColor: SkColor): LinkColor {
+  private getLinkColor_(backgroundSkColor: SkColor): LinkColor {
     const isDark = backgroundSkColor.value === darkThemeBackgroundSkColor.value;
     return isDark ? darkThemeLinkColors : defaultLinkColors;
   }
@@ -207,11 +207,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         SkColor = {value: chrome.readAnything.foregroundColor};
     const backgroundColor:
         SkColor = {value: chrome.readAnything.backgroundColor};
-    const linkColor = this.getLinkColor(backgroundColor);
+    const linkColor = this.getLinkColor_(backgroundColor);
 
     this.updateStyles({
       '--background-color': skColorToRgba(backgroundColor),
-      '--font-family': this.validatedFontName(),
+      '--font-family': this.validatedFontName_(),
       '--font-size': chrome.readAnything.fontSize + 'em',
       '--foreground-color': skColorToRgba(foregroundColor),
       '--letter-spacing': chrome.readAnything.letterSpacing + 'em',
