@@ -56,6 +56,8 @@ CreditCard GetEmptyCreditCard() {
 
 constexpr char kUrl[] = "https://www.example.com";
 constexpr char kOtherUrl[] = "https://www.example2.com";
+const std::u16string kAutofillProfileLabel = u"Home";
+const std::u16string kCreditCardNickname = u"Card's nickname";
 const AutofillProfile kProfile1 = autofill::test::GetFullProfile();
 const AutofillProfile kProfile2 = autofill::test::GetFullProfile2();
 const AutofillProfile kIncompleteProfile =
@@ -175,6 +177,15 @@ class MockAutofillClient : public autofill::TestAutofillClient {
   MOCK_METHOD(void, HideAutofillPopup, (autofill::PopupHidingReason), ());
 };
 
+class MockFastCheckoutAccessibilityService
+    : public FastCheckoutAccessibilityService {
+ public:
+  MockFastCheckoutAccessibilityService() = default;
+  ~MockFastCheckoutAccessibilityService() override = default;
+
+  MOCK_METHOD(void, Announce, (const std::u16string&), (override));
+};
+
 // static
 TestFastCheckoutClientImpl* TestFastCheckoutClientImpl::CreateForWebContents(
     content::WebContents* web_contents) {
@@ -240,6 +251,12 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*validator(), ShouldRun).WillByDefault(Return(true));
 
     test_client_->autofill_client_ = autofill_client_.get();
+
+    auto accessibility_service =
+        std::make_unique<MockFastCheckoutAccessibilityService>();
+    accessibility_service_ = accessibility_service.get();
+    fast_checkout_client()->accessibility_service_ =
+        std::move(accessibility_service);
   }
 
   autofill::TestPersonalDataManager* personal_data_manager() {
@@ -259,6 +276,10 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
 
   MockBrowserAutofillManager* autofill_manager() { return autofill_manager_; }
 
+  MockFastCheckoutAccessibilityService* accessibility_service() {
+    return accessibility_service_;
+  }
+
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 
@@ -269,8 +290,11 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     auto autofill_profile_unique_ptr =
         std::make_unique<autofill::AutofillProfile>(
             autofill::test::GetFullProfile());
+    autofill_profile_unique_ptr->set_profile_label(
+        base::UTF16ToUTF8(kAutofillProfileLabel));
     auto credit_card_unique_ptr =
         std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard());
+    credit_card_unique_ptr->SetNickname(kCreditCardNickname);
     autofill::AutofillProfile* autofill_profile =
         autofill_profile_unique_ptr.get();
     autofill::CreditCard* credit_card = credit_card_unique_ptr.get();
@@ -330,6 +354,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<TestFastCheckoutClientImpl> test_client_;
   raw_ptr<MockFastCheckoutTriggerValidator> validator_;
   raw_ptr<MockBrowserAutofillManager> autofill_manager_;
+  raw_ptr<MockFastCheckoutAccessibilityService> accessibility_service_;
 };
 
 MATCHER_P(FormDataEqualTo,
@@ -748,4 +773,49 @@ TEST_F(FastCheckoutClientImplTest, OnFullCardRequestFailed_StopsRun) {
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   fast_checkout_client()->OnFullCardRequestFailed(card_type, failure_type);
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+}
+
+TEST_F(
+    FastCheckoutClientImplTest,
+    OnAfterDidFillAutofillFormData_AddressForm_MakesAddressFormA11yAnnouncement) {
+  autofill::FormStructure* address_form =
+      AddFormToAutofillManagerCache(SetUpAddressForm());
+  StartRunAndSelectOptions({address_form->form_signature()});
+  std::u16string announcement_text =
+      kAutofillProfileLabel + u" address form filled.";
+
+  EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
+  fast_checkout_client()->OnAfterDidFillAutofillFormData();
+}
+
+TEST_F(
+    FastCheckoutClientImplTest,
+    OnAfterDidFillAutofillFormData_EmailForm_MakesEmailFormA11yAnnouncement) {
+  autofill::FormStructure* address_form =
+      AddFormToAutofillManagerCache(SetUpAddressForm());
+  address_form->field(0)->set_heuristic_type(
+      autofill::PatternSource::kLegacy,
+      autofill::ServerFieldType::EMAIL_ADDRESS);
+  StartRunAndSelectOptions({address_form->form_signature()});
+  std::u16string announcement_text = u"Email filled.";
+
+  EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
+  fast_checkout_client()->OnAfterDidFillAutofillFormData();
+}
+
+TEST_F(
+    FastCheckoutClientImplTest,
+    OnAfterDidFillAutofillFormData_CreditCardForm_MakesCreditCardFormA11yAnnouncement) {
+  autofill::FormStructure* credit_card_form =
+      AddFormToAutofillManagerCache(SetUpCreditCardForm());
+  auto [autofill_profile, credit_card] =
+      StartRunAndSelectOptions({credit_card_form->form_signature()});
+  autofill::payments::FullCardRequest* full_card_request =
+      autofill_client()->GetCvcAuthenticator()->GetFullCardRequest();
+  fast_checkout_client()->OnFullCardRequestSucceeded(*full_card_request,
+                                                     *credit_card, u"123");
+  std::u16string announcement_text = kCreditCardNickname + u" filled.";
+
+  EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
+  fast_checkout_client()->OnAfterDidFillAutofillFormData();
 }

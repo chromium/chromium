@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/fast_checkout/fast_checkout_accessibility_service.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client.h"
 #include "chrome/browser/fast_checkout/fast_checkout_enums.h"
@@ -162,6 +163,10 @@ class FastCheckoutClientImpl
   // notification.
   void UpdateFillingStates();
 
+  // Makes accessibility announcements for when a form was filled.
+  void A11yAnnounce(autofill::FormSignature form_signature,
+                    bool is_credit_card_form);
+
   // Triggers reparse with a delay of `kSleepBetweenTriggerReparseCalls`.
   // Reparsing updates the forms cache `autofill_manager_->form_structures()`
   // with current data from the renderer, eventually calling
@@ -193,6 +198,9 @@ class FastCheckoutClientImpl
 
   // Checks whether a run should be permitted or not.
   std::unique_ptr<FastCheckoutTriggerValidator> trigger_validator_;
+
+  // Makes a11y announcements.
+  std::unique_ptr<FastCheckoutAccessibilityService> accessibility_service_;
 
   // True if a run is ongoing; used to avoid multiple runs in parallel.
   bool is_running_ = false;
