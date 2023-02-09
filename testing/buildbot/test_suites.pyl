@@ -2329,6 +2329,9 @@
           '--disable-field-trial-config',
         ],
         'test': 'android_browsertests',
+        'swarming': {
+          'shards': 2,
+        },
       },
       'webview_cts_tests_no_field_trial': {
         'args': [
