@@ -5969,7 +5969,7 @@
     ],
 
     'chromium_mac_rel_isolated_scripts_code_coverage': [
-      'gpu_dawn_webgpu_blink_web_tests',
+      # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_blink_web_tests
     ],
 
     # Pixel tests only enabled on Win 10. So this is
