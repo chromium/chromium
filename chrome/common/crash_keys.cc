@@ -31,8 +31,6 @@
 namespace crash_keys {
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
-
 // A convenient wrapper around a crash key and its name.
 class CrashKeyWithName {
  public:
@@ -70,10 +68,10 @@ void SplitAndPopulateCrashKeys(std::deque<CrashKeyWithName>& crash_keys,
   }
 }
 
-// ChromeOS uses --enable-features and --disable-features more heavily than
-// most platforms, and the results don't fit into the default 64 bytes. So they
-// are separated out in a list of CrashKeys, one for each enabled or disabled
-// feature.
+// --enable-features and --disable-features often contain a long list not
+// fitting into 64 bytes, hiding important information when analysing crashes.
+// Therefore they are separated out in a list of CrashKeys, one for each enabled
+// or disabled feature.
 // They are also excluded from the default "switches".
 void HandleEnableDisableFeatures(const base::CommandLine& command_line) {
   static base::NoDestructor<std::deque<CrashKeyWithName>>
@@ -91,7 +89,6 @@ void HandleEnableDisableFeatures(const base::CommandLine& command_line) {
       command_line.GetSwitchValueASCII(switches::kDisableFeatures),
       "commandline-disabled-feature");
 }
-#endif
 
 // Return true if we DON'T want to upload this flag to the crash server.
 bool IsBoringSwitch(const std::string& flag) {
@@ -107,10 +104,8 @@ bool IsBoringSwitch(const std::string& flag) {
     // anyways. Should be switches::kGpuPreferences but we run into linking
     // errors on Windows if we try to use that directly.
     "gpu-preferences",
-#if BUILDFLAG(IS_CHROMEOS)
     switches::kEnableFeatures,
     switches::kDisableFeatures,
-#endif
 #if BUILDFLAG(IS_MAC)
     switches::kMetricsClientID,
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -157,9 +152,7 @@ bool IsBoringSwitch(const std::string& flag) {
 }  // namespace
 
 void SetCrashKeysFromCommandLine(const base::CommandLine& command_line) {
-#if BUILDFLAG(IS_CHROMEOS)
   HandleEnableDisableFeatures(command_line);
-#endif
   SetSwitchesFromCommandLine(command_line, &IsBoringSwitch);
 }
 

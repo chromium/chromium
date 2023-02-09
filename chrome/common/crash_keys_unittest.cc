@@ -18,6 +18,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#endif
+
 using crash_reporter::GetCrashKeyValue;
 using ::testing::IsEmpty;
 
@@ -122,10 +126,28 @@ TEST_F(CrashKeysTest, ShouldIgnoreBoringFlags) {
   EXPECT_TRUE(GetCrashKeyValue("switch-5").empty());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+namespace {
+
+void InitFromArgv(base::CommandLine& command_line,
+                  std::initializer_list<std::string> args) {
+#if BUILDFLAG(IS_WIN)
+  // Convert arguments to wstring on windows.
+  base::CommandLine::StringVector arg_vector;
+  for (std::string arg : args) {
+    arg_vector.push_back(base::ASCIIToWide(arg));
+  }
+  command_line.InitFromArgv(arg_vector);
+#else
+  command_line.InitFromArgv(args);
+#endif
+}
+
+}  // namespace
+
 TEST_F(CrashKeysTest, EnabledDisabledFeaturesFlags) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.InitFromArgv(
+  InitFromArgv(
+      command_line,
       {"program_name", "--example", "--enable-features=AEnabledFeatureFlag",
        "--unrelated-flag=23", "--disable-features=ADisabledFeaturesString",
        "--more-example=yes"});
@@ -147,9 +169,9 @@ TEST_F(CrashKeysTest, EnabledDisabledFeaturesFlags) {
 
 TEST_F(CrashKeysTest, ShouldCreateCrashKeyForEachEnabledFeature) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.InitFromArgv({"program_name", "--example",
-                             "--enable-features=FirstFeature,SecondFeature",
-                             "--unrelated-flag=23", "--more-example=yes"});
+  InitFromArgv(command_line, {"program_name", "--example",
+                              "--enable-features=FirstFeature,SecondFeature",
+                              "--unrelated-flag=23", "--more-example=yes"});
 
   crash_keys::SetCrashKeysFromCommandLine(command_line);
 
@@ -161,9 +183,9 @@ TEST_F(CrashKeysTest, ShouldCreateCrashKeyForEachEnabledFeature) {
 
 TEST_F(CrashKeysTest, ShouldCreateCrashKeyForEachDisabledFeature) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.InitFromArgv({"program_name", "--example",
-                             "--disable-features=FirstFeature,SecondFeature",
-                             "--unrelated-flag=23", "--more-example=yes"});
+  InitFromArgv(command_line, {"program_name", "--example",
+                              "--disable-features=FirstFeature,SecondFeature",
+                              "--unrelated-flag=23", "--more-example=yes"});
 
   crash_keys::SetCrashKeysFromCommandLine(command_line);
 
@@ -177,7 +199,8 @@ TEST_F(CrashKeysTest, ShouldCreateCrashKeyForEachDisabledFeature) {
 TEST_F(CrashKeysTest,
        EnabledDisabledFeatures_LastCommandArgumentShouldBeRetained) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.InitFromArgv(
+  InitFromArgv(
+      command_line,
       {"program_name", "--enable-features=FeatureEnabledInFirstArgument",
        "--disable-features=FeatureDisabledInFirstArgument",
        "--enable-features=FeatureEnabledInSecondArgument",
@@ -196,7 +219,8 @@ TEST_F(
     EnabledDisabledFeatures_ShouldClearPreviousCrashKeysIfCommandLineIsReparsed) {
   {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    command_line.InitFromArgv(
+    InitFromArgv(
+        command_line,
         {"program_name", "--enable-features=OriginalEnable_1, OriginalEnable_2",
          "--disable-features=OriginalDisable_1, OriginalDisable_2"});
     crash_keys::SetCrashKeysFromCommandLine(command_line);
@@ -215,8 +239,8 @@ TEST_F(
   // Parse a command line with only a single value in each flag.
   {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    command_line.InitFromArgv({"program_name", "--enable-features=NewEnable",
-                               "--disable-features=NewDisable"});
+    InitFromArgv(command_line, {"program_name", "--enable-features=NewEnable",
+                                "--disable-features=NewDisable"});
     crash_keys::SetCrashKeysFromCommandLine(command_line);
 
     EXPECT_EQ("NewEnable", GetCrashKeyValue("commandline-enabled-feature-1"));
@@ -229,8 +253,8 @@ TEST_F(
   // Parse a command line with no enable-features or disable-features flags.
   {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    command_line.InitFromArgv(
-        {"program_name", "--enable-logging", "--type=renderer"});
+    InitFromArgv(command_line,
+                 {"program_name", "--enable-logging", "--type=renderer"});
     crash_keys::SetCrashKeysFromCommandLine(command_line);
     EXPECT_EQ(GetCrashKeyValue("commandline-enabled-feature-1"), "");
     EXPECT_EQ(GetCrashKeyValue("commandline-enabled-feature-2"), "");
@@ -241,12 +265,10 @@ TEST_F(
   // Parse a new command line with enable-features or disable-features flags.
   {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    command_line.InitFromArgv({"program_name", "--enable-features=NewEnable",
-                               "--disable-features=NewDisable"});
+    InitFromArgv(command_line, {"program_name", "--enable-features=NewEnable",
+                                "--disable-features=NewDisable"});
     crash_keys::SetCrashKeysFromCommandLine(command_line);
     EXPECT_EQ("NewEnable", GetCrashKeyValue("commandline-enabled-feature-1"));
     EXPECT_EQ("NewDisable", GetCrashKeyValue("commandline-disabled-feature-1"));
   }
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
