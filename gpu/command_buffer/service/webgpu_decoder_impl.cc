@@ -253,7 +253,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                           int num_entries,
                           int* entries_processed) override;
   base::StringPiece GetLogPrefix() override { return "WebGPUDecoderImpl"; }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
                                               uint32_t texture_target,
                                               gl::GLImage* image) override {
