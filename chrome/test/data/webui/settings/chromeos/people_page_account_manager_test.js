@@ -46,6 +46,7 @@ class TestAccountManagerBrowserProxy extends TestBrowserProxy {
         isDeviceAccount: false,
         isSignedIn: true,
         unmigrated: false,
+        isManaged: true,
         fullName: 'Secondary Account 1',
         email: 'user1@example.com',
         pic: '',

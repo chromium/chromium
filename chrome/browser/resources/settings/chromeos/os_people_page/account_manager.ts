@@ -17,44 +17,40 @@ import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingChangeValue} from '../../mojom-webui/search/user_action_recorder.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {assertExists} from '../assert_extras.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 import {ParentalControlsBrowserProxyImpl} from '../parental_controls_page/parental_controls_browser_proxy.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getTemplate} from './account_manager.html.js';
 import {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsAccountManagerElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      I18nBehavior,
-      WebUIListenerBehavior,
-      RouteObserverBehavior,
-    ],
-    PolymerElement);
+const SettingsAccountManagerElementBase = RouteObserverMixin(
+    WebUiListenerMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-/** @polymer */
+interface SettingsAccountManagerElement {
+  $: {
+    removeConfirmationDialog: CrDialogElement,
+  };
+}
+
 class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
   static get is() {
-    return 'settings-account-manager';
+    return 'settings-account-manager' as const;
   }
 
   static get template() {
@@ -63,10 +59,6 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
 
   static get properties() {
     return {
-      /**
-       * List of Accounts.
-       * @type {!Array<Account>}
-       */
       accounts_: {
         type: Array,
         value() {
@@ -76,17 +68,14 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
 
       /**
        * Primary / Device account.
-       * @private {?Account}
        */
       deviceAccount_: Object,
 
       /**
        * The targeted account for menu operations.
-       * @private {?Account}
        */
       actionMenuAccount_: Object,
 
-      /** @private {boolean} */
       isChildUser_: {
         type: Boolean,
         value() {
@@ -94,10 +83,6 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
         },
       },
 
-      /**
-       * True if device account is managed.
-       * @private {boolean}
-       */
       isDeviceAccountManaged_: {
         type: Boolean,
         value() {
@@ -107,9 +92,8 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
       },
 
       /**
-       * @return {boolean} True if secondary account sign-ins are allowed, false
-       *    otherwise.
-       * @private
+       * @return true if secondary account sign-ins are allowed, false
+       *  otherwise.
        */
       isSecondaryGoogleAccountSigninAllowed_: {
         type: Boolean,
@@ -119,9 +103,8 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
       },
 
       /**
-       * @return {boolean} True if `kArcAccountRestrictionsEnabled` feature is
-       *     enabled, false otherwise.
-       * @private
+       * @return true if `kArcAccountRestrictionsEnabled` feature is
+       * enabled, false otherwise.
        */
       isArcAccountRestrictionsEnabled_: {
         type: Boolean,
@@ -132,11 +115,10 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kAddAccount,
           Setting.kRemoveAccount,
         ]),
@@ -144,31 +126,33 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
     };
   }
 
+  private accounts_: Account[];
+  private actionMenuAccount_: Account|null;
+  private browserProxy_: AccountManagerBrowserProxy;
+  private deviceAccount_: Account|null;
+  private isArcAccountRestrictionsEnabled_: boolean;
+  private isChildUser_: boolean;
+  private isDeviceAccountManaged_: boolean;
+  private isSecondaryGoogleAccountSigninAllowed_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!AccountManagerBrowserProxy} */
     this.browserProxy_ = AccountManagerBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
-    this.addWebUIListener('accounts-changed', this.refreshAccounts_.bind(this));
+    this.addWebUiListener('accounts-changed', this.refreshAccounts_.bind(this));
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
     this.refreshAccounts_();
   }
 
-  /**
-   * @param {!Route} newRoute
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(newRoute, oldRoute) {
+  override currentRouteChanged(newRoute: Route): void {
     if (newRoute !== routes.ACCOUNT_MANAGER) {
       return;
     }
@@ -176,22 +160,14 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
     this.attemptDeepLink();
   }
 
-  /**
-   * @return {string} account manager description text.
-   * @private
-   */
-  getAccountManagerDescription_() {
+  private getAccountManagerDescription_(): string {
     if (this.isChildUser_ && this.isSecondaryGoogleAccountSigninAllowed_) {
       return loadTimeData.getString('accountManagerChildDescription');
     }
     return loadTimeData.getString('accountManagerDescription');
   }
 
-  /**
-   * @return {string} account manager 'add account' label.
-   * @private
-   */
-  getAddAccountLabel_() {
+  private getAddAccountLabel_(): string {
     if (this.isChildUser_ && this.isSecondaryGoogleAccountSigninAllowed_) {
       return loadTimeData.getString('addSchoolAccountLabel');
     }
@@ -199,73 +175,48 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
   }
 
   /**
-   * @return {string} accounts list header (e.g. 'Secondary accounts' for
-   *     regular users or 'School accounts' for child users).
-   * @private
+   * @return accounts list header (e.g. 'Secondary accounts' for
+   * regular users or 'School accounts' for child users).
    */
-  getAccountListHeader_() {
+  private getAccountListHeader_(): string {
     return this.isChildUser_ ?
         loadTimeData.getString('accountListHeaderChild') :
         loadTimeData.getString('accountListHeader');
   }
 
-  /**
-   * @return {string} accounts list description.
-   * @private
-   */
-  getAccountListDescription_() {
+  private getAccountListDescription_(): string {
     return this.isChildUser_ ?
         loadTimeData.getString('accountListChildDescription') :
         loadTimeData.getString('accountListDescription');
   }
 
-  /**
-   * @return {string} 'Secondary Accounts disabled' message depending on
-   *    account type
-   * @private
-   */
-  getSecondaryAccountsDisabledUserMessage_() {
-    return this.isChildUser_
-      ? this.i18n('accountManagerSecondaryAccountsDisabledChildText')
-      : this.i18n('accountManagerSecondaryAccountsDisabledText');
+  private getSecondaryAccountsDisabledUserMessage_(): string {
+    return this.isChildUser_ ?
+        this.i18n('accountManagerSecondaryAccountsDisabledChildText') :
+        this.i18n('accountManagerSecondaryAccountsDisabledText');
   }
 
-  /**
-   * @return {string} class name for account list header class.
-   * @private
-   */
-  getAccountListHeaderClass_() {
+  private getAccountListHeaderClass_(): string {
     return this.isArcAccountRestrictionsEnabled_ ?
         'account-list-header-description with-padding' :
         'account-list-header-description';
   }
 
   /**
-   * @param {string} iconUrl
-   * @return {string} A CSS image-set for multiple scale factors.
-   * @private
+   * @return a CSS image-set for multiple scale factors.
    */
-  getIconImageSet_(iconUrl) {
+  private getIconImageSet_(iconUrl: string): string {
     return getImage(iconUrl);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  addAccount_(event) {
+  private addAccount_(): void {
     recordSettingChange(
-        Setting.kAddAccount, {intValue: this.accounts_.length + 1});
+        Setting.kAddAccount,
+        {intValue: this.accounts_.length + 1} as SettingChangeValue);
     this.browserProxy_.addAccount();
   }
 
-  /**
-   * @param {!Account} account
-   * @return {boolean} True if the account reauthentication button should be
-   *    shown, false otherwise.
-   * @private
-   */
-  shouldShowReauthenticationButton_(account) {
+  private shouldShowReauthenticationButton_(account: Account): boolean {
     // Device account re-authentication cannot be handled in-session, primarily
     // because the user may have changed their password (leading to an LST
     // invalidation) and we do not have a mechanism to change the cryptohome
@@ -274,19 +225,14 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
   }
 
   /**
-   * @return {boolean} True if managed badge should be shown next to the device
-   *     account picture.
-   * @private
+   * @return true if managed badge should be shown next to the device
+   * account picture.
    */
-  shouldShowManagedBadge_() {
+  private shouldShowManagedBadge_(): boolean {
     return this.isDeviceAccountManaged_ && !this.isChildUser_;
   }
 
-  /**
-   * @return {string} icon
-   * @private
-   */
-  getManagedAccountTooltipIcon_() {
+  private getManagedAccountTooltipIcon_(): string {
     if (this.isChildUser_) {
       return 'cr20:kite';
     }
@@ -296,17 +242,14 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
     return '';
   }
 
-  /**
-   * @return {string} description text
-   * @private
-   */
-  getManagementDescription_() {
+  private getManagementDescription_(): string {
     if (this.isChildUser_) {
       return loadTimeData.getString('accountManagerManagementDescription');
     }
     if (!this.deviceAccount_) {
       return '';
     }
+    assertExists(this.deviceAccount_.organization);
     if (!this.deviceAccount_.organization) {
       if (this.isDeviceAccountManaged_) {
         console.error(
@@ -322,57 +265,34 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
         this.deviceAccount_.organization);
   }
 
-  /**
-   * @param {boolean} unmigrated
-   * @private
-   */
-  getAccountManagerSignedOutName_(unmigrated) {
-    return this.i18n(unmigrated ? 'accountManagerUnmigratedAccountName'
-                                : 'accountManagerSignedOutAccountName');
+  private getAccountManagerSignedOutName_(unmigrated: boolean): string {
+    return this.i18n(
+        unmigrated ? 'accountManagerUnmigratedAccountName' :
+                     'accountManagerSignedOutAccountName');
   }
 
-  /**
-   * @param {boolean} unmigrated
-   * @private
-   */
-  getAccountManagerSignedOutLabel_(unmigrated) {
-    return this.i18n(unmigrated ? 'accountManagerMigrationLabel'
-                                : 'accountManagerReauthenticationLabel');
+  private getAccountManagerSignedOutLabel_(unmigrated: boolean): string {
+    return this.i18n(
+        unmigrated ? 'accountManagerMigrationLabel' :
+                     'accountManagerReauthenticationLabel');
   }
 
-
-  /**
-   * @param {!Account} account
-   * @private
-   */
-  getAccountManagerSignedOutTitle_(account) {
-    const label = account.unmigrated ? 'accountManagerMigrationTooltip'
-                                     : 'accountManagerReauthenticationTooltip';
+  private getAccountManagerSignedOutTitle_(account: Account): string {
+    const label = account.unmigrated ? 'accountManagerMigrationTooltip' :
+                                       'accountManagerReauthenticationTooltip';
     return loadTimeData.getStringF(label, account.email);
   }
 
-  /**
-   * @param {!Account} account
-   * @private
-   */
-  getMoreActionsTitle_(account) {
-    return loadTimeData.getStringF('accountManagerMoreActionsTooltip',
-                                    account.email);
+  private getMoreActionsTitle_(account: Account): string {
+    return loadTimeData.getStringF(
+        'accountManagerMoreActionsTooltip', account.email);
   }
 
-  /**
-   * @return {!Array<Account>} list of accounts.
-   * @private
-   */
-  getSecondaryAccounts_() {
+  private getSecondaryAccounts_(): Account[] {
     return this.accounts_.filter(account => !account.isDeviceAccount);
   }
 
-  /**
-   * @param {!CustomEvent<!{model: !{item: !Account}}>} event
-   * @private
-   */
-  onReauthenticationTap_(event) {
+  private onReauthenticationTap_(event: DomRepeatEvent<Account>) {
     if (event.model.item.unmigrated) {
       this.browserProxy_.migrateAccount(event.model.item.email);
     } else {
@@ -380,45 +300,28 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
     }
   }
 
-  /**
-   * @private
-   *
-   * TODO(crbug/1315757) ParentalControlsBrowserProxy is in TS so
-   * suppress the closure compilation error for launchFamilyLinkSettings()
-   * until this element is converted to TS.
-   * @suppress {missingProperties}
-   */
-  onManagedIconClick_() {
+  private onManagedIconClick_(): void {
     if (this.isChildUser_) {
       ParentalControlsBrowserProxyImpl.getInstance().launchFamilyLinkSettings();
     }
   }
 
-  /**
-   * @private
-   */
-  refreshAccounts_() {
-    this.browserProxy_.getAccounts().then(accounts => {
-      this.set('accounts_', accounts);
-      const deviceAccount = accounts.find(account => account.isDeviceAccount);
-      if (!deviceAccount) {
-        console.error('Cannot find device account.');
-        return;
-      }
-      this.deviceAccount_ = deviceAccount;
-    });
+  private async refreshAccounts_(): Promise<void> {
+    const accounts = await this.browserProxy_.getAccounts();
+    this.set('accounts_', accounts);
+    const deviceAccount = accounts.find(account => account.isDeviceAccount);
+    if (!deviceAccount) {
+      console.error('Cannot find device account.');
+      return;
+    }
+    this.deviceAccount_ = deviceAccount;
   }
 
-  /**
-   * Opens the Account actions menu.
-   * @param {!{model: !{item: Account}, target: !HTMLElement}} event
-   * @private
-   */
-  onAccountActionsMenuButtonTap_(event) {
+  private onAccountActionsMenuButtonTap_(event: DomRepeatEvent<Account>) {
     this.actionMenuAccount_ = event.model.item;
-    /** @type {!CrActionMenuElement} */ (
-        this.shadowRoot.querySelector('cr-action-menu'))
-        .showAt(event.target);
+
+    assertInstanceof(event.target, HTMLElement);
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(event.target);
   }
 
   /**
@@ -426,50 +329,49 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
    * |this.actionMenuAccount_|.
    * If Lacros is enabled, shows a warning dialog that the user needs to
    * confirm before removing the account.
-   * @private
    */
-  onRemoveAccountTap_() {
-    this.shadowRoot.querySelector('cr-action-menu').close();
+  private onRemoveAccountTap_(): void {
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
+    assertExists(this.actionMenuAccount_);
     if (loadTimeData.getBoolean('lacrosEnabled') &&
         this.actionMenuAccount_.isManaged) {
       this.$.removeConfirmationDialog.showModal();
     } else {
-      this.browserProxy_.removeAccount(
-          /** @type {?Account} */ (this.actionMenuAccount_));
+      this.browserProxy_.removeAccount(this.actionMenuAccount_);
       this.actionMenuAccount_ = null;
-      this.shadowRoot.querySelector('#add-account-button').focus();
+      this.shadowRoot!.querySelector<CrButtonElement>(
+                          '#add-account-button')!.focus();
     }
   }
 
   /**
    * The user chooses not to remove the account after seeing the warning
    * dialog, and taps the cancel button.
-   * @private
    */
-  onRemoveAccountDialogCancelTap_() {
+  private onRemoveAccountDialogCancelTap_(): void {
     this.actionMenuAccount_ = null;
     this.$.removeConfirmationDialog.cancel();
-    this.shadowRoot.querySelector('#add-account-button').focus();
+    this.shadowRoot!.querySelector<CrButtonElement>(
+                        '#add-account-button')!.focus();
   }
 
   /**
    * After seeing the warning dialog, the user chooses to removes the account
    * pointed to by |this.actionMenuAccount_|, and taps the remove button.
-   * @private
    */
-  onRemoveAccountDialogRemoveTap_() {
-    this.browserProxy_.removeAccount(
-        /** @type {?Account} */ (this.actionMenuAccount_));
+  private onRemoveAccountDialogRemoveTap_(): void {
+    assertExists(this.actionMenuAccount_);
+    this.browserProxy_.removeAccount(this.actionMenuAccount_);
     this.actionMenuAccount_ = null;
     this.$.removeConfirmationDialog.close();
-    this.shadowRoot.querySelector('#add-account-button').focus();
+    this.shadowRoot!.querySelector<CrButtonElement>(
+                        '#add-account-button')!.focus();
   }
 
   /**
    * Get the test for button that changes ARC availability.
-   * @private
    */
-  getChangeArcAvailabilityLabel_() {
+  private getChangeArcAvailabilityLabel_(): string {
     if (!this.actionMenuAccount_) {
       return '';
     }
@@ -482,29 +384,37 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
    * Change ARC availability for |this.actionMenuAccount_|.
    * Closes the 'More actions' menu and focuses the 'More actions' button for
    * |this.actionMenuAccount_|.
-   * @private
    */
-  onChangeArcAvailability_() {
-    this.shadowRoot.querySelector('cr-action-menu').close();
+  private onChangeArcAvailability_(): void {
+    assertExists(this.actionMenuAccount_);
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
     const newArcAvailability = !this.actionMenuAccount_.isAvailableInArc;
     this.browserProxy_.changeArcAvailability(
         this.actionMenuAccount_, newArcAvailability);
 
     const actionMenuAccountIndex =
-        this.shadowRoot.querySelector('#account-list')
-            .items.indexOf(this.actionMenuAccount_);
+        this.shadowRoot!.querySelector<DomRepeat>('#account-list')!.items!
+            .indexOf(this.actionMenuAccount_);
     if (actionMenuAccountIndex >= 0) {
       // Focus 'More actions' button for the current account.
-      this.shadowRoot
-          .querySelectorAll('.icon-more-vert')[actionMenuAccountIndex]
+      this.shadowRoot!
+          .querySelectorAll<HTMLElement>(
+              '.icon-more-vert')[actionMenuAccountIndex]
           .focus();
     } else {
       console.error(
           'Couldn\'t find active account in the list: ',
           this.actionMenuAccount_);
-      this.shadowRoot.querySelector('#add-account-button').focus();
+      this.shadowRoot!.querySelector<CrButtonElement>(
+                          '#add-account-button')!.focus();
     }
     this.actionMenuAccount_ = null;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsAccountManagerElement.is]: SettingsAccountManagerElement;
   }
 }
 
