@@ -748,8 +748,7 @@ See
 [chrome/updater/update_service.h](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/update_service.h)
 for the `UpdateService` RPC interface definition.
 
-*Windows-Only*: There are two broad modes in which `UpdateService::Update`
-operates:
+There are two broad modes in which `UpdateService::Update` operates:
 * `do_update_check_only` is `true`: `UpdateService::Update` only checks if there
   is an update.
 * `do_update_check_only` is `false`: `UpdateService::Update` checks if there is
