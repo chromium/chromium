@@ -1097,7 +1097,9 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 - (BOOL)isStartSurface {
-  DCHECK(self.webState);
+  if (!self.started || !self.webState) {
+    return NO;
+  }
   NewTabPageTabHelper* NTPHelper =
       NewTabPageTabHelper::FromWebState(self.webState);
   return NTPHelper && NTPHelper->ShouldShowStartSurface();
