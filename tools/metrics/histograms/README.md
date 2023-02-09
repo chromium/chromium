@@ -645,6 +645,23 @@ with the histogram. If there isn't a parallel DIR_METADATA file with such a
 component, but a parent directory has one, then the parent directory's component
 is used.
 
+### Improvement Direction
+For some histograms, an increase or a decrease in the reported values can be
+associated with either an improvement or a deterioration. For example, if you
+are tracking page load speed, then seeing your metrics tracking page load time
+in milliseconds getting gradually larger values, perhaps as the result of a
+Finch study, may signify worse performance; on the contrary, seeing a reduction
+in the page load speed may indicate an improvement. You can provide this
+information on the movement direction by adding a tag
+ `<improvement direction="LOWER_IS_BETTER"/>` within your `<histogram>`. The
+opposite is `<improvement direction="HIGHER_IS_BETTER"/>`.
+
+For other histograms where there may not be a movement direction that's clearly
+better, you can set `<improvement direction="NEITHER_IS_BETTER"/>`.
+
+This `<improvement>` tag is optional. You can also add/delete this tag or make a
+correction to its `direction` attribute any time.
+
 ### Cleaning Up Histogram Entries {#obsolete}
 
 If a histogram is no longer being emitted to, there are two options to clean up
