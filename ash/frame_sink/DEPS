@@ -1,0 +1,11 @@
+include_rules = [
+  "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
+  "+gpu/command_buffer/client/shared_image_interface.h",
+  "+gpu/command_buffer/common/gpu_memory_buffer_support.h",
+  "+gpu/command_buffer/common/shared_image_usage.h",
+  "+gpu/command_buffer/common/mailbox.h",
+  "+gpu/command_buffer/common/sync_token.h",
+  "+cc/trees/layer_tree_frame_sink.h",
+  "+cc/trees/layer_tree_frame_sink_client.h",
+  "+cc/scheduler/scheduler.h",
+]
