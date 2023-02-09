@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/util/display_util.h"
@@ -69,7 +70,12 @@ bool ForceFirstDisplayInternal() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Touch view mode is only available to internal display. We force the
   // display as internal for emulator to test touch view mode.
-  ret = ret || ash::system::StatisticsProvider::GetInstance()->IsRunningOnVm();
+  // However, display mode change is only available to external display. To run
+  // tests on a different display mode from default we will need to set the flag
+  // --drm-virtual-connector-is-external.
+  ret = ret ||
+        (ash::system::StatisticsProvider::GetInstance()->IsRunningOnVm() &&
+         !command_line->HasSwitch(switches::kDRMVirtualConnectorIsExternal));
 #endif
   return ret;
 }

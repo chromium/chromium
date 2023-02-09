@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -26,6 +27,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
@@ -121,8 +123,6 @@ display::DisplayConnectionType GetDisplayType(drmModeConnector* connector) {
     case DRM_MODE_CONNECTOR_DVID:
     case DRM_MODE_CONNECTOR_DVIA:
       return display::DISPLAY_CONNECTION_TYPE_DVI;
-    case DRM_MODE_CONNECTOR_VIRTUAL:
-      // A display on VM is treated as an internal display.
     case DRM_MODE_CONNECTOR_LVDS:
     case DRM_MODE_CONNECTOR_eDP:
     case DRM_MODE_CONNECTOR_DSI:
@@ -132,6 +132,14 @@ display::DisplayConnectionType GetDisplayType(drmModeConnector* connector) {
     case DRM_MODE_CONNECTOR_HDMIA:
     case DRM_MODE_CONNECTOR_HDMIB:
       return display::DISPLAY_CONNECTION_TYPE_HDMI;
+    case DRM_MODE_CONNECTOR_VIRTUAL:
+      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kDRMVirtualConnectorIsExternal)) {
+        return display::DISPLAY_CONNECTION_TYPE_UNKNOWN;
+      }
+      // A display on VM is treated as an internal display unless flag
+      // --drm-virtual-connector-is-external is present.
+      return display::DISPLAY_CONNECTION_TYPE_INTERNAL;
     default:
       return display::DISPLAY_CONNECTION_TYPE_UNKNOWN;
   }

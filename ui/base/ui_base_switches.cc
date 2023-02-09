@@ -42,6 +42,10 @@ const char kDisableTouchDragDrop[] = "disable-touch-drag-drop";
 const char kDisallowNonExactResourceReuse[] =
     "disallow-non-exact-resource-reuse";
 
+// Treats DRM virtual connector as external to enable display mode change in VM.
+const char kDRMVirtualConnectorIsExternal[] =
+    "drm-virtual-connector-is-external";
+
 // Enables touch event based drag and drop.
 const char kEnableTouchDragDrop[] = "enable-touch-drag-drop";
 
