@@ -9,9 +9,8 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
@@ -181,61 +180,31 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
 
  protected:
   base::expected<std::string, GoogleServiceAuthError> GetChallengeBytes() {
-    base::expected<std::string, GoogleServiceAuthError> response;
-    base::RunLoop run_loop;
-    SecondDeviceAuthBroker::ChallengeBytesCallback callback =
-        base::BindLambdaForTesting(
-            [&response, &run_loop](
-                const base::expected<std::string, GoogleServiceAuthError>&
-                    returned_response) -> void {
-              response = returned_response;
-              run_loop.Quit();
-            });
-    second_device_auth_broker_.GetChallengeBytes(std::move(callback));
-    run_loop.Run();
-
-    return response;
+    base::test::TestFuture<
+        const base::expected<std::string, GoogleServiceAuthError>&>
+        future;
+    second_device_auth_broker_.GetChallengeBytes(future.GetCallback());
+    return future.Get();
   }
 
   base::expected<std::string, SecondDeviceAuthBroker::AttestationErrorType>
   FetchAttestationCertificate(const std::string& fido_credential_id) {
-    base::expected<std::string, SecondDeviceAuthBroker::AttestationErrorType>
-        response;
-    base::RunLoop run_loop;
-    SecondDeviceAuthBroker::AttestationCertificateCallback callback =
-        base::BindLambdaForTesting(
-            [&response, &run_loop](
-                const base::expected<
-                    std::string, SecondDeviceAuthBroker::AttestationErrorType>&
-                    returned_response) -> void {
-              response = returned_response;
-              run_loop.Quit();
-            });
-    second_device_auth_broker_.FetchAttestationCertificate(fido_credential_id,
-                                                           std::move(callback));
-    run_loop.Run();
-
-    return response;
+    base::test::TestFuture<const base::expected<
+        std::string, SecondDeviceAuthBroker::AttestationErrorType>&>
+        future;
+    second_device_auth_broker_.FetchAttestationCertificate(
+        fido_credential_id, future.GetCallback());
+    return future.Get();
   }
 
   SecondDeviceAuthBroker::RefreshTokenResponse FetchRefreshToken(
       const FidoAssertionInfo& fido_assertion_info,
       const std::string& certificate) {
-    SecondDeviceAuthBroker::RefreshTokenResponse response;
-    base::RunLoop run_loop;
-    SecondDeviceAuthBroker::RefreshTokenCallback callback =
-        base::BindLambdaForTesting(
-            [&response,
-             &run_loop](const SecondDeviceAuthBroker::RefreshTokenResponse&
-                            returned_response) -> void {
-              response = returned_response;
-              run_loop.Quit();
-            });
+    base::test::TestFuture<const SecondDeviceAuthBroker::RefreshTokenResponse&>
+        future;
     second_device_auth_broker_.FetchRefreshToken(
-        fido_assertion_info, certificate, std::move(callback));
-    run_loop.Run();
-
-    return response;
+        fido_assertion_info, certificate, future.GetCallback());
+    return future.Get();
   }
 
   void AddFakeResponse(const std::string& url,
