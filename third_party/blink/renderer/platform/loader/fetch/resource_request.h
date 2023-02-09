@@ -546,6 +546,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
     return render_blocking_behavior_;
   }
 
+  void SetHasStorageAccess(bool has_storage_access) {
+    has_storage_access_ = has_storage_access;
+  }
+  bool GetHasStorageAccess() const { return has_storage_access_; }
+
  private:
   const CacheControlHeader& GetCacheControlHeader() const;
 
@@ -663,6 +668,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   scoped_refptr<
       base::RefCountedData<base::flat_set<net::SourceStream::SourceType>>>
       devtools_accepted_stream_types_;
+
+  bool has_storage_access_ = false;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

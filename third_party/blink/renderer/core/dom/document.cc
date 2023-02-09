@@ -6068,6 +6068,19 @@ void Document::PermissionServiceConnectionError() {
   data_->permission_service_.reset();
 }
 
+// TODO(crbug.com/1401089): This method currently always returns false since
+// nothing sets the HasStorageAccess member in `dom_window_`. It's not tied
+// to an end point yet thus not affecting current behavior.
+bool Document::HasStorageAccess() const {
+  DCHECK(GetExecutionContext());
+  DCHECK(dom_window_);
+  return TopFrameOrigin() &&
+         !GetExecutionContext()->GetSecurityOrigin()->IsOpaque() &&
+         dom_window_->isSecureContext() && dom_window_->HasStorageAccess();
+}
+
+// TODO(crbug.com/1401089): Update the method to return the result from
+// `HasStorageAccess()`;
 ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
   const bool has_access =
       TopFrameOrigin() && GetExecutionContext() &&

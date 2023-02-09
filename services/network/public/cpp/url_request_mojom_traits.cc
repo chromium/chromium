@@ -222,6 +222,7 @@ bool StructTraits<
   out->is_favicon = data.is_favicon();
   out->original_destination = data.original_destination();
   out->target_ip_address_space = data.target_ip_address_space();
+  out->has_storage_access = data.has_storage_access();
   return true;
 }
 

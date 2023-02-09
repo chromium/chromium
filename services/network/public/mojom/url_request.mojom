@@ -483,6 +483,16 @@ struct URLRequest {
   // Clients outside the network service must not set this field to a value
   // other than `kUnknown`.
   IPAddressSpace target_ip_address_space;
+
+  // True if the request is eligible for using Storage Access API grant (if
+  // one exists). This is secure since the renderer cannot forge a new storage
+  // access permission grant, so the renderer would not be able to gain access
+  // to unpartitioned cookies without also compromising the browser process or
+  // the network service. If permission has already been granted, then the
+  // compromised renderer would be able to access unpartitioned cookies. But by
+  // assumption, the browser process has already determined that this access is
+  // ok.
+  bool has_storage_access;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

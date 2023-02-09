@@ -1198,6 +1198,9 @@ class CORE_EXPORT Document : public ContainerNode,
   ScriptPromise requestStorageAccess(ScriptState* script_state);
   ScriptPromise requestStorageAccessForOrigin(ScriptState* script_state,
                                               const AtomicString& site);
+  // Returns whether the window has obtained storage access. Must be called on
+  // active documents.
+  bool HasStorageAccess() const;
 
   // Fragment directive API, currently used to feature detect text-fragments.
   // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
