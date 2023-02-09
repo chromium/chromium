@@ -63,7 +63,7 @@
         aria-label="$i18n{defaultColorName}"
         role="radio"
         checked="[[isDefaultColorSelected_]]"
-        aria-checked$="[[isDefaultColorSelected_]]"
+        aria-checked$="[[boolToString_(isDefaultColorSelected_)]]"
         tabindex$="[[tabIndex_(isDefaultColorSelected_)]]"
         on-click="onDefaultColorClick_">
     </customize-chrome-color>
@@ -77,7 +77,7 @@
         aria-label="$i18n{mainColorName}"
         role="radio"
         checked="[[isMainColorSelected_]]"
-        aria-checked$="[[isMainColorSelected_]]"
+        aria-checked$="[[boolToString_(isMainColorSelected_)]]"
         tabindex$="[[tabIndex_(isMainColorSelected_)]]"
         on-click="onMainColorClick_">
     </customize-chrome-color>
@@ -93,7 +93,7 @@
         role="radio"
         checked="[[isChromeColorSelected_(item.seed, selectedColor_)]]"
         aria-checked$=
-            "[[isChromeColorSelected_(item.seed, selectedColor_)]]"
+            "[[getChromeColorCheckedStatus_(item.seed, selectedColor_)]]"
         tabindex$="[[chromeColorTabIndex_(item.seed, selectedColor_)]]"
         on-click="onChromeColorClick_">
     </customize-chrome-color>
@@ -102,7 +102,7 @@
       title="$i18n{colorPickerLabel}"
       aria-label="$i18n{colorPickerLabel}"
       role="radio"
-      aria-checked$="[[isCustomColorSelected_]]"
+      aria-checked$="[[boolToString_(isCustomColorSelected_)]]"
       tabindex$="[[tabIndex_(isCustomColorSelected_)]]"
       on-click="onCustomColorClick_">
     <customize-chrome-color
