@@ -272,11 +272,12 @@ ProfileAttributesStorage::ProfileAttributesStorage(
   ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
   base::Value::Dict& attributes = update.Get();
   for (auto kv : attributes) {
-    base::Value& info = kv.second;
-    std::string* name = info.FindStringKey(ProfileAttributesEntry::kNameKey);
+    DCHECK(kv.second.is_dict());
+    base::Value::Dict& info = kv.second.GetDict();
+    std::string* name = info.FindString(ProfileAttributesEntry::kNameKey);
 
     absl::optional<bool> using_default_name =
-        info.FindBoolKey(ProfileAttributesEntry::kIsUsingDefaultNameKey);
+        info.FindBool(ProfileAttributesEntry::kIsUsingDefaultNameKey);
     if (!using_default_name.has_value()) {
       // If the preference hasn't been set, and the name is default, assume
       // that the user hasn't done this on purpose.
@@ -285,15 +286,15 @@ ProfileAttributesStorage::ProfileAttributesStorage(
       using_default_name = IsDefaultProfileName(
           name ? base::UTF8ToUTF16(*name) : std::u16string(),
           /*include_check_for_legacy_profile_name=*/true);
-      info.SetBoolKey(ProfileAttributesEntry::kIsUsingDefaultNameKey,
-                      using_default_name.value());
+      info.Set(ProfileAttributesEntry::kIsUsingDefaultNameKey,
+               using_default_name.value());
     }
 
     // For profiles that don't have the "using default avatar" state set yet,
     // assume it's the same as the "using default name" state.
-    if (!info.FindBoolKey(ProfileAttributesEntry::kIsUsingDefaultAvatarKey)) {
-      info.SetBoolKey(ProfileAttributesEntry::kIsUsingDefaultAvatarKey,
-                      using_default_name.value());
+    if (!info.FindBool(ProfileAttributesEntry::kIsUsingDefaultAvatarKey)) {
+      info.Set(ProfileAttributesEntry::kIsUsingDefaultAvatarKey,
+               using_default_name.value());
     }
 
     // `info` may become invalid after this call.
