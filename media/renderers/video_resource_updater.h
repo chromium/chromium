@@ -131,7 +131,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   VideoFrameExternalResources CreateExternalResourcesFromVideoFrame(
       scoped_refptr<VideoFrame> video_frame);
 
-  viz::ResourceFormat YuvResourceFormat(int bits_per_channel);
+  viz::SharedImageFormat YuvSharedImageFormat(int bits_per_channel);
 
  private:
   class PlaneResource;
@@ -164,12 +164,12 @@ class MEDIA_EXPORT VideoResourceUpdater
   // Passing -1 for |plane_index| avoids returning referenced
   // resources.
   PlaneResource* RecycleOrAllocateResource(const gfx::Size& resource_size,
-                                           viz::ResourceFormat resource_format,
+                                           viz::SharedImageFormat si_format,
                                            const gfx::ColorSpace& color_space,
                                            VideoFrame::ID unique_id,
                                            int plane_index);
   PlaneResource* AllocateResource(const gfx::Size& plane_size,
-                                  viz::ResourceFormat format,
+                                  viz::SharedImageFormat format,
                                   const gfx::ColorSpace& color_space);
 
   // Create a copy of a texture-backed source video frame in a new GL_TEXTURE_2D

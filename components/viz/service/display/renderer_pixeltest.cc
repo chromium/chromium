@@ -480,15 +480,15 @@ void CreateTestYUVVideoDrawQuad_FromVideoFrame(
     bits_per_channel = 10;
   }
 
-  ResourceFormat yuv_highbit_resource_format =
-      video_resource_updater->YuvResourceFormat(bits_per_channel);
+  SharedImageFormat yuv_highbit_resource_format =
+      video_resource_updater->YuvSharedImageFormat(bits_per_channel);
 
   float offset = 0.0f;
   float multiplier = 1.0f;
 
-  if (yuv_highbit_resource_format == R16_EXT) {
+  if (yuv_highbit_resource_format == SinglePlaneFormat::kR_16) {
     multiplier = 65535.0f / ((1 << bits_per_channel) - 1);
-  } else if (yuv_highbit_resource_format == LUMINANCE_F16) {
+  } else if (yuv_highbit_resource_format == SinglePlaneFormat::kLUMINANCE_F16) {
     std::unique_ptr<media::HalfFloatMaker> half_float_maker =
         media::HalfFloatMaker::NewHalfFloatMaker(bits_per_channel);
     offset = half_float_maker->Offset();
@@ -771,7 +771,8 @@ void CreateTestYUVVideoDrawQuad_NV12(
   std::vector<uint8_t> y_pixels(ya_tex_size.GetArea(), y);
   ResourceId resource_y = CreateGpuResource(
       child_context_provider, child_resource_provider, ya_tex_size,
-      video_resource_updater->YuvResourceFormat(8), color_space, y_pixels);
+      video_resource_updater->YuvSharedImageFormat(8).resource_format(),
+      color_space, y_pixels);
 
   // U goes in the R component and V goes in the G component.
   uint32_t rgba_pixel = (u << 24) | (v << 16);
