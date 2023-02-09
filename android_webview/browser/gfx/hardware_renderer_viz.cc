@@ -25,6 +25,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -398,6 +399,13 @@ void HardwareRendererViz::DrawAndSwap(const HardwareRendererDrawParams& params,
                                       const OverlaysParams& overlays_params) {
   TRACE_EVENT1("android_webview", "HardwareRendererViz::Draw", "vulkan",
                IsUsingVulkan());
+
+  if (!IsUsingVulkan()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Android.WebView.Gfx.GLDrawWasToFBO",
+        output_surface_provider_.gl_surface()->IsDrawingToFBO());
+  }
+
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
   // Release the context before returning, it is required for the external ANGLE

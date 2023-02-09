@@ -4282,6 +4282,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Gfx.GLDrawWasToFBO" units="Boolean"
+    expires_after="2023-12-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    For each draw in GL that WebView does on request from HWUI, records whether
+    the draw was done into the FBO or not.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Gfx.HardwareDrawType"
     enum="WebViewDrawAndSubmissionType" expires_after="2023-07-30">
   <owner>vasilyt@chromium.org</owner>
