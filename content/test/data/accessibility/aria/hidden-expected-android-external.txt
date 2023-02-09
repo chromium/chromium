@@ -1,3 +1,4 @@
 WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++TextView hint:"b" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hint="b"]
-++TextView hint:"c" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hint="c"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++TextView hint:"b" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hint="b"]
+++++TextView hint:"c" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hint="c"]

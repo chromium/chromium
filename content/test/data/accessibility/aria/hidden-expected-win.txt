@@ -1,3 +1,4 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_SECTION description='b'
-++IA2_ROLE_SECTION description='c'
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION description='b'
+++++IA2_ROLE_SECTION description='c'

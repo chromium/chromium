@@ -1,5 +1,5 @@
 rootWebArea htmlTag='#document'
 ++genericContainer ignored htmlTag='html'
-++++genericContainer ignored htmlTag='body'
+++++genericContainer htmlTag='body'
 ++++++genericContainer ignored htmlTag='my-element'
 ++++++++genericContainer ignored htmlTag='div'

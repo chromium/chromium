@@ -1,4 +1,5 @@
 WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"span-A4" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
-++View text:"span-A2" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
-++TextView text:"span-C" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View text:"span-A4" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
+++++View text:"span-A2" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
+++++TextView text:"span-C" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]

@@ -387,23 +387,6 @@ AXObjectInclusion AXLayoutObject::DefaultObjectInclusion(
   return AXObject::DefaultObjectInclusion(ignored_reasons);
 }
 
-static bool HasLineBox(const LayoutBlockFlow& block_flow) {
-  if (!block_flow.IsLayoutNGObject())
-    return block_flow.FirstLineBox();
-
-  // TODO(layout-dev): We should call this function after layout completion.
-  NGInlineCursor cursor(block_flow);
-  if (!cursor.HasRoot())
-    return false;
-
-  for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine()) {
-    if (!cursor.CurrentItem()->IsEmptyLineBox())
-      return true;
-  }
-
-  return false;
-}
-
 // Is this the anonymous placeholder for a text control?
 bool AXLayoutObject::IsPlaceholder() const {
   AXObject* parent_object = ParentObject();
@@ -593,24 +576,18 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
       return false;
   }
 
-  // Ignore layout objects that are block flows with inline children. These
-  // are usually dummy layout objects that pad out the tree, but there are
-  // some exceptions below.
+  // Ignore a block flow (display:block, display:inline-block), unless it
+  // directly parents inline children and can have a caret inside of it.
+  // This effectively trims a lot of uninteresting divs out of the tree.
   auto* block_flow = DynamicTo<LayoutBlockFlow>(*layout_object_);
-  if (block_flow && block_flow->ChildrenInline()) {
-    // If the layout object has any plain text in it, that text will be
-    // inside a LineBox, so the layout object will have a first LineBox.
-    const bool has_any_text = HasLineBox(*block_flow);
-
-    // Always include interesting-looking objects.
-    if (has_any_text || (node && node->HasAnyEventListeners(
-                                     event_util::MouseButtonEventTypes()))) {
+  if (block_flow && block_flow->ChildrenInline() && block_flow->FirstChild()) {
+    // Require the ability to contain a caret -- this requirement is not
+    // strictly necessary, and could be removed, but caused about 20 test
+    // changes on each platform.
+    NGInlineCursor cursor(*block_flow);
+    if (cursor.HasRoot()) {
       return false;
     }
-
-    if (ignored_reasons)
-      ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
-    return true;
   }
 
   // If setting enabled, do not ignore SVG grouping (<g>) elements.

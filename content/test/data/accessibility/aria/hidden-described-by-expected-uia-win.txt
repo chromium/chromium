@@ -1,4 +1,5 @@
 Document
-++Group Name='span-A3'
-++Group Name='span-B'
-++Group Name='span-C'
+++Group IsControlElement=false
+++++Group Name='span-A3'
+++++Group Name='span-B'
+++++Group Name='span-C'
