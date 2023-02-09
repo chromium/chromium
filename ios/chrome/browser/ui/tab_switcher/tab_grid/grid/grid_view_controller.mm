@@ -63,14 +63,9 @@ constexpr int kOpenTabsSectionIndex = 0;
 constexpr int kSuggestedActionsSectionIndex = 1;
 
 NSString* const kCellIdentifier = @"GridCellIdentifier";
-
 NSString* const kPlusSignCellIdentifier = @"PlusSignCellIdentifier";
-
 NSString* const kSuggestedActionsCellIdentifier =
     @"SuggestedActionsCellIdentifier";
-
-NSString* const kSuggestedActionsSectionIdentifier =
-    @"SuggestedActionsSectionIdentifier";
 
 // Creates an NSIndexPath with `index` in section 0.
 NSIndexPath* CreateIndexPath(NSInteger index) {
@@ -1368,7 +1363,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (CGFloat)offsetPastEndOfScrollView {
-  // Use collectionViewLayout.collectionViwContentSize because it has the
+  // Use collectionViewLayout.collectionViewContentSize because it has the
   // correct size during a batch update.
   return self.collectionView.contentOffset.x +
          self.collectionView.frame.size.width -
@@ -1744,6 +1739,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 #pragma mark - Public Editing Mode Selection
+
 - (void)selectAllItemsForEditing {
   if (_mode != TabGridModeSelection) {
     return;
