@@ -722,7 +722,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.HostnameHasDeviationCharacters" units="count"
-    expires_after="2023-06-04">
+    expires_after="2023-08-08">
   <owner>meacer@chromium.org</owner>
   <owner>chrome-trusty-transport@google.com</owner>
   <summary>
@@ -806,7 +806,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.LatencyAblation.ExcessWaitTime" units="ms"
-    expires_after="2023-06-04">
+    expires_after="2023-08-08">
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
   <summary>
@@ -1005,7 +1005,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.NavigationStartToBeforeUnloadForLegacy" units="ms"
-    expires_after="2023-06-04">
+    expires_after="2023-08-08">
   <owner>sky@chromium.org</owner>
   <owner>swarm-team@chromium.org</owner>
   <summary>
@@ -1018,7 +1018,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Navigation.NavigationStartToBeginWithAvoidUnnecessaryBeforeUnloadSync"
-    units="ms" expires_after="2023-06-04">
+    units="ms" expires_after="2023-08-08">
   <owner>sky@chromium.org</owner>
   <owner>swarm-team@chromium.org</owner>
   <summary>
@@ -1062,7 +1062,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.OnBeforeUnloadTotalTime" units="ms"
-    expires_after="2023-06-04">
+    expires_after="2023-08-08">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1090,7 +1090,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.Preconnect.PreresolveJobQueueingTime" units="ms"
-    expires_after="2023-06-04">
+    expires_after="2023-08-08">
   <owner>alexilin@chromium.org</owner>
   <owner>blundell@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
@@ -1103,7 +1103,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.Preconnect.PreresolveJobQueueLength" units="count"
-    expires_after="2023-06-04">
+    expires_after="2023-08-08">
   <owner>alexilin@chromium.org</owner>
   <owner>blundell@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
