@@ -974,7 +974,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   bool force_ignore_site_for_cookies_ = false;
   bool force_ignore_top_frame_party_for_cookies_ = false;
   bool force_main_frame_for_same_site_cookies_ = false;
-  CookieSettingOverrides cookie_setting_overrides_;
+  // TODO(https://crbug.com/1401089): this request ought to be ineligible for
+  // Storage Access API grants unless the requestor has opted in.
+  CookieSettingOverrides cookie_setting_overrides_ = CookieSettingOverrides(
+      CookieSettingOverride::kStorageAccessGrantEligible);
 
   absl::optional<url::Origin> initiator_;
   GURL delegate_redirect_url_;

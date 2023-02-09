@@ -4773,9 +4773,11 @@ class URLLoaderCookieSettingOverridesTest
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     if (IsCors() && IsOuterMostFrame()) {
       return net::CookieSettingOverrides(
+          net::CookieSettingOverride::kStorageAccessGrantEligible,
           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
     }
-    return net::CookieSettingOverrides();
+    return net::CookieSettingOverrides(
+        net::CookieSettingOverride::kStorageAccessGrantEligible);
   }
 
  private:

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -235,6 +236,15 @@ class CookieSettingsBaseStorageAccessAPITest
   CookieSettingsBaseStorageAccessAPITest() {
     CookieSettingsBase::SetStorageAccessAPIGrantsUnpartitionedStorageForTesting(
         PermissionGrantsUnpartitionedStorage());
+
+    std::vector<base::test::FeatureRefAndParams> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+    if (IsStoragePartitioned()) {
+      enabled.push_back({net::features::kThirdPartyStoragePartitioning, {}});
+    } else {
+      disabled.push_back(net::features::kThirdPartyStoragePartitioning);
+    }
+    features_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
   bool PermissionGrantsUnpartitionedStorage() const {
@@ -247,14 +257,18 @@ class CookieSettingsBaseStorageAccessAPITest
     // unpartitioned storage, or if storage is partitioned.
     return PermissionGrantsUnpartitionedStorage() || IsStoragePartitioned();
   }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_P(CookieSettingsBaseStorageAccessAPITest,
-       ShouldConsiderStorageAccessGrants) {
+       ShouldConsiderTopLevelStorageAccessGrants) {
   auto should_consider_for = [this](QueryReason query_reason) {
-    return CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
-        query_reason, PermissionGrantsUnpartitionedStorage(),
-        IsStoragePartitioned());
+    return CookieSettingsBase::
+        ShouldConsiderTopLevelStorageAccessGrantsInternal(
+            query_reason, PermissionGrantsUnpartitionedStorage(),
+            IsStoragePartitioned());
   };
 
   EXPECT_FALSE(should_consider_for(QueryReason::kSetting));
@@ -262,6 +276,28 @@ TEST_P(CookieSettingsBaseStorageAccessAPITest,
   EXPECT_EQ(should_consider_for(QueryReason::kSiteStorage),
             IsStorageGrantedByPermission());
   EXPECT_TRUE(should_consider_for(QueryReason::kCookies));
+}
+
+TEST_P(CookieSettingsBaseStorageAccessAPITest,
+       AddOverrideIfStorageIsRelevantToStorageAccessAPI) {
+  CallbackCookieSettings settings(
+      base::BindRepeating([](const GURL&) { return CONTENT_SETTING_ALLOW; }));
+
+  EXPECT_EQ(settings.AddOverrideIfStorageIsRelevantToStorageAccessAPI(
+                net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
+            IsStorageGrantedByPermission() || IsStoragePartitioned()
+                ? net::CookieSettingOverrides(
+                      net::CookieSettingOverride::kStorageAccessGrantEligible)
+                : net::CookieSettingOverrides());
+
+  // Make sure the helper didn't hardcode a particular enum variant:
+  EXPECT_EQ(
+      settings.AddOverrideIfStorageIsRelevantToStorageAccessAPI(
+          net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible, {}),
+      IsStorageGrantedByPermission() || IsStoragePartitioned()
+          ? net::CookieSettingOverrides(
+                net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible)
+          : net::CookieSettingOverrides());
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,

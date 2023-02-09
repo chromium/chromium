@@ -23,6 +23,7 @@
 #include "content/public/common/origin_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
@@ -74,7 +75,9 @@ void DurableStoragePermissionContext::DecidePermission(
           content_settings::CookieSettings::QueryReason::kSiteStorage) ||
       !cookie_settings->IsFullCookieAccessAllowed(
           requesting_origin, net::SiteForCookies::FromUrl(requesting_origin),
-          url::Origin::Create(requesting_origin), net::CookieSettingOverrides(),
+          url::Origin::Create(requesting_origin),
+          cookie_settings->AddOverrideIfStorageIsRelevantToStorageAccessAPI(
+              net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
           content_settings::CookieSettings::QueryReason::kSiteStorage)) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
                         std::move(callback), /*persist=*/false,

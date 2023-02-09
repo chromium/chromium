@@ -158,6 +158,9 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
+    if (IsStorageAccessAPIEnabled()) {
+      overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+    }
     if (IsTopLevelStorageAccessGrantEligible()) {
       overrides.Put(
           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);

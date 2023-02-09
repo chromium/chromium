@@ -282,11 +282,13 @@ bool NetworkServiceNetworkDelegate::
 
 bool NetworkServiceNetworkDelegate::OnCanQueueReportingReport(
     const url::Origin& origin) const {
-  return network_context_->cookie_manager()
-      ->cookie_settings()
-      .IsFullCookieAccessAllowed(
-          origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
-          net::CookieSettingOverrides(), QueryReason::kSiteStorage);
+  const CookieSettings& cookie_settings =
+      network_context_->cookie_manager()->cookie_settings();
+  return cookie_settings.IsFullCookieAccessAllowed(
+      origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
+      cookie_settings.AddOverrideIfStorageIsRelevantToStorageAccessAPI(
+          net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
+      QueryReason::kSiteStorage);
 }
 
 void NetworkServiceNetworkDelegate::OnCanSendReportingReports(
@@ -316,21 +318,25 @@ void NetworkServiceNetworkDelegate::OnCanSendReportingReports(
 bool NetworkServiceNetworkDelegate::OnCanSetReportingClient(
     const url::Origin& origin,
     const GURL& endpoint) const {
-  return network_context_->cookie_manager()
-      ->cookie_settings()
-      .IsFullCookieAccessAllowed(
-          origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
-          net::CookieSettingOverrides(), QueryReason::kSiteStorage);
+  const CookieSettings& cookie_settings =
+      network_context_->cookie_manager()->cookie_settings();
+  return cookie_settings.IsFullCookieAccessAllowed(
+      origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
+      cookie_settings.AddOverrideIfStorageIsRelevantToStorageAccessAPI(
+          net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
+      QueryReason::kSiteStorage);
 }
 
 bool NetworkServiceNetworkDelegate::OnCanUseReportingClient(
     const url::Origin& origin,
     const GURL& endpoint) const {
-  return network_context_->cookie_manager()
-      ->cookie_settings()
-      .IsFullCookieAccessAllowed(
-          origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
-          net::CookieSettingOverrides(), QueryReason::kSiteStorage);
+  const CookieSettings& cookie_settings =
+      network_context_->cookie_manager()->cookie_settings();
+  return cookie_settings.IsFullCookieAccessAllowed(
+      origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
+      cookie_settings.AddOverrideIfStorageIsRelevantToStorageAccessAPI(
+          net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
+      QueryReason::kSiteStorage);
 }
 
 absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>

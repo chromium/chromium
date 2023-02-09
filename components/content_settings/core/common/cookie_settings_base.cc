@@ -107,6 +107,7 @@ ContentSetting CookieSettingsBase::GetCookieSetting(
     net::CookieSettingOverrides overrides,
     content_settings::SettingSource* source,
     QueryReason query_reason) const {
+  DCheckOverridesConsistencyWithQueryReason(overrides, query_reason);
   return GetCookieSettingInternal(
       url, first_party_url,
       IsThirdPartyRequest(url, net::SiteForCookies::FromUrl(first_party_url)),
@@ -119,6 +120,7 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const absl::optional<url::Origin>& top_frame_origin,
     net::CookieSettingOverrides overrides,
     QueryReason query_reason) const {
+  DCheckOverridesConsistencyWithQueryReason(overrides, query_reason);
   ContentSetting setting = GetCookieSettingInternal(
       url,
       GetFirstPartyURL(site_for_cookies, base::OptionalToPtr(top_frame_origin)),
@@ -157,10 +159,41 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
 }
 
 bool CookieSettingsBase::ShouldConsiderStorageAccessGrants(
+    net::CookieSettingOverrides overrides) const {
+  return overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible);
+}
+
+void CookieSettingsBase::DCheckOverridesConsistencyWithQueryReason(
+    net::CookieSettingOverrides overrides,
     QueryReason query_reason) const {
-  return CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
-      query_reason, storage_access_api_grants_unpartitioned_storage_,
-      is_storage_partitioned_);
+  switch (query_reason) {
+    case QueryReason::kSetting:
+    case QueryReason::kPrivacySandbox:
+      DCHECK(overrides.Empty());
+      break;
+    case QueryReason::kSiteStorage:
+      DCHECK_EQ(overrides.Has(
+                    net::CookieSettingOverride::kStorageAccessGrantEligible),
+                storage_access_api_grants_unpartitioned_storage_ ||
+                    is_storage_partitioned_);
+      break;
+    case QueryReason::kCookies:
+      // Can't make any assertions here, since some kCookies callsites supply
+      // overrides, and some don't (because they don't need to or don't want
+      // to).
+      break;
+  }
+}
+
+net::CookieSettingOverrides
+CookieSettingsBase::AddOverrideIfStorageIsRelevantToStorageAccessAPI(
+    net::CookieSettingOverride override,
+    net::CookieSettingOverrides overrides) const {
+  if (storage_access_api_grants_unpartitioned_storage_ ||
+      is_storage_partitioned_) {
+    overrides.Put(override);
+  }
+  return overrides;
 }
 
 bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrants(
@@ -170,14 +203,13 @@ bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrants(
   // unlock unpartitioned storage more generally. It applies only to cookies.
   return overrides.Has(
              net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible) &&
-         CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
-             query_reason,
-             /*storage_access_api_grants_unpartitioned_storage=*/false,
+         CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrantsInternal(
+             query_reason, storage_access_api_grants_unpartitioned_storage_,
              is_storage_partitioned_);
 }
 
 // static
-bool CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
+bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrantsInternal(
     QueryReason query_reason,
     bool storage_access_api_grants_unpartitioned_storage,
     bool is_storage_partitioned) {

@@ -21,6 +21,7 @@
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/character_encoding.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -6835,12 +6836,14 @@ bool ChromeContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin) {
   // Persistent MediaDevice IDs are allowed if cookies are allowed.
-  return CookieSettingsFactory::GetForProfile(
-             Profile::FromBrowserContext(browser_context))
-      ->IsFullCookieAccessAllowed(
-          url, site_for_cookies, top_frame_origin,
-          net::CookieSettingOverrides(),
-          content_settings::CookieSettings::QueryReason::kSiteStorage);
+  scoped_refptr<content_settings::CookieSettings> cookie_settings =
+      CookieSettingsFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  return cookie_settings->IsFullCookieAccessAllowed(
+      url, site_for_cookies, top_frame_origin,
+      cookie_settings->AddOverrideIfStorageIsRelevantToStorageAccessAPI(
+          net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
+      content_settings::CookieSettings::QueryReason::kSiteStorage);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

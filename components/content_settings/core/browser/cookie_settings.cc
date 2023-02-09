@@ -218,7 +218,7 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
   bool storage_access_api_enabled =
       base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI);
   if (block && storage_access_api_enabled &&
-      ShouldConsiderStorageAccessGrants(query_reason)) {
+      ShouldConsiderStorageAccessGrants(overrides)) {
     ContentSetting host_setting = host_content_settings_map_->GetContentSetting(
         url, first_party_url, ContentSettingsType::STORAGE_ACCESS);
 

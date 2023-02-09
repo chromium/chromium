@@ -435,7 +435,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   net::CookieAccessResultList excluded_cookies = excluded_list;
   cookie_settings().AnnotateAndMoveUserBlockedCookies(
       url, site_for_cookies, &top_frame_origin, first_party_set_metadata_,
-      net::CookieSettingOverrides(), maybe_included_cookies, excluded_cookies);
+      GetCookieSettingOverrides(), maybe_included_cookies, excluded_cookies);
 
   std::vector<net::CookieWithAccessResult> result;
   std::vector<mojom::CookieOrLineWithAccessResultPtr>
@@ -852,7 +852,10 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
 net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides()
     const {
-  return net::CookieSettingOverrides();
+  // TODO(https://crbug.com/1401089): the overrides ought to exclude Storage
+  // Access API grants unless the frame has opted in.
+  return net::CookieSettingOverrides(
+      net::CookieSettingOverride::kStorageAccessGrantEligible);
 }
 
 }  // namespace network

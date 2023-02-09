@@ -96,24 +96,29 @@ class CookieSettingsBase {
   // choose to alter the value returned to the caller based on whether the
   // caller cares about the setting itself, or whether the caller just cares
   // about access to a particular cookie.
+  //
+  // TODO(https://crbug.com/1410244): Deprecated: Remove this enum in favor of
+  // using net::CookieSettingOverride and net::CookieSettingOverrides, which is
+  // more flexible and easier to understand.
   enum class QueryReason {
     // The query is about getting the user's setting (possibly for UI exposure).
-    // Storage Access API permission grants will not be considered when
-    // answering the query.
+    // Top-Level Storage Access API permission grants will not be considered
+    // when answering the query.
     kSetting = 0,
     // Deprecated from M111. Rely directly on the individual Privacy sandbox
     // APIs in `PrivacySandboxSettings`.
     // The query is to determine whether Privacy Sandbox APIs should be enabled,
-    // based on the cookies content setting. Storage Access API permission
-    // grants will not be considered when answering the query.
+    // based on the cookies content setting. Top-Level Storage Access API
+    // permission grants will not be considered when answering the query.
     kPrivacySandbox,
     // The query is about access to site-scoped storage in practice, after
-    // taking all settings and permission into account. Storage Access API
-    // permission grants will be considered when answering the query.
+    // taking all settings and permission into account. Top-Level Storage Access
+    // API permission grants will be considered when answering the query.
     kSiteStorage,
     // The query is about determining whether cookies are accessible in
-    // practice, after taking all settings and permissions into account. Storage
-    // Access API permission grants will be considered when answering the query.
+    // practice, after taking all settings and permissions into account.
+    // Top-Level Storage Access API permission grants will be considered when
+    // answering the query.
     kCookies,
   };
 
@@ -201,9 +206,17 @@ class CookieSettingsBase {
   // access.
   static bool IsValidSettingForLegacyAccess(ContentSetting setting);
 
+  // Conditionally adds the given `override` to `overrides`, if feature flags
+  // indicate that access to local storage ought to be granted by a Storage
+  // Access API grant.
+  net::CookieSettingOverrides AddOverrideIfStorageIsRelevantToStorageAccessAPI(
+      net::CookieSettingOverride override,
+      net::CookieSettingOverrides overrides) const;
+
   // Returns true iff the query should consider Storage Access API permission
   // grants.
-  bool ShouldConsiderStorageAccessGrants(QueryReason query_reason) const;
+  bool ShouldConsiderStorageAccessGrants(
+      net::CookieSettingOverrides overrides) const;
 
   // Returns true iff the query should consider top-level Storage Access API
   // permission grants. Note that this is handled similarly to storage access
@@ -214,7 +227,7 @@ class CookieSettingsBase {
       net::CookieSettingOverrides overrides) const;
 
   // Static version of the above, exposed for testing.
-  static bool ShouldConsiderStorageAccessGrantsInternal(
+  static bool ShouldConsiderTopLevelStorageAccessGrantsInternal(
       QueryReason query_reason,
       bool storage_access_api_grants_unpartitioned_storage,
       bool is_storage_partitioned);
@@ -235,6 +248,13 @@ class CookieSettingsBase {
   // `site_for_cookies` is used.
   static GURL GetFirstPartyURL(const net::SiteForCookies& site_for_cookies,
                                const url::Origin* top_frame_origin);
+
+  // DCHECKs that the overrides are consistent with the QueryReason.
+  // TODO(https://crbug.com/1410244): this is only useful while migrating away
+  // from QueryReason; delete this once that's finished.
+  void DCheckOverridesConsistencyWithQueryReason(
+      net::CookieSettingOverrides overrides,
+      QueryReason query_reason) const;
 
  private:
   virtual ContentSetting GetCookieSettingInternal(

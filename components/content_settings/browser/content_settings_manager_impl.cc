@@ -150,7 +150,9 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
   GURL url = origin.GetURL();
 
   bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
+      url, site_for_cookies, top_frame_origin,
+      cookie_settings_->AddOverrideIfStorageIsRelevantToStorageAccessAPI(
+          net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
       CookieSettings::QueryReason::kSiteStorage);
   if (delegate_->AllowStorageAccess(render_process_id_, render_frame_id,
                                     storage_type, url, allowed, &callback)) {

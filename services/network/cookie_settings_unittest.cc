@@ -60,6 +60,7 @@ std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
 
 struct TestCase {
   std::string test_name;
+  bool storage_access_grant_eligible;
   bool top_level_storage_access_grant_eligible;
   bool force_allow_third_party_cookies;
 };
@@ -85,6 +86,10 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     task_environment_.FastForwardBy(delta);
   }
 
+  bool IsStorageAccessGrantEligible() const {
+    return GetParam().storage_access_grant_eligible;
+  }
+
   bool IsTopLevelStorageAccessGrantEligible() const {
     return GetParam().top_level_storage_access_grant_eligible;
   }
@@ -95,6 +100,9 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
+    if (IsStorageAccessGrantEligible()) {
+      overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+    }
     if (IsTopLevelStorageAccessGrantEligible()) {
       overrides.Put(
           net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
@@ -111,10 +119,9 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   ContentSetting SettingWithEitherOverride(ContentSetting allow) const {
     DCHECK(allow == CONTENT_SETTING_ALLOW ||
            allow == CONTENT_SETTING_SESSION_ONLY);
-    // TODO(https://crbug.com/1401089): Storage Access grants should only be
-    // applicable in some situations. This should return CONTENT_SETTING_BLOCK
-    // sometimes.
-    return allow;
+    return IsStorageAccessGrantEligible() || IsForceAllowThirdPartyCookies()
+               ? allow
+               : CONTENT_SETTING_BLOCK;
   }
 
   // A version of above that considers Top-Level Storage Access API grant
@@ -144,11 +151,14 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   // grant or force allow.
   net::cookie_util::StorageAccessResult
   BlockedStorageAccessResultWithEitherOverride() const {
-    // TODO(https://crbug.com/1401089): Storage Access grants should only be
-    // applicable in some situations. This should return CONTENT_SETTING_BLOCK
-    // sometimes.
-    return net::cookie_util::StorageAccessResult::
-        ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
+    if (IsStorageAccessGrantEligible()) {
+      return net::cookie_util::StorageAccessResult::
+          ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
+    }
+    if (IsForceAllowThirdPartyCookies()) {
+      return net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_FORCED;
+    }
+    return net::cookie_util::StorageAccessResult::ACCESS_BLOCKED;
   }
 
   // A version of above that considers Top-Level Storage Access API grant
@@ -316,10 +326,11 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
       kAllowedRequestsHistogram,
       static_cast<int>(net::cookie_util::StorageAccessResult::
                            ACCESS_ALLOWED_STORAGE_ACCESS_GRANT),
-      1);
+      IsStorageAccessGrantEligible() ? 1 : 0);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
-      static_cast<int>(BlockedStorageAccessResultWithEitherOverride()), 1);
+      static_cast<int>(BlockedStorageAccessResultWithEitherOverride()),
+      IsStorageAccessGrantEligible() ? 1 : 2);
 
   // Invalid pairs where a |third_url| is used.
   EXPECT_EQ(
@@ -1180,10 +1191,32 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTest,
     testing::ValuesIn<TestCase>({
-        {"disable_all", false, false},
-        {"disable_TopLevel_force_3PCs", false, true},
-        {"enable_TopLevel", true, false},
-        {"enable_all", true, true},
+        {"disable_all", /*storage_access_grant_eligible=*/false,
+         /*top_level_storage_access_grant_eligible=*/false,
+         /*force_allow_third_party_cookies=*/false},
+        {"force_3PCs", /*storage_access_grant_eligible=*/false,
+         /*top_level_storage_access_grant_eligible=*/false,
+         /*force_allow_third_party_cookies=*/true},
+        {"enable_TopLevel", /*storage_access_grant_eligible=*/false,
+         /*top_level_storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/false},
+        {"enable_TopLevel_force_3PCs", /*storage_access_grant_eligible=*/false,
+         /*top_level_storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/true},
+        {"enable_StorageAccess", /*storage_access_grant_eligible=*/true,
+         /*top_level_storage_access_grant_eligible=*/false,
+         /*force_allow_third_party_cookies=*/false},
+        {"enable_StorageAccess_force_3PCs",
+         /*storage_access_grant_eligible=*/true,
+         /*top_level_storage_access_grant_eligible=*/false,
+         /*force_allow_third_party_cookies=*/true},
+        {"enable_StorageAccess_enable_TopLevel",
+         /*storage_access_grant_eligible=*/true,
+         /*top_level_storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/false},
+        {"enable_all", /*storage_access_grant_eligible=*/true,
+         /*top_level_storage_access_grant_eligible=*/true,
+         /*force_allow_third_party_cookies=*/true},
     }),
     [](const testing::TestParamInfo<CookieSettingsTest::ParamType>& info) {
       return info.param.test_name;
