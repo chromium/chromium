@@ -115,17 +115,9 @@ using DownloadToFileCompleteCallback =
           dataTask:(NSURLSessionDataTask*)dataTask
     didReceiveData:(NSData*)data {
   [_downloadedData appendData:data];
-
-  int64_t current = 0;
-
-  if (dataTask.countOfBytesExpectedToReceive > 0) {
-    current = (dataTask.countOfBytesReceived * 100) /
-              dataTask.countOfBytesExpectedToReceive;
-  } else {
-    current = 100;
-  }
-  _callbackRunner->PostTask(FROM_HERE,
-                            base::BindOnce(_progressCallback, current));
+  _callbackRunner->PostTask(
+      FROM_HERE,
+      base::BindOnce(_progressCallback, dataTask.countOfBytesReceived));
   [dataTask resume];
 }
 
