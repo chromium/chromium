@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './check_mark_wrapper.js';
 
+import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -23,10 +24,18 @@ export enum CategoryType {
   COLLECTION,
 }
 
+export const CHROME_THEME_COLLECTION_ELEMENT_ID =
+    'CustomizeChromeUI::kChromeThemeCollectionElementId';
+export const CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID =
+    'CustomizeChromeUI::kChangeChromeThemeClassicElementId';
+
 export interface SelectedCategory {
   type: CategoryType;
   collectionId?: string;
 }
+
+const CategoriesElementBase = HelpBubbleMixin(PolymerElement) as
+    {new (): PolymerElement & HelpBubbleMixinInterface};
 
 export interface CategoriesElement {
   $: {
@@ -38,7 +47,7 @@ export interface CategoriesElement {
   };
 }
 
-export class CategoriesElement extends PolymerElement {
+export class CategoriesElement extends CategoriesElementBase {
   static get is() {
     return 'customize-chrome-categories';
   }
@@ -100,6 +109,20 @@ export class CategoriesElement extends PolymerElement {
     super.disconnectedCallback();
     CustomizeChromeApiProxy.getInstance().callbackRouter.removeListener(
         this.setThemeListenerId_!);
+  }
+
+  override ready() {
+    super.ready();
+    this.registerHelpBubble(
+        CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, '#classicChromeTile');
+  }
+
+  private onCollectionsRendered_() {
+    const collections = this.root!.querySelectorAll('.collection');
+    if (collections.length >= 5) {
+      this.registerHelpBubble(
+          CHROME_THEME_COLLECTION_ELEMENT_ID, collections[4]);
+    }
   }
 
   private computeSelectedCategory_() {

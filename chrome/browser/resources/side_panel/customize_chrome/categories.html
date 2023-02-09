@@ -208,7 +208,8 @@
     </customize-chrome-check-mark-wrapper>
     <div class="label">$i18n{chromeColors}</div>
   </div>
-  <template is="dom-repeat" id="collectionsRepeat" items="[[collections_]]">
+  <template is="dom-repeat" id="collectionsRepeat" items="[[collections_]]"
+      on-rendered-item-count-changed="onCollectionsRendered_">
     <div class="tile collection" tabindex="0" role="button"
         on-click="onCollectionClick_"
         aria-checked$="[[isCollectionSelected_(item.id, selectedCategory_)]]">

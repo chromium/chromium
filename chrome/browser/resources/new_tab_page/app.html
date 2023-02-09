@@ -135,6 +135,11 @@
     position: fixed;
   }
 
+  #customizeButtonContainer:has(help-bubble) {
+    /* help-bubble parent needs z-index to overlay ntp-iframe */
+    z-index: 1001;
+  }
+
   :host-context([dir='ltr']) #customizeButtonContainer {
     right: 16px;
   }

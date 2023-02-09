@@ -5,10 +5,10 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 
-import {CategoriesElement} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
+import {CategoriesElement, CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, CHROME_THEME_COLLECTION_ELEMENT_ID} from 'chrome://customize-chrome-side-panel.top-chrome/categories.js';
 import {BackgroundCollection, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -198,5 +198,16 @@ suite('CategoriesTest', () => {
     checkedCategories =
         categoriesElement.shadowRoot!.querySelectorAll('[checked]');
     assertEquals(0, checkedCategories.length);
+  });
+
+  test('help bubble can correctly find anchor elements', async () => {
+    await setInitialSettings(5);
+    assertDeepEquals(
+        categoriesElement.getSortedAnchorStatusesForTesting(),
+        [
+          [CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, true],
+          [CHROME_THEME_COLLECTION_ELEMENT_ID, true],
+        ],
+    );
   });
 });

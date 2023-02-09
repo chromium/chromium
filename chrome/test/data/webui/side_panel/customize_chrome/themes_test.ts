@@ -7,8 +7,8 @@ import 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 
 import {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {ThemesElement} from 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {CHROME_THEME_BACK_ELEMENT_ID, CHROME_THEME_ELEMENT_ID, ThemesElement} from 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -275,4 +275,15 @@ suite('ThemesTest', () => {
         await callbackRouterRemote.$.flushForTesting();
         assertFalse(themesElement.$.refreshDailyToggle.checked);
       });
+
+  test('help bubble can correctly find anchor elements', async () => {
+    await setCollection('test_collection', 2);
+    assertDeepEquals(
+        themesElement.getSortedAnchorStatusesForTesting(),
+        [
+          [CHROME_THEME_BACK_ELEMENT_ID, true],
+          [CHROME_THEME_ELEMENT_ID, true],
+        ],
+    );
+  });
 });

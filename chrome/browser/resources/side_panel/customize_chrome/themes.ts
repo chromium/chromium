@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import './check_mark_wrapper.js';
 
+import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
@@ -18,6 +19,16 @@ import {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './themes.html.js';
 
+export const CHROME_THEME_ELEMENT_ID =
+    'CustomizeChromeUI::kChromeThemeElementId';
+export const CHROME_THEME_BACK_ELEMENT_ID =
+    'CustomizeChromeUI::kChromeThemeBackElementId';
+const CHROME_THEME_SELECTED_CUSTOM_EVENT_ID =
+    'kChromeThemeSelectedCustomEventId';
+
+const ThemesElementBase = HelpBubbleMixin(PolymerElement) as
+    {new (): PolymerElement & HelpBubbleMixinInterface};
+
 export interface ThemesElement {
   $: {
     backButton: HTMLButtonElement,
@@ -26,7 +37,7 @@ export interface ThemesElement {
   };
 }
 
-export class ThemesElement extends PolymerElement {
+export class ThemesElement extends ThemesElementBase {
   static get is() {
     return 'customize-chrome-themes';
   }
@@ -88,6 +99,18 @@ export class ThemesElement extends PolymerElement {
     this.callbackRouter_.removeListener(this.setThemeListenerId_);
   }
 
+  override ready() {
+    super.ready();
+    this.registerHelpBubble(CHROME_THEME_BACK_ELEMENT_ID, this.$.backButton);
+  }
+
+  private onThemesRendered_() {
+    const firstTile = this.root!.querySelector('.tile.theme');
+    if (firstTile) {
+      this.registerHelpBubble(CHROME_THEME_ELEMENT_ID, firstTile);
+    }
+  }
+
   private onCollectionChange_() {
     this.header_ = '';
     this.themes_ = [];
@@ -113,6 +136,8 @@ export class ThemesElement extends PolymerElement {
       previewImageUrl,
       collectionId,
     } = e.model.item;
+    this.notifyHelpBubbleAnchorCustomEvent(
+        CHROME_THEME_ELEMENT_ID, CHROME_THEME_SELECTED_CUSTOM_EVENT_ID);
     this.pageHandler_.setBackgroundImage(
         attribution1, attribution2, attributionUrl, imageUrl, previewImageUrl,
         collectionId);

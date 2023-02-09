@@ -9,6 +9,7 @@ import './chrome_colors.js';
 import './shortcuts.js';
 import './themes.js';
 
+import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,12 +28,18 @@ const SECTION_TO_SELECTOR = {
   [CustomizeChromeSection.kModules]: '#modules',
 };
 
+const CHANGE_CHROME_THEME_BUTTON_ELEMENT_ID =
+    'CustomizeChromeUI::kChangeChromeThemeButtonElementId';
+
 export enum CustomizeChromePage {
   OVERVIEW = 'overview',
   CATEGORIES = 'categories',
   THEMES = 'themes',
   CHROME_COLORS = 'chrome-colors',
 }
+
+const AppElementBase = HelpBubbleMixin(PolymerElement) as
+    {new (): PolymerElement & HelpBubbleMixinInterface};
 
 export interface AppElement {
   $: {
@@ -44,7 +51,7 @@ export interface AppElement {
   };
 }
 
-export class AppElement extends PolymerElement {
+export class AppElement extends AppElementBase {
   static get is() {
     return 'customize-chrome-app';
   }
@@ -68,6 +75,13 @@ export class AppElement extends PolymerElement {
         value: null,
       },
     };
+  }
+
+  override ready() {
+    super.ready();
+    this.registerHelpBubble(
+        CHANGE_CHROME_THEME_BUTTON_ELEMENT_ID,
+        ['#appearanceElement', '#editThemeButton']);
   }
 
   private page_: CustomizeChromePage;

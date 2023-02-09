@@ -101,7 +101,8 @@
   </cr-toggle>
 </div>
 <cr-grid columns="3" disable-arrow-navigation>
-  <template is="dom-repeat" id="themesRepeat" items="[[themes_]]">
+  <template is="dom-repeat" id="themesRepeat" items="[[themes_]]"
+      on-rendered-item-count-changed="onThemesRendered_">
     <div class="tile theme" tabindex="0" role="button"
         on-click="onSelectTheme_" title$="[[item.attribution1]]"
         aria-checked$="[[isThemeSelected_(item.attribution1, theme_)]]">
