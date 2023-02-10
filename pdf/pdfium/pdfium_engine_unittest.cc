@@ -1004,11 +1004,6 @@ TEST_P(PDFiumEngineTabbingTest, LinkUnderCursor) {
    * ++++ Highlight annotation
    * ++++ Link annotation
    */
-  // Enable feature flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chrome_pdf::features::kTabAcrossPDFAnnotations);
-
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
@@ -1093,12 +1088,6 @@ TEST_P(PDFiumEngineTabbingTest, TabbingSupportedAnnots) {
    * ++++ Highlight annotation
    * ++++ Link annotation
    */
-
-  // Enable feature flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chrome_pdf::features::kTabAcrossPDFAnnotations);
-
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));

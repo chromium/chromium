@@ -32,9 +32,5 @@ BASE_FEATURE(kPdfXfaSupport,
              "PdfXfaSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabAcrossPDFAnnotations,
-             "TabAcrossPDFAnnotations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace features
 }  // namespace chrome_pdf
