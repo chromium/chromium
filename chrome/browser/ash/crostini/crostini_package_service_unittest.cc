@@ -7,9 +7,11 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
+#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -42,6 +44,8 @@ namespace {
 using ::ash::FakeCiceroneClient;
 using ::ash::FakeConciergeClient;
 using ::ash::FakeSeneschalClient;
+using ::base::test::RepeatingTestFuture;
+using ::base::test::TestFuture;
 using ::chromeos::DBusMethodCallback;
 using ::testing::_;
 using ::testing::Invoke;
@@ -96,20 +100,6 @@ constexpr char kPackageFilePath[] = "/tmp/nethack.deb";
 constexpr char kPackageFileContainerPath[] =
     "/mnt/chromeos/MyFiles/tmp/nethack.deb";
 
-// Callback for RunUntilUninstallRequestMade.
-void CaptureUninstallRequestParametersAndQuitLoop(
-    base::RepeatingClosure quit_closure,
-    UninstallPackageOwningFileRequest* request_output,
-    DBusMethodCallback<UninstallPackageOwningFileResponse>* callback_output,
-    const UninstallPackageOwningFileRequest& request_input,
-    DBusMethodCallback<UninstallPackageOwningFileResponse> callback_input) {
-  *request_output = request_input;
-  if (callback_output != nullptr) {
-    *callback_output = std::move(callback_input);
-  }
-  std::move(quit_closure).Run();
-}
-
 // Run until |fake_cicerone_client_|'s UninstallPackageOwningFile is called.
 // |request| and |callback| are filled in with the parameters to
 // CiceroneClient::UninstallPackageOwningFile.
@@ -117,30 +107,20 @@ void RunUntilUninstallRequestMade(
     FakeCiceroneClient* fake_cicerone_client,
     UninstallPackageOwningFileRequest* request,
     DBusMethodCallback<UninstallPackageOwningFileResponse>* callback) {
-  base::RunLoop run_loop;
+  RepeatingTestFuture<const UninstallPackageOwningFileRequest&,
+                      DBusMethodCallback<UninstallPackageOwningFileResponse>>
+      result_future;
   fake_cicerone_client->SetOnUninstallPackageOwningFileCallback(
-      base::BindRepeating(&CaptureUninstallRequestParametersAndQuitLoop,
-                          run_loop.QuitClosure(), base::Unretained(request),
-                          base::Unretained(callback)));
-  run_loop.Run();
+      result_future.GetCallback());
+  auto result = result_future.Take();
+  *request = std::get<0>(result);
+  if (callback != nullptr) {
+    *callback = std::move(std::get<1>(result));
+  }
 
   // Callback isn't valid after end of function.
   fake_cicerone_client->SetOnUninstallPackageOwningFileCallback(
       base::NullCallback());
-}
-
-// Callback used for InstallLinuxPackage
-void ExpectedCrostiniResult(base::OnceClosure quit,
-                            CrostiniResult expected,
-                            CrostiniResult result) {
-  EXPECT_EQ(expected, result);
-  std::move(quit).Run();
-}
-
-// Callback used for GetLinuxPackageInfo.
-void RecordPackageInfoResult(LinuxPackageInfo* record_location,
-                             const LinuxPackageInfo& result) {
-  *record_location = result;
 }
 
 class CrostiniPackageServiceTest : public testing::Test {
@@ -217,8 +197,6 @@ class CrostiniPackageServiceTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Complete all CrostiniManager queued tasks before deleting it.
-    base::RunLoop().RunUntilIdle();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
         file_manager::util::GetDownloadsMountPointName(profile_.get()));
     service_.reset();
@@ -230,6 +208,21 @@ class CrostiniPackageServiceTest : public testing::Test {
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
+  }
+
+  void InstallLinuxPackageAndWait() {
+    TestFuture<CrostiniResult> ready_waiter;
+    service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
+                                       ready_waiter.GetCallback());
+
+    ASSERT_TRUE(ready_waiter.Wait());
+  }
+
+  LinuxPackageInfo GetLinuxPackageInfo() {
+    TestFuture<const LinuxPackageInfo&> result_future;
+    service_->GetLinuxPackageInfo(kDifferentContainerId, package_file_url_,
+                                  result_future.GetCallback());
+    return result_future.Get();
   }
 
  protected:
@@ -329,8 +322,6 @@ class CrostiniPackageServiceTest : public testing::Test {
   void StartAndSignalInstall(
       InstallLinuxPackageProgressSignal::Status signal_status,
       int progress_percent = 0) {
-    base::RunLoop().RunUntilIdle();
-
     InstallLinuxPackageProgressSignal signal = MakeInstallSignal(
         fake_cicerone_client_->get_most_recent_install_linux_package_request());
     signal.set_status(signal_status);
@@ -1119,13 +1110,9 @@ TEST_F(CrostiniPackageServiceTest, UninstallNotificationFailsOnVmShutdown) {
   auto* crostini_manager = CrostiniManager::GetForProfile(profile_.get());
   crostini_manager->AddRunningVmForTesting(kCrostiniDefaultVmName);
 
-  base::RunLoop run_loop;
-  crostini_manager->StopVm(
-      kCrostiniDefaultVmName,
-      base::BindOnce([](base::OnceClosure quit,
-                        crostini::CrostiniResult) { std::move(quit).Run(); },
-                     run_loop.QuitClosure()));
-  run_loop.Run();
+  TestFuture<CrostiniResult> stop_waiter;
+  crostini_manager->StopVm(kCrostiniDefaultVmName, stop_waiter.GetCallback());
+  ASSERT_TRUE(stop_waiter.Wait());
 
   EXPECT_THAT(
       Printable(notification_display_service_->GetDisplayedNotificationsForType(
@@ -1686,12 +1673,10 @@ TEST_F(CrostiniPackageServiceTest,
 }
 
 TEST_F(CrostiniPackageServiceTest, InstallSendsValidRequest) {
-  base::RunLoop run_loop;
-  service_->QueueInstallLinuxPackage(
-      kDifferentContainerId, package_file_url_,
-      base::BindOnce(&ExpectedCrostiniResult, run_loop.QuitClosure(),
-                     CrostiniResult::SUCCESS));
-  run_loop.Run();
+  TestFuture<CrostiniResult> result_future;
+  service_->QueueInstallLinuxPackage(kDifferentContainerId, package_file_url_,
+                                     result_future.GetCallback());
+  EXPECT_EQ(CrostiniResult::SUCCESS, result_future.Get());
 
   const vm_tools::cicerone::InstallLinuxPackageRequest& request =
       fake_cicerone_client_->get_most_recent_install_linux_package_request();
@@ -1703,23 +1688,21 @@ TEST_F(CrostiniPackageServiceTest, InstallSendsValidRequest) {
 }
 
 TEST_F(CrostiniPackageServiceTest, InstallConvertPathFailure) {
-  base::RunLoop run_loop;
+  TestFuture<CrostiniResult> result_future;
   service_->QueueInstallLinuxPackage(
       kDifferentContainerId,
       storage::FileSystemURL::CreateForTest(GURL("invalid")),
-      base::BindOnce(&ExpectedCrostiniResult, run_loop.QuitClosure(),
-                     CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED));
-  run_loop.Run();
+      result_future.GetCallback());
+
+  EXPECT_EQ(CrostiniResult::INSTALL_LINUX_PACKAGE_FAILED, result_future.Get());
 }
 
 TEST_F(CrostiniPackageServiceTest, InstallDisplaysProgressNotificationOnStart) {
-  base::RunLoop run_loop;
-  service_->QueueInstallLinuxPackage(
-      DefaultContainerId(), package_file_url_,
-      base::BindOnce(&ExpectedCrostiniResult, run_loop.QuitClosure(),
-                     CrostiniResult::SUCCESS));
-  run_loop.Run();
+  TestFuture<CrostiniResult> result_future;
+  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
+                                     result_future.GetCallback());
 
+  EXPECT_EQ(CrostiniResult::SUCCESS, result_future.Get());
   EXPECT_THAT(
       Printable(notification_display_service_->GetDisplayedNotificationsForType(
           NotificationHandler::Type::TRANSIENT)),
@@ -1728,8 +1711,7 @@ TEST_F(CrostiniPackageServiceTest, InstallDisplaysProgressNotificationOnStart) {
 
 TEST_F(CrostiniPackageServiceTest,
        InstallUpdatesProgressNotificationOnDownloadingSignal) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
+  InstallLinuxPackageAndWait();
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::DOWNLOADING,
                         44 /*progress_percent*/);
 
@@ -1742,8 +1724,7 @@ TEST_F(CrostiniPackageServiceTest,
 
 TEST_F(CrostiniPackageServiceTest,
        InstallUpdatesProgressNotificationOnInstallingSignal) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
+  InstallLinuxPackageAndWait();
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::INSTALLING,
                         44 /*progress_percent*/);
 
@@ -1756,8 +1737,7 @@ TEST_F(CrostiniPackageServiceTest,
 
 TEST_F(CrostiniPackageServiceTest,
        InstallDisplaysSuccessNotificationOnSuccessSignal) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
+  InstallLinuxPackageAndWait();
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::SUCCEEDED);
 
   EXPECT_THAT(
@@ -1768,8 +1748,7 @@ TEST_F(CrostiniPackageServiceTest,
 
 TEST_F(CrostiniPackageServiceTest,
        InstallDisplaysFailureNotificationOnFailedSignal) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
+  InstallLinuxPackageAndWait();
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::FAILED);
 
   EXPECT_THAT(
@@ -1779,10 +1758,7 @@ TEST_F(CrostiniPackageServiceTest,
 }
 
 TEST_F(CrostiniPackageServiceTest, InstallNotificationWaitsForAppListUpdate) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
-  base::RunLoop().RunUntilIdle();
-
+  InstallLinuxPackageAndWait();
   SendAppListUpdateSignal(DefaultContainerId(), 1);
 
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::SUCCEEDED);
@@ -1802,10 +1778,7 @@ TEST_F(CrostiniPackageServiceTest, InstallNotificationWaitsForAppListUpdate) {
 
 TEST_F(CrostiniPackageServiceTest,
        InstallNotificationDoesntWaitForAppListUpdate) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
-  base::RunLoop().RunUntilIdle();
-
+  InstallLinuxPackageAndWait();
   SendAppListUpdateSignal(DefaultContainerId(), 0);
 
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::SUCCEEDED);
@@ -1827,8 +1800,7 @@ TEST_F(CrostiniPackageServiceTest,
        InstallNotificationAppListUpdatesAreVmSpecific) {
   InstallLinuxPackageRequest request;
 
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
+  InstallLinuxPackageAndWait();
   request =
       fake_cicerone_client_->get_most_recent_install_linux_package_request();
   InstallLinuxPackageProgressSignal signal_progress =
@@ -1844,8 +1816,6 @@ TEST_F(CrostiniPackageServiceTest,
   InstallLinuxPackageProgressSignal signal_progress2 =
       MakeInstallSignal(request);
   signal_progress2.set_status(InstallLinuxPackageProgressSignal::SUCCEEDED);
-
-  base::RunLoop().RunUntilIdle();
 
   SendAppListUpdateSignal(
       guest_os::GuestId(kCrostiniDefaultVmType, kDifferentVmVmName,
@@ -1863,10 +1833,7 @@ TEST_F(CrostiniPackageServiceTest,
 
 TEST_F(CrostiniPackageServiceTest,
        InstallNotificationAppListUpdatesFromUnknownContainersAreIgnored) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
-
-  base::RunLoop().RunUntilIdle();
+  InstallLinuxPackageAndWait();
 
   SendAppListUpdateSignal(
       guest_os::GuestId(kCrostiniDefaultVmType, kDifferentVmVmName,
@@ -1882,23 +1849,15 @@ TEST_F(CrostiniPackageServiceTest,
 }
 
 TEST_F(CrostiniPackageServiceTest, InstallNotificationFailsOnVmShutdown) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
-
-  base::RunLoop().RunUntilIdle();
-
+  InstallLinuxPackageAndWait();
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::INSTALLING);
 
   auto* crostini_manager = CrostiniManager::GetForProfile(profile_.get());
   crostini_manager->AddRunningVmForTesting(kCrostiniDefaultVmName);
 
-  base::RunLoop run_loop;
-  crostini_manager->StopVm(
-      kCrostiniDefaultVmName,
-      base::BindOnce([](base::OnceClosure quit,
-                        crostini::CrostiniResult) { std::move(quit).Run(); },
-                     run_loop.QuitClosure()));
-  run_loop.Run();
+  TestFuture<CrostiniResult> stop_waiter;
+  crostini_manager->StopVm(kCrostiniDefaultVmName, stop_waiter.GetCallback());
+  ASSERT_TRUE(stop_waiter.Wait());
 
   EXPECT_THAT(
       Printable(notification_display_service_->GetDisplayedNotificationsForType(
@@ -1907,8 +1866,7 @@ TEST_F(CrostiniPackageServiceTest, InstallNotificationFailsOnVmShutdown) {
 }
 
 TEST_F(CrostiniPackageServiceTest, UninstallsQueuesBehindStartingUpInstall) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
+  InstallLinuxPackageAndWait();
   service_->QueueUninstallApplication(kDefaultAppId);
 
   // Install doesn't show a notification until it gets a response, but uninstall
@@ -1921,13 +1879,11 @@ TEST_F(CrostiniPackageServiceTest, UninstallsQueuesBehindStartingUpInstall) {
 }
 
 TEST_F(CrostiniPackageServiceTest, InstallRunsInFrontOfQueuedUninstall) {
-  base::RunLoop run_loop;
-  service_->QueueInstallLinuxPackage(
-      DefaultContainerId(), package_file_url_,
-      base::BindOnce(&ExpectedCrostiniResult, run_loop.QuitClosure(),
-                     CrostiniResult::SUCCESS));
+  TestFuture<CrostiniResult> result_future;
+  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
+                                     result_future.GetCallback());
   service_->QueueUninstallApplication(kDefaultAppId);
-  run_loop.Run();
+  EXPECT_EQ(CrostiniResult::SUCCESS, result_future.Get());
 
   // Ensure the install started, not the uninstall.
   const vm_tools::cicerone::InstallLinuxPackageRequest& request =
@@ -1942,8 +1898,7 @@ TEST_F(CrostiniPackageServiceTest, InstallRunsInFrontOfQueuedUninstall) {
 }
 
 TEST_F(CrostiniPackageServiceTest, QueuedUninstallRunsAfterCompletedInstall) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
+  InstallLinuxPackageAndWait();
   service_->QueueUninstallApplication(kDefaultAppId);
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::SUCCEEDED);
 
@@ -1967,8 +1922,7 @@ TEST_F(CrostiniPackageServiceTest,
   response.set_status(InstallLinuxPackageResponse::FAILED);
   response.set_failure_reason("No such file");
   fake_cicerone_client_->set_install_linux_package_response(response);
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
+  InstallLinuxPackageAndWait();
   service_->QueueUninstallApplication(kDefaultAppId);
 
   UninstallPackageOwningFileRequest request;
@@ -1988,8 +1942,7 @@ TEST_F(CrostiniPackageServiceTest,
 
 TEST_F(CrostiniPackageServiceTest,
        QueuedUninstallRunsAfterFailedInstallSignal) {
-  service_->QueueInstallLinuxPackage(DefaultContainerId(), package_file_url_,
-                                     base::DoNothing());
+  InstallLinuxPackageAndWait();
   service_->QueueUninstallApplication(kDefaultAppId);
   StartAndSignalInstall(InstallLinuxPackageProgressSignal::FAILED);
 
@@ -2008,10 +1961,7 @@ TEST_F(CrostiniPackageServiceTest,
 }
 
 TEST_F(CrostiniPackageServiceTest, GetLinuxPackageInfoSendsCorrectRequest) {
-  service_->GetLinuxPackageInfo(kDifferentContainerId, package_file_url_,
-                                base::DoNothing());
-
-  base::RunLoop().RunUntilIdle();
+  GetLinuxPackageInfo();
 
   const LinuxPackageInfoRequest& request =
       fake_cicerone_client_->get_most_recent_linux_package_info_request();
@@ -2032,13 +1982,7 @@ TEST_F(CrostiniPackageServiceTest, GetLinuxPackageInfoReturnsInfoOnSuccess) {
   response.set_summary("Fight! Run! Win!");
   fake_cicerone_client_->set_linux_package_info_response(response);
 
-  LinuxPackageInfo result;
-  service_->GetLinuxPackageInfo(
-      kDifferentContainerId, package_file_url_,
-      base::BindOnce(&RecordPackageInfoResult, base::Unretained(&result)));
-
-  base::RunLoop().RunUntilIdle();
-
+  auto result = GetLinuxPackageInfo();
   EXPECT_TRUE(result.success);
   EXPECT_EQ(result.name, "nethack");
   EXPECT_EQ(result.version, "3.6.1");
@@ -2051,14 +1995,13 @@ TEST_F(CrostiniPackageServiceTest, GetLinuxPackageInfoConvertPathFailure) {
   response.set_success(false);
   fake_seneschal_client_->set_share_path_response(response);
 
-  LinuxPackageInfo result;
+  TestFuture<const LinuxPackageInfo&> result_future;
   service_->GetLinuxPackageInfo(
       kDifferentContainerId,
       storage::FileSystemURL::CreateForTest(GURL("invalid")),
-      base::BindOnce(&RecordPackageInfoResult, base::Unretained(&result)));
+      result_future.GetCallback());
 
-  base::RunLoop().RunUntilIdle();
-
+  auto result = result_future.Get();
   EXPECT_FALSE(result.success);
   EXPECT_TRUE(base::StartsWith(result.failure_reason, "Invalid package url:",
                                base::CompareCase::SENSITIVE));
@@ -2069,17 +2012,15 @@ TEST_F(CrostiniPackageServiceTest, GetLinuxPackageInfoSharePathFailure) {
   response.set_success(false);
   fake_seneschal_client_->set_share_path_response(response);
 
-  LinuxPackageInfo result;
-  service_->GetLinuxPackageInfo(
-      kDifferentContainerId, package_file_url_,
-      base::BindOnce(&RecordPackageInfoResult, base::Unretained(&result)));
+  TestFuture<const LinuxPackageInfo&> result_future;
+  service_->GetLinuxPackageInfo(kDifferentContainerId, package_file_url_,
+                                result_future.GetCallback());
   CrostiniManager::GetForProfile(profile_.get())
       ->CallRestarterStartLxdContainerFinishedForTesting(
           service_->GetRestartIdForTesting(),
           CrostiniResult::CONTAINER_START_FAILED);
 
-  base::RunLoop().RunUntilIdle();
-
+  auto result = result_future.Get();
   EXPECT_FALSE(result.success);
   EXPECT_TRUE(base::StartsWith(result.failure_reason, "Error sharing package",
                                base::CompareCase::SENSITIVE));
@@ -2091,13 +2032,7 @@ TEST_F(CrostiniPackageServiceTest, GetLinuxPackageInfoReturnsFailureOnFailure) {
   response.set_failure_reason("test failure reason");
   fake_cicerone_client_->set_linux_package_info_response(response);
 
-  LinuxPackageInfo result;
-  service_->GetLinuxPackageInfo(
-      kDifferentContainerId, package_file_url_,
-      base::BindOnce(&RecordPackageInfoResult, base::Unretained(&result)));
-
-  base::RunLoop().RunUntilIdle();
-
+  auto result = GetLinuxPackageInfo();
   EXPECT_FALSE(result.success);
   EXPECT_EQ(result.failure_reason, "test failure reason");
 }

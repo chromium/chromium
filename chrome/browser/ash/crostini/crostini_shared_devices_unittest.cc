@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/crostini/crostini_shared_devices.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -77,14 +77,10 @@ class CrostiniSharedDevicesTest : public testing::Test {
   void SetVmDeviceShared(const std::string& vm_device,
                          bool shared,
                          bool expect_applied) {
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> result_future;
     crostini_shared_devices_->SetVmDeviceShared(
-        container_id_, vm_device, shared,
-        base::BindLambdaForTesting([&](bool applied) {
-          EXPECT_EQ(applied, expect_applied);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+        container_id_, vm_device, shared, result_future.GetCallback());
+    EXPECT_EQ(expect_applied, result_future.Get());
   }
 
   void AddRunningContainer(const guest_os::GuestId& container_id) {
