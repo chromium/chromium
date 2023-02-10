@@ -16,8 +16,6 @@
 
 namespace {
 
-using QueryReason = content_settings::CookieSettings::QueryReason;
-
 class CookieSettingsFactoryTest : public testing::Test {
  public:
   CookieSettingsFactoryTest()
@@ -66,20 +64,20 @@ TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingRules) {
   // The modification should apply to the regular profile and incognito profile.
   EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
       kBlockedSite, kBlockedSiteForCookies, kBlockedOrigin,
-      net::CookieSettingOverrides(), QueryReason::kSetting));
+      net::CookieSettingOverrides()));
   EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(
       kBlockedSite, kBlockedSiteForCookies, kBlockedOrigin,
-      net::CookieSettingOverrides(), QueryReason::kSetting));
+      net::CookieSettingOverrides()));
 
   // Modify an incognito cookie setting and check that this does not propagate
   // into regular mode.
   incognito_settings->SetCookieSetting(kHttpsSite, CONTENT_SETTING_BLOCK);
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kHttpsSite, kHttpsSiteForCookies, kHttpsOrigin,
-      net::CookieSettingOverrides(), QueryReason::kSetting));
+      net::CookieSettingOverrides()));
   EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(
       kHttpsSite, kHttpsSiteForCookies, kHttpsOrigin,
-      net::CookieSettingOverrides(), QueryReason::kSetting));
+      net::CookieSettingOverrides()));
 }
 
 TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingEverything) {
@@ -93,30 +91,30 @@ TEST_F(CookieSettingsFactoryTest, IncognitoBehaviorOfBlockingEverything) {
   // It should be effective for regular and incognito session.
   EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
       kFirstPartySite, kFirstPartySiteForCookies, kFirstPartyOrigin,
-      net::CookieSettingOverrides(), QueryReason::kSetting));
+      net::CookieSettingOverrides()));
   EXPECT_FALSE(incognito_settings->IsFullCookieAccessAllowed(
       kFirstPartySite, kFirstPartySiteForCookies, kFirstPartyOrigin,
-      net::CookieSettingOverrides(), QueryReason::kSetting));
+      net::CookieSettingOverrides()));
 
   // A whitelisted item set in incognito mode should only apply to incognito
   // mode.
   incognito_settings->SetCookieSetting(kAllowedSite, CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(incognito_settings->IsFullCookieAccessAllowed(
       kAllowedSite, kAllowedSiteForCookies, kAllowedOrigin,
-      net::CookieSettingOverrides(), QueryReason::kSetting));
+      net::CookieSettingOverrides()));
   EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
       kAllowedSite, kAllowedSiteForCookies, kAllowedOrigin,
-      net::CookieSettingOverrides(), QueryReason::kSetting));
+      net::CookieSettingOverrides()));
 
   // A whitelisted item set in regular mode should apply to regular and
   // incognito mode.
   cookie_settings_->SetCookieSetting(kHttpsSite, CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(incognito_settings->IsFullCookieAccessAllowed(
       kHttpsSite, kHttpsSiteForCookies, kHttpsOrigin,
-      net::CookieSettingOverrides(), QueryReason::kSetting));
+      net::CookieSettingOverrides()));
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kHttpsSite, kHttpsSiteForCookies, kHttpsOrigin,
-      net::CookieSettingOverrides(), QueryReason::kSetting));
+      net::CookieSettingOverrides()));
 }
 
 // Android does not have guest profiles.

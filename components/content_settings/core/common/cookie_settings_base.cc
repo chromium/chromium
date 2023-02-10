@@ -72,8 +72,7 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
   // No overrides are given since existing ones only pertain to 3P checks.
   ContentSetting setting = GetCookieSettingInternal(
       origin, is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
-      /*is_third_party_request=*/false, net::CookieSettingOverrides(), nullptr,
-      QueryReason::kSetting);
+      /*is_third_party_request=*/false, net::CookieSettingOverrides(), nullptr);
   DCHECK(IsValidSetting(setting));
   if (setting == CONTENT_SETTING_ALLOW)
     return false;
@@ -106,40 +105,32 @@ ContentSetting CookieSettingsBase::GetCookieSetting(
     const GURL& url,
     const GURL& first_party_url,
     net::CookieSettingOverrides overrides,
-    content_settings::SettingSource* source,
-    QueryReason query_reason) const {
-  DCheckOverridesConsistencyWithQueryReason(overrides, query_reason);
+    content_settings::SettingSource* source) const {
   return GetCookieSettingInternal(
       url, first_party_url,
       IsThirdPartyRequest(url, net::SiteForCookies::FromUrl(first_party_url)),
-      overrides, source, query_reason);
+      overrides, source);
 }
 
 bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
-    net::CookieSettingOverrides overrides,
-    QueryReason query_reason) const {
-  DCheckOverridesConsistencyWithQueryReason(overrides, query_reason);
+    net::CookieSettingOverrides overrides) const {
   ContentSetting setting = GetCookieSettingInternal(
       url,
       GetFirstPartyURL(site_for_cookies, base::OptionalToPtr(top_frame_origin)),
-      IsThirdPartyRequest(url, site_for_cookies), overrides, nullptr,
-      query_reason);
+      IsThirdPartyRequest(url, site_for_cookies), overrides, nullptr);
   return IsAllowed(setting);
 }
 
-// TODO(crbug.com/1413957): Remove QueryReason parameter from this method.
-bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin,
-                                             QueryReason query_reason) const {
+bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {
   // Pass GURL() as first_party_url since we don't know the context and
   // don't want to match against (*, exception) pattern.
   // No overrides are given since existing ones only pertain to 3P checks.
   ContentSetting setting = GetCookieSettingInternal(
       origin, is_privacy_sandbox_v4_enabled_ ? GURL() : origin,
-      /*is_third_party_request=*/false, net::CookieSettingOverrides(), nullptr,
-      QueryReason::kSetting);
+      /*is_third_party_request=*/false, net::CookieSettingOverrides(), nullptr);
   DCHECK(IsValidSetting(setting));
   return setting == CONTENT_SETTING_SESSION_ONLY;
 }
@@ -163,32 +154,6 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
 bool CookieSettingsBase::ShouldConsiderStorageAccessGrants(
     net::CookieSettingOverrides overrides) const {
   return overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible);
-}
-
-void CookieSettingsBase::DCheckOverridesConsistencyWithQueryReason(
-    net::CookieSettingOverrides overrides,
-    QueryReason query_reason) const {
-  switch (query_reason) {
-    case QueryReason::kSetting:
-    case QueryReason::kPrivacySandbox:
-      DCHECK(overrides.Empty());
-      break;
-    case QueryReason::kSiteStorage:
-      DCHECK_EQ(overrides.Has(
-                    net::CookieSettingOverride::kStorageAccessGrantEligible),
-                storage_access_api_grants_unpartitioned_storage_ ||
-                    is_storage_partitioned_);
-      DCHECK_EQ(
-          overrides.Has(
-              net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible),
-          is_storage_partitioned_);
-      break;
-    case QueryReason::kCookies:
-      // Can't make any assertions here, since some kCookies callsites supply
-      // overrides, and some don't (because they don't need to or don't want
-      // to).
-      break;
-  }
 }
 
 net::CookieSettingOverrides CookieSettingsBase::SettingOverridesForStorage()

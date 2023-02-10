@@ -304,23 +304,19 @@ TEST_F(DIPSServiceStateRemovalTest,
       ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW);
 
   // Verify settings.
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            GetCookieSettings()->GetCookieSetting(
-                excepted_3p_url, GURL(), net::CookieSettingOverrides(), nullptr,
-                content_settings::CookieSettingsBase::QueryReason::kCookies));
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            GetCookieSettings()->GetCookieSetting(
-                GURL(), excepted_3p_url, net::CookieSettingOverrides(), nullptr,
-                content_settings::CookieSettingsBase::QueryReason::kCookies));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetCookieSettings()->GetCookieSetting(
+                                       excepted_3p_url, GURL(),
+                                       net::CookieSettingOverrides(), nullptr));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetCookieSettings()->GetCookieSetting(
+                                       GURL(), excepted_3p_url,
+                                       net::CookieSettingOverrides(), nullptr));
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            GetCookieSettings()->GetCookieSetting(
-                excepted_1p_url, GURL(), net::CookieSettingOverrides(), nullptr,
-                content_settings::CookieSettingsBase::QueryReason::kCookies));
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            GetCookieSettings()->GetCookieSetting(
-                GURL(), excepted_1p_url, net::CookieSettingOverrides(), nullptr,
-                content_settings::CookieSettingsBase::QueryReason::kCookies));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetCookieSettings()->GetCookieSetting(
+                                       excepted_1p_url, GURL(),
+                                       net::CookieSettingOverrides(), nullptr));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetCookieSettings()->GetCookieSetting(
+                                       GURL(), excepted_1p_url,
+                                       net::CookieSettingOverrides(), nullptr));
 
   // Record bounces for sites.
   base::Time bounce = base::Time::FromDoubleT(2);

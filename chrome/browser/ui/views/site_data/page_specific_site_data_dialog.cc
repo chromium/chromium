@@ -410,12 +410,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
       // clear-on-exit state. If the dialog is reopened after making changes but
       // before reloading the page, it will show the state of accesses on the
       // page load.
-      site.setting =
-          cookie_settings_->IsCookieSessionOnly(
-              site.origin.GetURL(),
-              content_settings::CookieSettings::QueryReason::kSetting)
-              ? CONTENT_SETTING_SESSION_ONLY
-              : CONTENT_SETTING_ALLOW;
+      site.setting = cookie_settings_->IsCookieSessionOnly(site.origin.GetURL())
+                         ? CONTENT_SETTING_SESSION_ONLY
+                         : CONTENT_SETTING_ALLOW;
     } else {
       site.setting = CONTENT_SETTING_BLOCK;
     }

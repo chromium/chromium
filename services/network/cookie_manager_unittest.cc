@@ -66,7 +66,6 @@
 namespace network {
 namespace {
 using base::StrCat;
-using QueryReason = CookieSettings::QueryReason;
 using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
@@ -2717,19 +2716,19 @@ TEST_F(CookieManagerTest, BlockThirdPartyCookies) {
   const net::SiteForCookies kThatSiteForCookies =
       net::SiteForCookies::FromUrl(kThatURL);
   EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kThatSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
-      QueryReason::kCookies));
+      kThisURL, kThatSiteForCookies, kThisOrigin,
+      net::CookieSettingOverrides()));
 
   // Set block third party cookies to true, cookie should now be blocked.
   cookie_service_client()->BlockThirdPartyCookies(true);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kThatSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
-      QueryReason::kCookies));
+      kThisURL, kThatSiteForCookies, kThisOrigin,
+      net::CookieSettingOverrides()));
   EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kThisSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
-      QueryReason::kCookies));
+      kThisURL, kThisSiteForCookies, kThisOrigin,
+      net::CookieSettingOverrides()));
 
   // Set block third party cookies back to false, cookie should no longer be
   // blocked.
@@ -2737,8 +2736,8 @@ TEST_F(CookieManagerTest, BlockThirdPartyCookies) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kThatSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
-      QueryReason::kCookies));
+      kThisURL, kThatSiteForCookies, kThisOrigin,
+      net::CookieSettingOverrides()));
 }
 
 // A test class having cookie store with a persistent backing store.

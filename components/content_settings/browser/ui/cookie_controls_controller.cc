@@ -74,8 +74,7 @@ CookieControlsController::GetStatus(content::WebContents* web_contents) {
 
   SettingSource source;
   bool is_allowed = cookie_settings_->IsThirdPartyAccessAllowed(
-      web_contents->GetLastCommittedURL(), &source,
-      CookieSettings::QueryReason::kCookies);
+      web_contents->GetLastCommittedURL(), &source);
 
   CookieControlsStatus status = is_allowed
                                     ? CookieControlsStatus::kDisabledForSite
@@ -86,8 +85,7 @@ CookieControlsController::GetStatus(content::WebContents* web_contents) {
   } else if (is_allowed && original_cookie_settings_ &&
              original_cookie_settings_->ShouldBlockThirdPartyCookies() &&
              original_cookie_settings_->IsThirdPartyAccessAllowed(
-                 web_contents->GetLastCommittedURL(), nullptr /* source */,
-                 CookieSettings::QueryReason::kCookies)) {
+                 web_contents->GetLastCommittedURL(), nullptr /* source */)) {
     // TODO(crbug.com/1015767): Rules from regular mode can't be temporarily
     // overridden in incognito.
     enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
@@ -118,7 +116,7 @@ bool CookieControlsController::FirstPartyCookiesBlocked() {
   const GURL& url = GetWebContents()->GetLastCommittedURL();
   return !cookie_settings_->IsFullCookieAccessAllowed(
       url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-      net::CookieSettingOverrides(), CookieSettings::QueryReason::kCookies);
+      net::CookieSettingOverrides());
 }
 
 int CookieControlsController::GetAllowedCookieCount() {

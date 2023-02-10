@@ -44,9 +44,8 @@
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #endif
 
-using ::testing::_;
 using content::BrowserThread;
-using QueryReason = content_settings::CookieSettings::QueryReason;
+using ::testing::_;
 
 namespace {
 
@@ -242,13 +241,11 @@ class CookiesTreeModelTest : public testing::Test {
         EXPECT_FALSE(host->CanCreateContentException());
       } else {
         cookie_settings->ResetCookieSetting(expected_url);
-        EXPECT_FALSE(cookie_settings->IsCookieSessionOnly(
-            expected_url, QueryReason::kSetting));
+        EXPECT_FALSE(cookie_settings->IsCookieSessionOnly(expected_url));
 
         host->CreateContentException(cookie_settings,
                                      CONTENT_SETTING_SESSION_ONLY);
-        EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(
-            expected_url, QueryReason::kSetting));
+        EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(expected_url));
       }
     }
   }
@@ -1445,9 +1442,8 @@ TEST_F(CookiesTreeModelTest, ContentSettings) {
       cookie_settings, CONTENT_SETTING_SESSION_ONLY);
   EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
       host, net::SiteForCookies::FromUrl(host), url::Origin::Create(host),
-      net::CookieSettingOverrides(), QueryReason::kSetting));
-  EXPECT_TRUE(
-      cookie_settings->IsCookieSessionOnly(host, QueryReason::kSetting));
+      net::CookieSettingOverrides()));
+  EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(host));
 }
 
 TEST_F(CookiesTreeModelTest, FileSystemFilter) {

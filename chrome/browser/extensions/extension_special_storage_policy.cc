@@ -160,8 +160,7 @@ bool ExtensionSpecialStoragePolicy::IsStorageSessionOnly(const GURL& origin) {
   if (!cookie_settings_) {
     return false;
   }
-  return cookie_settings_->IsCookieSessionOnly(
-      origin, content_settings::CookieSettings::QueryReason::kSiteStorage);
+  return cookie_settings_->IsCookieSessionOnly(origin);
 }
 
 bool ExtensionSpecialStoragePolicy::HasSessionOnlyOrigins() {

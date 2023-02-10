@@ -89,33 +89,6 @@ class CookieSettingsBase {
       const std::string& domain,
       bool is_https) const;
 
-  // This enum is provided to CookieSettingsBase query methods by callers in
-  // order to indicate the reason for the query. This allows CookieSettingsBase
-  // (or its subclasses) to optionally apply different policies based on how the
-  // returned content setting will be used. E.g., a CookieSettings class may
-  // choose to alter the value returned to the caller based on whether the
-  // caller cares about the setting itself, or whether the caller just cares
-  // about access to a particular cookie.
-  //
-  // TODO(https://crbug.com/1410244): Deprecated: Remove this enum in favor of
-  // using net::CookieSettingOverride and net::CookieSettingOverrides, which is
-  // more flexible and easier to understand.
-  enum class QueryReason {
-    // The query is about getting the user's setting (possibly for UI exposure).
-    kSetting = 0,
-    // Deprecated from M111. Rely directly on the individual Privacy sandbox
-    // APIs in `PrivacySandboxSettings`.
-    // The query is to determine whether Privacy Sandbox APIs should be enabled,
-    // based on the cookies content setting.
-    kPrivacySandbox,
-    // The query is about access to site-scoped storage in practice, after
-    // taking all settings and permission into account.
-    kSiteStorage,
-    // The query is about determining whether cookies are accessible in
-    // practice, after taking all settings and permissions into account.
-    kCookies,
-  };
-
   // Returns true if the page identified by (`url`, `site_for_cookies`,
   // `top_frame_origin`) is allowed to access (i.e., read or write) cookies.
   // `site_for_cookies` is used to determine third-party-ness of `url`.
@@ -128,22 +101,21 @@ class CookieSettingsBase {
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,
-      net::CookieSettingOverrides overrides,
-      QueryReason query_reason) const;
+      net::CookieSettingOverrides overrides) const;
 
   // Returns true if the cookie set by a page identified by |url| should be
   // session only. Querying this only makes sense if |IsFullCookieAccessAllowed|
   // has returned true.
   //
   // This may be called on any thread.
-  bool IsCookieSessionOnly(const GURL& url, QueryReason query_reason) const;
+  bool IsCookieSessionOnly(const GURL& url) const;
 
   // A helper for applying third party cookie blocking rules.
-  ContentSetting GetCookieSetting(const GURL& url,
-                                  const GURL& first_party_url,
-                                  net::CookieSettingOverrides overrides,
-                                  content_settings::SettingSource* source,
-                                  QueryReason query_reason) const;
+  ContentSetting GetCookieSetting(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides,
+      content_settings::SettingSource* source) const;
 
   // Returns the cookie access semantics (legacy or nonlegacy) to be applied for
   // cookies on the given domain. The |cookie_domain| can be provided as the
@@ -235,21 +207,13 @@ class CookieSettingsBase {
   static GURL GetFirstPartyURL(const net::SiteForCookies& site_for_cookies,
                                const url::Origin* top_frame_origin);
 
-  // DCHECKs that the overrides are consistent with the QueryReason.
-  // TODO(https://crbug.com/1410244): this is only useful while migrating away
-  // from QueryReason; delete this once that's finished.
-  void DCheckOverridesConsistencyWithQueryReason(
-      net::CookieSettingOverrides overrides,
-      QueryReason query_reason) const;
-
  private:
   virtual ContentSetting GetCookieSettingInternal(
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
       net::CookieSettingOverrides overrides,
-      content_settings::SettingSource* source,
-      QueryReason query_reason) const = 0;
+      content_settings::SettingSource* source) const = 0;
 
   static bool storage_access_api_grants_unpartitioned_storage_;
   const bool is_storage_partitioned_;

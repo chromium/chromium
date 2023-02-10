@@ -17,7 +17,6 @@ namespace embedder_support {
 
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
-using QueryReason = content_settings::CookieSettings::QueryReason;
 
 namespace {
 bool AllowWorkerStorageAccess(
@@ -29,7 +28,7 @@ bool AllowWorkerStorageAccess(
   // somehow determine real CookieSettingOverrides rather than default to none.
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
       url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-      cookie_settings->SettingOverridesForStorage(), QueryReason::kSiteStorage);
+      cookie_settings->SettingOverridesForStorage());
 
   for (const auto& it : render_frames) {
     content_settings::PageSpecificContentSettings::StorageAccessed(
@@ -66,7 +65,7 @@ content::AllowServiceWorkerResult AllowServiceWorker(
   // also consider the third-party cookie user bypass override.
   bool allow_cookies = cookie_settings->IsFullCookieAccessAllowed(
       scope, site_for_cookies, top_frame_origin,
-      cookie_settings->SettingOverridesForStorage(), QueryReason::kSiteStorage);
+      cookie_settings->SettingOverridesForStorage());
 
   return content::AllowServiceWorkerResult::FromPolicy(!allow_javascript,
                                                        !allow_cookies);
@@ -83,7 +82,7 @@ bool AllowSharedWorker(
     const content_settings::CookieSettings* cookie_settings) {
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
       worker_url, site_for_cookies, top_frame_origin,
-      cookie_settings->SettingOverridesForStorage(), QueryReason::kSiteStorage);
+      cookie_settings->SettingOverridesForStorage());
 
   content_settings::PageSpecificContentSettings::SharedWorkerAccessed(
       render_process_id, render_frame_id, worker_url, name, storage_key,

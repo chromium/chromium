@@ -213,8 +213,7 @@ bool DIPSService::HasCookieException(const std::string& site) const {
   // under |site| to use cookies.
   if (cookie_settings_->IsFullCookieAccessAllowed(
           GURL(), net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-          net::CookieSettingOverrides(),
-          content_settings::CookieSettingsBase::QueryReason::kCookies)) {
+          net::CookieSettingOverrides())) {
     return true;
   }
 
@@ -222,8 +221,7 @@ bool DIPSService::HasCookieException(const std::string& site) const {
   // embedded by any other site.
   if (cookie_settings_->IsFullCookieAccessAllowed(
           url, net::SiteForCookies(), absl::nullopt,
-          net::CookieSettingOverrides(),
-          content_settings::CookieSettingsBase::QueryReason::kCookies)) {
+          net::CookieSettingOverrides())) {
     return true;
   }
 

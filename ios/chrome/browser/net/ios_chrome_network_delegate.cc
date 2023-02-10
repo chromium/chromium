@@ -77,11 +77,11 @@ bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     net::CookieAccessResultList& excluded_cookies) {
   // `cookie_settings_` is null during tests, or when we're running in the
   // system context.
-  bool allowed = !cookie_settings_ ||
-                 cookie_settings_->IsFullCookieAccessAllowed(
-                     request.url(), request.site_for_cookies(),
-                     request.isolation_info().top_frame_origin(),
-                     request.cookie_setting_overrides(), QueryReason::kCookies);
+  bool allowed =
+      !cookie_settings_ || cookie_settings_->IsFullCookieAccessAllowed(
+                               request.url(), request.site_for_cookies(),
+                               request.isolation_info().top_frame_origin(),
+                               request.cookie_setting_overrides());
 
   if (!allowed) {
     ExcludeAllCookies(
@@ -103,7 +103,7 @@ bool IOSChromeNetworkDelegate::OnCanSetCookie(
   return cookie_settings_->IsFullCookieAccessAllowed(
       request.url(), request.site_for_cookies(),
       request.isolation_info().top_frame_origin(),
-      request.cookie_setting_overrides(), QueryReason::kCookies);
+      request.cookie_setting_overrides());
 }
 
 net::NetworkDelegate::PrivacySetting
@@ -116,7 +116,7 @@ IOSChromeNetworkDelegate::OnForcePrivacyMode(
   return cookie_settings_->IsFullCookieAccessAllowed(
              request.url(), request.site_for_cookies(),
              request.isolation_info().top_frame_origin(),
-             request.cookie_setting_overrides(), QueryReason::kCookies)
+             request.cookie_setting_overrides())
              ? net::NetworkDelegate::PrivacySetting::kStateAllowed
              : net::NetworkDelegate::PrivacySetting::kStateDisallowed;
 }

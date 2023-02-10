@@ -153,8 +153,7 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
   // get CookieSettingOverrides from the frame rather than default to none.
   bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin,
-      cookie_settings_->SettingOverridesForStorage(),
-      CookieSettings::QueryReason::kSiteStorage);
+      cookie_settings_->SettingOverridesForStorage());
   if (delegate_->AllowStorageAccess(render_process_id_, render_frame_id,
                                     storage_type, url, allowed, &callback)) {
     DCHECK(!callback);

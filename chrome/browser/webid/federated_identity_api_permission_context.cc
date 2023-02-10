@@ -44,9 +44,8 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
   // enabled.  Once the privacy improvements for the API are implemented, remove
   // this restriction. See https://crbug.com/13043
   if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      !cookie_settings_->IsThirdPartyAccessAllowed(
-          rp_embedder_url, /*source=*/nullptr,
-          content_settings::CookieSettings::QueryReason::kCookies) &&
+      !cookie_settings_->IsThirdPartyAccessAllowed(rp_embedder_url,
+                                                   /*source=*/nullptr) &&
       !base::FeatureList::IsEnabled(features::kFedCmWithoutThirdPartyCookies)) {
     return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
   }

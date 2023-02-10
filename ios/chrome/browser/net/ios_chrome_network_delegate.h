@@ -49,7 +49,6 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
                                         PrefService* pref_service);
 
  private:
-  using QueryReason = content_settings::CookieSettings::QueryReason;
   // NetworkDelegate implementation.
   int OnBeforeURLRequest(net::URLRequest* request,
                          net::CompletionOnceCallback callback,

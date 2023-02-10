@@ -37,8 +37,6 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     : public content_settings::CookieSettingsBase {
  public:
-  using QueryReason = content_settings::CookieSettingsBase::QueryReason;
-
   CookieSettings();
 
   CookieSettings(const CookieSettings&) = delete;
@@ -163,8 +161,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& first_party_url,
       bool is_third_party_request,
       net::CookieSettingOverrides overrides,
-      content_settings::SettingSource* source,
-      QueryReason query_reason) const override;
+      content_settings::SettingSource* source) const override;
 
   // An enum that represents the scope of cookies to which the user's
   // third-party-cookie-blocking setting applies, in a given context.
@@ -226,8 +223,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
-      net::CookieSettingOverrides overrides,
-      QueryReason query_reason) const;
+      net::CookieSettingOverrides overrides) const;
 
   // An overload of the above, which determines `first_party_url` and
   // `is_third_party_request` appropriately.
@@ -235,8 +231,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin* top_frame_origin,
-      net::CookieSettingOverrides overrides,
-      QueryReason query_reason) const;
+      net::CookieSettingOverrides overrides) const;
 
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;

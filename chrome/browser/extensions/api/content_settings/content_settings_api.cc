@@ -170,10 +170,9 @@ ContentSettingsContentSettingGetFunction::Run() {
   // somehow determine real CookieSettingOverrides rather than default to none.
   ContentSetting setting =
       content_type == ContentSettingsType::COOKIES
-          ? cookie_settings->GetCookieSetting(
-                primary_url, secondary_url, net::CookieSettingOverrides(),
-                nullptr,
-                content_settings::CookieSettings::QueryReason::kSetting)
+          ? cookie_settings->GetCookieSetting(primary_url, secondary_url,
+                                              net::CookieSettingOverrides(),
+                                              nullptr)
           : map->GetContentSetting(primary_url, secondary_url, content_type);
 
   base::Value::Dict result;

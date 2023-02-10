@@ -288,7 +288,7 @@ bool NetworkServiceNetworkDelegate::OnCanQueueReportingReport(
       origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
       // Only storage access override is considered since other existing ones
       // only pertain to 3P checks.
-      cookie_settings.SettingOverridesForStorage(), QueryReason::kSiteStorage);
+      cookie_settings.SettingOverridesForStorage());
 }
 
 void NetworkServiceNetworkDelegate::OnCanSendReportingReports(
@@ -324,7 +324,7 @@ bool NetworkServiceNetworkDelegate::OnCanSetReportingClient(
       origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
       // Only storage access override is considered since other existing ones
       // only pertain to 3P checks.
-      cookie_settings.SettingOverridesForStorage(), QueryReason::kSiteStorage);
+      cookie_settings.SettingOverridesForStorage());
 }
 
 bool NetworkServiceNetworkDelegate::OnCanUseReportingClient(
@@ -336,7 +336,7 @@ bool NetworkServiceNetworkDelegate::OnCanUseReportingClient(
       origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
       // Only storage access override is considered since other existing ones
       // only pertain to 3P checks.
-      cookie_settings.SettingOverridesForStorage(), QueryReason::kSiteStorage);
+      cookie_settings.SettingOverridesForStorage());
 }
 
 absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>

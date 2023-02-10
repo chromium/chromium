@@ -163,8 +163,7 @@ bool CookieSettings::IsCookieAccessible(
              url,
              GetFirstPartyURL(site_for_cookies,
                               base::OptionalToPtr(top_frame_origin)),
-             IsThirdPartyRequest(url, site_for_cookies), overrides,
-             QueryReason::kCookies)
+             IsThirdPartyRequest(url, site_for_cookies), overrides)
       .IsCookieAllowed(cookie);
 }
 
@@ -186,7 +185,7 @@ net::NetworkDelegate::PrivacySetting CookieSettings::IsPrivacyModeEnabled(
     net::CookieSettingOverrides overrides) const {
   return GetCookieSettingWithMetadata(url, site_for_cookies,
                                       base::OptionalToPtr(top_frame_origin),
-                                      overrides, QueryReason::kCookies)
+                                      overrides)
       .PrivacySetting();
 }
 
@@ -207,9 +206,7 @@ CookieSettings::GetCookieSettingWithMetadata(
     const GURL& url,
     const GURL& first_party_url,
     bool is_third_party_request,
-    net::CookieSettingOverrides overrides,
-    QueryReason query_reason) const {
-  DCheckOverridesConsistencyWithQueryReason(overrides, query_reason);
+    net::CookieSettingOverrides overrides) const {
   if (ShouldAlwaysAllowCookies(url, first_party_url)) {
     return {/*cookie_setting=*/CONTENT_SETTING_ALLOW,
             /*third_party_blocking_scope=*/absl::nullopt};
@@ -274,11 +271,10 @@ CookieSettings::GetCookieSettingWithMetadata(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin* top_frame_origin,
-    net::CookieSettingOverrides overrides,
-    QueryReason query_reason) const {
+    net::CookieSettingOverrides overrides) const {
   return GetCookieSettingWithMetadata(
       url, GetFirstPartyURL(site_for_cookies, top_frame_origin),
-      IsThirdPartyRequest(url, site_for_cookies), overrides, query_reason);
+      IsThirdPartyRequest(url, site_for_cookies), overrides);
 }
 
 ContentSetting CookieSettings::GetCookieSettingInternal(
@@ -286,11 +282,9 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
     const GURL& first_party_url,
     bool is_third_party_request,
     net::CookieSettingOverrides overrides,
-    content_settings::SettingSource* source,
-    QueryReason query_reason) const {
+    content_settings::SettingSource* source) const {
   return GetCookieSettingWithMetadata(url, first_party_url,
-                                      is_third_party_request, overrides,
-                                      query_reason)
+                                      is_third_party_request, overrides)
       .cookie_setting();
 }
 
@@ -304,7 +298,7 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
     net::CookieAccessResultList& excluded_cookies) const {
   const CookieSettingWithMetadata setting_with_metadata =
       GetCookieSettingWithMetadata(url, site_for_cookies, top_frame_origin,
-                                   overrides, QueryReason::kCookies);
+                                   overrides);
 
   if (IsAllowed(setting_with_metadata.cookie_setting())) {
     return true;

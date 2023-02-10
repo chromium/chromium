@@ -52,7 +52,6 @@ class CookieSettings : public CookieSettingsBase,
                        public content_settings::Observer,
                        public RefcountedKeyedService {
  public:
-  using QueryReason = CookieSettingsBase::QueryReason;
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnThirdPartyCookieBlockingChanged(
@@ -109,8 +108,7 @@ class CookieSettings : public CookieSettingsBase,
   //
   // This should only be called on the UI thread.
   bool IsThirdPartyAccessAllowed(const GURL& first_party_url,
-                                 content_settings::SettingSource* source,
-                                 QueryReason query_reason);
+                                 content_settings::SettingSource* source);
 
   // Sets the cookie setting for the site and third parties embedded in it.
   //
@@ -169,8 +167,7 @@ class CookieSettings : public CookieSettingsBase,
       const GURL& first_party_url,
       bool is_third_party_request,
       net::CookieSettingOverrides overrides,
-      content_settings::SettingSource* source,
-      QueryReason query_reason) const override;
+      content_settings::SettingSource* source) const override;
 
   // content_settings::Observer:
   void OnContentSettingChanged(

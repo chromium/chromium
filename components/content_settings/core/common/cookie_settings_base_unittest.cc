@@ -25,7 +25,6 @@ const net::SiteForCookies kSiteForCookies =
     net::SiteForCookies::FromOrigin(kOrigin);
 
 using GetSettingCallback = base::RepeatingCallback<ContentSetting(const GURL&)>;
-using QueryReason = CookieSettingsBase::QueryReason;
 
 ContentSettingPatternSource CreateSetting(ContentSetting setting) {
   return ContentSettingPatternSource(
@@ -52,8 +51,7 @@ class CallbackCookieSettings : public CookieSettingsBase {
       const GURL& first_party_url,
       bool is_third_party_request,
       net::CookieSettingOverrides overrides,
-      content_settings::SettingSource* source,
-      QueryReason query_reason) const override {
+      content_settings::SettingSource* source) const override {
     return callback_.Run(url);
   }
   ContentSetting GetSettingForLegacyCookieAccess(
@@ -151,24 +149,21 @@ TEST(CookieSettingsBaseTest, CookieAccessNotAllowedWithBlockedSetting) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_BLOCK; }));
   EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
-      kURL, kSiteForCookies, kOrigin, net::CookieSettingOverrides(),
-      CallbackCookieSettings::QueryReason::kCookies));
+      kURL, kSiteForCookies, kOrigin, net::CookieSettingOverrides()));
 }
 
 TEST(CookieSettingsBaseTest, CookieAccessAllowedWithAllowSetting) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_ALLOW; }));
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
-      kURL, kSiteForCookies, kOrigin, net::CookieSettingOverrides(),
-      CallbackCookieSettings::QueryReason::kCookies));
+      kURL, kSiteForCookies, kOrigin, net::CookieSettingOverrides()));
 }
 
 TEST(CookieSettingsBaseTest, CookieAccessAllowedWithSessionOnlySetting) {
   CallbackCookieSettings settings(base::BindRepeating(
       [](const GURL&) { return CONTENT_SETTING_SESSION_ONLY; }));
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
-      kURL, kSiteForCookies, kOrigin, net::CookieSettingOverrides(),
-      CallbackCookieSettings::QueryReason::kCookies));
+      kURL, kSiteForCookies, kOrigin, net::CookieSettingOverrides()));
 }
 
 TEST(CookieSettingsBaseTest, LegacyCookieAccessSemantics) {
@@ -185,22 +180,19 @@ TEST(CookieSettingsBaseTest, LegacyCookieAccessSemantics) {
 TEST(CookieSettingsBaseTest, IsCookieSessionOnlyWithAllowSetting) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_ALLOW; }));
-  EXPECT_FALSE(settings.IsCookieSessionOnly(
-      kURL, CookieSettingsBase::QueryReason::kCookies));
+  EXPECT_FALSE(settings.IsCookieSessionOnly(kURL));
 }
 
 TEST(CookieSettingsBaseTest, IsCookieSessionOnlyWithBlockSetting) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_BLOCK; }));
-  EXPECT_FALSE(settings.IsCookieSessionOnly(
-      kURL, CookieSettingsBase::QueryReason::kCookies));
+  EXPECT_FALSE(settings.IsCookieSessionOnly(kURL));
 }
 
 TEST(CookieSettingsBaseTest, IsCookieSessionOnlySessionWithOnlySetting) {
   CallbackCookieSettings settings(base::BindRepeating(
       [](const GURL&) { return CONTENT_SETTING_SESSION_ONLY; }));
-  EXPECT_TRUE(settings.IsCookieSessionOnly(
-      kURL, CookieSettingsBase::QueryReason::kCookies));
+  EXPECT_TRUE(settings.IsCookieSessionOnly(kURL));
 }
 
 TEST(CookieSettingsBaseTest, IsValidSetting) {

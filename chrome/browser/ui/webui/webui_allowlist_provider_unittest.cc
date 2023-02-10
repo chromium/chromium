@@ -20,8 +20,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 
-using QueryReason = content_settings::CookieSettings::QueryReason;
-
 class WebUIAllowlistProviderTest : public ChromeRenderViewHostTestHarness {
  public:
   HostContentSettingsMap* GetHostContentSettingsMap(Profile* profile) {
@@ -269,34 +267,31 @@ TEST_F(WebUIAllowlistProviderTest,
   // cookies.
   EXPECT_TRUE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(top_level_url),
-      url::Origin::Create(top_level_url), net::CookieSettingOverrides(),
-      QueryReason::kCookies));
+      url::Origin::Create(top_level_url), net::CookieSettingOverrides()));
 
   // Allowlisted origin on its own can't use cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
-      QueryReason::kCookies));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides()));
 
   // Allowlisted origin embedded in Web top-level origin can't use cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       GURL("https://example2.com"),
       net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
-      QueryReason::kCookies));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides()));
 
   // Allowlisted origin making subresource request (e.g. image) can't use
   // cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies(), absl::nullopt,
-      net::CookieSettingOverrides(), QueryReason::kCookies));
+      net::CookieSettingOverrides()));
 
   // Allowlisted origin embedded in the wrong WebUI origin can't use cookies.
   const GURL url_no_permission_webui = GURL("chrome-untrusted://no-perm");
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(url_no_permission_webui),
       url::Origin::Create(url_no_permission_webui),
-      net::CookieSettingOverrides(), QueryReason::kCookies));
+      net::CookieSettingOverrides()));
 
   // Other permissions aren't affected.
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
@@ -324,34 +319,31 @@ TEST_F(WebUIAllowlistProviderTest,
 
   EXPECT_TRUE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(top_level_url),
-      url::Origin::Create(top_level_url), net::CookieSettingOverrides(),
-      QueryReason::kCookies));
+      url::Origin::Create(top_level_url), net::CookieSettingOverrides()));
   // Allowlisted origin on its own can use cookies, because only third-party
   // cookies are blocked.
   EXPECT_TRUE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
-      QueryReason::kCookies));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides()));
 
   // Allowlisted origin embedded in Web top-level origin can't use cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       GURL("https://example2.com"),
       net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
-      QueryReason::kCookies));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides()));
 
   // Allowlisted origin embedded in the wrong WebUI origin can't use cookies.
   const GURL url_no_permission_webui = GURL("chrome-untrusted://no-perm");
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(url_no_permission_webui),
       url::Origin::Create(url_no_permission_webui),
-      net::CookieSettingOverrides(), QueryReason::kCookies));
+      net::CookieSettingOverrides()));
 
   // Allowlisted origin making subresource request (e.g. image) can't use
   // cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies(), absl::nullopt,
-      net::CookieSettingOverrides(), QueryReason::kCookies));
+      net::CookieSettingOverrides()));
 
   // Other permissions aren't affected.
   EXPECT_EQ(CONTENT_SETTING_BLOCK,

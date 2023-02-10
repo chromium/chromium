@@ -801,8 +801,7 @@ void RestrictedCookieManager::CookiesEnabledFor(
   }
 
   std::move(callback).Run(cookie_settings_->IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin, GetCookieSettingOverrides(),
-      CookieSettings::QueryReason::kCookies));
+      url, site_for_cookies, top_frame_origin, GetCookieSettingOverrides()));
 }
 
 void RestrictedCookieManager::RemoveChangeListener(Listener* listener) {
