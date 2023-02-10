@@ -136,6 +136,10 @@ extern NSString* const kChevronForwardSymbol;
 extern NSString* const kGlobeAmericasSymbol;
 extern NSString* const kGlobeSymbol;
 extern NSString* const kPersonCropCircleSymbol;
+extern NSString* const kEqualSymbol;
+extern NSString* const kBookClosedSymbol;
+extern NSString* const kSunFillSymbol;
+extern NSString* const kCalendarSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

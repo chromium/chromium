@@ -60,6 +60,8 @@ source_set("omnibox_suggestion_icon_util") {
     "resources:pedal_settings",
     "resources:search",
     "//base",
+    "//ios/chrome/browser/ui/icons:buildflags",
+    "//ios/chrome/browser/ui/icons:symbols",
   ]
 }
 

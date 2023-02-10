@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_suggestion_icon_util.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -49,10 +50,19 @@
 }
 
 - (UIImage*)iconImage {
-  if (self.suggestionIconType == OmniboxSuggestionIconType::kFallbackAnswer &&
-      self.defaultSearchEngineIsGoogle && [self fallbackAnswerBrandedIcon]) {
-    return [[self fallbackAnswerBrandedIcon]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  if (UseSymbolsInOmnibox()) {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    if (self.suggestionIconType == OmniboxSuggestionIconType::kFallbackAnswer &&
+        self.defaultSearchEngineIsGoogle) {
+      return GetBrandedGoogleIcon();
+    }
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  } else {
+    if (self.suggestionIconType == OmniboxSuggestionIconType::kFallbackAnswer &&
+        self.defaultSearchEngineIsGoogle && [self fallbackAnswerBrandedIcon]) {
+      return [[self fallbackAnswerBrandedIcon]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    }
   }
   return GetOmniboxSuggestionIcon(self.suggestionIconType);
 }

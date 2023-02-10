@@ -129,6 +129,10 @@ NSString* const kChevronForwardSymbol = @"chevron.forward";
 NSString* const kGlobeAmericasSymbol = @"globe.americas.fill";
 NSString* const kGlobeSymbol = @"globe";
 NSString* const kPersonCropCircleSymbol = @"person.crop.circle";
+NSString* const kEqualSymbol = @"equal";
+NSString* const kBookClosedSymbol = @"book.closed";
+NSString* const kSunFillSymbol = @"sun.max.fill";
+NSString* const kCalendarSymbol = @"calendar";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.
