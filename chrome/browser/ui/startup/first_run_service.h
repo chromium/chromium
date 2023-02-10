@@ -51,15 +51,6 @@ class FirstRunService : public KeyedService {
   // opened on startup.
   bool ShouldOpenFirstRun() const;
 
-  // Asynchronously attempts to complete the first run silently.
-  // By the time `callback` is run (if non-null), either:
-  // - the first run has been marked finished because it can't be run for this
-  //   profile (e.g. policies) or because we want to enable Sync silently (on
-  //   Lacros only)
-  // - the first run is ready to be opened.
-  // The finished state can be checked by calling `ShouldOpenFirstRun()`.
-  void TryMarkFirstRunAlreadyFinished(base::OnceClosure callback);
-
   // This function takes the user through the browser FRE.
   // 1) First, it checks whether the FRE flow can be skipped in the first place.
   //    This is the case when sync consent is already given (true for existing
@@ -81,6 +72,17 @@ class FirstRunService : public KeyedService {
                             ResumeTaskCallback callback);
 
  private:
+  friend class FirstRunServiceFactory;
+
+  // Asynchronously attempts to complete the first run silently.
+  // By the time `callback` is run (if non-null), either:
+  // - the first run has been marked finished because it can't be run for this
+  //   profile (e.g. policies) or because we want to enable Sync silently (on
+  //   Lacros only)
+  // - the first run is ready to be opened.
+  // The finished state can be checked by calling `ShouldOpenFirstRun()`.
+  void TryMarkFirstRunAlreadyFinished(base::OnceClosure callback);
+
   void OpenFirstRunInternal(EntryPoint entry_point,
                             ResumeTaskCallback callback);
 

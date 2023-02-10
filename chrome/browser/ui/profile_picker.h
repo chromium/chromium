@@ -35,8 +35,10 @@ class ProfilePicker {
     // (closed the browser app).
     kQuitAtEnd = 1,
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     // The user exited the FRE before going through the mandatory steps.
     kQuitEarly = 2,
+#endif
   };
   using FirstRunExitedCallback =
       base::OnceCallback<void(FirstRunExitStatus status)>;
