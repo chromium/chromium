@@ -4698,6 +4698,9 @@ if (enable_java_templates && is_android) {
     java_group(target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       public_deps = [ ":$_unpack_target_name" ]
+      if (defined(invoker.public_deps)) {
+        public_deps += invoker.public_deps
+      }
       deps = []
       if (defined(_jar_target_name)) {
         deps += [ ":$_jar_target_name" ]

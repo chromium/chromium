@@ -647,6 +647,10 @@ class BuildConfigGenerator extends DefaultTask {
                     append('  # shown when incremental_install=true.\n')
                     append('  ignore_manifest = true\n')
                     append('  ignore_proguard_configs = true\n')
+                    append('')
+                    append('  # https://crbug.com/1414452\n')
+                    append('  jar_excluded_patterns += [ "androidx/core/os/BuildCompat*" ]\n')
+                    append('  public_deps = [ "//third_party/androidx/local_modifications/buildcompat:buildcompat_java" ]\n')
                 }
                 break
             case 'androidx_fragment_fragment':

@@ -35,3 +35,8 @@ How to add a new androidx library:
 * Wait for android-androidx-packager to upload a new CIPD instance (linked above)
 * Wait for androidx-chromium to roll the new package (linked above)
 
+Local Modifications:
+* Added the BuildCompat.java source to local_modification/ so that we can roll
+  it manually and out-of-band with the rest of androidx. Use the
+  update_source.sh script to pull in changes from androidx-main.
+  https://crbug.com/1414452
