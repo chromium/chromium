@@ -39,10 +39,29 @@
         }
       }
 
+      :host-context([chrome-refresh-2023]):host {
+        --cr-checkbox-ripple-size: 32px;
+        --cr-checkbox-checked-box-color: var(--color-button-foreground-checked,
+            var(--cr-fallback-color-primary));
+        --cr-checkbox-unchecked-box-color: var(--color-button-foreground-unchecked,
+            var(--cr-fallback-color-on-surface-variant));
+        --cr-checkbox-ripple-checked-color: var(--cr-active-background-color);
+        --cr-checkbox-ripple-unchecked-color: var(--cr-active-background-color);
+        --cr-checkbox-ripple-opacity: 1;
+      }
+
       :host([disabled]) {
         cursor: initial;
         opacity: var(--cr-disabled-opacity);
         pointer-events: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host([disabled]) {
+        opacity: 1;
+        --cr-checkbox-checked-box-color: var(--color-button-foreground-disabled,
+            rgba(var(--cr-fallback-color-on-surface-rgb), var(--cr-disabled-opacity)));
+        --cr-checkbox-unchecked-box-color: var(--color-button-foreground-disabled,
+            rgba(var(--cr-fallback-color-on-surface-rgb), var(--cr-disabled-opacity)));
       }
 
       #checkbox {
@@ -63,11 +82,37 @@
         width: var(--cr-checkbox-size);
       }
 
+      :host-context([chrome-refresh-2023]):host([disabled][checked]) #checkbox {
+        border-color: transparent;
+      }
+
+      :host-context([chrome-refresh-2023]) #hover-layer {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]) #checkbox:hover #hover-layer {
+        background-color: var(--cr-hover-background-color);
+        border-radius: 50%;
+        display: block;
+        height: 32px;
+        left: 50%;
+        overflow: hidden;
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 32px;
+      }
+
       @media (forced-colors: active) {
         /* paper-ripple is not showing in Windows HCM. Use outline instead. */
         :host(:focus) #checkbox {
           outline: var(--cr-focus-outline-hcm);
         }
+      }
+
+      :host-context([chrome-refresh-2023]) #checkbox:focus-visible {
+        border: 2px solid var(--cr-focus-outline-color);
       }
 
       #checkmark {
@@ -86,6 +131,16 @@
         transform-origin: 50% 14%;
       }
 
+      :host-context([chrome-refresh-2023]) #checkmark {
+        height: 7.19px;
+        transform-origin: 85% 92%;
+        width: 3.55px;
+      }
+
+      :host-context([chrome-refresh-2023]):host-context([dir='rtl']) #checkmark {
+        transform-origin: 30% 14%;
+      }
+
       :host([checked]) #checkbox {
         background: var(--cr-checkbox-checked-box-background-color,
             var(--cr-checkbox-checked-box-color));
@@ -96,6 +151,12 @@
         transform: scale(1) rotate(45deg);
         /* Only animate when showing checkmark. */
         transition: transform 140ms ease-out;
+      }
+
+      :host-context([chrome-refresh-2023]):host([checked]) #checkbox:focus-visible {
+        background-clip: padding-box;
+        border-color: transparent;
+        outline: 2px solid var(--cr-focus-outline-color);
       }
 
       paper-ripple {
@@ -144,6 +205,7 @@
         aria-checked="false" aria-labelledby="label-container"
         aria-describedby="ariaDescription">
       <span id="checkmark"></span>
+      <div id="hover-layer"></div>
     </div>
     <div id="label-container" aria-hidden="true" part="label-container">
       <slot></slot>
