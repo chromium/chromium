@@ -51,8 +51,7 @@ void CheckThatSlotOffsetIsZero(uintptr_t address);
 // We support pointer offsets in signed (ptrdiff_t) or unsigned (size_t) values.
 // Smaller types are also allowed.
 template <typename Z>
-static constexpr bool offset_type =
-    std::is_integral_v<Z> && sizeof(Z) <= sizeof(ptrdiff_t);
+static constexpr bool offset_type = std::is_integral_v<Z>;
 
 template <typename Z, typename = std::enable_if_t<offset_type<Z>, void>>
 struct PtrDelta {
