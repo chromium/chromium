@@ -433,6 +433,26 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             'INFO: Staged 0 metadata files.\n',
         ])
 
+    def test_execute_warn_parsing_error(self):
+        self.tool.filesystem.write_text_file(
+            self.finder.path_from_web_tests('external', 'wpt',
+                                            'fail.html.ini'),
+            textwrap.dedent("""\
+                [fail.html]
+                  expected: [OK, FAIL  # Unclosed list
+                """))
+        with self._patch_builtins():
+            exit_code = self.command.main(['fail.html'])
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+            'INFO: Processing wptrunner report (1/1)\n',
+            'INFO: Updating expectations for up to 1 test file.\n',
+            "ERROR: Failed to parse 'external/wpt/fail.html.ini': "
+            'EOL in list value (comment):  line 2\n',
+            'INFO: Staged 0 metadata files.\n',
+        ])
+
     def test_gather_reports(self):
         local_report = {
             'run_info': {

@@ -7,6 +7,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import collections
 import contextlib
+import functools
 import io
 import json
 import logging
@@ -47,6 +48,7 @@ path_finder.bootstrap_wpt_imports()
 from manifest import manifest as wptmanifest
 from wptrunner import manifestupdate, metadata, testloader, wpttest
 from wptrunner.wptmanifest.backends import conditional
+from wptrunner.wptmanifest.parser import ParseError
 
 _log = logging.getLogger(__name__)
 
@@ -182,9 +184,9 @@ class UpdateMetadata(Command):
                         manifests, tests_from_builders)
                 self.remove_orphaned_metadata(manifests,
                                               dry_run=options.dry_run)
-                self.update_and_stage(updater,
-                                      test_files,
-                                      dry_run=options.dry_run)
+                modified_test_files = self.write_updates(updater, test_files)
+                if not options.dry_run:
+                    self.stage(modified_test_files)
         except RPCError as error:
             _log.error('%s', error)
             _log.error('Request payload: %s',
@@ -226,44 +228,65 @@ class UpdateMetadata(Command):
                     # Ignore untracked files.
                     self.git.delete_list(orphans, ignore_unmatch=True)
 
-    def update_and_stage(self,
-                         updater: 'MetadataUpdater',
-                         test_files: List[metadata.TestFileData],
-                         dry_run: bool = False):
-        test_files_to_stage = []
-        update_results = zip(test_files,
-                             self._io_pool.map(updater.update, test_files))
+    def write_updates(
+            self,
+            updater: 'MetadataUpdater',
+            test_files: List[metadata.TestFileData],
+    ) -> List[metadata.TestFileData]:
+        """Write updates to disk.
+
+        Returns:
+            The subset of test files that were modified.
+        """
         _log.info('Updating expectations for up to %s.',
                   grammar.pluralize('test file', len(test_files)))
-        for i, (test_file, modified) in enumerate(update_results):
+        modified_test_files = []
+        write = functools.partial(self._log_update_write, updater)
+        for test_file, modified in zip(test_files,
+                                       self._io_pool.map(write, test_files)):
+            if modified:
+                modified_test_files.append(test_file)
+        return modified_test_files
+
+    def _log_update_write(
+            self,
+            updater: 'MetadataUpdater',
+            test_file: metadata.TestFileData,
+    ) -> bool:
+        try:
+            modified = updater.update(test_file)
             test_path = pathlib.Path(test_file.test_path).as_posix()
             if modified:
                 _log.info("Updated '%s'", test_path)
-                test_files_to_stage.append(test_file)
             else:
                 _log.debug("No change needed for '%s'", test_path)
+            return modified
+        except ParseError as error:
+            path = self._fs.relpath(_metadata_path(test_file),
+                                    self._path_finder.path_from_web_tests())
+            _log.error("Failed to parse '%s': %s", path, error)
+            return False
 
-        if not dry_run:
-            unstaged_changes = {
-                self._path_finder.path_from_chromium_base(path)
-                for path in self.git.unstaged_changes()
-            }
-            # Filter out all-pass metadata files marked as "modified" that
-            # already do not exist on disk or in the index. Otherwise, `git add`
-            # will fail.
-            paths = [
-                path for path in self._metadata_paths(test_files_to_stage)
-                if path in unstaged_changes
-            ]
-            all_pass = len(test_files_to_stage) - len(paths)
-            if all_pass:
-                _log.info(
-                    'Already deleted %s from the index '
-                    'for all-pass tests.',
-                    grammar.pluralize('metadata file', all_pass))
-            self.git.add_list(paths)
-            _log.info('Staged %s.',
-                      grammar.pluralize('metadata file', len(paths)))
+    def stage(self, test_files: List[metadata.TestFileData]) -> None:
+        unstaged_changes = {
+            self._path_finder.path_from_chromium_base(path)
+            for path in self.git.unstaged_changes()
+        }
+        # Filter out all-pass metadata files marked as "modified" that
+        # already do not exist on disk or in the index. Otherwise, `git add`
+        # will fail.
+        paths = [
+            path for path in map(_metadata_path, test_files)
+            if path in unstaged_changes
+        ]
+        all_pass = len(test_files) - len(paths)
+        if all_pass:
+            _log.info(
+                'Already deleted %s from the index '
+                'for all-pass tests.',
+                grammar.pluralize('metadata file', all_pass))
+        self.git.add_list(paths)
+        _log.info('Staged %s.', grammar.pluralize('metadata file', len(paths)))
 
     def _filter_unchanged_test_files(
             self,
@@ -286,7 +309,7 @@ class UpdateMetadata(Command):
             self._path_finder.path_from_chromium_base(path)
             for path in self.git.uncommitted_changes()
         }
-        metadata_paths = set(self._metadata_paths(test_files))
+        metadata_paths = set(map(_metadata_path, test_files))
         uncommitted_metadata = uncommitted_changes & metadata_paths
         if uncommitted_metadata:
             self._log_metadata_paths(
@@ -333,16 +356,6 @@ class UpdateMetadata(Command):
         for path in sorted(paths):
             rel_path = pathlib.Path(path).relative_to(web_tests_root)
             log('  %s', rel_path.as_posix())
-
-    def _metadata_paths(
-            self,
-            test_files: List[metadata.TestFileData],
-    ) -> List[str]:
-        return [
-            metadata.expected_path(test_file.metadata_path,
-                                   test_file.test_path)
-            for test_file in test_files
-        ]
 
     def _select_builds(self, options: optparse.Values) -> List[Build]:
         if options.builds:
@@ -817,3 +830,7 @@ def _coerce_bug_number(option: optparse.Option, _opt_str: str, value: str,
     if not bug_match:
         raise optparse.OptionValueError('invalid bug number or URL %r' % value)
     setattr(parser.values, option.dest, int(bug_match['bug']))
+
+
+def _metadata_path(test_file: metadata.TestFileData) -> str:
+    return metadata.expected_path(test_file.metadata_path, test_file.test_path)
