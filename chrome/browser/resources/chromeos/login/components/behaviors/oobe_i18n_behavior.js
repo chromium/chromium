@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {SanitizeInnerHtmlOpts} from 'chrome://resources/ash/common/parse_html_subset.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {SanitizeInnerHtmlOpts} from '//resources/ash/common/parse_html_subset.js';
 // clang-format on
 
 /**

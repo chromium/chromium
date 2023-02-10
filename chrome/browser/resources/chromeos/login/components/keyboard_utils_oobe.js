@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {assert} from '//resources/ash/common/assert.js';
 
 import {KeyboardUtils} from './keyboard_utils.js';
 

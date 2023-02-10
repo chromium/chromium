@@ -13,9 +13,9 @@ import {assert} from '//resources/ash/common/assert.js';
 import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkList} from '//resources/ash/common/network/network_list_types.js';
 import {OncMojo} from '//resources/ash/common/network/onc_mojo.js';
+import {StartConnectResult} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {Oobe} from '../cr_ui.js';
 

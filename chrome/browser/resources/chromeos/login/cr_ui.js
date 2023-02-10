@@ -8,283 +8,283 @@
  * shared between all *two* screens here.
  */
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {$} from 'chrome://resources/ash/common/util.js';
-import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
+import {assert} from '//resources/ash/common/assert.js';
+import {sendWithPromise} from '//resources/ash/common/cr.m.js';
+import {addSingletonGetter} from '//resources/ash/common/cr_deprecated.js';
+import {$} from '//resources/ash/common/util.js';
 
-import {DisplayManager} from './display_manager.js';
 import {DISPLAY_TYPE} from './components/display_manager_types.js';
-import {loadTimeData} from './i18n_setup.js';
 import {OobeTypes} from './components/oobe_types.js';
+import {DisplayManager} from './display_manager.js';
+import {loadTimeData} from './i18n_setup.js';
 
+
+/**
+ * Out of box controller. It manages initialization of screens,
+ * transitions, error messages display.
+ */
+export class Oobe extends DisplayManager {
+  /**
+   * OOBE initialization coordination. Used by tests to wait for OOBE
+   * to fully load when using the HTLImports polyfill.
+   * TODO(crbug.com/1111387) - Remove once migrated to JS modules.
+   * Remove spammy logging when closer to M89 branch point.
+   */
+  static waitForOobeToLoad() {
+    return new Promise((resolve, reject) => {
+      if (this.initializationComplete) {
+        // TODO(crbug.com/1111387) - Remove excessive logging.
+        console.warn('OOBE is already initialized. Continuing...');
+        resolve();
+      } else {
+        // TODO(crbug.com/1111387) - Remove excessive logging.
+        console.warn('OOBE not loaded yet. Waiting...');
+        this.initCallbacks.push(resolve);
+      }
+    });
+  }
 
   /**
-   * Out of box controller. It manages initialization of screens,
-   * transitions, error messages display.
+   * Handle the cancel accelerator.
    */
-  export class Oobe extends DisplayManager {
-    /**
-     * OOBE initialization coordination. Used by tests to wait for OOBE
-     * to fully load when using the HTLImports polyfill.
-     * TODO(crbug.com/1111387) - Remove once migrated to JS modules.
-     * Remove spammy logging when closer to M89 branch point.
-     */
-    static waitForOobeToLoad() {
-      return new Promise((resolve, reject) => {
-        if (this.initializationComplete) {
-          // TODO(crbug.com/1111387) - Remove excessive logging.
-          console.warn('OOBE is already initialized. Continuing...');
-          resolve();
-        } else {
-          // TODO(crbug.com/1111387) - Remove excessive logging.
-          console.warn('OOBE not loaded yet. Waiting...');
-          this.initCallbacks.push(resolve);
-        }
+  static handleCancel() {
+    Oobe.getInstance().handleCancel();
+  }
+
+  /**
+   * Shows the given screen.
+   * @param {Object} screen Screen params dict, e.g. {id: screenId,
+   *   data: data}
+   */
+  static showScreen(screen) {
+    Oobe.getInstance().showScreen(screen);
+  }
+
+  /**
+   * Toggles system info visibility.
+   */
+  static toggleSystemInfo() {
+    Oobe.getInstance().toggleSystemInfo();
+  }
+
+  /**
+   * Update body class to switch between OOBE UI and Login UI.
+   * @param {boolean} showOobe True if UI is in an OOBE mode (as opposed to
+   * login).
+   */
+  static showOobeUI(showOobe) {
+    if (showOobe) {
+      document.body.classList.add('oobe-display');
+    } else {
+      document.body.classList.remove('oobe-display');
+    }
+  }
+
+  /**
+   * Enables keyboard driven flow.
+   * @param {boolean} value True if keyboard navigation flow is forced.
+   */
+  static enableKeyboardFlow(value) {
+    Oobe.getInstance().forceKeyboardFlow = value;
+  }
+
+  /**
+   * Changes some UI which depends on the virtual keyboard being shown/hidden.
+   */
+  static setVirtualKeyboardShown(shown) {
+    Oobe.getInstance().virtualKeyboardShown = shown;
+  }
+
+  /**
+   * Sets the current height of the shelf area.
+   * @param {number} height current shelf height
+   */
+  static setShelfHeight(height) {
+    Oobe.getInstance().setShelfHeight(height);
+  }
+
+  static setOrientation(isHorizontal) {
+    Oobe.getInstance().setOrientation(isHorizontal);
+  }
+
+  /**
+   * Sets the required size of the oobe dialog.
+   * @param {number} width oobe dialog width
+   * @param {number} height oobe dialog height
+   */
+  static setDialogSize(width, height) {
+    Oobe.getInstance().setDialogSize(width, height);
+  }
+
+  /**
+   * Login for telemetry.
+   * @param {string} username Login username.
+   * @param {string} password Login password.
+   * @param {string} gaia_id GAIA ID.
+   * @param {boolean} enterpriseEnroll Login as an enterprise enrollment?
+   */
+  static loginForTesting(
+      username, password, gaia_id, enterpriseEnroll = false) {
+    // Helper method that runs |fn| after |screenName| is visible.
+    function waitForOobeScreen(screenName, fn) {
+      if (Oobe.getInstance().currentScreen &&
+          Oobe.getInstance().currentScreen.id === screenName) {
+        fn();
+      } else {
+        $('oobe').addEventListener('screenchanged', function handler(e) {
+          if (e.detail == screenName) {
+            $('oobe').removeEventListener('screenchanged', handler);
+            fn();
+          }
+        });
+      }
+    }
+
+    chrome.send('OobeTestApi.skipToLoginForTesting');
+
+    if (!enterpriseEnroll) {
+      chrome.send('completeLogin', [gaia_id, username, password, false]);
+    } else {
+      waitForOobeScreen('gaia-signin', function() {
+        // TODO(crbug.com/1100910): migrate logic to dedicated test api.
+        chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
+        chrome.send('toggleFakeEnrollment');
+      });
+
+      waitForOobeScreen('enterprise-enrollment', function() {
+        chrome.send(
+            'oauthEnrollCompleteLogin',
+            [username, OobeTypes.LicenseType.ENTERPRISE]);
       });
     }
+  }  // loginForTesting
 
-    /**
-     * Handle the cancel accelerator.
-     */
-    static handleCancel() {
-      Oobe.getInstance().handleCancel();
+  /**
+   * Shows the add user dialog. Used in browser tests.
+   */
+  static showAddUserForTesting() {
+    // TODO(crbug.com/1100910): migrate logic to dedicated test api.
+    chrome.send('OobeTestApi.showGaiaDialog');
+  }
+
+  /**
+   * Begin enterprise enrollment for telemetry.
+   */
+  static switchToEnterpriseEnrollmentForTesting() {
+    // TODO(crbug.com/1100910): migrate logic to dedicated test api.
+    chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
+  }
+
+  /**
+   * Finish enterprise enrollment for telemetry.
+   */
+  static enterpriseEnrollmentDone() {
+    // TODO(crbug.com/1100910): migrate logic to dedicated test api.
+    chrome.send('oauthEnrollClose', ['done']);
+  }
+
+  /**
+   * Returns true if enrollment was successful. Dismisses the enrollment
+   * attribute screen if it's present.
+   *
+   * @suppress {missingProperties}
+   * $('enterprise-enrollment').uiStep
+   * TODO(crbug.com/1229130) - Remove this suppression.
+   */
+  static isEnrollmentSuccessfulForTest() {
+    const step = $('enterprise-enrollment').uiStep;
+    // TODO(crbug.com/1229130) - Improve this check.
+    if (step === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
+      chrome.send('oauthEnrollAttributes', ['', '']);
+      return true;
     }
 
-    /**
-     * Shows the given screen.
-     * @param {Object} screen Screen params dict, e.g. {id: screenId,
-     *   data: data}
-     */
-    static showScreen(screen) {
-      Oobe.getInstance().showScreen(screen);
+    return step === OobeTypes.EnrollmentStep.SUCCESS;
+  }
+
+  /**
+   * Click on the primary action button ("Next" usually) for Gaia. On the
+   * Login or Enterprise Enrollment screen.
+   *
+   * @suppress {missingProperties}
+   * $('...').clickPrimaryButtonForTesting()
+   * TODO(crbug.com/1229130) - Remove this suppression.
+   */
+  static clickGaiaPrimaryButtonForTesting() {
+    if (!$('gaia-signin').hidden) {
+      $('gaia-signin').clickPrimaryButtonForTesting();
+    } else {
+      assert(!$('enterprise-enrollment').hidden);
+      $('enterprise-enrollment').clickPrimaryButtonForTesting();
+    }
+  }
+  /**
+   * Initializes the OOBE flow.  This will cause all C++ handlers to
+   * be invoked to do final setup.
+   */
+  static initialize() {
+    Oobe.getInstance().initialize();
+    chrome.send('screenStateInitialize');
+  }
+
+  /**
+   * Reloads content of the page (localized strings, options of the select
+   * controls).
+   * @param {!Object} data New dictionary with i18n values.
+   */
+  static reloadContent(data) {
+    // Reload global local strings, process DOM tree again.
+    loadTimeData.overrideValues(data);
+    Oobe.updateDocumentLocalizedStrings();
+
+    // Update localized content of the screens.
+    Oobe.getInstance().updateLocalizedContent_();
+  }
+
+  /**
+   * Update localized strings in tags that are used at the `document` level.
+   * These strings are used outside of a Polymer Element and cannot leverage
+   * I18nBehavior for it.
+   */
+  static updateDocumentLocalizedStrings() {
+    // Update attributes used in the <html> tag.
+    const attrToStrMap = {
+      lang: 'language',
+      dir: 'textdirection',
+      highlight: 'highlightStrength',
+    };
+    for (const [attribute, stringName] of Object.entries(attrToStrMap)) {
+      const localizedString = loadTimeData.getValue(stringName);
+      document.documentElement.setAttribute(attribute, localizedString);
     }
 
-    /**
-     * Toggles system info visibility.
-     */
-    static toggleSystemInfo() {
-      Oobe.getInstance().toggleSystemInfo();
+    const missingApiId = 'missingAPIKeysNotice';
+    if (!loadTimeData.valueExists(missingApiId)) {
+      return;
     }
+    // Update this standalone div in the main document.
+    const apiKeysNoticeDiv = $('api-keys-notice');
+    apiKeysNoticeDiv.textContent = loadTimeData.getValue(missingApiId);
+    $('api-keys-notice-container').hidden = false;
+  }
 
-    /**
-     * Update body class to switch between OOBE UI and Login UI.
-     * @param {boolean} showOobe True if UI is in an OOBE mode (as opposed to
-     * login).
-     */
-    static showOobeUI(showOobe) {
-      if (showOobe) {
-        document.body.classList.add('oobe-display');
-      } else {
-        document.body.classList.remove('oobe-display');
-      }
-    }
+  /**
+   * Updates "device in tablet mode" state when tablet mode is changed.
+   * @param {Boolean} isInTabletMode True when in tablet mode.
+   */
+  static setTabletModeState(isInTabletMode) {
+    Oobe.getInstance().setTabletModeState_(isInTabletMode);
+  }
 
-    /**
-     * Enables keyboard driven flow.
-     * @param {boolean} value True if keyboard navigation flow is forced.
-     */
-    static enableKeyboardFlow(value) {
-      Oobe.getInstance().forceKeyboardFlow = value;
-    }
+  /**
+   * Updates OOBE configuration when it is loaded.
+   * @param {!OobeTypes.OobeConfiguration} configuration OOBE configuration.
+   */
+  static updateOobeConfiguration(configuration) {
+    Oobe.getInstance().updateOobeConfiguration_(configuration);
+  }
 
-    /**
-     * Changes some UI which depends on the virtual keyboard being shown/hidden.
-     */
-    static setVirtualKeyboardShown(shown) {
-      Oobe.getInstance().virtualKeyboardShown = shown;
-    }
-
-    /**
-     * Sets the current height of the shelf area.
-     * @param {number} height current shelf height
-     */
-    static setShelfHeight(height) {
-      Oobe.getInstance().setShelfHeight(height);
-    }
-
-    static setOrientation(isHorizontal) {
-      Oobe.getInstance().setOrientation(isHorizontal);
-    }
-
-    /**
-     * Sets the required size of the oobe dialog.
-     * @param {number} width oobe dialog width
-     * @param {number} height oobe dialog height
-     */
-    static setDialogSize(width, height) {
-      Oobe.getInstance().setDialogSize(width, height);
-    }
-
-    /**
-     * Login for telemetry.
-     * @param {string} username Login username.
-     * @param {string} password Login password.
-     * @param {string} gaia_id GAIA ID.
-     * @param {boolean} enterpriseEnroll Login as an enterprise enrollment?
-     */
-    static loginForTesting(
-        username, password, gaia_id, enterpriseEnroll = false) {
-      // Helper method that runs |fn| after |screenName| is visible.
-      function waitForOobeScreen(screenName, fn) {
-        if (Oobe.getInstance().currentScreen &&
-            Oobe.getInstance().currentScreen.id === screenName) {
-          fn();
-        } else {
-          $('oobe').addEventListener('screenchanged', function handler(e) {
-            if (e.detail == screenName) {
-              $('oobe').removeEventListener('screenchanged', handler);
-              fn();
-            }
-          });
-        }
-      }
-
-      chrome.send('OobeTestApi.skipToLoginForTesting');
-
-      if (!enterpriseEnroll) {
-        chrome.send('completeLogin', [gaia_id, username, password, false]);
-      } else {
-        waitForOobeScreen('gaia-signin', function() {
-          // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-          chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
-          chrome.send('toggleFakeEnrollment');
-        });
-
-        waitForOobeScreen('enterprise-enrollment', function() {
-          chrome.send(
-              'oauthEnrollCompleteLogin',
-              [username, OobeTypes.LicenseType.ENTERPRISE]);
-        });
-      }
-    }  // loginForTesting
-
-    /**
-     * Shows the add user dialog. Used in browser tests.
-     */
-    static showAddUserForTesting() {
-      // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-      chrome.send('OobeTestApi.showGaiaDialog');
-    }
-
-    /**
-     * Begin enterprise enrollment for telemetry.
-     */
-    static switchToEnterpriseEnrollmentForTesting() {
-      // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-      chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
-    }
-
-    /**
-     * Finish enterprise enrollment for telemetry.
-     */
-    static enterpriseEnrollmentDone() {
-      // TODO(crbug.com/1100910): migrate logic to dedicated test api.
-      chrome.send('oauthEnrollClose', ['done']);
-    }
-
-    /**
-     * Returns true if enrollment was successful. Dismisses the enrollment
-     * attribute screen if it's present.
-     *
-     * @suppress {missingProperties}
-     * $('enterprise-enrollment').uiStep
-     * TODO(crbug.com/1229130) - Remove this suppression.
-     */
-    static isEnrollmentSuccessfulForTest() {
-      const step = $('enterprise-enrollment').uiStep;
-      // TODO(crbug.com/1229130) - Improve this check.
-      if (step === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
-        chrome.send('oauthEnrollAttributes', ['', '']);
-        return true;
-      }
-
-      return step === OobeTypes.EnrollmentStep.SUCCESS;
-    }
-
-    /**
-     * Click on the primary action button ("Next" usually) for Gaia. On the
-     * Login or Enterprise Enrollment screen.
-     *
-     * @suppress {missingProperties}
-     * $('...').clickPrimaryButtonForTesting()
-     * TODO(crbug.com/1229130) - Remove this suppression.
-     */
-    static clickGaiaPrimaryButtonForTesting() {
-      if (!$('gaia-signin').hidden) {
-        $('gaia-signin').clickPrimaryButtonForTesting();
-      } else {
-        assert(!$('enterprise-enrollment').hidden);
-        $('enterprise-enrollment').clickPrimaryButtonForTesting();
-      }
-    }
-    /**
-     * Initializes the OOBE flow.  This will cause all C++ handlers to
-     * be invoked to do final setup.
-     */
-    static initialize() {
-      Oobe.getInstance().initialize();
-      chrome.send('screenStateInitialize');
-    }
-
-    /**
-     * Reloads content of the page (localized strings, options of the select
-     * controls).
-     * @param {!Object} data New dictionary with i18n values.
-     */
-    static reloadContent(data) {
-      // Reload global local strings, process DOM tree again.
-      loadTimeData.overrideValues(data);
-      Oobe.updateDocumentLocalizedStrings();
-
-      // Update localized content of the screens.
-      Oobe.getInstance().updateLocalizedContent_();
-    }
-
-    /**
-     * Update localized strings in tags that are used at the `document` level.
-     * These strings are used outside of a Polymer Element and cannot leverage
-     * I18nBehavior for it.
-     */
-    static updateDocumentLocalizedStrings() {
-      // Update attributes used in the <html> tag.
-      const attrToStrMap = {
-        lang: 'language',
-        dir: 'textdirection',
-        highlight: 'highlightStrength',
-      };
-      for (const [attribute, stringName] of Object.entries(attrToStrMap)) {
-        const localizedString = loadTimeData.getValue(stringName);
-        document.documentElement.setAttribute(attribute, localizedString);
-      }
-
-      const missingApiId = 'missingAPIKeysNotice';
-      if (!loadTimeData.valueExists(missingApiId)) {
-        return;
-      }
-      // Update this standalone div in the main document.
-      const apiKeysNoticeDiv = $('api-keys-notice');
-      apiKeysNoticeDiv.textContent = loadTimeData.getValue(missingApiId);
-      $('api-keys-notice-container').hidden = false;
-    }
-
-    /**
-     * Updates "device in tablet mode" state when tablet mode is changed.
-     * @param {Boolean} isInTabletMode True when in tablet mode.
-     */
-    static setTabletModeState(isInTabletMode) {
-      Oobe.getInstance().setTabletModeState_(isInTabletMode);
-    }
-
-    /**
-     * Updates OOBE configuration when it is loaded.
-     * @param {!OobeTypes.OobeConfiguration} configuration OOBE configuration.
-     */
-    static updateOobeConfiguration(configuration) {
-      Oobe.getInstance().updateOobeConfiguration_(configuration);
-    }
-
-  }  // class Oobe
+}  // class Oobe
 
   Oobe.initializationComplete = false;
   Oobe.initCallbacks = [];

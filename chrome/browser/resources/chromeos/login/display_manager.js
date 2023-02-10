@@ -6,63 +6,63 @@
  * @fileoverview Display manager for WebUI OOBE and login.
  */
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {$, ensureTransitionEndEvent} from 'chrome://resources/ash/common/util.js';
-import {loadTimeData} from './i18n_setup.js';
-import {OobeTypes} from './components/oobe_types.js';
+import {assert} from '//resources/ash/common/assert.js';
+import {$, ensureTransitionEndEvent} from '//resources/ash/common/util.js';
 
-import {DISPLAY_TYPE, SCREEN_DEVICE_DISABLED, OOBE_UI_STATE, SCREEN_WELCOME } from './components/display_manager_types.js';
-import {MultiTapDetector} from './multi_tap_detector.js';
+import {DISPLAY_TYPE, OOBE_UI_STATE, SCREEN_DEVICE_DISABLED, SCREEN_WELCOME} from './components/display_manager_types.js';
 import {globalOobeKeyboard} from './components/keyboard_utils_oobe.js';
+import {OobeTypes} from './components/oobe_types.js';
+import {loadTimeData} from './i18n_setup.js';
+import {MultiTapDetector} from './multi_tap_detector.js';
 
-  /**
-   * Maximum time in milliseconds to wait for step transition to finish.
-   * The value is used as the duration for ensureTransitionEndEvent below.
-   * It needs to be inline with the step screen transition duration time
-   * defined in css file. The current value in css is 200ms. To avoid emulated
-   * transitionend fired before real one, 250ms is used.
-   */
-  const MAX_SCREEN_TRANSITION_DURATION = 250;
+/**
+ * Maximum time in milliseconds to wait for step transition to finish.
+ * The value is used as the duration for ensureTransitionEndEvent below.
+ * It needs to be inline with the step screen transition duration time
+ * defined in css file. The current value in css is 200ms. To avoid emulated
+ * transitionend fired before real one, 250ms is used.
+ */
+const MAX_SCREEN_TRANSITION_DURATION = 250;
 
-  /**
-   * As Polymer behaviors do not provide true inheritance, when two behaviors
-   * would declare same method one of them will be hidden. Also, if element
-   * re-declares the method it needs explicitly iterate over behaviors and call
-   * method on them. This function simplifies such interaction by calling
-   * method on element and all behaviors in the same order as lifecycle
-   * callbacks are called.
-   * @param {Element} element
-   * @param {string} name function name
-   * @param {...*} args arguments for the function
-   *
-   * @suppress {missingProperties}
-   * element.behaviors
-   * TODO(crbug.com/1229130) - Remove this suppression.
-   */
-  export function invokePolymerMethod(element, name, ...args) {
-    const method = element[name];
-    if (!method || typeof method !== 'function') {
-      return;
-    }
-    method.apply(element, args);
-    if (!element.behaviors) {
-      return;
-    }
-
-    // If element has behaviors call functions on them in reverse order,
-    // ignoring case when method on element was derived from behavior.
-    for (let i = element.behaviors.length - 1; i >= 0; i--) {
-      const behavior = element.behaviors[i];
-      const behaviorMethod = behavior[name];
-      if (!behaviorMethod || typeof behaviorMethod !== 'function') {
-        continue;
-      }
-      if (behaviorMethod == method) {
-        continue;
-      }
-      behaviorMethod.apply(element, args);
-    }
+/**
+ * As Polymer behaviors do not provide true inheritance, when two behaviors
+ * would declare same method one of them will be hidden. Also, if element
+ * re-declares the method it needs explicitly iterate over behaviors and call
+ * method on them. This function simplifies such interaction by calling
+ * method on element and all behaviors in the same order as lifecycle
+ * callbacks are called.
+ * @param {Element} element
+ * @param {string} name function name
+ * @param {...*} args arguments for the function
+ *
+ * @suppress {missingProperties}
+ * element.behaviors
+ * TODO(crbug.com/1229130) - Remove this suppression.
+ */
+export function invokePolymerMethod(element, name, ...args) {
+  const method = element[name];
+  if (!method || typeof method !== 'function') {
+    return;
   }
+  method.apply(element, args);
+  if (!element.behaviors) {
+    return;
+  }
+
+  // If element has behaviors call functions on them in reverse order,
+  // ignoring case when method on element was derived from behavior.
+  for (let i = element.behaviors.length - 1; i >= 0; i--) {
+    const behavior = element.behaviors[i];
+    const behaviorMethod = behavior[name];
+    if (!behaviorMethod || typeof behaviorMethod !== 'function') {
+      continue;
+    }
+    if (behaviorMethod == method) {
+      continue;
+    }
+    behaviorMethod.apply(element, args);
+  }
+}
 
   /**
    * A display manager that manages initialization of screens,

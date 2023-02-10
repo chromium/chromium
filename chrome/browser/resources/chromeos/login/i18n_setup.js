@@ -4,4 +4,4 @@
 
 import './strings.m.js';
 
-export {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+export {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
