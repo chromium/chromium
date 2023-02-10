@@ -18,6 +18,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_preload_test_response_utils.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -88,7 +89,8 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
 // clients to do so), and they share the prefetched response and other
 // resources, so it is a unified test designed to test the interaction between
 // these two features.
-class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
+class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
+                                        public SearchPreloadResponseController {
  public:
   SearchPreloadUnifiedBrowserTest()
       : prerender_helper_(base::BindRepeating(
@@ -175,14 +177,14 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
     bool is_invalid_response_body =
         request.GetURL().spec().find("invalid_content") != std::string::npos;
 
-    std::unique_ptr<DelayedResponse> resp = std::make_unique<DelayedResponse>(
-        this, service_deferral_type_, headers,
-        is_invalid_response_body ? "" : content);
-
+    net::HttpStatusCode code = net::HttpStatusCode::HTTP_OK;
     if (request.GetURL().spec().find("failed_terms") != std::string::npos) {
-      resp->set_code(net::HTTP_SERVICE_UNAVAILABLE);
-      return resp;
+      code = net::HttpStatusCode::HTTP_SERVICE_UNAVAILABLE;
     }
+
+    std::unique_ptr<net::test_server::HttpResponse> resp =
+        CreateDeferrableResponse(code, headers,
+                                 is_invalid_response_body ? "" : content);
 
     return resp;
   }
@@ -219,18 +221,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
     kPrefetch,
     // For URLs that will be used for prerender requests.
     kPrerender
-  };
-
-  enum class DeferralType {
-    // Do not defer HTTP responses.
-    kNoDeferral = 0,
-    // Ddefer the response header only.
-    kDeferHeader = 1,
-    // Only defer the response body.
-    kDeferBody = 2,
-    // Defer dispatching response head until a explicit signal, and then block
-    // the response until receiving the next signal.
-    kDeferHeaderThenBody = 3,
   };
 
   void SetUpContext() {
@@ -330,147 +320,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
     return search_prefetch_service_;
   }
 
-  // Instructs the search service whether to delay the response until receiving
-  // a specific signal (From callers' prospective, calling
-  // `DispatchDelayedResponseTask`). See comment of `DeferralType` for more
-  // information.
-  void set_service_deferral_type(DeferralType service_deferral_type) {
-    service_deferral_type_ = service_deferral_type;
-  }
-
-  // Called on the thread the server is running. The custom defined responses
-  // should call this method if they want to defer the network response.
-  void AddDelayedResponseTask(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-      base::OnceClosure response_closure) {
-    ASSERT_TRUE(task_runner->BelongsToCurrentThread());
-    base::AutoLock auto_lock(response_queue_lock_);
-    delayed_response_task_.emplace(task_runner, std::move(response_closure));
-    if (monitor_callback_)
-      std::move(monitor_callback_).Run();
-  }
-
-  // Called on the main thread. This will resume one delayed response.
-  void DispatchDelayedResponseTask() {
-    ASSERT_TRUE(
-        content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    base::RunLoop run_loop;
-    {
-      base::AutoLock auto_lock(response_queue_lock_);
-      if (!delayed_response_task_.empty()) {
-        delayed_response_task_.front().Run();
-        delayed_response_task_.pop();
-        return;
-      }
-      monitor_callback_ = run_loop.QuitClosure();
-    }
-    run_loop.Run();
-  }
-
  private:
-  // A DelayedResponseTask instance is created on the thread that server is
-  // running on, and be destroyed on the main thread. A lock is guarding the
-  // access to created instances.
-  class DelayedResponseTask {
-   public:
-    DelayedResponseTask(
-        const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-        base::OnceClosure response_closure)
-        : task_runner_(task_runner),
-          response_closure_(std::move(response_closure)) {}
-
-    void Run() {
-      ASSERT_TRUE(
-          content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-      task_runner_->PostTask(FROM_HERE, std::move(response_closure_));
-    }
-
-   private:
-    // Task runner of the thread on which a service server is running.
-    const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-    // Closure for making response dispatching controllable. The closure should
-    // be executed on the thread that the server is running on, as it sends
-    // network response.
-    base::OnceClosure response_closure_;
-  };
-
-  // Passes the delegates needed to respond to a request to the
-  // SearchPreloadUnifiedBrowserTest test fixture, so that it can control when
-  // and what to respond.
-  class DelayedResponse : public net::test_server::BasicHttpResponse {
-   public:
-    // Build a custom defined response that might be deferred based on
-    // `deferral_type`. See the comment of `DeferralType` for more information
-    // about the deferral type. Pass an empty string to `response_body` if the
-    // response (note, not the header) should fail.
-    DelayedResponse(SearchPreloadUnifiedBrowserTest* test_harness,
-                    DeferralType deferral_type,
-                    base::StringPairs headers,
-                    const std::string& response_body)
-        : test_harness_(test_harness),
-          service_deferral_type_(deferral_type),
-          headers_(headers),
-          body_(response_body) {}
-
-    DelayedResponse(const DelayedResponse&) = delete;
-    DelayedResponse& operator=(const DelayedResponse&) = delete;
-
-    // net::test_server::BasicHttpResponse implementation.
-    void SendResponse(base::WeakPtr<net::test_server::HttpResponseDelegate>
-                          delegate) override {
-      switch (service_deferral_type_) {
-        case DeferralType::kNoDeferral:
-          delegate->SendHeadersContentAndFinish(
-              code(), net::GetHttpReasonPhrase(code()), headers_, body_);
-          break;
-        case DeferralType::kDeferHeader:
-          test_harness_->AddDelayedResponseTask(
-              base::SingleThreadTaskRunner::GetCurrentDefault(),
-              base::BindOnce(&net::test_server::HttpResponseDelegate::
-                                 SendHeadersContentAndFinish,
-                             delegate, code(), net::GetHttpReasonPhrase(code()),
-                             headers_, body_));
-          break;
-        case DeferralType::kDeferBody:
-          test_harness_->AddDelayedResponseTask(
-              base::SingleThreadTaskRunner::GetCurrentDefault(),
-              base::BindOnce(&net::test_server::HttpResponseDelegate::
-                                 SendContentsAndFinish,
-                             delegate, body_));
-          delegate->SendResponseHeaders(
-              code(), net::GetHttpReasonPhrase(code()), headers_);
-          break;
-        case DeferralType::kDeferHeaderThenBody:
-          test_harness_->AddDelayedResponseTask(
-              base::SingleThreadTaskRunner::GetCurrentDefault(),
-              base::BindOnce(
-                  &net::test_server::HttpResponseDelegate::SendResponseHeaders,
-                  delegate, code(), "OK", headers_));
-          test_harness_->AddDelayedResponseTask(
-              base::SingleThreadTaskRunner::GetCurrentDefault(),
-              base::BindOnce(&net::test_server::HttpResponseDelegate::
-                                 SendContentsAndFinish,
-                             delegate, body_));
-          break;
-      }
-    }
-
-   private:
-    // The test fixture that can manipulate the respones.
-    raw_ptr<SearchPreloadUnifiedBrowserTest> test_harness_;
-
-    // The deferral mode. See comment of `DeferralType` for more information.
-    DeferralType service_deferral_type_ = DeferralType::kNoDeferral;
-
-    // Predefined response headers.
-    base::StringPairs headers_;
-
-    // Predefined response body. The response body will fail due to the
-    // CONTENT_LENGTH_MISMATCH error if it is set to an empty string.
-    std::string body_ = "";
-  };
-
   AutocompleteMatch CreateSearchSuggestionMatch(
       const std::string& original_query,
       const std::string& search_terms,
@@ -496,12 +346,6 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
       nullptr;
   net::test_server::EmbeddedTestServer search_engine_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-
-  DeferralType service_deferral_type_ = DeferralType::kNoDeferral;
-  std::queue<DelayedResponseTask> delayed_response_task_
-      GUARDED_BY(response_queue_lock_);
-  base::OnceClosure monitor_callback_ GUARDED_BY(response_queue_lock_);
-  base::Lock response_queue_lock_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
@@ -768,7 +612,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
   SetUpContext();
-  set_service_deferral_type(DeferralType::kDeferHeader);
+  set_service_deferral_type(
+      SearchPreloadTestResponseDeferralType::kDeferHeader);
 
   // 1. Type the first query.
   std::string search_query_1 = "hang";
@@ -976,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
-  set_service_deferral_type(DeferralType::kDeferBody);
+  set_service_deferral_type(SearchPreloadTestResponseDeferralType::kDeferBody);
   SetUpContext();
 
   // 1. Type the first query.
