@@ -66,7 +66,7 @@ static jboolean JNI_Fido2Api_ParseAttestationObject(
 
   if (!attestation_acceptable) {
     const bool did_modify = attestation_object->EraseAttestationStatement(
-        device::AttestationObject::AAGUID::kErase);
+        device::AttestationObject::AAGUID::kInclude);
     if (did_modify) {
       // The devicePubKey extension signs over the authenticator data so its
       // signature is now invalid and we have to remove the extension.
