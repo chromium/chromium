@@ -43,12 +43,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Fetches the variations seed before the actual first run of Chrome.
- */
+/** Fetches the variations seed before the actual first run of Chrome. */
 public class VariationsSeedFetcher {
     private static final String TAG = "VariationsSeedFetch";
 
+    // Note: ChromeVariations = 2 means "Disable all variations".
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
             NetworkTrafficAnnotationTag.createComplete("chrome_variations_android",
                     "semantics {"
@@ -67,9 +66,11 @@ public class VariationsSeedFetcher {
                             + "  cookies_allowed: NO"
                             + "  setting: 'Cannot be disabled in Settings. Chrome Variations are '"
                             + "           'an essential part of Chrome releases.'"
-                            + "  policy_exception_justification:"
-                            + "      'The ChromeVariations policy is only implemented on desktop '"
-                            + "      'and ChromeOS.'"
+                            + "  chrome_policy {"
+                            + "    ChromeVariations {"
+                            + "      ChromeVariations: 2"
+                            + "    }"
+                            + "  }"
                             + "}");
 
     @IntDef({VariationsPlatform.ANDROID, VariationsPlatform.ANDROID_WEBVIEW})
@@ -125,9 +126,7 @@ public class VariationsSeedFetcher {
         int NUM_ENTRIES = 4;
     }
 
-    /**
-     * For mocking the Date in tests.
-     */
+    /** For mocking the Date in tests. */
     @VisibleForTesting
     public interface DateTime {
         Date newDate();
@@ -137,6 +136,7 @@ public class VariationsSeedFetcher {
 
     /**
      * Overwrite the DateTime, typically with a mock for testing.
+     *
      * @param dateTime the mock.
      */
     @VisibleForTesting
@@ -145,9 +145,7 @@ public class VariationsSeedFetcher {
         mDateTime = dateTime;
     }
 
-    /**
-     * Get the dateTime, for testing only.
-     */
+    /** Get the dateTime, for testing only. */
     @VisibleForTesting
     public DateTime getDateTime() {
         return mDateTime;
@@ -175,6 +173,7 @@ public class VariationsSeedFetcher {
     /**
      * Override the VariationsSeedFetcher, typically with a mock, for testing classes that depend on
      * this one.
+     *
      * @param fetcher the mock.
      */
     @VisibleForTesting
@@ -238,9 +237,7 @@ public class VariationsSeedFetcher {
         return urlString;
     }
 
-    /**
-     * Object holding information about the status of a seed download attempt.
-     */
+    /** Object holding information about the status of a seed download attempt. */
     public static class SeedFetchInfo {
         // The result of the download, containing either an HTTP status code or a negative
         // value representing a specific error. This value is suitable for recording to the
@@ -252,9 +249,7 @@ public class VariationsSeedFetcher {
         public SeedInfo seedInfo;
     }
 
-    /**
-     * Object holding the seed data and related fields retrieved from HTTP headers.
-     */
+    /** Object holding the seed data and related fields retrieved from HTTP headers. */
     public static class SeedInfo {
         // If you add fields, see VariationsTestUtils.
         public String signature;
@@ -331,9 +326,9 @@ public class VariationsSeedFetcher {
         }
     }
 
-
     /**
      * Fetch the first run variations seed.
+     *
      * @param restrictMode The restrict mode parameter to pass to the server via a URL param.
      * @param milestone The milestone parameter to pass to the server via a URL param.
      * @param channel The channel parameter to pass to the server via a URL param.
@@ -397,8 +392,9 @@ public class VariationsSeedFetcher {
 
     /**
      * Download the variations seed data with platform and restrictMode.
-     * @param platform the platform parameter to let server only return experiments which can be
-     * run on that platform.
+     *
+     * @param platform the platform parameter to let server only return experiments which can be run
+     *     on that platform.
      * @param restrictMode the restrict mode parameter to pass to the server via a URL param.
      * @param milestone the milestone parameter to pass to the server via a URL param.
      * @param channel the channel parameter to pass to the server via a URL param.

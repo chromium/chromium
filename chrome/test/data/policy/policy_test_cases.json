@@ -7344,7 +7344,8 @@
       "win",
       "linux",
       "mac",
-      "fuchsia"
+      "fuchsia",
+      "android"
     ],
     "policy_pref_mapping_tests": [
       {
