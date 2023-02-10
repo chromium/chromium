@@ -672,6 +672,57 @@ SyncService::TransportState SyncServiceImpl::GetTransportState() const {
   return TransportState::ACTIVE;
 }
 
+SyncService::UserActionableError SyncServiceImpl::GetUserActionableError()
+    const {
+  const GoogleServiceAuthError auth_error = GetAuthError();
+  DCHECK(!auth_error.IsTransientError());
+
+  switch (auth_error.state()) {
+    case GoogleServiceAuthError::NONE:
+      break;
+    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
+    case GoogleServiceAuthError::CONNECTION_FAILED:
+    case GoogleServiceAuthError::REQUEST_CANCELED:
+      // Transient errors aren't reachable.
+      NOTREACHED();
+      break;
+    case GoogleServiceAuthError::SERVICE_ERROR:
+    case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+    case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
+      return UserActionableError::kSignInNeedsUpdate;
+    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
+    case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
+      // Not shown to the user.
+      // TODO(crbug.com/1412320): It looks like desktop code in
+      // chrome/browser/sync/sync_ui_util.cc does display this to the user.
+      break;
+    // Conventional value for counting the states, never used.
+    case GoogleServiceAuthError::NUM_STATES:
+      NOTREACHED();
+      break;
+  }
+
+  if (HasUnrecoverableError()) {
+    return UserActionableError::kGenericUnrecoverableError;
+  }
+  if (user_settings_->IsPassphraseRequiredForPreferredDataTypes()) {
+    return UserActionableError::kNeedsPassphrase;
+  }
+  if (user_settings_->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
+    return user_settings_->IsEncryptEverythingEnabled()
+               ? UserActionableError::kNeedsTrustedVaultKeyForEverything
+               : UserActionableError::kNeedsTrustedVaultKeyForPasswords;
+  }
+  if (user_settings_->IsTrustedVaultRecoverabilityDegraded()) {
+    return user_settings_->IsEncryptEverythingEnabled()
+               ? UserActionableError::
+                     kTrustedVaultRecoverabilityDegradedForEverything
+               : UserActionableError::
+                     kTrustedVaultRecoverabilityDegradedForPasswords;
+  }
+  return UserActionableError::kNone;
+}
+
 void SyncServiceImpl::NotifyObservers() {
   for (SyncServiceObserver& observer : *observers_) {
     observer.OnStateChanged(this);

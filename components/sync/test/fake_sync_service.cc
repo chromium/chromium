@@ -37,6 +37,11 @@ syncer::SyncService::TransportState FakeSyncService::GetTransportState() const {
   return TransportState::DISABLED;
 }
 
+SyncService::UserActionableError FakeSyncService::GetUserActionableError()
+    const {
+  return UserActionableError::kNone;
+}
+
 CoreAccountInfo FakeSyncService::GetAccountInfo() const {
   return CoreAccountInfo();
 }

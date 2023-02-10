@@ -111,6 +111,7 @@ class SyncServiceImpl : public SyncService,
   const SyncUserSettings* GetUserSettings() const override;
   DisableReasonSet GetDisableReasons() const override;
   TransportState GetTransportState() const override;
+  UserActionableError GetUserActionableError() const override;
   bool IsLocalSyncEnabled() const override;
   CoreAccountInfo GetAccountInfo() const override;
   bool HasSyncConsent() const override;

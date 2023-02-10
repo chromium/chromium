@@ -177,6 +177,41 @@ class SyncService : public KeyedService {
     ACTIVE
   };
 
+  // Error states that prevent Sync from working well or working at all, usually
+  // displayed to the user.
+  // TODO(crbug.com/1412320): Add new cases that are missing, ideally unify with
+  // other enums like AvatarSyncErrorType.
+  enum class UserActionableError {
+    // No errors.
+    kNone,
+    // There is a persistent auth error and the user needs to sign in for sync
+    // to resume (affects all datatypes).
+    kSignInNeedsUpdate,
+    // The user needs to enter a passphrase in order to decrypt the data. This
+    // can only happen to custom passphrase users and users in analogous legacy
+    // encryption states. It affects most datatypes (all datatypes except the
+    // ones that are never encrypted).
+    kNeedsPassphrase,
+    // The user needs to take action, usually go through a reauth challenge, in
+    // order to get access to encryption keys. It affects datatypes that can be
+    // branded to the user as 'passwords'.
+    kNeedsTrustedVaultKeyForPasswords,
+    // Same as above, but for the case where the encryption key is required to
+    // sync all encryptable datatypes.
+    kNeedsTrustedVaultKeyForEverything,
+    // Recoverability degraded means sync actually works normally, but there is
+    // a risk that the user may end up locked out and effectively lose access to
+    // passwords stored in the Sync server.
+    kTrustedVaultRecoverabilityDegradedForPasswords,
+    // Same as above, but for the case where data loss may affect all
+    // encryptable datatypes.
+    kTrustedVaultRecoverabilityDegradedForEverything,
+    // Same as DISABLE_REASON_UNRECOVERABLE_ERROR.
+    // TODO(crbug.com/1412320): Consider removing this value and use disable
+    // reasons instead.
+    kGenericUnrecoverableError,
+  };
+
   SyncService(const SyncService&) = delete;
   SyncService& operator=(const SyncService&) = delete;
 
@@ -215,6 +250,10 @@ class SyncService : public KeyedService {
   // syncer::GetUploadToGoogleState instead of this.
   virtual TransportState GetTransportState() const = 0;
 
+  // Returns errors that prevent SyncService from working at all or partially.
+  // Usually these errors are displayed to the user in the UI.
+  virtual UserActionableError GetUserActionableError() const = 0;
+
   // Returns true if the local sync backend server has been enabled through a
   // command line flag or policy. In this case sync is considered active but any
   // implied consent for further related services e.g. Suggestions, Web History
@@ -246,6 +285,8 @@ class SyncService : public KeyedService {
 
   // Returns true if the Chrome client is too old and needs to be updated for
   // Sync to work.
+  // TODO(crbug.com/1412320): Remove this API and use GetUserActionableError()
+  // instead.
   virtual bool RequiresClientUpgrade() const = 0;
 
   //////////////////////////////////////////////////////////////////////////////

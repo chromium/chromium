@@ -36,6 +36,10 @@ class MockSyncService : public SyncService {
   const syncer::SyncUserSettings* GetUserSettings() const override;
   MOCK_METHOD(DisableReasonSet, GetDisableReasons, (), (const override));
   MOCK_METHOD(TransportState, GetTransportState, (), (const override));
+  MOCK_METHOD(UserActionableError,
+              GetUserActionableError,
+              (),
+              (const override));
   MOCK_METHOD(bool, IsLocalSyncEnabled, (), (const override));
   MOCK_METHOD(CoreAccountInfo, GetAccountInfo, (), (const override));
   MOCK_METHOD(bool, HasSyncConsent, (), (const override));

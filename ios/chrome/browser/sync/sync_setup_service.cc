@@ -11,7 +11,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace {
 // The set of user-selectable datatypes. This must be in the same order as
@@ -125,44 +124,28 @@ void SyncSetupService::SetSyncEnabled(bool sync_enabled) {
 }
 
 SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
-  DCHECK(!sync_service_->GetAuthError().IsTransientError());
-
-  switch (sync_service_->GetAuthError().state()) {
-    case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
+  switch (sync_service_->GetUserActionableError()) {
+    case syncer::SyncService::UserActionableError::kNone:
+      return kNoSyncServiceError;
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       return kSyncServiceSignInNeedsUpdate;
-    // The following errors are not shown to the user.
-    case GoogleServiceAuthError::NONE:
-    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
-    case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
-      break;
-    // Transient errors are unreachable as SyncService won't report them.
-    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
-    case GoogleServiceAuthError::CONNECTION_FAILED:
-    case GoogleServiceAuthError::REQUEST_CANCELED:
-    // The following errors are unexpected on iOS.
-    case GoogleServiceAuthError::SERVICE_ERROR:
-    case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
-    // Conventional value for counting the states, never used.
-    case GoogleServiceAuthError::NUM_STATES:
-      NOTREACHED() << "Unexpected Auth error ("
-                   << sync_service_->GetAuthError().state()
-                   << "): " << sync_service_->GetAuthError().error_message();
-      break;
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+      return kSyncServiceNeedsPassphrase;
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+      return kSyncServiceNeedsTrustedVaultKey;
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+      return kSyncServiceTrustedVaultRecoverabilityDegraded;
+    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
+      return kSyncServiceUnrecoverableError;
   }
-  if (sync_service_->HasUnrecoverableError())
-    return kSyncServiceUnrecoverableError;
-  if (sync_service_->GetUserSettings()
-          ->IsPassphraseRequiredForPreferredDataTypes()) {
-    return kSyncServiceNeedsPassphrase;
-  }
-  if (sync_service_->GetUserSettings()
-          ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
-    return kSyncServiceNeedsTrustedVaultKey;
-  }
-  if (sync_service_->GetUserSettings()
-          ->IsTrustedVaultRecoverabilityDegraded()) {
-    return kSyncServiceTrustedVaultRecoverabilityDegraded;
-  }
+
+  NOTREACHED();
   return kNoSyncServiceError;
 }
 

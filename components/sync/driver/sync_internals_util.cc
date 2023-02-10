@@ -184,6 +184,33 @@ std::string GetTransportStateString(syncer::SyncService::TransportState state) {
   return std::string();
 }
 
+std::string GetUserActionableErrorString(
+    SyncService::UserActionableError state) {
+  switch (state) {
+    case SyncService::UserActionableError::kNone:
+      return "None";
+    case SyncService::UserActionableError::kSignInNeedsUpdate:
+      return "Sign-in needs update";
+    case SyncService::UserActionableError::kNeedsPassphrase:
+      return "Needs passphrase";
+    case SyncService::UserActionableError::kNeedsTrustedVaultKeyForPasswords:
+      return "Needs trusted vault key for passwords";
+    case SyncService::UserActionableError::kNeedsTrustedVaultKeyForEverything:
+      return "Needs trusted vault key for everything";
+    case SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+      return "Trusted vault recoverability degraded for passwords";
+    case SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+      return "Trusted vault recoverability degraded for everything";
+    case SyncService::UserActionableError::kGenericUnrecoverableError:
+      return "Generic unrecoverable error";
+  }
+
+  NOTREACHED();
+  return std::string();
+}
+
 // Returns a string describing the chrome version environment. Version format:
 // <Build Info> <OS> <Version number> (<Last change>)<channel or "-devel">
 // If version information is unavailable, returns "invalid."
@@ -283,6 +310,8 @@ base::Value::Dict ConstructAboutInformation(
       section_list.AddSection("Summary", /*is_sensitive=*/false);
   Stat<std::string>* transport_state =
       section_summary->AddStringStat("Transport State");
+  Stat<std::string>* error_state =
+      section_summary->AddStringStat("User Actionable Error");
   Stat<std::string>* disable_reasons =
       section_summary->AddStringStat("Disable Reasons");
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -410,12 +439,18 @@ base::Value::Dict ConstructAboutInformation(
 
   if (!service) {
     transport_state->Set("Sync service does not exist");
+    error_state->Set("Sync service does not exist");
     about_info.Set(kDetailsKey, section_list.ToValue(include_sensitive_data));
     return about_info;
   }
 
   // Summary.
   transport_state->Set(GetTransportStateString(service->GetTransportState()));
+  const SyncService::UserActionableError user_actionable_error =
+      service->GetUserActionableError();
+  error_state->Set(GetUserActionableErrorString(user_actionable_error),
+                   /*is_good=*/user_actionable_error ==
+                       SyncService::UserActionableError::kNone);
   disable_reasons->Set(GetDisableReasonsString(service->GetDisableReasons()));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   os_feature_state->Set("Enforced Enabled");
