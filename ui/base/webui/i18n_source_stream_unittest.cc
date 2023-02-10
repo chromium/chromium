@@ -158,8 +158,8 @@ class I18nSourceStreamTest : public ::testing::TestWithParam<I18nTestParam> {
   scoped_refptr<net::IOBuffer> output_buffer_;
   const int output_buffer_size_;
 
+  std::unique_ptr<I18nSourceStream> stream_;  // Must outlive `source_`.
   raw_ptr<net::MockSourceStream> source_;
-  std::unique_ptr<I18nSourceStream> stream_;
 
   TemplateReplacements replacements_;
 };
