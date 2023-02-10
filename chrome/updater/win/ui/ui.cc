@@ -13,8 +13,7 @@
 #include "chrome/updater/win/ui/ui_constants.h"
 #include "chrome/updater/win/ui/ui_util.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 const OmahaWnd::ControlAttributes OmahaWnd::kVisibleTextAttributes = {
     false, true, true, false, false};
@@ -35,8 +34,9 @@ void EnableFlatButtons(HWND hwnd_parent) {
       DCHECK(hwnd);
       CWindow wnd(hwnd);
       const DWORD style = wnd.GetStyle();
-      if (style & BS_FLAT)
+      if (style & BS_FLAT) {
         ::SetWindowTheme(wnd, _T(""), _T(""));
+      }
       return true;
     }
   };
@@ -128,21 +128,24 @@ LRESULT OmahaWnd::OnClose(UINT, WPARAM, LPARAM, BOOL& handled) {
 
 HRESULT OmahaWnd::CloseWindow() {
   HRESULT hr = DestroyWindow() ? S_OK : HRESULTFromLastError();
-  if (events_sink_)
+  if (events_sink_) {
     events_sink_->DoClose();
+  }
   return hr;
 }
 
 void OmahaWnd::MaybeRequestExitProcess() {
-  if (!is_complete_)
+  if (!is_complete_) {
     return;
+  }
 
   RequestExitProcess();
 }
 
 void OmahaWnd::RequestExitProcess() {
-  if (events_sink_)
+  if (events_sink_) {
     events_sink_->DoExit();
+  }
 }
 
 LRESULT OmahaWnd::OnNCDestroy(UINT, WPARAM, LPARAM, BOOL& handled) {
@@ -156,8 +159,9 @@ LRESULT OmahaWnd::OnNCDestroy(UINT, WPARAM, LPARAM, BOOL& handled) {
 LRESULT OmahaWnd::OnCancel(WORD, WORD id, HWND, BOOL& handled) {
   DCHECK_EQ(id, IDCANCEL);
 
-  if (!is_close_enabled_)
+  if (!is_close_enabled_) {
     return 0;
+  }
 
   MaybeCloseWindow();
   handled = true;
@@ -166,8 +170,9 @@ LRESULT OmahaWnd::OnCancel(WORD, WORD id, HWND, BOOL& handled) {
 
 void OmahaWnd::Show() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsWindow() || IsWindowVisible())
+  if (!IsWindow() || IsWindowVisible()) {
     return;
+  }
 
   CenterWindow(nullptr);
   SetVisible(true);
@@ -199,8 +204,9 @@ bool OmahaWnd::OnComplete() {
 
 void OmahaWnd::SetControlAttributes(int control_id,
                                     const ControlAttributes& attributes) {
-  if (attributes.is_ignore_entry)
+  if (attributes.is_ignore_entry) {
     return;
+  }
 
   HWND hwnd = GetDlgItem(control_id);
   DCHECK(hwnd);
@@ -239,12 +245,12 @@ HRESULT InitializeCommonControls(DWORD control_classes) {
   init_ctrls.dwICC = control_classes;
   if (!::InitCommonControlsEx(&init_ctrls)) {
     const DWORD error = ::GetLastError();
-    if (error != ERROR_CLASS_ALREADY_EXISTS)
+    if (error != ERROR_CLASS_ALREADY_EXISTS) {
       return HRESULT_FROM_WIN32(error);
+    }
   }
 
   return S_OK;
 }
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui

@@ -10,8 +10,7 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/ui_constants.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 HRESULT UIDisplayedEventManager::CreateEvent(UpdaterScope scope) {
   DCHECK(!IsEventHandleInitialized());
@@ -32,8 +31,9 @@ HRESULT UIDisplayedEventManager::GetEvent(UpdaterScope scope,
   HRESULT hr = OpenUniqueEventFromEnvironment(
       kLegacyUiDisplayedEventEnvironmentVariableName, scope,
       ScopedKernelHANDLE::Receiver(GetUIDisplayedEvent()).get());
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   *ui_displayed_event = GetUIDisplayedEvent().get();
   return S_OK;
@@ -43,8 +43,9 @@ void UIDisplayedEventManager::SignalEvent(UpdaterScope scope) {
   if (!IsEventHandleInitialized()) {
     HRESULT hr = GetEvent(
         scope, ScopedKernelHANDLE::Receiver(GetUIDisplayedEvent()).get());
-    if (HRESULT_FROM_WIN32(ERROR_ENVVAR_NOT_FOUND) == hr)
+    if (HRESULT_FROM_WIN32(ERROR_ENVVAR_NOT_FOUND) == hr) {
       hr = CreateEvent(scope);
+    }
     if (FAILED(hr)) {
       // We may display two UIs in this case.
       GetUIDisplayedEvent().reset();
@@ -65,5 +66,4 @@ ScopedKernelHANDLE& UIDisplayedEventManager::GetUIDisplayedEvent() {
   return *ui_displayed_event;
 }
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui

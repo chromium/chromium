@@ -60,6 +60,9 @@ class StackString {
     clear();
   }
 
+  StackString(const StackString&) = delete;
+  StackString& operator=(const StackString&) = delete;
+
   // We do not expose a constructor that accepts a string pointer on purpose.
   // We expect the caller to call assign() and handle failures.
 
@@ -96,8 +99,9 @@ class StackString {
   // Note: this method has no effect if this object's length is less than
   // |location|.
   bool truncate_at(size_t location) {
-    if (location >= kCapacity)
+    if (location >= kCapacity) {
       return false;
+    }
     buffer_[location] = L'\0';
     return true;
   }
@@ -106,10 +110,6 @@ class StackString {
   // We reserve 1 more than what is asked for as a safeguard against
   // off-by-one errors.
   wchar_t buffer_[kCapacity + 1];
-
- private:
-  StackString(const StackString&);
-  StackString& operator=(const StackString&);
 };
 
 }  // namespace updater

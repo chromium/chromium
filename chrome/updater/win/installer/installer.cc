@@ -136,15 +136,18 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
                               wchar_t* name,
                               LONG_PTR context) {
   Context* ctx = reinterpret_cast<Context*>(context);
-  if (!ctx)
+  if (!ctx) {
     return FALSE;
+  }
 
-  if (!StrStartsWith(name, kUpdaterArchivePrefix))
+  if (!StrStartsWith(name, kUpdaterArchivePrefix)) {
     return FALSE;
+  }
 
   PEResource resource(name, type, module);
-  if (!resource.IsValid() || resource.Size() < 1)
+  if (!resource.IsValid() || resource.Size() < 1) {
     return FALSE;
+  }
 
   PathString full_path;
   if (!full_path.assign(ctx->base_path) || !full_path.append(name) ||
@@ -152,8 +155,9 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
     return FALSE;
   }
 
-  if (!ctx->updater_resource_path->assign(full_path.get()))
+  if (!ctx->updater_resource_path->assign(full_path.get())) {
     return FALSE;
+  }
 
   return TRUE;
 }
@@ -174,8 +178,9 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
     return ProcessExitResult(UNABLE_TO_EXTRACT_ARCHIVE, ::GetLastError());
   }
 
-  if (archive_path->length() == 0)
+  if (archive_path->length() == 0) {
     return ProcessExitResult(UNABLE_TO_EXTRACT_ARCHIVE);
+  }
 
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
@@ -213,8 +218,9 @@ ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
         // Returns true if the --tag argument is present on the command line.
         constexpr wchar_t kTagSwitch[] = L"--tag=";
         for (int i = 1; i != num_args; ++i) {
-          if (memcmp(argv.get()[i], kTagSwitch, sizeof(kTagSwitch)) == 0)
+          if (memcmp(argv.get()[i], kTagSwitch, sizeof(kTagSwitch)) == 0) {
             return true;
+          }
         }
         return false;
       }()) {
@@ -326,15 +332,17 @@ ProcessExitResult InstallerMain(HMODULE module) {
   CommandString cmd_line_args;
   ProcessExitResult args_result = BuildCommandLineArguments(
       ::GetCommandLineW(), cmd_line_args.get(), cmd_line_args.capacity());
-  if (args_result.exit_code != SUCCESS_EXIT_CODE)
+  if (args_result.exit_code != SUCCESS_EXIT_CODE) {
     return args_result;
+  }
 
   // Both `RunElevated` and `RunDeElevated` use shell APIs to run the process,
   // which can have issues with relative paths. So we use the full exe path for
   // the program in the command line.
   base::FilePath exe_path;
-  if (!base::PathService::Get(base::FILE_EXE, &exe_path))
+  if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
     return ProcessExitResult(UNABLE_TO_GET_EXE_PATH);
+  }
   const base::CommandLine command_line =
       base::CommandLine::FromString(base::StrCat(
           {base::CommandLine::QuoteForCommandLineToArgvW(exe_path.value()),
@@ -372,18 +380,21 @@ ProcessExitResult InstallerMain(HMODULE module) {
 
   // Parse configuration from the command line and resources.
   Configuration configuration;
-  if (!configuration.Initialize(module))
+  if (!configuration.Initialize(module)) {
     return ProcessExitResult(GENERIC_INITIALIZATION_FAILURE, ::GetLastError());
+  }
 
   // Exit early if an invalid switch was found on the command line.
-  if (configuration.has_invalid_switch())
+  if (configuration.has_invalid_switch()) {
     return ProcessExitResult(INVALID_OPTION);
+  }
 
   // First get a path where we can extract the resource payload, which is
   // a compressed LZMA archive of a single file.
   absl::optional<base::ScopedTempDir> base_path_owner = CreateSecureTempDir();
-  if (!base_path_owner)
+  if (!base_path_owner) {
     return ProcessExitResult(static_cast<DWORD>(installer::TEMP_DIR_FAILED));
+  }
 
   PathString base_path;
   if (!base_path.assign(
@@ -397,8 +408,9 @@ ProcessExitResult InstallerMain(HMODULE module) {
 
   // Create a temp folder where the archives are unpacked.
   absl::optional<base::ScopedTempDir> temp_path = CreateSecureTempDir();
-  if (!temp_path)
+  if (!temp_path) {
     return ProcessExitResult(static_cast<DWORD>(installer::TEMP_DIR_FAILED));
+  }
 
   const base::FilePath unpack_path = temp_path->GetPath();
 
@@ -406,16 +418,18 @@ ProcessExitResult InstallerMain(HMODULE module) {
   UnPackStatus unpack_status =
       UnPackArchive(base::FilePath(compressed_archive.get()), unpack_path,
                     /*output_file=*/nullptr);
-  if (unpack_status != UNPACK_NO_ERROR)
+  if (unpack_status != UNPACK_NO_ERROR) {
     return ProcessExitResult(static_cast<DWORD>(installer::UNPACKING_FAILED));
+  }
 
   // Unpack the uncompressed archive to extract the updater files.
   base::FilePath uncompressed_archive =
       unpack_path.Append(FILE_PATH_LITERAL("updater.7z"));
   unpack_status =
       UnPackArchive(uncompressed_archive, unpack_path, /*output_file=*/nullptr);
-  if (unpack_status != UNPACK_NO_ERROR)
+  if (unpack_status != UNPACK_NO_ERROR) {
     return ProcessExitResult(static_cast<DWORD>(installer::UNPACKING_FAILED));
+  }
 
   // While unpacking the binaries, we paged in a whole bunch of memory that
   // we don't need anymore.  Let's give it back to the pool before running

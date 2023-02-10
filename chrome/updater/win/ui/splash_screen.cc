@@ -16,8 +16,7 @@
 #include "chrome/updater/win/ui/ui_constants.h"
 #include "chrome/updater/win/ui/ui_util.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 namespace {
 
@@ -63,8 +62,9 @@ void SplashScreen::Show() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(WindowState::STATE_CREATED, state_);
 
-  if (FAILED(Initialize()))
+  if (FAILED(Initialize())) {
     return;
+  }
 
   DCHECK(IsWindow());
   ShowWindow(SW_SHOWNORMAL);
@@ -116,8 +116,9 @@ HRESULT SplashScreen::Initialize() {
   DCHECK(!IsWindow());
   DCHECK(state_ == WindowState::STATE_CREATED);
 
-  if (!Create(nullptr))
+  if (!Create(nullptr)) {
     return E_FAIL;
+  }
 
   HideWindowChildren(*this);
 
@@ -139,8 +140,9 @@ HRESULT SplashScreen::Initialize() {
   HRESULT hr = ui::SetWindowIcon(
       m_hWnd, IDI_APP,
       base::win::ScopedGDIObject<HICON>::Receiver(hicon_).get());
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     VLOG(1) << "SetWindowIcon failed " << hr;
+  }
 
   default_font_.CreatePointFont(90, kDialogFont);
   SendMessageToDescendants(
@@ -239,8 +241,9 @@ void SplashScreen::SwitchToState(WindowState new_state) {
     case WindowState::STATE_FADING:
       DCHECK(IsWindow());
       timer_created_ = SetTimer(kClosingTimerID, kTimerInterval, nullptr) != 0;
-      if (!timer_created_)
+      if (!timer_created_) {
         Close();
+      }
       break;
     case WindowState::STATE_CLOSED:
       break;
@@ -249,9 +252,9 @@ void SplashScreen::SwitchToState(WindowState new_state) {
 
 void SplashScreen::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (state_ != WindowState::STATE_CLOSED && IsWindow())
+  if (state_ != WindowState::STATE_CLOSED && IsWindow()) {
     PostMessage(WM_CLOSE, 0, 0);
+  }
 }
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui

@@ -10,13 +10,11 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/updater/win/ui/owner_draw_controls.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 class YesNoDialog : public CAxDialogImpl<YesNoDialog>,
                     public OwnerDrawTitleBar,
@@ -70,7 +68,6 @@ class YesNoDialog : public CAxDialogImpl<YesNoDialog>,
   WTL::CFont default_font_;
 };
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_YES_NO_DIALOG_H_

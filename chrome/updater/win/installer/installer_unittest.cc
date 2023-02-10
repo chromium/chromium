@@ -15,8 +15,9 @@
 // Tests that `HandleRunElevated` returns `UNABLE_TO_ELEVATE_METAINSTALLER` when
 // not elevated and called with `kCmdLineExpectElevated` argument.
 TEST(InstallerTest, HandleRunElevated) {
-  if (::IsUserAnAdmin())
+  if (::IsUserAnAdmin()) {
     return;
+  }
 
   base::CommandLine command_line(
       base::FilePath(FILE_PATH_LITERAL("UpdaterSetup.exe")));

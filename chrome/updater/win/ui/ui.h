@@ -10,14 +10,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/ui/owner_draw_controls.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 void EnableFlatButtons(HWND hwnd_parent);
 
@@ -159,7 +157,6 @@ class OmahaWnd : public CAxDialogImpl<OmahaWnd>,
 // supports visual styles.
 HRESULT InitializeCommonControls(DWORD control_classes);
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_UI_H_

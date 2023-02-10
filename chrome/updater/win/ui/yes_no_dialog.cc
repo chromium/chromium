@@ -12,8 +12,7 @@
 #include "chrome/updater/win/ui/ui_constants.h"
 #include "chrome/updater/win/ui/ui_util.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 YesNoDialog::YesNoDialog(WTL::CMessageLoop* message_loop, HWND parent)
     : message_loop_(message_loop), parent_(parent), yes_clicked_(false) {
@@ -32,8 +31,9 @@ HRESULT YesNoDialog::Initialize(const std::wstring& yes_no_title,
                                 const std::wstring& yes_no_text) {
   DCHECK(!IsWindow());
 
-  if (!Create(parent_))
+  if (!Create(parent_)) {
     return E_FAIL;
+  }
 
   message_loop_->AddMessageFilter(this);
 
@@ -48,8 +48,9 @@ HRESULT YesNoDialog::Initialize(const std::wstring& yes_no_title,
   HRESULT hr =
       SetWindowIcon(m_hWnd, IDI_APP,
                     base::win::ScopedGDIObject<HICON>::Receiver(hicon_).get());
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     VLOG(1) << "Failed to SetWindowIcon" << hr;
+  }
 
   default_font_.CreatePointFont(90, kDialogFont);
   SendMessageToDescendants(
@@ -121,5 +122,4 @@ LRESULT YesNoDialog::OnNCDestroy(UINT message,
   return 0;
 }
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui

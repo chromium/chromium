@@ -11,8 +11,6 @@
 #include <vector>
 
 #include "base/base_paths_win.h"
-#include "base/check.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -25,7 +23,6 @@
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_localalloc.h"
-#include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -82,8 +79,9 @@ HRESULT LoadLegacyProcessLauncherFormat(const std::wstring& app_id,
     HRESULT hr = HRESULT_FROM_WIN32(
         app_key.Open(HKEY_LOCAL_MACHINE, GetAppClientsKey(app_id).c_str(),
                      Wow6432(KEY_QUERY_VALUE)));
-    if (FAILED(hr))
+    if (FAILED(hr)) {
       return hr;
+    }
 
     app_key.ReadValue(kRegValuePV, &pv);
     app_key.ReadValue(kRegValueName, &name);
@@ -138,16 +136,18 @@ HResultOr<AppCommandRunner> AppCommandRunner::LoadAppCommand(
     if (IsSystemInstall(scope)) {
       hr = LoadLegacyProcessLauncherFormat(app_id, command_id, command_format);
     }
-    if (FAILED(hr))
+    if (FAILED(hr)) {
       return base::unexpected(hr);
+    }
   }
 
   AppCommandRunner app_command_runner;
   hr = GetAppCommandFormatComponents(scope, command_format,
                                      app_command_runner.executable_,
                                      app_command_runner.parameters_);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return base::unexpected(hr);
+  }
 
   return app_command_runner;
 }
@@ -167,8 +167,9 @@ AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
     const base::win::RegKey command_key(
         root, base::StrCat({commands_key_name, it.Name()}).c_str(),
         Wow6432(KEY_QUERY_VALUE));
-    if (!command_key.Valid())
+    if (!command_key.Valid()) {
       continue;
+    }
 
     DWORD auto_run = 0;
     if (command_key.ReadValueDW(kRegValueAutoRunOnOSUpgrade, &auto_run) !=
@@ -179,8 +180,9 @@ AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
 
     HResultOr<AppCommandRunner> runner =
         LoadAppCommand(scope, app_id, it.Name());
-    if (runner.has_value())
+    if (runner.has_value()) {
       app_command_runners.push_back(*runner);
+    }
   }
 
   return app_command_runners;
@@ -257,8 +259,9 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
 
   executable = exe;
   parameters.clear();
-  for (int i = 1; i < num_args; ++i)
+  for (int i = 1; i < num_args; ++i) {
     parameters.push_back(argv.get()[i]);
+  }
 
   return S_OK;
 }
@@ -296,8 +299,9 @@ absl::optional<std::wstring> AppCommandRunner::FormatAppCommandLine(
             : base::CommandLine::QuoteForCommandLineToArgvW(
                   *formatted_parameter));
 
-    if (i + 1 < parameters.size())
+    if (i + 1 < parameters.size()) {
       formatted_command_line.push_back(L' ');
+    }
   }
 
   return formatted_command_line;

@@ -41,8 +41,9 @@ base::Process LongRunningProcess(UpdaterScope scope,
       base::NumberToWString(
           base::win::HandleToUint32(init_done_event->handle())));
 
-  if (cmd)
+  if (cmd) {
     *cmd = command_line;
+  }
 
   base::LaunchOptions launch_options;
   launch_options.handles_to_inherit.push_back(init_done_event->handle());
@@ -64,8 +65,9 @@ base::CommandLine GetTestProcessCommandLine(UpdaterScope scope,
 
   base::CommandLine command_line(
       executable_path.Append(kTestProcessExecutableName));
-  if (IsSystemInstall(scope))
+  if (IsSystemInstall(scope)) {
     command_line.AppendSwitch(kSystemSwitch);
+  }
 
   command_line.AppendSwitch(kEnableLoggingSwitch);
   command_line.AppendSwitchASCII(kLoggingModuleSwitch,

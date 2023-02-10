@@ -10,12 +10,10 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/win/atl.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/ui.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 class CompleteWndEvents : public OmahaWndEvents {
  public:
@@ -76,7 +74,6 @@ class CompleteWnd : public OmahaWnd {
   const DWORD control_classes_;
 };
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_COMPLETE_WND_H_

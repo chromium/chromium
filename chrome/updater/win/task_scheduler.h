@@ -13,8 +13,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 
 namespace base {
 class CommandLine;

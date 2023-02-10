@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/process/process.h"
-#include "base/scoped_generic.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

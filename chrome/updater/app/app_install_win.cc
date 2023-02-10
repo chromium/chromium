@@ -48,6 +48,7 @@
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/install_progress_observer.h"
+#include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/manifest_util.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/win_constants.h"

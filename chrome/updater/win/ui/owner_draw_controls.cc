@@ -13,8 +13,7 @@
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui_util.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 // Returns the system color corresponding to `high_contrast_color_index` if the
 // system is in high contrast mode. Otherwise, it returns `normal_color`.
@@ -136,8 +135,9 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
                                                        : COLOR_BTNTEXT));
 
   const UINT button_state = draw_item_struct->itemState;
-  if (button_state & ODS_FOCUS && button_state & ODS_SELECTED)
+  if (button_state & ODS_FOCUS && button_state & ODS_SELECTED) {
     dc.FrameRect(&button_rect, frame_brush_);
+  }
 }
 
 COLORREF CaptionButton::bk_color() const {
@@ -228,11 +228,13 @@ LRESULT OwnerDrawTitleBarWindow::OnDestroy(UINT,
                                            BOOL& handled) {
   handled = false;
 
-  if (close_button_.IsWindow())
+  if (close_button_.IsWindow()) {
     close_button_.DestroyWindow();
+  }
 
-  if (minimize_button_.IsWindow())
+  if (minimize_button_.IsWindow()) {
     minimize_button_.DestroyWindow();
+  }
 
   return 0;
 }
@@ -242,8 +244,9 @@ LRESULT OwnerDrawTitleBarWindow::OnMouseMove(UINT,
                                              LPARAM,
                                              BOOL& handled) {
   handled = false;
-  if (current_drag_position_.x == -1 || wparam != MK_LBUTTON)
+  if (current_drag_position_.x == -1 || wparam != MK_LBUTTON) {
     return 0;
+  }
 
   CPoint pt;
   ::GetCursorPos(&pt);
@@ -345,12 +348,14 @@ void OwnerDrawTitleBarWindow::UpdateButtonState(const WTL::CMenuHandle& menu,
   DCHECK(button);
   DCHECK(button_rect);
 
-  if (!button->IsWindow())
+  if (!button->IsWindow()) {
     return;
+  }
 
   int state = -1;
-  if (!menu.IsNull() && menu.IsMenu())
+  if (!menu.IsNull() && menu.IsMenu()) {
     state = menu.GetMenuState(button_sc_id, MF_BYCOMMAND);
+  }
 
   if (state == -1) {
     button->ShowWindow(SW_HIDE);
@@ -567,8 +572,9 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
     }
   }
 
-  if (progress_bar_rect.IsRectEmpty())
+  if (progress_bar_rect.IsRectEmpty()) {
     return 0;
+  }
 
   // Have a 2-pixel bottom shadow with a gradient fill.
   CRect shadow_rect = progress_bar_rect;
@@ -632,8 +638,9 @@ LRESULT CustomProgressBarCtrl::OnSetPos(UINT,
     current_position_ = std::min(static_cast<int>(new_position), kMaxPosition);
   }
 
-  if (current_position_ < kMinPosition)
+  if (current_position_ < kMinPosition) {
     current_position_ = kMinPosition;
+  }
 
   RedrawWindow();
 
@@ -692,5 +699,4 @@ LRESULT CustomProgressBarCtrl::OnSetMarquee(UINT,
   return is_set_marquee;
 }
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui

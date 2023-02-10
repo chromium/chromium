@@ -19,17 +19,13 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/string_util_impl_helpers.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_localalloc.h"
 #include "build/branding_buildflags.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/unittest_util_win.h"
 #include "chrome/updater/util/win_util.h"
-#include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -292,8 +288,9 @@ TEST_F(AppCommandRunnerTest,
 
     EXPECT_EQ(command_line.value(), test_case.output);
 
-    if (test_case.input[0] != L"%1" || test_case.substitutions.size() != 1)
+    if (test_case.input[0] != L"%1" || test_case.substitutions.size() != 1) {
       continue;
+    }
 
     // The formatted output is now sent through ::CommandLineToArgvW to
     // verify that it produces the original substitution.
@@ -390,8 +387,9 @@ TEST_F(AppCommandRunnerTest, CheckChromeBrandedName) {
 }
 
 TEST_F(AppCommandRunnerTest, RunProcessLauncherFormat) {
-  if (!IsSystemInstall(GetTestScope()))
+  if (!IsSystemInstall(GetTestScope())) {
     return;
+  }
 
   const struct {
     const wchar_t* app_name;
@@ -448,8 +446,9 @@ TEST_F(AppCommandRunnerTest, RunProcessLauncherFormat) {
     ASSERT_EQ(
         app_command_runner.has_value() ? S_OK : app_command_runner.error(),
         test_case.expected_hr);
-    if (FAILED(test_case.expected_hr))
+    if (FAILED(test_case.expected_hr)) {
       continue;
+    }
 
     ASSERT_HRESULT_SUCCEEDED(app_command_runner->Run({}, process));
 
@@ -461,8 +460,9 @@ TEST_F(AppCommandRunnerTest, RunProcessLauncherFormat) {
 }
 
 TEST_F(AppCommandRunnerTest, RunBothFormats) {
-  if (!IsSystemInstall(GetTestScope()))
+  if (!IsSystemInstall(GetTestScope())) {
     return;
+  }
 
   const struct {
     const wchar_t* cmd_id_to_execute;
@@ -528,13 +528,12 @@ TEST_F(AppCommandRunnerTest, LoadAutoRunOnOsUpgradeAppCommands) {
       {{L"/c", L"exit 5420"}, kCmdId2},
   };
 
-  base::ranges::for_each(
-      test_cases, [&](const auto& test_case) {
-        CreateAppCommandOSUpgradeRegistry(
-            GetTestScope(), kAppId1, test_case.command_id,
-            base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
-                          base::JoinString(test_case.input, L" ")}));
-      });
+  base::ranges::for_each(test_cases, [&](const auto& test_case) {
+    CreateAppCommandOSUpgradeRegistry(
+        GetTestScope(), kAppId1, test_case.command_id,
+        base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
+                      base::JoinString(test_case.input, L" ")}));
+  });
 
   const std::vector<AppCommandRunner> app_command_runners =
       AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(GetTestScope(),

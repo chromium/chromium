@@ -14,25 +14,17 @@
 #include <string>
 #include <vector>
 
-#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
-#include "base/win/scoped_variant.h"
-#include "base/win/windows_version.h"
-#include "chrome/updater/constants.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
@@ -42,7 +34,6 @@
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
@@ -443,8 +434,9 @@ TEST_F(TaskSchedulerTests, GetTaskInfoUserId) {
   EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, &info));
 
   const std::wstring expected_user_id = [&is_system]() -> std::wstring {
-    if (is_system)
+    if (is_system) {
       return L"SYSTEM";
+    }
 
     base::win::ScopedBstr user_name_bstr;
     ULONG user_name_size = 256;

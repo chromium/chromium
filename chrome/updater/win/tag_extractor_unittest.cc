@@ -7,7 +7,6 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/updater/win/tag_extractor.h"
 #include "chrome/updater/win/tag_extractor_impl.h"

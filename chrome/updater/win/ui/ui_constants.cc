@@ -4,13 +4,11 @@
 
 #include "chrome/updater/win/ui/ui_constants.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 const wchar_t kLegacyUiDisplayedEventEnvironmentVariableName[] =
     L"GOOGLE_UPDATE_UI_DISPLAYED_EVENT_NAME";
 
 const wchar_t kDialogFont[] = L"Segoe UI";
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui

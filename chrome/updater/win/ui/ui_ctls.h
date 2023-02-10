@@ -7,8 +7,7 @@
 
 #include "chrome/updater/win/ui/progress_wnd.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 const ProgressWnd::ControlState ProgressWnd::ctls_[] = {
     // The struct values are:
@@ -250,7 +249,6 @@ const ProgressWnd::ControlState ProgressWnd::ctls_[] = {
     },
 };
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_UI_CTLS_H_

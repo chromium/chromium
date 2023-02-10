@@ -7,12 +7,7 @@
 namespace updater {
 
 AppCompletionInfo::AppCompletionInfo()
-    : completion_code(CompletionCodes::COMPLETION_CODE_SUCCESS),
-      error_code(0),
-      extra_code1(0),
-      installer_result_code(0),
-      is_canceled(false),
-      is_noupdate(false) {}
+    : completion_code(CompletionCodes::COMPLETION_CODE_SUCCESS) {}
 AppCompletionInfo::AppCompletionInfo(const AppCompletionInfo&) = default;
 AppCompletionInfo& AppCompletionInfo::operator=(const AppCompletionInfo&) =
     default;

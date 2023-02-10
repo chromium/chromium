@@ -16,28 +16,16 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/thread_restrictions.h"
-#include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/work_item_list.h"
-#include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -238,10 +226,8 @@ std::vector<IID> GetActiveInterfaces(UpdaterScope scope) {
         switch (scope) {
           case UpdaterScope::kUser:
             return {
-                __uuidof(IUpdateStateUser),
-                __uuidof(IUpdaterUser),
-                __uuidof(ICompleteStatusUser),
-                __uuidof(IUpdaterObserverUser),
+                __uuidof(IUpdateStateUser),     __uuidof(IUpdaterUser),
+                __uuidof(ICompleteStatusUser),  __uuidof(IUpdaterObserverUser),
                 __uuidof(IUpdaterCallbackUser),
             };
           case UpdaterScope::kSystem:

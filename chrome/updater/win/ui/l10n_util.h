@@ -9,8 +9,6 @@
 
 #include <string>
 
-#include "chrome/updater/win/installer/exit_code.h"
-
 using UINT = unsigned int;
 
 namespace updater {

@@ -21,8 +21,7 @@
 #include "./atlframe.h"
 #pragma clang diagnostic pop
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 class CaptionButton : public CWindowImpl<CaptionButton, WTL::CButton>,
                       public WTL::COwnerDraw<CaptionButton> {
@@ -331,7 +330,6 @@ class CustomProgressBarCtrl : public CWindowImpl<CustomProgressBarCtrl> {
   WTL::CBrush empty_frame_brush_;
 };
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_OWNER_DRAW_CONTROLS_H_

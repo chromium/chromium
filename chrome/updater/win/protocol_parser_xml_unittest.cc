@@ -4,7 +4,6 @@
 
 #include "chrome/updater/win/protocol_parser_xml.h"
 
-#include "components/update_client/protocol_definition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {

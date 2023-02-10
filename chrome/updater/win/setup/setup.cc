@@ -14,21 +14,12 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/version.h"
 #include "base/win/scoped_com_initializer.h"
-#include "base/win/win_util.h"
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/work_item_list.h"
-#include "chrome/updater/app/server/win/com_classes.h"
-#include "chrome/updater/app/server/win/updater_idl.h"
-#include "chrome/updater/app/server/win/updater_internal_idl.h"
-#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -145,8 +136,9 @@ int Setup(UpdaterScope scope) {
   base::CommandLine run_updater_wake_command(
       versioned_dir->Append(updater_exe));
   run_updater_wake_command.AppendSwitch(kWakeSwitch);
-  if (IsSystemInstall(scope))
+  if (IsSystemInstall(scope)) {
     run_updater_wake_command.AppendSwitch(kSystemSwitch);
+  }
   run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
   run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                              kLoggingModuleSwitchValue);

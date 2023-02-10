@@ -35,8 +35,9 @@ absl::optional<base::FilePath> GetOfflineManifest(
     const std::string& app_id) {
   // Check manifest with fixed name first.
   base::FilePath manifest_path = offline_dir.AppendASCII("OfflineManifest.gup");
-  if (base::PathExists(manifest_path))
+  if (base::PathExists(manifest_path)) {
     return manifest_path;
+  }
 
   // Then check the legacy app specific manifest.
   manifest_path =
@@ -133,18 +134,17 @@ void ReadInstallCommandFromManifest(
     return;
   }
 
-  installer_path =
-      [&offline_dir, &app_id, &it]() {
-        const base::FilePath app_dir(offline_dir.AppendASCII(app_id));
-        const base::FilePath path(app_dir.AppendASCII(it->manifest.run));
-        return base::PathExists(path)
-                   ? path
-                   : base::FileEnumerator(
-                         app_dir, false, base::FileEnumerator::FILES, {},
-                         base::FileEnumerator::FolderSearchPolicy::ALL,
-                         base::FileEnumerator::ErrorPolicy::IGNORE_ERRORS)
-                         .Next();
-      }();
+  installer_path = [&offline_dir, &app_id, &it]() {
+    const base::FilePath app_dir(offline_dir.AppendASCII(app_id));
+    const base::FilePath path(app_dir.AppendASCII(it->manifest.run));
+    return base::PathExists(path)
+               ? path
+               : base::FileEnumerator(
+                     app_dir, false, base::FileEnumerator::FILES, {},
+                     base::FileEnumerator::FolderSearchPolicy::ALL,
+                     base::FileEnumerator::ErrorPolicy::IGNORE_ERRORS)
+                     .Next();
+  }();
   install_args = it->manifest.arguments;
 
   if (!install_data_index.empty()) {
@@ -161,8 +161,9 @@ void ReadInstallCommandFromManifest(
 
 bool IsArchitectureSupported(const std::string& arch,
                              const std::string& current_architecture) {
-  if (arch.empty())
+  if (arch.empty()) {
     return true;
+  }
 
   // This code accounts for Omaha 3 Offline manifests having `arch` as "x64",
   // but `GetArchitecture` returning "x86_64" for amd64.
@@ -208,15 +209,17 @@ bool IsArchitectureCompatible(const std::string& arch_list,
   std::vector<std::string> architectures = base::SplitString(
       arch_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  if (architectures.empty())
+  if (architectures.empty()) {
     return true;
+  }
 
   base::ranges::sort(architectures);
 
   if (base::ranges::find_if(
           architectures, [&current_architecture](const std::string& narch) {
-            if (narch[0] != '-')
+            if (narch[0] != '-') {
               return false;
+            }
 
             const std::string arch = narch.substr(1);
 
@@ -243,8 +246,9 @@ bool IsArchitectureCompatible(const std::string& arch_list,
 }
 
 bool IsOSVersionCompatible(const std::string& min_os_version) {
-  if (min_os_version.empty())
+  if (min_os_version.empty()) {
     return true;
+  }
 
   // `base::win::OSInfo` gets the `major`, `minor` and `build` from
   // `::GetVersionEx`, and the `patch` from the `UBR` value under the registry

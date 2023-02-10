@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -38,12 +37,14 @@ absl::optional<base::win::RegKey> ClientStateAppKeyOpen(
     const std::string& app_id,
     REGSAM regsam) {
   std::wstring subkey;
-  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
+  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey)) {
     return absl::nullopt;
+  }
   base::win::RegKey key(UpdaterScopeToHKeyRoot(updater_scope), CLIENT_STATE_KEY,
                         Wow6432(regsam));
-  if (key.OpenKey(subkey.c_str(), Wow6432(regsam)) != ERROR_SUCCESS)
+  if (key.OpenKey(subkey.c_str(), Wow6432(regsam)) != ERROR_SUCCESS) {
     return absl::nullopt;
+  }
   return key;
 }
 
@@ -55,12 +56,14 @@ absl::optional<base::win::RegKey> ClientStateAppKeyCreate(
     const std::string& app_id,
     REGSAM regsam) {
   std::wstring subkey;
-  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
+  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey)) {
     return absl::nullopt;
+  }
   base::win::RegKey key(UpdaterScopeToHKeyRoot(updater_scope), CLIENT_STATE_KEY,
                         Wow6432(regsam));
-  if (key.CreateKey(subkey.c_str(), Wow6432(regsam)) != ERROR_SUCCESS)
+  if (key.CreateKey(subkey.c_str(), Wow6432(regsam)) != ERROR_SUCCESS) {
     return absl::nullopt;
+  }
   return key;
 }
 
@@ -73,8 +76,9 @@ InstallerOutcome::~InstallerOutcome() = default;
 bool ClientStateAppKeyDelete(UpdaterScope updater_scope,
                              const std::string& app_id) {
   std::wstring subkey;
-  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey))
+  if (!base::UTF8ToWide(app_id.c_str(), app_id.size(), &subkey)) {
     return false;
+  }
   return base::win::RegKey(UpdaterScopeToHKeyRoot(updater_scope),
                            CLIENT_STATE_KEY, Wow6432(KEY_WRITE))
              .DeleteKey(subkey.c_str()) == ERROR_SUCCESS;
@@ -114,8 +118,9 @@ bool DeleteInstallerOutput(UpdaterScope updater_scope,
                            const std::string& app_id) {
   absl::optional<base::win::RegKey> key = ClientStateAppKeyOpen(
       updater_scope, app_id, KEY_SET_VALUE | KEY_QUERY_VALUE);
-  if (!key)
+  if (!key) {
     return false;
+  }
   auto delete_value = [&key](const wchar_t* value) {
     return !key->HasValue(value) || key->DeleteValue(value) == ERROR_SUCCESS;
   };
@@ -135,8 +140,9 @@ absl::optional<InstallerOutcome> GetInstallerOutcome(
     const std::string& app_id) {
   absl::optional<base::win::RegKey> key =
       ClientStateAppKeyOpen(updater_scope, app_id, KEY_READ);
-  if (!key)
+  if (!key) {
     return absl::nullopt;
+  }
   InstallerOutcome installer_outcome;
   {
     DWORD val = 0;
@@ -177,8 +183,9 @@ bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,
                                    const InstallerOutcome& installer_outcome) {
   absl::optional<base::win::RegKey> key =
       ClientStateAppKeyCreate(updater_scope, app_id, KEY_WRITE);
-  if (!key)
+  if (!key) {
     return false;
+  }
   if (installer_outcome.installer_result) {
     if (key->WriteValue(
             kRegValueInstallerResult,
@@ -248,8 +255,9 @@ Installer::Result MakeInstallerResult(
         // This is unconditional success:
         // - use the command line if available, and ignore everything else.
         result.error = 0;
-        if (installer_outcome->installer_cmd_line)
+        if (installer_outcome->installer_cmd_line) {
           result.installer_cmd_line = *installer_outcome->installer_cmd_line;
+        }
         DCHECK_EQ(result.error, 0);
         break;
 
@@ -262,12 +270,15 @@ Installer::Result MakeInstallerResult(
         result.error = installer_outcome->installer_error
                            ? *installer_outcome->installer_error
                            : exit_code;
-        if (!result.error)
+        if (!result.error) {
           result.error = kErrorApplicationInstallerFailed;
-        if (installer_outcome->installer_extracode1)
+        }
+        if (installer_outcome->installer_extracode1) {
           result.extended_error = *installer_outcome->installer_extracode1;
-        if (installer_outcome->installer_text)
+        }
+        if (installer_outcome->installer_text) {
           result.installer_text = *installer_outcome->installer_text;
+        }
         DCHECK_NE(result.error, 0);
         break;
 
@@ -278,10 +289,12 @@ Installer::Result MakeInstallerResult(
         result.error = installer_outcome->installer_error
                            ? *installer_outcome->installer_error
                            : exit_code;
-        if (!result.error)
+        if (!result.error) {
           result.error = kErrorApplicationInstallerFailed;
-        if (installer_outcome->installer_extracode1)
+        }
+        if (installer_outcome->installer_extracode1) {
           result.extended_error = *installer_outcome->installer_extracode1;
+        }
         result.installer_text = GetTextForSystemError(result.error);
         DCHECK_NE(result.error, 0);
         break;
@@ -291,8 +304,9 @@ Installer::Result MakeInstallerResult(
         // - if success, then use the command line if available.
         // - if an error, then ignore everything.
         result.error = exit_code;
-        if (result.error == 0 && installer_outcome->installer_cmd_line)
+        if (result.error == 0 && installer_outcome->installer_cmd_line) {
           result.installer_cmd_line = *installer_outcome->installer_cmd_line;
+        }
         break;
     }
     return result;

@@ -4,17 +4,13 @@
 
 #include "chrome/updater/win/ui/ui_util.h"
 
-#include "base/i18n/message_formatter.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_util.h"
-#include "base/win/atl.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 namespace {
 
@@ -32,8 +28,9 @@ BOOL CALLBACK FindProcessWindowsEnumProc(HWND hwnd, LPARAM lparam) {
   DWORD process_id = 0;
   ::GetWindowThreadProcessId(hwnd, &process_id);
 
-  if (enum_record->process_id != process_id)
+  if (enum_record->process_id != process_id) {
     return true;
+  }
 
   if ((enum_record->window_flags & kWindowMustBeTopLevel) &&
       ::GetParent(hwnd)) {
@@ -72,8 +69,9 @@ bool FindProcessWindows(uint32_t process_id,
 }
 
 void MakeWindowForeground(HWND wnd) {
-  if (!::IsWindowVisible(wnd))
+  if (!::IsWindowVisible(wnd)) {
     return;
+  }
   ::SetWindowPos(wnd, HWND_TOP, 0, 0, 0, 0,
                  SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
@@ -111,22 +109,26 @@ HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon) {
 
 std::wstring GetInstallerDisplayName(const std::u16string& bundle_name) {
   std::wstring display_name = base::AsWString(bundle_name);
-  if (display_name.empty())
+  if (display_name.empty()) {
     display_name = GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE);
+  }
   return GetLocalizedStringF(IDS_INSTALLER_DISPLAY_NAME_BASE, display_name);
 }
 
 bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text) {
   text->clear();
   auto* item = ::GetDlgItem(dlg, item_id);
-  if (!item)
+  if (!item) {
     return false;
+  }
   const auto num_chars = ::GetWindowTextLength(item);
-  if (!num_chars)
+  if (!num_chars) {
     return false;
+  }
   std::vector<wchar_t> tmp(num_chars + 1);
-  if (!::GetWindowText(item, &tmp.front(), tmp.size()))
+  if (!::GetWindowText(item, &tmp.front(), tmp.size())) {
     return false;
+  }
   text->assign(tmp.begin(), tmp.end());
   return true;
 }
@@ -140,5 +142,4 @@ bool IsHighContrastOn() {
   return hc.dwFlags & HCF_HIGHCONTRASTON;
 }
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui

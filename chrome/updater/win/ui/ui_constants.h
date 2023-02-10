@@ -7,8 +7,7 @@
 
 #include <windows.h>
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 inline constexpr COLORREF kBkColor = RGB(0XFB, 0XFB, 0XFB);
 inline constexpr COLORREF kTextColor = RGB(0x29, 0x29, 0x29);
@@ -38,7 +37,6 @@ extern const wchar_t kLegacyUiDisplayedEventEnvironmentVariableName[];
 
 extern const wchar_t kDialogFont[];
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_UI_CONSTANTS_H_

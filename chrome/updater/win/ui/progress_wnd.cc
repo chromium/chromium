@@ -4,18 +4,12 @@
 
 #include "chrome/updater/win/ui/progress_wnd.h"
 
-#include "base/check_op.h"
-#include "base/i18n/message_formatter.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions_win.h"
-#include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/updater/constants.h"
-#include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
@@ -23,8 +17,7 @@
 #include "chrome/updater/win/ui/ui_ctls.h"
 #include "chrome/updater/win/ui/ui_util.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 namespace {
 
@@ -59,8 +52,9 @@ static_assert(
 
 int GetPriority(CompletionCodes code) {
   for (size_t i = 0; i < std::size(kCompletionCodesActionPriority); ++i) {
-    if (kCompletionCodesActionPriority[i] == code)
+    if (kCompletionCodesActionPriority[i] == code) {
       return i;
+    }
   }
 
   NOTREACHED();
@@ -85,8 +79,9 @@ InstallStoppedWnd::InstallStoppedWnd(WTL::CMessageLoop* message_loop,
 
 InstallStoppedWnd::~InstallStoppedWnd() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (IsWindow())
+  if (IsWindow()) {
     CloseWindow();
+  }
 }
 
 BOOL InstallStoppedWnd::PreTranslateMessage(MSG* msg) {
@@ -176,8 +171,9 @@ LRESULT ProgressWnd::OnInitDialog(UINT message,
 // if the user chooses cancel.
 bool ProgressWnd::MaybeCloseWindow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_close_enabled())
+  if (!is_close_enabled()) {
     return false;
+  }
 
   if (cur_state_ != States::STATE_COMPLETE_SUCCESS &&
       cur_state_ != States::STATE_COMPLETE_ERROR &&
@@ -295,17 +291,20 @@ void ProgressWnd::HandleCancelRequest() {
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT,
                  GetLocalizedString(IDS_CANCELING_BASE).c_str());
 
-  if (is_canceled_)
+  if (is_canceled_) {
     return;
+  }
   is_canceled_ = true;
-  if (events_sink_)
+  if (events_sink_) {
     events_sink_->DoCancel();
+  }
 }
 
 void ProgressWnd::OnCheckingForUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsWindow())
+  if (!IsWindow()) {
     return;
+  }
 
   cur_state_ = States::STATE_CHECKING_FOR_UPDATE;
 
@@ -320,15 +319,17 @@ void ProgressWnd::OnUpdateAvailable(const std::u16string& app_id,
                                     const std::u16string& version_string) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsWindow())
+  if (!IsWindow()) {
     return;
+  }
 }
 
 void ProgressWnd::OnWaitingToDownload(const std::u16string& app_id,
                                       const std::u16string& app_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsWindow())
+  if (!IsWindow()) {
     return;
+  }
 
   cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
 
@@ -345,8 +346,9 @@ void ProgressWnd::OnDownloading(const std::u16string& app_id,
                                 int time_remaining_ms,
                                 int pos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsWindow())
+  if (!IsWindow()) {
     return;
+  }
 
   DCHECK(0 <= pos && pos <= 100);
 
@@ -381,12 +383,14 @@ void ProgressWnd::OnDownloading(const std::u16string& app_id,
   // Reduces flicker by only updating the control if the text has changed.
   std::wstring current_text;
   ui::GetDlgItemText(*this, IDC_INSTALLER_STATE_TEXT, &current_text);
-  if (s != current_text)
+  if (s != current_text) {
     SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
+  }
 
   SetMarqueeMode(pos == 0);
-  if (pos > 0)
+  if (pos > 0) {
     SendDlgItemMessage(IDC_PROGRESS, PBM_SETPOS, pos, 0);
+  }
 
   ChangeControlState();
 }
@@ -395,8 +399,9 @@ void ProgressWnd::OnWaitingRetryDownload(const std::u16string& app_id,
                                          const std::u16string& app_name,
                                          const base::Time& next_retry_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsWindow())
+  if (!IsWindow()) {
     return;
+  }
 
   // Display the next retry time interval if |next_retry_time| is in the future.
   const auto retry_time_in_sec =
@@ -415,8 +420,9 @@ void ProgressWnd::OnWaitingToInstall(const std::u16string& app_id,
                                      const std::u16string& app_name,
                                      bool* /*can_start_install*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsWindow())
+  if (!IsWindow()) {
     return;
+  }
 
   if (States::STATE_WAITING_TO_INSTALL != cur_state_) {
     cur_state_ = States::STATE_WAITING_TO_INSTALL;
@@ -432,8 +438,9 @@ void ProgressWnd::OnInstalling(const std::u16string& app_id,
                                int time_remaining_ms,
                                int pos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsWindow())
+  if (!IsWindow()) {
     return;
+  }
 
   if (States::STATE_INSTALLING != cur_state_) {
     cur_state_ = States::STATE_INSTALLING;
@@ -443,14 +450,16 @@ void ProgressWnd::OnInstalling(const std::u16string& app_id,
   }
 
   SetMarqueeMode(pos <= 0);
-  if (pos > 0)
+  if (pos > 0) {
     SendDlgItemMessage(IDC_PROGRESS, PBM_SETPOS, pos, 0);
+  }
 }
 
 void ProgressWnd::OnPause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsWindow())
+  if (!IsWindow()) {
     return;
+  }
 
   cur_state_ = States::STATE_PAUSED;
   ChangeControlState();
@@ -499,13 +508,15 @@ std::wstring ProgressWnd::GetBundleCompletionErrorMessages(
   // installation error message usually gives more details than the generic one.
   std::vector<std::wstring> completion_texts;
   for (const AppCompletionInfo& app_info : info.apps_info) {
-    if (!app_info.completion_message.empty())
+    if (!app_info.completion_message.empty()) {
       completion_texts.push_back(base::AsWString(app_info.completion_message));
+    }
   }
 
   // Or fallback to the default bundle failure message if nothing is available.
-  if (completion_texts.empty() && !info.completion_text.empty())
+  if (completion_texts.empty() && !info.completion_text.empty()) {
     completion_texts.push_back(info.completion_text);
+  }
 
   // TODO(crbug.com/1353148): Legacy updater allows simple HTML elements in the
   // completion message for better presentation of the installation result.
@@ -518,8 +529,9 @@ std::wstring ProgressWnd::GetBundleCompletionErrorMessages(
 void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!CompleteWnd::OnComplete())
+  if (!CompleteWnd::OnComplete()) {
     return;
+  }
 
   CloseInstallStoppedWindow();
 
@@ -626,8 +638,9 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
 }
 
 HRESULT ProgressWnd::LaunchCmdLine(const AppCompletionInfo& app_info) {
-  if (app_info.post_install_launch_command_line.empty())
+  if (app_info.post_install_launch_command_line.empty()) {
     return S_OK;
+  }
 
   if (app_info.completion_code !=
           CompletionCodes::COMPLETION_CODE_LAUNCH_COMMAND &&
@@ -659,18 +672,20 @@ bool ProgressWnd::LaunchCmdLines(const ObserverCompletionInfo& info) {
 }
 
 HRESULT ProgressWnd::ChangeControlState() {
-  for (const auto& ctl : ctls_)
+  for (const auto& ctl : ctls_) {
     SetControlAttributes(ctl.id, ctl.attr[static_cast<size_t>(cur_state_)]);
+  }
   return S_OK;
 }
 
 HRESULT ProgressWnd::SetMarqueeMode(bool is_marquee) {
   CWindow progress_bar = GetDlgItem(IDC_PROGRESS);
   LONG_PTR style = progress_bar.GetWindowLongPtr(GWL_STYLE);
-  if (is_marquee)
+  if (is_marquee) {
     style |= PBS_MARQUEE;
-  else
+  } else {
     style &= ~PBS_MARQUEE;
+  }
   progress_bar.SetWindowLongPtr(GWL_STYLE, style);
   progress_bar.SendMessage(PBM_SETMARQUEE, !!is_marquee, 0);
 
@@ -690,5 +705,4 @@ bool ProgressWnd::CloseInstallStoppedWindow() {
   return false;
 }
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui

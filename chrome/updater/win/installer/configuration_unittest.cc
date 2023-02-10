@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/environment.h"
-#include "base/test/test_reg_util_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {

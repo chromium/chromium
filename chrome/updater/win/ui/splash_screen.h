@@ -11,14 +11,12 @@
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/updater/splash_screen.h"
 #include "chrome/updater/win/ui/owner_draw_controls.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 class SilentSplashScreen : public updater::SplashScreen {
  public:
@@ -105,7 +103,6 @@ class SplashScreen : public CAxDialogImpl<SplashScreen>,
   base::OnceClosure on_close_closure_;
 };
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_SPLASH_SCREEN_H_

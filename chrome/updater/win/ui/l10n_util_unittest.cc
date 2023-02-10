@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/logging.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,8 +19,9 @@ constexpr int kUpdaterStringIds[] = {
 }  // namespace
 
 TEST(UpdaterL10NUtilTest, GetLocalizedStrings) {
-  for (int id : kUpdaterStringIds)
+  for (int id : kUpdaterStringIds) {
     ASSERT_FALSE(GetLocalizedString(id).empty());
+  }
 }
 
 TEST(UpdaterL10NUtilTest, GetLocalizedStringsFormatted) {

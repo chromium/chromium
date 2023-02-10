@@ -10,8 +10,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/scoped_handle.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 // Manages an event used to synchronize the state of the UI between processes.
 // In this case, one process presents the splash screen UI, forks another
@@ -41,7 +40,6 @@ class UIDisplayedEventManager {
   static ScopedKernelHANDLE& GetUIDisplayedEvent();
 };
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_UI_DISPLAYED_EVENT_H_

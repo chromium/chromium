@@ -7,16 +7,13 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
 #include "base/win/atl.h"
 #include "base/win/embedded_i18n/language_selector.h"
 #include "base/win/i18n.h"
-#include "chrome/updater/tag.h"
 #include "chrome/updater/util/util.h"
+#include "chrome/updater/win/installer/exit_code.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 
 namespace updater {
@@ -53,8 +50,9 @@ std::wstring GetLocalizedString(UINT base_message_id) {
       static_cast<UINT>(base_message_id + GetLanguageSelector().offset());
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
-  if (image)
+  if (image) {
     return std::wstring(image->achString, image->nLength);
+  }
   NOTREACHED() << "Unable to find resource id " << message_id;
   return std::wstring();
 }

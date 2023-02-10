@@ -9,7 +9,7 @@
 namespace updater {
 
 PEResource::PEResource(const wchar_t* name, const wchar_t* type, HMODULE module)
-    : resource_(nullptr), module_(module) {
+    : module_(module) {
   resource_ = ::FindResource(module, name, type);
 }
 
@@ -25,18 +25,21 @@ bool PEResource::WriteToDisk(const wchar_t* full_path) {
   // Resource handles are not real HGLOBALs so do not attempt to close them.
   // Resources are freed when the containing module is unloaded.
   HGLOBAL data_handle = ::LoadResource(module_, resource_);
-  if (nullptr == data_handle)
+  if (nullptr == data_handle) {
     return false;
+  }
 
   const char* data = reinterpret_cast<const char*>(::LockResource(data_handle));
-  if (nullptr == data)
+  if (nullptr == data) {
     return false;
+  }
 
   const size_t resource_size = Size();
   HANDLE out_file = ::CreateFile(full_path, GENERIC_WRITE, 0, nullptr,
                                  CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-  if (INVALID_HANDLE_VALUE == out_file)
+  if (INVALID_HANDLE_VALUE == out_file) {
     return false;
+  }
 
   // Don't write all of the data at once because this can lead to kernel
   // address-space exhaustion on 32-bit Windows (see https://crbug.com/1001022

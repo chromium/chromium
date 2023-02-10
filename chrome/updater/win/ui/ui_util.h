@@ -13,8 +13,7 @@
 
 #include "base/check_op.h"
 
-namespace updater {
-namespace ui {
+namespace updater::ui {
 
 // Finds all the primary windows owned by the given process. A primary window is
 // a top-level, has a system menu, and it is visible.
@@ -59,7 +58,6 @@ bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text);
 // Returns true if the system is in high contrast mode.
 bool IsHighContrastOn();
 
-}  // namespace ui
-}  // namespace updater
+}  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_UI_UTIL_H_
