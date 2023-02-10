@@ -18,6 +18,20 @@
 
 namespace content {
 
+namespace {
+
+WebContentsViewIOS::RenderWidgetHostViewCreateFunction
+    g_create_render_widget_host_view = nullptr;
+
+}  // namespace
+
+// static
+void WebContentsViewIOS::InstallCreateHookForTests(
+    RenderWidgetHostViewCreateFunction create_render_widget_host_view) {
+  CHECK_EQ(nullptr, g_create_render_widget_host_view);
+  g_create_render_widget_host_view = create_render_widget_host_view;
+}
+
 // This class holds a scoped_nsobject so we don't leak that in the header
 // of the WebContentsViewIOS.
 class WebContentsUIViewHolder {
@@ -96,6 +110,9 @@ void WebContentsViewIOS::CreateView(gfx::NativeView context) {}
 
 RenderWidgetHostViewBase* WebContentsViewIOS::CreateViewForWidget(
     RenderWidgetHost* render_widget_host) {
+  if (g_create_render_widget_host_view) {
+    return g_create_render_widget_host_view(render_widget_host);
+  }
   return new RenderWidgetHostViewIOS(render_widget_host);
 }
 

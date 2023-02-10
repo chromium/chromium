@@ -86,7 +86,7 @@ const char* const kExpectedFontFamilyNames[] = {"Ahem",
                                                 "Tinos",
                                                 "Mukti Narrow",
                                                 "Tinos"};
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 const char* const kExpectedFontFamilyNames[] = {"American Typewriter",
                                                 "Arial Narrow",
                                                 "Baskerville",

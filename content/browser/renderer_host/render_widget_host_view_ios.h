@@ -156,6 +156,8 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void OnFirstResponderChanged();
 
  private:
+  friend class MockPointerLockRenderWidgetHostView;
+
   RenderWidgetHostImpl* GetActiveWidget();
 
   void OnDidUpdateVisualPropertiesComplete(
@@ -170,6 +172,17 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   bool is_first_responder_ = false;
   bool is_getting_focus_ = false;
   bool is_visible_ = false;
+
+  // While the mouse is locked, the cursor is hidden from the user. Mouse events
+  // are still generated. However, the position they report is the last known
+  // mouse position just as mouse lock was entered; the movement they report
+  // indicates what the change in position of the mouse would be had it not been
+  // locked.
+  bool mouse_locked_ = false;
+
+  // Tracks whether unaccelerated mouse motion events are sent while the mouse
+  // is locked.
+  bool mouse_lock_unadjusted_movement_ = false;
 
   // Latest capture sequence number which is incremented when the caller
   // requests surfaces be synchronized via

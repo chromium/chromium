@@ -15,6 +15,7 @@
 
 namespace content {
 
+class RenderWidgetHostViewIOS;
 class WebContentsImpl;
 class WebContentsViewDelegate;
 class WebContentsUIViewHolder;
@@ -60,6 +61,13 @@ class WebContentsViewIOS : public WebContentsView,
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
+
+  using RenderWidgetHostViewCreateFunction =
+      RenderWidgetHostViewIOS* (*)(RenderWidgetHost*);
+
+  // Used to override the creation of RenderWidgetHostViews in tests.
+  CONTENT_EXPORT static void InstallCreateHookForTests(
+      RenderWidgetHostViewCreateFunction create_render_widget_host_view);
 
  private:
   // The WebContentsImpl whose contents we display.

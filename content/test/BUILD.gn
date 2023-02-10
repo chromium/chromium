@@ -645,7 +645,7 @@ static_library("test_support") {
     ]
   }
 
-  if (use_aura || is_mac) {
+  if (use_aura || is_apple) {
     deps += [
       "//components/viz/common",
       "//components/viz/host",
@@ -1198,7 +1198,6 @@ test("content_browsertests") {
   sources = [
     "../app/content_main_runner_impl_browsertest.cc",
     "../app/mojo/mojo_browsertest.cc",
-    "../app_shim_remote_cocoa/window_occlusion_browsertest_mac.mm",
     "../browser/accessibility/accessibility_action_browsertest.cc",
     "../browser/accessibility/accessibility_content_browsertest.cc",
     "../browser/accessibility/accessibility_content_browsertest.h",
@@ -1529,6 +1528,10 @@ test("content_browsertests") {
     "../test/url_loader_interceptor_browsertest.cc",
   ]
 
+  if (is_mac) {
+    sources +=
+        [ "../app_shim_remote_cocoa/window_occlusion_browsertest_mac.mm" ]
+  }
   if (enable_reporting) {
     sources += [
       "../browser/network/cross_origin_opener_policy_reporting_browsertest.cc",
@@ -1948,6 +1951,13 @@ test("content_browsertests") {
     deps += [ "//third_party/ocmock" ]
     data_deps += [ "//content/shell:content_shell" ]
     data += [ "$root_out_dir/Content Shell.app/" ]
+  }
+
+  if (is_ios) {
+    sources += [
+      "../browser/keyboard_lock_browsertest_ios.mm",
+      "../browser/pointer_lock_browsertest_ios.mm",
+    ]
   }
 
   if (is_chromeos_ash) {
