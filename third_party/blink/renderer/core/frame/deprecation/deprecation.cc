@@ -24,21 +24,6 @@
 
 namespace blink {
 
-namespace {
-
-// TODO(crbub.com/1411444): Properly report the message and milestone again.
-Report* CreateReportInternal(const KURL& context_url,
-                             const DeprecationInfo& info) {
-  DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
-      String::Number(static_cast<int>(info.feature_)), absl::nullopt,
-      "Deprecation messages are stored in the devtools-frontend repo at "
-      "front_end/models/issues_manager/DeprecationIssue.ts.");
-  return MakeGarbageCollected<Report>(ReportType::kDeprecation, context_url,
-                                      body);
-}
-
-}  // anonymous namespace
-
 Deprecation::Deprecation() : mute_count_(0) {}
 
 void Deprecation::ClearSuppression() {
@@ -104,10 +89,12 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
   // Send the deprecation message as a DevTools issue.
   AuditsIssue::ReportDeprecationIssue(context, info.type_);
 
-  Report* report = CreateReportInternal(context->Url(), info);
-
   // Send the deprecation report to the Reporting API and any
   // ReportingObservers.
+  DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
+      info.type_, absl::nullopt, info.message_);
+  Report* report = MakeGarbageCollected<Report>(ReportType::kDeprecation,
+                                                context->Url(), body);
   ReportingContext::From(context)->QueueReport(report);
 }
 

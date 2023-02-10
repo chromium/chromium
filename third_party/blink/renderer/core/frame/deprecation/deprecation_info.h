@@ -14,21 +14,23 @@ extern const char kNotDeprecated[];
 
 class DeprecationInfo final {
  public:
-  static const DeprecationInfo WithTranslation(WebFeature feature,
-                                               const String& type) {
-    return DeprecationInfo(feature, type);
+  static const DeprecationInfo Create(WebFeature feature,
+                                      const String& type,
+                                      const String& message) {
+    return DeprecationInfo(feature, type, message);
   }
 
-  static const DeprecationInfo NotDeprecated(WebFeature feature) {
-    return DeprecationInfo(feature, kNotDeprecated);
+  static const DeprecationInfo Invalid(WebFeature feature) {
+    return DeprecationInfo(feature, kNotDeprecated, kNotDeprecated);
   }
 
   const WebFeature feature_;
   const String type_;
+  const String message_;
 
  private:
-  DeprecationInfo(WebFeature feature, String type)
-      : feature_(feature), type_(type) {}
+  DeprecationInfo(WebFeature feature, String type, String message)
+      : feature_(feature), type_(type), message_(message) {}
 };
 
 // The implementation is generated using deprecation.json5 and placed in

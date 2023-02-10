@@ -63,11 +63,24 @@ def _CheckDeprecation(input_api, output_api):
                     'deprecation.json5 items must all contain a non-empty "message" value.'
                 )
             ]
+        if len(deprecation['message']) != len(deprecation['message'].encode()):
+            return [
+                output_api.PresubmitError(
+                    'deprecation.json5 items must all contain fully ascii "message" values.'
+                )
+            ]
         if 'translation_note' not in deprecation or not deprecation[
                 'translation_note']:
             return [
                 output_api.PresubmitError(
                     'deprecation.json5 items must all contain a non-empty "translation_note" value.'
+                )
+            ]
+        if len(deprecation['translation_note']) != len(
+                deprecation['translation_note'].encode()):
+            return [
+                output_api.PresubmitError(
+                    'deprecation.json5 items must all contain fully ascii "translation_note" values.'
                 )
             ]
         if 'web_features' in deprecation and deprecation['web_features']:

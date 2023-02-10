@@ -63,7 +63,7 @@ promise_test(async t => {
   frames[0].document.bodyi
   var report = await onreport;
   assert_equals(report.type, "deprecation");
-  assert_equals(report.body.id, "4171");
+  assert_equals(report.body.id, "CrossOriginAccessBasedOnDocumentDomain");
 }, "Deprecation warning for document-domain mediated cross-origin access, " +
    "after first navigation the target frame.");
 </script>

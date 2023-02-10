@@ -18,11 +18,14 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     {% for web_feature in deprecation.web_features %}
     case WebFeature::{{web_feature}}:
     {% endfor %}
-      return DeprecationInfo::WithTranslation(feature, "{{deprecation.name}}");
+      return DeprecationInfo::Create(
+        feature,
+        "{{deprecation.name}}",
+        "{{deprecation.message.replace("\\", "\\\\")}}");
     {% endif %}
     {% endfor %}
     default:
-      return DeprecationInfo::NotDeprecated(feature);
+      return DeprecationInfo::Invalid(feature);
   }
 }
 }  // namespace blink
