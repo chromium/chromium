@@ -144,7 +144,9 @@ public class TabUiThemeUtil {
      */
     private static int getSurfaceColorElev5(Context context, boolean isIncognito) {
         if (isIncognito) {
-            return context.getColor(R.color.default_bg_color_dark_elev_5_baseline);
+            return context.getColor(ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                            ? R.color.default_bg_color_dark_elev_5_gm3_baseline
+                            : R.color.default_bg_color_dark_elev_5_baseline);
         }
 
         return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_5);

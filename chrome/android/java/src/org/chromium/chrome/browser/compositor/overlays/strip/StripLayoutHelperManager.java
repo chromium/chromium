@@ -299,10 +299,15 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                     context.getResources().getColor(R.color.model_selector_button_bg_color);
 
             // Incognito bg color is surface 1 baseline for folio, surface 2 baseline for detached.
+            int defaultBgColorDarkElev1 = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                    ? R.color.default_bg_color_dark_elev_1_gm3_baseline
+                    : R.color.default_bg_color_dark_elev_1_baseline;
+            int defaultBgColorDarkElev2 = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                    ? R.color.default_bg_color_dark_elev_2_gm3_baseline
+                    : R.color.default_bg_color_dark_elev_2_baseline;
             int backgroundIncognitoColor = TabManagementFieldTrial.isTabStripFolioEnabled()
-                    ? context.getResources().getColor(R.color.default_bg_color_dark_elev_1_baseline)
-                    : context.getResources().getColor(
-                            R.color.default_bg_color_dark_elev_2_baseline);
+                    ? context.getResources().getColor(defaultBgColorDarkElev1)
+                    : context.getResources().getColor(defaultBgColorDarkElev2);
 
             ((TintedCompositorButton) mModelSelectorButton)
                     .setTint(iconDefaultColor, iconDefaultColor, iconIncognitoColor,

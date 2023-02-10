@@ -41,9 +41,12 @@ public class TabUiThemeProvider {
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
             // Incognito does not use dynamic colors, so it can use colors from resources.
+            int incognitoTabBgColorRes = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                    ? R.color.default_bg_color_dark_elev_4_gm3_baseline
+                    : R.color.incognito_tab_bg_color;
             @ColorRes
-            int colorRes = isSelected ? R.color.incognito_tab_bg_selected_color
-                                      : R.color.incognito_tab_bg_color;
+            int colorRes =
+                    isSelected ? R.color.incognito_tab_bg_selected_color : incognitoTabBgColorRes;
             return ContextCompat.getColor(context, colorRes);
         } else {
             float tabElevation = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
@@ -264,9 +267,13 @@ public class TabUiThemeProvider {
     public static ColorStateList getHoveredCardBackgroundTintList(
             Context context, boolean isIncognito, boolean isSelected) {
         if (isIncognito) {
+            int incognitoTabGroupHoveredBgColorRes =
+                    ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                    ? R.color.default_bg_color_dark_elev_1_gm3_baseline
+                    : R.color.incognito_tab_group_hovered_bg_color;
             @ColorRes
             int colorRes = isSelected ? R.color.incognito_tab_group_hovered_bg_selected_color
-                                      : R.color.incognito_tab_group_hovered_bg_color;
+                                      : incognitoTabGroupHoveredBgColorRes;
             return AppCompatResources.getColorStateList(context, colorRes);
         } else {
             if (isSelected) {

@@ -44,6 +44,11 @@ found in the LICENSE file.
     <color name="default_bg_color_elev_4_baseline">@color/default_bg_color_light_elev_4_baseline</color>
     <color name="default_bg_color_elev_5_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_5_baseline</color>
     <color name="default_bg_color_elev_6_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_6_baseline</color>
+    <color name="default_bg_color_elev_1_gm3_baseline">@color/default_bg_color_light_elev_1_gm3_baseline</color>
+    <color name="default_bg_color_elev_2_gm3_baseline">@color/default_bg_color_light_elev_2_gm3_baseline</color>
+    <color name="default_bg_color_elev_3_gm3_baseline">@color/default_bg_color_light_elev_3_gm3_baseline</color>
+    <color name="default_bg_color_elev_4_gm3_baseline">@color/default_bg_color_light_elev_4_gm3_baseline</color>
+    <color name="default_bg_color_elev_5_gm3_baseline">@color/default_bg_color_light_elev_5_gm3_baseline</color>
     <color name="legacy_bg_color_elev_1">@color/legacy_bg_color_light_elev_1</color>
     <color name="legacy_bg_color_elev_4">@color/legacy_bg_color_light_elev_4</color>
 

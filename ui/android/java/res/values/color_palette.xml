@@ -29,6 +29,16 @@ found in the LICENSE file.
     <color name="baseline_neutral_0_with_neutral_600_alpha_12_with_primary_600_2" tools:ignore="UnusedResources">#E8E9EB</color>
     <color name="baseline_neutral_0_with_neutral_600_alpha_14_with_primary_600_2" tools:ignore="UnusedResources">#E4E5E8</color>
     <color name="baseline_neutral_0_with_neutral_600_alpha_20_with_primary_600_2" tools:ignore="UnusedResources">#DADBDE</color>
+    <color name="baseline_neutral_0_with_surface_tint_light_alpha_5" tools:ignore="UnusedResources">#F7F9FC</color>
+    <color name="baseline_neutral_0_with_surface_tint_light_alpha_8" tools:ignore="UnusedResources">#F2F5FB</color>
+    <color name="baseline_neutral_0_with_surface_tint_light_alpha_11" tools:ignore="UnusedResources">#EFF3FA</color>
+    <color name="baseline_neutral_0_with_surface_tint_light_alpha_12" tools:ignore="UnusedResources">#EDF2FA</color>
+    <color name="baseline_neutral_0_with_surface_tint_light_alpha_14" tools:ignore="UnusedResources">#EAEFF9</color>
+    <color name="baseline_neutral_0_with_surface_tint_dark_alpha_5" tools:ignore="UnusedResources">#28282A</color>
+    <color name="baseline_neutral_0_with_surface_tint_dark_alpha_8" tools:ignore="UnusedResources">#2D2E31</color>
+    <color name="baseline_neutral_0_with_surface_tint_dark_alpha_11" tools:ignore="UnusedResources">#313336</color>
+    <color name="baseline_neutral_0_with_surface_tint_dark_alpha_12" tools:ignore="UnusedResources">#333539</color>
+    <color name="baseline_neutral_0_with_surface_tint_dark_alpha_14" tools:ignore="UnusedResources">#37393D</color>
     <color name="baseline_neutral_10">#FDFCFB</color>
     <color name="baseline_neutral_50">#F2F2F2</color>
     <color name="baseline_neutral_100">#E3E3E3</color>

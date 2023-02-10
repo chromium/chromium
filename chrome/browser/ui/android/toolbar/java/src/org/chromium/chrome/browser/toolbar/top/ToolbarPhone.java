@@ -50,6 +50,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -424,10 +425,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private int getToolbarDefaultColor() {
         if (mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus()) {
             if (mDropdownListScrolled) {
-                return isIncognito()
-                        ? getContext().getColor(R.color.default_bg_color_dark_elev_2_baseline)
-                        : ChromeColors.getSurfaceColor(
-                                getContext(), R.dimen.toolbar_text_box_elevation);
+                int colorRes = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                        ? R.color.default_bg_color_dark_elev_2_gm3_baseline
+                        : R.color.default_bg_color_dark_elev_2_baseline;
+                return isIncognito() ? getContext().getColor(colorRes)
+                                     : ChromeColors.getSurfaceColor(
+                                             getContext(), R.dimen.toolbar_text_box_elevation);
             }
             return mLocationBar.getDropdownBackgroundColor(isIncognito());
         }
