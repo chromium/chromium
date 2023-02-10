@@ -13,6 +13,20 @@
 
 namespace bluez {
 
+// static
+base::WeakPtr<BluetoothLocalGattServiceBlueZ>
+BluetoothLocalGattServiceBlueZ::Create(
+    BluetoothAdapterBlueZ* adapter,
+    const device::BluetoothUUID& uuid,
+    bool is_primary,
+    device::BluetoothLocalGattService::Delegate* delegate) {
+  auto* service =
+      new BluetoothLocalGattServiceBlueZ(adapter, uuid, is_primary, delegate);
+  auto weak_ptr = service->weak_ptr_factory_.GetWeakPtr();
+  adapter->AddLocalGattService(base::WrapUnique(service));
+  return weak_ptr;
+}
+
 BluetoothLocalGattServiceBlueZ::BluetoothLocalGattServiceBlueZ(
     BluetoothAdapterBlueZ* adapter,
     const device::BluetoothUUID& uuid,
@@ -27,7 +41,6 @@ BluetoothLocalGattServiceBlueZ::BluetoothLocalGattServiceBlueZ(
       delegate_(delegate) {
   DVLOG(1) << "Creating local GATT service with identifier: "
            << GetIdentifier();
-  adapter->AddLocalGattService(base::WrapUnique(this));
 }
 
 BluetoothLocalGattServiceBlueZ::~BluetoothLocalGattServiceBlueZ() = default;

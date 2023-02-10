@@ -29,10 +29,9 @@ BluetoothLocalGattCharacteristic::Create(const BluetoothUUID& uuid,
         uuid, properties, permissions,
         static_cast<floss::BluetoothLocalGattServiceFloss*>(service));
   } else {
-    return (new bluez::BluetoothLocalGattCharacteristicBlueZ(
-                uuid, properties, permissions,
-                static_cast<bluez::BluetoothLocalGattServiceBlueZ*>(service)))
-        ->weak_ptr_factory_.GetWeakPtr();
+    return bluez::BluetoothLocalGattCharacteristicBlueZ::Create(
+        uuid, properties, permissions,
+        static_cast<bluez::BluetoothLocalGattServiceBlueZ*>(service));
   }
 #else
   NOTIMPLEMENTED();

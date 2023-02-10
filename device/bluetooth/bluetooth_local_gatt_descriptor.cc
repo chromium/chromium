@@ -30,11 +30,10 @@ BluetoothLocalGattDescriptor::Create(
         static_cast<floss::BluetoothLocalGattCharacteristicFloss*>(
             characteristic));
   } else {
-    return (new bluez::BluetoothLocalGattDescriptorBlueZ(
-                uuid, permissions,
-                static_cast<bluez::BluetoothLocalGattCharacteristicBlueZ*>(
-                    characteristic)))
-        ->weak_ptr_factory_.GetWeakPtr();
+    return bluez::BluetoothLocalGattDescriptorBlueZ::Create(
+        uuid, permissions,
+        static_cast<bluez::BluetoothLocalGattCharacteristicBlueZ*>(
+            characteristic));
   }
 #else
   NOTIMPLEMENTED();

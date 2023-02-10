@@ -16,6 +16,20 @@
 
 namespace bluez {
 
+// static
+base::WeakPtr<BluetoothLocalGattCharacteristicBlueZ>
+BluetoothLocalGattCharacteristicBlueZ::Create(
+    const device::BluetoothUUID& uuid,
+    Properties properties,
+    Permissions permissions,
+    BluetoothLocalGattServiceBlueZ* service) {
+  auto* characteristic = new BluetoothLocalGattCharacteristicBlueZ(
+      uuid, properties, permissions, service);
+  auto weak_ptr = characteristic->weak_ptr_factory_.GetWeakPtr();
+  service->AddCharacteristic(base::WrapUnique(characteristic));
+  return weak_ptr;
+}
+
 BluetoothLocalGattCharacteristicBlueZ::BluetoothLocalGattCharacteristicBlueZ(
     const device::BluetoothUUID& uuid,
     Properties properties,
@@ -30,7 +44,6 @@ BluetoothLocalGattCharacteristicBlueZ::BluetoothLocalGattCharacteristicBlueZ(
       service_(service) {
   DVLOG(1) << "Creating local GATT characteristic with identifier: "
            << GetIdentifier();
-  service->AddCharacteristic(base::WrapUnique(this));
 }
 
 BluetoothLocalGattCharacteristicBlueZ::

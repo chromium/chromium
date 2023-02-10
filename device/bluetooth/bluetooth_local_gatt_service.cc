@@ -27,10 +27,9 @@ base::WeakPtr<BluetoothLocalGattService> BluetoothLocalGattService::Create(
     return floss::BluetoothLocalGattServiceFloss::Create(
         static_cast<floss::BluetoothAdapterFloss*>(adapter), uuid, is_primary);
   } else {
-    return (new bluez::BluetoothLocalGattServiceBlueZ(
-                static_cast<bluez::BluetoothAdapterBlueZ*>(adapter), uuid,
-                is_primary, delegate))
-        ->weak_ptr_factory_.GetWeakPtr();
+    return bluez::BluetoothLocalGattServiceBlueZ::Create(
+        static_cast<bluez::BluetoothAdapterBlueZ*>(adapter), uuid, is_primary,
+        delegate);
   }
 #else
   NOTIMPLEMENTED();

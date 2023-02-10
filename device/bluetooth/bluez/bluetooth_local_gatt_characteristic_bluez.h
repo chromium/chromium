@@ -29,7 +29,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicBlueZ
     : public BluetoothGattCharacteristicBlueZ,
       public device::BluetoothLocalGattCharacteristic {
  public:
-  BluetoothLocalGattCharacteristicBlueZ(
+  static base::WeakPtr<BluetoothLocalGattCharacteristicBlueZ> Create(
       const device::BluetoothUUID& uuid,
       Properties properties,
       Permissions permissions,
@@ -58,8 +58,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicBlueZ
 
  private:
   friend class BluetoothLocalGattDescriptorBlueZ;
-  // Needs access to weak_ptr_factory_.
-  friend device::BluetoothLocalGattCharacteristic;
+
+BluetoothLocalGattCharacteristicBlueZ(
+      const device::BluetoothUUID& uuid,
+      Properties properties,
+      Permissions permissions,
+      BluetoothLocalGattServiceBlueZ* service);
 
   // Adds a descriptor to this characteristic.
   void AddDescriptor(

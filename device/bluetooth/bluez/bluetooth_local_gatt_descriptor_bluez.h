@@ -24,7 +24,7 @@ class BluetoothLocalGattDescriptorBlueZ
     : public BluetoothGattDescriptorBlueZ,
       public device::BluetoothLocalGattDescriptor {
  public:
-  BluetoothLocalGattDescriptorBlueZ(
+  static base::WeakPtr<BluetoothLocalGattDescriptorBlueZ> Create(
       const device::BluetoothUUID& uuid,
       device::BluetoothGattCharacteristic::Permissions permissions,
       BluetoothLocalGattCharacteristicBlueZ* characteristic);
@@ -43,8 +43,10 @@ class BluetoothLocalGattDescriptorBlueZ
   device::BluetoothLocalGattCharacteristic* GetCharacteristic() const override;
 
  private:
-  // Needs access to weak_ptr_factory_.
-  friend class device::BluetoothLocalGattDescriptor;
+  BluetoothLocalGattDescriptorBlueZ(
+      const device::BluetoothUUID& uuid,
+      device::BluetoothGattCharacteristic::Permissions permissions,
+      BluetoothLocalGattCharacteristicBlueZ* characteristic);
 
   // UUID of this descriptor.
   device::BluetoothUUID uuid_;

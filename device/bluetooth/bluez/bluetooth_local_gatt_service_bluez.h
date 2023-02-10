@@ -24,7 +24,7 @@ class BluetoothLocalGattServiceBlueZ
     : public BluetoothGattServiceBlueZ,
       public device::BluetoothLocalGattService {
  public:
-  BluetoothLocalGattServiceBlueZ(
+  static base::WeakPtr<BluetoothLocalGattServiceBlueZ> Create(
       BluetoothAdapterBlueZ* adapter,
       const device::BluetoothUUID& uuid,
       bool is_primary,
@@ -61,8 +61,12 @@ class BluetoothLocalGattServiceBlueZ
 
  private:
   friend class BluetoothLocalGattCharacteristicBlueZ;
-  // Needs access to weak_ptr_factory_.
-  friend class device::BluetoothLocalGattService;
+
+  BluetoothLocalGattServiceBlueZ(
+      BluetoothAdapterBlueZ* adapter,
+      const device::BluetoothUUID& uuid,
+      bool is_primary,
+      device::BluetoothLocalGattService::Delegate* delegate);
 
   // Called by dbus:: on unsuccessful completion of a request to register a
   // local service.
