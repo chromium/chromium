@@ -1683,13 +1683,15 @@ int InputMethodController::ComputeWebTextInputNextPreviousFlags() const {
     return kWebTextInputFlagNone;
 
   int flags = kWebTextInputFlagNone;
-  if (page->GetFocusController().NextFocusableElementForIME(
-          element, mojom::blink::FocusType::kForward))
+  if (page->GetFocusController().NextFocusableElementForImeAndAutofill(
+          element, mojom::blink::FocusType::kForward)) {
     flags |= kWebTextInputFlagHaveNextFocusableElement;
+  }
 
-  if (page->GetFocusController().NextFocusableElementForIME(
-          element, mojom::blink::FocusType::kBackward))
+  if (page->GetFocusController().NextFocusableElementForImeAndAutofill(
+          element, mojom::blink::FocusType::kBackward)) {
     flags |= kWebTextInputFlagHavePreviousFocusableElement;
+  }
 
   return flags;
 }

@@ -2170,8 +2170,8 @@ bool HTMLInputElement::IsLastInputElementInForm() {
   return !GetDocument()
               .GetPage()
               ->GetFocusController()
-              .NextFocusableElementForIME(this,
-                                          mojom::blink::FocusType::kForward);
+              .NextFocusableElementForImeAndAutofill(
+                  this, mojom::blink::FocusType::kForward);
 }
 
 void HTMLInputElement::DispatchSimulatedEnter() {
