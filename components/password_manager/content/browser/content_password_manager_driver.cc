@@ -385,7 +385,10 @@ void ContentPasswordManagerDriver::RecordSavePasswordProgress(
   // chrome://password-manager-internals based debugging.
   if (GetLastCommittedURL().SchemeIs(content::kChromeUIScheme))
     return;
-  LOG_AF(client_->GetLogManager()) << log;
+  LOG_AF(client_->GetLogManager())
+      << autofill::Tag{"div"}
+      << autofill::Attrib{"class", "preserve-white-space"} << log
+      << autofill::CTag{"div"};
 }
 
 void ContentPasswordManagerDriver::UserModifiedPasswordField() {

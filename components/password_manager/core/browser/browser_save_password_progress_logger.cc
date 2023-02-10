@@ -349,7 +349,9 @@ void BrowserSavePasswordProgressLogger::LogPasswordRequirements(
 }
 
 void BrowserSavePasswordProgressLogger::SendLog(const std::string& log) {
-  LOG_AF(*log_manager_) << log;
+  LOG_AF(*log_manager_) << autofill::Tag{"div"}
+                        << autofill::Attrib{"class", "preserve-white-space"}
+                        << log << autofill::CTag{"div"};
 }
 
 std::string BrowserSavePasswordProgressLogger::PasswordAttributeLogString(
