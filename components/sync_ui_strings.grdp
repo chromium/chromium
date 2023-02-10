@@ -43,9 +43,6 @@
     <message name="IDS_SYNC_PASSPHRASE_MISMATCH_ERROR" desc="Error message when the passphrase and confirmation don't match.">
       You must enter the same passphrase twice.
     </message>
-    <message name="IDS_SYNC_SERVICE_UNAVAILABLE" desc="Error message to display when the user domain entered by the user has sync disabled.">
-      Sync is not available for your domain
-    </message>
     <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE" desc="Instructions for the dialog where the user enters their Sync passphrase.">
     Your data was encrypted with your <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>sync passphrase<ph name="END_LINK">&lt;/a&gt;</ph> on <ph name="TIME">$2<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
     </message>

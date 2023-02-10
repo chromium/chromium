@@ -10998,9 +10998,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Verify it's you
         </message>
 
-        <message name="IDS_SYNC_SERVER_IS_UNREACHABLE" desc="The message to display in the New Tab Page and Settings Page sync section when the server is unreachable.">
-          Couldn't connect to the sync server. Retrying...
-        </message>
         <if expr="not chromeos_ash">
           <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign in again to use sync.">
             Sign in again to resume sync
