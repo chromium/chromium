@@ -34,7 +34,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
-import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
+import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../../mojom-webui/app_notification_handler.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';

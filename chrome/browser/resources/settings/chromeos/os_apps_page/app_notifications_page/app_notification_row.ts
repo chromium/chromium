@@ -12,7 +12,7 @@ import {TriState} from 'chrome://resources/cr_components/app_management/app_mana
 import {createBoolPermissionValue, createTriStatePermissionValue, isBoolValue, isPermissionEnabled, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {App, AppNotificationsHandlerInterface} from '../../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
+import {App, AppNotificationsHandlerInterface} from '../../../mojom-webui/app_notification_handler.mojom-webui.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 
 import {getTemplate} from './app_notification_row.html.js';
