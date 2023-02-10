@@ -76,8 +76,8 @@ or running `gn args out/Default`:
 
     # Set the following true to create a Chrome (instead of Chromium) build.
     # This requires a src-internal checkout.
-    is_chrome_branded = false  # Adds internal features and branded art assets.
-    is_official_build = false  # Turns on many optimizations, slower build.
+    is_chrome_branded = true   # Adds internal features and branded art assets.
+    is_official_build = true   # Turns on many optimizations, slower build.
 
 NOTE: You may wish to replace 'Default' with something like 'Cros' if
 you switch back and forth between Linux and Chromium OS builds, or 'Debug'
