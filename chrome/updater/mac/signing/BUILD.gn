@@ -38,17 +38,10 @@ process_version_rc_template("sign_config") {
     "KEYSTONE_APP_NAME=\"" + keystone_app_name + "\"",
   ]
 
-  if (is_chrome_branded) {
-    extra_args += [
-      "-e",
-      "IS_CHROME_BRANDED=True",
-    ]
-  } else {
-    extra_args += [
-      "-e",
-      "IS_CHROME_BRANDED=False",
-    ]
-  }
+  extra_args += [
+    "-e",
+    "$extra_args_is_chrome_branded",
+  ]
 }
 
 copy("copy_signing") {
