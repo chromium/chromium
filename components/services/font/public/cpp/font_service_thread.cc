@@ -19,7 +19,7 @@ namespace internal {
 
 FontServiceThread::FontServiceThread()
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::USER_VISIBLE, base::MayBlock()})) {}
+          {base::TaskPriority::USER_BLOCKING, base::MayBlock()})) {}
 
 FontServiceThread::~FontServiceThread() {
   // Ensure the remote is unbound on the appropriate sequence.
