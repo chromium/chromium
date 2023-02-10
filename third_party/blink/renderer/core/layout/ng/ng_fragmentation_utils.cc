@@ -400,6 +400,10 @@ void SetupFragmentBuilderForFragmentation(
   }
 
   if (space.IsPaginated()) {
+    // As long as the page name inside doesn't change, we can stay on the same
+    // page as the preceding content.
+    builder->SetPreviousPageName(space.PageName());
+
     if (const AtomicString page_name = node.PageName())
       builder->SetStartPageNameIfNeeded(page_name);
   }
