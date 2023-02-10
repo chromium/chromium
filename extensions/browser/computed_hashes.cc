@@ -104,7 +104,9 @@ absl::optional<ComputedHashes> ComputedHashes::CreateFromFile(
   }
 
   absl::optional<base::Value> top_dictionary = base::JSONReader::Read(contents);
-  if (!top_dictionary || !top_dictionary->is_dict()) {
+  base::Value::Dict* dictionary =
+      top_dictionary ? top_dictionary->GetIfDict() : nullptr;
+  if (!dictionary) {
     *status = Status::PARSE_FAILED;
     return absl::nullopt;
   }
@@ -112,35 +114,36 @@ absl::optional<ComputedHashes> ComputedHashes::CreateFromFile(
   // For now we don't support forwards or backwards compatibility in the
   // format, so we return nullopt on version mismatch.
   absl::optional<int> version =
-      top_dictionary->FindIntKey(computed_hashes::kVersionKey);
+      dictionary->FindInt(computed_hashes::kVersionKey);
   if (!version || *version != computed_hashes::kVersion) {
     *status = Status::PARSE_FAILED;
     return absl::nullopt;
   }
 
-  const base::Value* all_hashes =
-      top_dictionary->FindListKey(computed_hashes::kFileHashesKey);
+  const base::Value::List* all_hashes =
+      dictionary->FindList(computed_hashes::kFileHashesKey);
   if (!all_hashes) {
     *status = Status::PARSE_FAILED;
     return absl::nullopt;
   }
 
   ComputedHashes::Data data;
-  for (const base::Value& file_hash : all_hashes->GetList()) {
-    if (!file_hash.is_dict()) {
+  for (const base::Value& file_hash : *all_hashes) {
+    const base::Value::Dict* file_hash_dict = file_hash.GetIfDict();
+    if (!file_hash_dict) {
       *status = Status::PARSE_FAILED;
       return absl::nullopt;
     }
 
     const std::string* relative_path_utf8 =
-        file_hash.FindStringKey(computed_hashes::kPathKey);
+        file_hash_dict->FindString(computed_hashes::kPathKey);
     if (!relative_path_utf8) {
       *status = Status::PARSE_FAILED;
       return absl::nullopt;
     }
 
     absl::optional<int> block_size =
-        file_hash.FindIntKey(computed_hashes::kBlockSizeKey);
+        file_hash_dict->FindInt(computed_hashes::kBlockSizeKey);
     if (!block_size) {
       *status = Status::PARSE_FAILED;
       return absl::nullopt;
@@ -151,8 +154,8 @@ absl::optional<ComputedHashes> ComputedHashes::CreateFromFile(
       return absl::nullopt;
     }
 
-    const base::Value* block_hashes =
-        file_hash.FindListKey(computed_hashes::kBlockHashesKey);
+    const base::Value::List* block_hashes =
+        file_hash_dict->FindList(computed_hashes::kBlockHashesKey);
     if (!block_hashes) {
       *status = Status::PARSE_FAILED;
       return absl::nullopt;
@@ -162,7 +165,7 @@ absl::optional<ComputedHashes> ComputedHashes::CreateFromFile(
         base::FilePath::FromUTF8Unsafe(*relative_path_utf8);
     std::vector<std::string> hashes;
 
-    for (const base::Value& value : block_hashes->GetList()) {
+    for (const base::Value& value : *block_hashes) {
       if (!value.is_string()) {
         *status = Status::PARSE_FAILED;
         return absl::nullopt;

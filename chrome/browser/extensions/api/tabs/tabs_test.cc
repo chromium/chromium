@@ -297,10 +297,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
 
   EXPECT_EQ(window_ids.size(), windows.size());
   for (const base::Value& result_window : windows) {
-    result_ids.insert(GetWindowId(utils::ToDictionary(result_window)));
+    base::Value::Dict result_window_dict = utils::ToDictionary(result_window);
+    result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was not passed in so tabs are not populated.
-    const base::Value* tabs = result_window.FindListKey(keys::kTabsKey);
+    const base::Value::List* tabs = result_window_dict.FindList(keys::kTabsKey);
     EXPECT_FALSE(tabs);
   }
   // The returned ids should contain all the current browser instance ids.
@@ -314,10 +315,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
 
   EXPECT_EQ(window_ids.size(), windows.size());
   for (const base::Value& result_window : windows) {
-    result_ids.insert(GetWindowId(utils::ToDictionary(result_window)));
+    base::Value::Dict result_window_dict = utils::ToDictionary(result_window);
+    result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was enabled so tabs should be populated.
-    const base::Value* tabs = result_window.FindListKey(keys::kTabsKey);
+    const base::Value::List* tabs = result_window_dict.FindList(keys::kTabsKey);
     EXPECT_TRUE(tabs);
   }
   // The returned ids should contain all the current app, browser and
@@ -363,10 +365,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
 
   EXPECT_EQ(window_ids.size(), windows.size());
   for (const base::Value& result_window : windows) {
-    result_ids.insert(GetWindowId(utils::ToDictionary(result_window)));
+    base::Value::Dict result_window_dict = utils::ToDictionary(result_window);
+    result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was not passed in so tabs are not populated.
-    const base::Value* tabs = result_window.FindListKey(keys::kTabsKey);
+    const base::Value::List* tabs = result_window_dict.FindList(keys::kTabsKey);
     EXPECT_FALSE(tabs);
   }
   // The returned ids should contain all the browser and devtools instance ids.
@@ -383,10 +386,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
 
   EXPECT_EQ(window_ids.size(), windows.size());
   for (const base::Value& result_window : windows) {
-    result_ids.insert(GetWindowId(utils::ToDictionary(result_window)));
+    base::Value::Dict result_window_dict = utils::ToDictionary(result_window);
+    result_ids.insert(GetWindowId(result_window_dict));
 
     // "populate" was enabled so tabs should be populated.
-    const base::Value* tabs = result_window.FindListKey(keys::kTabsKey);
+    const base::Value::List* tabs = result_window_dict.FindList(keys::kTabsKey);
     EXPECT_TRUE(tabs);
   }
   // The returned ids should contain all the browser and devtools instance ids.
