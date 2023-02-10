@@ -107,17 +107,26 @@ struct MemberHashRecordReplayRegisteredPointerId
   // Member. Prefer compressing raw pointers instead of decompressing Members,
   // assuming the former is cheaper.
   static unsigned GetHash(const T* key) {
-    int ptr = recordreplay::PointerId(key);
-    CHECK(ptr != 0);
-    return Base::GetHash(ptr);
+    if (IsRecordingOrReplaying("pointer-ids")) {
+      int ptr = recordreplay::PointerId(key);
+      CHECK(ptr != 0);
+      return Base::GetHash(ptr);
+    } else {
+      cppgc::internal::MemberBase::RawStorage st(key);
+      return Base::GetHash(st.GetAsInteger());
+    }
   }
 
   template <typename Member,
             std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
   static unsigned GetHash(const Member& m) {
-    int ptr = recordreplay::PointerId(m.Get());
-    CHECK(ptr != 0);
-    return Base::GetHash(ptr);
+    if (IsRecordingOrReplaying("pointer-ids")) {
+      int ptr = recordreplay::PointerId(m.Get());
+      CHECK(ptr != 0);
+      return Base::GetHash(ptr);
+    } else {
+      return Base::GetHash(m.GetRawStorage().GetAsInteger());
+    }
   }
 
   template <typename U, typename V>
@@ -141,13 +150,22 @@ struct MemberHashRecordReplayId
   // Member. Prefer compressing raw pointers instead of decompressing Members,
   // assuming the former is cheaper.
   static unsigned GetHash(const T* key) {
-    return Base::GetHash(key->RecordReplayId());
+    if (IsRecordingOrReplaying()) {
+      return Base::GetHash(key->RecordReplayId());
+    } else {
+      cppgc::internal::MemberBase::RawStorage st(key);
+      return Base::GetHash(st.GetAsInteger());
+    }
   }
 
   template <typename Member,
             std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
   static unsigned GetHash(const Member& m) {
-    return Base::GetHash(m.Get()->RecordReplayId());
+    if (IsRecordingOrReplaying()) {
+      return Base::GetHash(m.Get()->RecordReplayId());
+    } else {
+      return Base::GetHash(m.GetRawStorage().GetAsInteger());
+    }
   }
 
   template <typename U, typename V>
