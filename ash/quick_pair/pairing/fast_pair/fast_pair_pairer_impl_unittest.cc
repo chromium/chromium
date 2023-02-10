@@ -276,6 +276,12 @@ class FastPairPairerImplTest : public AshTestBase {
                                                    base::DoNothing());
   }
 
+  void SetHandshakeBleCallback() {
+    fake_fast_pair_handshake_->BleAddressRotated(
+        base::BindOnce(&FastPairPairerImplTest::on_ble_rotation_test_callback,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   std::unique_ptr<FastPairHandshake> CreateConnectedHandshake(
       scoped_refptr<Device> device,
       FastPairHandshake::OnCompleteCallback callback) {
@@ -441,7 +447,12 @@ class FastPairPairerImplTest : public AshTestBase {
     RunWriteAccountKeyCallback();
   }
 
+  void on_ble_rotation_test_callback() {
+    on_ble_rotation_callback_called_ = true;
+  }
+
   bool set_handshake_completed_successfully_ = false;
+  bool on_ble_rotation_callback_called_ = false;
   absl::optional<PairFailure> failure_ = absl::nullopt;
   std::unique_ptr<FakeBluetoothDevice> fake_bluetooth_device_;
   FakeBluetoothDevice* fake_bluetooth_device_ptr_ = nullptr;
@@ -2530,6 +2541,23 @@ TEST_F(FastPairPairerImplTest, RetroactiveNotLoggedToInitial) {
                 kInitialSuccessFunnelMetric,
                 FastPairInitialSuccessFunnelEvent::kAccountKeyWritten),
             0);
+}
+
+TEST_F(FastPairPairerImplTest, BleAddressRotatedCallsCallback) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
+                   /*protocol=*/Protocol::kFastPairRetroactive);
+
+  // When pairing starts, if the classic address can't be resolved to
+  // a device then we pair via address. 'SetGetDeviceNullptr' tells the adapter
+  // to return null when queried for the device to mock this behavior.
+  SetGetDeviceNullptr();
+  AddConnectedHandshake();
+  fake_fast_pair_handshake_->InvokeCallback();
+  SetHandshakeBleCallback();
+  CreatePairer();
+  EXPECT_TRUE(on_ble_rotation_callback_called_);
+  EXPECT_FALSE(IsAccountKeySavedToFootprints());
 }
 
 // Because we have an overall bonding timer, we still test what happens when

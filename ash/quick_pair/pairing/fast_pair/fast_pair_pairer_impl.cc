@@ -528,6 +528,15 @@ void FastPairPairerImpl::OnIsDeviceSavedToAccount(
     return;
   }
 
+  // If the BLE address has rotated writing the account key is guaranteed to
+  // fail. Instead of proceeding, call the callback and return.
+  if (fast_pair_handshake_->DidBleAddressRotate()) {
+    // TODO (b/268055837): add metric for when we get in this scenario.
+    QP_LOG(VERBOSE) << __func__ << ": BLE Address rotated, running callback";
+    fast_pair_handshake_->RunBleAddressRotationCallback();
+    return;
+  }
+
   // If we can't load the user's saved devices for some reason (e.g. offline)
   // |is_device_saved_to_account| will return false even though we didn't
   // properly check Footprints. This will cause us to write a new account key to

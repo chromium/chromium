@@ -403,7 +403,7 @@ void Mediator::OnCompanionAppAction(scoped_refptr<Device> device,
 
 void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
                                         AssociateAccountAction action) {
-  QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
+  QP_LOG(VERBOSE) << __func__ << ": Device=" << device << ", Action=" << action;
 
   switch (action) {
     case AssociateAccountAction::kAssoicateAccount:
