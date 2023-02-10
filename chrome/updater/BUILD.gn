@@ -479,6 +479,10 @@ if (is_win || is_mac || is_linux) {
       "MAC_TEAM_IDENTIFIER=\"$mac_team_identifier\"",
       "-e",
       "UPDATE_CHECK_URL=\"$update_check_url\"",
+      "-e",
+      "LEGACY_GOOGLE_UPDATE_APPID=\"$legacy_google_update_appid\"",
+      "-e",
+      "PREFS_ACCESS_MUTEX=\"$prefs_access_mutex\"",
     ]
 
     template_file = "updater_branding.h.in"

@@ -213,9 +213,7 @@ void CheckInstallation(UpdaterScope scope,
       std::wstring pv;
       EXPECT_EQ(ERROR_SUCCESS,
                 base::win::RegKey(
-                    root,
-                    GetAppClientsKey(L"{430FD4D0-B729-4F61-AA34-91526481799D}")
-                        .c_str(),
+                    root, GetAppClientsKey(kLegacyGoogleUpdateAppID).c_str(),
                     Wow6432(KEY_READ))
                     .ReadValue(kRegValuePV, &pv));
       EXPECT_STREQ(kUpdaterVersionUtf16, pv.c_str());

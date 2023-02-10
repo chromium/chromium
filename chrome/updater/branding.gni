@@ -24,6 +24,8 @@ if (is_chrome_branded) {
       "Copyright 2020 The Chromium Authors. All rights reserved."
   updater_product_full_name = "GoogleUpdater"
   mac_team_identifier = "EQHXZ8M8AV"
+  legacy_google_update_appid = "{430FD4D0-B729-4F61-AA34-91526481799D}"
+  prefs_access_mutex = "{D8E4A6FE-EA7A-4D20-A8C8-B4628776A101}"
 } else {
   browser_name = "Chromium"
   browser_product_name = "Chromium"
@@ -44,6 +46,8 @@ if (is_chrome_branded) {
       "Copyright 2020 The Chromium Authors. All rights reserved."
   updater_product_full_name = "ChromiumUpdater"
   mac_team_identifier = "PLACEHOLDER"
+  legacy_google_update_appid = "{8B2B92A3-1BA2-4154-A89C-DA74C9C505E4}"
+  prefs_access_mutex = "{A6B9ECD5-772A-4D3F-BFEB-CF9340534A3E}"
 }
 
 # Chrome and Chromium share the same endpoints for now.
