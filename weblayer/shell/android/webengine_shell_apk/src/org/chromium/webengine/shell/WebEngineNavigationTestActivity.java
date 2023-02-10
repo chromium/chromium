@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -57,7 +58,7 @@ public class WebEngineNavigationTestActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Throwable thrown) {}
-        }, mContext.getMainExecutor());
+        }, ContextCompat.getMainExecutor(mContext));
 
         Button openActivityButton = (Button) findViewById(R.id.open_activity);
         openActivityButton.setOnClickListener(
@@ -104,7 +105,7 @@ public class WebEngineNavigationTestActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Throwable thrown) {}
-        }, mContext.getMainExecutor());
+        }, ContextCompat.getMainExecutor(mContext));
     }
 
     private void onWebEngineReady(WebEngine webEngine) {

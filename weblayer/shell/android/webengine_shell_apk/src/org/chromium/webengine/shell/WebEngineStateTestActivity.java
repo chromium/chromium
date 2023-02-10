@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -140,7 +141,7 @@ public class WebEngineStateTestActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Throwable thrown) {}
-        }, mContext.getMainExecutor());
+        }, ContextCompat.getMainExecutor(mContext));
     }
 
     private void onWebSandboxReady(WebSandbox webSandbox) {
@@ -177,7 +178,7 @@ public class WebEngineStateTestActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Throwable thrown) {}
-        }, mContext.getMainExecutor());
+        }, ContextCompat.getMainExecutor(mContext));
     }
 
     private void onWebEngineReady(WebEngine webEngine) {
@@ -262,7 +263,7 @@ public class WebEngineStateTestActivity extends AppCompatActivity {
             public void onFailure(Throwable thrown) {
                 Log.i(TAG, "Opening Tab failed");
             }
-        }, mContext.getMainExecutor());
+        }, ContextCompat.getMainExecutor(mContext));
     }
 
     private boolean closeTab() {

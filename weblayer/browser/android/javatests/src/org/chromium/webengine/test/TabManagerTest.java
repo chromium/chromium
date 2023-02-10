@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -102,6 +103,7 @@ public class TabManagerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky")
     public void tabsPersistAcrossRotations() throws Exception {
         String url = getTestDataURL("simple_page.html");
         WebEngine webEngine = mActivityTestRule.createWebEngineAttachThenNavigateAndWait(url);

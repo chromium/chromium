@@ -18,6 +18,7 @@ import android.os.RemoteException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
+import androidx.core.content.ContextCompat;
 
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
@@ -228,7 +229,7 @@ public class WebSandbox {
         };
 
         return Futures.transformAsync(sandboxConnectionFuture, initializeBrowserProcessTask,
-                applicationContext.getMainExecutor());
+                ContextCompat.getMainExecutor(applicationContext));
     }
 
     @NonNull
@@ -247,8 +248,8 @@ public class WebSandbox {
             });
         };
 
-        return Futures.transformAsync(
-                sandboxConnectionFuture, isAvailableTask, applicationContext.getMainExecutor());
+        return Futures.transformAsync(sandboxConnectionFuture, isAvailableTask,
+                ContextCompat.getMainExecutor(applicationContext));
     }
 
     @NonNull
@@ -267,8 +268,8 @@ public class WebSandbox {
             });
         };
 
-        return Futures.transformAsync(
-                sandboxConnectionFuture, getVersionTask, applicationContext.getMainExecutor());
+        return Futures.transformAsync(sandboxConnectionFuture, getVersionTask,
+                ContextCompat.getMainExecutor(applicationContext));
     }
 
     @NonNull
@@ -288,7 +289,7 @@ public class WebSandbox {
         };
 
         return Futures.transformAsync(sandboxConnectionFuture, getProviderPackageNameTask,
-                applicationContext.getMainExecutor());
+                ContextCompat.getMainExecutor(applicationContext));
     }
 
     private class WebEngineDelegateClient extends IWebEngineDelegateClient.Stub {

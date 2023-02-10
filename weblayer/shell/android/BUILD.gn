@@ -157,6 +157,7 @@ android_library("webengine_shell_java") {
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//weblayer/public/java:service_provider_java",
     "//weblayer/public/java:webengine_java",

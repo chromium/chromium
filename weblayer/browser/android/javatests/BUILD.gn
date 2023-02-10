@@ -89,7 +89,9 @@ template("webengine_instrumentation") {
       "//content/test/data/android/authenticator.html",
       "//weblayer/test/data/",
     ]
-    proguard_enabled = !is_java_debug
+
+    # The instrumentation test should not be obfuscated otherwise the shell cannot be loaded.
+    proguard_enabled = false
   }
 }
 

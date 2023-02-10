@@ -23,6 +23,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -78,7 +79,7 @@ public class WebEngineShellActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Throwable thrown) {}
-        }, mContext.getMainExecutor());
+        }, ContextCompat.getMainExecutor(mContext));
 
         ListenableFuture<WebSandbox> webSandboxFuture = WebSandbox.create(mContext);
         Futures.addCallback(webSandboxFuture, new FutureCallback<WebSandbox>() {
@@ -89,7 +90,7 @@ public class WebEngineShellActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Throwable thrown) {}
-        }, mContext.getMainExecutor());
+        }, ContextCompat.getMainExecutor(mContext));
     }
 
     @Override
@@ -123,7 +124,7 @@ public class WebEngineShellActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Throwable thrown) {}
-        }, mContext.getMainExecutor());
+        }, ContextCompat.getMainExecutor(mContext));
     }
 
     private void onWebEngineReady(WebEngine webEngine) {
@@ -153,7 +154,7 @@ public class WebEngineShellActivity extends AppCompatActivity {
                             public void onFailure(Throwable thrown) {
                                 Log.w(TAG, "executeScript failed: " + thrown);
                             }
-                        }, mContext.getMainExecutor());
+                        }, ContextCompat.getMainExecutor(mContext));
                     }
                 });
 
@@ -196,14 +197,14 @@ public class WebEngineShellActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Throwable thrown) {}
-                }, mContext.getMainExecutor());
+                }, ContextCompat.getMainExecutor(mContext));
             }
 
             @Override
             public void onFailure(Throwable thrown) {
                 Log.w(TAG, "setCookie failed: " + thrown);
             }
-        }, mContext.getMainExecutor());
+        }, ContextCompat.getMainExecutor(mContext));
 
         urlBar.setOnEditorActionListener(new OnEditorActionListener() {
             @Override
@@ -257,7 +258,7 @@ public class WebEngineShellActivity extends AppCompatActivity {
                 }
                 WebEngineShellActivity.super.onBackPressed();
             }
-        }, mContext.getMainExecutor());
+        }, ContextCompat.getMainExecutor(mContext));
     }
 
     // TODO(swestphal): Move this to a helper class.

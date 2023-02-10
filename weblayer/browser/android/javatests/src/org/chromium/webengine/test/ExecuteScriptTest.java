@@ -8,6 +8,7 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 
 import android.util.Pair;
 
+import androidx.core.content.ContextCompat;
 import androidx.test.filters.SmallTest;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -95,7 +96,7 @@ public class ExecuteScriptTest {
                 }
                 executeLatch.countDown();
             }
-        }, mActivityTestRule.getContext().getMainExecutor());
+        }, ContextCompat.getMainExecutor(mActivityTestRule.getContext()));
 
         executeLatch.await();
     }

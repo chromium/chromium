@@ -2048,6 +2048,14 @@
     "script": "//android_webview/tools/run_cts.py",
     "type": "script",
   },
+  "webengine_support_instrumentation_test_apk": {
+    "label": "//weblayer/browser/android/javatests:webengine_support_instrumentation_test_apk",
+    "type": "console_test_launcher",
+  },
+  "weblayer_junit_tests": {
+    "label": "//weblayer/browser/java:weblayer_junit_tests",
+    "type": "junit_test",
+  },
   "webview_instrumentation_test_apk": {
     "label": "//android_webview/test:webview_instrumentation_test_apk",
     "type": "console_test_launcher",
