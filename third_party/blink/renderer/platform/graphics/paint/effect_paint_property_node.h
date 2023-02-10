@@ -294,7 +294,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   // a drop-shadow filter will draw a drop shadow even if the filtered content
   // is entirely empty.
   bool DrawsContent() const {
-    return MayHaveFilter() || MayHaveBackdropEffect();
+    return MayHaveFilter() || MayHaveBackdropEffect() ||
+           ViewTransitionElementId().valid();
   }
 
   CompositingReasons DirectCompositingReasonsForDebugging() const {
