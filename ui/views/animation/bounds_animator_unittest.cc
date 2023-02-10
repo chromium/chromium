@@ -199,9 +199,7 @@ class BoundsAnimatorTest : public testing::Test {
 
  private:
   TestView parent_;
-  // TODO(crbug.com/1298696): views_unittests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<TestView, DegradeToNoOpWhenMTE> child_;  // Owned by |parent_|.
+  raw_ptr<TestView> child_;  // Owned by |parent_|.
   std::unique_ptr<BoundsAnimator> animator_;
 };
 

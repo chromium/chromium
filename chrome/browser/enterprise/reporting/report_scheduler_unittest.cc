@@ -332,9 +332,7 @@ class ReportSchedulerTest : public ::testing::Test {
   std::unique_ptr<ReportScheduler> scheduler_;
   raw_ptr<policy::MockCloudPolicyClient> client_;
   raw_ptr<MockReportGenerator> generator_;
-  // TODO(crbug.com/1298696): unit_tests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<MockReportUploader, DegradeToNoOpWhenMTE> uploader_;
+  raw_ptr<MockReportUploader> uploader_;
   raw_ptr<MockRealTimeReportGenerator> real_time_generator_;
   raw_ptr<MockRealTimeUploader> extension_request_uploader_;
   raw_ptr<MockChromeProfileRequestGenerator> profile_request_generator_;

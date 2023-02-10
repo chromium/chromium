@@ -77,9 +77,7 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
   void CallUpdateCallbacks(const std::string& extension_id,
                            const UpdateCheckResult& result);
 
-  // TODO(crbug.com/1298696): unit_tests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<content::BrowserContext, DegradeToNoOpWhenMTE> browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   content::NotificationRegistrar registrar_;
 

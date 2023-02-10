@@ -57,7 +57,7 @@ class MultipartDataPipeGetter : public network::mojom::DataPipeGetter {
     void CloseHandles();
 
     base::File file_;
-    raw_ptr<uint8_t, DegradeToNoOpWhenMTE> data_ = nullptr;
+    raw_ptr<uint8_t> data_ = nullptr;
     size_t length_ = 0;
   };
 #else

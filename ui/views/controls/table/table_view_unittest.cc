@@ -140,9 +140,7 @@ class TableViewTestHelper {
   }
 
  private:
-  // TODO(crbug.com/1298696): views_unittests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<TableView, DegradeToNoOpWhenMTE> table_;
+  raw_ptr<TableView> table_;
 };
 
 namespace {
@@ -591,10 +589,7 @@ class TableViewTest : public ViewsTestBase,
   std::unique_ptr<TestTableModel2> model_;
 
   // Owned by |parent_|.
-  //
-  // TODO(crbug.com/1298696): views_unittests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<TableView, DegradeToNoOpWhenMTE> table_ = nullptr;
+  raw_ptr<TableView> table_ = nullptr;
 
   std::unique_ptr<TableViewTestHelper> helper_;
 

@@ -271,9 +271,8 @@ class BoostingVoteAggregator : public VoteObserver {
     const ExecutionContext* dst() const { return dst_; }
 
    private:
-    // TODO(crbug.com/1298696): Breaks component_unittests.
-    raw_ptr<const ExecutionContext, DegradeToNoOpWhenMTE> src_ = nullptr;
-    raw_ptr<const ExecutionContext, DegradeToNoOpWhenMTE> dst_ = nullptr;
+    raw_ptr<const ExecutionContext> src_ = nullptr;
+    raw_ptr<const ExecutionContext> dst_ = nullptr;
   };
   using ForwardEdge = Edge<true>;
   using ReverseEdge = Edge<false>;

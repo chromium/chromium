@@ -141,9 +141,7 @@ class LenientMockObserver : public ProcessNodeImpl::Observer {
   }
 
  private:
-  // TODO(crbug.com/1298696): Breaks components_unittests.
-  raw_ptr<const ProcessNode, DegradeToNoOpWhenMTE> notified_process_node_ =
-      nullptr;
+  raw_ptr<const ProcessNode> notified_process_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

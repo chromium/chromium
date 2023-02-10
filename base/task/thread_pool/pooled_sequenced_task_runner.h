@@ -52,9 +52,7 @@ class BASE_EXPORT PooledSequencedTaskRunner
  private:
   ~PooledSequencedTaskRunner() override;
 
-  // TODO(crbug.com/1298696): Breaks base_unittests.
-  const raw_ptr<PooledTaskRunnerDelegate, DegradeToNoOpWhenMTE>
-      pooled_task_runner_delegate_;
+  const raw_ptr<PooledTaskRunnerDelegate> pooled_task_runner_delegate_;
 
   // Sequence for all Tasks posted through this TaskRunner.
   const scoped_refptr<Sequence> sequence_;

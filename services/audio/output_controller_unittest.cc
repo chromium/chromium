@@ -312,11 +312,8 @@ class AudioManagerForControllerTest final : public media::FakeAudioManager {
   }
 
   media::FakeAudioLogFactory fake_audio_log_factory_;
-  // TODO(crbug.com/1298696): Breaks services_unittests.
-  raw_ptr<MockAudioOutputStream, DegradeToNoOpWhenMTE> last_created_stream_ =
-      nullptr;
-  raw_ptr<MockAudioOutputStream, DegradeToNoOpWhenMTE> last_closed_stream_ =
-      nullptr;
+  raw_ptr<MockAudioOutputStream> last_created_stream_ = nullptr;
+  raw_ptr<MockAudioOutputStream> last_closed_stream_ = nullptr;
 };
 
 ACTION(PopulateBuffer) {

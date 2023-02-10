@@ -338,12 +338,8 @@ struct FakesForTesting {
   ~FakesForTesting();
 
   ScopedLsaPolicy::CreatorCallback scoped_lsa_policy_creator;
-  // TODO(crbug.com/1298696): gcp_unittests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<OSUserManager, DegradeToNoOpWhenMTE> os_user_manager_for_testing =
-      nullptr;
-  raw_ptr<OSProcessManager, DegradeToNoOpWhenMTE>
-      os_process_manager_for_testing = nullptr;
+  raw_ptr<OSUserManager> os_user_manager_for_testing = nullptr;
+  raw_ptr<OSProcessManager> os_process_manager_for_testing = nullptr;
   WinHttpUrlFetcher::CreatorCallback fake_win_http_url_fetcher_creator;
 };
 

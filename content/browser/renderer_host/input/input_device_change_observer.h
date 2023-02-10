@@ -31,8 +31,7 @@ class InputDeviceChangeObserver : public ui::InputDeviceEventObserver {
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
 
  private:
-  // TODO(crbug.com/1298696): Breaks extensions_unittests.
-  raw_ptr<RenderViewHostImpl, DegradeToNoOpWhenMTE> render_view_host_impl_;
+  raw_ptr<RenderViewHostImpl> render_view_host_impl_;
 };
 
 }  // namespace content

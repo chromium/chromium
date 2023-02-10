@@ -37,9 +37,7 @@ class BASE_EXPORT PooledParallelTaskRunner : public TaskRunner {
   ~PooledParallelTaskRunner() override;
 
   const TaskTraits traits_;
-  // TODO(crbug.com/1298696): Breaks storage_unittests.
-  const raw_ptr<PooledTaskRunnerDelegate, DegradeToNoOpWhenMTE>
-      pooled_task_runner_delegate_;
+  const raw_ptr<PooledTaskRunnerDelegate> pooled_task_runner_delegate_;
 };
 
 }  // namespace internal

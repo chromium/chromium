@@ -59,8 +59,7 @@ class VIEWS_EXPORT AnimationDelegateViews
   void ClearAnimationRunner();
 
   raw_ptr<View> view_;
-  // TODO(crbug.com/1298696): Breaks views_unittests.
-  raw_ptr<gfx::AnimationContainer, DegradeToNoOpWhenMTE> container_ = nullptr;
+  raw_ptr<gfx::AnimationContainer> container_ = nullptr;
 
   // The animation runner that |container_| uses.
   raw_ptr<CompositorAnimationRunner> compositor_animation_runner_ = nullptr;

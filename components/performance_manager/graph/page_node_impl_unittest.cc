@@ -257,8 +257,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   }
 
  private:
-  // TODO(crbug.com/1298696): Breaks components_unittests.
-  raw_ptr<const PageNode, DegradeToNoOpWhenMTE> notified_page_node_ = nullptr;
+  raw_ptr<const PageNode> notified_page_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

@@ -47,11 +47,7 @@ class TestUnwindFunctions : public Win32StackFrameUnwinder::UnwindFunctions {
   DWORD64 expected_program_counter_;
   DWORD64 next_image_base_;
   DWORD64 expected_image_base_;
-  // TODO(crbug.com/1298696): base_unittests breaks with MTECheckedPtr
-  // enabled. Triage.
-  //
-  // This is probably because of kInvalidRuntimeFunction == (uintptr_t) -1.
-  raw_ptr<RUNTIME_FUNCTION, DegradeToNoOpWhenMTE> next_runtime_function_;
+  raw_ptr<RUNTIME_FUNCTION> next_runtime_function_;
   std::vector<RUNTIME_FUNCTION> runtime_functions_;
 };
 
