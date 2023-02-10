@@ -80,8 +80,6 @@ if (include_js_tests) {
 
     deps = [ "//chrome/browser/ui" ]
 
-    data = [ "mojo_webui_test_support.js" ]
-
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
 
@@ -292,7 +290,6 @@ if (include_js_tests) {
       sources += [ "access_code_cast/access_code_cast_browsertest.js" ]
     }
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    data = [ "mojo_webui_test_support.js" ]
   }
 
   js2gtest("unit_tests_js") {

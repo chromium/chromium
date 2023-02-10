@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../mojo_webui_test_support.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {ParentAccessController} from 'chrome://parent-access/parent_access_controller.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';

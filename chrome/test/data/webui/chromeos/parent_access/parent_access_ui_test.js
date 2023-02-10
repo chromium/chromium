@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 
-import '../../mojo_webui_test_support.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://parent-access/parent_access_ui.js';
 import 'chrome://parent-access/strings.m.js';
 
 import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestParentAccessUIHandler} from './test_parent_access_ui_handler.js';
