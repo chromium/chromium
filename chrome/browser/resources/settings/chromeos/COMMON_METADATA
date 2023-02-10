@@ -1,3 +1,11 @@
-monorail: {
-  component: "OS>Systems>Settings"
+team_email: "cros-settings@google.com"
+
+buganizer {
+  # ChromeOS > Software > Settings
+  component_id: 1246072
+}
+
+buganizer_public {
+  # ChromeOS Public Tracker > UI > Settings
+  component_id: 1246152
 }
