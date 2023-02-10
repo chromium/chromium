@@ -45,6 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
       bool mute_on,
       CrasAudioHandler::InputMuteChangeMethod method) override;
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
+  void OnNoiseCancellationStateChanged() override;
 };
 
 }  // namespace ash::audio_config

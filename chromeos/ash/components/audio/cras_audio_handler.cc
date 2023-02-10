@@ -105,6 +105,8 @@ void CrasAudioHandler::AudioObserver::OnActiveInputNodeChanged() {}
 void CrasAudioHandler::AudioObserver::OnOutputChannelRemixingChanged(
     bool /* mono_on */) {}
 
+void CrasAudioHandler::AudioObserver::OnNoiseCancellationStateChanged() {}
+
 void CrasAudioHandler::AudioObserver::OnHotwordTriggered(
     uint64_t /* tv_sec */,
     uint64_t /* tv_nsec */) {}
@@ -538,6 +540,10 @@ void CrasAudioHandler::RefreshNoiseCancellationState() {
 void CrasAudioHandler::SetNoiseCancellationState(bool noise_cancellation_on) {
   CrasAudioClient::Get()->SetNoiseCancellationEnabled(noise_cancellation_on);
   audio_pref_handler_->SetNoiseCancellationState(noise_cancellation_on);
+
+  for (auto& observer : observers_) {
+    observer.OnNoiseCancellationStateChanged();
+  }
 }
 
 void CrasAudioHandler::RequestNoiseCancellationSupported(

@@ -208,6 +208,10 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     return output_channel_remixing_changed_count_;
   }
 
+  int noise_cancellation_state_change_count() const {
+    return noise_cancellation_state_change_count_;
+  }
+
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
 
@@ -248,6 +252,10 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     ++output_channel_remixing_changed_count_;
   }
 
+  void OnNoiseCancellationStateChanged() override {
+    ++noise_cancellation_state_change_count_;
+  }
+
  private:
   int active_output_node_changed_count_ = 0;
   int active_input_node_changed_count_ = 0;
@@ -257,6 +265,7 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
   int output_volume_changed_count_ = 0;
   int input_gain_changed_count_ = 0;
   int output_channel_remixing_changed_count_ = 0;
+  int noise_cancellation_state_change_count_ = 0;
 };
 
 class SystemMonitorObserver
@@ -4878,4 +4887,23 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_TRUE(fake_cras_audio_client()->noise_cancellation_enabled());
 }
 
+TEST_P(CrasAudioHandlerTest, SetNoiseCancellationStateObserver) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  AudioNode internalMic = GenerateAudioNode(kInternalMic);
+  // Set the audio effect, Noise Cancellation supported.
+  internalMic.audio_effect = cras::EFFECT_TYPE_NOISE_CANCELLATION;
+  audio_nodes.push_back(internalMic);
+
+  // Enable noise cancellation for board.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+      audio_nodes, /*primary_active_node=*/audio_nodes[0],
+      /*noise_cancellation_enabled=*/true);
+
+  EXPECT_EQ(0, test_observer_->noise_cancellation_state_change_count());
+
+  // Change noise cancellation state to trigger observer.
+  cras_audio_handler_->SetNoiseCancellationState(false);
+
+  EXPECT_EQ(1, test_observer_->noise_cancellation_state_change_count());
+}
 }  // namespace ash

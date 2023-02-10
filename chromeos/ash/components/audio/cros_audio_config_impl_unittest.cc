@@ -284,6 +284,11 @@ class CrosAudioConfigImplTest : public testing::Test {
     cras_audio_handler_->SetNoiseCancellationSupportedForTesting(supported);
   }
 
+  void SetNoiseCancellationState(bool noise_cancellation_on) {
+    cras_audio_handler_->SetNoiseCancellationState(noise_cancellation_on);
+    base::RunLoop().RunUntilIdle();
+  }
+
  private:
   AudioNode GenerateAudioNode(const AudioNodeInfo* node_info) {
     return AudioNode(node_info->is_input, node_info->id, false, node_info->id,
@@ -546,11 +551,20 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
   ASSERT_EQ(mojom::AudioEffectState::kEnabled,
             fake_observer->GetInputAudioDevice(1)->noise_cancellation_state);
 
-  // Turn noise cancellation off.
+  // Call to set noise cancellation from frontend ignored when active input node
+  // does not support noise cancellation.
+  SimulateSetNoiseCancellationEnabled(/*enabled=*/false);
+
+  ASSERT_TRUE(GetNoiseCancellationState());
+  ASSERT_TRUE(GetNoiseCancellationStatePref());
+
+  SetActiveInputNodes({kInternalMicId});
   SimulateSetNoiseCancellationEnabled(/*enabled=*/false);
 
   ASSERT_FALSE(GetNoiseCancellationState());
   ASSERT_FALSE(GetNoiseCancellationStatePref());
+  ASSERT_EQ(mojom::AudioEffectState::kNotEnabled,
+            fake_observer->GetInputAudioDevice(1)->noise_cancellation_state);
 }
 
 TEST_F(CrosAudioConfigImplTest, GetOutputAudioDevices) {
@@ -936,6 +950,26 @@ TEST_F(CrosAudioConfigImplTest, NoiseCancellationAudioStateConfigured) {
   EXPECT_EQ(mojom::AudioEffectState::kNotSupported,
             fake_observer->GetInputAudioDevice(/*index=*/1)
                 ->noise_cancellation_state);
+}
+
+TEST_F(CrosAudioConfigImplTest,
+       ExternalUpdatesToNoiseCancellationStateObserved) {
+  SetAudioNodes({kInternalMic, kUsbMic});
+  SetActiveInputNodes({kInternalMicId});
+
+  std::unique_ptr<FakeAudioSystemPropertiesObserver> fake_observer = Observe();
+  size_t expected_call_count = 1;
+  EXPECT_EQ(expected_call_count, fake_observer->num_properties_updated_calls_);
+
+  SetNoiseCancellationState(/*noise_cancellation_on=*/true);
+  expected_call_count++;
+
+  EXPECT_EQ(expected_call_count, fake_observer->num_properties_updated_calls_);
+  expected_call_count++;
+
+  SetNoiseCancellationState(/*noise_cancellation_on=*/false);
+
+  EXPECT_EQ(expected_call_count, fake_observer->num_properties_updated_calls_);
 }
 
 }  // namespace ash::audio_config
