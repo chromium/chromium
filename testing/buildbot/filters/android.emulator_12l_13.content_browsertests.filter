@@ -1,0 +1,16 @@
+# crbug.com/1120813
+-CompositorImplBrowserTestRefreshRate.VideoPreference
+
+# crbug.com/1296333
+-WebRtcBrowserTest.CallAndVerifyVideoMutingWorks
+-WebRtcBrowserTest.CallInsideIframe
+-WebRtcBrowserTest.CanSetupAudioAndVideoCall
+-WebRtcBrowserTest.CanSetupDefaultVideoCall
+-WebRtcBrowserTest.CanSetupDefaultVideoCallWithOldGetUserMedia
+-WebRtcBrowserTest.CanSetupVideoCallAndDisableLocalVideo
+-WebRtcBrowserTest.CanSetupVideoCallWith16To9AspectRatio
+-WebRtcBrowserTest.CanSetupVideoCallWith1To1AspectRatio
+-WebRtcBrowserTest.CanSetupVideoCallWith4To3AspectRatio
+-WebRtcBrowserTest.GetSettingsReportsValuesForRemoteTracks
+-WebRtcBrowserTest.NoCrashWhenConnectChromiumSinkToRemoteTrack
+-WebRtcDataBrowserTest.CallWithSctpDataAndMedia

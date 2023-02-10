@@ -30,9 +30,6 @@
           # https://crbug.com/1289764
           '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
         ],
-        'swarming': {
-          'shards': 2,
-        },
       },
       'android-12-x64-rel': {
         # TODO(crbug.com/1225851): Remove experiment and ci_only
@@ -43,9 +40,18 @@
           # https://crbug.com/1289764
           '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
         ],
-        'swarming': {
-          'shards': 2,
-        },
+      },
+      'android-12l-x64-dbg-tests': {
+        'args': [
+          # https://crbug.com/1289764
+          '--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*',
+        ],
+      },
+      'android-13-x64-rel': {
+        'args': [
+          # https://crbug.com/1414886
+          '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
+        ],
       },
       'android-nougat-x86-rel': {
         'swarming': {
@@ -73,7 +79,6 @@
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
         ],
         'swarming': {
-          'shards': 2,
           'dimension_sets': [
             {
               'cores': '8', # crbug.com/1292221
@@ -1771,6 +1776,22 @@
         'experiment_percentage': 100,
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter',
+        ],
+        'swarming': {
+          'shards': 25,
+        },
+      },
+      'android-12l-x64-dbg-tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
+        ],
+        'swarming': {
+          'shards': 25,
+        },
+      },
+      'android-13-x64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 25,
