@@ -484,7 +484,7 @@ bool ClientCertResolver::IsAnyResolveTaskRunning() const {
 bool ClientCertResolver::ResolveClientCertificateSync(
     const client_cert::ConfigType client_cert_type,
     const client_cert::ClientCertConfig& client_cert_config,
-    base::Value* shill_properties) {
+    base::Value::Dict* shill_properties) {
   if (!ShouldResolveCert(client_cert_config))
     return false;
 
@@ -510,8 +510,7 @@ bool ClientCertResolver::ResolveClientCertificateSync(
 
   if (cert_it == client_cert_and_issuers.end()) {
     VLOG(1) << "Couldn't find a matching client cert";
-    client_cert::SetEmptyShillProperties(client_cert_type,
-                                         shill_properties->GetDict());
+    client_cert::SetEmptyShillProperties(client_cert_type, *shill_properties);
     return false;
   }
 
@@ -525,7 +524,7 @@ bool ClientCertResolver::ResolveClientCertificateSync(
     return false;
   }
   client_cert::SetShillProperties(client_cert_type, slot_id, pkcs11_id,
-                                  shill_properties->GetDict());
+                                  *shill_properties);
   return true;
 }
 

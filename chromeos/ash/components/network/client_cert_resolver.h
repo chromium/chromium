@@ -91,7 +91,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
   static bool ResolveClientCertificateSync(
       const client_cert::ConfigType client_cert_type,
       const client_cert::ClientCertConfig& client_cert_config,
-      base::Value* shill_properties);
+      base::Value::Dict* shill_properties);
 
   // Allows overwriting the function which gets the client certificate
   // provisioning profile id of a certificate. This is necessary for unit tests,

@@ -93,9 +93,8 @@ OncParsedCertificatesForPkcs12File(
       onc_certificates);
 }
 
-std::string GetString(const base::Value& dict, const char* key) {
-  DCHECK(dict.is_dict());
-  const std::string* value = dict.FindStringKey(key);
+std::string GetStringFromDict(const base::Value::Dict& dict, const char* key) {
+  const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
 
@@ -725,11 +724,11 @@ TEST_F(ClientCertResolverTest, UserPolicyUsesSystemTokenSync) {
   SetupCertificateConfigMatchingIssuerCN(::onc::ONC_SOURCE_USER_POLICY,
                                          &client_cert_config);
 
-  base::Value shill_properties(base::Value::Type::DICT);
+  base::Value::Dict shill_properties;
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::ConfigType::kEap, client_cert_config, &shill_properties);
   std::string pkcs11_id =
-      GetString(shill_properties, shill::kEapCertIdProperty);
+      GetStringFromDict(shill_properties, shill::kEapCertIdProperty);
   EXPECT_EQ(test_cert_id_, pkcs11_id);
 }
 
@@ -764,11 +763,11 @@ TEST_F(ClientCertResolverTest, DevicePolicyUsesSystemTokenSync) {
   SetupCertificateConfigMatchingIssuerCN(::onc::ONC_SOURCE_DEVICE_POLICY,
                                          &client_cert_config);
 
-  base::Value shill_properties(base::Value::Type::DICT);
+  base::Value::Dict shill_properties;
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::ConfigType::kEap, client_cert_config, &shill_properties);
   std::string pkcs11_id =
-      GetString(shill_properties, shill::kEapCertIdProperty);
+      GetStringFromDict(shill_properties, shill::kEapCertIdProperty);
   EXPECT_EQ(test_cert_id_, pkcs11_id);
 }
 
@@ -805,11 +804,11 @@ TEST_F(ClientCertResolverTest, DevicePolicyDoesNotUseUserTokenSync) {
   SetupCertificateConfigMatchingIssuerCN(::onc::ONC_SOURCE_DEVICE_POLICY,
                                          &client_cert_config);
 
-  base::Value shill_properties(base::Value::Type::DICT);
+  base::Value::Dict shill_properties;
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::ConfigType::kEap, client_cert_config, &shill_properties);
   std::string pkcs11_id =
-      GetString(shill_properties, shill::kEapCertIdProperty);
+      GetStringFromDict(shill_properties, shill::kEapCertIdProperty);
   EXPECT_EQ(std::string(), pkcs11_id);
 }
 
