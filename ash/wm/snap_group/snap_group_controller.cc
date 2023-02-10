@@ -20,6 +20,8 @@ SnapGroupController::~SnapGroupController() = default;
 
 bool SnapGroupController::AreWindowsInSnapGroup(aura::Window* window1,
                                                 aura::Window* window2) const {
+  DCHECK(window1);
+  DCHECK(window2);
   return window1 == RetrieveTheOtherWindowInSnapGroup(window2) &&
          window2 == RetrieveTheOtherWindowInSnapGroup(window1);
 }
@@ -52,6 +54,7 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
 
   window_to_snap_group_map_.erase(window1);
   window_to_snap_group_map_.erase(window2);
+  snap_group->StopObservingWindows();
   base::EraseIf(snap_groups_, base::MatchesUniquePtr(snap_group));
   return true;
 }

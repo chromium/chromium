@@ -16,6 +16,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_lock_button.h"
@@ -58,26 +59,6 @@ class SnapGroupTest : public AshTestBase {
         WorkspaceEventHandlerTestHelper(event_handler).resize_controller();
   }
 
-  void SnapTwoTestWindows(aura::Window* primary_window,
-                          aura::Window* secondary_window) {
-    UpdateDisplay("800x700");
-
-    WindowState* primary_window_state = WindowState::Get(primary_window);
-    const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
-    primary_window_state->OnWMEvent(&snap_primary);
-    EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
-              primary_window_state->GetStateType());
-
-    WindowState* secondary_window_state = WindowState::Get(secondary_window);
-    const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
-    secondary_window_state->OnWMEvent(&snap_secondary);
-    EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
-              secondary_window_state->GetStateType());
-
-    EXPECT_EQ(0.5f, *primary_window_state->snap_ratio());
-    EXPECT_EQ(0.5f, *secondary_window_state->snap_ratio());
-  }
-
   views::Widget* GetLockWidget() const {
     DCHECK(resize_controller_);
     return resize_controller_->lock_widget_.get();
@@ -118,7 +99,6 @@ TEST_F(SnapGroupTest, AddAndRemoveSnapGroupTest) {
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
   std::unique_ptr<aura::Window> w3(CreateTestWindow());
 
-  SnapTwoTestWindows(w1.get(), w2.get());
   auto* snap_group_controller = Shell::Get()->snap_group_controller();
   ASSERT_TRUE(snap_group_controller->AddSnapGroup(w1.get(), w2.get()));
   ASSERT_FALSE(snap_group_controller->AddSnapGroup(w1.get(), w3.get()));
@@ -146,7 +126,6 @@ TEST_F(SnapGroupTest, AddAndRemoveSnapGroupTest) {
 TEST_F(SnapGroupTest, WindowDestroyTest) {
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
-  SnapTwoTestWindows(w1.get(), w2.get());
   auto* snap_group_controller = Shell::Get()->snap_group_controller();
   ASSERT_TRUE(snap_group_controller->AddSnapGroup(w1.get(), w2.get()));
   const auto& snap_groups = snap_group_controller->snap_groups_for_testing();
@@ -171,7 +150,6 @@ TEST_F(SnapGroupTest, WindowActivationTest) {
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
   std::unique_ptr<aura::Window> w3(CreateTestWindow());
 
-  SnapTwoTestWindows(w1.get(), w2.get());
   auto* snap_group_controller = Shell::Get()->snap_group_controller();
   ASSERT_TRUE(snap_group_controller->AddSnapGroup(w1.get(), w2.get()));
 
@@ -233,13 +211,20 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
     WaitForOverviewEnterAnimation();
     EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
-    // The `window2` gets activated in the overview will be auto-snapped and the
-    // overview session will end.
-    wm::ActivateWindow(window2);
+    // The `window2` gets selected in the overview will be snapped to the
+    // non-occupied snap position and the overview session will end.
+    OverviewItem* item2 = GetOverviewItemForWindow(window2);
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(
+        item2->GetBoundsOfSelectedItem().CenterPoint());
+    event_generator->PressLeftButton();
+    event_generator->ReleaseLeftButton();
     WaitForOverviewExitAnimation();
     EXPECT_EQ(split_view_controller()->secondary_window(), window2);
     EXPECT_EQ(split_view_controller()->state(),
               SplitViewController::State::kBothSnapped);
+    EXPECT_EQ(0.5f, WindowState::Get(window1)->snap_ratio());
+    EXPECT_EQ(0.5f, WindowState::Get(window2)->snap_ratio());
   }
 
  private:
@@ -349,6 +334,34 @@ TEST_F(SnapGroupEntryPointArm1Test, WorkAreaChangeTest) {
   docked_mangnifier_controller->SetEnabled(/*enabled=*/true);
 }
 
+// Tests that a snap group will be automatically created on two windows snapped
+// in the clamshell mode.
+TEST_F(SnapGroupEntryPointArm1Test,
+       AutomaticallyCreateGroupOnTwoWindowsSnappedInClamshell) {
+  auto* snap_group_controller = Shell::Get()->snap_group_controller();
+  ASSERT_TRUE(snap_group_controller);
+  const auto& snap_groups = snap_group_controller->snap_groups_for_testing();
+  const auto& window_to_snap_group_map =
+      snap_group_controller->window_to_snap_group_map_for_testing();
+  EXPECT_TRUE(snap_groups.empty());
+  EXPECT_TRUE(window_to_snap_group_map.empty());
+
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(snap_groups.size(), 1u);
+  EXPECT_EQ(window_to_snap_group_map.size(), 2u);
+
+  std::unique_ptr<aura::Window> w3(CreateTestWindow());
+  wm::ActivateWindow(w2.get());
+  EXPECT_TRUE(IsStackedBelow(w3.get(), w1.get()));
+
+  w1.reset();
+  EXPECT_TRUE(snap_groups.empty());
+  EXPECT_TRUE(window_to_snap_group_map.empty());
+}
+
 // A test fixture that tests the user-initiated snap group entry point. This
 // entry point is guarded by the feature flag `kSnapGroup` and will only be
 // enabled when the feature param `kAutomaticallyLockGroup` is false.
@@ -362,6 +375,26 @@ class SnapGroupEntryPointArm2Test : public SnapGroupTest {
   SnapGroupEntryPointArm2Test& operator=(const SnapGroupEntryPointArm2Test&) =
       delete;
   ~SnapGroupEntryPointArm2Test() override = default;
+
+  void SnapTwoTestWindows(aura::Window* primary_window,
+                          aura::Window* secondary_window) {
+    UpdateDisplay("800x700");
+
+    WindowState* primary_window_state = WindowState::Get(primary_window);
+    const WMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+    primary_window_state->OnWMEvent(&snap_primary);
+    EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+              primary_window_state->GetStateType());
+
+    WindowState* secondary_window_state = WindowState::Get(secondary_window);
+    const WMEvent snap_secondary(WM_EVENT_SNAP_SECONDARY);
+    secondary_window_state->OnWMEvent(&snap_secondary);
+    EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+              secondary_window_state->GetStateType());
+
+    EXPECT_EQ(0.5f, *primary_window_state->snap_ratio());
+    EXPECT_EQ(0.5f, *secondary_window_state->snap_ratio());
+  }
 
   // Verifies that the given two windows can be locked properly and the tooltip
   // is updated accordingly.

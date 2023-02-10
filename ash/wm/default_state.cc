@@ -13,7 +13,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
-#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
@@ -411,8 +410,9 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     return;
   }
 
-  if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY)
+  if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY) {
     HandleWindowSnapping(window_state, type);
+  }
 
   if (next_state_type == current_state_type && window_state->IsSnapped()) {
     DCHECK(window_state->snap_ratio());

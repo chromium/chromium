@@ -16,7 +16,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -214,11 +213,14 @@ OverviewSession* GetOverviewSession() {
              : nullptr;
 }
 
-// Returns true if an overview session will be shown on the other half of the
-// screen on window snapped in clamshell mode.
+// Returns true if `SnapGroupController::IsArm1AutomaticallyLockEnabled()`
+// returns true. In this case, an overview session will be shown on the other
+// half of the screen on window snapped in clamshell mode and a snap group will
+// be created automatically on two windows snapped. The `split_view_divider_`
+// will show to indicate that the two windows are in a snap-group state.
 // TODO(b/267661569): Do not show overview when there is only one window in the
 // current root and this window gets snapped.
-bool ShouldShowOverviewOnWindowSnappedInClamshell() {
+bool ShouldAutomaticallyGroupOnWindowsSnappedInClamshell() {
   auto* snap_group_controller = Shell::Get()->snap_group_controller();
   return snap_group_controller &&
          snap_group_controller->IsArm1AutomaticallyLockEnabled();
@@ -543,20 +545,19 @@ class SplitViewController::AutoSnapController
     }
 
     // We do not auto snap windows in clamshell splitview mode if a new window
-    // is activated when clamshell splitview mode is active unless
-    // `SnapGroupController::IsArm1AutomaticallyLockEnabled()` returns true, and
-    // we'll end overview mode which will then end splitview mode.
+    // is activated when clamshell splitview mode is active. In this case we'll
+    // just end overview mode which will then end splitview mode.
     // TODO(xdai): Handle this logic in OverivewSession::OnWindowActivating().
+    // TODO(michelefan): Considering to auto-snap the second window with one
+    // window snapped when
+    // `SnapGroupController::IsArm1AutomaticallyLockEnabled()`.
     if (split_view_controller_->InClamshellSplitViewMode()) {
       Shell::Get()->overview_controller()->EndOverview(
           OverviewEndAction::kSplitView);
-      if (!ShouldShowOverviewOnWindowSnappedInClamshell()) {
-        return;
-      }
+      return;
     }
 
-    DCHECK(split_view_controller_->InTabletSplitViewMode() ||
-           ShouldShowOverviewOnWindowSnappedInClamshell());
+    DCHECK(split_view_controller_->InTabletSplitViewMode());
 
     // Do not snap the window if the activation change is caused by dragging a
     // window, or by dragging a tab. Note the two values
@@ -910,14 +911,13 @@ void SplitViewController::OnWMEvent(aura::Window* window,
 
   const bool in_overview =
       Shell::Get()->overview_controller()->InOverviewSession();
-
   // In clamshell mode, only if overview is active on window snapped or when the
   // feature flag `kSnapGroup` is enabled and the feature param
   // `kAutomaticallyLockGroup` is true, the window should be managed by
   // `SplitViewController`. Otherwise, the window should be snapped normally and
   // should not be managed by `SplitViewController`.
   if (split_view_type_ == SplitViewType::kClamshellType &&
-      !(in_overview || ShouldShowOverviewOnWindowSnappedInClamshell())) {
+      !(in_overview || ShouldAutomaticallyGroupOnWindowsSnappedInClamshell())) {
     return;
   }
 
@@ -1508,6 +1508,19 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
 
   auto_snap_controller_.reset();
 
+  // Only handle the cases when the `primary_window_` and `secondary_window_`
+  // are not destroyed. The window destroyed cases will be handed in
+  // `OnWindowDestroying` of snap_group.cc.
+  if (ShouldAutomaticallyGroupOnWindowsSnappedInClamshell() &&
+      state_ == State::kBothSnapped && primary_window_ && secondary_window_) {
+    SnapGroupController* snap_group_controller =
+        Shell::Get()->snap_group_controller();
+    DCHECK(snap_group_controller->AreWindowsInSnapGroup(primary_window_,
+                                                        secondary_window_));
+    DCHECK(snap_group_controller->RemoveSnapGroupContainingWindow(
+        primary_window_));
+  }
+
   StopObserving(SnapPosition::kPrimary);
   StopObserving(SnapPosition::kSecondary);
   black_scrim_layer_.reset();
@@ -1713,7 +1726,7 @@ void SplitViewController::OnWindowBoundsChanged(
   // TODO(michelefan): move this logic to `StartResizeWithDivider` after the
   // divider bar has been implemented.
   if (!InClamshellSplitViewMode() ||
-      ShouldShowOverviewOnWindowSnappedInClamshell()) {
+      ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
     return;
   }
 
@@ -1782,7 +1795,7 @@ void SplitViewController::OnResizeLoopStarted(aura::Window* window) {
     return;
   }
 
-  if (ShouldShowOverviewOnWindowSnappedInClamshell() &&
+  if (ShouldAutomaticallyGroupOnWindowsSnappedInClamshell() &&
       state_ == State::kBothSnapped) {
     presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
         window->layer()->GetCompositor(),
@@ -1961,7 +1974,7 @@ void SplitViewController::OnOverviewModeEnding(
 void SplitViewController::OnOverviewModeEnded() {
   DCHECK(InSplitViewMode());
   if (split_view_type_ == SplitViewType::kClamshellType &&
-      !ShouldShowOverviewOnWindowSnappedInClamshell()) {
+      !ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
     EndSplitView();
   }
 }
@@ -1973,7 +1986,7 @@ void SplitViewController::OnDisplayRemoved(
   // called. In clamshell mode, `OverviewController::CanEndOverview` always
   // returns true, meaning that overview is guaranteed to end successfully.
   DCHECK(!(InClamshellSplitViewMode() &&
-           ShouldShowOverviewOnWindowSnappedInClamshell()));
+           ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()));
 
   // If the `root_window_`is the root window of the display which is going to
   // be removed, there's no need to start overview.
@@ -2250,14 +2263,15 @@ void SplitViewController::StopObserving(SnapPosition snap_position) {
 
 void SplitViewController::UpdateStateAndNotifyObservers() {
   State previous_state = state_;
-  if (IsSnapped(primary_window_) && IsSnapped(secondary_window_))
+  if (IsSnapped(primary_window_) && IsSnapped(secondary_window_)) {
     state_ = State::kBothSnapped;
-  else if (IsSnapped(primary_window_))
+  } else if (IsSnapped(primary_window_)) {
     state_ = State::kPrimarySnapped;
-  else if (IsSnapped(secondary_window_))
+  } else if (IsSnapped(secondary_window_)) {
     state_ = State::kSecondarySnapped;
-  else
+  } else {
     state_ = State::kNoSnap;
+  }
 
   // We still notify observers even if |state_| doesn't change as it's possible
   // to snap a window to a position that already has a snapped window. However,
@@ -2267,8 +2281,9 @@ void SplitViewController::UpdateStateAndNotifyObservers() {
   // |State::kNoSnap|, it indicates to observers that split view mode
   // ended.
   DCHECK(previous_state != State::kNoSnap || state_ != State::kNoSnap);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSplitViewStateChanged(previous_state, state_);
+  }
 }
 
 void SplitViewController::NotifyDividerPositionChanged() {
@@ -2599,7 +2614,7 @@ void SplitViewController::OnWindowSnapped(
   auto* overview_controller = Shell::Get()->overview_controller();
   if (!overview_controller->InOverviewSession() &&
       (split_view_type_ == SplitViewType::kTabletType ||
-       ShouldShowOverviewOnWindowSnappedInClamshell()) &&
+       ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) &&
       (state_ == State::kPrimarySnapped ||
        state_ == State::kSecondarySnapped)) {
     overview_controller->StartOverview(OverviewStartAction::kSplitView,
@@ -2614,6 +2629,15 @@ void SplitViewController::OnWindowSnapped(
   if (primary_window_ && secondary_window_) {
     UpdateSnappedBounds(window == primary_window_ ? secondary_window_
                                                   : primary_window_);
+  }
+
+  if (state_ == State::kBothSnapped &&
+      ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
+    SnapGroupController* snap_group_controller =
+        Shell::Get()->snap_group_controller();
+    snap_group_controller->AddSnapGroup(primary_window_, secondary_window_);
+    DCHECK(snap_group_controller->AreWindowsInSnapGroup(primary_window_,
+                                                        secondary_window_));
   }
 }
 
@@ -2655,7 +2679,7 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
 
     // TODO(crbug.com/1351562): Consider not allowing one snapped window to be
     // floated. Then this should be a DCHECK.
-  } else if (ShouldShowOverviewOnWindowSnappedInClamshell() &&
+  } else if (ShouldAutomaticallyGroupOnWindowsSnappedInClamshell() &&
              (!primary_window_ || !secondary_window_)) {
     // When `kSnapGroup` is enabled and feature param `kAutomaticallyLockGroup`
     // is true, `SplitViewController` will no longer manage the window(s) on one
