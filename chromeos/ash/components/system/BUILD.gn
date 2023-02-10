@@ -17,8 +17,6 @@ component("system") {
     "//base",
   ]
   sources = [
-    "devicemode.cc",
-    "devicemode.h",
     "factory_ping_embargo_check.cc",
     "factory_ping_embargo_check.h",
     "kiosk_oem_manifest_parser.cc",

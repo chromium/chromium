@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/system/input_device_settings.h"
 
 #include "base/functional/bind.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/system/fake_input_device_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chromeos/ash/components/system/devicemode.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -258,12 +258,13 @@ void InputDeviceSettingsImplOzone::SetTouchscreensEnabled(bool enabled) {
 // static
 InputDeviceSettings* InputDeviceSettings::Get() {
   if (!g_input_device_settings_impl_ozone_instance) {
-    if (chromeos::IsRunningAsSystemCompositor())
+    if (base::SysInfo::IsRunningOnChromeOS()) {
       g_input_device_settings_impl_ozone_instance =
-          new InputDeviceSettingsImplOzone;
-    else
+          new InputDeviceSettingsImplOzone();
+    } else {
       g_input_device_settings_impl_ozone_instance =
           new FakeInputDeviceSettings();
+    }
   }
   return g_input_device_settings_impl_ozone_instance;
 }

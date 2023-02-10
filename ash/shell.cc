@@ -218,7 +218,6 @@
 #include "chromeos/ash/components/dbus/usb/usbguard_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
-#include "chromeos/ash/components/system/devicemode.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -1651,7 +1650,7 @@ void Shell::InitializeDisplayManager() {
   bool display_initialized = display_manager_->InitFromCommandLine();
 
   if (!display_initialized) {
-    if (chromeos::IsRunningAsSystemCompositor()) {
+    if (base::SysInfo::IsRunningOnChromeOS()) {
       display_change_observer_ =
           std::make_unique<display::DisplayChangeObserver>(
               display_manager_.get());

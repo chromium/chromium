@@ -37,9 +37,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/system/sys_info.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
-#include "chromeos/ash/components/system/devicemode.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
@@ -1338,7 +1338,7 @@ bool TabletModeController::ShouldUiBeInTabletMode() const {
     return true;
 
   return !has_internal_pointing_device_ && CanEnterTabletMode() &&
-         HasActiveInternalDisplay() && chromeos::IsRunningAsSystemCompositor();
+         HasActiveInternalDisplay() && base::SysInfo::IsRunningOnChromeOS();
 }
 
 bool TabletModeController::SetIsInTabletPhysicalState(bool new_state) {

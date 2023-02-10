@@ -22,6 +22,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
@@ -52,7 +53,6 @@
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
-#include "chromeos/ash/components/system/devicemode.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/components/disks/disks_prefs.h"
@@ -178,7 +178,7 @@ void Preferences::RegisterProfilePrefs(
 
   std::string hardware_keyboard_id;
   // TODO(yusukes): Remove the runtime hack.
-  if (chromeos::IsRunningAsSystemCompositor()) {
+  if (base::SysInfo::IsRunningOnChromeOS()) {
     DCHECK(g_browser_process);
     PrefService* local_state = g_browser_process->local_state();
     DCHECK(local_state);
