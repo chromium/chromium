@@ -145,7 +145,7 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 }
 
 - (void)mouseExited:(NSEvent*)theEvent {
-  // Suppress spurious events that are out of the bounds of this view.
+  // Suppress spurious mouseExited events that are in the bounds of this view.
   // For unknown reasons this happens shortly after mouseMoved on the toolbar if
   // the overlay window is above the NSToolbarFullScreenWindow.
   NSRect frameInWindow = [self convertRect:[self bounds] toView:nil];
