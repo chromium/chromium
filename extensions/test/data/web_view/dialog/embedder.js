@@ -248,7 +248,7 @@ function testDialogConfirmDefaultGCCancel() {
     embedder.test.assertEq(messageText, e.messageText);
     // Prevent default to leave cleanup in the GC's hands.
     e.preventDefault();
-    window.setTimeout(function() { window.gc(); });
+    window.gc({type: 'major', execution: 'async'});
   };
 
   setUpDialogTest(messageCallback, dialogHandler);

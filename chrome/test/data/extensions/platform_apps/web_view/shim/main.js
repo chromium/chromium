@@ -3128,10 +3128,12 @@ function testPlugin() {
 }
 
 function testGarbageCollect() {
-  var webview = new WebView();
+  let webview = new WebView();
   webview = null;
-  window.gc();
-  embedder.test.succeed();
+
+  window.gc({type: 'major', execution: 'async'}).then(() => {
+    embedder.test.succeed();
+  });
 }
 
 // This test verifies that when an app window is closed, only the state for the

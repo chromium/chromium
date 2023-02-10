@@ -3903,16 +3903,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Dialog_TestConfirmDialogDefaultCancel) {
              NO_TEST_SERVER);
 }
 
-// Disable due to runloop time out. https://crbug.com/937461
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Dialog_TestConfirmDialogDefaultGCCancel \
-  DISABLED_Dialog_TestConfirmDialogDefaultGCCancel
-#else
-#define MAYBE_Dialog_TestConfirmDialogDefaultGCCancel \
-  Dialog_TestConfirmDialogDefaultGCCancel
-#endif
-IN_PROC_BROWSER_TEST_P(WebViewTest,
-                       MAYBE_Dialog_TestConfirmDialogDefaultGCCancel) {
+IN_PROC_BROWSER_TEST_P(WebViewTest, Dialog_TestConfirmDialogDefaultGCCancel) {
   TestHelper("testConfirmDialogDefaultGCCancel",
              "web_view/dialog",
              NO_TEST_SERVER);
@@ -4388,11 +4379,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, BasicPostMessage) {
 }
 
 // Tests that webviews do get garbage collected.
-// This test is disabled because it relies on garbage collections triggered from
-// window.gc() to run precisely. This is not the case with unified heap where
-// they need to conservatively scan the stack, potentially keeping objects
-// alive. https://crbug.com/843903
-IN_PROC_BROWSER_TEST_P(WebViewTest, DISABLED_Shim_TestGarbageCollect) {
+IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestGarbageCollect) {
   TestHelper("testGarbageCollect", "web_view/shim", NO_TEST_SERVER);
   GetGuestViewManager()->WaitForSingleViewGarbageCollected();
 }
