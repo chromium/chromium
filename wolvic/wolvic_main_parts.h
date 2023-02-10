@@ -1,0 +1,36 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef WOLVIC_WOLVIC_MAIN_PARTS_H_
+#define WOLVIC_WOLVIC_MAIN_PARTS_H_
+
+#include "content/public/browser/browser_main_parts.h"
+
+namespace content {
+
+class WolvicBrowserContext;
+
+class WolvicMainParts : public BrowserMainParts {
+ public:
+  WolvicMainParts();
+
+  WolvicMainParts(const WolvicMainParts&) = delete;
+  WolvicMainParts& operator=(const WolvicMainParts&) = delete;
+
+  ~WolvicMainParts() override;
+
+  // BrowserMainParts overrides.
+  int PreMainMessageLoopRun() override;
+
+  WolvicBrowserContext* browser_context() { return browser_context_.get(); }
+
+ private:
+  void set_browser_context(WolvicBrowserContext* context);
+
+  std::unique_ptr<WolvicBrowserContext> browser_context_;
+};
+
+}  // namespace content
+
+#endif  // CONTENT_PUBLIC_ANDROID_WOLVIC_MAIN_PARTS_H_

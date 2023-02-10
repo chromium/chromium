@@ -28,9 +28,10 @@ import org.chromium.ui.base.WindowAndroid;
 @JNINamespace("embedder_support")
 public class ContentViewRenderView extends FrameLayout {
     // The native side of this object.
-    private long mNativeContentViewRenderView;
-    private WindowAndroid mWindowAndroid;
+    protected long mNativeContentViewRenderView;
+    protected WindowAndroid mWindowAndroid;
 
+    protected SurfaceHolder.Callback mSurfaceCallback;
     protected SurfaceBridge mSurfaceBridge;
     protected WebContents mWebContents;
 
@@ -68,7 +69,7 @@ public class ContentViewRenderView extends FrameLayout {
                 ContentViewRenderViewJni.get().init(ContentViewRenderView.this, rootWindow);
         assert mNativeContentViewRenderView != 0;
         mWindowAndroid = rootWindow;
-        SurfaceHolder.Callback surfaceCallback = new SurfaceHolder.Callback() {
+        mSurfaceCallback = new SurfaceHolder.Callback() {
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
                 assert mNativeContentViewRenderView != 0;
@@ -104,7 +105,7 @@ public class ContentViewRenderView extends FrameLayout {
                         mNativeContentViewRenderView, ContentViewRenderView.this);
             }
         };
-        mSurfaceBridge.connect(surfaceCallback);
+        mSurfaceBridge.connect(mSurfaceCallback);
     }
 
     @Override

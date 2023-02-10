@@ -804,6 +804,7 @@ group("gn_all") {
             "//tools/perf/contrib/vr_benchmarks:vr_perf_tests${_target_suffix}",
           ]
         }
+        deps += [ "//wolvic:empty_group" ]
       }
     }
 
