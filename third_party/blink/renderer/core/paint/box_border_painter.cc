@@ -374,14 +374,15 @@ struct OpacityGroup {
   unsigned alpha;
 };
 
-void ClipQuad(GraphicsContext& context,
-              const gfx::PointF quad[],
-              bool antialiased) {
+void ClipPolygon(GraphicsContext& context,
+                 const gfx::PointF vertices[],
+                 unsigned vertices_size,
+                 bool antialiased) {
   SkPathBuilder path;
-  path.moveTo(gfx::PointFToSkPoint(quad[0]));
-  path.lineTo(gfx::PointFToSkPoint(quad[1]));
-  path.lineTo(gfx::PointFToSkPoint(quad[2]));
-  path.lineTo(gfx::PointFToSkPoint(quad[3]));
+  path.moveTo(gfx::PointFToSkPoint(vertices[0]));
+  for (unsigned i = 1; i < vertices_size; ++i) {
+    path.lineTo(gfx::PointFToSkPoint(vertices[i]));
+  }
 
   context.ClipPath(path.detach(), antialiased ? kAntiAliased : kNotAntiAliased);
 }
@@ -1368,10 +1369,16 @@ void BoxBorderPainter::PaintOneBorderSide(
         ColorsMatchAtCorner(side, adjacent_side2) ? kHardMiter : kSoftMiter;
 
     GraphicsContextStateSaver state_saver(context_);
-    if (inner_.IsRenderable())
-      ClipBorderSidePolygon(side, miter1, miter2);
-    else
-      ClipBorderSideForComplexInnerPath(side);
+
+    ClipBorderSidePolygon(side, miter1, miter2);
+    if (!inner_.IsRenderable()) {
+      FloatRoundedRect adjusted_inner_rect =
+          CalculateAdjustedInnerBorder(inner_, side);
+      if (!adjusted_inner_rect.IsEmpty()) {
+        context_.ClipOutRoundedRect(adjusted_inner_rect);
+      }
+    }
+
     int stroke_thickness =
         std::max(std::max(edge_to_render.Width(), adjacent_edge1.Width()),
                  adjacent_edge2.Width());
@@ -1598,27 +1605,19 @@ gfx::Rect BoxBorderPainter::CalculateSideRectIncludingInner(
   return side_rect;
 }
 
-void BoxBorderPainter::ClipBorderSideForComplexInnerPath(BoxSide side) const {
-  context_.Clip(CalculateSideRectIncludingInner(side));
-  FloatRoundedRect adjusted_inner_rect =
-      CalculateAdjustedInnerBorder(inner_, side);
-  if (!adjusted_inner_rect.IsEmpty())
-    context_.ClipOutRoundedRect(adjusted_inner_rect);
-}
-
 void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                                              MiterType first_miter,
                                              MiterType second_miter) const {
   DCHECK(first_miter != kNoMiter || second_miter != kNoMiter);
 
-  gfx::PointF edge_quad[4];  // The boundary of the edge for fill
-  gfx::PointF
-      bound_quad1;  // Point 1 of the rectilinear bounding box of EdgeQuad
-  gfx::PointF
-      bound_quad2;  // Point 2 of the rectilinear bounding box of EdgeQuad
+  // The boundary of the edge for fill.
+  gfx::PointF edge_quad[4];
+  Vector<gfx::PointF, 5> edge_pentagon;
 
-  const PhysicalRect outer_rect = PhysicalRect::EnclosingRect(outer_.Rect());
-  const PhysicalRect inner_rect = PhysicalRect::EnclosingRect(inner_.Rect());
+  // Point 1 of the rectilinear bounding box of edge_quad.
+  gfx::PointF bound_quad1;
+  // Point 2 of the rectilinear bounding box of edge_quad.
+  gfx::PointF bound_quad2;
 
   // For each side, create a quad that encompasses all parts of that side that
   // may draw, including areas inside the innerBorder.
@@ -1634,15 +1633,45 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
   //       0  /              \  3
   //         3----------------0
 
+  // Points 1 and 2 of each quad are initially the corresponding corners of the
+  // inner rect. If an inner corner is rounded, the corresponding point will be
+  // moved inside to ensure the quad contains the half corner.
+  // However, if the inner border is not renderable, and line 1-2 would clip the
+  // rounded corner near the miter, we need to insert a point between 1 and 2 to
+  // create a pentagon.
+  // 0-------------3       0-------------3       0-------------4
+  // |\           /|       |\           /|       |\           /|
+  // | 1---------2 |       | \---------2 |       | \---------3 |
+  // | |         | |       | |\       /| |       | |\        | |
+  // | |         | |       | | \     / | |       | | \       | |
+  // | |         | |  -->  | |  \   /  | |  -->  | |  \      | |
+  // | |         | |       | |    1    | |       | |    1----2 |
+  // | |         | |       | |         | |       | |         | |
+  // | /---------\ |       | /---------\ |       | /---------\ |
+  //  -------------         -------------         -------------
+
+  const gfx::PointF inner_points[4] = {
+      inner_.Rect().origin(),
+      inner_.Rect().top_right(),
+      inner_.Rect().bottom_right(),
+      inner_.Rect().bottom_left(),
+  };
+  const gfx::PointF outer_points[4] = {
+      outer_.Rect().origin(),
+      outer_.Rect().top_right(),
+      outer_.Rect().bottom_right(),
+      outer_.Rect().bottom_left(),
+  };
+
   // Offset size and direction to expand clipping quad
   const static float kExtensionLength = 1e-1f;
   gfx::Vector2dF extension_offset;
   switch (side) {
     case BoxSide::kTop:
-      edge_quad[0] = gfx::PointF(outer_rect.MinXMinYCorner());
-      edge_quad[1] = gfx::PointF(inner_rect.MinXMinYCorner());
-      edge_quad[2] = gfx::PointF(inner_rect.MaxXMinYCorner());
-      edge_quad[3] = gfx::PointF(outer_rect.MaxXMinYCorner());
+      edge_quad[0] = outer_points[0];
+      edge_quad[1] = inner_points[0];
+      edge_quad[2] = inner_points[1];
+      edge_quad[3] = outer_points[1];
 
       DCHECK(edge_quad[0].y() == edge_quad[3].y());
       DCHECK(edge_quad[1].y() == edge_quad[2].y());
@@ -1662,9 +1691,24 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                 edge_quad[1].x(),
                 edge_quad[1].y() + inner_.GetRadii().TopLeft().height()),
             edge_quad[1]);
+        if (edge_quad[1].y() > inner_points[2].y()) {
+          FindIntersection(edge_quad[0], edge_quad[1], inner_points[3],
+                           inner_points[2], edge_quad[1]);
+        }
+        if (edge_quad[1].x() > inner_points[2].x()) {
+          FindIntersection(edge_quad[0], edge_quad[1], inner_points[1],
+                           inner_points[2], edge_quad[1]);
+        }
         DCHECK(bound_quad1.y() <= edge_quad[1].y());
         bound_quad1.set_y(edge_quad[1].y());
         bound_quad2.set_y(edge_quad[1].y());
+
+        if (edge_quad[2].y() < edge_quad[1].y() &&
+            edge_quad[2].x() > edge_quad[1].x()) {
+          edge_pentagon = {edge_quad[0], edge_quad[1],
+                           gfx::PointF(edge_quad[2].x(), edge_quad[1].y()),
+                           edge_quad[2], edge_quad[3]};
+        }
       }
 
       if (!inner_.GetRadii().TopRight().IsZero()) {
@@ -1676,9 +1720,24 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                 edge_quad[2].x(),
                 edge_quad[2].y() + inner_.GetRadii().TopRight().height()),
             edge_quad[2]);
+        if (edge_quad[2].y() > inner_points[3].y()) {
+          FindIntersection(edge_quad[3], edge_quad[2], inner_points[3],
+                           inner_points[2], edge_quad[2]);
+        }
+        if (edge_quad[2].x() < inner_points[3].x()) {
+          FindIntersection(edge_quad[3], edge_quad[2], inner_points[0],
+                           inner_points[3], edge_quad[2]);
+        }
         if (bound_quad1.y() < edge_quad[2].y()) {
           bound_quad1.set_y(edge_quad[2].y());
           bound_quad2.set_y(edge_quad[2].y());
+        }
+
+        if (edge_quad[2].y() > edge_quad[1].y() &&
+            edge_quad[2].x() > edge_quad[1].x()) {
+          edge_pentagon = {edge_quad[0], edge_quad[1],
+                           gfx::PointF(edge_quad[1].x(), edge_quad[2].y()),
+                           edge_quad[2], edge_quad[3]};
         }
       }
       break;
@@ -1686,10 +1745,10 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
     case BoxSide::kLeft:
       // Swap the order of adjacent edges to allow common code
       std::swap(first_miter, second_miter);
-      edge_quad[0] = gfx::PointF(outer_rect.MinXMaxYCorner());
-      edge_quad[1] = gfx::PointF(inner_rect.MinXMaxYCorner());
-      edge_quad[2] = gfx::PointF(inner_rect.MinXMinYCorner());
-      edge_quad[3] = gfx::PointF(outer_rect.MinXMinYCorner());
+      edge_quad[0] = outer_points[3];
+      edge_quad[1] = inner_points[3];
+      edge_quad[2] = inner_points[0];
+      edge_quad[3] = outer_points[0];
 
       DCHECK(edge_quad[0].x() == edge_quad[3].x());
       DCHECK(edge_quad[1].x() == edge_quad[2].x());
@@ -1709,9 +1768,24 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                 edge_quad[2].x(),
                 edge_quad[2].y() + inner_.GetRadii().TopLeft().height()),
             edge_quad[2]);
+        if (edge_quad[2].y() > inner_points[2].y()) {
+          FindIntersection(edge_quad[3], edge_quad[2], inner_points[3],
+                           inner_points[2], edge_quad[2]);
+        }
+        if (edge_quad[2].x() > inner_points[2].x()) {
+          FindIntersection(edge_quad[3], edge_quad[2], inner_points[1],
+                           inner_points[2], edge_quad[2]);
+        }
         DCHECK(bound_quad2.x() <= edge_quad[2].x());
         bound_quad1.set_x(edge_quad[2].x());
         bound_quad2.set_x(edge_quad[2].x());
+
+        if (edge_quad[2].y() < edge_quad[1].y() &&
+            edge_quad[2].x() > edge_quad[1].x()) {
+          edge_pentagon = {edge_quad[0], edge_quad[1],
+                           gfx::PointF(edge_quad[2].x(), edge_quad[1].y()),
+                           edge_quad[2], edge_quad[3]};
+        }
       }
 
       if (!inner_.GetRadii().BottomLeft().IsZero()) {
@@ -1724,9 +1798,24 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                 edge_quad[1].x(),
                 edge_quad[1].y() - inner_.GetRadii().BottomLeft().height()),
             edge_quad[1]);
+        if (edge_quad[1].y() < inner_points[1].y()) {
+          FindIntersection(edge_quad[0], edge_quad[1], inner_points[0],
+                           inner_points[1], edge_quad[1]);
+        }
+        if (edge_quad[1].x() > inner_points[1].x()) {
+          FindIntersection(edge_quad[0], edge_quad[1], inner_points[1],
+                           inner_points[2], edge_quad[1]);
+        }
         if (bound_quad1.x() < edge_quad[1].x()) {
           bound_quad1.set_x(edge_quad[1].x());
           bound_quad2.set_x(edge_quad[1].x());
+        }
+
+        if (edge_quad[2].y() < edge_quad[1].y() &&
+            edge_quad[2].x() < edge_quad[1].x()) {
+          edge_pentagon = {edge_quad[0], edge_quad[1],
+                           gfx::PointF(edge_quad[1].x(), edge_quad[2].y()),
+                           edge_quad[2], edge_quad[3]};
         }
       }
       break;
@@ -1734,10 +1823,10 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
     case BoxSide::kBottom:
       // Swap the order of adjacent edges to allow common code
       std::swap(first_miter, second_miter);
-      edge_quad[0] = gfx::PointF(outer_rect.MaxXMaxYCorner());
-      edge_quad[1] = gfx::PointF(inner_rect.MaxXMaxYCorner());
-      edge_quad[2] = gfx::PointF(inner_rect.MinXMaxYCorner());
-      edge_quad[3] = gfx::PointF(outer_rect.MinXMaxYCorner());
+      edge_quad[0] = outer_points[2];
+      edge_quad[1] = inner_points[2];
+      edge_quad[2] = inner_points[3];
+      edge_quad[3] = outer_points[3];
 
       DCHECK(edge_quad[0].y() == edge_quad[3].y());
       DCHECK(edge_quad[1].y() == edge_quad[2].y());
@@ -1758,9 +1847,24 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                 edge_quad[2].x(),
                 edge_quad[2].y() - inner_.GetRadii().BottomLeft().height()),
             edge_quad[2]);
+        if (edge_quad[2].y() < inner_points[1].y()) {
+          FindIntersection(edge_quad[3], edge_quad[2], inner_points[0],
+                           inner_points[1], edge_quad[2]);
+        }
+        if (edge_quad[2].x() > inner_points[1].x()) {
+          FindIntersection(edge_quad[3], edge_quad[2], inner_points[1],
+                           inner_points[2], edge_quad[2]);
+        }
         DCHECK(bound_quad2.y() >= edge_quad[2].y());
         bound_quad1.set_y(edge_quad[2].y());
         bound_quad2.set_y(edge_quad[2].y());
+
+        if (edge_quad[2].y() < edge_quad[1].y() &&
+            edge_quad[2].x() < edge_quad[1].x()) {
+          edge_pentagon = {edge_quad[0], edge_quad[1],
+                           gfx::PointF(edge_quad[1].x(), edge_quad[2].y()),
+                           edge_quad[2], edge_quad[3]};
+        }
       }
 
       if (!inner_.GetRadii().BottomRight().IsZero()) {
@@ -1773,18 +1877,33 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                 edge_quad[1].x(),
                 edge_quad[1].y() - inner_.GetRadii().BottomRight().height()),
             edge_quad[1]);
+        if (edge_quad[1].y() < inner_points[0].y()) {
+          FindIntersection(edge_quad[0], edge_quad[1], inner_points[0],
+                           inner_points[1], edge_quad[1]);
+        }
+        if (edge_quad[1].x() < inner_points[0].x()) {
+          FindIntersection(edge_quad[0], edge_quad[1], inner_points[0],
+                           inner_points[3], edge_quad[1]);
+        }
         if (bound_quad1.y() > edge_quad[1].y()) {
           bound_quad1.set_y(edge_quad[1].y());
           bound_quad2.set_y(edge_quad[1].y());
+        }
+
+        if (edge_quad[2].x() < edge_quad[1].x() &&
+            edge_quad[2].y() > edge_quad[1].y()) {
+          edge_pentagon = {edge_quad[0], edge_quad[1],
+                           gfx::PointF(edge_quad[2].x(), edge_quad[1].y()),
+                           edge_quad[2], edge_quad[3]};
         }
       }
       break;
 
     case BoxSide::kRight:
-      edge_quad[0] = gfx::PointF(outer_rect.MaxXMinYCorner());
-      edge_quad[1] = gfx::PointF(inner_rect.MaxXMinYCorner());
-      edge_quad[2] = gfx::PointF(inner_rect.MaxXMaxYCorner());
-      edge_quad[3] = gfx::PointF(outer_rect.MaxXMaxYCorner());
+      edge_quad[0] = outer_points[1];
+      edge_quad[1] = inner_points[1];
+      edge_quad[2] = inner_points[2];
+      edge_quad[3] = outer_points[2];
 
       DCHECK(edge_quad[0].x() == edge_quad[3].x());
       DCHECK(edge_quad[1].x() == edge_quad[2].x());
@@ -1804,9 +1923,24 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                 edge_quad[1].x(),
                 edge_quad[1].y() + inner_.GetRadii().TopRight().height()),
             edge_quad[1]);
+        if (edge_quad[1].y() > inner_points[3].y()) {
+          FindIntersection(edge_quad[0], edge_quad[1], inner_points[3],
+                           inner_points[2], edge_quad[1]);
+        }
+        if (edge_quad[1].x() < inner_points[3].x()) {
+          FindIntersection(edge_quad[0], edge_quad[1], inner_points[0],
+                           inner_points[3], edge_quad[1]);
+        }
         DCHECK(bound_quad1.x() >= edge_quad[1].x());
         bound_quad1.set_x(edge_quad[1].x());
         bound_quad2.set_x(edge_quad[1].x());
+
+        if (edge_quad[2].y() > edge_quad[1].y() &&
+            edge_quad[2].x() > edge_quad[1].x()) {
+          edge_pentagon = {edge_quad[0], edge_quad[1],
+                           gfx::PointF(edge_quad[1].x(), edge_quad[2].y()),
+                           edge_quad[2], edge_quad[3]};
+        }
       }
 
       if (!inner_.GetRadii().BottomRight().IsZero()) {
@@ -1819,16 +1953,38 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
                 edge_quad[2].x(),
                 edge_quad[2].y() - inner_.GetRadii().BottomRight().height()),
             edge_quad[2]);
+        if (edge_quad[2].y() < inner_points[0].y()) {
+          FindIntersection(edge_quad[3], edge_quad[2], inner_points[0],
+                           inner_points[1], edge_quad[2]);
+        }
+        if (edge_quad[2].x() < inner_points[0].x()) {
+          FindIntersection(edge_quad[3], edge_quad[2], inner_points[0],
+                           inner_points[3], edge_quad[2]);
+        }
         if (bound_quad1.x() > edge_quad[2].x()) {
           bound_quad1.set_x(edge_quad[2].x());
           bound_quad2.set_x(edge_quad[2].x());
+        }
+
+        if (edge_quad[2].x() < edge_quad[1].x() &&
+            edge_quad[2].y() > edge_quad[1].y()) {
+          edge_pentagon = {edge_quad[0], edge_quad[1],
+                           gfx::PointF(edge_quad[2].x(), edge_quad[1].y()),
+                           edge_quad[2], edge_quad[3]};
         }
       }
       break;
   }
 
   if (first_miter == second_miter) {
-    ClipQuad(context_, edge_quad, first_miter == kSoftMiter);
+    if (!edge_pentagon.empty() && !inner_.IsRenderable()) {
+      DCHECK_EQ(edge_pentagon.size(), 5u);
+
+      ClipPolygon(context_, edge_pentagon.data(), 5, first_miter == kSoftMiter);
+      return;
+    }
+
+    ClipPolygon(context_, edge_quad, 4, first_miter == kSoftMiter);
     return;
   }
 
@@ -1848,7 +2004,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
     clipping_quad[2] = bound_quad2;
     clipping_quad[3] = edge_quad[3];
 
-    ClipQuad(context_, clipping_quad, first_miter == kSoftMiter);
+    ClipPolygon(context_, clipping_quad, 4, first_miter == kSoftMiter);
   }
 
   if (second_miter != kNoMiter) {
@@ -1861,7 +2017,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
     clipping_quad[2] -= extension_offset;
     clipping_quad[3] = edge_quad[3] - extension_offset;
 
-    ClipQuad(context_, clipping_quad, second_miter == kSoftMiter);
+    ClipPolygon(context_, clipping_quad, 4, second_miter == kSoftMiter);
   }
 }
 

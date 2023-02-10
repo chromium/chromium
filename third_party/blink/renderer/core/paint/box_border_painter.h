@@ -115,7 +115,6 @@ class BoxBorderPainter {
                                       EBorderStyle) const;
   void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
   gfx::Rect CalculateSideRectIncludingInner(BoxSide) const;
-  void ClipBorderSideForComplexInnerPath(BoxSide) const;
 
   MiterType ComputeMiter(BoxSide, BoxSide adjacent_side, BorderEdgeFlags) const;
   static bool MitersRequireClipping(MiterType miter1,
