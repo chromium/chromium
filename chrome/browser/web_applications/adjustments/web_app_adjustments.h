@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/adjustments/link_capturing_pref_migration.h"
 #include "chrome/browser/web_applications/adjustments/preinstalled_web_app_duplication_fixer.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -38,9 +37,6 @@ class WebAppAdjustments : public KeyedService {
   }
 
  private:
-  // TODO(crbug.com/1262906): This was added in M97, remove in M107.
-  std::unique_ptr<LinkCapturingPrefMigration> link_capturing_pref_migration_;
-
   // TODO(crbug.com/1290716): This was added in M100, remove in M120.
   std::unique_ptr<PreinstalledWebAppDuplicationFixer>
       preinstalled_web_app_duplication_fixer_;

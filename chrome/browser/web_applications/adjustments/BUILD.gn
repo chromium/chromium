@@ -6,8 +6,6 @@ import("//chrome/common/features.gni")
 
 source_set("adjustments") {
   sources = [
-    "link_capturing_pref_migration.cc",
-    "link_capturing_pref_migration.h",
     "preinstalled_web_app_duplication_fixer.cc",
     "preinstalled_web_app_duplication_fixer.h",
     "web_app_adjustments.cc",
@@ -45,10 +43,6 @@ source_set("adjustments_browser_tests") {
   testonly = true
 
   sources = []
-
-  if (is_chromeos_ash) {
-    sources += [ "link_capturing_pref_migration_browsertest.cc" ]
-  }
 
   if (!is_chromeos_lacros) {
     sources += [ "preinstalled_web_app_duplication_fixer_browsertest.cc" ]
