@@ -439,8 +439,8 @@ void EventFactoryEvdev::DispatchPointingStickDevicesUpdated(
   TRACE_EVENT0("evdev",
                "EventFactoryEvdev::DispatchPointingStickDevicesUpdated");
 
-  // There's no list of mice in DeviceDataManager.
-  input_controller_.set_has_pointing_stick(devices.empty());
+  // There's no list of pointing sticks in DeviceDataManager.
+  input_controller_.set_has_pointing_stick(!devices.empty());
   DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
   observer->OnPointingStickDevicesUpdated(devices);
 }
