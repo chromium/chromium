@@ -66,4 +66,9 @@ void ArcObbMounterBridge::UnmountObb(const std::string& target_path,
   ash::ArcObbMounterClient::Get()->UnmountObb(target_path, std::move(callback));
 }
 
+// static
+void ArcObbMounterBridge::EnsureFactoryBuilt() {
+  ArcObbMounterBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

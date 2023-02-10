@@ -191,4 +191,9 @@ ArcWakeLockBridge::WakeLockRequester* ArcWakeLockBridge::GetWakeLockRequester(
   return it->second.get();
 }
 
+// static
+void ArcWakeLockBridge::EnsureFactoryBuilt() {
+  ArcWakeLockBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

@@ -189,6 +189,8 @@ class UserCloudPolicyManagerAsh
   // Return the ReportScheduler used to report usage data to the server.
   enterprise_reporting::ReportScheduler* GetReportSchedulerForTesting();
 
+  static void EnsureFactoryBuilt();
+
  protected:
   // CloudPolicyManager:
   void GetChromePolicy(PolicyMap* policy_map) override;

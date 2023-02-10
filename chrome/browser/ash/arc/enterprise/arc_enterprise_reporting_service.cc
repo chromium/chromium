@@ -135,4 +135,9 @@ void ArcEnterpriseReportingService::ReportCloudDpcOperationTime(
   }
 }
 
+// static
+void ArcEnterpriseReportingService::EnsureFactoryBuilt() {
+  ArcEnterpriseReportingServiceFactory::GetInstance();
+}
+
 }  // namespace arc

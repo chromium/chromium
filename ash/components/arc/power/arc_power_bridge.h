@@ -109,6 +109,8 @@ class ArcPowerBridge : public KeyedService,
     wake_lock_provider_ = std::move(provider);
   }
 
+  static void EnsureFactoryBuilt();
+
  private:
   class WakeLockRequestor;
 

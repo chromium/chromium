@@ -422,4 +422,9 @@ ArcBootPhaseThrottleObserver* ArcInstanceThrottle::GetBootObserver() {
   return static_cast<ArcBootPhaseThrottleObserver*>(observer);
 }
 
+// static
+void ArcInstanceThrottle::EnsureFactoryBuilt() {
+  ArcInstanceThrottleFactory::GetInstance();
+}
+
 }  // namespace arc

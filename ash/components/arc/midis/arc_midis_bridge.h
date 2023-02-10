@@ -41,6 +41,8 @@ class ArcMidisBridge : public KeyedService, public mojom::MidisHost {
   void Connect(mojo::PendingReceiver<mojom::MidisServer> receiver,
                mojo::PendingRemote<mojom::MidisClient> client_remote) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   void OnBootstrapMojoConnection(
       mojo::PendingReceiver<mojom::MidisServer> receiver,

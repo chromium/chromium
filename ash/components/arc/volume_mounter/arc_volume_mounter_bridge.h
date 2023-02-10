@@ -94,6 +94,8 @@ class ArcVolumeMounterBridge
   // Send all existing mount events. Usually is called around service startup.
   void SendAllMountEvents();
 
+  static void EnsureFactoryBuilt();
+
  private:
   void SendMountEventForMyFiles();
   void SendMountEventForRemovableMedia(

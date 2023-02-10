@@ -47,6 +47,8 @@ class ArcPropertyBridge : public KeyedService,
   void GetGcaMigrationProperty(
       mojom::PropertyInstance::GetGcaMigrationPropertyCallback callback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 

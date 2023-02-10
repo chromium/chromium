@@ -143,8 +143,9 @@ void UpdateNspidToPidMap(
       if (nspid != kNullProcessId && pid_map->find(nspid) != pid_map->end())
         (*pid_map)[nspid] = pid;
 
-      for (ProcessId child_pid : process_tree[pid])
+      for (ProcessId child_pid : process_tree[pid]) {
         queue.push(child_pid);
+      }
     }
   }
 }
@@ -536,6 +537,11 @@ void ArcProcessService::ContinueSystemMemoryInfoRequest(
       base::BindOnce(&GetArcSystemProcessList, cached_process_snapshot_),
       base::BindOnce(&ArcProcessService::OnGetSystemProcessList,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+// static
+void ArcProcessService::EnsureFactoryBuilt() {
+  ArcProcessServiceFactory::GetInstance();
 }
 
 // -----------------------------------------------------------------------------

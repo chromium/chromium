@@ -133,4 +133,9 @@ void ArcBootErrorNotification::OnArcSessionStopped(ArcStopReason reason) {
     ShowLowDiskSpaceErrorNotification(context_);
 }
 
+// static
+void ArcBootErrorNotification::EnsureFactoryBuilt() {
+  ArcBootErrorNotificationFactory::GetInstance();
+}
+
 }  // namespace arc

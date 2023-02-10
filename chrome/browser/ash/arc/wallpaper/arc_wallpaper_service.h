@@ -62,6 +62,8 @@ class ArcWallpaperService : public KeyedService, public mojom::WallpaperHost {
   void SetDecodeRequestSenderForTesting(
       std::unique_ptr<DecodeRequestSender> sender);
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class TestApi;
   class AndroidIdStore;

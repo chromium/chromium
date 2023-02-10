@@ -1554,4 +1554,9 @@ void ArcNetHostImpl::OnShuttingDown() {
   observing_network_state_ = false;
 }
 
+// static
+void ArcNetHostImpl::EnsureFactoryBuilt() {
+  ArcNetHostImplFactory::GetInstance();
+}
+
 }  // namespace arc

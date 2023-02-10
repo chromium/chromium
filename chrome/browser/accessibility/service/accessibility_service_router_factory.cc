@@ -34,4 +34,9 @@ KeyedService* AccessibilityServiceRouterFactory::BuildServiceInstanceFor(
   return new AccessibilityServiceRouter();
 }
 
+// static
+void AccessibilityServiceRouterFactory::EnsureFactoryBuilt() {
+  GetInstance();
+}
+
 }  // namespace ax

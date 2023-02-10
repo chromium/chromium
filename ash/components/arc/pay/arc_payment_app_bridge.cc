@@ -116,4 +116,9 @@ void ArcPaymentAppBridge::AbortPaymentApp(const std::string& request_token,
   payment_app->AbortPaymentApp(request_token, std::move(callback));
 }
 
+// static
+void ArcPaymentAppBridge::EnsureFactoryBuilt() {
+  ArcPaymentAppBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

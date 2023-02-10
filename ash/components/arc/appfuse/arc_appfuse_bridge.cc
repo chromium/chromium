@@ -104,4 +104,9 @@ void ArcAppfuseBridge::OpenFile(uint32_t uid,
       base::BindOnce(&RunWithScopedHandle, std::move(callback)));
 }
 
+// static
+void ArcAppfuseBridge::EnsureFactoryBuilt() {
+  ArcAppfuseBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

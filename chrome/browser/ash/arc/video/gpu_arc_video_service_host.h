@@ -54,6 +54,8 @@ class GpuArcVideoKeyedService : public KeyedService {
   static GpuArcVideoKeyedService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  static void EnsureFactoryBuilt();
+
   GpuArcVideoKeyedService(content::BrowserContext* context,
                           ArcBridgeService* bridge_service);
   GpuArcVideoKeyedService(const GpuArcVideoKeyedService&) = delete;

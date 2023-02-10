@@ -57,6 +57,8 @@ class ArcPrivacyItemsBridge
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;
   base::ObserverList<Observer> observer_list_;

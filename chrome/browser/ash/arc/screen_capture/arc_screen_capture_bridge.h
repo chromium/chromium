@@ -49,6 +49,8 @@ class ArcScreenCaptureBridge : public KeyedService,
                          RequestPermissionCallback callback) override;
   void TestModeAcceptPermission(const std::string& package_name) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   struct PendingCaptureParams {
     PendingCaptureParams(std::unique_ptr<DesktopMediaPicker> picker,

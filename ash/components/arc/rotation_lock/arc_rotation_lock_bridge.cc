@@ -111,4 +111,9 @@ void ArcRotationLockBridge::SendRotationLockState() {
       static_cast<arc::mojom::Rotation>(current_display.rotation()));
 }
 
+// static
+void ArcRotationLockBridge::EnsureFactoryBuilt() {
+  ArcRotationLockBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

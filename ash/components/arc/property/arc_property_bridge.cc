@@ -94,4 +94,9 @@ void ArcPropertyBridge::SyncMinimizeOnBackButton() {
     property_instance->SetMinimizeOnBackButton(false);
 }
 
+// static
+void ArcPropertyBridge::EnsureFactoryBuilt() {
+  ArcPropertyBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

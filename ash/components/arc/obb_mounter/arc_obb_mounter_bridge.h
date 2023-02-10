@@ -42,6 +42,8 @@ class ArcObbMounterBridge : public KeyedService, public mojom::ObbMounterHost {
   void UnmountObb(const std::string& target_path,
                   UnmountObbCallback callback) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 };

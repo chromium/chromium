@@ -938,4 +938,9 @@ void ArcAuthService::OnMainAccountResolutionStatus(
   UpdateMainAccountResolutionStatus(profile_, status);
 }
 
+// static
+void ArcAuthService::EnsureFactoryBuilt() {
+  ArcAuthServiceFactory::GetInstance();
+}
+
 }  // namespace arc

@@ -188,6 +188,8 @@ class ArcPolicyBridge : public KeyedService,
   }
   const std::string& get_arc_dpc_version() { return arc_dpc_version_; }
 
+  static void EnsureFactoryBuilt();
+
  private:
   void InitializePolicyService();
 

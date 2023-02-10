@@ -509,4 +509,9 @@ void ArcInputOverlayManager::ResetForPendingTouchInjector(
   touch_injector.reset();
 }
 
+// static
+void ArcInputOverlayManager::EnsureFactoryBuilt() {
+  ArcInputOverlayManagerFactory::GetInstance();
+}
+
 }  // namespace arc::input_overlay

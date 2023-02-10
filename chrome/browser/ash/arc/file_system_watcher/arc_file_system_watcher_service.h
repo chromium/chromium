@@ -63,6 +63,8 @@ class ArcFileSystemWatcherService
                                    base::OnceClosure callback) override;
   void StopWatchingRemovableMedia(const std::string& mount_path) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   class FileSystemWatcher;
 

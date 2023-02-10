@@ -46,6 +46,8 @@ class ArcLockScreenBridge
   // session_manager::SessionManagerObserver overrides.
   void OnSessionStateChanged() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Sends the device locked state to container.
   void SendDeviceLockedState();

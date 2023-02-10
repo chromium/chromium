@@ -52,6 +52,8 @@ class ArcSystemUIBridge : public KeyedService,
   bool SendOverlayColor(uint32_t source_color,
                         mojom::ThemeStyleType theme_style);
 
+  static void EnsureFactoryBuilt();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ArcSystemUIBridgeTest, SendOverlayColor);
   // Sends the device dark theme state to Android.

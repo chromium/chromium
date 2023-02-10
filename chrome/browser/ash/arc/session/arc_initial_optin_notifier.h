@@ -35,6 +35,8 @@ class ArcInitialOptInNotifier : public ArcSessionManagerObserver,
   void OnArcInitialStart() override;
   void OnArcOptInUserAction() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Must be the last member.
   base::WeakPtrFactory<ArcInitialOptInNotifier> weak_ptr_factory_{this};

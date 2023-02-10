@@ -58,6 +58,8 @@ class ArcKeymasterBridge : public KeyedService, public mojom::KeymasterHost {
   // KeymasterHost mojo interface.
   void GetServer(GetServerCallback callback) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   using BootstrapMojoConnectionCallback = base::OnceCallback<void(bool)>;
 

@@ -338,6 +338,8 @@ class ArcBluetoothBridge
       int32_t adv_handle,
       ReleaseAdvertisementHandleCallback callback) override;
 
+  static void EnsureFactoryBuilt();
+
  protected:
   void ReserveAdvertisementHandleImpl(
       ReserveAdvertisementHandleCallback callback);

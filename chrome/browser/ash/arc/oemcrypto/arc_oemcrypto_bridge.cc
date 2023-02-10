@@ -92,4 +92,9 @@ void ArcOemCryptoBridge::Connect(
       std::move(output_protection));
 }
 
+// static
+void ArcOemCryptoBridge::EnsureFactoryBuilt() {
+  ArcOemCryptoBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

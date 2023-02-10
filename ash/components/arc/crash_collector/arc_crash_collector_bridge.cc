@@ -191,4 +191,9 @@ std::vector<std::string> ArcCrashCollectorBridge::CreateCrashReporterArgs() {
   return args;
 }
 
+// static
+void ArcCrashCollectorBridge::EnsureFactoryBuilt() {
+  ArcCrashCollectorBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

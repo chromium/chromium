@@ -432,5 +432,9 @@ void ArcTracingBridge::ArcTracingAgent::GetCategories(
   bridge_->GetCategories(category_set);
 }
 
+// static
+void ArcTracingBridge::EnsureFactoryBuilt() {
+  ArcTracingBridgeFactory::GetInstance();
+}
 
 }  // namespace arc

@@ -88,4 +88,9 @@ void ArcUserSessionService::OnConnectionClosed() {
   session_manager::SessionManager::Get()->RemoveObserver(this);
 }
 
+// static
+void ArcUserSessionService::EnsureFactoryBuilt() {
+  ArcUserSessionServiceFactory::GetInstance();
+}
+
 }  // namespace arc

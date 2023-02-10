@@ -65,6 +65,9 @@ class ArcServiceLauncher {
   // OnPrimaryUserProfilePrepared() should be called.
   void ResetForTesting();
 
+  // Ensure all ARC keyed service factories are properly initialised.
+  static void EnsureFactoriesBuilt();
+
  private:
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   // Callback for when the CdmFactoryDaemon D-Bus service is available, also

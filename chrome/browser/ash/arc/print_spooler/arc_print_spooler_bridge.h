@@ -57,6 +57,8 @@ class ArcPrintSpoolerBridge : public KeyedService,
       StartPrintInCustomTabCallback callback,
       base::FilePath file_path);
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 

@@ -86,6 +86,8 @@ class ArcDigitalGoodsBridge : public KeyedService {
                const std::string& purchase_token,
                ConsumeCallback callback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 };

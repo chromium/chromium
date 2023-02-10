@@ -238,4 +238,9 @@ void ArcSurveyService::AddAllowedPackageNameForTesting(
   allowed_packages_.emplace(package_name);
 }
 
+// static
+void ArcSurveyService::EnsureFactoryBuilt() {
+  ArcSurveyServiceFactory::GetInstance();
+}
+
 }  // namespace arc

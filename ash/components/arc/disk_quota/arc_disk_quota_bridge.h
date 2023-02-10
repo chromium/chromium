@@ -54,6 +54,8 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
 
   void GetFreeDiskSpace(GetFreeDiskSpaceCallback) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   void OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
                           absl::optional<int64_t> reply);

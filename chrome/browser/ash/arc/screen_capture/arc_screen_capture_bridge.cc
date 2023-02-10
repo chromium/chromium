@@ -205,4 +205,9 @@ void ArcScreenCaptureBridge::OpenSession(
   std::move(callback).Run(std::move(screen_capture_session_remote));
 }
 
+// static
+void ArcScreenCaptureBridge::EnsureFactoryBuilt() {
+  ArcScreenCaptureBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

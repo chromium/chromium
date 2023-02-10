@@ -161,4 +161,9 @@ void ArcCameraBridge::RegisterCameraHalClient(
       std::move(callback));
 }
 
+// static
+void ArcCameraBridge::EnsureFactoryBuilt() {
+  ArcCameraBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

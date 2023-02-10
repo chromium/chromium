@@ -416,6 +416,9 @@ ChromeBrowserMainExtraPartsProfiles::~ChromeBrowserMainExtraPartsProfiles() =
 // TODO(erg): This needs to be something else. I don't think putting every
 // FooServiceFactory here will scale or is desirable long term.
 //
+// TODO(crbug/1414416): Check how to simplify the approach of registering every
+// factory in this function.
+//
 // static
 void ChromeBrowserMainExtraPartsProfiles::
     EnsureBrowserContextKeyedServiceFactoriesBuilt() {

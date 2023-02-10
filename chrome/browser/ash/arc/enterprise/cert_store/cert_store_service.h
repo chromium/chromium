@@ -60,6 +60,8 @@ class CertStoreService : public KeyedService,
         std::set<std::string>(cert_names.begin(), cert_names.end()));
   }
 
+  static void EnsureFactoryBuilt();
+
  private:
   using BuildAllowedCertDescriptionsCallback =
       base::OnceCallback<void(std::vector<CertDescription> allowed_certs)>;

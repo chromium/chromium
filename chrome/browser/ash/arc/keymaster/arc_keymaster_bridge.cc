@@ -161,4 +161,9 @@ void ArcKeymasterBridge::BootstrapMojoConnection(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+// static
+void ArcKeymasterBridge::EnsureFactoryBuilt() {
+  ArcKeymasterBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

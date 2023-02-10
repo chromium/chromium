@@ -68,4 +68,9 @@ ArcSharesheetBridge::~ArcSharesheetBridge() {
   arc_bridge_service_->sharesheet()->SetHost(nullptr);
 }
 
+// static
+void ArcSharesheetBridge::EnsureFactoryBuilt() {
+  ArcSharesheetBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

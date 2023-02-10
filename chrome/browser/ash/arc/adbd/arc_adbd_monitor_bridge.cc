@@ -252,4 +252,9 @@ void ArcAdbdMonitorBridge::StopArcVmAdbdInternal(
   ConfigureUpstartJobs(std::move(jobs), std::move(callback));
 }
 
+// static
+void ArcAdbdMonitorBridge::EnsureFactoryBuilt() {
+  ArcAdbdMonitorBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

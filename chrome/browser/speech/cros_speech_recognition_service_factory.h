@@ -21,6 +21,8 @@ class CrosSpeechRecognitionServiceFactory : public ProfileKeyedServiceFactory {
   static speech::SpeechRecognitionService* GetForProfile(Profile* profile);
   static CrosSpeechRecognitionServiceFactory* GetInstanceForTest();
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class base::NoDestructor<CrosSpeechRecognitionServiceFactory>;
   static CrosSpeechRecognitionServiceFactory* GetInstance();

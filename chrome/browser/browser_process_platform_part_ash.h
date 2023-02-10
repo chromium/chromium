@@ -128,6 +128,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {
     return in_session_password_change_manager_.get();
   }
 
+  static void EnsureFactoryBuilt();
+
  protected:
   // BrowserProcessPlatformPartChromeOS:
   bool CanRestoreUrlsForProfile(const Profile* profile) const override;

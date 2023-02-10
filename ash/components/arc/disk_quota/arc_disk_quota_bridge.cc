@@ -167,4 +167,9 @@ void ArcDiskQuotaBridge::OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
   std::move(callback).Run(std::move(disk_space));
 }
 
+// static
+void ArcDiskQuotaBridge::EnsureFactoryBuilt() {
+  ArcDiskQuotaBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

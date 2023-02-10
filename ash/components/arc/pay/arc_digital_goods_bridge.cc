@@ -127,4 +127,9 @@ void ArcDigitalGoodsBridge::Consume(const std::string& package_name,
                          std::move(callback));
 }
 
+// static
+void ArcDigitalGoodsBridge::EnsureFactoryBuilt() {
+  ArcDigitalGoodsBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

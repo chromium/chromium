@@ -117,4 +117,9 @@ void ArcMetricsServiceProxy::OnArcMemoryPressureKill(int count,
   }
 }
 
+// static
+void ArcMetricsServiceProxy::EnsureFactoryBuilt() {
+  ArcMetricsServiceProxyFactory::GetInstance();
+}
+
 }  // namespace arc

@@ -48,6 +48,8 @@ class ArcPipBridge : public KeyedService,
   // PipInstance methods:
   void ClosePip();
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;
 

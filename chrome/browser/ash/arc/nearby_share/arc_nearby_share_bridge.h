@@ -51,6 +51,8 @@ class ArcNearbyShareBridge : public KeyedService,
       mojo::PendingRemote<mojom::NearbyShareSessionInstance> instance,
       StartNearbyShareCallback callback) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Called by NearbyShareSessionImpl when the session is finished and can be
   // cleaned up.

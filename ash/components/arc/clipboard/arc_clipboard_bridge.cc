@@ -199,4 +199,9 @@ void ArcClipboardBridge::GetClipContent(GetClipContentCallback callback) {
   std::move(callback).Run(std::move(clip_data));
 }
 
+// static
+void ArcClipboardBridge::EnsureFactoryBuilt() {
+  ArcClipboardBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

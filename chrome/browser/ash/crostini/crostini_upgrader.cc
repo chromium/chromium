@@ -483,4 +483,9 @@ CrostiniExportImport::OnceTrackerFactory CrostiniUpgrader::MakeFactory() {
       weak_ptr_factory_.GetWeakPtr());
 }
 
+// static
+void CrostiniUpgrader::EnsureFactoryBuilt() {
+  CrostiniUpgraderFactory::GetInstance();
+}
+
 }  // namespace crostini

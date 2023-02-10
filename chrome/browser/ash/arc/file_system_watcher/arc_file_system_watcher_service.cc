@@ -501,4 +501,9 @@ void ArcFileSystemWatcherService::TriggerSendAllMountEvents() const {
   ArcVolumeMounterBridge::GetForBrowserContext(context_)->SendAllMountEvents();
 }
 
+// static
+void ArcFileSystemWatcherService::EnsureFactoryBuilt() {
+  ArcFileSystemWatcherServiceFactory::GetInstance();
+}
+
 }  // namespace arc

@@ -45,6 +45,8 @@ class ArcEnterpriseReportingService
                                    mojom::TimedCloudDpcOp op,
                                    bool success) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   THREAD_CHECKER(thread_checker_);
 

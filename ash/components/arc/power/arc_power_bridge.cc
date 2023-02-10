@@ -413,4 +413,9 @@ void ArcPowerBridge::UpdateAndroidScreenBrightness(double percent) {
   power_instance->UpdateScreenBrightnessSettings(percent);
 }
 
+// static
+void ArcPowerBridge::EnsureFactoryBuilt() {
+  ArcPowerBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

@@ -83,6 +83,8 @@ class ArcInputOverlayManager : public KeyedService,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class ArcInputOverlayManagerTest;
   friend class TestArcInputOverlayManager;

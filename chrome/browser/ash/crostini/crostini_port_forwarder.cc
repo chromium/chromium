@@ -406,4 +406,9 @@ void CrostiniPortForwarder::ActiveNetworksChanged(
   UpdateActivePortInterfaces();
 }
 
+// static
+void CrostiniPortForwarder::EnsureFactoryBuilt() {
+  CrostiniPortForwarderFactory::GetInstance();
+}
+
 }  // namespace crostini

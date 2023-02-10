@@ -149,4 +149,9 @@ void ArcTtsService::OnVoicesChanged(std::vector<mojom::TtsVoicePtr> voices) {
   content::TtsController::GetInstance()->VoicesChanged();
 }
 
+// static
+void ArcTtsService::EnsureFactoryBuilt() {
+  ArcTtsServiceFactory::GetInstance();
+}
+
 }  // namespace arc

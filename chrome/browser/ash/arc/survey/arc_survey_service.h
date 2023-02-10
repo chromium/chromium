@@ -69,6 +69,8 @@ class ArcSurveyService : public KeyedService, public ArcAppListPrefs::Observer {
   const std::set<std::string>* GetAllowedPackagesForTesting();
   void AddAllowedPackageNameForTesting(const std::string package_name);
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class ArcSurveyServiceTest;
   bool LoadSurveyData(std::string survey_data);

@@ -113,6 +113,8 @@ class ArcAccessibilityHelperBridge
     return tree_tracker_.trees_for_test();
   }
 
+  static void EnsureFactoryBuilt();
+
  private:
   // virtual for testing.
   virtual extensions::EventRouter* GetEventRouter() const;

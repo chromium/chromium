@@ -612,4 +612,9 @@ void ArcFileSystemOperationRunner::SetShouldDefer(bool should_defer) {
   DCHECK(deferred_operations_.empty());
 }
 
+// static
+void ArcFileSystemOperationRunner::EnsureFactoryBuilt() {
+  ArcFileSystemOperationRunnerFactory::GetInstance();
+}
+
 }  // namespace arc

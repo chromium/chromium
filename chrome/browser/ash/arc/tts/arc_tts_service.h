@@ -50,6 +50,8 @@ class ArcTtsService : public KeyedService,
     tts_controller_ = tts_controller;
   }
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 

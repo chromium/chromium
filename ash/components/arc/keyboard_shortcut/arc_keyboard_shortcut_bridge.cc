@@ -85,4 +85,9 @@ void ArcKeyboardShortcutBridge::HideKeyboardShortcutViewer() {
   NOTIMPLEMENTED();
 }
 
+// static
+void ArcKeyboardShortcutBridge::EnsureFactoryBuilt() {
+  ArcKeyboardShortcutBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

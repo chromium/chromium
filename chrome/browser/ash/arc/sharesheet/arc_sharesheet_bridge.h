@@ -40,6 +40,8 @@ class ArcSharesheetBridge : public KeyedService, public mojom::SharesheetHost {
   // mojom::SharesheetHost overrides:
   // TODO(phshah): Add overrides.
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 

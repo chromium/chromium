@@ -72,4 +72,9 @@ ArcFileSystemMounter::~ArcFileSystemMounter() {
   mount_points->RevokeFileSystem(kDocumentsProviderMountPointPath);
 }
 
+// static
+void ArcFileSystemMounter::EnsureFactoryBuilt() {
+  ArcFileSystemMounterFactory::GetInstance();
+}
+
 }  // namespace arc

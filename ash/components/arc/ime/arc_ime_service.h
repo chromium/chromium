@@ -171,6 +171,8 @@ class ArcImeService : public KeyedService,
   static void SetOverrideDisplayOriginForTesting(
       absl::optional<gfx::Point> origin);
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class ArcImeServiceTest;
 

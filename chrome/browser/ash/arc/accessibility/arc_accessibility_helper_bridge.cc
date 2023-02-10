@@ -628,4 +628,9 @@ void ArcAccessibilityHelperBridge::DispatchEventTextAnnouncement(
   GetEventRouter()->BroadcastEvent(std::move(event));
 }
 
+// static
+void ArcAccessibilityHelperBridge::EnsureFactoryBuilt() {
+  ArcAccessibilityHelperBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

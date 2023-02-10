@@ -106,6 +106,8 @@ class ArcNetHostImpl : public KeyedService,
   void OnConnectionReady() override;
   void OnConnectionClosed() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   const ash::NetworkState* GetDefaultNetworkFromChrome();
   void UpdateActiveNetworks(

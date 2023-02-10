@@ -85,6 +85,8 @@ class ArcInstanceThrottle : public KeyedService,
   // ArcMetricsService::BootTypeObserver
   void OnBootTypeRetrieved(mojom::BootType boot_type) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // ash::ThrottleService:
   void ThrottleInstance(bool should_throttle) override;

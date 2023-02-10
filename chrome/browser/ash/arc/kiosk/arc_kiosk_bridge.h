@@ -51,6 +51,8 @@ class ArcKioskBridge : public KeyedService,
   void OnMaintenanceSessionCreated(int32_t session_id) override;
   void OnMaintenanceSessionFinished(int32_t session_id, bool success) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // |delegate| should be alive while the ArcKioskBridge instance is alive.
   ArcKioskBridge(ArcBridgeService* bridge_service, Delegate* delegate);

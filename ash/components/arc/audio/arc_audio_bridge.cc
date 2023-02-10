@@ -157,4 +157,9 @@ void ArcAudioBridge::SendVolumeState() {
     audio_instance->NotifyVolumeState(volume_, muted_);
 }
 
+// static
+void ArcAudioBridge::EnsureFactoryBuilt() {
+  ArcAudioBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

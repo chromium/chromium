@@ -97,4 +97,9 @@ void ArcPrivacyItemsBridge::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+// static
+void ArcPrivacyItemsBridge::EnsureFactoryBuilt() {
+  ArcPrivacyItemsBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

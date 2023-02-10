@@ -41,6 +41,8 @@ class ArcOemCryptoBridge : public KeyedService,
   void Connect(
       mojo::PendingReceiver<mojom::OemCryptoService> receiver) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 

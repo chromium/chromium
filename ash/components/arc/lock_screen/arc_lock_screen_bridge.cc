@@ -78,4 +78,9 @@ void ArcLockScreenBridge::SendDeviceLockedState() {
       session_manager::SessionManager::Get()->IsUserSessionBlocked());
 }
 
+// static
+void ArcLockScreenBridge::EnsureFactoryBuilt() {
+  ArcLockScreenBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

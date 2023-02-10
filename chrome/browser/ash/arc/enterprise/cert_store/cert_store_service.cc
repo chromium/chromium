@@ -561,4 +561,9 @@ void CertStoreService::OnArcCertsInstalled(bool need_policy_update,
   }
 }
 
+// static
+void CertStoreService::EnsureFactoryBuilt() {
+  CertStoreServiceFactory::GetInstance();
+}
+
 }  // namespace arc

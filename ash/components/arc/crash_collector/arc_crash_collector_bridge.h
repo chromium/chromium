@@ -53,6 +53,8 @@ class ArcCrashCollectorBridge : public KeyedService,
       const std::string& cpu_abi,
       const absl::optional<std::string>& fingerprint) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   std::vector<std::string> CreateCrashReporterArgs();
 

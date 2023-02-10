@@ -385,4 +385,9 @@ void ArcResizeLockManager::ShowSplashScreenDialog(aura::Window* window,
                              is_fully_locked));
 }
 
+// static
+void ArcResizeLockManager::EnsureFactoryBuilt() {
+  ArcResizeLockManagerFactory::GetInstance();
+}
+
 }  // namespace arc

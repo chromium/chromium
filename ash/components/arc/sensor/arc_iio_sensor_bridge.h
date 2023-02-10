@@ -49,6 +49,8 @@ class ArcIioSensorBridge : public KeyedService,
   void TabletModeEventReceived(chromeos::PowerManagerClient::TabletMode mode,
                                base::TimeTicks timestamp) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Send tablet mode changed event to ARC.
   void SendTabletMode();

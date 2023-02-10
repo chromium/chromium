@@ -102,6 +102,8 @@ class ArcAuthService : public KeyedService,
   void HandleRemoveAccountRequest(const std::string& email) override;
   void HandleUpdateCredentialsRequest(const std::string& email) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class ArcAuthServiceTest;
 

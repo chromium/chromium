@@ -103,4 +103,9 @@ void ArcMediaSessionBridge::SetupAudioFocus() {
   ms_instance->EnableAudioFocus(audio_focus.Unbind());
 }
 
+// static
+void ArcMediaSessionBridge::EnsureFactoryBuilt() {
+  ArcMediaSessionBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

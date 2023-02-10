@@ -95,4 +95,9 @@ void ArcKioskBridge::OnMaintenanceSessionFinished(int32_t session_id,
   delegate_->OnMaintenanceSessionFinished();
 }
 
+// static
+void ArcKioskBridge::EnsureFactoryBuilt() {
+  ArcKioskBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

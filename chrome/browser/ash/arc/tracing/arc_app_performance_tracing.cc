@@ -483,4 +483,9 @@ void ArcAppPerformanceTracing::DetachActiveWindow() {
   arc_active_window_ = nullptr;
 }
 
+// static
+void ArcAppPerformanceTracing::EnsureFactoryBuilt() {
+  ArcAppPerformanceTracingFactory::GetInstance();
+}
+
 }  // namespace arc

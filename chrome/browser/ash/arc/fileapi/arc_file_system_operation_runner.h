@@ -203,6 +203,8 @@ class ArcFileSystemOperationRunner
   // Returns true if operations will be deferred.
   bool WillDefer() const { return should_defer_; }
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class ArcFileSystemOperationRunnerTest;
   friend class ash::RecentArcMediaSourceTest;

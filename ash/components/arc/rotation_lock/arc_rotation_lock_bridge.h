@@ -52,6 +52,8 @@ class ArcRotationLockBridge
   // ash::TabletModeObserver:
   void OnTabletPhysicalStateChanged() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   void SendRotationLockState();
 

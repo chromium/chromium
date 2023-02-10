@@ -127,4 +127,9 @@ void ArcNearbyShareBridge::StartNearbyShare(
   std::move(callback).Run(std::move(remote));
 }
 
+// static
+void ArcNearbyShareBridge::EnsureFactoryBuilt() {
+  ArcNearbyShareBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

@@ -929,4 +929,9 @@ bool ArcSettingsService::IsInitialSettingsPending() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kArcInitialSettingsPending);
 }
 
+// static
+void ArcSettingsService::EnsureFactoryBuilt() {
+  ArcSettingsServiceFactory::GetInstance();
+}
+
 }  // namespace arc

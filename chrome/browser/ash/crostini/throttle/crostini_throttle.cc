@@ -88,4 +88,9 @@ void CrostiniThrottle::ThrottleInstance(bool should_throttle) {
   delegate_->SetCpuRestriction(should_throttle);
 }
 
+// static
+void CrostiniThrottle::EnsureFactoryBuilt() {
+  CrostiniThrottleFactory::GetInstance();
+}
+
 }  // namespace crostini

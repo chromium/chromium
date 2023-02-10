@@ -321,4 +321,9 @@ void GpuArcVideoServiceHost::OnBootstrapVideoAcceleratorFactory(
           std::move(server_pipe)));
 }
 
+// static
+void GpuArcVideoKeyedService::EnsureFactoryBuilt() {
+  GpuArcVideoKeyedServiceFactory::GetInstance();
+}
+
 }  // namespace arc

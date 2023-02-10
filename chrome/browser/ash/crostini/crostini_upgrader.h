@@ -63,6 +63,8 @@ class CrostiniUpgrader : public KeyedService,
   // Return true if internal state allows starting upgrade.
   bool CanUpgrade();
 
+  static void EnsureFactoryBuilt();
+
  private:
   void CreateNewLogFile();
 

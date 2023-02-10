@@ -65,6 +65,8 @@ class ArcTimerBridge : public KeyedService,
                   base::TimeTicks absolute_expiration_time,
                   StartTimerCallback callback) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Deletes all timers.
   void DeleteArcTimers();

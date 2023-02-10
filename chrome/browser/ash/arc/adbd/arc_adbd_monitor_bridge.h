@@ -51,6 +51,8 @@ class ArcAdbdMonitorBridge
   void OnStartArcVmAdbdTesting(chromeos::VoidDBusMethodCallback callback);
   void OnStopArcVmAdbdTesting(chromeos::VoidDBusMethodCallback callback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   void StartArcVmAdbd(chromeos::VoidDBusMethodCallback callback);
   void StopArcVmAdbd(chromeos::VoidDBusMethodCallback callback);

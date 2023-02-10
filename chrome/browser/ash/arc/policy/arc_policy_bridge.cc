@@ -770,4 +770,9 @@ void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
   }
 }
 
+// static
+void ArcPolicyBridge::EnsureFactoryBuilt() {
+  ArcPolicyBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

@@ -47,6 +47,8 @@ class ArcAppfuseBridge : public KeyedService, public mojom::AppfuseHost {
                 int32_t flags,
                 OpenFileCallback callback) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 };

@@ -221,4 +221,9 @@ absl::optional<ArcTimerBridge::TimerId> ArcTimerBridge::GetTimerId(
                                   : absl::make_optional<TimerId>(it->second);
 }
 
+// static
+void ArcTimerBridge::EnsureFactoryBuilt() {
+  ArcTimerBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

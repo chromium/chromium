@@ -57,6 +57,8 @@ class ArcMetricsServiceProxy : public KeyedService,
   void OnArcOOMKillCount(unsigned long current_oom_kills) override;
   void OnArcMemoryPressureKill(int count, int estimated_freed_kb) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcAppListPrefs* const arc_app_list_prefs_;
   ArcMetricsService* const arc_metrics_service_;

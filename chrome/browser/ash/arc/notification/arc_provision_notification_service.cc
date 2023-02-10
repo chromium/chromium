@@ -187,4 +187,9 @@ void ArcProvisionNotificationService::OnArcErrorShowRequested(
   HideNotification();
 }
 
+// static
+void ArcProvisionNotificationService::EnsureFactoryBuilt() {
+  ArcProvisionNotificationServiceFactory::GetInstance();
+}
+
 }  // namespace arc

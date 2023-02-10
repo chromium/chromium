@@ -26,6 +26,8 @@ class AccessibilityServiceRouterFactory : public ProfileKeyedServiceFactory {
     return GetInstance();
   }
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class base::NoDestructor<AccessibilityServiceRouterFactory>;
   static AccessibilityServiceRouterFactory* GetInstance();

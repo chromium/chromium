@@ -851,4 +851,9 @@ UserCloudPolicyManagerAsh::GetReportSchedulerForTesting() {
   return report_scheduler_.get();
 }
 
+// static
+void UserCloudPolicyManagerAsh::EnsureFactoryBuilt() {
+  UserCloudPolicyManagerAshNotifierFactory::GetInstance();
+}
+
 }  // namespace policy

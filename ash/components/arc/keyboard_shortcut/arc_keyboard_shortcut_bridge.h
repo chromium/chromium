@@ -37,6 +37,8 @@ class ArcKeyboardShortcutBridge : public KeyedService,
   void ShowKeyboardShortcutViewer() override;
   void HideKeyboardShortcutViewer() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;
 };

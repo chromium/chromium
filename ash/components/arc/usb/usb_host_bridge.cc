@@ -384,4 +384,9 @@ void ArcUsbHostBridge::OnDeviceRemoved(
   ui_delegate_->DeviceRemoved(device_info->guid);
 }
 
+// static
+void ArcUsbHostBridge::EnsureFactoryBuilt() {
+  ArcUsbHostBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

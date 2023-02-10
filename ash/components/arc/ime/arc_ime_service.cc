@@ -822,4 +822,9 @@ gfx::Point ArcImeService::GetDisplayOriginForFocusedWindow() const {
       .origin();
 }
 
+// static
+void ArcImeService::EnsureFactoryBuilt() {
+  ArcImeServiceFactory::GetInstance();
+}
+
 }  // namespace arc

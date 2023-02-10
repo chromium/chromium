@@ -116,4 +116,9 @@ bool ArcSystemUIBridge::SendOverlayColor(uint32_t source_color,
   return true;
 }
 
+// static
+void ArcSystemUIBridge::EnsureFactoryBuilt() {
+  ArcSystemUIBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

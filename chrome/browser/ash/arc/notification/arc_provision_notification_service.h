@@ -44,6 +44,8 @@ class ArcProvisionNotificationService
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Shows/hides the notification.
   void MaybeShowNotification();

@@ -101,4 +101,9 @@ void ArcInitialOptInNotifier::OnArcOptInUserAction() {
     throughput_recorder->OnArcOptedIn();
 }
 
+// static
+void ArcInitialOptInNotifier::EnsureFactoryBuilt() {
+  ArcInitialOptInNotifierFactory::GetInstance();
+}
+
 }  // namespace arc

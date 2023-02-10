@@ -101,4 +101,9 @@ void ArcPipBridge::ClosePip() {
     instance->ClosePip();
 }
 
+// static
+void ArcPipBridge::EnsureFactoryBuilt() {
+  ArcPipBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

@@ -67,6 +67,8 @@ class ArcPaymentAppBridge : public KeyedService {
   void AbortPaymentApp(const std::string& request_token,
                        AbortPaymentAppCallback callback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 };

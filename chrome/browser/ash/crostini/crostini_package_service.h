@@ -87,6 +87,8 @@ class CrostiniPackageService : public KeyedService,
 
   CrostiniManager::RestartId GetRestartIdForTesting();
 
+  static void EnsureFactoryBuilt();
+
  private:
   // The user can request new operations while a different operation is in
   // progress. Rather than sending a request which will fail, just queue the

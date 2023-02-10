@@ -154,4 +154,9 @@ void TokenHandleFetcher::OnProfileDestroyed() {
   std::move(callback_).Run(account_id_, false);
 }
 
+// static
+void TokenHandleFetcher::EnsureFactoryBuilt() {
+  TokenHandleFetcherShutdownNotifierFactory::GetInstance();
+}
+
 }  // namespace ash

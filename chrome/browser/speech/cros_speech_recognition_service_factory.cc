@@ -43,3 +43,8 @@ KeyedService* CrosSpeechRecognitionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new speech::CrosSpeechRecognitionService(context);
 }
+
+// static
+void CrosSpeechRecognitionServiceFactory::EnsureFactoryBuilt() {
+  GetInstance();
+}

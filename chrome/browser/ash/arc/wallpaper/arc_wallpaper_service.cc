@@ -202,4 +202,9 @@ void ArcWallpaperService::NotifyWallpaperChangedAndReset(int32_t android_id) {
   NotifyWallpaperChanged(-1);
 }
 
+// static
+void ArcWallpaperService::EnsureFactoryBuilt() {
+  ArcWallpaperServiceFactory::GetInstance();
+}
+
 }  // namespace arc

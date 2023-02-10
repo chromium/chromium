@@ -47,6 +47,8 @@ class ArcSettingsService
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
   void OnArcInitialStart() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   void SetInitialSettingsPending(bool pending);
   bool IsInitialSettingsPending() const;

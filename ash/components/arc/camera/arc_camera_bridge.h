@@ -46,6 +46,8 @@ class ArcCameraBridge : public KeyedService, public mojom::CameraHost {
       mojo::PendingRemote<cros::mojom::CameraHalClient> client,
       RegisterCameraHalClientCallback callback) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   class PendingStartCameraServiceResult;
 

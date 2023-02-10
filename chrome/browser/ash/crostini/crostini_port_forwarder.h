@@ -113,6 +113,8 @@ class CrostiniPortForwarder : public KeyedService {
 
   static CrostiniPortForwarder* GetForProfile(Profile* profile);
 
+  static void EnsureFactoryBuilt();
+
   explicit CrostiniPortForwarder(Profile* profile);
 
   CrostiniPortForwarder(const CrostiniPortForwarder&) = delete;

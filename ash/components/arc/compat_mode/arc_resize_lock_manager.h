@@ -57,6 +57,8 @@ class ArcResizeLockManager : public KeyedService,
     pref_delegate_ = delegate;
   }
 
+  static void EnsureFactoryBuilt();
+
  private:
   friend class ArcResizeLockManagerTest;
 

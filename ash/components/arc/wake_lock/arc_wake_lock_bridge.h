@@ -67,6 +67,8 @@ class ArcWakeLockBridge : public KeyedService,
   void AcquirePartialWakeLock(AcquirePartialWakeLockCallback callback) override;
   void ReleasePartialWakeLock(ReleasePartialWakeLockCallback callback) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   class WakeLockRequester;
 

@@ -107,4 +107,9 @@ void ArcPrintSpoolerBridge::OnPrintDocumentSaved(
       std::move(web_contents), arc_window, std::move(instance)));
 }
 
+// static
+void ArcPrintSpoolerBridge::EnsureFactoryBuilt() {
+  ArcPrintSpoolerBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

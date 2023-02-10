@@ -47,6 +47,8 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   // Get token handle for existing user.
   void BackfillToken(Profile* profile, TokenFetchingCallback callback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   // AccessTokenFetcher::TokenCallback for PrimaryAccountAccessTokenFetcher.
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,

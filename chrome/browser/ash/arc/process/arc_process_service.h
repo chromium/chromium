@@ -143,6 +143,8 @@ class ArcProcessService : public KeyedService,
     PidMap pidmap_;
   };
 
+  static void EnsureFactoryBuilt();
+
  private:
   void OnReceiveProcessList(
       RequestProcessListCallback callback,

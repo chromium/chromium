@@ -61,6 +61,8 @@ class TtsEngineExtensionObserverChromeOS
     return &tts_service_;
   }
 
+  static void EnsureFactoryBuilt();
+
  private:
   explicit TtsEngineExtensionObserverChromeOS(Profile* profile);
   ~TtsEngineExtensionObserverChromeOS() override;

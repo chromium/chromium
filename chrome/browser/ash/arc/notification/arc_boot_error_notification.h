@@ -36,6 +36,8 @@ class ArcBootErrorNotification : public KeyedService,
   // ArcSessionManagerObserver:
   void OnArcSessionStopped(ArcStopReason reason) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   content::BrowserContext* const context_;
 };

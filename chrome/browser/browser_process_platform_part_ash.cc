@@ -297,3 +297,8 @@ bool BrowserProcessPlatformPart::CanRestoreUrlsForProfile(
          ash::ProfileHelper::IsUserProfile(profile) &&
          !ash::ProfileHelper::IsEphemeralUserProfile(profile);
 }
+
+// static
+void BrowserProcessPlatformPart::EnsureFactoryBuilt() {
+  PrimaryProfileServicesShutdownNotifierFactory::GetInstance();
+}

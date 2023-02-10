@@ -114,4 +114,9 @@ void ArcMidisBridge::OnMojoConnectionError() {
   midis_host_remote_.reset();
 }
 
+// static
+void ArcMidisBridge::EnsureFactoryBuilt() {
+  ArcMidisBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

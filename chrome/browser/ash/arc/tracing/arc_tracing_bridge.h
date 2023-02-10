@@ -65,6 +65,8 @@ class ArcTracingBridge : public KeyedService,
   // Stops tracing and calls |callback| when stopped.
   void StopTracing(StopCallback callback);
 
+  static void EnsureFactoryBuilt();
+
  private:
   // TODO(crbug.com/839086): Remove once we have replaced the legacy tracing
   // service with perfetto.

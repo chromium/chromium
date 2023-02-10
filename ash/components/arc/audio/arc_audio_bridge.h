@@ -45,6 +45,8 @@ class ArcAudioBridge : public KeyedService,
   void ShowVolumeControls() override;
   void OnSystemVolumeUpdateRequest(int32_t percent) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   // ash::CrasAudioHandler::AudioObserver overrides.
   void OnAudioNodesChanged() override;

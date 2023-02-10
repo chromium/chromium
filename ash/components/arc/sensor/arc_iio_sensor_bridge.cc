@@ -98,4 +98,9 @@ void ArcIioSensorBridge::OnGetSwitchStates(
   }
 }
 
+// static
+void ArcIioSensorBridge::EnsureFactoryBuilt() {
+  ArcIioSensorBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

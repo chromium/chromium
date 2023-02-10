@@ -268,3 +268,8 @@ void TtsEngineExtensionObserverChromeOS::CreateTtsServiceIfNeeded() {
       },
       &tts_service_));
 }
+
+// static
+void TtsEngineExtensionObserverChromeOS::EnsureFactoryBuilt() {
+  TtsEngineExtensionObserverChromeOSFactory::GetInstance();
+}

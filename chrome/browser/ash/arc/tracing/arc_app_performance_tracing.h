@@ -116,6 +116,8 @@ class ArcAppPerformanceTracing : public KeyedService,
   // profiled.
   aura::Window* active_window() { return arc_active_window_; }
 
+  static void EnsureFactoryBuilt();
+
  private:
   // May be start tracing session if all conditions are met. Window creating is
   // controlled by Wayland protocol implementation and task creation is reported

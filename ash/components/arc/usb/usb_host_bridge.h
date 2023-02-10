@@ -76,6 +76,8 @@ class ArcUsbHostBridge : public KeyedService,
 
   void SetUiDelegate(ArcUsbHostUiDelegate* ui_delegate);
 
+  static void EnsureFactoryBuilt();
+
  private:
   // Init |devices_| once the device list has been returned, so that we
   // can get UsbDeviceInfo from |guid| for other methods.

@@ -44,6 +44,8 @@ class ArcMediaSessionBridge
   void OnConnectionReady() override;
   void OnConnectionClosed() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   void SetupAudioFocus();
 

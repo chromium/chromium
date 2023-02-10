@@ -420,4 +420,9 @@ void ArcVolumeMounterBridge::OnSetUpExternalStorageMountPoints(
   std::move(callback).Run(true);
 }
 
+// static
+void ArcVolumeMounterBridge::EnsureFactoryBuilt() {
+  ArcVolumeMounterBridgeFactory::GetInstance();
+}
+
 }  // namespace arc

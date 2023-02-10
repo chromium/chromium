@@ -45,6 +45,8 @@ class ArcUserSessionService
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;
 };

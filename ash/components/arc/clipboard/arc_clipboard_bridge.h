@@ -42,6 +42,8 @@ class ArcClipboardBridge : public KeyedService,
   void SetClipContent(mojom::ClipDataPtr clip_data) override;
   void GetClipContent(GetClipContentCallback callback) override;
 
+  static void EnsureFactoryBuilt();
+
  private:
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 

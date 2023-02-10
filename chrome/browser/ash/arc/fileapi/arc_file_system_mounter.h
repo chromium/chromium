@@ -23,6 +23,8 @@ class ArcFileSystemMounter : public KeyedService {
   static ArcFileSystemMounter* GetForBrowserContext(
       content::BrowserContext* context);
 
+  static void EnsureFactoryBuilt();
+
   ArcFileSystemMounter(content::BrowserContext* context,
                        ArcBridgeService* bridge_service);
 

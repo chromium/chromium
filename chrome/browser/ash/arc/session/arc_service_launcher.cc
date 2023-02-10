@@ -46,7 +46,9 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_package_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager.h"
+#include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager_factory.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
@@ -58,8 +60,10 @@
 #include "chrome/browser/ash/arc/enterprise/arc_enterprise_reporting_service.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_service.h"
+#include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_mounter.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_idle_manager.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
@@ -398,5 +402,73 @@ void ArcServiceLauncher::OnGetTpmStatus(
       kTpmOwnershipCheckDelay);
 }
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+
+// static
+void ArcServiceLauncher::EnsureFactoriesBuilt() {
+  ArcAccessibilityHelperBridge::EnsureFactoryBuilt();
+  ArcAdbdMonitorBridge::EnsureFactoryBuilt();
+  ArcAppPerformanceTracing::EnsureFactoryBuilt();
+  ArcAppfuseBridge::EnsureFactoryBuilt();
+  ArcAudioBridge::EnsureFactoryBuilt();
+  ArcAuthService::EnsureFactoryBuilt();
+  ArcBluetoothBridge::EnsureFactoryBuilt();
+  ArcBootErrorNotification::EnsureFactoryBuilt();
+  ArcBootPhaseMonitorBridgeFactory::GetInstance();
+  ArcCameraBridge::EnsureFactoryBuilt();
+  ArcClipboardBridge::EnsureFactoryBuilt();
+  ArcCrashCollectorBridge::EnsureFactoryBuilt();
+  ArcDigitalGoodsBridge::EnsureFactoryBuilt();
+  ArcDiskQuotaBridge::EnsureFactoryBuilt();
+  ArcDocumentsProviderRootMapFactory::GetInstance();
+  ArcEnterpriseReportingService::EnsureFactoryBuilt();
+  ArcFileSystemMounter::EnsureFactoryBuilt();
+  ArcFileSystemOperationRunner::EnsureFactoryBuilt();
+  ArcFileSystemWatcherService::EnsureFactoryBuilt();
+  ArcIioSensorBridge::EnsureFactoryBuilt();
+  ArcImeService::EnsureFactoryBuilt();
+  ArcInitialOptInNotifier::EnsureFactoryBuilt();
+  ArcInstanceThrottle::EnsureFactoryBuilt();
+  ArcKeyboardShortcutBridge::EnsureFactoryBuilt();
+  ArcKeymasterBridge::EnsureFactoryBuilt();
+  ArcKioskBridge::EnsureFactoryBuilt();
+  ArcLockScreenBridge::EnsureFactoryBuilt();
+  ArcMediaSessionBridge::EnsureFactoryBuilt();
+  ArcMetricsServiceFactory::GetInstance();
+  ArcMetricsServiceProxy::EnsureFactoryBuilt();
+  ArcMidisBridge::EnsureFactoryBuilt();
+  ArcNearbyShareBridge::EnsureFactoryBuilt();
+  ArcNetHostImpl::EnsureFactoryBuilt();
+  ArcObbMounterBridge::EnsureFactoryBuilt();
+  ArcOemCryptoBridge::EnsureFactoryBuilt();
+  ArcPackageSyncableServiceFactory::GetInstance();
+  ArcPaymentAppBridge::EnsureFactoryBuilt();
+  ArcPipBridge::EnsureFactoryBuilt();
+  ArcPolicyBridge::EnsureFactoryBuilt();
+  ArcPowerBridge::EnsureFactoryBuilt();
+  ArcPrintSpoolerBridge::EnsureFactoryBuilt();
+  ArcPrivacyItemsBridge::EnsureFactoryBuilt();
+  ArcProcessService::EnsureFactoryBuilt();
+  ArcPropertyBridge::EnsureFactoryBuilt();
+  ArcProvisionNotificationService::EnsureFactoryBuilt();
+  ArcResizeLockManager::EnsureFactoryBuilt();
+  ArcRotationLockBridge::EnsureFactoryBuilt();
+  ArcScreenCaptureBridge::EnsureFactoryBuilt();
+  ArcSettingsService::EnsureFactoryBuilt();
+  ArcSharesheetBridge::EnsureFactoryBuilt();
+  ArcSurveyService::EnsureFactoryBuilt();
+  ArcSystemUIBridge::EnsureFactoryBuilt();
+  ArcTimerBridge::EnsureFactoryBuilt();
+  ArcTracingBridge::EnsureFactoryBuilt();
+  ArcTtsService::EnsureFactoryBuilt();
+  ArcUsbHostBridge::EnsureFactoryBuilt();
+  ArcUsbHostPermissionManagerFactory::GetInstance();
+  ArcUserSessionService::EnsureFactoryBuilt();
+  ArcVolumeMounterBridge::EnsureFactoryBuilt();
+  ArcWakeLockBridge::EnsureFactoryBuilt();
+  ArcWallpaperService::EnsureFactoryBuilt();
+  CertStoreService::EnsureFactoryBuilt();
+  GpuArcVideoKeyedService::EnsureFactoryBuilt();
+  input_overlay::ArcInputOverlayManager::EnsureFactoryBuilt();
+}
 
 }  // namespace arc

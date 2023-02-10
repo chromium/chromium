@@ -608,4 +608,9 @@ CrostiniManager::RestartId CrostiniPackageService::GetRestartIdForTesting() {
   return restart_id_for_testing_;
 }
 
+// static
+void CrostiniPackageService::EnsureFactoryBuilt() {
+  CrostiniPackageServiceFactory::GetInstance();
+}
+
 }  // namespace crostini
