@@ -1,0 +1,70 @@
+{
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "branch_configs": [
+    {
+      "branch_types": [
+        "standard"
+      ],
+      "name": "standard"
+    },
+    {
+      "branch_types": [
+        "cros-lts"
+      ],
+      "name": "cros-lts"
+    },
+    {
+      "branch_types": [
+        "desktop-extended-stable"
+      ],
+      "name": "desktop-extended-stable"
+    },
+    {
+      "branch_types": [
+        "fuchsia-lts"
+      ],
+      "name": "fuchsia-lts"
+    },
+    {
+      "branch_types": [
+        "cros-lts",
+        "desktop-extended-stable"
+      ],
+      "name": "cros-lts + desktop-extended-stable"
+    },
+    {
+      "branch_types": [
+        "cros-lts",
+        "fuchsia-lts"
+      ],
+      "name": "cros-lts + fuchsia-lts"
+    },
+    {
+      "branch_types": [
+        "desktop-extended-stable",
+        "fuchsia-lts"
+      ],
+      "name": "desktop-extended-stable + fuchsia-lts"
+    },
+    {
+      "branch_types": [
+        "cros-lts",
+        "desktop-extended-stable",
+        "fuchsia-lts"
+      ],
+      "name": "cros-lts + desktop-extended-stable + fuchsia-lts"
+    }
+  ],
+  "branch_script": "infra/config/scripts/branch.py",
+  "recipe": "branch_configuration/tester",
+  "starlark_entry_points": [
+    "infra/config/main.star",
+    "infra/config/dev.star"
+  ]
+}

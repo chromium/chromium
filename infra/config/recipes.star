@@ -112,6 +112,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:branch_configuration/tester",
+    bootstrappable = True,
 )
 
 build_recipe(
