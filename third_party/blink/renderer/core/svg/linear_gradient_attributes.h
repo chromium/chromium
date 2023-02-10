@@ -90,22 +90,6 @@ struct LinearGradientAttributes : GradientAttributes {
   bool y2_set_ : 1;
 };
 
-// Wrapper object for the LinearGradientAttributes part object.
-class LinearGradientAttributesWrapper final
-    : public GarbageCollected<LinearGradientAttributesWrapper> {
- public:
-  LinearGradientAttributesWrapper() = default;
-
-  LinearGradientAttributes& Attributes() { return attributes_; }
-  void Set(const LinearGradientAttributes& attributes) {
-    attributes_ = attributes;
-  }
-  void Trace(Visitor* visitor) const { visitor->Trace(attributes_); }
-
- private:
-  LinearGradientAttributes attributes_;
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_LINEAR_GRADIENT_ATTRIBUTES_H_

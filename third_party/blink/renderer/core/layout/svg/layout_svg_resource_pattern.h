@@ -70,12 +70,8 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
   PaintRecord AsPaintRecord(const gfx::SizeF&, const AffineTransform&) const;
 
   mutable bool should_collect_pattern_attributes_ : 1;
-  Member<PatternAttributesWrapper> attributes_wrapper_;
+  mutable PatternAttributes attributes_;
 
-  const PatternAttributes& Attributes() const {
-    NOT_DESTROYED();
-    return attributes_wrapper_->Attributes();
-  }
   const PatternAttributes& EnsureAttributes() const;
 
   // FIXME: we can almost do away with this per-object map, but not quite: the

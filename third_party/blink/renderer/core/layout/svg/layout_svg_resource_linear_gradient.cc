@@ -27,23 +27,21 @@ namespace blink {
 
 LayoutSVGResourceLinearGradient::LayoutSVGResourceLinearGradient(
     SVGLinearGradientElement* node)
-    : LayoutSVGResourceGradient(node),
-      attributes_wrapper_(
-          MakeGarbageCollected<LinearGradientAttributesWrapper>()) {}
+    : LayoutSVGResourceGradient(node) {}
 
 LayoutSVGResourceLinearGradient::~LayoutSVGResourceLinearGradient() = default;
 
 void LayoutSVGResourceLinearGradient::Trace(Visitor* visitor) const {
-  visitor->Trace(attributes_wrapper_);
+  visitor->Trace(attributes_);
   LayoutSVGResourceGradient::Trace(visitor);
 }
 
 void LayoutSVGResourceLinearGradient::CollectGradientAttributes() {
   NOT_DESTROYED();
   DCHECK(GetElement());
-  attributes_wrapper_->Set(LinearGradientAttributes());
+  attributes_ = LinearGradientAttributes();
   To<SVGLinearGradientElement>(GetElement())
-      ->CollectGradientAttributes(MutableAttributes());
+      ->CollectGradientAttributes(attributes_);
 }
 
 gfx::PointF LayoutSVGResourceLinearGradient::StartPoint(
@@ -62,13 +60,12 @@ gfx::PointF LayoutSVGResourceLinearGradient::EndPoint(
 
 scoped_refptr<Gradient> LayoutSVGResourceLinearGradient::BuildGradient() const {
   NOT_DESTROYED();
-  const LinearGradientAttributes& attributes = Attributes();
   scoped_refptr<Gradient> gradient = Gradient::CreateLinear(
-      StartPoint(attributes), EndPoint(attributes),
-      PlatformSpreadMethodFromSVGType(attributes.SpreadMethod()),
+      StartPoint(attributes_), EndPoint(attributes_),
+      PlatformSpreadMethodFromSVGType(attributes_.SpreadMethod()),
       Gradient::ColorInterpolation::kUnpremultiplied,
       Gradient::DegenerateHandling::kAllow);
-  gradient->AddColorStops(attributes.Stops());
+  gradient->AddColorStops(attributes_.Stops());
   return gradient;
 }
 

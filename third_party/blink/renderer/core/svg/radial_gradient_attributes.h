@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+
 struct RadialGradientAttributes final : GradientAttributes {
   DISALLOW_NEW();
 
@@ -111,22 +112,6 @@ struct RadialGradientAttributes final : GradientAttributes {
   bool fx_set_ : 1;
   bool fy_set_ : 1;
   bool fr_set_ : 1;
-};
-
-// Wrapper object for the RadialGradientAttributes part object.
-class RadialGradientAttributesWrapper final
-    : public GarbageCollected<RadialGradientAttributesWrapper> {
- public:
-  RadialGradientAttributesWrapper() = default;
-
-  RadialGradientAttributes& Attributes() { return attributes_; }
-  void Set(const RadialGradientAttributes& attributes) {
-    attributes_ = attributes;
-  }
-  void Trace(Visitor* visitor) const { visitor->Trace(attributes_); }
-
- private:
-  RadialGradientAttributes attributes_;
 };
 
 }  // namespace blink

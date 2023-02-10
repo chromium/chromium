@@ -50,11 +50,10 @@ struct PatternData {
 
 LayoutSVGResourcePattern::LayoutSVGResourcePattern(SVGPatternElement* node)
     : LayoutSVGResourcePaintServer(node),
-      should_collect_pattern_attributes_(true),
-      attributes_wrapper_(MakeGarbageCollected<PatternAttributesWrapper>()) {}
+      should_collect_pattern_attributes_(true) {}
 
 void LayoutSVGResourcePattern::Trace(Visitor* visitor) const {
-  visitor->Trace(attributes_wrapper_);
+  visitor->Trace(attributes_);
   visitor->Trace(pattern_map_);
   LayoutSVGResourcePaintServer::Trace(visitor);
 }
@@ -101,13 +100,12 @@ const PatternAttributes& LayoutSVGResourcePattern::EnsureAttributes() const {
   // avoid tearing down the pattern we're currently working on. Preferably the
   // state validation should have no side-effects though.
   if (should_collect_pattern_attributes_) {
-    attributes_wrapper_->Set(PatternAttributes());
+    attributes_ = PatternAttributes();
     auto* pattern_element = To<SVGPatternElement>(GetElement());
-    pattern_element->CollectPatternAttributes(
-        attributes_wrapper_->Attributes());
+    pattern_element->CollectPatternAttributes(attributes_);
     should_collect_pattern_attributes_ = false;
   }
-  return Attributes();
+  return attributes_;
 }
 
 bool LayoutSVGResourcePattern::FindCycleFromSelf() const {
@@ -208,15 +206,16 @@ PaintRecord LayoutSVGResourcePattern::AsPaintRecord(
   DCHECK(!should_collect_pattern_attributes_);
 
   AffineTransform content_transform;
-  if (Attributes().PatternContentUnits() ==
-      SVGUnitTypes::kSvgUnitTypeObjectboundingbox)
+  if (attributes_.PatternContentUnits() ==
+      SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
     content_transform = tile_transform;
+  }
 
   gfx::RectF bounds(size);
   PaintRecorder paint_recorder;
   cc::PaintCanvas* canvas = paint_recorder.beginRecording();
 
-  auto* pattern_content_element = Attributes().PatternContentElement();
+  auto* pattern_content_element = attributes_.PatternContentElement();
   DCHECK(pattern_content_element);
   // If the element or some of its ancestor prevents us from doing paint, we can
   // early out. Note that any locked ancestor would prevent paint.

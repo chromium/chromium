@@ -168,20 +168,6 @@ class PatternAttributes final {
   bool pattern_content_element_set_ : 1;
 };
 
-// Wrapper object for the PatternAttributes part object.
-class PatternAttributesWrapper
-    : public GarbageCollected<PatternAttributesWrapper> {
- public:
-  PatternAttributesWrapper() = default;
-
-  PatternAttributes& Attributes() { return attributes_; }
-  void Set(const PatternAttributes& attributes) { attributes_ = attributes; }
-  void Trace(Visitor* visitor) const { visitor->Trace(attributes_); }
-
- private:
-  PatternAttributes attributes_;
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PATTERN_ATTRIBUTES_H_

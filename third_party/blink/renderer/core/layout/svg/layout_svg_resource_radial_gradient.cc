@@ -28,23 +28,21 @@ namespace blink {
 
 LayoutSVGResourceRadialGradient::LayoutSVGResourceRadialGradient(
     SVGRadialGradientElement* node)
-    : LayoutSVGResourceGradient(node),
-      attributes_wrapper_(
-          MakeGarbageCollected<RadialGradientAttributesWrapper>()) {}
+    : LayoutSVGResourceGradient(node) {}
 
 LayoutSVGResourceRadialGradient::~LayoutSVGResourceRadialGradient() = default;
 
 void LayoutSVGResourceRadialGradient::Trace(Visitor* visitor) const {
-  visitor->Trace(attributes_wrapper_);
+  visitor->Trace(attributes_);
   LayoutSVGResourceGradient::Trace(visitor);
 }
 
 void LayoutSVGResourceRadialGradient::CollectGradientAttributes() {
   NOT_DESTROYED();
   DCHECK(GetElement());
-  attributes_wrapper_->Set(RadialGradientAttributes());
+  attributes_ = RadialGradientAttributes();
   To<SVGRadialGradientElement>(GetElement())
-      ->CollectGradientAttributes(MutableAttributes());
+      ->CollectGradientAttributes(attributes_);
 }
 
 gfx::PointF LayoutSVGResourceRadialGradient::CenterPoint(
@@ -75,14 +73,13 @@ float LayoutSVGResourceRadialGradient::FocalRadius(
 
 scoped_refptr<Gradient> LayoutSVGResourceRadialGradient::BuildGradient() const {
   NOT_DESTROYED();
-  const RadialGradientAttributes& attributes = Attributes();
   scoped_refptr<Gradient> gradient = Gradient::CreateRadial(
-      FocalPoint(attributes), FocalRadius(attributes), CenterPoint(attributes),
-      Radius(attributes), 1,
-      PlatformSpreadMethodFromSVGType(attributes.SpreadMethod()),
+      FocalPoint(attributes_), FocalRadius(attributes_),
+      CenterPoint(attributes_), Radius(attributes_), 1,
+      PlatformSpreadMethodFromSVGType(attributes_.SpreadMethod()),
       Gradient::ColorInterpolation::kUnpremultiplied,
       Gradient::DegenerateHandling::kAllow);
-  gradient->AddColorStops(attributes.Stops());
+  gradient->AddColorStops(attributes_.Stops());
   return gradient;
 }
 
