@@ -100,8 +100,8 @@ absl::optional<syncer::ModelError> ContactInfoSyncBridge::ApplySyncChanges(
         std::unique_ptr<AutofillProfile> remote =
             CreateAutofillProfileFromContactInfoSpecifics(
                 change->data().specifics.contact_info());
-        // Since the specifics are guaranteed to be valid by `GetStorageKey()`,
-        // the conversion will succeed.
+        // Since the specifics are guaranteed to be valid by
+        // `IsEntityDataValid()`, the conversion will succeed.
         DCHECK(remote);
         // Since the distinction between adds and updates is not always clear,
         // we check the existence of the profile manually and act accordingly.
@@ -155,6 +155,12 @@ void ContactInfoSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   }
 }
 
+bool ContactInfoSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  DCHECK(entity_data.specifics.has_contact_info());
+  return AreContactInfoSpecificsValid(entity_data.specifics.contact_info());
+}
+
 std::string ContactInfoSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
   return GetStorageKey(entity_data);
@@ -162,11 +168,8 @@ std::string ContactInfoSyncBridge::GetClientTag(
 
 std::string ContactInfoSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  DCHECK(entity_data.specifics.has_contact_info());
-  const sync_pb::ContactInfoSpecifics& specifics =
-      entity_data.specifics.contact_info();
-  // For invalid `entity_data`, `GetStorageKey()` should return an empty string.
-  return AreContactInfoSpecificsValid(specifics) ? specifics.guid() : "";
+  DCHECK(IsEntityDataValid(entity_data));
+  return entity_data.specifics.contact_info().guid();
 }
 
 void ContactInfoSyncBridge::AutofillProfileChanged(

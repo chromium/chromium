@@ -142,14 +142,21 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   std::unique_ptr<ContactInfoSyncBridge> bridge_;
 };
 
-TEST_F(ContactInfoSyncBridgeTest, GetStorageKey) {
+TEST_F(ContactInfoSyncBridgeTest, IsEntityDataValid) {
   // Valid case.
   std::unique_ptr<syncer::EntityData> entity =
       CreateContactInfoEntityDataFromAutofillProfile(TestProfile(kGUID1));
-  EXPECT_EQ(kGUID1, bridge().GetStorageKey(*entity));
+  EXPECT_TRUE(bridge().IsEntityDataValid(*entity));
   // Invalid case.
   entity->specifics.mutable_contact_info()->set_guid(kInvalidGUID);
-  EXPECT_TRUE(bridge().GetStorageKey(*entity).empty());
+  EXPECT_FALSE(bridge().IsEntityDataValid(*entity));
+}
+
+TEST_F(ContactInfoSyncBridgeTest, GetStorageKey) {
+  std::unique_ptr<syncer::EntityData> entity =
+      CreateContactInfoEntityDataFromAutofillProfile(TestProfile(kGUID1));
+  ASSERT_TRUE(bridge().IsEntityDataValid(*entity));
+  EXPECT_EQ(kGUID1, bridge().GetStorageKey(*entity));
 }
 
 // Tests that during the initial sync, `MergeSyncData()` incorporates remote
