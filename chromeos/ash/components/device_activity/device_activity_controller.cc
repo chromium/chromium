@@ -64,9 +64,18 @@ const char kFresnelBaseUrl[] = "https://crosfresnel-pa.googleapis.com";
 const char kDeviceActiveControllerPsmDeviceActiveSecretIsSet[] =
     "Ash.DeviceActiveController.PsmDeviceActiveSecretIsSet";
 
+// Count the number of devices that are testimage builds.
+const char kDeviceActiveControllerIsTestImageDevice[] =
+    "Ash.DeviceActiveController.IsTestImageDevice";
+
 void RecordPsmDeviceActiveSecretIsSet(bool is_set) {
   base::UmaHistogramBoolean(kDeviceActiveControllerPsmDeviceActiveSecretIsSet,
                             is_set);
+}
+
+void RecordIsTestImageDevice(bool is_test_image) {
+  base::UmaHistogramBoolean(kDeviceActiveControllerIsTestImageDevice,
+                            is_test_image);
 }
 
 class PsmDelegateImpl : public PsmDelegateInterface {
@@ -170,13 +179,16 @@ DeviceActivityController::DeviceActivityController(
   DCHECK(local_state);
   DCHECK(!g_ash_device_activity_controller);
 
-  // Halt if device channel is unknown/testimage channel.
+  // Halt if device is a testimage/unknown channel.
   if (chrome_passed_device_params.chromeos_channel ==
       version_info::Channel::UNKNOWN) {
+    RecordIsTestImageDevice(true);
     LOG(ERROR) << "Halt - Client should enter device active reporting logic. "
                << "Unknown and test image channels should not be counted as "
                << "legitimate device counts.";
     return;
+  } else {
+    RecordIsTestImageDevice(false);
   }
 
   g_ash_device_activity_controller = this;
