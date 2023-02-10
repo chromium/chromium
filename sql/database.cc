@@ -1281,7 +1281,7 @@ bool Database::AttachDatabase(const base::FilePath& other_db_path,
   DCHECK(ValidAttachmentPoint(attachment_point));
 
   Statement statement(GetUniqueStatement("ATTACH ? AS ?"));
-#if OS_WIN
+#if BUILDFLAG(IS_WIN)
   statement.BindString16(0, base::AsStringPiece16(other_db_path.value()));
 #else
   statement.BindString(0, other_db_path.value());

@@ -27,7 +27,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-#if OS_WIN
+#if BUILDFLAG(IS_WIN)
 #include "ui/views/win/hwnd_util.h"
 #endif
 
