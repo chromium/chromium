@@ -3940,9 +3940,10 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "DomainSuggestionsAlternativeScoring": "true",
                         "DomainSuggestionsMaxMatchesPerDomain": "2",
                         "DomainSuggestionsMinInputLength": "4",
-                        "DomainSuggestionsScoreFactor": "2",
+                        "DomainSuggestionsScoreFactor": "1",
                         "DomainSuggestionsTypedUrlsOffset": "1",
                         "DomainSuggestionsTypedUrlsThreshold": "7",
                         "DomainSuggestionsTypedVisitCapPerVisit": "2",
