@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//base/win/embedded_i18n/generate_embedded_i18n.gni")
+import("//chrome/updater/branding.gni")
 
 source_set("resources") {
   inputs = [
@@ -20,12 +21,6 @@ generate_embedded_i18n("generate_strings") {
   extractor_datafile =
       "//chrome/updater/win/ui/resources/create_metainstaller_string_rc.py"
   grdfile_folder = "//chrome/app/"
-
-  if (is_chrome_branded) {
-    grdfile_name = "google_chrome_strings"
-  } else {
-    grdfile_name = "chromium_strings"
-  }
 
   xtb_relative_path = "resources"
   grd_files_info = [ [
