@@ -181,6 +181,9 @@ ts_library("test_build_ts") {
 
   path_mappings = [
     # for chai_assert.js.
+    "chrome://webui-test/chromeos/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir),
     "chrome://webui-test/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
@@ -198,6 +201,7 @@ ts_library("test_build_ts") {
   deps = [
     ":build_ts",
     "//chrome/test/data/webui:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

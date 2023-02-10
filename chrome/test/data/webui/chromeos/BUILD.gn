@@ -4,6 +4,8 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
 
@@ -58,4 +60,41 @@ group("closure_compile") {
     "scanning:closure_compile",
     "shimless_rma:closure_compile",
   ]
+}
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "arc_account_picker/test_util.js",
+    "ash_common/i18n_behavior_test.js",
+    "chai_assert.js",
+    "fake_network_config_mojom.js",
+    "mock_controller.js",
+    "mock_controller.m.js",
+    "set_time_dialog_test.js",
+    "test_browser_proxy.js",
+    "test_store.js",
+    "test_util.js",
+  ]
+
+  deps = [
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+}
+
+generate_grd("build_grdp") {
+  testonly = true
+  grd_prefix = "webui_generated_test_chromeos"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "chromeos"
 }

@@ -19,10 +19,6 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
-if (is_chromeos_ash) {
-  import("//tools/typescript/ts_definitions.gni")
-}
-
 if (include_js_tests) {
   js2gtest("interactive_ui_tests_js_webui") {
     test_type = "webui"
@@ -361,35 +357,6 @@ generate_grd("build_web_ui_test_mojo_grdp") {
   deps = [ "..:web_ui_test_mojom_js_module" ]
 }
 
-# TypeScript related targets
-if (is_chromeos_ash) {
-  checked_in_dts_files = [ "chromeos/chai_assert.d.ts" ]
-
-  # Copies checked-in .d.ts files to the preprocess folder so that they are
-  # discovered by TSC the same way generated .d.ts files are.
-  preprocess_if_expr("copy_checked_in_dts_files") {
-    in_folder = "./"
-    in_files = checked_in_dts_files
-    out_folder = "$target_gen_dir/tsc"
-    visibility = [ ":build_ts" ]
-  }
-}
-
-if (is_chromeos_ash) {
-  generate_definitions_js_files = [ "chromeos/test_store.js" ]
-
-  ts_definitions("generate_definitions") {
-    root_dir = "./"
-    out_dir = "$target_gen_dir/tsc"
-    js_files = generate_definitions_js_files
-    visibility = [ ":build_ts" ]
-
-    if (is_chromeos_ash) {
-      extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
-    }
-  }
-}
-
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
@@ -424,31 +391,11 @@ ts_library("build_ts") {
   }
 
   deps = [ "//ui/webui/resources/js:build_ts" ]
-  if (is_chromeos_ash) {
-    extra_deps = [
-      ":copy_checked_in_dts_files",
-      ":generate_definitions",
-      "//ash/webui/common/resources:generate_definitions",
-    ]
-  }
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/chrome_timeticks.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
   ]
-
-  if (is_chromeos_ash) {
-    # Checked-in .d.ts files.
-    foreach(_file, checked_in_dts_files) {
-      definitions += [ "$target_gen_dir/tsc/$_file" ]
-    }
-
-    # Auto-generated .d.ts files.
-    foreach(_file, generate_definitions_js_files) {
-      definitions +=
-          [ "$target_gen_dir/tsc/" + string_replace(_file, ".js", ".d.ts") ]
-    }
-  }
 }
 
 generate_grd("build_grd") {
@@ -464,21 +411,6 @@ generate_grd("build_grd") {
 
     "invalidations/invalidations_test.js",
   ]
-
-  if (is_chromeos_ash) {
-    input_files += [
-      "chromeos/arc_account_picker/test_util.js",
-      "chromeos/ash_common/i18n_behavior_test.js",
-      "chromeos/chai_assert.js",
-      "chromeos/fake_network_config_mojom.js",
-      "chromeos/mock_controller.js",
-      "chromeos/mock_controller.m.js",
-      "chromeos/set_time_dialog_test.js",
-      "chromeos/test_browser_proxy.js",
-      "chromeos/test_store.js",
-      "chromeos/test_util.js",
-    ]
-  }
 
   if (enable_webui_certificate_viewer) {
     input_files += [ "certificate_viewer_dialog_test.js" ]
@@ -609,6 +541,7 @@ generate_grd("build_grd") {
 
   if (is_chromeos_ash) {
     deps += [
+      "chromeos:build_grdp",
       "chromeos/ash_common:build_grdp",
       "chromeos/cloud_upload:build_grdp",
       "chromeos/manage_mirrorsync:build_grdp",
@@ -623,6 +556,7 @@ generate_grd("build_grd") {
       "//ui/file_manager:build_tests_grdp",
     ]
     grdp_files += [
+      "$target_gen_dir/chromeos/resources.grdp",
       "$target_gen_dir/chromeos/ash_common/resources.grdp",
       "$target_gen_dir/chromeos/cloud_upload/resources.grdp",
       "$target_gen_dir/chromeos/office_fallback/resources.grdp",

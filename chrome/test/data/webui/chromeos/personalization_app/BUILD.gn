@@ -15,6 +15,9 @@ ts_library("build_ts") {
         rebase_path(
             "$root_gen_dir/ash/webui/personalization_app/resources/tsc/*",
             target_gen_dir),
+    "chrome://webui-test/chromeos/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
+                    target_gen_dir),
     "chrome://webui-test/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
@@ -57,6 +60,7 @@ ts_library("build_ts") {
     "wallpaper_selected_element_test.ts",
   ]
   deps = [
+    "..:build_ts",
     "../..:build_ts",
     "//ash/webui/personalization_app/resources:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
