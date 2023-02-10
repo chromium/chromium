@@ -353,7 +353,8 @@ class OzonePlatformWayland : public OzonePlatform,
             (wl::get_version_of_object(
                  connection_->zaura_shell()->wl_object()) >=
              ZAURA_SURFACE_SHOW_TOOLTIP_SINCE_VERSION) &&
-            connection_->zaura_shell()->HasBugFix(1402158);
+            connection_->zaura_shell()->HasBugFix(1402158) &&
+            connection_->zaura_shell()->HasBugFix(1410676);
       }
 
       if (surface_factory_) {
