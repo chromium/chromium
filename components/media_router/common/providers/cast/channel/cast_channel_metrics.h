@@ -12,6 +12,53 @@ namespace cast_channel {
 constexpr char kLaunchSessionChannelFlagsHistogram[] =
     "Cast.Channel.LaunchSession.Flags";
 
+// Must match with histogram enum CastCertificateStatus.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CastCertificateStatus {
+  kOk = 0,
+  kInvalidCRL,
+  kVerificationFailed,
+  kRevoked,
+  kMissingCRL,
+  kParseFailed,
+  kDateInvalid,
+  kRestrictionsFailed,
+  kMissingCerts,
+  kUnexpectedFailed,
+  kMaxValue = kUnexpectedFailed,
+};
+
+// Must match with histogram enum CastNonce.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CastNonceStatus {
+  kMatch = 0,
+  kMismatch,
+  kMissing,
+  kMaxValue = kMissing,
+};
+
+// Must match with the histogram enum CastSignature.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CastSignatureStatus {
+  kOk = 0,
+  kEmpty,
+  kVerifyFailed,
+  kAlgorithmUnsupported,
+  kMaxValue = kAlgorithmUnsupported,
+};
+
+// Record certificate verification histogram events.
+void RecordCertificateStatus(CastCertificateStatus status);
+
+// Record nonce verification histogram events.
+void RecordNonceStatus(CastNonceStatus status);
+
+// Record signature verification histogram events.
+void RecordSignatureStatus(CastSignatureStatus status);
+
 // Records the flags set on a Cast channel when a Cast LAUNCH message is sent.
 void RecordLaunchSessionChannelFlags(CastChannelFlags flags);
 

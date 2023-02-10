@@ -9,6 +9,18 @@
 
 namespace cast_channel {
 
+void RecordCertificateStatus(CastCertificateStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("Cast.Channel.Certificate", status);
+}
+
+void RecordNonceStatus(CastNonceStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("Cast.Channel.Nonce", status);
+}
+
+void RecordSignatureStatus(CastSignatureStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("Cast.Channel.Signature", status);
+}
+
 void RecordLaunchSessionChannelFlags(CastChannelFlags flags) {
   if (!flags) {
     UMA_HISTOGRAM_ENUMERATION(kLaunchSessionChannelFlagsHistogram,
