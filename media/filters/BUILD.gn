@@ -404,7 +404,10 @@ source_set("unit_tests") {
   }
 
   if (enable_hls_demuxer) {
-    sources += [ "hls_demuxer_unittest.cc" ]
+    sources += [
+      "hls_data_source_provider_unittest.cc",
+      "hls_demuxer_unittest.cc",
+    ]
   }
 
   if (media_use_ffmpeg) {
