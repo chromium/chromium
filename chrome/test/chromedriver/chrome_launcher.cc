@@ -190,6 +190,13 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
     LOG(WARNING) << "excluding remote-debugging-port switch is not supported";
   }
   if (switches.HasSwitch("user-data-dir")) {
+    if (switches.HasSwitch("headless")) {
+      // The old headless mode fails to start without a starting page provided
+      // See: https://crbug.com/1414672
+      // TODO(https://crbub.com/chromedriver/4358): Remove this workaround
+      // after the migration to the New Headless
+      command.AppendArg("data:,");
+    }
     base::FilePath::StringType user_data_dir_value =
         switches.GetSwitchValueNative("user-data-dir");
     if (user_data_dir_value.empty())

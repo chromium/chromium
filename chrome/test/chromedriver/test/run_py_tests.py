@@ -114,6 +114,8 @@ _OS_SPECIFIC_FILTER['win'] = [
     'HeadlessChromeDriverTest.testWindowFullScreen',
     'HeadlessInvalidCertificateTest.testLoadsPage',
     'HeadlessInvalidCertificateTest.testNavigateNewWindow',
+    'ChromeDriverTest.testHeadlessWithUserDataDirStarts',
+    'ChromeDriverTest.testHeadlessWithExistingUserDataDirStarts',
     'RemoteBrowserTest.testConnectToRemoteBrowserLiteralAddressHeadless',
     # Timed out on Win7 bots: crbug.com/1306504.
     'ChromeLoggingCapabilityTest.testDevToolsEventsLogger',
@@ -217,6 +219,8 @@ _ANDROID_NEGATIVE_FILTER['chrome'] = (
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2081
         'ChromeDriverTest.testCloseWindowUsingJavascript',
         # Android doesn't support headless mode
+        'ChromeDriverTest.testHeadlessWithUserDataDirStarts',
+        'ChromeDriverTest.testHeadlessWithExistingUserDataDirStarts',
         'HeadlessInvalidCertificateTest.*',
         'HeadlessChromeDriverTest.*',
         # Tests of the desktop Chrome launch process.
@@ -331,6 +335,7 @@ class ChromeDriverBaseTest(unittest.TestCase):
   def __init__(self, *args, **kwargs):
     super(ChromeDriverBaseTest, self).__init__(*args, **kwargs)
     self._drivers = []
+    self._temp_dirs = []
     self.maxDiff = None
 
   def tearDown(self):
@@ -339,6 +344,21 @@ class ChromeDriverBaseTest(unittest.TestCase):
         driver.Quit()
       except:
         pass
+    self._drivers = []
+    for temp_dir in self._temp_dirs:
+      # Deleting temp dir can fail if Chrome hasn't yet fully exited and still
+      # has open files in there. So we ignore errors, and retry if necessary.
+      shutil.rmtree(temp_dir, ignore_errors=True)
+      retry = 0
+      while retry < 10 and os.path.exists(temp_dir):
+        time.sleep(0.1)
+        shutil.rmtree(temp_dir, ignore_errors=True)
+    self._temp_dirs = []
+
+  def CreateTempDir(self):
+    temp_dir = tempfile.mkdtemp()
+    self._temp_dirs.append(temp_dir)
+    return temp_dir
 
   def CreateDriver(self, server_url=None, server_pid=None,
                    download_dir=None, **kwargs):
@@ -3320,6 +3340,37 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     message = self._driver.FindElement('css selector', '#message.result')
     self.assertTrue('clicked' in message.GetText())
 
+  def testHeadlessWithUserDataDirStarts(self):
+    """Tests that ChromeDriver can launch Chrome in headless mode
+       with user-data-dir provided as a command line argument.
+       See https://bugs.chromium.org/p/chromedriver/issues/detail?id=4357
+    """
+    temp_dir = self.CreateTempDir()
+    driver = self.CreateDriver(chrome_switches=[
+                                   '--headless',
+                                   '--user-data-dir=%s' % temp_dir,
+                               ])
+    self.assertEqual(driver.GetTitle(), '')
+
+  def testHeadlessWithExistingUserDataDirStarts(self):
+    """Tests that ChromeDriver can launch Chrome in headless mode
+       with user-data-dir, that already contains user data,
+       provided as a command line argument
+       See https://bugs.chromium.org/p/chromedriver/issues/detail?id=4357
+    """
+    temp_dir = self.CreateTempDir()
+    driver = self.CreateDriver(chrome_switches=[
+                                   '--headless',
+                                   '--user-data-dir=%s' % temp_dir,
+                               ])
+    self.assertEqual(driver.GetTitle(), '')
+    driver.Quit()
+    driver = self.CreateDriver(chrome_switches=[
+                                   '--headless',
+                                   '--user-data-dir=%s' % temp_dir,
+                               ])
+
+
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
     self._driver1 = self.CreateDriver()
@@ -4338,15 +4389,6 @@ class ChromeDriverAndroidTest(ChromeDriverBaseTest):
 
 class ChromeDownloadDirTest(ChromeDriverBaseTest):
 
-  def __init__(self, *args, **kwargs):
-    super(ChromeDownloadDirTest, self).__init__(*args, **kwargs)
-    self._temp_dirs = []
-
-  def CreateTempDir(self):
-    temp_dir = tempfile.mkdtemp()
-    self._temp_dirs.append(temp_dir)
-    return temp_dir
-
   def RespondWithCsvFile(self, request):
     return {'Content-Type': 'text/csv'}, b'a,b,c\n1,2,3\n'
 
@@ -4357,20 +4399,6 @@ class ChromeDownloadDirTest(ChromeDriverBaseTest):
       if os.path.isfile(path) or monotonic() > deadline:
         break
     self.assertTrue(os.path.isfile(path), "Failed to download file!")
-
-  def tearDown(self):
-    # Call the superclass tearDown() method before deleting temp dirs, so that
-    # Chrome has a chance to exit before its user data dir is blown away from
-    # underneath it.
-    super(ChromeDownloadDirTest, self).tearDown()
-    for temp_dir in self._temp_dirs:
-      # Deleting temp dir can fail if Chrome hasn't yet fully exited and still
-      # has open files in there. So we ignore errors, and retry if necessary.
-      shutil.rmtree(temp_dir, ignore_errors=True)
-      retry = 0
-      while retry < 10 and os.path.exists(temp_dir):
-        time.sleep(0.1)
-        shutil.rmtree(temp_dir, ignore_errors=True)
 
   def testFileDownloadWithClick(self):
     download_dir = self.CreateTempDir()
@@ -5073,7 +5101,7 @@ class RemoteBrowserTest(ChromeDriverBaseTest):
               '--user-data-dir=%s' % temp_dir,
               '--use-mock-keychain',
               '--password-store=basic',
-              'about:blank']
+              'data:,']
         process = subprocess.Popen(cmd)
         try:
           driver = self.CreateDriver(
