@@ -10,7 +10,9 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -95,10 +97,18 @@ const CGFloat kButtonLength = 44;
   const CGFloat closeButtonTrailingPadding =
       ShouldShowCompactToolbar(self) ? kPadding : kIPadButtonEdgeSpacing;
 
+  NSLayoutConstraint* inputFieldHeightConstraint =
+      ios::provider::IsNativeFindInPageEnabled()
+          ? [self.inputField.heightAnchor
+                constraintEqualToAnchor:self.heightAnchor
+                               constant:-2 * kPadding]
+          : [self.inputField.heightAnchor
+                constraintEqualToConstant:kInputFieldHeight];
+
   [NSLayoutConstraint activateConstraints:@[
     // Input Field.
     [self.inputField.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-    [self.inputField.heightAnchor constraintEqualToConstant:kInputFieldHeight],
+    inputFieldHeightConstraint,
     [self.inputField.leadingAnchor
         constraintEqualToAnchor:safeArea.leadingAnchor
                        constant:kPadding],
@@ -198,7 +208,14 @@ const CGFloat kButtonLength = 44;
     _inputField.translatesAutoresizingMaskIntoConstraints = NO;
     _inputField.placeholder =
         l10n_util::GetNSString(IDS_IOS_PLACEHOLDER_FIND_IN_PAGE);
-    _inputField.font = [UIFont systemFontOfSize:kFontSize];
+    if (ios::provider::IsNativeFindInPageEnabled()) {
+      _inputField.font = PreferredFontForTextStyleWithMaxCategory(
+          UIFontTextStyleBody,
+          self.traitCollection.preferredContentSizeCategory,
+          UIContentSizeCategoryAccessibilityLarge);
+    } else {
+      _inputField.font = [UIFont systemFontOfSize:kFontSize];
+    }
     _inputField.accessibilityIdentifier = kFindInPageInputFieldId;
   }
   return _inputField;
@@ -209,7 +226,14 @@ const CGFloat kButtonLength = 44;
   if (!_resultsCountLabel) {
     _resultsCountLabel = [[UILabel alloc] init];
     _resultsCountLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _resultsCountLabel.font = [UIFont systemFontOfSize:kFontSize];
+    if (ios::provider::IsNativeFindInPageEnabled()) {
+      _resultsCountLabel.font = PreferredFontForTextStyleWithMaxCategory(
+          UIFontTextStyleBody,
+          self.traitCollection.preferredContentSizeCategory,
+          UIContentSizeCategoryAccessibilityMedium);
+    } else {
+      _resultsCountLabel.font = [UIFont systemFontOfSize:kFontSize];
+    }
     _resultsCountLabel.accessibilityElementsHidden = YES;
   }
 
@@ -259,7 +283,14 @@ const CGFloat kButtonLength = 44;
                   forState:UIControlStateNormal];
     _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
     _closeButton.accessibilityIdentifier = kFindInPageCloseButtonId;
-    _closeButton.titleLabel.font = [UIFont systemFontOfSize:kButtonFontSize];
+    if (ios::provider::IsNativeFindInPageEnabled()) {
+      _closeButton.titleLabel.font = PreferredFontForTextStyleWithMaxCategory(
+          UIFontTextStyleBody,
+          self.traitCollection.preferredContentSizeCategory,
+          UIContentSizeCategoryAccessibilityMedium);
+    } else {
+      _closeButton.titleLabel.font = [UIFont systemFontOfSize:kButtonFontSize];
+    }
     _closeButton.pointerInteractionEnabled = YES;
   }
 
