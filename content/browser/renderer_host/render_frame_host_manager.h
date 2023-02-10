@@ -153,7 +153,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
         RenderViewHost* render_view_host) = 0;
     virtual void BeforeUnloadFiredFromRenderManager(
         bool proceed,
-        const base::TimeTicks& proceed_time,
         bool* proceed_to_fire_unload) = 0;
     virtual void CancelModalDialogsForRenderManager() = 0;
     virtual void NotifySwappedFromRenderManager(
@@ -310,15 +309,14 @@ class CONTENT_EXPORT RenderFrameHostManager {
   void SetIsLoading(bool is_loading);
 
   // Confirms whether we should close the page. |proceed| indicates whether the
-  // user chose to proceed. |proceed_time| is the time when the request was
-  // allowed to proceed. This is called in one of the two *distinct* scenarios
-  // below:
+  // user chose to proceed. This is called in one of the two *distinct*
+  // scenarios below:
   //   1- The tab/window is closed after allowing the appropriate renderer to
   //      show the beforeunload prompt.
   //   2- The FrameTreeNode is being prepared for attaching an inner Delegate,
   //      in which case beforeunload is triggered in the current frame. This
   //      only happens for child frames.
-  void BeforeUnloadCompleted(bool proceed, const base::TimeTicks& proceed_time);
+  void BeforeUnloadCompleted(bool proceed);
 
   // Called when a renderer's frame navigates.
   void DidNavigateFrame(RenderFrameHostImpl* render_frame_host,

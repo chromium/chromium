@@ -358,8 +358,7 @@ class DevToolsWindowBeforeUnloadObserver
   void Wait();
  private:
   // Invoked when the beforeunload handler fires.
-  void BeforeUnloadFired(bool proceed,
-                         const base::TimeTicks& proceed_time) override;
+  void BeforeUnloadFired(bool proceed) override;
 
   bool m_fired;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
@@ -379,9 +378,7 @@ void DevToolsWindowBeforeUnloadObserver::Wait() {
   message_loop_runner_->Run();
 }
 
-void DevToolsWindowBeforeUnloadObserver::BeforeUnloadFired(
-    bool proceed,
-    const base::TimeTicks& proceed_time) {
+void DevToolsWindowBeforeUnloadObserver::BeforeUnloadFired(bool proceed) {
   m_fired = true;
   if (message_loop_runner_.get())
     message_loop_runner_->Quit();

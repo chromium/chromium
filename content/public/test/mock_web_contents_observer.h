@@ -257,10 +257,7 @@ class MockWebContentsObserver : public WebContentsObserver {
               (viz::VerticalScrollDirection scroll_direction),
               (override));
   MOCK_METHOD(void, BeforeFormRepostWarningShow, (), (override));
-  MOCK_METHOD(void,
-              BeforeUnloadFired,
-              (bool proceed, const base::TimeTicks& proceed_time),
-              (override));
+  MOCK_METHOD(void, BeforeUnloadFired, (bool proceed), (override));
   MOCK_METHOD(void, BeforeUnloadDialogCancelled, (), (override));
   MOCK_METHOD(void, AXTreeIDForMainFrameHasChanged, (), (override));
   MOCK_METHOD(void,

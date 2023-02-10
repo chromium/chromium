@@ -696,9 +696,7 @@ class CONTENT_EXPORT WebContentsObserver {
 
   // Invoked when the beforeunload handler fires. |proceed| is set to true if
   // the beforeunload can safely proceed, otherwise it should be interrupted.
-  // The time is from the renderer process.
-  virtual void BeforeUnloadFired(bool proceed,
-                                 const base::TimeTicks& proceed_time) {}
+  virtual void BeforeUnloadFired(bool proceed) {}
 
   // Invoked when a user cancels a before unload dialog.
   virtual void BeforeUnloadDialogCancelled() {}

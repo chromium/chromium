@@ -1643,7 +1643,7 @@ TEST_P(RenderFrameHostManagerTest, NavigateWithEarlyClose) {
   WidgetDestructionObserver observer(run_loop.QuitClosure());
   host2->render_view_host()->GetWidget()->AddObserver(&observer);
 
-  manager->BeforeUnloadCompleted(true, base::TimeTicks());
+  manager->BeforeUnloadCompleted(/*proceed=*/true);
 
   run_loop.Run();
   EXPECT_FALSE(GetPendingFrameHost(manager));

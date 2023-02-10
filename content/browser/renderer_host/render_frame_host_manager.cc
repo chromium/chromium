@@ -551,9 +551,7 @@ void RenderFrameHostManager::SetIsLoading(bool is_loading) {
   render_frame_host_->render_view_host()->GetWidget()->SetIsLoading(is_loading);
 }
 
-void RenderFrameHostManager::BeforeUnloadCompleted(
-    bool proceed,
-    const base::TimeTicks& proceed_time) {
+void RenderFrameHostManager::BeforeUnloadCompleted(bool proceed) {
   // If beforeunload was dispatched as part of preparing this frame for
   // attaching an inner delegate, continue attaching now.
   if (is_attaching_inner_delegate()) {
@@ -567,7 +565,7 @@ void RenderFrameHostManager::BeforeUnloadCompleted(
   }
 
   bool proceed_to_fire_unload = false;
-  delegate_->BeforeUnloadFiredFromRenderManager(proceed, proceed_time,
+  delegate_->BeforeUnloadFiredFromRenderManager(proceed,
                                                 &proceed_to_fire_unload);
   if (proceed_to_fire_unload) {
     // If we're about to close the tab and there's a speculative RFH, cancel it.

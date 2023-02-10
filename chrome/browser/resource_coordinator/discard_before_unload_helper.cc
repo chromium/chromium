@@ -46,8 +46,7 @@ class DiscardBeforeUnloadHelper : public content::WebContentsObserver {
                             HasBeforeUnloadHandlerCallback&& callback);
 
   // WebContentsObserver:
-  void BeforeUnloadFired(bool proceed,
-                         const base::TimeTicks& proceed_time) override;
+  void BeforeUnloadFired(bool proceed) override;
   void BeforeUnloadDialogCancelled() override;
   void WebContentsDestroyed() override;
 
@@ -86,9 +85,7 @@ DiscardBeforeUnloadHelper::DiscardBeforeUnloadHelper(
 
 DiscardBeforeUnloadHelper::~DiscardBeforeUnloadHelper() = default;
 
-void DiscardBeforeUnloadHelper::BeforeUnloadFired(
-    bool proceed,
-    const base::TimeTicks& proceed_time) {
+void DiscardBeforeUnloadHelper::BeforeUnloadFired(bool proceed) {
   // |proceed = true| means no beforeunload handler and vice-versa.
   Respond(!proceed /* has_beforeunload_handler */);
 }

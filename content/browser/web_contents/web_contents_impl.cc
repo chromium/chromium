@@ -8154,12 +8154,10 @@ void WebContentsImpl::RendererResponsive(
 
 void WebContentsImpl::BeforeUnloadFiredFromRenderManager(
     bool proceed,
-    const base::TimeTicks& proceed_time,
     bool* proceed_to_fire_unload) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::BeforeUnloadFiredFromRenderManager");
-  observers_.NotifyObservers(&WebContentsObserver::BeforeUnloadFired, proceed,
-                             proceed_time);
+  observers_.NotifyObservers(&WebContentsObserver::BeforeUnloadFired, proceed);
   if (delegate_)
     delegate_->BeforeUnloadFired(this, proceed, proceed_to_fire_unload);
   // Note: |this| might be deleted at this point.

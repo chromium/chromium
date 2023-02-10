@@ -5081,8 +5081,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
           frame->navigator().BeforeUnloadCompleted(frame, proceed,
                                                    before_unload_end_time);
         } else {
-          frame->render_manager()->BeforeUnloadCompleted(
-              proceed, before_unload_end_time);
+          frame->render_manager()->BeforeUnloadCompleted(proceed);
         }
       },
       // The overhead of the browser->renderer IPC may be non trivial. Account
@@ -8679,7 +8678,7 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
         FROM_HERE,
         base::BindOnce(&RenderFrameHostManager::BeforeUnloadCompleted,
                        owner_->GetRenderFrameHostManager().GetWeakPtr(),
-                       /*proceed=*/true, base::TimeTicks::Now()));
+                       /*proceed=*/true));
     return;
   }
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
