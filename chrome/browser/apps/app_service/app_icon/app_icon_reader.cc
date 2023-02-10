@@ -55,40 +55,17 @@ void AppIconReader::ReadIcons(const std::string& app_id,
 
   const base::FilePath& base_path = profile_->GetPath();
 
-  switch (icon_type) {
-    case IconType::kUnknown: {
-      std::move(callback).Run(std::make_unique<apps::IconValue>());
-      return;
-    }
-    case IconType::kCompressed:
-      // If there are icon effects, or the icon is an adaptive icon with the
-      // foreground and background icon files, we need to call AppIconDecoder to
-      // convert the icon files to the uncompressed images, then apply icon
-      // effects, or generate the adaptive icon with the foreground and
-      // background icon files for all scale factors.
-      if (icon_effects == apps::IconEffects::kNone &&
-          !IsAdaptiveIcon(base_path, app_id, size_in_dip)) {
-        base::ThreadPool::PostTaskAndReplyWithResult(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-            base::BindOnce(&ReadOnBackgroundThread, base_path, app_id,
-                           apps_util::ConvertDipToPx(
-                               size_in_dip,
-                               /*quantize_to_supported_scale_factor=*/true)),
-            std::move(callback));
-        return;
-      }
-      [[fallthrough]];
-    case IconType::kUncompressed:
-      [[fallthrough]];
-    case IconType::kStandard: {
-      decodes_.emplace_back(std::make_unique<AppIconDecoder>(
-          base_path, app_id, size_in_dip,
-          base::BindOnce(&AppIconReader::OnUncompressedIconRead,
-                         weak_ptr_factory_.GetWeakPtr(), size_in_dip,
-                         icon_effects, icon_type, std::move(callback))));
-      decodes_.back()->Start();
-    }
+  if (icon_type == IconType::kUnknown) {
+    std::move(callback).Run(std::make_unique<apps::IconValue>());
+    return;
   }
+
+  decodes_.emplace_back(std::make_unique<AppIconDecoder>(
+      base_path, app_id, size_in_dip,
+      base::BindOnce(&AppIconReader::OnUncompressedIconRead,
+                     weak_ptr_factory_.GetWeakPtr(), size_in_dip, icon_effects,
+                     icon_type, std::move(callback))));
+  decodes_.back()->Start();
 }
 
 void AppIconReader::OnUncompressedIconRead(int32_t size_in_dip,
