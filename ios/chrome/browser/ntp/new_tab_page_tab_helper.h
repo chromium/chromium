@@ -45,11 +45,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // controllers have been created.
   bool IsActive() const;
 
-  // Disables this tab helper.  This is useful when navigating away from an NTP,
-  // so the tab helper can be disabled immediately, and before any potential
-  // WebStateObserver callback.
-  void Deactivate();
-
   // Returns true if an `url` is either chrome://newtab or about://newtab.
   bool IsNTPURL(const GURL& url);
 

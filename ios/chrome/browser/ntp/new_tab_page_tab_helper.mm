@@ -78,10 +78,6 @@ bool NewTabPageTabHelper::IsActive() const {
   return active_;
 }
 
-void NewTabPageTabHelper::Deactivate() {
-  SetActive(false);
-}
-
 bool NewTabPageTabHelper::IsNTPURL(const GURL& url) {
   // `url` can be chrome://newtab/ or about://newtab/ depending on where `url`
   // comes from (the VisibleURL chrome:// from a navigation item or the actual

@@ -118,7 +118,7 @@ TEST_F(NewTabPageTabHelperTest, TestToggleToAndFromNTP) {
   CreateTabHelper();
   EXPECT_FALSE(tab_helper()->IsActive());
 
-  GURL url(kChromeUINewTabURL);
+  GURL url(kChromeUIAboutNewTabURL);
   fake_web_state_.SetCurrentURL(url);
   web::FakeNavigationContext context;
   context.SetUrl(url);
@@ -127,18 +127,22 @@ TEST_F(NewTabPageTabHelperTest, TestToggleToAndFromNTP) {
   EXPECT_TRUE(tab_helper()->IsActive());
 
   GURL not_ntp_url(kTestURL);
-  fake_web_state_.SetCurrentURL(not_ntp_url);
   context.SetUrl(not_ntp_url);
   pending_item_->SetURL(not_ntp_url);
+  fake_navigation_manager_->SetPendingItem(pending_item_.get());
   fake_web_state_.OnNavigationStarted(&context);
-  fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_FALSE(tab_helper()->IsActive());
+  fake_web_state_.SetCurrentURL(not_ntp_url);
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
   EXPECT_FALSE(tab_helper()->IsActive());
 
-  context.SetUrl(url);
   pending_item_->SetURL(url);
+  context.SetUrl(url);
+  fake_navigation_manager_->SetPendingItem(pending_item_.get());
+  fake_web_state_.OnNavigationStarted(&context);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_NEW_TAB_TITLE),
+              base::SysUTF16ToNSString(pending_item_->GetTitle()));
   fake_web_state_.SetCurrentURL(url);
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
@@ -157,7 +161,7 @@ TEST_F(NewTabPageTabHelperTest, TestToggleToAndFromNTP) {
 // Tests double navigations from an NTP and non-NTP page at the same time.
 TEST_F(NewTabPageTabHelperTest, TestMismatchedPendingItem) {
   // Test an NTP url with a mismatched pending item.
-  GURL url(kChromeUINewTabURL);
+  GURL url(kChromeUIAboutNewTabURL);
   GURL not_ntp_url(kTestURL);
   fake_web_state_.SetCurrentURL(url);
   pending_item_->SetURL(not_ntp_url);
