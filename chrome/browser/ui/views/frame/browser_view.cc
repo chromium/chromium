@@ -1166,9 +1166,9 @@ gfx::Size BrowserView::GetWebAppFrameToolbarPreferredSize() const {
 
 #if BUILDFLAG(IS_MAC)
 bool BrowserView::UsesImmersiveFullscreenMode() const {
-  return base::FeatureList::IsEnabled(GetIsWebAppType()
-                                          ? features::kImmersiveFullscreenPWAs
-                                          : features::kImmersiveFullscreen);
+  return base::FeatureList::IsEnabled(features::kImmersiveFullscreen) &&
+         (!GetIsWebAppType() ||
+          base::FeatureList::IsEnabled(features::kImmersiveFullscreenPWAs));
 }
 #endif
 

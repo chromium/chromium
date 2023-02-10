@@ -616,11 +616,12 @@ BASE_FEATURE(kImmersiveFullscreen,
              "ImmersiveFullscreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables immerisve fullscreen mode for PWA windows. The above feature only
-// affects non-PWA windows.
+// Enables immerisve fullscreen mode for PWA windows. PWA windows will use
+// immersive fullscreen mode if and only if both this and the previous feature
+// are enabled.
 BASE_FEATURE(kImmersiveFullscreenPWAs,
              "ImmersiveFullscreenPWAs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
