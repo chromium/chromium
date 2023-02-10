@@ -12,6 +12,8 @@
 
 #include <iosfwd>
 
+#include "base/memory/raw_ptr.h"
+
 namespace redaction_internal {
 
 // Component ------------------------------------------------------------------
@@ -199,7 +201,8 @@ struct Parsed {
   }
 
  private:
-  Parsed* inner_parsed_;  // This object is owned and managed by this struct.
+  raw_ptr<Parsed>
+      inner_parsed_;  // This object is owned and managed by this struct.
 };
 
 }  // namespace redaction_internal

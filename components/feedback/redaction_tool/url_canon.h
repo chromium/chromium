@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/clamped_math.h"
 #include "components/feedback/redaction_tool/url_parse.h"
@@ -315,14 +316,14 @@ struct URLComponentSource {
         query(default_value),
         ref(default_value) {}
 
-  const CHAR* scheme;
-  const CHAR* username;
-  const CHAR* password;
-  const CHAR* host;
-  const CHAR* port;
-  const CHAR* path;
-  const CHAR* query;
-  const CHAR* ref;
+  raw_ptr<const CHAR> scheme;
+  raw_ptr<const CHAR> username;
+  raw_ptr<const CHAR> password;
+  raw_ptr<const CHAR> host;
+  raw_ptr<const CHAR> port;
+  raw_ptr<const CHAR> path;
+  raw_ptr<const CHAR> query;
+  raw_ptr<const CHAR> ref;
 };
 
 // This structure encapsulates information on modifying a URL. Each component

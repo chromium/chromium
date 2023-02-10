@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSER_UI_SITE_SETTINGS_ANDROID_WEBSITE_PREFERENCE_BRIDGE_UTIL_H_
 #define COMPONENTS_BROWSER_UI_SITE_SETTINGS_ANDROID_WEBSITE_PREFERENCE_BRIDGE_UTIL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
 
@@ -23,7 +24,7 @@ class ClearLocalStorageHelper : public content::BrowsingDataRemover::Observer {
   // Implements content::BrowsingDataRemover::Observer.
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override;
 
-  content::BrowsingDataRemover* remover_;
+  raw_ptr<content::BrowsingDataRemover> remover_;
   base::OnceClosure callback_;
 };
 

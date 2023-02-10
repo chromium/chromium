@@ -8,6 +8,7 @@
 #include <map>
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -166,7 +167,7 @@ class NavigationControllerImpl : public NavigationController,
   void ProcessDelayedLoad();
 
   // |tab_| owns |this|.
-  TabImpl* tab_;
+  raw_ptr<TabImpl> tab_;
 
   base::ObserverList<NavigationObserver>::Unchecked observers_;
   std::map<content::NavigationHandle*, std::unique_ptr<NavigationImpl>>

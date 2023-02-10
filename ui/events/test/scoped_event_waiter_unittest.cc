@@ -4,6 +4,7 @@
 
 #include "ui/events/test/scoped_event_waiter.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +38,7 @@ class ScopedEventWaiterTest : public testing::Test {
   void DispatchEvent(ui::Event* event) { processor_.OnEventFromSource(event); }
 
   TestEventProcessor processor_;
-  TestEventTarget* root_target_ = nullptr;
+  raw_ptr<TestEventTarget> root_target_ = nullptr;
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 

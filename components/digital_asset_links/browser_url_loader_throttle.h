@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -67,7 +68,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
 
   void OnCompleteCheck(std::string url, bool verified);
 
-  OriginVerificationSchedulerBridge* bridge_;
+  raw_ptr<OriginVerificationSchedulerBridge> bridge_;
 
   base::WeakPtrFactory<BrowserURLLoaderThrottle> weak_factory_{this};
 };

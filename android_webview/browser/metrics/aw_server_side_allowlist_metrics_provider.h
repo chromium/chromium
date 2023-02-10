@@ -6,6 +6,7 @@
 #define ANDROID_WEBVIEW_BROWSER_METRICS_AW_SERVER_SIDE_ALLOWLIST_METRICS_PROVIDER_H_
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "base/memory/raw_ptr.h"
 #include "components/metrics/metrics_provider.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -32,7 +33,7 @@ class AwServerSideAllowlistMetricsProvider : public ::metrics::MetricsProvider {
 
   bool IsAppPackageNameSystemApp();
 
-  AwMetricsServiceClient* client_;
+  raw_ptr<AwMetricsServiceClient> client_;
 };
 
 }  // namespace android_webview

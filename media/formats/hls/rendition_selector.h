@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
@@ -81,10 +82,10 @@ class MEDIA_EXPORT RenditionSelector {
   struct PreferredVariants {
     // Use this playlist for video, and use it for audio too if the audio-only
     // variant is nullptr.
-    const VariantStream* selected_variant;
+    raw_ptr<const VariantStream> selected_variant;
 
     // Use this variant for audio content if it is not nullptr.
-    const AudioRendition* audio_override;
+    raw_ptr<const AudioRendition> audio_override;
   };
 
   RenditionSelector(scoped_refptr<MultivariantPlaylist> playlist,

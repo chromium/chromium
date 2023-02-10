@@ -98,7 +98,7 @@ class MetadataWriter {
     const proto::CustomInput::FillPolicy fill_policy{
         proto::CustomInput_FillPolicy_UNKNOWN_FILL_POLICY};
     const size_t default_values_size{0};
-    const float* const default_values = nullptr;
+    const raw_ptr<const float> default_values = nullptr;
     const char* name{nullptr};
   };
 

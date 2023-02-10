@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_TEST_SCOPED_EVENT_WAITER_H_
 #define UI_EVENTS_TEST_SCOPED_EVENT_WAITER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/types/event_type.h"
@@ -31,7 +32,7 @@ class ScopedEventWaiter : public EventHandler {
   void OnEvent(Event* event) override;
 
   // The observed event target.
-  EventTarget* const target_;
+  const raw_ptr<EventTarget> target_;
 
   // The type of the event being waited for.
   const EventType target_event_type_;
