@@ -72,8 +72,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
           target_factory_remote,
       bool intercept_only,
       absl::optional<SecurityOptions> security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
-      url::Origin top_frame_origin);
+      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher);
 
   AwProxyingURLLoaderFactory(const AwProxyingURLLoaderFactory&) = delete;
   AwProxyingURLLoaderFactory& operator=(const AwProxyingURLLoaderFactory&) =
@@ -88,8 +87,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
       absl::optional<SecurityOptions> security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
-      url::Origin top_frame_origin);
+      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher);
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -119,8 +117,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   absl::optional<SecurityOptions> security_options_;
 
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
-
-  url::Origin top_frame_origin_;
 
   base::WeakPtrFactory<AwProxyingURLLoaderFactory> weak_factory_{this};
 };
