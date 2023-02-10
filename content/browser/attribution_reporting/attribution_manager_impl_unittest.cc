@@ -306,13 +306,12 @@ class AttributionManagerImplTest : public testing::Test {
   base::ScopedTempDir dir_;
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
+  std::unique_ptr<AttributionManagerImpl> attribution_manager_;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
   raw_ptr<MockCookieChecker> cookie_checker_;
   raw_ptr<MockReportSender> report_sender_;
   raw_ptr<MockAggregationService> aggregation_service_;
   scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner_;
-
-  std::unique_ptr<AttributionManagerImpl> attribution_manager_;
 };
 
 TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
