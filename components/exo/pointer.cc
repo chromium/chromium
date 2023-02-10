@@ -522,10 +522,10 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       ordinal_motion = event->movement();
     }
 
-    // Generate motion event if location changed. We need to check location
-    // here as mouse movement can generate both "moved" and "entered" events
-    // but OnPointerMotion should only be called if location changed since
-    // OnPointerEnter was called.
+    // Generate motion event if location changed or the location hasn't been
+    // sent yet. We need to check location here as mouse movement can generate
+    // both "moved" and "entered" events but OnPointerMotion should only be
+    // called if location changed since OnPointerEnter was called.
     if (!CheckIfSameLocation(event->IsSynthesized(), location_in_root,
                              location_in_target)) {
       bool ignore_motion = false;
@@ -548,12 +548,14 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       if (capture_window_) {
         if (ShouldMoveToCenter())
           MoveCursorToCenterOfActiveDisplay();
+        location_in_root_ = location_in_root;
+        location_in_surface_ = location_in_target;
       } else if (event->type() != ui::ET_MOUSE_EXITED && !ignore_motion) {
         delegate_->OnPointerMotion(event->time_stamp(), location_in_target);
         needs_frame |= true;
+        location_in_root_ = location_in_root;
+        location_in_surface_ = location_in_target;
       }
-      location_in_root_ = location_in_root;
-      location_in_surface_ = location_in_target;
     }
   }
   switch (event->type()) {
