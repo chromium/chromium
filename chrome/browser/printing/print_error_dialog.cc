@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -49,6 +50,8 @@ void ShowPrintErrorDialogTask(const std::u16string& title,
 
 void ShowPrintErrorDialog(const std::u16string& title,
                           const std::u16string& message) {
+  PRINTER_LOG(ERROR) << message;
+
   // Nested loop may destroy caller.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&ShowPrintErrorDialogTask, title, message));

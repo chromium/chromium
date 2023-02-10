@@ -7,6 +7,9 @@
 
 #include "base/functional/callback_forward.h"
 
+// Functions related to showing error dialogs for printing errors. Error dialogs
+// additionally create PRINTER_LOG() entries.
+
 // Shows a window-modal error when a selected printer is invalid.
 void ShowPrintErrorDialogForInvalidPrinterError();
 
