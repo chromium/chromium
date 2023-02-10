@@ -11,7 +11,6 @@ import android.view.View;
  * {@link PrivacyGuideFragment}
  */
 class NavbarVisibilityDelegate {
-    // TODO(crbug.com/1414072): Add unit tests.
     private final int mTotalSteps;
 
     NavbarVisibilityDelegate(int totalSteps) {

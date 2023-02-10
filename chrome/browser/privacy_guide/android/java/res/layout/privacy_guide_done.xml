@@ -60,7 +60,7 @@ found in the LICENSE file.
                 style="@style/TextAppearance.TextMedium.Secondary" />
 
             <org.chromium.ui.widget.ChromeImageButton
-                android:id="@+id/sb_button"
+                android:id="@+id/ps_button"
                 android:layout_width="@dimen/done_step_link_button_size"
                 android:layout_height="@dimen/done_step_link_button_size"
                 android:layout_gravity="center_vertical"

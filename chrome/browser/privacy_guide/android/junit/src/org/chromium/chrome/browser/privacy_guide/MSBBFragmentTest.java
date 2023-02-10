@@ -56,6 +56,10 @@ public class MSBBFragmentTest {
 
     @After
     public void tearDown() {
+        if (mScenario != null) {
+            mScenario.close();
+        }
+        Profile.setLastUsedProfileForTesting(null);
         mActionTester.tearDown();
     }
 

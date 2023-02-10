@@ -53,8 +53,10 @@ android_library("java") {
 robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/privacy_guide/CookiesFragmentTest.java",
+    "junit/src/org/chromium/chrome/browser/privacy_guide/DoneFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/HistorySyncFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/MSBBFragmentTest.java",
+    "junit/src/org/chromium/chrome/browser/privacy_guide/NavbarVisibilityDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideMetricsDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuidePagerAdapterTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/SafeBrowsingFragmentTest.java",
@@ -74,6 +76,7 @@ robolectric_library("junit") {
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/prefs/android:java",
+    "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
