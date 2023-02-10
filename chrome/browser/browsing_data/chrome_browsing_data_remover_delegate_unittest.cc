@@ -3665,7 +3665,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_EQ((base::ValueToTime(prefs->GetDict(kPermissionActionsPrefPath)
                                    .FindList("notifications")
                                    ->front()
-                                   .FindKey("time")))
+                                   .GetDict()
+                                   .Find("time")))
                 .value_or(base::Time()),
             third_recorded_time);
 
