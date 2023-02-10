@@ -89,11 +89,6 @@ void ExpectCrostiniResult(base::OnceClosure closure,
   std::move(closure).Run();
 }
 
-void ExpectBool(base::OnceClosure closure, bool expected_result, bool result) {
-  EXPECT_EQ(expected_result, result);
-  std::move(closure).Run();
-}
-
 class TestRestartObserver : public CrostiniManager::RestartObserver {
  public:
   void OnStageStarted(mojom::InstallerState stage) override {
@@ -156,13 +151,10 @@ class CrostiniManagerTest : public testing::Test {
   }
 
   void EnsureTerminaInstalled() {
-    base::RunLoop run_loop;
-    crostini_manager()->InstallTermina(
-        base::BindOnce([](base::OnceClosure callback,
-                          CrostiniResult) { std::move(callback).Run(); },
-                       run_loop.QuitClosure()),
-        /*is_initial_install=*/false);
-    run_loop.Run();
+    TestFuture<CrostiniResult> result_future;
+    crostini_manager()->InstallTermina(result_future.GetCallback(),
+                                       /*is_initial_install=*/false);
+    EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
   }
 
   CrostiniManagerTest()
@@ -846,25 +838,31 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
     SetCreateDiskImageResponse(vm_tools::concierge::DISK_STATUS_EXISTS);
   }
 
-  void RestartCrostiniCallback(base::OnceClosure closure,
-                               CrostiniResult result) {
-    restart_crostini_callback_count_++;
-    last_crostini_callback_result_ = result;
-    std::move(closure).Run();
-  }
-
-  void RemoveCrostiniCallback(base::OnceClosure closure,
-                              CrostiniResult result) {
-    remove_crostini_callback_count_++;
-    std::move(closure).Run();
-  }
-
   // CrostiniManager::RestartObserver
   void OnStageStarted(mojom::InstallerState stage) override {
     on_stage_started_.Run(stage);
   }
 
  protected:
+  // Convenience functions that forward the restart request to the
+  // CrostiniManager
+  CrostiniManager::RestartId RestartCrostini(
+      guest_os::GuestId container_id,
+      CrostiniManager::CrostiniResultCallback callback,
+      RestartObserver* observer = nullptr) {
+    return crostini_manager()->RestartCrostini(container_id,
+                                               std::move(callback), observer);
+  }
+
+  CrostiniManager::RestartId RestartCrostiniWithOptions(
+      guest_os::GuestId container_id,
+      CrostiniManager::RestartOptions options,
+      CrostiniManager::CrostiniResultCallback callback,
+      RestartObserver* observer = nullptr) {
+    return crostini_manager()->RestartCrostiniWithOptions(
+        container_id, std::move(options), std::move(callback), observer);
+  }
+
   void RunUntilState(mojom::InstallerState target_state) {
     base::RunLoop run_loop;
     on_stage_started_ =
@@ -874,11 +872,6 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
           }
         });
     run_loop.Run();
-  }
-
-  void ExpectCrostiniRestartResult(CrostiniResult result) {
-    EXPECT_EQ(1, restart_crostini_callback_count_);
-    EXPECT_EQ(result, last_crostini_callback_result_);
   }
 
   void ExpectRestarterUmaCount(int count) {
@@ -894,14 +887,9 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
     fake_concierge_client_->set_create_disk_image_response(response);
   }
 
-  CrostiniManager::RestartId restart_id_ =
-      CrostiniManager::kUninitializedRestartId;
   const CrostiniManager::RestartId uninitialized_id_ =
       CrostiniManager::kUninitializedRestartId;
 
-  int restart_crostini_callback_count_ = 0;
-  CrostiniResult last_crostini_callback_result_ = CrostiniResult::SUCCESS;
-  int remove_crostini_callback_count_ = 0;
   ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
   base::HistogramTester histogram_tester_{};
 
@@ -910,15 +898,14 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
 };
 
 TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  EXPECT_EQ(1, restart_crostini_callback_count_);
+
   auto req = fake_cicerone_client_->get_setup_lxd_container_user_request();
   EXPECT_EQ(req.container_username(),
             DefaultContainerUserNameForProfile(profile()));
@@ -934,29 +921,26 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccess) {
 TEST_F(CrostiniManagerRestartTest, CrostiniNotAllowed) {
   FakeCrostiniFeatures crostini_features;
   crostini_features.set_is_allowed_now(false);
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
-  ExpectCrostiniRestartResult(CrostiniResult::NOT_ALLOWED);
-  EXPECT_FALSE(crostini_manager()->IsRestartPending(restart_id_));
+  TestFuture<CrostiniResult> result_future;
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), result_future.GetCallback(), this);
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::NOT_ALLOWED);
+
+  EXPECT_FALSE(crostini_manager()->IsRestartPending(restart_id));
   histogram_tester_.ExpectBucketCount("Crostini.RestarterResult",
                                       CrostiniResult::NOT_ALLOWED, 1);
 }
 
 TEST_F(CrostiniManagerRestartTest, UncleanRestartReportsMetricToUncleanBucket) {
   crostini_manager()->SetUncleanStartupForTesting(true);
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  EXPECT_EQ(1, restart_crostini_callback_count_);
 
   histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", 1);
   histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", 1);
@@ -973,15 +957,14 @@ TEST_F(CrostiniManagerRestartTest, RestartDelayAndSuccessWhenVmStopping) {
           SendVmStoppedSignal();
         }
       });
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  EXPECT_EQ(1, restart_crostini_callback_count_);
 
   ExpectRestarterUmaCount(1);
 }
@@ -989,15 +972,14 @@ TEST_F(CrostiniManagerRestartTest, RestartDelayAndSuccessWhenVmStopping) {
 TEST_F(CrostiniManagerRestartTest, RestartSuccessWithOptions) {
   CrostiniManager::RestartOptions options;
   options.container_username = "helloworld";
-  restart_id_ = crostini_manager()->RestartCrostiniWithOptions(
-      container_id(), std::move(options),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostiniWithOptions(container_id(), std::move(options),
+                             result_future.GetCallback(), this);
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  EXPECT_EQ(1, restart_crostini_callback_count_);
   auto req = fake_cicerone_client_->get_setup_lxd_container_user_request();
   EXPECT_EQ(req.container_username(), "helloworld");
   ExpectRestarterUmaCount(1);
@@ -1005,13 +987,13 @@ TEST_F(CrostiniManagerRestartTest, RestartSuccessWithOptions) {
 
 TEST_F(CrostiniManagerRestartTest, CancelDuringCreateDiskImage) {
   TestFuture<CrostiniResult> result_future;
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(), result_future.GetCallback(), this);
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), result_future.GetCallback(), this);
   RunUntilState(mojom::InstallerState::kCreateDiskImage);
 
   EXPECT_EQ(fake_concierge_client_->create_disk_image_call_count(), 1);
 
-  crostini_manager()->CancelRestartCrostini(restart_id_);
+  crostini_manager()->CancelRestartCrostini(restart_id);
   EXPECT_EQ(result_future.Get(), CrostiniResult::RESTART_REQUEST_CANCELLED);
 
   base::RunLoop().RunUntilIdle();
@@ -1022,13 +1004,13 @@ TEST_F(CrostiniManagerRestartTest, CancelDuringCreateDiskImage) {
 
 TEST_F(CrostiniManagerRestartTest, CancelDuringStartTerminaVm) {
   TestFuture<CrostiniResult> result_future;
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(), result_future.GetCallback(), this);
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), result_future.GetCallback(), this);
   RunUntilState(mojom::InstallerState::kStartTerminaVm);
 
   EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 1);
 
-  crostini_manager()->CancelRestartCrostini(restart_id_);
+  crostini_manager()->CancelRestartCrostini(restart_id);
   EXPECT_EQ(result_future.Get(), CrostiniResult::RESTART_REQUEST_CANCELLED);
 
   base::RunLoop().RunUntilIdle();
@@ -1038,13 +1020,13 @@ TEST_F(CrostiniManagerRestartTest, CancelDuringStartTerminaVm) {
 
 TEST_F(CrostiniManagerRestartTest, CancelDuringStartLxd) {
   TestFuture<CrostiniResult> result_future;
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(), result_future.GetCallback(), this);
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), result_future.GetCallback(), this);
   RunUntilState(mojom::InstallerState::kStartLxd);
 
   EXPECT_EQ(fake_cicerone_client_->start_lxd_count(), 1);
 
-  crostini_manager()->CancelRestartCrostini(restart_id_);
+  crostini_manager()->CancelRestartCrostini(restart_id);
   EXPECT_EQ(result_future.Get(), CrostiniResult::RESTART_REQUEST_CANCELLED);
 
   base::RunLoop().RunUntilIdle();
@@ -1054,13 +1036,13 @@ TEST_F(CrostiniManagerRestartTest, CancelDuringStartLxd) {
 
 TEST_F(CrostiniManagerRestartTest, CancelDuringCreateContainer) {
   TestFuture<CrostiniResult> result_future;
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(), result_future.GetCallback(), this);
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), result_future.GetCallback(), this);
   RunUntilState(mojom::InstallerState::kCreateContainer);
 
   EXPECT_EQ(fake_cicerone_client_->create_lxd_container_count(), 1);
 
-  crostini_manager()->CancelRestartCrostini(restart_id_);
+  crostini_manager()->CancelRestartCrostini(restart_id);
   EXPECT_EQ(result_future.Get(), CrostiniResult::RESTART_REQUEST_CANCELLED);
 
   base::RunLoop().RunUntilIdle();
@@ -1070,13 +1052,13 @@ TEST_F(CrostiniManagerRestartTest, CancelDuringCreateContainer) {
 
 TEST_F(CrostiniManagerRestartTest, CancelDuringSetupContainer) {
   TestFuture<CrostiniResult> result_future;
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(), result_future.GetCallback(), this);
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), result_future.GetCallback(), this);
   RunUntilState(mojom::InstallerState::kSetupContainer);
 
   EXPECT_EQ(fake_cicerone_client_->setup_lxd_container_user_count(), 1);
 
-  crostini_manager()->CancelRestartCrostini(restart_id_);
+  crostini_manager()->CancelRestartCrostini(restart_id);
   EXPECT_EQ(result_future.Get(), CrostiniResult::RESTART_REQUEST_CANCELLED);
 
   base::RunLoop().RunUntilIdle();
@@ -1086,13 +1068,13 @@ TEST_F(CrostiniManagerRestartTest, CancelDuringSetupContainer) {
 
 TEST_F(CrostiniManagerRestartTest, CancelDuringStartContainer) {
   TestFuture<CrostiniResult> result_future;
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(), result_future.GetCallback(), this);
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), result_future.GetCallback(), this);
   RunUntilState(mojom::InstallerState::kStartContainer);
 
   EXPECT_EQ(fake_cicerone_client_->start_lxd_container_count(), 1);
 
-  crostini_manager()->CancelRestartCrostini(restart_id_);
+  crostini_manager()->CancelRestartCrostini(restart_id);
   EXPECT_EQ(result_future.Get(), CrostiniResult::RESTART_REQUEST_CANCELLED);
 
   base::RunLoop().RunUntilIdle();
@@ -1102,15 +1084,16 @@ TEST_F(CrostiniManagerRestartTest, CancelDuringStartContainer) {
 
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringComponentLoaded) {
   crostini_manager()->SetInstallTerminaNeverCompletesForTesting(true);
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(),
+            CrostiniResult::INSTALL_IMAGE_LOADER_TIMED_OUT);
+
   EXPECT_EQ(fake_concierge_client_->create_disk_image_call_count(), 0);
-  ExpectCrostiniRestartResult(CrostiniResult::INSTALL_IMAGE_LOADER_TIMED_OUT);
   EXPECT_FALSE(
       profile_->GetPrefs()->GetBoolean(crostini::prefs::kCrostiniEnabled));
   ExpectRestarterUmaCount(1);
@@ -1123,16 +1106,16 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringComponentLoaded) {
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateDiskImage) {
   fake_concierge_client_->set_send_create_disk_image_response_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::CREATE_DISK_IMAGE_TIMED_OUT);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
-  ExpectCrostiniRestartResult(CrostiniResult::CREATE_DISK_IMAGE_TIMED_OUT);
   ExpectRestarterUmaCount(1);
   histogram_tester_.ExpectTotalCount(
       "Crostini.RestarterTimeInState2.CreateDiskImage", 1);
@@ -1143,16 +1126,13 @@ TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateDiskImage) {
 TEST_F(CrostiniManagerRestartTest, UnexpectedTransitionsRecorded) {
   fake_concierge_client_->set_send_create_disk_image_response_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), base::DoNothing(), this);
   // Run until we're sitting in the CreateDiskImage step that'll never return,
   // then try triggering a different transition.
-  run_loop()->RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
   crostini_manager()->CallRestarterStartLxdContainerFinishedForTesting(
-      restart_id_, CrostiniResult::CONTAINER_START_FAILED);
+      restart_id, CrostiniResult::CONTAINER_START_FAILED);
   histogram_tester_.ExpectUniqueSample("Crostini.InvalidStateTransition",
                                        mojom::InstallerState::kStartContainer,
                                        1);
@@ -1161,16 +1141,16 @@ TEST_F(CrostiniManagerRestartTest, UnexpectedTransitionsRecorded) {
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartVm) {
   fake_concierge_client_->set_send_start_vm_response_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::START_TERMINA_VM_TIMED_OUT);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::START_TERMINA_VM_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
@@ -1180,32 +1160,32 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForVmStarted) {
   vm_tools::concierge::StartVmResponse response;
   response.set_status(vm_tools::concierge::VmStatus::VM_STATUS_STARTING);
   fake_concierge_client_->set_start_vm_response(response);
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::START_TERMINA_VM_TIMED_OUT);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::START_TERMINA_VM_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartLxd) {
   fake_cicerone_client_->set_send_start_lxd_response_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::START_LXD_TIMED_OUT);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::START_LXD_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
@@ -1213,16 +1193,16 @@ TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForLxdStarted) {
   vm_tools::cicerone::StartLxdResponse response;
   response.set_status(vm_tools::cicerone::StartLxdResponse::STARTING);
   fake_cicerone_client_->set_start_lxd_response(response);
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::START_LXD_TIMED_OUT);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::START_LXD_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
@@ -1231,23 +1211,17 @@ TEST_F(CrostiniManagerRestartTest, SameVmDifferentContainerStartsLxdCorrectly) {
   response.set_status(vm_tools::cicerone::StartLxdResponse::STARTING);
   fake_cicerone_client_->set_start_lxd_response(response);
 
-  auto barrier_closure = base::BarrierClosure(2, run_loop()->QuitClosure());
-
-  crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), barrier_closure),
-      this);
+  TestFuture<CrostiniResult> result_future_1;
+  RestartCrostini(container_id(), result_future_1.GetCallback(), this);
 
   auto container_id_2 =
       guest_os::GuestId(kCrostiniDefaultVmType, kVmName, "other-container");
-  crostini_manager()->RestartCrostini(
-      container_id_2,
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), barrier_closure),
-      this);
+  TestFuture<CrostiniResult> result_future_2;
+  RestartCrostini(container_id_2, result_future_2.GetCallback(), this);
 
   base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(result_future_1.IsReady());
+  EXPECT_FALSE(result_future_2.IsReady());
 
   vm_tools::cicerone::StartLxdProgressSignal signal;
   signal.set_owner_id(CryptohomeIdForProfile(profile()));
@@ -1255,39 +1229,36 @@ TEST_F(CrostiniManagerRestartTest, SameVmDifferentContainerStartsLxdCorrectly) {
   signal.set_status(vm_tools::cicerone::StartLxdProgressSignal::STARTED);
   crostini_manager()->OnStartLxdProgress(signal);
 
-  run_loop()->Run();
-
-  EXPECT_EQ(2, restart_crostini_callback_count_);
-  EXPECT_EQ(CrostiniResult::SUCCESS, last_crostini_callback_result_);
+  EXPECT_EQ(result_future_1.Get(), CrostiniResult::SUCCESS);
+  EXPECT_EQ(result_future_2.Get(), CrostiniResult::SUCCESS);
 }
 
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringCreateContainer) {
   fake_cicerone_client_->set_send_create_lxd_container_response_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
-  ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
 TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerCreated) {
   fake_cicerone_client_->set_send_notify_lxd_container_created_signal_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
@@ -1295,54 +1266,51 @@ TEST_F(CrostiniManagerRestartTest, HeartbeatKeepsCreateContainerFromTimingOut) {
   fake_cicerone_client_->set_send_notify_lxd_container_created_signal_delay(
       base::TimeDelta::Max());
   vm_tools::cicerone::LxdContainerDownloadingSignal signal;
-  signal.set_container_name(DefaultContainerId().container_name);
-  signal.set_vm_name(DefaultContainerId().vm_name);
+  signal.set_container_name(container_id().container_name);
+  signal.set_vm_name(container_id().vm_name);
   signal.set_owner_id(CryptohomeIdForProfile(profile()));
 
-  restart_id_ = crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
 
   task_environment_.FastForwardBy(base::Minutes(4));
   crostini_manager_->OnLxdContainerDownloading(signal);
   task_environment_.FastForwardBy(base::Minutes(4));
-  ASSERT_EQ(0, restart_crostini_callback_count_);
+  EXPECT_FALSE(result_future.IsReady());
 
   task_environment_.FastForwardBy(base::Minutes(6));
-  ASSERT_EQ(1, restart_crostini_callback_count_);
+  EXPECT_TRUE(result_future.IsReady());
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::CREATE_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
 TEST_F(CrostiniManagerRestartTest, RestartFinishesOnContainerCreatedError) {
   fake_cicerone_client_->set_lxd_container_created_signal_status(
       vm_tools::cicerone::LxdContainerCreatedSignal::UNKNOWN);
-  restart_id_ = crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
-      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::UNKNOWN_ERROR),
-      this);
-  run_loop()->Run();
 
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(DefaultContainerId(), result_future.GetCallback(), this);
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::UNKNOWN_ERROR);
+
+  // This pref entry is currently retained for the default container id and
+  // removed for other containers.
   EXPECT_GE(
       guest_os::GetContainers(profile_.get(), guest_os::VmType::TERMINA).size(),
       1uL);
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  EXPECT_EQ(0, restart_crostini_callback_count_);
   ExpectRestarterUmaCount(1);
 }
 
 TEST_F(CrostiniManagerRestartTest,
        SuccessfulCreateCancelContainerCreatedKeepsPrefs) {
   TestFuture<CrostiniResult> restart_future;
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(), restart_future.GetCallback());
+  RestartCrostini(container_id(), restart_future.GetCallback());
   EXPECT_EQ(restart_future.Get(), CrostiniResult::SUCCESS);
   EXPECT_GE(
       guest_os::GetContainers(profile_.get(), guest_os::VmType::TERMINA).size(),
@@ -1356,8 +1324,7 @@ TEST_F(CrostiniManagerRestartTest,
   TestFuture<CrostiniResult> failed_restart_future;
   fake_cicerone_client_->set_lxd_container_created_signal_status(
       vm_tools::cicerone::LxdContainerCreatedSignal::UNKNOWN);
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(), failed_restart_future.GetCallback());
+  RestartCrostini(container_id(), failed_restart_future.GetCallback());
   EXPECT_EQ(failed_restart_future.Get(), CrostiniResult::UNKNOWN_ERROR);
 
   // Expect container wasn't removed from prefs.
@@ -1369,46 +1336,42 @@ TEST_F(CrostiniManagerRestartTest,
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringContainerSetup) {
   fake_cicerone_client_->set_send_set_up_lxd_container_user_response_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SETUP_CONTAINER_TIMED_OUT);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::SETUP_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
 TEST_F(CrostiniManagerRestartTest, TimeoutDuringStartContainer) {
   fake_cicerone_client_->set_send_start_lxd_container_response_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
-  ExpectCrostiniRestartResult(CrostiniResult::START_CONTAINER_TIMED_OUT);
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::START_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
 TEST_F(CrostiniManagerRestartTest, TimeoutWaitingForContainerStarted) {
   fake_cicerone_client_->set_send_container_started_signal_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
-  EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
-  EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::START_CONTAINER_TIMED_OUT);
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::START_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
@@ -1417,28 +1380,26 @@ TEST_F(CrostiniManagerRestartTest,
   fake_cicerone_client_->set_send_container_started_signal_delay(
       base::TimeDelta::Max());
   vm_tools::cicerone::LxdContainerStartingSignal signal;
-  signal.set_container_name(DefaultContainerId().container_name);
-  signal.set_vm_name(DefaultContainerId().vm_name);
+  signal.set_container_name(container_id().container_name);
+  signal.set_vm_name(container_id().vm_name);
   signal.set_owner_id(CryptohomeIdForProfile(profile()));
   signal.set_status(vm_tools::cicerone::LxdContainerStartingSignal::STARTING);
 
-  restart_id_ = crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
 
   task_environment_.FastForwardBy(base::Minutes(7));
   crostini_manager_->OnLxdContainerStarting(signal);
   task_environment_.FastForwardBy(base::Minutes(7));
-  ASSERT_EQ(0, restart_crostini_callback_count_);
+  EXPECT_FALSE(result_future.IsReady());
 
   task_environment_.FastForwardBy(base::Minutes(2));
-  ASSERT_EQ(1, restart_crostini_callback_count_);
+  EXPECT_TRUE(result_future.IsReady());
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::START_CONTAINER_TIMED_OUT);
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  ExpectCrostiniRestartResult(CrostiniResult::START_CONTAINER_TIMED_OUT);
   ExpectRestarterUmaCount(1);
 }
 
@@ -1446,16 +1407,15 @@ TEST_F(CrostiniManagerRestartTest, CancelThenStopVm) {
   // This test checks that CrostiniRestarter can correctly handle VM shutdowns
   // after being cancelled.
 
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()),
-      this);
+  TestFuture<CrostiniResult> result_future;
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), result_future.GetCallback(), this);
   RunUntilState(mojom::InstallerState::kCreateContainer);
 
-  crostini_manager()->CancelRestartCrostini(restart_id_);
+  EXPECT_FALSE(result_future.IsReady());
+  crostini_manager()->CancelRestartCrostini(restart_id);
 
-  ExpectCrostiniRestartResult(CrostiniResult::RESTART_REQUEST_CANCELLED);
+  EXPECT_EQ(result_future.Get(), CrostiniResult::RESTART_REQUEST_CANCELLED);
 
   // Make sure the Restarter hasn't been destroyed yet, otherwise the shutdown
   // below won't actually test the code path we want it to.
@@ -1470,57 +1430,49 @@ TEST_F(CrostiniManagerRestartTest, CancelThenStopVm) {
 }
 
 TEST_F(CrostiniManagerRestartTest, CancelFinishedRestartIsSafe) {
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
+  TestFuture<CrostiniResult> result_future;
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), result_future.GetCallback());
 
-  ExpectCrostiniRestartResult(CrostiniResult::SUCCESS);
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
+  EXPECT_FALSE(crostini_manager()->IsRestartPending(restart_id));
 
-  base::RunLoop run_loop;
-  crostini_manager()->CancelRestartCrostini(restart_id_);
-  run_loop.RunUntilIdle();
+  crostini_manager()->CancelRestartCrostini(restart_id);
+  base::RunLoop().RunUntilIdle();
   // Just make sure nothing crashes.
 }
 
 TEST_F(CrostiniManagerRestartTest, DoubleCancelIsSafe) {
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+  TestFuture<CrostiniResult> result_future;
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), result_future.GetCallback());
 
-  crostini_manager()->CancelRestartCrostini(restart_id_);
-  crostini_manager()->CancelRestartCrostini(restart_id_);
-  run_loop()->Run();
-  ExpectCrostiniRestartResult(CrostiniResult::RESTART_REQUEST_CANCELLED);
+  crostini_manager()->CancelRestartCrostini(restart_id);
+  EXPECT_FALSE(crostini_manager()->IsRestartPending(restart_id));
+  EXPECT_TRUE(result_future.IsReady());
+  EXPECT_EQ(result_future.Get(), CrostiniResult::RESTART_REQUEST_CANCELLED);
+
+  crostini_manager()->CancelRestartCrostini(restart_id);
 }
 
 TEST_F(CrostiniManagerRestartTest, MultiRestartAllowed) {
   CrostiniManager::RestartId id1, id2, id3;
-  id1 = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()));
-  id2 = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()));
-  id3 = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()));
+
+  TestFuture<CrostiniResult> result_future_1, result_future_2, result_future_3;
+  id1 = RestartCrostini(container_id(), result_future_1.GetCallback());
+  id2 = RestartCrostini(container_id(), result_future_2.GetCallback());
+  id3 = RestartCrostini(container_id(), result_future_3.GetCallback());
 
   EXPECT_TRUE(crostini_manager()->IsRestartPending(id1));
   EXPECT_TRUE(crostini_manager()->IsRestartPending(id2));
   EXPECT_TRUE(crostini_manager()->IsRestartPending(id3));
 
-  run_loop()->Run();
+  EXPECT_EQ(result_future_1.Get(), CrostiniResult::SUCCESS);
+  EXPECT_EQ(result_future_2.Get(), CrostiniResult::SUCCESS);
+  EXPECT_EQ(result_future_3.Get(), CrostiniResult::SUCCESS);
+
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
-  EXPECT_EQ(3, restart_crostini_callback_count_);
 
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id1));
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id2));
@@ -1529,25 +1481,24 @@ TEST_F(CrostiniManagerRestartTest, MultiRestartAllowed) {
 }
 
 TEST_F(CrostiniManagerRestartTest, FailureWithMultipleRestarts) {
-  // When multiple restarters are running, a failure in the first should cause
+  // When multiple restarts are running, a failure in the first should cause
   // the others to fail immediately.
 
   vm_tools::concierge::StartVmResponse response;
   response.set_status(vm_tools::concierge::VmStatus::VM_STATUS_FAILURE);
   fake_concierge_client_->set_start_vm_response(response);
 
-  auto barrier_closure = base::BarrierClosure(3, run_loop()->QuitClosure());
-  auto result_callback =
-      base::BindLambdaForTesting([barrier_closure](CrostiniResult result) {
-        EXPECT_EQ(CrostiniResult::VM_START_FAILED, result);
-        barrier_closure.Run();
-      });
   CrostiniManager::RestartId id1, id2, id3;
-  id1 = crostini_manager()->RestartCrostini(container_id(), result_callback);
-  id2 = crostini_manager()->RestartCrostini(container_id(), result_callback);
-  id3 = crostini_manager()->RestartCrostini(container_id(), result_callback);
+  TestFuture<CrostiniResult> result_future_1, result_future_2, result_future_3;
+  id1 = RestartCrostini(container_id(), result_future_1.GetCallback());
+  id2 = RestartCrostini(container_id(), result_future_2.GetCallback());
+  id3 = RestartCrostini(container_id(), result_future_3.GetCallback());
 
-  run_loop()->Run();
+  EXPECT_EQ(result_future_1.Get(), CrostiniResult::VM_START_FAILED);
+  EXPECT_TRUE(result_future_2.IsReady());
+  EXPECT_TRUE(result_future_3.IsReady());
+  EXPECT_EQ(result_future_2.Get(), CrostiniResult::VM_START_FAILED);
+  EXPECT_EQ(result_future_3.Get(), CrostiniResult::VM_START_FAILED);
 
   EXPECT_EQ(1, fake_concierge_client_->start_vm_call_count());
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id1));
@@ -1566,33 +1517,31 @@ TEST_F(CrostiniManagerRestartTest, InstallHistogramEntries) {
   response.set_status(vm_tools::concierge::VmStatus::VM_STATUS_FAILURE);
   fake_concierge_client_->set_start_vm_response(response);
 
-  auto barrier_closure = base::BarrierClosure(2, run_loop()->QuitClosure());
-  auto result_callback =
-      base::BindLambdaForTesting([&barrier_closure](CrostiniResult result) {
-        EXPECT_EQ(CrostiniResult::VM_START_FAILED, result);
-        barrier_closure.Run();
-      });
+  TestFuture<CrostiniResult> result_future_1, result_future_2;
   CrostiniManager::RestartOptions options1;
   options1.restart_source = RestartSource::kInstaller;
-  crostini_manager()->RestartCrostiniWithOptions(
-      container_id(), std::move(options1), result_callback);
-  crostini_manager()->RestartCrostini(container_id(), result_callback);
-  run_loop()->Run();
+  RestartCrostiniWithOptions(container_id(), std::move(options1),
+                             result_future_1.GetCallback());
+  RestartCrostini(container_id(), result_future_2.GetCallback());
+
+  EXPECT_EQ(result_future_1.Get(), CrostiniResult::VM_START_FAILED);
+  EXPECT_EQ(result_future_2.Get(), CrostiniResult::VM_START_FAILED);
 
   histogram_tester_.ExpectBucketCount("Crostini.RestarterResult.Installer",
                                       CrostiniResult::VM_START_FAILED, 1);
   histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", 0);
 
   // Likewise for RestartSource::kMultiContainerCreation
-  base::RunLoop run_loop2;
-  barrier_closure = base::BarrierClosure(2, run_loop2.QuitClosure());
+  TestFuture<CrostiniResult> result_future_3, result_future_4;
   guest_os::GuestId container_id2("termina", "banana");
   CrostiniManager::RestartOptions options2;
   options2.restart_source = RestartSource::kMultiContainerCreation;
-  crostini_manager()->RestartCrostiniWithOptions(
-      container_id2, std::move(options2), result_callback);
-  crostini_manager()->RestartCrostini(container_id2, result_callback);
-  run_loop2.Run();
+  RestartCrostiniWithOptions(container_id2, std::move(options2),
+                             result_future_3.GetCallback());
+  RestartCrostini(container_id2, result_future_4.GetCallback());
+
+  EXPECT_EQ(result_future_3.Get(), CrostiniResult::VM_START_FAILED);
+  EXPECT_EQ(result_future_4.Get(), CrostiniResult::VM_START_FAILED);
 
   histogram_tester_.ExpectBucketCount(
       "Crostini.RestarterResult.MultiContainerCreation",
@@ -1609,13 +1558,9 @@ TEST_F(CrostiniManagerRestartTest, OsReleaseSetCorrectly) {
   os_release.set_id("debian");
   fake_cicerone_client_->set_lxd_container_os_release(os_release);
 
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  EXPECT_TRUE(crostini_manager()->IsRestartPending(restart_id_));
-  run_loop()->Run();
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
 
   const auto* stored_os_release =
       crostini_manager()->GetContainerOsRelease(container_id());
@@ -1636,131 +1581,104 @@ TEST_F(CrostiniManagerRestartTest, OsReleaseSetCorrectly) {
 }
 
 TEST_F(CrostiniManagerRestartTest, RestartThenUninstall) {
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()));
+  TestFuture<CrostiniResult> restart_future;
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), restart_future.GetCallback(), this);
 
-  EXPECT_TRUE(crostini_manager()->IsRestartPending(restart_id_));
+  EXPECT_TRUE(crostini_manager()->IsRestartPending(restart_id));
 
-  crostini_manager()->RemoveCrostini(
-      kVmName,
-      base::BindOnce(&CrostiniManagerRestartTest::RemoveCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()));
+  TestFuture<CrostiniResult> uninstall_future;
+  crostini_manager()->RemoveCrostini(kVmName, uninstall_future.GetCallback());
 
-  EXPECT_FALSE(crostini_manager()->IsRestartPending(restart_id_));
+  EXPECT_FALSE(crostini_manager()->IsRestartPending(restart_id));
 
-  run_loop()->Run();
-
-  ExpectCrostiniRestartResult(CrostiniResult::RESTART_ABORTED);
-  EXPECT_EQ(1, remove_crostini_callback_count_);
+  EXPECT_EQ(uninstall_future.Get(), CrostiniResult::SUCCESS);
+  EXPECT_EQ(restart_future.Get(), CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(1);
 }
 
 TEST_F(CrostiniManagerRestartTest, RestartMultipleThenUninstall) {
   CrostiniManager::RestartId id1, id2, id3;
-  id1 = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()));
-  id2 = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()));
-  id3 = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()));
+  TestFuture<CrostiniResult> restart_future_1, restart_future_2,
+      restart_future_3;
+  id1 = RestartCrostini(container_id(), restart_future_1.GetCallback());
+  id2 = RestartCrostini(container_id(), restart_future_2.GetCallback());
+  id3 = RestartCrostini(container_id(), restart_future_3.GetCallback());
 
   EXPECT_TRUE(crostini_manager()->IsRestartPending(id1));
   EXPECT_TRUE(crostini_manager()->IsRestartPending(id2));
   EXPECT_TRUE(crostini_manager()->IsRestartPending(id3));
 
-  crostini_manager()->RemoveCrostini(
-      kVmName,
-      base::BindOnce(&CrostiniManagerRestartTest::RemoveCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()));
+  TestFuture<CrostiniResult> uninstall_future;
+  crostini_manager()->RemoveCrostini(kVmName, uninstall_future.GetCallback());
 
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id1));
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id2));
   EXPECT_FALSE(crostini_manager()->IsRestartPending(id3));
 
-  run_loop()->Run();
+  EXPECT_EQ(uninstall_future.Get(), CrostiniResult::SUCCESS);
 
-  EXPECT_EQ(3, restart_crostini_callback_count_);
-  EXPECT_EQ(1, remove_crostini_callback_count_);
+  EXPECT_EQ(restart_future_1.Get(), CrostiniResult::RESTART_ABORTED);
+  EXPECT_EQ(restart_future_2.Get(), CrostiniResult::RESTART_ABORTED);
+  EXPECT_EQ(restart_future_3.Get(), CrostiniResult::RESTART_ABORTED);
   ExpectRestarterUmaCount(3);
 }
 
 TEST_F(CrostiniManagerRestartTest, UninstallWithRestarterTimeout) {
   fake_concierge_client_->set_send_start_vm_response_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(container_id(),
-                                                    base::DoNothing(), this);
+  RestartCrostini(container_id(), base::DoNothing(), this);
   RunUntilState(mojom::InstallerState::kStartTerminaVm);
 
   // In the kStartTerminaVm state now. Start an uninstall and then wait for
   // the timeout to be hit.
 
-  crostini_manager()->RemoveCrostini(
-      kVmName,
-      base::BindOnce(&CrostiniManagerRestartTest::RemoveCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()));
+  TestFuture<CrostiniResult> uninstall_future;
+  crostini_manager()->RemoveCrostini(kVmName, uninstall_future.GetCallback());
 
   task_environment_.FastForwardBy(kLongTime);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(1, remove_crostini_callback_count_);
+  EXPECT_EQ(uninstall_future.Get(), CrostiniResult::SUCCESS);
 }
 
 TEST_F(CrostiniManagerRestartTest, UninstallThenRestart) {
   // Install crostini first so that the uninstaller doesn't terminate before we
   // can call the installer again
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()));
+  TestFuture<CrostiniResult> restart_future_1;
+  RestartCrostini(container_id(), restart_future_1.GetCallback());
+  EXPECT_EQ(restart_future_1.Get(), CrostiniResult::SUCCESS);
 
-  EXPECT_TRUE(crostini_manager()->IsRestartPending(restart_id_));
+  TestFuture<CrostiniResult> uninstall_future;
+  crostini_manager()->RemoveCrostini(kVmName, uninstall_future.GetCallback());
 
-  run_loop()->Run();
+  TestFuture<CrostiniResult> restart_future_2;
+  CrostiniManager::RestartId restart_id =
+      RestartCrostini(container_id(), restart_future_2.GetCallback());
 
-  base::RunLoop run_loop2;
-  crostini_manager()->RemoveCrostini(
-      kVmName,
-      base::BindOnce(&CrostiniManagerRestartTest::RemoveCrostiniCallback,
-                     base::Unretained(this), run_loop2.QuitClosure()));
+  // Restarting during uninstallation is not allowed and immediately fails.
+  EXPECT_EQ(uninitialized_id_, restart_id);
+  EXPECT_TRUE(restart_future_2.IsReady());
+  EXPECT_EQ(restart_future_2.Get(),
+            CrostiniResult::CROSTINI_UNINSTALLER_RUNNING);
 
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()));
-
-  EXPECT_EQ(uninitialized_id_, restart_id_);
-
-  run_loop2.Run();
-
-  EXPECT_EQ(2, restart_crostini_callback_count_);
-  EXPECT_EQ(1, remove_crostini_callback_count_);
+  EXPECT_FALSE(uninstall_future.IsReady());
+  EXPECT_EQ(uninstall_future.Get(), CrostiniResult::SUCCESS);
 }
 
 TEST_F(CrostiniManagerRestartTest, VmStoppedDuringRestart) {
   fake_cicerone_client_->set_send_container_started_signal_delay(
       base::TimeDelta::Max());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->RunUntilIdle();
-  EXPECT_TRUE(crostini_manager()->IsRestartPending(restart_id_));
-  EXPECT_EQ(0, restart_crostini_callback_count_);
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback(), this);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(result_future.IsReady());
+
   vm_tools::concierge::VmStoppedSignal vm_stopped_signal;
   vm_stopped_signal.set_owner_id(CryptohomeIdForProfile(profile()));
   vm_stopped_signal.set_name(kVmName);
   crostini_manager()->OnVmStopped(vm_stopped_signal);
-  run_loop()->RunUntilIdle();
-  EXPECT_FALSE(crostini_manager()->IsRestartPending(restart_id_));
-  EXPECT_EQ(1, restart_crostini_callback_count_);
+  EXPECT_EQ(result_future.Get(), CrostiniResult::RESTART_FAILED_VM_STOPPED);
 }
 
 TEST_F(CrostiniManagerRestartTest, RestartTriggersArcSideloadIfEnabled) {
@@ -1772,12 +1690,11 @@ TEST_F(CrostiniManagerRestartTest, RestartTriggersArcSideloadIfEnabled) {
       vm_tools::cicerone::ConfigureForArcSideloadResponse::SUCCEEDED);
   fake_cicerone_client_->set_enable_arc_sideload_response(fake_response);
 
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->RunUntilIdle();
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
+
+  // ConfigureForArcSideload() is called asynchronously.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(fake_cicerone_client_->configure_for_arc_sideload_called());
 }
@@ -1791,27 +1708,24 @@ TEST_F(CrostiniManagerRestartTest, RestartDoesNotTriggerArcSideloadIfDisabled) {
       vm_tools::cicerone::ConfigureForArcSideloadResponse::SUCCEEDED);
   fake_cicerone_client_->set_enable_arc_sideload_response(fake_response);
 
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->RunUntilIdle();
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(container_id(), result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
+
+  // ConfigureForArcSideload() is called asynchronously.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_cicerone_client_->configure_for_arc_sideload_called());
 }
 
 TEST_F(CrostiniManagerRestartTest, RestartWhileShuttingDown) {
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
+  RestartCrostini(container_id(), base::DoNothing(), this);
   // crostini_manager() is destructed during test teardown, mimicking the effect
   // of shutting down chrome while a restart is running.
 }
 
 TEST_F(CrostiniManagerRestartTest, AllObservers) {
+  TestFuture<CrostiniResult> result_future_1, result_future_2;
+
   TestRestartObserver observer2;
   int observer1_count = 0;
   on_stage_started_ =
@@ -1819,22 +1733,15 @@ TEST_F(CrostiniManagerRestartTest, AllObservers) {
         ++observer1_count;
         if (state == mojom::InstallerState::kStartTerminaVm) {
           // Add a second Restarter with observer while first is starting.
-          crostini_manager()->RestartCrostini(
-              container_id(),
-              base::BindOnce(
-                  &CrostiniManagerRestartTest::RestartCrostiniCallback,
-                  base::Unretained(this), run_loop()->QuitClosure()),
-              &observer2);
+          RestartCrostini(container_id(), result_future_2.GetCallback(),
+                          &observer2);
         }
       });
 
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()),
-      this);
-  run_loop()->Run();
-  EXPECT_EQ(2, restart_crostini_callback_count_);
+  RestartCrostini(container_id(), result_future_1.GetCallback(), this);
+
+  EXPECT_EQ(result_future_1.Get(), CrostiniResult::SUCCESS);
+  EXPECT_EQ(result_future_2.Get(), CrostiniResult::SUCCESS);
   EXPECT_EQ(8, observer1_count);
   EXPECT_EQ(5u, observer2.stages.size());
 }
@@ -1843,13 +1750,13 @@ TEST_F(CrostiniManagerRestartTest, StartVmOnly) {
   TestRestartObserver observer;
   CrostiniManager::RestartOptions options;
   options.start_vm_only = true;
-  restart_id_ = crostini_manager()->RestartCrostiniWithOptions(
-      container_id(), std::move(options),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      &observer);
-  run_loop()->Run();
-  ExpectCrostiniRestartResult(CrostiniResult::SUCCESS);
+
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostiniWithOptions(container_id(), std::move(options),
+                             result_future.GetCallback(), &observer);
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
+
   EXPECT_EQ(std::vector<crostini::mojom::InstallerState>({
                 crostini::mojom::InstallerState::kStart,
                 crostini::mojom::InstallerState::kInstallImageLoader,
@@ -1864,18 +1771,18 @@ TEST_F(CrostiniManagerRestartTest, StartVmOnlyThenFullRestart) {
   TestRestartObserver observer2;
   CrostiniManager::RestartOptions options;
   options.start_vm_only = true;
-  restart_id_ = crostini_manager()->RestartCrostiniWithOptions(
-      container_id(), std::move(options),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()),
-      &observer1);
-  crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      &observer2);
-  run_loop()->Run();
-  EXPECT_EQ(2, restart_crostini_callback_count_);
+
+  TestFuture<CrostiniResult> result_future_1, result_future_2;
+
+  RestartCrostiniWithOptions(container_id(), std::move(options),
+                             result_future_1.GetCallback(), &observer1);
+
+  RestartCrostini(container_id(), result_future_2.GetCallback(), &observer2);
+
+  EXPECT_EQ(result_future_1.Get(), CrostiniResult::SUCCESS);
+  EXPECT_FALSE(result_future_2.IsReady());
+
+  EXPECT_EQ(result_future_2.Get(), CrostiniResult::SUCCESS);
   EXPECT_EQ(std::vector<crostini::mojom::InstallerState>({
                 crostini::mojom::InstallerState::kStart,
                 crostini::mojom::InstallerState::kInstallImageLoader,
@@ -1897,20 +1804,24 @@ TEST_F(CrostiniManagerRestartTest, StartVmOnlyThenFullRestart) {
 TEST_F(CrostiniManagerRestartTest, FullRestartThenStartVmOnly) {
   TestRestartObserver observer1;
   TestRestartObserver observer2;
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      &observer1);
+  TestFuture<CrostiniResult> result_future_1, result_future_2;
+
+  RestartCrostini(container_id(), result_future_1.GetCallback(), &observer1);
+
   CrostiniManager::RestartOptions options;
   options.start_vm_only = true;
-  restart_id_ = crostini_manager()->RestartCrostiniWithOptions(
-      container_id(), std::move(options),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()),
-      &observer2);
-  run_loop()->Run();
-  EXPECT_EQ(2, restart_crostini_callback_count_);
+  RestartCrostiniWithOptions(container_id(), std::move(options),
+                             result_future_2.GetCallback(), &observer2);
+
+  EXPECT_EQ(result_future_2.Get(), CrostiniResult::SUCCESS);
+  EXPECT_FALSE(result_future_1.IsReady());
+  EXPECT_EQ(std::vector<crostini::mojom::InstallerState>({
+                crostini::mojom::InstallerState::kCreateDiskImage,
+                crostini::mojom::InstallerState::kStartTerminaVm,
+            }),
+            observer2.stages);
+
+  EXPECT_EQ(result_future_1.Get(), CrostiniResult::SUCCESS);
   EXPECT_EQ(std::vector<crostini::mojom::InstallerState>({
                 crostini::mojom::InstallerState::kStart,
                 crostini::mojom::InstallerState::kInstallImageLoader,
@@ -1922,32 +1833,25 @@ TEST_F(CrostiniManagerRestartTest, FullRestartThenStartVmOnly) {
                 crostini::mojom::InstallerState::kStartContainer,
             }),
             observer1.stages);
-  EXPECT_EQ(std::vector<crostini::mojom::InstallerState>({
-                crostini::mojom::InstallerState::kCreateDiskImage,
-                crostini::mojom::InstallerState::kStartTerminaVm,
-            }),
-            observer2.stages);
 }
 
 TEST_F(CrostiniManagerRestartTest, StartVmOnlyTwice) {
   TestRestartObserver observer1;
   TestRestartObserver observer2;
+  TestFuture<CrostiniResult> result_future_1, result_future_2;
+
   CrostiniManager::RestartOptions options1;
   options1.start_vm_only = true;
-  restart_id_ = crostini_manager()->RestartCrostiniWithOptions(
-      container_id(), std::move(options1),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()),
-      &observer1);
+  RestartCrostiniWithOptions(container_id(), std::move(options1),
+                             result_future_1.GetCallback(), &observer1);
   CrostiniManager::RestartOptions options2;
   options2.start_vm_only = true;
-  restart_id_ = crostini_manager()->RestartCrostiniWithOptions(
-      container_id(), std::move(options2),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      &observer2);
-  run_loop()->Run();
-  EXPECT_EQ(2, restart_crostini_callback_count_);
+  RestartCrostiniWithOptions(container_id(), std::move(options2),
+                             result_future_2.GetCallback(), &observer2);
+
+  EXPECT_EQ(result_future_1.Get(), CrostiniResult::SUCCESS);
+  EXPECT_EQ(result_future_2.Get(), CrostiniResult::SUCCESS);
+
   EXPECT_EQ(std::vector<crostini::mojom::InstallerState>({
                 crostini::mojom::InstallerState::kStart,
                 crostini::mojom::InstallerState::kInstallImageLoader,
@@ -1965,20 +1869,17 @@ TEST_F(CrostiniManagerRestartTest, StartVmOnlyTwice) {
 TEST_F(CrostiniManagerRestartTest, StopAfterLxdAvailableThenFullRestart) {
   TestRestartObserver observer1;
   TestRestartObserver observer2;
+  TestFuture<CrostiniResult> result_future_1, result_future_2;
+
   CrostiniManager::RestartOptions options;
   options.stop_after_lxd_available = true;
-  restart_id_ = crostini_manager()->RestartCrostiniWithOptions(
-      container_id(), std::move(options),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), base::DoNothing()),
-      &observer1);
-  crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      &observer2);
-  run_loop()->Run();
-  EXPECT_EQ(2, restart_crostini_callback_count_);
+  RestartCrostiniWithOptions(container_id(), std::move(options),
+                             result_future_1.GetCallback(), &observer1);
+  RestartCrostini(container_id(), result_future_2.GetCallback(), &observer2);
+
+  EXPECT_EQ(result_future_1.Get(), CrostiniResult::SUCCESS);
+  EXPECT_EQ(result_future_2.Get(), CrostiniResult::SUCCESS);
+
   EXPECT_EQ(std::vector<crostini::mojom::InstallerState>({
                 crostini::mojom::InstallerState::kStart,
                 crostini::mojom::InstallerState::kInstallImageLoader,
@@ -2006,20 +1907,22 @@ TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
                              ->MountProviderRegistry();
   auto* share_service =
       guest_os::GuestOsSharePath::GetForProfile(profile_.get());
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(), base::BindLambdaForTesting([&](CrostiniResult result) {
-        ASSERT_GT(terminal_registry->List().size(), 0u);
-        ASSERT_GT(mount_registry->List().size(), 0u);
-        ASSERT_GT(share_service->ListGuests().size(), 0u);
-        crostini_manager()->RemoveCrostini(
-            kVmName,
-            base::BindOnce(&CrostiniManagerRestartTest::RemoveCrostiniCallback,
-                           base::Unretained(this), run_loop()->QuitClosure()));
-      }));
-  run_loop()->Run();
-  ASSERT_EQ(terminal_registry->List().size(), 0u);
-  ASSERT_EQ(mount_registry->List().size(), 0u);
-  ASSERT_EQ(share_service->ListGuests().size(), 0u);
+
+  TestFuture<CrostiniResult> restart_result;
+  RestartCrostini(container_id(), restart_result.GetCallback());
+  EXPECT_EQ(restart_result.Get(), CrostiniResult::SUCCESS);
+
+  EXPECT_GT(terminal_registry->List().size(), 0u);
+  EXPECT_GT(mount_registry->List().size(), 0u);
+  EXPECT_GT(share_service->ListGuests().size(), 0u);
+
+  TestFuture<CrostiniResult> uninstall_result;
+  crostini_manager()->RemoveCrostini(kVmName, uninstall_result.GetCallback());
+  EXPECT_EQ(uninstall_result.Get(), CrostiniResult::SUCCESS);
+
+  EXPECT_EQ(terminal_registry->List().size(), 0u);
+  EXPECT_EQ(mount_registry->List().size(), 0u);
+  EXPECT_EQ(share_service->ListGuests().size(), 0u);
 }
 
 TEST_F(CrostiniManagerRestartTest,
@@ -2035,19 +1938,23 @@ TEST_F(CrostiniManagerRestartTest,
   response.set_status(
       vm_tools::cicerone::DeleteLxdContainerResponse::DOES_NOT_EXIST);
   fake_cicerone_client_->set_delete_lxd_container_response_(response);
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(), base::BindLambdaForTesting([&](CrostiniResult result) {
-        ASSERT_GT(terminal_registry->List().size(), 0u);
-        ASSERT_GT(mount_registry->List().size(), 0u);
-        ASSERT_GT(share_service->ListGuests().size(), 0u);
-        crostini_manager()->DeleteLxdContainer(
-            container_id(),
-            base::BindOnce(&ExpectBool, run_loop()->QuitClosure(), true));
-      }));
-  run_loop()->Run();
-  ASSERT_EQ(terminal_registry->List().size(), 0u);
-  ASSERT_EQ(mount_registry->List().size(), 0u);
-  ASSERT_EQ(share_service->ListGuests().size(), 0u);
+
+  TestFuture<CrostiniResult> restart_result;
+  RestartCrostini(container_id(), restart_result.GetCallback());
+  EXPECT_EQ(restart_result.Get(), CrostiniResult::SUCCESS);
+
+  EXPECT_GT(terminal_registry->List().size(), 0u);
+  EXPECT_GT(mount_registry->List().size(), 0u);
+  EXPECT_GT(share_service->ListGuests().size(), 0u);
+
+  TestFuture<bool> delete_result;
+  crostini_manager()->DeleteLxdContainer(container_id(),
+                                         delete_result.GetCallback());
+  EXPECT_EQ(delete_result.Get(), true);
+
+  EXPECT_EQ(terminal_registry->List().size(), 0u);
+  EXPECT_EQ(mount_registry->List().size(), 0u);
+  EXPECT_EQ(share_service->ListGuests().size(), 0u);
 }
 
 TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
@@ -2058,23 +1965,25 @@ TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
                              ->MountProviderRegistry();
   auto* share_service =
       guest_os::GuestOsSharePath::GetForProfile(profile_.get());
+
+  TestFuture<CrostiniResult> restart_result;
+  RestartCrostini(container_id(), restart_result.GetCallback());
+  EXPECT_EQ(restart_result.Get(), CrostiniResult::SUCCESS);
+
+  EXPECT_GT(terminal_registry->List().size(), 0u);
+  EXPECT_GT(mount_registry->List().size(), 0u);
+  EXPECT_GT(share_service->ListGuests().size(), 0u);
+
   vm_tools::cicerone::LxdContainerDeletedSignal signal;
   signal.set_vm_name(container_id().vm_name);
   signal.set_container_name(container_id().container_name);
   signal.set_owner_id(CryptohomeIdForProfile(profile()));
   signal.set_status(vm_tools::cicerone::LxdContainerDeletedSignal::DELETED);
-  restart_id_ = crostini_manager()->RestartCrostini(
-      container_id(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()));
-  run_loop()->Run();
-  ASSERT_GT(terminal_registry->List().size(), 0u);
-  ASSERT_GT(mount_registry->List().size(), 0u);
-  ASSERT_GT(share_service->ListGuests().size(), 0u);
   crostini_manager()->OnLxdContainerDeleted(signal);
-  ASSERT_EQ(terminal_registry->List().size(), 0u);
-  ASSERT_EQ(mount_registry->List().size(), 0u);
-  ASSERT_EQ(share_service->ListGuests().size(), 0u);
+
+  EXPECT_EQ(terminal_registry->List().size(), 0u);
+  EXPECT_EQ(mount_registry->List().size(), 0u);
+  EXPECT_EQ(share_service->ListGuests().size(), 0u);
 }
 
 class CrostiniManagerEnterpriseReportingTest
@@ -2102,18 +2011,14 @@ TEST_F(CrostiniManagerEnterpriseReportingTest,
   fake_concierge_client_->set_get_vm_enterprise_reporting_info_response(
       response);
 
-  restart_id_ = crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(DefaultContainerId(), result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_TRUE(
       fake_concierge_client_->get_vm_enterprise_reporting_info_call_count());
-  EXPECT_EQ(1, restart_crostini_callback_count_);
   EXPECT_EQ(kTerminaKernelVersion,
             profile()->GetPrefs()->GetString(
                 crostini::prefs::kCrostiniLastLaunchTerminaKernelVersion));
@@ -2128,18 +2033,14 @@ TEST_F(CrostiniManagerEnterpriseReportingTest,
   fake_concierge_client_->set_get_vm_enterprise_reporting_info_response(
       response);
 
-  restart_id_ = crostini_manager()->RestartCrostini(
-      DefaultContainerId(),
-      base::BindOnce(&CrostiniManagerRestartTest::RestartCrostiniCallback,
-                     base::Unretained(this), run_loop()->QuitClosure()),
-      this);
-  run_loop()->Run();
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostini(DefaultContainerId(), result_future.GetCallback());
+  EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_TRUE(
       fake_concierge_client_->get_vm_enterprise_reporting_info_call_count());
-  EXPECT_EQ(1, restart_crostini_callback_count_);
   // In case of an error, the pref should be (re)set to the empty string:
   EXPECT_TRUE(
       profile()
@@ -2499,7 +2400,7 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerFailure) {
   ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
       prefs::kCrostiniAnsiblePlaybookFilePath);
 
-  crostini_manager()->RestartCrostiniWithOptions(
+  RestartCrostiniWithOptions(
       DefaultContainerId(), std::move(ansible_restart),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
@@ -2521,7 +2422,7 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerSuccess) {
   ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
       prefs::kCrostiniAnsiblePlaybookFilePath);
 
-  crostini_manager()->RestartCrostiniWithOptions(
+  RestartCrostiniWithOptions(
       DefaultContainerId(), std::move(ansible_restart),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS),
