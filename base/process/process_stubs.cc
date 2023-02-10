@@ -54,6 +54,10 @@ void Process::TerminateCurrentProcessImmediately(int exit_code) {
   ImmediateCrash();
 }
 
+bool Process::Terminate(int exit_code, bool wait) const {
+  return false;
+}
+
 bool Process::IsValid() const {
   return process_ != kNullProcessHandle;
 }

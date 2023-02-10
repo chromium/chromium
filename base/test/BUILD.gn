@@ -4,6 +4,7 @@
 
 import("//build/compiled_action.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/ui.gni")
 import("//build_overrides/build.gni")
@@ -266,7 +267,7 @@ static_library("test_support") {
     ]
   }
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "launcher/test_launcher.cc",
       "launcher/test_launcher.h",
