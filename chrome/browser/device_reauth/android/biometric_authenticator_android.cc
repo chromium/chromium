@@ -79,6 +79,9 @@ void LogAuthResult(const device_reauth::BiometricAuthRequester& requester,
   if (isAndroidPasswordManagerRequester(requester)) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BiometricAuthPwdFill.AuthResult", result);
+  } else if (device_reauth::BiometricAuthRequester::kIncognitoReauthPage ==
+             requester) {
+    base::UmaHistogramEnumeration("Android.IncognitoReauth.AuthResult", result);
   }
 }
 

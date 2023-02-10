@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -137,6 +138,11 @@ public class IncognitoReauthControllerImpl
         public void onResult(@NonNull Profile profile) {
             mProfile = profile;
             showDialogIfRequired();
+            if (!mIsStartupMetricsRecorded) {
+                RecordHistogram.recordBooleanHistogram("Android.IncognitoReauth.ToggleOnOrOff",
+                        IncognitoReauthManager.isIncognitoReauthEnabled(mProfile));
+                mIsStartupMetricsRecorded = true;
+            }
         }
     };
 
@@ -180,6 +186,7 @@ public class IncognitoReauthControllerImpl
     private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     private @Nullable Profile mProfile;
+    private boolean mIsStartupMetricsRecorded;
     private boolean mIncognitoReauthPending;
 
     /**
