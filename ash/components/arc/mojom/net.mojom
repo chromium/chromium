@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 28
+// Next MinVersion: 29
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -471,7 +471,7 @@ struct NetworkConfiguration {
   [MinVersion=19] array<string>? dns_proxy_addresses;
 
   // Available maximal uplink and downlink speeds for the network in kbps.
-  [MinVersion=26] LinkSpeed? link_speed;
+  [MinVersion=28] LinkSpeed? link_speed;
 };
 
 // Uplink and downlink speeds in Kbps for the network.
