@@ -291,11 +291,6 @@ class SoftwareVideoEncoderTest
     return diff_cnt;
   }
 
-  VideoPixelFormat GetExpectedOutputPixelFormat(VideoCodecProfile profile) {
-    return profile == VP9PROFILE_PROFILE2 ? PIXEL_FORMAT_YUV420P10
-                                          : PIXEL_FORMAT_I420;
-  }
-
  protected:
   VideoCodec codec_;
   VideoCodecProfile profile_;
@@ -500,7 +495,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
     EXPECT_EQ(decoded_frame->timestamp(), original_frame->timestamp());
     EXPECT_EQ(decoded_frame->visible_rect().size(),
               original_frame->visible_rect().size());
-    EXPECT_EQ(decoded_frame->format(), GetExpectedOutputPixelFormat(profile_));
+    EXPECT_EQ(decoded_frame->format(), PIXEL_FORMAT_I420);
     if (decoded_frame->format() == original_frame->format()) {
       EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),
                 original_frame->visible_rect().width());
@@ -907,12 +902,6 @@ SwVideoTestParams kVpxParams[] = {
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_NV12},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_XRGB},
-#if !BUILDFLAG(IS_FUCHSIA)
-    // Fuchsia is built without high bitdepth support in libvpx.
-    {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_I420},
-    {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_NV12},
-    {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_XRGB},
-#endif  // BUILDFLAG(OS_FUCHSIA)
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB}};
 
