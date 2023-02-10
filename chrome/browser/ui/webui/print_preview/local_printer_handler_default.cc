@@ -67,51 +67,48 @@ scoped_refptr<base::TaskRunner> CreatePrinterHandlerTaskRunner() {
 
 void OnDidGetDefaultPrinterNameFromPrintBackendService(
     PrinterHandler::DefaultPrinterCallback callback,
-    mojom::DefaultPrinterNameResultPtr printer_name) {
-  if (printer_name->is_result_code()) {
+    mojom::DefaultPrinterNameResultPtr result) {
+  if (result->is_result_code()) {
     PRINTER_LOG(ERROR)
         << "Failure getting default printer via service, result: "
-        << printer_name->get_result_code();
+        << result->get_result_code();
     std::move(callback).Run(std::string());
     return;
   }
 
   PRINTER_LOG(EVENT) << "Default Printer from service: "
-                     << printer_name->get_default_printer_name();
-  std::move(callback).Run(printer_name->get_default_printer_name());
+                     << result->get_default_printer_name();
+  std::move(callback).Run(result->get_default_printer_name());
 }
 
 void OnDidEnumeratePrintersFromPrintBackendService(
     PrinterHandler::AddedPrintersCallback added_printers_callback,
     PrinterHandler::GetPrintersDoneCallback done_callback,
-    mojom::PrinterListResultPtr printer_list) {
-  if (printer_list->is_result_code()) {
+    mojom::PrinterListResultPtr result) {
+  if (result->is_result_code()) {
     PRINTER_LOG(ERROR)
         << "Failure enumerating local printers via service, result: "
-        << printer_list->get_result_code();
+        << result->get_result_code();
   }
 
   ConvertPrinterListForCallback(
       std::move(added_printers_callback), std::move(done_callback),
-      printer_list->is_printer_list() ? printer_list->get_printer_list()
-                                      : PrinterList());
+      result->is_printer_list() ? result->get_printer_list() : PrinterList());
 }
 
 void OnDidFetchCapabilitiesFromPrintBackendService(
     const std::string& device_name,
     bool elevated_privileges,
     PrinterHandler::GetCapabilityCallback callback,
-    mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info) {
-  if (printer_caps_and_info->is_result_code()) {
+    mojom::PrinterCapsAndInfoResultPtr result) {
+  if (result->is_result_code()) {
     PRINTER_LOG(ERROR)
         << "Failure fetching printer capabilities via service for "
-        << device_name
-        << ", result: " << printer_caps_and_info->get_result_code();
+        << device_name << ", result: " << result->get_result_code();
 
     // If we failed because of access denied then we could retry at an elevated
     // privilege (if not already elevated).
-    if (printer_caps_and_info->get_result_code() ==
-            mojom::ResultCode::kAccessDenied &&
+    if (result->get_result_code() == mojom::ResultCode::kAccessDenied &&
         !elevated_privileges) {
       // Register that this printer requires elevated privileges.
       PrintBackendServiceManager& service_mgr =
@@ -136,7 +133,7 @@ void OnDidFetchCapabilitiesFromPrintBackendService(
   PRINTER_LOG(EVENT) << "Received printer info & capabilities via service for "
                      << device_name;
   const mojom::PrinterCapsAndInfoPtr& caps_and_info =
-      printer_caps_and_info->get_printer_caps_and_info();
+      result->get_printer_caps_and_info();
   base::Value::Dict settings = AssemblePrinterSettings(
       device_name, caps_and_info->printer_info,
       caps_and_info->user_defined_papers, /*has_secure_protocol=*/false,
