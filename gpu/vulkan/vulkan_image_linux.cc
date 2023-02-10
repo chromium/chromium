@@ -81,10 +81,24 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
       .sType = VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_KHR,
       .handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT,
   };
-  VkImageDrmFormatModifierListCreateInfoEXT modifier_info = {
-      .sType = VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_LIST_CREATE_INFO_EXT,
-      .drmFormatModifierCount = 1,
-      .pDrmFormatModifiers = &native_pixmap_handle.modifier,
+
+  std::vector<VkSubresourceLayout> planeLayouts(
+      native_pixmap_handle.planes.size());
+  for (size_t i = 0; i < native_pixmap_handle.planes.size(); ++i) {
+    planeLayouts[i].offset = native_pixmap_handle.planes[i].offset;
+    planeLayouts[i].size = native_pixmap_handle.planes[i].size;
+    planeLayouts[i].rowPitch = native_pixmap_handle.planes[i].stride;
+    planeLayouts[i].arrayPitch = 0;
+    planeLayouts[i].depthPitch = 0;
+  }
+
+  VkImageDrmFormatModifierExplicitCreateInfoEXT modifier_info = {
+      .sType =
+          VK_STRUCTURE_TYPE_IMAGE_DRM_FORMAT_MODIFIER_EXPLICIT_CREATE_INFO_EXT,
+      .drmFormatModifier = native_pixmap_handle.modifier,
+      .drmFormatModifierPlaneCount =
+          static_cast<uint32_t>(native_pixmap_handle.planes.size()),
+      .pPlaneLayouts = planeLayouts.data(),
   };
 
   if (using_modifier) {
