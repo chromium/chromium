@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/content_verifier_test_utils.h"
@@ -34,6 +36,7 @@
 #include "extensions/common/extension_updater_uma.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using extensions::mojom::ManifestLocation;
 
@@ -67,6 +70,34 @@ class UpdateServiceTest : public ExtensionUpdateClientBaseTest {
     EXPECT_EQ(expected,
               g_browser_process->profile_manager()->HasKeepAliveForTesting(
                   profile(), ProfileKeepAliveOrigin::kExtensionUpdater));
+  }
+
+  absl::optional<base::Value::Dict> GetRequest(size_t index) {
+    const std::vector<
+        update_client::URLLoaderPostInterceptor::InterceptedRequest>& requests =
+        update_interceptor_->GetRequests();
+    if (requests.size() < index) {
+      return absl::nullopt;
+    }
+
+    const std::string update_request = std::get<0>(requests[index]);
+    absl::optional<base::Value> root = base::JSONReader::Read(update_request);
+    if (!root) {
+      return absl::nullopt;
+    }
+
+    return std::move(root.value()).TakeDict();
+  }
+
+  base::Value::Dict GetApp(const base::Value::Dict& root, size_t index) {
+    const base::Value::List* app_list =
+        root.FindDict("request")->FindList("app");
+    EXPECT_GT(app_list->size(), index);
+    return CHECK_DEREF(app_list)[index].Clone().TakeDict();
+  }
+
+  base::Value::Dict GetFirstApp(const base::Value::Dict& root) {
+    return GetApp(root, 0);
   }
 };
 
@@ -102,14 +133,12 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, NoUpdate) {
   EXPECT_EQ(0, ping_interceptor_->GetCount())
       << ping_interceptor_->GetRequestsAsString();
 
-  const std::string update_request =
-      std::get<0>(update_interceptor_->GetRequests()[0]);
-    const auto root = base::JSONReader::Read(update_request);
-    ASSERT_TRUE(root);
-    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(kExtensionId, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.10", app.FindKey("version")->GetString());
-    EXPECT_TRUE(app.FindKey("enabled")->GetBool());
+  const absl::optional<base::Value::Dict> root = GetRequest(0);
+  ASSERT_TRUE(root);
+  const base::Value::Dict& app = GetFirstApp(root.value());
+  EXPECT_EQ(kExtensionId, CHECK_DEREF(app.FindString("appid")));
+  EXPECT_EQ("0.10", CHECK_DEREF(app.FindString("version")));
+  EXPECT_TRUE(app.FindBool("enabled").value_or(false));
 }
 
 IN_PROC_BROWSER_TEST_F(UpdateServiceTest, UpdateCheckError) {
@@ -145,14 +174,12 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, UpdateCheckError) {
   EXPECT_EQ(0, ping_interceptor_->GetCount())
       << ping_interceptor_->GetRequestsAsString();
 
-  const std::string update_request =
-      std::get<0>(update_interceptor_->GetRequests()[0]);
-    const auto root = base::JSONReader::Read(update_request);
-    ASSERT_TRUE(root);
-    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(kExtensionId, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.10", app.FindKey("version")->GetString());
-    EXPECT_TRUE(app.FindKey("enabled")->GetBool());
+  const absl::optional<base::Value::Dict> root = GetRequest(0);
+  ASSERT_TRUE(root);
+  const base::Value::Dict& app = GetFirstApp(root.value());
+  EXPECT_EQ(kExtensionId, CHECK_DEREF(app.FindString("appid")));
+  EXPECT_EQ("0.10", CHECK_DEREF(app.FindString("version")));
+  EXPECT_TRUE(app.FindBool("enabled").value_or(false));
 }
 
 IN_PROC_BROWSER_TEST_F(UpdateServiceTest, TwoUpdateCheckErrors) {
@@ -252,14 +279,12 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, SuccessfulUpdate) {
       << update_interceptor_->GetRequestsAsString();
   EXPECT_EQ(1, get_interceptor_count());
 
-  const std::string update_request =
-      std::get<0>(update_interceptor_->GetRequests()[0]);
-    const auto root = base::JSONReader::Read(update_request);
-    ASSERT_TRUE(root);
-    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(kExtensionId, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.10", app.FindKey("version")->GetString());
-    EXPECT_TRUE(app.FindKey("enabled")->GetBool());
+  const absl::optional<base::Value::Dict> root = GetRequest(0);
+  ASSERT_TRUE(root);
+  const base::Value::Dict& app = GetFirstApp(root.value());
+  EXPECT_EQ(kExtensionId, CHECK_DEREF(app.FindString("appid")));
+  EXPECT_EQ("0.10", CHECK_DEREF(app.FindString("version")));
+  EXPECT_TRUE(app.FindBool("enabled").value_or(false));
 }
 
 IN_PROC_BROWSER_TEST_F(UpdateServiceTest, PolicyCorrupted) {
@@ -338,19 +363,17 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, PolicyCorrupted) {
   // - installedby="policy"
   // - enabled="0"
   // - <disabled reason="1024"/>
-  const std::string update_request =
-      std::get<0>(update_interceptor_->GetRequests()[0]);
-    const auto root = base::JSONReader::Read(update_request);
-    ASSERT_TRUE(root);
-    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(kExtensionId, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.0.0.0", app.FindKey("version")->GetString());
-    EXPECT_EQ("reinstall", app.FindKey("installsource")->GetString());
-    EXPECT_EQ("policy", app.FindKey("installedby")->GetString());
-    EXPECT_FALSE(app.FindKey("enabled")->GetBool());
-    const auto& disabled = app.FindKey("disabled")->GetList()[0];
-    EXPECT_EQ(disable_reason::DISABLE_CORRUPTED,
-              disabled.FindKey("reason")->GetInt());
+  const absl::optional<base::Value::Dict> root = GetRequest(0);
+  ASSERT_TRUE(root);
+  const base::Value::Dict& app = GetFirstApp(root.value());
+  EXPECT_EQ(kExtensionId, CHECK_DEREF(app.FindString("appid")));
+  EXPECT_EQ("0.0.0.0", CHECK_DEREF(app.FindString("version")));
+  EXPECT_EQ("reinstall", CHECK_DEREF(app.FindString("installsource")));
+  EXPECT_EQ("policy", CHECK_DEREF(app.FindString("installedby")));
+  EXPECT_FALSE(app.FindBool("enabled").value_or(true));
+  const base::Value::Dict& disabled =
+      CHECK_DEREF(app.FindList("disabled"))[0].GetDict();
+  EXPECT_EQ(disable_reason::DISABLE_CORRUPTED, disabled.FindInt("reason"));
 }
 
 IN_PROC_BROWSER_TEST_F(UpdateServiceTest, UninstallExtensionWhileUpdating) {
@@ -483,6 +506,34 @@ class PolicyUpdateServiceTest : public ExtensionUpdateClientBaseTest,
   }
 
  protected:
+  absl::optional<base::Value::Dict> GetRequest(size_t index) {
+    const std::vector<
+        update_client::URLLoaderPostInterceptor::InterceptedRequest>& requests =
+        update_interceptor_->GetRequests();
+    if (requests.size() < index) {
+      return absl::nullopt;
+    }
+
+    const std::string update_request = std::get<0>(requests[index]);
+    absl::optional<base::Value> root = base::JSONReader::Read(update_request);
+    if (!root) {
+      return absl::nullopt;
+    }
+
+    return std::move(root.value()).TakeDict();
+  }
+
+  base::Value::Dict GetApp(const base::Value::Dict& root, size_t index) {
+    const base::Value::List* app_list =
+        root.FindDict("request")->FindList("app");
+    EXPECT_GT(app_list->size(), index);
+    return CHECK_DEREF(app_list)[index].Clone().TakeDict();
+  }
+
+  base::Value::Dict GetFirstApp(const base::Value::Dict& root) {
+    return GetApp(root, 0);
+  }
+
   // The id of the extension we want to have force-installed.
   std::string id_ = "aohghmighlieiainnegkcijnfilokake";
 
@@ -541,19 +592,17 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, FailedUpdateRetries) {
   // - installedby="policy"
   // - enabled="0"
   // - <disabled reason="1024"/>
-  const std::string update_request =
-      std::get<0>(update_interceptor_->GetRequests()[0]);
-    const auto root = base::JSONReader::Read(update_request);
-    ASSERT_TRUE(root);
-    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(id_, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.0.0.0", app.FindKey("version")->GetString());
-    EXPECT_EQ("reinstall", app.FindKey("installsource")->GetString());
-    EXPECT_EQ("policy", app.FindKey("installedby")->GetString());
-    EXPECT_FALSE(app.FindKey("enabled")->GetBool());
-    const auto& disabled = app.FindKey("disabled")->GetList()[0];
-    EXPECT_EQ(disable_reason::DISABLE_CORRUPTED,
-              disabled.FindKey("reason")->GetInt());
+  const absl::optional<base::Value::Dict> root = GetRequest(0);
+  ASSERT_TRUE(root);
+  const base::Value::Dict& app = GetFirstApp(root.value());
+  EXPECT_EQ(id_, CHECK_DEREF(app.FindString("appid")));
+  EXPECT_EQ("0.0.0.0", CHECK_DEREF(app.FindString("version")));
+  EXPECT_EQ("reinstall", CHECK_DEREF(app.FindString("installsource")));
+  EXPECT_EQ("policy", CHECK_DEREF(app.FindString("installedby")));
+  EXPECT_FALSE(app.FindBool("enabled").value_or(true));
+  const base::Value::Dict& disabled =
+      CHECK_DEREF(app.FindList("disabled"))[0].GetDict();
+  EXPECT_EQ(disable_reason::DISABLE_CORRUPTED, disabled.FindInt("reason"));
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, Backoff) {
@@ -662,17 +711,17 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, PolicyCorruptedOnStartup) {
 
   const std::string update_request =
       std::get<0>(update_interceptor_->GetRequests()[0]);
-    const auto root = base::JSONReader::Read(update_request);
-    ASSERT_TRUE(root);
-    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(id_, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.0.0.0", app.FindKey("version")->GetString());
-    EXPECT_EQ("reinstall", app.FindKey("installsource")->GetString());
-    EXPECT_EQ("policy", app.FindKey("installedby")->GetString());
-    EXPECT_FALSE(app.FindKey("enabled")->GetBool());
-    const auto& disabled = app.FindKey("disabled")->GetList()[0];
-    EXPECT_EQ(disable_reason::DISABLE_CORRUPTED,
-              disabled.FindKey("reason")->GetInt());
+  const absl::optional<base::Value::Dict> root = GetRequest(0);
+  ASSERT_TRUE(root);
+  const base::Value::Dict& app = GetFirstApp(root.value());
+  EXPECT_EQ(id_, CHECK_DEREF(app.FindString("appid")));
+  EXPECT_EQ("0.0.0.0", CHECK_DEREF(app.FindString("version")));
+  EXPECT_EQ("reinstall", CHECK_DEREF(app.FindString("installsource")));
+  EXPECT_EQ("policy", CHECK_DEREF(app.FindString("installedby")));
+  EXPECT_FALSE(app.FindBool("enabled").value_or(true));
+  const base::Value::Dict& disabled =
+      CHECK_DEREF(app.FindList("disabled"))[0].GetDict();
+  EXPECT_EQ(disable_reason::DISABLE_CORRUPTED, disabled.FindInt("reason"));
 }
 
 }  // namespace extensions
