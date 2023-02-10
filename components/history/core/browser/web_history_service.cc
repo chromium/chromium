@@ -610,8 +610,9 @@ void WebHistoryService::AudioHistoryCompletionCallback(
     response_value = ReadResponse(request);
     if (response_value) {
       if (absl::optional<bool> enabled =
-              response_value->FindBoolKey("history_recording_enabled"))
+              response_value->GetDict().FindBool("history_recording_enabled")) {
         enabled_value = *enabled;
+      }
     }
   }
 
@@ -636,8 +637,9 @@ void WebHistoryService::QueryWebAndAppActivityCompletionCallback(
     response_value = ReadResponse(request);
     if (response_value) {
       if (absl::optional<bool> enabled =
-              response_value->FindBoolKey("history_recording_enabled"))
+              response_value->GetDict().FindBool("history_recording_enabled")) {
         web_and_app_activity_enabled = *enabled;
+      }
     }
   }
 

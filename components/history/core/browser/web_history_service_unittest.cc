@@ -332,8 +332,9 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
   response_value = TestingWebHistoryService::ReadResponse(request.get());
   bool enabled_value = false;
   if (absl::optional<bool> enabled =
-          response_value->FindBoolKey("history_recording_enabled"))
+          response_value->GetDict().FindBool("history_recording_enabled")) {
     enabled_value = *enabled;
+  }
   EXPECT_TRUE(enabled_value);
 
   // Test that properly formatted response with good response code returns false
@@ -348,8 +349,9 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
   response_value2 = TestingWebHistoryService::ReadResponse(request2.get());
   enabled_value = true;
   if (absl::optional<bool> enabled =
-          response_value2->FindBoolKey("history_recording_enabled"))
+          response_value2->GetDict().FindBool("history_recording_enabled")) {
     enabled_value = *enabled;
+  }
   EXPECT_FALSE(enabled_value);
 
   // Test that a bad response code returns false.
@@ -387,7 +389,8 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
   absl::optional<base::Value> response_value5;
   // ReadResponse deletes the request
   response_value5 = TestingWebHistoryService::ReadResponse(request5.get());
-  EXPECT_FALSE(response_value5->FindBoolKey("history_recording_enabled"));
+  EXPECT_FALSE(
+      response_value5->GetDict().FindBool("history_recording_enabled"));
 }
 
 }  // namespace history
