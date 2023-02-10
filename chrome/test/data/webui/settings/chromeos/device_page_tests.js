@@ -11,6 +11,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -1311,6 +1312,32 @@ suite('SettingsDevicePage', function() {
           audioPage.shadowRoot.querySelector(enterpriseIconSelector)));
       assertTrue(outputMuteButton.disabled);
       assertTrue(outputSlider.disabled);
+    });
+
+    test('noise cancellation called twice with same value', async function() {
+      const mockController = new MockController();
+      const setNoiseCancellationEnabled = mockController.createFunctionMock(
+          crosAudioConfig, 'setNoiseCancellationEnabled');
+
+      assertEquals(
+          /* expected_call_count */ 0,
+          setNoiseCancellationEnabled.calls_.length);
+
+      crosAudioConfig.setAudioSystemProperties(
+          {...fakeCrosAudioConfig.defaultFakeAudioSystemProperties});
+      await flushTasks();
+
+      assertEquals(
+          /* expected_call_count */ 0,
+          setNoiseCancellationEnabled.calls_.length);
+
+      crosAudioConfig.setAudioSystemProperties(
+          noiseCancellationNotSupportedAudioSystemProperties);
+      await flushTasks();
+
+      assertEquals(
+          /* expected_call_count */ 1,
+          setNoiseCancellationEnabled.calls_.length);
     });
   });
 

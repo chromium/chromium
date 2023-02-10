@@ -179,7 +179,17 @@ class SettingsAudioElement extends SettingsAudioElementBase {
 
   /** Handles updates to noise cancellation state. */
   protected onNoiseCancellationEnabledChanged(
-      enabled: SettingsAudioElement['isNoiseCancellationEnabled_']): void {
+      enabled: SettingsAudioElement['isNoiseCancellationEnabled_'],
+      previousEnabled: SettingsAudioElement['isNoiseCancellationEnabled_']):
+      void {
+    // Polymer triggers change event on all assignment to
+    // `isNoiseCancellationEnabled_` even if the value is logically unchanged.
+    // Check previous value before calling `setNoiseCancellationEnabled` to test
+    // if value actually updated.
+    if (previousEnabled === undefined || previousEnabled === enabled) {
+      return;
+    }
+
     this.crosAudioConfig_.setNoiseCancellationEnabled(enabled);
   }
 

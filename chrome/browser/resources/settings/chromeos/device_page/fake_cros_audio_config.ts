@@ -150,7 +150,7 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
     }
     const nextState: AudioEffectState =
         enabled ? AudioEffectState.kEnabled : AudioEffectState.kNotEnabled;
-    this.audioSystemProperties.inputDevices[activeIndex]!
+    this.audioSystemProperties.inputDevices[activeIndex]
         .noiseCancellationState = nextState;
     this.notifyAudioSystemPropertiesUpdated();
   }
