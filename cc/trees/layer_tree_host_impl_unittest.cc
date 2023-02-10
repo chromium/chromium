@@ -14974,15 +14974,22 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, MainThreadFallback) {
   EXPECT_EQ(compositor_threaded_scrolling_result.scroll_delta.y(), 525u);
   EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_scrolling_reasons);
 
-  // If the scroll_node has a main_thread_scrolling_reason, the
-  // InputHandlerPointerResult should return a zero offset. This will cause the
-  // main thread to handle the scroll.
+  // Assign a main_thread_scrolling_reason to the scroll node.
   GetScrollNode(scroll_layer)->main_thread_scrolling_reasons =
       MainThreadScrollingReason::kThreadedScrollingDisabled;
   compositor_threaded_scrolling_result = GetInputHandler().MouseDown(
       gfx::PointF(350, 500), /*jump_key_modifier*/ false);
   GetInputHandler().MouseUp(gfx::PointF(350, 500));
-  EXPECT_EQ(compositor_threaded_scrolling_result.scroll_delta.y(), 0u);
+  if (base::FeatureList::IsEnabled(features::kScrollUnification)) {
+    // After unification, a scrollbar layer track click applies the scroll on
+    // the compositor thread even though it has a main thread scrolling reason.
+    EXPECT_EQ(compositor_threaded_scrolling_result.scroll_delta.y(), 525u);
+  } else {
+    // If the scroll_node has a main_thread_scrolling_reason, the
+    // InputHandlerPointerResult should return a zero offset. This will cause
+    // the main thread to handle the scroll.
+    EXPECT_EQ(compositor_threaded_scrolling_result.scroll_delta.y(), 0u);
+  }
 
   // Tear down the LayerTreeHostImpl before the InputHandlerClient.
   host_impl_->ReleaseLayerTreeFrameSink();

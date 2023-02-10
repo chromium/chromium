@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/cancelable_callback.h"
+#include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar.h"
@@ -67,16 +68,18 @@ PointerResultType ScrollbarController::HitTest(
   if (scrollbar->OverlayScrollbarOpacity() == 0.f)
     return PointerResultType::kUnhandled;
 
-  // If the scroll_node has a main_thread_scrolling_reason, don't initiate a
-  // scroll.
-  const ScrollNode* target_node =
-      layer_tree_host_impl_->active_tree()
-          ->property_trees()
-          ->scroll_tree()
-          .FindNodeFromElementId(scrollbar->scroll_element_id());
-  if (target_node->main_thread_scrolling_reasons)
-    return PointerResultType::kUnhandled;
-
+  if (!base::FeatureList::IsEnabled(features::kScrollUnification)) {
+    // If the scroll_node has a main_thread_scrolling_reason, don't initiate a
+    // scroll.
+    const ScrollNode* target_node =
+        layer_tree_host_impl_->active_tree()
+            ->property_trees()
+            ->scroll_tree()
+            .FindNodeFromElementId(scrollbar->scroll_element_id());
+    if (target_node->main_thread_scrolling_reasons) {
+      return PointerResultType::kUnhandled;
+    }
+  }
   return PointerResultType::kScrollbarScroll;
 }
 
