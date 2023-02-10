@@ -1,0 +1,15 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("buildflags.gni")
+
+# Generate a buildflag header for compile-time checking of mach absolute time
+# support in TimeTicks
+# TODO(crbug.com/1414153): this should be removed once there is a unified
+# approach to TimeTicks::Now on iOS.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_MACH_ABSOLUTE_TIME_TICKS=$enable_mach_absolute_time_ticks" ]
+}

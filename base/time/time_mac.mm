@@ -18,20 +18,19 @@
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 #include <errno.h>
 #include <time.h>
 #include "base/ios/ios_util.h"
-#endif
+#endif  // !BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 
 namespace {
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 // Returns a pointer to the initialized Mach timebase info struct.
 mach_timebase_info_data_t* MachTimebaseInfo() {
   static mach_timebase_info_data_t timebase_info = []() {
@@ -85,12 +84,12 @@ int64_t MachTimeToMicroseconds(uint64_t mach_time) {
   // 9223372036854775807 / (1e6 * 60 * 60 * 24 * 365.2425) = 292,277).
   return base::checked_cast<int64_t>(microseconds);
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 
 // Returns monotonically growing number of ticks in microseconds since some
 // unspecified starting point.
 int64_t ComputeCurrentTicks() {
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
   struct timespec tp;
   // clock_gettime() returns 0 on success and -1 on failure. Failure can only
   // happen because of bad arguments (unsupported clock type or timespec pointer
@@ -107,14 +106,10 @@ int64_t ComputeCurrentTicks() {
   // with less precision (such as TickCount) just call through to
   // mach_absolute_time.
   return MachTimeToMicroseconds(mach_absolute_time());
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 }
 
 int64_t ComputeThreadTicks() {
-#if BUILDFLAG(IS_IOS)
-  NOTREACHED();
-  return 0;
-#else
   // The pthreads library keeps a cached reference to the thread port, which
   // does not have to be released like mach_thread_self() does.
   mach_port_t thread_port = pthread_mach_thread_np(pthread_self());
@@ -138,7 +133,6 @@ int64_t ComputeThreadTicks() {
   absolute_micros += (thread_info_data.user_time.microseconds +
                       thread_info_data.system_time.microseconds);
   return absolute_micros.ValueOrDie();
-#endif  // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace
@@ -198,12 +192,12 @@ NSDate* Time::ToNSDate() const {
 
 // TimeDelta ------------------------------------------------------------------
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 // static
 TimeDelta TimeDelta::FromMachTime(uint64_t mach_time) {
   return Microseconds(MachTimeToMicroseconds(mach_time));
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 
 // TimeTicks ------------------------------------------------------------------
 
@@ -223,7 +217,7 @@ bool TimeTicks::IsConsistentAcrossProcesses() {
   return true;
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 // static
 TimeTicks TimeTicks::FromMachAbsoluteTime(uint64_t mach_absolute_time) {
   return TimeTicks(MachTimeToMicroseconds(mach_absolute_time));
@@ -239,15 +233,15 @@ mach_timebase_info_data_t TimeTicks::SetMachTimebaseInfoForTesting(
   return orig_timebase;
 }
 
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 
 // static
 TimeTicks::Clock TimeTicks::GetClock() {
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
   return Clock::IOS_CF_ABSOLUTE_TIME_MINUS_KERN_BOOTTIME;
 #else
   return Clock::MAC_MACH_ABSOLUTE_TIME;
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
 }
 
 // ThreadTicks ----------------------------------------------------------------

@@ -77,6 +77,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
+#if BUILDFLAG(IS_APPLE)
+#include "base/time/buildflags/buildflags.h"
+#endif
+
 #if BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
 #endif
@@ -138,9 +142,11 @@ class BASE_EXPORT TimeDelta {
 #if BUILDFLAG(IS_FUCHSIA)
   static TimeDelta FromZxDuration(zx_duration_t nanos);
 #endif
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
   static TimeDelta FromMachTime(uint64_t mach_time);
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
+#endif  // BUILDFLAG(IS_APPLE)
 
   // Converts an integer value representing TimeDelta to a class. This is used
   // when deserializing a |TimeDelta| structure, using a value known to be
@@ -1054,14 +1060,16 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   static TimeTicks FromQPCValue(LONGLONG qpc_value);
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
   static TimeTicks FromMachAbsoluteTime(uint64_t mach_absolute_time);
 
   // Sets the current Mach timebase to `timebase`. Returns the old timebase.
   static mach_timebase_info_data_t SetMachTimebaseInfoForTesting(
       mach_timebase_info_data_t timebase);
 
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENABLE_MACH_ABSOLUTE_TIME_TICKS)
+#endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Converts to TimeTicks the value obtained from SystemClock.uptimeMillis().
@@ -1158,7 +1166,7 @@ class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
   // Returns true if ThreadTicks::Now() is supported on this system.
   [[nodiscard]] static bool IsSupported() {
 #if (defined(_POSIX_THREAD_CPUTIME) && (_POSIX_THREAD_CPUTIME >= 0)) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
     return true;
 #elif BUILDFLAG(IS_WIN)
     return IsSupportedWin();

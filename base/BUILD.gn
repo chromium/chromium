@@ -47,6 +47,11 @@ if (is_mac) {
   import("//third_party/protobuf/proto_library.gni")
 }
 
+if (is_apple) {
+  # Buildflags to control time behavior on iOS in file shared with mac.
+  import("//base/time/buildflags/buildflags.gni")
+}
+
 declare_args() {
   # Indicates if the Location object contains the source code information
   # (file, function, line). False means only the program counter (and currently
@@ -87,6 +92,14 @@ assert(!is_nacl || is_nacl_saigo,
 # subprojects that still support MSVC.
 assert(!is_win || is_clang,
        "only clang-cl is supported on Windows, see https://crbug.com/988071")
+
+if (is_apple) {
+  assert(!use_blink || enable_mach_absolute_time_ticks,
+         "use_blink requires mach absolute time ticks")
+
+  assert(!is_mac || enable_mach_absolute_time_ticks,
+         "mac requires mach absolute time ticks")
+}
 
 # Determines whether libevent should be dep.
 dep_libevent = !is_fuchsia && !is_win && !is_mac && !is_nacl
@@ -1064,6 +1077,10 @@ component("base") {
     "//build/config/compiler:compiler_buildflags",
     "//third_party/modp_b64",
   ]
+
+  if (is_apple) {
+    deps += [ "//base/time/buildflags:buildflags" ]
+  }
 
   if (build_rust_json_reader) {
     deps += [ "//third_party/rust/serde_json_lenient/v0_1/wrapper" ]
@@ -3500,8 +3517,11 @@ test("base_unittests") {
       "process/memory_unittest_mac.h",
       "process/memory_unittest_mac.mm",
       "strings/sys_string_conversions_mac_unittest.mm",
-      "time/time_mac_unittest.mm",
     ]
+  }
+
+  if (is_apple && enable_mach_absolute_time_ticks) {
+    sources += [ "time/time_mac_unittest.mm" ]
   }
 
   if (is_posix) {
