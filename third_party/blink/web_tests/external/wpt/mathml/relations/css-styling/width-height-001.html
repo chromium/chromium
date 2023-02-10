@@ -24,7 +24,7 @@
   function runTests() {
 
     for (tag in MathMLFragments) {
-        if (!FragmentHelper.isValidChildOfMrow(tag) || tag === "mtable")
+        if (!FragmentHelper.isValidChildOfMrow(tag))
             continue;
 
         document.body.insertAdjacentHTML("beforeend", `<div style="position: absolute;"><math><mrow>${MathMLFragments[tag]}</mrow></math></div>`);
