@@ -197,8 +197,8 @@ TestChannel* ScopedInspectorSupport::ConnectDebuggerSession(
 
 ScopedInspectorSupport::V8State::V8State() = default;
 ScopedInspectorSupport::V8State::~V8State() {
-  inspector_sessions_.clear();
   output_channels_.clear();
+  inspector_sessions_.clear();
 
   // Delete inspector after `inspector_sessions_`, before `inspector_client`_
   v8_helper_->SetV8InspectorForTesting(
