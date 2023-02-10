@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Επανεκκίνηση του Linux;</translation>
 <translation id="1047431265488717055">Αντιγραφή κε&amp;ιμένου συνδέσμου</translation>
 <translation id="1048286738600630630">Οθόνες</translation>
+<translation id="1048770690598418849">Μπορείτε να κάνετε παράβλεψη προς το παρόν και θα δοκιμάσουμε ξανά αυτόματα αφού ολοκληρώσετε τη ρύθμιση</translation>
 <translation id="1048986595386481879">Δυναμική κατανομή</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Λαμβάνεται <ph name="ATTACHMENTS" /> από τη συσκευή <ph name="DEVICE_NAME" />}other{Λαμβάνονται <ph name="ATTACHMENTS" /> από τη συσκευή <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Ανώνυμη περιήγηση</translation>
@@ -1638,6 +1639,7 @@
 <translation id="2410754283952462441">Επιλέξτε λογαριασμό</translation>
 <translation id="241082044617551207">Άγνωστη προσθήκη</translation>
 <translation id="2410940059315936967">Ένας ιστότοπος που επισκέπτεστε μπορεί να ενσωματώνει περιεχόμενο από άλλους ιστοτόπους, για παράδειγμα εικόνες, διαφημίσεις και κείμενο. Τα cookie που ορίζονται από αυτούς τους άλλους ιστοτόπους ονομάζονται cookie τρίτου μέρους.</translation>
+<translation id="2411666601450687801">Δεν επιτρέπονται εικονικά μηχανήματα σε αυτήν τη συσκευή</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Πλήκτρα λειτουργίας πληκτρολογίου</translation>
 <translation id="2418307627282545839">Φωτεινά και απαλά χρώματα</translation>
@@ -1899,6 +1901,7 @@
 <translation id="2653659639078652383">Υποβολή</translation>
 <translation id="265390580714150011">Τιμή πεδίου</translation>
 <translation id="2654553774144920065">Αίτημα για εκτύπωση</translation>
+<translation id="265748523151262387">Μείνετε συνδεδεμένοι με το τηλέφωνό σας</translation>
 <translation id="2657612187216250073">Ρυθμίσεις προσβασιμότητας δείκτη</translation>
 <translation id="2658941648214598230">Εμφάνιση αρχικού περιεχομένου;</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Οι λειτουργίες διαφέρουν ανά συσκευή</translation>
@@ -5316,6 +5319,7 @@
 <translation id="5801051031414037185">Ρύθμιση τηλεφώνου</translation>
 <translation id="5801568494490449797">Προτιμήσεις</translation>
 <translation id="5804241973901381774">Άδειες</translation>
+<translation id="5804259315582798390">Αποτυχία ενεργοποίησης ανάκτησης τοπικών δεδομένων</translation>
 <translation id="5805268472388605531">Πατήστε παρατεταμένα πλήκτρα του πληκτρολογίου για εμφάνιση τόνων και ειδικών χαρακτήρων</translation>
 <translation id="5805697420284793859">Διαχείριση παραθύρου</translation>
 <translation id="5806447147478173900">Συνολικός αποθηκευτικός χώρος που χρησιμοποιείται από ιστοτόπους που προβάλλονται: <ph name="TOTAL_USAGE" /></translation>
@@ -6699,6 +6703,7 @@
 <translation id="7047059339731138197">Επιλέξτε φόντο</translation>
 <translation id="7049293980323620022">Διατήρηση αρχείου;</translation>
 <translation id="7050037487872780845">Μη έγκυρη διαμόρφωση σημείου πρόσβασης Wi-Fi</translation>
+<translation id="7051551856857948729">Απόκρυψη τιμής IBAN</translation>
 <translation id="7052237160939977163">Αποστολή δεδομένων εντοπισμού απόδοσης</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7055152154916055070">Αποκλεισμένη ανακατεύθυνση:</translation>
@@ -8564,6 +8569,7 @@
 <translation id="8767621466733104912">Αυτόματη ενημέρωση του Chrome για όλους τους χρήστες</translation>
 <translation id="8770406935328356739">Κατάλογος ρίζας επέκτασης</translation>
 <translation id="8771300903067484968">Έγινε επαναφορά του φόντου της αρχικής σελίδας στο προεπιλεγμένο φόντο.</translation>
+<translation id="8773280816776735812">Εμφάνιση τιμής IBAN</translation>
 <translation id="8773302562181397928">Εξοικονομήστε <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Επιβεβαίωση επαναφοράς</translation>
 <translation id="8774934320277480003">Επάνω περιθώριο</translation>

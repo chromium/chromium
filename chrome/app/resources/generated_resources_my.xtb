@@ -631,6 +631,7 @@
 <translation id="1567387640189251553">သင်၏ စကားဝှက်ကို နောက်ဆုံးထည့်သွင်းခဲ့သည့် အချိန်နောက်ပိုင်းတွင် မတူညီသည့်ကီးဘုတ်တစ်ခုကို ချိတ်ဆက်ထားသည်။ ၎င်းသည် သင်၏ ခလုတ်နှိပ်ချက်များကို ခိုးယူရန် ကြိုးစားနိုင်သည်။</translation>
 <translation id="156793199942386351">‘<ph name="CURRENTKEY" />’ ကို ‘<ph name="ACTION" />’ လုပ်ဆောင်ချက်အတွက် သတ်မှတ်ပြီးဖြစ်သည်။ <ph name="RESPONSE" /> အတွက် ကီးတစ်ခုခုကို နှိပ်ပါ။</translation>
 <translation id="1567993339577891801">JavaScript ခလုတ်ခုံ</translation>
+<translation id="1569466257325986920">သင်၏ Google Account စကားဝှက်ကို နောက်တစ်ကြိမ်ပြောင်းသည့်အခါ Google Account သို့ လက်မှတ်ထိုးဝင်ပြီးနောက် သင့်စက်တွင်းဒေတာကို အလိုအလျောက် ပြန်လည်ရယူပါမည်</translation>
 <translation id="1570604804919108255">အကြောင်းကြားချက်များကို ပြန်ဖွင့်ရန်</translation>
 <translation id="1571304935088121812">အသုံးပြုသူအမည်ကို ကူးယူပါ</translation>
 <translation id="1571738973904005196">တဘ်ကို ကြည့်ရန်- <ph name="TAB_ORIGIN" /></translation>
@@ -897,6 +898,7 @@
 <translation id="1781979858217752599">ဝင်းဒိုးအသံကို မျှဝေရန်</translation>
 <translation id="1782101999402987960">အပ်ဒိတ်များကို သင်၏စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="1782196717298160133">သင်၏ ဖုန်းကို ရှာကြည့်ခြင်း</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{မှတ်စု ၁ ခု}other{မှတ်စု # ခု}}</translation>
 <translation id="1784707308176068866">ပူးပေါင်းဆောင်ရွက်နေသော မူလအပလီကေးရှင်းက တောင်းဆိုသည့်အခါ နောက်ခံတွင် လုပ်ဆောင်သည်</translation>
 <translation id="1784849162047402014">စက်ပစ္စည်းသိုလှောင်ခန်းနည်းနေပါသည်</translation>
 <translation id="1787350673646245458">အသုံးပြုသူ၏ ပုံ</translation>
@@ -1692,6 +1694,7 @@
 <translation id="2467755475704469005">စက်မရှိပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">တာ့ချ်ပက် ရွှေ့သည့် အရှိန်မြှင့်ရန်</translation>
 <translation id="2468205691404969808">အဆိုပါ စာမျက်နှာများကို သင်ဝင်ကြည့်မထားလျှင်ပင် သင့်ဦးစားပေးများကို မှတ်မိရန် ကွတ်ကီးများ အသုံးပြုသည်</translation>
+<translation id="2468247643665097563">စီစဉ်ရန်</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">ခန့်မှန်းရခက်ပုံရသည့် စကားဝှက်များကို သင်သုံးနေပါသည်</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - တဘ် 1 ခု}other{<ph name="GROUP_TITLE" /> - တဘ် # ခု}}</translation>
@@ -5966,6 +5969,7 @@
 <translation id="6410668567036790476">ရှာဖွေမှုအင်ဂျင် ထည့်ရန်</translation>
 <translation id="641469293210305670">'အပ်ဒိတ်နှင့် အက်ပ်များ' ထည့်သွင်းခြင်း</translation>
 <translation id="6414878884710400018">'စနစ်သတ်မှတ်ချက်များ' ဖွင့်ရန်</translation>
+<translation id="6415816101512323589">သင့်ဒေတာကိုကာကွယ်ရန် စက်တွင်းဒေတာ ပြန်လည်ရယူခြင်းကို ဖွင့်မလား။</translation>
 <translation id="6415900369006735853">သင့်ဖုန်းမှတစ်ဆင့် အင်တာနက်သို့ ချိတ်ဆက်သည်</translation>
 <translation id="6416743254476733475">သင့်ကွန်ပျူတာတွင် ခွင့်ပြုပါ သို့မဟုတ် ပိတ်ထားပါ။</translation>
 <translation id="6417265370957905582">Google Assistant</translation>

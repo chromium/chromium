@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linuxను రీస్టార్ట్ చేయాలా?</translation>
 <translation id="1047431265488717055">లింక్ వచ&amp;నం కాపీ చేయి</translation>
 <translation id="1048286738600630630">ప్రదర్శనలు</translation>
+<translation id="1048770690598418849">మీరు ప్రస్తుతానికి స్కిప్ చేయవచ్చు, మీరు సెటప్ చేయడం పూర్తి చేసిన తర్వాత మేము ఆటోమేటిక్‌గా మళ్లీ ట్రై చేస్తాము</translation>
 <translation id="1048986595386481879">డైనమిక్‌గా కేటాయించబడింది</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" />ని స్వీకరిస్తోంది}other{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" />ని స్వీకరిస్తోంది}}</translation>
 <translation id="1049743911850919806">అజ్ఞాత మోడ్</translation>
@@ -1636,6 +1637,7 @@
 <translation id="2410754283952462441">ఖాతాను ఎంచుకోండి</translation>
 <translation id="241082044617551207">తెలియని ప్లగ్ఇన్‌</translation>
 <translation id="2410940059315936967">మీరు చూసే సైట్ ఇతర సైట్‌ల నుండి కంటెంట్‌ను పొందుపరచవచ్చు, ఉదాహరణకు, ఇమేజ్‌లు, యాడ్‌లు, ఇంకా టెక్స్ట్. ఈ ఇతర సైట్‌లు సెట్ చేసిన కుక్కీలను థర్డ్-పార్టీ కుక్కీలు అంటారు.</translation>
+<translation id="2411666601450687801">ఈ పరికరంలో వర్చువల్ మెషీన్‌లు ఏవీ అనుమతించబడవు</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">కీబోర్డ్ ఫంక్షన్ కీలు</translation>
 <translation id="2418307627282545839">ప్రకాశవంతంగా, చూడచక్కని రంగులతో అందంగా ఉంచుకోండి</translation>
@@ -1897,6 +1899,7 @@
 <translation id="2653659639078652383">సమర్పించు</translation>
 <translation id="265390580714150011">ఫీల్డ్ విలువ</translation>
 <translation id="2654553774144920065">ప్రింట్ రిక్వెస్ట్‌</translation>
+<translation id="265748523151262387">మీ ఫోన్‌తో కనెక్ట్ అయి ఉండండి</translation>
 <translation id="2657612187216250073">పాయింటర్ యాక్సెసిబిలిటీ సెట్టింగ్‌లు</translation>
 <translation id="2658941648214598230">అసలు కంటెంట్‌ను చూపించాలనుకుంటున్నారా?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />పరికరాన్ని బట్టి ఫీచర్‌లు మారతాయి</translation>
@@ -5313,6 +5316,7 @@
 <translation id="5801051031414037185">ఫోన్‌ను సెటప్ చేయండి</translation>
 <translation id="5801568494490449797">ప్రాధాన్యతలు</translation>
 <translation id="5804241973901381774">అనుమతులు</translation>
+<translation id="5804259315582798390">లోకల్ డేటా రికవరీని ఎనేబుల్ చేయడం విఫలమైంది</translation>
 <translation id="5805268472388605531">యాక్సెంట్ మార్క్‌లను, ప్రత్యేక అక్షరాలను చూడటానికి కీబోర్డ్ కీలను నొక్కి, పట్టుకోండి</translation>
 <translation id="5805697420284793859">విండో మేనేజర్</translation>
 <translation id="5806447147478173900">ప్రదర్శించబడిన సైట్‌లు ఉపయోగించిన మొత్తం స్టోరేజ్: <ph name="TOTAL_USAGE" /></translation>
@@ -6696,6 +6700,7 @@
 <translation id="7047059339731138197">బ్యాక్‌గ్రౌండ్‌ను ఎంచుకోండి</translation>
 <translation id="7049293980323620022">ఫైల్ అలాగే ఉంచాలా?</translation>
 <translation id="7050037487872780845">చెల్లని హాట్‌స్పాట్ కాన్ఫిగరేషన్</translation>
+<translation id="7051551856857948729">IBAN విలువను దాచండి</translation>
 <translation id="7052237160939977163">పనితీరు గుర్తింపు డేటాను పంపు</translation>
 <translation id="7053983685419859001">నిరోధించు</translation>
 <translation id="7055152154916055070">మళ్లింపు బ్లాక్ చేయబడింది:</translation>
@@ -8400,6 +8405,7 @@
 <translation id="8634348081024879304">మీరు Google Payతో మీ వర్చువల్ కార్డ్‌ను ఇకపై ఉపయోగించలేరు. <ph name="BEGIN_LINK" />వర్చువల్ కార్డ్‌ల గురించి తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">మళ్ళీ లోడ్ అవుతోంది...</translation>
 <translation id="8636284842992792762">ఎక్స్‌టెన్షన్‌లను ప్రారంభిస్తోంది...</translation>
+<translation id="8636323803535540285">త్వరగా ఇక్కడకు చేరుకోవడానికి, <ph name="BRAND" /> కోసం షార్ట్‌కట్‌ను జోడించండి</translation>
 <translation id="8636500887554457830">పాప్-అప్‌లను పంపడానికి లేదా మళ్లింపులను ఉపయోగించడానికి సైట్‌లను అనుమతించకండి</translation>
 <translation id="8637688295594795546">సిస్టమ్ అప్‌డేట్‌ అందుబాటులో ఉంది. డౌన్‌లోడ్ చేయ‌డానికి సిద్ధం చేస్తోంది...</translation>
 <translation id="8639047128869322042">హానికరమైన సాఫ్ట్‌వేర్‌ కోసం చెక్ చేస్తోంది...</translation>
@@ -8559,6 +8565,7 @@
 <translation id="8767621466733104912">అందరు వినియోగదారుల కోసం Chromeను ఆటోమేటిక్‌గా అప్‌డేట్ చేయి</translation>
 <translation id="8770406935328356739">ఎక్స్‌టెన్ష‌న్‌ మూలం డైరెక్టరీ</translation>
 <translation id="8771300903067484968">ప్రారంభ పేజీ నేపథ్యం అన్నది డిఫాల్ట్ బ్యాక్‌గ్రౌండ్‌కు రీసెట్ చేయబడింది.</translation>
+<translation id="8773280816776735812">IBAN విలువను చూపండి</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> సేవ్ చేయండి</translation>
 <translation id="8774379074441005279">పునరుద్ధరణను నిర్ధారించండి</translation>
 <translation id="8774934320277480003">ఎగువ అంచు</translation>

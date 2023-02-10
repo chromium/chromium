@@ -133,6 +133,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="163517899691012366">Notifications are muted when Do Not Disturb is on</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> devices</translation>
 <translation id="1639239467298939599">Loading</translation>
+<translation id="1647986356840967552">Previous page</translation>
 <translation id="1654477262762802994">Start a voice query</translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
@@ -555,6 +556,7 @@ Connect your device to power.</translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="397726367135689299">Battery charging may be unreliable.</translation>
 <translation id="3977512764614765090">Battery at <ph name="PERCENTAGE" />% and charging.</translation>
+<translation id="3984536049089846927">Next page</translation>
 <translation id="3986082989454912832">Answer</translation>
 <translation id="3995138139523574647">USB-C device (right-hand-side back port)</translation>
 <translation id="40062176907008878">Handwriting</translation>
@@ -718,6 +720,7 @@ Connect your device to power.</translation>
 <translation id="481455355267255546">Up next</translation>
 <translation id="4831034276697007977">Are you sure that you want to turn off automatic clicks?</translation>
 <translation id="4849058404725798627">Highlight object with keyboard focus</translation>
+<translation id="4855250849489639581">Swipe down for more layout options</translation>
 <translation id="485592688953820832">No action (pause)</translation>
 <translation id="485634149294284819">Enter keyboard menu</translation>
 <translation id="4860284199500934869">Check your network connection to download <ph name="FILENAME" /></translation>

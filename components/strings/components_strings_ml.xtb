@@ -540,6 +540,7 @@
 <translation id="2241693394036365668">ഫയൽ ഡൗൺലോഡ് ചെയ്യുമ്പോൾ</translation>
 <translation id="2246264294482514010">10 x 12 ഇഞ്ച്</translation>
 <translation id="2246480341630108201">നിങ്ങളുടെ രക്ഷിതാവ് ഇതുവരെ അനുമതി നൽകിയിട്ടില്ല</translation>
+<translation id="2247789808226901522">കാർഡ് കാലഹരണപ്പെട്ടു</translation>
 <translation id="2248949050832152960">WebAuthn ഉപയോഗിക്കുക</translation>
 <translation id="2250931979407627383">ഇടതുവശത്ത് അരിക് കൂട്ടിച്ചേർക്കൽ</translation>
 <translation id="225207911366869382">ഈ നയത്തിൽനിന്ന് ഈ മൂല്യം ഇല്ലാതാക്കി.</translation>
@@ -1077,6 +1078,7 @@
 <translation id="3646643500201740985">ഒരു പരസ്യം എത്ര നല്ല പ്രകടനം നടത്തി എന്ന് അളക്കൽ</translation>
 <translation id="3647286794400715637">URL-കളുടെ ഓരോ സ്ട്രിംഗ് എൻട്രിയിലും 1 മുതൽ 2 വരെ URL-കൾ ഉണ്ടായിരിക്കണം.</translation>
 <translation id="3650584904733503804">മൂല്യനിർണ്ണയം വിജയകരം</translation>
+<translation id="3650594806107685466">നിങ്ങളുടെ കാർഡ് സുരക്ഷിതമായി സൂക്ഷിക്കാൻ സഹായിക്കുന്നതിന്, <ph name="SIDE_OF_CARD" /> CVC നൽകുക</translation>
 <translation id="3653033846669030038">തീം പാർക്കുകൾ</translation>
 <translation id="3655241534245626312">അനുമതി ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="3655670868607891010">നിങ്ങൾ ഇത് പതിവായി കാണുന്നുണ്ടെങ്കിൽ, ഈ <ph name="HELP_LINK" /> പരീക്ഷിക്കൂ.</translation>
@@ -2457,6 +2459,7 @@
 <translation id="7112327784801341716">നിങ്ങളുടെ നിലവിലെ വിവരങ്ങൾ കാണുന്നില്ലേ? ഇത് അപ്ഡേറ്റ് ചെയ്യാൻ നിങ്ങളുടെ ബാങ്കുമായി ബന്ധപ്പെടുക.</translation>
 <translation id="7118618213916969306">ക്ലിപ്പ്ബോർഡ് URL-നുള്ള തിരയൽ, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">മറ്റ് ടാബുകളോ പ്രോഗ്രാമുകളോ അടയ്‌ക്കുക</translation>
+<translation id="7124354851782353862">നിങ്ങളുടെ CVC നൽകുക</translation>
 <translation id="7129355289156517987">Chromium-ലുള്ള മുഴുവൻ അദൃശ്യ ടാബുകളും നിങ്ങൾ അടയ്ക്കുമ്പോൾ ആ ടാബുകളിലെ നിങ്ങളുടെ ആക്റ്റിവിറ്റി ഈ ഉപകരണത്തിൽ നിന്ന് മായ്ക്കുന്നു:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി<ph name="END_LIST_ITEM" />
@@ -2572,6 +2575,7 @@
 <translation id="7388594495505979117">{0,plural, =1{നിങ്ങളുടെ ഉപകരണം 1 മിനിറ്റിൽ റീസ്റ്റാർട്ട് ചെയ്യും}other{നിങ്ങളുടെ ഉപകരണം # മിനിറ്റിൽ റീസ്റ്റാർട്ട് ചെയ്യും}}</translation>
 <translation id="7390545607259442187">കാർഡ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7392089738299859607">വിലാസം അപ്ഡേറ്റ് ചെയ്യുക</translation>
+<translation id="739728382607845710">പേയ്മെന്റ് കൈകാര്യം ചെയ്യുന്ന സംവിധാനത്തിന്റെ ഐക്കൺ</translation>
 <translation id="7399802613464275309">സുരക്ഷാ പരിശോധന</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">ലിങ്ക് പങ്കിട്ടും QR കോഡ് സൃഷ്ടിച്ചും കാസ്റ്റ് ചെയ്തും മറ്റും ഈ ടാബ് പങ്കിടുക</translation>
@@ -2781,6 +2785,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു ആപ്പ് (<ph name="EXAMPLE_APP_1" />)}=2{2 ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ആപ്പുകൾ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">പിന്നീട്, നിങ്ങൾ കാണുന്ന പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാനായി, നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റിന് Chrome-നോട് നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങൾ ആവശ്യപ്പെടാം. നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും ഐഡന്റിറ്റിയും സംരക്ഷിച്ചുകൊണ്ട് തന്നെ, 3 വിഷയങ്ങൾ വരെ Chrome പങ്കിടുന്നു.</translation>
+<translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> കാലഹരണപ്പെടുന്ന പുതിയ തീയതിയും CVC-യും നൽകുക</translation>
 <translation id="7862185352068345852">സൈറ്റ് വിടണോ?</translation>
 <translation id="7865448901209910068">ഏറ്റവും മികച്ച വേഗത</translation>
 <translation id="7871445724586827387">നിങ്ങളുടെ Google അക്കൗണ്ടിന്റെ പാസ്‌വേഡ് മാറ്റുക</translation>

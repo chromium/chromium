@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕೇ?</translation>
 <translation id="1047431265488717055">ಲಿಂಕ್ ಪ&amp;ಠ್ಯ ನಕಲಿಸಿ</translation>
 <translation id="1048286738600630630">ಪ್ರದರ್ಶನಗಳು</translation>
+<translation id="1048770690598418849">ನೀವು ಈಗ ಸ್ಕಿಪ್ ಮಾಡಬಹುದು ಮತ್ತು ನೀವು ಸೆಟಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಿದ ನಂತರ ನಾವು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮರುಪ್ರಯತ್ನಿಸುತ್ತೇವೆ</translation>
 <translation id="1048986595386481879">ಕ್ರಿಯಾತ್ಮಕವಾಗಿ ಹಂಚಲಾಗಿದೆ</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ಇಂದ <ph name="ATTACHMENTS" /> ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗುತ್ತಿದೆ}one{<ph name="DEVICE_NAME" /> ಇಂದ <ph name="ATTACHMENTS" /> ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗುತ್ತಿದೆ}other{<ph name="DEVICE_NAME" /> ಇಂದ <ph name="ATTACHMENTS" /> ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗುತ್ತಿದೆ}}</translation>
 <translation id="1049743911850919806">ಅದೃಶ್ಯ</translation>
@@ -1629,6 +1630,7 @@
 <translation id="2410754283952462441">ಖಾತೆಯೊಂದನ್ನು ಆರಿಸಿ</translation>
 <translation id="241082044617551207">ಅಪರಿಚಿತ ಪ್ಲಗ್-ಇನ್</translation>
 <translation id="2410940059315936967">ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್ ಇತರ ಸೈಟ್‌ಗಳಿಂದ ವಿಷಯವನ್ನು ಎಂಬೆಡ್ ಮಾಡಬಹುದು, ಉದಾಹರಣೆಗೆ ಚಿತ್ರಗಳು, ಜಾಹೀರಾತುಗಳು ಮತ್ತು ಪಠ್ಯ. ಈ ಇತರ ಸೈಟ್‌ಗಳಿಂದ ಸೆಟ್ ಮಾಡಲಾದ ಕುಕೀಗಳನ್ನು ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳು ಎಂದು ಕರೆಯಲಾಗುತ್ತದೆ.</translation>
+<translation id="2411666601450687801">ಈ ಸಾಧನದಲ್ಲಿ ಯಾವುದೇ ವರ್ಚುವಲ್ ಮಷಿನ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">ಕೀಬೋರ್ಡ್ ಫಂಕ್ಷನ್ ಕೀಗಳು</translation>
 <translation id="2418307627282545839">ಎಲ್ಲವನ್ನೂ ಪ್ರಕಾಶಮಾನ ಮತ್ತು ಉಲ್ಲಾಸಕರವಾಗಿರಿಸಿ</translation>
@@ -1889,6 +1891,7 @@
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
 <translation id="265390580714150011">ಕ್ಷೇತ್ರ ಮೌಲ್ಯ</translation>
 <translation id="2654553774144920065">ಪ್ರಿಂಟ್ ವಿನಂತಿ</translation>
+<translation id="265748523151262387">ನಿಮ್ಮ ಫೋನ್ ಕನೆಕ್ಟ್ ಆಗಿರುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="2657612187216250073">ಪಾಯಿಂಟರ್ ಪ್ರವೇಶಿಸುವಿಕೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2658941648214598230">ಮೂಲ ವಿಷಯವನ್ನು ತೋರಿಸಬೇಕೇ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ಸಾಧನದಿಂದ ಸಾಧನಕ್ಕೆ ವೈಶಿಷ್ಟ್ಯಗಳು ಬದಲಾಗುತ್ತವೆ</translation>
@@ -5307,6 +5310,7 @@
 <translation id="5801051031414037185">ಫೋನ್ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="5801568494490449797">ಪ್ರಾಶಸ್ತ್ಯಗಳು</translation>
 <translation id="5804241973901381774">ಅನುಮತಿಗಳು</translation>
+<translation id="5804259315582798390">ಸ್ಥಳೀಯ ಡೇಟಾ ರಿಕವರಿಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="5805268472388605531">ಉಚ್ಚಾರಣಾ ಗುರುತುಗಳು ಮತ್ತು ವಿಶೇಷ ಅಕ್ಷರಗಳನ್ನು ನೋಡಲು ಕೀಬೋರ್ಡ್ ಕೀಗಳನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ</translation>
 <translation id="5805697420284793859">ವಿಂಡೋ ಮ್ಯಾನೇಜರ್</translation>
 <translation id="5806447147478173900">ಪ್ರದರ್ಶಿಸಲಾದ ಸೈಟ್‌ಗಳು ಬಳಸಿದ ಒಟ್ಟು ಸಂಗ್ರಹಣೆ: <ph name="TOTAL_USAGE" /></translation>
@@ -6692,6 +6696,7 @@
 <translation id="7047059339731138197">ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7049293980323620022">ಫೈಲ್ ಇರಿಸುವುದೇ?</translation>
 <translation id="7050037487872780845">ಅಮಾನ್ಯ ಹಾಟ್‌ಸ್ಪಾಟ್ ಕಾನ್ಫಿಗರೇಶನ್</translation>
+<translation id="7051551856857948729">IBAN ಮೌಲ್ಯವನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="7052237160939977163">ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸ್‌ ಡೇಟಾ ಕಳುಹಿಸಿ</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="7055152154916055070">ಮರುನಿರ್ದೇಶಿಸುವಿಕೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ:</translation>
@@ -8555,6 +8560,7 @@
 <translation id="8767621466733104912">ಎಲ್ಲಾ ಬಳಕೆದಾರರಿಗಾಗಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="8770406935328356739">ವಿಸ್ತರಣೆ ಮೂಲ ಡೈರೆಕ್ಟರಿ</translation>
 <translation id="8771300903067484968">ಆರಂಭಿಕ ಪುಟದ ಹಿನ್ನೆಲೆಯನ್ನು ಡೀಫಾಲ್ಟ್ ಹಿನ್ನೆಲೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
+<translation id="8773280816776735812">IBAN ಮೌಲ್ಯವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ಅನ್ನು ಉಳಿಸಿ</translation>
 <translation id="8774379074441005279">ಮರುಸ್ಥಾಪನೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8774934320277480003">ಮೇಲಿನ ಅಂಚು</translation>

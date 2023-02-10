@@ -819,6 +819,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6869389390665537774">Можете да видите странице које сте посетили или да их обришете из историје</translation>
 <translation id="687135068089457384">Приказује подешавања</translation>
 <translation id="6873263987691478642">Подељени приказ</translation>
+<translation id="6873366418270195926">Добићете обавештење ако се цена снизи на било ком сајту. Ова страница је сачувана у <ph name="BEGIN_LINK" />Обележивачима<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтова, преузимања и додатака за које се зна да су штетни.</translation>
 <translation id="6888009575607455378">Желите ли стварно да одбаците промене?</translation>
 <translation id="6896758677409633944">Копирај</translation>
@@ -1122,6 +1123,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="952704832371081537">Откажи</translation>
 <translation id="953008885340860025">Одјављени сте из Chrome-а</translation>
 <translation id="959066944189734975">Пратите <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">Н</translation>
 <translation id="981498610235328462">Организација вам дозвољава да се пријавите само помоћу одређених налога. Налози који нису дозвољени су скривени.</translation>
 <translation id="984509647832111802">Синхронизација не ради.</translation>
 <translation id="988141524645182168">Други уређаји</translation>

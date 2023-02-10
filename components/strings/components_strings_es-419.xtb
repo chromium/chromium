@@ -676,7 +676,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2617988307566202237">Chrome <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />El historial de navegación
-            <ph name="LIST_ITEM" />Las cookies y datos de sitios
+            <ph name="LIST_ITEM" />Las cookies y los datos de sitios
             <ph name="LIST_ITEM" />La información que ingreses en formularios
           <ph name="END_LIST" /></translation>
 <translation id="2625385379895617796">El reloj está adelantado</translation>
@@ -2625,7 +2625,7 @@ Detalles adicionales:
 <translation id="7506488012654002225">Chromium <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />El historial de navegación
-          <ph name="LIST_ITEM" />Las cookies y datos de sitios
+          <ph name="LIST_ITEM" />Las cookies y los datos de sitios
           <ph name="LIST_ITEM" />La información que ingreses en formularios
         <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Sobre n.º 9</translation>

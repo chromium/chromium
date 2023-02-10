@@ -410,6 +410,7 @@
 <translation id="4462159676511157176">カスタム ネーム サーバー</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、管理者によって管理、接続</translation>
 <translation id="4470564870223067757">ハングル（2 ボル式）</translation>
+<translation id="4474142134969976028">一致する結果がありません</translation>
 <translation id="4477002475007461989">ルーマニア語</translation>
 <translation id="4477219268485577442">ブルガリア語（表音）</translation>
 <translation id="4508265954913339219">起動に失敗しました</translation>
@@ -817,6 +818,7 @@
 <translation id="7655441028674523381">Google フォトに簡単アクセス</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7663224033570512922">ヒンディー語</translation>
+<translation id="7665680517722058469">別の検索条件をお試しください</translation>
 <translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムをゴミ箱に移動しました</translation>
 <translation id="7693909743393669729">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが消去され、既存のパーティションは非表示のパーティションを含めすべて削除されます。この操作は元に戻せません。</translation>
 <translation id="7695430100978772476">「<ph name="DRIVE_NAME" />」をフォーマットできませんでした</translation>

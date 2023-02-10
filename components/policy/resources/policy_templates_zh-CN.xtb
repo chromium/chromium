@@ -1438,6 +1438,16 @@
       如果此政策已停用，用户则无法使用该功能。</translation>
 <translation id="2342066287156668839">启用永久配额。</translation>
 <translation id="2345547870894930157">启用 DNS-over-HTTPS，且禁止改用不安全的查询</translation>
+<translation id="234856189825555040">此政策用于控制 <ph name="PEPPER_NAME" /> 插件能否使用新版解码器（而非旧版视频解码器）与硬件解码器通信。
+
+迁移只会影响内部实现细节，应该不会改变任何行为。不过，如有任何 PPAPI 应用无法正常运行，可以使用此政策。
+
+如果此政策未设置或已启用，浏览器会决定使用哪种实现方案。
+如果此政策已停用，浏览器将会使用旧版实现方案，直至此政策到期。
+
+如果您必须使用此政策，请在 crbug.com 上提交 bug 以说明您的使用情形并抄送 {andrescj, blundell, pmolinalopez, vasilyt}@chromium.org。此政策的预定有效期会一直持续到 <ph name="PRODUCT_NAME" /> 114 版，之后我们将移除旧版实现方案。
+
+注意：在浏览器运行期间，只有新启动的渲染程序进程才会反映对此政策的更改。</translation>
 <translation id="2349117476121456297">将此政策设为 True 时，系统会让键盘顶行中的各个键充当功能键命令。按搜索键可将这些键的行为改回媒体键。
 
       如果此政策设为 False 或未设置，键盘会默认发出媒体键命令。按搜索键可将这些键改为功能键。</translation>
@@ -6093,6 +6103,16 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果此政策已停用或未设置，系统便不会报告使用情况信息。</translation>
 <translation id="6823711520976094072">如果此政策设为小于 1 MB 或未设置，<ph name="PRODUCT_OS_NAME" />会使用默认大小 (256 MiB) 缓存应用和扩展程序，以供同一部设备上的多位用户安装，从而避免重新为每位用户下载。</translation>
+<translation id="6829632070341067746">此政策用于控制 PPAPI 插件中 Graphics3D API 的近期重构。
+
+迁移只会影响内部实现细节，应该不会改变任何行为。不过，如有任何 PPAPI 应用无法正常运行，可以使用此政策。
+
+如果此政策未设置或已启用，浏览器会决定使用哪种实现方案。
+如果此政策已停用，浏览器将会使用旧版实现方案，直至此政策到期。
+
+如果您必须使用此政策，请在 crbug.com 上提交 bug 以说明您的使用情形并抄送 {blundell, vasilyt}@chromium.org。此政策的预定有效期会一直持续到 <ph name="PRODUCT_NAME" /> 114 版，之后我们将移除旧版实现方案。
+
+注意：在浏览器运行期间，只有新启动的渲染程序进程才会反映对此政策的更改。</translation>
 <translation id="6833023569065717572">如果此政策设为 True，设备的登录屏幕将采用 24 小时制的时钟格式。
 
       如果此政策设为 False，设备的登录屏幕将采用 12 小时制的时钟格式。
@@ -6386,6 +6406,14 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7081784525008938771">如果此政策已启用或未设置，播放视频时设备不会被视为闲置。这样，系统就不会开始应用闲置延迟时间、屏幕变暗延迟时间、屏幕关闭延迟时间和锁定延迟时间，也不会执行相应的操作。
 
           如果此政策已停用，则即使存在视频活动，系统仍会将设备视为闲置。</translation>
+<translation id="7084631508902923941">只要与端口建立了连接，与所指定的某个源相连的扩展程序就会保持运行状态。
+
+如果此政策未设置，系统将使用相应的默认值。目前已知下列应用源提供的 SDK 无法将已关闭的连接重启到关闭前的状态：
+- Smart Card Connector
+- Citrix Receiver（稳定版、Beta 版、备份）
+- VMware Horizon（稳定版、Beta 版）
+
+如果此政策已设置，系统会将新配置的值添加到默认值列表中。只要与端口建立了连接，默认值和政策提供的条目都会向连接的扩展程序授予例外资格。</translation>
 <translation id="7086720321892395256">控制“隐私保护屏”功能的用户和设备政策。</translation>
 <translation id="7090500018761495290">重新启用 Event.path API，直至 M115</translation>
 <translation id="7090668780328470271">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站无法请求用户授权其访问 USB 设备。
@@ -6997,6 +7025,14 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
           指定的政策值应以毫秒为单位，且不得大于屏幕关闭延迟时间（若已设置）和闲置延迟时间。</translation>
 <translation id="7680437377926096177">在用户关闭最后一个窗口时不显示让用户确认退出登录的对话框。</translation>
+<translation id="7682459947751785310">此政策可暂时用于强制启用对 PPB_VideoDecoder(Dev) API 的支持。
+
+如果此政策未设置或已停用，浏览器将决定是否支持该 API。
+如果此政策已启用，系统会支持该 API。
+
+我们正在取消对该 API 的支持，如果在这个过程中遇到问题，可以使用此政策。如果您必须使用此政策，请在 crbug.com 上提交 bug 以说明您的使用情形并抄送 {blundell, vasilyt}@chromium.org。此政策的预定有效期会一直持续到 <ph name="PRODUCT_NAME" /> 114 版，之后我们将按计划无条件地取消对该 API 的支持。
+
+注意：在浏览器运行期间，只有新启动的渲染程序进程才会反映对此政策的更改。</translation>
 <translation id="7683777542468165012">动态政策刷新</translation>
 <translation id="7687943045976362719">如果设置了此政策，则指定的内容类型由 <ph name="PRODUCT_FRAME_NAME" />处理。
 
@@ -7089,6 +7125,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已停用或未设置，Chrome 应用可能会无法运行，具体取决于弃用安排的状态。
       无论在哪种情况下，系统都允许由政策强制安装的 Chrome 应用继续运行。</translation>
 <translation id="7774768074957326919">使用系统代理设置</translation>
+<translation id="7776848995687565978">配置源列表，以向这些源所连接的扩展程序授予更长的后台生命周期。</translation>
 <translation id="777734450201217641">在登录屏幕上启用无障碍功能快捷方式。
 
           如果此政策设为 true，无障碍功能快捷方式在登录屏幕上将始终处于启用状态。
@@ -8510,6 +8547,34 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       实际的回滚可能性或许还取决于设备型号和关键的漏洞补丁程序。</translation>
 <translation id="9123464369663964441">让用户能够添加例外情况以允许显示混合内容</translation>
 <translation id="9124770007620653639">一律不将网域可靠性数据发送给 Google</translation>
+<translation id="9126491667911789829">通过设置此政策，您能以列表形式指定哪些 Web 应用无需用户互动即可静默安装且无法由用户卸载或停用。
+
+      此政策的每个列表项都是一个对象，其中会包含 1 个必要成员：
+      <ph name="URL_LABEL" />（要安装的 Web 应用的网址）
+
+      以及 6 个可选成员：
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      （用于指明 Web 应用的打开方式，默认在新标签页中打开）
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      （如果您想创建 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面快捷方式，请设为 True。）
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      （自 <ph name="PRODUCT_NAME" /> 90 版起，让您能够替换非渐进式 Web 应用 [PWA] 的应用名称，或临时安装但在安装完毕之前需进行身份验证的 PWA 的应用名称。如果同时提供了 <ph name="CUSTOM_NAME_LABEL" /> 和 <ph name="FALLBACK_APP_NAME_LABEL" />，系统会忽略后者。）
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      （自 <ph name="PRODUCT_OS_NAME" /> 99 版起，以及在所有其他桌面操作系统上的 112 版中，让您能永久替换所有 Web 应用和 PWA 的应用名称。）
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      （自 <ph name="PRODUCT_OS_NAME" /> 99 版起，以及在所有其他桌面操作系统上的 112 版中，让您能替换安装式应用的应用图标。图标必须为方形，大小不超过 1 MB，并采用以下格式之一：jpeg、png、gif、webp、ico。
+      哈希值必须是图标文件的 SHA256 哈希。）
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      （自 <ph name="PRODUCT_NAME" /> 107 版起。）如果此政策已启用，给定的 <ph name="URL_LABEL" /> 将作为快捷方式安装，就像通过桌面浏览器 GUI 中的“创建快捷方式…”选项完成一样。
+      请注意，如果作为快捷方式安装，它不会在 <ph name="URL_LABEL" /> 中的清单发生变化时更新。
+      如果此政策已停用或未设置，系统将正常安装给定 <ph name="URL_LABEL" /> 中的 Web 应用。
+
+      如需了解如何将应用固定到 <ph name="PRODUCT_OS_NAME" /> 任务栏中，请参阅 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />。</translation>
 <translation id="9129169595075460149">如果此政策已启用，Google 搜索中的安全搜索功能将始终处于启用状态，并且用户无法更改此设置。
 
       如果此政策已停用或未设置，系统将不会在 Google 搜索中强制启用安全搜索功能。</translation>
