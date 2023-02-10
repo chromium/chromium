@@ -377,14 +377,22 @@ bool TabScrubberChromeOS::MaybeDelegateHandlingToLacros(
     ui::ScrollEvent* event) {
   auto* active_window =
       ash::Shell::Get()->activation_client()->GetActiveWindow();
-  if (!active_window)
+  if (!active_window) {
     return false;
+  }
 
-  if (!crosapi::browser_util::IsLacrosWindow(active_window))
+  if (!crosapi::browser_util::IsLacrosWindow(active_window)) {
     return false;
+  }
 
-  crosapi::BrowserManager::Get()->HandleTabScrubbing(
-      event->x_offset(), event->IsFlingScrollEvent());
+  // TODO(crbug.com/1414649): FlingScrollEvent should be sent to Lacros as well,
+  // but only sending event with kFingerCount for now as a quick fix for
+  // crbug.com/1414649.
+  if (event->finger_count() != kFingerCount) {
+    return false;
+  }
+
+  crosapi::BrowserManager::Get()->HandleTabScrubbing(event->x_offset(), false);
   return true;
 }
 #endif
