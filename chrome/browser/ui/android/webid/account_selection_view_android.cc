@@ -170,11 +170,6 @@ void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, jint dismiss_reason) {
   delegate_->OnDismiss(static_cast<DismissReason>(dismiss_reason));
 }
 
-void AccountSelectionViewAndroid::OnAutoSignInCancelled(JNIEnv* env) {
-  // TODO(yigu): Alternatively we could fall back to manual sign in flow.
-  delegate_->OnDismiss(DismissReason::OTHER);
-}
-
 bool AccountSelectionViewAndroid::RecreateJavaObject() {
   if (delegate_->GetNativeView() == nullptr ||
       delegate_->GetNativeView()->GetWindowAndroid() == nullptr) {

@@ -20,7 +20,6 @@ import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,7 +30,6 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AutoSignInCancelButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
@@ -255,25 +253,6 @@ class AccountSelectionViewBinder {
     }
 
     /**
-     * Called whenever a cancel button for a single account is bound to this view.
-     * @param model The model containing the data for the view.
-     * @param view The view to be bound.
-     * @param key The key of the property to be bound.
-     */
-    static void bindAutoSignInCancelButtonView(PropertyModel model, View view, PropertyKey key) {
-        if (key != AutoSignInCancelButtonProperties.ON_CLICK_LISTENER) {
-            assert false : "Unhandled update to property:" + key;
-            return;
-        }
-        view.setOnClickListener(clickedView -> {
-            model.get(AutoSignInCancelButtonProperties.ON_CLICK_LISTENER).run();
-        });
-        String btnText = String.format(view.getContext().getString(R.string.cancel));
-        Button button = view.findViewById(R.id.auto_sign_in_cancel_btn);
-        button.setText(btnText);
-    }
-
-    /**
      * Called whenever non-account views are bound to the bottom sheet.
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
@@ -289,9 +268,6 @@ class AccountSelectionViewBinder {
         } else if (key == ItemProperties.CONTINUE_BUTTON) {
             itemView = view.findViewById(R.id.account_selection_continue_btn);
             itemBinder = AccountSelectionViewBinder::bindContinueButtonView;
-        } else if (key == ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON) {
-            itemView = view.findViewById(R.id.auto_sign_in_cancel_btn);
-            itemBinder = AccountSelectionViewBinder::bindAutoSignInCancelButtonView;
         } else if (key == ItemProperties.DATA_SHARING_CONSENT) {
             itemView = view.findViewById(R.id.user_data_sharing_consent);
             itemBinder = AccountSelectionViewBinder::bindDataSharingConsentView;
@@ -334,7 +310,8 @@ class AccountSelectionViewBinder {
             // bottom sheet is shown. Don't include instructions for closing the bottom sheet as
             // part of the "Verifying..." header content description because the bottom sheet
             // closes itself automatically at the "Verifying..." stage.
-            if (headerType != HeaderProperties.HeaderType.VERIFY) {
+            if (headerType != HeaderProperties.HeaderType.VERIFY
+                    && headerType != HeaderProperties.HeaderType.VERIFY_AUTO_SIGNIN) {
                 headerTitleText.setContentDescription(title + ". "
                         + resources.getString(R.string.bottom_sheet_accessibility_description));
             } else {
@@ -343,7 +320,8 @@ class AccountSelectionViewBinder {
             }
 
             if (key == HeaderProperties.TYPE) {
-                boolean progressBarVisible = (headerType == HeaderProperties.HeaderType.VERIFY);
+                boolean progressBarVisible = (headerType == HeaderProperties.HeaderType.VERIFY
+                        || headerType == HeaderProperties.HeaderType.VERIFY_AUTO_SIGNIN);
                 view.findViewById(R.id.header_progress_bar)
                         .setVisibility(progressBarVisible ? View.VISIBLE : View.GONE);
                 view.findViewById(R.id.header_divider)
@@ -379,15 +357,23 @@ class AccountSelectionViewBinder {
         return R.string.verify_sheet_title;
     }
 
+    /**
+     * Returns text for the {@link HeaderType.VERIFY_AUTO_SIGNIN} header.
+     */
+    static @StringRes int getVerifyHeaderAutoStringId() {
+        return R.string.verify_sheet_title_auto_signin;
+    }
+
     private static String computeHeaderTitle(
             Resources resources, HeaderProperties.HeaderType type, String rpUrl, String idpUrl) {
         if (type == HeaderProperties.HeaderType.VERIFY) {
             return resources.getString(getVerifyHeaderStringId());
         }
+        if (type == HeaderProperties.HeaderType.VERIFY_AUTO_SIGNIN) {
+            return resources.getString(getVerifyHeaderAutoStringId());
+        }
         @StringRes
-        int titleStringId = (type == HeaderProperties.HeaderType.AUTO_SIGN_IN)
-                ? R.string.account_selection_sheet_title_auto
-                : R.string.account_selection_sheet_title_explicit;
+        int titleStringId = R.string.account_selection_sheet_title_explicit;
         return String.format(resources.getString(titleStringId), rpUrl, idpUrl);
     }
 

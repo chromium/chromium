@@ -49,7 +49,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.Avatar;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AutoSignInCancelButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
@@ -219,14 +218,6 @@ public class AccountSelectionControllerTest {
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
-    }
-
-    @Test
-    public void testShowAccountAutoSignInHeader() {
-        mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
-                IDP_METADATA, CLIENT_ID_METADATA, true /* isAutoSignIn */);
-        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
-        assertEquals(HeaderType.AUTO_SIGN_IN, headerModel.get(TYPE));
     }
 
     @Test
@@ -419,38 +410,14 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
-    public void testCallsDelegateAndHidesOnCancellingAutoSignIn() {
-        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
-        mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
-                IDP_METADATA, CLIENT_ID_METADATA, true);
-        mMediator.onAutoSignInCancelled();
-        verify(mMockDelegate).onAutoSignInCancelled();
-        assertTrue(mMediator.wasDismissed());
-    }
-
-    @Test
-    public void testCallsCallbackAndHidesOnCancellingAutoSignIn() {
-        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
-        mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
-                IDP_METADATA, CLIENT_ID_METADATA, true);
-        assertFalse(mMediator.wasDismissed());
-        assertNotNull(mModel.get(ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON)
-                              .get(AutoSignInCancelButtonProperties.ON_CLICK_LISTENER));
-
-        mModel.get(ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON)
-                .get(AutoSignInCancelButtonProperties.ON_CLICK_LISTENER)
-                .run();
-        verify(mMockDelegate).onAutoSignInCancelled();
-        assertTrue(mMediator.wasDismissed());
-    }
-
-    @Test
     public void testCallsDelegateAndHidesOnlyOnceWithAutoSignIn() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, true);
+        // Auto signs in even if dismissed.
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockDelegate).onAccountSelected(TEST_CONFIG_URL, ANA);
         verifyNoMoreInteractions(mMockDelegate);
         assertTrue(mMediator.wasDismissed());
         // The delayed task should not call delegate after user dismissing.
@@ -479,14 +446,25 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
-    public void testShowVerifySheet() {
+    public void testShowVerifySheetExplicitSignin() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_2, Arrays.asList(NEW_USER),
-                IDP_METADATA, CLIENT_ID_METADATA, false);
+                IDP_METADATA, CLIENT_ID_METADATA, false /* isAutoSignIn */);
         mMediator.showVerifySheet(ANA);
 
         assertEquals(1, mSheetAccountItems.size());
         assertEquals(HeaderType.VERIFY, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    @Test
+    public void testShowVerifySheetAutoSignin() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        // showVerifySheet is called in showAccounts when isAutoSignIn is true
+        mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
+                IDP_METADATA, CLIENT_ID_METADATA, true /* isAutoSignIn */);
+
+        assertEquals(1, mSheetAccountItems.size());
+        assertEquals(HeaderType.VERIFY_AUTO_SIGNIN, mModel.get(ItemProperties.HEADER).get(TYPE));
     }
 
     private void pressBack() {

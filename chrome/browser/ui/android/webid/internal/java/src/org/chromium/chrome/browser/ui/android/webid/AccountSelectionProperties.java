@@ -57,7 +57,7 @@ class AccountSelectionProperties {
      * sheet.
      */
     static class HeaderProperties {
-        public enum HeaderType { AUTO_SIGN_IN, SIGN_IN, VERIFY }
+        public enum HeaderType { AUTO_SIGN_IN, SIGN_IN, VERIFY, VERIFY_AUTO_SIGNIN }
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("close_on_click_listener");
         static final ReadableObjectPropertyKey<String> IDP_FOR_DISPLAY =
@@ -114,23 +114,9 @@ class AccountSelectionProperties {
     }
 
     /**
-     * Properties defined here reflect the state of the cancel button used for auto sign in.
-     */
-    static class AutoSignInCancelButtonProperties {
-        static final ReadableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
-                new ReadableObjectPropertyKey<>("on_click_listener");
-
-        static final PropertyKey[] ALL_KEYS = {ON_CLICK_LISTENER};
-
-        private AutoSignInCancelButtonProperties() {}
-    }
-
-    /**
      * Properties defined here reflect sections in the FedCM bottom sheet.
      */
     static class ItemProperties {
-        static final WritableObjectPropertyKey<PropertyModel> AUTO_SIGN_IN_CANCEL_BUTTON =
-                new WritableObjectPropertyKey<>("auto_sign_in_btn");
         static final WritableObjectPropertyKey<PropertyModel> CONTINUE_BUTTON =
                 new WritableObjectPropertyKey<>("continue_btn");
         static final WritableObjectPropertyKey<PropertyModel> DATA_SHARING_CONSENT =
@@ -138,8 +124,7 @@ class AccountSelectionProperties {
         static final WritableObjectPropertyKey<PropertyModel> HEADER =
                 new WritableObjectPropertyKey<>("header");
 
-        static final PropertyKey[] ALL_KEYS = {
-                AUTO_SIGN_IN_CANCEL_BUTTON, CONTINUE_BUTTON, DATA_SHARING_CONSENT, HEADER};
+        static final PropertyKey[] ALL_KEYS = {CONTINUE_BUTTON, DATA_SHARING_CONSENT, HEADER};
 
         private ItemProperties() {}
     }

@@ -60,7 +60,6 @@ android_resources("java_resources") {
     "java/res/layout/account_selection_data_sharing_consent_item.xml",
     "java/res/layout/account_selection_header_item.xml",
     "java/res/layout/account_selection_sheet.xml",
-    "java/res/layout/auto_sign_in_cancel_button.xml",
     "java/res/values/dimens.xml",
   ]
 }

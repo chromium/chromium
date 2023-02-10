@@ -46,7 +46,7 @@ const std::u16string kTitleSignIn =
     u"Sign in to rp-example.com with idp-example.com";
 const std::u16string kTitleSignInWithoutIdp = u"Sign in to rp-example.com";
 const std::u16string kTitleSigningIn = u"Verifying…";
-const std::u16string kTitleSigningInWithAutoSignin = u"Signing in…";
+const std::u16string kTitleSigningInWithAutoSignin = u"Signing you in…";
 
 constexpr char kIdBase[] = "id";
 constexpr char kEmailBase[] = "email";

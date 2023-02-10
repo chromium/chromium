@@ -38,7 +38,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AutoSignInCancelButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
@@ -78,7 +77,6 @@ public class AccountSelectionViewTest {
 
     @Mock
     private Callback<Account> mAccountCallback;
-    private Runnable mAutoSignInCancelCallback;
 
     private Resources mResources;
     private PropertyModel mModel;
@@ -118,7 +116,7 @@ public class AccountSelectionViewTest {
     }
 
     @Test
-    public void testVerifyingTitleDisplayed() {
+    public void testVerifyingTitleDisplayedExplicitSignin() {
         mModel.set(ItemProperties.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(HeaderProperties.TYPE, HeaderType.VERIFY)
@@ -130,6 +128,21 @@ public class AccountSelectionViewTest {
 
         assertEquals("Incorrect title", mResources.getString(R.string.verify_sheet_title),
                 title.getText());
+    }
+
+    @Test
+    public void testVerifyingTitleDisplayedAutoSignin() {
+        mModel.set(ItemProperties.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.TYPE, HeaderType.VERIFY_AUTO_SIGNIN)
+                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
+                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
+                        .build());
+        assertEquals(View.VISIBLE, mContentView.getVisibility());
+        TextView title = mContentView.findViewById(R.id.header_title);
+
+        assertEquals("Incorrect title",
+                mResources.getString(R.string.verify_sheet_title_auto_signin), title.getText());
     }
 
     @Test
@@ -184,43 +197,6 @@ public class AccountSelectionViewTest {
         continueButton.performClick();
 
         waitForEvent(mAccountCallback).onResult(eq(ANA));
-    }
-
-    @Test
-    public void testAutoSignInCancelButtonDisplayed() {
-        // Create an account with no callback to ensure the button callback
-        // is the one that gets invoked.
-        mSheetAccountItems.add(
-                new MVCListAdapter.ListItem(AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
-                        new PropertyModel.Builder(AccountProperties.ALL_KEYS)
-                                .with(AccountProperties.ACCOUNT, ANA)
-                                .with(AccountProperties.ON_CLICK_LISTENER, null)
-                                .build()));
-
-        mModel.set(ItemProperties.AUTO_SIGN_IN_CANCEL_BUTTON, buildCancelButton());
-        ShadowLooper.shadowMainLooper().idle();
-
-        assertEquals(View.VISIBLE, mContentView.getVisibility());
-
-        assertNotNull(getAccounts().getChildAt(0));
-        assertTrue(mContentView.findViewById(R.id.auto_sign_in_cancel_btn).isShown());
-    }
-
-    @Test
-    public void testHeaderDisplayedForAutoSignIn() {
-        mModel.set(ItemProperties.HEADER,
-                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(HeaderProperties.TYPE, HeaderType.AUTO_SIGN_IN)
-                        .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
-                        .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
-                        .build());
-        assertEquals(View.VISIBLE, mContentView.getVisibility());
-        TextView title = mContentView.findViewById(R.id.header_title);
-
-        assertEquals("Incorrect title",
-                mResources.getString(
-                        R.string.account_selection_sheet_title_auto, "example.org", "idp.org"),
-                title.getText());
     }
 
     @Test
@@ -298,12 +274,6 @@ public class AccountSelectionViewTest {
         }
 
         return modelBuilder.build();
-    }
-
-    private PropertyModel buildCancelButton() {
-        return new PropertyModel.Builder(AutoSignInCancelButtonProperties.ALL_KEYS)
-                .with(AutoSignInCancelButtonProperties.ON_CLICK_LISTENER, mAutoSignInCancelCallback)
-                .build();
     }
 
     private PropertyModel buildDataSharingConsentItem(String idpEtldPlusOne) {

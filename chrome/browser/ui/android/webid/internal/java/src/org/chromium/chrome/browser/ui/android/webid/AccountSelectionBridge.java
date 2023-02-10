@@ -109,22 +109,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         }
     }
 
-    @Override
-    public void onAutoSignInCancelled() {
-        if (mNativeView != 0) {
-            // This call passes the account fields directly as String and GURL parameters as an
-            // optimization to avoid needing multiple JNI getters on the Account class on for each
-            // field.
-            AccountSelectionBridgeJni.get().onAutoSignInCancelled(mNativeView);
-        }
-    }
-
     @NativeMethods
     interface Natives {
         void onAccountSelected(long nativeAccountSelectionViewAndroid, GURL idpConfigUrl,
                 String[] accountFields, GURL accountPictureUrl, boolean isSignedIn);
         void onDismiss(long nativeAccountSelectionViewAndroid,
                 @IdentityRequestDialogDismissReason int dismissReason);
-        void onAutoSignInCancelled(long nativeAccountSelectionViewAndroid);
     }
 }

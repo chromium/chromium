@@ -33,11 +33,6 @@ public interface AccountSelectionComponent {
          * was selected.
          */
         void onDismissed(@IdentityRequestDialogDismissReason int dismissReason);
-
-        /**
-         * Called when the user cancels auto sign in.
-         */
-        void onAutoSignInCancelled();
     }
 
     /**

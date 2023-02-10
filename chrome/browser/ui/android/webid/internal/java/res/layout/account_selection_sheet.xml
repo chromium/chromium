@@ -32,9 +32,6 @@ found in the LICENSE file.
     <include layout="@layout/account_selection_continue_button"
         android:id="@+id/account_selection_continue_btn"
         android:visibility="gone"/>
-    <include layout="@layout/auto_sign_in_cancel_button"
-        android:id="@+id/auto_sign_in_cancel_btn"
-        android:visibility="gone"/>
     <include layout="@layout/account_selection_data_sharing_consent_item"
         android:id="@+id/user_data_sharing_consent"
         android:visibility="gone"/>
