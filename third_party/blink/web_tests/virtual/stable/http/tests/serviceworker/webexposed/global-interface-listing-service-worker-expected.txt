@@ -2342,6 +2342,10 @@ interface WebGLActiveInfo
 interface WebGLBuffer
     attribute @@toStringTag
     method constructor
+interface WebGLContextEvent : Event
+    attribute @@toStringTag
+    getter statusMessage
+    method constructor
 interface WebGLFramebuffer
     attribute @@toStringTag
     method constructor

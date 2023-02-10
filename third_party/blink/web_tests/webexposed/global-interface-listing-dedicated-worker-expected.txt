@@ -2788,6 +2788,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface WebGLBuffer
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker] interface WebGLContextEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter statusMessage
+[Worker]     method constructor
 [Worker] interface WebGLFramebuffer
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
