@@ -8326,6 +8326,21 @@
             ]
         }
     ],
+    "PageInfoAboutThisSiteImprovedBottomSheet": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageInfoAboutThisSiteImprovedBottomSheet"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoAboutThisSiteMoreInfoDesktop": [
         {
             "platforms": [
