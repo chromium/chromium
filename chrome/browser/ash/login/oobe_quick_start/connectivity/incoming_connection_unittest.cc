@@ -24,16 +24,12 @@ constexpr std::array<uint8_t, 25> kBaseUrl = {
 // Qr code key param ("?key=") represented in a 5 byte array.
 constexpr std::array<uint8_t, 5> kUrlKeyParam = {0x3f, 0x6b, 0x65, 0x79, 0x3d};
 
-// 10 random bytes to use as the RandomSessionId.
-constexpr std::array<uint8_t, 10> kRandomSessionId = {
-    0x6b, 0xb3, 0x85, 0x27, 0xbb, 0x28, 0xb4, 0x59, 0x16, 0xca};
+// 6 random bytes to use as the RandomSessionId.
+constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
+                                                     0x27, 0xbb, 0x28};
 
-// Hex representation of kRandomSessionId. kRandomSessionId is converted into a
-// hex string, then each character of that string is represented as a byte
-// below.
-constexpr std::array<uint8_t, 20> kRandomSessionIdHex = {
-    0x36, 0x42, 0x42, 0x33, 0x38, 0x35, 0x32, 0x37, 0x42, 0x42,
-    0x32, 0x38, 0x42, 0x34, 0x35, 0x39, 0x31, 0x36, 0x43, 0x41};
+// Base64 representation of kRandomSessionId.
+constexpr char kRandomSessionIdBase64[] = "a7OFJ7so";
 
 // 32 random bytes to use as the shared secret.
 constexpr std::array<uint8_t, 32> kSharedSecret = {
@@ -41,15 +37,9 @@ constexpr std::array<uint8_t, 32> kSharedSecret = {
     0xcf, 0xf3, 0xeb, 0x31, 0x08, 0x90, 0x73, 0xef, 0xda, 0x87, 0xd4,
     0x23, 0xc0, 0x55, 0xd5, 0x83, 0x5b, 0x04, 0x28, 0x49, 0xf2};
 
-// Hex representation of kSharedSecret. kSharedSecret is converted into a hex
-// string, then each character of that string is represented as a byte below.
-constexpr std::array<uint8_t, 64> kSharedSecretHex = {
-    0x35, 0x34, 0x42, 0x44, 0x34, 0x30, 0x43, 0x46, 0x38, 0x41, 0x37,
-    0x43, 0x32, 0x46, 0x36, 0x41, 0x43, 0x41, 0x31, 0x35, 0x35, 0x39,
-    0x43, 0x46, 0x46, 0x33, 0x45, 0x42, 0x33, 0x31, 0x30, 0x38, 0x39,
-    0x30, 0x37, 0x33, 0x45, 0x46, 0x44, 0x41, 0x38, 0x37, 0x44, 0x34,
-    0x32, 0x33, 0x43, 0x30, 0x35, 0x35, 0x44, 0x35, 0x38, 0x33, 0x35,
-    0x42, 0x30, 0x34, 0x32, 0x38, 0x34, 0x39, 0x46, 0x32};
+// Base64 representation of kSharedSecret.
+constexpr char kSharedSecretBase64[] =
+    "VL1Az4p8L2rKFVnP8-sxCJBz79qH1CPAVdWDWwQoSfI";
 
 }  // namespace
 
@@ -74,13 +64,16 @@ class IncomingConnectionTest : public testing::Test {
 };
 
 TEST_F(IncomingConnectionTest, TestGetQrCodeData) {
+  std::string session_id(kRandomSessionIdBase64);
+  std::string shared_secret(kSharedSecretBase64);
+
   std::vector<uint8_t> expected_data(std::begin(kBaseUrl), std::end(kBaseUrl));
-  expected_data.insert(expected_data.end(), std::begin(kRandomSessionIdHex),
-                       std::end(kRandomSessionIdHex));
+  expected_data.insert(expected_data.end(), session_id.begin(),
+                       session_id.end());
   expected_data.insert(expected_data.end(), std::begin(kUrlKeyParam),
                        std::end(kUrlKeyParam));
-  expected_data.insert(expected_data.end(), std::begin(kSharedSecretHex),
-                       std::end(kSharedSecretHex));
+  expected_data.insert(expected_data.end(), shared_secret.begin(),
+                       shared_secret.end());
 
   std::vector<uint8_t> actual_data = incoming_connection_->GetQrCodeData();
 

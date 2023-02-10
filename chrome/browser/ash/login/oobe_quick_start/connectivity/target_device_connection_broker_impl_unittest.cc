@@ -30,10 +30,12 @@ constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
 constexpr uint8_t kEndpointInfoVerificationStyle = 0u;
 constexpr uint8_t kEndpointInfoDeviceType = 8u;
 
+constexpr size_t kEndpointInfoRandomSessionIdLength = 10;
+
 // 10 random bytes to use as the RandomSessionId. The corresponding display name
 // code is (0x135e % 1000) = 958.
-constexpr std::array<uint8_t, 10> kRandomSessionId = {
-    0x13, 0x5e, 0xfb, 0x0f, 0x3a, 0x20, 0x06, 0xbd, 0xbf, 0x95};
+constexpr std::array<uint8_t, 6> kRandomSessionId = {0x13, 0x5e, 0xfb,
+                                                     0x0f, 0x3a, 0x20};
 
 struct EndpointInfoTestCase {
   chromeos::DeviceType device_type;
@@ -495,14 +497,18 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   EXPECT_EQ(kEndpointInfoDeviceType, device_type);
   i++;
 
-  // Parse the fixed-length RandomSessionId.
-  ASSERT_GE(endpoint_info.size(), i + RandomSessionId::kLength);
-  base::span<const uint8_t, RandomSessionId::kLength> session_id_bytes =
-      GetRandomSessionId().AsBytes();
-  for (size_t k = i; k < i + RandomSessionId::kLength; k++) {
-    EXPECT_EQ(session_id_bytes[k - i], endpoint_info[k]);
+  // Parse the RandomSessionId. The field is fixed-width, but contains a string
+  // that may not occupy the full length, in which case there will be a null
+  // terminator.
+  ASSERT_GE(endpoint_info.size(), i + kEndpointInfoRandomSessionIdLength);
+  std::string session_id = GetRandomSessionId().ToString();
+  for (size_t k = i; k < i + kEndpointInfoRandomSessionIdLength; k++) {
+    if (endpoint_info[k] == 0) {
+      break;
+    }
+    EXPECT_EQ(session_id[k - i], endpoint_info[k]);
   }
-  i += RandomSessionId::kLength;
+  i += kEndpointInfoRandomSessionIdLength;
 
   ASSERT_GT(endpoint_info.size(), i);
   uint8_t is_quick_start = endpoint_info[i];

@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 
+#include "base/base64url.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "crypto/random.h"
 
 namespace ash::quick_start {
@@ -19,7 +20,19 @@ RandomSessionId::RandomSessionId(base::span<const uint8_t, kLength> bytes) {
 }
 
 std::string RandomSessionId::ToString() const {
-  return base::HexEncode(bytes_);
+  std::string session_id_bytes(bytes_.begin(), bytes_.end());
+  std::string session_id_base64;
+  base::Base64UrlEncode(session_id_bytes,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &session_id_base64);
+  return session_id_base64;
+}
+
+std::string RandomSessionId::GetDisplayCode() const {
+  uint32_t high = bytes_[0];
+  uint32_t low = bytes_[1];
+  uint32_t x = (high << 8) + low;
+  return base::StringPrintf("%03d", x % 1000);
 }
 
 std::ostream& operator<<(std::ostream& stream,

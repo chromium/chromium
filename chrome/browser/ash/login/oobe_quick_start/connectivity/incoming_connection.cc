@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 
-#include "base/strings/string_number_conversions.h"
+#include "base/base64url.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "crypto/random.h"
 
@@ -26,11 +26,15 @@ IncomingConnection::IncomingConnection(NearbyConnection* nearby_connection,
 IncomingConnection::~IncomingConnection() = default;
 
 std::vector<uint8_t> IncomingConnection::GetQrCodeData() const {
-  // TODO(b/234655072): Align with Android on whether |random_session_id_| and
-  // |shared_secret_| should be encoded as hex strings here.
+  std::string shared_secret_str(shared_secret_.begin(), shared_secret_.end());
+  std::string shared_secret_base64;
+  base::Base64UrlEncode(shared_secret_str,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &shared_secret_base64);
+
   std::string url = "https://signin.google/qs/" +
                     random_session_id_.ToString() +
-                    "?key=" + base::HexEncode(shared_secret_);
+                    "?key=" + shared_secret_base64;
 
   return std::vector<uint8_t>(url.begin(), url.end());
 }

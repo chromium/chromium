@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
                     ".uiStep === 'verification'")
       ->Wait();
   test::OobeJS().ExpectAttributeEQ("canvasSize_",
-                                   {QuickStartView::kScreenId.name}, 225);
+                                   {QuickStartView::kScreenId.name}, 185);
 }
 
 }  // namespace ash
