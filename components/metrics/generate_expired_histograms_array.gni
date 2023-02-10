@@ -164,6 +164,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/storage/histograms.xml",
       "//tools/metrics/histograms/metadata/subresource/histograms.xml",
       "//tools/metrics/histograms/metadata/sync/histograms.xml",
+      "//tools/metrics/histograms/metadata/system/histograms.xml",
       "//tools/metrics/histograms/metadata/invalidation/histograms.xml",
       "//tools/metrics/histograms/metadata/tab/histograms.xml",
       "//tools/metrics/histograms/metadata/translate/histograms.xml",

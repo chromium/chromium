@@ -92,6 +92,10 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/metrics/pressure/pressure_metrics_reporter.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace {
 
 void RecordMemoryMetrics();
@@ -680,6 +684,10 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
         std::make_unique<PowerMetricsReporter>(process_monitor_.get());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX)
+  pressure_metrics_reporter_ = std::make_unique<PressureMetricsReporter>();
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {

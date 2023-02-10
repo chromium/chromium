@@ -22,6 +22,10 @@ class PowerMetricsReporter;
 class ProcessMonitor;
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+class PressureMetricsReporter;
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace chrome {
 void AddMetricsExtraParts(ChromeBrowserMainParts* main_parts);
 }
@@ -83,6 +87,11 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
 
   std::unique_ptr<BatteryDischargeReporter> battery_discharge_reporter_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX)
+  // Reports pressure metrics.
+  std::unique_ptr<PressureMetricsReporter> pressure_metrics_reporter_;
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_BROWSER_MAIN_EXTRA_PARTS_METRICS_H_

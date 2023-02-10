@@ -144,6 +144,7 @@
   X("renderer")                                                          \
   X("renderer_host")                                                     \
   X("renderer.scheduler")                                                \
+  X("resources")                                                         \
   X("RLZ")                                                               \
   X("ServiceWorker")                                                     \
   X("SiteEngagement")                                                    \

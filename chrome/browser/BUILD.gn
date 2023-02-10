@@ -6445,6 +6445,15 @@ static_library("browser") {
     ]
   }
 
+  if (is_linux) {
+    sources += [
+      "metrics/pressure/pressure_metrics.cc",
+      "metrics/pressure/pressure_metrics.h",
+      "metrics/pressure/pressure_metrics_reporter.cc",
+      "metrics/pressure/pressure_metrics_reporter.h",
+    ]
+  }
+
   if (toolkit_views) {
     sources += [
       "page_load_metrics/observers/side_search_page_load_metrics_observer.cc",
