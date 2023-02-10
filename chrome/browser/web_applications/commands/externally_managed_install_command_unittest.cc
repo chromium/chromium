@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -59,13 +60,19 @@ class ExternallyManagedInstallCommandTest : public WebAppTest {
 
   InstallResult InstallAndWait(
       const ExternalInstallOptions& install_options,
-      std::unique_ptr<WebAppDataRetriever> data_retriever) {
+      std::unique_ptr<WebAppDataRetriever> data_retriever,
+      bool use_url_loader = true) {
     base::test::TestFuture<const AppId&, webapps::InstallResultCode, bool>
         future;
+    if (use_url_loader) {
+      url_loader_ = std::make_unique<TestWebAppUrlLoader>();
+      url_loader_->SetPrepareForLoadResultLoaded();
+    }
     provider()->command_manager().ScheduleCommand(
         std::make_unique<ExternallyManagedInstallCommand>(
             profile(), install_options, future.GetCallback(),
-            web_contents()->GetWeakPtr(), std::move(data_retriever)));
+            web_contents()->GetWeakPtr(), std::move(data_retriever),
+            use_url_loader ? url_loader_.get() : nullptr));
     InstallResult result{.installed_app_id = future.Get<0>(),
                          .install_code = future.Get<1>()};
     return result;
@@ -167,6 +174,7 @@ class ExternallyManagedInstallCommandTest : public WebAppTest {
  private:
   base::flat_map<AppId, BitmapData> app_to_icons_data_;
   raw_ptr<TestShortcutManager> shortcut_manager_;
+  std::unique_ptr<TestWebAppUrlLoader> url_loader_;
 };
 
 TEST_F(ExternallyManagedInstallCommandTest, Success) {
@@ -178,6 +186,22 @@ TEST_F(ExternallyManagedInstallCommandTest, Success) {
   data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
 
   auto result = InstallAndWait(install_options, std::move(data_retriever));
+  EXPECT_EQ(result.install_code,
+            webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(
+      result.installed_app_id));
+}
+
+TEST_F(ExternallyManagedInstallCommandTest, SuccessWithoutWebLoader) {
+  ExternalInstallOptions install_options(
+      kWebAppUrl, mojom::UserDisplayMode::kStandalone,
+      ExternalInstallSource::kExternalDefault);
+
+  auto data_retriever = std::make_unique<FakeDataRetriever>();
+  data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
+
+  auto result = InstallAndWait(install_options, std::move(data_retriever),
+                               /*use_url_loader = */ false);
   EXPECT_EQ(result.install_code,
             webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(
@@ -294,6 +318,9 @@ TEST_F(ExternallyManagedInstallCommandTest, UpgradeLock) {
   auto data_retriever = std::make_unique<FakeDataRetriever>();
   data_retriever->BuildDefaultDataToRetrieve(kWebAppUrl, kWebAppScope);
 
+  auto web_app_url_loader = std::make_unique<TestWebAppUrlLoader>();
+  web_app_url_loader->SetPrepareForLoadResultLoaded();
+
   base::flat_set<AppId> app_ids{
       GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl)};
 
@@ -323,7 +350,8 @@ TEST_F(ExternallyManagedInstallCommandTest, UpgradeLock) {
         result.installed_app_id = app_id;
         run_loop.Quit();
       }),
-      web_contents()->GetWeakPtr(), std::move(data_retriever));
+      web_contents()->GetWeakPtr(), std::move(data_retriever),
+      web_app_url_loader.get());
 
   // Schedules another callback command that acquires the same app lock after
   // current command upgrades to app lock.

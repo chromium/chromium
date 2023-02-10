@@ -103,7 +103,8 @@ class WebAppCommandScheduler {
                               webapps::InstallResultCode code,
                               bool did_uninstall_and_replace)> install_callback,
       base::WeakPtr<content::WebContents> contents,
-      std::unique_ptr<WebAppDataRetriever> data_retriever);
+      std::unique_ptr<WebAppDataRetriever> data_retriever,
+      WebAppUrlLoader* web_app_url_loader);
 
   // Install a placeholder app, this is used during externally managed install
   // flow when url load fails.

@@ -245,7 +245,7 @@ void ExternallyManagedAppInstallTask::ContinueWebAppInstall(
           weak_ptr_factory_.GetWeakPtr(),
           /*is_placeholder=*/false,
           /*offline_install=*/false, std::move(result_callback)),
-      web_contents->GetWeakPtr(), data_retriever_factory_.Run());
+      web_contents->GetWeakPtr(), data_retriever_factory_.Run(), url_loader_);
 }
 
 void ExternallyManagedAppInstallTask::InstallPlaceholder(

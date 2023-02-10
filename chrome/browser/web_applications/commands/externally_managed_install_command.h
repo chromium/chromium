@@ -35,19 +35,28 @@ class NoopLock;
 class NoopLockDescription;
 class WebAppDataRetriever;
 
-// Command to install web_apps from param by the ExternallyInstalledAppsManager
+// Command to install web_apps from param by the ExternallyInstalledAppsManager.
+// After loading the install-URL and retrieving all necessary information from
+// that page, the WebContent will be navigated to about:blank. Otherwise,
+// subsequent icon fetching might get interrupted by navigations that got
+// started via HTML or javascript on the install-URL page.
 class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
  public:
   using InstallAndReplaceCallback =
       base::OnceCallback<void(const AppId& app_id,
                               webapps::InstallResultCode code,
                               bool did_uninstall_and_replace)>;
+
+  // web_app_url_loader can be nullptr. In that case there will be no navigation
+  // to about::blank before retrieving the icons. This might cause the icon
+  // fetching to be interrupted by navigations on the web page.
   ExternallyManagedInstallCommand(
       Profile* profile,
       const ExternalInstallOptions& external_install_options,
       InstallAndReplaceCallback callback,
       base::WeakPtr<content::WebContents> contents,
-      std::unique_ptr<WebAppDataRetriever> data_retriever);
+      std::unique_ptr<WebAppDataRetriever> data_retriever,
+      WebAppUrlLoader* web_app_url_loader);
   ~ExternallyManagedInstallCommand() override;
 
   // WebAppCommandTemplate<NoopLock>:
@@ -68,6 +77,9 @@ class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
                                     const GURL& manifest_url,
                                     bool valid_manifest_for_web_app,
                                     webapps::InstallableStatusCode error_code);
+  void OnPreparedForIconRetrieving(base::flat_set<GURL> icon_urls,
+                                   const bool& skip_page_favicons,
+                                   WebAppUrlLoaderResult result);
   void OnIconsRetrievedUpgradeLockDescription(
       IconsDownloadedResult result,
       IconsMap icons_map,
@@ -102,6 +114,7 @@ class ExternallyManagedInstallCommand : public WebAppCommandTemplate<NoopLock> {
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
+  const raw_ptr<WebAppUrlLoader, DanglingUntriaged> web_app_url_loader_;
 
   absl::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
 

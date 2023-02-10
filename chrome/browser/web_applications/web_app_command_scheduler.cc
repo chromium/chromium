@@ -174,7 +174,8 @@ void WebAppCommandScheduler::InstallExternallyManagedApp(
                             webapps::InstallResultCode code,
                             bool did_uninstall_and_replace)> install_callback,
     base::WeakPtr<content::WebContents> contents,
-    std::unique_ptr<WebAppDataRetriever> data_retriever) {
+    std::unique_ptr<WebAppDataRetriever> data_retriever,
+    WebAppUrlLoader* web_app_url_loader) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -188,7 +189,8 @@ void WebAppCommandScheduler::InstallExternallyManagedApp(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ExternallyManagedInstallCommand>(
           &profile_.get(), external_install_options,
-          std::move(install_callback), contents, std::move(data_retriever)));
+          std::move(install_callback), contents, std::move(data_retriever),
+          web_app_url_loader));
 }
 
 void WebAppCommandScheduler::InstallPlaceholder(

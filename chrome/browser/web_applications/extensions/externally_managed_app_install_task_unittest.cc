@@ -402,7 +402,10 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
   const GURL kWebAppUrl("https://foo.example");
   auto task = GetInstallationTaskWithTestMocks(
       {kWebAppUrl, absl::nullopt, ExternalInstallSource::kInternalDefault});
-  url_loader().SetPrepareForLoadResultLoaded();
+  // PrepareForLoad happens twice: once for the URL, once before retrieving the
+  // icons.
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
@@ -441,7 +444,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallFails) {
       {kWebAppUrl, mojom::UserDisplayMode::kStandalone,
        ExternalInstallSource::kInternalDefault},
       /*mock_empty_web_app_info=*/true);
-  url_loader().SetPrepareForLoadResultLoaded();
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
@@ -472,7 +476,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallForcedContainerWindow) {
       ExternalInstallOptions(kWebAppUrl, mojom::UserDisplayMode::kStandalone,
                              ExternalInstallSource::kInternalDefault);
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
-  url_loader().SetPrepareForLoadResultLoaded();
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
@@ -497,7 +502,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallForcedContainerTab) {
       ExternalInstallOptions(kWebAppUrl, mojom::UserDisplayMode::kBrowser,
                              ExternalInstallSource::kInternalDefault);
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
-  url_loader().SetPrepareForLoadResultLoaded();
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
@@ -521,7 +527,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallPreinstalledApp) {
   auto install_options = ExternalInstallOptions(
       kWebAppUrl, absl::nullopt, ExternalInstallSource::kInternalDefault);
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
-  url_loader().SetPrepareForLoadResultLoaded();
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
@@ -546,7 +553,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallAppFromPolicy) {
   auto install_options = ExternalInstallOptions(
       kWebAppUrl, absl::nullopt, ExternalInstallSource::kExternalPolicy);
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
-  url_loader().SetPrepareForLoadResultLoaded();
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
@@ -694,7 +702,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
   auto task = GetInstallationTaskWithTestMocks(options);
   finalizer()->SetNextUninstallExternalWebAppResult(
       kWebAppUrl, webapps::UninstallResultCode::kSuccess);
-  url_loader().SetPrepareForLoadResultLoaded();
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
@@ -755,7 +764,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
 
   finalizer()->SetNextUninstallExternalWebAppResult(
       kWebAppUrl, webapps::UninstallResultCode::kError);
-  url_loader().SetPrepareForLoadResultLoaded();
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
@@ -792,7 +802,8 @@ TEST_P(ExternallyManagedAppInstallTaskTest, InstallPlaceholderCustomName) {
   options.install_placeholder = true;
   options.override_name = kCustomName;
   auto task = GetInstallationTaskWithTestMocks(std::move(options));
-  url_loader().SetPrepareForLoadResultLoaded();
+  url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
+                                         WebAppUrlLoader::Result::kUrlLoaded});
   url_loader().SetNextLoadUrlResult(
       kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
@@ -826,7 +837,9 @@ TEST_P(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
 
     base::RunLoop run_loop;
     auto task = GetInstallationTaskWithTestMocks(options);
-    url_loader().SetPrepareForLoadResultLoaded();
+    url_loader().AddPrepareForLoadResults(
+        {WebAppUrlLoader::Result::kUrlLoaded,
+         WebAppUrlLoader::Result::kUrlLoaded});
     url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                       WebAppUrlLoader::Result::kUrlLoaded);
 
@@ -851,7 +864,9 @@ TEST_P(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
 
     base::RunLoop run_loop;
     auto task = GetInstallationTaskWithTestMocks(options);
-    url_loader().SetPrepareForLoadResultLoaded();
+    url_loader().AddPrepareForLoadResults(
+        {WebAppUrlLoader::Result::kUrlLoaded,
+         WebAppUrlLoader::Result::kUrlLoaded});
     url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                       WebAppUrlLoader::Result::kUrlLoaded);
 
