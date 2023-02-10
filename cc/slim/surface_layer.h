@@ -44,6 +44,8 @@ class COMPONENT_EXPORT(CC_SLIM) SurfaceLayer : public Layer {
   void SetOldestAcceptableFallback(const viz::SurfaceId& surface_id);
   const absl::optional<viz::SurfaceId>& oldest_acceptable_fallback() const;
 
+  void SetLayerTree(LayerTree* layer_tree) override;
+
  private:
   explicit SurfaceLayer(scoped_refptr<cc::SurfaceLayer> cc_layer);
   ~SurfaceLayer() override;

@@ -126,8 +126,10 @@ void LayerTreeImpl::SetRoot(scoped_refptr<Layer> root) {
     root_->SetLayerTree(nullptr);
   }
   root_ = std::move(root);
-  root_->SetLayerTree(this);
-  SetNeedsDraw();
+  if (root_) {
+    root_->SetLayerTree(this);
+    SetNeedsDraw();
+  }
 }
 
 void LayerTreeImpl::SetFrameSink(std::unique_ptr<FrameSink> sink) {
@@ -211,6 +213,18 @@ void LayerTreeImpl::NotifyTreeChanged() {
 
 void LayerTreeImpl::NotifyPropertyChanged() {
   SetNeedsDraw();
+}
+
+void LayerTreeImpl::AddSurfaceRange(const viz::SurfaceRange& range) {
+  DCHECK(range.IsValid());
+  DCHECK(!referenced_surfaces_.contains(range));
+  referenced_surfaces_.insert(range);
+}
+
+void LayerTreeImpl::RemoveSurfaceRange(const viz::SurfaceRange& range) {
+  DCHECK(range.IsValid());
+  DCHECK(referenced_surfaces_.contains(range));
+  referenced_surfaces_.erase(range);
 }
 
 void LayerTreeImpl::MaybeRequestFrameSink() {

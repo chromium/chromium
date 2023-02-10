@@ -9,6 +9,7 @@
 
 #include "cc/layers/surface_layer.h"
 #include "cc/slim/features.h"
+#include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -113,12 +114,35 @@ const absl::optional<viz::SurfaceId>& SurfaceLayer::oldest_acceptable_fallback()
                     : surface_range_.start();
 }
 
+void SurfaceLayer::SetLayerTree(LayerTree* tree) {
+  if (cc_layer()) {
+    Layer::SetLayerTree(tree);
+    return;
+  }
+
+  if (layer_tree() && surface_range_.IsValid()) {
+    static_cast<LayerTreeImpl*>(layer_tree())
+        ->RemoveSurfaceRange(surface_range_);
+  }
+  Layer::SetLayerTree(tree);
+  if (layer_tree() && surface_range_.IsValid()) {
+    static_cast<LayerTreeImpl*>(layer_tree())->AddSurfaceRange(surface_range_);
+  }
+}
+
 void SurfaceLayer::SetSurfaceRange(const viz::SurfaceRange& surface_range) {
   DCHECK(!cc_layer());
   if (surface_range_ == surface_range) {
     return;
   }
+  if (layer_tree() && surface_range_.IsValid()) {
+    static_cast<LayerTreeImpl*>(layer_tree())
+        ->RemoveSurfaceRange(surface_range_);
+  }
   surface_range_ = surface_range;
+  if (layer_tree() && surface_range_.IsValid()) {
+    static_cast<LayerTreeImpl*>(layer_tree())->AddSurfaceRange(surface_range_);
+  }
   NotifyPropertyChanged();
 }
 

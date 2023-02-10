@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -82,6 +83,8 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   // Internal methods called by Layers.
   void NotifyTreeChanged();
   void NotifyPropertyChanged();
+  void AddSurfaceRange(const viz::SurfaceRange& range);
+  void RemoveSurfaceRange(const viz::SurfaceRange& range);
 
  private:
   friend class LayerTree;
@@ -128,6 +131,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   float device_scale_factor_ = 1.0f;
   SkColor4f background_color_ = SkColors::kWhite;
   absl::optional<float> top_controls_visible_height_;
+  base::flat_set<viz::SurfaceRange> referenced_surfaces_;
 
   base::WeakPtrFactory<LayerTreeImpl> weak_factory_{this};
 };

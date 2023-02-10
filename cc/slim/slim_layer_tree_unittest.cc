@@ -11,10 +11,13 @@
 #include "base/unguessable_token.h"
 #include "cc/slim/features.h"
 #include "cc/slim/layer.h"
+#include "cc/slim/surface_layer.h"
 #include "cc/slim/test_frame_sink_impl.h"
 #include "cc/slim/test_layer_tree_client.h"
 #include "cc/slim/test_layer_tree_impl.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "components/viz/common/surfaces/surface_id.h"
+#include "components/viz/common/surfaces/surface_range.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/overlay_transform.h"
@@ -204,6 +207,31 @@ TEST_F(SlimLayerTreeTest, DeferBeginFrame) {
   std::move(defer_runnable).Run();
   EXPECT_TRUE(layer_tree_->NeedsBeginFrames());
   EXPECT_TRUE(weak_frame_sink->needs_begin_frames());
+}
+
+TEST_F(SlimLayerTreeTest, ReferencedSurfaceRange) {
+  scoped_refptr<SurfaceLayer> layer = SurfaceLayer::Create();
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  viz::SurfaceId start(viz::FrameSinkId(1u, 2u),
+                       viz::LocalSurfaceId(3u, 4u, token));
+  viz::SurfaceId end(viz::FrameSinkId(1u, 2u),
+                     viz::LocalSurfaceId(5u, 6u, token));
+  layer->SetOldestAcceptableFallback(start);
+  layer->SetSurfaceId(end, cc::DeadlinePolicy::UseDefaultDeadline());
+
+  layer_tree_->SetRoot(layer);
+  EXPECT_EQ(layer_tree_->referenced_surfaces(),
+            base::flat_set<viz::SurfaceRange>{viz::SurfaceRange(start, end)});
+
+  viz::SurfaceId new_end(viz::FrameSinkId(1u, 2u),
+                         viz::LocalSurfaceId(7u, 8u, token));
+  layer->SetSurfaceId(new_end, cc::DeadlinePolicy::UseDefaultDeadline());
+  EXPECT_EQ(layer_tree_->referenced_surfaces(),
+            std::vector<viz::SurfaceRange>{viz::SurfaceRange(start, new_end)});
+
+  layer_tree_->SetRoot(nullptr);
+  EXPECT_EQ(layer_tree_->referenced_surfaces(),
+            std::vector<viz::SurfaceRange>());
 }
 
 }  // namespace
