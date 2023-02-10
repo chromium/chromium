@@ -8,16 +8,15 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/input/boundary_event_dispatcher.h"
 #include "third_party/blink/renderer/core/input/touch_event_manager.h"
-#include "third_party/blink/renderer/core/page/touch_adjustment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace blink {
 
 class LocalFrame;
 class MouseEventManager;
-class GestureManager;
 class WebPointerProperties;
 
 // This class takes care of dispatching all pointer events and keeps track of
@@ -109,8 +108,6 @@ class CORE_EXPORT PointerEventManager final
   // it also clears any state that might have kept since the last call to this
   // function.
   WebInputEventResult FlushEvents();
-
-  void SetGestureManager(GestureManager* gesture_manager);
 
   // Returns the id of the pointer event corresponding to the given pointer
   // properties if exists otherwise s_invalidId.
@@ -302,8 +299,6 @@ class CORE_EXPORT PointerEventManager final
   // main thread, or all events (touch start/end/move).
   bool skip_touch_filter_discrete_ = false;
   bool skip_touch_filter_all_ = false;
-
-  Member<GestureManager> gesture_manager_;
 
   WeakMember<Scrollbar> captured_scrollbar_;
 };
