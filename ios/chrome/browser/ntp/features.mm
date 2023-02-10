@@ -24,6 +24,10 @@ BASE_FEATURE(kEnableFeedBackgroundRefresh,
              "EnableFeedBackgroundRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableFeedForegroundRefresh,
+             "EnableFeedForegroundRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCreateDiscoverFeedServiceEarly,
              "CreateDiscoverFeedServiceEarly",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -65,6 +69,11 @@ const char kBackgroundRefreshIntervalInSeconds[] =
     "BackgroundRefreshIntervalInSeconds";
 const char kBackgroundRefreshMaxAgeInSeconds[] =
     "BackgroundRefreshMaxAgeInSeconds";
+
+const char kEnableFeedRefreshPostFeedSession[] =
+    "EnableFeedRefreshPostFeedSession";
+const char kEnableFeedRefreshOnAppBackgrounding[] =
+    "EnableFeedRefreshOnAppBackgrounding";
 
 bool IsWebChannelsEnabled() {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
@@ -177,6 +186,18 @@ double GetBackgroundRefreshMaxAgeInSeconds() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kEnableFeedBackgroundRefresh, kBackgroundRefreshMaxAgeInSeconds,
       /*default=*/0);
+}
+
+bool IsFeedRefreshPostFeedSessionEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kEnableFeedForegroundRefresh, kEnableFeedRefreshPostFeedSession,
+      /*default=*/false);
+}
+
+bool IsFeedRefreshOnAppBackgroundingEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kEnableFeedForegroundRefresh, kEnableFeedRefreshOnAppBackgrounding,
+      /*default=*/false);
 }
 
 bool IsFeedBottomSignInPromoEnabled() {
