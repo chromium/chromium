@@ -8,23 +8,21 @@
 #include <string>
 
 #include "base/functional/bind.h"
-#include "base/i18n/case_conversion.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -40,15 +38,6 @@
 namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
-
-// Returns the current site pointed by `web_contents`. This method should only
-// be called when web contents are present.
-std::u16string GetCurrentSite(content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  const GURL& url = web_contents->GetLastCommittedURL();
-  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-      url);
-}
 
 // Updates the `toggle_button` text based on its state.
 void UpdateSiteSettingToggleText(views::ToggleButton* toggle_button) {
@@ -174,7 +163,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               .SetTextStyle(views::style::STYLE_SECONDARY),
                           views::Builder<views::Label>()
                               .CopyAddressTo(&subheader_subtitle_)
-                              .SetText(GetCurrentSite(web_contents))
+                              .SetText(GetCurrentHost(web_contents))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                               .SetTextContext(views::style::CONTEXT_LABEL)
                               .SetTextStyle(views::style::STYLE_SECONDARY)
@@ -246,7 +235,7 @@ void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
 void ExtensionsMenuMainPageView::Update(content::WebContents* web_contents) {
   DCHECK(web_contents);
 
-  subheader_subtitle_->SetText(GetCurrentSite(web_contents));
+  subheader_subtitle_->SetText(GetCurrentHost(web_contents));
 
   site_settings_toggle_->SetVisible(
       IsSiteSettingsToggleVisible(toolbar_model_, web_contents));
