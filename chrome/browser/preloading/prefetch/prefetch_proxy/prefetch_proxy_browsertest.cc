@@ -2460,10 +2460,9 @@ class SSLReportingPrefetchProxyBrowserTest : public PrefetchProxyBrowserTest {
   void SetFeatures() override {
     // Important: Features with parameters can't be used here, because it will
     // cause a failed DCHECK in the SSL reporting test.
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIsolatePrerenders,
-         blink::features::kSpeculationRulesPrefetchProxy},
-        {});
+    scoped_feature_list_.InitFromCommandLine(
+        "IsolatePrerenders,SpeculationRulesPrefetchProxy",
+        "PrefetchUseContentRefactor");
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -4097,14 +4096,11 @@ class SpeculationPrefetchProxyTest : public PrefetchProxyBrowserTest {
   }
 
   void SetFeatures() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kIsolatePrerenders,
-          {{"use_speculation_rules", "true"},
-           {"max_srp_prefetches", "3"},
-           {"max_subresource_count_per_prerender", "50"}}},
-         {blink::features::kLightweightNoStatePrefetch, {}},
-         {blink::features::kSpeculationRulesPrefetchProxy, {}}},
-        {{features::kLazyImageLoading}});
+    scoped_feature_list_.InitFromCommandLine(
+        "IsolatePrerenders:use_speculation_rules/true/max_srp_prefetches/4/"
+        "max_subresource_count_per_prerender/"
+        "50,LightweightNoStatePrefetch,SpeculationRulesPrefetchProxy",
+        "PrefetchUseContentRefactor,LazyImageLoading");
   }
 
  private:
@@ -4398,6 +4394,12 @@ class PrefetchProxyPrerenderBrowserTest : public PrefetchProxyBrowserTest {
   PrefetchProxyPrerenderBrowserTest& operator=(
       const PrefetchProxyPrerenderBrowserTest&) = delete;
 
+  void SetFeatures() override {
+    scoped_feature_list_.InitFromCommandLine(
+        "IsolatePrerenders:use_speculation_rules/false/max_srp_prefetches/1",
+        "PrefetchUseContentRefactor");
+  }
+
   void SetUpOnMainThread() override {
     prerender_test_helper_->SetUp(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -4426,6 +4428,7 @@ class PrefetchProxyPrerenderBrowserTest : public PrefetchProxyBrowserTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<content::test::PrerenderTestHelper> prerender_test_helper_;
 };
 
@@ -4723,17 +4726,11 @@ class SpeculationOnlyPrivatePrefetchesPrefetchProxyTest
     : public PrefetchProxyBrowserTest {
  public:
   void SetFeatures() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kIsolatePrerenders,
-          {
-              {"use_speculation_rules", "true"},
-              {"max_srp_prefetches", "3"},
-              {"use_individual_network_contexts", "true"},
-              {"support_non_private_prefetches", "false"},
-          }},
-         {blink::features::kLightweightNoStatePrefetch, {}},
-         {blink::features::kSpeculationRulesPrefetchProxy, {}}},
-        {{features::kLazyImageLoading}});
+    scoped_feature_list_.InitFromCommandLine(
+        "IsolatePrerenders:use_speculation_rules/true/max_srp_prefetches/3/"
+        "use_individual_network_contexts/true/support_non_private_prefetches/"
+        "false,LightweightNoStatePrefetch,SpeculationRulesPrefetchProxy",
+        "PrefetchUseContentRefactor,LazyImageLoading");
   }
 
  private:
@@ -4777,17 +4774,11 @@ class SpeculationNonPrivatePrefetchesPrefetchProxyTest
     : public PrefetchProxyBrowserTest {
  public:
   void SetFeatures() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kIsolatePrerenders,
-          {
-              {"use_speculation_rules", "true"},
-              {"max_srp_prefetches", "3"},
-              {"use_individual_network_contexts", "true"},
-              {"support_non_private_prefetches", "true"},
-          }},
-         {blink::features::kLightweightNoStatePrefetch, {}},
-         {blink::features::kSpeculationRulesPrefetchProxy, {}}},
-        {{features::kLazyImageLoading}});
+    scoped_feature_list_.InitFromCommandLine(
+        "IsolatePrerenders:use_speculation_rules/true/max_srp_prefetches/3/"
+        "use_individual_network_contexts/true/support_non_private_prefetches/"
+        "true,LightweightNoStatePrefetch,SpeculationRulesPrefetchProxy",
+        "PrefetchUseContentRefactor,LazyImageLoading");
   }
 
  private:
