@@ -2501,8 +2501,8 @@ void WebAppIntegrationTestDriver::CheckFilesLoadedInSite(
         continue;
       }
 
-      const static std::string kFooHandler  = "foo_handler.html";
-      const static std::string kBarHandler  = "bar_handler.html";
+      static const std::string kFooHandler = "foo_handler.html";
+      static const std::string kBarHandler = "bar_handler.html";
       AppId app_id = *WebAppTabHelper::GetAppId(web_contents);
       std::string url_str = web_contents->GetURL().spec();
 
@@ -2828,7 +2828,9 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayMinimal() {
   if (!BeforeStateCheckAction(__FUNCTION__))
     return;
   DCHECK(app_browser());
-  DCHECK(app_browser()->app_controller()->AsWebAppBrowserController());
+  web_app::AppBrowserController* app_controller =
+      app_browser()->app_controller();
+  DCHECK(app_controller->AsWebAppBrowserController());
   absl::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
@@ -2839,10 +2841,40 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayMinimal() {
   DisplayMode window_display_mode =
       web_contents->GetDelegate()->GetDisplayMode(web_contents);
 
-  EXPECT_TRUE(app_browser()->app_controller()->HasMinimalUiButtons());
+  EXPECT_TRUE(app_controller->HasMinimalUiButtons());
+  EXPECT_FALSE(app_controller->AppUsesTabbed());
+
   EXPECT_EQ(app_state->effective_display_mode,
             blink::mojom::DisplayMode::kMinimalUi);
   EXPECT_EQ(window_display_mode, blink::mojom::DisplayMode::kMinimalUi);
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckWindowDisplayTabbed() {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  DCHECK(app_browser());
+
+  web_app::AppBrowserController* app_controller =
+      app_browser()->app_controller();
+  DCHECK(app_controller->AsWebAppBrowserController());
+  absl::optional<AppState> app_state = GetStateForAppId(
+      after_state_change_action_state_.get(), profile(), active_app_id_);
+  ASSERT_TRUE(app_state.has_value());
+
+  content::WebContents* web_contents =
+      app_browser()->tab_strip_model()->GetActiveWebContents();
+  DCHECK(web_contents);
+  DisplayMode window_display_mode =
+      web_contents->GetDelegate()->GetDisplayMode(web_contents);
+
+  EXPECT_FALSE(app_controller->HasMinimalUiButtons());
+  EXPECT_TRUE(app_controller->AppUsesTabbed());
+
+  EXPECT_EQ(app_state->effective_display_mode,
+            blink::mojom::DisplayMode::kTabbed);
+  EXPECT_EQ(window_display_mode, blink::mojom::DisplayMode::kTabbed);
   AfterStateCheckAction();
 }
 
@@ -2850,7 +2882,10 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayStandalone() {
   if (!BeforeStateCheckAction(__FUNCTION__))
     return;
   DCHECK(app_browser());
-  DCHECK(app_browser()->app_controller()->AsWebAppBrowserController());
+
+  web_app::AppBrowserController* app_controller =
+      app_browser()->app_controller();
+  DCHECK(app_controller->AsWebAppBrowserController());
   absl::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
   ASSERT_TRUE(app_state.has_value());
@@ -2861,7 +2896,9 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayStandalone() {
   DisplayMode window_display_mode =
       web_contents->GetDelegate()->GetDisplayMode(web_contents);
 
-  EXPECT_FALSE(app_browser()->app_controller()->HasMinimalUiButtons());
+  EXPECT_FALSE(app_controller->HasMinimalUiButtons());
+  EXPECT_FALSE(app_controller->AppUsesTabbed());
+
   EXPECT_EQ(app_state->effective_display_mode,
             blink::mojom::DisplayMode::kStandalone);
   EXPECT_EQ(window_display_mode, blink::mojom::DisplayMode::kStandalone);
@@ -3634,6 +3671,8 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kDesktopPWAsEnforceWebAppSettingsPolicy);
   enabled_features.push_back(features::kRecordWebAppDebugInfo);
   enabled_features.push_back(blink::features::kDesktopPWAsSubApps);
+  enabled_features.push_back(features::kDesktopPWAsTabStrip);
+  enabled_features.push_back(features::kDesktopPWAsTabStripSettings);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   disabled_features.push_back(features::kWebAppsCrosapi);
   disabled_features.push_back(ash::features::kLacrosPrimary);

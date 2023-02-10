@@ -24,6 +24,7 @@ check_window_closed,                                   🌕, 🌕,  🌕,   🌕
 check_window_created,                                  🌕, 🌕,  🌕,   🌕,
 check_window_not_created,                              🌕, 🌕,  🌕,   🌕,
 check_window_display_minimal,                          🌕, 🌕,  🌕,   🌕,
+check_window_display_tabbed,                           🌕, 🌕,  🌕,   🌕,
 check_window_display_standalone,                       🌕, 🌕,  🌕,   🌕,
 check_window_controls_overlay,                         🌕, 🌕,  🌕,   🌕,
 check_window_controls_overlay_toggle,                  🌕, 🌕,  🌕,   🌕,

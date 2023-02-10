@@ -353,6 +353,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckWindowControlsOverlayToggle(Site site, IsShown is_shown);
   void CheckWindowDisplayBrowser();
   void CheckWindowDisplayMinimal();
+  void CheckWindowDisplayTabbed();
   void CheckWindowDisplayStandalone();
   void CheckNotHasSubApp(Site subapp);
   void CheckHasSubApp(Site subapp);
