@@ -17,6 +17,7 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/content_script_injection_url_getter.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_urls.h"
@@ -41,8 +42,7 @@ namespace extensions {
 
 namespace {
 
-class RendererContextData
-    : public ContentScriptInjectionUrlGetter::ContextData {
+class RendererContextData : public ContextData {
  public:
   explicit RendererContextData(const blink::WebLocalFrame* frame)
       : frame_(frame) {}

@@ -27,6 +27,7 @@
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/content_script_injection_url_getter.h"
+#include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -137,7 +138,7 @@ class RenderProcessHostUserData : public base::SupportsUserData::Data {
 const char* RenderProcessHostUserData::kUserDataKey =
     "ContentScriptTracker's data";
 
-class BrowserContextData : public ContentScriptInjectionUrlGetter::ContextData {
+class BrowserContextData : public ContextData {
  public:
   explicit BrowserContextData(content::RenderFrameHost* frame)
       : frame_(frame) {}

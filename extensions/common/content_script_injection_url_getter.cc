@@ -12,8 +12,6 @@
 
 namespace extensions {
 
-ContentScriptInjectionUrlGetter::ContextData::~ContextData() = default;
-
 // static
 GURL ContentScriptInjectionUrlGetter::Get(
     const ContextData& context_data,
