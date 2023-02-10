@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.components.browser_ui.site_settings.WebsiteAddress.ANY_SUBDOMAIN_PATTERN;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
 import android.util.Pair;
@@ -320,8 +321,8 @@ public class WebsitePermissionsFetcher {
         }
 
         private Website findOrCreateSite(String origin, String embedder) {
-            // Ensure that the origin parameter is actually an origin and not a host.
-            assert origin.equals(SITE_WILDCARD) || origin.contains(SCHEME_SUFFIX);
+            // Ensure that the origin parameter is actually an origin or a wildcard.
+            assert containsPatternWildcards(origin) || origin.contains(SCHEME_SUFFIX);
 
             // This allows us to show multiple entries in "All sites" for the same origin, based on
             // the (origin, embedder) combination. For example, "cnn.com", "cnn.com all cookies on
@@ -357,7 +358,7 @@ public class WebsitePermissionsFetcher {
                     continue;
                 }
                 // Convert the address to origin, if it's not one already (unless it's a wildcard).
-                String origin = address.equals(SITE_WILDCARD)
+                String origin = containsPatternWildcards(address)
                         ? address
                         : WebsiteAddress.create(address).getOrigin();
                 Website site = findOrCreateSite(origin, embedder);
@@ -585,5 +586,9 @@ public class WebsitePermissionsFetcher {
     public void setWebsitePreferenceBridgeForTesting(
             WebsitePreferenceBridge websitePreferenceBridge) {
         mWebsitePreferenceBridge = websitePreferenceBridge;
+    }
+
+    private static boolean containsPatternWildcards(String origin) {
+        return origin.equals(SITE_WILDCARD) || origin.startsWith(ANY_SUBDOMAIN_PATTERN);
     }
 }
