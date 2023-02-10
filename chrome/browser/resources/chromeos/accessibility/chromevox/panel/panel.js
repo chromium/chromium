@@ -320,13 +320,14 @@ export class Panel extends PanelInterface {
 
       // Build the top-level menus.
       const searchMenu = this.addSearchMenu_('panel_search_menu');
-      const jumpMenu = this.addMenu_('panel_menu_jump');
-      const speechMenu = this.addMenu_('panel_menu_speech');
-      const touchMenu =
-          touchScreen ? this.addMenu_('panel_menu_touchgestures') : null;
-      const tabsMenu = this.addMenu_('panel_menu_tabs');
-      const chromevoxMenu = this.addMenu_('panel_menu_chromevox');
-      const actionsMenu = this.addMenu_('panel_menu_actions');
+      const jumpMenu = this.menuManager_.addMenu('panel_menu_jump');
+      const speechMenu = this.menuManager_.addMenu('panel_menu_speech');
+      const touchMenu = touchScreen ?
+          this.menuManager_.addMenu('panel_menu_touchgestures') :
+          null;
+      const tabsMenu = this.menuManager_.addMenu('panel_menu_tabs');
+      const chromevoxMenu = this.menuManager_.addMenu('panel_menu_chromevox');
+      const actionsMenu = this.menuManager_.addMenu('panel_menu_actions');
 
       // Add a menu item that opens the full list of ChromeBook keyboard
       // shortcuts. We want this to be at the top of the ChromeVox menu.
@@ -540,28 +541,6 @@ export class Panel extends PanelInterface {
     this.pendingCallback_ = null;
     this.updateFromPrefs_();
     await ISearchUI.init(this.searchInput_);
-  }
-
-  /**
-   * Create a new menu with the given name and add it to the menu bar.
-   * @param {string} menuMsg The msg id of the new menu to add.
-   * @return {!PanelMenu} The menu just created.
-   * @private
-   */
-  addMenu_(menuMsg) {
-    const menu = new PanelMenu(menuMsg);
-    $('menu-bar').appendChild(menu.menuBarItemElement);
-    menu.menuBarItemElement.addEventListener(
-        'mouseover',
-        () =>
-            this.menuManager_.activateMenu(menu, true /* activateFirstItem */),
-        false);
-    menu.menuBarItemElement.addEventListener(
-        'mouseup', event => this.menuManager_.onMouseUpOnMenuTitle(menu, event),
-        false);
-    $('menus_background').appendChild(menu.menuContainerElement);
-    this.menuManager_.menus.push(menu);
-    return menu;
   }
 
   /**

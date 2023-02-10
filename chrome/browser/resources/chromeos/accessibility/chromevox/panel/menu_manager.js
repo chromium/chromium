@@ -57,6 +57,23 @@ export class MenuManager {
     }
   }
 
+  /**
+   * Create a new menu with the given name and add it to the menu bar.
+   * @param {string} menuMsg The msg id of the new menu to add.
+   * @return {!PanelMenu} The menu just created.
+   */
+  addMenu(menuMsg) {
+    const menu = new PanelMenu(menuMsg);
+    $('menu-bar').appendChild(menu.menuBarItemElement);
+    menu.menuBarItemElement.addEventListener(
+        'mouseover',
+        () => this.activateMenu(menu, true /* activateFirstItem */), false);
+    menu.menuBarItemElement.addEventListener(
+        'mouseup', event => this.onMouseUpOnMenuTitle(menu, event), false);
+    $('menus_background').appendChild(menu.menuContainerElement);
+    this.menus_.push(menu);
+    return menu;
+  }
 
   /**
    * Clear any previous menus. The menus are all regenerated each time the
