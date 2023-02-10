@@ -357,6 +357,7 @@ group("gn_all") {
       "//build/android/gyp/test:hello_world",
       "//build/android/stacktrace:java_deobfuscate",
       "//build/config/android/test/proto:test_build_protos",
+      "//build/private_code_test:private_paths",
       "//chrome/android/monochrome:monochrome_public_apk_checker",
       "//chrome/android/webapk/shell_apk:maps_go_webapk",
       "//chrome/android/webapk/shell_apk:webapk",

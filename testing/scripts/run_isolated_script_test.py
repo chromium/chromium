@@ -57,6 +57,10 @@ KNOWN_TYP_VPYTHON3_TEST_RUNNERS = {
 
 # pylint: disable=super-with-arguments
 
+class BareScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
+  pass
+
+
 class IsolatedScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
   def generate_sharding_args(self, total_shards, shard_index):
     # This script only uses environment variable for sharding.
@@ -122,10 +126,23 @@ class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
 
 
 def main():
-  if any(r in sys.argv[1] for r in KNOWN_ISOLATED_SCRIPT_TEST_RUNNERS):
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--script-type', choices=['isolated', 'typ', 'bare'])
+  args, _ = parser.parse_known_args()
+
+  kind = args.script_type
+  if not kind:
+    if any(r in sys.argv[1] for r in KNOWN_ISOLATED_SCRIPT_TEST_RUNNERS):
+      kind = 'isolated'
+    else:
+      kind = 'typ'
+
+  if kind == 'isolated':
     adapter = IsolatedScriptTestAdapter()
-  else:
+  elif kind == 'typ':
     adapter = TypUnittestAdapter()
+  else:
+    adapter = BareScriptTestAdapter()
   return adapter.run_test()
 
 # This is not really a "script test" so does not need to manually add

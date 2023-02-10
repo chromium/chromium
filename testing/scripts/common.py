@@ -13,6 +13,7 @@ import platform
 import subprocess
 import sys
 import tempfile
+import time
 import traceback
 
 logging.basicConfig(level=logging.INFO)
@@ -309,7 +310,7 @@ def extract_filter_list(filter_list):
   return filter_list.split('::')
 
 
-class BaseIsolatedScriptArgsAdapter(object):
+class BaseIsolatedScriptArgsAdapter:
   """The base class for all script adapters that need to translate flags
   set by isolated script test contract into the specific test script's flags.
   """
@@ -318,6 +319,7 @@ class BaseIsolatedScriptArgsAdapter(object):
     self._parser = argparse.ArgumentParser()
     self._options = None
     self._rest_args = None
+    self._script_writes_output_json = None
     self._parser.add_argument(
         '--isolated-outdir', type=str,
         required=False,
@@ -343,13 +345,16 @@ class BaseIsolatedScriptArgsAdapter(object):
         '--xvfb',
         help='start xvfb. Ignored on unsupported platforms',
         action='store_true')
-
-    # This argument is ignored for now.
+    # Used to create the correct subclass.
     self._parser.add_argument(
-        '--isolated-script-test-chartjson-output', type=str)
-    # This argument is ignored for now.
-    self._parser.add_argument('--isolated-script-test-perf-output',
-        type=os.path.abspath)
+        '--script-type', choices=['isolated', 'typ', 'bare'],
+        help='Which script adapter to use')
+
+    # Arguments that are ignored, but added here because it's easier to ignore
+    # them to to update bot configs to not pass them.
+    self._parser.add_argument('--avd-config')
+    self._parser.add_argument('--isolated-script-test-chartjson-output')
+    self._parser.add_argument('--isolated-script-test-perf-output')
 
     self.add_extra_arguments(self._parser)
 
@@ -373,26 +378,26 @@ class BaseIsolatedScriptArgsAdapter(object):
 
   def generate_test_output_args(self, output):
     del output  # unused
-    raise RuntimeError('this method is not yet implemented')
+    return []
 
   def generate_test_filter_args(self, test_filter_str):
     del test_filter_str  # unused
-    raise RuntimeError('this method is not yet implemented')
+    raise RuntimeError('Flag not supported.')
 
   def generate_test_repeat_args(self, repeat_count):
     del repeat_count  # unused
-    raise RuntimeError('this method is not yet implemented')
+    raise RuntimeError('Flag not supported.')
 
   def generate_test_launcher_retry_limit_args(self, retry_limit):
     del retry_limit  # unused
-    raise RuntimeError('this method is not yet implemented')
-
-  def generate_test_also_run_disabled_tests_args(self):
-    raise RuntimeError('this method is not yet implemented')
+    raise RuntimeError('Flag not supported.')
 
   def generate_sharding_args(self, total_shards, shard_index):
     del total_shards, shard_index  # unused
-    raise RuntimeError('this method is not yet implemented')
+    raise RuntimeError('Flag not supported.')
+
+  def generate_test_also_run_disabled_tests_args(self):
+    raise RuntimeError('Flag not supported.')
 
   def select_python_executable(self):
     return sys.executable
@@ -401,8 +406,10 @@ class BaseIsolatedScriptArgsAdapter(object):
     isolated_script_cmd = [ self.select_python_executable() ] + self.rest_args
 
     if self.options.isolated_script_test_output:
-      isolated_script_cmd += self.generate_test_output_args(
+      output_args = self.generate_test_output_args(
           self.options.isolated_script_test_output)
+      self._script_writes_output_json = bool(output_args)
+      isolated_script_cmd += output_args
 
     # Augment test filter args if needed
     if self.options.isolated_script_test_filter:
@@ -448,6 +455,34 @@ class BaseIsolatedScriptArgsAdapter(object):
   def do_post_test_run_tasks(self):
     pass
 
+  def _write_simple_test_results(self, start_time, exit_code):
+    if exit_code is None:
+      failure_type = 'CRASH'
+    elif exit_code == 0:
+      failure_type = 'PASS'
+    else:
+      failure_type = 'FAIL'
+
+    test_name = os.path.basename(self._rest_args[0])
+    # See //docs/testing/json_test_results_format.md
+    results_json = {
+        'version': 3,
+        'interrupted': False,
+        'num_failures_by_type': { failure_type: 1 },
+        'path_delimiter': '/',
+        'seconds_since_epoch': start_time,
+        'tests': {
+            test_name: {
+              'expected': 'PASS',
+              'actual': failure_type,
+              'time': time.time() - start_time,
+            },
+        },
+    }
+    with open(self.options.isolated_script_test_output, 'w') as fp:
+      json.dump(results_json, fp)
+
+
   def run_test(self, cwd=None):
     self.parse_args()
     cmd = self.generate_isolated_script_cmd()
@@ -456,12 +491,12 @@ class BaseIsolatedScriptArgsAdapter(object):
 
     env = os.environ.copy()
 
-    valid = True
+    env['CHROME_HEADLESS'] = '1'
+    print('Running command: %s\nwith env: %r' % (
+        ' '.join(cmd), env))
+    sys.stdout.flush()
+    start_time = time.time()
     try:
-      env['CHROME_HEADLESS'] = '1'
-      print('Running command: %s\nwith env: %r' % (
-          ' '.join(cmd), env))
-      sys.stdout.flush()
       if self.options.xvfb and sys.platform.startswith('linux'):
         exit_code = xvfb.run_executable(cmd, env, cwd=cwd)
       else:
@@ -469,19 +504,14 @@ class BaseIsolatedScriptArgsAdapter(object):
       print('Command returned exit code %d' % exit_code)
       sys.stdout.flush()
       self.do_post_test_run_tasks()
-      return exit_code
     except Exception:
       traceback.print_exc()
-      valid = False
+      exit_code = None
     finally:
       self.clean_up_after_test_run()
 
-    if not valid:
-      failures = ['(entire test suite)']
-      with open(self.options.isolated_script_test_output, 'w') as fp:
-        json.dump({
-            'valid': valid,
-            'failures': failures,
-        }, fp)
+    if (self.options.isolated_script_test_output
+        and not self._script_writes_output_json):
+      self._write_simple_test_results(start_time, exit_code)
 
-    return 1
+    return exit_code if exit_code is not None else 2

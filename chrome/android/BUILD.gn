@@ -7,6 +7,7 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/android/system_image.gni")
 import("//build/config/python.gni")
+import("//build/private_code_test/private_code_test.gni")
 import("//build/util/process_version.gni")
 import("//chrome/android/chrome_common_shared_library.gni")
 import("//chrome/android/chrome_java_resources.gni")
@@ -47,6 +48,13 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
 }
 
 if (current_toolchain == default_toolchain) {
+  # 32-bit library will have browser code in it. 64-bit is webview-only.
+  if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
+    _monochrome_browser_toolchain = android_secondary_abi_toolchain
+  } else {
+    _monochrome_browser_toolchain = current_toolchain
+  }
+
   app_hooks_impl = "java/src/org/chromium/chrome/browser/AppHooksImpl.java"
 
   # Exclude it from JNI registration if VR is not enabled.
@@ -2073,9 +2081,9 @@ if (current_toolchain == default_toolchain) {
 
     if (enable_resource_allowlist_generation) {
       if (_is_trichrome || _is_monochrome) {
-        _lib = "libmonochrome_pak_allowlist_inputs"
+        _lib = "libmonochrome_inputs"
       } else {
-        _lib = "libchrome_pak_allowlist_inputs"
+        _lib = "libchrome_inputs"
       }
       _resource_allowlist_target = "${_variant}_resource_allowlist"
       _resource_allowlist_file =
@@ -2083,17 +2091,11 @@ if (current_toolchain == default_toolchain) {
       _lib_path = "/lib.unstripped/" + _lib + shlib_extension
 
       generate_resource_allowlist(_resource_allowlist_target) {
-        _fat_lib_toolchain = ""
+        _fat_lib_toolchain = current_toolchain
         if (_is_monochrome || _is_trichrome) {
-          # Always use the 32-bit library's allowlist since the 64-bit one is
-          # webview-only.
           # TODO(agrieve): For 64-bit primary, using libmonochrome_64 would be
           #     more efficient.
-          if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
-            _fat_lib_toolchain = android_secondary_abi_toolchain
-          } else {
-            _fat_lib_toolchain = current_toolchain
-          }
+          _fat_lib_toolchain = _monochrome_browser_toolchain
         }
         deps = [ ":${_lib}($_fat_lib_toolchain)" ]
 
@@ -3433,6 +3435,13 @@ if (current_toolchain == default_toolchain) {
       }
     }
   }
+
+  if (enable_chrome_android_internal) {
+    private_code_test("libmonochrome_private_code_test") {
+      linker_inputs_dep =
+          ":libmonochrome_inputs($_monochrome_browser_toolchain)"
+    }
+  }
 }
 
 generate_jni("chrome_jni_headers") {
@@ -3736,7 +3745,7 @@ template("libchrome_impl") {
 }
 
 if (enable_resource_allowlist_generation) {
-  libchrome_impl("libchrome_pak_allowlist_inputs") {
+  libchrome_impl("libchrome_inputs") {
     collect_inputs_only = true
   }
 }
@@ -3747,7 +3756,7 @@ libchrome_impl("libchrome") {
   if (enable_resource_allowlist_generation) {
     # Make sure allowlist_inputs is built first so when concurrent_links == 1
     # it comes before the actual (very slow) link step.
-    deps = [ ":libchrome_pak_allowlist_inputs" ]
+    deps = [ ":libchrome_inputs" ]
   }
 }
 
@@ -3832,7 +3841,7 @@ if (!android_64bit_target_cpu ||
      current_toolchain == android_secondary_abi_toolchain)) {
   # Avoiding a real link for this step allows the actual libmonochrome to
   # run at the same time as R8.
-  libmonochrome_apk_or_bundle_tmpl("libmonochrome_pak_allowlist_inputs") {
+  libmonochrome_apk_or_bundle_tmpl("libmonochrome_inputs") {
     collect_inputs_only = true
   }
 
@@ -3842,7 +3851,7 @@ if (!android_64bit_target_cpu ||
     if (enable_resource_allowlist_generation) {
       # Make sure allowlist_inputs is built first so when concurrent_links == 1
       # it comes before the actual (very slow) link step.
-      deps = [ ":libmonochrome_pak_allowlist_inputs" ]
+      deps = [ ":libmonochrome_inputs" ]
     }
   }
 

@@ -1031,14 +1031,13 @@ template("test") {
 # The script must implement the
 # [test executable API](//docs/testing/test_executable_api.md).
 #
-# The template must be passed the `script` parameter, which specifies
-# the path to the script to run. It may optionally be passed a
-# `script_args` parameter, which can be used to include a list of
-# args to be specified by default. The template will produce
-# a `$root_build_dir/run_$target_name` wrapper and write the runtime_deps
-# for the target to $root_build_dir/${target_name}.runtime_deps, as per
-# the conventions listed in the
-# [test wrapper API](//docs/testing/test_wrapper_api.md).
+# The template must be passed the `script` parameter, which specifies the path
+# to the script to run. It may optionally be passed a `args` parameter, which
+# can be used to include a list of args to be specified by default. The
+# template will produce a `$root_build_dir/run_$target_name` wrapper and write
+# the runtime_deps for the target to
+# $root_build_dir/${target_name}.runtime_deps, as per the conventions listed in
+# the [test wrapper API](//docs/testing/test_wrapper_api.md).
 template("script_test") {
   if (use_rts) {
     action("${target_name}__rts_filters") {
@@ -1084,12 +1083,12 @@ template("script_test") {
     }
 
     forward_variables_from(invoker,
-                           [ "*" ],
+                           "*",
                            TESTONLY_AND_VISIBILITY + [
+                                 "args",
                                  "data",
                                  "data_deps",
                                  "script",
-                                 "script_args",
                                ])
     forward_variables_from(invoker, [ "visibility" ])
 
@@ -1097,6 +1096,33 @@ template("script_test") {
 
     if (use_rts) {
       data_deps += [ ":${invoker.target_name}__rts_filters" ]
+    }
+  }
+}
+
+# Defines a test target that uses exit code for pass/fail.
+template("isolated_script_test") {
+  script_test(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [
+                                 "args",
+                                 "deps",
+                                 "script",
+                               ])
+    forward_variables_from(invoker, [ "visibility" ])
+    deps = [ "//testing:run_isolated_script_test" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+    script = "//testing/scripts/run_isolated_script_test.py"
+    data = [ invoker.script ]
+    args = [
+      rebase_path(invoker.script, root_build_dir),
+      "--script-type=bare",
+    ]
+    if (defined(invoker.args)) {
+      args += invoker.args
     }
   }
 }

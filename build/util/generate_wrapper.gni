@@ -41,43 +41,28 @@
 #     wrapper_script = "$root_build_dir/bin/run_sample_build_product"
 #   }
 template("generate_wrapper") {
-  _generator_script = "//build/util/generate_wrapper.py"
-  if (defined(invoker.generator_script)) {
-    _generator_script = invoker.generator_script
-  }
-  _executable_to_wrap = invoker.executable
-  _wrapper_script = invoker.wrapper_script
-  if (is_win) {
-    _wrapper_script += ".bat"
-  }
-  if (defined(invoker.executable_args)) {
-    _wrapped_arguments = invoker.executable_args
-  } else {
-    _wrapped_arguments = []
-  }
-
   action(target_name) {
-    forward_variables_from(invoker,
-                           TESTONLY_AND_VISIBILITY + [
-                                 "assert_no_deps",
-                                 "data",
-                                 "data_deps",
-                                 "deps",
-                                 "public_deps",
-                                 "sources",
-                               ])
-    script = _generator_script
-    if (!defined(data)) {
-      data = []
+    if (defined(invoker.generator_script)) {
+      script = invoker.generator_script
+    } else {
+      script = "//build/util/generate_wrapper.py"
     }
-    data += [
+    _wrapper_script = invoker.wrapper_script
+    if (is_win) {
+      _wrapper_script += ".bat"
+    }
+
+    data = [
       _wrapper_script,
       "//.vpython3",
     ]
+    if (defined(invoker.data)) {
+      data += invoker.data
+    }
     outputs = [ _wrapper_script ]
 
     _rebased_executable_to_wrap =
-        rebase_path(_executable_to_wrap, root_build_dir)
+        rebase_path(invoker.executable, root_build_dir)
     _rebased_wrapper_script = rebase_path(_wrapper_script, root_build_dir)
     if (is_win) {
       _script_language = "batch"
@@ -95,11 +80,19 @@ template("generate_wrapper") {
       _script_language,
     ]
 
-    args += [ "--" ]
-    args += _wrapped_arguments
-
-    if (defined(invoker.write_runtime_deps)) {
-      write_runtime_deps = invoker.write_runtime_deps
+    if (defined(invoker.executable_args)) {
+      args += [ "--" ] + invoker.executable_args
     }
+
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [
+                                 "data",
+                                 "executable",
+                                 "executable_args",
+                                 "generator_script",
+                                 "wrapper_script",
+                               ])
   }
 }

@@ -1482,6 +1482,10 @@
     "label": "//printing:printing_unittests",
     "type": "console_test_launcher",
   },
+  "private_code_failure_test": {
+    "label": "//build/private_code_test:private_code_failure_test",
+    "type": "generated_script",
+  },
   "profile_provider_unittest": {
     "label": "//chrome/browser/metrics/perf:profile_provider_unittest",
     "type": "console_test_launcher",

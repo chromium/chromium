@@ -4687,6 +4687,10 @@
       },
     },
 
+    'private_code_failure_test_isolated_scripts': {
+      'private_code_failure_test': {}
+    },
+
     # TODO(dpranke): These are run on the p/chromium waterfall; they should
     # probably be run on other builders, and we should get rid of the p/chromium
     # waterfall.

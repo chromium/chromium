@@ -705,6 +705,7 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_12_emulator_gtests',
+          'isolated_scripts': 'private_code_failure_test_isolated_scripts',
         }
       },
       'android-12l-x64-dbg-tests': {
