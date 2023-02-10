@@ -12,3 +12,10 @@ set -o pipefail
 PREFIX="$1"
 
 mv GoogleUpdater.app "$PREFIX"
+
+# Some of the files have nanosecond-resolution timestamps that cause problems
+# later on in the build when copied elsewhere. Reset the modification times of
+# each file to the current second.
+for file in "$PREFIX/"**; do
+  touch -m -d $(date -u +"%Y-%m-%dT%H:%M:%SZ") $file;
+done;
