@@ -4314,6 +4314,8 @@ TEST_P(PartitionAllocTest, DanglingPtr) {
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 2);
 #endif
+
+  PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr));
 }
 
 // Allocate memory, and reference it from 3
@@ -4358,6 +4360,8 @@ TEST_P(PartitionAllocTest, DanglingDanglingPtr) {
   EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr));
 }
 
 // When 'free' is called, it remain one raw_ptr<> and one
@@ -4410,6 +4414,8 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
 #endif
+
+  PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr));
 }
 
 // When 'free' is called, it remain one raw_ptr<> and one
@@ -4464,6 +4470,8 @@ TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
 #endif
+
+  PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr));
 }
 
 // When 'free' is called, it remains one
@@ -4504,6 +4512,8 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtr) {
   EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr));
 }
 
 // Same as 'DanglingPtrUsedToAcquireNewRawPtr', but release the
@@ -4543,6 +4553,8 @@ TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtrVariant) {
   EXPECT_TRUE(ref_count->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr));
 }
 
 // Acquire a raw_ptr<T>, and release it before freeing memory. In the
@@ -4579,6 +4591,8 @@ TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
   EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  PartitionAllocFreeForRefCounting(allocator.root()->ObjectToSlotStart(ptr));
 }
 
 #if defined(PA_HAS_DEATH_TESTS)
