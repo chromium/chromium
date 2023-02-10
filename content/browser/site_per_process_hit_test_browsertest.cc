@@ -4462,7 +4462,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     EXPECT_EQ(120, set_cursor_interceptor->cursor()->custom_bitmap().height());
   }
   // A cursor without enough room to be fully enclosed within the root view
-  // should not be shown, even if the iframe is at an offset.
+  // should not be shown, even if the iframe is at an offset. The default cursor
+  // should be shown instead.
   {
     blink::WebMouseEvent mouse_event(
         blink::WebInputEvent::Type::kMouseMove,
@@ -4476,8 +4477,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     // We should see a new cursor come in that replaces the large one.
     set_cursor_interceptor->Wait();
     EXPECT_TRUE(set_cursor_interceptor->cursor().has_value());
-    EXPECT_NE(120, set_cursor_interceptor->cursor()->custom_bitmap().width());
-    EXPECT_NE(120, set_cursor_interceptor->cursor()->custom_bitmap().height());
+    EXPECT_EQ(ui::mojom::CursorType::kPointer,
+              set_cursor_interceptor->cursor());
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
