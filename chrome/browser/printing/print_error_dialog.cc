@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
@@ -28,7 +29,16 @@ ErrorDialogOverride& GetErrorDialogOverride() {
   return *error_dialog_override;
 }
 
-void ShowPrintErrorDialogTask() {
+void ShowPrintErrorDialogTask(const std::u16string& title,
+                              const std::u16string& message) {
+  // Runs always on the UI thread.
+  static bool is_dialog_shown = false;
+  if (is_dialog_shown) {
+    return;
+  }
+  // Block opening dialog from nested task.
+  base::AutoReset<bool> auto_reset(&is_dialog_shown, true);
+
   if (GetErrorDialogOverride().show_dialog) {
     GetErrorDialogOverride().show_dialog.Run();
     return;
@@ -37,16 +47,28 @@ void ShowPrintErrorDialogTask() {
   Browser* browser = chrome::FindLastActive();
   chrome::ShowWarningMessageBox(
       browser ? browser->window()->GetNativeWindow() : gfx::kNullNativeWindow,
-      l10n_util::GetStringUTF16(IDS_PRINT_SPOOL_FAILED_TITLE_TEXT),
-      l10n_util::GetStringUTF16(IDS_PRINT_SPOOL_FAILED_ERROR_TEXT));
+      title, message);
+}
+
+void ShowPrintErrorDialog(const std::u16string& title,
+                          const std::u16string& message) {
+  // Nested loop may destroy caller.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&ShowPrintErrorDialogTask, title, message));
 }
 
 }  // namespace
 
-void ShowPrintErrorDialog() {
-  // Nested loop may destroy caller.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ShowPrintErrorDialogTask));
+void ShowPrintErrorDialogForInvalidPrinterError() {
+  ShowPrintErrorDialog(
+      std::u16string(),
+      l10n_util::GetStringUTF16(IDS_PRINT_INVALID_PRINTER_SETTINGS));
+}
+
+void ShowPrintErrorDialogForGenericError() {
+  ShowPrintErrorDialog(
+      l10n_util::GetStringUTF16(IDS_PRINT_SPOOL_FAILED_TITLE_TEXT),
+      l10n_util::GetStringUTF16(IDS_PRINT_SPOOL_FAILED_ERROR_TEXT));
 }
 
 void SetShowPrintErrorDialogForTest(base::RepeatingClosure callback) {

@@ -768,7 +768,7 @@ void PrintPreviewHandler::HandleCancelPendingPrintRequest(
   WebContents* initiator = GetInitiator();
   if (initiator)
     ClearInitiatorDetails();
-  ShowPrintErrorDialog();
+  ShowPrintErrorDialogForGenericError();
 }
 
 void PrintPreviewHandler::HandleSaveAppState(const base::Value::List& args) {

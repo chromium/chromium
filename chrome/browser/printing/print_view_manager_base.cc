@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -17,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -29,7 +27,6 @@
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -83,17 +80,6 @@ namespace {
 
 using PrintSettingsCallback =
     base::OnceCallback<void(std::unique_ptr<PrinterQuery>)>;
-
-void ShowWarningMessageBox(const std::u16string& message) {
-  // Runs always on the UI thread.
-  static bool is_dialog_shown = false;
-  if (is_dialog_shown)
-    return;
-  // Block opening dialog from nested task.
-  base::AutoReset<bool> auto_reset(&is_dialog_shown, true);
-
-  chrome::ShowWarningMessageBox(nullptr, std::u16string(), message);
-}
 
 void OnDidGetDefaultPrintSettings(
     scoped_refptr<PrintQueriesQueue> queue,
@@ -710,7 +696,7 @@ void PrintViewManagerBase::PrintingFailed(int32_t cookie,
   // shown.
   if (print_job_ && print_job_->document() &&
       print_job_->document()->cookie() == cookie) {
-    ShowPrintErrorDialog();
+    ShowPrintErrorDialogForGenericError();
   }
 #endif
 
@@ -726,10 +712,9 @@ void PrintViewManagerBase::RemoveObserver(Observer& observer) {
 }
 
 void PrintViewManagerBase::ShowInvalidPrinterSettingsError() {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ShowWarningMessageBox,
-                                l10n_util::GetStringUTF16(
-                                    IDS_PRINT_INVALID_PRINTER_SETTINGS)));
+#if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
+  ShowPrintErrorDialogForInvalidPrinterError();
+#endif
 }
 
 void PrintViewManagerBase::RenderFrameHostStateChanged(
@@ -803,7 +788,7 @@ void PrintViewManagerBase::OnCanceling() {
 void PrintViewManagerBase::OnFailed() {
 #if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
   if (!canceling_job_)
-    ShowPrintErrorDialog();
+    ShowPrintErrorDialogForGenericError();
 #endif
 
   TerminatePrintJob(true);

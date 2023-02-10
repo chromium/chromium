@@ -646,7 +646,6 @@ class TestPrintViewManager : public PrintViewManager {
     print_now_result_ = PrintViewManager::PrintNow(rfh);
     return *print_now_result_;
   }
-  void ShowInvalidPrinterSettingsError() override { ShowPrintErrorDialog(); }
   bool CreateNewPrintJob(std::unique_ptr<PrinterQuery> query) override {
     if (!PrintViewManager::CreateNewPrintJob(std::move(query)))
       return false;
