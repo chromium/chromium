@@ -308,6 +308,7 @@ class Surface final : public ui::PropertyHandler {
   void AppendSurfaceHierarchyContentsToFrame(
       const gfx::PointF& origin,
       float device_scale_factor,
+      bool client_submits_in_pixel_coords,
       FrameSinkResourceManager* resource_manager,
       viz::CompositorFrame* frame);
 
@@ -574,6 +575,7 @@ class Surface final : public ui::PropertyHandler {
   // the |frame|.
   void AppendContentsToFrame(const gfx::PointF& origin,
                              float device_scale_factor,
+                             bool client_submits_in_pixel_coords,
                              viz::CompositorFrame* frame);
 
   // Update surface content size base on current buffer size.

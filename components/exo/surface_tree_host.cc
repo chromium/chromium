@@ -309,6 +309,7 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
 
   root_surface_->AppendSurfaceHierarchyContentsToFrame(
       gfx::PointF(root_surface_origin_), GetScaleFactor(),
+      client_submits_surfaces_in_pixel_coordinates(),
       layer_tree_frame_sink_holder_->resource_manager(), &frame);
 
   std::vector<GLbyte*> sync_tokens;

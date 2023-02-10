@@ -1115,6 +1115,7 @@ void Surface::AppendSurfaceHierarchyCallbacks(
 void Surface::AppendSurfaceHierarchyContentsToFrame(
     const gfx::PointF& origin,
     float device_scale_factor,
+    bool client_submits_in_pixel_coords,
     FrameSinkResourceManager* resource_manager,
     viz::CompositorFrame* frame) {
   // The top most sub-surface is at the front of the RenderPass's quad_list,
@@ -1125,7 +1126,9 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
     // decendents.
     sub_surface->AppendSurfaceHierarchyContentsToFrame(
         origin + sub_surface_entry.second.OffsetFromOrigin(),
-        device_scale_factor, resource_manager, frame);
+
+        device_scale_factor, client_submits_in_pixel_coords, resource_manager,
+        frame);
   }
 
   // Update the resource, or if not required, ensure we call the buffer release
@@ -1137,7 +1140,8 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
         std::move(state_.per_commit_explicit_release_callback_));
   }
 
-  AppendContentsToFrame(origin, device_scale_factor, frame);
+  AppendContentsToFrame(origin, device_scale_factor,
+                        client_submits_in_pixel_coords, frame);
 
   DCHECK(!current_resource_.id ||
          resource_manager->HasReleaseCallbackForResource(current_resource_.id));
@@ -1397,6 +1401,7 @@ static viz::SharedQuadState* AppendOrCreateSharedQuadState(
 
 void Surface::AppendContentsToFrame(const gfx::PointF& origin,
                                     float device_scale_factor,
+                                    bool client_submits_in_pixel_coords,
                                     viz::CompositorFrame* frame) {
   const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame->render_pass_list.back();
@@ -1461,19 +1466,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     scale.Scale(state_.basic_state.buffer_scale);
   }
 
-  // Compute the total transformation from post-transform buffer coordinates to
-  // target coordinates.
-  // Scale and offset the normalized space to fit the content size rectangle.
-  gfx::Transform viewport_to_target_transform(
-      gfx::AxisTransform2d::FromScaleAndTranslation(
-          scale, origin.OffsetFromOrigin() + translate));
-  viewport_to_target_transform.PostConcat(state_.surface_transform);
-  // Convert from DPs to pixels.
-  viewport_to_target_transform.PostScale(device_scale_factor);
-
-  gfx::Transform quad_to_target_transform(buffer_transform_);
-  quad_to_target_transform.PostConcat(viewport_to_target_transform);
-
   bool are_contents_opaque =
       !current_resource_has_alpha_ ||
       state_.basic_state.blend_mode == SkBlendMode::kSrc ||
@@ -1492,6 +1484,22 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     msk = gfx::MaskFilterInfo(rounded_corners_rect);
   }
 
+  // Compute the total transformation from post-transform buffer coordinates to
+  // target coordinates.
+  // Scale and offset the normalized space to fit the content size rectangle.
+  gfx::Transform viewport_to_target_transform(
+      gfx::AxisTransform2d::FromScaleAndTranslation(
+          scale, origin.OffsetFromOrigin() + translate));
+  viewport_to_target_transform.PostConcat(state_.surface_transform);
+
+  if (!client_submits_in_pixel_coords) {
+    // Convert from DPs to pixels.
+    viewport_to_target_transform.PostScale(device_scale_factor);
+  }
+
+  gfx::Transform quad_to_target_transform(buffer_transform_);
+  quad_to_target_transform.PostConcat(viewport_to_target_transform);
+
   // The overdraw algorithm in 'Display::RemoveOverdrawQuads' operates in
   // content space and, due to the discretized nature of the |gfx::Rect|, cannot
   // work with 0,0 1x1 quads. This also means that quads that do not fall on
@@ -1509,6 +1517,11 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
       // Later in 'SurfaceAggregator' this transform will have 2d translation.
       quad_to_target_transform = gfx::Transform();
     }
+  }
+
+  if (client_submits_in_pixel_coords) {
+    // Client DPs are actually pixels. This coverts to target space of surface.
+    quad_to_target_transform.PostScale(device_scale_factor);
   }
 
   if (current_resource_.id) {
