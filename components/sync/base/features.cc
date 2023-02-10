@@ -78,10 +78,6 @@ BASE_FEATURE(kSyncTrustedVaultResetKeysAreStale,
              "SyncTrustedVaultResetKeysAreStale",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncTrustedVaultUseMD5HashedFile,
-             "SyncTrustedVaultUseMD5HashedFile",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseSyncInvalidations,
              "UseSyncInvalidations",
              base::FEATURE_DISABLED_BY_DEFAULT);

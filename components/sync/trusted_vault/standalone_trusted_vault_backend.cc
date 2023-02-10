@@ -104,24 +104,6 @@ sync_pb::LocalTrustedVault ReadMD5HashedFile(const base::FilePath& file_path) {
   return data_proto;
 }
 
-void WriteEncryptedFileToDisk(const sync_pb::LocalTrustedVault& data,
-                              const base::FilePath& file_path) {
-  std::string encrypted_data;
-  const bool encryption_success =
-      OSCrypt::EncryptString(data.SerializeAsString(), &encrypted_data);
-  base::UmaHistogramBoolean("Sync.TrustedVaultLocalDataEncryptionIsSuccessful",
-                            encryption_success);
-  if (!encryption_success) {
-    DLOG(ERROR) << "Failed to encrypt trusted vault file.";
-    return;
-  }
-
-  if (!base::ImportantFileWriter::WriteFileAtomically(file_path,
-                                                      encrypted_data)) {
-    DLOG(ERROR) << "Failed to write trusted vault file.";
-  }
-}
-
 void WriteMD5HashedFileToDisk(const sync_pb::LocalTrustedVault& data,
                               const base::FilePath& file_path) {
   sync_pb::LocalTrustedVaultFileContent file_proto;
@@ -330,13 +312,10 @@ void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged() {
 }
 
 void StandaloneTrustedVaultBackend::ReadDataFromDisk() {
-  if (base::FeatureList::IsEnabled(kSyncTrustedVaultUseMD5HashedFile)) {
-    MaybeMigrateDataFile(deprecated_encrypted_file_path_,
-                         md5_hashed_file_path_);
-    data_ = ReadMD5HashedFile(md5_hashed_file_path_);
-  } else {
-    data_ = ReadEncryptedFile(deprecated_encrypted_file_path_);
-  }
+  // TODO(crbug.com/1374650): Migration from legacy file was enabled in M108,
+  // clean it up once at least one year passed.
+  MaybeMigrateDataFile(deprecated_encrypted_file_path_, md5_hashed_file_path_);
+  data_ = ReadMD5HashedFile(md5_hashed_file_path_);
 
   if (data_.user_size() == 0) {
     // No data, set the current version and omit writing the file.
@@ -1233,11 +1212,7 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
 }
 
 void StandaloneTrustedVaultBackend::WriteDataToDisk() {
-  if (base::FeatureList::IsEnabled(kSyncTrustedVaultUseMD5HashedFile)) {
-    WriteMD5HashedFileToDisk(data_, md5_hashed_file_path_);
-  } else {
-    WriteEncryptedFileToDisk(data_, deprecated_encrypted_file_path_);
-  }
+  WriteMD5HashedFileToDisk(data_, md5_hashed_file_path_);
 }
 
 }  // namespace syncer

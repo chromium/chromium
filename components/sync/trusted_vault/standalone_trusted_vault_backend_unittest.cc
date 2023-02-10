@@ -108,19 +108,6 @@ bool WriteLocalEncryptedTrustedVaultFile(
                          encrypted_content.size()) != -1;
 }
 
-sync_pb::LocalTrustedVault ReadLocalEncryptedTrustedVaultFile(
-    const base::FilePath& path) {
-  std::string ciphertext;
-  base::ReadFileToString(path, &ciphertext);
-
-  std::string decrypted_content;
-  OSCrypt::DecryptString(ciphertext, &decrypted_content);
-
-  sync_pb::LocalTrustedVault proto;
-  proto.ParseFromString(decrypted_content);
-  return proto;
-}
-
 sync_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
     const base::FilePath& path) {
   std::string file_content;
@@ -509,40 +496,6 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
 }
 
-TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldReadAndFetchNonEmptyKeysFromDeprecatedFile) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kSyncTrustedVaultUseMD5HashedFile);
-
-  const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
-  const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
-
-  const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
-  const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
-  const std::vector<uint8_t> kKey3 = {2, 3, 4};
-
-  sync_pb::LocalTrustedVault initial_data;
-  sync_pb::LocalTrustedVaultPerUser* user_data1 = initial_data.add_user();
-  sync_pb::LocalTrustedVaultPerUser* user_data2 = initial_data.add_user();
-  user_data1->set_gaia_id(account_info_1.gaia);
-  user_data2->set_gaia_id(account_info_2.gaia);
-  user_data1->add_vault_key()->set_key_material(kKey1.data(), kKey1.size());
-  user_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
-  user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
-
-  ASSERT_TRUE(WriteLocalEncryptedTrustedVaultFile(initial_data,
-                                                  deprecated_file_path()));
-  backend()->ReadDataFromDisk();
-
-  // Keys should be fetched immediately for both accounts.
-  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
-      fetch_keys_callback;
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey1)));
-  backend()->FetchKeys(account_info_1, fetch_keys_callback.Get());
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
-  backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
-}
-
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldMigrateDataFromDeprecatedFile) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
@@ -615,33 +568,6 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
 
   // Read the file from disk.
   sync_pb::LocalTrustedVault proto = ReadLocalTrustedVaultFile(file_path());
-  ASSERT_THAT(proto.user_size(), Eq(2));
-  EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey1)));
-  EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(7));
-  EXPECT_THAT(proto.user(1).vault_key(),
-              ElementsAre(KeyMaterialEq(kKey3), KeyMaterialEq(kKey4)));
-  EXPECT_THAT(proto.user(1).last_vault_key_version(), Eq(9));
-}
-
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeysInDeprecatedFile) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kSyncTrustedVaultUseMD5HashedFile);
-
-  const std::string kGaiaId1 = "user1";
-  const std::string kGaiaId2 = "user2";
-  const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
-  const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
-  const std::vector<uint8_t> kKey3 = {2, 3, 4};
-  const std::vector<uint8_t> kKey4 = {3, 4};
-
-  backend()->StoreKeys(kGaiaId1, {kKey1}, /*last_key_version=*/7);
-  backend()->StoreKeys(kGaiaId2, {kKey2}, /*last_key_version=*/8);
-  // Keys for |kGaiaId2| overridden, so |kKey2| should be lost.
-  backend()->StoreKeys(kGaiaId2, {kKey3, kKey4}, /*last_key_version=*/9);
-
-  // Read the file from disk.
-  sync_pb::LocalTrustedVault proto =
-      ReadLocalEncryptedTrustedVaultFile(deprecated_file_path());
   ASSERT_THAT(proto.user_size(), Eq(2));
   EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey1)));
   EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(7));
