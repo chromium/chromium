@@ -12,7 +12,7 @@ var pageImpl, browserProxy;
 
 /** @constructor */
 function TestPageImpl() {
-  this.binding = new mojo.Binding(TestPage, this);
+  this.binding = new mojo.Binding(web.mojom.TestPage, this);
 }
 
 TestPageImpl.prototype = {
@@ -37,12 +37,12 @@ function whenDomContentLoaded() {
 
 function main() {
   whenDomContentLoaded().then(function() {
-    browserProxy = new TestUIHandlerMojoPtr();
-    Mojo.bindInterface(TestUIHandlerMojo.name,
+    browserProxy = new web.mojom.TestUIHandlerMojoPtr();
+    Mojo.bindInterface(web.mojom.TestUIHandlerMojo.name,
                        mojo.makeRequest(browserProxy).handle);
 
     pageImpl = new TestPageImpl();
-    var pagePtr = new TestPagePtr();
+    var pagePtr = new web.mojom.TestPagePtr();
     pageImpl.binding.bind(mojo.makeRequest(pagePtr));
     browserProxy.setClientPage(pagePtr);
 

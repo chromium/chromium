@@ -50,7 +50,7 @@ constexpr base::TimeDelta kMessageTimeout = base::Seconds(5);
 // Once "fin" is received `IsFinReceived()` call will return true, indicating
 // that communication was successful. See test WebUI page code here:
 // ios/web/test/data/mojo_test.js
-class TestUIHandler : public TestUIHandlerMojo {
+class TestUIHandler : public mojom::TestUIHandlerMojo {
  public:
   TestUIHandler() {}
   ~TestUIHandler() override {}
@@ -59,7 +59,7 @@ class TestUIHandler : public TestUIHandlerMojo {
   bool IsFinReceived() { return fin_received_; }
 
   // TestUIHandlerMojo overrides.
-  void SetClientPage(mojo::PendingRemote<TestPage> page) override {
+  void SetClientPage(mojo::PendingRemote<mojom::TestPage> page) override {
     page_.Bind(std::move(page));
   }
   void HandleJsMessage(const std::string& message) override {
@@ -68,7 +68,8 @@ class TestUIHandler : public TestUIHandlerMojo {
       DCHECK(!syn_received_);
       DCHECK(!fin_received_);
       syn_received_ = true;
-      NativeMessageResultMojoPtr result(NativeMessageResultMojo::New());
+      mojom::NativeMessageResultMojoPtr result(
+          mojom::NativeMessageResultMojo::New());
       result->message = "ack";
       page_->HandleNativeMessage(std::move(result));
     } else if (message == "fin") {
@@ -81,13 +82,14 @@ class TestUIHandler : public TestUIHandlerMojo {
     }
   }
 
-  void BindTestHandler(mojo::PendingReceiver<TestUIHandlerMojo> receiver) {
+  void BindTestHandler(
+      mojo::PendingReceiver<mojom::TestUIHandlerMojo> receiver) {
     receivers_.Add(this, std::move(receiver));
   }
 
  private:
-  mojo::ReceiverSet<TestUIHandlerMojo> receivers_;
-  mojo::Remote<TestPage> page_;
+  mojo::ReceiverSet<mojom::TestUIHandlerMojo> receivers_;
+  mojo::Remote<mojom::TestPage> page_;
   // `true` if "syn" has been received.
   bool syn_received_ = false;
   // `true` if "fin" has been received.
