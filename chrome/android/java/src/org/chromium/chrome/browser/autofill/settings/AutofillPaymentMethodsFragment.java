@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.hardware.fingerprint.FingerprintManagerCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -23,6 +22,7 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -147,8 +147,9 @@ public class AutofillPaymentMethodsFragment extends PreferenceFragmentCompat
                 card_pref.setSummary(card.getFormattedExpirationDate(getActivity()));
             }
 
-            card_pref.setIcon(
-                    AppCompatResources.getDrawable(getActivity(), card.getIssuerIconDrawableId()));
+            // Set card icon. It can be either a custom card art or a network icon.
+            card_pref.setIcon(AutofillUiUtils.getCardIcon(getStyledContext(), card,
+                    R.dimen.settings_page_card_icon_width, R.dimen.settings_page_card_icon_height));
 
             if (card.getIsLocal()) {
                 card_pref.setFragment(AutofillLocalCardEditor.class.getName());

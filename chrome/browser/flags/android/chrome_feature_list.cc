@@ -97,6 +97,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableSupportForHonorificPrefixes,
     &autofill::features::kAutofillEnableUpdateVirtualCardEnrollment,
     &autofill::features::kAutofillEnableVirtualCardMetadata,
+    &autofill::features::kAutofillEnableCardArtImage,
     &autofill::features::kAutofillEnableCardProductName,
     &autofill::features::kAutofillTouchToFillForCreditCardsAndroid,
     &blink::features::kForceWebContentsDarkMode,
