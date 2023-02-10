@@ -435,6 +435,15 @@ void DidCancelPrerender(const GURL& prerendering_url,
                    disallowed_api_method);
 }
 
+void DidUpdatePrefetchStatus(FrameTreeNode* ftn,
+                             const GURL& prefetch_url,
+                             PreloadingTriggeringOutcome status) {
+  std::string initiating_frame_id =
+      ftn->current_frame_host()->devtools_frame_token().ToString();
+  DispatchToAgents(ftn, &protocol::PageHandler::DidUpdatePrefetchStatus,
+                   initiating_frame_id, prefetch_url, status);
+}
+
 namespace {
 
 protocol::String BuildBlockedByResponseReason(

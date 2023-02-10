@@ -1,0 +1,20 @@
+Tests that Page.prefetchStatusUpdated is dispatched for prefetching a resource whose MIME type is not supported.
+{
+    method : Page.prefetchStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/non_existent.bmp
+        status : Running
+    }
+    sessionId : <string>
+}
+{
+    method : Page.prefetchStatusUpdated
+    params : {
+        initiatingFrameId : <string>
+        prefetchUrl : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/non_existent.bmp
+        status : Failure
+    }
+    sessionId : <string>
+}
+

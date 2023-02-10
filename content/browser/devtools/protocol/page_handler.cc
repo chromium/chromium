@@ -1606,6 +1606,38 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
   }
 }
 
+Page::PrefetchStatus PreloadingTriggeringOutcomeToProtocol(
+    PreloadingTriggeringOutcome feature) {
+  switch (feature) {
+    case PreloadingTriggeringOutcome::kRunning:
+      return Page::PrefetchStatusEnum::Running;
+    case PreloadingTriggeringOutcome::kReady:
+      return Page::PrefetchStatusEnum::Ready;
+    case PreloadingTriggeringOutcome::kSuccess:
+      return Page::PrefetchStatusEnum::Success;
+    case PreloadingTriggeringOutcome::kFailure:
+      return Page::PrefetchStatusEnum::Failure;
+    case PreloadingTriggeringOutcome::kUnspecified:
+    case PreloadingTriggeringOutcome::kDuplicate:
+    case PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown:
+    case PreloadingTriggeringOutcome::kTriggeredButUpgradedToPrerender:
+    case PreloadingTriggeringOutcome::kTriggeredButPending:
+      return Page::PrefetchStatusEnum::NotSupported;
+  }
+}
+
+bool PreloadingTriggeringOutcomeSupported(PreloadingTriggeringOutcome feature) {
+  switch (feature) {
+    case PreloadingTriggeringOutcome::kRunning:
+    case PreloadingTriggeringOutcome::kReady:
+    case PreloadingTriggeringOutcome::kSuccess:
+    case PreloadingTriggeringOutcome::kFailure:
+      return true;
+    default:
+      return false;
+  }
+}
+
 using blink::scheduler::WebSchedulerTrackedFeature;
 Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     WebSchedulerTrackedFeature feature) {
@@ -2090,6 +2122,21 @@ void PageHandler::DidCancelPrerender(const GURL& prerendering_url,
                                        prerendering_url.spec(),
                                        PrerenderFinalStatusToProtocol(status),
                                        std::move(opt_disallowed_api_method));
+}
+
+void PageHandler::DidUpdatePrefetchStatus(
+    const std::string& initiating_frame_id,
+    const GURL& prefetch_url,
+    PreloadingTriggeringOutcome status) {
+  if (!enabled_) {
+    return;
+  }
+
+  auto statusEnum = PreloadingTriggeringOutcomeToProtocol(status);
+  if (statusEnum != Page::PrefetchStatusEnum::NotSupported) {
+    frontend_->PrefetchStatusUpdated(initiating_frame_id, prefetch_url.spec(),
+                                     statusEnum);
+  }
 }
 
 bool PageHandler::ShouldBypassCSP() {

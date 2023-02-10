@@ -116,6 +116,10 @@ class PageHandler : public DevToolsDomainHandler,
                           PrerenderFinalStatus status,
                           const std::string& disallowed_api_method);
 
+  void DidUpdatePrefetchStatus(const std::string& initiating_frame_id,
+                               const GURL& prefetch_url,
+                               PreloadingTriggeringOutcome status);
+
   Response Enable() override;
   Response Disable() override;
 

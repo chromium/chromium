@@ -200,6 +200,10 @@ void DidCancelPrerender(const GURL& prerendering_url,
                         PrerenderFinalStatus status,
                         const std::string& disallowed_api_method);
 
+void DidUpdatePrefetchStatus(FrameTreeNode* ftn,
+                             const GURL& prefetch_url,
+                             PreloadingTriggeringOutcome status);
+
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
     absl::optional<const base::UnguessableToken> devtools_navigation_token,

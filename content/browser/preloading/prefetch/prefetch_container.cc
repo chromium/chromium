@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
@@ -22,6 +23,7 @@
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -108,6 +110,8 @@ PreloadingFailureReason ToPreloadingFailureReason(PrefetchStatus status) {
 // failure reason enum is added.
 void SetTriggeringOutcomeAndFailureReasonFromStatus(
     PreloadingAttempt* attempt,
+    FrameTreeNode* ftn,
+    const GURL& url,
     absl::optional<PrefetchStatus> old_prefetch_status,
     PrefetchStatus new_prefetch_status) {
   if (old_prefetch_status &&
@@ -121,11 +125,15 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
   if (attempt) {
     switch (new_prefetch_status) {
       case PrefetchStatus::kPrefetchNotFinishedInTime:
+        devtools_instrumentation::DidUpdatePrefetchStatus(
+            ftn, url, PreloadingTriggeringOutcome::kRunning);
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
         break;
       case PrefetchStatus::kPrefetchSuccessful:
         // A successful prefetch means the response is ready to be used for the
         // next navigation.
+        devtools_instrumentation::DidUpdatePrefetchStatus(
+            ftn, url, PreloadingTriggeringOutcome::kReady);
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         break;
       case PrefetchStatus::kPrefetchUsedNoProbe:
@@ -141,6 +149,8 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
           attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         }
 
+        devtools_instrumentation::DidUpdatePrefetchStatus(
+            ftn, url, PreloadingTriggeringOutcome::kSuccess);
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
         break;
       // A decoy is considered eligible because a network request is made for
@@ -151,6 +161,8 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchFailedNetError:
       case PrefetchStatus::kPrefetchFailedNon2XX:
       case PrefetchStatus::kPrefetchFailedMIMENotSupported:
+        devtools_instrumentation::DidUpdatePrefetchStatus(
+            ftn, url, PreloadingTriggeringOutcome::kFailure);
         attempt->SetFailureReason(
             ToPreloadingFailureReason(new_prefetch_status));
         break;
@@ -280,8 +292,10 @@ PrefetchContainer::~PrefetchContainer() {
 
 void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
   SetHoldbackFromStatus(attempt_.get(), prefetch_status);
+  FrameTreeNode* ftn = FrameTreeNode::From(
+      RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
   SetTriggeringOutcomeAndFailureReasonFromStatus(
-      attempt_.get(),
+      attempt_.get(), ftn, url_,
       /*old_prefetch_status=*/prefetch_status_,
       /*new_prefetch_status=*/prefetch_status);
   prefetch_status_ = prefetch_status;

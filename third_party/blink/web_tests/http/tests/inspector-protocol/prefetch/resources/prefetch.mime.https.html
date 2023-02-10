@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<script>
+  let script = document.createElement('script');
+  script.type = 'speculationrules';
+  script.textContent = JSON.stringify({ prefetch: [{ source: "list", urls: ["https://127.0.0.1:8443/inspector-protocol/prefetch/resources/non_existent.bmp"] }] });
+  document.head.appendChild(script);
+</script>
+<body> This is a test page for prefetch! </body>
+</html>
