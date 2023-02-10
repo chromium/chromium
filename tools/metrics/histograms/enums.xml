@@ -90032,6 +90032,44 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="ClosedByAnotherDialog"/>
 </enum>
 
+<enum name="SafeBrowsingUrlScheme">
+  <int value="0" label="Unknown scheme"/>
+  <int value="1" label="about"/>
+  <int value="2" label="blob"/>
+  <int value="3" label="content"/>
+  <int value="4" label="cid"/>
+  <int value="5" label="data"/>
+  <int value="6" label="file"/>
+  <int value="7" label="filesystem"/>
+  <int value="8" label="ftp"/>
+  <int value="9" label="http"/>
+  <int value="10" label="https"/>
+  <int value="11" label="javascript"/>
+  <int value="12" label="mailto"/>
+  <int value="13" label="quic-transport"/>
+  <int value="14" label="tel"/>
+  <int value="15" label="urn"/>
+  <int value="16" label="uuid-in-package"/>
+  <int value="17" label="webcal"/>
+  <int value="18" label="ws"/>
+  <int value="19" label="wss"/>
+  <int value="20" label="isolated-app"/>
+  <int value="21" label="chrome-native"/>
+  <int value="22" label="chrome-search"/>
+  <int value="23" label="devtools"/>
+  <int value="24" label="chrome-error"/>
+  <int value="25" label="chrome"/>
+  <int value="26" label="chrome-untrusted"/>
+  <int value="27" label="chrome-guest"/>
+  <int value="28" label="view-source"/>
+  <int value="29" label="externalfile"/>
+  <int value="30" label="android-app"/>
+  <int value="31" label="googlechrome"/>
+  <int value="32" label="android-webview-video-poster"/>
+  <int value="33" label="chrome-distiller"/>
+  <int value="34" label="chrome-extension"/>
+</enum>
+
 <enum name="SafeBrowsingUserConsentVsUrlCheckRaceResult">
   <obsolete>
     The relevant code was deleted in December 2019.

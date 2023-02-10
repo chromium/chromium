@@ -380,6 +380,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.CheckUrl.UrlScheme" enum="SafeBrowsingUrlScheme"
+    expires_after="2023-06-25">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the scheme of the URL whose Safe Browsing reputation is about to be
+    checked. Logged before it has been determined whether or not the scheme is
+    valid for Safe Browsing.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.ClientSafeBrowsingReport.DownloadWarningActionSize"
     units="units" expires_after="2023-07-23">

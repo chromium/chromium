@@ -19,6 +19,7 @@
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/browser/utils/scheme_logger.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -532,6 +533,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
     database_manager_->SetLookupMechanismExperimentIsEnabled();
   }
   base::UmaHistogramBoolean("SafeBrowsing.RT.CanCheckDatabase", can_check_db_);
+  scheme_logger::LogScheme(url, "SafeBrowsing.CheckUrl.UrlScheme");
   std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism;
   DCHECK(!lookup_mechanism_runner_);
   if (can_perform_full_url_lookup) {
