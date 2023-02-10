@@ -19,6 +19,7 @@
 #include <cstring>
 
 #include "absl/base/config.h"
+#include "absl/base/dynamic_annotations.h"
 #include "absl/hash/hash.h"
 
 namespace absl {
@@ -44,6 +45,7 @@ constexpr size_t Group::kWidth;
 inline size_t RandomSeed() {
 #ifdef ABSL_HAVE_THREAD_LOCAL
   static thread_local size_t counter = 0;
+  ABSL_ANNOTATE_MEMORY_IS_INITIALIZED(&counter, sizeof(size_t));
   size_t value = ++counter;
 #else   // ABSL_HAVE_THREAD_LOCAL
   static std::atomic<size_t> counter(0);
