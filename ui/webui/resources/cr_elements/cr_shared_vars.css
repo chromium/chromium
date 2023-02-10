@@ -249,6 +249,7 @@ html[chrome-refresh-2023] {
   --cr-fallback-color-on-surface-rgb: 31, 31, 31;
   --cr-fallback-color-on-surface: rgb(var(--cr-fallback-color-on-surface-rgb));
 
+  --cr-fallback-color-surface-variant: rgb(225, 227, 225);
   --cr-fallback-color-on-surface-variant: rgb(68, 71, 70);
 
   /* States */
@@ -280,6 +281,7 @@ html[chrome-refresh-2023] {
     --cr-fallback-color-on-secondary-container: rgb(194, 231, 255);
     --cr-fallback-color-surface: rgb(26, 27, 30);
     --cr-fallback-color-on-surface-rgb: 227, 227, 227;
+    --cr-fallback-color-surface-variant: rgb(68, 71, 70);
     --cr-fallback-color-on-surface-variant: rgb(196, 199, 197);
   }
 }

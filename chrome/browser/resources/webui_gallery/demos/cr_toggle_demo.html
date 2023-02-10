@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html $i18n{chromeRefresh2023Attribute}>
   <head>
     <meta charset="utf-8">
     <title>cr-toggle demo</title>
     <link rel="stylesheet" href="demo.css">
+    <style>
+      html[chrome-refresh-2023] .row:has(cr-toggle[dark]) {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <dom-bind>
