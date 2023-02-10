@@ -46,22 +46,14 @@ class LayoutSVGResourceLinearGradient final : public LayoutSVGResourceGradient {
     return kResourceType;
   }
 
-  SVGUnitTypes::SVGUnitType GradientUnits() const override {
-    NOT_DESTROYED();
-    return attributes_.GradientUnits();
-  }
-  AffineTransform CalculateGradientTransform() const override {
-    NOT_DESTROYED();
-    return attributes_.GradientTransform();
-  }
-  void CollectGradientAttributes() override;
-  scoped_refptr<Gradient> BuildGradient() const override;
-
   gfx::PointF StartPoint(const LinearGradientAttributes&) const;
   gfx::PointF EndPoint(const LinearGradientAttributes&) const;
 
  private:
-  LinearGradientAttributes attributes_;
+  const GradientAttributes& EnsureAttributes() const override;
+  scoped_refptr<Gradient> BuildGradient() const override;
+
+  mutable LinearGradientAttributes attributes_;
 };
 
 }  // namespace blink

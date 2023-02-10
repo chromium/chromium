@@ -24,11 +24,13 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/core/svg/gradient_attributes.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
 
@@ -69,8 +71,7 @@ struct GradientData {
 };
 
 LayoutSVGResourceGradient::LayoutSVGResourceGradient(SVGGradientElement* node)
-    : LayoutSVGResourcePaintServer(node),
-      should_collect_gradient_attributes_(true) {}
+    : LayoutSVGResourcePaintServer(node) {}
 
 void LayoutSVGResourceGradient::Trace(Visitor* visitor) const {
   visitor->Trace(gradient_map_);
@@ -97,7 +98,7 @@ bool LayoutSVGResourceGradient::RemoveClientFromCache(
 }
 
 std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
-    const gfx::RectF& object_bounding_box) {
+    const gfx::RectF& object_bounding_box) const {
   NOT_DESTROYED();
   // Create gradient object
   auto gradient_data = std::make_unique<GradientData>();
@@ -106,14 +107,12 @@ std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
   // gradient. This should avoid tearing down the gradient we're
   // currently working on. Preferably the state validation should have
   // no side-effects though.
-  if (should_collect_gradient_attributes_) {
-    CollectGradientAttributes();
-    should_collect_gradient_attributes_ = false;
-  }
+  const GradientAttributes& attributes = EnsureAttributes();
 
   // We want the text bounding box applied to the gradient space transform
   // now, so the gradient shader can use it.
-  if (GradientUnits() == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
+  if (attributes.GradientUnits() ==
+      SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
     // Spec: When the geometry of the applicable element has no width or height
     // and objectBoundingBox is specified, then the given effect (e.g. a
     // gradient or a filter) will be ignored.
@@ -127,8 +126,9 @@ std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
 
   // Create gradient object
   gradient_data->gradient = BuildGradient();
+  gradient_data->gradient->AddColorStops(attributes.Stops());
 
-  AffineTransform gradient_transform = CalculateGradientTransform();
+  AffineTransform gradient_transform = attributes.GradientTransform();
   gradient_data->userspace_transform *= gradient_transform;
 
   return gradient_data;

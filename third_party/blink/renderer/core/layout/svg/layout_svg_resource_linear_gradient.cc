@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_linear_gradient.h"
 
 #include "third_party/blink/renderer/core/svg/svg_linear_gradient_element.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -36,12 +35,17 @@ void LayoutSVGResourceLinearGradient::Trace(Visitor* visitor) const {
   LayoutSVGResourceGradient::Trace(visitor);
 }
 
-void LayoutSVGResourceLinearGradient::CollectGradientAttributes() {
+const GradientAttributes& LayoutSVGResourceLinearGradient::EnsureAttributes()
+    const {
   NOT_DESTROYED();
   DCHECK(GetElement());
-  attributes_ = LinearGradientAttributes();
-  To<SVGLinearGradientElement>(GetElement())
-      ->CollectGradientAttributes(attributes_);
+  if (should_collect_gradient_attributes_) {
+    attributes_ = LinearGradientAttributes();
+    To<SVGLinearGradientElement>(GetElement())
+        ->CollectGradientAttributes(attributes_);
+    should_collect_gradient_attributes_ = false;
+  }
+  return attributes_;
 }
 
 gfx::PointF LayoutSVGResourceLinearGradient::StartPoint(
@@ -60,13 +64,12 @@ gfx::PointF LayoutSVGResourceLinearGradient::EndPoint(
 
 scoped_refptr<Gradient> LayoutSVGResourceLinearGradient::BuildGradient() const {
   NOT_DESTROYED();
-  scoped_refptr<Gradient> gradient = Gradient::CreateLinear(
+  DCHECK(!should_collect_gradient_attributes_);
+  return Gradient::CreateLinear(
       StartPoint(attributes_), EndPoint(attributes_),
       PlatformSpreadMethodFromSVGType(attributes_.SpreadMethod()),
       Gradient::ColorInterpolation::kUnpremultiplied,
       Gradient::DegenerateHandling::kAllow);
-  gradient->AddColorStops(attributes_.Stops());
-  return gradient;
 }
 
 }  // namespace blink

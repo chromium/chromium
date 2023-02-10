@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_radial_gradient.h"
 
 #include "third_party/blink/renderer/core/svg/svg_radial_gradient_element.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -37,12 +36,17 @@ void LayoutSVGResourceRadialGradient::Trace(Visitor* visitor) const {
   LayoutSVGResourceGradient::Trace(visitor);
 }
 
-void LayoutSVGResourceRadialGradient::CollectGradientAttributes() {
+const GradientAttributes& LayoutSVGResourceRadialGradient::EnsureAttributes()
+    const {
   NOT_DESTROYED();
   DCHECK(GetElement());
-  attributes_ = RadialGradientAttributes();
-  To<SVGRadialGradientElement>(GetElement())
-      ->CollectGradientAttributes(attributes_);
+  if (should_collect_gradient_attributes_) {
+    attributes_ = RadialGradientAttributes();
+    To<SVGRadialGradientElement>(GetElement())
+        ->CollectGradientAttributes(attributes_);
+    should_collect_gradient_attributes_ = false;
+  }
+  return attributes_;
 }
 
 gfx::PointF LayoutSVGResourceRadialGradient::CenterPoint(
@@ -73,14 +77,13 @@ float LayoutSVGResourceRadialGradient::FocalRadius(
 
 scoped_refptr<Gradient> LayoutSVGResourceRadialGradient::BuildGradient() const {
   NOT_DESTROYED();
-  scoped_refptr<Gradient> gradient = Gradient::CreateRadial(
+  DCHECK(!should_collect_gradient_attributes_);
+  return Gradient::CreateRadial(
       FocalPoint(attributes_), FocalRadius(attributes_),
       CenterPoint(attributes_), Radius(attributes_), 1,
       PlatformSpreadMethodFromSVGType(attributes_.SpreadMethod()),
       Gradient::ColorInterpolation::kUnpremultiplied,
       Gradient::DegenerateHandling::kAllow);
-  gradient->AddColorStops(attributes_.Stops());
-  return gradient;
 }
 
 }  // namespace blink
