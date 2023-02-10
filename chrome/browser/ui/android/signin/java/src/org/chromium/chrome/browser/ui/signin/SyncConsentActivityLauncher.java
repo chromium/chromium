@@ -17,8 +17,7 @@ import java.lang.annotation.RetentionPolicy;
 public interface SyncConsentActivityLauncher {
     @IntDef({SigninAccessPoint.SETTINGS, SigninAccessPoint.BOOKMARK_MANAGER,
             SigninAccessPoint.RECENT_TABS, SigninAccessPoint.SIGNIN_PROMO,
-            SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, SigninAccessPoint.AUTOFILL_DROPDOWN,
-            SigninAccessPoint.NTP_SIGNED_OUT_ICON})
+            SigninAccessPoint.NTP_CONTENT_SUGGESTIONS, SigninAccessPoint.AUTOFILL_DROPDOWN})
     @Retention(RetentionPolicy.SOURCE)
     @interface AccessPoint {}
 

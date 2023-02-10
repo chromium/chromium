@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -47,7 +46,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -113,7 +111,11 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         mButtonData = new ButtonDataImpl(/*canShow=*/false, /*drawable=*/null,
                 /*onClickListener=*/
                 view
-                -> onClick(),
+                -> {
+                    recordIdentityDiscUsed();
+                    SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                    settingsLauncher.launchSettingsActivity(mContext, MainSettings.class);
+                },
                 mContext.getString(R.string.accessibility_toolbar_btn_identity_disc),
                 /*supportsTinting=*/false,
                 new IPHCommandBuilder(mContext.getResources(),
@@ -198,12 +200,13 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     private ButtonSpec buttonSpecWithDrawableAndDescription(
             ButtonSpec buttonSpec, @Nullable String email) {
         Drawable drawable = getProfileImage(email);
+        String contentDescription = getContentDescription(email);
+
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.IDENTITY_STATUS_CONSISTENCY)
                 && (buttonSpec.getDrawable() == drawable)) {
             return buttonSpec;
         }
 
-        String contentDescription = getContentDescription(email);
         return new ButtonSpec(drawable, buttonSpec.getOnClickListener(),
                 /*onLongClickListener=*/null, contentDescription, buttonSpec.getSupportsTinting(),
                 buttonSpec.getIPHCommandBuilder(), AdaptiveToolbarButtonVariant.UNKNOWN,
@@ -386,17 +389,6 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
 
         return mContext.getString(
                 R.string.accessibility_toolbar_btn_identity_disc_with_name, userName);
-    }
-
-    private void onClick() {
-        recordIdentityDiscUsed();
-        if (getSignedInAccountInfo() == null) {
-            SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
-                    mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
-        } else {
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(mContext, MainSettings.class);
-        }
     }
 
     private static boolean shouldUseSignedOutAvatar(@Nullable String email) {
