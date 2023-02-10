@@ -178,6 +178,8 @@ enum OptimizationType {
   // This optimization provides information about hosts that are blocked for
   // IBAN autofill.
   IBAN_AUTOFILL_BLOCKED = 25;
+  // This optimization provides information about images for a URL.
+  SALIENT_IMAGE = 26;
 }
 
 // Presents semantics for how page load URLs should be matched.

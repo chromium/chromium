@@ -69,6 +69,8 @@ std::string GetStringNameForOptimizationType(
       return "ThankCreatorEligible";
     case proto::OptimizationType::IBAN_AUTOFILL_BLOCKED:
       return "IBANAutofillBlocked";
+    case proto::OptimizationType::SALIENT_IMAGE:
+      return "SalientImage";
   }
 
   // The returned string is used to record histograms for the optimization type.
