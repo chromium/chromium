@@ -50,6 +50,7 @@ SANDBOX_POLICY_EXPORT extern const char kXrCompositingSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kIconReaderSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kMediaFoundationCdmSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kWindowsSystemProxyResolverSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kFileUtilSandbox[];
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
