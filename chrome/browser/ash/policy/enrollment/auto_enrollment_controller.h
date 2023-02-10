@@ -15,7 +15,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,8 +34,7 @@ class AutoEnrollmentController {
   using ProgressCallbackList =
       base::RepeatingCallbackList<void(AutoEnrollmentState)>;
   using RlweClientFactory =
-      base::RepeatingCallback<std::unique_ptr<psm::RlweClient>(
-          const private_membership::rlwe::RlwePlaintextId&)>;
+      policy::psm::RlweDmserverClientImpl::RlweClientFactory;
 
   // State of the system clock.
   enum class SystemClockSyncState {

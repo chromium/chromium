@@ -10,6 +10,7 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,8 +21,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
 #include "chrome/browser/ash/policy/enrollment/psm/construct_rlwe_id.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client_impl.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client_impl.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -38,6 +37,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 // This is used for logs that may not be strictly necessary but are of great use
 // because they will log whether determinations are needed or not, along with
@@ -165,7 +165,7 @@ void ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport report) {
 
 AutoEnrollmentController::AutoEnrollmentController()
     : psm_rlwe_client_factory_(
-          base::BindRepeating(&policy::psm::RlweClientImpl::Create)) {}
+          base::BindRepeating(&policy::psm::RlweDmserverClientImpl::Create)) {}
 
 AutoEnrollmentController::~AutoEnrollmentController() = default;
 
@@ -425,7 +425,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
           service,
           g_browser_process->system_network_context_manager()
               ->GetSharedURLLoaderFactory(),
-          psm_rlwe_client_factory_.Run(plaintext_id)));
+          plaintext_id, psm_rlwe_client_factory_));
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
   client_->Start();

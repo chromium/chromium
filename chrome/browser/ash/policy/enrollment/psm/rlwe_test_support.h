@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_TEST_SUPPORT_H_
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_PSM_RLWE_TEST_SUPPORT_H_
 
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
-
 #include <memory>
 
 #include "base/functional/callback.h"
@@ -14,6 +12,7 @@
 
 namespace private_membership::rlwe {
 class RlwePlaintextId;
+class PrivateMembershipRlweClient;
 }  // namespace private_membership::rlwe
 
 namespace policy::psm::testing {
@@ -21,8 +20,9 @@ namespace policy::psm::testing {
 using RlweTestCase = private_membership::rlwe::
     PrivateMembershipRlweClientRegressionTestData::TestCase;
 
-using RlweClientFactory = base::RepeatingCallback<std::unique_ptr<RlweClient>(
-    const private_membership::rlwe::RlwePlaintextId&)>;
+using RlweClientFactory = base::RepeatingCallback<
+    std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>(
+        const private_membership::rlwe::RlwePlaintextId&)>;
 
 // Load a test case from the test database provided by the
 // third_party/private_membership library. These can be used to simulate PSM

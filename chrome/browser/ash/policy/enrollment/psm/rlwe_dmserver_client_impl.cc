@@ -13,30 +13,39 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
+#include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace psm_rlwe = private_membership::rlwe;
 namespace em = enterprise_management;
 
 namespace policy::psm {
 
+// static
+std::unique_ptr<RlweDmserverClientImpl::RlweClient>
+RlweDmserverClientImpl::Create(const psm_rlwe::RlwePlaintextId& plaintext_id) {
+  auto status_or_client = RlweClient::Create(
+      private_membership::rlwe::RlweUseCase::CROS_DEVICE_STATE, {plaintext_id});
+  DCHECK(status_or_client.ok()) << status_or_client.status().message();
+
+  return std::move(status_or_client).value();
+}
+
 RlweDmserverClientImpl::RlweDmserverClientImpl(
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<RlweClient> psm_rlwe_client)
-    : psm_rlwe_client_(std::move(psm_rlwe_client)),
+    const PlaintextId& plaintext_id,
+    RlweClientFactory rlwe_client_factory)
+    : plaintext_id_(plaintext_id),
+      psm_rlwe_client_(rlwe_client_factory.Run(plaintext_id)),
       random_device_id_(base::GenerateGUID()),
       url_loader_factory_(url_loader_factory),
       device_management_service_(device_management_service) {
@@ -207,13 +216,11 @@ void RlweDmserverClientImpl::OnRlweQueryRequestCompletion(
         return;
       }
 
-      const ::rlwe::StatusOr<bool> is_member =
-          psm_rlwe_client_->ProcessQueryResponse(
-              result.response.private_set_membership_response()
-                  .rlwe_response()
-                  .query_response());
-
-      if (!is_member.ok()) {
+      const auto responses = psm_rlwe_client_->ProcessQueryResponse(
+          result.response.private_set_membership_response()
+              .rlwe_response()
+              .query_response());
+      if (!responses.ok()) {
         // If the RLWE query response hasn't processed successfully, then
         // report the error and stop the protocol.
         LOG(ERROR) << "PSM error: unexpected internal logic error during "
@@ -223,13 +230,18 @@ void RlweDmserverClientImpl::OnRlweQueryRequestCompletion(
         return;
       }
 
+      DCHECK_EQ(responses->membership_responses_size(), 1);
+
+      const bool is_member =
+          responses->membership_responses(0).membership_response().is_member();
+
       base::UmaHistogramEnumeration(kUMAPsmResult + uma_suffix_,
                                     RlweResult::kSuccessfulDetermination);
       RecordPsmSuccessTimeHistogram();
 
       LOG(WARNING) << "PSM determination successful. Identifier "
-                   << psm_rlwe_client_->GetPsmIdentifierDebugString()
-                   << (*is_member ? "" : " not") << " present on the server";
+                   << plaintext_id_.sensitive_id() << (is_member ? "" : " not")
+                   << " present on the server";
 
       // Reset the |psm_request_job_| to allow another call to
       // CheckMembership.
@@ -237,7 +249,7 @@ void RlweDmserverClientImpl::OnRlweQueryRequestCompletion(
 
       std::move(on_completion_callback_)
           .Run(ResultHolder(
-              RlweResult::kSuccessfulDetermination, *is_member,
+              RlweResult::kSuccessfulDetermination, is_member,
               /*membership_determination_time=*/base::Time::Now()));
       return;
     }

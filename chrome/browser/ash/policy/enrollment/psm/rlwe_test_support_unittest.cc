@@ -6,6 +6,7 @@
 
 #include "device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace policy {
 

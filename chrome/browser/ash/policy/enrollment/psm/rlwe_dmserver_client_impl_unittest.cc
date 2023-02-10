@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/enrollment/psm/rlwe_dmserver_client.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_test_support.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -27,6 +28,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
+#include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace psm_rlwe = private_membership::rlwe;
 namespace em = enterprise_management;
@@ -70,8 +72,7 @@ class RlweDmserverClientImplTest
     psm_test_case_ = testing::LoadTestCase(is_member);
     psm_client_ = std::make_unique<RlweDmserverClientImpl>(
         service_.get(), shared_url_loader_factory_,
-        testing::CreateClientFactory(is_member).Run(
-            /* unused plaintext id*/ {}));
+        psm_test_case_.plaintext_id(), testing::CreateClientFactory(is_member));
   }
 
   // Start the `RlweDmserverClient` to retrieve the device state.
@@ -219,7 +220,7 @@ class RlweDmserverClientImplTest
 
   // Sets which PSM RLWE client will be created, depending on the factory. It
   // is only used for PSM during creating the client for initial enrollment.
-  std::unique_ptr<RlweClient> psm_rlwe_test_client_;
+  std::unique_ptr<RlweDmserverClientImpl::RlweClient> psm_rlwe_test_client_;
 
   base::HistogramTester histogram_tester_;
   std::unique_ptr<FakeDeviceManagementService> service_;

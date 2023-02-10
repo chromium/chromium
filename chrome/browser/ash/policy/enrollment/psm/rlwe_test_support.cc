@@ -12,12 +12,12 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_client_impl.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace em = enterprise_management;
+using RlweClient = private_membership::rlwe::PrivateMembershipRlweClient;
 using RlweTestData =
     private_membership::rlwe::PrivateMembershipRlweClientRegressionTestData;
 
@@ -35,8 +35,7 @@ std::unique_ptr<RlweClient> CreateRlweClient(
           test_case.seed());  // IN-TEST
   CHECK(status_or_client.ok()) << status_or_client.status().message();
 
-  return std::make_unique<RlweClientImpl>(std::move(status_or_client).value(),
-                                          test_case.plaintext_id());
+  return std::move(status_or_client).value();
 }
 
 RlweTestData ReadTestData() {
