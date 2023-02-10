@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
+#include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_make_current.h"
@@ -3615,7 +3616,10 @@ error::Error GLES2DecoderPassthroughImpl::DoBeginQueryEXT(
 
     if (query_info->type != GL_NONE && query_info->type != target) {
       InsertError(GL_INVALID_OPERATION,
-                  "Query type does not match the target.");
+                  base::StringPrintf(
+                      "Query type (%s) does not match the target (%s).",
+                      gl::GLEnums::GetStringEnum(query_info->type).c_str(),
+                      gl::GLEnums::GetStringEnum(target).c_str()));
       return error::kNoError;
     }
   } else {
