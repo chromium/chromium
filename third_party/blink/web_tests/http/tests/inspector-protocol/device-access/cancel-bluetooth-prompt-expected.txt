@@ -1,0 +1,20 @@
+Tests canceling a bluetooth device request prompt.
+deviceRequestPrompted: {
+    devices : [
+    ]
+    id : <string>
+}
+cancelPrompt: {
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+navigator.bluetooth.requestDevice: {
+    className : DOMException
+    description : DOMException: User cancelled the requestDevice() chooser.
+    objectId : <string>
+    subtype : error
+    type : object
+}
+

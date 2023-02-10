@@ -45,8 +45,8 @@ class FakeBluetoothChooserFactory : public mojom::FakeBluetoothChooserFactory {
   // |next_fake_bluetooth_chooser_| is not null.
   void CreateFakeBluetoothChooser(
       mojo::PendingReceiver<mojom::FakeBluetoothChooser> receiver,
-      mojo::PendingAssociatedRemote<mojom::FakeBluetoothChooserClient> client)
-      override;
+      mojo::PendingAssociatedRemote<mojom::FakeBluetoothChooserClient> client,
+      CreateFakeBluetoothChooserCallback callback) override;
 
   // Transfers ownership of |next_fake_bluetooth_chooser_| to the caller.
   std::unique_ptr<FakeBluetoothChooser> GetNextFakeBluetoothChooser();

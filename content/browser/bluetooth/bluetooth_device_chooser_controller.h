@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "content/browser/devtools/devtools_device_request_prompt_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,7 +23,7 @@ class BluetoothAdapter;
 class BluetoothDevice;
 class BluetoothDiscoverySession;
 class BluetoothDiscoveryFilter;
-}
+}  // namespace device
 
 namespace content {
 
@@ -99,6 +100,22 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
           std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>>& filters);
 
  private:
+  class BluetoothDeviceRequestPromptInfo final
+      : public DevtoolsDeviceRequestPromptInfo {
+   public:
+    explicit BluetoothDeviceRequestPromptInfo(
+        BluetoothDeviceChooserController& controller);
+    ~BluetoothDeviceRequestPromptInfo() override;
+
+    std::vector<DevtoolsDeviceRequestPromptDevice> GetDevices() override;
+    bool SelectDevice(const std::string& device_id) override;
+    void Cancel() override;
+
+   private:
+    // The controller that owns this instance.
+    raw_ref<BluetoothDeviceChooserController> controller_;
+  };
+
   // Populates the chooser with the GATT connected devices.
   void PopulateConnectedDevices();
 
@@ -136,6 +153,8 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
   raw_ptr<WebBluetoothServiceImpl> web_bluetooth_service_;
   // The RenderFrameHost that owns web_bluetooth_service_.
   raw_ref<RenderFrameHost> render_frame_host_;
+
+  BluetoothDeviceRequestPromptInfo prompt_info_;
 
   // Contains the filters and optional services used when scanning.
   blink::mojom::WebBluetoothRequestDeviceOptionsPtr options_;

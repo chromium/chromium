@@ -104,6 +104,8 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/background_service.h",
     "protocol/browser.cc",
     "protocol/browser.h",
+    "protocol/device_access.cc",
+    "protocol/device_access.h",
     "protocol/dom.cc",
     "protocol/dom.h",
     "protocol/emulation.cc",

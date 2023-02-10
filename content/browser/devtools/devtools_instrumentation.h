@@ -11,6 +11,7 @@
 
 #include <vector>
 
+#include "content/browser/devtools/devtools_device_request_prompt_info.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -376,6 +377,12 @@ void ApplyNetworkContextParamsOverrides(
 
 void DidRejectCrossOriginPortalMessage(
     RenderFrameHostImpl* render_frame_host_impl);
+
+void UpdateDeviceRequestPrompt(RenderFrameHost* render_frame_host,
+                               DevtoolsDeviceRequestPromptInfo* prompt_info);
+
+void CleanUpDeviceRequestPrompt(RenderFrameHost* render_frame_host,
+                                DevtoolsDeviceRequestPromptInfo* prompt_info);
 
 }  // namespace devtools_instrumentation
 

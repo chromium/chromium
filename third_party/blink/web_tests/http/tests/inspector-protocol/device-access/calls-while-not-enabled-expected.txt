@@ -1,0 +1,4 @@
+Tests that calls to methods of DeviceAccess domain return proper error if the domain has not been enabled
+cancelPrompt: code: -32000 message: DeviceAccess domain is not enabled
+selectPrompt: code: -32000 message: DeviceAccess domain is not enabled
+

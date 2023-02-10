@@ -124,6 +124,11 @@
                 "include": ["enable", "disable", "addVirtualAuthenticator", "removeVirtualAuthenticator", "addCredential", "removeCredential", "clearCredentials", "getCredential", "getCredentials", "setUserVerified", "setAutomaticPresenceSimulation", "setResponseOverrideBits"],
                 "async": ["addCredential", "getCredential", "getCredentials"],
                 "include_events": ["credentialAdded", "credentialAsserted"]
+            },
+            {
+                "domain": "DeviceAccess",
+                "include": ["enable", "disable", "selectPrompt", "cancelPrompt"],
+                "include_events": ["deviceRequestPrompted"]
             }
         ]
     },

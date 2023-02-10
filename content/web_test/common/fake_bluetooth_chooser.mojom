@@ -56,7 +56,7 @@ interface FakeBluetoothChooser {
 interface FakeBluetoothChooserFactory {
   CreateFakeBluetoothChooser(
       pending_receiver<FakeBluetoothChooser> fake_chooser,
-      pending_associated_remote<FakeBluetoothChooserClient> client);
+      pending_associated_remote<FakeBluetoothChooserClient> client) => ();
 };
 
 // FakeBluetoothChooserEvent describes the type of chooser event that has been

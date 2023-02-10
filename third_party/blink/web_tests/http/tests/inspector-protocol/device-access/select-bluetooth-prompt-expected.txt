@@ -1,0 +1,23 @@
+Tests selecting device in bluetooth device request prompt.
+deviceRequestPrompted: {
+    devices : [
+        [0] : {
+            id : <string>
+            name : 
+        }
+    ]
+    id : <string>
+}
+selectPrompt: {
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+navigator.bluetooth.requestDevice: {
+    className : BluetoothDevice
+    description : BluetoothDevice
+    objectId : <string>
+    type : object
+}
+

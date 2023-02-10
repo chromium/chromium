@@ -20,6 +20,8 @@
 #include "content/browser/bluetooth/bluetooth_metrics.h"
 #include "content/browser/bluetooth/bluetooth_util.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -212,6 +214,46 @@ void StopDiscoverySession(
 
 }  // namespace
 
+BluetoothDeviceChooserController::BluetoothDeviceRequestPromptInfo::
+    BluetoothDeviceRequestPromptInfo(
+        BluetoothDeviceChooserController& controller)
+    : controller_(controller) {}
+
+BluetoothDeviceChooserController::BluetoothDeviceRequestPromptInfo::
+    ~BluetoothDeviceRequestPromptInfo() = default;
+
+std::vector<DevtoolsDeviceRequestPromptDevice>
+BluetoothDeviceChooserController::BluetoothDeviceRequestPromptInfo::
+    GetDevices() {
+  std::vector<DevtoolsDeviceRequestPromptDevice> devices;
+  for (auto& device_id : controller_->device_ids_) {
+    auto* device = controller_->adapter_->GetDevice(device_id);
+    if (device != nullptr) {
+      devices.push_back(
+          {device_id, base::UTF16ToUTF8(device->GetNameForDisplay())});
+    }
+  }
+  return devices;
+}
+
+bool BluetoothDeviceChooserController::BluetoothDeviceRequestPromptInfo::
+    SelectDevice(const std::string& select_device_id) {
+  for (auto& device_id : controller_->device_ids_) {
+    auto* device = controller_->adapter_->GetDevice(device_id);
+    if (device != nullptr && device_id == select_device_id) {
+      controller_->OnBluetoothChooserEvent(BluetoothChooserEvent::SELECTED,
+                                           select_device_id);
+      return true;
+    }
+  }
+  return false;
+}
+
+void BluetoothDeviceChooserController::BluetoothDeviceRequestPromptInfo::
+    Cancel() {
+  controller_->OnBluetoothChooserEvent(BluetoothChooserEvent::CANCELLED, "");
+}
+
 BluetoothDeviceChooserController::BluetoothDeviceChooserController(
     WebBluetoothServiceImpl* web_bluetooth_service,
     RenderFrameHost& render_frame_host,
@@ -219,6 +261,7 @@ BluetoothDeviceChooserController::BluetoothDeviceChooserController(
     : adapter_(std::move(adapter)),
       web_bluetooth_service_(web_bluetooth_service),
       render_frame_host_(render_frame_host),
+      prompt_info_(*this),
       discovery_session_timer_(
           FROM_HERE,
           base::Seconds(scan_duration_),
@@ -236,6 +279,9 @@ BluetoothDeviceChooserController::~BluetoothDeviceChooserController() {
                              /*options=*/nullptr,
                              /*device_id=*/std::string());
   }
+
+  devtools_instrumentation::CleanUpDeviceRequestPrompt(&*render_frame_host_,
+                                                       &prompt_info_);
 }
 
 void BluetoothDeviceChooserController::GetDevice(
@@ -329,6 +375,9 @@ void BluetoothDeviceChooserController::GetDevice(
   }
 
   StartDeviceDiscovery();
+
+  devtools_instrumentation::UpdateDeviceRequestPrompt(&*render_frame_host_,
+                                                      &prompt_info_);
 }
 
 void BluetoothDeviceChooserController::AddFilteredDevice(
@@ -347,6 +396,9 @@ void BluetoothDeviceChooserController::AddFilteredDevice(
           device.GetNameForDisplay(), device.IsGattConnected(),
           web_bluetooth_service_->IsDevicePaired(device.GetAddress()),
           rssi ? CalculateSignalStrengthLevel(rssi.value()) : -1);
+
+      devtools_instrumentation::UpdateDeviceRequestPrompt(&*render_frame_host_,
+                                                          &prompt_info_);
     }
   }
 }

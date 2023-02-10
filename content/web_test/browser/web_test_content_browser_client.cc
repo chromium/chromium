@@ -644,7 +644,6 @@ void WebTestContentBrowserClient::ConfigureNetworkContextParamsForShell(
 
 void WebTestContentBrowserClient::CreateFakeBluetoothChooserFactory(
     mojo::PendingReceiver<mojom::FakeBluetoothChooserFactory> receiver) {
-  DCHECK(!fake_bluetooth_chooser_factory_);
   fake_bluetooth_chooser_factory_ =
       FakeBluetoothChooserFactory::Create(std::move(receiver));
 }

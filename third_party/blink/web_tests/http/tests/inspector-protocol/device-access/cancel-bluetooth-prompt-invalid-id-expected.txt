@@ -1,0 +1,15 @@
+Tests canceling a bluetooth device request prompt with invalid parameters.
+deviceRequestPrompted: {
+    devices : [
+    ]
+    id : <string>
+}
+cancelPrompt with invalid id: {
+    error : {
+        code : -32602
+        message : Cannot find request with id
+    }
+    id : <number>
+    sessionId : <string>
+}
+
