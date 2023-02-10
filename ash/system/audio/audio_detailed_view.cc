@@ -159,23 +159,27 @@ AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
 
   Shell::Get()->accessibility_controller()->AddObserver(this);
 
-  if (!captions::IsLiveCaptionFeatureSupported())
+  if (!captions::IsLiveCaptionFeatureSupported()) {
     return;
+  }
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (soda_installer)
+  if (soda_installer) {
     soda_installer->AddObserver(this);
+  }
 }
 
 AudioDetailedView::~AudioDetailedView() {
   Shell::Get()->accessibility_controller()->RemoveObserver(this);
-  if (!captions::IsLiveCaptionFeatureSupported())
+  if (!captions::IsLiveCaptionFeatureSupported()) {
     return;
+  }
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   // `soda_installer` is not guaranteed to be valid, since it's possible for
   // this class to out-live it. This means that this class cannot use
   // ScopedObservation and needs to manage removing the observer itself.
-  if (soda_installer)
+  if (soda_installer) {
     soda_installer->RemoveObserver(this);
+  }
 }
 
 void AudioDetailedView::SetMapNoiseCancellationToggleCallbackForTest(
@@ -631,18 +635,6 @@ void AudioDetailedView::UpdateScrollableList() {
 
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
 
-  // Sets the input noise cancellation state.
-  if (audio_handler->noise_cancellation_supported()) {
-    for (const auto& device : input_devices_) {
-      if (device.type == AudioDeviceType::kInternalMic) {
-        audio_handler->SetNoiseCancellationState(
-            audio_handler->GetNoiseCancellationState() &&
-            (device.audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION));
-        break;
-      }
-    }
-  }
-
   for (const auto& device : input_devices_) {
     HoverHighlightView* device_name_container = AddScrollListCheckableItem(
         container, gfx::kNoneIcon, GetAudioDeviceName(device), device.active);
@@ -654,11 +646,8 @@ void AudioDetailedView::UpdateScrollableList() {
     }
 
     // Adds the input noise cancellation toggle.
-    // TODO(b/262286695): Update the noise cancellation toggle once the spec is
-    // ready.
     if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
-        audio_handler->noise_cancellation_supported() &&
-        (device.audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION)) {
+        audio_handler->IsNoiseCancellationSupportedForDevice(device.id)) {
       if (features::IsQsRevampEnabled()) {
         noise_cancellation_view_ = container->AddChildView(
             AudioDetailedView::CreateQsNoiseCancellationToggleRow(device));
@@ -699,8 +688,9 @@ void AudioDetailedView::HandleViewClicked(views::View* view) {
   }
 
   AudioDeviceMap::iterator iter = device_map_.find(view);
-  if (iter == device_map_.end())
+  if (iter == device_map_.end()) {
     return;
+  }
   AudioDevice device = iter->second;
 
   // If the clicked view is focused, save the id of this device to preserve the

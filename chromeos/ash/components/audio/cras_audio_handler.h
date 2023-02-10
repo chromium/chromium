@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstdint>
 #include <queue>
 #include <string>
 #include <vector>
@@ -286,7 +287,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Gets the default output buffer size in frames.
   void GetDefaultOutputBufferSize(int32_t* buffer_size) const;
 
-  // Gets the state of input noise cancellation.
+  // Returns noise cancellation supported if:
+  // - Overall board/device supports noise cancellation
+  // - Audio device has bit for Noise Cancellation set in `audio_effect`.
+  bool IsNoiseCancellationSupportedForDevice(uint64_t device_id);
+
+  // Gets the pref state of input noise cancellation.
   bool GetNoiseCancellationState() const;
 
   // Refreshes the input device noise cancellation state.

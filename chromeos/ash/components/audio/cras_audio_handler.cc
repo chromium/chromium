@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <set>
 #include <utility>
 #include <vector>
@@ -491,6 +492,24 @@ CrasAudioHandler::GetNumberOfInputStreamsWithPermission() const {
 
 void CrasAudioHandler::GetDefaultOutputBufferSize(int32_t* buffer_size) const {
   *buffer_size = default_output_buffer_size_;
+}
+
+bool CrasAudioHandler::IsNoiseCancellationSupportedForDevice(
+    uint64_t device_id) {
+  if (!noise_cancellation_supported()) {
+    return false;
+  }
+
+  const AudioDevice* device = GetDeviceFromId(device_id);
+  if (!device) {
+    return false;
+  }
+
+  if (!device->is_input) {
+    return false;
+  }
+
+  return device->audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION;
 }
 
 bool CrasAudioHandler::GetNoiseCancellationState() const {

@@ -4799,4 +4799,48 @@ TEST_P(CrasAudioHandlerTest, MicrophoneMuteKeyboardSwitchTest) {
             test_observer_->input_mute_changed_count());
 }
 
+TEST_P(CrasAudioHandlerTest, IsNoiseCancellationSupportedForDeviceNoNC) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with internal mic.
+  AudioNode internalMic = GenerateAudioNode(kInternalMic);
+  // Clear the audio effect, no Noise Cancellation supported.
+  internalMic.audio_effect = 0u;
+  audio_nodes.push_back(internalMic);
+  // Disable noise cancellation for board.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+      audio_nodes, /*primary_active_node=*/audio_nodes[0],
+      /*noise_cancellation_enabled=*/false);
+
+  EXPECT_FALSE(cras_audio_handler_->IsNoiseCancellationSupportedForDevice(
+      kInternalMicId));
+}
+
+TEST_P(CrasAudioHandlerTest, IsNoiseCancellationSupportedForDeviceWithNC) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  AudioNode internalMic = GenerateAudioNode(kInternalMic);
+  // Set the audio effect, Noise Cancellation supported.
+  internalMic.audio_effect = cras::EFFECT_TYPE_NOISE_CANCELLATION;
+  audio_nodes.push_back(internalMic);
+  AudioNode micJack = GenerateAudioNode(kMicJack);
+  // Clear the audio effect, no Noise Cancellation supported.
+  micJack.audio_effect = 0u;
+  audio_nodes.push_back(micJack);
+  AudioNode internalSpeaker = GenerateAudioNode(kInternalSpeaker);
+  // Force audio_effect value to verify output nodes always return false.
+  internalSpeaker.audio_effect = cras::EFFECT_TYPE_NOISE_CANCELLATION;
+  audio_nodes.push_back(internalSpeaker);
+
+  // Enable noise cancellation for board.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+      audio_nodes, /*primary_active_node=*/audio_nodes[0],
+      /*noise_cancellation_enabled=*/true);
+
+  EXPECT_TRUE(cras_audio_handler_->IsNoiseCancellationSupportedForDevice(
+      kInternalMicId));
+  EXPECT_FALSE(
+      cras_audio_handler_->IsNoiseCancellationSupportedForDevice(kMicJackId));
+  EXPECT_FALSE(cras_audio_handler_->IsNoiseCancellationSupportedForDevice(
+      kInternalSpeakerId));
+}
+
 }  // namespace ash
