@@ -38,6 +38,7 @@ blink_core_sources_frame = [
   "frame_content_as_text.cc",
   "deprecation/deprecation.cc",
   "deprecation/deprecation.h",
+  "deprecation/deprecation_info.h",
   "deprecation/deprecation_report_body.cc",
   "deprecation/deprecation_report_body.h",
   "device_single_window_event_controller.cc",

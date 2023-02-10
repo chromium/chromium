@@ -2,8 +2,6 @@
   // See third_party/blink/renderer/core/frame/deprecation/README.md
   // The code for triggering DevTools Deprecation Issues is generated from here.
   //
-  // TODO(crbug.com/1411444): Copy this file into devtools_frontend.
-  // TODO(crbug.com/1411444): Codegen deprecations and update note in README.
   parameters: {
     // The name of each deprecation is cannot contain any characters illegal in
     // a c++ enum.
@@ -116,7 +114,7 @@
       message: "Cookies containing a `\\(0|r|n)` character will be rejected instead of truncated.",
       translation_note: "This warning occurs when the browser attempts to store a cookie containing a banned character. Rather than the cookie string being truncated at the banned character, the entire cookie will be rejected now.",
       web_features: [
-        "CookieWithTruncatingChar",
+        "kCookieWithTruncatingChar",
       ],
       milestone: 103,
     },
@@ -523,7 +521,7 @@
     },
     {
       name: "XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload",
-      message: "Synchronous `XMLHttpRequest` on the main thread is deprecated because of its detrimental effects to the end user\u2019s experience. For more help, check https://xhr.spec.whatwg.org/.",
+      message: "Synchronous `XMLHttpRequest` on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.",
       translation_note: "Warning displayed to developers. It is shown when the `XMLHttpRequest` API is used in a way that it slows down the page load of the next page. The `main thread` refers to an operating systems thread used to run most of the processing of HTML documents, so please use a consistent wording.",
       web_features: [
         "kXMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload",

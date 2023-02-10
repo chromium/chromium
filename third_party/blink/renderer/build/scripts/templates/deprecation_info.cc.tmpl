@@ -1,0 +1,28 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license(2023)}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation_info.h"
+
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+
+namespace blink {
+
+const char kNotDeprecated[] = "NotDeprecated";
+
+const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
+  switch (feature) {
+    {% for deprecation in deprecations %}
+    {% if deprecation.web_features %}
+    {% for web_feature in deprecation.web_features %}
+    case WebFeature::{{web_feature}}:
+    {% endfor %}
+      return DeprecationInfo::WithTranslation(feature, "{{deprecation.name}}");
+    {% endif %}
+    {% endfor %}
+    default:
+      return DeprecationInfo::NotDeprecated(feature);
+  }
+}
+}  // namespace blink

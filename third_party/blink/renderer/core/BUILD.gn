@@ -186,6 +186,25 @@ source_set("prerequisites") {
   ]
 }
 
+blink_python_runner("make_deprecation_info") {
+  script = "../build/scripts/make_deprecation_info.py"
+
+  inputs = scripts_for_json5_files + [
+             "frame/deprecation/deprecation.json5",
+             "../build/scripts/templates/deprecation_info.cc.tmpl",
+           ]
+
+  outputs = [ "$root_gen_dir/third_party/blink/renderer/core/frame/deprecation/deprecation_info.cc" ]
+
+  args = [
+    rebase_path("frame/deprecation/deprecation.json5", root_build_dir),
+    "--output_dir",
+    rebase_path(
+        "$root_gen_dir/third_party/blink/renderer/core/frame/deprecation",
+        root_build_dir),
+  ]
+}
+
 component("core") {
   output_name = "blink_core"
 
@@ -232,6 +251,7 @@ component("core") {
                          "",
                          "fragment_directive")
   sources += rebase_path(blink_core_sources_frame, "", "frame")
+  sources += get_target_outputs(":make_deprecation_info")
   sources += rebase_path(blink_core_sources_fullscreen, "", "fullscreen")
   sources += rebase_path(blink_core_sources_geometry, "", "geometry")
   sources += rebase_path(blink_core_sources_highlight, "", "highlight")
@@ -311,6 +331,7 @@ component("core") {
   deps = [
     ":generate_eventhandler_names",
     ":generated_settings_macros",
+    ":make_deprecation_info",
     "//build:chromeos_buildflags",
     "//components/attribution_reporting",
     "//components/attribution_reporting:mojom_blink",

@@ -1,8 +1,8 @@
 {#
     FIXME: Do we need to put license blocks in generated files?
 #}
-{% macro license() %}
-// Copyright 2014 The Chromium Authors
+{% macro license(year=2014) %}
+// Copyright {{year}} The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 {%- endmacro %}
