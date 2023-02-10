@@ -39,6 +39,7 @@ class FullscreenController;
 @class KeyCommandsProvider;
 @class NewTabPageCoordinator;
 @class LensCoordinator;
+@protocol OmniboxCommands;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
@@ -80,6 +81,7 @@ typedef struct {
   id<FindInPageCommands> findInPageCommandsHandler;
   id<ToolbarCommands> toolbarCommandsHandler;
   id<LoadQueryCommands> loadQueryCommandsHandler;
+  id<OmniboxCommands> omniboxCommandsHandler;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

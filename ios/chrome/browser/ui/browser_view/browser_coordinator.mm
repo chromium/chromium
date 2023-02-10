@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/feed_commands.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
@@ -840,6 +841,10 @@ enum class ToolbarKind {
   // HandlerForProtocol method.
   _viewControllerDependencies.loadQueryCommandsHandler =
       static_cast<id<LoadQueryCommands>>(_dispatcher);
+  // TODO(crbug.com/1413769) Typecast should be performed using
+  // HandlerForProtocol method.
+  _viewControllerDependencies.omniboxCommandsHandler =
+      static_cast<id<OmniboxCommands>>(_dispatcher);
 }
 
 - (void)updateViewControllerDependencies {
@@ -896,6 +901,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.findInPageCommandsHandler = nil;
   _viewControllerDependencies.toolbarCommandsHandler = nil;
   _viewControllerDependencies.loadQueryCommandsHandler = nil;
+  _viewControllerDependencies.omniboxCommandsHandler = nil;
 
   [_bookmarksCoordinator shutdown];
   _bookmarksCoordinator = nil;
