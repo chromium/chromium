@@ -184,7 +184,7 @@ void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
   if (error_state_ == new_error_state)
     return;
   error_state_ = new_error_state;
-  if (IsTransientSyncError(new_error_state)) {
+  if (new_error_state == SyncSetupService::kNoSyncServiceError) {
     infobar->RemoveSelf();
   } else {
     infobars::InfoBarManager* infobar_manager = infobar->owner();

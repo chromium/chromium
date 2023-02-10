@@ -77,9 +77,7 @@ bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
   switch (this->GetSyncServiceState()) {
     // No error.
     case SyncSetupService::kNoSyncServiceError:
-    // These errors are transient and don't mean that sync is off.
-    case SyncSetupService::kSyncServiceCouldNotConnect:
-    case SyncSetupService::kSyncServiceServiceUnavailable:
+    // This error doesn't actually stop sync.
     case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
       return false;
     // These errors effectively amount to disabled sync and require a signin.
@@ -127,26 +125,20 @@ void SyncSetupService::SetSyncEnabled(bool sync_enabled) {
 }
 
 SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
+  DCHECK(!sync_service_->GetAuthError().IsTransientError());
+
   switch (sync_service_->GetAuthError().state()) {
-    case GoogleServiceAuthError::REQUEST_CANCELED:
-      return kSyncServiceCouldNotConnect;
-    // TODO(crbug.com/1194007): This will support the SyncDisabled policy that
-    // can force the Sync service to become unavailable.
-    // Based on GetSyncStatusLabelsForAuthError, SERVICE_UNAVAILABLE
-    // corresponds to sync having been disabled for the user's domain.
-    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
-      return kSyncServiceServiceUnavailable;
     case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
       return kSyncServiceSignInNeedsUpdate;
     // The following errors are not shown to the user.
     case GoogleServiceAuthError::NONE:
-    // Connection failed is not shown to the user, as this will happen if the
-    // service retuned a 500 error. A more detail error can always be checked
-    // on chrome://sync-internals.
-    case GoogleServiceAuthError::CONNECTION_FAILED:
     case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
     case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
       break;
+    // Transient errors are unreachable as SyncService won't report them.
+    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
+    case GoogleServiceAuthError::CONNECTION_FAILED:
+    case GoogleServiceAuthError::REQUEST_CANCELED:
     // The following errors are unexpected on iOS.
     case GoogleServiceAuthError::SERVICE_ERROR:
     case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
