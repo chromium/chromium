@@ -510,11 +510,15 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_NEW_ZERO_ITEM_LABEL" desc="Text that indicates that a user has selected zero bookmarks for editing. [Length: 30em.]">
         0 selected
       </message>
-      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED" desc="Presented in an infobar when a bookmark is created. [Length: 30em.]">
-        Bookmarked
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED" desc="Presented in an infobar when bookmarks are created. [Length: 30em.]">
+        {count, plural,
+        =1 {Bookmarked}
+        other {Bookmarked}}
       </message>
-      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER" desc="Presented in an infobar when a bookmark is created. Specifies in which folder the bookmark was added. [Length: 30em.]">
-        Bookmarked to <ph name="FOLDER_TITLE">$1<ex>My Folder</ex></ph>
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER" desc="Presented in an infobar when  bookmark are created. Specifies in which folder the bookmark was added. [Length: 30em.]">
+          {count, plural,
+          =1 {Bookmarked to {title}}
+          other {Bookmarked to {title}}}
       </message>
       <message name="IDS_IOS_BOOKMARK_URL_FIELD_HEADER" desc="Title shown above URL field on Edit Bookmark screen. [Length: 20em]">
         URL

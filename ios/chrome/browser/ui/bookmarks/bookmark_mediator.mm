@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -79,11 +80,12 @@ const int64_t kLastUsedFolderNone = -1;
 
   NSString* folderTitle =
       bookmark_utils_ios::TitleForBookmarkNode(defaultFolder);
-  NSString* text =
-      _prefs->GetInt64(prefs::kIosBookmarkFolderDefault) != kLastUsedFolderNone
-          ? l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER,
-                                    base::SysNSStringToUTF16(folderTitle))
-          : l10n_util::GetNSString(IDS_IOS_BOOKMARK_PAGE_SAVED);
+  BOOL usesDefaultFolder =
+      (_prefs->GetInt64(prefs::kIosBookmarkFolderDefault) ==
+       kLastUsedFolderNone);
+  NSString* text = [self messageForAddingBookmarksInFolder:!usesDefaultFolder
+                                                     title:folderTitle
+                                                     count:1];
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
   message.action = action;
@@ -103,11 +105,9 @@ const int64_t kLastUsedFolderNone = -1;
   }
 
   NSString* folderTitle = bookmark_utils_ios::TitleForBookmarkNode(folder);
-  NSString* text =
-      folderTitle && [folderTitle length]
-          ? l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER,
-                                    base::SysNSStringToUTF16(folderTitle))
-          : l10n_util::GetNSString(IDS_IOS_BOOKMARK_PAGE_SAVED);
+  NSString* text = [self messageForAddingBookmarksInFolder:(folderTitle.length)
+                                                     title:folderTitle
+                                                     count:URLs.count];
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
   message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
@@ -130,6 +130,27 @@ const int64_t kLastUsedFolderNone = -1;
   }
 
   return defaultFolder;
+}
+
+// The localized strings for adding bookmarks.
+// `addFolder`: whether the folder name should appear in the message
+// `folderTitle`: The name of the folder. Assumed to be non-nil if `addFolder`
+// is true. `count`: the number of bookmarks. Used for localization.
+- (NSString*)messageForAddingBookmarksInFolder:(BOOL)addFolder
+                                         title:(NSString*)folderTitle
+                                         count:(int)count {
+  std::u16string result;
+  if (addFolder) {
+    std::u16string pattern =
+        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER);
+    result = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        pattern, "count", count, "title",
+        base::SysNSStringToUTF16(folderTitle));
+  } else {
+    result =
+        l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED, count);
+  }
+  return base::SysUTF16ToNSString(result);
 }
 
 @end

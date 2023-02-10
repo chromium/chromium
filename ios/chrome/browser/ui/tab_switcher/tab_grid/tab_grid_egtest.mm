@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/format_macros.h"
+#import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
@@ -557,7 +558,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
-  [self waitForSnackBarMessage:IDS_IOS_BOOKMARK_PAGE_SAVED
+  NSString* snackbarMessage = base::SysUTF16ToNSString(
+      l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED, 1));
+  [self waitForSnackBarMessageText:snackbarMessage
       triggeredByTappingItemWithMatcher:AddToBookmarksButton()];
 
   [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
@@ -1299,10 +1302,13 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // Choose "Mobile Bookmarks" folder as the destination.
   // Duplicate matcher here instead of using +[BookmarkEarlGreyUI
   // openMobileBookmarks] in order to properly wait for the snackbar message.
-  NSString* snackBarMessage =
-      l10n_util::GetNSStringF(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER,
-                              base::SysNSStringToUTF16(@"Mobile Bookmarks"));
-  [self waitForSnackBarMessageText:snackBarMessage
+  std::u16string pattern =
+      l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER);
+  NSString* snackbarMessage = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          pattern, "count", 2, "title",
+          base::SysNSStringToUTF16(@"Mobile Bookmarks")));
+  [self waitForSnackBarMessageText:snackbarMessage
       triggeredByTappingItemWithMatcher:grey_allOf(grey_kindOfClassName(
                                                        @"UITableViewCell"),
                                                    grey_descendant(grey_text(
@@ -1964,7 +1970,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [self longPressTabWithTitle:title2];
 
-  [self waitForSnackBarMessage:IDS_IOS_BOOKMARK_PAGE_SAVED
+  NSString* snackbarMessage = base::SysUTF16ToNSString(
+      l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED, 1));
+  [self waitForSnackBarMessageText:snackbarMessage
       triggeredByTappingItemWithMatcher:AddToBookmarksButton()];
 
   [self longPressTabWithTitle:title2];
