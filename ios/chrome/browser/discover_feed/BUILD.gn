@@ -7,6 +7,8 @@ source_set("discover_feed") {
   sources = [
     "discover_feed_configuration.h",
     "discover_feed_configuration.mm",
+    "discover_feed_experiments_tracker.h",
+    "discover_feed_experiments_tracker.mm",
     "discover_feed_observer.h",
     "discover_feed_observer_bridge.h",
     "discover_feed_observer_bridge.mm",
@@ -18,7 +20,10 @@ source_set("discover_feed") {
     "feed_model_configuration.mm",
   ]
   deps = [
+    "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/keyed_service/core",
+    "//components/variations:variations",
+    "//ios/chrome/browser/metrics:accessor",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
   public_deps = [

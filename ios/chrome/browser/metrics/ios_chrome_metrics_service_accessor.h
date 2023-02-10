@@ -13,6 +13,7 @@
 #include "components/variations/synthetic_trials.h"
 
 class ApplicationBreadcrumbsLogger;
+class DiscoverFeedExperimentsTracker;
 class OptimizationGuideService;
 
 namespace {
@@ -44,6 +45,7 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
 
   friend class ApplicationBreadcrumbsLogger;
   friend class CrashesDOMHandler;
+  friend class DiscoverFeedExperimentsTracker;
   friend class IOSChromeMainParts;
   friend class OptimizationGuideService;
   friend class segmentation_platform::IOSFieldTrialRegisterImpl;
