@@ -58151,6 +58151,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:enabled"/>
   <int value="-1939003674" label="NetworkServiceInProcess:disabled"/>
   <int value="-1938263248" label="enable-extension-info-dialog"/>
+  <int value="-1937756352" label="LensEnableImageTranslate:disabled"/>
   <int value="-1937145719" label="EnableWebAppUninstallFromOsSettings:enabled"/>
   <int value="-1937077699" label="http-form-warning"/>
   <int value="-1937038119" label="FullRestoreForLacros:disabled"/>
@@ -59620,6 +59621,7 @@ from previous Chrome versions.
   <int value="-1126217973" label="IdleTimeSpellChecking:disabled"/>
   <int value="-1125840399" label="ViewsBrowserWindows:enabled"/>
   <int value="-1125133283" label="disable-threaded-scrolling"/>
+  <int value="-1124684239" label="LensEnableImageTranslate:enabled"/>
   <int value="-1123054362" label="MicrosoftOfficeWebAppExperiment:enabled"/>
   <int value="-1122899696" label="PluginVmShowMicrophonePermissions:disabled"/>
   <int value="-1122895401"

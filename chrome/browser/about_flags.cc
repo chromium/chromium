@@ -7974,6 +7974,10 @@ const FeatureEntry kFeatureEntries[] = {
          kLensImageFormatVariations,
          "LensImageFormatOptimizations")},
 
+    {"enable-lens-image-translate", flag_descriptions::kLensImageTranslateName,
+     flag_descriptions::kLensImageTranslateDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kEnableImageTranslate)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-log-controller-for-diagnostics-app",
      flag_descriptions::kEnableLogControllerForDiagnosticsAppName,

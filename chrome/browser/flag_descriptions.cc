@@ -1897,6 +1897,13 @@ const char kLensImageFormatOptimizationsDescription[] =
     "Enables the use of either WebP or JPEG on all Lens quries to reduce "
     "network load and improve latency";
 
+const char kLensImageTranslateName[] =
+    "Translate text in images with Google Lens";
+const char kLensImageTranslateDescription[] =
+    "Enables a context menu item to translate text in images using Google "
+    "Lens. The context menu item appears when the current page is being "
+    "translated.";
+
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";
 const char kLogJsConsoleMessagesDescription[] =
