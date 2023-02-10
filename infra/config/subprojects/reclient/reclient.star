@@ -567,5 +567,6 @@ ci.builder(
     reclient_jobs = None,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_rewrapper_env = {"RBE_compare": "true"},
+    reclient_disable_bq_upload = True,
     service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
 )

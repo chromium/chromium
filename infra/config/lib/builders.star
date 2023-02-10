@@ -289,7 +289,7 @@ def _code_coverage_property(
 
 _VALID_REPROXY_ENV_PREFIX_LIST = ["RBE_", "GLOG_", "GOMA_"]
 
-def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified, bootstrap_env, scandeps_server):
+def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified, bootstrap_env, scandeps_server, disable_bq_upload):
     reclient = {}
     instance = defaults.get_value("reclient_instance", instance)
     if not instance:
@@ -331,6 +331,9 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_servi
     ensure_verified = defaults.get_value("reclient_ensure_verified", ensure_verified)
     if ensure_verified:
         reclient["ensure_verified"] = True
+    disable_bq_upload = defaults.get_value("reclient_disable_bq_upload", disable_bq_upload)
+    if disable_bq_upload:
+        reclient["disable_bq_upload"] = True
 
     return reclient
 
@@ -406,6 +409,7 @@ defaults = args.defaults(
     reclient_scandeps_server = False,
     reclient_cache_silo = None,
     reclient_ensure_verified = None,
+    reclient_disable_bq_upload = None,
 
     # This is to enable luci.buildbucket.omit_python2 experiment.
     # TODO(crbug.com/1362440): remove this after enabling this in all builders.
@@ -472,6 +476,7 @@ def builder(
         reclient_scandeps_server = args.DEFAULT,
         reclient_cache_silo = None,
         reclient_ensure_verified = None,
+        reclient_disable_bq_upload = None,
         omit_python2 = args.DEFAULT,
         **kwargs):
     """Define a builder.
@@ -652,6 +657,8 @@ def builder(
             remote caching. Has no effect if reclient_instance is not set.
         reclient_ensure_verified: If True, it verifies build artifacts. Has no
             effect if reclient_instance is not set.
+        reclient_disable_bq_upload: If True, rbe_metrics will not be uploaded to
+            BigQuery after each build
         omit_python2: If True, set luci.buildbucket.omit_python2 experiment.
             TODO(crbug.com/1362440): remove this after enabling this in all
             builders.
@@ -806,6 +813,7 @@ def builder(
         scandeps_server = reclient_scandeps_server,
         cache_silo = reclient_cache_silo,
         ensure_verified = reclient_ensure_verified,
+        disable_bq_upload = reclient_disable_bq_upload,
     )
     if reclient != None:
         properties["$build/reclient"] = reclient

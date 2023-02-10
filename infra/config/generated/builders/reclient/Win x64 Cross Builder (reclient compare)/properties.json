@@ -41,6 +41,7 @@
     }
   },
   "$build/reclient": {
+    "disable_bq_upload": true,
     "ensure_verified": true,
     "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics",
