@@ -13,7 +13,6 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_service.h"
-#include "content/public/browser/render_process_host_creation_observer.h"
 
 namespace task_manager {
 
@@ -22,10 +21,8 @@ class ChildProcessTask;
 // This provides tasks that represent RenderProcessHost processes. It does so by
 // listening to the notification service for the creation and destruction of the
 // RenderProcessHost.
-class RenderProcessHostTaskProvider
-    : public TaskProvider,
-      public content::RenderProcessHostCreationObserver,
-      public content::NotificationObserver {
+class RenderProcessHostTaskProvider : public TaskProvider,
+                                      public content::NotificationObserver {
  public:
   RenderProcessHostTaskProvider();
   RenderProcessHostTaskProvider(const RenderProcessHostTaskProvider&) = delete;
@@ -35,9 +32,6 @@ class RenderProcessHostTaskProvider
 
   // task_manager::TaskProvider:
   Task* GetTaskOfUrlRequest(int child_id, int route_id) override;
-
-  // content::RenderProcessHostCreationObserver:
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
   // content::NotificationObserver:
   void Observe(int type,
