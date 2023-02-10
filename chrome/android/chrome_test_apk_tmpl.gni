@@ -18,19 +18,6 @@ chrome_public_test_manifest_package = "org.chromium.chrome.tests"
 
 template("chrome_test_apk_tmpl") {
   chrome_public_common_apk_or_module_tmpl(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "apk_name",
-                             "data_deps",
-                             "enable_lint",
-                             "enforce_resource_overlays_in_tests",
-                             "extra_args",
-                             "is_unit_test",
-                             "shared_libraries",
-                             "sources",
-                             "data",
-                           ])
-
     testonly = true
     target_type = "instrumentation_test_apk"
     bundles_supported = true
@@ -60,10 +47,22 @@ template("chrome_test_apk_tmpl") {
     if (!is_java_debug) {
       proguard_enabled = true
       proguard_configs = [ "//chrome/android/proguard/apk_for_test.flags" ]
+      if (defined(invoker.proguard_configs)) {
+        proguard_configs += invoker.proguard_configs
+      }
     }
 
     # TODO(crbug.com/993340): Update test goldens with webp versions of images.
     png_to_webp = false
+
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [
+                                 "additional_apks",
+                                 "deps",
+                                 "proguard_configs",
+                               ])
   }
 }
 

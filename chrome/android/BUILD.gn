@@ -2844,6 +2844,7 @@ if (current_toolchain == default_toolchain) {
     chrome_test_apk_tmpl("chrome_public_test_vr_apk") {
       apk_name = "ChromePublicTestVr"
       shared_libraries = [ ":libchromefortest" ]
+      manifest_package = chrome_public_manifest_package
 
       deps = [
         ":chrome_test_vr_java",
