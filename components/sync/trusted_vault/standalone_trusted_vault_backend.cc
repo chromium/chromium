@@ -327,16 +327,12 @@ void StandaloneTrustedVaultBackend::ReadDataFromDisk() {
     WriteDataToDisk();
   }
 
-  if (base::FeatureList::IsEnabled(kSyncTrustedVaultResetKeysAreStale) &&
-      data_.data_version() == 1) {
+  if (data_.data_version() == 1) {
     UpgradeToVersion2(&data_);
     WriteDataToDisk();
   }
 
-  // TODO(crbug.com/1362513): DCHECK against kCurrentLocalTrustedVaultVersion
-  // once kSyncTrustedVaultResetKeysAreStale is removed and version 2 is
-  // guaranteed.
-  DCHECK_GE(data_.data_version(), 1);
+  DCHECK_EQ(data_.data_version(), kCurrentLocalTrustedVaultVersion);
 }
 
 void StandaloneTrustedVaultBackend::FetchKeys(

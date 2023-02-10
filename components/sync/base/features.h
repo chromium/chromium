@@ -102,10 +102,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // being registered is consistent with the server-side state.
 BASE_DECLARE_FEATURE(kSyncTrustedVaultVerifyDeviceRegistration);
 
-// Triggers one-off reset of `keys_are_stale`, allowing another device
-// registration attempt if previous was failed.
-BASE_DECLARE_FEATURE(kSyncTrustedVaultResetKeysAreStale);
-
 // If enabled, the device will register with FCM and listen to new
 // invalidations. Also, FCM token will be set in DeviceInfo, which signals to
 // the server that device listens to new invalidations.
