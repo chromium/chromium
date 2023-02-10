@@ -6,9 +6,12 @@
 #define CC_SLIM_UI_RESOURCE_LAYER_H_
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
+#include "cc/resources/ui_resource_client.h"
 #include "cc/slim/layer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace cc {
 class UIResourceLayer;
@@ -24,7 +27,7 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
   // Sets the resource. If they don't exist already, the shared UI resource and
   // ID are generated and cached in a map in the associated UIResourceManager.
   // Currently, this resource will never be released by the UIResourceManager.
-  void SetUIResourceId(int id);
+  void SetUIResourceId(cc::UIResourceId id);
 
   // An alternative way of setting the resource where an ID is used directly. If
   // you use this method, you are responsible for updating the ID if the layer
@@ -41,12 +44,31 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
                         float top_right,
                         float bottom_right);
 
+  // Layer implementation.
+  void SetLayerTree(LayerTree* tree) override;
+
  protected:
+  FRIEND_TEST_ALL_PREFIXES(SlimLayerTest, UIResourceLayerProperties);
+
   explicit UIResourceLayer(scoped_refptr<cc::UIResourceLayer> cc_layer);
   ~UIResourceLayer() override;
 
+  cc::UIResourceId resource_id() const { return resource_id_; }
+  auto uv_top_left() const { return uv_.origin(); }
+  auto uv_bottom_right() const { return uv_.bottom_right(); }
+  const auto& vertex_opacity() const { return vertex_opacity_; }
+
+  bool HasDrawableContent() const override;
+
  private:
   cc::UIResourceLayer* cc_layer() const;
+  void RefreshResource();
+  void SetUIResourceIdInternal(cc::UIResourceId resource_id);
+
+  cc::UIResourceId resource_id_ = 0;
+  SkBitmap bitmap_;
+  gfx::RectF uv_;
+  float vertex_opacity_[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 };
 
 }  // namespace cc::slim
