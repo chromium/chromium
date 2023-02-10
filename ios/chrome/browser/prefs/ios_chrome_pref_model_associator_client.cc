@@ -41,3 +41,8 @@ base::Value IOSChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
     const base::Value& server_value) const {
   return base::Value();
 }
+
+const sync_preferences::SyncablePrefsDatabase&
+IOSChromePrefModelAssociatorClient::GetSyncablePrefsDatabase() const {
+  return ios_chrome_syncable_prefs_database_;
+}
