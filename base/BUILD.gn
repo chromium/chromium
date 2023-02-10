@@ -4748,6 +4748,7 @@ source_set("partition_alloc_test_support") {
     "allocator/partition_allocator/extended_api.cc",
     "allocator/partition_allocator/extended_api.h",
     "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h",
+    "allocator/partition_allocator/partition_alloc_for_testing.h",
   ]
   if (is_posix) {
     sources += [ "allocator/partition_allocator/partition_alloc_base/threading/platform_thread_posix_for_testing.cc" ]

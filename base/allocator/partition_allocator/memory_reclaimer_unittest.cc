@@ -7,11 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_alloc_for_testing.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,28 +37,31 @@ void HandleOOM(size_t unused_size) {
 
 class MemoryReclaimerTest : public ::testing::Test {
  public:
-  MemoryReclaimerTest() = default;
-
- protected:
-  void SetUp() override {
-    PartitionAllocGlobalInit(HandleOOM);
+  MemoryReclaimerTest() {
+    // Since MemoryReclaimer::ResetForTesting() clears partitions_,
+    // we need to make PartitionAllocator after this ResetForTesting().
+    // Otherwise, we will see no PartitionAllocator is registered.
     MemoryReclaimer::Instance()->ResetForTesting();
-    allocator_ = std::make_unique<PartitionAllocator>();
-    allocator_->init({
-        PartitionOptions::AlignedAlloc::kDisallowed,
-        PartitionOptions::ThreadCache::kDisabled,
-        PartitionOptions::Quarantine::kAllowed,
-        PartitionOptions::Cookie::kAllowed,
-        PartitionOptions::BackupRefPtr::kDisabled,
-        PartitionOptions::BackupRefPtrZapping::kDisabled,
-        PartitionOptions::UseConfigurablePool::kNo,
-    });
+
+    allocator_ =
+        std::make_unique<PartitionAllocatorForTesting>(PartitionOptions{
+            PartitionOptions::AlignedAlloc::kDisallowed,
+            PartitionOptions::ThreadCache::kDisabled,
+            PartitionOptions::Quarantine::kAllowed,
+            PartitionOptions::Cookie::kAllowed,
+            PartitionOptions::BackupRefPtr::kDisabled,
+            PartitionOptions::BackupRefPtrZapping::kDisabled,
+            PartitionOptions::UseConfigurablePool::kNo,
+        });
     allocator_->root()->UncapEmptySlotSpanMemoryForTesting();
+    PartitionAllocGlobalInit(HandleOOM);
   }
 
-  void TearDown() override {
+  ~MemoryReclaimerTest() override {
+    // Since MemoryReclaimer::UnregisterPartition() checks whether
+    // the given partition is managed by MemoryReclaimer, need to
+    // destruct |allocator_| before ResetForTesting().
     allocator_ = nullptr;
-    MemoryReclaimer::Instance()->ResetForTesting();
     PartitionAllocGlobalUninitForTesting();
   }
 
@@ -69,7 +72,7 @@ class MemoryReclaimerTest : public ::testing::Test {
     allocator_->root()->Free(data);
   }
 
-  std::unique_ptr<PartitionAllocator> allocator_;
+  std::unique_ptr<PartitionAllocatorForTesting> allocator_;
 };
 
 TEST_F(MemoryReclaimerTest, FreesMemory) {

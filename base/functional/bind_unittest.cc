@@ -12,8 +12,8 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
-#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_for_testing.h"  // nogncheck
 #include "base/functional/callback.h"
 #include "base/functional/disallow_unretained.h"
 #include "base/memory/ptr_util.h"
@@ -1819,33 +1819,30 @@ void HandleOOM(size_t unused_size) {
 // Basic set of options to mostly only enable `BackupRefPtr::kEnabled`.
 // This avoids the boilerplate of having too much options enabled for simple
 // testing purpose.
-static constexpr partition_alloc::PartitionOptions kOpts = {
-    partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
-    partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-    partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-    partition_alloc::PartitionOptions::Cookie::kAllowed,
-    partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
-    partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled,
-    partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+static constexpr partition_alloc::PartitionOptions
+    kOnlyEnableBackupRefPtrOptions = {
+        partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
+        partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+        partition_alloc::PartitionOptions::Quarantine::kDisallowed,
+        partition_alloc::PartitionOptions::Cookie::kAllowed,
+        partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
+        partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled,
+        partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
 };
 
 class BindUnretainedDanglingInternalFixture : public BindTest {
  public:
   void SetUp() override {
     partition_alloc::PartitionAllocGlobalInit(HandleOOM);
-    allocator_.init(kOpts);
     enabled_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPartitionAllocUnretainedDanglingPtr, {{"mode", "crash"}}}},
         {/* disabled_features */});
     allocator::InstallUnretainedDanglingRawPtrChecks();
   }
+
   void TearDown() override {
     enabled_feature_list_.Reset();
     allocator::InstallUnretainedDanglingRawPtrChecks();
-    allocator_.root()->PurgeMemory(
-        partition_alloc::PurgeFlags::kDecommitEmptySlotSpans |
-        partition_alloc::PurgeFlags::kDiscardUnusedSystemPages);
-    partition_alloc::PartitionAllocGlobalUninitForTesting();
   }
 
   // In unit tests, allocations being tested need to live in a separate PA
@@ -1865,7 +1862,8 @@ class BindUnretainedDanglingInternalFixture : public BindTest {
 
  private:
   test::ScopedFeatureList enabled_feature_list_;
-  partition_alloc::PartitionAllocator allocator_;
+  partition_alloc::PartitionAllocatorForTesting allocator_{
+      kOnlyEnableBackupRefPtrOptions};
 };
 
 class BindUnretainedDanglingTest

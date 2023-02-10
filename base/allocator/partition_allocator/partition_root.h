@@ -405,6 +405,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PartitionRoot()
       : flags{QuarantineMode::kAlwaysDisabled, ScanMode::kDisabled} {}
   explicit PartitionRoot(PartitionOptions opts) : flags() { Init(opts); }
+  // TODO(tasak): remove ~PartitionRoot() after confirming all tests
+  // don't need ~PartitionRoot().
   ~PartitionRoot();
 
   // This will unreserve any space in the pool that the PartitionRoot is
@@ -584,6 +586,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
                  PartitionStatsDumper* partition_stats_dumper);
 
   static void DeleteForTesting(PartitionRoot* partition_root);
+  void ResetForTesting(bool allow_leaks);
   void ResetBookkeepingForTesting();
 
   PA_ALWAYS_INLINE BucketDistribution GetBucketDistribution() const {

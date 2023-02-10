@@ -9,13 +9,13 @@
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
-#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cpu.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_for_testing.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/tagging.h"
@@ -101,7 +101,7 @@ class PartitionAllocPCScanTestBase : public testing::Test {
 
  private:
   // Leverage the already-templated version outside `internal::`.
-  partition_alloc::PartitionAllocator allocator_;
+  partition_alloc::PartitionAllocatorAllowLeaksForTesting allocator_;
 };
 
 // The test that expects free() being quarantined only when tag overflow occurs.

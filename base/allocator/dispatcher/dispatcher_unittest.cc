@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_for_testing.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -101,6 +101,11 @@ TEST_F(BaseAllocatorDispatcherTest, VerifyInitialization) {
 struct PartitionAllocator {
   void* Alloc(size_t size) { return alloc_.AllocWithFlags(0, size, nullptr); }
   void Free(void* data) { alloc_.Free(data); }
+  ~PartitionAllocator() {
+    // Use |DisallowLeaks| to confirm that there is no memory allocated and
+    // not yet freed.
+    alloc_.ResetForTesting(::partition_alloc::internal::DisallowLeaks);
+  }
 
  private:
   ThreadSafePartitionRoot alloc_{{

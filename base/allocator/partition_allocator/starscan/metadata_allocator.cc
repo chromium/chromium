@@ -30,13 +30,14 @@ ThreadSafePartitionRoot& PCScanMetadataAllocator() {
   return *allocator;
 }
 
+// TODO(tasak): investigate whether PartitionAlloc tests really need this
+// function or not. If we found no tests need, remove it.
 void ReinitPCScanMetadataAllocatorForTesting() {
   // First, purge memory owned by PCScanMetadataAllocator.
   PCScanMetadataAllocator().PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans |
                                         PurgeFlags::kDiscardUnusedSystemPages);
   // Then, reinit the allocator.
-  PCScanMetadataAllocator().~PartitionRoot();
-  memset(&PCScanMetadataAllocator(), 0, sizeof(PCScanMetadataAllocator()));
+  PCScanMetadataAllocator().ResetForTesting(true);  // IN-TEST
   PCScanMetadataAllocator().Init(kConfig);
 }
 
