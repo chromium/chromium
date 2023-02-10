@@ -47,10 +47,6 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -128,14 +124,24 @@
 #include "components/offline_pages/core/client_namespace_constants.h"
 #endif
 
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#endif
+
 using content::BrowserThread;
 using content::DownloadManager;
 using download::DownloadItem;
 using download::DownloadPathReservationTracker;
 using download::PathValidationResult;
 using safe_browsing::DownloadFileType;
-using safe_browsing::DownloadProtectionService;
 using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+using safe_browsing::DownloadProtectionService;
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 using extensions::CrxInstaller;
@@ -952,18 +958,19 @@ ChromeDownloadManagerDelegate::ApplicationClientIdForFileScanning() {
   return std::string(chrome::kApplicationClientIDStringForAVScanning);
 }
 
+#if BUILDFLAG(FULL_SAFE_BROWSING)
 DownloadProtectionService*
 ChromeDownloadManagerDelegate::GetDownloadProtectionService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
   if (sb_service && sb_service->download_protection_service()) {
     return sb_service->download_protection_service();
   }
-#endif
+
   return nullptr;
 }
+#endif
 
 void ChromeDownloadManagerDelegate::GetInsecureDownloadStatus(
     download::DownloadItem* download,

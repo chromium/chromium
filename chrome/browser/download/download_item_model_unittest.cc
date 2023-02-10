@@ -48,7 +48,6 @@
 using download::DownloadItem;
 using offline_items_collection::FailState;
 using safe_browsing::DownloadFileType;
-using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 using ::testing::_;
 using ::testing::Mock;
 using ::testing::NiceMock;
@@ -56,6 +55,10 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
 using ::testing::SetArgPointee;
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
+#endif
 
 namespace {
 

@@ -33,7 +33,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_target_info.h"
 #include "chrome/browser/download/insecure_download_blocking.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -69,6 +68,7 @@
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -139,8 +139,10 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
       : ChromeDownloadManagerDelegate(profile) {
     ON_CALL(*this, MockCheckDownloadUrl(_, _))
         .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
+#if BUILDFLAG(FULL_SAFE_BROWSING)
     ON_CALL(*this, GetDownloadProtectionService())
         .WillByDefault(Return(nullptr));
+#endif
     ON_CALL(*this, MockReserveVirtualPath(_, _, _, _, _))
         .WillByDefault(DoAll(SetArgPointee<4>(PathValidationResult::SUCCESS),
                              ReturnArg<1>()));
@@ -203,8 +205,10 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
                download::DownloadDangerType(DownloadItem*,
                                             const base::FilePath&));
 
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   MOCK_METHOD0(GetDownloadProtectionService,
                safe_browsing::DownloadProtectionService*());
+#endif
 
   void RequestConfirmation(
       DownloadItem* item,
