@@ -460,12 +460,12 @@
   {
     "name": "autofill-always-return-cloud-tokenized-card",
     "owners": [ "aneeshali@google.com", "jsaul@google.com", "siyua" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-auto-trigger-manual-fallback-for-cards",
     "owners": ["siashah", "siyua"],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-enable-card-art-image",
@@ -490,7 +490,7 @@
   {
     "name": "autofill-enable-manual-fallback-for-virtual-cards",
     "owners": [ "siashah", "siyua" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
       "name": "autofill-enable-new-card-unmask-prompt-view",
@@ -500,12 +500,12 @@
   {
     "name": "autofill-enable-offer-notification-for-promo-codes",
     "owners": [ "jsaul@google.com", "siyua" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua", "siashah@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-enable-page-load-metadata-integration",
@@ -530,12 +530,12 @@
   {
     "name": "autofill-enable-sticky-manual-fallback-for-cards",
     "owners": [ "siashah","siyua" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-enable-update-virtual-card-enrollment",
     "owners": [ "siyua", "jsaul@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "autofill-enable-upstream-save-card-offer-ui-experiment",
@@ -555,7 +555,7 @@
     {
     "name": "autofill-enable-virtual-card-management-in-desktop-settings-page",
     "owners": [ "siyua", "jsaul@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-enable-virtual-card-metadata",
@@ -565,7 +565,7 @@
   {
     "name": "autofill-enforce-delays-in-strike-database",
     "owners": [ "siyua"],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-fill-iban-fields",
@@ -1787,7 +1787,7 @@
   {
     "name": "enable-autofill-credit-card-authentication",
     "owners": [ "jsaul@google.com", "siyua" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "enable-autofill-credit-card-upload",
