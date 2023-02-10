@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -1469,7 +1470,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Run hibernation task.
   scheduler::RunIdleTasksForTesting(
       scheduler::WebThreadScheduler::MainThreadScheduler(),
-      base::BindOnce([]() {}));
+      WTF::BindOnce([]() {}));
   blink::test::RunPendingTasks();
   // If enabled, hibernation should cause repaint of the painting layer.
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
@@ -1521,7 +1522,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Run hibernation task.
   scheduler::RunIdleTasksForTesting(
       scheduler::WebThreadScheduler::MainThreadScheduler(),
-      base::BindOnce([]() {}));
+      WTF::BindOnce([]() {}));
   blink::test::RunPendingTasks();
 
   // Never hibernate a canvas with no resource provider.

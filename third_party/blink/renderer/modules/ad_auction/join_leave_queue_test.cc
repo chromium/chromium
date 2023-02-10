@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -18,8 +19,8 @@ class JoinLeaveQueueTest : public testing::Test {
   JoinLeaveQueueTest()
       : queue_(std::make_unique<JoinLeaveQueue<int>>(
             /*max_active=*/2,
-            base::BindRepeating(&JoinLeaveQueueTest::Start,
-                                base::Unretained(this)))) {}
+            WTF::BindRepeating(&JoinLeaveQueueTest::Start,
+                               base::Unretained(this)))) {}
 
  protected:
   void Start(int&& i) { start_order_.push_back(i); }

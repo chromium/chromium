@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -78,8 +79,8 @@ class BackendDatabaseWithMockedClose
           pending_receiver)
       : receiver_(this, std::move(pending_receiver)) {
     receiver_.set_disconnect_handler(
-        base::BindOnce(&BackendDatabaseWithMockedClose::DatabaseDestroyed,
-                       base::Unretained(this)));
+        WTF::BindOnce(&BackendDatabaseWithMockedClose::DatabaseDestroyed,
+                      base::Unretained(this)));
   }
 
   void DatabaseDestroyed() { destroyed_ = true; }
