@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/prefs/chrome_syncable_prefs_database.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 
 namespace base {
@@ -39,6 +40,11 @@ class ChromePrefModelAssociatorClient
       const std::string& pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override;
+  const sync_preferences::SyncablePrefsDatabase& GetSyncablePrefsDatabase()
+      const override;
+
+  // This defines the list of preferences that can be synced.
+  ChromeSyncablePrefsDatabase chrome_syncable_prefs_database_;
 };
 
 #endif  // CHROME_BROWSER_PREFS_CHROME_PREF_MODEL_ASSOCIATOR_CLIENT_H_

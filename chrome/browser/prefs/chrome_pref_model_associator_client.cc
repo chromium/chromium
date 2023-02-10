@@ -49,3 +49,8 @@ base::Value ChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
 
   return base::Value();
 }
+
+const sync_preferences::SyncablePrefsDatabase&
+ChromePrefModelAssociatorClient::GetSyncablePrefsDatabase() const {
+  return chrome_syncable_prefs_database_;
+}

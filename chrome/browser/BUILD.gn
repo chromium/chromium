@@ -1286,6 +1286,8 @@ static_library("browser") {
     "prefs/chrome_pref_model_associator_client.h",
     "prefs/chrome_pref_service_factory.cc",
     "prefs/chrome_pref_service_factory.h",
+    "prefs/chrome_syncable_prefs_database.cc",
+    "prefs/chrome_syncable_prefs_database.h",
     "prefs/incognito_mode_prefs.cc",
     "prefs/incognito_mode_prefs.h",
     "prefs/pref_metrics_service.cc",

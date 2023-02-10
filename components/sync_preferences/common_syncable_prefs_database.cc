@@ -5,11 +5,14 @@
 #include "components/sync_preferences/common_syncable_prefs_database.h"
 
 #include "base/containers/fixed_flat_set.h"
+#include "base/strings/string_piece.h"
 
 namespace sync_preferences {
-
+namespace {
+// List of syncable preferences common across platforms.
 constexpr auto kCommonSyncablePrefsAllowlist =
-    base::MakeFixedFlatSet<std::string_view>({"dummy"});
+    base::MakeFixedFlatSet<base::StringPiece>({"dummy"});
+}  // namespace
 
 bool CommonSyncablePrefsDatabase::IsPreferenceSyncable(
     const std::string& pref_name) const {
