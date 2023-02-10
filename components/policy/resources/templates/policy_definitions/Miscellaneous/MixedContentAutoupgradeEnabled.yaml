@@ -24,6 +24,7 @@ owners:
 schema:
   type: boolean
 supported_on:
+# TODO(crbug.com/1414550): Remove this policy on ~Mar 23 after 113 has branched.
 - ios:111-
 tags: []
 type: main
