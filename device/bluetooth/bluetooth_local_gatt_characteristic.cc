@@ -9,6 +9,7 @@
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     !defined(LINUX_WITHOUT_DBUS)
 #include "device/bluetooth/bluez/bluetooth_local_gatt_characteristic_bluez.h"
+#include "device/bluetooth/floss/bluetooth_local_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/floss_features.h"
 #endif
 
@@ -24,12 +25,9 @@ BluetoothLocalGattCharacteristic::Create(const BluetoothUUID& uuid,
     !defined(LINUX_WITHOUT_DBUS)
   DCHECK(service);
   if (floss::features::IsFlossEnabled()) {
-    // TODO: Floss local gatt work.
-    // return (new floss::BluetoothLocalGattCharacteristicFloss(
-    //             uuid, properties, permissions,
-    //             static_cast<floss::BluetoothLocalGattServiceFloss*>(service)))
-    //     ->weak_ptr_factory_.GetWeakPtr();
-    return nullptr;
+    return floss::BluetoothLocalGattCharacteristicFloss::Create(
+        uuid, properties, permissions,
+        static_cast<floss::BluetoothLocalGattServiceFloss*>(service));
   } else {
     return (new bluez::BluetoothLocalGattCharacteristicBlueZ(
                 uuid, properties, permissions,

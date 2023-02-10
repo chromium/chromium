@@ -9,6 +9,7 @@
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     !defined(LINUX_WITHOUT_DBUS)
 #include "device/bluetooth/bluez/bluetooth_local_gatt_descriptor_bluez.h"
+#include "device/bluetooth/floss/bluetooth_local_gatt_descriptor_floss.h"
 #include "device/bluetooth/floss/floss_features.h"
 #endif
 
@@ -24,13 +25,10 @@ BluetoothLocalGattDescriptor::Create(
     !defined(LINUX_WITHOUT_DBUS)
   DCHECK(characteristic);
   if (floss::features::IsFlossEnabled()) {
-    // TODO: Floss local gatt work.
-    // return (new floss::BluetoothLocalGattDescriptorFloss(
-    //             uuid, permissions,
-    //             static_cast<floss::BluetoothLocalGattCharacteristicFloss*>(
-    //                 characteristic)))
-    //     ->weak_ptr_factory_.GetWeakPtr();
-    return nullptr;
+    return floss::BluetoothLocalGattDescriptorFloss::Create(
+        uuid, permissions,
+        static_cast<floss::BluetoothLocalGattCharacteristicFloss*>(
+            characteristic));
   } else {
     return (new bluez::BluetoothLocalGattDescriptorBlueZ(
                 uuid, permissions,

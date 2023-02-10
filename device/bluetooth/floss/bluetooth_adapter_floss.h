@@ -38,6 +38,8 @@ namespace floss {
 
 class BluetoothDeviceFloss;
 class BluetoothAdvertisementFloss;
+class BluetoothLocalGattServiceFloss;
+class BluetoothLocalGattCharacteristicFloss;
 
 // The BluetoothAdapterFloss class implements BluetoothAdapter for platforms
 // that use Floss, a dbus front-end for the Fluoride Bluetooth stack.
@@ -128,6 +130,32 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
 
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
+
+  // Register a GATT service. The service must belong to this adapter.
+  void RegisterGattService(
+      BluetoothLocalGattServiceFloss* service,
+      base::OnceClosure callback,
+      device::BluetoothGattService::ErrorCallback error_callback);
+
+  // Unregister a GATT service. The service must already be registered.
+  void UnregisterGattService(
+      BluetoothLocalGattServiceFloss* service,
+      base::OnceClosure callback,
+      device::BluetoothGattService::ErrorCallback error_callback);
+
+  void AddLocalGattService(
+      std::unique_ptr<BluetoothLocalGattServiceFloss> service);
+
+  void RemoveLocalGattService(BluetoothLocalGattServiceFloss* service);
+
+  // Returns if a given service is currently registered.
+  bool IsGattServiceRegistered(BluetoothLocalGattServiceFloss* service);
+
+  // Send a notification for this characteristic that its value has been
+  // updated. If the service that owns that characteristic is not registered,
+  // this method will return false.
+  bool SendValueChanged(BluetoothLocalGattCharacteristicFloss* characteristic,
+                        const std::vector<uint8_t>& value);
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SetServiceAllowList(const UUIDList& uuids,
@@ -299,6 +327,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   // b/253718595 will provide a 'no preference' option so that Floss can choose
   // a default value for the advertising interval.
   uint16_t interval_ms_ = 100;
+
+  // List of GATT services that are owned by this adapter.
+  base::flat_map<std::string, std::unique_ptr<BluetoothLocalGattServiceFloss>>
+      owned_gatt_services_;
 
   base::WeakPtrFactory<BluetoothAdapterFloss> weak_ptr_factory_{this};
 };

@@ -19,6 +19,7 @@
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/floss/bluetooth_advertisement_floss.h"
 #include "device/bluetooth/floss/bluetooth_device_floss.h"
+#include "device/bluetooth/floss/bluetooth_local_gatt_service_floss.h"
 #include "device/bluetooth/floss/bluetooth_low_energy_scan_session_floss.h"
 #include "device/bluetooth/floss/bluetooth_socket_floss.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -1070,9 +1071,68 @@ void BluetoothAdapterFloss::ConnectDevice(
   std::move(callback).Run(device_ptr);
 }
 
+void BluetoothAdapterFloss::AddLocalGattService(
+    std::unique_ptr<BluetoothLocalGattServiceFloss> service) {
+  DCHECK(!base::Contains(owned_gatt_services_, service->GetIdentifier()));
+  owned_gatt_services_[service->GetIdentifier()] = std::move(service);
+}
+
+void BluetoothAdapterFloss::RemoveLocalGattService(
+    BluetoothLocalGattServiceFloss* service) {
+  auto service_iter = owned_gatt_services_.find(service->GetIdentifier());
+  if (service_iter == owned_gatt_services_.end()) {
+    BLUETOOTH_LOG(ERROR)
+        << "Trying to remove service: " << service->GetIdentifier()
+        << " from adapter: "
+        << FlossDBusManager::Get()->GetAdapterClient()->GetObjectPath()->value()
+        << " that doesn't own it.";
+    return;
+  }
+
+  // TODO: Unregister registered service.
+  owned_gatt_services_.erase(service_iter);
+}
+
 device::BluetoothLocalGattService* BluetoothAdapterFloss::GetGattService(
     const std::string& identifier) const {
-  return nullptr;
+  const auto& service = owned_gatt_services_.find(identifier);
+  return service == owned_gatt_services_.end() ? nullptr
+                                               : service->second.get();
+}
+
+void BluetoothAdapterFloss::RegisterGattService(
+    BluetoothLocalGattServiceFloss* service,
+    base::OnceClosure callback,
+    device::BluetoothGattService::ErrorCallback error_callback) {
+  // TODO: Forced success. Update when GATT server work completed. Route this
+  // request to the GATT manager client to have it translated into a DBUS call.
+  // The daemon should callback with an updated GATT service structure
+  // containing the registered instance ID/handle. Design a way to update the
+  // instance ID/handle for the service object while allowing other applications
+  // to access them through old identifiers.
+  service->SetRegistered(true);
+  std::move(callback).Run();
+}
+
+void BluetoothAdapterFloss::UnregisterGattService(
+    BluetoothLocalGattServiceFloss* service,
+    base::OnceClosure callback,
+    device::BluetoothGattService::ErrorCallback error_callback) {
+  DCHECK(FlossDBusManager::Get());
+  // TODO: Forced success. Update when GATT server work completed.
+  service->SetRegistered(false);
+  std::move(callback).Run();
+}
+
+bool BluetoothAdapterFloss::SendValueChanged(
+    BluetoothLocalGattCharacteristicFloss* characteristic,
+    const std::vector<uint8_t>& value) {
+  if (!characteristic->GetService()->IsRegistered()) {
+    return false;
+  }
+
+  // TODO: Forced success. Update when GATT server work completed.
+  return true;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
