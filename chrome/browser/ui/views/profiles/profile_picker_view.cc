@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -386,6 +387,12 @@ void ProfilePickerView::ShowScreen(
     content::WebContents* contents,
     const GURL& url,
     base::OnceClosure navigation_finished_closure) {
+  base::ScopedClosureRunner finish_init_runner;
+  if (state_ == kInitializing) {
+    finish_init_runner.ReplaceClosure(
+        base::BindOnce(&ProfilePickerView::FinishInit, base::Unretained(this)));
+  }
+
   if (url.is_empty()) {
     DCHECK(!navigation_finished_closure);
     ShowScreenFinished(contents);
@@ -430,9 +437,10 @@ void ProfilePickerView::Clear() {
   if (state_ == kClosing)
     return;
 
-  if (state_ == kReady) {
+  state_ = kClosing;
+
+  if (GetWidget()) {
     GetWidget()->Close();
-    state_ = kClosing;
     return;
   }
 
@@ -562,7 +570,6 @@ void ProfilePickerView::Display() {
     // Build the layout synchronously before creating the picker profile to
     // simplify tests.
     BuildLayout();
-
     g_browser_process->profile_manager()->CreateProfileAsync(
         params_.profile_path(),
         base::BindOnce(&ProfilePickerView::OnPickerProfileCreated,
@@ -621,10 +628,16 @@ void ProfilePickerView::Init(Profile* picker_profile) {
   flow_controller_ = CreateFlowController(picker_profile, GetClearClosure());
   DCHECK(flow_controller_);
   flow_controller_->Init();
-  state_ = kReady;
+}
 
-  PrefService* prefs = g_browser_process->local_state();
-  prefs->SetBoolean(prefs::kBrowserProfilePickerShown, true);
+void ProfilePickerView::FinishInit() {
+  DCHECK_EQ(kInitializing, state_);
+  state_ = kDisplayed;
+
+  if (IsClassicProfilePickerFlow(params_)) {
+    PrefService* prefs = g_browser_process->local_state();
+    prefs->SetBoolean(prefs::kBrowserProfilePickerShown, true);
+  }
 
   if (params_.entry_point() == ProfilePicker::EntryPoint::kOnStartup) {
     DCHECK(!creation_time_on_startup_.is_null());

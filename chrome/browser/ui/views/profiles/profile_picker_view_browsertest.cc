@@ -91,6 +91,7 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -2238,6 +2239,34 @@ class ProfilePickerLacrosFirstRunBrowserTestBase
     }
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    ProfilePickerTestBase::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ProfilePickerLacrosFirstRunBrowserTestBase::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
+  virtual void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          auto sync_service = std::make_unique<syncer::TestSyncService>();
+
+          // The FRE will be paused, waiting for the state to change
+          // before either showing or exiting it.
+          // `GoThroughFirstRunFlow()` will do this, or the test
+          // should call `sync_service()` to do this manually.
+          sync_service->SetTransportState(
+              syncer::SyncService::TransportState::INITIALIZING);
+
+          return sync_service;
+        }));
+  }
+
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     ProfilePickerTestBase::SetUpDefaultCommandLine(command_line);
 
@@ -2281,6 +2310,11 @@ class ProfilePickerLacrosFirstRunBrowserTestBase
     histogram_tester().ExpectUniqueSample(
         "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
         FirstRunService::EntryPoint::kProcessStartup, 1);
+
+    // Unblock the sync service.
+    sync_service()->SetTransportState(
+        syncer::SyncService::TransportState::ACTIVE);
+    sync_service()->FireStateChanged();
 
     // A welcome page should be displayed.
     WaitForPickerWidgetCreated();
@@ -2330,10 +2364,17 @@ class ProfilePickerLacrosFirstRunBrowserTestBase
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(GetPrimaryProfile()));
+  }
+
  private:
   // Start tracking the logged histograms from the beginning, since the FRE can
   // be triggered and completed before we enter the test body.
   base::HistogramTester histogram_tester_;
+
+  base::CallbackListSubscription create_services_subscription_;
 
   // Lifts the timeout to make sure it is not hiding errors where we don't get
   // the signal that the sync service started.
@@ -2571,10 +2612,6 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerLacrosManagedFirstRunBrowserTest,
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Signin_EnterpriseAccountPrompt_ImportData"));
 
-  // TODO(crbug.com/1324886): Workaround for Sync startup attempting a real
-  // connection.
-  SyncServiceFactory::GetForProfile(profile)->StopAndClear();
-
   GoThroughFirstRunFlow(
       /*expected_welcome_type=*/EnterpriseProfileWelcomeUI::ScreenType::
           kLacrosEnterpriseWelcome,
@@ -2616,25 +2653,35 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerLacrosManagedFirstRunBrowserTest,
   // Dummy case to set up the primary profile.
   histogram_tester().ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
-  GetPrimaryProfile()->GetPrefs()->SetBoolean(syncer::prefs::kSyncManaged,
-                                              true);
 }
 IN_PROC_BROWSER_TEST_P(ProfilePickerLacrosManagedFirstRunBrowserTest,
                        PRE_SyncDisabled) {
   Profile* profile = GetPrimaryProfile();
 
+  // The profile picker is created but is waiting for the
+  // sync service to complete its initialization to
+  // determine whether to show the FRE or not.
   EXPECT_TRUE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Signin_EnterpriseAccountPrompt_ImportData"));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(ProfilePickerView::State::kInitializing,
+            view()->state_for_testing());
 
-  // TODO(crbug.com/1324886): Workaround for Sync startup attempting a real
-  // connection.
-  SyncServiceFactory::GetForProfile(profile)->StopAndClear();
+  // Unblock the sync service and simulate the server-side
+  // being disabled.
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  sync_service()->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  sync_service()->FireStateChanged();
 
+  // The pending state should resolve by skipping the FRE.
+  EXPECT_FALSE(ShouldOpenFirstRun(profile));
+  WaitForPickerClosed();
   EXPECT_FALSE(ProfilePicker::IsOpen());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
-  EXPECT_FALSE(ShouldOpenFirstRun(profile));
-
   histogram_tester().ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunOutcome",
       ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);

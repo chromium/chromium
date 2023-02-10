@@ -12,12 +12,12 @@ class WebContents;
 }
 
 namespace views {
-class View;
 class WebView;
 class Widget;
 }  // namespace views
 
 class GURL;
+class ProfilePickerView;
 
 class ProfilePickerTestBase : public InProcessBrowserTest {
  public:
@@ -25,7 +25,7 @@ class ProfilePickerTestBase : public InProcessBrowserTest {
   ~ProfilePickerTestBase() override;
 
   // Returns the ProfilePickerView that is currently displayed.
-  views::View* view();
+  ProfilePickerView* view();
 
   // Returns the widget associated with the profile picker.
   views::Widget* widget();

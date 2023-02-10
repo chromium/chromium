@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/profile_ui_test_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,8 +25,8 @@ ProfilePickerTestBase::ProfilePickerTestBase() = default;
 
 ProfilePickerTestBase::~ProfilePickerTestBase() = default;
 
-views::View* ProfilePickerTestBase::view() {
-  return ProfilePicker::GetViewForTesting();
+ProfilePickerView* ProfilePickerTestBase::view() {
+  return static_cast<ProfilePickerView*>(ProfilePicker::GetViewForTesting());
 }
 
 views::Widget* ProfilePickerTestBase::widget() {

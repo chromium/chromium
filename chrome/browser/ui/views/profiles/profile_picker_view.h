@@ -90,9 +90,35 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
+  // views::WidgetDelegateView:
+  void WindowClosing() override;
+  views::ClientView* CreateClientView(views::Widget* widget) override;
+  views::View* GetContentsView() override;
+  std::u16string GetAccessibleWindowTitle() const override;
+  gfx::Size GetMinimumSize() const override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
   // Gets called when the native wiget changes size.
   // TODO(crbug.com/1380808): Remove once the cause of the bug is found.
   virtual void OnNativeWidgetSizeChanged(const gfx::Size& new_size) {}
+
+  // Exposed for testing
+  enum State {
+    // The view has just been created.
+    kNotStarted = 0,
+
+    // The view received a request to be displayed, but nothing has been shown
+    // yet.
+    kInitializing = 1,
+
+    // The view is currently shown.
+    kDisplayed = 2,
+
+    // The view received a request to close, and will be deleted shortly.
+    kClosing = 3
+  };
+
+  State state_for_testing() { return state_; }
 
  protected:
   // To display the Profile picker, use ProfilePicker::Show().
@@ -115,8 +141,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   friend class ProfilePicker;
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CreateForceSignedInProfile);
-
-  enum State { kNotStarted = 0, kInitializing = 1, kReady = 2, kClosing = 3 };
 
   class NavigationFinishedObserver : public content::WebContentsObserver {
    public:
@@ -150,6 +174,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Creates and shows the dialog.
   void Init(Profile* picker_profile);
 
+  // Finalizes the Init (entering the `kDisplayed` state), called along with the
+  // first time `ShowScreen()`.
+  void FinishInit();
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Switches the layout to the sign-in screen (and creates a new profile).
   // absl::nullopt `profile_color` corresponds to the default theme.
@@ -174,16 +202,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
                             absl::optional<SkColor> profile_color,
                             std::unique_ptr<content::WebContents> contents);
 #endif
-
-  // views::WidgetDelegate:
-  void WindowClosing() override;
-  views::ClientView* CreateClientView(views::Widget* widget) override;
-  views::View* GetContentsView() override;
-  std::u16string GetAccessibleWindowTitle() const override;
-
-  // views::View:
-  gfx::Size GetMinimumSize() const override;
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   // Builds the views hieararchy.
   void BuildLayout();
