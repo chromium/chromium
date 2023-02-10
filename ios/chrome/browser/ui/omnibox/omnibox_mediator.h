@@ -19,11 +19,17 @@ class FaviconLoader;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 
+namespace feature_engagement {
+class Tracker;
+}
+
 // A mediator object that updates the omnibox according to the model changes.
 @interface OmniboxMediator
     : NSObject <OmniboxViewControllerPasteDelegate, PopupMatchPreviewDelegate>
 
-- (instancetype)initWithIncognito:(BOOL)isIncognito NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithIncognito:(BOOL)isIncognito
+                          tracker:(feature_engagement::Tracker*)tracker
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The templateURLService used by this mediator to extract whether the default

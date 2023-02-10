@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
@@ -49,6 +50,9 @@ using base::UserMetricsAction;
 // Is Browser incognito.
 @property(nonatomic, assign, readonly) BOOL isIncognito;
 
+// FET reference.
+@property(nonatomic, assign) feature_engagement::Tracker* tracker;
+
 // Whether the current default search engine supports search-by-image.
 @property(nonatomic, assign) BOOL searchEngineSupportsSearchByImage;
 
@@ -71,12 +75,14 @@ using base::UserMetricsAction;
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
 }
 
-- (instancetype)initWithIncognito:(BOOL)isIncognito {
+- (instancetype)initWithIncognito:(BOOL)isIncognito
+                          tracker:(feature_engagement::Tracker*)tracker {
   self = [super init];
   if (self) {
     _searchEngineSupportsSearchByImage = NO;
     _searchEngineSupportsLens = NO;
     _isIncognito = isIncognito;
+    _tracker = tracker;
   }
   return self;
 }
@@ -450,6 +456,8 @@ using base::UserMetricsAction;
   DefaultBrowserSceneAgent* agent =
       [DefaultBrowserSceneAgent agentFromScene:self.sceneState];
   [agent.nonModalScheduler logUserPastedInOmnibox];
+
+  LogToFETUserPastedURLIntoOmnibox(self.tracker);
 }
 
 // Loads an image-search query with `image`.

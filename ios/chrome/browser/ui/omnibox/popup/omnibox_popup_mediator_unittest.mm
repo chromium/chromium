@@ -11,6 +11,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_result.h"
@@ -126,6 +127,8 @@ class OmniboxPopupMediatorTest : public PlatformTest {
     std::unique_ptr<image_fetcher::ImageDataFetcher> mock_image_data_fetcher =
         std::make_unique<MockImageDataFetcher>();
 
+    feature_engagement::test::MockTracker tracker;
+
     mockResultConsumer_ =
         OCMProtocolMock(@protocol(AutocompleteResultConsumer));
 
@@ -133,7 +136,8 @@ class OmniboxPopupMediatorTest : public PlatformTest {
                initWithFetcher:std::move(mock_image_data_fetcher)
                  faviconLoader:nil
         autocompleteController:autocomplete_controller.get()
-                      delegate:&delegate_];
+                      delegate:&delegate_
+                       tracker:&tracker];
     mediator_.consumer = mockResultConsumer_;
 
     // Stubs call to AutocompleteResultConsumer::updateMatches and stores

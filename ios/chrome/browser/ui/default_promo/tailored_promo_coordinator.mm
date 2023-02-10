@@ -7,6 +7,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_string_util.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_util.h"
@@ -211,7 +213,8 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
 // Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  LogToFETDefaultBrowserPromoShown(browserState);
+  LogToFETDefaultBrowserPromoShown(
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
 }
 
 @end

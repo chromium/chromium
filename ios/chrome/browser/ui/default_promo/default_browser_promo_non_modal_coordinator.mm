@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
 
 #import "base/notreached.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_coordinator_implementation.h"
@@ -70,6 +73,7 @@
     [self.bannerViewController setIconImage:image];
     [self.bannerViewController setUseIconBackgroundTint:NO];
     [self.bannerViewController setPresentsModal:NO];
+    [self recordDefaultBrowserPromoShown];
   }
 }
 
@@ -141,6 +145,15 @@
   // The non-modal promo should never have a modal.
   NOTREACHED();
   return 0;
+}
+
+#pragma mark - private
+
+// Records that a default browser promo has been shown.
+- (void)recordDefaultBrowserPromoShown {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  LogToFETDefaultBrowserPromoShown(
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
 }
 
 @end

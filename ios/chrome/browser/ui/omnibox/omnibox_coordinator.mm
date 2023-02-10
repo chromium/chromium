@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
@@ -17,6 +18,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -112,7 +114,10 @@
   self.viewController.textInputDelegate = self;
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.mediator = [[OmniboxMediator alloc] initWithIncognito:isIncognito];
+  self.mediator = [[OmniboxMediator alloc]
+      initWithIncognito:isIncognito
+                tracker:feature_engagement::TrackerFactory::GetForBrowserState(
+                            self.browser->GetBrowserState())];
 
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(

@@ -36,6 +36,10 @@ namespace image_fetcher {
 class ImageDataFetcher;
 }  // namespace
 
+namespace feature_engagement {
+class Tracker;
+}
+
 class OmniboxPopupMediatorDelegate {
  public:
   virtual bool IsStarredMatch(const AutocompleteMatch& match) const = 0;
@@ -123,7 +127,8 @@ class OmniboxPopupMediatorDelegate {
                         imageFetcher
                   faviconLoader:(FaviconLoader*)faviconLoader
          autocompleteController:(AutocompleteController*)autocompleteController
-                       delegate:(OmniboxPopupMediatorDelegate*)delegate;
+                       delegate:(OmniboxPopupMediatorDelegate*)delegate
+                        tracker:(feature_engagement::Tracker*)tracker;
 
 - (void)updateMatches:(const AutocompleteResult&)result;
 
