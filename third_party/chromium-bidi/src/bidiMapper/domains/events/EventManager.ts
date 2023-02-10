@@ -23,7 +23,7 @@ import type {
 import type {BidiServer} from '../../BidiServer.js';
 import {Buffer} from '../../../utils/buffer.js';
 import {IdWrapper} from '../../../utils/idWrapper.js';
-import {OutgoingBidiMessage} from '../../OutgoindBidiMessage.js';
+import {OutgoingBidiMessage} from '../../OutgoingBidiMessage.js';
 import {SubscriptionManager} from './SubscriptionManager.js';
 
 class EventWrapper extends IdWrapper {

@@ -27,7 +27,7 @@ import {BrowsingContextStorage} from './domains/context/browsingContextStorage.j
 import {CdpConnection} from './CdpConnection.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {IEventManager} from './domains/events/EventManager.js';
-import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
+import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
 
 type CommandProcessorEvents = {

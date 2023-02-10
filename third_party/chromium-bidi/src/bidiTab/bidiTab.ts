@@ -31,7 +31,7 @@ import {BidiServer} from '../bidiMapper/BidiServer.js';
 import {BidiTransport} from '../bidiMapper/bidiMapper.js';
 import {CdpConnection} from '../cdp/index.js';
 import {ITransport} from '../utils/transport.js';
-import {OutgoingBidiMessage} from '../bidiMapper/OutgoindBidiMessage.js';
+import {OutgoingBidiMessage} from '../bidiMapper/OutgoingBidiMessage.js';
 import {generatePage} from './mapperTabPage.js';
 
 const logSystem = log(LogType.system);
