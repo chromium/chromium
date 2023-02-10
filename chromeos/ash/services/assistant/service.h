@@ -24,6 +24,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GoogleServiceAuthError;
@@ -123,7 +124,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   void OnStateChanged(AssistantManagerService::State new_state) override;
 
   void UpdateAssistantManagerState();
-  void ScheduleUpdateAssistantManagerState();
+  void ScheduleUpdateAssistantManagerState(bool should_backoff);
 
   CoreAccountInfo RetrievePrimaryAccountInfo() const;
   void RequestAccessToken();
@@ -159,6 +160,13 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   void OnLibassistantLoaded(bool success);
 
   void ClearAfterStop();
+
+  void DecreaseStartServiceBackoff();
+
+  base::TimeDelta GetAutoRecoverTime();
+  void SetAutoRecoverTimeForTesting(base::TimeDelta delay) {
+    auto_recover_time_for_testing_ = delay;
+  }
 
   // |ServiceContext| object passed to child classes so they can access some of
   // our functionality without depending on us.
@@ -198,6 +206,16 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   // non-null until |assistant_manager_service_| is created.
   std::unique_ptr<network::PendingSharedURLLoaderFactory>
       pending_url_loader_factory_;
+
+  // If Libassistant service is disconnected, will use this backoff entry to
+  // restart the service.
+  net::BackoffEntry start_service_retry_backoff_;
+
+  // A timer used to slowly recover from previous crashes by reducing the
+  // `start_service_retry_backoff_` failure_count by one for every
+  // `kAutoRecoverTime`.
+  std::unique_ptr<base::OneShotTimer> auto_service_recover_timer_;
+  base::TimeDelta auto_recover_time_for_testing_;
 
   base::CancelableOnceClosure update_assistant_manager_callback_;
 

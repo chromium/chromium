@@ -66,6 +66,27 @@ const char* g_s3_server_uri_override = nullptr;
 // device.
 const char* g_device_id_override = nullptr;
 
+// If LibAssistant service crashes `kMaxStartServiceRetries` times in total, we
+// will not restart LibAssistant, unless
+// 1. Explicitly re-enable the Assistant from the Settings,
+// 2. Reboot the device.
+// 3. It has been `kAutoRecoverTime` since the last crash.
+constexpr int kMaxStartServiceRetries = 5;
+
+// An interval used to gradually reduce the failure_count so that we could
+// restart.
+constexpr base::TimeDelta kAutoRecoverTime = base::Hours(24);
+
+constexpr net::BackoffEntry::Policy kRetryStartServiceBackoffPolicy = {
+    1,          // Number of initial errors to ignore.
+    1000,       // Initial delay in ms.
+    2.0,        // Factor by which the waiting time will be multiplied.
+    0.2,        // Fuzzing percentage.
+    60 * 1000,  // Maximum delay in ms.
+    -1,         // Never discard the entry.
+    true,       // Use initial delay.
+};
+
 AssistantStatus ToAssistantStatus(AssistantManagerService::State state) {
   using State = AssistantManagerService::State;
 
@@ -195,7 +216,9 @@ Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>
       identity_manager_(identity_manager),
       token_refresh_timer_(std::make_unique<base::OneShotTimer>()),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-      pending_url_loader_factory_(std::move(pending_url_loader_factory)) {
+      pending_url_loader_factory_(std::move(pending_url_loader_factory)),
+      start_service_retry_backoff_(&kRetryStartServiceBackoffPolicy),
+      auto_service_recover_timer_(std::make_unique<base::OneShotTimer>()) {
   DCHECK(identity_manager_);
   chromeos::PowerManagerClient* power_manager_client =
       context_->power_manager_client();
@@ -310,6 +333,8 @@ void Service::OnAssistantHotwordAlwaysOn(bool hotword_always_on) {
 }
 
 void Service::OnAssistantSettingsEnabled(bool enabled) {
+  // Reset the failure count and backoff delay when the Settings is re-enabled.
+  start_service_retry_backoff_.Reset();
   UpdateAssistantManagerState();
 }
 
@@ -366,6 +391,10 @@ void Service::UpdateAssistantManagerState() {
     return;
   }
 
+  if (start_service_retry_backoff_.failure_count() > kMaxStartServiceRetries) {
+    return;
+  }
+
   if (IsSignedOutMode()) {
     // Clear |access_token_| in signed-out mode to keep it synced with what we
     // will pass to the |assistant_manager_service_|.
@@ -406,10 +435,10 @@ void Service::UpdateAssistantManagerState() {
         return;
       }
       // Wait if |assistant_manager_service_| is not at a stable state.
-      ScheduleUpdateAssistantManagerState();
+      ScheduleUpdateAssistantManagerState(/*should_backoff=*/false);
       break;
     case AssistantManagerService::State::STOPPING:
-      ScheduleUpdateAssistantManagerState();
+      ScheduleUpdateAssistantManagerState(/*should_backoff=*/false);
       break;
     case AssistantManagerService::State::RUNNING:
       if (assistant_state->settings_enabled().value()) {
@@ -426,13 +455,16 @@ void Service::UpdateAssistantManagerState() {
   }
 }
 
-void Service::ScheduleUpdateAssistantManagerState() {
+void Service::ScheduleUpdateAssistantManagerState(bool should_backoff) {
   update_assistant_manager_callback_.Cancel();
   update_assistant_manager_callback_.Reset(base::BindOnce(
       &Service::UpdateAssistantManagerState, weak_ptr_factory_.GetWeakPtr()));
+
+  base::TimeDelta delay =
+      should_backoff ? start_service_retry_backoff_.GetTimeUntilRelease()
+                     : kUpdateAssistantManagerDelay;
   main_task_runner_->PostDelayedTask(
-      FROM_HERE, update_assistant_manager_callback_.callback(),
-      kUpdateAssistantManagerDelay);
+      FROM_HERE, update_assistant_manager_callback_.callback(), delay);
 }
 
 CoreAccountInfo Service::RetrievePrimaryAccountInfo() const {
@@ -558,8 +590,23 @@ void Service::OnLibassistantServiceStopped() {
 void Service::OnLibassistantServiceDisconnected() {
   ClearAfterStop();
 
-  // Restarts LibassistantService.
-  ScheduleUpdateAssistantManagerState();
+  if (auto_service_recover_timer_->IsRunning()) {
+    auto_service_recover_timer_->Stop();
+  }
+  start_service_retry_backoff_.InformOfRequest(/*succeeded=*/false);
+  if (start_service_retry_backoff_.failure_count() <= kMaxStartServiceRetries) {
+    LOG(WARNING) << "LibAssistant service disconnected. Re-starting...";
+
+    // Restarts LibassistantService.
+    ScheduleUpdateAssistantManagerState(/*should_backoff=*/true);
+  } else {
+    // Start auto recover timer.
+    auto delay = GetAutoRecoverTime();
+    auto_service_recover_timer_->Start(FROM_HERE, delay, this,
+                                       &Service::DecreaseStartServiceBackoff);
+    LOG(ERROR)
+        << "LibAssistant service keeps disconnected. All retries attempted.";
+  }
 }
 
 void Service::AddAshSessionObserver() {
@@ -631,6 +678,28 @@ void Service::ClearAfterStop() {
   is_assistant_manager_service_finalized_ = false;
   scoped_ash_session_observer_.reset();
   ResetAuthenticationStateObserver();
+}
+
+void Service::DecreaseStartServiceBackoff() {
+  // Reduce the failure_count by one to allow restart.
+  start_service_retry_backoff_.InformOfRequest(/*succeeded=*/true);
+
+  // It is ok to try to reset service if the service is running.
+  ScheduleUpdateAssistantManagerState(/*should_backoff=*/true);
+
+  // Start auto recover timer.
+  if (start_service_retry_backoff_.failure_count() > 0) {
+    auto delay = GetAutoRecoverTime();
+    auto_service_recover_timer_->Start(FROM_HERE, delay, this,
+                                       &Service::DecreaseStartServiceBackoff);
+  }
+}
+
+base::TimeDelta Service::GetAutoRecoverTime() {
+  if (!auto_recover_time_for_testing_.is_zero()) {
+    return auto_recover_time_for_testing_;
+  }
+  return kAutoRecoverTime;
 }
 
 }  // namespace ash::assistant

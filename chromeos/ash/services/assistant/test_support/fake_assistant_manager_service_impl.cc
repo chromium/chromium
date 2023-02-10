@@ -136,12 +136,19 @@ void FakeAssistantManagerServiceImpl::SetStateAndInformObservers(
   // In reality we will not skip states, i.e. we will always get |STARTING|
   // before ever encountering |STARTED|. As such our fake implementation will
   // send out all intermediate states between |old_state| and |new_state|.
+  // |DISCONNECTED| is different, could be sent before |STARTED| and |RUNNING|.
+  if (new_state == State::DISCONNECTED) {
+    for (auto& observer : state_observers_) {
+      observer.OnStateChanged(state_);
+    }
+    return;
+  }
+
   MaybeSendStateChange(State::STOPPED, old_state, new_state);
   MaybeSendStateChange(State::STARTING, old_state, new_state);
   MaybeSendStateChange(State::STARTED, old_state, new_state);
   MaybeSendStateChange(State::RUNNING, old_state, new_state);
   MaybeSendStateChange(State::STOPPING, old_state, new_state);
-  MaybeSendStateChange(State::DISCONNECTED, old_state, new_state);
 }
 
 void FakeAssistantManagerServiceImpl::MaybeSendStateChange(State state,
