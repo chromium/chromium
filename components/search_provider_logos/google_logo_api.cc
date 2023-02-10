@@ -77,11 +77,10 @@ GURL AppendPreliminaryParamsToDoodleURL(bool gray_background,
 namespace {
 const char kResponsePreamble[] = ")]}'";
 
-GURL ParseUrl(const base::Value& parent_dict,
+GURL ParseUrl(const base::Value::Dict& parent_dict,
               const std::string& key,
               const GURL& base_url) {
-  DCHECK(parent_dict.is_dict());
-  const std::string* url_str = parent_dict.FindStringKey(key);
+  const std::string* url_str = parent_dict.FindString(key);
   if (!url_str || url_str->empty()) {
     return GURL();
   }
@@ -111,27 +110,31 @@ ParseEncodedImageData(const std::string& encoded_image_data) {
   // The content should look like this: "image/png;base64,aaa..." (where
   // "aaa..." is the base64-encoded image data).
   size_t mime_type_end = content.find_first_of(';');
-  if (mime_type_end == std::string::npos)
+  if (mime_type_end == std::string::npos) {
     return result;
+  }
 
   std::string mime_type = content.substr(0, mime_type_end);
 
   size_t base64_begin = mime_type_end + 1;
   size_t base64_end = content.find_first_of(',', base64_begin);
-  if (base64_end == std::string::npos)
+  if (base64_end == std::string::npos) {
     return result;
+  }
   auto base64 = base::MakeStringPiece(content.begin() + base64_begin,
                                       content.begin() + base64_end);
-  if (base64 != "base64")
+  if (base64 != "base64") {
     return result;
+  }
 
   size_t data_begin = base64_end + 1;
   auto data =
       base::MakeStringPiece(content.begin() + data_begin, content.end());
 
   std::string decoded_data;
-  if (!base::Base64Decode(data, &decoded_data))
+  if (!base::Base64Decode(data, &decoded_data)) {
     return result;
+  }
 
   result.first = mime_type;
   result.second =
@@ -148,8 +151,9 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
     bool* parsing_failed) {
   // The response may start with )]}'. Ignore this.
   base::StringPiece response_sp(*response);
-  if (base::StartsWith(response_sp, kResponsePreamble))
+  if (base::StartsWith(response_sp, kResponsePreamble)) {
     response_sp.remove_prefix(strlen(kResponsePreamble));
+  }
 
   // Default parsing failure to be true.
   *parsing_failed = true;
@@ -162,22 +166,24 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
     return nullptr;
   }
 
-  if (!parsed_json->is_dict())
+  if (!parsed_json->is_dict()) {
     return nullptr;
+  }
 
-  const base::Value* ddljson = parsed_json->FindDictKey("ddljson");
-  if (!ddljson)
+  const base::Value::Dict* ddljson = parsed_json->GetDict().FindDict("ddljson");
+  if (!ddljson) {
     return nullptr;
+  }
 
   // If there is no logo today, the "ddljson" dictionary will be empty.
-  if (ddljson->DictEmpty()) {
+  if (ddljson->empty()) {
     *parsing_failed = false;
     return nullptr;
   }
 
   auto logo = std::make_unique<EncodedLogo>();
 
-  const std::string* doodle_type = ddljson->FindStringKey("doodle_type");
+  const std::string* doodle_type = ddljson->FindString("doodle_type");
   logo->metadata.type = LogoType::SIMPLE;
   if (doodle_type) {
     if (*doodle_type == "ANIMATED") {
@@ -196,37 +202,44 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
   // Check if the main image is animated.
   if (is_animated) {
     // If animated, get the URL for the animated image.
-    const base::Value* image = ddljson->FindDictKey("large_image");
-    if (!image)
+    const base::Value::Dict* image = ddljson->FindDict("large_image");
+    if (!image) {
       return nullptr;
+    }
     logo->metadata.animated_url = ParseUrl(*image, "url", base_url);
-    if (!logo->metadata.animated_url.is_valid())
+    if (!logo->metadata.animated_url.is_valid()) {
       return nullptr;
+    }
 
-    const base::Value* dark_image = ddljson->FindDictKey("dark_large_image");
-    if (dark_image)
+    const base::Value::Dict* dark_image = ddljson->FindDict("dark_large_image");
+    if (dark_image) {
       logo->metadata.dark_animated_url = ParseUrl(*dark_image, "url", base_url);
+    }
   }
 
   if (is_simple || is_animated) {
-    const base::Value* image = ddljson->FindDictKey("large_image");
+    const base::Value::Dict* image = ddljson->FindDict("large_image");
     if (image) {
-      if (absl::optional<int> width_px = image->FindIntKey("width"))
+      if (absl::optional<int> width_px = image->FindInt("width")) {
         logo->metadata.width_px = *width_px;
-      if (absl::optional<int> height_px = image->FindIntKey("height"))
+      }
+      if (absl::optional<int> height_px = image->FindInt("height")) {
         logo->metadata.height_px = *height_px;
+      }
     }
 
-    const base::Value* dark_image = ddljson->FindDictKey("dark_large_image");
+    const base::Value::Dict* dark_image = ddljson->FindDict("dark_large_image");
     if (dark_image) {
       if (const std::string* background_color =
-              dark_image->FindStringKey("background_color")) {
+              dark_image->FindString("background_color")) {
         logo->metadata.dark_background_color = *background_color;
       }
-      if (absl::optional<int> width_px = dark_image->FindIntKey("width"))
+      if (absl::optional<int> width_px = dark_image->FindInt("width")) {
         logo->metadata.dark_width_px = *width_px;
-      if (absl::optional<int> height_px = dark_image->FindIntKey("height"))
+      }
+      if (absl::optional<int> height_px = dark_image->FindInt("height")) {
         logo->metadata.dark_height_px = *height_px;
+      }
     }
   }
 
@@ -235,8 +248,8 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
        logo->metadata.type == LogoType::SIMPLE);
 
   if (is_eligible_for_share_button) {
-    const base::Value* share_button = ddljson->FindDictKey("share_button");
-    const std::string* short_link_ptr = ddljson->FindStringKey("short_link");
+    const base::Value::Dict* share_button = ddljson->FindDict("share_button");
+    const std::string* short_link_ptr = ddljson->FindString("short_link");
     // The short link in the doodle proto is an incomplete URL with the format
     // //g.co/*, //doodle.gle/* or //google.com?doodle=*.
     // Complete the URL if possible.
@@ -245,44 +258,47 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
       short_link_str.insert(0, "https:");
       logo->metadata.short_link = GURL(std::move(short_link_str));
       if (logo->metadata.short_link.is_valid()) {
-        if (absl::optional<int> offset_x = share_button->FindIntKey("offset_x"))
+        if (absl::optional<int> offset_x = share_button->FindInt("offset_x")) {
           logo->metadata.share_button_x = *offset_x;
-        if (absl::optional<int> offset_y = share_button->FindIntKey("offset_y"))
+        }
+        if (absl::optional<int> offset_y = share_button->FindInt("offset_y")) {
           logo->metadata.share_button_y = *offset_y;
+        }
         if (absl::optional<double> opacity =
-                share_button->FindDoubleKey("opacity")) {
+                share_button->FindDouble("opacity")) {
           logo->metadata.share_button_opacity = *opacity;
         }
-        if (const std::string* icon = share_button->FindStringKey("icon_image"))
+        if (const std::string* icon = share_button->FindString("icon_image")) {
           logo->metadata.share_button_icon = *icon;
+        }
         if (const std::string* bg_color =
-                share_button->FindStringKey("background_color")) {
+                share_button->FindString("background_color")) {
           logo->metadata.share_button_bg = *bg_color;
         }
       }
     }
-    const base::Value* dark_share_button =
-        ddljson->FindDictKey("dark_share_button");
+    const base::Value::Dict* dark_share_button =
+        ddljson->FindDict("dark_share_button");
     if (dark_share_button) {
       if (logo->metadata.short_link.is_valid()) {
         if (absl::optional<int> offset_x =
-                dark_share_button->FindIntKey("offset_x")) {
+                dark_share_button->FindInt("offset_x")) {
           logo->metadata.dark_share_button_x = *offset_x;
         }
         if (absl::optional<int> offset_y =
-                dark_share_button->FindIntKey("offset_y")) {
+                dark_share_button->FindInt("offset_y")) {
           logo->metadata.dark_share_button_y = *offset_y;
         }
         if (absl::optional<double> opacity =
-                dark_share_button->FindDoubleKey("opacity")) {
+                dark_share_button->FindDouble("opacity")) {
           logo->metadata.dark_share_button_opacity = *opacity;
         }
         if (const std::string* icon =
-                dark_share_button->FindStringKey("icon_image")) {
+                dark_share_button->FindString("icon_image")) {
           logo->metadata.dark_share_button_icon = *icon;
         }
         if (const std::string* bg_color =
-                dark_share_button->FindStringKey("background_color")) {
+                dark_share_button->FindString("background_color")) {
           logo->metadata.dark_share_button_bg = *bg_color;
         }
       }
@@ -294,33 +310,37 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
 
   // Data is optional, since we may be revalidating a cached logo.
   // If there is a CTA image, get that; otherwise use the regular image.
-  const std::string* encoded_image_data =
-      ddljson->FindStringKey("cta_data_uri");
-  if (!encoded_image_data)
-    encoded_image_data = ddljson->FindStringKey("data_uri");
+  const std::string* encoded_image_data = ddljson->FindString("cta_data_uri");
+  if (!encoded_image_data) {
+    encoded_image_data = ddljson->FindString("data_uri");
+  }
   if (encoded_image_data) {
     auto [mime_type, data] = ParseEncodedImageData(*encoded_image_data);
-    if (!data)
+    if (!data) {
       return nullptr;
+    }
     logo->metadata.mime_type = mime_type;
     logo->encoded_image = data;
   }
 
   const std::string* dark_encoded_image_data =
-      ddljson->FindStringKey("dark_cta_data_uri");
-  if (!dark_encoded_image_data)
-    dark_encoded_image_data = ddljson->FindStringKey("dark_data_uri");
+      ddljson->FindString("dark_cta_data_uri");
+  if (!dark_encoded_image_data) {
+    dark_encoded_image_data = ddljson->FindString("dark_data_uri");
+  }
   if (dark_encoded_image_data) {
     auto [mime_type, data] = ParseEncodedImageData(*dark_encoded_image_data);
 
-    if (data)
+    if (data) {
       logo->metadata.dark_mime_type = mime_type;
+    }
     logo->dark_encoded_image = data;
   }
 
   logo->metadata.on_click_url = ParseUrl(*ddljson, "target_url", base_url);
-  if (const std::string* alt_text = ddljson->FindStringKey("alt_text"))
+  if (const std::string* alt_text = ddljson->FindString("alt_text")) {
     logo->metadata.alt_text = *alt_text;
+  }
 
   logo->metadata.cta_log_url = ParseUrl(*ddljson, "cta_log_url", base_url);
   logo->metadata.dark_cta_log_url =
@@ -328,12 +348,13 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
   logo->metadata.log_url = ParseUrl(*ddljson, "log_url", base_url);
   logo->metadata.dark_log_url = ParseUrl(*ddljson, "dark_log_url", base_url);
 
-  if (const std::string* fingerprint = ddljson->FindStringKey("fingerprint"))
+  if (const std::string* fingerprint = ddljson->FindString("fingerprint")) {
     logo->metadata.fingerprint = *fingerprint;
+  }
 
   if (is_interactive) {
     const std::string* behavior =
-        ddljson->FindStringKey("launch_interactive_behavior");
+        ddljson->FindString("launch_interactive_behavior");
     if (behavior && (*behavior == "NEW_WINDOW")) {
       logo->metadata.type = LogoType::SIMPLE;
       logo->metadata.on_click_url = logo->metadata.full_page_url;
@@ -345,15 +366,14 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
   logo->metadata.iframe_height_px = 0;
   if (is_interactive) {
     logo->metadata.iframe_width_px =
-        ddljson->FindIntKey("iframe_width_px").value_or(kDefaultIframeWidthPx);
-    logo->metadata.iframe_height_px = ddljson->FindIntKey("iframe_height_px")
-                                          .value_or(kDefaultIframeHeightPx);
+        ddljson->FindInt("iframe_width_px").value_or(kDefaultIframeWidthPx);
+    logo->metadata.iframe_height_px =
+        ddljson->FindInt("iframe_height_px").value_or(kDefaultIframeHeightPx);
   }
 
   base::TimeDelta time_to_live;
   // The JSON doesn't guarantee the number to fit into an int.
-  if (absl::optional<double> ttl_ms =
-          ddljson->FindDoubleKey("time_to_live_ms")) {
+  if (absl::optional<double> ttl_ms = ddljson->FindDouble("time_to_live_ms")) {
     time_to_live = base::Milliseconds(*ttl_ms);
     logo->metadata.can_show_after_expiration = false;
   } else {

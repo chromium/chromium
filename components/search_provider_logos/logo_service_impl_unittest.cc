@@ -186,7 +186,7 @@ std::string MakeServerResponse(const SkBitmap& image,
                                const std::string& dark_mime_type,
                                const std::string& fingerprint,
                                base::TimeDelta time_to_live) {
-  base::Value dict(base::Value::Type::DICT);
+  base::Value::Dict dict;
 
   std::string data_uri = "data:";
   data_uri += mime_type;
@@ -198,28 +198,28 @@ std::string MakeServerResponse(const SkBitmap& image,
   dark_data_uri += ";base64,";
   dark_data_uri += EncodeBitmapAsPNGBase64(dark_image);
 
-  dict.SetStringPath("ddljson.target_url", on_click_url);
-  dict.SetStringPath("ddljson.alt_text", alt_text);
+  dict.SetByDottedPath("ddljson.target_url", on_click_url);
+  dict.SetByDottedPath("ddljson.alt_text", alt_text);
   if (animated_url.empty()) {
-    dict.SetStringPath("ddljson.doodle_type", "SIMPLE");
+    dict.SetByDottedPath("ddljson.doodle_type", "SIMPLE");
     if (!image.isNull())
-      dict.SetStringPath("ddljson.data_uri", data_uri);
+      dict.SetByDottedPath("ddljson.data_uri", data_uri);
     if (!dark_image.isNull())
-      dict.SetStringPath("ddljson.dark_data_uri", dark_data_uri);
+      dict.SetByDottedPath("ddljson.dark_data_uri", dark_data_uri);
   } else {
-    dict.SetStringPath("ddljson.doodle_type", "ANIMATED");
-    dict.SetBoolPath("ddljson.large_image.is_animated_gif", true);
-    dict.SetStringPath("ddljson.large_image.url", animated_url);
-    dict.SetStringPath("ddljson.dark_large_image.url", dark_animated_url);
+    dict.SetByDottedPath("ddljson.doodle_type", "ANIMATED");
+    dict.SetByDottedPath("ddljson.large_image.is_animated_gif", true);
+    dict.SetByDottedPath("ddljson.large_image.url", animated_url);
+    dict.SetByDottedPath("ddljson.dark_large_image.url", dark_animated_url);
     if (!image.isNull())
-      dict.SetStringPath("ddljson.cta_data_uri", data_uri);
+      dict.SetByDottedPath("ddljson.cta_data_uri", data_uri);
     if (!dark_image.isNull())
-      dict.SetStringPath("ddljson.dark_cta_data_uri", dark_data_uri);
+      dict.SetByDottedPath("ddljson.dark_cta_data_uri", dark_data_uri);
   }
-  dict.SetStringPath("ddljson.fingerprint", fingerprint);
+  dict.SetByDottedPath("ddljson.fingerprint", fingerprint);
   if (time_to_live != base::TimeDelta())
-    dict.SetIntPath("ddljson.time_to_live_ms",
-                    static_cast<int>(time_to_live.InMilliseconds()));
+    dict.SetByDottedPath("ddljson.time_to_live_ms",
+                         static_cast<int>(time_to_live.InMilliseconds()));
 
   std::string output;
   base::JSONWriter::Write(dict, &output);

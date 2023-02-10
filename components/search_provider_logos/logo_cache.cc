@@ -213,12 +213,14 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
     const std::string& str,
     int* logo_num_bytes,
     int* dark_logo_num_bytes) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(str);
-  if (!value)
+  absl::optional<base::Value> value = base::JSONReader::Read(str);
+  if (!value) {
     return nullptr;
+  }
   const base::Value::Dict* dict = value->GetIfDict();
-  if (!dict)
+  if (!dict) {
     return nullptr;
+  }
 
   // These helpers replace the deprecated analogous methods on
   // base::DictionaryValue, so as to maintain the early exit behavior in the if
