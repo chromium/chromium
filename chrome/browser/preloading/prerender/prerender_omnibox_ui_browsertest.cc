@@ -17,6 +17,7 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
@@ -110,8 +111,9 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
       : prerender_helper_(base::BindRepeating(
             &PrerenderOmniboxUIBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kOmniboxTriggerForPrerender2);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kOmniboxTriggerForPrerender2},
+        {kSearchPrefetchOnlyAllowDefaultMatchPreloading});
   }
 
   void SetUp() override {
@@ -510,7 +512,8 @@ class PrerenderPreloaderHoldbackBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kOmniboxTriggerForPrerender2,
                               features::kPrerender2Holdback},
-        /* disabled_features=*/{});
+        /* disabled_features=*/{
+            kSearchPrefetchOnlyAllowDefaultMatchPreloading});
   }
   ~PrerenderPreloaderHoldbackBrowserTest() override = default;
 
@@ -647,7 +650,8 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
             base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
         {features::kSupportSearchSuggestionForPrerender2},
-        {prerender_utils::kHidePrefetchParameter});
+        {prerender_utils::kHidePrefetchParameter,
+         kSearchPrefetchOnlyAllowDefaultMatchPreloading});
   }
 
   void SetUpOnMainThread() override {
