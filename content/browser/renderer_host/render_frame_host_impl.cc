@@ -9866,7 +9866,7 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
       GetRemoteAssociatedInterfaces()->GetInterface(&render_accessibility_);
       DCHECK(render_accessibility_);
     }
-    render_accessibility_->SetMode(ax_mode.flags());
+    render_accessibility_->SetMode(ax_mode);
   } else {
     // Resetting the Remote signals the renderer to shutdown accessibility
     // in the renderer.

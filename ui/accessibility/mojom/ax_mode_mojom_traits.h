@@ -13,6 +13,9 @@ namespace mojo {
 template <>
 struct StructTraits<ax::mojom::AXModeDataView, ui::AXMode> {
   static uint32_t flags(const ui::AXMode& p) { return p.flags(); }
+  static uint32_t experimental_flags(const ui::AXMode& p) {
+    return p.experimental_flags();
+  }
 
   static bool Read(ax::mojom::AXModeDataView data, ui::AXMode* out);
 };

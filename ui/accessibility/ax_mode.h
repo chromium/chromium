@@ -78,8 +78,11 @@ class AX_BASE_EXPORT AXMode {
   // related metrics callsites, see: |ModeFlagHistogramValue|).
   static constexpr uint32_t kLastModeFlag = 1 << 7;
 
-  constexpr AXMode() : flags_(kNone) {}
-  constexpr AXMode(uint32_t flags) : flags_(flags) {}
+  constexpr AXMode() : flags_(kNone), experimental_flags_(kNone) {}
+  constexpr AXMode(uint32_t flags)
+      : flags_(flags), experimental_flags_(kNone) {}
+  constexpr AXMode(uint32_t flags, uint32_t experimental_flags)
+      : flags_(flags), experimental_flags_(experimental_flags) {}
 
   bool has_mode(uint32_t flag) const { return (flags_ & flag) == flag; }
 
@@ -89,7 +92,12 @@ class AX_BASE_EXPORT AXMode {
 
   uint32_t flags() const { return flags_; }
 
-  bool operator==(AXMode rhs) const { return flags_ == rhs.flags_; }
+  uint32_t experimental_flags() const { return experimental_flags_; }
+
+  bool operator==(AXMode rhs) const {
+    return flags_ == rhs.flags_ &&
+           experimental_flags_ == rhs.experimental_flags_;
+  }
 
   bool is_mode_off() const { return flags_ == 0; }
 
@@ -97,12 +105,14 @@ class AX_BASE_EXPORT AXMode {
 
   AXMode& operator|=(const AXMode& rhs) {
     flags_ |= rhs.flags_;
+    experimental_flags_ |= rhs.experimental_flags_;
     return *this;
   }
 
-  std::string ToString() const;
+  bool HasExperimentalFlags(uint32_t experimental_flag) const;
+  void SetExperimentalFlags(uint32_t experimental_flag, bool value);
 
-  uint32_t flags_ = 0U;
+  std::string ToString() const;
 
   // IMPORTANT!
   // These values are written to logs.  Do not renumber or delete
@@ -121,6 +131,28 @@ class AX_BASE_EXPORT AXMode {
     // increase, but none of the other enum values may change.
     UMA_AX_MODE_MAX
   };
+
+  // Experimental Flags
+  // These are currently defined separately from existing flags to avoid
+  // making temporary changes to the defined enums until they are ready
+  // for production release.
+  static constexpr uint32_t kExperimentalFirstFlag = 1 << 0;
+  static constexpr uint32_t kExperimentalFormControls = 1 << 0;
+  static constexpr uint32_t kExperimentalLastFlag = 1 << 0;
+
+  // IMPORTANT!
+  // These values are written to logs.  Do not renumber or delete
+  // existing items; add new entries to the end of the list.
+  enum class ExperimentalModeFlagHistogramValue {
+    UMA_AX_EXPERIMENTAL_MODE_FORM_CONTROLS = 0,
+
+    // This must always be the last enum. It's okay for its value to
+    // increase, but none of the other enum values may change.
+    UMA_AX_EXPERIMENTAL_MODE_MAX
+  };
+
+  uint32_t flags_ = 0U;
+  uint32_t experimental_flags_ = 0U;
 };
 
 // Used when an AT that only require basic accessibility information, such as

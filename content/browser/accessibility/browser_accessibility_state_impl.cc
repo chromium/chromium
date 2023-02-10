@@ -48,12 +48,19 @@ constexpr int kOnAccessibilityUsageUpdateDelaySecs = 5;
 // doing so is bad for performance.
 constexpr int kDisableAccessibilitySupportDelaySecs = 2;
 
-// Record a histograms for an accessibility mode when it's enabled.
+// Record a histogram for an accessibility mode when it is enabled.
 void RecordNewAccessibilityModeFlags(
     ui::AXMode::ModeFlagHistogramValue mode_flag) {
   UMA_HISTOGRAM_ENUMERATION(
       "Accessibility.ModeFlag", mode_flag,
       ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
+}
+
+// Record a histogram for an experimental accessibility mode when it is enabled.
+void RecordNewExperimentalAccessibilityModeFlags(
+    ui::AXMode::ExperimentalModeFlagHistogramValue experimental_mode_flag) {
+  // TODO(aldietz): Add histogram enumeration for
+  // "Accessibility.ExperimentalModeFlag"
 }
 
 // Update the accessibility histogram 45 seconds after initialization.
@@ -399,30 +406,54 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
 
   // Retrieve only newly added modes for the purposes of logging.
   int new_mode_flags = mode.flags() & (~previous_mode.flags());
-  if (new_mode_flags & ui::AXMode::kNativeAPIs)
+  if (new_mode_flags & ui::AXMode::kNativeAPIs) {
     RecordNewAccessibilityModeFlags(
         ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_NATIVE_APIS);
-  if (new_mode_flags & ui::AXMode::kWebContents)
+  }
+
+  if (new_mode_flags & ui::AXMode::kWebContents) {
     RecordNewAccessibilityModeFlags(
         ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS);
-  if (new_mode_flags & ui::AXMode::kInlineTextBoxes)
+  }
+
+  if (new_mode_flags & ui::AXMode::kInlineTextBoxes) {
     RecordNewAccessibilityModeFlags(
         ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES);
-  if (new_mode_flags & ui::AXMode::kScreenReader)
+  }
+
+  if (new_mode_flags & ui::AXMode::kScreenReader) {
     RecordNewAccessibilityModeFlags(
         ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER);
-  if (new_mode_flags & ui::AXMode::kHTML)
+  }
+
+  if (new_mode_flags & ui::AXMode::kHTML) {
     RecordNewAccessibilityModeFlags(
         ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML);
-  if (new_mode_flags & ui::AXMode::kHTMLMetadata)
+  }
+
+  if (new_mode_flags & ui::AXMode::kHTMLMetadata) {
     RecordNewAccessibilityModeFlags(
         ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML_METADATA);
-  if (new_mode_flags & ui::AXMode::kLabelImages)
+  }
+
+  if (new_mode_flags & ui::AXMode::kLabelImages) {
     RecordNewAccessibilityModeFlags(
         ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_LABEL_IMAGES);
-  if (new_mode_flags & ui::AXMode::kPDF)
+  }
+
+  if (new_mode_flags & ui::AXMode::kPDF) {
     RecordNewAccessibilityModeFlags(
         ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF);
+  }
+
+  // Retrieve only newly added experimental modes for the purposes of logging.
+  int new_experimental_mode_flags =
+      mode.experimental_flags() & (~previous_mode.experimental_flags());
+  if (new_experimental_mode_flags & ui::AXMode::kExperimentalFormControls) {
+    RecordNewExperimentalAccessibilityModeFlags(
+        ui::AXMode::ExperimentalModeFlagHistogramValue::
+            UMA_AX_EXPERIMENTAL_MODE_FORM_CONTROLS);
+  }
 
   std::vector<WebContentsImpl*> web_contents_vector =
       WebContentsImpl::GetAllWebContents();
@@ -447,7 +478,10 @@ void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
 
   int raw_flags = accessibility_mode_.flags() ^
                   (mode.flags() & accessibility_mode_.flags());
-  accessibility_mode_ = raw_flags;
+  int raw_experimental_flags =
+      accessibility_mode_.experimental_flags() ^
+      (mode.experimental_flags() & accessibility_mode_.experimental_flags());
+  accessibility_mode_ = ui::AXMode(raw_flags, raw_experimental_flags);
 
   // Proxy the new AXMode to AXPlatformNode.
   ui::AXPlatformNode::SetAXMode(accessibility_mode_);

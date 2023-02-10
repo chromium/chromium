@@ -1727,6 +1727,7 @@ void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
     return;
 
   accessibility_mode_ = mode;
+
   // Update state for all frames in this tree and inner trees. Should also
   // include speculative frame hosts.
   GetPrimaryMainFrame()->ForEachRenderFrameHostIncludingSpeculative(
@@ -4628,7 +4629,7 @@ void WebContentsImpl::RecordAccessibilityEvents(
   DCHECK_EQ(start_recording, callback.has_value());
   if (start_recording) {
     BrowserAccessibilityStateImpl::GetInstance()->AddAccessibilityModeFlags(
-        ui::kAXModeBasic.flags());
+        ui::kAXModeBasic);
     auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
     CHECK(ax_mgr);
     base::ProcessId pid = base::Process::Current().Pid();

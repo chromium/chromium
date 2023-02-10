@@ -15,6 +15,15 @@ std::ostream& operator<<(std::ostream& stream, const AXMode& mode) {
   return stream << mode.ToString();
 }
 
+bool AXMode::HasExperimentalFlags(uint32_t experimental_flag) const {
+  return (experimental_flags_ & experimental_flag) == experimental_flag;
+}
+
+void AXMode::SetExperimentalFlags(uint32_t experimental_flag, bool value) {
+  experimental_flags_ = value ? (experimental_flags_ | experimental_flag)
+                              : (experimental_flags_ & ~experimental_flag);
+}
+
 std::string AXMode::ToString() const {
   std::vector<base::StringPiece> tokens;
 
@@ -55,6 +64,24 @@ std::string AXMode::ToString() const {
     if (has_mode(mode_flag))
       tokens.push_back(flag_name);
   }
+
+  for (uint32_t experimental_mode_flag = AXMode::kExperimentalFirstFlag;
+       experimental_mode_flag <= AXMode::kExperimentalLastFlag;
+       experimental_mode_flag = experimental_mode_flag << 1) {
+    base::StringPiece flag_name;
+    switch (experimental_mode_flag) {
+      case AXMode::kExperimentalFormControls:
+        flag_name = "kExperimentalFormControls";
+        break;
+    }
+
+    DCHECK(!flag_name.empty());
+
+    if (HasExperimentalFlags(experimental_mode_flag)) {
+      tokens.push_back(flag_name);
+    }
+  }
+
   return base::JoinString(tokens, " | ");
 }
 
