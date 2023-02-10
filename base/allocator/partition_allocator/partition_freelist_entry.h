@@ -249,9 +249,7 @@ class PartitionFreelistEntry {
                           (next_address & kSuperPageBaseMask);
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
     bool marked_as_free_in_bitmap =
-        for_thread_cache
-            ? true
-            : !FreeSlotBitmapSlotIsUsed(reinterpret_cast<uintptr_t>(next));
+        for_thread_cache ? true : !FreeSlotBitmapSlotIsUsed(next_address);
 #else
     bool marked_as_free_in_bitmap = true;
 #endif
