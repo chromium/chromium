@@ -3420,9 +3420,6 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_OVERVIEW" translateable="false" desc="Label for accelerator action - Overview mode.">
         Overview mode
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_PROJECTOR_MARKER" translateable="false" desc="Label for accelerator action - Toggle projector marker.">
-        Toggle projector marker
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_RESIZE_LOCK_MENU" translateable="false" desc="Label for accelerator action - Toggle menu to resize lock mode.">
         Toggle menu to resize lock mode
       </message>
@@ -3431,12 +3428,6 @@ Connect your device to power.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_WIFI" translateable="false" desc="Label for accelerator action - Turn wifi on or off.">
         Turn wifi on or off
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOUCH_HUD_CLEAR" translateable="false" desc="Label for accelerator action - Touch hud clear.">
-        Touch Hud clear
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOUCH_HUD_MODE_CHANGE" translateable="false" desc="Label for accelerator action - Touch hud mode change.">
-        Touch hud mode change
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_UNPIN" translateable="false" desc="Label for accelerator action - Unpin an app.">
         Unpin an app
@@ -3542,6 +3533,39 @@ Connect your device to power.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS" translateable="false" desc="Label for accelerator action - Assign active window to all desks.">
         Assign active window to all desks
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_PRIVACY_SCREEN" translateable="false" desc="Label for accelerator action - Toggle privacy screen.">
+        Toggle privacy screen
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_KEYBOARD_BACKLIGHT" translateable="false" desc="Label for accelerator action - Toggle keyboard backlight.">
+        Toggle keyboard backlight
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MICROPHONE_MUTE" translateable="false" desc="Label for accelerator action - Mute or unmute microphone.">
+        Mute or unmute microphone
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_PLAY_MEDIA" translateable="false" desc="Label for accelerator action - Play media.">
+        Play media
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_PAUSE_MEDIA" translateable="false" desc="Label for accelerator action - Pause media.">
+        Pause media
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_PLAY_PAUSE_MEDIA" translateable="false" desc="Label for accelerator action - Play or pause media.">
+        Play or pause media
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEXT_TRACK" translateable="false" desc="Label for accelerator action - Go to next track.">
+        Go to next track
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_PREVIOUS_TRACK" translateable="false" desc="Label for accelerator action - Go to previous track.">
+        Go to previous track
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FAST_FORWARD_MEDIA" translateable="false" desc="Label for accelerator action - Fast forward media.">
+        Fast forward media
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SYSTEM_TRAY_BUBBLE" translateable="false" desc="Label for accelerator action - Open Quick Settings.">
+        Open Quick Settings
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MESSAGE_CENTER_BUBBLE" translateable="false" desc="Label for accelerator action - See notifications.">
+        See notifications
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLOSE_TAB" translateable="false" desc="Label for accelerator action - Close the current tab.">
         Close the current tab
