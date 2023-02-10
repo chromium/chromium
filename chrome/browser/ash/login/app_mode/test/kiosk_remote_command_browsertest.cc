@@ -104,6 +104,9 @@ class TestRebootObserver : public chromeos::PowerManagerClient::Observer {
 class KioskRemoteCommandTest : public KioskBaseTest {
  public:
   KioskRemoteCommandTest() {
+    // Skip initial policy setup is needed to do a custom StartConnection below
+    device_state_.set_skip_initial_policy_setup(true);
+
     settings_helper_.Set(kDeviceOwner,
                          base::Value(test_owner_account_id_.GetUserEmail()));
     login_manager_.AppendRegularUsers(1);
@@ -186,9 +189,8 @@ class KioskRemoteCommandTest : public KioskBaseTest {
       &mixin_host_,
       {{LoginManagerMixin::TestUserInfo{test_owner_account_id_}}}};
 
-  // TODO(b/268172940): Change to OOBE_COMPLETED_CLOUD_ENROLLED mixin
   DeviceStateMixin device_state_{
-      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   std::unique_ptr<TestingRemoteCommandsServer> remote_command_server_;
   policy::DeviceCloudPolicyManagerAsh* policy_manager_;
