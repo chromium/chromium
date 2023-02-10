@@ -7,12 +7,14 @@
 
 #include <stddef.h>
 
+#include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/test/sessions_hierarchy.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace fake_server {
 
@@ -52,6 +54,11 @@ class FakeServerVerifier {
   // hierarchy present on the server. This method only supports one session.
   testing::AssertionResult VerifySessions(
       const SessionsHierarchy& expected_sessions);
+
+  // Returns a successful result if |expected_urls| matches the URLs (within
+  // ModelType::HISTORY) on the server.
+  testing::AssertionResult VerifyHistory(
+      const std::multiset<GURL>& expected_urls);
 
  private:
   const raw_ptr<FakeServer> fake_server_;

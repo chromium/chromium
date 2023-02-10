@@ -22,6 +22,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/pref_names.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "components/variations/variations_associated_data.h"
@@ -885,6 +886,24 @@ NSString* SerializedValue(const base::Value* value) {
   return nil;
 }
 
++ (NSError*)waitForSyncTransportStateActiveWithTimeout:
+    (base::TimeDelta)timeout {
+  bool success = WaitUntilConditionOrTimeout(timeout, ^{
+    ChromeBrowserState* browser_state =
+        chrome_test_util::GetOriginalBrowserState();
+    DCHECK(browser_state);
+    syncer::SyncService* syncService =
+        SyncServiceFactory::GetForBrowserState(browser_state);
+    return syncService->GetTransportState() ==
+           syncer::SyncService::TransportState::ACTIVE;
+  });
+  if (!success) {
+    NSString* errorDescription = @"Sync feature must be active";
+    return testing::NSErrorWithLocalizedDescription(errorDescription);
+  }
+  return nil;
+}
+
 + (NSString*)syncCacheGUID {
   return base::SysUTF8ToNSString(chrome_test_util::GetSyncCacheGuid());
 }
@@ -944,6 +963,23 @@ NSString* SerializedValue(const base::Value* value) {
   if (!success && !error) {
     error = testing::NSErrorWithLocalizedDescription(
         @"Error occurred during verification sessions.");
+  }
+  return error;
+}
+
++ (NSError*)verifyHistoryOnSyncServerWithURLs:(NSArray<NSURL*>*)URLs {
+  std::multiset<GURL> multisetUrls;
+  for (NSURL* url in URLs) {
+    multisetUrls.insert(net::GURLWithNSURL(url));
+  }
+
+  NSError* __autoreleasing tempError = nil;
+  bool success =
+      chrome_test_util::VerifyHistoryOnSyncServer(multisetUrls, &tempError);
+  NSError* error = tempError;
+  if (!success && !error) {
+    error = testing::NSErrorWithLocalizedDescription(
+        @"Error occurred during verifying history URLs.");
   }
   return error;
 }
@@ -1045,6 +1081,10 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (BOOL)isDemographicMetricsReportingEnabled {
   return base::FeatureList::IsEnabled(metrics::kDemographicMetricsReporting);
+}
+
++ (BOOL)isSyncHistoryDataTypeEnabled {
+  return base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType);
 }
 
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch {

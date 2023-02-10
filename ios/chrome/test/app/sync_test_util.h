@@ -102,6 +102,12 @@ bool IsAutofillProfilePresent(std::string guid, std::string full_name);
 BOOL VerifySessionsOnSyncServer(const std::multiset<std::string>& expected_urls,
                                 NSError** error);
 
+// Verifies the URLs (in the HISTORY data type) on the Sync FakeServer.
+// `expected_urls` is the collection of expected URLs. On failure, returns NO
+// and `error` is set to an appropriate message.
+BOOL VerifyHistoryOnSyncServer(const std::multiset<GURL>& expected_urls,
+                               NSError** error);
+
 // Adds typed URL to HistoryService.
 void AddTypedURLToClient(const GURL& url);
 

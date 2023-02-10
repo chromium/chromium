@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/json/json_writer.h"
+#include "base/strings/string_util.h"
 #include "components/sync/test/fake_server.h"
 
 using base::JSONWriter;
@@ -158,6 +159,36 @@ AssertionResult FakeServerVerifier::VerifySessions(
     actual_sessions.AddWindow(tab_urls);
   }
   return VerifySessionsHierarchyEquality(expected_sessions, actual_sessions);
+}
+
+AssertionResult FakeServerVerifier::VerifyHistory(
+    const std::multiset<GURL>& expected_urls) {
+  std::vector<sync_pb::SyncEntity> history =
+      fake_server_->GetSyncEntitiesByModelType(syncer::HISTORY);
+  std::multiset<GURL> actual_urls;
+  for (const sync_pb::SyncEntity& entity : history) {
+    sync_pb::HistorySpecifics history_specifics = entity.specifics().history();
+    for (int i = 0; i < history_specifics.redirect_entries_size(); i++) {
+      actual_urls.emplace(history_specifics.redirect_entries(i).url());
+    }
+  }
+
+  if (expected_urls == actual_urls) {
+    return AssertionSuccess();
+  }
+
+  std::vector<std::string> actual;
+  for (const GURL& url : actual_urls) {
+    actual.push_back(url.spec());
+  }
+  std::vector<std::string> expected;
+  for (const GURL& url : expected_urls) {
+    expected.push_back(url.spec());
+  }
+  return AssertionFailure()
+         << "Server history does not match! "
+         << "FakeServer contents: " << base::JoinString(actual, ", ")
+         << "; Expected contents: " << base::JoinString(expected, ", ");
 }
 
 }  // namespace fake_server

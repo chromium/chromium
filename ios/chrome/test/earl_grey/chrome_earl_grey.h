@@ -247,7 +247,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // the collection of URLs that are to be expected for a single window. A
 // GREYAssert is induced on failure. See the SessionsHierarchy class for
 // documentation regarding the verification.
-- (void)verifySyncServerURLs:(NSArray<NSString*>*)URLs;
+- (void)verifySyncServerSessionURLs:(NSArray<NSString*>*)URLs;
 
 // Waits until sync server contains `count` entities of the given `type` and
 // `name`. Folders are not included in this count.
@@ -256,6 +256,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
                                      name:(const std::string&)UTF8Name
                                     count:(size_t)count
                                   timeout:(base::TimeDelta)timeout;
+
+- (void)waitForSyncServerHistoryURLs:(NSArray<NSURL*>*)URLs
+                             timeout:(base::TimeDelta)timeout;
 
 // Induces a GREYAssert if `expected_present` is YES and the provided `url` is
 // not present, or vice versa.
@@ -477,6 +480,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)waitForSyncFeatureEnabled:(BOOL)isEnabled
                       syncTimeout:(base::TimeDelta)timeout;
 
+// Waits for sync to become fully active; see
+// SyncService::TransportState::ACTIVE for details. If not succeeded a
+// GREYAssert is induced.
+- (void)waitForSyncTransportStateActiveWithTimeout:(base::TimeDelta)timeout;
+
 // Returns the current sync cache GUID. The sync server must be running when
 // calling this.
 - (std::string)syncCacheGUID;
@@ -641,6 +649,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns YES if DemographicMetricsReporting feature is enabled.
 - (BOOL)isDemographicMetricsReportingEnabled [[nodiscard]];
+
+// Returns YES if the SyncEnableHistoryDataType feature is enabled.
+- (BOOL)isSyncHistoryDataTypeEnabled [[nodiscard]];
 
 // Returns YES if the `launchSwitch` is found in host app launch switches.
 - (BOOL)appHasLaunchSwitch:(const std::string&)launchSwitch;

@@ -314,6 +314,23 @@ BOOL VerifySessionsOnSyncServer(const std::multiset<std::string>& expected_urls,
   return result == testing::AssertionSuccess();
 }
 
+BOOL VerifyHistoryOnSyncServer(const std::multiset<GURL>& expected_urls,
+                               NSError** error) {
+  DCHECK(gSyncFakeServer);
+  fake_server::FakeServerVerifier verifier(gSyncFakeServer);
+  testing::AssertionResult result = verifier.VerifyHistory(expected_urls);
+  if (result != testing::AssertionSuccess() && error != nil) {
+    NSDictionary* errorInfo = @{
+      NSLocalizedDescriptionKey : base::SysUTF8ToNSString(result.message())
+    };
+    *error = [NSError errorWithDomain:kSyncTestErrorDomain
+                                 code:0
+                             userInfo:errorInfo];
+    return NO;
+  }
+  return result == testing::AssertionSuccess();
+}
+
 void AddTypedURLToClient(const GURL& url) {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();

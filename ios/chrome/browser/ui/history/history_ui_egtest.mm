@@ -288,21 +288,30 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testSearchSyncedHistory {
   const char syncedURL[] = "http://mockurl/sync/";
   const GURL mockURL(syncedURL);
-  [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
 
   // Sign in to sync.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::TYPED_URLS];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 
-  [ChromeEarlGrey waitForSyncServerEntitiesWithType:syncer::TYPED_URLS
-                                               name:mockURL.spec()
-                                              count:1
-                                            timeout:kSyncOperationTimeout];
+  // Add a typed URL and wait for it to show up on the server.
+  [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
+  if ([ChromeEarlGrey isSyncHistoryDataTypeEnabled]) {
+    NSArray<NSURL*>* URLs = @[
+      net::NSURLWithGURL(mockURL),
+    ];
+    [ChromeEarlGrey waitForSyncServerHistoryURLs:URLs
+                                         timeout:kSyncOperationTimeout];
+  } else {
+    [ChromeEarlGrey triggerSyncCycleForType:syncer::TYPED_URLS];
+    [ChromeEarlGrey waitForSyncServerEntitiesWithType:syncer::TYPED_URLS
+                                                 name:mockURL.spec()
+                                                count:1
+                                              timeout:kSyncOperationTimeout];
+  }
 
   [self loadTestURLs];
   [self openHistoryPanel];

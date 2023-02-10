@@ -353,7 +353,7 @@ void WaitForAutofillProfileLocallyPresent(const std::string& guid,
     base::SysUTF8ToNSString(URL1.spec()),
     base::SysUTF8ToNSString(URL2.spec()),
   ];
-  [ChromeEarlGrey verifySyncServerURLs:specs];
+  [ChromeEarlGrey verifySyncServerSessionURLs:specs];
 }
 
 // Tests that a typed URL (after Sync is enabled) is uploaded to the Sync

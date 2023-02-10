@@ -355,6 +355,11 @@
 + (NSError*)waitForSyncFeatureEnabled:(BOOL)isEnabled
                           syncTimeout:(base::TimeDelta)timeout;
 
+// Waits for sync to become fully active; see
+// SyncService::TransportState::ACTIVE for details. If not succeeded a
+// GREYAssert is induced.
++ (NSError*)waitForSyncTransportStateActiveWithTimeout:(base::TimeDelta)timeout;
+
 // Returns the current sync cache GUID. The sync server must be running when
 // calling this.
 + (NSString*)syncCacheGUID;
@@ -440,6 +445,11 @@
 // SessionsHierarchy class for documentation regarding the verification.
 + (NSError*)verifySessionsOnSyncServerWithSpecs:(NSArray<NSString*>*)specs;
 
+// Verifies the URLs (in the HISTORY data type) on the Sync FakeServer.
+// `specs` is the collection of expected URLs. On failure, returns a NSError
+// describing the failure.
++ (NSError*)verifyHistoryOnSyncServerWithURLs:(NSArray<NSURL*>*)URLs;
+
 // Verifies that `count` entities of the given `type` and `name` exist on the
 // sync FakeServer. Folders are not included in this count. Returns NSError
 // if there is a failure or if the count does not match.
@@ -491,6 +501,9 @@
 
 // Returns YES if DemographicMetricsReporting feature is enabled.
 + (BOOL)isDemographicMetricsReportingEnabled [[nodiscard]];
+
+// Returns YES if the SyncEnableHistoryDataType feature is enabled.
++ (BOOL)isSyncHistoryDataTypeEnabled [[nodiscard]];
 
 // Returns YES if the `launchSwitch` is found in host app launch switches.
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch;
