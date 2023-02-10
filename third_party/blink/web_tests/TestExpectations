@@ -110,9 +110,9 @@ external/wpt/css/compositing/root-element-background-transparency.html [ Failure
 crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 
 # Extra box in the output:
-crbug.com/1254933 [ Linux ] css3/filters/filterRegions.html [ Failure ]
-crbug.com/1254933 [ Win ] css3/filters/filterRegions.html [ Failure ]
-crbug.com/1405377 [ Mac ] css3/filters/filterRegions.html [ Failure ]
+crbug.com/1254933 [ Linux ] css3/filters/filterRegions.html [ Failure Pass ]
+crbug.com/1254933 [ Win ] css3/filters/filterRegions.html [ Failure Pass ]
+crbug.com/1405377 [ Mac ] css3/filters/filterRegions.html [ Failure Pass ]
 
 # Script preloaded: No
 crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
