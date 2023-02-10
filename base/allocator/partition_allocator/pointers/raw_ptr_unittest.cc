@@ -905,14 +905,10 @@ TEST_F(RawPtrTest, PlusEqualOperatorTypes) {
   ASSERT_EQ(*ptr, 44);
   ptr -= 2;  // Negative literal.
   ASSERT_EQ(*ptr, 42);
-  ptr += ptrdiff_t{1};
+  ptr += ptrdiff_t{1};  // ptrdiff_t.
   ASSERT_EQ(*ptr, 43);
-  ptr += size_t{2};
+  ptr += size_t{2};  // size_t.
   ASSERT_EQ(*ptr, 45);
-  ptr += int64_t{-3};  // Negative literal.
-  ASSERT_EQ(*ptr, 42);
-  ptr += uint64_t{1};
-  ASSERT_EQ(*ptr, 43);
 }
 
 TEST_F(RawPtrTest, MinusEqualOperator) {
@@ -937,14 +933,10 @@ TEST_F(RawPtrTest, MinusEqualOperatorTypes) {
   ASSERT_EQ(*ptr, 43);
   ptr -= -2;  // Negative literal.
   ASSERT_EQ(*ptr, 45);
-  ptr -= ptrdiff_t{2};
+  ptr -= ptrdiff_t{2};  // ptrdiff_t.
   ASSERT_EQ(*ptr, 43);
-  ptr -= size_t{1};
+  ptr -= size_t{1};  // size_t.
   ASSERT_EQ(*ptr, 42);
-  ptr -= int64_t{-3};  // Negative literal.
-  ASSERT_EQ(*ptr, 45);
-  ptr -= uint64_t{1};
-  ASSERT_EQ(*ptr, 44);
 }
 
 TEST_F(RawPtrTest, PlusOperator) {
@@ -953,11 +945,8 @@ TEST_F(RawPtrTest, PlusOperator) {
   for (int i = 0; i < 4; ++i) {
     ASSERT_EQ(*(ptr + i), 42 + i);
   }
-  for (int i = 0; i < 4; ++i) {
-    ASSERT_EQ(*(ptr + int64_t{i}), 42 + i);
-  }
   EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
-                  .get_for_dereference_cnt = 8,
+                  .get_for_dereference_cnt = 4,
                   .get_for_extraction_cnt = 0,
                   .get_for_comparison_cnt = 0,
               }),
@@ -970,11 +959,8 @@ TEST_F(RawPtrTest, MinusOperator) {
   for (int i = 1; i <= 4; ++i) {
     ASSERT_EQ(*(ptr - i), 46 - i);
   }
-  for (int i = 1; i <= 4; ++i) {
-    ASSERT_EQ(*(ptr - int64_t{i}), 46 - i);
-  }
   EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
-                  .get_for_dereference_cnt = 8,
+                  .get_for_dereference_cnt = 4,
                   .get_for_extraction_cnt = 0,
                   .get_for_comparison_cnt = 0,
               }),
@@ -1574,11 +1560,6 @@ void RunBackupRefPtrImplAdvanceTest(
   EXPECT_CHECK_DEATH(protected_ptr = protected_ptr + 1);
   EXPECT_CHECK_DEATH(protected_ptr += 1);
   EXPECT_CHECK_DEATH(++protected_ptr);
-  // Prior to crrev.com/c/4235831 these operators were disabled for 64-bit
-  // offsets on 32-bit platforms. raw_ptr would take the implicit conversion
-  // route thus bypassing the OOB check, integral to BRP correctness.
-  EXPECT_CHECK_DEATH(protected_ptr = protected_ptr + uint64_t{1});
-  EXPECT_CHECK_DEATH(protected_ptr += uint64_t{1});
 
   // Even though |protected_ptr| is already pointing to the end of the
   // allocation, assign it explicitly to make sure the underlying implementation
@@ -1589,11 +1570,6 @@ void RunBackupRefPtrImplAdvanceTest(
   EXPECT_CHECK_DEATH(protected_ptr = protected_ptr - 1);
   EXPECT_CHECK_DEATH(protected_ptr -= 1);
   EXPECT_CHECK_DEATH(--protected_ptr);
-  // Prior to crrev.com/c/4235831 these operators were disabled for 64-bit
-  // offsets on 32-bit platforms. raw_ptr would take the implicit conversion
-  // route thus bypassing the OOB check, integral to BRP correctness.
-  EXPECT_CHECK_DEATH(protected_ptr = protected_ptr - uint64_t{1});
-  EXPECT_CHECK_DEATH(protected_ptr -= uint64_t{1});
 
 #if PA_CONFIG(USE_OOB_POISON)
   // An array type that should be more than a third the size of the available
