@@ -535,6 +535,8 @@ ci.builder(
     ),
     builderless = True,
     execution_timeout = 12 * time.hour,
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
     service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
 )
