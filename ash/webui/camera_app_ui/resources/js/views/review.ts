@@ -158,48 +158,48 @@ export class Review<T> extends View {
       this.root.appendChild(templ);
     }
     for (const btnGroup of this.btnGroups) {
-      const addButton =
-          ({
-            uiArgs: {text, label, templateId, primary},
-            exitValue,
-            callback,
-            hasPopup,
-          }: Option<T|null>) => {
-            const templ = instantiateTemplate(
-                templateId !== undefined ? `#${templateId}` :
-                                           '#text-button-template');
-            const btn = dom.getFrom(templ, 'button', HTMLButtonElement);
-            if (text !== undefined) {
-              btn.setAttribute('i18n-text', text);
-            }
-            if (label !== undefined) {
-              btn.setAttribute('i18n-label', label);
-            }
-            if (this.primaryBtn === null && primary === true) {
-              btn.classList.add('primary');
-              this.primaryBtn = btn;
-            } else {
-              btn.classList.add('secondary');
-            }
-            if (hasPopup !== null) {
-              btn.setAttribute('aria-haspopup', hasPopup.toString());
-            }
-            btn.onclick = () => {
-              if (callback !== null) {
-                callback();
-              }
-              if (exitValue !== undefined) {
-                onSelected.signal(exitValue);
-              }
-            };
-            btnGroup.el.appendChild(templ);
-          };
+      const addButton = ({
+        uiArgs: {text, label, templateId, primary},
+        exitValue,
+        callback,
+        hasPopup,
+      }: Option<T|null>) => {
+        const templ = instantiateTemplate(
+            templateId !== undefined ? `#${templateId}` :
+                                       '#text-button-template');
+        const btn = dom.getFrom(templ, 'button', HTMLButtonElement);
+        if (text !== undefined) {
+          btn.setAttribute('i18n-text', text);
+        }
+        if (label !== undefined) {
+          btn.setAttribute('i18n-label', label);
+        }
+        if (this.primaryBtn === null && primary === true) {
+          btn.classList.add('primary');
+          this.primaryBtn = btn;
+        } else {
+          btn.classList.add('secondary');
+        }
+        if (hasPopup !== null) {
+          btn.setAttribute('aria-haspopup', hasPopup.toString());
+        }
+        btn.onclick = () => {
+          if (callback !== null) {
+            callback();
+          }
+          if (exitValue !== undefined) {
+            onSelected.signal(exitValue);
+          }
+        };
+        btnGroup.el.appendChild(templ);
+      };
       for (const opt of btnGroup.optionGroup.options) {
         addButton(opt);
       }
       setupI18nElements(btnGroup.el);
     }
-    nav.open(this.viewName).closed.then(() => {
+    // The promise are indirectly awaited by waiting on onSelected.
+    void nav.open(this.viewName).closed.then(() => {
       onSelected.signal(null);
     });
     const result = await onSelected.wait();
