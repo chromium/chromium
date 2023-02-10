@@ -551,13 +551,15 @@ TEST_F(CrosAudioConfigImplTest, SetNoiseCancellationState) {
   ASSERT_EQ(mojom::AudioEffectState::kEnabled,
             fake_observer->GetInputAudioDevice(1)->noise_cancellation_state);
 
-  // Call to set noise cancellation from frontend ignored when active input node
+  // Frontend call to turn off noise cancellation ignored when active input node
   // does not support noise cancellation.
   SimulateSetNoiseCancellationEnabled(/*enabled=*/false);
 
   ASSERT_TRUE(GetNoiseCancellationState());
   ASSERT_TRUE(GetNoiseCancellationStatePref());
 
+  // Turn noise cancellation off with active input device that supports noise
+  // cancellation.
   SetActiveInputNodes({kInternalMicId});
   SimulateSetNoiseCancellationEnabled(/*enabled=*/false);
 

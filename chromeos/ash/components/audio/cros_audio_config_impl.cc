@@ -52,24 +52,10 @@ void UpdateInternalMicBasedOnAudioDevice(AudioDevice& internal_mic,
 //   - the overall device(chromebook) supports noise cancellation
 //   - the provided audio device supports noise cancellation
 //   - if noise cancellation is enabled in CrasAudioHandler
-// TODO(b/265077695): Update logic when Noise Cancellation refactor in
-// CrasAudioHandler completed.
 mojom::AudioEffectState GetNoiseCancellationState(const AudioDevice& device) {
-  if (!device.is_input) {
-    return mojom::AudioEffectState::kNotSupported;
-  }
-
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
 
-  // Overall device does not support noise cancellation.
-  if (!audio_handler->noise_cancellation_supported()) {
-    return mojom::AudioEffectState::kNotSupported;
-  }
-
-  // Check audio effect state for given audio device to determine if noise
-  // cancellation currently enabled.
-  if (!(device.audio_effect &
-        cras::AudioEffectType::EFFECT_TYPE_NOISE_CANCELLATION)) {
+  if (!audio_handler->IsNoiseCancellationSupportedForDevice(device.id)) {
     return mojom::AudioEffectState::kNotSupported;
   }
 
