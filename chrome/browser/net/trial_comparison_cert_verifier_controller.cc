@@ -43,16 +43,11 @@ TrialComparisonCertVerifierController::TrialComparisonCertVerifierController(
     return;
   }
 
-  base::RepeatingClosure refresh_state_callback =
-      base::BindRepeating(&TrialComparisonCertVerifierController::RefreshState,
-                          base::Unretained(this));
   pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(prefs::kSafeBrowsingEnabled,
-                             refresh_state_callback);
-  pref_change_registrar_.Add(prefs::kSafeBrowsingEnhanced,
-                             refresh_state_callback);
-  pref_change_registrar_.Add(prefs::kSafeBrowsingScoutReportingEnabled,
-                             refresh_state_callback);
+  pref_change_registrar_.Add(
+      prefs::kSafeBrowsingScoutReportingEnabled,
+      base::BindRepeating(&TrialComparisonCertVerifierController::RefreshState,
+                          base::Unretained(this)));
 }
 
 TrialComparisonCertVerifierController::
