@@ -380,6 +380,10 @@ vars = {
   # and whatever else without interference from each other.
   'libfuzzer_revision': 'debe7d2d1982e540fbd6bd78604bf001753f9e74',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling centipede
+  # and whatever else without interference from each other.
+  'centipede_revision': '63ed43d2bfa2c04e291e81d643a5581c9be90c53',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
   'devtools_frontend_revision': 'e0fdc2176e62bdc92ae5ed25ffd6bcd83720e2e2',
@@ -1458,6 +1462,9 @@ deps = {
 
   'src/third_party/libFuzzer/src':
     Var('chromium_git') + '/chromium/llvm-project/compiler-rt/lib/fuzzer.git' + '@' +  Var('libfuzzer_revision'),
+
+  'src/third_party/centipede/src':
+    Var('chromium_git') + '/external/github.com/google/centipede.git' + '@' + Var('centipede_revision'),
 
   'src/third_party/libaddressinput/src':
     Var('chromium_git') + '/external/libaddressinput.git' + '@' + 'e8712e415627f22d0b00ebee8db99547077f39bd',

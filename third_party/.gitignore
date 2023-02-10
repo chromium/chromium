@@ -63,6 +63,7 @@
 /cast_web_runtime
 /catapult
 /ced/src
+/centipede/src
 /checkstyle/*.jar
 /chromeos_login_manager
 /chromeos_text_input
