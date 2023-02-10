@@ -164,7 +164,9 @@ void VersionUpdater::RequestUpdateCheck() {
 
   if (NetworkHandler::IsInitialized())
     NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
-  UpdateEngineClient::Get()->AddObserver(this);
+  if (!UpdateEngineClient::Get()->HasObserver(this)) {
+    UpdateEngineClient::Get()->AddObserver(this);
+  }
   VLOG(1) << "Initiate update check";
   UpdateEngineClient::Get()->RequestUpdateCheck(base::BindOnce(
       &VersionUpdater::OnUpdateCheckStarted, weak_ptr_factory_.GetWeakPtr()));
