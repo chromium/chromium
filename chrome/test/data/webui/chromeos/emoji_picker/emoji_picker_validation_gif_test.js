@@ -9,7 +9,7 @@ import {EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {deepQuerySelector, waitForCondition} from './emoji_picker_test_util.js';
+import {deepQuerySelector} from './emoji_picker_test_util.js';
 import {TestEmojiPickerApiProxyImpl} from './test_emoji_picker_api_proxy.js';
 
 function historyGroupSelector(category) {
@@ -22,8 +22,6 @@ suite(`emoji-picker-validation-gif`, () => {
   let emojiPicker;
   /** @type {function(...!string): ?HTMLElement} */
   let findInEmojiPicker;
-  /** @type {function(...!string): ?HTMLElement} */
-  let findEmojiAllButtons;
   /** @type {Array<string>} */
   const categoryList = ['emoji', 'symbol', 'emoticon', 'gif'];
   /** @type {number} */
@@ -34,7 +32,14 @@ suite(`emoji-picker-validation-gif`, () => {
     document.body.innerHTML = '';
     window.localStorage.clear();
     window.localStorage.setItem(GIF_VALIDATION_DATE, new Date(0).toJSON());
+    const oneByOneGif =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+    const oneByTwoGif =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAQAAAAziH6sAAAADklEQVR42mNk+M/I8B8ABQoCAV5AcKEAAAAASUVORK5CYII=';
 
+    // The name left of - is the position of the GIF initially.
+    // The name right of - is the position of the GIF after history GIFs have
+    // been validated.
     const historyGifs = {
       history: [
         {
@@ -43,17 +48,15 @@ suite(`emoji-picker-validation-gif`, () => {
               id: '0',
               url: {
                 full: {
-                  url:
-                      'https://media.tenor.com/P0tX6a_nVIkAAAAC/grinch-smile-grinch.gif',
+                  url: oneByTwoGif,
                 },
                 preview: {
-                  url:
-                      'https://media.tenor.com/P0tX6a_nVIkAAAAM/grinch-smile-grinch.gif',
+                  url: oneByTwoGif,
                 },
               },
-              previewSize: {width: 220, height: 324},
+              previewSize: {width: 1, height: 2},
             },
-            name: 'Grinch Smile Grinch GIF',
+            name: 'Left 1 - Invalid',
           },
           alternates: [],
         },
@@ -63,15 +66,15 @@ suite(`emoji-picker-validation-gif`, () => {
               id: '1',
               url: {
                 full: {
-                  url: 'https://media.tenor.com/HU6E9HN1dSAAAAAC/head-turn.gif',
+                  url: oneByOneGif,
                 },
                 preview: {
-                  url: 'https://media.tenor.com/HU6E9HN1dSAAAAAM/head-turn.gif',
+                  url: oneByOneGif,
                 },
               },
-              previewSize: {width: 220, height: 224},
+              previewSize: {width: 1, height: 1},
             },
-            name: 'Head Turn GIF',
+            name: 'Right 1 - Left 1',
           },
           alternates: [],
         },
@@ -81,17 +84,15 @@ suite(`emoji-picker-validation-gif`, () => {
               id: '2',
               url: {
                 full: {
-                  url:
-                      'https://media.tenor.com/OfjkK_lANHsAAAAC/snoopy-dog.gif',
+                  url: oneByTwoGif,
                 },
                 preview: {
-                  url:
-                      'https://media.tenor.com/OfjkK_lANHsAAAAM/snoopy-dog.gif',
+                  url: oneByTwoGif,
                 },
               },
-              previewSize: {width: 220, height: 164},
+              previewSize: {width: 1, height: 2},
             },
-            name: 'Snoopy Dog GIF',
+            name: 'Right 2 - Right 1',
           },
           alternates: [],
         },
@@ -101,17 +102,15 @@ suite(`emoji-picker-validation-gif`, () => {
               id: 3,
               url: {
                 full: {
-                  url:
-                      'https://media.tenor.com/lSFT81zyIkMAAAAC/baby-yoda-i-love-you.gif',
+                  url: oneByTwoGif,
                 },
                 preview: {
-                  url:
-                      'https://media.tenor.com/lSFT81zyIkMAAAAM/baby-yoda-i-love-you.gif',
+                  url: oneByTwoGif,
                 },
               },
-              previewSize: {width: 220, height: 176},
+              previewSize: {width: 1, height: 2},
             },
-            name: 'Baby Yoda I Love You GIF',
+            name: 'Left 2 - Invalid',
           },
           alternates: [],
         },
@@ -121,17 +120,15 @@ suite(`emoji-picker-validation-gif`, () => {
               id: '4',
               url: {
                 full: {
-                  url:
-                      'https://media.tenor.com/QPapotlLW18AAAAC/dance-cute.gif',
+                  url: oneByTwoGif,
                 },
                 preview: {
-                  url:
-                      'https://media.tenor.com/QPapotlLW18AAAAM/dance-cute.gif',
+                  url: oneByTwoGif,
                 },
               },
-              previewSize: {width: 220, height: 234},
+              previewSize: {width: 1, height: 2},
             },
-            name: 'Dance Cute GIF',
+            name: 'Right 3 - Left 2',
           },
           alternates: [],
         },
@@ -192,9 +189,18 @@ suite(`emoji-picker-validation-gif`, () => {
 
         assertEquals(3, recentlyUsedEmoji.length);
 
-        // Check that the correct GIFs have been deleted.
-        assert(recentlyUsedEmoji[0].alt === 'Head Turn GIF');
-        assert(recentlyUsedEmoji[1].alt === 'Snoopy Dog GIF');
-        assert(recentlyUsedEmoji[2].alt === 'Dance Cute GIF');
+        // Check display is correct and the correct GIFs have been deleted.
+        const leftColResults =
+            findInEmojiPicker(historyGroupSelector('gif'))
+                .shadowRoot.querySelectorAll('div.left-column > .emoji-button');
+        assertEquals(leftColResults.length, 2);
+        assert(leftColResults[0].alt === 'Right 1 - Left 1');
+        assert(leftColResults[1].alt === 'Right 3 - Left 2');
+
+        const rightColResults = findInEmojiPicker(historyGroupSelector('gif'))
+                                    .shadowRoot.querySelectorAll(
+                                        'div.right-column > .emoji-button');
+        assertEquals(rightColResults.length, 1);
+        assert(rightColResults[0].alt === 'Right 2 - Right 1');
       });
 });

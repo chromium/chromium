@@ -282,40 +282,38 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
           {
             id: '1',
             url: {
-              full: 'https://media.tenor.com/HU6E9HN1dSAAAAAC/head-turn.gif',
-              preview: 'https://media.tenor.com/HU6E9HN1dSAAAAAM/head-turn.gif',
+              full: this.oneByOneGif,
+              preview: this.oneByOneGif,
             },
             previewSize: {
-              width: 220,
-              height: 224,
+              width: 1,
+              height: 1,
             },
-            contentDescription: 'Head Turn GIF',
+            contentDescription: 'Right 1 - Left 1',
           },
           {
             id: '2',
             url: {
-              full: 'https://media.tenor.com/OfjkK_lANHsAAAAC/snoopy-dog.gif',
-              preview:
-                  'https://media.tenor.com/OfjkK_lANHsAAAAM/snoopy-dog.gif',
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
             },
             previewSize: {
-              width: 220,
-              height: 164,
+              width: 1,
+              height: 2,
             },
-            contentDescription: 'Snoopy Dog GIF',
+            contentDescription: 'Right 2 - Right 1',
           },
           {
             id: '4',
             url: {
-              full: 'https://media.tenor.com/QPapotlLW18AAAAC/dance-cute.gif',
-              preview:
-                  'https://media.tenor.com/QPapotlLW18AAAAM/dance-cute.gif',
+              full: this.oneByTwoGif,
+              preview: this.oneByTwoGif,
             },
             previewSize: {
-              width: 220,
-              height: 234,
+              width: 1,
+              height: 2,
             },
-            contentDescription: 'Dance Cute GIF',
+            contentDescription: 'Right 3 - Left 2',
           },
         ],
       });
