@@ -84,7 +84,7 @@ class ClipboardTest : public PlatformTest {
   }
 
   void TearDown() override {
-    ClipboardTraits::Destroy(clipboard_);
+    ClipboardTraits::Destroy(clipboard_.ExtractAsDangling());
     PlatformTest::TearDown();
   }
 
