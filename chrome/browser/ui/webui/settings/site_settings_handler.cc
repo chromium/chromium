@@ -1503,17 +1503,11 @@ void SiteSettingsHandler::HandleGetNotificationPermissionReviewList(
 
 void SiteSettingsHandler::HandleGetFileSystemGrants(
     const base::Value::List& args) {
-  CHECK_EQ(2U, args.size());
+  CHECK_EQ(1U, args.size());
   AllowJavascript();
 
   const base::Value& callback_id = args[0];
-  const std::string& origin_string = args[1].GetString();
-
-  auto url = GURL(origin_string);
-  DCHECK(url.is_valid());
-  const url::Origin& origin = url::Origin::Create(url);
-
-  base::Value::List grants = PopulateFileSystemGrantData(origin);
+  base::Value::List grants = PopulateFileSystemGrantData();
 
   ResolveJavascriptCallback(callback_id, grants);
 }
@@ -2445,8 +2439,35 @@ SiteSettingsHandler::PopulateNotificationPermissionReviewData() {
   return result;
 }
 
-base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData(
-    const url::Origin& origin) {
+// Dictionary keys for an individual `FileSystemPermissionGrant`.
+// Schema (per grant):
+// {
+//     "origin" : <string>;
+//     "filePath" : <string>;
+//     "isWritable" : <bool>;
+//     "isDirectory" : <bool>;
+// }
+
+// Dictionary keys for an individual permission grant in
+// the returned `grants` List.
+// Note that while the `isWritable` and `isDirectory` values
+// are implied by the names of the grant lists, the
+// `FileSystemPermissionGrant` type contains these attributes
+// in order to make the data more easily accessible from the UI code.
+//
+// Schema (per origin):
+// [
+//  ...
+//   {
+//     "origin" : <string>;
+//     "directoryReadGrants" : FileSystemPermissionGrant[];
+//     "directoryWriteGrants" : FileSystemPermissionGrant[];
+//     "fileReadGrants" : FileSystemPermissionGrant[];
+//     "fileWriteGrants" : FileSystemPermissionGrant[];
+//   }
+//  ...
+// ]
+base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
   base::Value::List grants;
 
   // TODO(crbug.com/1373962): Remove feature flag check after persisted
@@ -2456,45 +2477,77 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData(
     return grants;
   ChromeFileSystemAccessPermissionContext* permission_context =
       FileSystemAccessPermissionContextFactory::GetForProfile(profile_);
+  std::vector<url::Origin> origins_with_grants =
+      permission_context->GetOriginsWithGrants();
 
-  ChromeFileSystemAccessPermissionContext::Grants grantObj =
-      permission_context->GetPermissionGrants(origin);
+  for (auto& origin : origins_with_grants) {
+    ChromeFileSystemAccessPermissionContext::Grants grantObj =
+        permission_context->GetPermissionGrants(origin);
+    if (grantObj.file_read_grants.empty() &&
+        grantObj.file_write_grants.empty() &&
+        grantObj.directory_read_grants.empty() &&
+        grantObj.directory_write_grants.empty()) {
+      continue;
+    }
 
-  // Populate the `grants` object with allowed permissions.
-  for (auto& filePath : grantObj.file_read_grants) {
-    base::Value::Dict fileReadGrant;
-    fileReadGrant.Set(site_settings::kDisplayName, FilePathToValue(filePath));
-    fileReadGrant.Set(site_settings::kIsWritable, false);
-    fileReadGrant.Set(site_settings::kIsDirectory, false);
-    grants.Append(base::Value(std::move(fileReadGrant)));
+    base::Value::Dict file_system_permission_grant;
+    base::Value::List directory_read_grants;
+    base::Value::List directory_write_grants;
+    base::Value::List file_read_grants;
+    base::Value::List file_write_grants;
+    std::string origin_string = origin.GetURL().spec();
+    file_system_permission_grant.Set(site_settings::kOrigin, origin_string);
+
+    // Populate the `file_system_permission_grant` object with allowed
+    // permissions.
+    for (auto& file_path : grantObj.directory_write_grants) {
+      base::Value::Dict directory_write_grant;
+      directory_write_grant.Set(site_settings::kOrigin, origin_string);
+      directory_write_grant.Set(site_settings::kFilePath,
+                                FilePathToValue(file_path));
+      directory_write_grant.Set(site_settings::kIsWritable, true);
+      directory_write_grant.Set(site_settings::kIsDirectory, true);
+      directory_write_grants.Append(std::move(directory_write_grant));
+    }
+    file_system_permission_grant.Set(site_settings::kDirectoryWriteGrants,
+                                     std::move(directory_write_grants));
+
+    for (auto& file_path : grantObj.directory_read_grants) {
+      base::Value::Dict directory_read_grant;
+      directory_read_grant.Set(site_settings::kOrigin, origin_string);
+      directory_read_grant.Set(site_settings::kFilePath,
+                               FilePathToValue(file_path));
+      directory_read_grant.Set(site_settings::kIsWritable, false);
+      directory_read_grant.Set(site_settings::kIsDirectory, true);
+      directory_read_grants.Append(std::move(directory_read_grant));
+    }
+    file_system_permission_grant.Set(site_settings::kDirectoryReadGrants,
+                                     std::move(directory_read_grants));
+
+    for (auto& file_path : grantObj.file_write_grants) {
+      base::Value::Dict file_write_grant;
+      file_write_grant.Set(site_settings::kOrigin, origin_string);
+      file_write_grant.Set(site_settings::kFilePath,
+                           FilePathToValue(file_path));
+      file_write_grant.Set(site_settings::kIsWritable, true);
+      file_write_grant.Set(site_settings::kIsDirectory, false);
+      file_write_grants.Append(std::move(file_write_grant));
+    }
+    file_system_permission_grant.Set(site_settings::kFileWriteGrants,
+                                     std::move(file_write_grants));
+
+    for (auto& file_path : grantObj.file_read_grants) {
+      base::Value::Dict file_read_grant;
+      file_read_grant.Set(site_settings::kOrigin, origin_string);
+      file_read_grant.Set(site_settings::kFilePath, FilePathToValue(file_path));
+      file_read_grant.Set(site_settings::kIsWritable, false);
+      file_read_grant.Set(site_settings::kIsDirectory, false);
+      file_read_grants.Append((base::Value(std::move(file_read_grant))));
+    }
+    file_system_permission_grant.Set(site_settings::kFileReadGrants,
+                                     std::move(file_read_grants));
+    grants.Append(std::move(file_system_permission_grant));
   }
-
-  for (auto& filePath : grantObj.file_write_grants) {
-    base::Value::Dict fileWriteGrant;
-    fileWriteGrant.Set(site_settings::kDisplayName, FilePathToValue(filePath));
-    fileWriteGrant.Set(site_settings::kIsWritable, true);
-    fileWriteGrant.Set(site_settings::kIsDirectory, false);
-    grants.Append(base::Value(std::move(fileWriteGrant)));
-  }
-
-  for (auto& filePath : grantObj.directory_read_grants) {
-    base::Value::Dict directoryReadGrant;
-    directoryReadGrant.Set(site_settings::kDisplayName,
-                           FilePathToValue(filePath));
-    directoryReadGrant.Set(site_settings::kIsWritable, false);
-    directoryReadGrant.Set(site_settings::kIsDirectory, true);
-    grants.Append(base::Value(std::move(directoryReadGrant)));
-  }
-
-  for (auto& filePath : grantObj.directory_write_grants) {
-    base::Value::Dict directoryWriteGrant;
-    directoryWriteGrant.Set(site_settings::kDisplayName,
-                            FilePathToValue(filePath));
-    directoryWriteGrant.Set(site_settings::kIsWritable, true);
-    directoryWriteGrant.Set(site_settings::kIsDirectory, true);
-    grants.Append(base::Value(std::move(directoryWriteGrant)));
-  }
-
   return grants;
 }
 

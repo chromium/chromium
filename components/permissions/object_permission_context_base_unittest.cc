@@ -177,6 +177,20 @@ TEST_F(ObjectPermissionContextBaseTest,
   EXPECT_EQ(object2_, objects[0]->value);
 }
 
+TEST_F(ObjectPermissionContextBaseTest, GetOriginsWithGrants) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin2_, object2_.Clone());
+
+  auto origins_with_grants = context_.GetOriginsWithGrants();
+  EXPECT_EQ(2u, origins_with_grants.size());
+  EXPECT_EQ(origin2_, origins_with_grants[0]);
+  EXPECT_EQ(origin1_, origins_with_grants[1]);
+}
+
 TEST_F(ObjectPermissionContextBaseTest, GetAllGrantedObjects) {
   MockPermissionObserver mock_observer;
   context_.AddObserver(&mock_observer);

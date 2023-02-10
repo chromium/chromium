@@ -360,9 +360,9 @@ class SiteSettingsHandler
   // a lot of notifications, but have low site engagement.
   base::Value::List PopulateNotificationPermissionReviewData();
 
-  // Returns a list of permission grant objects for the allowed permissions
-  // granted via the File System Access API.
-  base::Value::List PopulateFileSystemGrantData(const url::Origin& origin);
+  // Returns a dictionary containing the lists of the allowed permission
+  // grant objects granted via the File System Access API, per origin.
+  base::Value::List PopulateFileSystemGrantData();
 
   // Sends the list of notification permissions to review to the WebUI.
   void SendNotificationPermissionReviewList();

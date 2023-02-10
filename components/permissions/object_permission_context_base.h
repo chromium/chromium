@@ -98,6 +98,9 @@ class ObjectPermissionContextBase : public KeyedService {
   virtual std::vector<std::unique_ptr<Object>> GetGrantedObjects(
       const url::Origin& origin);
 
+  // Returns the list of all origins that have granted permission(s).
+  virtual std::vector<url::Origin> GetOriginsWithGrants();
+
   // Returns the set of all objects that any origin has been granted permission
   // to access.
   //

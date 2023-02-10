@@ -2602,63 +2602,64 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
       1UL);
 
   url::Origin originToTest = kTestOrigin1;
-  base::Value::List get_file_system_origin_permissions_args;
-  get_file_system_origin_permissions_args.Append(kCallbackId);
-  get_file_system_origin_permissions_args.Append(originToTest.GetURL().spec());
+  base::Value::List get_file_system_permissions_args;
+  get_file_system_permissions_args.Append(kCallbackId);
 
-  handler_->HandleGetFileSystemGrants(get_file_system_origin_permissions_args);
+  handler_->HandleGetFileSystemGrants(get_file_system_permissions_args);
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   const base::Value::List& grants = data.arg3()->GetList();
 
   EXPECT_EQ(grants.size(), 2UL);
-  const base::Value::Dict& first_grant = grants[0].GetDict();
-  const base::Value::Dict& second_grant = grants[1].GetDict();
+  EXPECT_EQ(grants[0].FindKey(site_settings::kOrigin)->GetString(),
+            "https://www.a.com/");
+  EXPECT_EQ(grants[1].FindKey(site_settings::kOrigin)->GetString(),
+            "https://www.b.com/");
 
-  EXPECT_FALSE(
-      first_grant.FindBool(site_settings::kIsDirectory).value_or(true));
-  EXPECT_TRUE(
-      second_grant.FindBool(site_settings::kIsDirectory).value_or(false));
+  auto* kTestOrigin1FileReadGrants =
+      grants[0].FindKey(site_settings::kFileReadGrants);
+  auto* kTestOrigin1FileWriteGrants =
+      grants[0].FindKey(site_settings::kFileWriteGrants);
+  auto* kTestOrigin1DirectoryReadGrants =
+      grants[0].FindKey(site_settings::kDirectoryReadGrants);
+  auto* kTestOrigin1DirectoryWriteGrants =
+      grants[0].FindKey(site_settings::kDirectoryWriteGrants);
 
-  EXPECT_EQ(CHECK_DEREF(first_grant.FindString(site_settings::kDisplayName)),
-            FilePathToValue(file_read_grant->GetPath()).GetString());
-  EXPECT_EQ(CHECK_DEREF(second_grant.FindString(site_settings::kDisplayName)),
-            FilePathToValue(directory_read_grant->GetPath()).GetString());
+  auto* kTestOrigin2FileReadGrants =
+      grants[1].FindKey(site_settings::kFileReadGrants);
+  auto* kTestOrigin2FileWriteGrants =
+      grants[1].FindKey(site_settings::kFileWriteGrants);
+  auto* kTestOrigin2DirectoryReadGrants =
+      grants[1].FindKey(site_settings::kDirectoryReadGrants);
+  auto* kTestOrigin2DirectoryWriteGrants =
+      grants[1].FindKey(site_settings::kDirectoryWriteGrants);
 
-  EXPECT_FALSE(first_grant.FindBool(site_settings::kIsWritable).value_or(true));
-  EXPECT_FALSE(
-      second_grant.FindBool(site_settings::kIsWritable).value_or(true));
+  // Checks that the grants for test origins are populated as expected.
+  EXPECT_FALSE(kTestOrigin1FileReadGrants->GetList()[0]
+                   .GetDict()
+                   .Find(site_settings::kIsDirectory)
+                   ->GetBool());
+  EXPECT_EQ(kTestOrigin1FileWriteGrants->GetList().size(), 0UL);
+  EXPECT_EQ(kTestOrigin1DirectoryReadGrants->GetList()[0]
+                .GetDict()
+                .Find(site_settings::kFilePath)
+                ->GetString(),
+            "/e/");
+  EXPECT_EQ(kTestOrigin1DirectoryWriteGrants->GetList().size(), 0UL);
 
-  originToTest = kTestOrigin2;
-  base::Value::List get_file_system_origin2_permissions_args;
-  get_file_system_origin2_permissions_args.Append(kCallbackId);
-  get_file_system_origin2_permissions_args.Append(originToTest.GetURL().spec());
-
-  handler_->HandleGetFileSystemGrants(get_file_system_origin2_permissions_args);
-  const content::TestWebUI::CallData& origin2_data =
-      *web_ui()->call_data().back();
-  const base::Value::List& origin2_grants = origin2_data.arg3()->GetList();
-
-  EXPECT_EQ(origin2_grants.size(), 2UL);
-  const base::Value::Dict& first_origin2_grant = origin2_grants[0].GetDict();
-  const base::Value::Dict& second_origin2_grant = origin2_grants[1].GetDict();
-
-  EXPECT_FALSE(
-      first_origin2_grant.FindBool(site_settings::kIsDirectory).value_or(true));
-  EXPECT_TRUE(second_origin2_grant.FindBool(site_settings::kIsDirectory)
-                  .value_or(false));
-
-  EXPECT_EQ(
-      CHECK_DEREF(first_origin2_grant.FindString(site_settings::kDisplayName)),
-      FilePathToValue(file_write_grant->GetPath()).GetString());
-
-  EXPECT_EQ(
-      CHECK_DEREF(second_origin2_grant.FindString(site_settings::kDisplayName)),
-      FilePathToValue(directory_write_grant->GetPath()).GetString());
-
-  EXPECT_TRUE(
-      first_origin2_grant.FindBool(site_settings::kIsWritable).value_or(false));
-  EXPECT_TRUE(second_origin2_grant.FindBool(site_settings::kIsWritable)
-                  .value_or(false));
+  // In the case of kTestOrigin2, check that when an origin has an
+  // associated 'write' grant, that the grant is only recorded in the
+  // respective write grants list, and is not recorded in the origin's
+  // read grants list.
+  EXPECT_EQ(kTestOrigin2FileReadGrants->GetList().size(), 0UL);
+  EXPECT_TRUE(kTestOrigin2FileWriteGrants->GetList()[0]
+                  .GetDict()
+                  .Find(site_settings::kIsWritable)
+                  ->GetBool());
+  EXPECT_EQ(kTestOrigin2DirectoryReadGrants->GetList().size(), 0UL);
+  EXPECT_TRUE(kTestOrigin2DirectoryWriteGrants->GetList()[0]
+                  .GetDict()
+                  .Find(site_settings::kIsDirectory)
+                  ->GetBool());
 }
 
 namespace {
