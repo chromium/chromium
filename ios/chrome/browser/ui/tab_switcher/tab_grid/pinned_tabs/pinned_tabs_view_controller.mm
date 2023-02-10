@@ -225,6 +225,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                          selectionItem:selectionItem];
 }
 
+- (BOOL)isCollectionEmpty {
+  return _items.count == 0;
+}
+
 - (BOOL)isSelectedCellVisible {
   // The collection view's selected item may not have updated yet, so use the
   // selected index.

@@ -1779,13 +1779,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // YES if there are tabs present on `page`. For `TabGridPageRemoteTabs`, YES
 // if there are tabs on either of the other pages.
 - (BOOL)tabsPresentForPage:(TabGridPage)page {
-  if (page == TabGridPageRemoteTabs) {
-    return !(
-        [self gridViewControllerForPage:TabGridPageRegularTabs].gridEmpty &&
-        [self gridViewControllerForPage:TabGridPageIncognitoTabs].gridEmpty);
+  switch (page) {
+    case TabGridPageRemoteTabs:
+      return !([self.regularTabsViewController isGridEmpty] &&
+               [self.pinnedTabsViewController isCollectionEmpty] &&
+               [self.incognitoTabsViewController isGridEmpty]);
+    case TabGridPageRegularTabs:
+      return !([self.regularTabsViewController isGridEmpty] &&
+               [self.pinnedTabsViewController isCollectionEmpty]);
+    case TabGridPageIncognitoTabs:
+      return [self.incognitoTabsViewController isGridEmpty];
   }
-
-  return ![self gridViewControllerForPage:page].gridEmpty;
 }
 
 // Disables the done button on bottom toolbar if a disabled tab view is
@@ -1808,8 +1812,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   GridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
 
-  BOOL enabled =
-      (gridViewController == nil) ? NO : !gridViewController.gridEmpty;
+  BOOL enabled = (gridViewController == nil)
+                     ? NO
+                     : [self tabsPresentForPage:self.currentPage];
   BOOL incognitoTabsNeedsAuth =
       (self.currentPage == TabGridPageIncognitoTabs &&
        self.incognitoTabsViewController.contentNeedsAuthentication);
@@ -2619,6 +2624,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   TabGridPage newActivePage = self.currentPage;
+
   if (self.currentPage == TabGridPageRemoteTabs) {
     newActivePage = self.activePage;
   }
@@ -2626,7 +2632,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Holding the done button down when it is enabled could result in done tap
   // being triggered on release after tabs have been closed and the button
   // disabled. Ensure that action is only taken on a valid state.
-  if (![[self gridViewControllerForPage:newActivePage] isGridEmpty]) {
+  if ([self tabsPresentForPage:newActivePage]) {
     [self.tabPresentationDelegate showActiveTabInPage:newActivePage
                                          focusOmnibox:NO
                                          closeTabGrid:YES];
