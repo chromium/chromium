@@ -76,7 +76,6 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/repost_form_warning_controller.h"
-#include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
@@ -1501,11 +1500,6 @@ std::unique_ptr<content::WebContents> Browser::SwapWebContents(
     if (old_view && new_view)
       new_view->TakeFallbackContentFrom(old_view);
   }
-
-  // TODO(crbug.com/836409): TabLoadTracker should not rely on being notified
-  // directly about tab contents swaps.
-  resource_coordinator::TabLoadTracker::Get()->SwapTabContents(
-      old_contents, new_contents.get());
 
   // Clear the task manager tag. The TabStripModel will associate its own task
   // manager tag.

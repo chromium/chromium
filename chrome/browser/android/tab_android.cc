@@ -251,11 +251,6 @@ std::unique_ptr<content::WebContents> TabAndroid::SwapWebContents(
     bool did_start_load,
     bool did_finish_load) {
   content::WebContents* old_contents = web_contents_.get();
-  // TODO(crbug.com/836409): TabLoadTracker should not rely on being notified
-  // directly about tab contents swaps.
-  resource_coordinator::TabLoadTracker::Get()->SwapTabContents(
-      old_contents, new_contents.get());
-
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_TabImpl_swapWebContents(env, weak_java_tab_.get(env),
                                new_contents->GetJavaWebContents(),
