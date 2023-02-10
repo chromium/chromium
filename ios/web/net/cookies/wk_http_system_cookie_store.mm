@@ -83,8 +83,6 @@ WKHTTPSystemCookieStore::~WKHTTPSystemCookieStore() = default;
 void WKHTTPSystemCookieStore::GetCookiesForURLAsync(
     const GURL& url,
     SystemCookieCallbackForCookies callback) {
-  net::ReportGetCookiesForURLCall(
-      net::SystemCookieStoreType::kWKHTTPSystemCookieStore);
   GetCookiesAsyncInternal(url, std::move(callback));
 }
 
@@ -249,9 +247,6 @@ void WKHTTPSystemCookieStore::ProcessGetCookiesResultInIOThread(
           [filtered_cookies addObject:cookie];
         }
       }
-      net::ReportGetCookiesForURLResult(
-          net::SystemCookieStoreType::kWKHTTPSystemCookieStore,
-          filtered_cookies.count != 0);
       block_cookies = filtered_cookies;
     }
 

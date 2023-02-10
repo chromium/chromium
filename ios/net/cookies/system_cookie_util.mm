@@ -65,41 +65,6 @@ std::unique_ptr<net::CanonicalCookie> CanonicalCookieFromSystemCookie(
       url::PORT_UNSPECIFIED);
 }
 
-void ReportGetCookiesForURLResult(SystemCookieStoreType store_type,
-                                  bool has_cookies) {
-  GetCookiesForURLCallResult call_result =
-      GetCookiesForURLCallResult::kCookiesFoundOnWKHTTPSystemCookieStore;
-  switch (store_type) {
-    case SystemCookieStoreType::kWKHTTPSystemCookieStore:
-      call_result =
-          has_cookies
-              ? GetCookiesForURLCallResult::
-                    kCookiesFoundOnWKHTTPSystemCookieStore
-              : GetCookiesForURLCallResult::kNoCookiesOnWKHTTPSystemCookieStore;
-      break;
-    case SystemCookieStoreType::kNSHTTPSystemCookieStore:
-      call_result =
-          has_cookies
-              ? GetCookiesForURLCallResult::
-                    kCookiesFoundOnNSHTTPSystemCookieStore
-              : GetCookiesForURLCallResult::kNoCookiesOnNSHTTPSystemCookieStore;
-
-      break;
-    case SystemCookieStoreType::kCookieMonster:
-      call_result =
-          has_cookies ? GetCookiesForURLCallResult::kCookiesFoundOnCookieMonster
-                      : GetCookiesForURLCallResult::kNoCookiesOnCookieMonster;
-      break;
-  }
-  UMA_HISTOGRAM_ENUMERATION("IOS.Cookies.GetCookiesForURLCallResult",
-                            call_result);
-}
-
-void ReportGetCookiesForURLCall(SystemCookieStoreType store_type) {
-  UMA_HISTOGRAM_ENUMERATION("IOS.Cookies.GetCookiesForURLCallStoreType",
-                            store_type);
-}
-
 // Converts net::CanonicalCookie to NSHTTPCookie.
 NSHTTPCookie* SystemCookieFromCanonicalCookie(
     const net::CanonicalCookie& cookie) {

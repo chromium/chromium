@@ -34,12 +34,8 @@
   SKStoreProductViewController* viewController =
       [[SKStoreProductViewController alloc] init];
   viewController.delegate = self;
-  [viewController
-      loadProductWithParameters:self.iTunesProductParameters
-                completionBlock:^(BOOL result, NSError* _Nullable error) {
-                  UMA_HISTOGRAM_BOOLEAN("IOS.StoreKitLoadedSuccessfully",
-                                        result);
-                }];
+  [viewController loadProductWithParameters:self.iTunesProductParameters
+                            completionBlock:nil];
   [self.baseViewController presentViewController:viewController
                                         animated:YES
                                       completion:nil];

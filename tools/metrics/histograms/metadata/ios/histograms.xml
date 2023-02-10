@@ -194,33 +194,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Cookies.GetCookiesForURLCallResult"
-    enum="IOSGetCookiesForURLCallResult" expires_after="2021-08-01">
-  <owner>mrefaat@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    Recorded to indicate whether the GetCookiesForURL call found cookies or not
-    when called on a specific system cookie store implementation. Most of the
-    cookies fetching on iOS Chromium is done by the WKWebView and doesn't
-    involve calling GetCookiesForURL. The method is only called when a request
-    is made by the UrlRequestFetcher for cases that are not handled by WKWebView
-    (eg. Downloads, Auto Suggestions and NTP tiles).
-  </summary>
-</histogram>
-
-<histogram name="IOS.Cookies.GetCookiesForURLCallStoreType"
-    enum="IOSGetCookiesForURLCallCookieStoreType" expires_after="2021-08-01">
-  <owner>mrefaat@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    The system cookie store type used when GetCookiesForURL method is called.
-    Most of the cookies fetching on iOS Chromium is done by the WKWebView and
-    doesn't involve calling GetCookiesForURL. The method is only called when a
-    request is made by the UrlRequestFetcher for cases that are not handled by
-    WKWebView (eg. Downloads, Auto Suggestions and NTP tiles).
-  </summary>
-</histogram>
-
 <histogram name="IOS.CredentialExtension.ConsentVerifiedCount" units="count"
     expires_after="2023-06-11">
   <owner>ginnyhuang@chromium.org</owner>
@@ -1643,16 +1616,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.RepeatedExternalAppPromptResponse"
-    enum="IOSRepeatedExternalAppPromptResponse" expires_after="2021-08-01">
-  <owner>mrefaat@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    The user reaction to the prompt that appears when a website tries to open an
-    external application repeatedly.
-  </summary>
-</histogram>
-
 <histogram name="IOS.RestoreNavigationItemCount" units="rank"
     expires_after="2023-09-12">
   <owner>gambard@chromium.org</owner>
@@ -1876,15 +1839,6 @@ chromium-metrics-reviews@google.com.
     be logged when the LinksHandler didn't handle a specific URL on purpose (not
     supported), and Failure will be logged when a URL that should have been
     handled wasn't handled.
-  </summary>
-</histogram>
-
-<histogram name="IOS.StoreKitLoadedSuccessfully" enum="BooleanSuccess"
-    expires_after="2021-08-01">
-  <owner>mrefaat@chromium.org</owner>
-  <owner>bling-team@google.com</owner>
-  <summary>
-    Whether the StoreKit loaded the required iTunes product successfully or not.
   </summary>
 </histogram>
 

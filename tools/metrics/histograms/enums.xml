@@ -53406,15 +53406,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="CookieMonster"/>
 </enum>
 
-<enum name="IOSGetCookiesForURLCallResult">
-  <int value="0" label="Cookies found on WKHTTPSystemCookieStore"/>
-  <int value="1" label="No Cookies on WKHTTPSystemCookieStore"/>
-  <int value="2" label="Cookies found on NSHTTPSystemCookieStore"/>
-  <int value="3" label="No Cookies on NSHTTPSystemCookieStore"/>
-  <int value="4" label="Cookies found on CookieMonster"/>
-  <int value="5" label="No Cookies on CookieMonster"/>
-</enum>
-
 <enum name="IOSHandoffOrigin">
   <int value="0" label="Unknown Origin"/>
   <int value="1" label="Chrome on iOS"/>
@@ -53686,15 +53677,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="BanneredPromoViewProvider"/>
   <int value="2" label="StandardPromoAlertProvider"/>
   <int value="3" label="StandardPromoDisplayHandler"/>
-</enum>
-
-<enum name="IOSRepeatedExternalAppPromptResponse">
-  <int value="0" label="Blocked">
-    User selected to block the application for the current session.
-  </int>
-  <int value="1" label="Allowed">
-    User selected to allow the application to run again.
-  </int>
 </enum>
 
 <enum name="IOSSearchExtensionAction">
