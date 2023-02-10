@@ -542,6 +542,11 @@ Request* Request::CreateRequestWithRequestOrString(
     }
 
     request->SetBrowsingTopics(init->browsingTopics());
+
+    if (init->browsingTopics()) {
+      UseCounter::Count(execution_context,
+                        mojom::blink::WebFeature::kTopicsAPIFetch);
+    }
   }
 
   // "If |init|'s method member is present, let |method| be it and run these

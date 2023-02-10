@@ -1061,6 +1061,10 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
       with_credentials_ ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kSameOrigin);
   request.SetBrowsingTopics(deprecated_browsing_topics_);
+  if (deprecated_browsing_topics_) {
+    UseCounter::Count(&execution_context, WebFeature::kTopicsAPIXhr);
+  }
+
   request.SetSkipServiceWorker(world_ && world_->IsIsolatedWorld());
   if (trust_token_params_)
     request.SetTrustTokenParams(*trust_token_params_);

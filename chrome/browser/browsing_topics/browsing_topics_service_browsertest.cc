@@ -1858,4 +1858,137 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(api_usage_contexts[1].hashed_context_domain, HashedDomain(1));
 }
 
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_DocumentApi) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  InvokeTopicsAPI(web_contents());
+
+  // Navigate away to flush use counters.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::kTopicsAPI_BrowsingTopics_Method, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Fetch) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  GURL fetch_url = main_frame_url;
+
+  {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+    // Send a fetch() request with `browsingTopics` set to false. Expect no
+    // `kTopicsAPIFetch` use counter.
+    EXPECT_TRUE(ExecJs(
+        web_contents()->GetPrimaryMainFrame(),
+        content::JsReplace("fetch($1, {browsingTopics: false})", fetch_url)));
+
+    // Navigate away to flush use counters.
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+    histogram_tester.ExpectBucketCount(
+        "Blink.UseCounter.Features", blink::mojom::WebFeature::kTopicsAPIFetch,
+        0);
+  }
+
+  {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+    // Send a fetch() request with `browsingTopics` set to true. Expect one
+    // `kTopicsAPIFetch` use counter.
+    EXPECT_TRUE(ExecJs(
+        web_contents()->GetPrimaryMainFrame(),
+        content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+
+    // Navigate away to flush use counters.
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+    histogram_tester.ExpectBucketCount(
+        "Blink.UseCounter.Features", blink::mojom::WebFeature::kTopicsAPIFetch,
+        1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, UseCounter_Xhr) {
+  base::HistogramTester histogram_tester;
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+
+  GURL xhr_url = main_frame_url;
+
+  {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+    // Send a XHR request with `deprecatedBrowsingTopics` set to false. Expect
+    // no `kTopicsAPIXhr` use counter.
+    EXPECT_EQ("success", EvalJs(web_contents()->GetPrimaryMainFrame(),
+                                content::JsReplace(R"(
+      const xhr = new XMLHttpRequest();
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          domAutomationController.send('success');
+        }
+      }
+
+      xhr.open('GET', $1);
+      xhr.deprecatedBrowsingTopics = false;
+      xhr.send();)",
+                                                   xhr_url),
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+
+    // Navigate away to flush use counters.
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                       blink::mojom::WebFeature::kTopicsAPIXhr,
+                                       0);
+  }
+
+  {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+    // Send a XHR request with `deprecatedBrowsingTopics` set to false. Expect
+    // one `kTopicsAPIXhr` use counter.
+    EXPECT_EQ("success", EvalJs(web_contents()->GetPrimaryMainFrame(),
+                                content::JsReplace(R"(
+    const xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        domAutomationController.send('success');
+      }
+    }
+
+    xhr.open('GET', $1);
+    xhr.deprecatedBrowsingTopics = true;
+    xhr.send();)",
+                                                   xhr_url),
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+
+    // Navigate away to flush use counters.
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
+                                       blink::mojom::WebFeature::kTopicsAPIXhr,
+                                       1);
+  }
+}
+
 }  // namespace browsing_topics
