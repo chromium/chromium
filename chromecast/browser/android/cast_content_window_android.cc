@@ -25,12 +25,11 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaWindow(
     bool turn_on_screen,
     bool keep_screen_on,
     const std::string& session_id,
-    const std::string& display_id) {
+    const int display_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_CastContentWindowAndroid_create(
       env, native_window, enable_touch_input, turn_on_screen, keep_screen_on,
-      ConvertUTF8ToJavaString(env, session_id),
-      ConvertUTF8ToJavaString(env, display_id));
+      ConvertUTF8ToJavaString(env, session_id), static_cast<jint>(display_id));
 }
 
 bool ShouldRequestAudioFocus(bool is_remote_control_mode,

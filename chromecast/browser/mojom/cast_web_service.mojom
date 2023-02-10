@@ -55,8 +55,10 @@ struct CastWebViewParams {
   // Cast Application/Activity session ID.
   string session_id = "";
 
-  // Cast display ID to create the web view (if available).
-  string display_id = "";
+  // ID of the target display to create the web view. The value is zero if the
+  // target display is the platform default display or if the target display is
+  // not available and falls back to the platform default display.
+  int32 display_id = 0;
 
   // Cast Receiver SDK version of the application (if available).
   string sdk_version = "";

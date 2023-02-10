@@ -42,22 +42,18 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     @CalledByNative
     private static CastContentWindowAndroid create(long nativeCastContentWindowAndroid,
             boolean enableTouchInput, boolean turnOnScreen, boolean keepScreenOn, String sessionId,
-            String displayId) {
+            int displayId) {
         return new CastContentWindowAndroid(nativeCastContentWindowAndroid,
                 getContextWithDisplay(displayId), enableTouchInput, turnOnScreen, keepScreenOn,
                 sessionId);
     }
 
-    private static Context getContextWithDisplay(String displayId) {
+    private static Context getContextWithDisplay(int displayId) {
         Context context = ContextUtils.getApplicationContext();
-        try {
-            int id = Integer.parseInt(displayId);
-            DisplayManager displayManager = context.getSystemService(DisplayManager.class);
-            Display display = displayManager.getDisplay(id);
-            if (display != null) {
-                return context.createDisplayContext(display);
-            }
-        } catch (NumberFormatException e) {
+        DisplayManager displayManager = context.getSystemService(DisplayManager.class);
+        Display display = displayManager.getDisplay(displayId);
+        if (display != null) {
+            return context.createDisplayContext(display);
         }
         Log.i(TAG,
                 "Display with the given cast display id is not available, "
