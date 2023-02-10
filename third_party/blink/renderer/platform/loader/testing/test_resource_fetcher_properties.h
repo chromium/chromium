@@ -61,7 +61,6 @@ class TestResourceFetcherProperties final : public ResourceFetcherProperties {
   scheduler::FrameStatus GetFrameStatus() const override {
     return frame_status_;
   }
-  const KURL& WebBundlePhysicalUrl() const override;
   int GetOutstandingThrottledLimit() const override {
     return IsOutermostMainFrame() ? 3 : 2;
   }

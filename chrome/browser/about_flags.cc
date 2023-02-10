@@ -6887,10 +6887,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin | kOsCrOS | kOsAndroid,
      FEATURE_VALUE_TYPE(net::features::kUseDnsHttpsSvcbAlpn)},
 
-    {"web-bundles", flag_descriptions::kWebBundlesName,
-     flag_descriptions::kWebBundlesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kWebBundles)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"hidpi-capture", flag_descriptions::kWebContentsCaptureHiDpiName,
      flag_descriptions::kWebContentsCaptureHiDpiDescription, kOsDesktop,

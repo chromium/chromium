@@ -505,14 +505,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "wbn-from-network",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/web-bundle"],
-    "exclusive_tests": ["external/wpt/web-bundle/wbn-from-network"],
-    "args": ["--enable-features=WebBundlesFromNetwork"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "plz-dedicated-worker",
     "platforms": ["Linux"],
     "bases": ["external/wpt/content-security-policy/inside-worker",

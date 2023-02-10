@@ -18,7 +18,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "content/browser/web_package/web_bundle_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/file_url_loader.h"
 #include "content/public/common/content_client.h"
@@ -198,31 +197,6 @@ class ContentURLLoader : public network::mojom::URLLoader {
 
     // Set the mimetype of the response.
     GetMimeType(request, path, &head->mime_type);
-    if (head->mime_type.empty() ||
-        head->mime_type == "application/octet-stream") {
-      // When a Web Bundle file is downloaded with
-      // "content-type: application/webbundle;v=b1" header, Chrome saves it as
-      // "application/webbundle" MIME type. The MIME type is stored to Android's
-      // DownloadManager. If the file is opened from a URI which is under
-      // DownloadManager's control and the ContentProvider can get the MIME
-      // type, |head.mime_type| is set to "application/webbundle". But otherwise
-      // ContentResolver.getType() returns null or the default type
-      // [1]"application/octet-stream" even if the file extension is ".wbn".
-      // (eg: opening the file from "Internal Storage")
-      // This is because the Media type of Web Bundles isn't registered
-      // to the IANA registry (https://www.iana.org/assignments/media-types/),
-      // and it is not listed in the mime.types files [2][3] which was referd by
-      // MimeTypeMap.getMimeTypeFromExtension().
-      // So we set the MIME type if the file extension is ".wbn" by calling
-      // web_bundle_utils::GetWebBundleFileMimeTypeFromFile().
-      // [1]
-      // https://android.googlesource.com/platform/frameworks/base/+/1b817f6/core/java/android/content/ContentResolver.java#481
-      // [2] https://android.googlesource.com/platform/external/mime-support/
-      // [3]
-      // https://android.googlesource.com/platform/libcore/+/master/luni/src/main/java/libcore/net/android.mime.types
-      web_bundle_utils::GetWebBundleFileMimeTypeFromFile(path,
-                                                         &head->mime_type);
-    }
 
     if (!head->mime_type.empty()) {
       head->headers = base::MakeRefCounted<net::HttpResponseHeaders>("");

@@ -25,7 +25,6 @@
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
-#include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/common/content_constants.h"
@@ -124,7 +123,6 @@ void RecursivelyGenerateFrameEntries(
         state.initiator_origin, initiator_base_url, std::vector<GURL>(),
         blink::PageState::CreateFromEncodedData(data), "GET", -1,
         nullptr /* blob_url_loader_factory */,
-        nullptr /* web_bundle_navigation_info */,
         nullptr /* subresource_web_bundle_navigation_info */,
         // TODO(https://crbug.com/1140393): We should restore the policy
         // container.
@@ -430,7 +428,6 @@ NavigationEntryImpl::NavigationEntryImpl(
               "GET",
               -1,
               std::move(blob_url_loader_factory),
-              nullptr /* web_bundle_navigation_info */,
               nullptr /* subresource_web_bundle_navigation_info */,
               nullptr /* policy_container_policies */,
               false /* protect_url_in_navigation_api */))),
@@ -937,8 +934,6 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           std::string(),
 #endif
           false /* is_browser_initiated */,
-          GURL() /* web_bundle_physical_url */,
-          GURL() /* base_url_override_for_web_bundle */,
           ukm::kInvalidSourceId /* document_ukm_source_id */, frame_policy,
           std::vector<std::string>() /* force_enabled_origin_trials */,
           false /* origin_agent_cluster */,
@@ -1027,7 +1022,6 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
     const std::string& method,
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
     std::unique_ptr<SubresourceWebBundleNavigationInfo>
         subresource_web_bundle_navigation_info,
     std::unique_ptr<PolicyContainerPolicies> policy_container_policies) {
@@ -1060,7 +1054,6 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
         std::move(source_site_instance), url, origin, referrer,
         initiator_origin, initiator_base_url, redirect_chain, page_state,
         method, post_id, std::move(blob_url_loader_factory),
-        std::move(web_bundle_navigation_info),
         std::move(subresource_web_bundle_navigation_info),
         std::move(policy_container_policies), protect_url_in_navigation_api);
     return;
@@ -1097,7 +1090,6 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
           url, origin, referrer, initiator_origin, initiator_base_url,
           redirect_chain, page_state, method, post_id,
           std::move(blob_url_loader_factory),
-          std::move(web_bundle_navigation_info),
           std::move(subresource_web_bundle_navigation_info),
           std::move(policy_container_policies), protect_url_in_navigation_api);
       return;
@@ -1112,7 +1104,6 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
       navigation_api_key, site_instance, std::move(source_site_instance), url,
       origin, referrer, initiator_origin, initiator_base_url, redirect_chain,
       page_state, method, post_id, std::move(blob_url_loader_factory),
-      std::move(web_bundle_navigation_info),
       std::move(subresource_web_bundle_navigation_info),
       std::move(policy_container_policies), protect_url_in_navigation_api);
   parent_node->children.push_back(

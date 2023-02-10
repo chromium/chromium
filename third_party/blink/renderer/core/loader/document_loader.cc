@@ -292,8 +292,6 @@ struct SameSizeAsDocumentLoader
   base::TimeTicks last_redirect_end_time;
   WebScopedVirtualTimePauser virtual_time_pauser;
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager;
-  const KURL web_bundle_physical_url;
-  const KURL web_bundle_claimed_url;
   ukm::SourceId ukm_source_id;
   UseCounterImpl use_counter;
   const base::TickClock* clock;
@@ -495,8 +493,6 @@ DocumentLoader::DocumentLoader(
       loading_url_as_empty_document_(!params_->is_static_data &&
                                      WillLoadUrlAsEmpty(url_)),
       is_static_data_(params_->is_static_data),
-      web_bundle_physical_url_(params_->web_bundle_physical_url),
-      web_bundle_claimed_url_(params_->web_bundle_claimed_url),
       ukm_source_id_(params_->document_ukm_source_id),
       clock_(params_->tick_clock ? params_->tick_clock
                                  : base::DefaultTickClock::GetInstance()),
@@ -632,8 +628,6 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       last_navigation_had_transient_user_activation_;
   params->is_browser_initiated = is_browser_initiated_;
   params->was_discarded = was_discarded_;
-  params->web_bundle_physical_url = web_bundle_physical_url_;
-  params->web_bundle_claimed_url = web_bundle_claimed_url_;
   params->document_ukm_source_id = ukm_source_id_;
   params->is_cross_site_cross_browsing_context_group =
       is_cross_site_cross_browsing_context_group_;
@@ -1226,18 +1220,6 @@ void DocumentLoader::HandleRedirect(
   const KURL& url_before_redirect = redirect_response.CurrentRequestUrl();
   url_ = redirect.new_url;
   const KURL& url_after_redirect = url_;
-
-  // Browser process should have already checked that redirecting url is
-  // allowed to display content from the target origin.
-  // When the referrer page is in an unsigned Web Bundle file in local
-  // (eg: file:///tmp/a.wbn), Chrome internally redirects the navigation to the
-  // page (eg: https://example.com/page.html) inside the Web Bundle file
-  // to the file's URL (file:///tmp/a.wbn?https://example.com/page.html). In
-  // this case, CanDisplay() returns false, and web_bundle_claimed_url must not
-  // be null.
-  CHECK(SecurityOrigin::Create(url_before_redirect)
-            ->CanDisplay(url_after_redirect) ||
-        !params_->web_bundle_claimed_url.IsNull());
 
   // Update the HTTP method of this document to the method used by the redirect.
   AtomicString new_http_method = redirect.new_http_method;
@@ -2519,7 +2501,6 @@ void DocumentLoader::CommitNavigation() {
           .WithTypeFrom(MimeType())
           .WithSrcdocDocument(loading_srcdoc_)
           .WithFallbackSrcdocBaseURL(fallback_srcdoc_base_url_)
-          .WithWebBundleClaimedUrl(web_bundle_claimed_url_)
           .WithUkmSourceId(ukm_source_id_));
 
   RecordUseCountersForCommit();

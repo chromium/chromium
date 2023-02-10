@@ -506,10 +506,6 @@ void FillNavigationParamsRequest(
 
   navigation_params->had_transient_user_activation =
       common_params.has_user_gesture;
-  navigation_params->web_bundle_physical_url =
-      commit_params.web_bundle_physical_url;
-  navigation_params->web_bundle_claimed_url =
-      commit_params.web_bundle_claimed_url;
 
   WebVector<WebString> web_origin_trials;
   web_origin_trials.reserve(commit_params.force_enabled_origin_trials.size());

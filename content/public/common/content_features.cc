@@ -1381,19 +1381,6 @@ BASE_FEATURE(kWebBluetoothNewPermissionsBackend,
              "WebBluetoothNewPermissionsBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether Web Bundles (Bundled HTTP Exchanges) is enabled.
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html
-// When this feature is enabled, Chromium can load unsigned Web Bundles local
-// file under file:// URL (and content:// URI on Android).
-BASE_FEATURE(kWebBundles, "WebBundles", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When this feature is enabled, Chromium will be able to load unsigned Web
-// Bundles file under https: URL and localhost http: URL.
-// TODO(crbug.com/1018640): Implement this feature.
-BASE_FEATURE(kWebBundlesFromNetwork,
-             "WebBundlesFromNetwork",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If WebGL Image Chromium is allowed, this feature controls whether it is
 // enabled.
 BASE_FEATURE(kWebGLImageChromium,

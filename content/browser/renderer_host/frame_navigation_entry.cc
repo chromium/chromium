@@ -8,7 +8,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
-#include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
 namespace content {
@@ -33,7 +32,6 @@ FrameNavigationEntry::FrameNavigationEntry(
     const std::string& method,
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
     std::unique_ptr<SubresourceWebBundleNavigationInfo>
         subresource_web_bundle_navigation_info,
     std::unique_ptr<PolicyContainerPolicies> policy_container_policies,
@@ -55,7 +53,6 @@ FrameNavigationEntry::FrameNavigationEntry(
       method_(method),
       post_id_(post_id),
       blob_url_loader_factory_(std::move(blob_url_loader_factory)),
-      web_bundle_navigation_info_(std::move(web_bundle_navigation_info)),
       subresource_web_bundle_navigation_info_(
           std::move(subresource_web_bundle_navigation_info)),
       policy_container_policies_(std::move(policy_container_policies)),
@@ -73,7 +70,6 @@ scoped_refptr<FrameNavigationEntry> FrameNavigationEntry::Clone() const {
       committed_origin_, referrer_, initiator_origin_, initiator_base_url_,
       redirect_chain_, page_state_, method_, post_id_,
       nullptr /* blob_url_loader_factory */,
-      nullptr /* web_bundle_navigation_info */,
       nullptr /* subresource_web_bundle_navigation_info */,
       policy_container_policies_ ? policy_container_policies_->ClonePtr()
                                  : nullptr,
@@ -101,7 +97,6 @@ void FrameNavigationEntry::UpdateEntry(
     const std::string& method,
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
     std::unique_ptr<SubresourceWebBundleNavigationInfo>
         subresource_web_bundle_navigation_info,
     std::unique_ptr<PolicyContainerPolicies> policy_container_policies,
@@ -122,7 +117,6 @@ void FrameNavigationEntry::UpdateEntry(
   method_ = method;
   post_id_ = post_id;
   blob_url_loader_factory_ = std::move(blob_url_loader_factory);
-  web_bundle_navigation_info_ = std::move(web_bundle_navigation_info);
   subresource_web_bundle_navigation_info_ =
       std::move(subresource_web_bundle_navigation_info);
   policy_container_policies_ = std::move(policy_container_policies);
@@ -187,16 +181,6 @@ scoped_refptr<network::ResourceRequestBody> FrameNavigationEntry::GetPostData(
       exploded_state.top.http_body.http_content_type.value_or(
           std::u16string()));
   return exploded_state.top.http_body.request_body;
-}
-
-void FrameNavigationEntry::set_web_bundle_navigation_info(
-    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info) {
-  web_bundle_navigation_info_ = std::move(web_bundle_navigation_info);
-}
-
-WebBundleNavigationInfo* FrameNavigationEntry::web_bundle_navigation_info()
-    const {
-  return web_bundle_navigation_info_.get();
 }
 
 SubresourceWebBundleNavigationInfo*

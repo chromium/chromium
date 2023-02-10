@@ -45,7 +45,6 @@
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_request_handler.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
-#include "content/browser/web_package/web_bundle_utils.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1123,8 +1122,7 @@ void NavigationURLLoaderImpl::Clone(
 // different response, e.g. service workers.
 bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
     network::mojom::URLResponseHeadPtr* response) {
-  if (!default_loader_used_ &&
-      !web_bundle_utils::CanLoadAsWebBundle(url_, (*response)->mime_type)) {
+  if (!default_loader_used_) {
     return false;
   }
   for (auto& interceptor : interceptors_) {

@@ -2387,8 +2387,6 @@ String ResourceFetcher::GetCacheIdentifier(const KURL& url) const {
       mojom::ControllerServiceWorkerMode::kNoController) {
     return String::Number(properties_->ServiceWorkerId());
   }
-  if (properties_->WebBundlePhysicalUrl().IsValid())
-    return properties_->WebBundlePhysicalUrl().GetString();
 
   // Requests that can be satisfied via `archive_` (i.e. MHTML) or
   // `subresource_web_bundles_` should not participate in the global caching,

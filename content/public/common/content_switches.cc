@@ -793,10 +793,6 @@ const char kTouchEventFeatureDetectionEnabled[] = "enabled";
 //   disabled: touch events are disabled.
 const char kTouchEventFeatureDetectionDisabled[] = "disabled";
 
-// Accepts specified file URL of a trustable WebBundle file. This flag
-// should be used only for testing purpose.
-const char kTrustableWebBundleFileUrl[] = "trustable-web-bundles-file-url";
-
 // Accepts a number representing the time-ticks value at the Unix epoch.
 // Since different processes can produce a different value for this due to
 // system clock changes, this allows synchronizing them to a single value.

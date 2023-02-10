@@ -7167,11 +7167,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "web-bundles",
-    "owners": [ "//content/browser/web_package/OWNERS" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "web-feed",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 122

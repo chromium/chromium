@@ -86,10 +86,6 @@
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
-#include "content/browser/web_package/web_bundle_handle_tracker.h"
-#include "content/browser/web_package/web_bundle_navigation_info.h"
-#include "content/browser/web_package/web_bundle_source.h"
-#include "content/browser/web_package/web_bundle_utils.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/debug_utils.h"
@@ -1189,7 +1185,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       std::move(navigation_ui_data), std::move(blob_url_loader_factory),
       mojo::NullAssociatedRemote(),
       nullptr /* prefetched_signed_exchange_cache */,
-      nullptr /* web_bundle_handle_tracker */,
       rfh_restored_from_back_forward_cache, initiator_process_id,
       was_opener_suppressed, is_pdf,
       is_embedder_initiated_fenced_frame_navigation));
@@ -1210,7 +1205,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
-    std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker,
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener) {
   TRACE_EVENT0("navigation", "NavigationRequest::CreateRendererInitiated");
@@ -1261,8 +1255,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*data_url_as_string=*/std::string(),
 #endif
           /*is_browser_initiated=*/false,
-          /*web_bundle_physical_url=*/GURL(),
-          /*base_url_override_for_web_bundle=*/GURL(),
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           frame_tree_node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
@@ -1309,7 +1301,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       nullptr,  // navigation_ui_data
       std::move(blob_url_loader_factory), std::move(navigation_client),
       std::move(prefetched_signed_exchange_cache),
-      std::move(web_bundle_handle_tracker),
       nullptr,  // rfh_restored_from_back_forward_cache
       initiator_process_id,
       /*was_opener_suppressed=*/false, /*is_pdf=*/false,
@@ -1338,7 +1329,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
     const std::vector<GURL>& redirects,
     const GURL& original_url,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
-    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
     std::unique_ptr<SubresourceWebBundleNavigationInfo>
         subresource_web_bundle_navigation_info,
     int http_response_code) {
@@ -1404,8 +1394,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*data_url_as_string=*/std::string(),
 #endif
           /*is_browser_initiated=*/false,
-          /*web_bundle_physical_url=*/GURL(),
-          /*base_url_override_for_web_bundle=*/GURL(),
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           frame_tree_node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
@@ -1442,7 +1430,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
       nullptr /* navigation_ui_data */, nullptr /* blob_url_loader_factory */,
       mojo::NullAssociatedRemote(),
       nullptr /* prefetched_signed_exchange_cache */,
-      nullptr /* web_bundle_handle_tracker */,
       nullptr /* rfh_restored_from_back_forward_cache */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       false /* was_opener_suppressed */, false /* is_pdf */));
@@ -1475,8 +1462,6 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   navigation_request->commit_params_->session_storage_key =
       frame_tree_node->frame_tree().GetSessionStorageKey(
           navigation_request->commit_params_->storage_key);
-  navigation_request->web_bundle_navigation_info_ =
-      std::move(web_bundle_navigation_info);
   if (subresource_web_bundle_navigation_info) {
     navigation_request->begin_params_->web_bundle_token =
         absl::make_optional(network::ResourceRequest::WebBundleTokenParams(
@@ -1515,7 +1500,6 @@ NavigationRequest::NavigationRequest(
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
-    std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker,
     base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache,
     int initiator_process_id,
     bool was_opener_suppressed,
@@ -1546,7 +1530,6 @@ NavigationRequest::NavigationRequest(
                                 common_params_->should_replace_current_entry)),
       prefetched_signed_exchange_cache_(
           std::move(prefetched_signed_exchange_cache)),
-      web_bundle_handle_tracker_(std::move(web_bundle_handle_tracker)),
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),
       is_back_forward_cache_restore_(!!rfh_restored_from_back_forward_cache),
@@ -1652,10 +1635,6 @@ NavigationRequest::NavigationRequest(
     frame_entry_item_sequence_number_ = frame_entry->item_sequence_number();
     frame_entry_document_sequence_number_ =
         frame_entry->document_sequence_number();
-    if (frame_entry->web_bundle_navigation_info()) {
-      web_bundle_navigation_info_ =
-          frame_entry->web_bundle_navigation_info()->Clone();
-    }
   }
 
   // Sanitize the referrer.
@@ -4087,9 +4066,6 @@ void NavigationRequest::OnResponseStarted(
           frame_entry->redirect_chain(), frame_entry->page_state(),
           frame_entry->method(), frame_entry->post_id(),
           frame_entry->blob_url_loader_factory(),
-          frame_entry->web_bundle_navigation_info()
-              ? frame_entry->web_bundle_navigation_info()->Clone()
-              : nullptr,
           frame_entry->subresource_web_bundle_navigation_info()
               ? frame_entry->subresource_web_bundle_navigation_info()->Clone()
               : nullptr,
@@ -4483,44 +4459,6 @@ void NavigationRequest::OnStartChecksComplete(
                             weak_factory_.GetWeakPtr()));
   }
 
-  // Initialize the WebBundleHandle.
-  if (web_bundle_handle_tracker_) {
-    DCHECK(base::FeatureList::IsEnabled(features::kWebBundles) ||
-           base::FeatureList::IsEnabled(features::kWebBundlesFromNetwork) ||
-           base::CommandLine::ForCurrentProcess()->HasSwitch(
-               switches::kTrustableWebBundleFileUrl));
-    web_bundle_handle_ = web_bundle_handle_tracker_->MaybeCreateWebBundleHandle(
-        common_params_->url, frame_tree_node_->frame_tree_node_id());
-  }
-  if (!web_bundle_handle_ && web_bundle_navigation_info_) {
-    DCHECK(base::FeatureList::IsEnabled(features::kWebBundles) ||
-           base::FeatureList::IsEnabled(features::kWebBundlesFromNetwork) ||
-           base::CommandLine::ForCurrentProcess()->HasSwitch(
-               switches::kTrustableWebBundleFileUrl));
-    web_bundle_handle_ = WebBundleHandle::MaybeCreateForNavigationInfo(
-        web_bundle_navigation_info_->Clone(),
-        frame_tree_node_->frame_tree_node_id());
-  }
-  if (!web_bundle_handle_) {
-    if (web_bundle_utils::CanLoadAsTrustableWebBundleFile(
-            common_params_->url)) {
-      auto source =
-          WebBundleSource::MaybeCreateFromTrustedFileUrl(common_params_->url);
-      // MaybeCreateFromTrustedFileUrl() returns null when the url contains an
-      // invalid character.
-      if (source) {
-        web_bundle_handle_ = WebBundleHandle::CreateForTrustableFile(
-            std::move(source), frame_tree_node_->frame_tree_node_id());
-      }
-    } else if (web_bundle_utils::CanLoadAsWebBundleFile(common_params_->url)) {
-      web_bundle_handle_ = WebBundleHandle::CreateForFile(
-          frame_tree_node_->frame_tree_node_id());
-    } else if (base::FeatureList::IsEnabled(features::kWebBundlesFromNetwork)) {
-      web_bundle_handle_ = WebBundleHandle::CreateForNetwork(
-          browser_context, frame_tree_node_->frame_tree_node_id());
-    }
-  }
-
   // Mark the fetch_start (Navigation Timing API).
   commit_params_->navigation_timing->fetch_start = base::TimeTicks::Now();
 
@@ -4548,8 +4486,6 @@ void NavigationRequest::OnStartChecksComplete(
   // TODO(clamy): Avoid cloning the navigation params and create the
   // ResourceRequest directly here.
   std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptor;
-  if (web_bundle_handle_)
-    interceptor.push_back(web_bundle_handle_->TakeInterceptor());
   net::HttpRequestHeaders cors_exempt_headers;
   std::swap(cors_exempt_headers, cors_exempt_request_headers_);
 
@@ -5350,22 +5286,6 @@ void NavigationRequest::CommitNavigation() {
         &service_worker_container_info, commit_params_->document_ukm_source_id);
   }
 
-  if (web_bundle_handle_) {
-    // Check whether the page was served from a web bundle.
-    if (web_bundle_handle_->navigation_info()) {
-      // If the page was served from a web bundle, sets
-      // |web_bundle_navigation_info_| which will be passed to
-      // the FrameNavigationEntry of the navigation, and will be used for
-      // history navigations.
-      web_bundle_navigation_info_ =
-          web_bundle_handle_->navigation_info()->Clone();
-    } else {
-      // If the page was not served from a web bundle, clears
-      // |web_bundle_handle_| not to pass it to |render_frame_host_|.
-      web_bundle_handle_.reset();
-    }
-  }
-
   // Determine if top-level navigation is allowed without sticky user
   // activation. This is used to fix the exploit in https://crbug.com/1251790.
   // If a child document is cross-origin with its parent, it loses its ability
@@ -5424,7 +5344,7 @@ void NavigationRequest::CommitNavigation() {
       std::move(url_loader_client_endpoints_),
       std::move(subresource_loader_params_), std::move(subresource_overrides_),
       std::move(service_worker_container_info), document_token_,
-      devtools_navigation_token_, std::move(web_bundle_handle_));
+      devtools_navigation_token_);
   UpdateNavigationHandleTimingsOnCommitSent();
 
   // Give SpareRenderProcessHostManager a heads-up about the most recently used

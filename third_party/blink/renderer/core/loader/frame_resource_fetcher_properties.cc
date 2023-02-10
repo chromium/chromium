@@ -45,8 +45,7 @@ FrameResourceFetcherProperties::FrameResourceFetcherProperties(
       document_(document),
       fetch_client_settings_object_(
           MakeGarbageCollected<FetchClientSettingsObjectImpl>(
-              *document.domWindow())),
-      web_bundle_physical_url_(document_loader.WebBundlePhysicalUrl()) {}
+              *document.domWindow())) {}
 
 void FrameResourceFetcherProperties::Trace(Visitor* visitor) const {
   visitor->Trace(document_loader_);
@@ -134,10 +133,6 @@ scheduler::FrameStatus FrameResourceFetcherProperties::GetFrameStatus() const {
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
   return scheduler::GetFrameStatus(frame->GetFrameScheduler());
-}
-
-const KURL& FrameResourceFetcherProperties::WebBundlePhysicalUrl() const {
-  return web_bundle_physical_url_;
 }
 
 int FrameResourceFetcherProperties::GetOutstandingThrottledLimit() const {

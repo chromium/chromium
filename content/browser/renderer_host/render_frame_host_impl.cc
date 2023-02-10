@@ -139,10 +139,6 @@
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
-#include "content/browser/web_package/web_bundle_handle.h"
-#include "content/browser/web_package/web_bundle_handle_tracker.h"
-#include "content/browser/web_package/web_bundle_navigation_info.h"
-#include "content/browser/web_package/web_bundle_source.h"
 #include "content/browser/webauth/authenticator_impl.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
@@ -3195,7 +3191,6 @@ void RenderFrameHostImpl::RenderProcessGone(
   SetLastCommittedUrl(GURL());
   SetInheritedBaseUrl(GURL());
   renderer_url_info_ = RendererURLInfo();
-  web_bundle_handle_.reset();
 
   must_be_replaced_ = true;
   has_committed_any_navigation_ = false;
@@ -9112,8 +9107,7 @@ void RenderFrameHostImpl::CommitNavigation(
         subresource_overrides,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     const absl::optional<blink::DocumentToken>& document_token,
-    const base::UnguessableToken& devtools_navigation_token,
-    std::unique_ptr<WebBundleHandle> web_bundle_handle) {
+    const base::UnguessableToken& devtools_navigation_token) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CommitNavigation",
                "navigation_request", navigation_request, "url",
                common_params->url);
@@ -9203,13 +9197,7 @@ void RenderFrameHostImpl::CommitNavigation(
   has_committed_any_navigation_ = true;
 
   if (!is_same_document) {
-    // If this is NOT for same-document navigation, existing
-    // |web_bundle_handle_| should be reset to the new one. Otherwise the
-    // existing one should be kept around so that the subresource requests keep
-    // being served from the WebBundleURLLoaderFactory held by the handle.
-    web_bundle_handle_ = std::move(web_bundle_handle);
-
-    // Similarly, reset |subresource_web_bundle_navigation_info_| to the new one
+    // Reset |subresource_web_bundle_navigation_info_| to the new one
     // if this is NOT for same-document navigation. For same-document
     // navigation, |navigation_request| doesn't have bundle information so
     // existing one should be kept around.
@@ -9330,24 +9318,6 @@ void RenderFrameHostImpl::CommitNavigation(
           bypass_redirect_checks);
     }
 
-    bool navigation_to_web_bundle = false;
-
-    if (web_bundle_handle_ && web_bundle_handle_->IsReadyForLoading()) {
-      navigation_to_web_bundle = true;
-      mojo::Remote<network::mojom::URLLoaderFactory> fallback_factory(
-          std::move(pending_default_factory));
-      web_bundle_handle_->CreateURLLoaderFactory(
-          pending_default_factory.InitWithNewPipeAndPassReceiver(),
-          std::move(fallback_factory));
-      DCHECK(web_bundle_handle_->navigation_info());
-      commit_params->web_bundle_physical_url =
-          web_bundle_handle_->navigation_info()->source().url();
-      if (web_bundle_handle_->claimed_url().is_valid()) {
-        commit_params->web_bundle_claimed_url =
-            web_bundle_handle_->claimed_url();
-      }
-    }
-
     DCHECK(pending_default_factory);
     subresource_loader_factories->pending_default_factory() =
         std::move(pending_default_factory);
@@ -9356,7 +9326,7 @@ void RenderFrameHostImpl::CommitNavigation(
     //
     // For loading Web Bundle files, we don't set FileURLLoaderFactory.
     // Because loading local files from a Web Bundle file is prohibited.
-    if (effective_scheme == url::kFileScheme && !navigation_to_web_bundle) {
+    if (effective_scheme == url::kFileScheme) {
       // USER_BLOCKING because this scenario is exactly one of the examples
       // given by the doc comment for USER_BLOCKING: Loading and rendering a web
       // page after the user clicks a link.
@@ -11267,14 +11237,6 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
         cross_origin_embedder_policy().report_only_reporting_endpoint,
         GetReportingSource(), isolation_info.network_anonymization_key());
   }
-  std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info;
-  if (is_same_document && web_bundle_handle_ &&
-      web_bundle_handle_->navigation_info()) {
-    // Need to set |web_bundle_navigation_info| of NavigationRequest. This
-    // will be passed to FrameNavigationEntry, and will be used for subsequent
-    // history navigations.
-    web_bundle_navigation_info = web_bundle_handle_->navigation_info()->Clone();
-  }
 
   std::unique_ptr<SubresourceWebBundleNavigationInfo>
       subresource_web_bundle_navigation_info;
@@ -11311,7 +11273,6 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
       std::move(referrer), transition, should_replace_current_entry, method,
       has_user_gesture, is_overriding_user_agent, redirects,
       original_request_url, std::move(coep_reporter),
-      std::move(web_bundle_navigation_info),
       std::move(subresource_web_bundle_navigation_info), http_status_code);
 }
 
@@ -12893,13 +12854,6 @@ RenderFrameHostImpl::EnsurePrefetchedSignedExchangeCache() {
 void RenderFrameHostImpl::ClearPrefetchedSignedExchangeCache() {
   if (prefetched_signed_exchange_cache_)
     prefetched_signed_exchange_cache_->Clear();
-}
-
-std::unique_ptr<WebBundleHandleTracker>
-RenderFrameHostImpl::MaybeCreateWebBundleHandleTracker() {
-  if (web_bundle_handle_)
-    return web_bundle_handle_->MaybeCreateTracker();
-  return nullptr;
 }
 
 RenderWidgetHostImpl* RenderFrameHostImpl::GetLocalRenderWidgetHost() const {

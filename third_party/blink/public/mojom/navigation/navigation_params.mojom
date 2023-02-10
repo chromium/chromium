@@ -426,13 +426,6 @@ struct CommitNavigationParams {
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
 
-  // The physical URL of Web Bundle from which the document is loaded.
-  // Used as an additional identifier for MemoryCache.
-  url.mojom.Url web_bundle_physical_url;
-
-  // The claimed URL inside Web Bundle from which the document is loaded.
-  url.mojom.Url web_bundle_claimed_url;
-
   // UKM source id to be associated with the Document that will be installed
   // in the current frame. This could be an invalid id for empty Document. Only
   // Documents that will emit UKM events need valid ids.

@@ -370,8 +370,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                     HistoryNavigationType,
                                     CommitReason commit_reason);
 
-  const KURL& WebBundlePhysicalUrl() const { return web_bundle_physical_url_; }
-
   bool NavigationScrollAllowed() const { return navigation_scroll_allowed_; }
 
   // We want to make sure that the largest content is painted before the "LCP
@@ -754,8 +752,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   base::TimeTicks redirect_end_time_;
   WebScopedVirtualTimePauser virtual_time_pauser_;
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager_;
-  const KURL web_bundle_physical_url_;
-  const KURL web_bundle_claimed_url_;
   ukm::SourceId ukm_source_id_;
 
   // This UseCounter tracks feature usage associated with the lifetime of

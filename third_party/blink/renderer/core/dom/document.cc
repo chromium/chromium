@@ -868,11 +868,6 @@ Document::Document(const DocumentInit& initializer,
     UpdateBaseURL();
   }
 
-  if (initializer.GetWebBundleClaimedUrl().IsValid()) {
-    web_bundle_claimed_url_ = initializer.GetWebBundleClaimedUrl();
-    SetBaseURLOverride(initializer.GetWebBundleClaimedUrl());
-  }
-
   is_vertical_scroll_enforced_ =
       GetFrame() && !GetFrame()->IsOutermostMainFrame() &&
       RuntimeEnabledFeatures::ExperimentalPoliciesEnabled() &&
@@ -4234,9 +4229,6 @@ void Document::writeln(v8::Isolate* isolate,
 }
 
 KURL Document::urlForBinding() const {
-  if (WebBundleClaimedUrl().IsValid()) {
-    return WebBundleClaimedUrl();
-  }
   if (!Url().IsNull()) {
     return Url();
   }

@@ -277,12 +277,6 @@ DocumentInit& DocumentInit::WithFallbackSrcdocBaseURL(
   return *this;
 }
 
-DocumentInit& DocumentInit::WithWebBundleClaimedUrl(
-    const KURL& web_bundle_claimed_url) {
-  web_bundle_claimed_url_ = web_bundle_claimed_url;
-  return *this;
-}
-
 DocumentInit& DocumentInit::WithUkmSourceId(ukm::SourceId ukm_source_id) {
   ukm_source_id_ = ukm_source_id;
   return *this;

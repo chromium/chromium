@@ -51,7 +51,6 @@ class WorkerResourceFetcherProperties final : public ResourceFetcherProperties {
   scheduler::FrameStatus GetFrameStatus() const override {
     return scheduler::FrameStatus::kNone;
   }
-  const KURL& WebBundlePhysicalUrl() const override;
   int GetOutstandingThrottledLimit() const override;
 
  private:

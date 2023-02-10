@@ -882,8 +882,6 @@ class CORE_EXPORT Document : public ContainerNode,
   KURL CompleteURLWithOverride(const String&,
                                const KURL& base_url_override) const;
 
-  const KURL& WebBundleClaimedUrl() const { return web_bundle_claimed_url_; }
-
   // Determines whether a new document should take on the same origin as that of
   // the document which created it.
   static bool ShouldInheritSecurityOriginFromOwner(const KURL&);
@@ -2210,8 +2208,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   KURL base_element_url_;   // The URL set by the <base> element.
   KURL cookie_url_;         // The URL to use for cookie access.
-
-  KURL web_bundle_claimed_url_;
 
   AtomicString base_target_;
 

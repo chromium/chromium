@@ -6005,9 +6005,6 @@ crbug.com/1318952 http/tests/inspector-protocol/fetch/fetch-samesite-cookies.js 
 # Sheriff 2022-04-25
 crbug.com/1319320 rootscroller/root-scroller-apply-filter-to-parent.html [ Failure Pass ]
 
-# Sheriff 2022-04-25
-crbug.com/1319808 virtual/wbn-from-network/external/wpt/web-bundle/subresource-loading/reuse-web-bundle-resource.https.tentative.html [ Crash Failure Pass Timeout ]
-
 # Sheriff 2022-04-26
 crbug.com/1320140 [ Win ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/disallowed-navigations.https.html [ Pass Timeout ]
 crbug.com/1320140 [ Win ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes.https.html [ Pass Timeout ]

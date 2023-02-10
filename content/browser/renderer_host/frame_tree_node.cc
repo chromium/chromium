@@ -29,7 +29,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
-#include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_thread.h"
@@ -1076,7 +1075,6 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     const std::vector<GURL>& redirects,
     const GURL& original_url,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
-    std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
     std::unique_ptr<SubresourceWebBundleNavigationInfo>
         subresource_web_bundle_navigation_info,
     int http_response_code) {
@@ -1086,7 +1084,6 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
       transition, should_replace_current_entry, method,
       has_transient_activation, is_overriding_user_agent, redirects,
       original_url, std::move(coep_reporter),
-      std::move(web_bundle_navigation_info),
       std::move(subresource_web_bundle_navigation_info), http_response_code);
 }
 

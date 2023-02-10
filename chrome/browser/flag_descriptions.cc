@@ -3197,11 +3197,6 @@ const char kWebBluetoothNewPermissionsBackendDescription[] =
     "persistent storage of device permissions and Web Bluetooth features such "
     "as BluetoothDevice.watchAdvertisements() and Bluetooth.getDevices()";
 
-const char kWebBundlesName[] = "Web Bundles";
-const char kWebBundlesDescription[] =
-    "Enables experimental supports for Web Bundles (Bundled HTTP Exchanges) "
-    "navigation.";
-
 const char kWebContentsCaptureHiDpiName[] = "HiDPI Tab Capture";
 const char kWebContentsCaptureHiDpiDescription[] =
     "Enables HiDPI rendering for tab capture if the displayed content's "

@@ -53,10 +53,6 @@ void Location::Trace(Visitor* visitor) const {
 }
 
 inline const KURL& Location::Url() const {
-  const KURL& web_bundle_claimed_url = GetDocument()->WebBundleClaimedUrl();
-  if (web_bundle_claimed_url.IsValid()) {
-    return web_bundle_claimed_url;
-  }
   const KURL& url = GetDocument()->Url();
   if (!url.IsValid()) {
     // Use "about:blank" while the page is still loading (before we have a

@@ -135,10 +135,6 @@ static const char* kBadFlags[] = {
     // be possible to read GPU data for other Chromium processes.
     switches::kEnableUnsafeWebGPU,
 
-    // A flag to support local file based WebBundle loading, only for testing
-    // purpose.
-    switches::kTrustableWebBundleFileUrl,
-
     // A flag to bypass the WebHID blocklist for testing purposes.
     switches::kDisableHidBlocklist,
 
@@ -173,7 +169,6 @@ static const base::Feature* kBadFeatureFlagsInAboutFlags[] = {
     &features::kIsolatedWebApps,
     &features::kIsolatedWebAppDevMode,
 
-    &features::kWebBundlesFromNetwork,
 #if BUILDFLAG(IS_ANDROID)
     &chrome::android::kCommandLineOnNonRooted,
 #endif

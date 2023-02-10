@@ -42,10 +42,6 @@ LoaderFreezeMode WorkerResourceFetcherProperties::FreezeMode() const {
   return global_scope_->GetLoaderFreezeMode();
 }
 
-const KURL& WorkerResourceFetcherProperties::WebBundlePhysicalUrl() const {
-  return NullURL();
-}
-
 int WorkerResourceFetcherProperties::GetOutstandingThrottledLimit() const {
   return outstanding_throttled_limit_;
 }
