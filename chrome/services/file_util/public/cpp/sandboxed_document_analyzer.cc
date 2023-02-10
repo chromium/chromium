@@ -49,8 +49,9 @@ SandboxedDocumentAnalyzer::~SandboxedDocumentAnalyzer() = default;
 
 void SandboxedDocumentAnalyzer::PrepareFileToAnalyze() {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  base::File file(tmp_file_path_,
-                  base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File file(tmp_file_path_, base::File::FLAG_OPEN |
+                                      base::File::FLAG_READ |
+                                      base::File::FLAG_WIN_SHARE_DELETE);
 
   if (!file.IsValid()) {
     ReportFileFailure("Could not open file");

@@ -9,6 +9,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -17,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/services/file_util/fake_file_util_service.h"
 #include "chrome/services/file_util/file_util_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,6 +33,7 @@ namespace {
 
 #define CDRDT(x) safe_browsing::ClientDownloadRequest_DownloadType_##x
 
+using ::testing::_;
 using ::testing::UnorderedElementsAre;
 
 class SandboxedRarAnalyzerTest : public testing::Test {
@@ -362,6 +365,31 @@ TEST_F(SandboxedRarAnalyzerTest,
   ASSERT_TRUE(results.has_executable);
   EXPECT_EQ(2, results.archived_binary.size());
   EXPECT_TRUE(results.archived_archive_filenames.empty());
+}
+
+TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
+  base::FilePath file_path;
+  ASSERT_NO_FATAL_FAILURE(file_path = GetFilePath("small_archive.rar"));
+  base::FilePath temp_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&temp_path));
+  ASSERT_TRUE(base::CopyFile(file_path, temp_path));
+
+  mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
+  base::RunLoop run_loop;
+
+  FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
+  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeRarFile(_, _, _))
+      .WillOnce([&](base::File rar_file, base::File temporary_file,
+                    chrome::mojom::SafeArchiveAnalyzer::AnalyzeRarFileCallback
+                        callback) {
+        EXPECT_TRUE(base::DeleteFile(temp_path));
+        std::move(callback).Run(safe_browsing::ArchiveAnalyzerResults());
+        run_loop.Quit();
+      });
+  scoped_refptr<SandboxedRarAnalyzer> analyzer(new SandboxedRarAnalyzer(
+      temp_path, base::DoNothing(), std::move(remote)));
+  analyzer->Start();
+  run_loop.Run();
 }
 
 }  // namespace

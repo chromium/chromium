@@ -75,7 +75,8 @@ void SandboxedRarAnalyzer::PrepareFileToAnalyze() {
     return;
   }
 
-  base::File file(file_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File file(file_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                  base::File::FLAG_WIN_SHARE_DELETE);
   if (!file.IsValid()) {
     // TODO(vakh): Add UMA metrics here to check how often this happens.
     DLOG(ERROR) << "Could not open file: " << file_path_.value();

@@ -107,6 +107,32 @@ source_set("unit_tests") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_file_util_service.cc",
+    "fake_file_util_service.h",
+  ]
+
+  if (is_linux || is_win) {
+    sources += [
+      "fake_document_analysis_service.cc",
+      "fake_document_analysis_service.h",
+    ]
+  }
+
+  deps = [
+    ":buildflags",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/services/file_util/public/mojom:mojom",
+    "//components/safe_browsing:buildflags",
+    "//extensions/buildflags:buildflags",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+  ]
+}
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [

@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/services/file_util/fake_file_util_service.h"
 #include "chrome/services/file_util/file_util_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,6 +20,8 @@
 namespace safe_browsing {
 
 namespace {
+
+using ::testing::_;
 
 std::string ToHex(const std::string& s) {
   return base::HexEncode(s.data(), s.size());
@@ -210,6 +214,34 @@ TEST_F(SandboxedSevenZipAnalyzerTest, NotASevenZip) {
   RunAnalyzer(dir_test_data_.Append(FILE_PATH_LITERAL("not_a_seven_zip.7z")),
               &results);
   EXPECT_FALSE(results.success);
+}
+
+TEST_F(SandboxedSevenZipAnalyzerTest, CanDeleteDuringExecution) {
+  base::FilePath file_path =
+      dir_test_data_.Append(FILE_PATH_LITERAL("empty.7z"));
+  base::FilePath temp_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&temp_path));
+  ASSERT_TRUE(base::CopyFile(file_path, temp_path));
+
+  mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
+  base::RunLoop run_loop;
+
+  FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
+  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeSevenZipFile(_, _, _, _))
+      .WillOnce(
+          [&](base::File zip_file, base::File temporary_file,
+              base::File temporary_file2,
+              chrome::mojom::SafeArchiveAnalyzer::AnalyzeSevenZipFileCallback
+                  callback) {
+            EXPECT_TRUE(base::DeleteFile(temp_path));
+            std::move(callback).Run(safe_browsing::ArchiveAnalyzerResults());
+            run_loop.Quit();
+          });
+  scoped_refptr<SandboxedSevenZipAnalyzer> analyzer(
+      new SandboxedSevenZipAnalyzer(temp_path, base::DoNothing(),
+                                    std::move(remote)));
+  analyzer->Start();
+  run_loop.Run();
 }
 
 }  // namespace safe_browsing

@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/safe_browsing/document_analyzer_results.h"
 #include "chrome/services/file_util/document_analysis_service.h"
+#include "chrome/services/file_util/fake_document_analysis_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -29,6 +30,9 @@
 
 namespace safe_browsing {
 namespace {
+
+using ::testing::_;
+
 class SandboxedDocumentAnalyzerTest : public testing::Test {
  public:
   SandboxedDocumentAnalyzerTest()
@@ -158,5 +162,32 @@ TEST_F(SandboxedDocumentAnalyzerTest, AnalyzeCorruptedArchive) {
       results.error_message);
   EXPECT_FALSE(results.has_macros);
 }
+
+TEST_F(SandboxedDocumentAnalyzerTest, CanDeleteDuringExecution) {
+  base::FilePath file_path;
+  ASSERT_NO_FATAL_FAILURE(file_path = GetFilePath("doc_containing_macros.doc"));
+  base::FilePath temp_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&temp_path));
+  ASSERT_TRUE(base::CopyFile(file_path, temp_path));
+
+  mojo::PendingRemote<chrome::mojom::DocumentAnalysisService> remote;
+  base::RunLoop run_loop;
+
+  FakeDocumentAnalysisService service(remote.InitWithNewPipeAndPassReceiver());
+  EXPECT_CALL(service.GetSafeDocumentAnalyzer(), AnalyzeDocument(_, _, _))
+      .WillOnce([&](base::File office_file, base::FilePath file_path,
+                    chrome::mojom::SafeDocumentAnalyzer::AnalyzeDocumentCallback
+                        callback) {
+        EXPECT_TRUE(base::DeleteFile(temp_path));
+        std::move(callback).Run(safe_browsing::DocumentAnalyzerResults());
+        run_loop.Quit();
+      });
+  scoped_refptr<SandboxedDocumentAnalyzer> analyzer(
+      new SandboxedDocumentAnalyzer(file_path, temp_path, base::DoNothing(),
+                                    std::move(remote)));
+  analyzer->Start();
+  run_loop.Run();
+}
+
 }  // namespace
 }  // namespace safe_browsing

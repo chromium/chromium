@@ -44,7 +44,8 @@ void SandboxedSevenZipAnalyzer::Start() {
 SandboxedSevenZipAnalyzer::~SandboxedSevenZipAnalyzer() = default;
 
 void SandboxedSevenZipAnalyzer::PrepareFileToAnalyze() {
-  base::File file(file_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File file(file_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                  base::File::FLAG_WIN_SHARE_DELETE);
 
   if (!file.IsValid()) {
     DLOG(ERROR) << "Could not open file: " << file_path_.value();

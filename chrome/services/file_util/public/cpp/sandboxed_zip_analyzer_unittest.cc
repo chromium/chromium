@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,9 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/services/file_util/fake_file_util_service.h"
 #include "chrome/services/file_util/file_util_service.h"
+#include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/sha2.h"
@@ -24,13 +27,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC)
 namespace {
 
+#if BUILDFLAG(IS_MAC)
 const char kAppInZipHistogramName[] =
     "SBClientDownload.ZipFileContainsAppDirectory";
-}
 #endif  // BUILDFLAG(IS_MAC)
+
+using testing::_;
+
+}  // namespace
 
 class SandboxedZipAnalyzerTest : public ::testing::Test {
  protected:
@@ -405,3 +411,28 @@ TEST_F(SandboxedZipAnalyzerTest, ZippedAppWithUnsignedAndSignedExecutable) {
   EXPECT_TRUE(found_signed);
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+TEST_F(SandboxedZipAnalyzerTest, CanDeleteDuringExecution) {
+  base::FilePath file_path =
+      dir_test_data_.AppendASCII("download_protection/zipfile_no_binaries.zip");
+  base::FilePath temp_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&temp_path));
+  ASSERT_TRUE(base::CopyFile(file_path, temp_path));
+
+  mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
+  base::RunLoop run_loop;
+
+  FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
+  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeZipFile(_, _, _))
+      .WillOnce([&](base::File zip_file, base::File temporary_file,
+                    chrome::mojom::SafeArchiveAnalyzer::AnalyzeZipFileCallback
+                        callback) {
+        EXPECT_TRUE(base::DeleteFile(temp_path));
+        std::move(callback).Run(safe_browsing::ArchiveAnalyzerResults());
+        run_loop.Quit();
+      });
+  scoped_refptr<SandboxedZipAnalyzer> analyzer(new SandboxedZipAnalyzer(
+      temp_path, base::DoNothing(), std::move(remote)));
+  analyzer->Start();
+  run_loop.Run();
+}
