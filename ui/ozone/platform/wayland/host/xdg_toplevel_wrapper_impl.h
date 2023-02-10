@@ -107,11 +107,18 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
                              int32_t x,
                              int32_t y);
 
+  static void ConfigureRasterScale(void* data,
+                                   struct zaura_toplevel* zaura_toplevel,
+                                   uint32_t scale_as_uint);
+
   // Send request to wayland compositor to enable a requested decoration mode.
   void SetTopLevelDecorationMode(DecorationMode requested_mode);
 
   // Initializes the xdg-decoration protocol extension, if available.
   void InitializeXdgDecoration();
+
+  // Called when raster scale is changed.
+  void OnConfigureRasterScale(double scale);
 
   // Ground surface for this toplevel wrapper.
   std::unique_ptr<XDGSurfaceWrapperImpl> xdg_surface_wrapper_;

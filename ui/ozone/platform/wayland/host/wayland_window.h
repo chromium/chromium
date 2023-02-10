@@ -256,6 +256,11 @@ class WaylandWindow : public PlatformWindow,
   // frames. Updating state based on configure is handled separately to this.
   void OnSurfaceConfigureEvent();
 
+  // Sets the raster scale to be applied on the next configure.
+  void SetPendingRasterScale(float scale) {
+    pending_configure_state_.raster_scale = scale;
+  }
+
   // See comments on the member variable for an explanation of this.
   const PlatformWindowDelegate::State& applied_state() const {
     return applied_state_;
@@ -422,6 +427,7 @@ class WaylandWindow : public PlatformWindow,
   struct PendingConfigureState {
     absl::optional<gfx::Rect> bounds_dip;
     absl::optional<gfx::Size> size_px;
+    absl::optional<float> raster_scale;
   };
 
   // This holds the requested state for the next configure from the server.

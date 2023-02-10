@@ -32,6 +32,9 @@ namespace ui {
 
 namespace {
 
+static_assert(sizeof(uint32_t) == sizeof(float),
+              "Sizes much match for reinterpret cast to be meaningful");
+
 XDGToplevelWrapperImpl::DecorationMode ToDecorationMode(uint32_t mode) {
   switch (mode) {
     case ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE:
@@ -334,6 +337,18 @@ void XDGToplevelWrapperImpl::OnOriginChange(
 }
 
 // static
+void XDGToplevelWrapperImpl::ConfigureRasterScale(
+    void* data,
+    struct zaura_toplevel* zaura_toplevel,
+    uint32_t scale_as_uint) {
+  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
+  DCHECK(surface);
+  auto* wayland_window = static_cast<WaylandWindow*>(surface->wayland_window_);
+  float scale = *reinterpret_cast<float*>(&scale_as_uint);
+  wayland_window->SetPendingRasterScale(scale);
+}
+
+// static
 void XDGToplevelWrapperImpl::CloseTopLevel(void* data,
                                            struct xdg_toplevel* xdg_toplevel) {
   auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
@@ -489,9 +504,7 @@ void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
   zaura_toplevel_set_supports_screen_coordinates(aura_toplevel_.get());
 
   static constexpr zaura_toplevel_listener aura_toplevel_listener = {
-      &ConfigureAuraTopLevel,
-      &OnOriginChange,
-  };
+      &ConfigureAuraTopLevel, &OnOriginChange, &ConfigureRasterScale};
 
   zaura_toplevel_add_listener(aura_toplevel_.get(), &aura_toplevel_listener,
                               this);
