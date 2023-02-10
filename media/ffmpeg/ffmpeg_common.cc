@@ -15,6 +15,7 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_util.h"
 #include "media/base/video_aspect_ratio.h"
+#include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_util.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -43,6 +44,12 @@ VideoDecoderConfig::AlphaMode GetAlphaMode(const AVStream* stream) {
   return alpha_mode && !strcmp(alpha_mode->value, "1")
              ? VideoDecoderConfig::AlphaMode::kHasAlpha
              : VideoDecoderConfig::AlphaMode::kIsOpaque;
+}
+
+VideoColorSpace GetGuessedColorSpace(const VideoColorSpace& color_space) {
+  return VideoColorSpace::FromGfxColorSpace(
+      // convert to gfx color space and make a guess.
+      color_space.ToGfxColorSpace());
 }
 
 }  // namespace
@@ -690,17 +697,18 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
     // because GBR is reasonable for 4:4:4 content. See crbug.com/1067377.
     color_space = VideoColorSpace::REC709();
   } else if (codec_context->codec_id == AV_CODEC_ID_HEVC &&
-             color_space.primaries == VideoColorSpace::PrimaryID::INVALID &&
-             color_space.transfer == VideoColorSpace::TransferID::BT709 &&
-             color_space.matrix == VideoColorSpace::MatrixID::UNSPECIFIED &&
-             color_space.range == gfx::ColorSpace::RangeID::LIMITED &&
+             (color_space.primaries == VideoColorSpace::PrimaryID::INVALID ||
+              color_space.transfer == VideoColorSpace::TransferID::INVALID ||
+              color_space.matrix == VideoColorSpace::MatrixID::INVALID) &&
              AVPixelFormatToVideoPixelFormat(codec_context->pix_fmt) ==
                  PIXEL_FORMAT_I420) {
     // Some HEVC SDR content encoded by the Adobe Premiere HW HEVC encoder has
-    // invalid primaries but valid transfer and matrix, this will cause
-    // IsHevcProfileSupported return "false" and fail to playback.
-    // See crbug.com/1374270.
-    color_space = VideoColorSpace::REC709();
+    // invalid primaries but valid transfer and matrix, and some HEVC SDR
+    // content encoded by web camera has invalid primaries and transfer, this
+    // will cause IsHevcProfileSupported return "false" and fail to playback.
+    // make a guess can at least make these videos able to play. See
+    // crbug.com/1374270.
+    color_space = GetGuessedColorSpace(color_space);
   }
 
   // AVCodecContext occasionally has invalid extra data. See
