@@ -133,6 +133,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
           'autoRepeatDelaysPref.value,' +
           'autoRepeatIntervalsPref.value)',
       'onModifierRemappingsChanged(keyboard.settings.modifierRemappings)',
+      'updateSettingsToCurrentPrefs(keyboard)',
     ];
   }
 
@@ -145,6 +146,24 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
   private autoRepeatDelaysPref: chrome.settingsPrivate.PrefObject;
   private autoRepeatIntervalsPref: chrome.settingsPrivate.PrefObject;
   private remapKeyboardKeysSublabel: string;
+  private isInitialized: boolean = false;
+
+  private updateSettingsToCurrentPrefs(): void {
+    this.set(
+        'topRowAreFunctionKeysPref.value',
+        this.keyboard.settings.topRowAreFKeys);
+    this.set(
+        'blockMetaFunctionKeyRewritesPref.value',
+        this.keyboard.settings.suppressMetaFKeyRewrites);
+    this.set(
+        'enableAutoRepeatPref.value', this.keyboard.settings.autoRepeatEnabled);
+    this.set(
+        'autoRepeatDelaysPref.value', this.keyboard.settings.autoRepeatDelay);
+    this.set(
+        'autoRepeatIntervalsPref.value',
+        this.keyboard.settings.autoRepeatInterval);
+    this.isInitialized = true;
+  }
 
   private onLearnMoreLinkClicked_(event: Event): void {
     const path = event.composedPath();
@@ -160,6 +179,9 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
 
   private onSettingsChanged(): void {
     // TODO(wangdanny): Implement onSettingsChanged.
+    if (!this.isInitialized) {
+      return;
+    }
   }
 
   private async onModifierRemappingsChanged(): Promise<void> {
