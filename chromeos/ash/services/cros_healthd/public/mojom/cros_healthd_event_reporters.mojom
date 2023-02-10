@@ -1,0 +1,23 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Definitions for the diagnostics API exposed by the cros_healthd daemon. This
+// API is normally consumed by the browser and the diag command-line tool.
+
+// NOTE: This mojom should be kept in sync with the copy in ChromiumOS's repo in
+// src/platform2/diagnostics/mojom/public/cros_healthd_event_reporters.mojom.
+
+module ash.cros_healthd.mojom;
+
+import "ash/system/diagnostics/mojom/input.mojom";
+
+// For ash-chrome to report events to HealthD service.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+interface AshEventReporter {
+ // Send the event to HealthD.
+ SendKeyboardDiagnosticEvent@0(
+    ash.diagnostics.mojom.KeyboardDiagnosticEventInfo info);
+};

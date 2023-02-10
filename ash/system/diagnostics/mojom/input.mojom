@@ -127,3 +127,19 @@ struct KeyboardInfo {
   // Only applicable to CrOS keyboards.
   bool has_assistant_key@9;
 };
+
+// Keyboard diagnostics event info. It is fired when users completed a keyboard
+// diagnostic in the Diagnostics App.
+[Stable]
+struct KeyboardDiagnosticEventInfo {
+  // The keyboard which has been tested.
+  KeyboardInfo keyboard_info@0;
+  // Keys which have been tested. It is an array of the evdev key code.
+  array<uint32> tested_keys@1;
+  // Top row keys which have been tested. They are positions of the key on the
+  // top row after escape (0 is leftmost, 1 is next to the right, etc.).
+  // Generally, 0 is F1, in some fashion.
+  // NOTE: This position may exceed the length of keyboard_info->top_row_keys,
+  // for external keyboards with keys in the F11-F15 range.
+  array<uint32> tested_top_row_keys@2;
+};

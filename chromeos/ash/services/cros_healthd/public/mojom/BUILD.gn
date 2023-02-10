@@ -36,3 +36,8 @@ mojom("mojom") {
     },
   ]
 }
+
+mojom("event_reporter") {
+  sources = [ "cros_healthd_event_reporters.mojom" ]
+  public_deps = [ "//ash/system/diagnostics/mojom" ]
+}
