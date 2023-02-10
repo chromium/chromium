@@ -389,12 +389,11 @@ ui::KeyEvent KeyA() {
 void SetAutocorrectPreferenceTo(Profile& profile,
                                 const std::string& engine_id,
                                 int autocorrect_level) {
-  base::Value input_method_setting(base::Value::Type::DICT);
-  input_method_setting.SetPath(
-      engine_id + ".physicalKeyboardAutoCorrectionLevel",
-      base::Value(autocorrect_level));
+  base::Value::Dict input_method_setting;
+  input_method_setting.SetByDottedPath(
+      engine_id + ".physicalKeyboardAutoCorrectionLevel", autocorrect_level);
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
-                          input_method_setting);
+                          base::Value(std::move(input_method_setting)));
 }
 
 class MockSuggestionHandler : public SuggestionHandlerInterface {

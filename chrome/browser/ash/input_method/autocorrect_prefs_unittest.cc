@@ -18,17 +18,17 @@ namespace ash::input_method {
 namespace {
 
 constexpr char kUsEnglish[] = "xkb:us::eng";
-constexpr char kBrazilPortugese[] = "xkb:br::por";
+constexpr char kBrazilPortuguese[] = "xkb:br::por";
 
 void SetAutocorrectLevelTo(Profile& profile,
                            const std::string& pref_name,
                            const std::string& engine_id,
                            int autocorrect_level) {
-  base::Value input_method_setting(base::Value::Type::DICT);
-  input_method_setting.SetPath(base::StrCat({engine_id, ".", pref_name}),
-                               base::Value(autocorrect_level));
+  base::Value::Dict input_method_setting;
+  input_method_setting.SetByDottedPath(
+      base::StrCat({engine_id, ".", pref_name}), autocorrect_level);
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
-                          input_method_setting);
+                          base::Value(std::move(input_method_setting)));
 }
 
 void SetPkAutocorrectLevelTo(Profile& profile,
@@ -100,7 +100,7 @@ TEST_P(FetchesAutocorrectPreference, AndScopesReturnedPkPreferenceToEngineId) {
   // The above preference is set for the US English engine only. Queries for
   // the autocorrect level on any other engine should return the default.
   EXPECT_EQ(GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()),
-                                               kBrazilPortugese),
+                                               kBrazilPortuguese),
             AutocorrectPreference::kDefault);
 }
 
@@ -124,7 +124,7 @@ TEST_P(FetchesAutocorrectPreference, AndScopesReturnedVkPreferenceToEngineId) {
   // The above preference is set for the US English engine only. Queries for
   // the autocorrect level on any other engine should return the default.
   EXPECT_EQ(GetVirtualKeyboardAutocorrectPref(*(profile_.GetPrefs()),
-                                              kBrazilPortugese),
+                                              kBrazilPortuguese),
             AutocorrectPreference::kDefault);
 }
 
@@ -168,13 +168,13 @@ TEST_F(AutocorrectPrefsTest, EnabledByDefaultIsScopedToSingleLanguage) {
   feature_list_.InitWithFeatures({features::kAutocorrectByDefault}, {});
 
   SetPhysicalKeyboardAutocorrectAsEnabledByDefault(profile_.GetPrefs(),
-                                                   kBrazilPortugese);
+                                                   kBrazilPortuguese);
 
   EXPECT_EQ(
       GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()), kUsEnglish),
       AutocorrectPreference::kDefault);
   EXPECT_EQ(GetPhysicalKeyboardAutocorrectPref(*(profile_.GetPrefs()),
-                                               kBrazilPortugese),
+                                               kBrazilPortuguese),
             AutocorrectPreference::kEnabledByDefault);
 }
 

@@ -45,7 +45,7 @@ class PrefChangeRecorder {
   // options page.
   InputMethodOptionsObserver input_method_options_observer_;
 
-  // This container holds all of the autocorrrect preferences (for both PK and
+  // This container holds all of the autocorrect preferences (for both PK and
   // VK) previously captured by this class. It is used to detect what has
   // changed when a user updates their autocorrect preferences in the settings
   // page.

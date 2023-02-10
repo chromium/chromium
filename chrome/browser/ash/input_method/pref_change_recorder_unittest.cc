@@ -20,7 +20,7 @@ namespace ash::input_method {
 namespace {
 
 constexpr char kUsEnglish[] = "xkb:us::eng";
-constexpr char kBrazilPortugese[] = "xkb:br::por";
+constexpr char kBrazilPortuguese[] = "xkb:br::por";
 constexpr char kSpainSpanish[] = "xkb:es::spa";
 constexpr char kFranceFrench[] = "xkb:fr::fra";
 
@@ -125,7 +125,7 @@ TEST_P(UserChangesAutocorrectPrefMetric,
        RecordsTheCorrectValueForPkAndBucketsToLangOtherThenEnglish) {
   const AutocorrectPrefChangeCase& test_case = GetParam();
   base::HistogramTester histograms_;
-  FakeInputMethodOptions options(profile_.GetPrefs(), kBrazilPortugese);
+  FakeInputMethodOptions options(profile_.GetPrefs(), kBrazilPortuguese);
 
   // Set the initial autocorrect level (simulating previous values set by user).
   if (test_case.autocorrect_level_from)
@@ -145,7 +145,7 @@ TEST_P(UserChangesAutocorrectPrefMetric,
        RecordsTheCorrectValueForVkAndBucketsToLangOtherThenEnglish) {
   const AutocorrectPrefChangeCase& test_case = GetParam();
   base::HistogramTester histograms_;
-  FakeInputMethodOptions options(profile_.GetPrefs(), kBrazilPortugese);
+  FakeInputMethodOptions options(profile_.GetPrefs(), kBrazilPortuguese);
 
   // Set the initial autocorrect level (simulating previous values set by user).
   if (test_case.autocorrect_level_from)
@@ -360,8 +360,8 @@ INSTANTIATE_TEST_SUITE_P(
             /*metric_name=*/
             "InputMethod.Assistive.AutocorrectV2.UserPrefChange.English.PK"},
         EnabledByDefaultMetricCase{
-            "BrazilianPortugese",
-            /*engine_id=*/kBrazilPortugese,
+            "BrazilianPortuguese",
+            /*engine_id=*/kBrazilPortuguese,
             /*metric_name=*/
             "InputMethod.Assistive.AutocorrectV2.UserPrefChange.All.PK"},
         EnabledByDefaultMetricCase{
