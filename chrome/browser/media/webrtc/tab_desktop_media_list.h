@@ -15,6 +15,7 @@
 class TabDesktopMediaList : public DesktopMediaListBase {
  public:
   TabDesktopMediaList(
+      content::WebContents* web_contents,
       DesktopMediaList::WebContentsFilter includable_web_contents_filter,
       bool include_chrome_app_windows);
 
@@ -63,6 +64,10 @@ class TabDesktopMediaList : public DesktopMediaListBase {
       std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
       const SkBitmap& bitmap);
   void CompleteRefreshAfterThumbnailProcessing();
+
+  // The WebContents from which the media-picker was invoked, if such
+  // a WebContents was ever set.
+  const absl::optional<base::WeakPtr<content::WebContents>> web_contents_;
 
   // The hash of the last captured preview frame. Used to detect identical
   // frames and prevent needless rescaling.

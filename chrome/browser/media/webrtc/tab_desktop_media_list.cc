@@ -34,6 +34,7 @@
 
 using content::BrowserThread;
 using content::DesktopMediaID;
+using content::WebContents;
 
 namespace {
 
@@ -116,10 +117,14 @@ void HandleCapturedBitmap(
 }  // namespace
 
 TabDesktopMediaList::TabDesktopMediaList(
+    WebContents* web_contents,
     DesktopMediaList::WebContentsFilter includable_web_contents_filter,
     bool include_chrome_app_windows)
     : DesktopMediaListBase(
           base::Milliseconds(kDefaultTabDesktopMediaListUpdatePeriod)),
+      web_contents_(web_contents
+                        ? absl::make_optional(web_contents->GetWeakPtr())
+                        : absl::nullopt),
       includable_web_contents_filter_(
           std::move(includable_web_contents_filter)),
       include_chrome_app_windows_(include_chrome_app_windows) {
@@ -150,7 +155,18 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
   DCHECK(can_refresh());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  Profile* profile;
+  if (web_contents_.has_value()) {
+    const base::WeakPtr<WebContents>& wc_weak_ref = web_contents_.value();
+    // Profile::FromBrowserContext is robust to receiving nullptr as input.
+    profile = Profile::FromBrowserContext(
+        wc_weak_ref ? wc_weak_ref->GetBrowserContext() : nullptr);
+  } else {
+    // When going through DesktopMediaPickerController::Show(), it can be that
+    // no WebContents was ever associated. In that case, fall back on the
+    // legacy behavior of using the last-used profile.
+    profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  }
   if (!profile) {
     OnRefreshComplete();
     return;
@@ -164,7 +180,7 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
     }
   }
 
-  std::vector<content::WebContents*> contents_list;
+  std::vector<WebContents*> contents_list;
   // Enumerate all tabs for a user profile.
   for (auto* browser : browsers) {
     const TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -172,7 +188,7 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
 
     for (int i = 0; i < tab_strip_model->count(); i++) {
       // Create id for tab.
-      content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
+      WebContents* contents = tab_strip_model->GetWebContentsAt(i);
       DCHECK(contents);
       contents_list.push_back(contents);
     }
@@ -357,8 +373,7 @@ void TabDesktopMediaList::SetPreviewedSource(
       id->web_contents_id.render_process_id,
       id->web_contents_id.main_render_frame_id);
   // Note host may be nullptr, but FromRenderFrameHost handles that for us.
-  content::WebContents* const source_contents =
-      content::WebContents::FromRenderFrameHost(host);
+  WebContents* const source_contents = WebContents::FromRenderFrameHost(host);
   if (!source_contents) {
     // No WebContents instance found, likely the selected tab has been recently
     // closed or crashed and the list of sources hasn't been updated yet.

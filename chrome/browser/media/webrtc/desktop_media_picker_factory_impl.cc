@@ -117,7 +117,7 @@ DesktopMediaPickerFactoryImpl::CreateMediaList(
         // one, the std::move here is safe.
         std::unique_ptr<DesktopMediaList> tab_list =
             std::make_unique<TabDesktopMediaList>(
-                std::move(includable_web_contents_filter),
+                web_contents, std::move(includable_web_contents_filter),
                 add_chrome_app_windows);
         have_tab_list = true;
         source_lists.push_back(std::move(tab_list));
