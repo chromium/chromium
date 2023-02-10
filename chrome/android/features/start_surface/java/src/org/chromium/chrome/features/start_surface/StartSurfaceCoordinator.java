@@ -326,7 +326,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 || !ChromeFeatureList.sQueryTilesOnStart.isEnabled();
         mIsStartSurfaceRefactorEnabled =
                 ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity);
-        TabSwitcher.Controller controller;
+        TabSwitcher.Controller controller = null;
         Runnable initializeMVTilesRunnable = null;
         View logoContainerView = null;
         ViewGroup feedPlaceholderParentView = null;
@@ -358,7 +358,6 @@ public class StartSurfaceCoordinator implements StartSurface {
             // createSwipeRefreshLayout has to be called before creating any surface.
             createSwipeRefreshLayout();
             createStartSurfaceWithoutTasksSurface(excludeQueryTiles);
-            controller = mTabSwitcherModule.getController();
             initializeMVTilesRunnable = this::initializeMVTiles;
             logoContainerView = mView.findViewById(R.id.logo_container);
             feedPlaceholderParentView = mView.findViewById(R.id.tasks_surface_body);

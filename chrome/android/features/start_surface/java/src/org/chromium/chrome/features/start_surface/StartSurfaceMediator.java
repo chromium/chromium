@@ -224,7 +224,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
     // TODO(crbug.com/1315676): Clean up TabSwitcher#Controller once the start surface refactoring
     // is done.
-    StartSurfaceMediator(Controller controller, ViewGroup tabSwitcherContainer,
+    StartSurfaceMediator(@Nullable Controller controller, ViewGroup tabSwitcherContainer,
             @Nullable TabSwitcher tabSwitcherModule, TabModelSelector tabModelSelector,
             @Nullable PropertyModel propertyModel,
             @Nullable SecondaryTasksSurfaceInitializer secondaryTasksSurfaceInitializer,
@@ -237,9 +237,10 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             @Nullable BackPressManager backPressManager, ViewGroup feedPlaceholderParentView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OnClickListener tabSwitcherClickHandler) {
-        mController = controller;
         mTabSwitcherContainer = tabSwitcherContainer;
         mTabSwitcherModule = tabSwitcherModule;
+        mController = mTabSwitcherModule != null ? mTabSwitcherModule.getController() : controller;
+        assert mController != null;
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
         mSecondaryTasksSurfaceInitializer = secondaryTasksSurfaceInitializer;
@@ -270,8 +271,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             assert mIsStartSurfaceEnabled;
 
             if (mTabSwitcherModule != null) {
-                boolean isTabCarousel = mTabSwitcherModule.getController().getTabSwitcherType()
-                        == TabSwitcherType.CAROUSEL;
+                boolean isTabCarousel =
+                        mController.getTabSwitcherType() == TabSwitcherType.CAROUSEL;
                 mPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, isTabCarousel);
                 mPropertyModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, isTabCarousel);
 
