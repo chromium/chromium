@@ -86,14 +86,6 @@ import org.chromium.url.GURL;
     }
 
     @Override
-    public void didFinishLoadNoop(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
-            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
-        // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
-        // didFinishLoad has the same behavior as before.
-        didFinishLoadInPrimaryMainFrame(rfhId, url, isKnownValid, rfhLifecycleState);
-    }
-
-    @Override
     public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl,
             @LifecycleState int frameLifecycleState) {
         if (frameLifecycleState != LifecycleState.ACTIVE) return;

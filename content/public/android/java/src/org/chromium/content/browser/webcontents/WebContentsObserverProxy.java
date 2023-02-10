@@ -300,26 +300,6 @@ class WebContentsObserverProxy extends WebContentsObserver {
     }
 
     @CalledByNative
-    private void didFinishLoadNoop(int renderProcessId, int renderFrameId, GURL url,
-            boolean isKnownValid, boolean isInPrimaryMainFrame,
-            @LifecycleState int frameLifecycleState) {
-        didFinishLoadNoop(new GlobalRenderFrameHostId(renderProcessId, renderFrameId), url,
-                isKnownValid, isInPrimaryMainFrame, frameLifecycleState);
-    }
-
-    @Override
-    public void didFinishLoadNoop(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
-            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
-        handleObserverCall();
-        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
-        for (; observersIterator.hasNext();) {
-            observersIterator.next().didFinishLoadNoop(
-                    rfhId, url, isKnownValid, isInPrimaryMainFrame, rfhLifecycleState);
-        }
-        finishObserverCall();
-    }
-
-    @CalledByNative
     private void documentLoadedInPrimaryMainFrame(
             int renderProcessId, int renderFrameId, @LifecycleState int rfhLifecycleState) {
         documentLoadedInPrimaryMainFrame(

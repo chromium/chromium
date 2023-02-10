@@ -156,13 +156,6 @@ public abstract class WebContentsObserver {
             boolean isKnownValid, @LifecycleState int rfhLifecycleState) {}
 
     /**
-     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
-     * No-op, for measuring performance of calling didFinishLoad in only the primary main frame.
-     */
-    public void didFinishLoadNoop(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
-            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {}
-
-    /**
      * Notifies that the document has finished loading for the primary main frame.
      * @param rfhId Identifier of the navigating frame.
      * @param rfhLifecycleState The lifecycle state of the associated frame.
