@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox pointer handler. A pointer, in this context, is
  * either user touch or mouse input.
  */
+import {AsyncUtil} from '../../common/async_util.js';
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {CustomAutomationEvent} from '../common/custom_automation_event.js';
@@ -21,8 +22,16 @@ import {Output} from './output/output.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const AutomationEvent = chrome.automation.AutomationEvent;
+const DeviceType = chrome.chromeosInfoPrivate.DeviceType;
 const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
+
+/** @return {!Promise<DeviceType>} */
+async function getDeviceType() {
+  return new Promise(
+      resolve => chrome.chromeosInfoPrivate.get(
+          ['deviceType'], data => resolve(data.deviceType)));
+}
 
 export class PointerHandler extends BaseAutomationHandler {
   constructor() {
@@ -41,39 +50,11 @@ export class PointerHandler extends BaseAutomationHandler {
     /** @private {!Date} */
     this.lastHoverRequested_ = new Date();
 
-    chrome.automation.getDesktop(desktop => {
-      this.node_ = desktop;
-      this.addListener_(EventType.MOUSE_MOVED, this.onMouseMove);
+    /** @private {boolean} */
+    this.ready_ = false;
 
-      // This is needed for ARC++ and Lacros. They send mouse move and hit test
-      // respectively. Each responds with hover.
-      this.addListener_(EventType.HOVER, evt => {
-        if (this.expectingHoverCount_ === 0) {
-          return;
-        }
-
-        // Stop honoring expectingHoverCount_ if it comes far after its
-        // corresponding requested hit test.
-        if (new Date() - this.lastHoverRequested_ > 500) {
-          this.expectingHoverCount_ = 0;
-        }
-
-        this.expectingHoverCount_--;
-        this.handleHitTestResult(evt.target);
-      });
-
-      this.mouseX_ = 0;
-      this.mouseY_ = 0;
-    });
-
-    if (SettingsManager.get('speakTextUnderMouse')) {
-      chrome.accessibilityPrivate.enableMouseEvents(true);
-    }
-
-    chrome.chromeosInfoPrivate.get(['deviceType'], result => {
-      this.isChromebox_ = result['deviceType'] ===
-          chrome.chromeosInfoPrivate.DeviceType.CHROMEBOX;
-    });
+    // Asynchronously initialize the listeners. Sets this.ready_ when done.
+    this.initListeners_();
   }
 
   /**
@@ -92,13 +73,13 @@ export class PointerHandler extends BaseAutomationHandler {
       // on the main CFM UI. Synthesize mouse moves with the touch
       // accessibility flag for now for touch-based user gestures. Eliminate
       // this branch once hit testing is fixed.
-      this.synthesizeMouseMove();
+      this.synthesizeMouseMove_();
       return;
     }
 
     const actOnNode = specificNode ? specificNode : this.node_;
     actOnNode.hitTestWithReply(this.mouseX_, this.mouseY_, target => {
-      this.handleHitTestResult(target);
+      this.handleHitTestResult_(target);
     });
   }
 
@@ -107,7 +88,7 @@ export class PointerHandler extends BaseAutomationHandler {
    * @param {AutomationEvent} evt The mouse move event to process.
    */
   onMouseMove(evt) {
-    this.onMove(evt.mouseX, evt.mouseY);
+    this.onMove_(evt.mouseX, evt.mouseY);
   }
 
   /**
@@ -116,7 +97,88 @@ export class PointerHandler extends BaseAutomationHandler {
    * @param {number} y
    */
   onTouchMove(x, y) {
-    this.onMove(x, y, true);
+    this.onMove_(x, y, true);
+  }
+
+  // =========== Private Methods =============
+
+  /** @private */
+  async initListeners_() {
+    this.node_ = await AsyncUtil.getDesktop();
+    this.addListener_(EventType.MOUSE_MOVED, this.onMouseMove_);
+
+    // This is needed for ARC++ and Lacros. They send mouse move and hit test
+    // respectively. Each responds with hover.
+    this.addListener_(EventType.HOVER, this.onHover_);
+
+    this.mouseX_ = 0;
+    this.mouseY_ = 0;
+
+    if (SettingsManager.get('speakTextUnderMouse')) {
+      chrome.accessibilityPrivate.enableMouseEvents(true);
+    }
+
+    const deviceType = await getDeviceType();
+    this.isChromebox_ = deviceType === DeviceType.CHROMEBOX;
+
+    this.ready_ = true;
+  }
+
+  /**
+   * Performs a hit test using the most recent mouse coordinates received in
+   * onMouseMove or onMove (a e.g. for touch explore).
+   * @param {boolean} isTouch
+   * @param {AutomationNode} specificNode
+   * @private
+   */
+  runHitTest_(isTouch = false, specificNode = null) {
+    if (!this.ready_ || !this.mouseX_ || !this.mouseY_) {
+      return;
+    }
+
+    if (isTouch && this.isChromebox_) {
+      // TODO(accessibility): hit testing seems to be broken in some cases e.g.
+      // on the main CFM UI. Synthesize mouse moves with the touch
+      // accessibility flag for now for touch-based user gestures. Eliminate
+      // this branch once hit testing is fixed.
+      this.synthesizeMouseMove_();
+      return;
+    }
+
+    const actOnNode = specificNode ? specificNode : this.node_;
+    actOnNode.hitTestWithReply(this.mouseX_, this.mouseY_, target => {
+      this.handleHitTestResult_(target);
+    });
+  }
+
+  /**
+   * This is needed for ARC++ and Lacros. They send mouse move and hit test
+   * respectively. Each responds with hover.
+   * @param {AutomationEvent} evt The mouse move event to process.
+   * @private
+   */
+  onHover_(evt) {
+    if (this.expectingHoverCount_ === 0) {
+      return;
+    }
+
+    // Stop honoring expectingHoverCount_ if it comes far after its
+    // corresponding requested hit test.
+    if (new Date() - this.lastHoverRequested_ > 500) {
+      this.expectingHoverCount_ = 0;
+    }
+
+    this.expectingHoverCount_--;
+    this.handleHitTestResult_(evt.target);
+  }
+
+  /**
+   * Handles mouse move events.
+   * @param {AutomationEvent} evt The mouse move event to process.
+   * @private
+   */
+  onMouseMove_(evt) {
+    this.onMove_(evt.mouseX, evt.mouseY);
   }
 
   /**
@@ -124,18 +186,24 @@ export class PointerHandler extends BaseAutomationHandler {
    * @param {number} x
    * @param {number} y
    * @param {boolean} isTouch
+   * @private
    */
-  onMove(x, y, isTouch = false) {
+  onMove_(x, y, isTouch = false) {
+    if (x === undefined || y === undefined) {
+      return;
+    }
+
     this.mouseX_ = x;
     this.mouseY_ = y;
-    this.runHitTest(isTouch);
+    this.runHitTest_(isTouch);
   }
 
   /**
    * Synthesizes a mouse move on the current mouse location.
+   * @private
    */
-  synthesizeMouseMove() {
-    if (this.mouseX_ === undefined || this.mouseY_ === undefined) {
+  synthesizeMouseMove_() {
+    if (!this.ready_ || !this.mouseX_ || !this.mouseY_) {
       return;
     }
 
@@ -147,9 +215,10 @@ export class PointerHandler extends BaseAutomationHandler {
 
   /**
    * Handles the result of a test test e.g. speaking the node.
-   * @param {chrome.automation.AutomationNode} result
+   * @param {AutomationNode} result
+   * @private
    */
-  handleHitTestResult(result) {
+  handleHitTestResult_(result) {
     if (!result) {
       return;
     }
@@ -161,7 +230,7 @@ export class PointerHandler extends BaseAutomationHandler {
         target.className.indexOf('ExoSurface') === 0) {
       // We're in ARC++, which still requires a synthesized mouse
       // event.
-      this.synthesizeMouseMove();
+      this.synthesizeMouseMove_();
       return;
     }
 

@@ -86,9 +86,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
   }
 
   simulateHitTestResult(node) {
-    return () => {
-      GestureCommandHandler.instance.pointerHandler_.handleHitTestResult(node);
-    };
+    return () => GestureCommandHandler.instance.pointerHandler_
+                     .handleHitTestResult_(node);
   }
 
   press(keyCode, modifiers) {
