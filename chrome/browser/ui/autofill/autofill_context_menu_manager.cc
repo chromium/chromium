@@ -194,7 +194,7 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
       browser_, chrome::kFeedbackSourceAutofillContextMenu,
       /*description_template=*/std::string(),
       /*description_placeholder_text=*/std::string(),
-      /*category_tag=*/std::string(),
+      /*category_tag=*/"dogfood_autofill_feedback",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/data_logs::FetchAutofillFeedbackData(manager));
 }
