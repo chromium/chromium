@@ -210,14 +210,18 @@ bool CustomInputProcessor::AddFromInputContext(
     return false;
   }
   const auto& input_context = feature_processor_state->input_context();
+  auto input_name = custom_input.name();
   auto custom_input_iter = custom_input.additional_args().find("name");
-  if (custom_input_iter == custom_input.additional_args().end()) {
-    return false;
+  if (custom_input_iter != custom_input.additional_args().end()) {
+    input_name = custom_input_iter->second;
   }
 
-  auto input_context_iter =
-      input_context->metadata_args.find(custom_input_iter->second);
+  auto input_context_iter = input_context->metadata_args.find(input_name);
   if (input_context_iter == input_context->metadata_args.end()) {
+    feature_processor_state->SetError(
+        stats::FeatureProcessingError::kCustomInputError,
+        "The model expects an input '" + input_name +
+            "' which wasn't found in the input context.");
     return false;
   }
 

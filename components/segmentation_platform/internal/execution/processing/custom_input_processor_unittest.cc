@@ -207,8 +207,7 @@ TEST_F(CustomInputProcessorTest, FromInputContext) {
   base::flat_map<int, Data> data;
   proto::InputFeature input;
   proto::CustomInput* custom_input = input.mutable_custom_input();
-  custom_input->set_name("test");
-  (*custom_input->mutable_additional_args())["name"] = "test";
+  custom_input->set_name("test_input");
   custom_input->set_fill_policy(proto::CustomInput::FILL_FROM_INPUT_CONTEXT);
   custom_input->set_tensor_length(1);
   data.emplace(0, Data(input));
@@ -216,7 +215,35 @@ TEST_F(CustomInputProcessorTest, FromInputContext) {
   std::unique_ptr<FeatureProcessorState> feature_processor_state =
       std::make_unique<FeatureProcessorState>();
   auto input_context = base::MakeRefCounted<InputContext>();
-  input_context->metadata_args.emplace("test", 0.6f);
+  input_context->metadata_args.emplace("test_input", 0.6f);
+  feature_processor_state->set_input_context_for_testing(input_context);
+
+  // Set expected tensor result.
+  base::flat_map<int, QueryProcessor::Tensor> expected_result;
+  expected_result[0] = {ProcessedValue(0.6f)};
+
+  // Process the custom inputs and verify using expected result.
+  ExpectProcessedCustomInput(std::move(data),
+                             std::move(feature_processor_state),
+                             /*expected_error=*/false, expected_result);
+}
+
+TEST_F(CustomInputProcessorTest,
+       FromInputContextUsesAdditionalArgNameIfPresent) {
+  // Create custom input data.
+  base::flat_map<int, Data> data;
+  proto::InputFeature input;
+  proto::CustomInput* custom_input = input.mutable_custom_input();
+  custom_input->set_name("test_input");
+  (*custom_input->mutable_additional_args())["name"] = "test_arg";
+  custom_input->set_fill_policy(proto::CustomInput::FILL_FROM_INPUT_CONTEXT);
+  custom_input->set_tensor_length(1);
+  data.emplace(0, Data(input));
+
+  std::unique_ptr<FeatureProcessorState> feature_processor_state =
+      std::make_unique<FeatureProcessorState>();
+  auto input_context = base::MakeRefCounted<InputContext>();
+  input_context->metadata_args.emplace("test_arg", 0.6f);
   feature_processor_state->set_input_context_for_testing(input_context);
 
   // Set expected tensor result.

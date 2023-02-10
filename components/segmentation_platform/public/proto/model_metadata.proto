@@ -118,7 +118,8 @@ message CustomInput {
     // Output type: ProcessedValue
     // Output length: 1
     // Additional arg:
-    //   `name`: The name of the field to be looked up in input context.
+    //   `name`: Optional. The name of the field to be looked up in input
+    //    context. If missing then the |name| field is used.
     FILL_FROM_INPUT_CONTEXT = 4;
 
     // Output is a tensor of length 10 consisting of float values denoting
