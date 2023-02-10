@@ -1264,13 +1264,18 @@ void CommerceHintAgent::FocusedElementChanged(
   if (!ShouldUseDOMBasedHeuristics()) {
     return;
   }
+  auto builder = ukm::builders::Shopping_AddToCartDetection(
+      render_frame()->GetWebFrame()->GetDocument().GetUkmSourceId());
   base::Time before_check = base::Time::Now();
   blink::WebElement element = focused_element;
   if (IsAddToCartButton(element)) {
     add_to_cart_focus_time_ = base::Time::Now();
   }
+  base::TimeDelta execution_time = base::Time::Now() - before_check;
   base::UmaHistogramMicrosecondsTimes("Commerce.Carts.AddToCartButtonDetection",
-                                      base::Time::Now() - before_check);
+                                      execution_time);
+  builder.SetHeuristicsExecutionTime(execution_time.InMicroseconds())
+      .Record(ukm_recorder_.get());
 }
 
 bool CommerceHintAgent::ShouldSkipAddToCartRequest(const GURL& navigation_url,

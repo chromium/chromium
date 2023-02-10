@@ -181,6 +181,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
   using FormSubmittedEntry = ukm::builders::Shopping_FormSubmitted;
   using XHREntry = ukm::builders::Shopping_WillSendRequest;
   using ExtractionEntry = ukm::builders::Shopping_CartExtraction;
+  using AddToCartEntry = ukm::builders::Shopping_AddToCartDetection;
 
   CommerceHintAgentTest() = default;
 
@@ -1742,6 +1743,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
 #endif
   WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
   WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 1);
+  ExpectUKMCount(AddToCartEntry::kEntryName, "HeuristicsExecutionTime", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
@@ -1758,6 +1760,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
 #endif
   WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 0);
   WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 1);
+  ExpectUKMCount(AddToCartEntry::kEntryName, "HeuristicsExecutionTime", 1);
 
   // Focus on an AddToCart button and then send AddToCart requests.
   EXPECT_EQ(nullptr,
@@ -1769,6 +1772,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
 #endif
   WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
   WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 2);
+  ExpectUKMCount(AddToCartEntry::kEntryName, "HeuristicsExecutionTime", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
@@ -1799,6 +1803,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
 #endif
   WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 1);
   WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 3);
+  ExpectUKMCount(AddToCartEntry::kEntryName, "HeuristicsExecutionTime", 3);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsTest,
@@ -1871,6 +1876,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintDOMBasedHeuristicsSkipTest,
 #endif
   WaitForUmaCount("Commerce.Carts.AddToCartByPOST", 2);
   WaitForUmaCount("Commerce.Carts.AddToCartButtonDetection", 0);
+  ExpectUKMCount(AddToCartEntry::kEntryName, "HeuristicsExecutionTime", 0);
 }
 
 }  // namespace

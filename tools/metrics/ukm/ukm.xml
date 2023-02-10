@@ -20057,6 +20057,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.AddToCartDetection">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <summary>
+    Metrics related to DOM-based AddToCart button detection in ChromeCart.
+  </summary>
+  <metric name="HeuristicsExecutionTime">
+    <summary>
+      Logged when DOM-based AddToCart button detection heuristic is executed and
+      records the execution time. This is expressed in microseconds.
+    </summary>
+  </metric>
+</event>
+
 <event name="Shopping.CartExtraction">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
