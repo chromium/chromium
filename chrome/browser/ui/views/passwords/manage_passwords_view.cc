@@ -366,6 +366,7 @@ ManagePasswordsView::CreatePasswordDetailsTitleView() {
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(
           [](ManagePasswordsView* view) {
+            view->SetButtons(ui::DIALOG_BUTTON_NONE);
             view->currently_selected_password_ = absl::nullopt;
             view->RecreateLayout();
           },
