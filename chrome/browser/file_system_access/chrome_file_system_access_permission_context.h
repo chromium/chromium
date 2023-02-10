@@ -143,6 +143,12 @@ class ChromeFileSystemAccessPermissionContext
   };
   Grants GetPermissionGrants(const url::Origin& origin);
 
+  // Revokes read access and/or write access for the given origin
+  // and given file path.
+  void RevokeGrant(const url::Origin& origin,
+                   const base::FilePath& file_path,
+                   PersistedPermissionOptions persisted_status);
+
   // Revokes write access and directory read access for the given origin.
   void RevokeGrants(const url::Origin& origin,
                     PersistedPermissionOptions persisted_status);

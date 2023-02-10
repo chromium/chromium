@@ -1655,6 +1655,31 @@ void ChromeFileSystemAccessPermissionContext::RevokeGrants(
   ScheduleUsageIconUpdate();
 }
 
+void ChromeFileSystemAccessPermissionContext::RevokeGrant(
+    const url::Origin& origin,
+    const base::FilePath& file_path,
+    PersistedPermissionOptions persisted_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto origin_it = origins_.find(origin);
+  if (origin_it == origins_.end()) {
+    return;
+  }
+
+  OriginState& origin_state = origin_it->second;
+  for (auto& grant : origin_state.read_grants) {
+    if (grant.first == file_path) {
+      grant.second->SetStatus(PermissionStatus::ASK, persisted_status);
+    }
+  }
+
+  for (auto& grant : origin_state.write_grants) {
+    if (grant.first == file_path) {
+      grant.second->SetStatus(PermissionStatus::ASK, persisted_status);
+    }
+  }
+  ScheduleUsageIconUpdate();
+}
+
 bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -1380,6 +1380,38 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       PersistedPermission_RevokeGrantByFilePath) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
+  // Revoke active grant by file path, but not persisted permission.
+  permission_context()->RevokeGrant(
+      kTestOrigin, kTestPath,
+      PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
+  auto updated_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kNone);
+  EXPECT_EQ(PermissionStatus::ASK, updated_grant->GetStatus());
+  EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
+
+  auto kTestPath2 = kTestPath.AppendASCII("foo");
+  auto grant2 = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(PermissionStatus::GRANTED, grant2->GetStatus());
+  // Revoke active grant by file path, and reset persisted permission.
+  permission_context()->RevokeGrant(
+      kTestOrigin, kTestPath2,
+      PersistedPermissionOptions::kUpdatePersistedPermission);
+  auto updated_grant2 = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kNone);
+  EXPECT_EQ(PermissionStatus::ASK, updated_grant2->GetStatus());
+  EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath2, HandleType::kFile, GrantType::kRead));
+  EXPECT_FALSE(permission_context()->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath2, HandleType::kFile, GrantType::kWrite));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        PersistedPermission_NotAccessibleIfContentSettingBlock) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
