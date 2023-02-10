@@ -1553,10 +1553,10 @@ int WINAPI wWinMain(HINSTANCE instance,
   if (is_uninstall)
     persistent_histogram_storage.Disable();
 
-  // Check to make sure current system is Win7 or later. If not, log
+  // Check to make sure current system is Win10 or later. If not, log
   // error message and get out.
   if (!InstallUtil::IsOSSupported()) {
-    LOG(ERROR) << "Chrome only supports Windows 7 or later.";
+    LOG(ERROR) << "Chrome only supports Windows 10 or later.";
     installer_state.WriteInstallerResult(installer::OS_NOT_SUPPORTED,
                                          IDS_INSTALL_OS_NOT_SUPPORTED_BASE,
                                          nullptr);
