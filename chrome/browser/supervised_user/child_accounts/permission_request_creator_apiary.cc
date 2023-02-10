@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -38,8 +37,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-const char kPermissionRequestApiPath[] = "people/me/permissionRequests";
 
 const int kNumPermissionRequestRetries = 1;
 
@@ -115,7 +112,7 @@ void PermissionRequestCreatorApiary::CreateURLAccessRequest(
 }
 
 GURL PermissionRequestCreatorApiary::GetApiUrl() const {
-  return kids_management_api::GetURL(kPermissionRequestApiPath);
+  return supervised_user::KidsManagementPermissionRequestsURL();
 }
 
 std::string PermissionRequestCreatorApiary::GetApiScope() const {

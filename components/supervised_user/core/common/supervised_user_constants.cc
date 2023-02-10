@@ -7,6 +7,18 @@
 #include "components/supervised_user/core/common/pref_names.h"
 
 namespace supervised_user {
+namespace {
+
+GURL KidsManagementBaseURL() {
+  return GURL("https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/");
+}
+
+const char kGetFamilyProfileURL[] = "families/mine?alt=json";
+const char kGetFamilyMembersURL[] = "families/mine/members?alt=json";
+const char kPermissionRequestsURL[] = "people/me/permissionRequests";
+const char kClassifyURLRequestURL[] = "people/me:classifyUrl";
+
+}  // namespace
 
 const char kAuthorizationHeaderFormat[] = "Bearer %s";
 const char kCameraMicDisabled[] = "CameraMicDisabled";
@@ -43,5 +55,21 @@ const char* const kCustodianInfoPrefs[] = {
 
 const base::FilePath::CharType kSupervisedUserSettingsFilename[] =
     FILE_PATH_LITERAL("Managed Mode Settings");
+
+GURL KidsManagementGetFamilyProfileURL() {
+  return KidsManagementBaseURL().Resolve(kGetFamilyProfileURL);
+}
+
+GURL KidsManagementGetFamilyMembersURL() {
+  return KidsManagementBaseURL().Resolve(kGetFamilyMembersURL);
+}
+
+GURL KidsManagementPermissionRequestsURL() {
+  return KidsManagementBaseURL().Resolve(kPermissionRequestsURL);
+}
+
+GURL KidsManagementClassifyURLRequestURL() {
+  return KidsManagementBaseURL().Resolve(kClassifyURLRequestURL);
+}
 
 }  // namespace supervised_user

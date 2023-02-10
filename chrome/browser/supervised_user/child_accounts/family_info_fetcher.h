@@ -126,7 +126,7 @@ class FamilyInfoFetcher {
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  std::string request_path_;
+  GURL request_url_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
   std::string access_token_;

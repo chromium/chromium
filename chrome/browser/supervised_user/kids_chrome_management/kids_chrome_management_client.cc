@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -47,7 +46,6 @@ constexpr char kClassifyUrlDataContentType[] =
     "application/x-www-form-urlencoded";
 
 // Constants for ClassifyURL.
-constexpr char kClassifyUrlRequestApiPath[] = "people/me:classifyUrl";
 constexpr char kClassifyUrlOauthConsumerName[] = "kids_url_classifier";
 constexpr char kClassifyUrlDataFormat[] = "url=%s&region_code=%s";
 constexpr char kClassifyUrlAllowed[] = "allowed";
@@ -121,7 +119,7 @@ std::unique_ptr<network::ResourceRequest>
 CreateResourceRequestForUrlClassifier() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url =
-      kids_management_api::GetURL(kClassifyUrlRequestApiPath);
+      supervised_user::KidsManagementClassifyURLRequestURL();
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   return resource_request;

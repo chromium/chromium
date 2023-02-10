@@ -6,6 +6,7 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_
 
 #include "base/files/file_path.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -37,6 +38,12 @@ extern const char* const kCustodianInfoPrefs[10];
 
 // Filenames.
 extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
+
+// URLs for RPCs in the KidsManagement service.
+GURL KidsManagementGetFamilyProfileURL();
+GURL KidsManagementGetFamilyMembersURL();
+GURL KidsManagementPermissionRequestsURL();
+GURL KidsManagementClassifyURLRequestURL();
 
 }  // namespace supervised_user
 

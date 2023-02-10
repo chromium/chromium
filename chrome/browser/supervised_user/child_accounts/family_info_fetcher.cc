@@ -16,7 +16,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -33,8 +32,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
-const char kGetFamilyProfileApiPath[] = "families/mine?alt=json";
-const char kGetFamilyMembersApiPath[] = "families/mine/members?alt=json";
 const int kNumFamilyInfoFetcherRetries = 1;
 
 const char kIdFamily[] = "family";
@@ -81,8 +78,8 @@ std::string LatencyPerStatusKey(KidsExternalFetcherStatus::State status) {
 
 void RecordMetrics(KidsExternalFetcherStatus::State status,
                    base::TimeTicks start_time,
-                   base::StringPiece request_path) {
-  if (request_path != kGetFamilyMembersApiPath) {
+                   const GURL& request_url) {
+  if (request_url != supervised_user::KidsManagementGetFamilyMembersURL()) {
     // Ignore tracing all api calls except for family members.
     return;
   }
@@ -164,12 +161,12 @@ bool FamilyInfoFetcher::StringToRole(
 }
 
 void FamilyInfoFetcher::StartGetFamilyProfile() {
-  request_path_ = kGetFamilyProfileApiPath;
+  request_url_ = supervised_user::KidsManagementGetFamilyProfileURL();
   StartFetchingAccessToken();
 }
 
 void FamilyInfoFetcher::StartGetFamilyMembers() {
-  request_path_ = kGetFamilyMembersApiPath;
+  request_url_ = supervised_user::KidsManagementGetFamilyMembersURL();
   StartFetchingAccessToken();
 }
 
@@ -192,13 +189,11 @@ void FamilyInfoFetcher::OnAccessTokenFetchComplete(
   if (error.state() != GoogleServiceAuthError::NONE) {
     DLOG(WARNING) << "Failed to get an access token: " << error.ToString();
     RecordMetrics(KidsExternalFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR,
-                  simple_url_loader_start_time_, request_path_);
+                  simple_url_loader_start_time_, request_url_);
     consumer_->OnFailure(ErrorCode::kTokenError);
     return;
   }
   access_token_ = access_token_info.token;
-
-  GURL url = kids_management_api::GetURL(request_path_);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("family_info", R"(
@@ -229,7 +224,7 @@ void FamilyInfoFetcher::OnAccessTokenFetchComplete(
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = url;
+  resource_request->url = request_url_;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
@@ -278,7 +273,7 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
     if (primary_account_id.empty()) {
       DLOG(WARNING) << "Primary account removed";
       RecordMetrics(KidsExternalFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR,
-                    simple_url_loader_start_time_, request_path_);
+                    simple_url_loader_start_time_, request_url_);
       consumer_->OnFailure(ErrorCode::kTokenError);
       return;
     }
@@ -292,7 +287,7 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
   if (response_code != net::HTTP_OK) {
     DLOG(WARNING) << "HTTP error " << response_code;
     RecordMetrics(KidsExternalFetcherStatus::State::HTTP_ERROR,
-                  simple_url_loader_start_time_, request_path_);
+                  simple_url_loader_start_time_, request_url_);
     consumer_->OnFailure(ErrorCode::kNetworkError);
     return;
   }
@@ -300,14 +295,15 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
   if (net_error != net::OK) {
     DLOG(WARNING) << "NetError " << net_error;
     RecordMetrics(KidsExternalFetcherStatus::State::HTTP_ERROR,
-                  simple_url_loader_start_time_, request_path_);
+                  simple_url_loader_start_time_, request_url_);
     consumer_->OnFailure(ErrorCode::kNetworkError);
     return;
   }
 
-  if (request_path_ == kGetFamilyProfileApiPath) {
+  if (request_url_ == supervised_user::KidsManagementGetFamilyProfileURL()) {
     FamilyProfileFetched(response_body);
-  } else if (request_path_ == kGetFamilyMembersApiPath) {
+  } else if (request_url_ ==
+             supervised_user::KidsManagementGetFamilyMembersURL()) {
     FamilyMembersFetched(response_body);
   } else {
     NOTREACHED();
@@ -410,7 +406,7 @@ void FamilyInfoFetcher::FamilyMembersFetched(const std::string& response) {
   absl::optional<base::Value> value = base::JSONReader::Read(response);
   if (!value || !value->is_dict()) {
     RecordMetrics(KidsExternalFetcherStatus::State::INVALID_RESPONSE,
-                  simple_url_loader_start_time_, request_path_);
+                  simple_url_loader_start_time_, request_url_);
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
@@ -418,18 +414,18 @@ void FamilyInfoFetcher::FamilyMembersFetched(const std::string& response) {
   const base::Value::List* members_list = dict.FindList(kIdMembers);
   if (!members_list) {
     RecordMetrics(KidsExternalFetcherStatus::State::DATA_ERROR,
-                  simple_url_loader_start_time_, request_path_);
+                  simple_url_loader_start_time_, request_url_);
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   std::vector<FamilyMember> members;
   if (!ParseMembers(*members_list, &members)) {
     RecordMetrics(KidsExternalFetcherStatus::State::DATA_ERROR,
-                  simple_url_loader_start_time_, request_path_);
+                  simple_url_loader_start_time_, request_url_);
     consumer_->OnFailure(ErrorCode::kServiceError);
     return;
   }
   RecordMetrics(KidsExternalFetcherStatus::State::NO_ERROR,
-                simple_url_loader_start_time_, request_path_);
+                simple_url_loader_start_time_, request_url_);
   consumer_->OnGetFamilyMembersSuccess(members);
 }
