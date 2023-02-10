@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_simulator.h"
+#include "content/browser/attribution_reporting/attribution_interop_runner.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -37,12 +37,12 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
+#include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
-#include "content/browser/attribution_reporting/attribution_simulator_parser.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -369,7 +369,7 @@ class AttributionEventHandler : public AttributionObserver {
 
 }  // namespace
 
-base::expected<base::Value::Dict, std::string> RunAttributionSimulation(
+base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
     base::Value::Dict input,
     const AttributionConfig& config) {
   // Prerequisites for using an environment with mock time.
@@ -378,7 +378,7 @@ base::expected<base::Value::Dict, std::string> RunAttributionSimulation(
   TestBrowserContext browser_context;
   const base::Time time_origin = base::Time::Now();
 
-  auto events = ParseAttributionSimulationInput(std::move(input), time_origin);
+  auto events = ParseAttributionInteropInput(std::move(input), time_origin);
   if (!events.has_value()) {
     return base::unexpected(events.error());
   }

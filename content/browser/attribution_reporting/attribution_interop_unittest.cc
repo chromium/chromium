@@ -15,8 +15,8 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_simulator.h"
-#include "content/browser/attribution_reporting/attribution_simulator_parser.h"
+#include "content/browser/attribution_reporting/attribution_interop_parser.h"
+#include "content/browser/attribution_reporting/attribution_interop_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -94,7 +94,7 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   ASSERT_TRUE(input && input->is_dict());
 
   auto actual_output =
-      RunAttributionSimulation(std::move(*input).TakeDict(), config);
+      RunAttributionInteropSimulation(std::move(*input).TakeDict(), config);
   ASSERT_TRUE(actual_output.has_value()) << actual_output.error();
 
   absl::optional<base::Value> expected_output = dict.Extract("output");

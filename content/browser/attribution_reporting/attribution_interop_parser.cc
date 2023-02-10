@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_simulator_parser.h"
+#include "content/browser/attribution_reporting/attribution_interop_parser.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -44,22 +44,18 @@ constexpr char kResponseKey[] = "response";
 constexpr char kResponsesKey[] = "responses";
 constexpr char kTimestampKey[] = "timestamp";
 
-class AttributionSimulatorInputParser {
+class AttributionInteropParser {
  public:
-  explicit AttributionSimulatorInputParser(
-      base::Time offset_time = base::Time())
+  explicit AttributionInteropParser(base::Time offset_time = base::Time())
       : offset_time_(offset_time) {}
 
-  ~AttributionSimulatorInputParser() = default;
+  ~AttributionInteropParser() = default;
 
-  AttributionSimulatorInputParser(const AttributionSimulatorInputParser&) =
-      delete;
-  AttributionSimulatorInputParser(AttributionSimulatorInputParser&&) = delete;
+  AttributionInteropParser(const AttributionInteropParser&) = delete;
+  AttributionInteropParser(AttributionInteropParser&&) = delete;
 
-  AttributionSimulatorInputParser& operator=(
-      const AttributionSimulatorInputParser&) = delete;
-  AttributionSimulatorInputParser& operator=(
-      AttributionSimulatorInputParser&&) = delete;
+  AttributionInteropParser& operator=(const AttributionInteropParser&) = delete;
+  AttributionInteropParser& operator=(AttributionInteropParser&&) = delete;
 
   base::expected<AttributionSimulationEvents, std::string> ParseInput(
       base::Value::Dict input) && {
@@ -534,17 +530,16 @@ class AttributionSimulatorInputParser {
 }  // namespace
 
 base::expected<AttributionSimulationEvents, std::string>
-ParseAttributionSimulationInput(base::Value::Dict input,
-                                const base::Time offset_time) {
-  return AttributionSimulatorInputParser(offset_time)
-      .ParseInput(std::move(input));
+ParseAttributionInteropInput(base::Value::Dict input,
+                             const base::Time offset_time) {
+  return AttributionInteropParser(offset_time).ParseInput(std::move(input));
 }
 
 base::expected<AttributionConfig, std::string> ParseAttributionConfig(
     const base::Value::Dict& dict) {
   AttributionConfig config;
-  std::string error = AttributionSimulatorInputParser().ParseConfig(
-      dict, config, /*required=*/true);
+  std::string error =
+      AttributionInteropParser().ParseConfig(dict, config, /*required=*/true);
   if (!error.empty()) {
     return base::unexpected(std::move(error));
   }
@@ -553,8 +548,8 @@ base::expected<AttributionConfig, std::string> ParseAttributionConfig(
 
 std::string MergeAttributionConfig(const base::Value::Dict& dict,
                                    AttributionConfig& config) {
-  return AttributionSimulatorInputParser().ParseConfig(dict, config,
-                                                       /*required=*/false);
+  return AttributionInteropParser().ParseConfig(dict, config,
+                                                /*required=*/false);
 }
 
 }  // namespace content

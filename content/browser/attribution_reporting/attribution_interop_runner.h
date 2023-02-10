@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTEROP_RUNNER_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTEROP_RUNNER_H_
 
 #include <string>
 
@@ -15,12 +15,11 @@ namespace content {
 struct AttributionConfig;
 
 // Simulates the Attribution Reporting API for a single user on sources and
-// triggers specified in `input`. Returns the generated reports, if any, as a
-// JSON document.
-base::expected<base::Value::Dict, std::string> RunAttributionSimulation(
+// triggers specified in `input`. Returns the generated reports.
+base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
     base::Value::Dict input,
     const AttributionConfig&);
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SIMULATOR_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTEROP_RUNNER_H_

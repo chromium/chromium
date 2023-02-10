@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_simulator_parser.h"
+#include "content/browser/attribution_reporting/attribution_interop_parser.h"
 
 #include <ostream>
 #include <string>
@@ -105,7 +105,7 @@ using ::attribution_reporting::SuitableOrigin;
 // Pick an arbitrary offset time to test correct handling.
 constexpr base::Time kOffsetTime = base::Time::UnixEpoch() + base::Days(5);
 
-TEST(AttributionSimulatorParserTest, EmptyInputParses) {
+TEST(AttributionInteropParserTest, EmptyInputParses) {
   const char* const kTestCases[] = {
       R"json({})json",
       R"json({"sources":[]})json",
@@ -114,14 +114,13 @@ TEST(AttributionSimulatorParserTest, EmptyInputParses) {
 
   for (const char* json : kTestCases) {
     base::Value::Dict value = base::test::ParseJsonDict(json);
-    auto result =
-        ParseAttributionSimulationInput(std::move(value), kOffsetTime);
+    auto result = ParseAttributionInteropInput(std::move(value), kOffsetTime);
     ASSERT_TRUE(result.has_value()) << json;
     EXPECT_THAT(*result, IsEmpty()) << json;
   }
 }
 
-TEST(AttributionSimulatorParserTest, ValidSourceParses) {
+TEST(AttributionInteropParserTest, ValidSourceParses) {
   constexpr char kJson[] = R"json({"sources": [
     {
       "timestamp": "1643235574123",
@@ -160,7 +159,7 @@ TEST(AttributionSimulatorParserTest, ValidSourceParses) {
 
   base::Value::Dict value = base::test::ParseJsonDict(kJson);
 
-  auto result = ParseAttributionSimulationInput(std::move(value), kOffsetTime);
+  auto result = ParseAttributionInteropInput(std::move(value), kOffsetTime);
 
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_EQ(result->size(), 2u);
@@ -198,7 +197,7 @@ TEST(AttributionSimulatorParserTest, ValidSourceParses) {
   EXPECT_FALSE(source2->debug_permission);
 }
 
-TEST(AttributionSimulatorParserTest, ValidTriggerParses) {
+TEST(AttributionInteropParserTest, ValidTriggerParses) {
   constexpr char kJson[] = R"json({"triggers": [
     {
       "timestamp": "1643235575123",
@@ -218,7 +217,7 @@ TEST(AttributionSimulatorParserTest, ValidTriggerParses) {
 
   base::Value::Dict value = base::test::ParseJsonDict(kJson);
 
-  auto result = ParseAttributionSimulationInput(std::move(value), kOffsetTime);
+  auto result = ParseAttributionInteropInput(std::move(value), kOffsetTime);
 
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result->size(), 1u);
@@ -242,14 +241,14 @@ struct ParseErrorTestCase {
   const char* json;
 };
 
-class AttributionSimulatorParserInputErrorTest
+class AttributionInteropParserInputErrorTest
     : public testing::TestWithParam<ParseErrorTestCase> {};
 
-TEST_P(AttributionSimulatorParserInputErrorTest, InvalidInputFails) {
+TEST_P(AttributionInteropParserInputErrorTest, InvalidInputFails) {
   const ParseErrorTestCase& test_case = GetParam();
 
   base::Value::Dict value = base::test::ParseJsonDict(test_case.json);
-  auto result = ParseAttributionSimulationInput(std::move(value), kOffsetTime);
+  auto result = ParseAttributionInteropInput(std::move(value), kOffsetTime);
   ASSERT_FALSE(result.has_value());
   EXPECT_THAT(result.error(), HasSubstr(test_case.expected_failure_substr));
 }
@@ -541,11 +540,11 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     },
 };
 
-INSTANTIATE_TEST_SUITE_P(AttributionSimulatorParserInvalidInputs,
-                         AttributionSimulatorParserInputErrorTest,
+INSTANTIATE_TEST_SUITE_P(AttributionInteropParserInvalidInputs,
+                         AttributionInteropParserInputErrorTest,
                          ::testing::ValuesIn(kParseErrorTestCases));
 
-TEST(AttributionSimulatorParserTest, ValidConfig) {
+TEST(AttributionInteropParserTest, ValidConfig) {
   const struct {
     const char* json;
     bool required;
@@ -667,7 +666,7 @@ TEST(AttributionSimulatorParserTest, ValidConfig) {
   }
 }
 
-TEST(AttributionSimulatorParserTest, InvalidConfigPositiveIntegers) {
+TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
   const char* const kFields[] = {
       "max_sources_per_origin",
       "max_destinations_per_source_site_reporting_origin",
@@ -718,7 +717,7 @@ TEST(AttributionSimulatorParserTest, InvalidConfigPositiveIntegers) {
   }
 }
 
-TEST(AttributionSimulatorParserTest, InvalidConfigNonNegativeIntegers) {
+TEST(AttributionInteropParserTest, InvalidConfigNonNegativeIntegers) {
   const char* const kFields[] = {
       "source_event_id_cardinality",
       "aggregatable_report_min_delay",
@@ -757,7 +756,7 @@ TEST(AttributionSimulatorParserTest, InvalidConfigNonNegativeIntegers) {
   }
 }
 
-TEST(AttributionSimulatorParserTest, InvalidConfigRandomizedResponseRates) {
+TEST(AttributionInteropParserTest, InvalidConfigRandomizedResponseRates) {
   const char* const kFields[] = {
       "navigation_source_randomized_response_rate",
       "event_source_randomized_response_rate",
