@@ -74,7 +74,7 @@ gfx::ProtectedVideoType ProtectedVideoTypeFromMetadata(
 VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     const VideoFrame& frame,
     GLuint target,
-    gfx::BufferFormat buffer_formats[VideoFrame::kMaxPlanes],
+    viz::SharedImageFormat si_formats[VideoFrame::kMaxPlanes],
     bool use_stream_video_draw_quad) {
   const VideoPixelFormat format = frame.format();
   const size_t num_textures = frame.NumTextures();
@@ -87,7 +87,8 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     absl::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
     DCHECK(buffer_format.has_value());
-    buffer_formats[0] = buffer_format.value();
+    si_formats[0] = viz::SharedImageFormat::SinglePlane(
+        viz::GetResourceFormat(buffer_format.value()));
     return VideoFrameResourceType::RGB;
   }
 
@@ -102,10 +103,10 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       // NOTE: ABGR == RGBA and ARGB == BGRA, they differ only byte order
       // See: VideoFormat function in gpu_memory_buffer_video_frame_pool
       // https://cs.chromium.org/chromium/src/media/video/gpu_memory_buffer_video_frame_pool.cc?type=cs&g=0&l=281
-      buffer_formats[0] =
+      si_formats[0] =
           (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR)
-              ? gfx::BufferFormat::RGBA_8888
-              : gfx::BufferFormat::BGRA_8888;
+              ? viz::SinglePlaneFormat::kRGBA_8888
+              : viz::SinglePlaneFormat::kBGRA_8888;
 
       switch (target) {
         case GL_TEXTURE_EXTERNAL_OES:
@@ -129,15 +130,15 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       break;
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
-      buffer_formats[0] = (format == PIXEL_FORMAT_XR30)
-                              ? gfx::BufferFormat::BGRA_1010102
-                              : gfx::BufferFormat::RGBA_1010102;
+      si_formats[0] = (format == PIXEL_FORMAT_XR30)
+                          ? viz::SinglePlaneFormat::kBGRA_1010102
+                          : viz::SinglePlaneFormat::kRGBA_1010102;
       return VideoFrameResourceType::RGB;
     case PIXEL_FORMAT_I420:
       DCHECK_EQ(num_textures, 3u);
-      buffer_formats[0] = gfx::BufferFormat::R_8;
-      buffer_formats[1] = gfx::BufferFormat::R_8;
-      buffer_formats[2] = gfx::BufferFormat::R_8;
+      si_formats[0] = viz::SinglePlaneFormat::kR_8;
+      si_formats[1] = viz::SinglePlaneFormat::kR_8;
+      si_formats[2] = viz::SinglePlaneFormat::kR_8;
       return VideoFrameResourceType::YUV;
 
     case PIXEL_FORMAT_NV12:
@@ -154,33 +155,33 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
              target == GL_TEXTURE_2D || target == GL_TEXTURE_RECTANGLE_ARB)
           << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
       DCHECK_EQ(num_textures, 2u);
-      buffer_formats[0] = gfx::BufferFormat::R_8;
-      buffer_formats[1] = gfx::BufferFormat::RG_88;
+      si_formats[0] = viz::SinglePlaneFormat::kR_8;
+      si_formats[1] = viz::SinglePlaneFormat::kRG_88;
       return VideoFrameResourceType::YUV;
 
     case PIXEL_FORMAT_NV12A:
       DCHECK_EQ(num_textures, 3u);
-      buffer_formats[0] = gfx::BufferFormat::R_8;
-      buffer_formats[1] = gfx::BufferFormat::RG_88;
-      buffer_formats[2] = gfx::BufferFormat::R_8;
+      si_formats[0] = viz::SinglePlaneFormat::kR_8;
+      si_formats[1] = viz::SinglePlaneFormat::kRG_88;
+      si_formats[2] = viz::SinglePlaneFormat::kR_8;
       return VideoFrameResourceType::YUVA;
 
     case PIXEL_FORMAT_P016LE:
       DCHECK_EQ(num_textures, 2u);
       // TODO(mcasas): Support other formats such as e.g. P012.
-      buffer_formats[0] = gfx::BufferFormat::R_16;
+      si_formats[0] = viz::SinglePlaneFormat::kR_16;
       // TODO(https://crbug.com/1233228): This needs to be
       // gfx::BufferFormat::RG_1616.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      buffer_formats[1] = gfx::BufferFormat::RG_1616;
+      si_formats[1] = viz::SinglePlaneFormat::kRG_1616;
 #else
-      buffer_formats[1] = gfx::BufferFormat::RG_88;
+      si_formats[1] = viz::SinglePlaneFormat::kRG_88;
 #endif
       return VideoFrameResourceType::YUV;
 
     case PIXEL_FORMAT_RGBAF16:
       DCHECK_EQ(num_textures, 1u);
-      buffer_formats[0] = gfx::BufferFormat::RGBA_F16;
+      si_formats[0] = viz::SinglePlaneFormat::kRGBA_F16;
       return VideoFrameResourceType::RGBA;
 
     case PIXEL_FORMAT_UYVY:
@@ -949,9 +950,9 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
   if (copy_required)
     target = GL_TEXTURE_2D;
 
-  gfx::BufferFormat buffer_formats[VideoFrame::kMaxPlanes];
+  viz::SharedImageFormat si_formats[VideoFrame::kMaxPlanes];
   external_resources.type = ExternalResourceTypeForHardwarePlanes(
-      *video_frame, target, buffer_formats, use_stream_video_draw_quad_);
+      *video_frame, target, si_formats, use_stream_video_draw_quad_);
   external_resources.bits_per_channel = video_frame->BitDepth();
 
   if (external_resources.type == VideoFrameResourceType::NONE) {
@@ -984,8 +985,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
       const gfx::Size plane_size(width, height);
       auto transfer_resource = viz::TransferableResource::MakeGpu(
           mailbox_holder.mailbox, GL_LINEAR, mailbox_holder.texture_target,
-          mailbox_holder.sync_token, plane_size,
-          viz::GetResourceFormat(buffer_formats[i]),
+          mailbox_holder.sync_token, plane_size, si_formats[i],
           video_frame->metadata().allow_overlay);
       transfer_resource.color_space = resource_color_space;
       transfer_resource.color_space_when_sampled =
