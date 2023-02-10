@@ -7,177 +7,14 @@ import 'chrome://settings/settings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AutofillManagerImpl, CountryDetailManager, CountryDetailManagerImpl, CrInputElement, CrTextareaElement, SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsAutofillSectionElement} from 'chrome://settings/lazy_load.js';
+import {CountryDetailManagerImpl, CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, TestAutofillManager} from './passwords_and_autofill_fake_data.js';
+import {createAutofillSection, initiateRemoving, initiateEditing, CountryDetailManagerTestImpl, createAddressDialog, createRemoveAddressDialog, expectEvent} from './autofill_section_test_utils.js';
 // clang-format on
-
-/**
- * Test implementation.
- */
-class CountryDetailManagerTestImpl implements CountryDetailManager {
-  getCountryList() {
-    return new Promise<chrome.autofillPrivate.CountryEntry[]>(function(
-        resolve) {
-      resolve([
-        {name: 'United States', countryCode: 'US'},  // Default test country.
-        {name: 'Israel', countryCode: 'IL'},
-        {name: 'United Kingdom', countryCode: 'GB'},
-      ]);
-    });
-  }
-
-  getAddressFormat(countryCode: string) {
-    return chrome.autofillPrivate.getAddressComponents(countryCode);
-  }
-}
-
-
-/**
- * Resolves the promise after the element fires the expected event. |causeEvent|
- * is called after adding a listener to make sure that the event is captured.
- */
-function expectEvent(
-    element: Element, eventName: string, causeEvent: () => void) {
-  const promise = eventToPromise(eventName, element);
-  causeEvent();
-  return promise;
-}
-
-/**
- * Creates the autofill section for the given list.
- */
-async function createAutofillSection(
-    addresses: chrome.autofillPrivate.AddressEntry[],
-    prefValues: any): Promise<SettingsAutofillSectionElement> {
-  // Override the AutofillManagerImpl for testing.
-  const autofillManager = new TestAutofillManager();
-  autofillManager.data.addresses = addresses;
-  AutofillManagerImpl.setInstance(autofillManager);
-
-  const section = document.createElement('settings-autofill-section');
-  section.prefs = {autofill: prefValues};
-  document.body.appendChild(section);
-  await autofillManager.whenCalled('getAddressList');
-
-  return section;
-}
-
-/**
- * Creates the Edit Address dialog and fulfills the promise when the dialog
- * has actually opened.
- */
-function createAddressDialog(address: chrome.autofillPrivate.AddressEntry):
-    Promise<SettingsAddressEditDialogElement> {
-  return new Promise(function(resolve) {
-    const section = document.createElement('settings-address-edit-dialog');
-    section.address = address;
-    document.body.appendChild(section);
-    eventToPromise('on-update-address-wrapper', section).then(function() {
-      resolve(section);
-    });
-  });
-}
-
-/**
- * Opens and returns the address edit dialog element for specified
- * by |index| address in the |section| list.
- */
-async function initiateEditing(
-    section: SettingsAutofillSectionElement,
-    index: number): Promise<SettingsAddressEditDialogElement> {
-  let dialog =
-      section.shadowRoot!.querySelector<SettingsAddressEditDialogElement>(
-          'settings-address-edit-dialog');
-  assertFalse(!!dialog, 'stale dialog found');
-
-  const addressElements = section.$.addressList.children;
-
-  assertGT(
-      addressElements.length, index,
-      'index is too high, not enough addresses in the list');
-
-  const menu =
-      addressElements[index]!.querySelector<HTMLElement>('#addressMenu');
-
-  assertTrue(!!menu, 'the row element should contain the menu element');
-
-  // Open menu and click the Edit button.
-  menu.click();
-  section.$.menuEditAddress.click();
-
-  flush();
-
-  dialog = section.shadowRoot!.querySelector<SettingsAddressEditDialogElement>(
-      'settings-address-edit-dialog');
-
-  assertTrue(!!dialog, 'the dialog element should be in the section subtree');
-
-  await eventToPromise('on-update-address-wrapper', dialog);
-  return dialog;
-}
-
-/**
- * Opens and returns the remove confirmation dialog element for specified
- * by |index| address in the |section| list.
- */
-function initiateRemoving(
-    section: SettingsAutofillSectionElement,
-    index: number): SettingsAddressRemoveConfirmationDialogElement {
-  let dialog =
-      section.shadowRoot!
-          .querySelector<SettingsAddressRemoveConfirmationDialogElement>(
-              'settings-address-remove-confirmation-dialog');
-  assertFalse(!!dialog, 'stale dialog found');
-
-  const addressElements = section.$.addressList.children;
-
-  assertGT(
-      addressElements.length, index,
-      'index is too high, not enough addresses in the list');
-
-  const menu =
-      addressElements[index]!.querySelector<HTMLElement>('#addressMenu');
-
-  assertTrue(!!menu, 'the row element should contain the menu element');
-
-  // Open menu and click the Delete button.
-  menu.click();
-  section.$.menuRemoveAddress.click();
-
-  flush();
-
-  dialog = section.shadowRoot!
-               .querySelector<SettingsAddressRemoveConfirmationDialogElement>(
-                   'settings-address-remove-confirmation-dialog');
-
-  assertTrue(!!dialog, 'the dialog element should be in the section subtree');
-
-  return dialog;
-}
-
-/**
- * Creates the remove address dialog. Simulate clicking "Remove" button in
- * autofill section.
- */
-async function createRemoveAddressDialog(autofillManager: TestAutofillManager):
-    Promise<SettingsAddressRemoveConfirmationDialogElement> {
-  const address = createAddressEntry();
-
-  // Override the AutofillManagerImpl for testing.
-  autofillManager.data.addresses = [address];
-  AutofillManagerImpl.setInstance(autofillManager);
-
-  document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  const section = document.createElement('settings-autofill-section');
-  document.body.appendChild(section);
-  await flushTasks();
-
-  return initiateRemoving(section, 0);
-}
 
 suite('AutofillSectionUiTest', function() {
   test('testAutofillExtensionIndicator', function() {
@@ -459,25 +296,37 @@ suite('AutofillSectionAddressTests', function() {
   test('verifyPhoneAndEmailAreSaved', function() {
     const address = createEmptyAddressEntry();
     return createAddressDialog(address).then(function(dialog) {
-      assertEquals('', dialog.$.phoneInput.value);
+      const rows = dialog.$.dialog.querySelectorAll('.address-row');
+      assertGT(rows.length, 0, 'dialog should contain address rows');
+
+      const lastRow = rows[rows.length - 1]!;
+      const phoneInput =
+          lastRow.querySelector<CrInputElement>('cr-input:nth-of-type(1)');
+      const emailInput =
+          lastRow.querySelector<CrInputElement>('cr-input:nth-of-type(2)');
+
+      assertTrue(!!phoneInput, 'phone element should be the first cr-input');
+      assertTrue(!!emailInput, 'email element should be the second cr-input');
+
+      assertEquals(undefined, phoneInput.value);
       assertFalse(!!(address.phoneNumbers && address.phoneNumbers[0]));
 
-      assertEquals('', dialog.$.emailInput.value);
+      assertEquals(undefined, emailInput.value);
       assertFalse(!!(address.emailAddresses && address.emailAddresses[0]));
 
       const phoneNumber = '(555) 555-5555';
       const emailAddress = 'no-reply@chromium.org';
 
-      dialog.$.phoneInput.value = phoneNumber;
-      dialog.$.emailInput.value = emailAddress;
+      phoneInput.value = phoneNumber;
+      emailInput.value = emailAddress;
 
       return expectEvent(dialog, 'save-address', function() {
                dialog.$.saveButton.click();
              }).then(function() {
-        assertEquals(phoneNumber, dialog.$.phoneInput.value);
+        assertEquals(phoneNumber, phoneInput.value);
         assertEquals(phoneNumber, address.phoneNumbers![0]);
 
-        assertEquals(emailAddress, dialog.$.emailInput.value);
+        assertEquals(emailAddress, emailInput.value);
         assertEquals(emailAddress, address.emailAddresses![0]);
       });
     });
@@ -513,17 +362,29 @@ suite('AutofillSectionAddressTests', function() {
     address.emailAddresses = [emailAddress];
 
     return createAddressDialog(address).then(function(dialog) {
-      assertEquals(phoneNumber, dialog.$.phoneInput.value);
-      assertEquals(emailAddress, dialog.$.emailInput.value);
+      const rows = dialog.$.dialog.querySelectorAll('.address-row');
+      assertGT(rows.length, 0, 'dialog should contain address rows');
 
-      dialog.$.phoneInput.value = '';
-      dialog.$.emailInput.value = '';
+      const lastRow = rows[rows.length - 1]!;
+      const phoneInput =
+          lastRow.querySelector<CrInputElement>('cr-input:nth-of-type(1)');
+      const emailInput =
+          lastRow.querySelector<CrInputElement>('cr-input:nth-of-type(2)');
+
+      assertTrue(!!phoneInput, 'phone element should be the first cr-input');
+      assertTrue(!!emailInput, 'email element should be the second cr-input');
+
+      assertEquals(phoneNumber, phoneInput.value);
+      assertEquals(emailAddress, emailInput.value);
+
+      phoneInput.value = '';
+      emailInput.value = '';
 
       return expectEvent(dialog, 'save-address', function() {
                dialog.$.saveButton.click();
              }).then(function() {
-        assertEquals(0, address.phoneNumbers!.length);
-        assertEquals(0, address.emailAddresses!.length);
+        assertEquals(undefined, address.phoneNumbers);
+        assertEquals(undefined, address.emailAddresses);
       });
     });
   });

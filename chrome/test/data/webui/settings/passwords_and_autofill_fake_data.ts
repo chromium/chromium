@@ -238,7 +238,7 @@ export function makePasswordCheckStatus(
 /**
  * Creates a new random GUID for testing.
  */
-function makeGuid(): string {
+export function makeGuid(): string {
   return patternMaker('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 16);
 }
 

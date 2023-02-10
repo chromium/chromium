@@ -148,6 +148,9 @@ namespace autofillPrivate {
     // A hint for the UI regarding whether the input is likely to be long.
     boolean isLongField;
 
+    // Whether this component is required or not.
+    boolean isRequired;
+
     // A placeholder for the text field to be used when the user has not yet
     // input a value for the field.
     DOMString? placeholder;

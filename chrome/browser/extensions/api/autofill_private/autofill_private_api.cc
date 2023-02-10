@@ -56,6 +56,7 @@ constexpr auto kUserVerified = autofill::VerificationStatus::kUserVerified;
 constexpr char kFieldTypeKey[] = "field";
 constexpr char kFieldLengthKey[] = "isLongField";
 constexpr char kFieldNameKey[] = "fieldName";
+constexpr char kFieldRequired[] = "isRequired";
 
 // Field names for the address components.
 constexpr char kFullNameField[] = "FULL_NAME";
@@ -107,6 +108,7 @@ base::Value::Dict AddressUiComponentAsValueMap(
   info.Set(kFieldLengthKey,
            address_ui_component.length_hint ==
                i18n::addressinput::AddressUiComponent::HINT_LONG);
+  info.Set(kFieldRequired, address_ui_component.is_required);
   return info;
 }
 

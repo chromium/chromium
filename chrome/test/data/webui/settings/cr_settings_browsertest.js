@@ -895,6 +895,7 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['CollapseRadioButton', 'collapse_radio_button_tests.js'],
  ['ControlledButton', 'controlled_button_tests.js'],
  ['ControlledRadioButton', 'controlled_radio_button_tests.js'],
+ ['AutofillAddressValidation', 'autofill_section_address_validation_test.js'],
  ['DoNotTrackToggle', 'do_not_track_toggle_test.js'],
  ['DownloadsPage', 'downloads_page_test.js'],
  ['DropdownMenu', 'dropdown_menu_tests.js'],

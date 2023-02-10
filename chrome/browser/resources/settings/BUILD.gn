@@ -280,6 +280,7 @@ build_webui("build") {
     "about_page/about_page_browser_proxy.ts",
     "appearance_page/appearance_browser_proxy.ts",
     "appearance_page/fonts_browser_proxy.ts",
+    "autofill_page/address_edit_dialog_components.ts",
     "autofill_page/autofill_manager_proxy.ts",
     "autofill_page/merge_passwords_store_copies_mixin.ts",
     "autofill_page/user_util_mixin.ts",

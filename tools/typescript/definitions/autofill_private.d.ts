@@ -71,6 +71,7 @@ declare global {
         field: AddressField;
         fieldName: string;
         isLongField: boolean;
+        isRequired: boolean;
         placeholder?: string;
       }
 

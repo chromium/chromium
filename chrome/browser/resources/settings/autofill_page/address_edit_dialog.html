@@ -47,11 +47,27 @@
         }
       }
 
-      #accountSourceNotice {
+      #notices {
+        display: none;
         margin-bottom: 4px;
         margin-top: 20px;
         white-space: initial;
       }
+
+      #notices:has(:not([hidden])) {
+        display: block;
+      }
+
+      #validationError {
+        color: var(--google-red-600);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #validationError {
+          color: var(--google-red-300);
+        }
+      }
+
     </style>
     <cr-dialog id="dialog" close-text="$i18n{close}">
       <div slot="title">[[title_]]</div>
@@ -60,10 +76,10 @@
           <label id="select-label" class="cr-form-field-label">
             $i18n{addressCountry}
           </label>
-          <select class="md-select" aria-labelledby="select-label"
+          <select id="country" class="md-select" aria-labelledby="select-label"
               value="[[countryCode_]]" on-change="onCountryChange_"
               autofocus>
-            <option value=""></option>
+            <option value="" hidden="[[isAccountAddress_]]"></option>
             <template is="dom-repeat" items="[[countries_]]">
               <option value="[[getCode_(item)]]"
                   disabled="[[isDivision_(item)]]">
@@ -72,39 +88,39 @@
             </template>
           </select>
         </div>
-        <template is="dom-repeat" items="[[addressWrapper_]]">
+        <template is="dom-repeat" items="[[components_]]">
           <div class="address-row">
             <template is="dom-repeat" items="[[item]]">
-              <template is="dom-if" if="[[item.isTextArea]]">
-                <cr-textarea label="[[item.component.fieldName]]"
-                    value="{{item.value}}" on-value-changed="updateCanSave_"
-                    class$="address-column [[long_(item)]]"
-                    spellcheck="false" maxlength="1000">
+              <template is="dom-if" if="[[item.isTextarea]]">
+                <cr-textarea label="[[item.label]]"
+                    value="{{item.value}}"
+                    class$="address-column [[item.additionalClassName]]"
+                    spellcheck="false" maxlength="1000"
+                    required="[[item.isRequired]]"
+                    invalid="[[isVisuallyInvalid_(item.isValidatable,
+                                                  item.isValid)]]">
                 </cr-textarea>
               </template>
-              <template is="dom-if" if="[[!item.isTextArea]]">
-                <cr-input type="text" label="[[item.component.fieldName]]"
+              <template is="dom-if" if="[[!item.isTextarea]]">
+                <cr-input type="text" label="[[item.label]]"
                     value="{{item.value}}" spellcheck="false"
-                    on-value-changed="updateCanSave_" maxlength="1000"
-                    class$="address-column [[long_(item)]]">
+                    maxlength="1000"
+                    class$="address-column [[item.additionalClassName]]"
+                    required="[[item.isRequired]]"
+                    invalid="[[isVisuallyInvalid_(item.isValidatable,
+                                                  item.isValid)]]">
                 </cr-input>
               </template>
             </template>
           </div>
         </template>
-        <div class="address-row">
-          <cr-input id="phoneInput" type="text" label="$i18n{addressPhone}"
-              class="address-column last-row" on-value-changed="updateCanSave_"
-              value="{{phoneNumber_}}" spellcheck="false" maxlength="1000">
-          </cr-input>
-          <cr-input id="emailInput" type="text" label="$i18n{addressEmail}"
-              on-value-changed="updateCanSave_" value="{{email_}}"
-              class="address-column long last-row" spellcheck="false"
-              maxlength="1000">
-          </cr-input>
-        </div>
-        <div id="accountSourceNotice" hidden="[[!isAccountAddress_]]">
-          [[i18n('editAccountAddressSourceNotice', accountInfo.email)]]
+        <div id="notices">
+          <div id="validationError" hidden="[[!validationError_]]">
+            [[validationError_]]
+          </div>
+          <div id="accountSourceNotice" hidden="[[!isAccountAddress_]]">
+            [[i18n('editAccountAddressSourceNotice', accountInfo.email)]]
+          </div>
         </div>
       </div>
       <div slot="button-container">

@@ -208,6 +208,12 @@
   <message name="IDS_AUTOFILL_DELETE_SYNC_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before the address deletion.">
     This address will be deleted from this and your other signed-in devices
   </message>
+  <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR" desc="The form error message shown to the user in case of a single required field missing.">
+    A required field is empty. Fill it before saving.
+  </message>
+  <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELDS_FORM_ERROR" desc="The form error message shown to the user in case of multiple required fields missing.">
+    Some required fields are empty. Fill them before saving.
+  </message>
   <if expr="not is_ios">
     <then>
       <message name="IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE" desc="Title for the Autofill settings page that allows user to manage their list of saved addresses and Autofill preferences for addresses. Sentence-Cased." formatter_data="android_java">
