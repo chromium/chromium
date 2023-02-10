@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -158,7 +159,9 @@ bool UpdateMimeInfoDatabase(bool install,
   return success;
 }
 
-void UninstallMimeInfoOnLinux(const AppId& app_id, Profile* profile) {
+void UninstallMimeInfoOnLinux(const AppId& app_id,
+                              Profile* profile,
+                              base::OnceClosure on_done) {
   base::FilePath filename =
       shell_integration_linux::GetMimeTypesRegistrationFilename(
           profile->GetPath(), app_id);
@@ -171,7 +174,25 @@ void UninstallMimeInfoOnLinux(const AppId& app_id, Profile* profile) {
       FROM_HERE,
       base::BindOnce(base::BindOnce(&UpdateMimeInfoDatabase, /*install=*/false),
                      std::move(filename), std::move(file_contents)),
-      base::BindOnce(&OnMimeInfoDatabaseUpdated, /*install=*/false));
+      base::BindOnce(&OnMimeInfoDatabaseUpdated, /*install=*/false)
+          .Then(std::move(on_done)));
+}
+
+void OnMimeInfoOnLinuxUninstalled(const AppId& app_id,
+                                  Profile* profile,
+                                  ResultCallback callback) {
+  // If this was triggered as part of the uninstallation process, nothing more
+  // is needed. Uninstalling already cleans up shortcuts (and thus, file
+  // handlers).
+  auto* provider = WebAppProvider::GetForWebApps(profile);
+  if (provider->registrar_unsafe().IsUninstalling(app_id)) {
+    std::move(callback).Run(Result::kOk);
+    return;
+  }
+  DCHECK(provider->registrar_unsafe().IsInstalled(app_id));
+
+  // Otherwise, simply recreate the .desktop file.
+  UpdateFileHandlerRegistrationInOs(app_id, profile, std::move(callback));
 }
 
 }  // namespace
@@ -191,33 +212,23 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const apps::FileHandlers& file_handlers,
                                 ResultCallback callback) {
   DCHECK(!file_handlers.empty());
-  InstallMimeInfoOnLinux(app_id, profile, file_handlers);
-
-  UpdateFileHandlerRegistrationInOs(app_id, profile, std::move(callback));
+  InstallMimeInfoOnLinux(app_id, profile, file_handlers,
+                         base::BindOnce(UpdateFileHandlerRegistrationInOs,
+                                        app_id, profile, std::move(callback)));
 }
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,
                                   Profile* profile,
                                   ResultCallback callback) {
-  UninstallMimeInfoOnLinux(app_id, profile);
-
-  // If this was triggered as part of the uninstallation process, nothing more
-  // is needed. Uninstalling already cleans up shortcuts (and thus, file
-  // handlers).
-  auto* provider = WebAppProvider::GetForWebApps(profile);
-  if (provider->registrar_unsafe().IsUninstalling(app_id)) {
-    std::move(callback).Run(Result::kOk);
-    return;
-  }
-  DCHECK(provider->registrar_unsafe().IsInstalled(app_id));
-
-  // Otherwise, simply recreate the .desktop file.
-  UpdateFileHandlerRegistrationInOs(app_id, profile, std::move(callback));
+  UninstallMimeInfoOnLinux(app_id, profile,
+                           base::BindOnce(OnMimeInfoOnLinuxUninstalled, app_id,
+                                          profile, std::move(callback)));
 }
 
 void InstallMimeInfoOnLinux(const AppId& app_id,
                             Profile* profile,
-                            const apps::FileHandlers& file_handlers) {
+                            const apps::FileHandlers& file_handlers,
+                            base::OnceClosure on_done) {
   DCHECK(!app_id.empty() && !file_handlers.empty());
 
   base::FilePath filename =
@@ -231,7 +242,8 @@ void InstallMimeInfoOnLinux(const AppId& app_id,
       FROM_HERE,
       base::BindOnce(base::BindOnce(&UpdateMimeInfoDatabase, /*install=*/true),
                      std::move(filename), std::move(file_contents)),
-      base::BindOnce(&OnMimeInfoDatabaseUpdated, /*install=*/true));
+      base::BindOnce(&OnMimeInfoDatabaseUpdated, /*install=*/true)
+          .Then(std::move(on_done)));
 }
 
 void SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(  // IN-TEST

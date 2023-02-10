@@ -186,8 +186,8 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
 
   auto shortcut_sub_manager = std::make_unique<ShortcutSubManager>(
       *profile_, *icon_manager, *registrar);
-  auto file_handling_sub_manager =
-      std::make_unique<FileHandlingSubManager>(*registrar);
+  auto file_handling_sub_manager = std::make_unique<FileHandlingSubManager>(
+      *profile_, *registrar, *sync_bridge);
   auto protocol_handling_sub_manager =
       std::make_unique<ProtocolHandlingSubManager>(profile_, *registrar);
   auto url_handling_sub_manager =
@@ -772,6 +772,7 @@ void OsIntegrationManager::UpdateFileHandlers(
     // to be synchronously called on Mac.
 #if BUILDFLAG(IS_MAC)
     std::move(finished_callback).Run(Result::kOk);
+    return;
 #else
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(finished_callback), Result::kOk));

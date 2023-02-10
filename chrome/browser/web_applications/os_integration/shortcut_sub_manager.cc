@@ -249,7 +249,23 @@ void ShortcutSubManager::Execute(
   }
 #endif
 
-  // TODO: Add file handler change detection.
+#if BUILDFLAG(IS_MAC)
+  // Protocol handler update detection. Shortcuts need to be updated in this
+  // case on Mac because the shortcut itself includes the protocol
+  // handling metadata.
+  if (desired_state.has_file_handling() != current_state.has_file_handling()) {
+    std::move(do_update).Run();
+    return;
+  }
+  if (desired_state.has_file_handling() && current_state.has_file_handling()) {
+    desired = desired_state.file_handling().SerializeAsString();
+    current = current_state.file_handling().SerializeAsString();
+    if (desired != current) {
+      std::move(do_update).Run();
+      return;
+    }
+  }
+#endif
 
   // Fifth, no update is required.
   std::move(callback_for_no_update).Run();

@@ -7,18 +7,30 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
+class Profile;
+
 namespace web_app {
 
 class WebAppRegistrar;
+class WebAppSyncBridge;
+
+std::set<std::string> GetFileExtensionsFromFileHandlingProto(
+    const proto::FileHandling& file_handling);
+
+std::set<std::string> GetMimeTypesFromFileHandlingProto(
+    const proto::FileHandling& file_handling);
 
 // Used to track updates to the file handlers for a web app.
 class FileHandlingSubManager : public OsIntegrationSubManager {
  public:
-  explicit FileHandlingSubManager(WebAppRegistrar& registrar);
+  FileHandlingSubManager(Profile& profile,
+                         WebAppRegistrar& registrar,
+                         WebAppSyncBridge& sync_bridge);
   ~FileHandlingSubManager() override;
   void Start() override;
   void Shutdown() override;
@@ -33,7 +45,21 @@ class FileHandlingSubManager : public OsIntegrationSubManager {
                base::OnceClosure callback) override;
 
  private:
+  void Unregister(const AppId& app_id,
+                  const proto::WebAppOsIntegrationState& desired_state,
+                  const proto::WebAppOsIntegrationState& current_state,
+                  base::OnceClosure callback);
+
+  void Register(const AppId& app_id,
+                const proto::WebAppOsIntegrationState& desired_state,
+                base::OnceClosure callback);
+
+  const raw_ref<Profile> profile_;
+
   const raw_ref<WebAppRegistrar> registrar_;
+  const raw_ref<WebAppSyncBridge> sync_bridge_;
+
+  base::WeakPtrFactory<FileHandlingSubManager> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

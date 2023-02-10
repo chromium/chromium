@@ -69,7 +69,8 @@ TEST_F(WebAppFileHandlerRegistrationLinuxTest,
         return true;
       }));
 
-  InstallMimeInfoOnLinux(app_id, test_profile, file_handlers);
+  InstallMimeInfoOnLinux(app_id, test_profile, file_handlers,
+                         base::DoNothing());
 }
 
 }  // namespace web_app

@@ -28,6 +28,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -42,6 +43,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/icon_util.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #endif
 
 using content::BrowserThread;
@@ -147,7 +152,12 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
   shortcut_info->profile_name = profile_name;
   shortcut_info->is_multi_profile = true;
 
-  // TODO(https://crbug.com/1295044): Add file handlers.
+  if (state.has_file_handling()) {
+    shortcut_info->file_handler_extensions =
+        GetFileExtensionsFromFileHandlingProto(state.file_handling());
+    shortcut_info->file_handler_mime_types =
+        GetMimeTypesFromFileHandlingProto(state.file_handling());
+  }
 
   if (state.has_protocols_handled()) {
     for (const auto& protocol_handler : state.protocols_handled().protocols()) {
@@ -161,7 +171,10 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
 
   // TODO(https://crbug.com/1295044): Add shortcut menu infos.
 
-  // TODO(https://crbug.com/1295044): Add mac's file handlers per profile.
+#if BUILDFLAG(IS_MAC)
+  shortcut_info->handlers_per_profile =
+      AppShimRegistry::Get()->GetHandlersForApp(app_id);
+#endif
 
   return shortcut_info;
 }

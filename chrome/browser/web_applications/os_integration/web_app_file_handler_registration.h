@@ -51,7 +51,8 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
 // I/O and a a callout to the Linux shell are performed asynchronously.
 void InstallMimeInfoOnLinux(const AppId& app_id,
                             Profile* profile,
-                            const apps::FileHandlers& file_handlers);
+                            const apps::FileHandlers& file_handlers,
+                            base::OnceClosure on_done);
 
 using UpdateMimeInfoDatabaseOnLinuxCallback =
     base::RepeatingCallback<bool(base::FilePath profile_path,
