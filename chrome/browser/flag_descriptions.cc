@@ -4031,6 +4031,10 @@ const char kStartSurfaceDisabledFeedImprovementName[] =
 const char kStartSurfaceDisabledFeedImprovementDescription[] =
     "Enable improving Start surface when Feed is disabled";
 
+const char kStartSurfaceOnTabletName[] = "Start Surface On Tablet";
+const char kStartSurfaceOnTabletDescription[] =
+    "Enable Start Surface On Tablet.";
+
 const char kStartSurfaceRefactorName[] = "Start Surface Refactor";
 const char kStartSurfaceRefactorDescription[] =
     "Enable splitting Tab switcher from Start surface";

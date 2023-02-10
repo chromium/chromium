@@ -5999,6 +5999,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStartSurfaceRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kStartSurfaceRefactor)},
 
+    {"enable-start-surface-on-tablet",
+     flag_descriptions::kStartSurfaceOnTabletName,
+     flag_descriptions::kStartSurfaceOnTabletDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kStartSurfaceOnTablet)},
+
     {"enable-show-scrollable-mvt-on-ntp",
      flag_descriptions::kShowScrollableMVTOnNTPAndroidName,
      flag_descriptions::kShowScrollableMVTOnNTPAndroidDescription, kOsAndroid,

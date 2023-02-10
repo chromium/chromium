@@ -308,6 +308,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTrustedWebActivityQualityEnforcementForced,
     &kTrustedWebActivityQualityEnforcementWarning,
     &kStartSurfaceAndroid,
+    &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
     &kStartSurfaceRefactor,
     &kStartSurfaceDisabledFeedImprovement,
@@ -1024,6 +1025,10 @@ BASE_FEATURE(kSearchResumptionModuleAndroid,
 BASE_FEATURE(kShouldIgnoreIntentSkipInternalCheck,
              "ShouldIgnoreIntentSkipInternalCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kStartSurfaceOnTablet,
+             "StartSurfaceOnTablet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStartSurfaceReturnTime,
              "StartSurfaceReturnTime",

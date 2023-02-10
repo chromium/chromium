@@ -3119,6 +3119,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "enable-start-surface-on-tablet",
+    "owners": [ "hanxi", "xinyiji", "clank-start" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-start-surface-refactor",
     "owners": [ "hanxi", "clank-start" ],
     "expiry_milestone": 115

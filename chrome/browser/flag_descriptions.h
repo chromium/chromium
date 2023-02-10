@@ -2307,6 +2307,9 @@ extern const char kSiteDataImprovementsDescription[];
 extern const char kStartSurfaceDisabledFeedImprovementName[];
 extern const char kStartSurfaceDisabledFeedImprovementDescription[];
 
+extern const char kStartSurfaceOnTabletName[];
+extern const char kStartSurfaceOnTabletDescription[];
+
 extern const char kStartSurfaceRefactorName[];
 extern const char kStartSurfaceRefactorDescription[];
 
