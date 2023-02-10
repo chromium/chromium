@@ -71,7 +71,7 @@ class ServiceProxyImpl : public ServiceProxy,
 
   //  Called after retrieving all the segmentation info from the DB.
   void OnGetAllSegmentationInfo(
-      DefaultModelManager::SegmentInfoList segment_info);
+      DefaultModelManager::SegmentInfoList segment_info_list);
 
   // ModelExecutionScheduler::Observer overrides.
   void OnModelExecutionCompleted(SegmentId segment_id) override;

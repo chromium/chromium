@@ -63,7 +63,7 @@ std::string PredictionResultToString(
       time_string.str().c_str(), segment_rank ? *segment_rank : kInvalidScore);
 }
 
-base::flat_set<proto::SegmentId> GetAllSegemntIds(
+base::flat_set<proto::SegmentId> GetAllSegmentIds(
     const std::vector<std::unique_ptr<Config>>& configs) {
   base::flat_set<proto::SegmentId> all_segment_ids;
   for (const auto& config : configs) {
@@ -123,7 +123,7 @@ void ServiceProxyImpl::UpdateObservers(bool update_service_status) {
       (static_cast<int>(ServiceStatus::kSegmentationInfoDbInitialized) &
        service_status_flag_)) {
     default_manager_->GetAllSegmentInfoFromBothModels(
-        GetAllSegemntIds(*configs_), segment_db_,
+        GetAllSegmentIds(*configs_), segment_db_,
         base::BindOnce(&ServiceProxyImpl::OnGetAllSegmentationInfo,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -177,23 +177,23 @@ void ServiceProxyImpl::SetSelectedSegment(const std::string& segmentation_key,
 }
 
 void ServiceProxyImpl::OnGetAllSegmentationInfo(
-    DefaultModelManager::SegmentInfoList segment_info) {
+    DefaultModelManager::SegmentInfoList segment_info_list) {
   if (!configs_)
     return;
 
   // Convert the |segment_info| vector to a map for quick lookup.
-  base::flat_map<SegmentId, proto::SegmentInfo> segment_ids;
-  for (const auto& info : segment_info) {
+  base::flat_map<SegmentId, proto::SegmentInfo> segment_info_map;
+  for (const auto& info : segment_info_list) {
     const SegmentId segment_id = info->segment_info.segment_id();
     switch (info->segment_source) {
       case DefaultModelManager::SegmentSource::DATABASE:
         // If database info is available, then overwrite the existing entry.
-        segment_ids[segment_id] = std::move(info->segment_info);
+        segment_info_map[segment_id] = std::move(info->segment_info);
         break;
       case DefaultModelManager::SegmentSource::DEFAULT_MODEL:
         // If database info is not available then use default model info.
-        if (segment_ids.count(segment_id) == 0) {
-          segment_ids[segment_id] = std::move(info->segment_info);
+        if (segment_info_map.count(segment_id) == 0) {
+          segment_info_map[segment_id] = std::move(info->segment_info);
         }
         break;
     }
@@ -217,14 +217,15 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
     }
     result.emplace_back(config->segmentation_key, selected);
     for (const auto& segment_id : config->segments) {
-      if (!segment_ids.contains(segment_id.first))
+      if (!segment_info_map.contains(segment_id.first)) {
         continue;
+      }
       // TODO(ssid): Currently only selected segment rank is available in prefs,
       // so add rank only to the one segment. We should expand to include ranks
       // from all segments once we have ranking API support.
       absl::optional<float> current_segment_rank =
           segment_id.first == selected ? selected_segment_rank : absl::nullopt;
-      const auto& info = segment_ids[segment_id.first];
+      const auto& info = segment_info_map[segment_id.first];
       bool can_execute_segment =
           force_refresh_results_ ||
           (signal_storage_config_ &&
