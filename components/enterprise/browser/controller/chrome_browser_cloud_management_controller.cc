@@ -85,7 +85,7 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
     ConfigurationPolicyProvider* platform_provider) {
   if (!IsEnabled()) {
     LOG_POLICY(WARNING, CBCM_ENROLLMENT)
-        << "Could not create policy mananger as CBCM is not enabled.";
+        << "Could not create policy manager as CBCM is not enabled.";
     return nullptr;
   }
 
@@ -160,7 +160,7 @@ void ChromeBrowserCloudManagementController::Init(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   if (!IsEnabled()) {
     LOG_POLICY(ERROR, CBCM_ENROLLMENT)
-        << "Cloud management constroller initialization aborted as CBCM is not "
+        << "Cloud management controller initialization aborted as CBCM is not "
            "enabled.";
 
     LOG_POLICY(INFO, CBCM_ENROLLMENT)
