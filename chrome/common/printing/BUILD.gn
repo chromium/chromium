@@ -82,6 +82,8 @@ source_set("printing") {
       "printer_capabilities.h",
     ]
 
+    deps += [ "//components/device_event_log" ]
+
     if (is_mac) {
       sources += [
         "printer_capabilities_mac.h",

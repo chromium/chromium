@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/printing/printing_buildflags.h"
 #include "components/crash/core/common/crash_keys.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/printing/common/cloud_print_cdd_conversion.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
@@ -207,16 +208,20 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  VLOG(1) << "Get printer capabilities start for " << device_name;
+  PRINTER_LOG(EVENT) << "Get printer capabilities start for " << device_name;
   crash_keys::ScopedPrinterInfo crash_key(
       print_backend->GetPrinterDriverInfo(device_name));
 
   auto caps = absl::make_optional<PrinterSemanticCapsAndDefaults>();
-  if (print_backend->GetPrinterSemanticCapsAndDefaults(device_name, &*caps) !=
-      mojom::ResultCode::kSuccess) {
+  mojom::ResultCode result =
+      print_backend->GetPrinterSemanticCapsAndDefaults(device_name, &*caps);
+  if (result == mojom::ResultCode::kSuccess) {
+    PRINTER_LOG(EVENT) << "Got printer capabilities for " << device_name;
+  } else {
     // Failed to get capabilities, but proceed to assemble the settings to
     // return what information we do have.
-    LOG(WARNING) << "Failed to get capabilities for " << device_name;
+    PRINTER_LOG(ERROR) << "Failed to get capabilities for " << device_name
+                       << ", result: " << result;
     caps = absl::nullopt;
   }
 
