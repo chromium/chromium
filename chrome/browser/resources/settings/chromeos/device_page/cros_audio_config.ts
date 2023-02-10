@@ -8,8 +8,6 @@
  * ability to override it with a fake implementation needed for tests.
  */
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-
 import {CrosAudioConfig, CrosAudioConfigInterface as CrosAudioConfigMojomInterface} from '../../mojom-webui/audio/cros_audio_config.mojom-webui.js';
 
 import {FakeCrosAudioConfig, FakeCrosAudioConfigInterface} from './fake_cros_audio_config.js';
@@ -22,9 +20,7 @@ export type CrosAudioConfigInterface = Required<CrosAudioConfigMojomInterface>&
 let crosAudioConfig: CrosAudioConfigInterface|null = null;
 
 /** Use FakeCrosAudioConfig implementation in `getCrosAudioConfig`. */
-// TODO(b/260277007): When mojo is stable set useFakeMojo to false and remove
-// assert on `useFakeMojo` value.
-const useFakeMojo = true;
+const useFakeMojo = false;
 
 /**
  * The CrosAudioConfig implementation used for testing. Passing null reverses
@@ -39,7 +35,7 @@ export function getCrosAudioConfig(): CrosAudioConfigInterface {
   if (!crosAudioConfig && useFakeMojo) {
     crosAudioConfig = new FakeCrosAudioConfig();
   }
-  assert(useFakeMojo, '`useFakeMojo` should be false until mojo is stable.');
+
   if (!crosAudioConfig) {
     crosAudioConfig = CrosAudioConfig.getRemote();
   }
