@@ -43,7 +43,7 @@
   over the course of our development.
   </description>
 
-  <interface name="zcr_color_manager_v1" version="2">
+  <interface name="zcr_color_manager_v1" version="3">
     <description summary="color manager singleton">
 	A global interface used for getting color management surface and color
 	management output objects as well as creating color space objects from
@@ -150,7 +150,7 @@
 
     <request name="create_color_space_from_names">
       <description summary="create a color space object from well-known names">
-	Create a color space object from well-known names. This request returns
+	[Deprecated] Create a color space object from well-known names. This request returns
 	a zcr_color_space_creator_v1 object which either returns an error
 	or the successfully created zcr_color_space_v1 object.
 
@@ -159,7 +159,8 @@
 	bad_enum is raised.
 
 	See the zcr_color_space_v1 and zcr_color_space_creator_v1 interface for
-	more details about the created object.
+	more details about the created object. Use create_color_space_from_complete_names
+	instead.
       </description>
       <arg name="id" type="new_id" interface="zcr_color_space_creator_v1"/>
       <arg name="eotf" type="uint" enum="eotf_names" summary="EOTF"/>
@@ -169,7 +170,7 @@
 
     <request name="create_color_space_from_params">
       <description summary="create a color space object from parameters">
-	Create a color space object from parameters. This request returns
+	[Deprecated] Create a color space object from parameters. This request returns
 	a zcr_color_space_creator_v1 object which either returns an error
 	or the successfully created zcr_color_space_v1 object.
 
@@ -183,7 +184,8 @@
 	integers carried by the protocol.
 
 	See the zcr_color_space_v1 and zcr_color_space_creator_v1 interface for
-	more details about the created object.
+	more details about the created object. Use create_color_space_from_complete_params
+	instead.
       </description>
       <arg name="id" type="new_id" interface="zcr_color_space_creator_v1"/>
       <arg name="eotf" type="uint" enum="eotf_names" summary="EOTF"/>
@@ -224,6 +226,91 @@
 	Destroy the zcr_color_manager_v1 object. This does not affect any other
 	objects in any way.
       </description>
+    </request>
+
+    <!-- Version 3 additions -->
+
+    <enum name="matrix_names">
+      <description summary="For specifying color matrices">
+	Names that describe typical ColorSpace Matrix IDs
+
+      </description>
+      <entry name="unknown" value="0" summary="Unknown range"/>
+      <entry name="rgb" value="1" summary="RGB matrix"/>
+      <entry name="bt709" value="2" summary="BT709 matrix"/>
+      <entry name="bt2020_ncl" value="3" summary="BT2020_NCL matrix"/>
+      <entry name="bt2020_cl" value="4" summary="BT2020_CL matrix"/>
+      <entry name="fcc" value="5" summary="FCC matrix"/>
+      <entry name="smpte170m" value="6" summary="SMPTE170M matrix"/>
+      <entry name="smpte240m" value="7" summary="SMPTE240M matrix"/>
+    </enum>
+
+    <enum name="range_names">
+      <description summary="For specifying RGB ranges">
+	Names that describe typical RGB value ranges.
+
+      </description>
+      <entry name="unknown" value="0" summary="Unknown range"/>
+      <entry name="limited" value="1" summary="Limited RGB color range (values from 16-235 for 8-bit)"/>
+      <entry name="full" value="2" summary="Full RGB color range (values from 0 to 255 for 8-bit)"/>
+      <entry name="derived" value="3" summary="Range is defined by EOTF/MatrixID"/>
+    </enum>
+
+    <request name="create_color_space_from_complete_names" since="3">
+      <description summary="create a color space object from well-known names">
+	Create a color space object from well-known names. This request returns
+	a zcr_color_space_creator_v1 object which either returns an error
+	or the successfully created zcr_color_space_v1 object.
+
+	EOTF, chromaticity and whitepoint must not be unknown. Otherwise, or
+	if a given value is not listed in the enumeration, the protocol error
+	bad_enum is raised.
+
+	This request additionally includes matrix and range information.
+
+	See the zcr_color_space_v1 and zcr_color_space_creator_v1 interface for
+	more details about the created object.
+      </description>
+      <arg name="id" type="new_id" interface="zcr_color_space_creator_v1"/>
+      <arg name="eotf" type="uint" enum="eotf_names" summary="EOTF"/>
+      <arg name="chromaticity" type="uint" enum="chromaticity_names" summary="chromaticity"/>
+      <arg name="whitepoint" type="uint" enum="whitepoint_names" summary="whitepoint"/>
+      <arg name="matrix" type="uint" enum="matrix_names" summary="color matrix"/>
+      <arg name="range" type="uint" enum="range_names" summary="color range"/>
+    </request>
+
+    <request name="create_color_space_from_complete_params" since="3">
+      <description summary="create a color space object from parameters">
+	Create a color space object from parameters. This request returns
+	a zcr_color_space_creator_v1 object which either returns an error
+	or the successfully created zcr_color_space_v1 object.
+
+	EOTF must not be unknown. Otherwise, or if a given EOTF is not listed
+	in the enumeration, the protocol error bad_enum is raised.
+
+	The white point must be inside the triangle created by the red, green
+	and blue primaries. Otherwise the bad_param protocol error is raised.
+
+	All the chromaticity values are multiplied by 10000 to produce the
+	integers carried by the protocol.
+
+	This request additionally includes matrix and range information.
+
+	See the zcr_color_space_v1 and zcr_color_space_creator_v1 interface for
+	more details about the created object.
+      </description>
+      <arg name="id" type="new_id" interface="zcr_color_space_creator_v1"/>
+      <arg name="eotf" type="uint" enum="eotf_names" summary="EOTF"/>
+      <arg name="matrix" type="uint" enum="matrix_names" summary="Color matrix"/>
+      <arg name="range" type="uint" enum="range_names" summary="Color range"/>
+      <arg name="primary_r_x" type="uint" summary="red primary X * 10000"/>
+      <arg name="primary_r_y" type="uint" summary="red primary Y * 10000"/>
+      <arg name="primary_g_x" type="uint" summary="green primary X * 10000"/>
+      <arg name="primary_g_y" type="uint" summary="green primary Y * 10000"/>
+      <arg name="primary_b_x" type="uint" summary="blue primary X * 10000"/>
+      <arg name="primary_b_y" type="uint" summary="blue primary Y * 10000"/>
+      <arg name="white_point_x" type="uint" summary="white point X * 10000"/>
+      <arg name="white_point_y" type="uint" summary="white point Y * 10000"/>
     </request>
   </interface>
 
@@ -505,7 +592,7 @@
     </event>
   </interface>
 
-  <interface name="zcr_color_space_v1" version="1">
+  <interface name="zcr_color_space_v1" version="3">
     <description summary="color space">
 	Refers to a color space which can be attached to a surface
 	(zcr_color_management_surface_v1.set_color_space). It may provide
@@ -574,7 +661,7 @@
 
     <event name="names">
       <description summary="well-known names of a color space">
-	This event may be sent only as a response to
+	[Deprecated] This event may be sent only as a response to
 	zcr_color_space_v1.get_information.
 
 	EOTF, chromaticity and whitepoint contain well-known names of those
@@ -583,7 +670,7 @@
 	Compositors should not assume that all clients can understand these
 	names. The names are provided for client convenience. If a client
 	understands the name triplet, it may ignore other information about
-	the color space, the ICC profile for example.
+	the color space, the ICC profile for example. Use complete_names instead.
       </description>
       <arg name="eotf" type="uint" enum="zcr_color_manager_v1.eotf_names" summary="EOTF"/>
       <arg name="chromaticity" type="uint" enum="zcr_color_manager_v1.chromaticity_names" summary="chromaticity"/>
@@ -592,14 +679,15 @@
 
     <event name="params">
       <description summary="RGB primaries along with whitepoint defining color space">
-	This event may be sent only as a response to
+	[Deprecated] This event may be sent only as a response to
 	zcr_color_space_v1.get_information.
 
 	The RGB primary value arguments along with the whitepoint value arguments
 	and eotf can be used to define an arbitrary or custom color space.
 
 	The eotf enum contains well known names of that property, but the compositor
-	should not assume that all clients will understand those names.
+	should not assume that all clients will understand those names. Use
+	complete_params instead.
       </description>
       <arg name="eotf" type="uint" enum="zcr_color_manager_v1.eotf_names" summary="EOTF"/>
       <arg name="primary_r_x" type="uint" summary="red primary X * 10000"/>
@@ -630,6 +718,52 @@
 	output does not change the color space of those objects.
       </description>
     </request>
+
+	<!-- Version 3 additions -->
+
+    <event name="complete_names" since="3">
+      <description summary="well-known names of a color space">
+	This event may be sent only as a response to
+	zcr_color_space_v1.get_information.
+
+	EOTF, chromaticity, matrix, range and whitepoint contain well-known names of those
+	properties if available and unknown otherwise.
+
+	Compositors should not assume that all clients can understand these
+	names. The names are provided for client convenience. If a client
+	understands the name triplet, it may ignore other information about
+	the color space, the ICC profile for example.
+      </description>
+      <arg name="eotf" type="uint" enum="zcr_color_manager_v1.eotf_names" summary="EOTF"/>
+      <arg name="chromaticity" type="uint" enum="zcr_color_manager_v1.chromaticity_names" summary="chromaticity"/>
+      <arg name="whitepoint" type="uint" enum="zcr_color_manager_v1.whitepoint_names" summary="whitepoint"/>
+      <arg name="matrix" type="uint" enum="zcr_color_manager_v1.matrix_names" summary="Color matrix"/>
+      <arg name="range" type="uint" enum="zcr_color_manager_v1.range_names" summary="Color range"/>
+    </event>
+
+    <event name="complete_params" since="3">
+      <description summary="RGB primaries along with whitepoint defining color space">
+	This event may be sent only as a response to
+	zcr_color_space_v1.get_information.
+
+	The RGB primary value arguments along with the whitepoint value arguments
+	and eotf can be used to define an arbitrary or custom color space.
+
+	The eotf enum contains well known names of that property, but the compositor
+	should not assume that all clients will understand those names.
+      </description>
+      <arg name="eotf" type="uint" enum="zcr_color_manager_v1.eotf_names" summary="EOTF"/>
+      <arg name="matrix" type="uint" enum="zcr_color_manager_v1.matrix_names" summary="Color matrix"/>
+      <arg name="range" type="uint" enum="zcr_color_manager_v1.range_names" summary="Color range"/>
+      <arg name="primary_r_x" type="uint" summary="red primary X * 10000"/>
+      <arg name="primary_r_y" type="uint" summary="red primary Y * 10000"/>
+      <arg name="primary_g_x" type="uint" summary="green primary X * 10000"/>
+      <arg name="primary_g_y" type="uint" summary="green primary Y * 10000"/>
+      <arg name="primary_b_x" type="uint" summary="blue primary X * 10000"/>
+      <arg name="primary_b_y" type="uint" summary="blue primary Y * 10000"/>
+      <arg name="white_point_x" type="uint" summary="white point X * 10000"/>
+      <arg name="white_point_y" type="uint" summary="white point Y * 10000"/>
+    </event>
   </interface>
 
 </protocol>

@@ -15,6 +15,26 @@ zcr_color_manager_v1_chromaticity_names ToColorManagerChromaticity(
   return ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_UNKNOWN;
 }
 
+zcr_color_manager_v1_matrix_names ToColorManagerMatrix(
+    gfx::ColorSpace::MatrixID matrixID) {
+  for (const auto& it : kMatrixMap) {
+    if (it.second == matrixID) {
+      return it.first;
+    }
+  }
+  return ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_UNKNOWN;
+}
+
+zcr_color_manager_v1_range_names ToColorManagerRange(
+    gfx::ColorSpace::RangeID rangeID) {
+  for (const auto& it : kRangeMap) {
+    if (it.second == rangeID) {
+      return it.first;
+    }
+  }
+  return ZCR_COLOR_MANAGER_V1_RANGE_NAMES_UNKNOWN;
+}
+
 zcr_color_manager_v1_eotf_names ToColorManagerEOTF(
     gfx::ColorSpace::TransferID transferID) {
   for (const auto& it : kEotfMap) {

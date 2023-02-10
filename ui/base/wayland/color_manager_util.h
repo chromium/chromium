@@ -89,8 +89,46 @@ constexpr auto kHDRTransferMap =
          {ZCR_COLOR_MANAGER_V1_EOTF_NAMES_EXTENDEDSRGB10,
           SkNamedTransferFnExt::kSRGBExtended1023Over510}});
 
+// A map from zcr_color_manager_v1 matrix_names enum values to
+// gfx::ColorSpace::MatrixIDs.
+constexpr auto kMatrixMap =
+    base::MakeFixedFlatMap<zcr_color_manager_v1_matrix_names,
+                           gfx::ColorSpace::MatrixID>(
+        {{ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_RGB,
+          gfx::ColorSpace::MatrixID::RGB},
+         {ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_BT709,
+          gfx::ColorSpace::MatrixID::BT709},
+         {ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_BT2020_NCL,
+          gfx::ColorSpace::MatrixID::BT2020_NCL},
+         {ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_BT2020_CL,
+          gfx::ColorSpace::MatrixID::BT2020_CL},
+         {ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_FCC,
+          gfx::ColorSpace::MatrixID::FCC},
+         {ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_SMPTE170M,
+          gfx::ColorSpace::MatrixID::SMPTE170M},
+         {ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_SMPTE240M,
+          gfx::ColorSpace::MatrixID::SMPTE240M}});
+
+// A map from zcr_color_manager_v1 range_names enum values to
+// gfx::ColorSpace::RangeIDs.
+constexpr auto kRangeMap =
+    base::MakeFixedFlatMap<zcr_color_manager_v1_range_names,
+                           gfx::ColorSpace::RangeID>(
+        {{ZCR_COLOR_MANAGER_V1_RANGE_NAMES_LIMITED,
+          gfx::ColorSpace::RangeID::LIMITED},
+         {ZCR_COLOR_MANAGER_V1_RANGE_NAMES_FULL,
+          gfx::ColorSpace::RangeID::FULL},
+         {ZCR_COLOR_MANAGER_V1_RANGE_NAMES_DERIVED,
+          gfx::ColorSpace::RangeID::DERIVED}});
+
 zcr_color_manager_v1_chromaticity_names ToColorManagerChromaticity(
     gfx::ColorSpace::PrimaryID primaryID);
+
+zcr_color_manager_v1_matrix_names ToColorManagerMatrix(
+    gfx::ColorSpace::MatrixID matrixID);
+
+zcr_color_manager_v1_range_names ToColorManagerRange(
+    gfx::ColorSpace::RangeID rangeID);
 
 zcr_color_manager_v1_eotf_names ToColorManagerEOTF(
     gfx::ColorSpace::TransferID transferID);

@@ -364,8 +364,8 @@ void Server::Initialize() {
   wl_global_create(wl_display_.get(),
                    &zwp_relative_pointer_manager_v1_interface, 1, display_,
                    bind_relative_pointer_manager);
-  wl_global_create(wl_display_.get(), &zcr_color_manager_v1_interface, 1, this,
-                   bind_zcr_color_manager);
+  wl_global_create(wl_display_.get(), &zcr_color_manager_v1_interface,
+                   kZcrColorManagerVersion, this, bind_zcr_color_manager);
   wl_global_create(wl_display_.get(), &zxdg_decoration_manager_v1_interface, 1,
                    display_, bind_zxdg_decoration_manager);
   wl_global_create(wl_display_.get(), &zcr_extended_drag_v1_interface, 1,

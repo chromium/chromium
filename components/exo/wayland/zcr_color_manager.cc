@@ -11,6 +11,7 @@
 
 #include "ash/shell.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "components/exo/surface.h"
@@ -51,31 +52,55 @@ class ColorManagerColorSpace {
   explicit ColorManagerColorSpace(gfx::ColorSpace color_space)
       : color_space(color_space),
         eotf(ui::wayland::ToColorManagerEOTF(color_space)),
+        matrix(ui::wayland::ToColorManagerMatrix(color_space.GetMatrixID())),
+        range(ui::wayland::ToColorManagerRange(color_space.GetRangeID())),
         primaries(color_space.GetPrimaries()) {}
 
   ColorManagerColorSpace(gfx::ColorSpace color_space,
                          zcr_color_manager_v1_eotf_names eotf,
+                         zcr_color_manager_v1_matrix_names matrix,
+                         zcr_color_manager_v1_range_names range,
                          SkColorSpacePrimaries primaries)
-      : color_space(color_space), eotf(eotf), primaries(primaries) {}
+      : color_space(color_space),
+        eotf(eotf),
+        matrix(matrix),
+        range(range),
+        primaries(primaries) {}
 
   virtual ~ColorManagerColorSpace() = default;
 
   const gfx::ColorSpace color_space;
   const zcr_color_manager_v1_eotf_names eotf;
+  const zcr_color_manager_v1_matrix_names matrix;
+  const zcr_color_manager_v1_range_names range;
   const SkColorSpacePrimaries primaries;
 
   void SendColorSpaceInfo(wl_resource* color_space_resource) {
     SendCustomColorSpaceInfo(color_space_resource);
-    zcr_color_space_v1_send_params(
-        color_space_resource, eotf,
-        static_cast<int>(FLOAT_TO_PARAM(primaries.fRX)),
-        static_cast<int>(FLOAT_TO_PARAM(primaries.fRY)),
-        static_cast<int>(FLOAT_TO_PARAM(primaries.fGX)),
-        static_cast<int>(FLOAT_TO_PARAM(primaries.fGY)),
-        static_cast<int>(FLOAT_TO_PARAM(primaries.fBX)),
-        static_cast<int>(FLOAT_TO_PARAM(primaries.fBY)),
-        static_cast<int>(FLOAT_TO_PARAM(primaries.fWX)),
-        static_cast<int>(FLOAT_TO_PARAM(primaries.fWY)));
+    if (wl_resource_get_version(color_space_resource) <
+        ZCR_COLOR_SPACE_V1_COMPLETE_PARAMS_SINCE_VERSION) {
+      zcr_color_space_v1_send_params(
+          color_space_resource, eotf,
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fRX)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fRY)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fGX)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fGY)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fBX)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fBY)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fWX)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fWY)));
+    } else {
+      zcr_color_space_v1_send_complete_params(
+          color_space_resource, eotf, matrix, range,
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fRX)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fRY)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fGX)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fGY)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fBX)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fBY)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fWX)),
+          static_cast<int>(FLOAT_TO_PARAM(primaries.fWY)));
+    }
     zcr_color_space_v1_send_done(color_space_resource);
   }
 
@@ -88,18 +113,29 @@ class NameBasedColorSpace final : public ColorManagerColorSpace {
       gfx::ColorSpace color_space,
       zcr_color_manager_v1_chromaticity_names chromaticity,
       zcr_color_manager_v1_eotf_names eotf,
+      zcr_color_manager_v1_matrix_names matrix,
+      zcr_color_manager_v1_range_names range,
       zcr_color_manager_v1_whitepoint_names whitepoint)
-      : ColorManagerColorSpace(color_space, eotf, color_space.GetPrimaries()),
-        chromaticity(ui::wayland::ToColorManagerChromaticity(
-            color_space.GetPrimaryID())),
+      : ColorManagerColorSpace(color_space,
+                               eotf,
+                               matrix,
+                               range,
+                               color_space.GetPrimaries()),
+        chromaticity(chromaticity),
         whitepoint(whitepoint) {}
 
   const zcr_color_manager_v1_chromaticity_names chromaticity;
   const zcr_color_manager_v1_whitepoint_names whitepoint;
 
   void SendCustomColorSpaceInfo(wl_resource* color_space_resource) override {
-    zcr_color_space_v1_send_names(color_space_resource, eotf, chromaticity,
-                                  whitepoint);
+    if (wl_resource_get_version(color_space_resource) <
+        ZCR_COLOR_SPACE_V1_COMPLETE_NAMES_SINCE_VERSION) {
+      zcr_color_space_v1_send_names(color_space_resource, eotf, chromaticity,
+                                    whitepoint);
+    } else {
+      zcr_color_space_v1_send_complete_names(
+          color_space_resource, eotf, chromaticity, whitepoint, matrix, range);
+    }
   }
 };
 
@@ -253,8 +289,8 @@ void color_management_output_get_color_space(
   auto color_space = std::make_unique<ColorManagerColorSpace>(
       color_management_output_observer->GetColorSpace());
 
-  wl_resource* color_space_resource =
-      wl_resource_create(client, &zcr_color_space_v1_interface, 1, id);
+  wl_resource* color_space_resource = wl_resource_create(
+      client, &zcr_color_space_v1_interface, kZcrColorManagerVersion, id);
 
   SetImplementation(color_space_resource, &color_space_v1_implementation,
                     std::move(color_space));
@@ -330,7 +366,7 @@ void CreateColorSpace(struct wl_client* client,
                       int32_t color_space_creator_id,
                       std::unique_ptr<ColorManagerColorSpace> color_space) {
   wl_resource* color_space_resource = wl_resource_create(
-      client, &zcr_color_space_v1_interface, /*version=*/1, /*id=*/0);
+      client, &zcr_color_space_v1_interface, kZcrColorManagerVersion, /*id=*/0);
   SetImplementation(color_space_resource, &color_space_v1_implementation,
                     std::move(color_space));
 
@@ -364,14 +400,29 @@ void color_manager_create_color_space_from_icc(
   NOTIMPLEMENTED();
 }
 
+// Not all MatrixID and RangeID combinations are supported in DRM/KMS
+// so alter their values to something more acceptable in those cases.
+void adjust_matrix_and_range(gfx::ColorSpace::MatrixID* matrix_id,
+                             gfx::ColorSpace::RangeID* range_id) {
+  // TODO(b/233667677): Passing MatrixID=BT2020_NCL and RangeID=LIMITED results
+  // in improper rendering, until that is supported default to {RGB, FULL} which
+  // is identical to composited video values.
+  if (*matrix_id == gfx::ColorSpace::MatrixID::BT2020_NCL) {
+    *matrix_id = gfx::ColorSpace::MatrixID::RGB;
+    *range_id = gfx::ColorSpace::RangeID::FULL;
+  }
+}
+
 // TODO(b/206971557): This doesn't handle the user-set white point yet.
-void color_manager_create_color_space_from_names(
+void color_manager_create_color_space_from_complete_names(
     struct wl_client* client,
     struct wl_resource* color_manager_resource,
     uint32_t id,
     uint32_t eotf,
     uint32_t chromaticity,
-    uint32_t whitepoint) {
+    uint32_t whitepoint,
+    uint32_t matrix,
+    uint32_t range) {
   uint32_t error_flags = 0;
 
   auto chromaticity_id = gfx::ColorSpace::PrimaryID::INVALID;
@@ -383,6 +434,29 @@ void color_manager_create_color_space_from_names(
     error_flags |= ZCR_COLOR_SPACE_CREATOR_V1_CREATION_ERROR_BAD_PRIMARIES;
   }
 
+  auto matrix_id = gfx::ColorSpace::MatrixID::INVALID;
+  const auto* maybe_matrix = ui::wayland::kMatrixMap.find(matrix);
+  if (maybe_matrix != std::end(ui::wayland::kMatrixMap)) {
+    matrix_id = maybe_matrix->second;
+  } else {
+    DLOG(ERROR) << "Unable to find named matrix for id=" << matrix;
+    wl_resource_post_error(color_manager_resource,
+                           ZCR_COLOR_MANAGER_V1_ERROR_BAD_ENUM,
+                           "Unable to find a matrix matching %d", matrix);
+  }
+
+  auto range_id = gfx::ColorSpace::RangeID::INVALID;
+  const auto* maybe_range = ui::wayland::kRangeMap.find(range);
+  if (maybe_range != std::end(ui::wayland::kRangeMap)) {
+    range_id = maybe_range->second;
+  } else {
+    DLOG(ERROR) << "Unable to find named range for id=" << range;
+    wl_resource_post_error(color_manager_resource,
+                           ZCR_COLOR_MANAGER_V1_ERROR_BAD_ENUM,
+                           "Unable to find a range matching %d", range);
+  }
+  adjust_matrix_and_range(&matrix_id, &range_id);
+
   auto eotf_id = gfx::ColorSpace::TransferID::INVALID;
   const auto* maybe_eotf = ui::wayland::kEotfMap.find(eotf);
   if (maybe_eotf != std::end(ui::wayland::kEotfMap)) {
@@ -392,12 +466,13 @@ void color_manager_create_color_space_from_names(
     CreateColorSpace(
         client, id,
         std::make_unique<NameBasedColorSpace>(
-            gfx::ColorSpace(
-                chromaticity_id, gfx::ColorSpace::TransferID::CUSTOM_HDR,
-                gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL,
-                nullptr, &transfer_fn, /*is_hdr=*/true),
+            gfx::ColorSpace(chromaticity_id,
+                            gfx::ColorSpace::TransferID::CUSTOM_HDR, matrix_id,
+                            range_id, nullptr, &transfer_fn, /*is_hdr=*/true),
             static_cast<zcr_color_manager_v1_chromaticity_names>(chromaticity),
             static_cast<zcr_color_manager_v1_eotf_names>(eotf),
+            static_cast<zcr_color_manager_v1_matrix_names>(matrix),
+            static_cast<zcr_color_manager_v1_range_names>(range),
             static_cast<zcr_color_manager_v1_whitepoint_names>(whitepoint)));
     return;
   } else {
@@ -413,17 +488,35 @@ void color_manager_create_color_space_from_names(
   CreateColorSpace(
       client, id,
       std::make_unique<NameBasedColorSpace>(
-          gfx::ColorSpace(chromaticity_id, eotf_id),
+          gfx::ColorSpace(chromaticity_id, eotf_id, matrix_id, range_id),
           static_cast<zcr_color_manager_v1_chromaticity_names>(chromaticity),
           static_cast<zcr_color_manager_v1_eotf_names>(eotf),
+          static_cast<zcr_color_manager_v1_matrix_names>(matrix),
+          static_cast<zcr_color_manager_v1_range_names>(range),
           static_cast<zcr_color_manager_v1_whitepoint_names>(whitepoint)));
 }
 
-void color_manager_create_color_space_from_params(
+void color_manager_create_color_space_from_names_DEPRECATED(
     struct wl_client* client,
     struct wl_resource* color_manager_resource,
     uint32_t id,
     uint32_t eotf,
+    uint32_t chromaticity,
+    uint32_t whitepoint) {
+  LOG(WARNING) << "Deprecated request:  create_color_space_from_names";
+  color_manager_create_color_space_from_complete_names(
+      client, color_manager_resource, id, eotf,
+      ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_RGB,
+      ZCR_COLOR_MANAGER_V1_RANGE_NAMES_FULL, chromaticity, whitepoint);
+}
+
+void color_manager_create_color_space_from_complete_params(
+    struct wl_client* client,
+    struct wl_resource* color_manager_resource,
+    uint32_t id,
+    uint32_t eotf,
+    uint32_t matrix,
+    uint32_t range,
     uint32_t primary_r_x,
     uint32_t primary_r_y,
     uint32_t primary_g_x,
@@ -454,6 +547,29 @@ void color_manager_create_color_space_from_params(
     return;
   }
 
+  auto matrix_id = gfx::ColorSpace::MatrixID::INVALID;
+  const auto* maybe_matrix = ui::wayland::kMatrixMap.find(matrix);
+  if (maybe_matrix != std::end(ui::wayland::kMatrixMap)) {
+    matrix_id = maybe_matrix->second;
+  } else {
+    DLOG(ERROR) << "Unable to find named matrix for id=" << matrix;
+    wl_resource_post_error(color_manager_resource,
+                           ZCR_COLOR_MANAGER_V1_ERROR_BAD_ENUM,
+                           "Unable to find a matrix matching %d", matrix);
+  }
+
+  auto range_id = gfx::ColorSpace::RangeID::INVALID;
+  const auto* maybe_range = ui::wayland::kRangeMap.find(range);
+  if (maybe_range != std::end(ui::wayland::kRangeMap)) {
+    range_id = maybe_range->second;
+  } else {
+    DLOG(ERROR) << "Unable to find named range for id=" << range;
+    wl_resource_post_error(color_manager_resource,
+                           ZCR_COLOR_MANAGER_V1_ERROR_BAD_ENUM,
+                           "Unable to find a range matching %d", range);
+  }
+  adjust_matrix_and_range(&matrix_id, &range_id);
+
   auto eotf_id = gfx::ColorSpace::TransferID::INVALID;
   const auto* maybe_eotf = ui::wayland::kEotfMap.find(eotf);
   if (maybe_eotf != std::end(ui::wayland::kEotfMap)) {
@@ -479,9 +595,33 @@ void color_manager_create_color_space_from_params(
     return;
   }
 
-  CreateColorSpace(client, id,
-                   std::make_unique<ColorManagerColorSpace>(
-                       gfx::ColorSpace::CreateCustom(xyzd50, eotf_id)));
+  auto primary_id = gfx::ColorSpace::PrimaryID::CUSTOM;
+  CreateColorSpace(
+      client, id,
+      std::make_unique<ColorManagerColorSpace>(gfx::ColorSpace(
+          primary_id, eotf_id, matrix_id, range_id, &xyzd50, nullptr)));
+}
+
+void color_manager_create_color_space_from_params_DEPRECATED(
+    struct wl_client* client,
+    struct wl_resource* color_manager_resource,
+    uint32_t id,
+    uint32_t eotf,
+    uint32_t primary_r_x,
+    uint32_t primary_r_y,
+    uint32_t primary_g_x,
+    uint32_t primary_g_y,
+    uint32_t primary_b_x,
+    uint32_t primary_b_y,
+    uint32_t white_point_x,
+    uint32_t white_point_y) {
+  LOG(WARNING) << "Deprecated request:  create_color_space_from_params";
+  color_manager_create_color_space_from_complete_params(
+      client, color_manager_resource, id, eotf,
+      ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_RGB,
+      ZCR_COLOR_MANAGER_V1_RANGE_NAMES_FULL, primary_r_x, primary_r_y,
+      primary_g_x, primary_g_y, primary_b_x, primary_b_y, white_point_x,
+      white_point_y);
 }
 
 void color_manager_get_color_management_output(
@@ -524,11 +664,13 @@ void color_manager_destroy(struct wl_client* client,
 
 const struct zcr_color_manager_v1_interface color_manager_v1_implementation = {
     color_manager_create_color_space_from_icc,
-    color_manager_create_color_space_from_names,
-    color_manager_create_color_space_from_params,
+    color_manager_create_color_space_from_names_DEPRECATED,
+    color_manager_create_color_space_from_params_DEPRECATED,
     color_manager_get_color_management_output,
     color_manager_get_color_management_surface,
-    color_manager_destroy};
+    color_manager_destroy,
+    color_manager_create_color_space_from_complete_names,
+    color_manager_create_color_space_from_complete_params};
 
 }  // namespace
 
