@@ -134,7 +134,8 @@ VisitContentAnnotations::VisitContentAnnotations(
     const std::u16string& search_terms,
     const std::string& alternative_title,
     const std::string& page_language,
-    PasswordState password_state)
+    PasswordState password_state,
+    bool has_url_keyed_image)
     : annotation_flags(annotation_flags),
       model_annotations(model_annotations),
       related_searches(related_searches),
@@ -142,7 +143,8 @@ VisitContentAnnotations::VisitContentAnnotations(
       search_terms(search_terms),
       alternative_title(alternative_title),
       page_language(page_language),
-      password_state(password_state) {}
+      password_state(password_state),
+      has_url_keyed_image(has_url_keyed_image) {}
 VisitContentAnnotations::VisitContentAnnotations() = default;
 VisitContentAnnotations::VisitContentAnnotations(
     const VisitContentAnnotations&) = default;

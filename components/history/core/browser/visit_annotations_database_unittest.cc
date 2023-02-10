@@ -124,7 +124,8 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
       u"search",
       "Alternative title",
       "en",
-      VisitContentAnnotations::PasswordState::kUnknown};
+      VisitContentAnnotations::PasswordState::kUnknown,
+      /*has_url_keyed_image=*/true};
   AddContentAnnotationsForVisit(visit_id, content_annotations);
 
   // Query for it.
@@ -153,6 +154,7 @@ TEST_F(VisitAnnotationsDatabaseTest, AddContentAnnotationsForVisit) {
             got_content_annotations.search_normalized_url);
   EXPECT_EQ(u"search", got_content_annotations.search_terms);
   EXPECT_EQ("Alternative title", got_content_annotations.alternative_title);
+  EXPECT_TRUE(got_content_annotations.has_url_keyed_image);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest,
@@ -264,7 +266,8 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
       u"search",
       "Alternative title",
       "en",
-      VisitContentAnnotations::PasswordState::kUnknown};
+      VisitContentAnnotations::PasswordState::kUnknown,
+      /*has_url_keyed_image=*/false};
   AddContentAnnotationsForVisit(visit_id, original);
 
   // Mutate that row.
@@ -275,6 +278,7 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
       GURL("http://pagewithvisit.com?q=search2");
   modification.search_terms = u"search2";
   modification.alternative_title = "New alternative title";
+  modification.has_url_keyed_image = true;
   UpdateContentAnnotationsForVisit(visit_id, modification);
 
   // Check that the mutated version was written.
@@ -301,6 +305,7 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
             GURL("http://pagewithvisit.com?q=search2"));
   EXPECT_EQ(final.search_terms, u"search2");
   EXPECT_EQ(final.alternative_title, "New alternative title");
+  EXPECT_TRUE(final.has_url_keyed_image);
 }
 
 TEST_F(

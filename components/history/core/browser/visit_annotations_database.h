@@ -217,6 +217,10 @@ class VisitAnnotationsDatabase {
   // `originator_cluster_id` columns.
   bool MigrateClustersAutoincrementIdAndAddOriginatorColumns();
 
+  // Called by the derived classes to migrate the older content_annotations
+  // table by adding the has_url_keyed_image column.
+  bool MigrateContentAnnotationsAddHasUrlKeyedImage();
+
  private:
   // Return true if the clusters table's schema contains "AUTOINCREMENT".
   // false if table do not contain AUTOINCREMENT, or the table is not created.

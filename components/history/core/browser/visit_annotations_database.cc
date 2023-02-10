@@ -23,7 +23,8 @@ namespace {
 #define HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS                        \
   " visit_id,visibility_score,categories,page_topics_model_version,"  \
   "annotation_flags,entities,related_searches,search_normalized_url," \
-  "search_terms,alternative_title,page_language,password_state "
+  "search_terms,alternative_title,page_language,password_state,"      \
+  "has_url_keyed_image "
 #define HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS                        \
   " visit_id,context_annotation_flags,duration_since_last_visit,"     \
   "page_end_reason,total_foreground_duration,browser_type,window_id," \
@@ -233,7 +234,8 @@ bool VisitAnnotationsDatabase::InitVisitAnnotationsTables() {
                        "search_terms LONGVARCHAR,"
                        "alternative_title VARCHAR,"
                        "page_language VARCHAR,"
-                       "password_state INTEGER DEFAULT 0 NOT NULL)")) {
+                       "password_state INTEGER DEFAULT 0 NOT NULL,"
+                       "has_url_keyed_image BOOLEAN NOT NULL)")) {
     return false;
   }
 
@@ -312,7 +314,7 @@ void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO content_annotations(" HISTORY_CONTENT_ANNOTATIONS_ROW_FIELDS
-      ")VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"));
+      ")VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit_id);
   statement.BindDouble(
       1, static_cast<double>(
@@ -335,6 +337,7 @@ void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
   statement.BindString(10, visit_content_annotations.page_language);
   statement.BindInt(
       11, PasswordStateToInt(visit_content_annotations.password_state));
+  statement.BindBool(12, visit_content_annotations.has_url_keyed_image);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute 'content_annotations' insert statement:  "
@@ -384,7 +387,7 @@ void VisitAnnotationsDatabase::UpdateContentAnnotationsForVisit(
       "page_topics_model_version=?,"
       "annotation_flags=?,entities=?,"
       "related_searches=?,search_normalized_url=?,search_terms=?,"
-      "alternative_title=? "
+      "alternative_title=?,has_url_keyed_image=?"
       "WHERE visit_id=?"));
   statement.BindDouble(
       0, static_cast<double>(
@@ -404,7 +407,8 @@ void VisitAnnotationsDatabase::UpdateContentAnnotationsForVisit(
                        visit_content_annotations.search_normalized_url.spec());
   statement.BindString16(7, visit_content_annotations.search_terms);
   statement.BindString(8, visit_content_annotations.alternative_title);
-  statement.BindInt64(9, visit_id);
+  statement.BindBool(9, visit_content_annotations.has_url_keyed_image);
+  statement.BindInt64(10, visit_id);
 
   if (!statement.Run()) {
     DVLOG(0)
@@ -522,6 +526,7 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
   out_content_annotations->page_language = statement.ColumnString(10);
   out_content_annotations->password_state =
       PasswordStateFromInt(statement.ColumnInt(11));
+  out_content_annotations->has_url_keyed_image = statement.ColumnBool(12);
   return true;
 }
 
@@ -1433,6 +1438,20 @@ bool VisitAnnotationsDatabase::ClustersTableContainsAutoincrement() {
   // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume no
   // other columns could contain "AUTOINCREMENT".
   return clusters_schema.find("AUTOINCREMENT") != std::string::npos;
+}
+
+bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddHasUrlKeyedImage() {
+  if (!GetDB().DoesTableExist("content_annotations")) {
+    NOTREACHED() << " Content annotations table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("content_annotations", "has_url_keyed_image")) {
+    return true;
+  }
+  return GetDB().Execute(
+      "ALTER TABLE content_annotations "
+      "ADD COLUMN has_url_keyed_image BOOLEAN DEFAULT false NOT NULL");
 }
 
 bool VisitAnnotationsDatabase::CreateClustersTable() {

@@ -251,7 +251,8 @@ struct VisitContentAnnotations {
                           const std::u16string& search_terms,
                           const std::string& alternative_title,
                           const std::string& page_language,
-                          PasswordState password_state);
+                          PasswordState password_state,
+                          bool has_url_keyed_image);
   VisitContentAnnotations(const VisitContentAnnotations& other);
   ~VisitContentAnnotations();
 
@@ -270,6 +271,8 @@ struct VisitContentAnnotations {
   // Whether a password form was found on the page - see also
   // sessions::SerializedNavigationEntry::PasswordState.
   PasswordState password_state = PasswordState::kUnknown;
+  // Whether there is a URL-keyed image for this visit.
+  bool has_url_keyed_image = false;
 };
 
 class URLResult : public URLRow {

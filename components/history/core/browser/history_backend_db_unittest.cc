@@ -2346,6 +2346,7 @@ TEST_F(HistoryBackendDBTest,
     EXPECT_TRUE(visit_content_annotations.search_terms.empty());
   }
 }
+
 TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsAddPageMetadataColumns) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(53));
 
@@ -2694,6 +2695,55 @@ TEST_F(HistoryBackendDBTest,
     Cluster cluster = db_->GetCluster(cluster_id);
     EXPECT_EQ(cluster.originator_cache_guid, "");
     EXPECT_EQ(cluster.originator_cluster_id, 0);
+  }
+}
+
+TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsAddHasUrlKeyedImage) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(61));
+
+  const VisitID visit_id = 1;
+
+  // Open the db for manual manipulation.
+  sql::Database db;
+  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+  const char kInsertContentAnnotationsStatement[] =
+      "INSERT INTO "
+      "content_annotations(visit_id,visibility_score,categories,"
+      "page_topics_model_version,annotation_flags,entities,related_searches,"
+      "search_normalized_url,search_terms,alternative_title,page_language,"
+      "password_state)"
+      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+
+  // Add an entry to "content_annotations" table.
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertContentAnnotationsStatement));
+    s.BindInt64(0, visit_id);
+    s.BindDouble(1, -1);
+    s.BindString(2, "");
+    s.BindInt64(3, -1);
+    s.BindInt64(4, 0);
+    s.BindString(5, "");
+    s.BindString(6, "");
+    s.BindString(7, "");
+    s.BindString16(8, u"");
+    s.BindString(9, "");
+    s.BindString(10, "");
+    s.BindInt(11, 0);
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 62);
+
+  // After the migration, has_url_keyed_image should be false.
+  {
+    VisitContentAnnotations visit_content_annotations;
+    db_->GetContentAnnotationsForVisit(visit_id, &visit_content_annotations);
+    EXPECT_FALSE(visit_content_annotations.has_url_keyed_image);
   }
 }
 
