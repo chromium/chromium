@@ -11,7 +11,6 @@
     android:layout_height="wrap_content"
     android:elevation="@dimen/page_zoom_view_elevation"
     android:gravity="center"
-    android:maxWidth="@dimen/page_zoom_view_max_width"
     android:orientation="horizontal" >
 
     <org.chromium.ui.widget.ChromeImageButton
@@ -25,8 +24,8 @@
 
     <SeekBar
         android:id="@+id/page_zoom_slider"
-        android:layout_width="0dp"
         android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="@dimen/min_touch_target_size"
         android:contentDescription="@string/page_zoom_label" />
 
