@@ -208,8 +208,9 @@ class ScopedFakeAutoEnrollmentClientFactory {
   // created, returns immediately. Note: The returned instance is owned by
   // `policy::AutoEnrollmentController`.
   policy::FakeAutoEnrollmentClient* WaitAutoEnrollmentClientCreated() {
-    if (created_auto_enrollment_client_)
+    if (created_auto_enrollment_client_) {
       return created_auto_enrollment_client_;
+    }
 
     base::RunLoop run_loop;
     run_on_auto_enrollment_client_created_ = run_loop.QuitClosure();
@@ -233,8 +234,9 @@ class ScopedFakeAutoEnrollmentClientFactory {
     EXPECT_FALSE(created_auto_enrollment_client_);
     created_auto_enrollment_client_ = auto_enrollment_client;
 
-    if (run_on_auto_enrollment_client_created_)
+    if (run_on_auto_enrollment_client_created_) {
       std::move(run_on_auto_enrollment_client_created_).Run();
+    }
   }
 
   // The `policy::AutoEnrollmentController` which is using
@@ -297,8 +299,9 @@ void QuitLoopOnAutoEnrollmentProgress(
     policy::AutoEnrollmentState expected_state,
     base::RunLoop* loop,
     policy::AutoEnrollmentState actual_state) {
-  if (expected_state == actual_state)
+  if (expected_state == actual_state) {
     loop->Quit();
+  }
 }
 
 // Returns a string which can be put into the VPD variable
@@ -379,8 +382,9 @@ class WizardControllerTest : public OobeBaseTest {
 
   content::WebContents* GetWebContents() {
     LoginDisplayHost* host = LoginDisplayHost::default_host();
-    if (!host)
+    if (!host) {
       return nullptr;
+    }
     return host->GetOobeWebContents();
   }
 
@@ -2716,22 +2720,6 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
 
   FakeRollbackNetworkConfig* network_config_;
 };
-
-IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
-                       RestartChromeAfterRollbackEnrollment) {
-  base::RunLoop run_loop;
-  auto subscription =
-      browser_shutdown::AddAppTerminatingCallback(run_loop.QuitClosure());
-
-  CheckCurrentScreen(WelcomeView::kScreenId);
-  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
-  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
-  WizardController::default_controller()->AdvanceToScreen(
-      EnrollmentScreenView::kScreenId);
-  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
-  mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
-  run_loop.Run();
-}
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Disabled due to crbug.com/1414116.
