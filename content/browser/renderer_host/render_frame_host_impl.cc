@@ -3222,6 +3222,8 @@ void RenderFrameHostImpl::RenderProcessGone(
   has_pagehide_handler_ = false;
   has_visibilitychange_handler_ = false;
 
+  has_navigate_event_handler_ = false;
+
   if (IsPendingDeletion()) {
     // If the process has died, we don't need to wait for the ACK. Complete the
     // deletion immediately.
@@ -6440,6 +6442,11 @@ void RenderFrameHostImpl::NavigateToNavigationApiKey(
     return;
   }
   frame_tree_->controller().NavigateToNavigationApiKey(this, task_id, key);
+}
+
+void RenderFrameHostImpl::NavigateEventHandlerPresenceChanged(bool present) {
+  DCHECK_NE(has_navigate_event_handler_, present);
+  has_navigate_event_handler_ = present;
 }
 
 void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(
@@ -12220,6 +12227,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   has_unload_handler_ = false;
   has_pagehide_handler_ = false;
   has_visibilitychange_handler_ = false;
+
+  has_navigate_event_handler_ = false;
 
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());

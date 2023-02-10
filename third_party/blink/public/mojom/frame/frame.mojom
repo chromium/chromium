@@ -364,6 +364,10 @@ interface LocalFrameHost {
   NavigateToNavigationApiKey(string key, bool has_user_gesture,
                     TaskAttributionId? soft_navigation_heuristics_task_id);
 
+  // Called with |true| when the first navigate event handler is added, and with
+  // |false| when the last navigate event handler is removed.
+  NavigateEventHandlerPresenceChanged(bool present);
+
   // Changes the title for the page in the UI when the page is navigated or the
   // title changes. Sent for top-level frames. This can be null when loading an
   // initial empty document (and in some tests).

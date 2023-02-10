@@ -1058,6 +1058,36 @@ const AtomicString& NavigationApi::InterfaceName() const {
   return event_target_names::kNavigation;
 }
 
+void NavigationApi::AddedEventListener(
+    const AtomicString& event_type,
+    RegisteredEventListener& registered_listener) {
+  EventTargetWithInlineData::AddedEventListener(event_type,
+                                                registered_listener);
+  LocalFrame* frame = window_->GetFrame();
+  if (event_type != event_type_names::kNavigate || !frame) {
+    return;
+  }
+  navigate_event_handler_count_++;
+  if (navigate_event_handler_count_ == 1) {
+    frame->GetLocalFrameHostRemote().NavigateEventHandlerPresenceChanged(true);
+  }
+}
+
+void NavigationApi::RemovedEventListener(
+    const AtomicString& event_type,
+    const RegisteredEventListener& registered_listener) {
+  EventTargetWithInlineData::RemovedEventListener(event_type,
+                                                  registered_listener);
+  LocalFrame* frame = window_->GetFrame();
+  if (event_type != event_type_names::kNavigate || !frame) {
+    return;
+  }
+  navigate_event_handler_count_--;
+  if (navigate_event_handler_count_ == 0) {
+    frame->GetLocalFrameHostRemote().NavigateEventHandlerPresenceChanged(false);
+  }
+}
+
 void NavigationApi::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);

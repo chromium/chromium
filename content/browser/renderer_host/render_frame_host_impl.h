@@ -2106,6 +2106,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return has_committed_any_navigation_;
   }
 
+  // Whether the document in this frame currently has a navigate event handler
+  // registered.
+  bool has_navigate_event_handler() const {
+    return has_navigate_event_handler_;
+  }
+
   // Return true if the process this RenderFrameHost is using has crashed and we
   // are replacing RenderFrameHosts for crashed frames rather than reusing them.
   //
@@ -2229,6 +2235,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& key,
       bool has_user_gesture,
       absl::optional<blink::scheduler::TaskAttributionId> task_id) override;
+  void NavigateEventHandlerPresenceChanged(bool present) override;
   void UpdateTitle(const absl::optional<::std::u16string>& title,
                    base::i18n::TextDirection title_direction) override;
   void UpdateUserActivationState(
@@ -4228,6 +4235,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool has_unload_handler_ = false;
   bool has_pagehide_handler_ = false;
   bool has_visibilitychange_handler_ = false;
+
+  // Tracks whether any navigate event handlers for the Navigation API are
+  // registered in the current document. This is useful for tracking whether
+  // the document might be allowed to cancel certain history navigations.
+  bool has_navigate_event_handler_ = false;
 
   absl::optional<RenderFrameAudioOutputStreamFactory>
       audio_service_audio_output_stream_factory_;
