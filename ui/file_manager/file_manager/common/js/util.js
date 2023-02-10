@@ -1190,6 +1190,14 @@ util.isDriveShortcutsEnabled = () => {
 };
 
 /**
+ * Returns whether the DriveFsBulkPinning feature flag is enabled.
+ * @returns {boolean}
+ */
+util.isDriveFsBulkPinningEnabled = () => {
+  return loadTimeData.getBoolean('DRIVEFS_BULK_PINNING');
+};
+
+/**
  * Retrieves all entries inside the given |rootEntry|.
  * @param {!DirectoryEntry} rootEntry
  * @param {function(!Array<!Entry>)} entriesCallback Called when some chunk of

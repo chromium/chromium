@@ -22,6 +22,7 @@ import {getStore} from '../../state/store.js';
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {TAG_NAME as DlpRestrictedBannerName} from './ui/banners/dlp_restricted_banner.js';
+import {TAG_NAME as DriveBulkPinningBannerTagName} from './ui/banners/drive_bulk_pinning_banner.js';
 import {TAG_NAME as DriveLowIndividualSpaceBanner} from './ui/banners/drive_low_individual_space_banner.js';
 import {TAG_NAME as DriveOfflinePinningBannerTagName} from './ui/banners/drive_offline_pinning_banner.js';
 import {TAG_NAME as DriveOutOfIndividualSpaceBanner} from './ui/banners/drive_out_of_individual_space_banner.js';
@@ -325,6 +326,9 @@ export class BannerController extends EventTarget {
           util.isGoogleOneOfferFilesBannerEligibleAndEnabled() ?
           [GoogleOneOfferBannerTagName] :
           [DriveWelcomeBannerTagName];
+      if (util.isDriveFsBulkPinningEnabled()) {
+        educationalBanners.push(DriveBulkPinningBannerTagName);
+      }
       educationalBanners.push(
           HoldingSpaceWelcomeBannerTagName, DriveOfflinePinningBannerTagName,
           PhotosWelcomeBannerTagName);

@@ -26,6 +26,7 @@ html_to_js("web_components") {
     "drive_out_of_individual_space_banner.js",
     "drive_out_of_organization_space_banner.js",
     "drive_offline_pinning_banner.js",
+    "drive_bulk_pinning_banner.js",
     "drive_welcome_banner.js",
     "google_one_offer_banner.js",
     "educational_banner.js",
@@ -53,6 +54,7 @@ js_type_check("closure_compile_jsmodules") {
 
   deps = [
     ":dlp_restricted_banner",
+    ":drive_bulk_pinning_banner",
     ":drive_low_individual_space_banner",
     ":drive_offline_pinning_banner",
     ":drive_out_of_individual_space_banner",
@@ -146,6 +148,13 @@ js_library("drive_offline_pinning_banner") {
   deps = [
     ":educational_banner",
     "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:banner",
+  ]
+}
+js_library("drive_bulk_pinning_banner") {
+  deps = [
+    ":educational_banner",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:banner",
   ]
