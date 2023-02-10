@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/feed/core/v2/prefs.h"
+#include "components/feed/core/v2/ios_shared_prefs.h"
 
 #include <string>
 #include <vector>
@@ -14,14 +14,16 @@
 
 namespace feed {
 
-class FeedPrefsTest : public testing::Test {
+namespace {
+
+class IOSSharedPrefsTest : public testing::Test {
  protected:
-  FeedPrefsTest() { feed::RegisterProfilePrefs(prefs_.registry()); }
+  IOSSharedPrefsTest() { feed::RegisterProfilePrefs(prefs_.registry()); }
 
   TestingPrefServiceSimple prefs_;
 };
 
-TEST_F(FeedPrefsTest, TestSetAndGetExperiments) {
+TEST_F(IOSSharedPrefsTest, TestSetAndGetExperiments) {
   Experiments e;
   std::vector<std::string> group_list{"Group1"};
   e["Trial1"] = group_list;
@@ -31,5 +33,7 @@ TEST_F(FeedPrefsTest, TestSetAndGetExperiments) {
   ASSERT_TRUE(prefs_.HasPrefPath(prefs::kExperimentsV2));
   EXPECT_EQ(e, prefs::GetExperiments(prefs_));
 }
+
+}  // namespace
 
 }  // namespace feed

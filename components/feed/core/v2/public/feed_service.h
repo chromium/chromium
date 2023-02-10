@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "components/feed/core/v2/ios_shared_prefs.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/keyed_service/core/keyed_service.h"

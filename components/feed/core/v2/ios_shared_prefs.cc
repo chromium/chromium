@@ -48,5 +48,30 @@ int GetNoticeCardClicksCount(const PrefService& pref_service) {
   return pref_service.GetInteger(feed::prefs::kNoticeCardClicksCount);
 }
 
+void SetExperiments(const Experiments& experiments, PrefService& pref_service) {
+  base::Value::Dict dict;
+  for (const auto& exp : experiments) {
+    base::Value::List list;
+    for (auto elem : exp.second) {
+      list.Append(elem);
+    }
+    dict.Set(exp.first, std::move(list));
+  }
+  pref_service.SetDict(kExperimentsV2, std::move(dict));
+}
+
+Experiments GetExperiments(PrefService& pref_service) {
+  const auto& dict = pref_service.GetDict(kExperimentsV2);
+  Experiments experiments;
+  for (auto kv : dict) {
+    std::vector<std::string> vect;
+    for (const auto& v : kv.second.GetList()) {
+      vect.push_back(v.GetString());
+    }
+    experiments[kv.first] = vect;
+  }
+  return experiments;
+}
+
 }  // namespace prefs
 }  // namespace feed
