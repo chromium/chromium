@@ -136,6 +136,9 @@ class BrowsingDataModel {
 
   virtual ~BrowsingDataModel();
 
+  // Returns number of entries within the Model.
+  size_t size() const { return browsing_data_entries_.size(); }
+
   // Consults supported storage backends to create and populate a Model based
   // on the current state of `storage_partition`.
   static void BuildFromDisk(

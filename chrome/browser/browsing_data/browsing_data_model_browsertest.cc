@@ -306,6 +306,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
       BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
 
   // Join an interest group.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
@@ -316,8 +317,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   do {
     browsing_data_model = BuildBrowsingDataModel();
     base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  } while (std::distance(browsing_data_model->begin(),
-                         browsing_data_model->end()) != 1);
+  } while (browsing_data_model->size() != 1);
 
   // Validate that an interest group is added.
   url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
@@ -353,11 +353,11 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   auto* allowed_browsing_data_model =
       content_settings->allowed_browsing_data_model();
   ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 
   // Join an interest group.
   JoinInterestGroup(web_contents(), https_test_server());
-  while (std::distance(allowed_browsing_data_model->begin(),
-                       allowed_browsing_data_model->end()) != 1) {
+  while (allowed_browsing_data_model->size() != 1) {
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
@@ -394,6 +394,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
     auto* allowed_browsing_data_model =
         content_settings->allowed_browsing_data_model();
     ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+    ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 
     // Register a source.
     ASSERT_TRUE(ExecJs(web_contents(), content::JsReplace(R"(
@@ -402,8 +403,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                                                           register_url))
     );
 
-    while (std::distance(allowed_browsing_data_model->begin(),
-                         allowed_browsing_data_model->end()) != 1) {
+    while (allowed_browsing_data_model->size() != 1) {
       base::RunLoop run_loop;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
