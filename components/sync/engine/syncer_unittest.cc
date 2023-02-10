@@ -134,7 +134,7 @@ class SyncerTest : public testing::Test,
     DVLOG(1) << "HandleSyncEngineEvent in unittest " << event.what_happened;
   }
 
-  void OnActionableError(const SyncProtocolError& error) override {}
+  void OnActionableProtocolError(const SyncProtocolError& error) override {}
   void OnRetryTimeChanged(base::Time retry_time) override {}
   void OnThrottledTypesChanged(ModelTypeSet throttled_types) override {}
   void OnBackedOffTypesChanged(ModelTypeSet backed_off_types) override {}

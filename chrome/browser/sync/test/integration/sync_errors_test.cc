@@ -127,15 +127,17 @@ class SyncErrorTest : public SyncTest {
 };
 
 // Helper class that waits until the sync engine has hit an actionable error.
-class ActionableErrorChecker : public SingleClientStatusChangeChecker {
+class ActionableProtocolErrorChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit ActionableErrorChecker(SyncServiceImpl* service)
+  explicit ActionableProtocolErrorChecker(SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
 
-  ActionableErrorChecker(const ActionableErrorChecker&) = delete;
-  ActionableErrorChecker& operator=(const ActionableErrorChecker&) = delete;
+  ActionableProtocolErrorChecker(const ActionableProtocolErrorChecker&) =
+      delete;
+  ActionableProtocolErrorChecker& operator=(
+      const ActionableProtocolErrorChecker&) = delete;
 
-  ~ActionableErrorChecker() override = default;
+  ~ActionableProtocolErrorChecker() override = default;
 
   // Checks if an actionable error has been hit. Called repeatedly each time PSS
   // notifies observers of a state change.
@@ -168,16 +170,16 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, UpgradeClientErrorDuringIncrementalSync) {
 
   std::string description = "Not My Fault";
   std::string url = "www.google.com";
-  GetFakeServer()->TriggerActionableError(sync_pb::SyncEnums::THROTTLED,
-                                          description, url,
-                                          sync_pb::SyncEnums::UPGRADE_CLIENT);
+  GetFakeServer()->TriggerActionableProtocolError(
+      sync_pb::SyncEnums::THROTTLED, description, url,
+      sync_pb::SyncEnums::UPGRADE_CLIENT);
 
   // Now make one more change so we will do another sync.
   const BookmarkNode* node2 = AddFolder(0, 0, "title2");
   SetTitle(0, node2, "new_title2");
 
   // Wait until an actionable error is encountered.
-  EXPECT_TRUE(ActionableErrorChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(ActionableProtocolErrorChecker(GetSyncService(0)).Wait());
 
   // UPGRADE_CLIENT gets mapped to an unrecoverable error, so Sync will *not*
   // start up again in transport-only mode (which would clear the cached error).
@@ -194,9 +196,9 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, UpgradeClientErrorDuringIncrementalSync) {
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, UpgradeClientErrorDuringInitialSync) {
   std::string description = "Not My Fault";
   std::string url = "www.google.com";
-  GetFakeServer()->TriggerActionableError(sync_pb::SyncEnums::THROTTLED,
-                                          description, url,
-                                          sync_pb::SyncEnums::UPGRADE_CLIENT);
+  GetFakeServer()->TriggerActionableProtocolError(
+      sync_pb::SyncEnums::THROTTLED, description, url,
+      sync_pb::SyncEnums::UPGRADE_CLIENT);
 
   ASSERT_TRUE(SetupClients());
 
@@ -205,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, UpgradeClientErrorDuringInitialSync) {
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
   // Wait until an actionable error is encountered.
-  EXPECT_TRUE(ActionableErrorChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(ActionableProtocolErrorChecker(GetSyncService(0)).Wait());
 
   // UPGRADE_CLIENT gets mapped to an unrecoverable error, so Sync will *not*
   // start up again in transport-only mode (which would clear the cached error).
@@ -296,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, EncryptionObsoleteErrorTest) {
   SetTitle(0, node1, "new_title1");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
-  GetFakeServer()->TriggerActionableError(
+  GetFakeServer()->TriggerActionableProtocolError(
       sync_pb::SyncEnums::ENCRYPTION_OBSOLETE, "Not My Fault", "www.google.com",
       sync_pb::SyncEnums::UNKNOWN_ACTION);
 

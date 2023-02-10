@@ -807,7 +807,8 @@ void SyncServiceImpl::OnMigrationNeededForTypes(ModelTypeSet types) {
   migrator_->MigrateTypes(types);
 }
 
-void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
+void SyncServiceImpl::OnActionableProtocolError(
+    const SyncProtocolError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   last_actionable_error_ = error;
   DCHECK_NE(last_actionable_error_.action, UNKNOWN_ACTION);

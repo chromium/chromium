@@ -48,7 +48,7 @@ class SyncEngineHost {
   virtual void OnMigrationNeededForTypes(ModelTypeSet types) = 0;
 
   // Called when the sync cycle returns there is an user actionable error.
-  virtual void OnActionableError(const SyncProtocolError& error) = 0;
+  virtual void OnActionableProtocolError(const SyncProtocolError& error) = 0;
 
   // Called when the set of backed off types is changed.
   virtual void OnBackedOffTypesChanged() = 0;

@@ -403,9 +403,10 @@ void SyncManagerImpl::OnSyncCycleEvent(const SyncCycleEvent& event) {
   }
 }
 
-void SyncManagerImpl::OnActionableError(const SyncProtocolError& error) {
+void SyncManagerImpl::OnActionableProtocolError(
+    const SyncProtocolError& error) {
   for (SyncManager::Observer& observer : observers_) {
-    observer.OnActionableError(error);
+    observer.OnActionableProtocolError(error);
   }
 }
 

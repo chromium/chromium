@@ -45,7 +45,7 @@ class DebugInfoEventListener : public SyncManager::Observer,
   // SyncManager::Observer implementation.
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
   void OnConnectionStatusChange(ConnectionStatus connection_status) override;
-  void OnActionableError(const SyncProtocolError& sync_error) override;
+  void OnActionableProtocolError(const SyncProtocolError& sync_error) override;
   void OnMigrationRequested(ModelTypeSet types) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
   void OnSyncStatusChanged(const SyncStatus& status) override;

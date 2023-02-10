@@ -99,10 +99,11 @@ void SyncEngineBackend::OnConnectionStatusChange(ConnectionStatus status) {
              status);
 }
 
-void SyncEngineBackend::OnActionableError(const SyncProtocolError& sync_error) {
+void SyncEngineBackend::OnActionableProtocolError(
+    const SyncProtocolError& sync_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   host_.Call(FROM_HERE,
-             &SyncEngineImpl::HandleActionableErrorEventOnFrontendLoop,
+             &SyncEngineImpl::HandleActionableProtocolErrorEventOnFrontendLoop,
              sync_error);
 }
 

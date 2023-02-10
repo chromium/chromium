@@ -58,7 +58,7 @@ class SyncManager {
     // changed.
     virtual void OnConnectionStatusChange(ConnectionStatus status) = 0;
 
-    virtual void OnActionableError(
+    virtual void OnActionableProtocolError(
         const SyncProtocolError& sync_protocol_error) = 0;
 
     virtual void OnMigrationRequested(ModelTypeSet types) = 0;

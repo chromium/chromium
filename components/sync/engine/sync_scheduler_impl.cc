@@ -77,7 +77,7 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
   return false;
 }
 
-bool IsActionableError(const SyncProtocolError& error) {
+bool IsActionableProtocolError(const SyncProtocolError& error) {
   return (error.action != UNKNOWN_ACTION);
 }
 
@@ -860,10 +860,10 @@ void SyncSchedulerImpl::OnSyncProtocolError(
     SDVLOG(2) << "Sync Scheduler requesting early exit.";
     Stop();
   }
-  if (IsActionableError(sync_protocol_error)) {
-    SDVLOG(2) << "OnActionableError";
+  if (IsActionableProtocolError(sync_protocol_error)) {
+    SDVLOG(2) << "OnActionableProtocolError";
     for (SyncEngineEventListener& observer : *cycle_context_->listeners())
-      observer.OnActionableError(sync_protocol_error);
+      observer.OnActionableProtocolError(sync_protocol_error);
   }
 }
 

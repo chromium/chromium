@@ -241,7 +241,7 @@ TEST(SyncUIUtilTest, DistinctCasesReportProperMessages) {
   }
 }
 
-TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableError) {
+TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableProtocolError) {
   base::test::TaskEnvironment task_environment;
   syncer::TestSyncService service;
   signin::IdentityTestEnvironment environment;
@@ -282,7 +282,7 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableError) {
                             SyncStatusActionType::kUpgradeClient));
 }
 
-TEST(SyncUIUtilTest, ActionableErrorWithPassiveMessage) {
+TEST(SyncUIUtilTest, ActionableProtocolErrorWithPassiveMessage) {
   base::test::TaskEnvironment task_environment;
   syncer::TestSyncService service;
   signin::IdentityTestEnvironment environment;

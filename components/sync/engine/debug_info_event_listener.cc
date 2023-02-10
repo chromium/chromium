@@ -95,7 +95,7 @@ void DebugInfoEventListener::OnPassphraseTypeChanged(
   CreateAndAddEvent(sync_pb::SyncEnums::PASSPHRASE_TYPE_CHANGED);
 }
 
-void DebugInfoEventListener::OnActionableError(
+void DebugInfoEventListener::OnActionableProtocolError(
     const SyncProtocolError& sync_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateAndAddEvent(sync_pb::SyncEnums::ACTIONABLE_ERROR);

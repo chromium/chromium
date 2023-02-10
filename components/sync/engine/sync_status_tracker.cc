@@ -67,7 +67,7 @@ void SyncStatusTracker::OnSyncCycleEvent(const SyncCycleEvent& event) {
   status_changed_callback_.Run(status_);
 }
 
-void SyncStatusTracker::OnActionableError(
+void SyncStatusTracker::OnActionableProtocolError(
     const SyncProtocolError& sync_protocol_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   status_ = CreateBlankStatus();

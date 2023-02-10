@@ -23,7 +23,7 @@ class SyncEngineEventListener {
 
   // This event is sent when we receive an actionable error. It is up to
   // the listeners to figure out the action to take using the error sent.
-  virtual void OnActionableError(const SyncProtocolError& error) = 0;
+  virtual void OnActionableProtocolError(const SyncProtocolError& error) = 0;
 
   // This event is sent when scheduler decides to wait before next request
   // either because it gets throttled by server or because it backs off after

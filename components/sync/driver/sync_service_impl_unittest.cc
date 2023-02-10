@@ -937,7 +937,7 @@ TEST_F(SyncServiceImplTest, ResetSyncData) {
 
   SyncProtocolError client_cmd;
   client_cmd.action = RESET_LOCAL_SYNC_DATA;
-  service()->OnActionableError(client_cmd);
+  service()->OnActionableProtocolError(client_cmd);
 }
 
 // Test that when SyncServiceImpl receives actionable error
@@ -957,7 +957,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
 
   SyncProtocolError client_cmd;
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;
-  service()->OnActionableError(client_cmd);
+  service()->OnActionableProtocolError(client_cmd);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ash does not support signout.
@@ -1014,7 +1014,7 @@ TEST_F(SyncServiceImplTest,
   client_cmd.error_type = NOT_MY_BIRTHDAY;
 
   base::HistogramTester histogram_tester;
-  service()->OnActionableError(client_cmd);
+  service()->OnActionableProtocolError(client_cmd);
 
   ASSERT_FALSE(service()->IsSyncFeatureEnabled());
 
@@ -1045,7 +1045,7 @@ TEST_F(SyncServiceImplTest,
   client_cmd.error_type = ENCRYPTION_OBSOLETE;
 
   base::HistogramTester histogram_tester;
-  service()->OnActionableError(client_cmd);
+  service()->OnActionableProtocolError(client_cmd);
 
   ASSERT_FALSE(service()->IsSyncFeatureEnabled());
 

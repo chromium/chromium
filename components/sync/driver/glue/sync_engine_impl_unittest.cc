@@ -78,7 +78,7 @@ class MockSyncEngineHost : public SyncEngineHost {
               (ModelTypeSet types),
               (override));
   MOCK_METHOD(void,
-              OnActionableError,
+              OnActionableProtocolError,
               (const SyncProtocolError& error),
               (override));
   MOCK_METHOD(void, OnBackedOffTypesChanged, (), (override));

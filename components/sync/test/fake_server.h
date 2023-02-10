@@ -204,19 +204,20 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // Force the server to return the given data as part of the error field of
   // ClientToServerResponse on all subsequent sync requests. Must not be called
   // if any of errors triggerings currently configured.
-  void TriggerActionableError(const sync_pb::SyncEnums_ErrorType& error_type,
-                              const std::string& description,
-                              const std::string& url,
-                              const sync_pb::SyncEnums::Action& action);
+  void TriggerActionableProtocolError(
+      const sync_pb::SyncEnums_ErrorType& error_type,
+      const std::string& description,
+      const std::string& url,
+      const sync_pb::SyncEnums::Action& action);
 
-  void ClearActionableError();
+  void ClearActionableProtocolError();
 
   // Instructs the server to send triggered errors on every other request
   // (starting with the first one after this call). This feature can be used to
   // test the resiliency of the client when communicating with a problematic
   // server or flaky network connection. This method should only be called
-  // after a call to TriggerError or TriggerActionableError. Returns true if
-  // triggered error alternating was successful.
+  // after a call to TriggerError or TriggerActionableProtocolError. Returns
+  // true if triggered error alternating was successful.
   bool EnableAlternatingTriggeredErrors();
 
   // If called, all subsequent GetUpdatesResponses won't contain

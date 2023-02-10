@@ -103,7 +103,7 @@ class SyncManagerImpl
 
   // SyncEngineEventListener implementation.
   void OnSyncCycleEvent(const SyncCycleEvent& event) override;
-  void OnActionableError(const SyncProtocolError& error) override;
+  void OnActionableProtocolError(const SyncProtocolError& error) override;
   void OnRetryTimeChanged(base::Time retry_time) override;
   void OnThrottledTypesChanged(ModelTypeSet throttled_types) override;
   void OnBackedOffTypesChanged(ModelTypeSet backed_off_types) override;

@@ -498,10 +498,10 @@ void SyncEngineImpl::HandleSyncCycleCompletedOnFrontendLoop(
   host_->OnSyncCycleCompleted(snapshot);
 }
 
-void SyncEngineImpl::HandleActionableErrorEventOnFrontendLoop(
+void SyncEngineImpl::HandleActionableProtocolErrorEventOnFrontendLoop(
     const SyncProtocolError& sync_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_->OnActionableError(sync_error);
+  host_->OnActionableProtocolError(sync_error);
 }
 
 void SyncEngineImpl::HandleMigrationRequestedOnFrontendLoop(

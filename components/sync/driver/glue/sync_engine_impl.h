@@ -158,7 +158,7 @@ class SyncEngineImpl : public SyncEngine,
       const SyncCycleSnapshot& snapshot);
 
   // Let the front end handle the actionable error event.
-  void HandleActionableErrorEventOnFrontendLoop(
+  void HandleActionableProtocolErrorEventOnFrontendLoop(
       const SyncProtocolError& sync_error);
 
   // Handle a migration request.

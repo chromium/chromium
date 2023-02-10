@@ -93,7 +93,10 @@ class SyncManagerObserverMock : public SyncManager::Observer {
               (const SyncCycleSnapshot&),
               (override));
   MOCK_METHOD(void, OnConnectionStatusChange, (ConnectionStatus), (override));
-  MOCK_METHOD(void, OnActionableError, (const SyncProtocolError&), (override));
+  MOCK_METHOD(void,
+              OnActionableProtocolError,
+              (const SyncProtocolError&),
+              (override));
   MOCK_METHOD(void, OnMigrationRequested, (ModelTypeSet), (override));
   MOCK_METHOD(void, OnProtocolEvent, (const ProtocolEvent&), (override));
   MOCK_METHOD(void, OnSyncStatusChanged, (const SyncStatus&), (override));
