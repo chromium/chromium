@@ -29,7 +29,7 @@ class PlaybackImageButton : public OverlayWindowImageButton {
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
-  void UpdateImageAndTooltipText();
+  void UpdateImageAndText();
 
   VideoOverlayWindowViews::PlaybackState playback_state_ =
       VideoOverlayWindowViews::PlaybackState::kEndOfVideo;

@@ -7715,6 +7715,8 @@ absl::optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
     case ax::mojom::Event::kSelectionAdd:
     case ax::mojom::Event::kSelectionRemove:
       return UIA_SelectionItemIsSelectedPropertyId;
+    case ax::mojom::Event::kTextChanged:
+      return UIA_NamePropertyId;
     default:
       return absl::nullopt;
   }

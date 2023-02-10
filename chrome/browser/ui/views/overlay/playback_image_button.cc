@@ -33,7 +33,7 @@ void PlaybackImageButton::OnBoundsChanged(const gfx::Rect& rect) {
   replay_image_ = ui::ImageModel::FromVectorIcon(
       vector_icons::kReplayIcon, kColorPipWindowForeground, icon_size);
 
-  UpdateImageAndTooltipText();
+  UpdateImageAndText();
 }
 
 void PlaybackImageButton::SetPlaybackState(
@@ -42,26 +42,35 @@ void PlaybackImageButton::SetPlaybackState(
     return;
 
   playback_state_ = playback_state;
-  UpdateImageAndTooltipText();
+  UpdateImageAndText();
 }
 
-void PlaybackImageButton::UpdateImageAndTooltipText() {
+void PlaybackImageButton::UpdateImageAndText() {
   switch (playback_state_) {
-    case VideoOverlayWindowViews::kPlaying:
+    case VideoOverlayWindowViews::kPlaying: {
       SetImageModel(views::Button::STATE_NORMAL, pause_image_);
-      SetTooltipText(
-          l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_PAUSE_CONTROL_TEXT));
+      std::u16string pause_text =
+          l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_PAUSE_CONTROL_TEXT);
+      SetTooltipText(pause_text);
+      SetAccessibleName(pause_text);
       break;
-    case VideoOverlayWindowViews::kPaused:
+    }
+    case VideoOverlayWindowViews::kPaused: {
       SetImageModel(views::Button::STATE_NORMAL, play_image_);
-      SetTooltipText(
-          l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_PLAY_CONTROL_TEXT));
+      std::u16string play_text =
+          l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_PLAY_CONTROL_TEXT);
+      SetTooltipText(play_text);
+      SetAccessibleName(play_text);
       break;
-    case VideoOverlayWindowViews::kEndOfVideo:
+    }
+    case VideoOverlayWindowViews::kEndOfVideo: {
       SetImageModel(views::Button::STATE_NORMAL, replay_image_);
-      SetTooltipText(l10n_util::GetStringUTF16(
-          IDS_PICTURE_IN_PICTURE_REPLAY_CONTROL_TEXT));
+      std::u16string replay_text =
+          l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_REPLAY_CONTROL_TEXT);
+      SetTooltipText(replay_text);
+      SetAccessibleName(replay_text);
       break;
+    }
   }
   SchedulePaint();
 }
