@@ -1308,6 +1308,10 @@ extern const char kNewBaseUrlInheritanceBehaviorAllowed[];
 extern const char kOutOfProcessSystemDnsResolutionEnabled[];
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kQuickDeleteDialogSuppressed[];
+#endif
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

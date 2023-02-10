@@ -3688,4 +3688,8 @@ const char kOutOfProcessSystemDnsResolutionEnabled[] =
     "net.out_of_process_system_dns_resolution_enabled";
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_ANDROID)
+const char kQuickDeleteDialogSuppressed[] = "quick_delete.dialog_suppressed";
+#endif
+
 }  // namespace prefs

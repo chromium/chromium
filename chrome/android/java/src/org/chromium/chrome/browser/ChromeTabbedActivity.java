@@ -206,6 +206,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.profile_metrics.BrowserProfileType;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -2247,8 +2248,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && QuickDeleteController.isQuickDeleteEnabled()) {
             assert !mTabModelSelector.getCurrentModel().isIncognito()
                 : "Quick delete is not supported in Incognito.";
-            // TODO(crbug.com/1412087): Get/Create the quick delete controller and tell it to show
-            // the dialog.
+
+            QuickDeleteController
+                    .create(getModalDialogManager(), getSnackbarManager(),
+                            UserPrefs.get(mTabModelProfileSupplier.get()))
+                    .triggerQuickDeleteFlow();
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }
