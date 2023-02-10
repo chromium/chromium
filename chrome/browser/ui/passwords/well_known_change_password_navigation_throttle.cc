@@ -55,6 +55,8 @@ bool IsTriggeredByGoogleOwnedUI(NavigationHandle* handle) {
     url::Origin origin = handle->GetInitiatorOrigin().value_or(url::Origin());
     return origin == url::Origin::Create(GURL(chrome::kChromeUISettingsURL)) ||
            origin ==
+               url::Origin::Create(GURL(chrome::kChromeUIPasswordManagerURL)) ||
+           origin ==
                url::Origin::Create(GURL(chrome::kGooglePasswordManagerURL));
   }
 

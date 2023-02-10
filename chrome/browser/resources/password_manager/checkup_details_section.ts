@@ -80,6 +80,15 @@ export class CheckupDetailsSectionElement extends
       credentialsWithReusedPassword_: {
         type: Array,
       },
+
+      /**
+       * The ids of insecure credentials for which user clicked "Change
+       * Password" button
+       */
+      clickedChangePasswordIds_: {
+        type: Object,
+        value: new Set(),
+      },
     };
   }
 
@@ -92,6 +101,7 @@ export class CheckupDetailsSectionElement extends
   private mutedCompromisedCredentials_:
       chrome.passwordsPrivate.PasswordUiEntry[];
   private activeListItem_: CheckupListItemElement|null;
+  private clickedChangePasswordIds_: Set<number>;
   private insecureCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
 
@@ -255,6 +265,16 @@ export class CheckupDetailsSectionElement extends
       |undefined {
     return this.groups_.find(
         group => group.entries.some(entry => entry.id === id));
+  }
+
+  private onChangePasswordClick_(event: CustomEvent<number>) {
+    this.clickedChangePasswordIds_.add(event.detail);
+    this.notifyPath('clickedChangePasswordIds_.size');
+  }
+
+  private clickedChangePassword_(item: chrome.passwordsPrivate.PasswordUiEntry):
+      boolean {
+    return this.clickedChangePasswordIds_.has(item.id);
   }
 }
 

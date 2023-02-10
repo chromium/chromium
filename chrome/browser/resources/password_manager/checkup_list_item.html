@@ -41,6 +41,17 @@
   #separator {
     margin-inline-start: 56px;
   }
+
+  #alreadyChanged {
+    color: var(--cr-link-color);
+    flex: 1;
+    margin-top: 8px;
+    text-align: end;
+  }
+
+  #changePasswordButton {
+    height: 32px;
+  }
 </style>
 <div id="separator" class="hr" hidden="[[first]]"></div>
 <div id="list-item" focus-row-container>
@@ -67,16 +78,22 @@
       </template>
     </div>
   </div>
-  <div id="changeButton">
-    <!-- TODO(crbug.com/): Open change password URL. -->
-    <!-- TODO(crbug.com/): Add already changed dialog. -->
-    <!-- TODO(crbug.com/): Hide change password button for android apps. -->
-    <cr-button id="changePasswordButton" on-click="onChangePasswordClick_">
-      $i18n{changePassword}
-      <iron-icon icon="cr:open-in-new" id="change-password-link-icon">
-      </iron-icon>
-    </cr-button>
-  </div>
+  <template is="dom-if" if="[[item.changePasswordUrl]]">
+    <div class="button-container" id="changeButton">
+      <cr-button id="changePasswordButton" on-click="onChangePasswordClick_">
+        $i18n{changePassword}
+        <iron-icon icon="cr:open-in-new" id="change-password-link-icon">
+        </iron-icon>
+      </cr-button>
+      <a id="alreadyChanged" hidden="[[!showAlreadyChanged]]" href="/"
+          on-click="onAlreadyChangedClick_">
+        $i18n{alreadyChangedPasswordLink}
+      </a>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!item.changePasswordUrl]]">
+    <span id="changePasswordInApp">$i18n{changePasswordInApp}</span>
+  </template>
   <cr-icon-button class="icon-more-vert" id="more" title="$i18n{moreActions}"
       on-click="onMoreClick_">
   </cr-icon-button>

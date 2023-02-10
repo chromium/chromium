@@ -72,9 +72,12 @@
   <template id="insecureCredentials" is="dom-repeat"
       items="[[shownInsecureCredentials_]]" initial-count="50">
     <checkup-list-item item="[[item]]" first="[[!index]]"
+        group="[[getCurrentGroup_(item.id, groups_)]]"
         show-details="[[isCompromisedType(insecurityType_)]]"
+        show-already-changed=
+            "[[clickedChangePassword_(item, clickedChangePasswordIds_.size)]]"
         on-more-actions-click="onMoreActionsClick_"
-        group="[[getCurrentGroup_(item.id, groups_)]]">
+        on-change-password-clicked="onChangePasswordClick_">
     </checkup-list-item>
   </template>
   <template is="dom-if" if="[[mutedCompromisedCredentials_.length]]">
@@ -87,9 +90,12 @@
         opened="[[mutedLeakedCredentialsExpanded_]]">
       <template is="dom-repeat" items="[[mutedCompromisedCredentials_]]">
         <checkup-list-item item="[[item]]" first="[[!index]]"
+            group="[[getCurrentGroup_(item.id, groups_)]]"
             show-details="[[isCompromisedType(insecurityType_)]]"
+            show-already-changed=
+            "[[clickedChangePassword_(item, clickedChangePasswordIds_.size)]]"
             on-more-actions-click="onMoreActionsClick_"
-            group="[[getCurrentGroup_(item.id, groups_)]]">
+            on-change-password-clicked="onChangePasswordClick_">
         </checkup-list-item>
       </template>
     </iron-collapse>
@@ -103,8 +109,11 @@
     </div>
     <template is="dom-repeat" items="[[item.credentials]]">
       <checkup-list-item item="[[item]]" first="[[!index]]"
+          group="[[getCurrentGroup_(item.id, groups_)]]"
+          show-already-changed=
+            "[[clickedChangePassword_(item, clickedChangePasswordIds_.size)]]"
           on-more-actions-click="onMoreActionsClick_"
-          group="[[getCurrentGroup_(item.id, groups_)]]">
+          on-change-password-clicked="onChangePasswordClick_">
       </checkup-list-item>
     </template>
   </template>
