@@ -815,11 +815,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return;
         }
 
-        if (isInOverviewMode() && !ReturnToChromeUtil.isStartSurfaceEnabled(this)) {
-            hideOverview();
-        } else {
-            showOverview(StartSurfaceState.SHOWING_TABSWITCHER);
-        }
+        ReturnToChromeUtil.recordClickTabSwitcher(
+                isInOverviewMode(), getTabModelSelector().getCurrentTab());
+
+        showOverview(StartSurfaceState.SHOWING_TABSWITCHER);
     }
 
     private void initializeToolbarManager() {
