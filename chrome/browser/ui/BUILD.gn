@@ -2034,6 +2034,8 @@ static_library("ui") {
       "../ash/app_list/arc/arc_vpn_provider_manager_factory.h",
       "../ash/app_list/arc/intent.cc",
       "../ash/app_list/arc/intent.h",
+      "../ash/app_list/chat/chat_controller.cc",
+      "../ash/app_list/chat/chat_controller.h",
       "../ash/app_list/chrome_app_list_item.cc",
       "../ash/app_list/chrome_app_list_item.h",
       "../ash/app_list/chrome_app_list_item_manager.cc",
