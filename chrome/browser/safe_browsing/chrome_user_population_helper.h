@@ -32,6 +32,10 @@ enum class NoCachedPopulationReason {
 void ClearCachedUserPopulation(Profile* profile,
                                NoCachedPopulationReason reason);
 
+// Function that gets a PageLoadToken for a given URL
+ChromeUserPopulation::PageLoadToken GetPageLoadTokenForURL(Profile* profile,
+                                                           GURL url);
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CHROME_USER_POPULATION_HELPER_H_

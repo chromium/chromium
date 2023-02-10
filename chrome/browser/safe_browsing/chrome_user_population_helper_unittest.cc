@@ -6,11 +6,13 @@
 
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/model_type.h"
@@ -180,6 +182,32 @@ TEST(GetUserPopulationForProfileTest, PopulatesUserAgent) {
       version_info::GetOSType();
   ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
   EXPECT_EQ(population.user_agent(), user_agent);
+}
+
+TEST(GetPageLoadTokenForURLTest, PopulatesEmptyTokenForEmptyProfile) {
+  content::BrowserTaskEnvironment task_environment;
+  ChromeUserPopulation::PageLoadToken token =
+      GetPageLoadTokenForURL(nullptr, GURL(""));
+  EXPECT_FALSE(token.has_token_value());
+}
+
+TEST(GetPageLoadTokenForURLTest, PopulatesNewTokenValueForURL) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ChromeUserPopulation::PageLoadToken token =
+      GetPageLoadTokenForURL(&profile, GURL("https://www.example.com"));
+  EXPECT_TRUE(token.has_token_value());
+}
+
+TEST(GetPageLoadTokenForURLTest, PopulatesExistingTokenValueForURL) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  VerdictCacheManager* cache_manager =
+      VerdictCacheManagerFactory::GetForProfile(&profile);
+  cache_manager->CreatePageLoadToken(profile.GetHomePage());
+  ChromeUserPopulation::PageLoadToken token =
+      GetPageLoadTokenForURL(&profile, profile.GetHomePage());
+  EXPECT_TRUE(token.has_token_value());
 }
 
 }  // namespace safe_browsing

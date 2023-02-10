@@ -16,6 +16,7 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 
 namespace safe_browsing {
@@ -52,8 +53,11 @@ KeyedService* ChromePingManagerFactory::BuildServiceInstanceFor(
           &ChromePingManagerFactory::ShouldFetchAccessTokenForReport, profile),
       safe_browsing::WebUIInfoSingleton::GetInstance(),
       content::GetUIThreadTaskRunner({}),
-      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile,
-                          profile));
+      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
+      base::FeatureList::IsEnabled(
+          safe_browsing::kAddPageLoadTokenToClientSafeBrowsingReport)
+          ? base::BindRepeating(&safe_browsing::GetPageLoadTokenForURL, profile)
+          : base::NullCallback());
 }
 
 // static

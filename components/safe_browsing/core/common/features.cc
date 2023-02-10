@@ -25,6 +25,10 @@ BASE_FEATURE(kAdSamplerTriggerFeature,
              "SafeBrowsingAdSamplerTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAddPageLoadTokenToClientSafeBrowsingReport,
+             "AddPageLoadTokenToClientSafeBrowsingReport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionKillswitch,
              "ClientSideDetectionKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -249,6 +253,7 @@ constexpr struct {
   bool show_state;
 } kExperimentalFeatures[]{
     {&kAdSamplerTriggerFeature, false},
+    {&kAddPageLoadTokenToClientSafeBrowsingReport, false},
     {&kClientSideDetectionKillswitch, true},
     {&kClientSideDetectionModelIsFlatBuffer, true},
     {&kClientSideDetectionReferrerChain, true},

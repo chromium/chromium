@@ -18,6 +18,9 @@ namespace safe_browsing {
 // for example to control how often collection should occur.
 BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 
+// Adds page load token to client safe browsing report.
+BASE_DECLARE_FEATURE(kAddPageLoadTokenToClientSafeBrowsingReport);
+
 // Killswitch for client side phishing detection. Since client side models are
 // run on a large fraction of navigations, crashes due to the model are very
 // impactful, even if only a small fraction of users have a bad version of the

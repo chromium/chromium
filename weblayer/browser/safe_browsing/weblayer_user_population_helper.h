@@ -6,6 +6,7 @@
 #define WEBLAYER_BROWSER_SAFE_BROWSING_WEBLAYER_USER_POPULATION_HELPER_H_
 
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;
@@ -17,6 +18,11 @@ namespace weblayer {
 // given |browser_context| and populates it appropriately for WebLayer.
 safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserContext(
     content::BrowserContext* browser_context);
+
+// A function that returns tha page load token for the provided URL
+safe_browsing::ChromeUserPopulation::PageLoadToken GetPageLoadTokenForURL(
+    content::BrowserContext* browser_context,
+    GURL url);
 
 }  // namespace weblayer
 

@@ -33,10 +33,10 @@ class PingManagerTest : public testing::Test {
           "&key=%s", base::EscapeQueryParamValue(key, true).c_str());
     }
 
-    ping_manager_.reset(
-        new PingManager(safe_browsing::GetTestV4ProtocolConfig(), nullptr,
-                        nullptr, base::BindRepeating([]() { return false; }),
-                        nullptr, nullptr, base::NullCallback()));
+    ping_manager_.reset(new PingManager(
+        safe_browsing::GetTestV4ProtocolConfig(), nullptr, nullptr,
+        base::BindRepeating([]() { return false; }), nullptr, nullptr,
+        base::NullCallback(), base::NullCallback()));
   }
 
   PingManager* ping_manager() { return ping_manager_.get(); }

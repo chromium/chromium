@@ -5,7 +5,9 @@
 #include "weblayer/browser/safe_browsing/weblayer_user_population_helper.h"
 
 #include "components/safe_browsing/core/browser/user_population.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "weblayer/browser/browser_context_impl.h"
+#include "weblayer/browser/verdict_cache_manager_factory.h"
 
 namespace weblayer {
 
@@ -24,6 +26,17 @@ safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserContext(
       /*num_profiles=*/absl::optional<size_t>(),
       /*num_loaded_profiles=*/absl::optional<size_t>(),
       /*num_open_profiles=*/absl::optional<size_t>());
+}
+
+safe_browsing::ChromeUserPopulation::PageLoadToken GetPageLoadTokenForURL(
+    content::BrowserContext* browser_context,
+    GURL url) {
+  safe_browsing::VerdictCacheManager* cache_manager =
+      VerdictCacheManagerFactory::GetForBrowserContext(browser_context);
+  if (!cache_manager) {
+    return safe_browsing::ChromeUserPopulation::PageLoadToken();
+  }
+  return cache_manager->GetPageLoadToken(url);
 }
 
 }  // namespace weblayer

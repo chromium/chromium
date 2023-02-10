@@ -45,13 +45,15 @@ class ChromePingManagerTest : public testing::Test {
                                   bool is_signed_in,
                                   bool is_remove_cookies_feature_enabled,
                                   bool expect_access_token,
-                                  bool expect_cookies_removed);
+                                  bool expect_cookies_removed,
+                                  bool is_csbrr_page_load_token_enabled);
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
  private:
-  void SetUpFeatureList(bool should_enable_remove_cookies);
+  void SetUpFeatureList(bool should_enable_remove_cookies,
+                        bool should_enable_csbrr_page_load_token);
   raw_ptr<TestingProfile> SetUpProfile(bool is_enhanced_protection,
                                        bool is_signed_in);
   TestSafeBrowsingTokenFetcher* SetUpTokenFetcher(PingManager* ping_manager);
@@ -85,13 +87,19 @@ void ChromePingManagerTest::TearDown() {
 }
 
 void ChromePingManagerTest::SetUpFeatureList(
-    bool should_enable_remove_cookies) {
+    bool should_enable_remove_cookies,
+    bool should_enable_csbrr_page_load_token) {
   std::vector<base::test::FeatureRef> enabled_features = {};
   std::vector<base::test::FeatureRef> disabled_features = {};
   if (should_enable_remove_cookies) {
     enabled_features.push_back(kSafeBrowsingRemoveCookiesInAuthRequests);
   } else {
     disabled_features.push_back(kSafeBrowsingRemoveCookiesInAuthRequests);
+  }
+  if (should_enable_csbrr_page_load_token) {
+    enabled_features.push_back(kAddPageLoadTokenToClientSafeBrowsingReport);
+  } else {
+    disabled_features.push_back(kAddPageLoadTokenToClientSafeBrowsingReport);
   }
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
@@ -127,10 +135,12 @@ void ChromePingManagerTest::RunReportThreatDetailsTest(
     bool is_signed_in,
     bool is_remove_cookies_feature_enabled,
     bool expect_access_token,
-    bool expect_cookies_removed) {
+    bool expect_cookies_removed,
+    bool is_csbrr_page_load_token_enabled) {
   base::RunLoop csbrr_logged_run_loop;
   base::HistogramTester histogram_tester;
-  SetUpFeatureList(is_remove_cookies_feature_enabled);
+  SetUpFeatureList(is_remove_cookies_feature_enabled,
+                   is_csbrr_page_load_token_enabled);
   raw_ptr<TestingProfile> profile =
       SetUpProfile(is_enhanced_protection, is_signed_in);
   auto* ping_manager = ChromePingManagerFactory::GetForBrowserContext(profile);
@@ -149,6 +159,14 @@ void ChromePingManagerTest::RunReportThreatDetailsTest(
   expected_report.ParseFromString(input_report_content);
   *expected_report.mutable_population() =
       safe_browsing::GetUserPopulationForProfile(profile);
+  if (is_csbrr_page_load_token_enabled) {
+    ChromeUserPopulation::PageLoadToken token =
+        safe_browsing::GetPageLoadTokenForURL(profile, GURL(""));
+    expected_report.mutable_population()
+        ->mutable_page_load_tokens()
+        ->Add()
+        ->Swap(&token);
+  }
   std::string expected_report_content;
   EXPECT_TRUE(expected_report.SerializeToString(&expected_report_content));
   EXPECT_NE(input_report_content, expected_report_content);
@@ -193,7 +211,8 @@ TEST_F(ChromePingManagerTest, ReportThreatDetailsWithAccessToken) {
                              /*is_signed_in=*/true,
                              /*is_remove_cookies_feature_enabled=*/true,
                              /*expect_access_token=*/true,
-                             /*expect_cookies_removed=*/true);
+                             /*expect_cookies_removed=*/true,
+                             /*is_csbrr_page_load_token_enabled=*/false);
 }
 TEST_F(ChromePingManagerTest,
        ReportThreatDetailsWithAccessToken_RemoveCookiesFeatureDisabled) {
@@ -201,7 +220,8 @@ TEST_F(ChromePingManagerTest,
                              /*is_signed_in=*/true,
                              /*is_remove_cookies_feature_enabled=*/false,
                              /*expect_access_token=*/true,
-                             /*expect_cookies_removed=*/false);
+                             /*expect_cookies_removed=*/false,
+                             /*is_csbrr_page_load_token_enabled*/ false);
 }
 TEST_F(ChromePingManagerTest,
        ReportThreatDetailsWithoutAccessToken_NotSignedIn) {
@@ -209,7 +229,8 @@ TEST_F(ChromePingManagerTest,
                              /*is_signed_in=*/false,
                              /*is_remove_cookies_feature_enabled=*/true,
                              /*expect_access_token=*/false,
-                             /*expect_cookies_removed=*/false);
+                             /*expect_cookies_removed=*/false,
+                             /*is_csbrr_page_load_token_enabled*/ false);
 }
 TEST_F(ChromePingManagerTest,
        ReportThreatDetailsWithoutAccessToken_NotEnhancedProtection) {
@@ -217,12 +238,25 @@ TEST_F(ChromePingManagerTest,
                              /*is_signed_in=*/true,
                              /*is_remove_cookies_feature_enabled=*/true,
                              /*expect_access_token=*/false,
-                             /*expect_cookies_removed=*/false);
+                             /*expect_cookies_removed=*/false,
+                             /*is_csbrr_page_load_token_enabled*/ false);
 }
 TEST_F(ChromePingManagerTest, ReportThreatDetailsWithoutAccessToken_Incognito) {
   raw_ptr<TestingProfile> profile = TestingProfile::Builder().BuildIncognito(
       profile_manager_->CreateTestingProfile("testing_profile"));
   EXPECT_EQ(ChromePingManagerFactory::GetForBrowserContext(profile), nullptr);
+}
+
+// TODO(crbug.com/1413210): remove test case when deprecating
+// kAddPageLoadTokenToClientSafeBrowsingReport feature
+TEST_F(ChromePingManagerTest,
+       ReportThreatDetailsWithPageLoadToken_PageLoadTokenFeatureEnabled) {
+  RunReportThreatDetailsTest(/*is_enhanced_protection=*/true,
+                             /*is_signed_in=*/true,
+                             /*is_remove_cookies_feature_enabled=*/true,
+                             /*expect_access_token=*/true,
+                             /*expect_cookies_removed=*/true,
+                             /*is_csbrr_page_load_token_enabled*/ true);
 }
 
 TEST_F(ChromePingManagerTest, ReportSafeBrowsingHit) {

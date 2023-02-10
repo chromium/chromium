@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
@@ -80,10 +81,13 @@ PingManager* PingManager::Create(
     WebUIDelegate* webui_delegate,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::RepeatingCallback<ChromeUserPopulation()>
-        get_user_population_callback) {
+        get_user_population_callback,
+    base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
+        get_page_load_token_callback) {
   return new PingManager(config, url_loader_factory, std::move(token_fetcher),
                          get_should_fetch_access_token, webui_delegate,
-                         ui_task_runner, get_user_population_callback);
+                         ui_task_runner, get_user_population_callback,
+                         get_page_load_token_callback);
 }
 
 PingManager::PingManager(
@@ -94,14 +98,17 @@ PingManager::PingManager(
     WebUIDelegate* webui_delegate,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::RepeatingCallback<ChromeUserPopulation()>
-        get_user_population_callback)
+        get_user_population_callback,
+    base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
+        get_page_load_token_callback)
     : config_(config),
       url_loader_factory_(url_loader_factory),
       token_fetcher_(std::move(token_fetcher)),
       get_should_fetch_access_token_(get_should_fetch_access_token),
       webui_delegate_(webui_delegate),
       ui_task_runner_(ui_task_runner),
-      get_user_population_callback_(get_user_population_callback) {}
+      get_user_population_callback_(get_user_population_callback),
+      get_page_load_token_callback_(get_page_load_token_callback) {}
 
 PingManager::~PingManager() {}
 
@@ -157,6 +164,17 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
   if (!get_user_population_callback_.is_null()) {
     *report->mutable_population() = get_user_population_callback_.Run();
+  }
+  if (!get_page_load_token_callback_.is_null() &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::kAddPageLoadTokenToClientSafeBrowsingReport)) {
+    ChromeUserPopulation::PageLoadToken token =
+        get_page_load_token_callback_.Run(GURL(report->page_url()));
+    report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
+        &token);
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.ClientSafeBrowsingReport.IsPageLoadTokenNull",
+        !token.has_token_value());
   }
 
   std::string serialized_report;

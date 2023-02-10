@@ -12,11 +12,13 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/user_population.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/sync/driver/sync_service.h"
 
 namespace safe_browsing {
@@ -110,6 +112,25 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
   GetCachedUserPopulation(profile) = population;
 
   return population;
+}
+
+ChromeUserPopulation::PageLoadToken GetPageLoadTokenForURL(Profile* profile,
+                                                           GURL url) {
+  if (!profile) {
+    return ChromeUserPopulation::PageLoadToken();
+  }
+  VerdictCacheManager* cache_manager =
+      VerdictCacheManagerFactory::GetForProfile(profile);
+  if (!cache_manager) {
+    return ChromeUserPopulation::PageLoadToken();
+  }
+
+  ChromeUserPopulation::PageLoadToken token =
+      cache_manager->GetPageLoadToken(url);
+  if (token.has_token_value()) {
+    return token;
+  }
+  return cache_manager->CreatePageLoadToken(url);
 }
 
 }  // namespace safe_browsing
