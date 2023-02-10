@@ -277,10 +277,9 @@ bool MediaFragmentURIParser::ParseNPTTime(const char* time_string,
     return true;
   }
 
-  if (digits1.length() < 2)
+  if (digits1.length() < 1) {
     return false;
-  if (digits1.length() > 2)
-    mode = kHours;
+  }
 
   // Collect the next sequence of 0-9 after ':'
   if (offset >= length || time_string[offset++] != ':')
@@ -293,6 +292,18 @@ bool MediaFragmentURIParser::ParseNPTTime(const char* time_string,
     return false;
 
   // Detect whether this timestamp includes hours.
+  if (offset < length && time_string[offset] == ':') {
+    mode = kHours;
+  }
+  if (mode == kMinutes) {
+    if (digits1.length() != 2) {
+      return false;
+    }
+    if (value1 > 59 || value2 > 59) {
+      return false;
+    }
+  }
+
   int value3;
   if (mode == kHours || (offset < length && time_string[offset] == ':')) {
     if (offset >= length || time_string[offset++] != ':')
@@ -303,6 +314,9 @@ bool MediaFragmentURIParser::ParseNPTTime(const char* time_string,
     if (digits3.length() != 2)
       return false;
     value3 = digits3.ToInt();
+    if (value2 > 59 || value3 > 59) {
+      return false;
+    }
   } else {
     value3 = value2;
     value2 = value1;

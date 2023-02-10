@@ -709,6 +709,7 @@ blink_core_tests_html = [
   "media/html_video_element_persistent_test.cc",
   "media/html_video_element_test.cc",
   "media/media_custom_controls_fullscreen_detector_test.cc",
+  "media/media_fragment_uri_parser_test.cc",
   "media/video_auto_fullscreen_test.cc",
   "media/video_filling_viewport_test.cc",
   "media/video_wake_lock_test.cc",

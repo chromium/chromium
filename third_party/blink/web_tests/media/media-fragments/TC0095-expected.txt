@@ -1,0 +1,11 @@
+
+Title: TC0095
+Fragment: 't=0:00:03,0:00:07'
+Comment: The media is requested from a to b.
+EVENT(canplaythrough)
+EXPECTED (video.currentTime == '3') OK
+RUN(video.play())
+EVENT(pause)
+EXPECTED (video.currentTime - fragmentEndTime <= '0.5') OK
+END OF TEST
+

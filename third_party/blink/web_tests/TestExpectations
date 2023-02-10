@@ -6583,6 +6583,7 @@ crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-f
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-fragments/TC0089.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-fragments/TC0090.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-fragments/TC0091.html [ Failure Skip ]
+crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/media-fragments/TC0095.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/track-css-cue-lifetime.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/track-css-matching-timestamps.html [ Failure Skip ]
 crbug.com/1362106 [ Win ] virtual/media-foundation-for-clear-dcomp/media/track/track-css-matching.html [ Failure Skip ]

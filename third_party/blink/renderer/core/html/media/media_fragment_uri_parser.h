@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_FRAGMENT_URI_PARSER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_FRAGMENT_URI_PARSER_H_
 
+#include "base/gtest_prod_util.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -34,7 +36,7 @@ namespace blink {
 
 class KURL;
 
-class MediaFragmentURIParser final {
+class CORE_EXPORT MediaFragmentURIParser final {
   STACK_ALLOCATED();
 
  public:
@@ -58,6 +60,8 @@ class MediaFragmentURIParser final {
                         unsigned length,
                         double& start_time,
                         double& end_time);
+
+  FRIEND_TEST_ALL_PREFIXES(ParseNPTTimeTest, TestParseNPTTime);
   bool ParseNPTTime(const char*,
                     unsigned length,
                     unsigned& offset,

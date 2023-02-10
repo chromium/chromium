@@ -73,7 +73,8 @@
         TC0091 : { start: 3, end: 7, valid: true, description: "Sprinkling &", fragment: "&t=3,7&", comment: "Sprinkling & is OK."},
         TC0092 : { start: null, end: null, valid: false, description: "Incorrect percent encoding", fragment: "t%3d10", comment: "UA knows that this is an invalid media fragment, so it will play the entire media resource."},
         TC0093 : { start: null, end: null, valid: false, description: "Incorrect percent encoding", fragment: "t=10%26", comment: "UA knows that this is an invalid media fragment, so it will play the entire media resource."},
-        TC0094 : { start: null, end: null, valid: false, description: "Trailing comma", fragment: "t=3,7,", comment: "UA knows that this is an invalid media fragment, so it will play the entire media resource."}
+        TC0094 : { start: null, end: null, valid: false, description: "Trailing comma", fragment: "t=3,7,", comment: "UA knows that this is an invalid media fragment, so it will play the entire media resource."},
+        TC0095 : { start: 3, end: 7, valid: true, description: "NPT HH:MM:SS format. Single digit npt-hh.", fragment: "t=0:00:03,0:00:07", comment: "The media is requested from a to b."}
     };
 
     logConsole();
