@@ -50,8 +50,6 @@ static_library("test_support") {
     "../browser/attribution_reporting/attribution_interop_parser.h",
     "../browser/attribution_reporting/attribution_interop_runner.cc",
     "../browser/attribution_reporting/attribution_interop_runner.h",
-    "../browser/attribution_reporting/attribution_parser_test_utils.cc",
-    "../browser/attribution_reporting/attribution_parser_test_utils.h",
     "../browser/attribution_reporting/attribution_test_utils.cc",
     "../browser/attribution_reporting/attribution_test_utils.h",
     "../browser/back_forward_cache_test_util.cc",

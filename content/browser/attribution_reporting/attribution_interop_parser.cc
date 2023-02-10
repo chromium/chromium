@@ -7,11 +7,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/functional/function_ref.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -25,7 +27,6 @@
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
-#include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -43,6 +44,50 @@ constexpr char kRegistrationRequestKey[] = "registration_request";
 constexpr char kResponseKey[] = "response";
 constexpr char kResponsesKey[] = "responses";
 constexpr char kTimestampKey[] = "timestamp";
+
+using Context = absl::variant<base::StringPiece, size_t>;
+using ContextPath = std::vector<Context>;
+
+class ScopedContext {
+ public:
+  ScopedContext(ContextPath& path, Context context) : path_(path) {
+    path_->push_back(context);
+  }
+
+  ~ScopedContext() { path_->pop_back(); }
+
+  ScopedContext(const ScopedContext&) = delete;
+  ScopedContext(ScopedContext&&) = delete;
+
+  ScopedContext& operator=(const ScopedContext&) = delete;
+  ScopedContext& operator=(ScopedContext&&) = delete;
+
+ private:
+  const raw_ref<ContextPath> path_;
+};
+
+// Writes a newline on destruction.
+class ErrorWriter {
+ public:
+  explicit ErrorWriter(std::ostringstream& stream) : stream_(stream) {}
+
+  ~ErrorWriter() { *stream_ << std::endl; }
+
+  ErrorWriter(const ErrorWriter&) = delete;
+  ErrorWriter(ErrorWriter&&) = default;
+
+  ErrorWriter& operator=(const ErrorWriter&) = delete;
+  ErrorWriter& operator=(ErrorWriter&&) = delete;
+
+  std::ostringstream& operator*() { return *stream_; }
+
+  void operator()(base::StringPiece key) { *stream_ << "[\"" << key << "\"]"; }
+
+  void operator()(size_t index) { *stream_ << '[' << index << ']'; }
+
+ private:
+  const raw_ref<std::ostringstream> stream_;
+};
 
 class AttributionInteropParser {
  public:
@@ -75,8 +120,8 @@ class AttributionInteropParser {
       });
     }
 
-    if (has_error()) {
-      return base::unexpected(std::move(error_manager_).TakeError());
+    if (has_error_) {
+      return base::unexpected(error_stream_.str());
     }
 
     return std::move(events_);
@@ -162,25 +207,38 @@ class AttributionInteropParser {
           base::Minutes(aggregatable_report_delay_span);
     }
 
-    return std::move(error_manager_).TakeError();
+    return error_stream_.str();
   }
 
  private:
   const base::Time offset_time_;
-  AttributionParserErrorManager error_manager_;
+
+  std::ostringstream error_stream_;
+
+  ContextPath context_path_;
+  bool has_error_ = false;
 
   std::vector<AttributionSimulationEvent> events_;
 
-  [[nodiscard]] std::unique_ptr<AttributionParserErrorManager::ScopedContext>
-  PushContext(AttributionParserErrorManager::Context context) {
-    return error_manager_.PushContext(context);
+  [[nodiscard]] ScopedContext PushContext(Context context) {
+    return ScopedContext(context_path_, context);
   }
 
-  AttributionParserErrorManager::ErrorWriter Error() {
-    return error_manager_.Error();
-  }
+  ErrorWriter Error() {
+    has_error_ = true;
 
-  bool has_error() const { return error_manager_.has_error(); }
+    if (context_path_.empty()) {
+      error_stream_ << "input root";
+    }
+
+    ErrorWriter writer(error_stream_);
+    for (Context context : context_path_) {
+      absl::visit(writer, context);
+    }
+
+    error_stream_ << ": ";
+    return writer;
+  }
 
   void ParseListOfDicts(
       base::Value* values,
@@ -217,7 +275,7 @@ class AttributionInteropParser {
                              const SuitableOrigin& reporting_origin) {
     static constexpr char kUrlKey[] = "url";
     absl::optional<SuitableOrigin> origin = ParseOrigin(dict, kUrlKey);
-    if (has_error()) {
+    if (has_error_) {
       return;
     }
     if (*origin != reporting_origin) {
@@ -240,7 +298,7 @@ class AttributionInteropParser {
                 source_type = ParseSourceType(dict);
               });
 
-    if (has_error()) {
+    if (has_error_) {
       return;
     }
 
@@ -252,7 +310,7 @@ class AttributionInteropParser {
 
           bool debug_permission = ParseDebugPermission(dict);
 
-          if (has_error()) {
+          if (has_error_) {
             return;
           }
 
@@ -296,7 +354,7 @@ class AttributionInteropParser {
                 reporting_origin = ParseOrigin(dict, kAttributionSrcUrlKey);
               });
 
-    if (has_error()) {
+    if (has_error_) {
       return;
     }
 
@@ -308,7 +366,7 @@ class AttributionInteropParser {
 
           bool debug_permission = ParseDebugPermission(dict);
 
-          if (has_error()) {
+          if (has_error_) {
             return;
           }
 
