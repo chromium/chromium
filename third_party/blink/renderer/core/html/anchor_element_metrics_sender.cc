@@ -79,6 +79,9 @@ void AnchorElementMetricsSender::MaybeReportClickedMetricsOnClick(
   auto click = mojom::blink::AnchorElementClick::New();
   click->anchor_id = AnchorElementId(anchor_element);
   click->target_url = anchor_element.Href();
+  base::TimeDelta navigation_start_to_click =
+      clock_->NowTicks() - NavigationStart(anchor_element);
+  click->navigation_start_to_click = navigation_start_to_click;
   metrics_host_->ReportAnchorElementClick(std::move(click));
 }
 
@@ -139,6 +142,10 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
       IntersectionObserver::kFractionOfTarget, 100 /* delay in ms */);
 }
 
+void AnchorElementMetricsSender::SetNowAsNavigationStartForTesting() {
+  mock_navigation_start_for_testing_ = clock_->NowTicks();
+}
+
 void AnchorElementMetricsSender::SetTickClockForTesting(
     const base::TickClock* clock) {
   clock_ = clock;
@@ -172,6 +179,16 @@ void AnchorElementMetricsSender::UpdateVisibleAnchors(
   }
 }
 
+base::TimeTicks AnchorElementMetricsSender::NavigationStart(
+    const HTMLAnchorElement& element) {
+  return mock_navigation_start_for_testing_.has_value()
+             ? mock_navigation_start_for_testing_.value()
+             : GetRootDocument(element)
+                   ->Loader()
+                   ->GetTiming()
+                   .NavigationStart();
+}
+
 void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
     HTMLAnchorElement& element,
     const PointerEvent& pointer_event) {
@@ -185,19 +202,26 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
   if (event_type == event_type_names::kPointerover) {
     if (!element_timing->pointer_over_timer_.has_value()) {
       element_timing->pointer_over_timer_ = clock_->NowTicks();
+
+      auto msg = mojom::blink::AnchorElementPointerOver::New();
+      msg->anchor_id = anchor_id;
+      base::TimeDelta navigation_start_to_pointer_over =
+          clock_->NowTicks() - NavigationStart(element);
+      msg->navigation_start_to_pointer_over = navigation_start_to_pointer_over;
+
+      metrics_host_->ReportAnchorElementPointerOver(std::move(msg));
     }
   } else if (event_type == event_type_names::kPointerout) {
     if (!element_timing->pointer_over_timer_.has_value()) {
       return;
     }
-    auto msg = mojom::blink::AnchorElementPointerHover::New();
+    auto msg = mojom::blink::AnchorElementPointerOut::New();
     msg->anchor_id = anchor_id;
     base::TimeDelta hover_dwell_time =
         clock_->NowTicks() - element_timing->pointer_over_timer_.value();
     element_timing->pointer_over_timer_.reset();
     msg->hover_dwell_time = hover_dwell_time;
-
-    metrics_host_->ReportAnchorElementsPointerHover(std::move(msg));
+    metrics_host_->ReportAnchorElementPointerOut(std::move(msg));
   }
 }
 
@@ -236,8 +260,7 @@ void AnchorElementMetricsSender::EnqueueEnteredViewport(
   auto msg = mojom::blink::AnchorElementEnteredViewport::New();
   msg->anchor_id = anchor_id;
   base::TimeDelta time_entered_viewport =
-      clock_->NowTicks() -
-      GetRootDocument(element)->Loader()->GetTiming().NavigationStart();
+      clock_->NowTicks() - NavigationStart(element);
   msg->navigation_start_to_entered_viewport = time_entered_viewport;
   entered_viewport_messages_.push_back(std::move(msg));
 }

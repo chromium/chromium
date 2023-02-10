@@ -43,6 +43,38 @@ class NavigationPredictor
                      mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
 
  private:
+  friend class MockNavigationPredictorForTesting;
+  using AnchorId = base::StrongAlias<class AnchorId, uint32_t>;
+  // This structure holds the user interactions with a given anchor element.
+  // Whenever, the user clicks on a link, we iterate over all |UserInteractions|
+  // data and check if the anchor element is still in viewport or not. If it is
+  // still in viewport, we use |last_navigation_start_to_entered_viewport| and
+  // |navigation_start_to_click_| to update |max_time_in_viewport|.  Similarly,
+  // we also check if the pointer is still hovering over the anchor element, and
+  // use |last_navigation_start_to_pointer_over| and
+  // |navigation_start_to_click_| to update |max_hover_dwell_time|. We then
+  // record |max_time_in_viewport|, and |max_hover_dwell_time| to UKM.
+  struct UserInteractions {
+    // True if the anchor element is still in viewport, otherwise false.
+    bool is_in_viewport = false;
+    // True if the pointer is still hovering over the anchor element, otherwise
+    // false;
+    bool is_hovered = false;
+    // If the anchor element is still in viewport, it is the TimeDelta between
+    // the navigation start of the anchor element's root document and the last
+    // time the anchor element entered the viewport, otherwise empty.
+    absl::optional<base::TimeDelta> last_navigation_start_to_entered_viewport;
+    // The maximum duration that the anchor element was in the viewport.
+    absl::optional<base::TimeDelta> max_time_in_viewport;
+    // If the anchor element is still in viewport, it is the TimeDelta between
+    // the navigation start of the anchor element's root document and the last
+    // time the pointer started to hover over the anchor element, otherwise
+    // empty.
+    absl::optional<base::TimeDelta> last_navigation_start_to_pointer_over;
+    // The maximum the pointer hover dwell time over the anchor element.
+    absl::optional<base::TimeDelta> max_hover_dwell_time;
+  };
+
   NavigationPredictor(content::RenderFrameHost& render_frame_host,
                       mojo::PendingReceiver<AnchorElementMetricsHost> receiver);
   ~NavigationPredictor() override;
@@ -56,8 +88,10 @@ class NavigationPredictor
   void ReportAnchorElementsLeftViewport(
       std::vector<blink::mojom::AnchorElementLeftViewportPtr> elements)
       override;
-  void ReportAnchorElementsPointerHover(
-      blink::mojom::AnchorElementPointerHoverPtr hover_event) override;
+  void ReportAnchorElementPointerOver(
+      blink::mojom::AnchorElementPointerOverPtr pointer_over_event) override;
+  void ReportAnchorElementPointerOut(
+      blink::mojom::AnchorElementPointerOutPtr hover_event) override;
   void ReportNewAnchorElements(
       std::vector<blink::mojom::AnchorElementMetricsPtr> elements) override;
 
@@ -85,13 +119,23 @@ class NavigationPredictor
   // A count of clicks to prevent reporting more than 10 clicks to UKM.
   size_t clicked_count_ = 0;
 
-  // For each anchor ID that we track, the index that this anchor will have in
-  // the UKM logs.
-  std::unordered_map<uint32_t, blink::mojom::AnchorElementMetricsPtr> anchors_;
+  // Stores the anchor element metrics for each anchor ID that we track.
+  std::unordered_map<AnchorId,
+                     blink::mojom::AnchorElementMetricsPtr,
+                     typename AnchorId::Hasher>
+      anchors_;
 
-  // For each anchor ID that we track, the index that this anchor will have in
-  // the UKM logs.
-  std::unordered_map<uint32_t, int> tracked_anchor_id_to_index_;
+  // User interaction data for anchor ID that we track.
+  std::unordered_map<AnchorId, UserInteractions, typename AnchorId::Hasher>
+      user_interactions_;
+
+  // The time between navigation start and the last time user clicked on a link.
+  absl::optional<base::TimeDelta> navigation_start_to_click_;
+
+  // Mapping between the anchor ID for the anchors that we track and the index
+  // that this anchor will have in the UKM logs.
+  std::unordered_map<AnchorId, int, typename AnchorId::Hasher>
+      tracked_anchor_id_to_index_;
 
   // URLs that were sent to the prediction service.
   std::set<GURL> predicted_urls_;

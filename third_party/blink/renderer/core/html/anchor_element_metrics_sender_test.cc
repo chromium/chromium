@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -55,9 +56,14 @@ class MockAnchorElementMetricsHost
     }
   }
 
-  void ReportAnchorElementsPointerHover(
-      mojom::blink::AnchorElementPointerHoverPtr hover_event) override {
-    pointer_hover_.emplace_back(std::move(hover_event));
+  void ReportAnchorElementPointerOver(
+      mojom::blink::AnchorElementPointerOverPtr pointer_over_event) override {
+    pointer_over_.emplace_back(std::move(pointer_over_event));
+  }
+
+  void ReportAnchorElementPointerOut(
+      mojom::blink::AnchorElementPointerOutPtr hover_event) override {
+    pointer_hover_dwell_time_.emplace_back(std::move(hover_event));
   }
 
   void ReportNewAnchorElements(
@@ -76,7 +82,9 @@ class MockAnchorElementMetricsHost
   std::vector<mojom::blink::AnchorElementClickPtr> clicks_;
   std::vector<mojom::blink::AnchorElementEnteredViewportPtr> entered_viewport_;
   std::vector<mojom::blink::AnchorElementLeftViewportPtr> left_viewport_;
-  std::vector<mojom::blink::AnchorElementPointerHoverPtr> pointer_hover_;
+  std::vector<mojom::blink::AnchorElementPointerOverPtr> pointer_over_;
+  std::vector<mojom::blink::AnchorElementPointerOutPtr>
+      pointer_hover_dwell_time_;
   std::vector<mojom::blink::AnchorElementMetricsPtr> elements_;
   std::set<int32_t> anchor_ids_;
 
@@ -239,6 +247,7 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
         </body>)HTML",
       2 * kViewportHeight, kViewportHeight / 2));
 
+  // Check that the element is registered, but there are no other events.
   ProcessEvents(1);
   EXPECT_EQ(1u, hosts_.size());
   const auto& mock_host = hosts_[0];
@@ -247,74 +256,64 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
   EXPECT_EQ(0u, mock_host->entered_viewport_.size());
   EXPECT_EQ(0u, mock_host->left_viewport_.size());
 
-  // Scroll down. Now the anchor element is visible.
   SetMockClock();
+  AnchorElementMetricsSender::From(GetDocument())
+      ->SetNowAsNavigationStartForTesting();
+
+  // Scroll down. Now the anchor element is visible, and should report the
+  // entered viewport event. |navigation_start_to_entered_viewport| should be
+  // |wait_time1|.
+  const auto wait_time1 = base::Milliseconds(100);
+  clock_.Advance(wait_time1);
+
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 2 * kViewportHeight),
       mojom::blink::ScrollType::kProgrammatic);
   ProcessEvents(1);
-  EXPECT_EQ(1u, hosts_.size());
-  EXPECT_EQ(1u, mock_host->elements_.size());
-  EXPECT_EQ(0u, mock_host->clicks_.size());
   EXPECT_EQ(1u, mock_host->entered_viewport_.size());
-  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
-            mock_host->entered_viewport_[0]->anchor_id);
+  EXPECT_EQ(
+      wait_time1,
+      mock_host->entered_viewport_[0]->navigation_start_to_entered_viewport);
   EXPECT_EQ(0u, mock_host->left_viewport_.size());
 
-  // Scroll up. It should be out of view again.
-  const auto wait_time = base::Milliseconds(150);
-  clock_.Advance(wait_time);
+  // Scroll up. It should be out of view again, and should report the left
+  // viewport event. |time_in_viewport| should be |time_in_viewport_1|.
+  const auto time_in_viewport_1 = base::Milliseconds(150);
+  clock_.Advance(time_in_viewport_1);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, -2 * kViewportHeight),
       mojom::blink::ScrollType::kProgrammatic);
   ProcessEvents(1);
-  EXPECT_EQ(1u, hosts_.size());
-  EXPECT_EQ(1u, mock_host->elements_.size());
-  EXPECT_EQ(0u, mock_host->clicks_.size());
   EXPECT_EQ(1u, mock_host->entered_viewport_.size());
-  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
-            mock_host->entered_viewport_[0]->anchor_id);
   EXPECT_EQ(1u, mock_host->left_viewport_.size());
-  EXPECT_EQ(wait_time, mock_host->left_viewport_[0]->time_in_viewport);
-  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
-            mock_host->left_viewport_[0]->anchor_id);
+  EXPECT_EQ(time_in_viewport_1, mock_host->left_viewport_[0]->time_in_viewport);
 
-  // Scroll down to make it visible again.
+  // Scroll down to make it visible again. It should send a second entered
+  // viewport event. |navigation_start_to_entered_viewport| should be
+  // |wait_time1+time_in_viewport_1+wait_time2|.
+  const auto wait_time2 = base::Milliseconds(100);
+  clock_.Advance(wait_time2);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 2 * kViewportHeight),
       mojom::blink::ScrollType::kProgrammatic);
   ProcessEvents(1);
-  EXPECT_EQ(1u, hosts_.size());
-  EXPECT_EQ(1u, mock_host->elements_.size());
-  EXPECT_EQ(0u, mock_host->clicks_.size());
   EXPECT_EQ(2u, mock_host->entered_viewport_.size());
-  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
-            mock_host->entered_viewport_[1]->anchor_id);
+  EXPECT_EQ(
+      wait_time1 + time_in_viewport_1 + wait_time2,
+      mock_host->entered_viewport_[1]->navigation_start_to_entered_viewport);
   EXPECT_EQ(1u, mock_host->left_viewport_.size());
-  EXPECT_EQ(wait_time, mock_host->left_viewport_[0]->time_in_viewport);
-  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
-            mock_host->left_viewport_[0]->anchor_id);
 
-  // Scroll up to push it out of view again.
-  const auto wait_time2 = base::Milliseconds(300);
-  clock_.Advance(wait_time2);
+  // Scroll up to push it out of view again. It should send a second left
+  // viewport event, and |time_in_viewport| should be |time_in_viewport_2|.
+  const auto time_in_viewport_2 = base::Milliseconds(30);
+  clock_.Advance(time_in_viewport_2);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, -2 * kViewportHeight),
       mojom::blink::ScrollType::kProgrammatic);
   ProcessEvents(1);
-  EXPECT_EQ(1u, hosts_.size());
-  EXPECT_EQ(1u, mock_host->elements_.size());
-  EXPECT_EQ(0u, mock_host->clicks_.size());
   EXPECT_EQ(2u, mock_host->entered_viewport_.size());
-  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
-            mock_host->entered_viewport_[1]->anchor_id);
   EXPECT_EQ(2u, mock_host->left_viewport_.size());
-  EXPECT_EQ(wait_time, mock_host->left_viewport_[0]->time_in_viewport);
-  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
-            mock_host->left_viewport_[0]->anchor_id);
-  EXPECT_EQ(wait_time2, mock_host->left_viewport_[1]->time_in_viewport);
-  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
-            mock_host->left_viewport_[1]->anchor_id);
+  EXPECT_EQ(time_in_viewport_2, mock_host->left_viewport_[1]->time_in_viewport);
 }
 
 TEST_F(AnchorElementMetricsSenderTest,
@@ -339,13 +338,11 @@ TEST_F(AnchorElementMetricsSenderTest,
   ProcessEvents(1);
   EXPECT_EQ(1u, hosts_.size());
   const auto& mock_host = hosts_[0];
-  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(1u, mock_host->elements_.size());
   EXPECT_EQ(1u, mock_host->entered_viewport_.size());
   EXPECT_EQ(0u, mock_host->left_viewport_.size());
-  EXPECT_EQ(1u, mock_host->elements_.size());
-  EXPECT_EQ(0u, mock_host->pointer_hover_.size());
-
-  SetMockClock();
+  EXPECT_EQ(0u, mock_host->pointer_over_.size());
+  EXPECT_EQ(0u, mock_host->pointer_hover_dwell_time_.size());
 
   auto move_to = [this](const auto x, const auto y) {
     gfx::PointF coordinates(x, y);
@@ -357,9 +354,31 @@ TEST_F(AnchorElementMetricsSenderTest,
         event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
   };
 
-  const auto wait_time = base::Milliseconds(150);
+  SetMockClock();
+  AnchorElementMetricsSender::From(GetDocument())
+      ->SetNowAsNavigationStartForTesting();
+  // Move the pointer over the link for the first time. We should send pointer
+  // over event. |navigation_start_to_pointer_over| should be |wait_time_1|.
+  const auto wait_time_1 = base::Milliseconds(150);
+  clock_.Advance(wait_time_1);
   move_to(0, 0);
-  clock_.Advance(wait_time);
+  ProcessEvents(1);
+  EXPECT_EQ(1u, hosts_.size());
+  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(0u, mock_host->left_viewport_.size());
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(1u, mock_host->pointer_over_.size());
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->pointer_over_[0]->anchor_id);
+  EXPECT_EQ(wait_time_1,
+            mock_host->pointer_over_[0]->navigation_start_to_pointer_over);
+  EXPECT_EQ(0u, mock_host->pointer_hover_dwell_time_.size());
+
+  // Move the pointer away. We should send pointer hover event and
+  // |hover_dwell_time| should be |hover_dwell_time_1|.
+  const auto hover_dwell_time_1 = base::Milliseconds(250);
+  clock_.Advance(hover_dwell_time_1);
   move_to(kViewportWidth / 2, kViewportHeight);
   ProcessEvents(1);
   EXPECT_EQ(1u, hosts_.size());
@@ -367,10 +386,49 @@ TEST_F(AnchorElementMetricsSenderTest,
   EXPECT_EQ(1u, mock_host->entered_viewport_.size());
   EXPECT_EQ(0u, mock_host->left_viewport_.size());
   EXPECT_EQ(1u, mock_host->elements_.size());
-  EXPECT_EQ(1u, mock_host->pointer_hover_.size());
+  EXPECT_EQ(1u, mock_host->pointer_over_.size());
+  EXPECT_EQ(1u, mock_host->pointer_hover_dwell_time_.size());
   EXPECT_EQ(mock_host->elements_[0]->anchor_id,
-            mock_host->pointer_hover_[0]->anchor_id);
-  EXPECT_EQ(wait_time, mock_host->pointer_hover_[0]->hover_dwell_time);
+            mock_host->pointer_hover_dwell_time_[0]->anchor_id);
+  EXPECT_EQ(hover_dwell_time_1,
+            mock_host->pointer_hover_dwell_time_[0]->hover_dwell_time);
+
+  // Move the pointer over the link for a second time. We should send pointer
+  // over event. |navigation_start_to_pointer_over| should be
+  // |wait_time_1+hover_dwell_time_1+wait_time_2|.
+  const auto wait_time_2 = base::Milliseconds(50);
+  clock_.Advance(wait_time_2);
+  move_to(0, 0);
+  ProcessEvents(1);
+  EXPECT_EQ(1u, hosts_.size());
+  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(0u, mock_host->left_viewport_.size());
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(2u, mock_host->pointer_over_.size());
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->pointer_over_[1]->anchor_id);
+  EXPECT_EQ(wait_time_1 + hover_dwell_time_1 + wait_time_2,
+            mock_host->pointer_over_[1]->navigation_start_to_pointer_over);
+  EXPECT_EQ(1u, mock_host->pointer_hover_dwell_time_.size());
+
+  // Move the pointer away for a second time. We should send pointer hover event
+  // and |hover_dwell_time| should be |hover_dwell_time_2|.
+  const auto hover_dwell_time_2 = base::Milliseconds(200);
+  clock_.Advance(hover_dwell_time_2);
+  move_to(kViewportWidth / 2, kViewportHeight);
+  ProcessEvents(1);
+  EXPECT_EQ(1u, hosts_.size());
+  EXPECT_EQ(0u, mock_host->clicks_.size());
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(0u, mock_host->left_viewport_.size());
+  EXPECT_EQ(1u, mock_host->elements_.size());
+  EXPECT_EQ(2u, mock_host->pointer_over_.size());
+  EXPECT_EQ(2u, mock_host->pointer_hover_dwell_time_.size());
+  EXPECT_EQ(mock_host->elements_[0]->anchor_id,
+            mock_host->pointer_hover_dwell_time_[1]->anchor_id);
+  EXPECT_EQ(hover_dwell_time_2,
+            mock_host->pointer_hover_dwell_time_[1]->hover_dwell_time);
 }
 
 TEST_F(AnchorElementMetricsSenderTest, AnchorElementEnteredViewportLater) {
@@ -426,6 +484,9 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementClicked) {
   EXPECT_EQ(1u, hosts_.size());
   const auto& mock_host = hosts_[0];
   EXPECT_EQ(1u, mock_host->clicks_.size());
+  EXPECT_EQ("https://example.com/p2", mock_host->clicks_[0]->target_url);
+  EXPECT_LE(base::TimeDelta(),
+            mock_host->clicks_[0]->navigation_start_to_click);
   // Wait until the script has had time to run.
   platform_->RunForPeriodSeconds(5.);
   next_page.Complete("empty");

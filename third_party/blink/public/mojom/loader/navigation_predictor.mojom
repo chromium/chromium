@@ -83,14 +83,18 @@ struct AnchorElementClick {
 
   // The URL of the anchor when it was clicked.
   url.mojom.Url target_url;
+
+  // The time between navigation start of the anchor element's root document and
+  // the time the user clicked on the link.
+  mojo_base.mojom.TimeDelta navigation_start_to_click;
 };
 
 struct AnchorElementEnteredViewport {
   // The ID of the anchor that entered the viewport.
   uint32 anchor_id;
 
-  // The time between navigation start and the time the anchor element entered
-  // the viewport.
+  // The time between navigation start of the anchor element's root document and
+  // the time the anchor element entered the viewport.
   mojo_base.mojom.TimeDelta navigation_start_to_entered_viewport;
 };
 
@@ -103,7 +107,16 @@ struct AnchorElementLeftViewport {
   mojo_base.mojom.TimeDelta time_in_viewport;
 };
 
-struct AnchorElementPointerHover {
+struct AnchorElementPointerOver {
+  // The ID of the anchor that pointer started hovering over it.
+  uint32 anchor_id;
+
+  // The time between navigation start of the anchor element's root document and
+  // the time the pointer started hovering over the anchor element event.
+  mojo_base.mojom.TimeDelta navigation_start_to_pointer_over;
+};
+
+struct AnchorElementPointerOut {
   // The ID of the anchor that pointer hovered over it.
   uint32 anchor_id;
 
@@ -115,8 +128,8 @@ struct AnchorElementPointerHover {
 // the renderer process to the implementation of this interface living in the
 // browser process.
 interface AnchorElementMetricsHost {
-  // This is called when an anchor element is clicked. The renderer extracts and sends
-  // |metrics| of the clicked anchor element.
+  // This is called when an anchor element is clicked. The renderer extracts and
+  // sends |metrics| of the clicked anchor element.
   ReportAnchorElementClick(AnchorElementClick clicked);
 
   // At each layout, HTMLAnchorElements that have been newly created (since the
@@ -135,13 +148,18 @@ interface AnchorElementMetricsHost {
   // previously been reported by ReportNewAnchorElements (e.g. because they were
   // not visible following the first layout after the HTMLAnchorElement was
   // created).
-  ReportAnchorElementsEnteredViewport(array<AnchorElementEnteredViewport> elements);
+  ReportAnchorElementsEnteredViewport(
+    array<AnchorElementEnteredViewport> elements);
 
   // This is called regularly to report anchors that left the viewport. This
   // just reports the ID of each element leaving the viewport. These records
-  // can be joined with the metrics reported by ReportAnchorElementsEnteredViewport.
+  // can be joined with the metrics reported by
+  // |ReportAnchorElementsEnteredViewport|.
   ReportAnchorElementsLeftViewport(array<AnchorElementLeftViewport> elements);
 
-  // This is called whenever pointer hovers over the anchor element.
-  ReportAnchorElementsPointerHover(AnchorElementPointerHover hover_event);
+  // This is called whenever the pointer starts hovering over anchor element.
+  ReportAnchorElementPointerOver(AnchorElementPointerOver pointer_over_event);
+
+  // This is called whenever pointer stops hovering over the anchor element.
+  ReportAnchorElementPointerOut(AnchorElementPointerOut hover_event);
 };

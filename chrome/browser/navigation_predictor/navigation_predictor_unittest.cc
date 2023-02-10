@@ -454,3 +454,225 @@ TEST_F(NavigationPredictorTest, ReportAnchorElementClickMoreThan10Clicks) {
     EXPECT_EQ(10u, entries.size());
   }
 }
+
+class MockNavigationPredictorForTesting : public NavigationPredictor {
+ public:
+  using AnchorId = NavigationPredictor::AnchorId;
+  static MockNavigationPredictorForTesting* Create(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver) {
+    // The object is bound to the lifetime of the |render_frame_host| and the
+    // mojo connection. See DocumentService for details.
+    return new MockNavigationPredictorForTesting(*render_frame_host,
+                                                 std::move(receiver));
+  }
+  const std::
+      unordered_map<AnchorId, UserInteractions, typename AnchorId::Hasher>&
+      user_interactions() const {
+    return user_interactions_;
+  }
+  absl::optional<base::TimeDelta> navigation_start_to_click() {
+    return navigation_start_to_click_;
+  }
+
+ private:
+  MockNavigationPredictorForTesting(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver)
+      : NavigationPredictor(render_frame_host, std::move(receiver)) {}
+};
+
+TEST_F(NavigationPredictorTest, AnchorElementEnteredAndLeftViewport) {
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+
+  auto report_anchor_element_left_viewport =
+      [&predictor_service](
+          const MockNavigationPredictorForTesting::AnchorId& anchor_id,
+          const base::TimeDelta& time_in_viewport) {
+        std::vector<blink::mojom::AnchorElementLeftViewportPtr> metrics;
+        metrics.push_back(blink::mojom::AnchorElementLeftViewport::New(
+            static_cast<uint32_t>(anchor_id), time_in_viewport));
+        predictor_service->ReportAnchorElementsLeftViewport(std::move(metrics));
+        base::RunLoop().RunUntilIdle();
+      };
+
+  auto report_anchor_element_entered_viewport =
+      [&predictor_service](
+          const MockNavigationPredictorForTesting::AnchorId& anchor_id,
+          const base::TimeDelta& navigation_start_to_entered_viewport) {
+        std::vector<blink::mojom::AnchorElementEnteredViewportPtr> metrics;
+        metrics.push_back(blink::mojom::AnchorElementEnteredViewport::New(
+            static_cast<uint32_t>(anchor_id),
+            navigation_start_to_entered_viewport));
+        predictor_service->ReportAnchorElementsEnteredViewport(
+            std::move(metrics));
+        base::RunLoop().RunUntilIdle();
+      };
+
+  MockNavigationPredictorForTesting::AnchorId anchor_id{1};
+  // Anchor element entered the viewport for the first time. Check user
+  // interaction data to see if it is registered.
+  const auto navigation_start_to_entered_viewport_1 = base::Milliseconds(150);
+  report_anchor_element_entered_viewport(
+      anchor_id, navigation_start_to_entered_viewport_1);
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  const auto& user_interactions =
+      predictor_service_host->user_interactions().at(anchor_id);
+  EXPECT_TRUE(user_interactions.is_in_viewport);
+  EXPECT_TRUE(
+      user_interactions.last_navigation_start_to_entered_viewport.has_value());
+  EXPECT_EQ(navigation_start_to_entered_viewport_1,
+            user_interactions.last_navigation_start_to_entered_viewport);
+
+  // Anchor element left the viewport for the first time.
+  const auto time_in_viewport_1 = base::Milliseconds(100);
+  report_anchor_element_left_viewport(anchor_id, time_in_viewport_1);
+
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  EXPECT_FALSE(user_interactions.is_in_viewport);
+  EXPECT_FALSE(
+      user_interactions.last_navigation_start_to_entered_viewport.has_value());
+  EXPECT_TRUE(user_interactions.max_time_in_viewport.has_value());
+  EXPECT_EQ(time_in_viewport_1, user_interactions.max_time_in_viewport);
+
+  // Anchor element entered the viewport for a second time. It should update the
+  // existing user interaction data.
+  const auto navigation_start_to_entered_viewport_2 = base::Milliseconds(350);
+  report_anchor_element_entered_viewport(
+      anchor_id, navigation_start_to_entered_viewport_2);
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  EXPECT_TRUE(user_interactions.is_in_viewport);
+  EXPECT_EQ(navigation_start_to_entered_viewport_2,
+            user_interactions.last_navigation_start_to_entered_viewport);
+
+  // Anchor element left the viewport for a second time. It should update the
+  // time_in_viewport to max(time_in_viewport_1, time_in_viewport_2).
+  const auto time_in_viewport_2 = base::Milliseconds(200);
+  report_anchor_element_left_viewport(anchor_id, time_in_viewport_2);
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  // max(time_in_viewport_1, time_in_viewport_2) = time_in_viewport_2
+  EXPECT_EQ(time_in_viewport_2, user_interactions.max_time_in_viewport);
+
+  // Anchor element left the viewport for the third time. It should not affect
+  // the entered_viewport_to_left_viewport.
+  const auto time_in_viewport_3 = base::Milliseconds(120);
+  report_anchor_element_left_viewport(anchor_id, time_in_viewport_3);
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  // max(time_in_viewport_1, time_in_viewport_2, time_in_viewport_3) =
+  // time_in_viewport_2
+  EXPECT_EQ(time_in_viewport_2, user_interactions.max_time_in_viewport);
+}
+
+TEST_F(NavigationPredictorTest, AnchorElementPointerOverAndHover) {
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+
+  auto report_pointer_over =
+      [&predictor_service](
+          const MockNavigationPredictorForTesting::AnchorId& anchor_id,
+          const base::TimeDelta& navigation_start_to_pointer_over) {
+        predictor_service->ReportAnchorElementPointerOver(
+            blink::mojom::AnchorElementPointerOver::New(
+                static_cast<uint32_t>(anchor_id),
+                navigation_start_to_pointer_over));
+        base::RunLoop().RunUntilIdle();
+      };
+
+  auto report_pointer_out =
+      [&predictor_service](
+          const MockNavigationPredictorForTesting::AnchorId& anchor_id,
+          const base::TimeDelta& hover_dwell_time) {
+        blink::mojom::AnchorElementPointerOutPtr metrics =
+            blink::mojom::AnchorElementPointerOut::New(
+                static_cast<uint32_t>(anchor_id), hover_dwell_time);
+        predictor_service->ReportAnchorElementPointerOut(std::move(metrics));
+        base::RunLoop().RunUntilIdle();
+      };
+
+  MockNavigationPredictorForTesting::AnchorId anchor_id{1};
+  // Pointer started hovering over the anchor element for the first time. Check
+  // user interaction data to see if it is registered.
+  const auto navigation_start_to_pointer_over_1 = base::Milliseconds(150);
+  report_pointer_over(anchor_id, navigation_start_to_pointer_over_1);
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  const auto& user_interactions =
+      predictor_service_host->user_interactions().at(anchor_id);
+  EXPECT_TRUE(user_interactions.is_hovered);
+  EXPECT_TRUE(
+      user_interactions.last_navigation_start_to_pointer_over.has_value());
+  EXPECT_EQ(navigation_start_to_pointer_over_1,
+            user_interactions.last_navigation_start_to_pointer_over);
+
+  // Pointer stopped hovering over the anchor element for the first time.
+  const auto hover_dwell_time_1 = base::Milliseconds(100);
+  report_pointer_out(anchor_id, hover_dwell_time_1);
+
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  EXPECT_FALSE(user_interactions.is_hovered);
+  EXPECT_FALSE(
+      user_interactions.last_navigation_start_to_pointer_over.has_value());
+  EXPECT_TRUE(user_interactions.max_hover_dwell_time.has_value());
+  EXPECT_EQ(hover_dwell_time_1, user_interactions.max_hover_dwell_time);
+
+  // Pointer started hovering over the anchor element for a second time. It
+  // should update the existing user interaction data.
+  const auto navigation_start_to_pointer_over_2 = base::Milliseconds(450);
+  report_pointer_over(anchor_id, navigation_start_to_pointer_over_2);
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  EXPECT_TRUE(user_interactions.is_hovered);
+  EXPECT_TRUE(
+      user_interactions.last_navigation_start_to_pointer_over.has_value());
+  EXPECT_EQ(navigation_start_to_pointer_over_2,
+            user_interactions.last_navigation_start_to_pointer_over);
+
+  // Pointer stopped hovering over the anchor element for a second time. It
+  // should update the max_hover_dwell_time to max(hover_dwell_time_1,
+  // hover_dwell_time_2).
+  const auto hover_dwell_time_2 = base::Milliseconds(200);
+  report_pointer_out(anchor_id, hover_dwell_time_2);
+
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  EXPECT_FALSE(user_interactions.is_hovered);
+  EXPECT_FALSE(
+      user_interactions.last_navigation_start_to_pointer_over.has_value());
+  EXPECT_TRUE(user_interactions.max_hover_dwell_time.has_value());
+  // max(hover_dwell_time_1, hover_dwell_time_2) = hover_dwell_time_2
+  EXPECT_EQ(hover_dwell_time_2, user_interactions.max_hover_dwell_time);
+
+  // Pointer stopped hovering over the anchor element for a third time. It
+  // should not affect the max_hover_dwell_time.
+  const auto hover_dwell_time_3 = base::Milliseconds(50);
+  report_pointer_out(anchor_id, hover_dwell_time_3);
+
+  EXPECT_EQ(1u, predictor_service_host->user_interactions().size());
+  EXPECT_FALSE(user_interactions.is_hovered);
+  EXPECT_FALSE(
+      user_interactions.last_navigation_start_to_pointer_over.has_value());
+  EXPECT_TRUE(user_interactions.max_hover_dwell_time.has_value());
+  // max((hover_dwell_time_1, hover_dwell_time_2, hover_dwell_time_3) =
+  // hover_dwell_time_2
+  EXPECT_EQ(hover_dwell_time_2, user_interactions.max_hover_dwell_time);
+}
+
+TEST_F(NavigationPredictorTest, NavigationStartToClick) {
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+
+  EXPECT_FALSE(predictor_service_host->navigation_start_to_click().has_value());
+
+  const auto navigation_start_to_click = base::Milliseconds(200);
+  auto click = blink::mojom::AnchorElementClick::New();
+  click->anchor_id = 1;
+  click->target_url = GURL("https://example.com/test.html");
+  click->navigation_start_to_click = navigation_start_to_click;
+
+  predictor_service->ReportAnchorElementClick(std::move(click));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(navigation_start_to_click,
+            predictor_service_host->navigation_start_to_click());
+}

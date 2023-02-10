@@ -4,6 +4,7 @@
 
 #include "chrome/browser/navigation_predictor/navigation_predictor.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/check_op.h"
@@ -120,7 +121,7 @@ void NavigationPredictor::ReportNewAnchorElements(
   GURL document_url;
   std::vector<GURL> new_predictions;
   for (auto& element : elements) {
-    uint32_t anchor_id = element->anchor_id;
+    AnchorId anchor_id(element->anchor_id);
     if (anchors_.find(anchor_id) != anchors_.end()) {
       continue;
     }
@@ -178,6 +179,8 @@ void NavigationPredictor::ReportAnchorElementClick(
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
   DCHECK(!IsPrerendering(render_frame_host()));
 
+  navigation_start_to_click_ = click->navigation_start_to_click;
+
   clicked_count_++;
   if (clicked_count_ > kMaxClicksTracked)
     return;
@@ -189,27 +192,51 @@ void NavigationPredictor::ReportAnchorElementClick(
   // An anchor index of -1 indicates that we are not going to log details about
   // the anchor that was clicked.
   int anchor_index = -1;
-  auto index_it = tracked_anchor_id_to_index_.find(click->anchor_id);
+  AnchorId anchor_id(click->anchor_id);
+  auto index_it = tracked_anchor_id_to_index_.find(anchor_id);
   if (index_it != tracked_anchor_id_to_index_.end()) {
     anchor_index = index_it->second;
   }
 
   ukm::builders::NavigationPredictorPageLinkClick builder(ukm_source_id_);
   builder.SetAnchorElementIndex(anchor_index);
-  auto it = anchors_.find(click->anchor_id);
+  auto it = anchors_.find(anchor_id);
   if (it != anchors_.end()) {
     builder.SetHrefUnchanged(it->second->target_url == click->target_url);
   }
   builder.Record(ukm_recorder_);
 }
 
-// TODO(isaboori crbug.com/1408182): Implement ReportAnchorElementsLeftViewport.
 void NavigationPredictor::ReportAnchorElementsLeftViewport(
-    std::vector<blink::mojom::AnchorElementLeftViewportPtr> /*elements*/) {}
+    std::vector<blink::mojom::AnchorElementLeftViewportPtr> elements) {
+  for (const auto& element : elements) {
+    auto& user_interaction = user_interactions_[AnchorId(element->anchor_id)];
+    user_interaction.is_in_viewport = false;
+    user_interaction.last_navigation_start_to_entered_viewport.reset();
+    user_interaction.max_time_in_viewport = std::max(
+        user_interaction.max_time_in_viewport.value_or(base::TimeDelta()),
+        element->time_in_viewport);
+  }
+}
 
-// TODO(isaboori crbug.com/1408182): Implement ReportAnchorElementsPointerHover.
-void NavigationPredictor::ReportAnchorElementsPointerHover(
-    blink::mojom::AnchorElementPointerHoverPtr /*hover_event*/) {}
+void NavigationPredictor::ReportAnchorElementPointerOver(
+    blink::mojom::AnchorElementPointerOverPtr pointer_over_event) {
+  auto& user_interaction =
+      user_interactions_[AnchorId(pointer_over_event->anchor_id)];
+  user_interaction.is_hovered = true;
+  user_interaction.last_navigation_start_to_pointer_over =
+      pointer_over_event->navigation_start_to_pointer_over;
+}
+
+void NavigationPredictor::ReportAnchorElementPointerOut(
+    blink::mojom::AnchorElementPointerOutPtr hover_event) {
+  auto& user_interaction = user_interactions_[AnchorId(hover_event->anchor_id)];
+  user_interaction.is_hovered = false;
+  user_interaction.last_navigation_start_to_pointer_over.reset();
+  user_interaction.max_hover_dwell_time = std::max(
+      hover_event->hover_dwell_time,
+      user_interaction.max_hover_dwell_time.value_or(base::TimeDelta()));
+}
 
 void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     std::vector<blink::mojom::AnchorElementEnteredViewportPtr> elements) {
@@ -222,14 +249,21 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
   }
 
   for (const auto& element : elements) {
-    if (anchors_.find(element->anchor_id) == anchors_.end()) {
+    AnchorId anchor_id(element->anchor_id);
+    auto& user_interaction = user_interactions_[anchor_id];
+    user_interaction.is_in_viewport = true;
+    user_interaction.last_navigation_start_to_entered_viewport =
+        element->navigation_start_to_entered_viewport;
+
+    auto anchor_it = anchors_.find(anchor_id);
+    if (anchor_it == anchors_.end()) {
       // We don't know about this anchor, likely because at its first paint,
       // AnchorElementMetricsSender didn't send it to NavigationPredictor.
       // Reasons could be that the link had non-HTTP scheme, the anchor had
       // zero width/height, etc.
       continue;
     }
-    const auto& anchor = anchors_[element->anchor_id];
+    const auto& anchor = anchor_it->second;
     // Collect the target URL if it is new, without ref (# fragment).
     GURL::Replacements replacements;
     replacements.ClearRef();
@@ -244,7 +278,7 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
       continue;
     }
 
-    auto index_it = tracked_anchor_id_to_index_.find(element->anchor_id);
+    auto index_it = tracked_anchor_id_to_index_.find(anchor_id);
     if (index_it == tracked_anchor_id_to_index_.end()) {
       // We're not tracking this element, no need to generate a
       // NavigationPredictorAnchorElementMetrics record.

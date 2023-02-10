@@ -82,6 +82,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   HeapMojoRemote<mojom::blink::AnchorElementMetricsHost>* MetricsHost();
   void SetTickClockForTesting(const base::TickClock* clock);
+  void SetNowAsNavigationStartForTesting();
   void FireUpdateTimerForTesting();
 
   // Creates AnchorElementMetrics from anchor element if possible. Then records
@@ -118,6 +119,11 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   // Sends the metrics update, immediately.
   void UpdateMetrics(TimerBase*);
+
+  base::TimeTicks NavigationStart(const HTMLAnchorElement& element);
+
+  // Mock timestamp for navigation start used for testing.
+  absl::optional<base::TimeTicks> mock_navigation_start_for_testing_;
 
   // Use WeakMember to make sure we don't leak memory on long-lived pages.
   HeapHashSet<WeakMember<HTMLAnchorElement>> anchor_elements_to_report_;
