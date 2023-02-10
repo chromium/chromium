@@ -88,11 +88,11 @@ imageset("overflow_menu_action_pin_tab") {
   ]
 }
 
-imageset("overflow_menu_action_price_notifications") {
+imageset("overflow_menu_destination_price_notifications") {
   sources = [
-    "overflow_menu_action_price_notifications.imageset/Contents.json",
-    "overflow_menu_action_price_notifications.imageset/overflow_menu_action_price_notifications@2x.png",
-    "overflow_menu_action_price_notifications.imageset/overflow_menu_action_price_notifications@3x.png",
+    "overflow_menu_destination_price_notifications.imageset/Contents.json",
+    "overflow_menu_destination_price_notifications.imageset/overflow_menu_destination_price_notifications@2x.png",
+    "overflow_menu_destination_price_notifications.imageset/overflow_menu_destination_price_notifications@3x.png",
   ]
 }
 

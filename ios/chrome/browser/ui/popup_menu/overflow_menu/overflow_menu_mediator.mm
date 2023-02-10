@@ -241,7 +241,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuAction* addBookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* editBookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* readLaterAction;
-@property(nonatomic, strong) OverflowMenuAction* openPriceNotificationsAction;
 @property(nonatomic, strong) OverflowMenuAction* translateAction;
 @property(nonatomic, strong) OverflowMenuAction* requestDesktopAction;
 @property(nonatomic, strong) OverflowMenuAction* requestMobileAction;
@@ -550,17 +549,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                       [weakSelf openPriceNotifications];
                                     }];
   } else {
-    // Price Tracking destination.
-    // TODO:(crbug.com/1385781) Rename the `imageName` to
-    // 'overflow_menu_destination_price_notifications' when the Price tracking
-    // action item is being removed.
     self.priceNotificationsDestination = [self
         createOverflowMenuDestination:
             IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE
                           destination:overflow_menu::Destination::
                                           PriceNotifications
                             imageName:
-                                @"overflow_menu_action_price_notifications"
+                                @"overflow_menu_destination_price_notifications"
                       accessibilityID:kToolsMenuPriceNotifications
                               handler:^{
                                 [weakSelf openPriceNotifications];
@@ -770,15 +765,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           [weakSelf addToReadingList];
         });
 
-    // TODO:(crbug.com/1385781) Remove once the PriceNotificationsDestination
-    // has landed.
-    self.openPriceNotificationsAction = CreateOverflowMenuAction(
-        IDS_IOS_PRICE_NOTIFICATIONS_OVERFLOW_MENU_TITLE, kDownTrendSymbol,
-        /*systemSymbol=*/YES, /*monochromeSymbol=*/NO,
-        kToolsMenuPriceNotifications, ^{
-          [weakSelf openPriceNotifications];
-        });
-
     self.translateAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_TRANSLATE, kTranslateSymbol,
         /*systemSymbol=*/NO, /*monochromeSymbol=*/NO, kToolsMenuTranslateId, ^{
@@ -897,15 +883,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST,
         @"overflow_menu_action_read_later", kToolsMenuReadLater, ^{
           [weakSelf addToReadingList];
-        });
-
-    // TODO:(crbug.com/1385781) Remove once the PriceNotificationsDestination
-    // has landed.
-    self.openPriceNotificationsAction = CreateOverflowMenuAction(
-        IDS_IOS_PRICE_NOTIFICATIONS_OVERFLOW_MENU_TITLE,
-        @"overflow_menu_action_price_notifications",
-        kToolsMenuPriceNotifications, ^{
-          [weakSelf openPriceNotifications];
         });
 
     self.translateAction = CreateOverflowMenuAction(
@@ -1159,14 +1136,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   return newDestinations;
 }
 
-// Make sure the model to match the current page state.
-- (void)updateModel {
-  // If the model hasn't been created, there's no need to update.
-  if (!_overflowMenuModel) {
-    return;
-  }
-
-  NSArray<OverflowMenuDestination*>* baseDestinations = @[
+// Creates an NSArray containing the destinations contained in the overflow menu
+// carousel.
+- (NSArray<OverflowMenuDestination*>*)baseDestinations {
+  NSMutableArray* baseDestinations = [[NSMutableArray alloc] initWithArray:@[
     self.bookmarksDestination,
     self.historyDestination,
     self.readingListDestination,
@@ -1175,8 +1148,26 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     self.recentTabsDestination,
     self.siteInfoDestination,
     self.settingsDestination,
-    self.priceNotificationsDestination,
-  ];
+  ]];
+
+  if (self.webState &&
+      IsPriceTrackingEnabled(ChromeBrowserState::FromBrowserState(
+          self.webState->GetBrowserState())) &&
+      IsSmartSortingPriceTrackingDestinationEnabled()) {
+    [baseDestinations addObject:self.priceNotificationsDestination];
+  }
+
+  return baseDestinations;
+}
+
+// Make sure the model to match the current page state.
+- (void)updateModel {
+  // If the model hasn't been created, there's no need to update.
+  if (!_overflowMenuModel) {
+    return;
+  }
+
+  NSArray<OverflowMenuDestination*>* baseDestinations = [self baseDestinations];
 
   if (self.destinationUsageHistory && IsSmartSortingNewOverflowMenuEnabled()) {
     baseDestinations = [self.destinationUsageHistory
@@ -1269,12 +1260,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     (pageIsBookmarked) ? self.editBookmarkAction : self.addBookmarkAction,
     self.readLaterAction
   ]];
-
-  if (self.webState &&
-      IsPriceTrackingEnabled(ChromeBrowserState::FromBrowserState(
-          self.webState->GetBrowserState()))) {
-    [pageActions addObject:self.openPriceNotificationsAction];
-  }
 
   // Clear Browsing Data Action is not relevant in incognito, so don't show it.
   // History is also hidden for similar reasons.

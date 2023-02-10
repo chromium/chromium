@@ -322,7 +322,7 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
   }
 
   // Checks that Tools Menu has the right number of items in each section.
-  CheckMediatorSetItems(9, @[
+  CheckMediatorSetItems(8, @[
     @(number_of_tab_actions),
     // Other actions, depending on configuration.
     @(number_of_action_items),
