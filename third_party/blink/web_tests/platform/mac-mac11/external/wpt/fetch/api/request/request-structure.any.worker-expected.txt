@@ -19,5 +19,8 @@ PASS Check integrity attribute
 FAIL Check isReloadNavigation attribute assert_true: request has isReloadNavigation attribute expected true got false
 PASS Check isHistoryNavigation attribute
 PASS Check bodyUsed attribute
+PASS Request does not expose priority attribute
+PASS Request does not expose internalpriority attribute
+PASS Request does not expose blocking attribute
 Harness: the test ran to completion.
 

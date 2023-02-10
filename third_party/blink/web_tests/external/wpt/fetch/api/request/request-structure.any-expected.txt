@@ -20,5 +20,8 @@ FAIL Check isReloadNavigation attribute assert_true: request has isReloadNavigat
 PASS Check isHistoryNavigation attribute
 FAIL Check duplex attribute assert_true: request has duplex attribute expected true got false
 PASS Check bodyUsed attribute
+PASS Request does not expose priority attribute
+PASS Request does not expose internalpriority attribute
+PASS Request does not expose blocking attribute
 Harness: the test ran to completion.
 
