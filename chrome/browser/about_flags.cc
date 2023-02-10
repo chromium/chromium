@@ -6686,6 +6686,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilitySelectToSpeakPageMigration)},
 
+    {"enable-accessibility-chromevox-page-migration",
+     flag_descriptions::kAccessibilityChromeVoxPageMigrationName,
+     flag_descriptions::kAccessibilityChromeVoxPageMigrationDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityChromeVoxPageMigration)},
+
     {"enable-view-ppd", flag_descriptions::kEnableViewPpdName,
      flag_descriptions::kEnableViewPpdDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnableViewPpd)},

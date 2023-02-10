@@ -58381,6 +58381,8 @@ from previous Chrome versions.
   <int value="-1823193038" label="QuietNotificationPrompts:disabled"/>
   <int value="-1823073826" label="TabGroupsSave:disabled"/>
   <int value="-1822825246" label="DragFromShelfToHomeOrOverview:enabled"/>
+  <int value="-1821585768"
+      label="AccessibilityChromeVoxPageMigration:disabled"/>
   <int value="-1821491797"
       label="AutofillEnableRankingFormulaCreditCards:enabled"/>
   <int value="-1821058653" label="enable-delay-agnostic-aec"/>
@@ -64219,6 +64221,7 @@ from previous Chrome versions.
   <int value="1511140997" label="OfflinePagesAsyncDownload:disabled"/>
   <int value="1511161758" label="BackgroundLoader:enabled"/>
   <int value="1511961044" label="ArcFilePickerExperiment:disabled"/>
+  <int value="1512608246" label="AccessibilityChromeVoxPageMigration:enabled"/>
   <int value="1514036945"
       label="OmniboxUIExperimentElideSuggestionUrlAfterHost:disabled"/>
   <int value="1514066770" label="DisplayCutoutAPI:enabled"/>

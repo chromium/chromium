@@ -184,6 +184,15 @@ bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
       ::features::kAccessibilitySelectToSpeakPageMigration);
 }
 
+BASE_FEATURE(kAccessibilityChromeVoxPageMigration,
+             "AccessibilityChromeVoxPageMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityChromeVoxPageMigrationEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityChromeVoxPageMigration);
+}
+
 BASE_FEATURE(kAccessibilitySelectToSpeakPrefsMigration,
              "AccessibilitySelectToSpeakPrefsMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
