@@ -54,8 +54,8 @@ async function doAuthFetch() {
 
   // Show a "Please sign in" dialog.
   toggleSigninModal(true /*show*/);
-  let signinButton = document.querySelector('#signin-modal button.signin');
-  signinButton.addEventListener('click', getToken);
+  const btnSignin = g_el.divSigninModal.querySelector('button.signin');
+  btnSignin.addEventListener('click', getToken);
 
   // Only hide the dialog once we have the token.
   await g_authTokenPromise;
@@ -73,8 +73,7 @@ async function fetchAccessToken() {
 
 /** @param {boolean} show */
 function toggleSigninModal(show) {
-  const modal = document.getElementById('signin-modal');
-  modal.style.display = show ? '': 'none';
+  g_el.divSigninModal.style.display = show ? '' : 'none';
 }
 
 /**

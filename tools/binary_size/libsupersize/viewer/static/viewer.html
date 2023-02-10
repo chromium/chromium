@@ -11,27 +11,32 @@ found in the LICENSE file.
   <title>Super Size Tiger View</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#4285f4">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,500" media="print" onload="this.media='all'">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Google+Sans:400,500%7cRoboto:400,500"
+        media="print" onload="this.media='all'">
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="options.css">
-  <link rel="icon" href="favicon.ico" sizes="16x16 32x32 256x256" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" sizes="16x16 32x32 256x256"
+        type="image/x-icon">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/diff2html/bundles/css/diff2html.min.css">
+  <script defer src="shared.js"></script>
+  <script defer src="dom.js"></script>
   <script defer src="auth-consts.js"></script>
   <script defer src="auth.js"></script>
   <script defer src="start-worker.js"></script>
-  <script defer src="shared.js"></script>
   <script defer src="state.js"></script>
   <script defer src="infocard-ui.js"></script>
   <script defer src="tree-ui.js"></script>
-  <script async defer src="https://accounts.google.com/gsi/client" onload="initClient()"></script>
-  <script async>
+  <script async defer src="https://accounts.google.com/gsi/client"
+          onload="initClient()"></script>
+  <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
           .catch(() => console.warn('ServiceWorker not loaded.'));
     }
   </script>
-  <script async type="text/javascript" src="https://cdn.jsdelivr.net/npm/diff2html/bundles/js/diff2html.min.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/diff2html/bundles/js/diff2html.min.js"></script>
 </head>
 
 <body>
@@ -40,28 +45,32 @@ found in the LICENSE file.
   <header class="appbar">
     <div class="appbar-inner">
       <div style="flex-grow: 1;">
-        <h1 class="headline">Super Size Tiger View</h1>
-        <div id="review-info" style="display: none;">
+        <h1 id="h1-headline" class="headline">Super Size Tiger View</h1>
+        <div id="div-review-info" style="display: none;">
           <span>Showing breakdown for:</span>
-          <a id="review-text" target="_blank"></a>
+          <a id="link-review-text" href="#" target="_blank"></a>
         </div>
       </div>
-      <a title="Download the &quot;before&quot; .size file" id="before-anchor" download="before_size.size" style="display:none">
+      <a id="link-download-before" href="#"
+         title="Download the &quot;before&quot; .size file"
+         download="before_size.size" style="display:none">
         <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" class="download-button">
           <path
             d="M18.0 21.0 22.0 17.0 20.6 15.6 19.0 17.2V13.025H17.0V17.2L15.4 15.6L14.0 17.0ZM14.0 24.0V22.0H22.0V24.0ZM6.0 20.0Q5.175 20.0 4.5875 19.4125Q4.0 18.825 4.0 18.0V4.0Q4.0 3.175 4.5875 2.5875Q5.175 2.0 6.0 2.0H13.0L19.0 8.0V11.025H17.0V9.0H12.0V4.0H6.0Q6.0 4.0 6.0 4.0Q6.0 4.0 6.0 4.0V18.0Q6.0 18.0 6.0 18.0Q6.0 18.0 6.0 18.0H12.0V20.0ZM6.0 18.0V11.025V9.0V4.0Q6.0 4.0 6.0 4.0Q6.0 4.0 6.0 4.0V18.0Q6.0 18.0 6.0 18.0Q6.0 18.0 6.0 18.0Z">
           </path>
         </svg>
       </a>
-      <a title="Download .size file" id="load-anchor" download="load_size.size" style="display:none">
+      <a id="link-download-load" href="#" title="Download .size file"
+         download="load_size.size" style="display:none">
         <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" class="download-button">
           <path
             d="M18.0 21.0 22.0 17.0 20.6 15.6 19.0 17.2V13.025H17.0V17.2L15.4 15.6L14.0 17.0ZM14.0 24.0V22.0H22.0V24.0ZM6.0 20.0Q5.175 20.0 4.5875 19.4125Q4.0 18.825 4.0 18.0V4.0Q4.0 3.175 4.5875 2.5875Q5.175 2.0 6.0 2.0H13.0L19.0 8.0V11.025H17.0V9.0H12.0V4.0H6.0Q6.0 4.0 6.0 4.0Q6.0 4.0 6.0 4.0V18.0Q6.0 18.0 6.0 18.0Q6.0 18.0 6.0 18.0H12.0V20.0ZM6.0 18.0V11.025V9.0V4.0Q6.0 4.0 6.0 4.0Q6.0 4.0 6.0 4.0V18.0Q6.0 18.0 6.0 18.0Q6.0 18.0 6.0 18.0Z">
           </path>
         </svg>
       </a>
-      <input type="file" name="upload" id="upload" accept=".size,.sizediff" >
-      <label for="upload" class="text-button filled-button with-icon">
+      <input id="file-upload" type="file" name="upload"
+             accept=".size,.sizediff" >
+      <label for="file-upload" class="text-button filled-button with-icon">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#fff">
             <!--
             Icons from https://material.io/tools/icons/?style=outline
@@ -72,7 +81,7 @@ found in the LICENSE file.
         <span class="label-text">Upload data</span>
       </label>
       <a href="https://chromium.googlesource.com/chromium/src/+/main/tools/binary_size/html_report_faq.md" class="icon-button"
-          title="FAQ" id="faq" target="_blank">
+          title="FAQ" id="link-faq" target="_blank">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368">
             <path d="M11,18h2v-2h-2V18z M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8
                     s3.59-8,8-8s8,3.59,8,8S16.41,20,12,20z M12,6c-2.21,0-4,1.79-4,4h2c0-1.1,0.9-2,2-2s2,0.9,2,2c0,2-3,1.75-3,5h2c0-2.25,3-2.5,3-5
@@ -100,40 +109,40 @@ found in the LICENSE file.
         </svg>
       </button>
     </div>
-    <progress value="0" id="progress" class="appbar-progress"></progress>
+    <progress value="0" id="prog-appbar"></progress>
   </header>
   <!-- Options side panel -->
-  <form id="options" class="options" method="GET">
+  <form id="frm-options" method="GET">
     <header class="form-bar">
       <button type="button" class="icon-button toggle-options" title="Close">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#5f6368">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+               viewBox="0 0 24 24" fill="#5f6368">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
           </svg>
       </button>
     </header>
 
-    <input type="hidden" name="load_url" data-dynamic>
-    <input type="hidden" name="before_url">
-
     <fieldset>
       <legend class="subhead">Size options</legend>
       <div class="checkbox-wrapper">
-        <input type="checkbox" id="methodcount" name="method_count" value="on">
-        <label class="checkbox-label" for="methodcount">Method Count Mode</label>
+        <input type="checkbox" id="cb-method-count" name="method_count">
+        <label class="checkbox-label" for="cb-method-count">
+          Method Count Mode
+        </label>
       </div>
       <p class="select-wrapper">
-        <select id="byteunit" class="sel-big" name="byteunit" data-dynamic>
+        <select id="sel-byte-unit" class="sel-big" name="byteunit" data-dynamic>
           <option value="B">B - bytes</option>
           <option value="KiB" selected>KiB - kibibytes</option>
           <option value="MiB">MiB - mebibytes</option>
           <option value="GiB">GiB - gibibytes</option>
         </select>
-        <label class="select-label" for="byteunit">Byte unit</label>
+        <label class="select-label" for="sel-byte-unit">Byte unit</label>
       </p>
       <p class="input-wrapper">
-        <input type="number" id="minsize" name="min_size" value="0" min="0">
-        <label class="input-label" for="minsize">
-            Minimum size (bytes)
+        <input type="number" id="nb-min-size" name="min_size" value="0" min="0">
+        <label class="input-label" for="nb-min-size">
+          Minimum size (bytes)
         </label>
       </p>
     </fieldset>
@@ -141,157 +150,175 @@ found in the LICENSE file.
     <fieldset>
       <legend class="subhead">Group symbols by</legend>
       <div class="radio-wrapper">
-        <input type="radio"
-               id="group-by-sourcepath"
-               name="group_by"
+        <input type="radio" id="rb-group-by-sourcepath" name="group_by"
                value="source_path">
-        <label class="radio-label" for="group-by-sourcepath">Nothing</label>
+        <label class="radio-label" for="rb-group-by-sourcepath">Nothing</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio"
-               id="group-by-container"
-               name="group_by"
+        <input type="radio" id="rb-group-by-container" name="group_by"
                value="container" checked>
-        <label class="radio-label" for="group-by-container">Container</label>
+        <label class="radio-label" for="rb-group-by-container">Container</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio"
-               id="group-by-component"
-               name="group_by"
+        <input type="radio" id="rb-group-by-component" name="group_by"
                value="component">
-        <label class="radio-label" for="group-by-component">Component</label>
+        <label class="radio-label" for="rb-group-by-component">Component</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio"
-               id="group-by-template"
-               name="group_by"
+        <input type="radio" id="rb-group-by-template" name="group_by"
                value="template">
-        <label class="radio-label" for="group-by-template">Template</label>
+        <label class="radio-label" for="rb-group-by-template">Template</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio"
-               id="group-by-generated_type"
-               name="group_by"
+        <input type="radio" id="rb-group-by-generated_type" name="group_by"
                value="generated_type">
-        <label class="radio-label" for="group-by-generated_type">Generated type</label>
+        <label class="radio-label" for="rb-group-by-generated_type">
+          Generated type
+        </label>
       </div>
     </fieldset>
 
     <fieldset>
       <legend class="subhead">Search by regex</legend>
       <div class="input-wrapper">
-        <input class="input-regex" type="text" id="includeregex" name="include" placeholder=".+@.+" aria-describedby="include-error">
-        <label class="input-label" for="includeregex">
-            Symbols must contain
+        <input type="text" id="tb-include-regex" class="input-regex"
+               name="include" placeholder=".+@.+"
+               aria-describedby="p-include-error">
+        <label class="input-label" for="tb-include-regex">
+          Symbols must contain
         </label>
-        <p class="input-error" id="include-error"></p>
+        <p class="input-error" id="p-include-error"></p>
       </div>
       <div class="input-wrapper">
-        <input class="input-regex" type="text" id="excluderegex" name="exclude" placeholder="\(.+\)" aria-describedby="exclude-error">
-        <label class="input-label" for="excluderegex">
-            Symbols must exclude
+        <input type="text" id="tb-exclude-regex" class="input-regex"
+               name="exclude" placeholder="\(.+\)"
+               aria-describedby="p-exclude-error">
+        <label class="input-label" for="tb-exclude-regex">
+          Symbols must exclude
         </label>
-        <p class="input-error" id="exclude-error"></p>
+        <p class="input-error" id="p-exclude-error"></p>
       </div>
     </fieldset>
 
-    <fieldset id="types-filter">
+    <fieldset id="fs-types-filter">
       <legend class="subhead">Symbol types to show</legend>
       <div class="checkbox-wrapper">
-        <input type="checkbox" id="filtertext" name="type" value="t" checked>
-        <label class="checkbox-label" for="filtertext">
-            Native code: .text
+        <input type="checkbox" id="cb-filter-text" name="type" value="t"
+               checked>
+        <label class="checkbox-label" for="cb-filter-text">
+          Native code: .text
         </label>
       </div>
       <div class="checkbox-wrapper">
-        <input type="checkbox" id="filterdata" name="type" value="d" checked>
-        <label class="checkbox-label" for="filterdata">
-            Native code: .data
+        <input type="checkbox" id="cb-filter-data" name="type" value="d"
+               checked>
+        <label class="checkbox-label" for="cb-filter-data">
+          Native code: .data
         </label>
       </div>
       <div class="checkbox-wrapper">
-        <input type="checkbox" id="filterrodata" name="type" value="r" checked>
-        <label class="checkbox-label" for="filterrodata">
-            Native code: .rodata
+        <input type="checkbox" id="cb-filter-rodata" name="type" value="r"
+               checked>
+        <label class="checkbox-label" for="cb-filter-rodata">
+          Native code: .rodata
         </label>
       </div>
       <div class="checkbox-wrapper">
-        <input type="checkbox" id="filterrelro" name="type" value="R" checked>
-        <label class="checkbox-label" for="filterrelro">
-            Native code: .data.rel.ro
+        <input type="checkbox" id="cb-filter-relro" name="type" value="R"
+               checked>
+        <label class="checkbox-label" for="cb-filter-relro">
+          Native code: .data.rel.ro
         </label>
       </div>
       <div class="checkbox-wrapper">
-        <input type="checkbox" id="filterdex" name="type" value="m" checked>
-        <label class="checkbox-label" for="filterdex">
-            Dex: Methods
+        <input type="checkbox" id="cb-filter-dex" name="type" value="m"
+               checked>
+        <label class="checkbox-label" for="cb-filter-dex">Dex: Methods</label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="cb-filter-dexnon" name="type" value="x"
+               checked>
+        <label class="checkbox-label" for="cb-filter-dexnon">Dex: Other</label>
+      </div>
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="cb-filter-pak" name="type" value="p"
+               checked>
+        <label class="checkbox-label" for="cb-filter-pak">
+          Pak: Translations
         </label>
       </div>
       <div class="checkbox-wrapper">
-        <input type="checkbox" id="filterdexnon" name="type" value="x" checked>
-        <label class="checkbox-label" for="filterdexnon">
-            Dex: Other
+        <input type="checkbox" id="cb-filter-paknon" name="type" value="P"
+               checked>
+        <label class="checkbox-label" for="cb-filter-paknon">
+          Pak: Non-translations
         </label>
       </div>
       <div class="checkbox-wrapper">
-        <input type="checkbox" id="filterpak" name="type" value="p" checked>
-        <label class="checkbox-label" for="filterpak">
-            Pak: Translations
+        <input type="checkbox" id="cb-filter-other" name="type" value="o"
+               checked>
+        <label class="checkbox-label" for="cb-filter-other">
+          Assets &amp; Miscellaneous Entries
         </label>
       </div>
       <div class="checkbox-wrapper">
-        <input type="checkbox" id="filterpaknon" name="type" value="P" checked>
-        <label class="checkbox-label" for="filterpaknon">
-            Pak: Non-translations
+        <input type="checkbox" id="cb-filter-bss" name="type" value="b">
+        <label class="checkbox-label" for="cb-filter-bss">
+          Native Code: .bss
         </label>
       </div>
-      <div class="checkbox-wrapper">
-        <input type="checkbox" id="filterother" name="type" value="o" checked>
-        <label class="checkbox-label" for="filterother">
-            Assets &amp; Miscellaneous Entries
-        </label>
-      </div>
-      <div class="checkbox-wrapper">
-        <input type="checkbox" id="filterbss" name="type" value="b">
-        <label class="checkbox-label" for="filterbss">
-            Native Code: .bss
-        </label>
-      </div>
-      <button type="button" class="text-button" id="type-all">Select all</button>
-      <button type="button" class="text-button" id="type-none">Select none</button>
+      <button type="button" id="btn-type-all" class="text-button">
+        Select all
+      </button>
+      <button type="button" id="btn-type-none" class="text-button">
+        Select none
+      </button>
     </fieldset>
 
-    <fieldset id="flag-view">
+    <fieldset>
       <legend class="subhead">Filter symbols</legend>
       <div class="radio-wrapper">
-        <input type="radio" id="clearflag" name="flag_filter" value="clear" checked>
-        <label class="radio-label" for="clearflag">All</label>
+        <input type="radio" id="rb-flag-clear" name="flag_filter" value="clear"
+               checked>
+        <label class="radio-label" for="rb-flag-clear">All</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="hotflag" name="flag_filter" value="hot">
-        <label class="radio-label" for="hotflag">Hot code</label>
+        <input type="radio" id="rb-flag-hot" name="flag_filter" value="hot">
+        <label class="radio-label" for="rb-flag-hot">Hot code</label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="generatedflag" name="flag_filter" value="generated">
-        <label class="radio-label" for="generatedflag">Generated files</label>
+        <input type="radio" id="rb-flag-generated" name="flag_filter"
+               value="generated">
+        <label class="radio-label" for="rb-flag-generated">
+          Generated files
+        </label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="uncompressedflag" name="flag_filter" value="uncompressed">
-        <label class="radio-label" for="uncompressedflag">Uncompressed .pak files</label>
+        <input type="radio" id="rb-flag-uncompressed" name="flag_filter"
+               value="uncompressed">
+        <label class="radio-label" for="rb-flag-uncompressed">
+          Uncompressed .pak files
+        </label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="nonoverheadflag" name="flag_filter" value="nonoverhead">
-        <label class="radio-label" for="nonoverheadflag">Non-overhead</label>
+        <input type="radio" id="rb-flag-nonoverhead" name="flag_filter"
+               value="nonoverhead">
+        <label class="radio-label" for="rb-flag-nonoverhead">
+          Non-overhead
+        </label>
       </div>
       <div class="radio-wrapper">
-        <input type="radio" id="disassemblyflag" name="flag_filter" value="disassembly">
-        <label class="radio-label" for="disassemblyflag">Disassembly</label>
+        <input type="radio" id="rb-flag-disassembly" name="flag_filter"
+               value="disassembly">
+        <label class="radio-label" for="rb-flag-disassembly">
+          Disassembly
+        </label>
       </div>
     </fieldset>
   </form>
   <div class="symbols">
     <!-- Icons for symbols are stored here and cloned. -->
-    <div hidden id="icons">
+    <div hidden id="div-icons">
       <svg class="icon foldericon" height="24" width="24" fill="#5f6368">
         <title>Directory</title>
         <path d="M9.17,6l2,2H20v10L4,18V6H9.17 M10,4H4C2.9,4,2.01,4.9,2.01,6L2,18c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8c0-1.1-0.9-2-2-2
@@ -366,7 +393,7 @@ found in the LICENSE file.
         />
       </svg>
     </div>
-    <div hidden id="symbol-diff-status-icons">
+    <div hidden id="div-diff-status-icons">
       <svg class="diff-status-icon addedicon" height="24" width="24">
         <title>Added</title>
         <path d="M 12,2 C 6.48,2 2,6.48 2,12 2,17.52 6.48,22 12,22 17.52,22 22,17.52 22,12 22,6.48 17.52,2 12,2 Z" fill="#ffffff"/>
@@ -389,8 +416,9 @@ found in the LICENSE file.
       </svg>
     </div>
     <!-- Template for tree groups and leaves -->
-    <template id="template-symboltree-group">
-      <li role="treeitem" aria-expanded="false" aria-describedby="infocard-artifact">
+    <template id="tmpl-symbol-tree-group">
+      <li role="treeitem" aria-expanded="false"
+          aria-describedby="div-infocard-artifact">
         <a class="node" href="#" tabindex="-1" role="presentation">
           <span class="symbol-name"></span>
           <span class="size"></span>
@@ -398,8 +426,8 @@ found in the LICENSE file.
         <ul role="group"></ul>
       </li>
     </template>
-    <template id="template-symboltree-leaf">
-      <li role="treeitem" aria-describedby="infocard-symbol">
+    <template id="tmpl-symbol-tree-leaf">
+      <li role="treeitem" aria-describedby="div-infocard-symbol">
         <span class="node" tabindex="-1">
           <span class="symbol-name"></span>
           <span class="size"></span>
@@ -410,31 +438,33 @@ found in the LICENSE file.
     <main class="tree-view">
       <header class="tree-header">
         <span class="subtitle">Name</span>
-        <span class="subtitle size-header" id="size-header">Size</span>
+        <span id="span-size-header" class="subtitle">Size</span>
       </header>
-      <ul id="symboltree" class="tree" role="tree" aria-labelledby="headline"></ul>
+      <ul id="ul-symbol-tree" class="tree" role="tree"
+          aria-labelledby="h1-headline"></ul>
     </main>
     <!-- Empty .sizediff Message-->
-    <div id="no-symbols-msg" style="display:none">
+    <div id="div-no-symbols-msg" style="display:none">
       This diff contains no symbols (no sizes changed).
     </div>
     <!-- Metadata Node -->
-    <div id="metadata-view" class="metadata" title="Metadata from .size/.sizediff file">
+    <div id="div-metadata-view" class="metadata"
+         title="Metadata from .size/.sizediff file">
       <a class="node" tabindex="0" role="presentation">
-        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-          fill="#716f71">
+        <svg width="24" height="24" viewBox="0 0 24 24"
+             xmlns="http://www.w3.org/2000/svg" fill="#716f71">
           <path fill-rule="evenodd"
-            d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 7V9H13V7H11ZM11 11V17H13V11H11ZM4 12C4 16.41 7.59 20 12 20C16.41 20 20 16.41 20 12C20 7.59 16.41 4 12 4C7.59 4 4 7.59 4 12Z">
+                d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11 7V9H13V7H11ZM11 11V17H13V11H11ZM4 12C4 16.41 7.59 20 12 20C16.41 20 20 16.41 20 12C20 7.59 16.41 4 12 4C7.59 4 4 7.59 4 12Z">
           </path>
         </svg>
         <span class="metadata-symbol-name">Metadata</span>
       </a>
     </div>
-    <pre id="metadata-content" class="metadata"></pre>
+    <pre id="pre-metadata-content" class="metadata"></pre>
     <!-- Symbol and artifact breakdown cards -->
     <link href="infocard.css" rel="stylesheet">
-    <footer class="infocards">
-      <div class="infocard infocard-artifact open" id="infocard-artifact" hidden>
+    <div class="infocards">
+      <div id="div-infocard-artifact" class="infocard open" hidden>
         <div class="icon-info artifact-icon-info">
           <canvas class="type-pie-info" height="80" width="80"></canvas>
           <div></div>
@@ -463,13 +493,13 @@ found in the LICENSE file.
                 <th class="subhead-2 changed">Changed</th>
                 <th class="subhead-2 size">Total size</th>
                 <th class="subhead-2 percent">Percent</th>
-
               </tr>
             </thead>
             <tbody>
               <tr class="bss-info">
                 <td>
-                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#a142f4">
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#a142f4">
                     <path d="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm0 2h7v5h5v11H6V4zm4 6v4h2v-4h-2zm0 6v2h2v-2h-2z"
                       />
                   </svg>
@@ -485,7 +515,8 @@ found in the LICENSE file.
               </tr>
               <tr class="data-info">
                 <td>
-                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#fa7b17">
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#fa7b17">
                     <path d="M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6H6m0 2h7v5h5v11H6V4m2 8v2h8v-2H8m0 4v2h5v-2z" />
                   </svg>
                 </td>
@@ -499,7 +530,8 @@ found in the LICENSE file.
               </tr>
               <tr class="rodata-info">
                 <td>
-                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#24c1e0">
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#24c1e0">
                     <path d="M6 2a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6H6zm0 2h7v5h5v11H6V4zm5.9 8c-2 0-3.7 1.2-4.4 3a4.7 4.7 0 0 0 8.8 0c-.7-1.8-2.4-3-4.4-3zm0 1a2 2 0 0 1 2 2 2 2 0 0 1-2 2 2 2 0 0 1-2-2 2 2 0 0 1 2-2zm0 .8a1.2 1.2 0 0 0-1.2 1.2 1.2 1.2 0 0 0 1.2 1.2 1.2 1.2 0 0 0 1.2-1.2 1.2 1.2 0 0 0-1.2-1.2z"
                     />
                   </svg>
@@ -514,7 +546,8 @@ found in the LICENSE file.
               </tr>
               <tr class="relro-info">
                 <td>
-                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#fbbc04">
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#fbbc04">
                     <path d="M20,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h15c1.1,0,2-0.9,2-2V5C22,3.9,21.1,3,20,3z M20,5v3H5V5H20z M15,19h-5v-9h5V19z
                              M5,10h3v9H5V10z M17,19v-9h3v9H17z" />
                   </svg>
@@ -529,7 +562,8 @@ found in the LICENSE file.
               </tr>
               <tr class="text-info">
                 <td>
-                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#1a73e8">
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#1a73e8">
                     <path d="M9.4,16.6L4.8,12l4.6-4.6L8,6l-6,6l6,6L9.4,16.6z M14.6,16.6l4.6-4.6l-4.6-4.6L16,6l6,6l-6,6L14.6,16.6z" />
                   </svg>
                 </td>
@@ -543,7 +577,8 @@ found in the LICENSE file.
               </tr>
               <tr class="dexnon-info">
                 <td>
-                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#ea4335">
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#ea4335">
                     <path d="M6.6 1.44l-.82.83 2.1 2.1A6.96 6.96 0 0 0 5 10v1h14v-1a6.96 6.96 0 0 0-2.88-5.63l2.1-2.1-.82-.83-2.3 2.31a6.81 6.81 0 0 0-6.19 0L6.6 1.44zM9 7a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zm6 0a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zM5 12v4.27C5 20 8.17 23 12 23s7-3 7-6.73V12H5zm2 2h10v2.27c0 2.6-2.2 4.73-5 4.73s-5-2.13-5-4.73V14z"
                     />
                   </svg>
@@ -558,7 +593,8 @@ found in the LICENSE file.
               </tr>
               <tr class="dex-info">
                 <td>
-                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#a50e0e">
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#a50e0e">
                     <path d="M6.6 1.44l-.82.83 2.1 2.1A6.96 6.96 0 0 0 5 10v1h14v-1a6.96 6.96 0 0 0-2.88-5.63l2.1-2.1-.82-.83-2.3 2.31a6.81 6.81 0 0 0-6.19 0L6.6 1.44zM9 7a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zm6 0a1 1 0 0 1 1 1 1 1 0 0 1-1 1 1 1 0 0 1-1-1 1 1 0 0 1 1-1zM5 12v4.27C5 20 8.17 23 12 23s7-3 7-6.73V12H5zm2 2h10v2.27c0 2.6-2.2 4.73-5 4.73s-5-2.13-5-4.73V14z"
                     />
                   </svg>
@@ -573,7 +609,8 @@ found in the LICENSE file.
               </tr>
               <tr class="pak-info">
                 <td>
-                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#34a853">
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#34a853">
                     <path d="M5 3a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5zm0 2h5v2h2V5h7v14H5V5zm7 2v2h2V7h-2zm0 2h-2v2h2V9zm0 2v2h2v-2h-2zm0 2h-2v2h2v-2zm0 2v2h2v-2h-2z"
                     />
                   </svg>
@@ -588,7 +625,8 @@ found in the LICENSE file.
               </tr>
               <tr class="paknon-info">
                 <td>
-                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#0d652d">
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#0d652d">
                     <path d="M5 3a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5zm0 2h5v2h2V5h7v14H5V5zm7 2v2h2V7h-2zm0 2h-2v2h2V9zm0 2v2h2v-2h-2zm0 2h-2v2h2v-2zm0 2v2h2v-2h-2z"
                     />
                   </svg>
@@ -603,7 +641,8 @@ found in the LICENSE file.
               </tr>
               <tr class="other-info">
                 <td>
-                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18" fill="#5f6368">
+                  <svg class="icon" viewBox="0 0 24 24" height="18" width="18"
+                       fill="#5f6368">
                     <path d="M10.88 2l-.85 1.36L4 13h6v-2H7.6l3.28-5.23L12.28 8h2.35l-3.75-6zM12 10v10h10V10H12zm2 2h6v6h-6v-6zM2.21 15A5.52 5.52 0 0 0 10 21.4v-2.45A3.48 3.48 0 0 1 7.5 20a3.48 3.48 0 0 1-3.15-5H2.2z"
                     />
                   </svg>
@@ -620,7 +659,7 @@ found in the LICENSE file.
           </table>
         </div>
       </div>
-      <div class="infocard infocard-symbol" id="infocard-symbol" hidden>
+      <div id="div-infocard-symbol" class="infocard" hidden>
         <div class="icon-info">
           <div></div>
         </div>
@@ -637,25 +676,33 @@ found in the LICENSE file.
           <span class="flags-info"></span>
         </p>
       </div>
-    </footer>
+    </div>
   </div>
   <!-- Modal Sign in Dialog -->
-  <div id="signin-modal" class="modal" style="display:none">
+  <div id="div-signin-modal" class="modal" style="display:none">
     <div class="modal-content" style="width:600px">
-      <div style="margin-bottom: 40px">You are trying to access a private size file. Please sign in with your @google.com
-        account.
+      <div style="margin-bottom: 40px">
+        You are trying to access a private size file.
+        Please sign in with your @google.com account.
       </div>
-      <button type="button" class="signin text-button filled-button">Sign Me In</button>
+      <button type="button" class="signin text-button filled-button">
+        Sign Me In
+      </button>
     </div>
   </div>
   <!-- Modal To Display Disassembly-->
-  <div id="disassembly-modal" class="modal" style="display:none">
+  <div id="div-disassembly-modal" class="modal" style="display:none">
     <div class="modal-content">
-      <div id='disassembly-code'>Sample</div>
+      <div class="div-code">Sample</div>
       <div style="margin-top: 10px">
-        <a title="Download unified diff" id="disassembly-download" download="disassembly.txt">Download</a>
-        <button style="margin-left: 10px" id="disassembly-close" type="button"
-          class="text-button filled-button">Close</button>
+        <a title="Download unified diff" class="link-download" href="#"
+           download="disassembly.txt">
+           Download
+        </a>
+        <button type="button" style="margin-left: 10px"
+                class="btn-close text-button filled-button">
+          Close
+        </button>
       </div>
     </div>
   </div>

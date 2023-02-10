@@ -31,13 +31,13 @@
   display: grid;
   padding: 16px;
 }
-.infocard-artifact {
+#div-infocard-artifact {
   grid-template-areas: 'header icon' 'type type';
   grid-template-columns: 1fr 80px;
   grid-column-gap: 16px;
   grid-row-gap: 8px;
 }
-.infocard-symbol {
+#div-infocard-symbol {
   grid-template-areas: 'icon header' 'type type';
   grid-template-columns: 40px auto;
   grid-column-gap: 16px;

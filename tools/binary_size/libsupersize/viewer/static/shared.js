@@ -92,6 +92,20 @@
  * @property {?MetadataType} metadata
  */
 
+/**
+ * @typedef {Object} BuildOptions
+ * @property {string} loadUrl
+ * @property {string} beforeUrl
+ * @property {boolean} methodCountMode
+ * @property {string} groupBy
+ * @property {string} includeRegex
+ * @property {string} excludeRegex
+ * @property {string} includeSections
+ * @property {number} minSymbolSize
+ * @property {number} flagToFilter
+ * @property {boolean} nonOverhead
+ * @property {boolean} disassemblyMode
+ */
 
 /**
  * @typedef {Object} BuildTreeResults
@@ -116,6 +130,14 @@ const _FLAGS = {
   COVERAGE:         1 << 8,
   UNCOMPRESSED:     1 << 9,
 };
+
+/** @type {Object<string, _FLAGS>} */
+const _NAMES_TO_FLAGS = Object.freeze({
+  hot: _FLAGS.HOT,
+  generated: _FLAGS.GENERATED_SOURCE,
+  coverage: _FLAGS.COVERAGE,
+  uncompressed: _FLAGS.UNCOMPRESSED,
+});
 
 /**
  * @enum {number} Various byte units and the corresponding amount of bytes that
@@ -159,12 +181,45 @@ const _OTHER_SYMBOL_TYPE = 'o';
 const _SYMBOL_TYPE_SET =
     new Set(/** @type {Iterable<string>} */ ('bdrtRxmopP'));
 
-/** @type {string} Key where type is stored in the query string state. */
-const _TYPE_STATE_KEY = 'type';
-
 /** @type {Array<string> | string} */
 const _LOCALE = /** @type {Array<string>} */ (navigator.languages) ||
     navigator.language;
+
+/** @enum {string} Keys in query string and names of input elements. */
+const STATE_KEY = {
+  LOAD_URL: 'load_url',
+  BEFORE_URL: 'before_url',
+  BYTE_UNIT: 'byteunit',
+  METHOD_COUNT: 'method_count',
+  MIN_SIZE: 'min_size',
+  GROUP_BY: 'group_by',
+  INCLUDE: 'include',
+  EXCLUDE: 'exclude',
+  TYPE: 'type',
+  FLAG_FILTER: 'flag_filter',
+};
+
+/**
+ * Throws error if |cond| is false.
+ * @param {boolean} cond The condition to check.
+ * @param {string=} msg Message on assert failure.
+ */
+function assert(cond, msg = 'Assert fail.') {
+  if (!cond)
+    throw new Error(msg);
+}
+
+/**
+ * Throws error if |obj| is null; returns |obj| otherwise.
+ * @param {?Object} obj The condition to check.
+ * @param {string=} msg Message on assert failure.
+ * @return {!Object}
+ */
+function assertNotNull(obj, msg = 'Assert fail: Object is null.') {
+  if (!obj)
+    throw new Error(msg);
+  return obj;
+}
 
 /**
  * Iterates over each type in the query string. Types can be expressed as
@@ -174,7 +229,7 @@ const _LOCALE = /** @type {Array<string>} */ (navigator.languages) ||
  * @param {Array<string>} typesList All values associated with the "type" key
  *     in the query string.
  */
-function* types(typesList) {
+function* translateTypes(typesList) {
   for (const typeOrTypes of typesList) {
     for (const typeChar of typeOrTypes) {
       yield typeChar;

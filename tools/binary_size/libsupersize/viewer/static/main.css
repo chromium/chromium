@@ -23,7 +23,7 @@ body {
   display: flex;
   align-items: center;
 }
-.appbar-progress {
+#prog-appbar {
   display: block;
   width: 100%;
   height: 4px;
@@ -33,30 +33,30 @@ body {
   background: #4285f499;
   transition: opacity 0.5s ease;
 }
-.appbar-progress::-webkit-progress-bar {
+#prog-appbar::-webkit-progress-bar {
   background: transparent;
 }
-.appbar-progress::-webkit-progress-value {
+#prog-appbar::-webkit-progress-value {
   background: #1a73e8;
   transition: width 1s ease-in;
 }
-.appbar-progress[value="0"]::-webkit-progress-value {
+#prog-appbar[value="0"]::-webkit-progress-value {
   transition: none;
 }
-.appbar-progress[value="1"] {
+#prog-appbar[value="1"] {
   opacity: 0;
 }
-.appbar-progress[value="1"]::-webkit-progress-value {
+#prog-appbar[value="1"]::-webkit-progress-value {
   transition-duration: 0.2s;
 }
-.error .appbar-progress {
+.error #prog-appbar {
   background: #ea433599;
 }
-.error .appbar-progress::-webkit-progress-value {
+.error #prog-appbar::-webkit-progress-value {
   background: #d93025;
 }
 
-.options {
+#frm-options {
   visibility: hidden;
   grid-area: options;
 }
@@ -211,7 +211,7 @@ ul {
   color: #ea4335;
 }
 
-.diff .size-header::after {
+.diff #span-size-header::after {
   content: " diff";
 }
 
@@ -286,31 +286,28 @@ ul {
   max-width: 1200px;
 }
 
-#metadata-view:not(.active) {
+#div-metadata-view:not(.active),
+#pre-metadata-content:not(.active) {
   display: none;
 }
 
-#metadata-content:not(.active) {
-  display: none;
-}
-
-#review-info{
+#div-review-info{
   font-size: 13px;
 }
 
-#review-text {
+#link-review-text {
   color: #0000d1;
   text-decoration: none;
   white-space: pre;
 }
 
-#no-symbols-msg {
+#div-no-symbols-msg {
   position: relative;
   text-align: center;
   top: -1em;
 }
 
-#disassembly-code {
+#div-disassembly-modal .div-code {
   border: 1px solid #ccc;
   box-sizing: border-box;
   max-width: 100%;

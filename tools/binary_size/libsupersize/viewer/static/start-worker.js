@@ -72,10 +72,11 @@ class TreeWorker {
    * @returns {Promise<BuildTreeResults, string>}
    */
   loadAndBuildTree(input=null, accessToken=null) {
+    const buildOptions = state.exportToBuildOptions();
     return this._waitForResponse('loadAndBuildTree', {
       input,
       accessToken,
-      optionsStr: location.search.slice(1),
+      buildOptions,
     });
   }
 
@@ -84,8 +85,9 @@ class TreeWorker {
    * @returns {Promise<BuildTreeResults>}
    */
   buildTree() {
+    const buildOptions = state.exportToBuildOptions();
     return this._waitForResponse('buildTree', {
-      optionsStr: location.search.slice(1),
+      buildOptions,
     });
   }
 
