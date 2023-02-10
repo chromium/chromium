@@ -150,20 +150,18 @@ class ResourceBundleTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
+  MockResourceBundleDelegate delegate_;
   std::unique_ptr<ResourceBundle> resource_bundle_;
 };
 
 TEST_F(ResourceBundleTest, DelegateGetPathForResourcePack) {
-  MockResourceBundleDelegate delegate;
-  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate);
-
+  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
   base::FilePath pack_path(FILE_PATH_LITERAL("/path/to/test_path.pak"));
   ResourceScaleFactor pack_scale_factor = ui::k200Percent;
 
-  EXPECT_CALL(delegate,
-      GetPathForResourcePack(
-          Property(&base::FilePath::value, pack_path.value()),
-          pack_scale_factor))
+  EXPECT_CALL(delegate_, GetPathForResourcePack(Property(&base::FilePath::value,
+                                                         pack_path.value()),
+                                                pack_scale_factor))
       .Times(1)
       .WillOnce(Return(pack_path));
 
@@ -173,13 +171,12 @@ TEST_F(ResourceBundleTest, DelegateGetPathForResourcePack) {
 TEST_F(ResourceBundleTest, DelegateGetPathForLocalePack) {
   ResourceBundle* orig_instance =
       ResourceBundle::SwapSharedInstanceForTesting(nullptr);
-  MockResourceBundleDelegate delegate;
-  ResourceBundle::InitSharedInstance(&delegate);
+  ResourceBundle::InitSharedInstance(&delegate_);
 
   std::string locale = "en-US";
 
   // Cancel the load.
-  EXPECT_CALL(delegate, GetPathForLocalePack(_, _))
+  EXPECT_CALL(delegate_, GetPathForLocalePack(_, _))
       .WillRepeatedly(Return(base::FilePath()))
       .RetiresOnSaturation();
 
@@ -188,7 +185,7 @@ TEST_F(ResourceBundleTest, DelegateGetPathForLocalePack) {
                     locale, /*crash_on_failure=*/false));
 
   // Allow the load to proceed.
-  EXPECT_CALL(delegate, GetPathForLocalePack(_, _))
+  EXPECT_CALL(delegate_, GetPathForLocalePack(_, _))
       .WillRepeatedly(ReturnArg<0>());
 
   EXPECT_TRUE(ResourceBundle::LocaleDataPakExists(locale));
@@ -200,13 +197,11 @@ TEST_F(ResourceBundleTest, DelegateGetPathForLocalePack) {
 }
 
 TEST_F(ResourceBundleTest, DelegateGetImageNamed) {
-  MockResourceBundleDelegate delegate;
-  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate);
-
+  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
   gfx::Image empty_image = resource_bundle->GetEmptyImage();
   int resource_id = 5;
 
-  EXPECT_CALL(delegate, GetImageNamed(resource_id))
+  EXPECT_CALL(delegate_, GetImageNamed(resource_id))
       .Times(1)
       .WillOnce(Return(empty_image));
 
@@ -215,18 +210,16 @@ TEST_F(ResourceBundleTest, DelegateGetImageNamed) {
 }
 
 TEST_F(ResourceBundleTest, DelegateGetNativeImageNamed) {
-  MockResourceBundleDelegate delegate;
-  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate);
+  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
 
   gfx::Image empty_image = resource_bundle->GetEmptyImage();
   int resource_id = 5;
 
   // Some platforms delegate GetNativeImageNamed calls to GetImageNamed.
-  EXPECT_CALL(delegate, GetImageNamed(resource_id))
+  EXPECT_CALL(delegate_, GetImageNamed(resource_id))
       .Times(Between(0, 1))
       .WillOnce(Return(empty_image));
-  EXPECT_CALL(delegate,
-      GetNativeImageNamed(resource_id))
+  EXPECT_CALL(delegate_, GetNativeImageNamed(resource_id))
       .Times(Between(0, 1))
       .WillOnce(Return(empty_image));
 
@@ -235,8 +228,7 @@ TEST_F(ResourceBundleTest, DelegateGetNativeImageNamed) {
 }
 
 TEST_F(ResourceBundleTest, DelegateLoadDataResourceBytes) {
-  MockResourceBundleDelegate delegate;
-  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate);
+  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
 
   // Create the data resource for testing purposes.
   unsigned char data[] = "My test data";
@@ -246,8 +238,9 @@ TEST_F(ResourceBundleTest, DelegateLoadDataResourceBytes) {
   int resource_id = 5;
   ResourceScaleFactor scale_factor = ui::kScaleFactorNone;
 
-  EXPECT_CALL(delegate, LoadDataResourceBytes(resource_id, scale_factor))
-      .Times(1).WillOnce(Return(static_memory.get()));
+  EXPECT_CALL(delegate_, LoadDataResourceBytes(resource_id, scale_factor))
+      .Times(1)
+      .WillOnce(Return(static_memory.get()));
 
   scoped_refptr<base::RefCountedMemory> result =
       resource_bundle->LoadDataResourceBytesForScale(resource_id, scale_factor);
@@ -255,8 +248,7 @@ TEST_F(ResourceBundleTest, DelegateLoadDataResourceBytes) {
 }
 
 TEST_F(ResourceBundleTest, DelegateGetRawDataResource) {
-  MockResourceBundleDelegate delegate;
-  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate);
+  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
 
   // Create the string piece for testing purposes.
   char data[] = "My test data";
@@ -264,7 +256,7 @@ TEST_F(ResourceBundleTest, DelegateGetRawDataResource) {
 
   int resource_id = 5;
 
-  EXPECT_CALL(delegate,
+  EXPECT_CALL(delegate_,
               GetRawDataResource(resource_id, ui::kScaleFactorNone, _))
       .Times(1)
       .WillOnce(DoAll(SetArgPointee<2>(string_piece), Return(true)));
@@ -312,13 +304,11 @@ TEST_F(ResourceBundleTest, IsBrotli) {
 }
 
 TEST_F(ResourceBundleTest, DelegateGetLocalizedString) {
-  MockResourceBundleDelegate delegate;
-  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate);
-
+  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
   std::u16string data = u"My test data";
   int resource_id = 5;
 
-  EXPECT_CALL(delegate, GetLocalizedString(resource_id, _))
+  EXPECT_CALL(delegate_, GetLocalizedString(resource_id, _))
       .Times(1)
       .WillOnce(DoAll(SetArgPointee<1>(data), Return(true)));
 
@@ -344,7 +334,6 @@ TEST_F(ResourceBundleTest, OverrideStringResource) {
 #if DCHECK_IS_ON()
 TEST_F(ResourceBundleTest, CanOverrideStringResources) {
   ResourceBundle* resource_bundle = CreateResourceBundle(nullptr);
-
   std::u16string data = u"My test data";
   int resource_id = 5;
 
@@ -357,13 +346,11 @@ TEST_F(ResourceBundleTest, CanOverrideStringResources) {
 #endif
 
 TEST_F(ResourceBundleTest, DelegateGetLocalizedStringWithOverride) {
-  MockResourceBundleDelegate delegate;
-  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate);
-
+  ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
   std::u16string delegate_data = u"My delegate data";
   int resource_id = 5;
 
-  EXPECT_CALL(delegate, GetLocalizedString(resource_id, _))
+  EXPECT_CALL(delegate_, GetLocalizedString(resource_id, _))
       .Times(1)
       .WillOnce(DoAll(SetArgPointee<1>(delegate_data), Return(true)));
 
