@@ -41,7 +41,8 @@ SupervisedUserServiceFactory* SupervisedUserServiceFactory::GetInstance() {
 
 // static
 KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
-  return new SupervisedUserService(profile);
+  return new SupervisedUserService(
+      profile, IdentityManagerFactory::GetInstance()->GetForProfile(profile));
 }
 
 SupervisedUserServiceFactory::SupervisedUserServiceFactory()

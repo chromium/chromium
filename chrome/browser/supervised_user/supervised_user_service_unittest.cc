@@ -27,6 +27,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -69,9 +72,7 @@ class AsyncTestHelper {
     Reset();
   }
 
-  ~AsyncTestHelper() {
-    EXPECT_FALSE(quit_called_);
-  }
+  ~AsyncTestHelper() { EXPECT_FALSE(quit_called_); }
 
   void QuitRunLoop() {
     // QuitRunLoop() can not be called more than once between calls to Wait().
@@ -108,9 +109,7 @@ class SupervisedUserURLFilterObserver
   }
 
   // SupervisedUserURLFilter::Observer
-  void OnSiteListUpdated() override {
-    QuitRunLoop();
-  }
+  void OnSiteListUpdated() override { QuitRunLoop(); }
 
  private:
   base::ScopedObservation<SupervisedUserURLFilter,
@@ -120,7 +119,9 @@ class SupervisedUserURLFilterObserver
 
 }  // namespace
 
-class SupervisedUserServiceTest : public ::testing::Test {
+class SupervisedUserServiceTest
+    : public ::testing::TestWithParam<
+          /* is_subject_to_parental_controls */ bool> {
  public:
   SupervisedUserServiceTest() {
     // The testing browser process may be deleted following a crash.
@@ -134,8 +135,10 @@ class SupervisedUserServiceTest : public ::testing::Test {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               SyncServiceFactory::GetDefaultFactory());
     builder.SetIsSupervisedProfile();
-    profile_ = builder.Build();
-
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment(builder);
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
     SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_.get());
     service->Init();
@@ -144,7 +147,39 @@ class SupervisedUserServiceTest : public ::testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
 };
+
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
+TEST_P(SupervisedUserServiceTest, IsURLFilteringEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      supervised_users::kFilterWebsitesForSupervisedUsersOnThirdParty);
+  EXPECT_TRUE(base::FeatureList::IsEnabled(
+      supervised_users::kFilterWebsitesForSupervisedUsersOnThirdParty));
+
+  signin::IdentityTestEnvironment* identity_test_env =
+      identity_test_env_profile_adaptor_->identity_test_env();
+  AccountInfo account = identity_test_env->MakePrimaryAccountAvailable(
+      "account@gmail.com", signin::ConsentLevel::kSignin);
+
+  bool is_subject_to_parental_controls = GetParam();
+  AccountCapabilitiesTestMutator mutator(&account.capabilities);
+  mutator.set_is_subject_to_parental_controls(is_subject_to_parental_controls);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account);
+
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile_.get());
+  EXPECT_EQ(service->IsURLFilteringEnabled(), is_subject_to_parental_controls);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SupervisedUserServiceTest,
+                         /* is_subject_to_parental_controls */ testing::Bool());
+
+#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
 
 // TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
 // due to failed timezone conversion assertion.
@@ -168,8 +203,7 @@ class SupervisedUserServiceExtensionTestBase
     : public extensions::ExtensionServiceTestBase {
  public:
   explicit SupervisedUserServiceExtensionTestBase(bool is_supervised)
-      : is_supervised_(is_supervised),
-        channel_(version_info::Channel::DEV) {}
+      : is_supervised_(is_supervised), channel_(version_info::Channel::DEV) {}
   ~SupervisedUserServiceExtensionTestBase() override {}
 
   void SetUp() override {
@@ -315,8 +349,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
     extensions::disable_reason::DisableReason reason =
         extensions::disable_reason::DISABLE_NONE;
     EXPECT_TRUE(supervised_user_service->MustRemainDisabled(extension.get(),
-                                                            &reason,
-                                                            &error_3));
+                                                            &reason, &error_3));
     EXPECT_EQ(extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED,
               reason);
     EXPECT_FALSE(error_3.empty());

@@ -91,4 +91,7 @@ bool IsKidsManagementServiceEnabled() {
   return base::FeatureList::IsEnabled(kEnableKidsManagementService);
 }
 
+BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnThirdParty,
+             "FilterWebsitesForSupervisedUsersOnThirdParty",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace supervised_user

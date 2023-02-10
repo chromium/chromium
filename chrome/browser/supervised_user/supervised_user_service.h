@@ -39,14 +39,14 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+class Browser;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class PrefService;
 class Profile;
 class SupervisedUserServiceObserver;
 class SupervisedUserURLFilter;
-
-namespace supervised_user {
-class SupervisedUserSettingsService;
-}  // namespace supervised_user
 
 namespace base {
 class FilePath;
@@ -57,15 +57,19 @@ class Version;
 namespace extensions {
 class Extension;
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace supervised_user {
+class SupervisedUserSettingsService;
+}  // namespace supervised_user
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
-
-#if !BUILDFLAG(IS_ANDROID)
-class Browser;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // This class handles all the information related to a given supervised profile
 // (e.g. the default URL filtering behavior, or manual allowlist/denylist
@@ -176,7 +180,7 @@ class SupervisedUserService : public KeyedService,
   // includes Unicorn, Geller, and Griffin accounts.
   bool IsChild() const;
 
-  bool IsSupervisedUserExtensionInstallEnabled() const;
+  bool IsURLFilteringEnabled() const;
 
   // Returns true if there is a custodian for the child.  A child can have
   // up to 2 custodians, and this returns true if they have at least 1.
@@ -250,7 +254,8 @@ class SupervisedUserService : public KeyedService,
 
   // Use |SupervisedUserServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
-  explicit SupervisedUserService(Profile* profile);
+  explicit SupervisedUserService(Profile* profile,
+                                 signin::IdentityManager* identity_manager);
 
   void SetActive(bool active);
 
@@ -370,6 +375,8 @@ class SupervisedUserService : public KeyedService,
 
   // Owns us via the KeyedService mechanism.
   raw_ptr<Profile> profile_;
+
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   bool active_;
 
