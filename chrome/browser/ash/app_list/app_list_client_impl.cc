@@ -96,6 +96,27 @@ ChromeSearchResult* FindAppResultByAppId(
   return result;
 }
 
+ash::NewWindowDelegate::Disposition ConvertDisposition(
+    WindowOpenDisposition disposition) {
+  switch (disposition) {
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+      return ash::NewWindowDelegate::Disposition::kNewForegroundTab;
+    case WindowOpenDisposition::UNKNOWN:
+    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+      return ash::NewWindowDelegate::Disposition::kNewWindow;
+    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::SINGLETON_TAB:
+    case WindowOpenDisposition::SWITCH_TO_TAB:
+      return ash::NewWindowDelegate::Disposition::kSwitchToTab;
+  }
+}
+
 }  // namespace
 
 AppListClientImpl::AppListClientImpl()
@@ -140,8 +161,9 @@ AppListClientImpl::~AppListClientImpl() {
   DCHECK_EQ(this, g_app_list_client_instance);
   g_app_list_client_instance = nullptr;
 
-  if (app_list_controller_)
+  if (app_list_controller_) {
     app_list_controller_->SetClient(nullptr);
+  }
 }
 
 // static
@@ -153,8 +175,9 @@ void AppListClientImpl::OnAppListControllerDestroyed() {
   // |app_list_controller_| could be released earlier, e.g. starting a kiosk
   // next session.
   app_list_controller_ = nullptr;
-  if (current_model_updater_)
+  if (current_model_updater_) {
     current_model_updater_->SetActive(false);
+  }
 }
 
 void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
@@ -197,16 +220,18 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
                                          ash::AppListLaunchType launch_type,
                                          int suggestion_index,
                                          bool launch_as_default) {
-  if (!search_controller_)
+  if (!search_controller_) {
     return;
+  }
 
   auto requested_model_updater_iter = profile_model_mappings_.find(profile_id);
   DCHECK(requested_model_updater_iter != profile_model_mappings_.end());
   DCHECK_EQ(current_model_updater_, requested_model_updater_iter->second);
 
   ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
-  if (!result)
+  if (!result) {
     return;
+  }
 
   app_list::LaunchData launch_data;
   launch_data.id = result_id;
@@ -245,15 +270,18 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   RecordSearchResultOpenTypeHistogram(launched_from, result->metrics_type(),
                                       IsTabletMode());
 
-  if (launch_as_default)
+  if (launch_as_default) {
     RecordDefaultSearchResultOpenTypeHistogram(result->metrics_type());
+  }
 
   if (!last_query_length &&
-      launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox)
+      launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
     RecordZeroStateSuggestionOpenTypeHistogram(result->metrics_type());
+  }
 
-  if (launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox)
+  if (launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
     RecordOpenedResultFromSearchBox(result->metrics_type());
+  }
 
   MaybeRecordLauncherAction(launched_from);
 
@@ -270,11 +298,13 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
 void AppListClientImpl::InvokeSearchResultAction(
     const std::string& result_id,
     ash::SearchResultActionType action) {
-  if (!search_controller_)
+  if (!search_controller_) {
     return;
+  }
   ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
-  if (result)
+  if (result) {
     search_controller_->InvokeResultAction(result, action);
+  }
 }
 
 void AppListClientImpl::ViewClosing() {
@@ -353,8 +383,9 @@ void AppListClientImpl::GetContextMenuModel(
 
 void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
   app_list_target_visibility_ = visible;
-  if (!visible && search_controller_)
+  if (!visible && search_controller_) {
     search_controller_->AppListClosing();
+  }
 }
 
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
@@ -393,8 +424,9 @@ void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
 
 void AppListClientImpl::OnSearchResultVisibilityChanged(const std::string& id,
                                                         bool visibility) {
-  if (!search_controller_)
+  if (!search_controller_) {
     return;
+  }
 
   ChromeSearchResult* result = search_controller_->FindSearchResult(id);
   if (result == nullptr) {
@@ -429,8 +461,9 @@ void AppListClientImpl::ActiveUserChanged(user_manager::User* active_user) {
     state_for_new_user_.reset();
   }
 
-  if (!active_user->is_profile_created())
+  if (!active_user->is_profile_created()) {
     return;
+  }
 
   UpdateProfile();
 }
@@ -440,13 +473,15 @@ void AppListClientImpl::UpdateProfile() {
   app_list::AppListSyncableService* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile);
   // AppListSyncableService is null in tests.
-  if (syncable_service)
+  if (syncable_service) {
     SetProfile(profile);
+  }
 }
 
 void AppListClientImpl::SetProfile(Profile* new_profile) {
-  if (profile_ == new_profile)
+  if (profile_ == new_profile) {
     return;
+  }
 
   if (profile_) {
     DCHECK(current_model_updater_);
@@ -551,8 +586,9 @@ void AppListClientImpl::OnTemplateURLServiceChanged() {
 void AppListClientImpl::ShowAppList(ash::AppListShowSource source) {
   // This may not work correctly if the profile passed in is different from the
   // one the ash Shell is currently using.
-  if (!app_list_controller_)
+  if (!app_list_controller_) {
     return;
+  }
   app_list_controller_->ShowAppList(source);
 }
 
@@ -565,8 +601,9 @@ ash::AppListController* AppListClientImpl::GetAppListController() const {
 }
 
 void AppListClientImpl::DismissView() {
-  if (!app_list_controller_)
+  if (!app_list_controller_) {
     return;
+  }
   app_list_controller_->DismissAppList();
 }
 
@@ -619,7 +656,7 @@ void AppListClientImpl::OpenURL(Profile* profile,
       // Send the url to the current primary browser.
       ash::NewWindowDelegate::GetPrimary()->OpenUrl(
           url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-          ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+          ConvertDisposition(disposition));
     }
   } else {
     NavigateParams params(profile, url, transition);
@@ -644,8 +681,9 @@ void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {
 ash::AppListSortOrder AppListClientImpl::GetPermanentSortingOrder() const {
   // `profile_` could be set after a user session gets added to the existing
   // session in tests, which does not happen on real devices.
-  if (!profile_)
+  if (!profile_) {
     return ash::AppListSortOrder::kCustom;
+  }
 
   return app_list::AppListSyncableServiceFactory::GetForProfile(profile_)
       ->GetPermanentSortingOrder();
@@ -676,16 +714,18 @@ void AppListClientImpl::MaybeRecordViewShown() {
   // TODO(https://crbug.com/1248250): handle ui events during OOBE in a more
   // elegant way. For example, do not bother showing the app list when handling
   // the app list toggling event because the app list is not visible in OOBE.
-  if (!IsSessionActive())
+  if (!IsSessionActive()) {
     return;
+  }
 
   // Return early if `state_for_new_user_` is null.
   // TODO(https://crbug.com/1278947): Theoretically, `state_for_new_user_`
   // should be meaningful when the current user is new. However, it is not hold
   // under some edge cases. When the root issue gets fixed, replace it with a
   // check statement.
-  if (!state_for_new_user_)
+  if (!state_for_new_user_) {
     return;
+  }
 
   if (state_for_new_user_->showing_recorded) {
     // Showing launcher was recorded before so return early.
@@ -772,8 +812,9 @@ void AppListClientImpl::MaybeRecordLauncherAction(
   }
 
   // The launcher action has been recorded so return early.
-  if (state_for_new_user_->action_recorded)
+  if (state_for_new_user_->action_recorded) {
     return;
+  }
 
   state_for_new_user_->action_recorded = true;
   if (IsTabletMode()) {
