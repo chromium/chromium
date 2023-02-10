@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/rgb_keyboard/rgb_keyboard_manager.h"
+#include "ash/shell.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
@@ -79,7 +81,17 @@ gfx::Rect PersonalizationSystemAppDelegate::GetDefaultBounds(
     Browser* browser) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  bounds.ClampToCenteredSize({826, 745});
+  if (ash::features::IsPersonalizationJellyEnabled()) {
+    // TODO(b/267332833): The sizing does not look right. May need updating as
+    // Jelly is implemented.
+    if (ash::Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
+      bounds.ClampToCenteredSize({826, 881});
+    } else {
+      bounds.ClampToCenteredSize({826, 608});
+    }
+  } else {
+    bounds.ClampToCenteredSize({826, 745});
+  }
   return bounds;
 }
 
