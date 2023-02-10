@@ -6,10 +6,10 @@
 <script>
 "use strict";
 
-async function setupLoopbackWithCodecAndGetReader(t, codec) {
+async function setupLoopbackWithCodedAndGetStreams(t, codec) {
   const caller = new RTCPeerConnection({encodedInsertableStreams:true});
   t.add_cleanup(() => caller.close());
-  const callee = new RTCPeerConnection();
+  const callee = new RTCPeerConnection({encodedInsertableStreams:true});
   t.add_cleanup(() => callee.close());
 
   const stream = await navigator.mediaDevices.getUserMedia({video:true});
@@ -26,7 +26,21 @@ async function setupLoopbackWithCodecAndGetReader(t, codec) {
 
   const senderStreams = transceiver.sender.createEncodedStreams();
   exchangeIceCandidates(caller, callee);
+
+  const ontrackPromise = addEventListenerPromise(t, callee, 'track');
+
   await exchangeOfferAnswer(caller, callee);
+
+  const trackEvent = await ontrackPromise;
+  const receiverTransceiver = trackEvent.transceiver;
+  const receiverStreams = receiverTransceiver.receiver.createEncodedStreams();
+
+  return {senderStreams, receiverStreams};
+}
+
+async function setupLoopbackWithCodecAndGetReader(t, codec) {
+  const {senderStreams, receiverStreams} = await setupLoopbackWithCodedAndGetStreams(t, codec);
+  receiverStreams.readable.pipeTo(receiverStreams.writable);
   return senderStreams.readable.getReader();
 }
 
@@ -135,4 +149,25 @@ promise_test(async t => {
   cloneFrame.setMetadata(metadata);
 }, "setMetadata() allows metadata with no generic dependency descriptor - ie no frameId");
 
+promise_test(async t => {
+  const {senderStreams, receiverStreams} =
+    await setupLoopbackWithCodedAndGetStreams(t, 'VP8');
+
+  let csrcs = [123, 321, 456, 654];
+
+  const receiverReaderPromise = receiverStreams.readable.getReader().read();
+
+  // Modify the CSRCs on a sent frame.
+  let sendFrame = (await senderStreams.readable.getReader().read()).value;
+  const metadata = sendFrame.getMetadata();
+  metadata.contributingSources = csrcs;
+  sendFrame.setMetadata(metadata);
+  await senderStreams.writable.getWriter().write(sendFrame);
+
+  // Assert the received frame has the modified CSRCs
+  const receivedFrame = (await receiverReaderPromise).value;
+
+  assert_array_equals(receivedFrame.getMetadata().contributingSources, csrcs,
+                        "First modified CSRCS match");
+}, "modified csrcs are propagated over a PeerConnection");
 </script>
