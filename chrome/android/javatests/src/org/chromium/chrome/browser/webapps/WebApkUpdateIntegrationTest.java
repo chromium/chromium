@@ -71,8 +71,7 @@ public class WebApkUpdateIntegrationTest {
     // Android Manifest meta data for {@link WEBAPK_PACKAGE_NAME}.
     // TODO(eirage): change all to use mTestServer.
     private static final String WEBAPK_HOST_NAME = "pwa-directory.appspot.com";
-    private static final String WEBAPK_MANIFEST_URL =
-            "/chrome/test/data/banners/manifest_one_icon.json";
+    private static final String WEBAPK_MANIFEST_URL = "/chrome/test/data/banners/manifest.json";
     private static final String WEBAPK_START_URL =
             "/chrome/test/data/banners/manifest_test_page.html";
     private static final String WEBAPK_SCOPE_URL = "/chrome/test/data/banners/";

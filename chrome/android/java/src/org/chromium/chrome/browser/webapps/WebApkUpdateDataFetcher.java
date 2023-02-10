@@ -74,7 +74,8 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
 
         mTab.addObserver(this);
         mNativePointer = WebApkUpdateDataFetcherJni.get().initialize(WebApkUpdateDataFetcher.this,
-                mOldInfo.url(), mOldInfo.scopeUrl(), mOldInfo.manifestUrl(), mOldInfo.manifestId());
+                mOldInfo.manifestStartUrl(), mOldInfo.scopeUrl(), mOldInfo.manifestUrl(),
+                mOldInfo.manifestId());
         WebApkUpdateDataFetcherJni.get().start(
                 mNativePointer, WebApkUpdateDataFetcher.this, mTab.getWebContents());
         return true;
@@ -114,7 +115,7 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
      */
     @CalledByNative
     protected void onDataAvailable(String manifestStartUrl, String scopeUrl, String name,
-            String shortName, String manifestId, String primaryIconUrl,
+            String shortName, String manifestUrl, String manifestId, String primaryIconUrl,
             String primaryIconMurmur2Hash, Bitmap primaryIconBitmap, boolean isPrimaryIconMaskable,
             String splashIconUrl, String splashIconMurmur2Hash, Bitmap splashIconBitmap,
             boolean isSplashIconMaskable, String[] iconUrls, @DisplayMode.EnumType int displayMode,
@@ -159,9 +160,9 @@ public class WebApkUpdateDataFetcher extends EmptyTabObserver {
                         shortName, displayMode, orientation, mOldInfo.source(), themeColor,
                         backgroundColor, defaultBackgroundColor, isPrimaryIconMaskable,
                         isSplashIconMaskable, mOldInfo.webApkPackageName(),
-                        mOldInfo.shellApkVersion(), mOldInfo.manifestUrl(), manifestStartUrl,
-                        manifestId, mOldInfo.appKey(), WebApkDistributor.BROWSER,
-                        iconUrlToMurmur2HashMap, shareTarget, mOldInfo.shouldForceNavigation(),
+                        mOldInfo.shellApkVersion(), manifestUrl, manifestStartUrl, manifestId,
+                        mOldInfo.appKey(), WebApkDistributor.BROWSER, iconUrlToMurmur2HashMap,
+                        shareTarget, mOldInfo.shouldForceNavigation(),
                         mOldInfo.isSplashProvidedByWebApk(), null, shortcutItems,
                         mOldInfo.webApkVersionCode());
         mObserver.onGotManifestData(intentDataProvider, primaryIconUrl, splashIconUrl);

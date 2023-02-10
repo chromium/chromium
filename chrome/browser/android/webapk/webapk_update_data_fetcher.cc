@@ -261,6 +261,8 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
       base::android::ConvertUTF16ToJavaString(env, info_.name);
   ScopedJavaLocalRef<jstring> java_short_name =
       base::android::ConvertUTF16ToJavaString(env, info_.short_name);
+  ScopedJavaLocalRef<jstring> java_manifest_url =
+      base::android::ConvertUTF8ToJavaString(env, info_.manifest_url.spec());
   ScopedJavaLocalRef<jstring> java_manifest_id =
       base::android::ConvertUTF8ToJavaString(env, info_.manifest_id.spec());
   ScopedJavaLocalRef<jstring> java_primary_icon_url =
@@ -351,8 +353,9 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
 
   Java_WebApkUpdateDataFetcher_onDataAvailable(
       env, java_ref_, java_url, java_scope, java_name, java_short_name,
-      java_manifest_id, java_primary_icon_url, java_primary_icon_murmur2_hash,
-      java_primary_icon, java_is_primary_icon_maskable, java_splash_icon_url,
+      java_manifest_url, java_manifest_id, java_primary_icon_url,
+      java_primary_icon_murmur2_hash, java_primary_icon,
+      java_is_primary_icon_maskable, java_splash_icon_url,
       java_splash_icon_murmur2_hash, java_splash_icon,
       java_is_splash_icon_maskable, java_icon_urls,
       static_cast<int>(info_.display), static_cast<int>(info_.orientation),
