@@ -10,4 +10,9 @@ FidoAssertionInfo::FidoAssertionInfo() = default;
 
 FidoAssertionInfo::~FidoAssertionInfo() = default;
 
+FidoAssertionInfo::FidoAssertionInfo(const FidoAssertionInfo& other) = default;
+
+FidoAssertionInfo& FidoAssertionInfo::operator=(
+    const FidoAssertionInfo& other) = default;
+
 }  // namespace ash::quick_start

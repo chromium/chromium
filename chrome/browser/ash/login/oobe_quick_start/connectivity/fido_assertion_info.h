@@ -16,6 +16,8 @@ namespace ash::quick_start {
 struct FidoAssertionInfo {
   FidoAssertionInfo();
   ~FidoAssertionInfo();
+  FidoAssertionInfo(const FidoAssertionInfo& other);
+  FidoAssertionInfo& operator=(const FidoAssertionInfo& other);
 
   // User's email.
   std::string email;

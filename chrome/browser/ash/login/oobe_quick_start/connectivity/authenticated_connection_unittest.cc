@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
 
 #include "base/base64.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -74,7 +75,7 @@ TEST_F(AuthenticatedConnectionTest, RequestAccountTransferAssertion) {
   // Start the Quick Start account transfer flow by initially sending
   // BootstrapOptions.
   authenticated_connection_->RequestAccountTransferAssertion(
-      kChallengeBase64Url);
+      kChallengeBase64Url, base::DoNothing());
   std::vector<uint8_t> bootstrap_options_data =
       fake_nearby_connection_->GetWrittenData();
   std::string bootstrap_options_string(bootstrap_options_data.begin(),
