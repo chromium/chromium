@@ -35,7 +35,6 @@ crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
 # These tests are just a tad bit too slow on MSAN bots and time out. Setting
 # them as "Slow" doesn't seem to help the problem (see discussion on bug), so
 # marking them as "Timeout" while crbug.com/729136 is worked out.
-crbug.com/729136 [ Linux ] fast/css/css-selector-deeply-nested.html [ Timeout ]
 crbug.com/1400717 [ Linux ] webexposed/element-instance-property-listing.html [ Timeout ]
 
 # Tests timing out on WebKit Linux Trusty MSAN
