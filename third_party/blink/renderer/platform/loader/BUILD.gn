@@ -273,8 +273,6 @@ source_set("test_support") {
     "testing/test_loader_factory.h",
     "testing/test_resource_fetcher_properties.cc",
     "testing/test_resource_fetcher_properties.h",
-    "testing/web_url_loader_factory_with_mock.cc",
-    "testing/web_url_loader_factory_with_mock.h",
   ]
 
   configs += [

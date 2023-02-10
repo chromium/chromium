@@ -10,7 +10,6 @@
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
-#include "third_party/blink/renderer/platform/loader/testing/web_url_loader_factory_with_mock.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/testing/weburl_loader_mock_factory_impl.h"
 
@@ -29,12 +28,6 @@ FetchTestingPlatformSupport::~FetchTestingPlatformSupport() {
 WebURLLoaderMockFactory*
 FetchTestingPlatformSupport::GetURLLoaderMockFactory() {
   return url_loader_mock_factory_.get();
-}
-
-std::unique_ptr<WebURLLoaderFactory>
-FetchTestingPlatformSupport::CreateDefaultURLLoaderFactory() {
-  return std::make_unique<WebURLLoaderFactoryWithMock>(
-      url_loader_mock_factory_.get());
 }
 
 }  // namespace blink
