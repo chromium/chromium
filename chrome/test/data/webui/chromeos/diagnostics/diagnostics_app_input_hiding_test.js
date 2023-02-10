@@ -11,12 +11,11 @@ import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_brow
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeKeyboards, fakeMemoryUsage, fakeSystemInfo, fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
-import {KeyboardInfo} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
+import {KeyboardInfo} from 'chrome://diagnostics/input.mojom-webui.js';
 import {setInputDataProviderForTesting, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 

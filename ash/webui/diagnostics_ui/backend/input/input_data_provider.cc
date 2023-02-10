@@ -15,6 +15,7 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/keyboard_input_log.h"
+#include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "ash/webui/diagnostics_ui/backend/input/event_watcher_factory.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_event_watcher.h"

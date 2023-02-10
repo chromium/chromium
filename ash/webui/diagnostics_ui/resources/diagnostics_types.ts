@@ -7,7 +7,8 @@
  * Type aliases for the mojo API.
  */
 
-import {KeyboardInfo, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {KeyboardInfo} from './input.mojom-webui.js';
+import {TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 import {RoutineType} from './system_routine_controller.mojom-webui.js';
 
 export interface NetworkGuidInfo {

@@ -7,8 +7,8 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
+import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input.mojom-webui.js';
 import {InputCardElement, InputCardType} from 'chrome://diagnostics/input_card.js';
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

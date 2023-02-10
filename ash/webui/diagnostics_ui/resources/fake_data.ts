@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {NetworkGuidInfo} from './diagnostics_types.js';
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
+import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input.mojom-webui.js';
+import {TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
 import {stringToMojoString16} from './mojo_utils.js';
 import {AuthenticationType, CellularStateProperties, EthernetStateProperties, IPConfigProperties, LockType, Network, NetworkState, NetworkType, RoamingState, SecurityType, WiFiStateProperties} from './network_health_provider.mojom-webui.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, CpuUsage, ExternalPowerSource, MemoryUsage, SystemInfo} from './system_data_provider.mojom-webui.js';

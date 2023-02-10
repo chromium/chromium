@@ -14,8 +14,9 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
+import {ConnectionType, KeyboardInfo} from './input.mojom-webui.js';
 import {InputCardElement} from './input_card.js';
-import {ConnectedDevicesObserverReceiver, ConnectionType, InputDataProviderInterface, InternalDisplayPowerStateObserverReceiver, KeyboardInfo, LidStateObserverReceiver, TabletModeObserverReceiver, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
+import {ConnectedDevicesObserverReceiver, InputDataProviderInterface, InternalDisplayPowerStateObserverReceiver, LidStateObserverReceiver, TabletModeObserverReceiver, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
 import {getTemplate} from './input_list.html.js';
 import {KeyboardTesterElement} from './keyboard_tester.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';

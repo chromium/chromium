@@ -10,16 +10,17 @@ import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_brow
 import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeKeyboards, fakeTouchDevices} from 'chrome://diagnostics/fake_data.js';
 import {FakeInputDataProvider} from 'chrome://diagnostics/fake_input_data_provider.js';
+import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from 'chrome://diagnostics/input.mojom-webui.js';
 import {InputCardElement} from 'chrome://diagnostics/input_card.js';
-import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
+import {TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {InputListElement} from 'chrome://diagnostics/input_list.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {isVisible} from '../test_util.js';
 
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';

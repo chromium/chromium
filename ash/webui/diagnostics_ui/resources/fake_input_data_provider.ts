@@ -5,7 +5,8 @@
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
 import {GetConnectedDevicesResponse} from './diagnostics_types.js';
-import {ConnectedDevicesObserverRemote, InputDataProviderInterface, InternalDisplayPowerStateObserverRemote, KeyboardInfo, KeyboardObserverRemote, LidStateObserverRemote, TabletModeObserverRemote, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {KeyboardInfo} from './input.mojom-webui.js';
+import {ConnectedDevicesObserverRemote, InputDataProviderInterface, InternalDisplayPowerStateObserverRemote, KeyboardObserverRemote, LidStateObserverRemote, TabletModeObserverRemote, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 
 /**
  * @fileoverview

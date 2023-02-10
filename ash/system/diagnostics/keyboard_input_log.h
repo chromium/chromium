@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/diagnostics/async_log.h"
+#include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"

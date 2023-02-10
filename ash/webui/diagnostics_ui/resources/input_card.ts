@@ -15,8 +15,9 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ConnectionType, KeyboardInfo} from './input.mojom-webui.js';
 import {getTemplate} from './input_card.html.js';
-import {ConnectionType, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {InputDataProviderInterface, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
 import {HostDeviceStatus} from './input_list.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';
 

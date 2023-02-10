@@ -20,7 +20,8 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input_data_provider.mojom-webui.js';
+import {KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input.mojom-webui.js';
+import {InputDataProviderInterface, KeyboardObserverReceiver, KeyEvent, KeyEventType} from './input_data_provider.mojom-webui.js';
 import {getTemplate} from './keyboard_tester.html.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';
 
