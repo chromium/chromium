@@ -141,21 +141,31 @@ void MicGainSliderView::Update(bool by_user) {
   // Gets the input gain for each device to draw each slider in
   // `AudioDetailedView`.
   if (features::IsQsRevampEnabled()) {
-    if (!show_internal_stub) {
-      // If the device cannot be found by `device_id_`(i.e. this device is the
-      // dual internal mic), sets its level as the front internal mic level.
-      if (!audio_handler->GetDeviceFromId(device_id_)) {
-        level = audio_handler->GetInputGainPercentForDevice(
-                    audio_handler->GetDeviceByType(AudioDeviceType::kFrontMic)
-                        ->id) /
-                100.f;
-      } else {
-        // Inactive input devices don't have a record of their mute states, so
-        // we manually get the level.
-        level = audio_handler->GetInputGainPercentForDevice(device_id_) / 100.f;
-      }
+    uint64_t device_id;
+    if (audio_handler->GetDeviceFromId(device_id_)) {
+      // If the device can be found by its id, this slider must not be one of
+      // the dual internal mic, thus the `device_id_` is the actual id for it.
+      device_id = device_id_;
+    } else if (show_internal_stub) {
+      // If the device cannot be found by its id and the dual internal mic is
+      // active, this slider must be the one for the dual internal mic, which is
+      // the active input node.
+      device_id = audio_handler->GetPrimaryActiveInputNode();
+    } else {
+      // If the device cannot be found by its id and the dual internal mic is
+      // inactive, this slider must be the one for the dual internal mic, which
+      // is currently inactive. Sets its level as the front internal mic level
+      // by default.
+      device_id =
+          audio_handler->GetDeviceByType(AudioDeviceType::kFrontMic)->id;
     }
-    // Sets `is_muted` for active internal mic stub and all other input devices.
+
+    // Checks if the device is muted. If so, sets its level to be 0 to render
+    // the muted state for slider. Otherwise, gets its volume level.
+    level =
+        audio_handler->IsInputMutedForDevice(device_id)
+            ? 0
+            : audio_handler->GetInputGainPercentForDevice(device_id) / 100.f;
     is_muted = level == 0;
   }
 

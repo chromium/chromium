@@ -4,6 +4,7 @@
 
 #include "ash/system/audio/mic_gain_slider_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/audio/mic_gain_slider_view.h"
 #include "base/metrics/user_metrics.h"
@@ -64,6 +65,12 @@ void MicGainSliderController::SliderValueChanged(
                         CrasAudioHandler::Get()->GetInputGainPercent());
   }
 
+  // For QsRevamp: Manually sets the mute state since we don't distinguish muted
+  // and level is 0 state in QsRevamp.
+  if (features::IsQsRevampEnabled() && level == 0) {
+    CrasAudioHandler::Get()->SetMuteForDevice(
+        CrasAudioHandler::Get()->GetPrimaryActiveInputNode(), true);
+  }
   CrasAudioHandler::Get()->SetInputGainPercent(level);
 }
 
