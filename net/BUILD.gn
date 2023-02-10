@@ -52,9 +52,8 @@ enable_python_utils =
     !is_arm_cast_shell_build && !is_android && !is_fuchsia && !is_ios
 
 # Platforms that cannot use python_utils (like Android but see full
-# list above) will instead use a remote server, except for iOS which
-# won't get either.
-use_remote_test_server = !enable_python_utils && !is_ios
+# list above) will instead use a remote server.
+use_remote_test_server = !enable_python_utils && enable_websockets
 
 # Whether //net should use an external GSSAPI library for implementing HTTP
 # Negotiate authentication. All platforms for which use_kerberos is true should
@@ -2039,7 +2038,7 @@ static_library("test_support") {
     configs += [ "//build/config/linux/nss" ]
   }
 
-  if (!is_ios) {
+  if (enable_websockets) {
     sources += [
       "test/spawned_test_server/base_test_server.cc",
       "test/spawned_test_server/base_test_server.h",
