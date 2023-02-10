@@ -111,8 +111,16 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
   void SetUp() override {
     BlockCleanupTest::SetUp();
     scene_state_ = [[StubSceneState alloc] initWithAppState:nil];
-    scene_state_.window =
-        [[UIApplication sharedApplication].windows firstObject];
+
+    for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+      UIWindowScene* windowScene =
+          base::mac::ObjCCastStrict<UIWindowScene>(scene);
+      UIWindow* window = [windowScene.windows firstObject];
+      if (window) {
+        scene_state_.window = window;
+        break;
+      }
+    }
 
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(

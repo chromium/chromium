@@ -5,5 +5,8 @@
 source_set("chromium_keyboard") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "chromium_keyboard.mm" ]
-  deps = [ "//ios/public/provider/chrome/browser/keyboard:keyboard_api" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/keyboard:keyboard_api",
+  ]
 }

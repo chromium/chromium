@@ -8,6 +8,7 @@
 #import <cmath>
 #import <limits>
 
+#import "base/mac/foundation_util.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -16,7 +17,18 @@
 
 CGFloat DeviceCornerRadius() {
   UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-  UIWindow* window = UIApplication.sharedApplication.windows.firstObject;
+
+  UIWindow* window = nil;
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* windowScene =
+        base::mac::ObjCCastStrict<UIWindowScene>(scene);
+    UIWindow* firstWindow = [windowScene.windows firstObject];
+    if (firstWindow) {
+      window = firstWindow;
+      break;
+    }
+  }
+
   const BOOL isRoundedDevice =
       (idiom == UIUserInterfaceIdiomPhone && window.safeAreaInsets.bottom);
   return isRoundedDevice ? 40.0 : 0.0;

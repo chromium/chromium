@@ -10,6 +10,7 @@ source_set("appearance") {
     "appearance_customization.mm",
   ]
   deps = [
+    "//base",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/common/ui/colors",

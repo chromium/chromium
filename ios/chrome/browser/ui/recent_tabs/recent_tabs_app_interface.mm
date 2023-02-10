@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 
 #import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
@@ -15,10 +16,8 @@
 @implementation RecentTabsAppInterface
 
 + (void)clearCollapsedListViewSectionStates {
-  NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
-  for (UIWindow* window in windows) {
-    UISceneSession* session = window.windowScene.session;
-
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UISceneSession* session = scene.session;
     NSMutableDictionary* newUserInfo =
         [NSMutableDictionary dictionaryWithDictionary:session.userInfo];
     [newUserInfo removeObjectForKey:kListModelCollapsedKey];
