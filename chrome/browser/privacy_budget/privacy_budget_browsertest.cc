@@ -458,8 +458,14 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
                                  Contains(Key(navigation_source_id_hash)))))));
 }
 
+// TODO(crbug.com/1412257): Test is flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CallsCanvasToBlob DISABLED_CallsCanvasToBlob
+#else
+#define MAYBE_CallsCanvasToBlob CallsCanvasToBlob
+#endif
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
-                       CallsCanvasToBlob) {
+                       MAYBE_CallsCanvasToBlob) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::DOMMessageQueue messages(web_contents());
