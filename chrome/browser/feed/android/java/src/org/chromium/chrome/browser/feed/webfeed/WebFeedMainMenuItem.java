@@ -61,7 +61,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private static final String TAG = "WebFeedMainMenuItem";
     private static final int LOADING_REFRESH_TIME_MS = 400;
 
-    private final Context mContext;
+    private Context mContext;
 
     private GURL mUrl;
     private Tab mTab;
@@ -80,8 +80,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private ChipView mCrowButton;
     private ImageView mIcon;
     private TextView mItemText;
-    // TODO(crbug.com/1369755): Move this variable into a mock
-    private boolean mItemTextClicked;
 
     private @Nullable byte[] mRecommendedWebFeedName;
 
@@ -172,8 +170,8 @@ public class WebFeedMainMenuItem extends FrameLayout {
     }
 
     @VisibleForTesting
-    public boolean isCreatorActivityInitiated() {
-        return mItemTextClicked;
+    public void setContextForTest(Context newContext) {
+        mContext = newContext;
     }
 
     private void initializeText(@Nullable WebFeedMetadata webFeedMetadata) {
@@ -183,14 +181,10 @@ public class WebFeedMainMenuItem extends FrameLayout {
             mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
         }
         mItemText.setText(mTitle);
-        mItemTextClicked = false;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
             mItemText.setContentDescription(
                     mContext.getString(R.string.cormorant_creator_preview, mTitle));
-            mItemText.setOnClickListener((view) -> {
-                mItemTextClicked = true;
-                launchCreatorActivity();
-            });
+            mItemText.setOnClickListener((view) -> { launchCreatorActivity(); });
         }
     }
 

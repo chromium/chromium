@@ -6,13 +6,17 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
@@ -30,6 +34,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
@@ -81,7 +87,11 @@ public final class WebFeedMainMenuItemTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    private Activity mActivity;
+    @Captor
+    ArgumentCaptor<Intent> mIntentCaptor;
+
+    @Mock
+    private Context mContext;
     @Mock
     private FeedLauncher mFeedLauncher;
     @Mock
@@ -96,12 +106,13 @@ public final class WebFeedMainMenuItemTest {
     public WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock
     public UrlFormatter.Natives mUrlFormatterJniMock;
-    private TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
     @Mock
     private CrowButtonDelegate mCrowButtonDelegate;
-    private Class<?> mCreatorActivityClass;
 
+    private Activity mActivity;
+    private Class<?> mCreatorActivityClass;
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
+    private TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
     private ArrayList<Callback<WebFeedBridge.WebFeedMetadata>> mWaitingMetadataCallbacks =
             new ArrayList();
 
@@ -135,6 +146,10 @@ public final class WebFeedMainMenuItemTest {
                 .when(mWebFeedBridgeJniMock)
                 .findWebFeedInfoForPage(any(WebFeedBridge.WebFeedPageInformation.class), anyInt(),
                         any(Callback.class));
+
+        // Initialize an empty class for mCreatorActivityClass
+        class CreatorActivityClassTest {}
+        mCreatorActivityClass = CreatorActivityClassTest.class;
 
         mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
                 R.layout.web_feed_main_menu_item, null));
@@ -189,12 +204,26 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_launchCreatorActivity() {
         initializeWebFeedMainMenuItem();
-        respondWithFeedMetadata(null);
+        respondWithFeedMetadata(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBED, GURL.emptyGURL()));
 
-        assertFalse(mWebFeedMainMenuItem.isCreatorActivityInitiated());
+        mIntentCaptor = ArgumentCaptor.forClass(Intent.class);
         TextView textView = mWebFeedMainMenuItem.findViewById(R.id.menu_item_text);
+        mWebFeedMainMenuItem.setContextForTest(mContext);
         textView.performClick();
-        assertTrue(mWebFeedMainMenuItem.isCreatorActivityInitiated());
+
+        verify(mContext).startActivity(mIntentCaptor.capture());
+        Intent intent = mIntentCaptor.getValue();
+        assertNotNull(intent);
+        assertEquals(4, intent.getExtras().size());
+        assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_TITLE));
+        assertNotNull(intent.getExtras().getString(CreatorIntentConstants.CREATOR_TITLE));
+        assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_URL));
+        assertNotNull(intent.getExtras().getString(CreatorIntentConstants.CREATOR_URL));
+        assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_WEB_FEED_ID));
+        assertNotNull(intent.getExtras().getByteArray(CreatorIntentConstants.CREATOR_WEB_FEED_ID));
+        assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_ENTRY_POINT));
+        assertNotNull(intent.getExtras().getInt(CreatorIntentConstants.CREATOR_ENTRY_POINT));
     }
 
     @Test
