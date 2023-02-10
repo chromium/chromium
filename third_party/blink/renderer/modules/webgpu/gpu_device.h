@@ -20,7 +20,6 @@ namespace blink {
 class ExecutionContext;
 class HTMLCanvasElement;
 class GPUAdapter;
-class GPUAdapter;
 class GPUBuffer;
 class GPUBufferDescriptor;
 class GPUCommandEncoder;
