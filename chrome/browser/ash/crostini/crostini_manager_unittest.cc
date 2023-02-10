@@ -329,24 +329,6 @@ TEST_F(CrostiniManagerTest, CreateDiskImageSuccess) {
   EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
 }
 
-TEST_F(CrostiniManagerTest, DestroyDiskImageEmptyNameError) {
-  TestFuture<bool> success_future;
-
-  crostini_manager()->DestroyDiskImage("", success_future.GetCallback());
-
-  EXPECT_FALSE(success_future.Get());
-  EXPECT_EQ(fake_concierge_client_->destroy_disk_image_call_count(), 0);
-}
-
-TEST_F(CrostiniManagerTest, DestroyDiskImageSuccess) {
-  TestFuture<bool> result_future;
-
-  crostini_manager()->DestroyDiskImage(kVmName, result_future.GetCallback());
-
-  EXPECT_TRUE(result_future.Get());
-  EXPECT_GE(fake_concierge_client_->destroy_disk_image_call_count(), 1);
-}
-
 TEST_F(CrostiniManagerTest, StartTerminaVmNameError) {
   TestFuture<bool> success_future;
 

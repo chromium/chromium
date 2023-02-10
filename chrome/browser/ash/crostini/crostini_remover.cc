@@ -7,78 +7,91 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/bind.h"
-#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/prefs/pref_service.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace crostini {
 
-CrostiniRemover::CrostiniRemover(
-    Profile* profile,
-    std::string vm_name,
-    CrostiniManager::RemoveCrostiniCallback callback)
+CrostiniRemover::CrostiniRemover(Profile* profile,
+                                 guest_os::VmType vm_type,
+                                 std::string vm_name,
+                                 base::OnceCallback<void(Result)> callback)
     : profile_(profile),
+      vm_type_(vm_type),
       vm_name_(std::move(vm_name)),
       callback_(std::move(callback)) {}
 
 CrostiniRemover::~CrostiniRemover() = default;
 
-void CrostiniRemover::RemoveCrostini() {
+void CrostiniRemover::RemoveVm() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CrostiniManager::GetForProfile(profile_)->StopVm(
-      vm_name_, base::BindOnce(&CrostiniRemover::StopVmFinished, this));
+  vm_tools::concierge::StopVmRequest request;
+  request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_name(vm_name_);
+
+  ash::ConciergeClient::Get()->StopVm(
+      std::move(request),
+      base::BindOnce(&CrostiniRemover::StopVmFinished, this));
 }
 
-void CrostiniRemover::StopVmFinished(CrostiniResult result) {
+void CrostiniRemover::StopVmFinished(
+    absl::optional<vm_tools::concierge::StopVmResponse> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (result != CrostiniResult::SUCCESS) {
-    LOG(ERROR) << "Failed to stop VM";
-    std::move(callback_).Run(result);
+  if (!response) {
+    LOG(ERROR) << "Failed to stop termina vm. Empty response.";
+    std::move(callback_).Run(Result::kStopVmNoResponse);
+    return;
+  }
+
+  if (!response->success()) {
+    LOG(ERROR) << "Failed to stop VM: " << response->failure_reason();
+    std::move(callback_).Run(Result::kStopVmFailed);
     return;
   }
 
   VLOG(1) << "Clearing application list";
   guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
-      ->ClearApplicationList(guest_os::VmType::TERMINA, vm_name_, "");
+      ->ClearApplicationList(vm_type_, vm_name_, "");
   guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile_)
       ->ClearMimeTypes(vm_name_, "");
   VLOG(1) << "Destroying disk image";
-  CrostiniManager::GetForProfile(profile_)->DestroyDiskImage(
-      vm_name_,
+
+  vm_tools::concierge::DestroyDiskImageRequest request;
+  request.set_cryptohome_id(
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
+  request.set_vm_name(std::move(vm_name_));
+
+  ash::ConciergeClient::Get()->DestroyDiskImage(
+      std::move(request),
       base::BindOnce(&CrostiniRemover::DestroyDiskImageFinished, this));
 }
 
-void CrostiniRemover::DestroyDiskImageFinished(bool success) {
+void CrostiniRemover::DestroyDiskImageFinished(
+    absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!success) {
-    LOG(ERROR) << "Failed to destroy disk image";
-    std::move(callback_).Run(CrostiniResult::DESTROY_DISK_IMAGE_FAILED);
+  if (!response) {
+    LOG(ERROR) << "Failed to destroy disk image. Empty response.";
+    std::move(callback_).Run(Result::kDestroyDiskImageFailed);
     return;
   }
 
-  VLOG(1) << "Uninstalling Termina";
-  CrostiniManager::GetForProfile(profile_)->UninstallTermina(
-      base::BindOnce(&CrostiniRemover::UninstallTerminaFinished, this));
-}
-
-void CrostiniRemover::UninstallTerminaFinished(bool success) {
-  if (!success) {
-    LOG(ERROR) << "Failed to uninstall Termina";
-    std::move(callback_).Run(CrostiniResult::UNINSTALL_TERMINA_FAILED);
+  if (response->status() != vm_tools::concierge::DISK_STATUS_DESTROYED &&
+      response->status() != vm_tools::concierge::DISK_STATUS_DOES_NOT_EXIST) {
+    LOG(ERROR) << "Failed to destroy disk image: "
+               << response->failure_reason();
+    std::move(callback_).Run(Result::kDestroyDiskImageFailed);
     return;
   }
 
-  profile_->GetPrefs()->SetBoolean(prefs::kCrostiniEnabled, false);
-  profile_->GetPrefs()->ClearPref(prefs::kCrostiniLastDiskSize);
-  guest_os::RemoveVmFromPrefs(profile_, kCrostiniDefaultVmType);
-  profile_->GetPrefs()->ClearPref(prefs::kCrostiniDefaultContainerConfigured);
-  std::move(callback_).Run(CrostiniResult::SUCCESS);
+  std::move(callback_).Run(Result::kSuccess);
+  return;
 }
 
 }  // namespace crostini

@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crostini/crostini_low_disk_notification.h"
+#include "chrome/browser/ash/crostini/crostini_remover.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -245,15 +246,6 @@ class CrostiniManager : public KeyedService,
       // The logical size of the disk image, in bytes
       int64_t disk_size_bytes,
       CreateDiskImageCallback callback);
-
-  // Checks the arguments for destroying a named Termina VM disk image.
-  // Removes the named Termina VM via ConciergeClient::DestroyDiskImage.
-  // |callback| is called if the arguments are bad, or after the method call
-  // finishes.
-  void DestroyDiskImage(
-      // The path to the disk image, including the name of the image itself.
-      const std::string& vm_name,
-      BoolCallback callback);
 
   // Checks the arguments for starting a Termina VM. Starts a Termina VM via
   // ConciergeClient::StartTerminaVm. |callback| is called if the arguments
@@ -658,12 +650,6 @@ class CrostiniManager : public KeyedService,
       CreateDiskImageCallback callback,
       absl::optional<vm_tools::concierge::CreateDiskImageResponse> response);
 
-  // Callback for ConciergeClient::DestroyDiskImage. Called after the Concierge
-  // service method finishes.
-  void OnDestroyDiskImage(
-      BoolCallback callback,
-      absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response);
-
   // Callback for ConciergeClient::StartVm. Called after the Concierge
   // service method finishes.  Updates running containers list then calls the
   // |callback| if the container has already been started, otherwise passes the
@@ -826,7 +812,11 @@ class CrostiniManager : public KeyedService,
                         base::OnceClosure closure);
 
   // Callback for CrostiniManager::RemoveCrostini.
-  void OnRemoveCrostini(CrostiniResult result);
+  void OnRemoveCrostini(CrostiniRemover::Result result);
+
+  void OnRemoveTermina(bool success);
+
+  void FinishUninstall(CrostiniResult result);
 
   void OnVmStoppedCleanup(const std::string& vm_name);
 

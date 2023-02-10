@@ -1452,24 +1452,6 @@ void CrostiniManager::CreateDiskImage(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void CrostiniManager::DestroyDiskImage(const std::string& vm_name,
-                                       BoolCallback callback) {
-  if (vm_name.empty()) {
-    LOG(ERROR) << "VM name must not be empty";
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  vm_tools::concierge::DestroyDiskImageRequest request;
-  request.set_cryptohome_id(CryptohomeIdForProfile(profile_));
-  request.set_vm_name(std::move(vm_name));
-
-  GetConciergeClient()->DestroyDiskImage(
-      std::move(request),
-      base::BindOnce(&CrostiniManager::OnDestroyDiskImage,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void CrostiniManager::StartTerminaVm(std::string name,
                                      const base::FilePath& disk_path,
                                      const base::FilePath& wayland_path,
@@ -2494,26 +2476,6 @@ void CrostiniManager::OnCreateDiskImage(
   std::move(callback).Run(result, path);
 }
 
-void CrostiniManager::OnDestroyDiskImage(
-    BoolCallback callback,
-    absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
-  if (!response) {
-    LOG(ERROR) << "Failed to destroy disk image. Empty response.";
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  if (response->status() != vm_tools::concierge::DISK_STATUS_DESTROYED &&
-      response->status() != vm_tools::concierge::DISK_STATUS_DOES_NOT_EXIST) {
-    LOG(ERROR) << "Failed to destroy disk image: "
-               << response->failure_reason();
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  std::move(callback).Run(/*success=*/true);
-}
-
 void CrostiniManager::OnStartTerminaVm(
     std::string vm_name,
     BoolCallback callback,
@@ -3490,7 +3452,7 @@ void CrostiniManager::RemoveCrostini(std::string vm_name,
   AddRemoveCrostiniCallback(std::move(callback));
 
   auto crostini_remover = base::MakeRefCounted<CrostiniRemover>(
-      profile_, std::move(vm_name),
+      profile_, guest_os::VmType::TERMINA, std::move(vm_name),
       base::BindOnce(&CrostiniManager::OnRemoveCrostini,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -3499,8 +3461,7 @@ void CrostiniManager::RemoveCrostini(std::string vm_name,
       base::BindOnce(
           [](scoped_refptr<CrostiniRemover> remover) {
             content::GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE,
-                base::BindOnce(&CrostiniRemover::RemoveCrostini, remover));
+                FROM_HERE, base::BindOnce(&CrostiniRemover::RemoveVm, remover));
           },
           crostini_remover));
 
@@ -3509,12 +3470,45 @@ void CrostiniManager::RemoveCrostini(std::string vm_name,
   }
 }
 
-void CrostiniManager::OnRemoveCrostini(CrostiniResult result) {
+void CrostiniManager::OnRemoveCrostini(CrostiniRemover::Result result) {
+  switch (result) {
+    case CrostiniRemover::Result::kStopVmNoResponse:
+      FinishUninstall(CrostiniResult::STOP_VM_NO_RESPONSE);
+      return;
+    case CrostiniRemover::Result::kStopVmFailed:
+      FinishUninstall(CrostiniResult::VM_STOP_FAILED);
+      return;
+    case CrostiniRemover::Result::kDestroyDiskImageFailed:
+      FinishUninstall(CrostiniResult::DESTROY_DISK_IMAGE_FAILED);
+      return;
+    case CrostiniRemover::Result::kSuccess:
+      // Keep going instead of finishing now.
+      break;
+  }
+  UninstallTermina(base::BindOnce(&CrostiniManager::OnRemoveTermina,
+                                  weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::OnRemoveTermina(bool success) {
+  if (!success) {
+    LOG(ERROR) << "Failed to uninstall Termina";
+    FinishUninstall(CrostiniResult::UNINSTALL_TERMINA_FAILED);
+    return;
+  }
+
+  profile_->GetPrefs()->SetBoolean(prefs::kCrostiniEnabled, false);
+  profile_->GetPrefs()->ClearPref(prefs::kCrostiniLastDiskSize);
+  guest_os::RemoveVmFromPrefs(profile_, kCrostiniDefaultVmType);
+  profile_->GetPrefs()->ClearPref(prefs::kCrostiniDefaultContainerConfigured);
+  UnregisterAllContainers();
+  FinishUninstall(CrostiniResult::SUCCESS);
+}
+
+void CrostiniManager::FinishUninstall(CrostiniResult result) {
   base::UmaHistogramEnumeration("Crostini.UninstallResult.Reason", result);
   for (auto& callback : remove_crostini_callbacks_) {
     std::move(callback).Run(result);
   }
-  UnregisterAllContainers();
   remove_crostini_callbacks_.clear();
 }
 

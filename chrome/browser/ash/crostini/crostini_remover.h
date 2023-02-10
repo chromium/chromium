@@ -5,33 +5,49 @@
 #ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_REMOVER_H_
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_REMOVER_H_
 
-#include "chrome/browser/ash/crostini/crostini_manager.h"
+#include <string>
+#include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class Profile;
 
 namespace crostini {
 
 class CrostiniRemover : public base::RefCountedThreadSafe<CrostiniRemover> {
  public:
+  enum class Result {
+    kSuccess,
+    kStopVmNoResponse,
+    kStopVmFailed,
+    kDestroyDiskImageFailed,
+  };
   CrostiniRemover(Profile* profile,
+                  guest_os::VmType vm_type,
                   std::string vm_name,
-                  CrostiniManager::RemoveCrostiniCallback callback);
+                  base::OnceCallback<void(Result)> callback);
 
   CrostiniRemover(const CrostiniRemover&) = delete;
   CrostiniRemover& operator=(const CrostiniRemover&) = delete;
 
-  void RemoveCrostini();
+  void RemoveVm();
 
  private:
   friend class base::RefCountedThreadSafe<CrostiniRemover>;
 
   ~CrostiniRemover();
 
-  void StopVmFinished(crostini::CrostiniResult result);
-  void DestroyDiskImageFinished(bool success);
-  void UninstallTerminaFinished(bool success);
+  void StopVmFinished(
+      absl::optional<vm_tools::concierge::StopVmResponse> response);
+  void DestroyDiskImageFinished(
+      absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response);
 
   Profile* profile_;
+  guest_os::VmType vm_type_;
   std::string vm_name_;
-  CrostiniManager::RemoveCrostiniCallback callback_;
+  base::OnceCallback<void(Result)> callback_;
 };
 
 }  // namespace crostini
