@@ -1878,10 +1878,7 @@ void WebLocalFrameImpl::PrintEnd() {
 bool WebLocalFrameImpl::GetPrintPresetOptionsForPlugin(
     const WebNode& node,
     WebPrintPresetOptions* preset_options) {
-  WebPluginContainerImpl* plugin_container =
-      node.IsNull() ? GetFrame()->GetWebPluginContainer()
-                    : To<WebPluginContainerImpl>(node.PluginContainer());
-
+  WebPluginContainerImpl* plugin_container = GetPluginToPrintHelper(node);
   if (!plugin_container || !plugin_container->SupportsPaginatedPrint())
     return false;
 
