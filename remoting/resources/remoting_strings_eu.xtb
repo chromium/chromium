@@ -29,7 +29,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2366718077645204424">Ezin da ostalariarekin konektatu. Agian erabiltzen ari zaren sarearen konfigurazioarengatik izan daiteke.zoo</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Azken konexio-data <ph name="RELATIVE_TIMESTAMP" />.</translation>
-<translation id="2504109125669302160">Eman erabilerraztasun-eginbideak atzitzeko baimena <ph name="PRODUCT_NAME" /> zerbitzuari</translation>
+<translation id="2504109125669302160">Eman erabilerraztasun-eginbideak erabiltzeko baimena <ph name="PRODUCT_NAME" /> zerbitzuari</translation>
 <translation id="2509394361235492552">Konektatu da <ph name="HOSTNAME" /> ostalarira</translation>
 <translation id="2540992418118313681">Ordenagailua partekatu nahi duzu, beste erabiltzaile batek ikusteko eta kontrolatzeko?</translation>
 <translation id="2579271889603567289">Ostalariak huts egin du edo ezin izan da abiarazi.</translation>
@@ -165,7 +165,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="8073845705237259513">Chrome-ren Urruneko pantaila erabili ahal izateko, Google-ko kontu bat gehitu beharko duzu gailuan.</translation>
 <translation id="809687642899217504">Nire ordenagailuak</translation>
 <translation id="8116630183974937060">Sareko errore bat gertatu da. Egiaztatu gailua konektatuta daukazula eta saiatu berriro.</translation>
-<translation id="8295077433896346116"><ph name="PRODUCT_NAME" /> erabiltzeko, erabilerraztasun-eginbideak atzitzeko baimena eman behar diozu, urruneko gailuko sarrerak Mac honetan aplika daitezen.
+<translation id="8295077433896346116"><ph name="PRODUCT_NAME" /> erabiltzeko, erabilerraztasun-eginbideak erabiltzeko baimena eman behar diozu, urruneko gailuko sarrerak Mac honetan aplika daitezen.
 
 Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia. Erabilerraztasun-eginbideen hobespen-panela irekitzen denean, markatu "<ph name="SERVICE_SCRIPT_NAME" />" elementuaren ondoan dagoen koadroa.
 
@@ -173,7 +173,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia. Erabilerr
 <translation id="8305209735512572429">Web Authentication APIaren urruneko prozesua</translation>
 <translation id="8383794970363966105">Chromoting erabili ahal izateko, Google-ko kontu bat gehitu beharko duzu gailuan.</translation>
 <translation id="8386846956409881180">Balio ez duten OAuth kredentzialekin dago konfiguratuta ostalaria.</translation>
-<translation id="8397385476380433240">Eman <ph name="PRODUCT_NAME" /> atzitzeko baimena</translation>
+<translation id="8397385476380433240">Eman <ph name="PRODUCT_NAME" /> erabiltzeko baimena</translation>
 <translation id="8406498562923498210">Hautatu saio bat Chrome-ren Urruneko pantaila aplikazioaren ingurunean abiarazteko. Gogoan izan saio mota batzuk ezin direla aldi berean abiarazi Chrome-ren Urruneko pantaila aplikazioan eta kontsola lokalean.</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8445362773033888690">Ikusi Google Play Store-n</translation>
@@ -184,7 +184,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia. Erabilerr
 <translation id="8743328882720071828">Ordenagailua ikusteko eta kontrolatzeko baimena eman nahi diozu <ph name="CLIENT_USERNAME" /> erabiltzaileari?</translation>
 <translation id="8747048596626351634">Saioak huts egin du edo ezin izan da hasi. Urruneko ordenagailuan "~/.chrome-remote-desktop-session" izeneko prozesurik bada, ziurtatu aurreko planoko prozesu luzea abiarazten duela, adibidez, ordenagailu-ingurunea edo leiho-kudeatzailea.</translation>
 <translation id="8804164990146287819">Pribatutasun-gidalerroak</translation>
-<translation id="8906511416443321782">Mikrofonoa atzitzeko baimena behar da audioa grabatzeko eta Chrome-ren Urruneko pantaila bezero-aplikaziora igortzeko.</translation>
+<translation id="8906511416443321782">Mikrofonoa erabiltzeko baimena behar da audioa grabatzeko eta Chrome-ren Urruneko pantaila bezero-aplikaziora igortzeko.</translation>
 <translation id="9111855907838866522">Urruneko gailura konektatuta zaude. Menua irekitzeko, sakatu pantaila lau hatzekin.</translation>
 <translation id="9126115402994542723">Ez eskatu PINa berriro ostalari honetara gailu honetatik konektatzean.</translation>
 <translation id="916856682307586697">Abiarazi XSession lehenetsia</translation>
