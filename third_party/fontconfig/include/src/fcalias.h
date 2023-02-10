@@ -272,6 +272,8 @@ extern __typeof (FcNameUnregisterConstants) IA__FcNameUnregisterConstants FC_ATT
 #define FcNameUnregisterConstants IA__FcNameUnregisterConstants
 extern __typeof (FcNameGetConstant) IA__FcNameGetConstant FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcNameGetConstant IA__FcNameGetConstant
+extern __typeof (FcNameGetConstantFor) IA__FcNameGetConstantFor FC_ATTRIBUTE_VISIBILITY_HIDDEN;
+#define FcNameGetConstantFor IA__FcNameGetConstantFor
 extern __typeof (FcNameConstant) IA__FcNameConstant FC_ATTRIBUTE_VISIBILITY_HIDDEN;
 #define FcNameConstant IA__FcNameConstant
 extern __typeof (FcNameParse) IA__FcNameParse FC_ATTRIBUTE_VISIBILITY_HIDDEN;
