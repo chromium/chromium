@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 #include <memory>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -76,7 +77,12 @@ TEST_F(PageTimelineMonitorUnitTest, TestPageTimeline) {
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
-  EXPECT_GE(entries.size(), static_cast<const unsigned long>(1));
+  EXPECT_EQ(entries.size(), 1UL);
+
+  // Unsliced resource usage metrics should be collected along with the slice.
+  auto entries2 = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+  EXPECT_EQ(entries2.size(), 1UL);
 }
 
 TEST_F(PageTimelineMonitorUnitTest,
@@ -94,7 +100,13 @@ TEST_F(PageTimelineMonitorUnitTest,
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
-  EXPECT_GE(entries.size(), 0UL);
+  EXPECT_EQ(entries.size(), 0UL);
+
+  // Unsliced resource usage metrics should be collected even when the slice is
+  // not.
+  auto entries2 = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+  EXPECT_EQ(entries2.size(), 1UL);
 }
 
 TEST_F(PageTimelineMonitorUnitTest, TestPageTimelineNavigation) {
@@ -111,14 +123,20 @@ TEST_F(PageTimelineMonitorUnitTest, TestPageTimelineNavigation) {
   TriggerCollectSlice();
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
-  EXPECT_TRUE(entries.size() == 1);
+  EXPECT_EQ(entries.size(), 1UL);
+  auto entries2 = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+  EXPECT_EQ(entries2.size(), 1UL);
 
   mock_graph.page->SetUkmSourceId(mock_source_id_2);
 
   TriggerCollectSlice();
   entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
-  EXPECT_TRUE(entries.size() == 2);
+  EXPECT_EQ(entries.size(), 2UL);
+  entries2 = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+  EXPECT_EQ(entries2.size(), 2UL);
 
   std::vector<ukm::SourceId> ids;
   for (const ukm::mojom::UkmEntry* entry : entries) {
@@ -139,7 +157,10 @@ TEST_F(PageTimelineMonitorUnitTest, TestOnlyRecordTabs) {
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::PerformanceManager_PageTimelineState::kEntryName);
-  EXPECT_TRUE(entries.size() == 0);
+  EXPECT_EQ(entries.size(), 0UL);
+  auto entries2 = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+  EXPECT_EQ(entries2.size(), 0UL);
 }
 
 TEST_F(PageTimelineMonitorUnitTest, TestUpdateFaviconInBackground) {
@@ -421,6 +442,47 @@ TEST_F(PageTimelineMonitorUnitTest, TestUpdatePageNodeBeforeTypeChange) {
 
   // making sure no DCHECKs are hit
   TriggerCollectSlice();
+}
+
+TEST_F(PageTimelineMonitorUnitTest, TestResourceUsage) {
+  MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
+  const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
+  mock_graph.page->SetType(performance_manager::PageType::kTab);
+  mock_graph.page->SetUkmSourceId(mock_source_id);
+  mock_graph.frame->SetResidentSetKbEstimate(123);
+
+  const ukm::SourceId mock_source_id2 = ukm::AssignNewSourceId();
+  mock_graph.other_page->SetType(performance_manager::PageType::kTab);
+  mock_graph.other_page->SetUkmSourceId(mock_source_id2);
+  mock_graph.other_frame->SetResidentSetKbEstimate(456);
+  mock_graph.other_frame->SetPrivateFootprintKbEstimate(789);
+  mock_graph.child_frame->SetPrivateFootprintKbEstimate(1000);
+
+  TriggerCollectSlice();
+  auto entries = test_ukm_recorder()->GetEntriesByName(
+      ukm::builders::PerformanceManager_PageResourceUsage::kEntryName);
+  // Expect 1 entry per page.
+  EXPECT_EQ(entries.size(), 2UL);
+
+  const auto kExpectedResidentSetSize =
+      base::MakeFixedFlatMap<ukm::SourceId, int64_t>({
+          {mock_source_id, 123},
+          {mock_source_id2, 456},
+      });
+  const auto kExpectedPrivateFootprint =
+      base::MakeFixedFlatMap<ukm::SourceId, int64_t>({
+          {mock_source_id, 0},
+          // other_page is the sum of other_frame and child_frame
+          {mock_source_id2, 1789},
+      });
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    test_ukm_recorder()->ExpectEntryMetric(
+        entry, "ResidentSetSizeEstimate",
+        kExpectedResidentSetSize.at(entry->source_id));
+    test_ukm_recorder()->ExpectEntryMetric(
+        entry, "PrivateFootprintEstimate",
+        kExpectedPrivateFootprint.at(entry->source_id));
+  }
 }
 
 }  // namespace performance_manager::metrics

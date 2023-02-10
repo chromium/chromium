@@ -60,6 +60,21 @@ PageTimelineMonitor::PageNodeInfo::GetPageState() {
 }
 
 void PageTimelineMonitor::CollectSlice() {
+  // Whether or not we record a full PageTimelineState slice, record the
+  // estimated memory usage, which has fewer privacy implications so can be
+  // recorded more often.
+  for (auto const& pair : page_node_info_map_) {
+    const PageNode* page_node = pair.first;
+
+    DCHECK_EQ(page_node->GetType(), performance_manager::PageType::kTab);
+    const ukm::SourceId source_id = page_node->GetUkmSourceID();
+
+    ukm::builders::PerformanceManager_PageResourceUsage(source_id)
+        .SetResidentSetSizeEstimate(page_node->EstimateResidentSetSize())
+        .SetPrivateFootprintEstimate(page_node->EstimatePrivateFootprintSize())
+        .Record(ukm::UkmRecorder::Get());
+  }
+
   // We only collect a slice randomly every ~20 times this gets called for
   // privacy purposes. Always fall through when we're in a test.
   if (!ShouldCollectSlice()) {

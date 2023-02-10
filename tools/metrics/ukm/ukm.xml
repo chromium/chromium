@@ -17003,6 +17003,27 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PerformanceManager.PageResourceUsage">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <summary>
+    Metrics detailing the estimated resources used by pages. The resources of a
+    renderer process are allocated to all pages hosted in that process using the
+    algorithm in performance_manager::ProcessMetricsDecorator. An event is
+    collected for each open page every 5 minutes.
+  </summary>
+  <metric name="PrivateFootprintEstimate">
+    <summary>
+      The estimated private footprint of the page, in kilobytes.
+    </summary>
+  </metric>
+  <metric name="ResidentSetSizeEstimate">
+    <summary>
+      The estimated resident set size of the page, in kilobytes.
+    </summary>
+  </metric>
+</event>
+
 <event name="PerformanceManager.PageTimelineState">
   <owner>anthonyvd@chromium.org</owner>
   <owner>spvw@chromium.org</owner>
