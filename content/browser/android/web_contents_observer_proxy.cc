@@ -198,22 +198,11 @@ void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
 
 void WebContentsObserverProxy::DOMContentLoaded(
     RenderFrameHost* render_frame_host) {
-  // TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf
-  // experiment is finished.
-  TRACE_EVENT0("browser", "Java_WebContentsObserverProxy_DOMContentLoaded");
-
   if (render_frame_host->IsInPrimaryMainFrame()) {
     Java_WebContentsObserverProxy_documentLoadedInPrimaryMainFrame(
         AttachCurrentThread(), java_observer_,
         render_frame_host->GetProcess()->GetID(),
         render_frame_host->GetRoutingID(),
-        static_cast<jint>(render_frame_host->GetLifecycleState()));
-  } else if (base::FeatureList::IsEnabled(
-                 features::kNotifyJavaSpuriouslyToMeasurePerf)) {
-    Java_WebContentsObserverProxy_documentLoadedInFrameNoop(
-        AttachCurrentThread(), java_observer_,
-        render_frame_host->GetProcess()->GetID(),
-        render_frame_host->GetRoutingID(), false,
         static_cast<jint>(render_frame_host->GetLifecycleState()));
   }
 }

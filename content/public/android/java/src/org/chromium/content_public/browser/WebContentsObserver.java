@@ -164,14 +164,6 @@ public abstract class WebContentsObserver {
             GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {}
 
     /**
-     * TODO(crbug.com/1351884) Remove when NotifyJavaSupriouslyToMeasurePerf experiment is finished.
-     * No-op, for measuring performance of calling documentLoadedInFrame in only the primary main
-     * frame vs calling it in all frames.
-     */
-    public void documentLoadedInFrameNoop(GlobalRenderFrameHostId rfhId,
-            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {}
-
-    /**
      * Notifies that a navigation entry has been committed.
      * @param details Details of committed navigation entry.
      */

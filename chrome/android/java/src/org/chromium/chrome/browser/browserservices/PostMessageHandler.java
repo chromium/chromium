@@ -106,14 +106,6 @@ public class PostMessageHandler implements OriginVerificationListener {
                 }
                 initializeWithWebContents(webContents);
             }
-
-            @Override
-            public void documentLoadedInFrameNoop(GlobalRenderFrameHostId rfhId,
-                    boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
-                if (!isInPrimaryMainFrame) {
-                    return;
-                }
-            }
         };
     }
 

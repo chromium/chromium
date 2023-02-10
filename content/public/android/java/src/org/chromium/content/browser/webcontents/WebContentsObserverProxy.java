@@ -317,25 +317,6 @@ class WebContentsObserverProxy extends WebContentsObserver {
         finishObserverCall();
     }
 
-    @CalledByNative
-    private void documentLoadedInFrameNoop(int renderProcessId, int renderFrameId,
-            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
-        documentLoadedInFrameNoop(new GlobalRenderFrameHostId(renderProcessId, renderFrameId),
-                false, rfhLifecycleState);
-    }
-
-    @Override
-    public void documentLoadedInFrameNoop(GlobalRenderFrameHostId rfhId,
-            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
-        handleObserverCall();
-        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
-        for (; observersIterator.hasNext();) {
-            observersIterator.next().documentLoadedInFrameNoop(
-                    rfhId, isInPrimaryMainFrame, rfhLifecycleState);
-        }
-        finishObserverCall();
-    }
-
     @Override
     @CalledByNative
     public void navigationEntryCommitted(LoadCommittedDetails details) {
