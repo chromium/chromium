@@ -179,6 +179,8 @@ DeviceActivityController::DeviceActivityController(
   DCHECK(local_state);
   DCHECK(!g_ash_device_activity_controller);
 
+  g_ash_device_activity_controller = this;
+
   // Halt if device is a testimage/unknown channel.
   if (chrome_passed_device_params.chromeos_channel ==
       version_info::Channel::UNKNOWN) {
@@ -190,8 +192,6 @@ DeviceActivityController::DeviceActivityController(
   } else {
     RecordIsTestImageDevice(false);
   }
-
-  g_ash_device_activity_controller = this;
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
