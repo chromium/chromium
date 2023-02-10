@@ -9,8 +9,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
-#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
@@ -19,8 +17,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/util.h"
 
