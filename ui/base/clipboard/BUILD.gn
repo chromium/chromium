@@ -191,7 +191,7 @@ component("clipboard") {
 source_set("clipboard_test_support") {
   testonly = true
 
-  if (!is_ios) {
+  if (use_blink) {
     sources = [
       "test/clipboard_test_util.cc",
       "test/clipboard_test_util.h",

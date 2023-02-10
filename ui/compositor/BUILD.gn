@@ -110,7 +110,7 @@ component("compositor") {
     "//ui/gl",
   ]
 
-  if (is_mac) {
+  if (is_apple) {
     deps += [ "//ui/accelerated_widget_mac" ]
   }
 
@@ -171,6 +171,10 @@ static_library("test_support") {
     sources += [ "test/test_compositor_host_mac.mm" ]
   }
 
+  if (is_ios) {
+    sources += [ "test/test_compositor_host_ios.mm" ]
+  }
+
   if (is_win) {
     sources += [ "test/test_compositor_host_win.cc" ]
   }
@@ -198,7 +202,7 @@ static_library("test_support") {
     "//ui/gl:test_support",
   ]
 
-  if (is_mac) {
+  if (is_apple) {
     deps += [
       "//gpu/ipc/service:service",
       "//ui/accelerated_widget_mac",
