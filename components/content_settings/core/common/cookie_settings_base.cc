@@ -176,6 +176,10 @@ void CookieSettingsBase::DCheckOverridesConsistencyWithQueryReason(
                     net::CookieSettingOverride::kStorageAccessGrantEligible),
                 storage_access_api_grants_unpartitioned_storage_ ||
                     is_storage_partitioned_);
+      DCHECK_EQ(
+          overrides.Has(
+              net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible),
+          is_storage_partitioned_);
       break;
     case QueryReason::kCookies:
       // Can't make any assertions here, since some kCookies callsites supply
@@ -185,45 +189,24 @@ void CookieSettingsBase::DCheckOverridesConsistencyWithQueryReason(
   }
 }
 
-net::CookieSettingOverrides
-CookieSettingsBase::AddOverrideIfStorageIsRelevantToStorageAccessAPI(
-    net::CookieSettingOverride override,
-    net::CookieSettingOverrides overrides) const {
+net::CookieSettingOverrides CookieSettingsBase::SettingOverridesForStorage()
+    const {
+  net::CookieSettingOverrides overrides;
   if (storage_access_api_grants_unpartitioned_storage_ ||
       is_storage_partitioned_) {
-    overrides.Put(override);
+    overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+  }
+  if (is_storage_partitioned_) {
+    overrides.Put(
+        net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
   return overrides;
 }
 
 bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrants(
-    QueryReason query_reason,
     net::CookieSettingOverrides overrides) const {
-  // Unlike the standard Storage Access API, the top-level version does not
-  // unlock unpartitioned storage more generally. It applies only to cookies.
   return overrides.Has(
-             net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible) &&
-         CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrantsInternal(
-             query_reason, storage_access_api_grants_unpartitioned_storage_,
-             is_storage_partitioned_);
-}
-
-// static
-bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrantsInternal(
-    QueryReason query_reason,
-    bool storage_access_api_grants_unpartitioned_storage,
-    bool is_storage_partitioned) {
-  switch (query_reason) {
-    case QueryReason::kSetting:
-      return false;
-    case QueryReason::kPrivacySandbox:
-      return false;
-    case QueryReason::kSiteStorage:
-      return storage_access_api_grants_unpartitioned_storage ||
-             is_storage_partitioned;
-    case QueryReason::kCookies:
-      return true;
-  }
+      net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
 }
 
 // static

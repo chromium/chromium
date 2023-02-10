@@ -102,23 +102,17 @@ class CookieSettingsBase {
   // more flexible and easier to understand.
   enum class QueryReason {
     // The query is about getting the user's setting (possibly for UI exposure).
-    // Top-Level Storage Access API permission grants will not be considered
-    // when answering the query.
     kSetting = 0,
     // Deprecated from M111. Rely directly on the individual Privacy sandbox
     // APIs in `PrivacySandboxSettings`.
     // The query is to determine whether Privacy Sandbox APIs should be enabled,
-    // based on the cookies content setting. Top-Level Storage Access API
-    // permission grants will not be considered when answering the query.
+    // based on the cookies content setting.
     kPrivacySandbox,
     // The query is about access to site-scoped storage in practice, after
-    // taking all settings and permission into account. Top-Level Storage Access
-    // API permission grants will be considered when answering the query.
+    // taking all settings and permission into account.
     kSiteStorage,
     // The query is about determining whether cookies are accessible in
     // practice, after taking all settings and permissions into account.
-    // Top-Level Storage Access API permission grants will be considered when
-    // answering the query.
     kCookies,
   };
 
@@ -206,12 +200,11 @@ class CookieSettingsBase {
   // access.
   static bool IsValidSettingForLegacyAccess(ContentSetting setting);
 
-  // Conditionally adds the given `override` to `overrides`, if feature flags
-  // indicate that access to local storage ought to be granted by a Storage
-  // Access API grant.
-  net::CookieSettingOverrides AddOverrideIfStorageIsRelevantToStorageAccessAPI(
-      net::CookieSettingOverride override,
-      net::CookieSettingOverrides overrides) const;
+  // Returns a set of overrides that includes Storage Access API and Top-Level
+  // Storage Access API overrides iff the config booleans indicate that Storage
+  // Access API and Top-Level Storage Access API should unlock access to DOM
+  // storage.
+  net::CookieSettingOverrides SettingOverridesForStorage() const;
 
   // Returns true iff the query should consider Storage Access API permission
   // grants.
@@ -223,14 +216,7 @@ class CookieSettingsBase {
   // grants, but applies to subresources more broadly (at the top-level rather
   // than only for a single frame).
   bool ShouldConsiderTopLevelStorageAccessGrants(
-      QueryReason query_reason,
       net::CookieSettingOverrides overrides) const;
-
-  // Static version of the above, exposed for testing.
-  static bool ShouldConsiderTopLevelStorageAccessGrantsInternal(
-      QueryReason query_reason,
-      bool storage_access_api_grants_unpartitioned_storage,
-      bool is_storage_partitioned);
 
   // Controls whether Storage Access API grants allow access to unpartitioned
   // *storage*, in addition to unpartitioned cookies. This is static so that all

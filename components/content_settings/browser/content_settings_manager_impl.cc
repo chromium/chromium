@@ -151,8 +151,7 @@ void ContentSettingsManagerImpl::AllowStorageAccess(
 
   bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin,
-      cookie_settings_->AddOverrideIfStorageIsRelevantToStorageAccessAPI(
-          net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
+      cookie_settings_->SettingOverridesForStorage(),
       CookieSettings::QueryReason::kSiteStorage);
   if (delegate_->AllowStorageAccess(render_process_id_, render_frame_id,
                                     storage_type, url, allowed, &callback)) {

@@ -6891,8 +6891,7 @@ bool ChromeContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
           Profile::FromBrowserContext(browser_context));
   return cookie_settings->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin,
-      cookie_settings->AddOverrideIfStorageIsRelevantToStorageAccessAPI(
-          net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
+      cookie_settings->SettingOverridesForStorage(),
       content_settings::CookieSettings::QueryReason::kSiteStorage);
 }
 

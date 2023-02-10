@@ -286,9 +286,7 @@ bool NetworkServiceNetworkDelegate::OnCanQueueReportingReport(
       network_context_->cookie_manager()->cookie_settings();
   return cookie_settings.IsFullCookieAccessAllowed(
       origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
-      cookie_settings.AddOverrideIfStorageIsRelevantToStorageAccessAPI(
-          net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
-      QueryReason::kSiteStorage);
+      cookie_settings.SettingOverridesForStorage(), QueryReason::kSiteStorage);
 }
 
 void NetworkServiceNetworkDelegate::OnCanSendReportingReports(
@@ -322,9 +320,7 @@ bool NetworkServiceNetworkDelegate::OnCanSetReportingClient(
       network_context_->cookie_manager()->cookie_settings();
   return cookie_settings.IsFullCookieAccessAllowed(
       origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
-      cookie_settings.AddOverrideIfStorageIsRelevantToStorageAccessAPI(
-          net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
-      QueryReason::kSiteStorage);
+      cookie_settings.SettingOverridesForStorage(), QueryReason::kSiteStorage);
 }
 
 bool NetworkServiceNetworkDelegate::OnCanUseReportingClient(
@@ -334,9 +330,7 @@ bool NetworkServiceNetworkDelegate::OnCanUseReportingClient(
       network_context_->cookie_manager()->cookie_settings();
   return cookie_settings.IsFullCookieAccessAllowed(
       origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
-      cookie_settings.AddOverrideIfStorageIsRelevantToStorageAccessAPI(
-          net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
-      QueryReason::kSiteStorage);
+      cookie_settings.SettingOverridesForStorage(), QueryReason::kSiteStorage);
 }
 
 absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>

@@ -252,57 +252,30 @@ class CookieSettingsBaseStorageAccessAPITest
   }
   bool IsStoragePartitioned() const { return std::get<1>(GetParam()); }
 
-  bool IsStorageGrantedByPermission() const {
-    // Storage access should only be granted if the permission grants
-    // unpartitioned storage, or if storage is partitioned.
-    return PermissionGrantsUnpartitionedStorage() || IsStoragePartitioned();
-  }
-
  private:
   base::test::ScopedFeatureList features_;
 };
 
 TEST_P(CookieSettingsBaseStorageAccessAPITest,
-       ShouldConsiderTopLevelStorageAccessGrants) {
-  auto should_consider_for = [this](QueryReason query_reason) {
-    return CookieSettingsBase::
-        ShouldConsiderTopLevelStorageAccessGrantsInternal(
-            query_reason, PermissionGrantsUnpartitionedStorage(),
-            IsStoragePartitioned());
-  };
-
-  EXPECT_FALSE(should_consider_for(QueryReason::kSetting));
-  EXPECT_FALSE(should_consider_for(QueryReason::kPrivacySandbox));
-  EXPECT_EQ(should_consider_for(QueryReason::kSiteStorage),
-            IsStorageGrantedByPermission());
-  EXPECT_TRUE(should_consider_for(QueryReason::kCookies));
-}
-
-TEST_P(CookieSettingsBaseStorageAccessAPITest,
-       AddOverrideIfStorageIsRelevantToStorageAccessAPI) {
+       SettingOverridesForStorageAccessAPIs) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_ALLOW; }));
 
-  EXPECT_EQ(settings.AddOverrideIfStorageIsRelevantToStorageAccessAPI(
-                net::CookieSettingOverride::kStorageAccessGrantEligible, {}),
-            IsStorageGrantedByPermission() || IsStoragePartitioned()
-                ? net::CookieSettingOverrides(
-                      net::CookieSettingOverride::kStorageAccessGrantEligible)
-                : net::CookieSettingOverrides());
+  net::CookieSettingOverrides overrides = settings.SettingOverridesForStorage();
 
-  // Make sure the helper didn't hardcode a particular enum variant:
   EXPECT_EQ(
-      settings.AddOverrideIfStorageIsRelevantToStorageAccessAPI(
-          net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible, {}),
-      IsStorageGrantedByPermission() || IsStoragePartitioned()
-          ? net::CookieSettingOverrides(
-                net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible)
-          : net::CookieSettingOverrides());
+      overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible),
+      PermissionGrantsUnpartitionedStorage() || IsStoragePartitioned());
+  EXPECT_EQ(
+      overrides.Has(
+          net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible),
+      IsStoragePartitioned());
 }
 
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         CookieSettingsBaseStorageAccessAPITest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    CookieSettingsBaseStorageAccessAPITest,
+    testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace
 }  // namespace content_settings
