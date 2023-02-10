@@ -42179,6 +42179,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4459" label="FedCmAutoReauthn"/>
   <int value="4460" label="TopicsAPIFetch"/>
   <int value="4461" label="TopicsAPIXhr"/>
+  <int value="4462" label="ParseFromString"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

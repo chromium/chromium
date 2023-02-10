@@ -40,6 +40,7 @@ Document* DOMParser::parseFromString(const String& str,
   bool include_shadow_roots =
       options->hasIncludeShadowRoots() && options->includeShadowRoots();
   doc->setAllowDeclarativeShadowRoots(include_shadow_roots);
+  doc->CountUse(mojom::blink::WebFeature::kParseFromString);
   if (include_shadow_roots) {
     doc->CountUse(mojom::blink::WebFeature::kParseFromStringIncludeShadows);
   }
