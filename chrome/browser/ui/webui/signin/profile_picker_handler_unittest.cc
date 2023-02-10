@@ -66,21 +66,21 @@ class MockIdentityManagerLacros : public IdentityManagerLacros {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-void VerifyProfileEntry(const base::Value& value,
+void VerifyProfileEntry(const base::Value::Dict& value,
                         ProfileAttributesEntry* entry) {
-  EXPECT_EQ(*value.FindKey("profilePath"),
+  EXPECT_EQ(*value.Find("profilePath"),
             base::FilePathToValue(entry->GetPath()));
-  EXPECT_EQ(*value.FindStringKey("localProfileName"),
+  EXPECT_EQ(*value.FindString("localProfileName"),
             base::UTF16ToUTF8(entry->GetLocalProfileName()));
-  EXPECT_EQ(value.FindBoolKey("isSyncing"),
+  EXPECT_EQ(*value.FindBool("isSyncing"),
             entry->GetSigninState() ==
                 SigninState::kSignedInWithConsentedPrimaryAccount);
-  EXPECT_EQ(value.FindBoolKey("needsSignin"), entry->IsSigninRequired());
-  EXPECT_EQ(*value.FindStringKey("gaiaName"),
+  EXPECT_EQ(*value.FindBool("needsSignin"), entry->IsSigninRequired());
+  EXPECT_EQ(*value.FindString("gaiaName"),
             base::UTF16ToUTF8(entry->GetGAIANameToDisplay()));
-  EXPECT_EQ(*value.FindStringKey("userName"),
+  EXPECT_EQ(*value.FindString("userName"),
             base::UTF16ToUTF8(entry->GetUserName()));
-  EXPECT_EQ(value.FindBoolKey("isManaged"),
+  EXPECT_EQ(*value.FindBool("isManaged"),
             AccountInfo::IsManaged(entry->GetHostedDomain()));
 }
 
@@ -142,7 +142,8 @@ class ProfilePickerHandlerTest : public testing::Test {
     size_t size = data.arg2()->GetList().size();
     ASSERT_EQ(size, ordered_profile_entries.size());
     for (size_t i = 0; i < size; ++i) {
-      VerifyProfileEntry(data.arg2()->GetList()[i], ordered_profile_entries[i]);
+      VerifyProfileEntry(data.arg2()->GetList()[i].GetDict(),
+                         ordered_profile_entries[i]);
     }
   }
 

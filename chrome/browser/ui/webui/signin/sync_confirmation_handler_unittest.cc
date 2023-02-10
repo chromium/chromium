@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/sync_confirmation_handler.h"
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -34,6 +35,7 @@
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 const int kExpectedProfileImageSize = 128;
 
@@ -183,13 +185,14 @@ class SyncConfirmationHandlerTest : public BrowserWithTestWindowTest,
                                              false /* no_silhouette */)
             .spec();
     std::string passed_picture_url;
-    const base::Value* src = call_data.arg2()->FindKey("src");
+    const base::Value::Dict& dict = call_data.arg2()->GetDict();
+    const std::string* src = dict.FindString("src");
     EXPECT_NE(src, nullptr);
-    EXPECT_EQ(expected_picture_url, src->GetString());
-    const base::Value* show_enterprise_badge =
-        call_data.arg2()->FindKey("showEnterpriseBadge");
-    EXPECT_NE(show_enterprise_badge, nullptr);
-    EXPECT_EQ(primary_account.IsManaged(), show_enterprise_badge->GetBool());
+    EXPECT_EQ(expected_picture_url, *src);
+    const absl::optional<bool> show_enterprise_badge =
+        dict.FindBool("showEnterpriseBadge");
+    EXPECT_TRUE(show_enterprise_badge.has_value());
+    EXPECT_EQ(primary_account.IsManaged(), show_enterprise_badge.value());
   }
 
  protected:
