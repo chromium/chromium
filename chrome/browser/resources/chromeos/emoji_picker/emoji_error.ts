@@ -1,0 +1,54 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {NO_INTERNET_ERROR_MSG, SOMETHING_WENT_WRONG_ERROR_MSG} from './constants.js';
+import {getTemplate} from './emoji_error.html.js';
+import {Status} from './emoji_picker.mojom-webui.js';
+import {createCustomEvent, GIF_ERROR_TRY_AGAIN} from './events.js';
+
+export class EmojiErrorComponent extends PolymerElement {
+  static get is() {
+    return 'emoji-error' as const;
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      status: {type: Status},
+    };
+  }
+  private status: Status;
+
+  isGifInHttpErrorState(status: Status): boolean {
+    return status === Status.kHttpError;
+  }
+
+  isGifInNetworkErrorState(status: Status): boolean {
+    return status === Status.kNetError;
+  }
+
+  getErrorMessage(status: Status): string {
+    return status === Status.kNetError ? NO_INTERNET_ERROR_MSG :
+                                         SOMETHING_WENT_WRONG_ERROR_MSG;
+  }
+
+  onClickTryAgain() {
+    this.dispatchEvent(createCustomEvent(GIF_ERROR_TRY_AGAIN, {}));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EmojiErrorComponent.is]: EmojiErrorComponent;
+  }
+}
+
+customElements.define(EmojiErrorComponent.is, EmojiErrorComponent);

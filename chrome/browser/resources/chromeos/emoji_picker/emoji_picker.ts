@@ -6,12 +6,12 @@ import './icons.html.js';
 import './emoji_group.js';
 import './emoji_group_button.js';
 import './emoji_search.js';
+import './emoji_error.js';
 import './emoji_category_button.js';
 import './text_group_button.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -88,7 +88,6 @@ export class EmojiPicker extends PolymerElement {
       gifSupport: {type: Boolean, value: false},
       gifDataInitialised: {type: Boolean, value: false},
       nextGifPos: {type: Object, value: () => ({})},
-      errorMessage: {type: String, value: null},
       status: {type: Status, value: null},
     };
   }
@@ -117,7 +116,6 @@ export class EmojiPicker extends PolymerElement {
   private groupTabsMoving: boolean = false;
   private gifDataInitialised: boolean;
   private nextGifPos: {[key: string]: string};
-  private errorMessage: string|null;
   private status: Status|null;
   private previousGifValidation: Date;
 
@@ -156,6 +154,7 @@ export class EmojiPicker extends PolymerElement {
     this.addEventListener(
         'search',
         ev => this.onSearchChanged((ev as CustomEvent<string>).detail));
+    this.addEventListener(events.GIF_ERROR_TRY_AGAIN, this.onClickTryAgain);
   }
 
   private filterGroupTabByPagination(pageNumber: number): (tab: {
@@ -368,17 +367,6 @@ export class EmojiPicker extends PolymerElement {
           .then((values) => {
             const {status, featuredGifs} = values[1];
             this.status = status;
-            switch (status) {
-              case Status.kNetError:
-                this.errorMessage = constants.NO_INTERNET_ERROR_MSG;
-                break;
-              case Status.kHttpError:
-                this.errorMessage = constants.SOMETHING_WENT_WRONG_ERROR_MSG;
-                break;
-              default:
-                this.errorMessage = null;
-                break;
-            }
             const trendingGifsElement: EmojiVariants[] =
                 this.apiProxy.convertTenorGifsToEmoji(featuredGifs);
 
@@ -400,7 +388,7 @@ export class EmojiPicker extends PolymerElement {
   }
 
   onClickTryAgain() {
-    // TODO(b/266024083): Try fetch trending gifs again on click
+    // TODO(b/266024083): Try fetch categories and trending gifs again on click
   }
 
   private canScrollToGroup(category: CategoryEnum, groupId: string): boolean {
@@ -591,16 +579,8 @@ export class EmojiPicker extends PolymerElement {
     this.insertHistoryVisualContentItem(category, item);
   }
 
-  isGifInErrorState(status: Status) {
+  isGifInErrorState(status: Status): boolean {
     return this.gifSupport && status !== Status.kHttpOk;
-  }
-
-  isGifInHttpErrorState(status: Status) {
-    return status === Status.kHttpError;
-  }
-
-  isGifInNetworkErrorState(status: Status) {
-    return status === Status.kNetError;
   }
 
   private clearRecentEmoji(event: events.EmojiClearRecentClickEvent) {

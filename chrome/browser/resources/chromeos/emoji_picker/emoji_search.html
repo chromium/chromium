@@ -158,7 +158,7 @@
       </template>
     </div>
     <template is="dom-if"
-      if="[[!searchResults.length]]">
+      if="[[noResults(searchResults)]]">
       <div class="no-result">
         <picture>
           <source srcset="no_results_dark.svg"
@@ -166,6 +166,12 @@
           <img src="no_results.svg" id = "no-emoji-image">
         </picture>
         No result found
+      </div>
+    </template>
+    <template is="dom-if" if="[[isGifInErrorState(status)]]">
+      <div class="no-result">
+        <emoji-error status="[[status]]">
+        </emoji-error>
       </div>
     </template>
   </div>

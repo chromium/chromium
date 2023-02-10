@@ -10,8 +10,10 @@ import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_fie
 import {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Status} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {getTemplate} from './emoji_search.html.js';
+import {GIF_ERROR_TRY_AGAIN} from './events.js';
 import Fuse from './fuse.js';
 import {CategoryData, CategoryEnum, EmojiGroupData, EmojiVariants} from './types.js';
 
@@ -40,6 +42,7 @@ export class EmojiSearch extends PolymerElement {
       searchResults: {type: Array},
       needIndexing: {type: Boolean, value: false},
       gifSupport: {type: Boolean, value: false},
+      status: {type: Status, value: null},
       searchQuery: {type: String, value: ''},
       nextGifPos: {type: String, value: ''},
     };
@@ -50,6 +53,7 @@ export class EmojiSearch extends PolymerElement {
   private searchResults: EmojiGroupData;
   private needIndexing: boolean;
   private gifSupport: boolean;
+  private status: Status|null;
   // TODO(b/235419647): Update the config to use extended search.
   private fuseConfig: Fuse.IFuseOptions<EmojiVariants> = {
     threshold: 0.0,        // Exact match only.
@@ -79,6 +83,7 @@ export class EmojiSearch extends PolymerElement {
         'search', (ev) => this.onSearch((ev as CustomEvent<string>).detail));
     this.$.search.getSearchInput().addEventListener(
         'keydown', (ev: KeyboardEvent) => this.onSearchKeyDown(ev));
+    this.addEventListener(GIF_ERROR_TRY_AGAIN, this.onClickTryAgain);
   }
 
   private onSearch(newSearch: string): void {
@@ -303,7 +308,8 @@ export class EmojiSearch extends PolymerElement {
 
     const searchResults: EmojiGroupData = [];
     const apiProxy = EmojiPickerApiProxyImpl.getInstance();
-    const {searchGifs} = await apiProxy.searchGifs(search);
+    const {status, searchGifs} = await apiProxy.searchGifs(search);
+    this.status = status;
     this.nextGifPos = searchGifs.next;
     searchResults.push({
       'category': CategoryEnum.GIF,
@@ -371,6 +377,22 @@ export class EmojiSearch extends PolymerElement {
    */
   searchNotEmpty(): boolean {
     return this.$.search.getValue() !== '';
+  }
+
+  /**
+   * Display no results if `gifSupport` flag is off and `searchResults` are
+   * empty. If `gifSupport` flag is on it will always have gifs to display.
+   */
+  noResults(searchResults: EmojiGroupData): boolean {
+    return !this.gifSupport && searchResults.length === 0;
+  }
+
+  isGifInErrorState(status: Status): boolean {
+    return this.gifSupport && status !== Status.kHttpOk;
+  }
+
+  onClickTryAgain() {
+    this.onSearch(this.$.search.getValue());
   }
 
   /**

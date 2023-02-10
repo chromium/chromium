@@ -57,6 +57,14 @@ export const CATEGORY_DATA_LOADED = 'category-data-loaded';
 export type EmojiPickerReadyEvent = CustomEvent;
 
 /**
+ * The event that the user clicks try again when there is either a network or
+ * http error when trying to fetch for gifs.
+ */
+export const GIF_ERROR_TRY_AGAIN = 'gif-error-try-again';
+
+export type GifErrorTryAgainEvent = CustomEvent;
+
+/**
  * The event that all the data are loaded and rendered and all the
  * emoji-picker functionalities are ready to use.
  */

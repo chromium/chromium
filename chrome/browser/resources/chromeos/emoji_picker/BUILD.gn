@@ -11,6 +11,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 web_component_files = [
   "emoji_button.ts",
   "emoji_category_button.ts",
+  "emoji_error.ts",
   "emoji_group.ts",
   "emoji_group_button.ts",
   "emoji_picker.ts",
