@@ -139,6 +139,11 @@ class TrainingDataCollectorImpl : public TrainingDataCollector,
   // A list of segment IDs that needs to report metrics continuously.
   base::flat_set<SegmentId> continuous_collection_segments_;
 
+  // List of all segments that need to upload training data.
+  // TODO(ssid): Clean up the list of segment IDs in this class to be a single
+  // list.
+  base::flat_set<SegmentId> all_segments_for_training_;
+
   base::WeakPtrFactory<TrainingDataCollectorImpl> weak_ptr_factory_{this};
 };
 
