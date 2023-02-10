@@ -166,6 +166,10 @@ bool IsBlockedControl(int control_id) {
   return false;
 }
 
+bool IsNonEmptyRange(const mojom::RangePtr& range) {
+  return range->min < range->max;
+}
+
 }  // namespace
 
 // Class keeping track of a SPLANE V4L2 buffer, mmap()ed on construction and
@@ -406,47 +410,47 @@ void V4L2CaptureDelegate::GetPhotoState(
   photo_capabilities->tilt = RetrieveUserControlRange(V4L2_CID_TILT_ABSOLUTE);
   photo_capabilities->zoom = RetrieveUserControlRange(V4L2_CID_ZOOM_ABSOLUTE);
 
-  v4l2_queryctrl manual_focus_ctrl = {};
-  manual_focus_ctrl.id = V4L2_CID_FOCUS_ABSOLUTE;
-  if (RunIoctl(VIDIOC_QUERYCTRL, &manual_focus_ctrl))
+  photo_capabilities->focus_distance =
+      RetrieveUserControlRange(V4L2_CID_FOCUS_ABSOLUTE);
+  if (IsNonEmptyRange(photo_capabilities->focus_distance)) {
     photo_capabilities->supported_focus_modes.push_back(MeteringMode::MANUAL);
+  }
 
+  photo_capabilities->current_focus_mode = MeteringMode::NONE;
   v4l2_queryctrl auto_focus_ctrl = {};
-  auto_focus_ctrl.id = V4L2_CID_FOCUS_AUTO;
-  if (RunIoctl(VIDIOC_QUERYCTRL, &auto_focus_ctrl)) {
+  v4l2_control current_auto_focus = {};
+  auto_focus_ctrl.id = current_auto_focus.id = V4L2_CID_FOCUS_AUTO;
+  if (RunIoctl(VIDIOC_QUERYCTRL, &auto_focus_ctrl) &&
+      RunIoctl(VIDIOC_G_CTRL, &current_auto_focus)) {
+    photo_capabilities->current_focus_mode = current_auto_focus.value
+                                                 ? MeteringMode::CONTINUOUS
+                                                 : MeteringMode::MANUAL;
     photo_capabilities->supported_focus_modes.push_back(
         MeteringMode::CONTINUOUS);
   }
 
-  photo_capabilities->current_focus_mode = MeteringMode::NONE;
-  v4l2_control auto_focus_current = {};
-  auto_focus_current.id = V4L2_CID_FOCUS_AUTO;
-  if (DoIoctl(VIDIOC_G_CTRL, &auto_focus_current) >= 0) {
-    photo_capabilities->current_focus_mode = auto_focus_current.value
-                                                 ? MeteringMode::CONTINUOUS
-                                                 : MeteringMode::MANUAL;
-  }
-
-  photo_capabilities->focus_distance =
-      RetrieveUserControlRange(V4L2_CID_FOCUS_ABSOLUTE);
-
-  v4l2_queryctrl auto_exposure_ctrl = {};
-  auto_exposure_ctrl.id = V4L2_CID_EXPOSURE_AUTO;
-  if (RunIoctl(VIDIOC_QUERYCTRL, &auto_exposure_ctrl)) {
+  // Determines the exposure time of the camera sensor. Drivers interpret values
+  // as 100 µs units, same as specs.
+  photo_capabilities->exposure_time =
+      RetrieveUserControlRange(V4L2_CID_EXPOSURE_ABSOLUTE);
+  if (IsNonEmptyRange(photo_capabilities->exposure_time)) {
     photo_capabilities->supported_exposure_modes.push_back(
         MeteringMode::MANUAL);
-    photo_capabilities->supported_exposure_modes.push_back(
-        MeteringMode::CONTINUOUS);
   }
 
   photo_capabilities->current_exposure_mode = MeteringMode::NONE;
-  v4l2_control exposure_current = {};
-  exposure_current.id = V4L2_CID_EXPOSURE_AUTO;
-  if (DoIoctl(VIDIOC_G_CTRL, &exposure_current) >= 0) {
+  v4l2_queryctrl auto_exposure_ctrl = {};
+  v4l2_control current_auto_exposure = {};
+  auto_exposure_ctrl.id = current_auto_exposure.id = V4L2_CID_EXPOSURE_AUTO;
+  if (RunIoctl(VIDIOC_QUERYCTRL, &auto_exposure_ctrl) &&
+      RunIoctl(VIDIOC_G_CTRL, &current_auto_exposure)) {
     photo_capabilities->current_exposure_mode =
-        exposure_current.value == V4L2_EXPOSURE_MANUAL
+        (current_auto_exposure.value == V4L2_EXPOSURE_MANUAL ||
+         current_auto_exposure.value == V4L2_EXPOSURE_SHUTTER_PRIORITY)
             ? MeteringMode::MANUAL
             : MeteringMode::CONTINUOUS;
+    photo_capabilities->supported_exposure_modes.push_back(
+        MeteringMode::CONTINUOUS);
   }
 
   // Exposure compensation is valid if V4L2_CID_EXPOSURE_AUTO control is set to
@@ -455,32 +459,25 @@ void V4L2CaptureDelegate::GetPhotoState(
   photo_capabilities->exposure_compensation =
       RetrieveUserControlRange(V4L2_CID_AUTO_EXPOSURE_BIAS);
 
-  // Determines the exposure time of the camera sensor. Drivers interpret values
-  // as 100 µs units, same as specs.
-  photo_capabilities->exposure_time =
-      RetrieveUserControlRange(V4L2_CID_EXPOSURE_ABSOLUTE);
-
   photo_capabilities->color_temperature =
       RetrieveUserControlRange(V4L2_CID_WHITE_BALANCE_TEMPERATURE);
-  if (photo_capabilities->color_temperature) {
+  if (IsNonEmptyRange(photo_capabilities->color_temperature)) {
     photo_capabilities->supported_white_balance_modes.push_back(
         MeteringMode::MANUAL);
   }
 
-  v4l2_queryctrl white_balance_ctrl = {};
-  white_balance_ctrl.id = V4L2_CID_AUTO_WHITE_BALANCE;
-  if (RunIoctl(VIDIOC_QUERYCTRL, &white_balance_ctrl)) {
+  photo_capabilities->current_white_balance_mode = MeteringMode::NONE;
+  v4l2_queryctrl auto_white_balance_ctrl = {};
+  v4l2_control current_auto_white_balance = {};
+  auto_white_balance_ctrl.id = current_auto_white_balance.id =
+      V4L2_CID_AUTO_WHITE_BALANCE;
+  if (RunIoctl(VIDIOC_QUERYCTRL, &auto_white_balance_ctrl) &&
+      RunIoctl(VIDIOC_G_CTRL, &current_auto_white_balance)) {
+    photo_capabilities->current_white_balance_mode =
+        current_auto_white_balance.value ? MeteringMode::CONTINUOUS
+                                         : MeteringMode::MANUAL;
     photo_capabilities->supported_white_balance_modes.push_back(
         MeteringMode::CONTINUOUS);
-  }
-
-  photo_capabilities->current_white_balance_mode = MeteringMode::NONE;
-  v4l2_control white_balance_current = {};
-  white_balance_current.id = V4L2_CID_AUTO_WHITE_BALANCE;
-  if (DoIoctl(VIDIOC_G_CTRL, &white_balance_current) >= 0) {
-    photo_capabilities->current_white_balance_mode =
-        white_balance_current.value ? MeteringMode::CONTINUOUS
-                                    : MeteringMode::MANUAL;
   }
 
   photo_capabilities->iso = mojom::Range::New();
@@ -511,144 +508,181 @@ void V4L2CaptureDelegate::SetPhotoOptions(
     return;
 
   if (settings->has_pan) {
-    v4l2_control pan_current = {};
-    pan_current.id = V4L2_CID_PAN_ABSOLUTE;
-    pan_current.value = settings->pan;
-    if (DoIoctl(VIDIOC_S_CTRL, &pan_current) < 0)
+    v4l2_control set_pan = {};
+    set_pan.id = V4L2_CID_PAN_ABSOLUTE;
+    set_pan.value = settings->pan;
+    if (DoIoctl(VIDIOC_S_CTRL, &set_pan) < 0) {
       DPLOG(ERROR) << "setting pan to " << settings->pan;
+    }
   }
 
   if (settings->has_tilt) {
-    v4l2_control tilt_current = {};
-    tilt_current.id = V4L2_CID_TILT_ABSOLUTE;
-    tilt_current.value = settings->tilt;
-    if (DoIoctl(VIDIOC_S_CTRL, &tilt_current) < 0)
+    v4l2_control set_tilt = {};
+    set_tilt.id = V4L2_CID_TILT_ABSOLUTE;
+    set_tilt.value = settings->tilt;
+    if (DoIoctl(VIDIOC_S_CTRL, &set_tilt) < 0) {
       DPLOG(ERROR) << "setting tilt to " << settings->tilt;
+    }
   }
 
   if (settings->has_zoom) {
-    v4l2_control zoom_current = {};
-    zoom_current.id = V4L2_CID_ZOOM_ABSOLUTE;
-    zoom_current.value = settings->zoom;
-    if (DoIoctl(VIDIOC_S_CTRL, &zoom_current) < 0)
+    v4l2_control set_zoom = {};
+    set_zoom.id = V4L2_CID_ZOOM_ABSOLUTE;
+    set_zoom.value = settings->zoom;
+    if (DoIoctl(VIDIOC_S_CTRL, &set_zoom) < 0) {
       DPLOG(ERROR) << "setting zoom to " << settings->zoom;
+    }
   }
 
   if (settings->has_focus_mode &&
       (settings->focus_mode == mojom::MeteringMode::MANUAL ||
        settings->focus_mode == mojom::MeteringMode::CONTINUOUS)) {
-    v4l2_control auto_focus = {};
-    auto_focus.id = V4L2_CID_FOCUS_AUTO;
-    auto_focus.value =
-        settings->focus_mode == mojom::MeteringMode::MANUAL ? false : true;
-    if (DoIoctl(VIDIOC_S_CTRL, &auto_focus) < 0)
-      DPLOG(ERROR) << "setting focusMode to "
-                   << (settings->focus_mode == mojom::MeteringMode::MANUAL
-                           ? "manual"
-                           : "continuous");
+    v4l2_control set_auto_focus = {};
+    set_auto_focus.id = V4L2_CID_FOCUS_AUTO;
+    set_auto_focus.value =
+        settings->focus_mode == mojom::MeteringMode::CONTINUOUS;
+    if (DoIoctl(VIDIOC_S_CTRL, &set_auto_focus) < 0) {
+      DPLOG(ERROR) << "setting focus mode to "
+                   << (settings->focus_mode == mojom::MeteringMode::CONTINUOUS
+                           ? "continuous"
+                           : "manual");
+    }
   }
 
-  if (settings->has_focus_distance &&
-      settings->focus_mode == mojom::MeteringMode::MANUAL) {
-    v4l2_control set_focus_distance_ctrl = {};
-    set_focus_distance_ctrl.id = V4L2_CID_FOCUS_ABSOLUTE;
-    set_focus_distance_ctrl.value = settings->focus_distance;
-    if (DoIoctl(VIDIOC_S_CTRL, &set_focus_distance_ctrl) < 0)
-      DPLOG(ERROR) << "setting focus distance to " << settings->focus_distance;
+  if (settings->has_focus_distance) {
+    v4l2_control current_auto_focus = {};
+    current_auto_focus.id = V4L2_CID_FOCUS_AUTO;
+    const int result = DoIoctl(VIDIOC_G_CTRL, &current_auto_focus);
+    // Focus distance can only be applied if auto focus is off.
+    if (result >= 0 && !current_auto_focus.value) {
+      v4l2_control set_focus_distance = {};
+      set_focus_distance.id = V4L2_CID_FOCUS_ABSOLUTE;
+      set_focus_distance.value = settings->focus_distance;
+      if (DoIoctl(VIDIOC_S_CTRL, &set_focus_distance) < 0) {
+        DPLOG(ERROR) << "setting focus distance to "
+                     << settings->focus_distance;
+      }
+    }
   }
 
   if (settings->has_white_balance_mode &&
       (settings->white_balance_mode == mojom::MeteringMode::CONTINUOUS ||
        settings->white_balance_mode == mojom::MeteringMode::MANUAL)) {
-    v4l2_control white_balance_set = {};
-    white_balance_set.id = V4L2_CID_AUTO_WHITE_BALANCE;
-    white_balance_set.value =
+    v4l2_control set_auto_white_balance = {};
+    set_auto_white_balance.id = V4L2_CID_AUTO_WHITE_BALANCE;
+    set_auto_white_balance.value =
         settings->white_balance_mode == mojom::MeteringMode::CONTINUOUS;
-    DoIoctl(VIDIOC_S_CTRL, &white_balance_set);
+    if (DoIoctl(VIDIOC_S_CTRL, &set_auto_white_balance) < 0) {
+      DPLOG(ERROR) << "setting white balance mode to "
+                   << (settings->white_balance_mode ==
+                               mojom::MeteringMode::CONTINUOUS
+                           ? "continuous"
+                           : "manual");
+    }
   }
 
   if (settings->has_color_temperature) {
-    v4l2_control auto_white_balance_current = {};
-    auto_white_balance_current.id = V4L2_CID_AUTO_WHITE_BALANCE;
-    const int result = DoIoctl(VIDIOC_G_CTRL, &auto_white_balance_current);
+    v4l2_control current_auto_white_balance = {};
+    current_auto_white_balance.id = V4L2_CID_AUTO_WHITE_BALANCE;
+    const int result = DoIoctl(VIDIOC_G_CTRL, &current_auto_white_balance);
     // Color temperature can only be applied if Auto White Balance is off.
-    if (result >= 0 && !auto_white_balance_current.value) {
+    if (result >= 0 && !current_auto_white_balance.value) {
       v4l2_control set_temperature = {};
       set_temperature.id = V4L2_CID_WHITE_BALANCE_TEMPERATURE;
       set_temperature.value = settings->color_temperature;
-      DoIoctl(VIDIOC_S_CTRL, &set_temperature);
+      if (DoIoctl(VIDIOC_S_CTRL, &set_temperature) < 0) {
+        DPLOG(ERROR) << "setting color temperature to "
+                     << settings->color_temperature;
+      }
     }
   }
 
   if (settings->has_exposure_mode &&
       (settings->exposure_mode == mojom::MeteringMode::CONTINUOUS ||
        settings->exposure_mode == mojom::MeteringMode::MANUAL)) {
-    v4l2_control exposure_mode_set = {};
-    exposure_mode_set.id = V4L2_CID_EXPOSURE_AUTO;
-    exposure_mode_set.value =
+    v4l2_control set_auto_exposure = {};
+    set_auto_exposure.id = V4L2_CID_EXPOSURE_AUTO;
+    // Usually only manual iris modes are supported due to fixed apertures.
+    set_auto_exposure.value =
         settings->exposure_mode == mojom::MeteringMode::CONTINUOUS
-            ? V4L2_EXPOSURE_APERTURE_PRIORITY
-            : V4L2_EXPOSURE_MANUAL;
-    DoIoctl(VIDIOC_S_CTRL, &exposure_mode_set);
+            ? V4L2_EXPOSURE_APERTURE_PRIORITY  // Auto exposure time and manual
+                                               // iris.
+            : V4L2_EXPOSURE_MANUAL;  // Manual exposure time and manual iris.
+    if (DoIoctl(VIDIOC_S_CTRL, &set_auto_exposure) < 0) {
+      DPLOG(ERROR) << "setting exposure mode to "
+                   << (settings->exposure_mode ==
+                               mojom::MeteringMode::CONTINUOUS
+                           ? "continuous"
+                           : "manual");
+    }
   }
 
   if (settings->has_exposure_compensation) {
-    v4l2_control auto_exposure_current = {};
-    auto_exposure_current.id = V4L2_CID_EXPOSURE_AUTO;
-    const int result = DoIoctl(VIDIOC_G_CTRL, &auto_exposure_current);
-    // Exposure Compensation is effective only when V4L2_CID_EXPOSURE_AUTO
+    v4l2_control current_auto_exposure = {};
+    current_auto_exposure.id = V4L2_CID_EXPOSURE_AUTO;
+    const int result = DoIoctl(VIDIOC_G_CTRL, &current_auto_exposure);
+    // Exposure compensation is effective only when V4L2_CID_EXPOSURE_AUTO
     // control is set to AUTO, SHUTTER_PRIORITY or APERTURE_PRIORITY.
-    if (result >= 0 && auto_exposure_current.value != V4L2_EXPOSURE_MANUAL) {
-      v4l2_control set_exposure = {};
-      set_exposure.id = V4L2_CID_AUTO_EXPOSURE_BIAS;
-      set_exposure.value = settings->exposure_compensation;
-      DoIoctl(VIDIOC_S_CTRL, &set_exposure);
+    if (result >= 0 && current_auto_exposure.value != V4L2_EXPOSURE_MANUAL) {
+      v4l2_control set_exposure_bias = {};
+      set_exposure_bias.id = V4L2_CID_AUTO_EXPOSURE_BIAS;
+      set_exposure_bias.value = settings->exposure_compensation;
+      if (DoIoctl(VIDIOC_S_CTRL, &set_exposure_bias) < 0) {
+        DPLOG(ERROR) << "setting exposure compensation to "
+                     << settings->exposure_compensation;
+      }
     }
   }
 
   if (settings->has_exposure_time) {
-    v4l2_control exposure_time_current = {};
-    exposure_time_current.id = V4L2_CID_EXPOSURE_AUTO;
-    const int result = DoIoctl(VIDIOC_G_CTRL, &exposure_time_current);
+    v4l2_control current_auto_exposure = {};
+    current_auto_exposure.id = V4L2_CID_EXPOSURE_AUTO;
+    const int result = DoIoctl(VIDIOC_G_CTRL, &current_auto_exposure);
     // Exposure time can only be applied if V4L2_CID_EXPOSURE_AUTO is set to
-    // V4L2_EXPOSURE_MANUAL or V4L2_EXPOSURE_SHUTTER_PRIORITY.
+    // manual exposure time (MANUAL or SHUTTER_PRIORITY).
     if (result >= 0 &&
-        (exposure_time_current.value == V4L2_EXPOSURE_MANUAL ||
-         exposure_time_current.value == V4L2_EXPOSURE_SHUTTER_PRIORITY)) {
+        (current_auto_exposure.value == V4L2_EXPOSURE_MANUAL ||
+         current_auto_exposure.value == V4L2_EXPOSURE_SHUTTER_PRIORITY)) {
       v4l2_control set_exposure_time = {};
       set_exposure_time.id = V4L2_CID_EXPOSURE_ABSOLUTE;
       set_exposure_time.value = settings->exposure_time;
-      DoIoctl(VIDIOC_S_CTRL, &set_exposure_time);
+      if (DoIoctl(VIDIOC_S_CTRL, &set_exposure_time) < 0) {
+        DPLOG(ERROR) << "setting exposure time to " << settings->exposure_time;
+      }
     }
   }
 
   if (settings->has_brightness) {
-    v4l2_control current = {};
-    current.id = V4L2_CID_BRIGHTNESS;
-    current.value = settings->brightness;
-    if (DoIoctl(VIDIOC_S_CTRL, &current) < 0)
+    v4l2_control set_brightness = {};
+    set_brightness.id = V4L2_CID_BRIGHTNESS;
+    set_brightness.value = settings->brightness;
+    if (DoIoctl(VIDIOC_S_CTRL, &set_brightness) < 0) {
       DPLOG(ERROR) << "setting brightness to " << settings->brightness;
+    }
   }
   if (settings->has_contrast) {
-    v4l2_control current = {};
-    current.id = V4L2_CID_CONTRAST;
-    current.value = settings->contrast;
-    if (DoIoctl(VIDIOC_S_CTRL, &current) < 0)
+    v4l2_control set_contrast = {};
+    set_contrast.id = V4L2_CID_CONTRAST;
+    set_contrast.value = settings->contrast;
+    if (DoIoctl(VIDIOC_S_CTRL, &set_contrast) < 0) {
       DPLOG(ERROR) << "setting contrast to " << settings->contrast;
+    }
   }
   if (settings->has_saturation) {
-    v4l2_control current = {};
-    current.id = V4L2_CID_SATURATION;
-    current.value = settings->saturation;
-    if (DoIoctl(VIDIOC_S_CTRL, &current) < 0)
+    v4l2_control set_saturation = {};
+    set_saturation.id = V4L2_CID_SATURATION;
+    set_saturation.value = settings->saturation;
+    if (DoIoctl(VIDIOC_S_CTRL, &set_saturation) < 0) {
       DPLOG(ERROR) << "setting saturation to " << settings->saturation;
+    }
   }
   if (settings->has_sharpness) {
-    v4l2_control current = {};
-    current.id = V4L2_CID_SHARPNESS;
-    current.value = settings->sharpness;
-    if (DoIoctl(VIDIOC_S_CTRL, &current) < 0)
+    v4l2_control set_sharpness = {};
+    set_sharpness.id = V4L2_CID_SHARPNESS;
+    set_sharpness.value = settings->sharpness;
+    if (DoIoctl(VIDIOC_S_CTRL, &set_sharpness) < 0) {
       DPLOG(ERROR) << "setting sharpness to " << settings->sharpness;
+    }
   }
 
   std::move(callback).Run(true);
