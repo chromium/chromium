@@ -615,7 +615,12 @@ void StressUpdateService(UpdaterScope scope) {
   int n = 10;
 
   // Delay in milliseconds between successive cycles.
+#if BUILDFLAG(IS_LINUX)
+  // Looping too tightly causes socket connections to be dropped on Linux.
+  const int kDelayBetweenLoopsMS = 10;
+#else
   const int kDelayBetweenLoopsMS = 0;
+#endif
 
   // Runs on the main sequence.
   auto loop_closure = [&]() {
