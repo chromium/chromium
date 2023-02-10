@@ -93,7 +93,7 @@ void PendingLinkPreload::NotifyFinished() {
 void PendingLinkPreload::UnblockRendering() {
   if (RenderBlockingResourceManager* manager =
           document_->GetRenderBlockingResourceManager()) {
-    manager->RemovePendingPreload(*this);
+    manager->RemovePendingFontPreload(*this);
   }
 }
 

@@ -33,7 +33,7 @@ class CORE_EXPORT RenderBlockingResourceManager final
 
   bool HasRenderBlockingResources() const {
     return pending_stylesheet_owner_nodes_.size() || pending_scripts_.size() ||
-           pending_preloads_.size() || imperative_font_loading_count_;
+           pending_font_preloads_.size() || imperative_font_loading_count_;
   }
 
   bool HasPendingStylesheets() const {
@@ -53,10 +53,8 @@ class CORE_EXPORT RenderBlockingResourceManager final
   // Loading API) to block rendering for a short period, so that preloaded fonts
   // have a higher chance to be used by the first paint.
   // Design doc: https://bit.ly/36E8UKB
-  // TODO(crbug.com/1271296): `kRegular` is no longer in use. Clean up the code.
-  enum class PreloadType { kRegular, kShortBlockingFont };
-  void AddPendingPreload(const PendingLinkPreload& link, PreloadType type);
-  void RemovePendingPreload(const PendingLinkPreload& link);
+  void AddPendingFontPreload(const PendingLinkPreload& link);
+  void RemovePendingFontPreload(const PendingLinkPreload& link);
 
   void AddImperativeFontLoading(FontFace*);
   void RemoveImperativeFontLoading();
@@ -83,10 +81,8 @@ class CORE_EXPORT RenderBlockingResourceManager final
   // Tracks the currently pending render-blocking script elements.
   HeapHashSet<WeakMember<const ScriptElementBase>> pending_scripts_;
 
-  // Tracks the currently pending render-blocking preload and modulepreload
-  // links, including short-blocking font preloads.
-  HeapHashMap<WeakMember<const PendingLinkPreload>, PreloadType>
-      pending_preloads_;
+  // Tracks the currently pending render-blocking font preloads.
+  HeapHashSet<WeakMember<const PendingLinkPreload>> pending_font_preloads_;
 
   Member<Document> document_;
 

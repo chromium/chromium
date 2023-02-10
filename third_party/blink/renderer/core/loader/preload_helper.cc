@@ -425,9 +425,7 @@ void PreloadHelper::PreloadIfNeeded(
     if (RenderBlockingResourceManager* manager =
             document.GetRenderBlockingResourceManager()) {
       if (EqualIgnoringASCIICase(params.as, "font")) {
-        manager->AddPendingPreload(
-            *pending_preload,
-            RenderBlockingResourceManager::PreloadType::kShortBlockingFont);
+        manager->AddPendingFontPreload(*pending_preload);
       }
     }
   }

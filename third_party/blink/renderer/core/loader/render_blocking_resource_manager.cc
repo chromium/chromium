@@ -57,21 +57,17 @@ RenderBlockingResourceManager::RenderBlockingResourceManager(Document& document)
           &RenderBlockingResourceManager::FontPreloadingTimerFired),
       font_preload_timeout_(kMaxRenderingDelayForFontPreloads) {}
 
-void RenderBlockingResourceManager::AddPendingPreload(
-    const PendingLinkPreload& link,
-    PreloadType type) {
-  // TODO(crbug.com/1271296): `kRegular` is no longer in use. Clean up the code.
-  DCHECK_EQ(type, PreloadType::kShortBlockingFont);
-
-  if (type == PreloadType::kShortBlockingFont && font_preload_timer_has_fired_)
+void RenderBlockingResourceManager::AddPendingFontPreload(
+    const PendingLinkPreload& link) {
+  if (font_preload_timer_has_fired_) {
     return;
+  }
 
   if (document_->body())
     return;
 
-  pending_preloads_.insert(&link, type);
-  if (type == PreloadType::kShortBlockingFont)
-    EnsureStartFontPreloadTimer();
+  pending_font_preloads_.insert(&link);
+  EnsureStartFontPreloadTimer();
 }
 
 void RenderBlockingResourceManager::AddImperativeFontLoading(
@@ -89,12 +85,13 @@ void RenderBlockingResourceManager::AddImperativeFontLoading(
   EnsureStartFontPreloadTimer();
 }
 
-void RenderBlockingResourceManager::RemovePendingPreload(
+void RenderBlockingResourceManager::RemovePendingFontPreload(
     const PendingLinkPreload& link) {
-  auto iter = pending_preloads_.find(&link);
-  if (iter == pending_preloads_.end())
+  auto iter = pending_font_preloads_.find(&link);
+  if (iter == pending_font_preloads_.end()) {
     return;
-  pending_preloads_.erase(iter);
+  }
+  pending_font_preloads_.erase(iter);
   document_->RenderBlockingResourceUnblocked();
 }
 
@@ -113,12 +110,7 @@ void RenderBlockingResourceManager::EnsureStartFontPreloadTimer() {
 
 void RenderBlockingResourceManager::FontPreloadingTimerFired(TimerBase*) {
   font_preload_timer_has_fired_ = true;
-  VectorOf<const PendingLinkPreload> short_blocking_font_preloads;
-  for (auto preload_and_type : pending_preloads_) {
-    if (preload_and_type.value == PreloadType::kShortBlockingFont)
-      short_blocking_font_preloads.push_back(preload_and_type.key);
-  }
-  pending_preloads_.RemoveAll(short_blocking_font_preloads);
+  pending_font_preloads_.clear();
   imperative_font_loading_count_ = 0;
   document_->RenderBlockingResourceUnblocked();
 }
@@ -180,7 +172,7 @@ void RenderBlockingResourceManager::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(pending_stylesheet_owner_nodes_);
   visitor->Trace(pending_scripts_);
-  visitor->Trace(pending_preloads_);
+  visitor->Trace(pending_font_preloads_);
   visitor->Trace(font_preload_timer_);
 }
 
