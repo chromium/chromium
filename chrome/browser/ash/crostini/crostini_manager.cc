@@ -2657,16 +2657,8 @@ void CrostiniManager::OnStopVm(
 
   if (!response->success()) {
     LOG(ERROR) << "Failed to stop VM: " << response->failure_reason();
-    // TODO(rjwright): Change the service so that "Requested VM does not
-    // exist" is not an error. "Requested VM does not exist" means that there
-    // is a disk image for the VM but it is not running, either because it has
-    // not been started or it has already been stopped. There's no need for
-    // this to be an error, and making it a success will save us having to
-    // discriminate on failure_reason here.
-    if (response->failure_reason() != "Requested VM does not exist") {
-      std::move(callback).Run(CrostiniResult::VM_STOP_FAILED);
-      return;
-    }
+    std::move(callback).Run(CrostiniResult::VM_STOP_FAILED);
+    return;
   }
 
   std::move(callback).Run(CrostiniResult::SUCCESS);
