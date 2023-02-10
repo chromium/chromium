@@ -82,17 +82,15 @@ suite('acceleratorLookupManagerTest', function() {
 
       getManager().setAcceleratorLayoutLookup(result.layoutInfos);
 
-      // We expect 2 subcategories for kTabsAndWindows: kGeneral and
-      // kSystemApps.
+      // We expect 2 subcategories for kWindowsAndDesks: kWindows and
+      // kDesks.
       assertEquals(
           2,
           getManager().getSubcategories(
-                          AcceleratorCategory.kTabsAndWindows)!.size);
-      // We expect 1 subcategory for kWindowsAndDesk: kSystemControl.
+                          AcceleratorCategory.kWindowsAndDesks)!.size);
+      // We expect 1 subcategory for kBrowser: kTabs.
       assertEquals(
-          1,
-          getManager().getSubcategories(
-                          AcceleratorCategory.kPageAndWebBrowser)!.size);
+          1, getManager().getSubcategories(AcceleratorCategory.kBrowser)!.size);
 
       // We expect 1 subcategory for kEventRewriter: kSixPackKeys.
       assertEquals(

@@ -3315,9 +3315,6 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_ROTATE_SCREEN" translateable="false" desc="Label for accelerator action - Rotate window 90 degrees clockwise.">
         Rotate window 90 degrees clockwise
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_ROTATE_WINDOW" translateable="false" desc="Label for accelerator action - Rotate window.">
-        Rotate window
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SCALE_UI_DOWN" translateable="false" desc="Label for accelerator action - Zoom in on screen.">
         Zoom in on screen
       </message>
@@ -3411,9 +3408,6 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MAXIMIZED" translateable="false" desc="Label for accelerator action - Maximize window.">
         Maximize window
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MESSAGE_CENTER_BUBBLE" translateable="false" desc="Label for accelerator action - See notifications.">
-        See notifications
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MIRROR_MODE" translateable="false" desc="Label for accelerator action - Mirror monitors.">
         Mirror monitors
       </message>
@@ -3428,9 +3422,6 @@ Connect your device to power.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SPOKEN_FEEDBACK" translateable="false" desc="Label for accelerator action - Turn ChromeVox (spoken feedback) on or off.">
         Turn ChromeVox (spoken feedback) on or off
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SYSTEM_TRAY_BUBBLE" translateable="false" desc="Label for accelerator action - Open system settings.">
-        Open system settings
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_WIFI" translateable="false" desc="Label for accelerator action - Turn wifi on or off.">
         Turn wifi on or off
@@ -3447,8 +3438,8 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_DOWN" translateable="false" desc="Label for accelerator action - Turn volume down.">
         Turn volume down
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_MUTE" translateable="false" desc="Label for accelerator action - Turn volume down.">
-        Turn volume up
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_MUTE" translateable="false" desc="Label for accelerator action - Mute sound.">
+        Mute sound
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_VOLUME_UP" translateable="false" desc="Label for accelerator action - Turn volume up.">
         Turn volume up
@@ -3575,9 +3566,6 @@ Connect your device to power.
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLEAR_BROWSING_DATA" translateable="false" desc="Label for accelerator action - Clear browsing data.">
         Clear browsing data
-      </message>
-       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_CLOSE_FIND_OR_STOP" translateable="false" desc="Label for accelerator action - Close any open find window or stop the loading of your current page.">
-        Close any open find window or stop the loading of your current page
       </message>
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_FOCUS_BOOKMARKS" translateable="false" desc="Label for accelerator action - Focus on or Highlight the bookmarks bar (if shown).">
         Focus on or Highlight the bookmarks bar (if shown)

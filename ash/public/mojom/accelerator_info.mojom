@@ -65,13 +65,12 @@ enum AcceleratorLayoutStyle {
 };
 
 // Enum of top-level accelerator categories. Used in the UI for categorization.
-// TODO(jimmyxgong): These are not the final enums, update once final categories
-// are available.
 enum AcceleratorCategory {
-  kTabsAndWindows,
-  kPageAndWebBrowser,
-  kSystemAndDisplaySettings,
-  kTextEditing,
+  kGeneral,
+  kDevice,
+  kBrowser,
+  kText,
+  kWindowsAndDesks,
   kAccessibility,
   kDebug,
   kDeveloper,
@@ -80,12 +79,25 @@ enum AcceleratorCategory {
 
 // Enum of secondary-level accelerator categories. Used in the UI for
 // categorization.
-// TODO(jimmyxgong): These are not the final enums, update once final
-// subcategories are available.
 enum AcceleratorSubcategory {
+  kGeneralControls,
+  kApps,
+  kMedia,
+  kInputs,
+  kDisplay,
   kGeneral,
-  kSystemControls,
-  kSystemApps,
+  kBrowserNavigation,
+  kPages,
+  kTabs,
+  kBookmarks,
+  kDeveloperTools,
+  kTextNavigation,
+  kTextEditing,
+  kWindows,
+  kDesks,
+  kChromeVox,
+  kVisibility,
+  kAccessibilityNavigation,
   kSixPackKeys,
 };
 

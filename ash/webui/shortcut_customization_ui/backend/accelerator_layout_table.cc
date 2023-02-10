@@ -331,8 +331,9 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           //    NonConfigurableAcceleratorDetails(
           //        {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
           {NonConfigurableActions::kBrowserNextPane,
-           NonConfigurableAcceleratorDetails({ui::Accelerator(
-               ui::VKEY_PRIOR, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_BROWSER_BACK,
+                                ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
           {NonConfigurableActions::kAmbientOpenRightClickMenu,
            NonConfigurableAcceleratorDetails({ui::Accelerator(
                ui::VKEY_VOLUME_UP, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)})},

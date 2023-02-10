@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
-import {AcceleratorSource, LayoutInfo, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorCategory, AcceleratorSource, AcceleratorSubcategory, LayoutInfo, LayoutStyle, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -55,11 +55,11 @@ suite('acceleratorSubsectionTest', function() {
     const title = 'test title';
     const expectedLayoutInfo: LayoutInfo = {
       action: 0,
-      category: 0,
+      category: AcceleratorCategory.kWindowsAndDesks,
       description,
       source: AcceleratorSource.kAsh,
       style: LayoutStyle.kDefault,
-      subCategory: 0,
+      subCategory: AcceleratorSubcategory.kWindows,
     };
 
     sectionElement!.title = title;
@@ -78,8 +78,8 @@ suite('acceleratorSubsectionTest', function() {
   test('LoadCategoryAndConfirmDescriptions', async () => {
     const expectedTitle = 'test title';
     sectionElement!.title = expectedTitle;
-    sectionElement!.category = /*Chromeos*/ 0;
-    sectionElement!.subcategory = /*Window Management*/ 0;
+    sectionElement!.category = AcceleratorCategory.kWindowsAndDesks;
+    sectionElement!.subcategory = AcceleratorSubcategory.kWindows;
 
     await flushTasks();
 

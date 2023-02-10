@@ -66,14 +66,18 @@ const categoryPrefix = 'category';
 export const getCategoryNameStringId =
     (category: AcceleratorCategory): string => {
       switch (category) {
-        case AcceleratorCategory.kTabsAndWindows:
-          return `${categoryPrefix}TabsAndWindows`;
-        case AcceleratorCategory.kPageAndWebBrowser:
-          return `${categoryPrefix}PageAndWebBrowser`;
-        case AcceleratorCategory.kSystemAndDisplaySettings:
-          return `${categoryPrefix}SystemAndDisplaySettings`;
-        case AcceleratorCategory.kTextEditing:
-          return `${categoryPrefix}TextEditing`;
+        case AcceleratorCategory.kGeneral:
+          return `${categoryPrefix}General`;
+        case AcceleratorCategory.kDevice:
+          return `${categoryPrefix}Device`;
+        case AcceleratorCategory.kBrowser:
+          return `${categoryPrefix}Browser`;
+        case AcceleratorCategory.kText:
+          return `${categoryPrefix}Text`;
+        case AcceleratorCategory.kWindowsAndDesks:
+          return `${categoryPrefix}WindowsAndDesks`;
+        case AcceleratorCategory.kDebug:
+          return `${categoryPrefix}Debug`;
         case AcceleratorCategory.kAccessibility:
           return `${categoryPrefix}Accessibility`;
         case AcceleratorCategory.kDebug:
@@ -93,12 +97,42 @@ const subcategoryPrefix = 'subcategory';
 export const getSubcategoryNameStringId =
     (subcategory: AcceleratorSubcategory): string => {
       switch (subcategory) {
+        case AcceleratorSubcategory.kGeneralControls:
+          return `${subcategoryPrefix}GeneralControls`;
+        case AcceleratorSubcategory.kApps:
+          return `${subcategoryPrefix}Apps`;
+        case AcceleratorSubcategory.kMedia:
+          return `${subcategoryPrefix}Media`;
+        case AcceleratorSubcategory.kInputs:
+          return `${subcategoryPrefix}Inputs`;
+        case AcceleratorSubcategory.kDisplay:
+          return `${subcategoryPrefix}Display`;
         case AcceleratorSubcategory.kGeneral:
           return `${subcategoryPrefix}General`;
-        case AcceleratorSubcategory.kSystemApps:
-          return `${subcategoryPrefix}SystemApps`;
-        case AcceleratorSubcategory.kSystemControls:
-          return `${subcategoryPrefix}SystemControls`;
+        case AcceleratorSubcategory.kBrowserNavigation:
+          return `${subcategoryPrefix}BrowserNavigation`;
+        case AcceleratorSubcategory.kPages:
+          return `${subcategoryPrefix}Pages`;
+        case AcceleratorSubcategory.kTabs:
+          return `${subcategoryPrefix}Tabs`;
+        case AcceleratorSubcategory.kBookmarks:
+          return `${subcategoryPrefix}Bookmarks`;
+        case AcceleratorSubcategory.kDeveloperTools:
+          return `${subcategoryPrefix}DeveloperTools`;
+        case AcceleratorSubcategory.kTextNavigation:
+          return `${subcategoryPrefix}TextNavigation`;
+        case AcceleratorSubcategory.kTextEditing:
+          return `${subcategoryPrefix}TextEditing`;
+        case AcceleratorSubcategory.kWindows:
+          return `${subcategoryPrefix}Windows`;
+        case AcceleratorSubcategory.kDesks:
+          return `${subcategoryPrefix}Desks`;
+        case AcceleratorSubcategory.kChromeVox:
+          return `${subcategoryPrefix}ChromeVox`;
+        case AcceleratorSubcategory.kVisibility:
+          return `${subcategoryPrefix}Visibility`;
+        case AcceleratorSubcategory.kAccessibilityNavigation:
+          return `${subcategoryPrefix}AccessibilityNavigation`;
         case AcceleratorSubcategory.kSixPackKeys:
           return `${subcategoryPrefix}SixPackKeys`;
         default: {

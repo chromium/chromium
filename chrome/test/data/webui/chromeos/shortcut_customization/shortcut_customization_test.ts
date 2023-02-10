@@ -86,7 +86,7 @@ suite('shortcutCustomizationAppTest', function() {
     const editDialog = getPage().shadowRoot!.querySelector('#editDialog');
     assertFalse(!!editDialog);
 
-    const subSections = getSubsections(AcceleratorCategory.kTabsAndWindows);
+    const subSections = getSubsections(AcceleratorCategory.kWindowsAndDesks);
     const accelerators =
         subSections[subsectionIndex]!.shadowRoot!.querySelectorAll(
             'accelerator-row') as NodeListOf<AcceleratorRowElement>;
@@ -96,14 +96,14 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
   }
 
-  test('LoadFakeTabsAndWindowsPage', async () => {
+  test('LoadFakeWindowsAndDesksPage', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
     const actualSubsections =
-        getSubsections(AcceleratorCategory.kTabsAndWindows);
+        getSubsections(AcceleratorCategory.kWindowsAndDesks);
     const expectedLayouts =
-        getManager().getSubcategories(AcceleratorCategory.kTabsAndWindows);
+        getManager().getSubcategories(AcceleratorCategory.kWindowsAndDesks);
     // Two subsections for this category based on the data in fake_data.ts.
     assertEquals(expectedLayouts!.size, actualSubsections!.length);
 
@@ -131,7 +131,7 @@ suite('shortcutCustomizationAppTest', function() {
         actualSubsections[1]!.accelRowDataArray!.length);
   });
 
-  test('LoadFakePageAndWebBrowserPage', async () => {
+  test('LoadFakeBrowserPage', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -147,10 +147,9 @@ suite('shortcutCustomizationAppTest', function() {
 
     await flushTasks();
 
-    const actualSubsections =
-        getSubsections(AcceleratorCategory.kPageAndWebBrowser);
+    const actualSubsections = getSubsections(AcceleratorCategory.kBrowser);
     const expectedLayouts =
-        getManager().getSubcategories(AcceleratorCategory.kPageAndWebBrowser);
+        getManager().getSubcategories(AcceleratorCategory.kBrowser);
     assertEquals(expectedLayouts!.size, actualSubsections!.length);
 
     const keyIterator = expectedLayouts!.keys().next();
@@ -172,11 +171,11 @@ suite('shortcutCustomizationAppTest', function() {
     let editDialog = getPage().shadowRoot!.querySelector('#editDialog');
     assertFalse(!!editDialog);
 
-    const subSections = getSubsections(AcceleratorCategory.kTabsAndWindows);
+    const subSections = getSubsections(AcceleratorCategory.kWindowsAndDesks);
     const accelerators =
         subSections[0]!.shadowRoot!.querySelectorAll('accelerator-row');
-    // Only two accelerators rows for this subsection.
-    assertEquals(2, accelerators.length);
+    // Only three accelerators rows for this subsection.
+    assertEquals(3, accelerators.length);
     // Click on the first accelerator, expect the edit dialog to open.
     accelerators[0]!.click();
     await flushTasks();
