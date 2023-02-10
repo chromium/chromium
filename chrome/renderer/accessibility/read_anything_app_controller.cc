@@ -469,7 +469,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     const std::vector<ui::AXNodeID>& content_node_ids) {
   // Reset state.
   display_node_ids_.clear();
-  selection_.reset();
+  start_node_ = nullptr;
+  end_node_ = nullptr;
   content_node_ids_ = content_node_ids;
   distillation_in_progress_ = false;
 
@@ -485,13 +486,14 @@ void ReadAnythingAppController::OnAXTreeDistilled(
       !base::Contains(trees_, tree_id) || tree_id == ui::AXTreeIDUnknown()) {
     return;
   }
-  selection_ = std::make_unique<ui::AXSelection>(
-      trees_[active_tree_id_]->GetUnignoredSelection());
+  ui::AXSelection selection = trees_[active_tree_id_]->GetUnignoredSelection();
+  has_selection_ = selection.anchor_object_id != ui::kInvalidAXNodeID &&
+                   selection.focus_object_id != ui::kInvalidAXNodeID;
   if (!content_node_ids_.empty()) {
     // If there are content_node_ids, this means the AXTree was successfully
     // distilled. Post-process in preparation to display the distilled content.
     PostProcessDistillableAXTree();
-  } else if (selection_->HasSelection()) {
+  } else if (has_selection_) {
     // Otherwise, if there is a selection, post-process the AXTree to display
     // the selected content.
     PostProcessAXTreeWithSelection();
@@ -521,25 +523,26 @@ void ReadAnythingAppController::Draw() {
 }
 
 void ReadAnythingAppController::PostProcessAXTreeWithSelection() {
-  DCHECK(selection_->HasSelection());
+  DCHECK(has_selection_);
   DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
   DCHECK(base::Contains(trees_, active_tree_id_));
+  ui::AXSelection selection = trees_[active_tree_id_]->GetUnignoredSelection();
   // Identify the start and end nodes and offsets. The start node comes earlier
   // the end node in the tree order.
-  ui::AXNode* anchor_node = GetAXNode(selection_->anchor_object_id);
+  ui::AXNode* anchor_node = GetAXNode(selection.anchor_object_id);
   DCHECK(anchor_node);
-  ui::AXNode* focus_node = GetAXNode(selection_->focus_object_id);
+  ui::AXNode* focus_node = GetAXNode(selection.focus_object_id);
   DCHECK(focus_node);
-  ui::AXNode* start_node = selection_->is_backward ? focus_node : anchor_node;
-  ui::AXNode* end_node = selection_->is_backward ? anchor_node : focus_node;
+  start_node_ = selection.is_backward ? focus_node : anchor_node;
+  end_node_ = selection.is_backward ? anchor_node : focus_node;
 
   // If start node or end node is ignored, go to the nearest unignored node
   // within the selection.
-  if (start_node->IsIgnored()) {
-    start_node = start_node->GetNextUnignoredInTreeOrder();
+  if (start_node_->IsIgnored()) {
+    start_node_ = start_node_->GetNextUnignoredInTreeOrder();
   }
-  if (end_node->IsIgnored()) {
-    end_node = end_node->GetNextUnignoredInTreeOrder();
+  if (end_node_->IsIgnored()) {
+    end_node_ = end_node_->GetNextUnignoredInTreeOrder();
   }
 
   // Display nodes are the nodes which will be displayed by the rendering
@@ -549,7 +552,7 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection() {
   // Add all ancestor ids of start node, including the start node itself. This
   // does a first walk down to start node.
   base::queue<ui::AXNode*> ancestors =
-      start_node->GetAncestorsCrossingTreeBoundaryAsQueue();
+      start_node_->GetAncestorsCrossingTreeBoundaryAsQueue();
   while (!ancestors.empty()) {
     ui::AXNodeID ancestor_id = ancestors.front()->id();
     display_node_ids_.insert(ancestor_id);
@@ -558,10 +561,10 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection() {
 
   // Do a pre-order walk of the tree from the start node to the end node and add
   // all nodes to the list of display node ids.
-  ui::AXNode* next_node = start_node;
-  DCHECK(!start_node->IsIgnored());
-  DCHECK(!end_node->IsIgnored());
-  while (next_node != end_node) {
+  ui::AXNode* next_node = start_node_;
+  DCHECK(!start_node_->IsIgnored());
+  DCHECK(!end_node_->IsIgnored());
+  while (next_node != end_node_) {
     next_node = next_node->GetNextUnignoredInTreeOrder();
     display_node_ids_.insert(next_node->id());
   }

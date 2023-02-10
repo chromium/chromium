@@ -27,7 +27,6 @@ class RenderFrame;
 
 namespace ui {
 class AXNode;
-class AXSelection;
 class AXSerializableTree;
 class AXTree;
 }  // namespace ui
@@ -222,11 +221,10 @@ class ReadAnythingAppController
   // nodes of the selection.
   std::set<ui::AXNodeID> display_node_ids_;
 
-  // The current selection of the active AXTree. Is set whenever the AXTree
-  // finishes distilling.
-  // TODO(crbug.com/1266555): Reset this whenever the document selection
-  // changes.
-  std::unique_ptr<ui::AXSelection> selection_;
+  // Selection information.
+  bool has_selection_ = false;
+  ui::AXNode* start_node_ = nullptr;
+  ui::AXNode* end_node_ = nullptr;
 
   // Theme information.
   SkColor background_color_;
