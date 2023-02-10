@@ -1,4 +1,11 @@
+team_email: "cros-personalization@google.com"
+
 buganizer {
   # ChromeOS > Software > Personalization
   component_id: 1006527
+}
+
+buganizer_public {
+  # ChromeOS Public Tracker > UI > Personalization
+  component_id: 1246153
 }
