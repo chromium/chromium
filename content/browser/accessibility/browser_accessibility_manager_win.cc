@@ -767,19 +767,13 @@ void BrowserAccessibilityManagerWin::OnAtomicUpdateFinished(
 // static
 bool BrowserAccessibilityManagerWin::IsIA2NodeSelected(
     BrowserAccessibility* node) {
-  return node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+  return node->IsIA2NodeSelected();
 }
 
 // static
 bool BrowserAccessibilityManagerWin::IsUIANodeSelected(
     BrowserAccessibility* node) {
-  // https://www.w3.org/TR/core-aam-1.1/#mapping_state-property_table
-  // SelectionItem.IsSelected is set according to the True or False value of
-  // aria-checked for 'radio' and 'menuitemradio' roles.
-  if (ui::IsRadio(node->GetRole()))
-    return node->GetData().GetCheckedState() == ax::mojom::CheckedState::kTrue;
-
-  return node->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+  return node->IsUIANodeSelected();
 }
 
 void BrowserAccessibilityManagerWin::FireIA2SelectionEvents(

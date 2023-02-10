@@ -1178,6 +1178,28 @@ bool AXPlatformNodeDelegate::IsReadOnlyOrDisabled() const {
   return false;
 }
 
+bool AXPlatformNodeDelegate::IsIA2NodeSelected() const {
+  if (node_) {
+    return node_->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+  }
+  return false;
+}
+
+bool AXPlatformNodeDelegate::IsUIANodeSelected() const {
+  if (node_) {
+    // https://www.w3.org/TR/core-aam-1.1/#mapping_state-property_table
+    // SelectionItem.IsSelected is set according to the True or False value of
+    // aria-checked for 'radio' and 'menuitemradio' roles.
+    if (ui::IsRadio(node_->GetRole())) {
+      return GetData().GetCheckedState() == ax::mojom::CheckedState::kTrue;
+    }
+
+    return GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+  }
+
+  return false;
+}
+
 const std::vector<gfx::NativeViewAccessible>
 AXPlatformNodeDelegate::GetUIADirectChildrenInRange(
     ui::AXPlatformNodeDelegate* start,

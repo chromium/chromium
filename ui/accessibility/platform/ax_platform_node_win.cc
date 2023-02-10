@@ -5390,6 +5390,13 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       break;
     }
 
+    case UIA_SelectionItemIsSelectedPropertyId: {
+      result->vt = VT_BOOL;
+      result->boolVal =
+          GetDelegate()->IsUIANodeSelected() ? VARIANT_TRUE : VARIANT_FALSE;
+      break;
+    }
+
     case UIA_SizeOfSetPropertyId: {
       absl::optional<int> set_size = GetSetSize();
       if (set_size) {

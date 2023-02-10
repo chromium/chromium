@@ -459,6 +459,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Get whether this node is marked as read-only or is disabled.
   virtual bool IsReadOnlyOrDisabled() const;
 
+  // Returns true if the IA2 node is selected.
+  bool IsIA2NodeSelected() const;
+
+  // Returns true if the UIA node is selected.
+  // For radio buttons, returns true if the node's 'checked' state is true.
+  bool IsUIANodeSelected() const;
+
   // See `AXNode::HasVisibleCaretOrSelection`.
   virtual bool HasVisibleCaretOrSelection() const;
 
