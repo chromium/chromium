@@ -145,7 +145,6 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     this.email = data && 'email' in data && data.email;
     this.passwordInvalid_ = data && 'showError' in data && data.showError;
     if (this.isCryptohomeRecoveryUIFlowEnabled_) {
-      this.$.cancel.textKey = 'continueWithoutLocalDataButton';
       this.$.tryAgain.textKey = 'oldPasswordHint';
       this.$.proceedAnyway.textKey = 'continueAndDeleteDataButton';
     }
@@ -203,6 +202,9 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
 
   /** @private */
   onForgotPasswordClicked_() {
+    if (this.disabled) {
+      return;
+    }
     this.setUIStep(GaiaPasswordChangedUIState.FORGOT);
     this.clearPassword();
   }
@@ -231,18 +233,6 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     this.disabled = true;
     this.clearPassword();
     this.userActed('resync');
-  }
-
-  /** @private */
-  onSecondaryButton_() {
-    if (this.disabled) {
-      return;
-    }
-    if (this.isCryptohomeRecoveryUIFlowEnabled_) {
-      this.onForgotPasswordClicked_();
-    } else {
-      this.onCancel_();
-    }
   }
 
   onNoRecovery_() {
