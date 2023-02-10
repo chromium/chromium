@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="49">
+  <interface name="zaura_shell" version="50">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -755,7 +755,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="49">
+  <interface name="zaura_toplevel" version="50">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -1056,7 +1056,7 @@
       <arg name="scale_factor_as_uint" type="uint"/>
     </request>
 
-      <!-- Version 48 additions-->
+    <!-- Version 48 additions-->
     <request name="set_snap_primary" since="48">
       <description summary="snap the surface to the primary snap position.">
         Request that surface is snapped to the left or top if primary layout,
@@ -1098,6 +1098,19 @@
         Request that window unsets snapping.
       </description>
     </request>
+
+    <!-- Version 50 additions -->
+    <event name="configure_raster_scale" since="50">
+      <description summary="set the raster scale during a configure">
+        Sets the raster scale of this window. This should be called during a
+        configure event sequence. To do so we reinterpret_cast into a 32-bit
+        uint and later cast back into a float. This is because wayland does not
+        support native transport of floats. As different CPU architectures may
+        use different endian representations for IEEE 754 floats, this protocol
+        implicitly assumes that the caller and receiver are the same machine.
+      </description>
+      <arg name="scale" type="uint" summary="Raster scale, in float format"/>
+    </event>
   </interface>
 
   <interface name="zaura_popup" version="46">
