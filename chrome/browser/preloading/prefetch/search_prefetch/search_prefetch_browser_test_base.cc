@@ -270,16 +270,6 @@ SearchPrefetchBaseBrowserTest::HandleSearchRequest(
   if (request.relative_url == kClientHintsURL)
     return nullptr;
 
-  if (hang_requests_after_start_) {
-    base::StringPairs headers = {{"Content-Length", "100"},
-                                 {"content-type", "text/html"}};
-    return std::make_unique<net::test_server::HungAfterHeadersHttpResponse>(
-        headers);
-  }
-
-  if (should_hang_requests_)
-    return std::make_unique<net::test_server::HungResponse>();
-
   bool is_prefetch =
       request.headers.find("Purpose") != request.headers.end() &&
       request.headers.find("Purpose")->second == "prefetch" &&
@@ -291,17 +281,12 @@ SearchPrefetchBaseBrowserTest::HandleSearchRequest(
                                     MonitorSearchResourceRequestOnUIThread,
                                 base::Unretained(this), request, is_prefetch));
 
-  auto delay = base::Milliseconds(100);
-
   if (base::Contains(static_files_, request.relative_url)) {
-    std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
-        std::make_unique<net::test_server::DelayedHttpResponse>(
-            delayed_response_ ? delay : base::TimeDelta());
-    resp->set_code(net::HTTP_OK);
-    resp->set_content(static_files_[request.relative_url].first);
-    resp->set_content_type(static_files_[request.relative_url].second);
-    resp->AddCustomHeader("cache-control", "private, max-age=0");
-    return resp;
+    return CreateDeferrableResponse(
+        net::HTTP_OK,
+        {{"cache-control", "private, max-age=0"},
+         {"content-type", static_files_[request.relative_url].second}},
+        static_files_[request.relative_url].first);
   }
 
   // If this is an embedded search for load in iframe, parse out the iframe
@@ -313,38 +298,26 @@ SearchPrefetchBaseBrowserTest::HandleSearchRequest(
     content.append(subframe_path);
     content.append("\"/></body></html>");
 
-    std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
-        std::make_unique<net::test_server::DelayedHttpResponse>(
-            delayed_response_ ? delay : base::TimeDelta());
-    resp->set_code(is_prefetch ? net::HTTP_BAD_GATEWAY : net::HTTP_OK);
-    resp->set_content_type("text/html");
-    resp->set_content(content);
-    resp->AddCustomHeader("cache-control", "private, max-age=0");
-    return resp;
+    return CreateDeferrableResponse(
+        is_prefetch ? net::HTTP_BAD_GATEWAY : net::HTTP_OK,
+        {{"cache-control", "private, max-age=0"},
+         {"content-type", "text/html"}},
+        content);
   }
 
   if (request.GetURL().spec().find("502_on_prefetch") != std::string::npos &&
       is_prefetch) {
-    std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
-        std::make_unique<net::test_server::DelayedHttpResponse>(
-            delayed_response_ ? delay : base::TimeDelta());
-    resp->set_code(net::HTTP_BAD_GATEWAY);
-    resp->set_content_type("text/html");
-    resp->set_content("<html><body>prefetch</body></html>");
-    return resp;
+    return CreateDeferrableResponse(net::HTTP_BAD_GATEWAY,
+                                    {{"content-type", "text/html"}},
+                                    "<html><body>prefetch</body></html>");
   }
-
-  std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
-      std::make_unique<net::test_server::DelayedHttpResponse>(
-          delayed_response_ ? delay : base::TimeDelta());
-  resp->set_code(net::HTTP_OK);
-  resp->set_content_type("text/html");
   std::string content = "<html><body> ";
   content.append(is_prefetch ? "prefetch" : "regular");
   content.append(" </body></html>");
-  resp->set_content(content);
-  resp->AddCustomHeader("cache-control", "private, max-age=0");
-  return resp;
+  return CreateDeferrableResponse(
+      net::HTTP_OK,
+      {{"content-type", "text/html"}, {"cache-control", "private, max-age=0"}},
+      content);
 }
 
 void SearchPrefetchBaseBrowserTest::MonitorSearchResourceRequestOnUIThread(
