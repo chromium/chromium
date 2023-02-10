@@ -103,6 +103,15 @@ export class CrSliderElement extends CrSliderElementBase {
         notify: true,
       },
 
+      /**
+       * The amount the slider value increments by when pressing any of the keys
+       * from `deltaKeyMap_`. Defaults to 1.
+       */
+      keyPressSliderIncrement: {
+        type: Number,
+        value: 1,
+      },
+
       markerCount: {
         type: Number,
         value: 0,
@@ -181,12 +190,14 @@ export class CrSliderElement extends CrSliderElementBase {
       'onTicksChanged_(ticks.*)',
       'updateUi_(ticks.*, value, min, max)',
       'onValueMinMaxChange_(value, min, max)',
+      'buildDeltaKeyMap_(isRtl_, keyPressSliderIncrement)',
     ];
   }
 
   disabled: boolean;
   dragging: boolean;
   updatingFromKey: boolean;
+  keyPressSliderIncrement: number;
   markerCount: number;
   max: number;
   min: number;
@@ -222,14 +233,6 @@ export class CrSliderElement extends CrSliderElementBase {
   override connectedCallback() {
     super.connectedCallback();
     this.isRtl_ = window.getComputedStyle(this)['direction'] === 'rtl';
-    this.deltaKeyMap_ = new Map([
-      ['ArrowDown', -1],
-      ['ArrowUp', 1],
-      ['PageDown', -1],
-      ['PageUp', 1],
-      ['ArrowLeft', this.isRtl_ ? 1 : -1],
-      ['ArrowRight', this.isRtl_ ? -1 : 1],
-    ]);
     this.draggingEventTracker_ = new EventTracker();
   }
 
@@ -457,6 +460,19 @@ export class CrSliderElement extends CrSliderElementBase {
     if (this.updateValue_(ratio * (this.max - this.min) + this.min)) {
       this.fire_('cr-slider-value-changed');
     }
+  }
+
+  private buildDeltaKeyMap_() {
+    const increment = this.keyPressSliderIncrement;
+    const decrement = -this.keyPressSliderIncrement;
+    this.deltaKeyMap_ = new Map([
+      ['ArrowDown', decrement],
+      ['ArrowUp', increment],
+      ['PageDown', decrement],
+      ['PageUp', increment],
+      ['ArrowLeft', this.isRtl_ ? increment : decrement],
+      ['ArrowRight', this.isRtl_ ? decrement : increment],
+    ]);
   }
 
   // Overridden from PaperRippleBehavior

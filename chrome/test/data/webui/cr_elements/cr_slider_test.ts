@@ -129,6 +129,46 @@ suite('cr-slider', function() {
     assertEquals(97, crSlider.value);
   });
 
+  test('key events with key down intervals', () => {
+    crSlider.keyPressSliderIncrement = 10;
+    pressArrowRight();
+    assertEquals(10, crSlider.value);
+    pressPageUp();
+    assertEquals(20, crSlider.value);
+    pressArrowUp();
+    assertEquals(30, crSlider.value);
+    pressHome();
+    assertEquals(0, crSlider.value);
+    pressArrowLeft();
+    assertEquals(0, crSlider.value);
+    pressArrowDown();
+    assertEquals(0, crSlider.value);
+    pressPageDown();
+    assertEquals(0, crSlider.value);
+    pressEnd();
+    assertEquals(100, crSlider.value);
+    pressArrowRight();
+    assertEquals(100, crSlider.value);
+    pressPageUp();
+    assertEquals(100, crSlider.value);
+    pressArrowUp();
+    assertEquals(100, crSlider.value);
+    pressArrowLeft();
+    assertEquals(90, crSlider.value);
+    pressArrowDown();
+    assertEquals(80, crSlider.value);
+    pressPageDown();
+    assertEquals(70, crSlider.value);
+
+    // Verify value stays within bounds.
+    crSlider.value = 98;
+    pressArrowRight();
+    assertEquals(100, crSlider.value);
+    crSlider.value = 2;
+    pressArrowLeft();
+    assertEquals(0, crSlider.value);
+  });
+
   test('no-keybindings', () => {
     crSlider.noKeybindings = true;
     pressArrowRight();
