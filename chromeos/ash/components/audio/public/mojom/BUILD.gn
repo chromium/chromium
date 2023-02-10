@@ -9,5 +9,6 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 mojom("mojom") {
   sources = [ "cros_audio_config.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
-  webui_module_path = "/audio"
+  webui_module_path = "/"
+  use_typescript_sources = true
 }

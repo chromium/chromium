@@ -125,16 +125,16 @@ group("generate_mojom_webui") {
   public_deps = [
     ":generate_app_notification_mojo_webui",
     ":generate_ash_search_mojo_webui",
-    ":generate_cros_audio_config_mojo_webui",
+    ":generate_cros_audio_config_mojom",
     ":generate_personalization_search_mojo_webui",
     ":generate_settings_mojo_webui",
   ]
 }
 
-copy("generate_cros_audio_config_mojo_webui") {
-  deps = [ "//chromeos/ash/components/audio/public/mojom:mojom_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.js" ]
-  outputs = [ "$tsc_input_dir/mojom-webui/audio/{{source_file_part}}" ]
+copy("generate_cros_audio_config_mojom") {
+  deps = [ "//chromeos/ash/components/audio/public/mojom:mojom_ts__generator" ]
+  sources = [ "$root_gen_dir/chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.ts" ]
+  outputs = [ "$tsc_input_dir/mojom-webui/{{source_file_part}}" ]
 }
 
 copy("generate_settings_mojo_webui") {

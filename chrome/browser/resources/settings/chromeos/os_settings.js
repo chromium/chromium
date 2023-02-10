@@ -123,7 +123,7 @@ import './settings_scheduler_slider/settings_scheduler_slider.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
-import * as crosAudioConfigMojomWebui from '../mojom-webui/audio/cros_audio_config.mojom-webui.js';
+import * as crosAudioConfigMojom from '../mojom-webui/cros_audio_config.mojom-webui.js';
 import * as appNotificationHandlerMojomWebui from '../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
 import * as personalizationSearchMojomWebui from '../mojom-webui/personalization/search.mojom-webui.js';
 import * as routesMojomWebui from '../mojom-webui/routes.mojom-webui.js';
@@ -214,7 +214,7 @@ export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesti
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';
 export {
   appNotificationHandlerMojomWebui,
-  crosAudioConfigMojomWebui,
+  crosAudioConfigMojom,
   fakeCrosAudioConfig,
   personalizationSearchMojomWebui,
   routesMojomWebui,
