@@ -236,7 +236,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
                         "com.google.android.gms.fonts",
                         "com.google.android.gms",
                         query,
-                        R.array.ui_com_google_android_gms_fonts_certs);
+                        org.chromium.ui.R.array.ui_com_google_android_gms_fonts_certs);
 
         try {
             long startTimeMs = SystemClock.elapsedRealtime();

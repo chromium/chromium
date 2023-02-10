@@ -1,0 +1,255 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//device/vr/buildflags/buildflags.gni")
+
+assert(enable_vr)
+assert(is_android)
+
+# An empty group included in //BUILD.gn to make this and other wolvic build
+# files reachable by GN.
+group("empty_group") {
+}
+
+shared_library("libcontent_native") {
+  testonly = true
+  sources = [
+    "../content/shell/browser/shell_paths.cc",
+    "wolvic_browser_context.cc",
+    "wolvic_browser_context.h",
+    "wolvic_content_browser_client.cc",
+    "wolvic_content_browser_client.h",
+    "wolvic_content_main_delegate.cc",
+    "wolvic_content_main_delegate.h",
+    "wolvic_library_loader.cc",
+    "wolvic_main_parts.cc",
+    "wolvic_main_parts.h",
+  ]
+  deps = [
+    ":content_native_lib",
+    "//components/crash/content/browser",
+    "//media",
+    "//skia",
+  ]
+
+  # Explicit dependency required for JNI registration to be able to
+  # find the native side functions.
+  if (is_component_build) {
+    deps += [
+      "//device/gamepad",
+      "//media/midi",
+    ]
+  }
+  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
+}
+
+static_library("content_native_lib") {
+  testonly = true
+  configs += [ "//build/config:precompiled_headers" ]
+
+  # This is to support our dependency on //content/browser.
+  # See comment at the top of //content/BUILD.gn for why this is disabled in
+  # component builds.
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  public_deps = [
+    # content_shell_lib also exposes all public content APIs.
+    "//content/public/app",
+    "//content/public/browser",
+    "//content/public/child",
+    "//content/public/common",
+    "//content/public/gpu",
+    "//content/public/renderer",
+    "//content/public/utility",
+    "//services/network:network_service",
+  ]
+  deps = [
+    "//base",
+    "//base:base_static",
+    "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
+    "//cc/base",
+    "//components/cdm/renderer",
+    "//components/custom_handlers",
+    "//components/custom_handlers:test_support",
+    "//components/keyed_service/content",
+    "//components/metrics",
+    "//components/metrics:net",
+    "//components/metrics:test_support",
+    "//components/network_hints/browser:browser",
+    "//components/network_hints/renderer",
+    "//components/network_session_configurator/common",
+    "//components/origin_trials:browser",
+    "//components/origin_trials:common",
+    "//components/performance_manager",
+    "//components/permissions",
+    "//components/prefs",
+    "//components/services/storage/test_api",
+    "//components/url_formatter",
+    "//components/variations",
+    "//components/variations/service",
+    "//components/web_cache/renderer",
+    "//content:content_resources",
+    "//content:dev_ui_content_resources",
+    "//content/common:main_frame_counter",
+    "//content/public/common",
+    "//content/test:content_test_mojo_bindings",
+    "//content/test:test_support",
+    "//device/bluetooth",
+    "//media",
+    "//media/mojo:buildflags",
+    "//net",
+    "//net:net_resources",
+    "//ppapi/buildflags",
+    "//services/device/public/cpp:test_support",
+    "//services/network/public/cpp",
+    "//services/test/echo:lib",
+    "//services/test/echo/public/mojom",
+    "//third_party/blink/public:blink",
+    "//third_party/blink/public:image_resources",
+    "//third_party/blink/public:resources",
+    "//third_party/blink/public/strings",
+    "//third_party/blink/public/strings:accessibility_strings",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/ime/init",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/platform_window",
+    "//url",
+    "//v8",
+  ]
+
+  if (is_fuchsia) {
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy" ]
+  } else {
+    deps += [
+      "//components/crash/content/browser",
+      "//components/crash/core/app",
+    ]
+  }
+
+  if (is_android) {
+    deps += [
+      "//components/embedder_support/android:view",
+      "//content/shell/android:content_shell_jni_headers",
+      "//mojo/public/java/system:test_support",
+      "//ui/android",
+    ]
+  }
+}
+
+generate_build_config_srcjar("build_config_gen") {
+  use_final_fields = true
+  enable_multidex = true
+}
+
+dist_aar("content_aar") {
+  testonly = true
+  deps = [
+    ":libcontent_native",
+    "//base",
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/embedder_support/android:view_java",
+    "//components/metrics:metrics_java",
+    "//components/viz/service:service_java",
+    "//content/public/android:content_full_java",
+    "//content/shell/android:content_shell_apk_java",
+    "//content/shell/android:content_shell_assets",
+    "//content/shell/android:content_shell_java",
+    "//device/vr:vr",
+    "//device/vr/android:vr_android",
+    "//media/base/android:media_java",
+    "//services/device/public/java:nfc_java",
+    "//ui/android:ui_full_java",
+  ]
+  native_libraries = [
+    "$root_build_dir/libcontent_native.so",
+    # TODO: Replace with shared library
+    # "$root_build_dir/obj/device/vr/libdevice_vr.a",
+  ]
+  shared_libraries = [ ":libcontent_native" ]
+  jar_included_patterns = [
+    "J/N.class",
+    "org/chromium/base/*.class",
+    "org/chromium/blink/mojom/*.class",
+    "org/chromium/build/*.class",
+    "org/chromium/components/embedder_support/view/*.class",
+    "org/chromium/components/metrics/*.class",
+    "org/chromium/components/variations/*.class",
+    "org/chromium/components/viz/service/frame_sinks/*.class",
+    "org/chromium/content_public/*.class",
+    "org/chromium/content/*.class",
+    "org/chromium/device/*",
+    "org/chromium/media/*.class",
+    "org/chromium/mojo_base/mojom/*.class",
+    "org/chromium/mojo/bindings/*.class",
+    "org/chromium/mojo/system/*.class",
+    "org/chromium/net/*.class",
+    "org/chromium/service_manager/mojom/*.class",
+    "org/chromium/services/*.class",
+    "org/chromium/url/*.class",
+  ]
+  resource_included_patterns = [ "*/content/public/*" ]
+  jar_excluded_patterns = [
+    "android/*.class",
+    "androidx/*.class",
+    "kotlin/*.class",
+    "org/intellij/*.class",
+    "org/jetbrains/*.class",
+  ]
+  srcjar_deps = [ ":build_config_gen" ]
+
+  generate_final_jni = true
+  android_manifest = "AndroidManifest.xml"
+  output = "$root_build_dir/Content.aar"
+}
+
+dist_aar("ui_aar") {
+  deps = [
+    "//ui/accessibility:ax_base_java",
+    "//ui/android:ui_full_java",
+  ]
+  native_libraries = []
+  jar_included_patterns = [ "org/chromium/ui/*.class" ]
+  resource_included_patterns = [ "*/ui/android/*" ]
+  jar_excluded_patterns = [
+    "android/*.class",
+    "androidx/*.class",
+    "kotlin/*.class",
+    "org/intellij/*.class",
+    "org/jetbrains/*.class",
+  ]
+
+  android_manifest = "UiAndroidManifest.xml"
+  output = "$root_build_dir/ChromiumUi.aar"
+}
+
+dist_aar("content_shell_aar") {
+  testonly = true
+  deps = [
+    "//content/shell/android:content_shell_apk_java",
+    "//content/shell/android:content_shell_assets",
+    "//content/shell/android:content_shell_java",
+    "//content/shell/android:content_shell_java_resources",
+  ]
+  native_libraries = []
+  jar_included_patterns = [ "org/chromium/content_shell/*.class" ]
+  resource_included_patterns = [ "*content/shell/android*" ]
+  jar_excluded_patterns = [
+    "android/*.class",
+    "androidx/*.class",
+    "kotlin/*.class",
+    "org/intellij/*.class",
+    "org/jetbrains/*.class",
+  ]
+
+  android_manifest = "ContentShellAndroidManifest.xml"
+  output = "$root_build_dir/ContentShell.aar"
+}

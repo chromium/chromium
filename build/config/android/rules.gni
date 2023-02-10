@@ -1658,6 +1658,50 @@ if (enable_java_templates && is_android) {
 
     _deps = []
 
+    _generate_final_jni =
+        defined(invoker.generate_final_jni) && invoker.generate_final_jni
+    if (_generate_final_jni) {
+      _srcjar_deps = []
+      if (defined(invoker.srcjar_deps)) {
+        _srcjar_deps = invoker.srcjar_deps
+      }
+
+      if (defined(invoker.shared_libraries)) {
+        _shared_library_list_file = "$target_gen_dir/$target_name.native_libs"
+        generated_file("${target_name}__shared_library_list") {
+          deps = invoker.shared_libraries
+          outputs = [ _shared_library_list_file ]
+          data_keys = [ "shared_libraries" ]
+          walk_keys = [ "shared_libraries_barrier" ]
+          rebase = root_build_dir
+        }
+
+        _native_libraries_target_name = "${target_name}__native_libraries"
+        write_native_libraries_java(_native_libraries_target_name) {
+          enable_chromium_linker = false
+          use_final_fields = true
+          native_libraries_list_file = _shared_library_list_file
+        }
+        _srcjar_deps += [ ":$_native_libraries_target_name" ]
+      }
+
+      _outer_target_name = target_name
+      _jni_srcjar_target = "${target_name}__final_jni"
+      generate_jni_registration(_jni_srcjar_target) {
+        java_targets = [ ":$_outer_target_name" ]
+      }
+      _srcjar_deps += [ ":$_jni_srcjar_target" ]
+
+      _jni_java_target = "${target_name}__final_jni_java"
+      java_library_impl(_jni_java_target) {
+        type = "java_library"
+        supports_android = true
+        requires_android = true
+        srcjar_deps = _srcjar_deps
+      }
+      _deps += [ ":$_jni_java_target" ]
+    }
+
     if (defined(invoker.deps)) {
       _deps += invoker.deps
     }
