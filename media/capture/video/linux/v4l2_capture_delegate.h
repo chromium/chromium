@@ -92,6 +92,12 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
   // Simple wrapper to do HANDLE_EINTR(v4l2_->ioctl(device_fd_.get(), ...)).
   int DoIoctl(int request, void* argp);
 
+  // Check whether the control is controllable (and not changed automatically).
+  bool IsControllableControl(int control_id);
+
+  // Subscribe and unsubscribe control events as needed.
+  void ReplaceControlEventSubscriptions();
+
   // Creates a mojom::RangePtr with the (min, max, current, step) values of the
   // control associated with |control_id|. Returns an empty Range otherwise.
   mojom::RangePtr RetrieveUserControlRange(int control_id);

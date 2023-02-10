@@ -125,6 +125,20 @@ void FillV4L2RequestBuffer(v4l2_requestbuffers* request_buffer, int count) {
   request_buffer->count = count;
 }
 
+// Determines if |control_id| is controlled by a special control and
+// determines the control ID of that special control.
+int GetControllingSpecialControl(int control_id) {
+  switch (control_id) {
+    case V4L2_CID_EXPOSURE_ABSOLUTE:
+      return V4L2_CID_EXPOSURE_AUTO;
+    case V4L2_CID_FOCUS_ABSOLUTE:
+      return V4L2_CID_FOCUS_AUTO;
+    case V4L2_CID_WHITE_BALANCE_TEMPERATURE:
+      return V4L2_CID_AUTO_WHITE_BALANCE;
+  }
+  return 0;
+}
+
 // Determines if |control_id| is special, i.e. controls another one's state.
 bool IsSpecialControl(int control_id) {
   switch (control_id) {
@@ -507,6 +521,8 @@ void V4L2CaptureDelegate::SetPhotoOptions(
   if (!device_fd_.is_valid() || !is_capturing_)
     return;
 
+  bool special_controls_maybe_changed = false;
+
   if (settings->has_pan) {
     v4l2_control set_pan = {};
     set_pan.id = V4L2_CID_PAN_ABSOLUTE;
@@ -547,6 +563,7 @@ void V4L2CaptureDelegate::SetPhotoOptions(
                            ? "continuous"
                            : "manual");
     }
+    special_controls_maybe_changed = true;
   }
 
   if (settings->has_focus_distance) {
@@ -579,6 +596,7 @@ void V4L2CaptureDelegate::SetPhotoOptions(
                            ? "continuous"
                            : "manual");
     }
+    special_controls_maybe_changed = true;
   }
 
   if (settings->has_color_temperature) {
@@ -615,6 +633,7 @@ void V4L2CaptureDelegate::SetPhotoOptions(
                            ? "continuous"
                            : "manual");
     }
+    special_controls_maybe_changed = true;
   }
 
   if (settings->has_exposure_compensation) {
@@ -685,6 +704,13 @@ void V4L2CaptureDelegate::SetPhotoOptions(
     }
   }
 
+  if (special_controls_maybe_changed) {
+    // The desired subscription states of the controls controlled by the changed
+    // special controls may have changed thus replace control event
+    // subscriptions.
+    ReplaceControlEventSubscriptions();
+  }
+
   std::move(callback).Run(true);
 }
 
@@ -714,6 +740,71 @@ bool V4L2CaptureDelegate::RunIoctl(int request, void* argp) {
 
 int V4L2CaptureDelegate::DoIoctl(int request, void* argp) {
   return HANDLE_EINTR(v4l2_->ioctl(device_fd_.get(), request, argp));
+}
+
+bool V4L2CaptureDelegate::IsControllableControl(int control_id) {
+  const int special_control_id = GetControllingSpecialControl(control_id);
+  if (!special_control_id) {
+    // The control is not controlled by a special control thus the control is
+    // controllable.
+    return true;
+  }
+
+  // The control is controlled by a special control thus the control is
+  // really controllable (and not changed automatically) only if that special
+  // control is not set to automatic.
+  v4l2_control special_control = {};
+  special_control.id = special_control_id;
+  if (DoIoctl(VIDIOC_G_CTRL, &special_control) < 0) {
+    return false;
+  }
+  switch (control_id) {
+    case V4L2_CID_EXPOSURE_ABSOLUTE:
+      DCHECK_EQ(special_control_id, V4L2_CID_EXPOSURE_AUTO);
+      // For a V4L2_CID_EXPOSURE_AUTO special control, |special_control.value|
+      // is an enum v4l2_exposure_auto_type.
+      // Check if the exposure time is manual. Iris may be manual or automatic.
+      return special_control.value == V4L2_EXPOSURE_MANUAL ||
+             special_control.value == V4L2_EXPOSURE_SHUTTER_PRIORITY;
+    case V4L2_CID_FOCUS_ABSOLUTE:
+    case V4L2_CID_WHITE_BALANCE_TEMPERATURE:
+      // For V4L2_CID_FOCUS_AUTO and V4L2_CID_AUTO_WHITE_BALANCE special
+      // controls, |special_control.value| is a boolean.
+      return !special_control.value;  // Not automatic.
+    default:
+      NOTIMPLEMENTED();
+      return false;
+  }
+}
+
+void V4L2CaptureDelegate::ReplaceControlEventSubscriptions() {
+  constexpr uint32_t kControlIds[] = {V4L2_CID_AUTO_EXPOSURE_BIAS,
+                                      V4L2_CID_AUTO_WHITE_BALANCE,
+                                      V4L2_CID_BRIGHTNESS,
+                                      V4L2_CID_CONTRAST,
+                                      V4L2_CID_EXPOSURE_ABSOLUTE,
+                                      V4L2_CID_EXPOSURE_AUTO,
+                                      V4L2_CID_FOCUS_ABSOLUTE,
+                                      V4L2_CID_FOCUS_AUTO,
+                                      V4L2_CID_PAN_ABSOLUTE,
+                                      V4L2_CID_SATURATION,
+                                      V4L2_CID_SHARPNESS,
+                                      V4L2_CID_TILT_ABSOLUTE,
+                                      V4L2_CID_WHITE_BALANCE_TEMPERATURE,
+                                      V4L2_CID_ZOOM_ABSOLUTE};
+  for (uint32_t control_id : kControlIds) {
+    int request = IsControllableControl(control_id) ? VIDIOC_SUBSCRIBE_EVENT
+                                                    : VIDIOC_UNSUBSCRIBE_EVENT;
+    v4l2_event_subscription subscription = {};
+    subscription.type = V4L2_EVENT_CTRL;
+    subscription.id = control_id;
+    if (DoIoctl(request, &subscription) < 0) {
+      DPLOG(INFO) << (request == VIDIOC_SUBSCRIBE_EVENT
+                          ? "VIDIOC_SUBSCRIBE_EVENT"
+                          : "VIDIOC_UNSUBSCRIBE_EVENT")
+                  << ", {type = V4L2_EVENT_CTRL, id = " << control_id << "}";
+    }
+  }
 }
 
 mojom::RangePtr V4L2CaptureDelegate::RetrieveUserControlRange(int control_id) {
@@ -882,6 +973,7 @@ bool V4L2CaptureDelegate::StartStream() {
                   "VIDIOC_STREAMON failed");
     return false;
   }
+  ReplaceControlEventSubscriptions();
   is_capturing_ = true;
   return true;
 }
@@ -893,7 +985,7 @@ void V4L2CaptureDelegate::DoCapture() {
 
   pollfd device_pfd = {};
   device_pfd.fd = device_fd_.get();
-  device_pfd.events = POLLIN;
+  device_pfd.events = POLLIN | POLLPRI;
 
   const int result =
       HANDLE_EINTR(v4l2_->poll(&device_pfd, 1, kCaptureTimeoutMs));
@@ -929,6 +1021,41 @@ void V4L2CaptureDelegate::DoCapture() {
     }
   } else {
     timeout_count_ = 0;
+  }
+
+  // Dequeue events if the driver has filled in some.
+  if (device_pfd.revents & POLLPRI) {
+    bool controls_changed = false;
+    bool special_controls_changed = false;
+
+    v4l2_event event;
+    do {
+      if (DoIoctl(VIDIOC_DQEVENT, &event) < 0) {
+        DPLOG(INFO) << "VIDIOC_DQEVENT";
+        break;
+      }
+      switch (event.type) {
+        case V4L2_EVENT_CTRL:
+          controls_changed = true;
+          if (IsSpecialControl(event.id)) {
+            special_controls_changed = true;
+          }
+          break;
+        default:
+          NOTREACHED() << "Unexpected event type dequeued: " << event.type;
+          break;
+      }
+    } while (event.pending > 0u);
+
+    if (special_controls_changed) {
+      // The desired subscription states of the controls controlled by
+      // the changed special controls may have changed thus replace control
+      // event subscriptions.
+      ReplaceControlEventSubscriptions();
+    }
+    if (controls_changed) {
+      client_->OnCaptureConfigurationChanged();
+    }
   }
 
   // Deenqueue, send and reenqueue a buffer if the driver has filled one in.

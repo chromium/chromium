@@ -10,14 +10,17 @@
 #include <unistd.h>
 
 #include <queue>
+#include <vector>
 
 #include "base/bits.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 #ifndef KERNEL_VERSION
 #define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + (c))
@@ -116,6 +119,17 @@ class FakeV4L2Impl::OpenedDevice {
         base::Milliseconds(timeout_in_milliseconds));
   }
 
+  void EnqueueEvents() {
+    for (uint32_t control_id : control_event_subscriptions_) {
+      pending_events_.emplace();
+      v4l2_event& event = pending_events_.back();
+      event.type = V4L2_EVENT_CTRL;
+      event.id = control_id;
+    }
+  }
+
+  bool HasPendingEvents() const { return !pending_events_.empty(); }
+
   int enum_fmt(v4l2_fmtdesc* fmtdesc) {
     if (fmtdesc->index > 0u) {
       // We only support a single format for now.
@@ -144,6 +158,8 @@ class FakeV4L2Impl::OpenedDevice {
     memset(cap->reserved, 0, sizeof(cap->reserved));
     return kSuccessReturnValue;
   }
+
+  int g_ctrl(v4l2_control* control) { return Error(EINVAL); }
 
   int s_ctrl(v4l2_control* control) { return kSuccessReturnValue; }
 
@@ -348,6 +364,39 @@ class FakeV4L2Impl::OpenedDevice {
     return kSuccessReturnValue;
   }
 
+  int dqevent(v4l2_event* event) {
+    if (pending_events_.empty()) {
+      return Error(EINVAL);
+    }
+    *event = pending_events_.front();
+    pending_events_.pop();
+    event->pending = pending_events_.size();
+    return kSuccessReturnValue;
+  }
+
+  int subscribe_event(v4l2_event_subscription* event_subscription) {
+    if (event_subscription->type != V4L2_EVENT_CTRL) {
+      NOTIMPLEMENTED();
+      return Error(EINVAL);
+    }
+    EXPECT_NE(event_subscription->id, 0u);
+    control_event_subscriptions_.insert(event_subscription->id);
+    return kSuccessReturnValue;
+  }
+
+  int unsubscribe_event(v4l2_event_subscription* event_subscription) {
+    if (event_subscription->type != V4L2_EVENT_CTRL) {
+      NOTIMPLEMENTED();
+      return Error(EINVAL);
+    }
+    if (event_subscription->id == 0) {
+      control_event_subscriptions_.clear();
+    } else {
+      control_event_subscriptions_.erase(event_subscription->id);
+    }
+    return kSuccessReturnValue;
+  }
+
  private:
   void RunFrameProductionLoop() {
     while (!should_quit_frame_production_loop_.IsSet()) {
@@ -381,9 +430,11 @@ class FakeV4L2Impl::OpenedDevice {
   const int open_flags_;
   v4l2_pix_format selected_format_;
   v4l2_fract timeperframe_;
+  base::flat_set<uint32_t> control_event_subscriptions_;
   std::vector<FakeV4L2Buffer> device_buffers_;
   std::queue<FakeV4L2Buffer*> incoming_queue_;
   std::queue<FakeV4L2Buffer*> outgoing_queue_;
+  std::queue<v4l2_event> pending_events_;
   base::WaitableEvent wait_for_outgoing_queue_event_;
   base::Thread frame_production_thread_;
   base::AtomicFlag should_quit_frame_production_loop_;
@@ -447,6 +498,8 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
       return opened_device->enum_fmt(reinterpret_cast<v4l2_fmtdesc*>(argp));
     case VIDIOC_QUERYCAP:
       return opened_device->querycap(reinterpret_cast<v4l2_capability*>(argp));
+    case VIDIOC_G_CTRL:
+      return opened_device->g_ctrl(reinterpret_cast<v4l2_control*>(argp));
     case VIDIOC_S_CTRL:
       return opened_device->s_ctrl(reinterpret_cast<v4l2_control*>(argp));
     case VIDIOC_S_EXT_CTRLS:
@@ -479,6 +532,14 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
     case VIDIOC_ENUM_FRAMEINTERVALS:
       return opened_device->enum_frameintervals(
           reinterpret_cast<v4l2_frmivalenum*>(argp));
+    case VIDIOC_DQEVENT:
+      return opened_device->dqevent(reinterpret_cast<v4l2_event*>(argp));
+    case VIDIOC_SUBSCRIBE_EVENT:
+      return opened_device->subscribe_event(
+          reinterpret_cast<v4l2_event_subscription*>(argp));
+    case VIDIOC_UNSUBSCRIBE_EVENT:
+      return opened_device->unsubscribe_event(
+          reinterpret_cast<v4l2_event_subscription*>(argp));
 
     case VIDIOC_CROPCAP:
     case VIDIOC_DBG_G_REGISTER:
@@ -496,7 +557,6 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
     case VIDIOC_S_AUDOUT:
     case VIDIOC_G_CROP:
     case VIDIOC_S_CROP:
-    case VIDIOC_G_CTRL:
     case VIDIOC_G_ENC_INDEX:
     case VIDIOC_G_EXT_CTRLS:
     case VIDIOC_TRY_EXT_CTRLS:
@@ -526,6 +586,18 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
     case VIDIOC_QUERYMENU:
     case VIDIOC_QUERYSTD:
     case VIDIOC_S_HW_FREQ_SEEK:
+    case VIDIOC_S_DV_TIMINGS:
+    case VIDIOC_G_DV_TIMINGS:
+    case VIDIOC_CREATE_BUFS:
+    case VIDIOC_PREPARE_BUF:
+    case VIDIOC_G_SELECTION:
+    case VIDIOC_S_SELECTION:
+    case VIDIOC_DECODER_CMD:
+    case VIDIOC_TRY_DECODER_CMD:
+    case VIDIOC_ENUM_DV_TIMINGS:
+    case VIDIOC_QUERY_DV_TIMINGS:
+    case VIDIOC_DV_TIMINGS_CAP:
+    case VIDIOC_ENUM_FREQ_BANDS:
       // Unsupported |request| code.
       NOTREACHED() << "Unsupported request code " << request;
       return kErrorReturnValue;
@@ -585,7 +657,7 @@ int FakeV4L2Impl::poll(struct pollfd* ufds, unsigned int nfds, int timeout) {
     return Error(EBADF);
   }
   auto* opened_device = device_iter->second.get();
-  if (ufd.events != POLLIN) {
+  if (!(ufd.events & POLLIN)) {
     // We only support waiting for data to become readable.
     return Error(EINVAL);
   }
@@ -593,6 +665,14 @@ int FakeV4L2Impl::poll(struct pollfd* ufds, unsigned int nfds, int timeout) {
     return 0;
   }
   ufd.revents |= POLLIN;
+  if (ufd.events & POLLPRI) {
+    if (opened_device->HasPendingEvents()) {
+      ufd.revents |= POLLPRI;
+    } else {
+      // For the next poll.
+      opened_device->EnqueueEvents();
+    }
+  }
   return 1;
 }
 
