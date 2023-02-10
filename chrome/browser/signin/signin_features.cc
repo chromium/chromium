@@ -3,11 +3,21 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/signin_features.h"
+
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 // Enables the new style, "For You" First Run Experience
 BASE_FEATURE(kForYouFre, "ForYouFre", base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// Whether the browser should be opened when the user closes the FRE window. If
+// false, we just exit Chrome and the user will get straight to the browser on
+// the next process launch.
+const base::FeatureParam<bool> kForYouFreCloseShouldProceed{
+    &kForYouFre, /*name=*/"close_should_proceed", /*default_value=*/true};
+#endif
 #endif
 
 // Enables the client-side processing of the HTTP response header

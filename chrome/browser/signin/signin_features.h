@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kForYouFre);
+extern const base::FeatureParam<bool> kForYouFreCloseShouldProceed;
 #endif
 
 BASE_DECLARE_FEATURE(kProcessGaiaRemoveLocalAccountHeader);

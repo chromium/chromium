@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -188,14 +189,17 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   bool expected_fre_finished = true;
+  bool expected_proceed = false;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   expected_fre_finished = false;  // QuitEarly
+#else
+  expected_proceed = kForYouFreCloseShouldProceed.Get();
 #endif
 
   EXPECT_TRUE(fre_service()->ShouldOpenFirstRun());
   fre_service()->OpenFirstRunIfNeeded(
       FirstRunService::EntryPoint::kOther,
-      ExpectProceed(false).Then(run_loop.QuitClosure()));
+      ExpectProceed(expected_proceed).Then(run_loop.QuitClosure()));
 
   profiles::testing::WaitForPickerWidgetCreated();
   EXPECT_FALSE(GetFirstRunFinishedPrefValue());
@@ -359,7 +363,7 @@ const PolicyTestParam kPolicyTestParams[] = {
     {.key = policy::key::kPromotionalTabsEnabled, .value = "false"},
 };
 
-std::string ParamToTestSuffix(
+std::string PolicyParamToTestSuffix(
     const ::testing::TestParamInfo<PolicyTestParam>& info) {
   return info.param.key + "_" + info.param.value;
 }
@@ -437,4 +441,65 @@ IN_PROC_BROWSER_TEST_P(FirstRunServicePolicyBrowserTest, OpenFirstRunIfNeeded) {
 INSTANTIATE_TEST_SUITE_P(,
                          FirstRunServicePolicyBrowserTest,
                          testing::ValuesIn(kPolicyTestParams),
-                         &ParamToTestSuffix);
+                         &PolicyParamToTestSuffix);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+struct FeatureTestParams {
+  const base::FieldTrialParams feature_params;
+  const bool expected_proceed;
+};
+
+const FeatureTestParams kFeatureTestParams[] = {
+    {.feature_params = {{"close_should_proceed", "false"}},
+     .expected_proceed = false},
+    {.feature_params = {{"close_should_proceed", "true"}},
+     .expected_proceed = true},
+};
+
+std::string FeatureParamToTestSuffix(
+    const ::testing::TestParamInfo<FeatureTestParams>& info) {
+  std::vector<std::string> pieces;
+  for (const auto& feature_param : info.param.feature_params) {
+    pieces.push_back(feature_param.first);
+    pieces.push_back(feature_param.second);
+  }
+
+  return base::JoinString(pieces, "_");
+}
+
+class FirstRunServiceFeatureParamsBrowserTest
+    : public FirstRunServiceBrowserTest,
+      public testing::WithParamInterface<FeatureTestParams> {
+ public:
+  FirstRunServiceFeatureParamsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kForYouFre, GetParam().feature_params);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(FirstRunServiceFeatureParamsBrowserTest, CloseProceeds) {
+  base::RunLoop run_loop;
+
+  EXPECT_TRUE(fre_service()->ShouldOpenFirstRun());
+  fre_service()->OpenFirstRunIfNeeded(
+      FirstRunService::EntryPoint::kOther,
+      ExpectProceed(GetParam().expected_proceed).Then(run_loop.QuitClosure()));
+
+  profiles::testing::WaitForPickerWidgetCreated();
+  EXPECT_FALSE(GetFirstRunFinishedPrefValue());
+
+  ProfilePicker::Hide();
+  run_loop.Run();
+
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+  EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FirstRunServiceFeatureParamsBrowserTest,
+                         testing::ValuesIn(kFeatureTestParams),
+                         &FeatureParamToTestSuffix);
+#endif

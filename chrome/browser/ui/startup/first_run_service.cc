@@ -188,6 +188,10 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
   }
 
   bool proceed = status == ProfilePicker::FirstRunExitStatus::kCompleted;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  proceed |= kForYouFreCloseShouldProceed.Get();
+#endif
+
   std::move(original_intent_callback).Run(proceed);
 }
 
