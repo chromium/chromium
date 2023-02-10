@@ -128,12 +128,6 @@ class GpuCommandBufferTestEGL {
       gfx::BufferFormat format,
       gfx::Size size,
       uint8_t* pixels) const;
-
-  // Get some real dmabuf fds for testing by exporting an EGLImage created from
-  // a GL texture.
-  gfx::NativePixmapHandle CreateNativePixmapHandle(gfx::BufferFormat format,
-                                                   gfx::Size size,
-                                                   uint8_t* pixels);
 #endif
 
  protected:

@@ -497,21 +497,6 @@ GpuCommandBufferTestEGL::CreateGLImageNativePixmap(gfx::BufferFormat format,
 
   return image;
 }
-
-gfx::NativePixmapHandle GpuCommandBufferTestEGL::CreateNativePixmapHandle(
-    gfx::BufferFormat format,
-    gfx::Size size,
-    uint8_t* pixels) {
-  scoped_refptr<gl::GLImageNativePixmap> image =
-      CreateGLImageNativePixmap(format, size, pixels);
-  EXPECT_TRUE(image);
-  EXPECT_EQ(size, image->GetSize());
-
-  // Export the EGLImage as dmabuf fds
-  // The test will own the dmabuf fds so no need to keep a reference on the
-  // EGLImage after returning from this function.
-  return image->ExportHandle();
-}
 #endif
 
 }  // namespace gpu
