@@ -200,7 +200,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   // Transport type of device.
   // TODO(b/204708206): Update with property framework when available
-  device::BluetoothTransport transport_;
+  device::BluetoothTransport transport_ =
+      device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC;
 
   // Class of device.
   // TODO(b/204708206): Update with property framework when available

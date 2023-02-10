@@ -836,8 +836,9 @@ void BluetoothAdapterFloss::AdapterDeviceConnected(
   BluetoothDeviceFloss* device =
       static_cast<BluetoothDeviceFloss*>(GetDevice(device_id.address));
   if (!device) {
-    LOG(WARNING) << "Device connected for an unknown device "
-                 << device_id.address;
+    BLUETOOTH_LOG(EVENT) << "Adding newly connected device to devices_ map: "
+                         << device_id.address;
+    AdapterFoundDevice(device_id);
     return;
   }
 
