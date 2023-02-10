@@ -286,6 +286,8 @@ extern const char kScreenMagnifierAcceleratorDialogHasBeenAccepted[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDictationAcceleratorDialogHasBeenAccepted[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDictationDlcSuccessNotificationHasBeenShown[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisplayRotationAcceleratorDialogHasBeenAccepted[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisplayRotationAcceleratorDialogHasBeenAccepted2[];

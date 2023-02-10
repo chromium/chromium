@@ -1361,6 +1361,29 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, SodaFailPumpkinFail) {
   AssertDictationNoDlcsNotifcation(en_us_display_name());
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       SuccessNotificationOnlyShownOnce) {
+  // Show the success message for the first time.
+  ASSERT_FALSE(GetActiveUserPrefs()->GetBoolean(
+      prefs::kDictationDlcSuccessNotificationHasBeenShown));
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
+  AssertMessageCenterEmpty();
+  soda_installer()->NotifySodaInstalledForTesting();
+  AssertDictationOnlySodaNotifcation(en_us_display_name());
+  InstallPumpkinAndWait();
+  AssertDictationAllDlcsNotifcation(en_us_display_name());
+  ASSERT_TRUE(GetActiveUserPrefs()->GetBoolean(
+      prefs::kDictationDlcSuccessNotificationHasBeenShown));
+
+  ClearMessageCenter();
+
+  // Request a Pumpkin install again and ensure the message center is empty.
+  InstallPumpkinAndWait();
+  AssertMessageCenterEmpty();
+}
+
 enum DictationDialogTestVariant {
   kOfflineEnabledAndAvailable,
   kOfflineEnabledAndUnavailable,

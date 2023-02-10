@@ -2421,7 +2421,15 @@ void AccessibilityManager::UpdateDictationNotification() {
   // 4. Pumpkin not installed, SODA not installed
   DictationNotificationType type;
   if (pumpkin_installed && soda_installed) {
+    if (profile_->GetPrefs()->GetBoolean(
+            prefs::kDictationDlcSuccessNotificationHasBeenShown)) {
+      // Do not show the DLC success notification if it has already been shown.
+      return;
+    }
+
     type = DictationNotificationType::kAllDlcsDownloaded;
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kDictationDlcSuccessNotificationHasBeenShown, true);
   } else if (pumpkin_installed && !soda_installed) {
     type = DictationNotificationType::kOnlyPumpkinDownloaded;
   } else if (!pumpkin_installed && soda_installed) {
