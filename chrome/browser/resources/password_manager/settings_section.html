@@ -60,7 +60,9 @@
       label="$i18n{importPasswords}"
       sub-label="$i18n{importPasswordsDescription}" hide-icon>
   </cr-link-row>
-  <passwords-exporter></passwords-exporter>
+  <template is="dom-if" if="[[hasPasswordsToExport_]]" restamp>
+      <passwords-exporter></passwords-exporter>
+  </template>
   <template is="dom-if" if="[[!isPasswordManagerShortcutInstalled_]]" restamp>
     <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
         on-click="onAddShortcutClick_" label="$i18n{addShortcut}"

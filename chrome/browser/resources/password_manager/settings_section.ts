@@ -12,7 +12,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BlockedSite, BlockedSitesListChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
+import {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import {getTemplate} from './settings_section.html.js';
 
@@ -58,6 +58,11 @@ export class SettingsSectionElement extends I18nMixin
         },
       },
       // </if>
+
+      hasPasswordsToExport_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -65,15 +70,18 @@ export class SettingsSectionElement extends I18nMixin
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
+  private setCredentialsChangedListener_: CredentialsChangedListener|null =
+      null;
 
   private addShortcutDescription_: string;
+
+  private hasPasswordsToExport_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
     this.setBlockedSitesListListener_ = blockedSites => {
       this.blockedSites_ = blockedSites;
     };
-
     PasswordManagerImpl.getInstance().getBlockedSitesList().then(
         blockedSites => this.blockedSites_ = blockedSites);
     PasswordManagerImpl.getInstance().addBlockedSitesListChangedListener(
@@ -81,6 +89,15 @@ export class SettingsSectionElement extends I18nMixin
 
     this.addShortcutDescription_ =
         this.i18n('addShortcutDescription', this.i18n('localPasswordManager'));
+
+    this.setCredentialsChangedListener_ =
+        (passwords: chrome.passwordsPrivate.PasswordUiEntry[]) => {
+          this.hasPasswordsToExport_ = passwords.length > 0;
+        };
+    PasswordManagerImpl.getInstance().getSavedPasswordList().then(
+        this.setCredentialsChangedListener_);
+    PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
+        this.setCredentialsChangedListener_);
   }
 
   override disconnectedCallback() {
@@ -89,6 +106,11 @@ export class SettingsSectionElement extends I18nMixin
     PasswordManagerImpl.getInstance().removeBlockedSitesListChangedListener(
         this.setBlockedSitesListListener_);
     this.setBlockedSitesListListener_ = null;
+
+    assert(this.setCredentialsChangedListener_);
+    PasswordManagerImpl.getInstance().removeSavedPasswordListChangedListener(
+        this.setCredentialsChangedListener_);
+    this.setCredentialsChangedListener_ = null;
   }
 
   private getBlockedSitesDescription_() {
