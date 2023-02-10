@@ -31,7 +31,7 @@ SettingsPrivateDelegate::~SettingsPrivateDelegate() {
 }
 
 base::Value SettingsPrivateDelegate::GetPref(const std::string& name) {
-  std::unique_ptr<api::settings_private::PrefObject> pref =
+  absl::optional<api::settings_private::PrefObject> pref =
       prefs_util_->GetPref(name);
   if (!pref)
     return base::Value();

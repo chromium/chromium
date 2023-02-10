@@ -190,11 +190,11 @@ TEST_P(GeneratedPasswordLeakDetectionPrefTest, UpdatePreference) {
   // generated pref.
   prefs()->SetUserPref(password_manager::prefs::kPasswordLeakDetectionEnabled,
                        std::make_unique<base::Value>(true));
-  EXPECT_TRUE(pref.GetPrefObject()->value->GetBool());
+  EXPECT_TRUE(pref.GetPrefObject().value->GetBool());
 
   prefs()->SetUserPref(password_manager::prefs::kPasswordLeakDetectionEnabled,
                        std::make_unique<base::Value>(false));
-  EXPECT_FALSE(pref.GetPrefObject()->value->GetBool());
+  EXPECT_FALSE(pref.GetPrefObject().value->GetBool());
 
   // Confirm that a type mismatch is reported as such.
   EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(2).get()),
@@ -214,15 +214,15 @@ TEST_P(GeneratedPasswordLeakDetectionPrefTest, ProfileState) {
                        std::make_unique<base::Value>(true));
   prefs()->SetUserPref(prefs::kSafeBrowsingEnhanced,
                        std::make_unique<base::Value>(false));
-  EXPECT_TRUE(pref.GetPrefObject()->value->GetBool());
-  EXPECT_FALSE(*pref.GetPrefObject()->user_control_disabled);
+  EXPECT_TRUE(pref.GetPrefObject().value->GetBool());
+  EXPECT_FALSE(*pref.GetPrefObject().user_control_disabled);
 
   // Set Safe Browsing to disabled, check that user control is disabled and pref
   // cannot be modified, but the pref value remains enabled.
   prefs()->SetUserPref(prefs::kSafeBrowsingEnabled,
                        std::make_unique<base::Value>(false));
-  EXPECT_TRUE(pref.GetPrefObject()->value->GetBool());
-  EXPECT_TRUE(*pref.GetPrefObject()->user_control_disabled);
+  EXPECT_TRUE(pref.GetPrefObject().value->GetBool());
+  EXPECT_TRUE(*pref.GetPrefObject().user_control_disabled);
   EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(true).get()),
             settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 }
@@ -233,24 +233,24 @@ TEST_P(GeneratedPasswordLeakDetectionPrefTest, ManagementState) {
   // Check that the management state of the underlying preference is applied
   // to the generated preference.
   GeneratedPasswordLeakDetectionPref pref(profile());
-  EXPECT_EQ(pref.GetPrefObject()->enforcement,
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
             settings_api::Enforcement::ENFORCEMENT_NONE);
-  EXPECT_EQ(pref.GetPrefObject()->controlled_by,
+  EXPECT_EQ(pref.GetPrefObject().controlled_by,
             settings_api::ControlledBy::CONTROLLED_BY_NONE);
 
   prefs()->SetRecommendedPref(
       password_manager::prefs::kPasswordLeakDetectionEnabled,
       std::make_unique<base::Value>(true));
-  EXPECT_EQ(pref.GetPrefObject()->enforcement,
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
             settings_api::Enforcement::ENFORCEMENT_RECOMMENDED);
-  EXPECT_EQ(pref.GetPrefObject()->recommended_value->GetBool(), true);
+  EXPECT_EQ(pref.GetPrefObject().recommended_value->GetBool(), true);
 
   prefs()->SetManagedPref(
       password_manager::prefs::kPasswordLeakDetectionEnabled,
       std::make_unique<base::Value>(true));
-  EXPECT_EQ(pref.GetPrefObject()->enforcement,
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
             settings_api::Enforcement::ENFORCEMENT_ENFORCED);
-  EXPECT_EQ(pref.GetPrefObject()->controlled_by,
+  EXPECT_EQ(pref.GetPrefObject().controlled_by,
             settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY);
 
   // Check that the preference cannot be changed when the backing preference is

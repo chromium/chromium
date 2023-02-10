@@ -61,14 +61,13 @@ class GeneratedCookiePrimarySettingPref : public GeneratedCookiePrefBase {
   // Generated Preference Interface.
   extensions::settings_private::SetPrefResult SetPref(
       const base::Value* value) override;
-  std::unique_ptr<extensions::api::settings_private::PrefObject> GetPrefObject()
-      const override;
+  extensions::api::settings_private::PrefObject GetPrefObject() const override;
 
  private:
   // Applies the effective primary cookie setting management state from
   // |profile| to |pref_object|.
   static void ApplyPrimaryCookieSettingManagedState(
-      extensions::api::settings_private::PrefObject* pref_object,
+      extensions::api::settings_private::PrefObject& pref_object,
       Profile* profile);
 };
 
@@ -79,8 +78,7 @@ class GeneratedCookieSessionOnlyPref : public GeneratedCookiePrefBase {
   // Generated Preference Interface.
   extensions::settings_private::SetPrefResult SetPref(
       const base::Value* value) override;
-  std::unique_ptr<extensions::api::settings_private::PrefObject> GetPrefObject()
-      const override;
+  extensions::api::settings_private::PrefObject GetPrefObject() const override;
 };
 
 // A generated preference that represents cookies content setting and supports
@@ -93,8 +91,7 @@ class GeneratedCookieDefaultContentSettingPref
   // Generated Preference Interface.
   extensions::settings_private::SetPrefResult SetPref(
       const base::Value* value) override;
-  std::unique_ptr<extensions::api::settings_private::PrefObject> GetPrefObject()
-      const override;
+  extensions::api::settings_private::PrefObject GetPrefObject() const override;
 };
 
 }  // namespace content_settings

@@ -108,7 +108,7 @@ base::Value::List GetUsersList(content::BrowserContext* browser_context) {
       UsersPrivateDelegateFactory::GetForBrowserContext(browser_context);
   PrefsUtil* prefs_util = delegate->GetPrefsUtil();
 
-  std::unique_ptr<api::settings_private::PrefObject> users_pref_object =
+  absl::optional<api::settings_private::PrefObject> users_pref_object =
       prefs_util->GetPref(ash::kAccountsPrefUsers);
   if (users_pref_object->value && users_pref_object->value->is_list()) {
     email_list = users_pref_object->value->GetList().Clone();

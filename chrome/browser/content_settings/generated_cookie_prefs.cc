@@ -149,12 +149,11 @@ GeneratedCookiePrimarySettingPref::SetPref(const base::Value* value) {
   }
 }
 
-std::unique_ptr<extensions::api::settings_private::PrefObject>
+extensions::api::settings_private::PrefObject
 GeneratedCookiePrimarySettingPref::GetPrefObject() const {
-  auto pref_object =
-      std::make_unique<extensions::api::settings_private::PrefObject>();
-  pref_object->key = pref_name_;
-  pref_object->type = extensions::api::settings_private::PREF_TYPE_NUMBER;
+  extensions::api::settings_private::PrefObject pref_object;
+  pref_object.key = pref_name_;
+  pref_object.type = extensions::api::settings_private::PREF_TYPE_NUMBER;
 
   auto content_setting = host_content_settings_map_->GetDefaultContentSetting(
       ContentSettingsType::COOKIES, nullptr);
@@ -163,26 +162,26 @@ GeneratedCookiePrimarySettingPref::GetPrefObject() const {
       profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode));
 
   if (content_setting == ContentSetting::CONTENT_SETTING_BLOCK) {
-    pref_object->value =
+    pref_object.value =
         base::Value(static_cast<int>(CookiePrimarySetting::BLOCK_ALL));
   } else {
-    pref_object->value = base::Value(
+    pref_object.value = base::Value(
         static_cast<int>(ToCookiePrimarySetting(cookie_controls_mode)));
   }
 
-  ApplyPrimaryCookieSettingManagedState(pref_object.get(), profile_);
+  ApplyPrimaryCookieSettingManagedState(pref_object, profile_);
 
   // Ensure that if any user selectable values were added, at least two values
   // were, so the user is able to select between them.
-  DCHECK(!pref_object->user_selectable_values ||
-         pref_object->user_selectable_values->size() >= 2);
+  DCHECK(!pref_object.user_selectable_values ||
+         pref_object.user_selectable_values->size() >= 2);
 
-  if (pref_object->user_selectable_values) {
+  if (pref_object.user_selectable_values) {
     // Sort user selectable values to make interacting with them simpler in C++.
     // This is not required by the SettingsPrivate API, but is expected in the
     // unit_tests associated with this file.
-    std::sort(pref_object->user_selectable_values->begin(),
-              pref_object->user_selectable_values->end(),
+    std::sort(pref_object.user_selectable_values->begin(),
+              pref_object.user_selectable_values->end(),
               [](const base::Value& a, const base::Value& b) {
                 return a.GetInt() < b.GetInt();
               });
@@ -192,7 +191,7 @@ GeneratedCookiePrimarySettingPref::GetPrefObject() const {
 
 /* static */
 void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
-    settings_api::PrefObject* pref_object,
+    settings_api::PrefObject& pref_object,
     Profile* profile) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
@@ -225,17 +224,17 @@ void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
 
   if (content_setting_enforced && content_setting == CONTENT_SETTING_BLOCK) {
     // Preference is fully managed by the content setting.
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
     settings_private::GeneratedPref::ApplyControlledByFromContentSettingSource(
-        pref_object, content_setting_source);
+        &pref_object, content_setting_source);
     return;
   }
 
   if (content_setting_enforced && cookie_controls_mode_enforced) {
     // Preference is considered fully managed by the third party preference.
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
     settings_private::GeneratedPref::ApplyControlledByFromPref(
-        pref_object, cookie_controls_mode_pref);
+        &pref_object, cookie_controls_mode_pref);
     return;
   }
 
@@ -248,27 +247,27 @@ void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
   if (cookie_controls_mode_recommended) {
     auto recommended_value = static_cast<CookieControlsMode>(
         cookie_controls_mode_pref->GetRecommendedValue()->GetInt());
-    pref_object->recommended_value = base::Value(
+    pref_object.recommended_value = base::Value(
         static_cast<int>(ToCookiePrimarySetting(recommended_value)));
 
     // Based on state assessed so far the enforcement is only recommended. This
     // may be changed to ENFORCED later in this function.
-    pref_object->enforcement =
+    pref_object.enforcement =
         settings_api::Enforcement::ENFORCEMENT_RECOMMENDED;
   }
 
   // If cookie controls are enforced and the content settings is not enforced,
   // you can choose between the selected cookie controls setting and "BLOCK"
   if (cookie_controls_mode_enforced) {
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
     settings_private::GeneratedPref::ApplyControlledByFromPref(
-        pref_object, cookie_controls_mode_pref);
+        &pref_object, cookie_controls_mode_pref);
     auto value = static_cast<CookieControlsMode>(
         cookie_controls_mode_pref->GetValue()->GetInt());
     settings_private::GeneratedPref::AddUserSelectableValue(
-        pref_object, static_cast<int>(ToCookiePrimarySetting(value)));
+        &pref_object, static_cast<int>(ToCookiePrimarySetting(value)));
     settings_private::GeneratedPref::AddUserSelectableValue(
-        pref_object, static_cast<int>(CookiePrimarySetting::BLOCK_ALL));
+        &pref_object, static_cast<int>(CookiePrimarySetting::BLOCK_ALL));
     return;
   }
 
@@ -276,16 +275,17 @@ void GeneratedCookiePrimarySettingPref::ApplyPrimaryCookieSettingManagedState(
   if (content_setting_enforced) {
     DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
            content_setting == CONTENT_SETTING_SESSION_ONLY);
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
     settings_private::GeneratedPref::ApplyControlledByFromContentSettingSource(
-        pref_object, content_setting_source);
+        &pref_object, content_setting_source);
 
     settings_private::GeneratedPref::AddUserSelectableValue(
-        pref_object, static_cast<int>(CookiePrimarySetting::ALLOW_ALL));
+        &pref_object, static_cast<int>(CookiePrimarySetting::ALLOW_ALL));
     settings_private::GeneratedPref::AddUserSelectableValue(
-        pref_object, static_cast<int>(CookiePrimarySetting::BLOCK_THIRD_PARTY));
+        &pref_object,
+        static_cast<int>(CookiePrimarySetting::BLOCK_THIRD_PARTY));
     settings_private::GeneratedPref::AddUserSelectableValue(
-        pref_object,
+        &pref_object,
         static_cast<int>(CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO));
   }
 }
@@ -314,20 +314,19 @@ GeneratedCookieSessionOnlyPref::SetPref(const base::Value* value) {
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }
 
-std::unique_ptr<settings_api::PrefObject>
-GeneratedCookieSessionOnlyPref::GetPrefObject() const {
-  auto pref_object = std::make_unique<settings_api::PrefObject>();
-  pref_object->key = pref_name_;
-  pref_object->type = settings_api::PREF_TYPE_BOOLEAN;
+settings_api::PrefObject GeneratedCookieSessionOnlyPref::GetPrefObject() const {
+  settings_api::PrefObject pref_object;
+  pref_object.key = pref_name_;
+  pref_object.type = settings_api::PREF_TYPE_BOOLEAN;
 
   std::string content_setting_provider;
   auto content_setting = host_content_settings_map_->GetDefaultContentSetting(
       ContentSettingsType::COOKIES, &content_setting_provider);
 
-  pref_object->user_control_disabled =
+  pref_object.user_control_disabled =
       content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
-  pref_object->value = base::Value(
-      content_setting == ContentSetting::CONTENT_SETTING_SESSION_ONLY);
+  pref_object.value = base::Value(content_setting ==
+                                  ContentSetting::CONTENT_SETTING_SESSION_ONLY);
 
   // Content settings can be managed via policy, extension or supervision, but
   // cannot be recommended.
@@ -335,19 +334,19 @@ GeneratedCookieSessionOnlyPref::GetPrefObject() const {
       HostContentSettingsMap::GetSettingSourceFromProviderName(
           content_setting_provider);
   if (content_setting_source == SettingSource::SETTING_SOURCE_POLICY) {
-    pref_object->controlled_by =
+    pref_object.controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY;
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
   }
   if (content_setting_source == SettingSource::SETTING_SOURCE_EXTENSION) {
-    pref_object->controlled_by =
+    pref_object.controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_EXTENSION;
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
   }
   if (content_setting_source == SettingSource::SETTING_SOURCE_SUPERVISED) {
-    pref_object->controlled_by =
+    pref_object.controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
   }
 
   return pref_object;
@@ -383,17 +382,17 @@ GeneratedCookieDefaultContentSettingPref::SetPref(const base::Value* value) {
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }
 
-std::unique_ptr<settings_api::PrefObject>
+settings_api::PrefObject
 GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
-  auto pref_object = std::make_unique<settings_api::PrefObject>();
-  pref_object->key = pref_name_;
-  pref_object->type = settings_api::PREF_TYPE_STRING;
+  settings_api::PrefObject pref_object;
+  pref_object.key = pref_name_;
+  pref_object.type = settings_api::PREF_TYPE_STRING;
 
   std::string content_setting_provider;
   auto content_setting = host_content_settings_map_->GetDefaultContentSetting(
       ContentSettingsType::COOKIES, &content_setting_provider);
 
-  pref_object->value =
+  pref_object.value =
       base::Value(content_settings::ContentSettingToString(content_setting));
 
   // Cookies content setting can be managed via policy, extension or
@@ -402,19 +401,19 @@ GeneratedCookieDefaultContentSettingPref::GetPrefObject() const {
       HostContentSettingsMap::GetSettingSourceFromProviderName(
           content_setting_provider);
   if (content_setting_source == SettingSource::SETTING_SOURCE_POLICY) {
-    pref_object->controlled_by =
+    pref_object.controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY;
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
   }
   if (content_setting_source == SettingSource::SETTING_SOURCE_EXTENSION) {
-    pref_object->controlled_by =
+    pref_object.controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_EXTENSION;
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
   }
   if (content_setting_source == SettingSource::SETTING_SOURCE_SUPERVISED) {
-    pref_object->controlled_by =
+    pref_object.controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_CHILD_RESTRICTION;
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
   }
 
   return pref_object;

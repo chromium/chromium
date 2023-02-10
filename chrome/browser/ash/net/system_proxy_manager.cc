@@ -563,7 +563,7 @@ bool SystemProxyManager::IsProxyConfiguredByUserViaExtension() {
   if (!extension_prefs_util_)
     return false;
 
-  std::unique_ptr<extensions::api::settings_private::PrefObject> pref =
+  absl::optional<extensions::api::settings_private::PrefObject> pref =
       extension_prefs_util_->GetPref(proxy_config::prefs::kProxy);
   return pref && pref->extension_can_be_disabled &&
          *pref->extension_can_be_disabled;

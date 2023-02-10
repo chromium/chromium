@@ -42,21 +42,20 @@ class TestPrefsUtil : public PrefsUtil {
  public:
   explicit TestPrefsUtil(Profile* profile) : PrefsUtil(profile) {}
 
-  std::unique_ptr<api::settings_private::PrefObject> GetPref(
+  absl::optional<api::settings_private::PrefObject> GetPref(
       const std::string& name) override {
     if (name != "cros.accounts.users")
       return PrefsUtil::GetPref(name);
 
-    std::unique_ptr<api::settings_private::PrefObject> pref_object(
-        new api::settings_private::PrefObject());
-    pref_object->key = name;
-    pref_object->type = api::settings_private::PrefType::PREF_TYPE_LIST;
+    api::settings_private::PrefObject pref_object;
+    pref_object.key = name;
+    pref_object.type = api::settings_private::PrefType::PREF_TYPE_LIST;
 
     base::Value::List value;
     for (auto& email : user_list_) {
       value.Append(email);
     }
-    pref_object->value = base::Value(std::move(value));
+    pref_object.value = base::Value(std::move(value));
 
     return pref_object;
   }

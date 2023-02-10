@@ -1073,16 +1073,15 @@ settings_api::PrefType PrefsUtil::GetType(const std::string& name,
   }
 }
 
-std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetCrosSettingsPref(
+absl::optional<settings_api::PrefObject> PrefsUtil::GetCrosSettingsPref(
     const std::string& name) {
-  std::unique_ptr<settings_api::PrefObject> pref_object(
-      new settings_api::PrefObject());
+  absl::optional<settings_api::PrefObject> pref_object(absl::in_place);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::Value* value = ash::CrosSettings::Get()->GetPref(name);
   if (!value) {
     LOG(WARNING) << "Cros settings pref not found: " << name;
-    return nullptr;
+    return absl::nullopt;
   }
   pref_object->key = name;
   pref_object->type = GetType(name, value->type());
@@ -1092,29 +1091,29 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetCrosSettingsPref(
   return pref_object;
 }
 
-std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
+absl::optional<settings_api::PrefObject> PrefsUtil::GetPref(
     const std::string& name) {
   if (GetAllowlistedPrefType(name) == settings_api::PrefType::PREF_TYPE_NONE) {
-    return nullptr;
+    return absl::nullopt;
   }
 
   settings_private::GeneratedPrefs* generated_prefs =
       settings_private::GeneratedPrefsFactory::GetForBrowserContext(profile_);
 
   const PrefService::Preference* pref = nullptr;
-  std::unique_ptr<settings_api::PrefObject> pref_object;
+  absl::optional<settings_api::PrefObject> pref_object;
   if (IsCrosSetting(name)) {
     pref_object = GetCrosSettingsPref(name);
     if (!pref_object)
-      return nullptr;
+      return absl::nullopt;
   } else if (generated_prefs && generated_prefs->HasPref(name)) {
     return generated_prefs->GetPref(name);
   } else {
     PrefService* pref_service = FindServiceForPref(name);
     pref = pref_service->FindPreference(name);
     if (!pref)
-      return nullptr;
-    pref_object = std::make_unique<settings_api::PrefObject>();
+      return absl::nullopt;
+    pref_object.emplace();
     pref_object->key = pref->name();
     pref_object->type = GetType(name, pref->GetType());
     pref_object->value = pref->GetValue()->Clone();

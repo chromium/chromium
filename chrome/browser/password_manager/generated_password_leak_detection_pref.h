@@ -31,8 +31,7 @@ class GeneratedPasswordLeakDetectionPref
   // Generated Preference Interface.
   extensions::settings_private::SetPrefResult SetPref(
       const base::Value* value) override;
-  std::unique_ptr<extensions::api::settings_private::PrefObject> GetPrefObject()
-      const override;
+  extensions::api::settings_private::PrefObject GetPrefObject() const override;
 
   // Fired when preferences used to generate this preference are changed.
   void OnSourcePreferencesChanged();

@@ -45,7 +45,7 @@ void ValidateGeneratedPrefSetting(
                 ->GetBool(),
             expected_quieter_ui);
   EXPECT_EQ(static_cast<NotificationSetting>(
-                generated_pref->GetPrefObject()->value->GetInt()),
+                generated_pref->GetPrefObject().value->GetInt()),
             pref_value);
 }
 
@@ -199,21 +199,21 @@ void SetupManagedTestConditions(
 }
 
 void ValidateManagedPreference(
-    settings_api::PrefObject* pref,
+    settings_api::PrefObject& pref,
     const NotificationSettingManagedTestCase& test_case) {
   if (test_case.expected_controlled_by !=
       settings_api::ControlledBy::CONTROLLED_BY_NONE) {
-    EXPECT_EQ(pref->controlled_by, test_case.expected_controlled_by);
+    EXPECT_EQ(pref.controlled_by, test_case.expected_controlled_by);
   }
 
   if (test_case.expected_enforcement !=
       settings_api::Enforcement::ENFORCEMENT_NONE) {
-    EXPECT_EQ(pref->enforcement, test_case.expected_enforcement);
+    EXPECT_EQ(pref.enforcement, test_case.expected_enforcement);
   }
 
   if (test_case.expected_recommended_value != kNoRecommendedValue) {
     EXPECT_EQ(
-        static_cast<NotificationSetting>(pref->recommended_value->GetInt()),
+        static_cast<NotificationSetting>(pref.recommended_value->GetInt()),
         test_case.expected_recommended_value);
   }
 
@@ -222,8 +222,8 @@ void ValidateManagedPreference(
   // First convert std::vector<std::unique_ptr<base::value(T)>> to
   // std::vector<T> for easier comparison.
   std::vector<NotificationSetting> pref_user_selectable_values;
-  if (pref->user_selectable_values) {
-    for (const auto& value : *pref->user_selectable_values) {
+  if (pref.user_selectable_values) {
+    for (const auto& value : *pref.user_selectable_values) {
       pref_user_selectable_values.push_back(
           static_cast<NotificationSetting>(value.GetInt()));
     }
@@ -387,7 +387,7 @@ TEST_F(GeneratedNotificationPrefTest, ManagedState) {
     auto pref =
         std::make_unique<content_settings::GeneratedNotificationPref>(&profile);
     auto pref_object = pref->GetPrefObject();
-    ValidateManagedPreference(pref_object.get(), test_case);
+    ValidateManagedPreference(pref_object, test_case);
   }
 }
 

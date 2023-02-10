@@ -110,11 +110,10 @@ extensions::settings_private::SetPrefResult GeneratedNotificationPref::SetPref(
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }
 
-std::unique_ptr<settings_api::PrefObject>
-GeneratedNotificationPref::GetPrefObject() const {
-  auto pref_object = std::make_unique<settings_api::PrefObject>();
-  pref_object->key = kGeneratedNotificationPref;
-  pref_object->type = settings_api::PREF_TYPE_NUMBER;
+settings_api::PrefObject GeneratedNotificationPref::GetPrefObject() const {
+  settings_api::PrefObject pref_object;
+  pref_object.key = kGeneratedNotificationPref;
+  pref_object.type = settings_api::PREF_TYPE_NUMBER;
 
   const auto quieter_pref_enabled =
       profile_->GetPrefs()
@@ -128,29 +127,28 @@ GeneratedNotificationPref::GetPrefObject() const {
       notification_content_setting != ContentSetting::CONTENT_SETTING_BLOCK;
 
   if (notification_content_setting_enabled && quieter_pref_enabled) {
-    pref_object->value =
+    pref_object.value =
         base::Value(static_cast<int>(NotificationSetting::QUIETER_MESSAGING));
   } else if (notification_content_setting_enabled) {
-    pref_object->value =
-        base::Value(static_cast<int>(NotificationSetting::ASK));
+    pref_object.value = base::Value(static_cast<int>(NotificationSetting::ASK));
   } else {
     DCHECK_EQ(ContentSetting::CONTENT_SETTING_BLOCK,
               notification_content_setting);
-    pref_object->value =
+    pref_object.value =
         base::Value(static_cast<int>(NotificationSetting::BLOCK));
   }
 
-  ApplyNotificationManagementState(profile_, pref_object.get());
+  ApplyNotificationManagementState(*profile_, pref_object);
 
   return pref_object;
 }
 
 /* static */
 void GeneratedNotificationPref::ApplyNotificationManagementState(
-    Profile* profile,
-    settings_api::PrefObject* pref_object) {
+    Profile& profile,
+    settings_api::PrefObject& pref_object) {
   HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
+      HostContentSettingsMapFactory::GetForProfile(&profile);
   std::string content_setting_provider;
   auto content_setting = map->GetDefaultContentSetting(
       ContentSettingsType::NOTIFICATIONS, &content_setting_provider);
@@ -162,7 +160,7 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
       content_settings::SettingSource::SETTING_SOURCE_USER;
 
   const PrefService::Preference* quieter_ui_pref =
-      profile->GetPrefs()->FindPreference(
+      profile.GetPrefs()->FindPreference(
           prefs::kEnableQuietNotificationPermissionUi);
   auto quieter_ui_on = quieter_ui_pref->GetValue()->GetBool();
   auto quieter_ui_enforced = !quieter_ui_pref->IsUserModifiable();
@@ -179,31 +177,31 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
   }
 
   if (content_setting_enforced) {
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
 
     if (content_setting == CONTENT_SETTING_BLOCK) {
       // Preference is fully managed by the content setting.
       GeneratedPref::ApplyControlledByFromContentSettingSource(
-          pref_object, content_setting_source);
+          &pref_object, content_setting_source);
       return;
     } else if (quieter_ui_enforced) {
       // Preference is fully managed by the content setting and quieter ui pref.
-      GeneratedPref::ApplyControlledByFromPref(pref_object, quieter_ui_pref);
+      GeneratedPref::ApplyControlledByFromPref(&pref_object, quieter_ui_pref);
       return;
     }
     GeneratedPref::ApplyControlledByFromContentSettingSource(
-        pref_object, content_setting_source);
+        &pref_object, content_setting_source);
 
     DCHECK(content_setting_enforced && !quieter_ui_enforced);
     // Since content setting is enforced but the quieter ui pref is not,
     // user can choose from 2 options.
     GeneratedPref::AddUserSelectableValue(
-        pref_object, static_cast<int>(NotificationSetting::ASK));
+        &pref_object, static_cast<int>(NotificationSetting::ASK));
     GeneratedPref::AddUserSelectableValue(
-        pref_object, static_cast<int>(NotificationSetting::QUIETER_MESSAGING));
+        &pref_object, static_cast<int>(NotificationSetting::QUIETER_MESSAGING));
 
     if (quieter_ui_recommended) {
-      pref_object->recommended_value = base::Value(static_cast<int>(
+      pref_object.recommended_value = base::Value(static_cast<int>(
           quieter_ui_recommended_on ? NotificationSetting::QUIETER_MESSAGING
                                     : NotificationSetting::ASK));
     }
@@ -213,14 +211,14 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
   if (quieter_ui_enforced) {
     // Quieter ui pref is enforced, but the content setting is not, so the user
     // can choose from 2 options
-    pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    GeneratedPref::ApplyControlledByFromPref(pref_object, quieter_ui_pref);
+    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    GeneratedPref::ApplyControlledByFromPref(&pref_object, quieter_ui_pref);
     GeneratedPref::AddUserSelectableValue(
-        pref_object,
+        &pref_object,
         static_cast<int>(quieter_ui_on ? NotificationSetting::QUIETER_MESSAGING
                                        : NotificationSetting::ASK));
     GeneratedPref::AddUserSelectableValue(
-        pref_object, static_cast<int>(NotificationSetting::BLOCK));
+        &pref_object, static_cast<int>(NotificationSetting::BLOCK));
   }
   // If neither of notification content setting nor quieter ui preference is
   // enforced, but quieter ui preference is recommended, then recommended value

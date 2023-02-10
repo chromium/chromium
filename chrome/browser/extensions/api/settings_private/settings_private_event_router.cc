@@ -152,7 +152,7 @@ void SettingsPrivateEventRouter::SendPrefChange(const std::string& pref_name) {
     return;
   }
 
-  std::unique_ptr<api::settings_private::PrefObject> pref_object =
+  absl::optional<api::settings_private::PrefObject> pref_object =
       prefs_util_->GetPref(pref_name);
 
   std::vector<api::settings_private::PrefObject> prefs;

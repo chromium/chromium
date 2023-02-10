@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -48,8 +49,8 @@ class GeneratedPrefs : public KeyedService {
   // Returns true if preference is supported.
   bool HasPref(const std::string& pref_name);
 
-  // Returns fully populated PrefObject or nullptr if not supported.
-  std::unique_ptr<api::settings_private::PrefObject> GetPref(
+  // Returns fully populated PrefObject or nullopt if not supported.
+  absl::optional<api::settings_private::PrefObject> GetPref(
       const std::string& pref_name);
 
   // Updates preference value.

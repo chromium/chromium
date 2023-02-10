@@ -36,7 +36,7 @@ class GeneratedResolveTimezoneByGeolocationMethodShort
   ~GeneratedResolveTimezoneByGeolocationMethodShort() override;
 
   // GeneratedPrefsChromeOSImpl implementation:
-  std::unique_ptr<settings_api::PrefObject> GetPrefObject() const override;
+  settings_api::PrefObject GetPrefObject() const override;
   SetPrefResult SetPref(const base::Value* value) override;
 };
 
@@ -48,18 +48,17 @@ GeneratedResolveTimezoneByGeolocationMethodShort::
 GeneratedResolveTimezoneByGeolocationMethodShort::
     ~GeneratedResolveTimezoneByGeolocationMethodShort() = default;
 
-std::unique_ptr<settings_api::PrefObject>
+settings_api::PrefObject
 GeneratedResolveTimezoneByGeolocationMethodShort::GetPrefObject() const {
-  std::unique_ptr<settings_api::PrefObject> pref_object =
-      std::make_unique<settings_api::PrefObject>();
+  settings_api::PrefObject pref_object;
 
-  pref_object->key = pref_name_;
-  pref_object->type = settings_api::PREF_TYPE_NUMBER;
-  pref_object->value = base::Value(static_cast<int>(
+  pref_object.key = pref_name_;
+  pref_object.type = settings_api::PREF_TYPE_NUMBER;
+  pref_object.value = base::Value(static_cast<int>(
       g_browser_process->platform_part()
           ->GetTimezoneResolverManager()
           ->GetEffectiveUserTimeZoneResolveMethod(profile_->GetPrefs(), true)));
-  UpdateTimeZonePrefControlledBy(pref_object.get());
+  UpdateTimeZonePrefControlledBy(&pref_object);
 
   return pref_object;
 }
