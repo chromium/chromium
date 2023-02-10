@@ -2014,6 +2014,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         // 7. Lift the TSR folio container off the toolbar.
+        mInteractingTab.setIsReordering(true);
         if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
             updateFolioTabAttachState(mInteractingTab, false, animationList);
         }
@@ -2058,6 +2059,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         // 5. Reattach the TSR folio container to the toolbar.
+        mInteractingTab.setIsReordering(false);
         if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
             updateFolioTabAttachState(mInteractingTab, true, animationList);
         }

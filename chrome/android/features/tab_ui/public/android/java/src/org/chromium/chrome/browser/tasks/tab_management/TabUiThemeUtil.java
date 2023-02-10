@@ -18,9 +18,10 @@ import org.chromium.ui.util.ColorUtils;
  * Internal themes are provided via @{@link TabUiThemeProvider}
  */
 public class TabUiThemeUtil {
-    private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
     private static final String TAG = "TabUiThemeProvider";
+    private static final float MAX_TAB_STRIP_TAB_WIDTH_DP = 265.f;
     private static final float DETACHED_TAB_OVERLAY_ALPHA = 0.85f;
+    private static final float DETACHED_TAB_OVERLAY_ALPHA_EDIT_MODE = 0.2f;
 
     /**
      * Returns the color for the tab strip background.
@@ -57,12 +58,12 @@ public class TabUiThemeUtil {
      * @return The color for the tab container.
      */
     public static int getTabStripContainerColor(
-            Context context, boolean isIncognito, boolean foreground) {
+            Context context, boolean isIncognito, boolean foreground, boolean isReordering) {
         if (foreground) {
             if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
                 return ChromeColors.getDefaultThemeColor(context, isIncognito);
             } else if (TabManagementFieldTrial.isTabStripDetachedEnabled()) {
-                return getTabStripDetachedTabColor(context, isIncognito);
+                return getTabStripDetachedTabColor(context, isIncognito, isReordering);
             }
         } else {
             if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
@@ -83,8 +84,21 @@ public class TabUiThemeUtil {
      * @param isIncognito Whether the color is used for incognito mode.
      * @return The color for the detached tab container.
      */
-    private static int getTabStripDetachedTabColor(Context context, boolean isIncognito) {
+    private static int getTabStripDetachedTabColor(
+            Context context, boolean isIncognito, boolean isReordering) {
         assert TabManagementFieldTrial.isTabStripDetachedEnabled();
+
+        if (isReordering) {
+            if (isIncognito) {
+                return context.getColor(R.color.default_bg_color_dark_elev_4_baseline);
+            } else {
+                final int baseColor = getTabStripBackgroundColor(context, isIncognito);
+                final int overlayColor = SemanticColorUtils.getDefaultControlColorActive(context);
+
+                return ColorUtils.getColorWithOverlay(
+                        baseColor, overlayColor, DETACHED_TAB_OVERLAY_ALPHA_EDIT_MODE);
+            }
+        }
 
         if (isIncognito) return Color.BLACK;
 
