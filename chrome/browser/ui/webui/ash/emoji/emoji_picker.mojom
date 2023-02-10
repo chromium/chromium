@@ -99,4 +99,7 @@ interface PageHandler {
   // gif: The gif to insert in the form of the url returned from the tenor API
   // e.g. "https://media.tenor.com/m8ggSG6nLqIAAAAC/christmas-minions.gif".
   CopyGifToClipboard(url.mojom.Url gif);
+
+  // Send a signal that emoji UI is fully loaded for metrics.
+  OnUiFullyLoaded();
 };

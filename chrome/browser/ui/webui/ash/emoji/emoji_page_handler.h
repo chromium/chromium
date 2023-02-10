@@ -44,6 +44,7 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   void GetGifsByIds(const std::vector<std::string>& ids,
                     GetGifsByIdsCallback callback) override;
   void CopyGifToClipboard(const GURL& gif) override;
+  void OnUiFullyLoaded() override;
 
  private:
   mojo::Receiver<emoji_picker::mojom::PageHandler> receiver_;

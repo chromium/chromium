@@ -48,6 +48,11 @@ void LogInsertEmojiDelay(base::TimeDelta delay) {
   base::UmaHistogramMediumTimes("InputMethod.SystemEmojiPicker.Delay", delay);
 }
 
+void LogLoadTime(base::TimeDelta delay) {
+  base::UmaHistogramMediumTimes("InputMethod.SystemEmojiPicker.LoadTime",
+                                delay);
+}
+
 void CopyEmojiToClipboard(const std::string& emoji_to_copy) {
   if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerClipboard)) {
     auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
@@ -259,6 +264,10 @@ void EmojiPageHandler::CopyGifToClipboard(const GURL& gif) {
   ToastManager::Get()->Show(ToastData(
       kEmojiPickerToastId, ToastCatalogName::kCopyGifToClipboardAction,
       l10n_util::GetStringUTF16(IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD)));
+}
+
+void EmojiPageHandler::OnUiFullyLoaded() {
+  LogLoadTime(base::TimeTicks::Now() - shown_time_);
 }
 
 }  // namespace ash

@@ -30,6 +30,8 @@ export interface EmojiPickerApiProxy {
       Promise<{status: Status, selectedGifs: VisualContent[]}>;
 
   convertTenorGifsToEmoji(gifs: TenorGifResponse): EmojiVariants[];
+
+  onUiFullyLoaded(): void;
 }
 
 export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
@@ -88,6 +90,10 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
   getGifsByIds(ids: string[]):
       Promise<{status: Status, selectedGifs: VisualContent[]}> {
     return this.handler.getGifsByIds(ids);
+  }
+
+  onUiFullyLoaded(): void {
+    this.handler.onUiFullyLoaded();
   }
 
   convertTenorGifsToEmoji(gifs: TenorGifResponse): EmojiVariants[] {

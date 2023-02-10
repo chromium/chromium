@@ -1308,6 +1308,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.SystemEmojiPicker.LoadTime" units="ms"
+    expires_after="2024-02-09">
+  <owner>jopalmer@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Time between when emoji picker is opened and when UI is completely loaded.
+    Used to monitor performance of emoji picker. Recorded once the ChromeOS
+    emoji picker finishes loading.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.SystemEmojiPicker.SearchLength" units="characters"
     expires_after="2023-02-26">
   <owner>jopalmer@chromium.org</owner>

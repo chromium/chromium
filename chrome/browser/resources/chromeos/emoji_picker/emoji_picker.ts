@@ -508,6 +508,7 @@ export class EmojiPicker extends PolymerElement {
       afterNextRender(
           this,
           () => {
+            this.apiProxy.onUiFullyLoaded();
             this.dispatchEvent(
                 events.createCustomEvent(events.EMOJI_PICKER_READY, {}));
           },
