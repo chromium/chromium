@@ -68,13 +68,14 @@ export class ChromeVoxPrefs {
    *     LocalStorage and SettingsManager.
    */
   getPrefs() {
-    const prefs = {};
+    let prefs = {};
     for (const pref in ChromeVoxPrefs.DEFAULT_PREFS) {
       prefs[pref] = LocalStorage.get(pref);
     }
     for (const pref of SettingsManager.PREFS) {
       prefs[pref] = SettingsManager.get(pref);
     }
+    prefs = {...prefs, ...SettingsManager.getEventStreamFilters()};
     return prefs;
   }
 
@@ -84,6 +85,10 @@ export class ChromeVoxPrefs {
    * @param {Object|string|number|boolean} value The new value of the pref.
    */
   setPref(key, value) {
+    if (SettingsManager.EVENT_STREAM_FILTERS.includes(key)) {
+      SettingsManager.setEventStreamFilter(key, Boolean(value));
+      return;
+    }
     if (SettingsManager.PREFS.includes(key)) {
       SettingsManager.set(key, value);
       return;
@@ -172,59 +177,6 @@ ChromeVoxPrefs.DEFAULT_PREFS = {
   'earcons': true,
   'sticky': false,
   'typingEcho': 0,
-
-  // eventStreamFilters
-  'activedescendantchanged': true,
-  'alert': true,
-  'ariaAttributeChanged': true,
-  'autocorrectionOccured': true,
-  'blur': true,
-  'checkedStateChanged': true,
-  'childrenChanged': true,
-  'clicked': true,
-  'documentSelectionChanged': true,
-  'documentTitleChanged': true,
-  'expandedChanged': true,
-  'focus': true,
-  'focusContext': true,
-  'imageFrameUpdated': true,
-  'hide': true,
-  'hitTestResult': true,
-  'hover': true,
-  'invalidStatusChanged': true,
-  'layoutComplete': true,
-  'liveRegionCreated': true,
-  'liveRegionChanged': true,
-  'loadComplete': true,
-  'locationChanged': true,
-  'mediaStartedPlaying': true,
-  'mediaStoppedPlaying': true,
-  'menuEnd': true,
-  'menuItemSelected': true,
-  'menuListValueChanged': true,
-  'menuPopupEnd': true,
-  'menuPopupStart': true,
-  'menuStart': true,
-  'mouseCanceled': true,
-  'mouseDragged': true,
-  'mouseMoved': true,
-  'mousePressed': true,
-  'mouseReleased': true,
-  'rowCollapsed': true,
-  'rowCountChanged': true,
-  'rowExpanded': true,
-  'scrollPositionChanged': true,
-  'scrolledToAnchor': true,
-  'selectedChildrenChanged': true,
-  'selection': true,
-  'selectionAdd': true,
-  'selectionRemove': true,
-  'show': true,
-  'stateChanged': true,
-  'textChanged': true,
-  'textSelectionChanged': true,
-  'treeChanged': true,
-  'valueInTextFieldChanged': true,
 };
 
 

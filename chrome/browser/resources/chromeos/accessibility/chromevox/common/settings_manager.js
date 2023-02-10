@@ -89,7 +89,7 @@ export class SettingsManager {
     if (Object.keys(eventStreamFilters).length) {
       // Combine with any event stream filters already in settings prefs.
       eventStreamFilters = {
-        ...Settings.get(this.getPrefName_('eventStreamFilters'), {}),
+        ...Settings.get(this.getPrefName_('eventStreamFilters')),
         ...eventStreamFilters,
       };
       Settings.set(this.getPrefName_('eventStreamFilters'), eventStreamFilters);
@@ -159,14 +159,37 @@ export class SettingsManager {
     return String(value);
   }
 
-
   /**
    * @param {string} key
    * @param {*} value
    */
   static set(key, value) {
     const pref = SettingsManager.getPrefName_(key);
-    return Settings.set(pref, value);
+    Settings.set(pref, value);
+  }
+
+  /**
+   * Get event stream filters from the event_stream_filter dictionary pref.
+   * @return {!Object<string, boolean>}
+   */
+  static getEventStreamFilters() {
+    return Settings.get(this.getPrefName_('eventStreamFilters'));
+  }
+
+  /**
+   * Set an event stream filter on the event_stream_filter dictionary pref.
+   * @param {string} key
+   * @param {boolean} value
+   */
+  static setEventStreamFilter(key, value) {
+    if (!SettingsManager.EVENT_STREAM_FILTERS.includes(key)) {
+      throw new Error('Cannot set unknown event stream filter: ' + key);
+    }
+
+    const eventStreamFilters =
+        Settings.get(this.getPrefName_('eventStreamFilters'));
+    eventStreamFilters[key] = value;
+    Settings.set(this.getPrefName_('eventStreamFilters'), eventStreamFilters);
   }
 }
 
@@ -174,7 +197,8 @@ export class SettingsManager {
 SettingsManager.instance;
 
 /**
- * TODO(b/262786141): Uncomment each of these and update call sites.
+ * List of the prefs used in ChromeVox, including in options page, each stored
+ * as a Chrome settings pref.
  * @const {!Array<string>}
  */
 SettingsManager.PREFS = [
@@ -194,6 +218,7 @@ SettingsManager.PREFS = [
   'enableEarconLogging',
   'enableEventStreamLogging',
   'enableSpeechLogging',
+  'eventStreamFilters',
   'languageSwitching',
   'menuBrailleCommands',
   'numberReadingStyle',
@@ -208,59 +233,61 @@ SettingsManager.PREFS = [
   'voiceName',
 ];
 
-// List of event stream filters used on the ChromeVox options page to indicate
-// which events to log, to store together in a dictionary Chrome settings pref.
+/**
+ * List of event stream filters used on the ChromeVox options page to indicate
+ * which events to log, stored together in a Chrome settings dictionary pref.
+ * @const {!Array<string>}
+ */
 SettingsManager.EVENT_STREAM_FILTERS = [
-  // TODO(b/262786141: Update call sites and uncomment.
-  // 'activedescendantchanged',
-  // 'alert',
-  // 'ariaAttributeChanged',
-  // 'autocorrectionOccured',
-  // 'blur',
-  // 'checkedStateChanged',
-  // 'childrenChanged',
-  // 'clicked',
-  // 'documentSelectionChanged',
-  // 'documentTitleChanged',
-  // 'expandedChanged',
-  // 'focus',
-  // 'focusContext',
-  // 'hide',
-  // 'hitTestResult',
-  // 'hover',
-  // 'imageFrameUpdated',
-  // 'invalidStatusChanged',
-  // 'layoutComplete',
-  // 'liveRegionChanged',
-  // 'liveRegionCreated',
-  // 'loadComplete',
-  // 'locationChanged',
-  // 'mediaStartedPlaying',
-  // 'mediaStoppedPlaying',
-  // 'menuEnd',
-  // 'menuItemSelected',
-  // 'menuListValueChanged',
-  // 'menuPopupEnd',
-  // 'menuPopupStart',
-  // 'menuStart',
-  // 'mouseCanceled',
-  // 'mouseDragged',
-  // 'mouseMoved',
-  // 'mousePressed',
-  // 'mouseReleased',
-  // 'rowCollapsed',
-  // 'rowCountChanged',
-  // 'rowExpanded',
-  // 'scrollPositionChanged',
-  // 'scrolledToAnchor',
-  // 'selectedChildrenChanged',
-  // 'selection',
-  // 'selectionAdd',
-  // 'selectionRemove',
-  // 'show',
-  // 'stateChanged',
-  // 'textChanged',
-  // 'textSelectionChanged',
-  // 'treeChanged',
-  // 'valueInTextFieldChanged',
+  'activedescendantchanged',
+  'alert',
+  'ariaAttributeChanged',
+  'autocorrectionOccured',
+  'blur',
+  'checkedStateChanged',
+  'childrenChanged',
+  'clicked',
+  'documentSelectionChanged',
+  'documentTitleChanged',
+  'expandedChanged',
+  'focus',
+  'focusContext',
+  'hide',
+  'hitTestResult',
+  'hover',
+  'imageFrameUpdated',
+  'invalidStatusChanged',
+  'layoutComplete',
+  'liveRegionChanged',
+  'liveRegionCreated',
+  'loadComplete',
+  'locationChanged',
+  'mediaStartedPlaying',
+  'mediaStoppedPlaying',
+  'menuEnd',
+  'menuItemSelected',
+  'menuListValueChanged',
+  'menuPopupEnd',
+  'menuPopupStart',
+  'menuStart',
+  'mouseCanceled',
+  'mouseDragged',
+  'mouseMoved',
+  'mousePressed',
+  'mouseReleased',
+  'rowCollapsed',
+  'rowCountChanged',
+  'rowExpanded',
+  'scrollPositionChanged',
+  'scrolledToAnchor',
+  'selectedChildrenChanged',
+  'selection',
+  'selectionAdd',
+  'selectionRemove',
+  'show',
+  'stateChanged',
+  'textChanged',
+  'textSelectionChanged',
+  'treeChanged',
+  'valueInTextFieldChanged',
 ];

@@ -185,6 +185,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityChromeVoxEnableEarconLogging,
     prefs::kAccessibilityChromeVoxEnableEventStreamLogging,
     prefs::kAccessibilityChromeVoxEnableSpeechLogging,
+    prefs::kAccessibilityChromeVoxEventStreamFilters,
     prefs::kAccessibilityChromeVoxLanguageSwitching,
     prefs::kAccessibilityChromeVoxMenuBrailleCommands,
     prefs::kAccessibilityChromeVoxNumberReadingStyle,
@@ -1017,6 +1018,9 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       prefs::kAccessibilityChromeVoxEnableEventStreamLogging, false);
   registry->RegisterBooleanPref(
       prefs::kAccessibilityChromeVoxEnableSpeechLogging, false);
+  registry->RegisterDictionaryPref(
+      prefs::kAccessibilityChromeVoxEventStreamFilters,
+      base::Value(base::Value::Type::DICT));
   registry->RegisterBooleanPref(prefs::kAccessibilityChromeVoxLanguageSwitching,
                                 false);
   registry->RegisterBooleanPref(

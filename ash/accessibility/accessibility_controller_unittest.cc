@@ -145,6 +145,8 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityChromeVoxEnableSpeechLogging));
   EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxEventStreamFilters));
+  EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityChromeVoxLanguageSwitching));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityChromeVoxMenuBrailleCommands));

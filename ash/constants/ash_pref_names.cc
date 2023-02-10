@@ -287,6 +287,10 @@ const char kAccessibilityChromeVoxEnableEventStreamLogging[] =
 // enabled.
 const char kAccessibilityChromeVoxEnableSpeechLogging[] =
     "settings.a11y.chromevox.enable_speech_logging";
+// A dictionary pref that defines which event stream filters in ChromeVox are
+// enabled. (e.g. {clicked: true, focus: false, hover: true})
+const char kAccessibilityChromeVoxEventStreamFilters[] =
+    "settings.a11y.chromevox.event_stream_filters";
 // A boolean pref which determines whether language switching for ChromeVox is
 // enabled.
 const char kAccessibilityChromeVoxLanguageSwitching[] =

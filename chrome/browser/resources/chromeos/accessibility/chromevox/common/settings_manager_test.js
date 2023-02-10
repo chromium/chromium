@@ -202,3 +202,84 @@ AX_TEST_F(
       // Ensure all storage prefs deleted.
       await this.ensureStoragePrefsRemoved(prefs);
     });
+
+// Sets all developer storage prefs, runs the migration in
+// SettingsManager, verifies prefs migrated to settings prefs, and verifies that
+// storage prefs are removed.
+AX_TEST_F(
+    'ChromeVoxSettingsManagerTest',
+    'AllDeveloperPrefsMigratedToSettingsAfterStoragePrefsSet',
+    async function() {
+      const loggingPrefs = {
+        enableBrailleLogging: true,
+        enableEarconLogging: false,
+        enableEventStreamLogging: true,
+        enableSpeechLogging: false,
+      };
+
+      const eventStreamFilters = {
+        activedescendantchanged: true,
+        alert: true,
+        ariaAttributeChanged: true,
+        autocorrectionOccured: false,
+        blur: true,
+        checkedStateChanged: false,
+        childrenChanged: false,
+        clicked: true,
+        documentSelectionChanged: true,
+        documentTitleChanged: false,
+        expandedChanged: false,
+        focus: true,
+        focusContext: true,
+        hide: false,
+        hitTestResult: true,
+        hover: true,
+        imageFrameUpdated: false,
+        invalidStatusChanged: true,
+        layoutComplete: false,
+        liveRegionChanged: false,
+        liveRegionCreated: false,
+        loadComplete: false,
+        locationChanged: true,
+        mediaStartedPlaying: true,
+        mediaStoppedPlaying: true,
+        menuEnd: true,
+        menuItemSelected: false,
+        menuListValueChanged: false,
+        menuPopupEnd: false,
+        menuPopupStart: true,
+        menuStart: true,
+        mouseCanceled: true,
+        mouseDragged: true,
+        mouseMoved: true,
+        mousePressed: false,
+        mouseReleased: false,
+        rowCollapsed: true,
+        rowCountChanged: true,
+        rowExpanded: false,
+        scrollPositionChanged: true,
+        scrolledToAnchor: true,
+        selectedChildrenChanged: true,
+        selection: true,
+        selectionAdd: false,
+        selectionRemove: false,
+        show: true,
+        stateChanged: false,
+        textChanged: true,
+        textSelectionChanged: true,
+        treeChanged: true,
+        valueInTextFieldChanged: true,
+      };
+
+      const storagePrefs = {...loggingPrefs, ...eventStreamFilters};
+      const expectedSettingsPrefs = {...loggingPrefs, eventStreamFilters};
+
+      // Set storage prefs.
+      await this.setStoragePrefsAndMigrate(storagePrefs);
+
+      // Check storage prefs migrated to settings prefs.
+      await this.ensureSettingsPrefsIncludes(expectedSettingsPrefs);
+
+      // Ensure all storage prefs deleted.
+      await this.ensureStoragePrefsRemoved(storagePrefs);
+    });

@@ -51,6 +51,7 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityChromeVoxEnableEarconLogging,
     ash::prefs::kAccessibilityChromeVoxEnableEventStreamLogging,
     ash::prefs::kAccessibilityChromeVoxEnableSpeechLogging,
+    ash::prefs::kAccessibilityChromeVoxEventStreamFilters,
     ash::prefs::kAccessibilityChromeVoxLanguageSwitching,
     ash::prefs::kAccessibilityChromeVoxMenuBrailleCommands,
     ash::prefs::kAccessibilityChromeVoxNumberReadingStyle,

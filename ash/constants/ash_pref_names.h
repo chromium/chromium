@@ -134,6 +134,8 @@ extern const char kAccessibilityChromeVoxEnableEventStreamLogging[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityChromeVoxEnableSpeechLogging[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxEventStreamFilters[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityChromeVoxLanguageSwitching[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityChromeVoxMenuBrailleCommands[];
