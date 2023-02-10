@@ -20,7 +20,9 @@ void IOSChromeFieldTrials::OnVariationsSetupComplete() {
   // Persistent histograms must be enabled ASAP, but depends on Features.
   base::FilePath user_data_dir;
   if (base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir)) {
-    InstantiatePersistentHistograms(user_data_dir);
+    InstantiatePersistentHistogramsWithFeaturesAndCleanup(user_data_dir);
+  } else {
+    NOTREACHED();
   }
 }
 

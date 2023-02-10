@@ -407,11 +407,11 @@ TEST_F(AndroidMetricsServiceClientTest,
        TestBrowserMetricsDirClearedIfReportingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      base::kPersistentHistogramsFeature, {{"storage", "MappedFile"}});
+      kPersistentHistogramsFeature, {{"storage", "MappedFile"}});
 
   base::FilePath metrics_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir));
-  InstantiatePersistentHistograms(metrics_dir);
+  InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
   base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
   ASSERT_TRUE(base::PathExists(upload_dir));
 
@@ -432,11 +432,11 @@ TEST_F(AndroidMetricsServiceClientTest,
        TestBrowserMetricsDirClearedIfNoConsent) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      base::kPersistentHistogramsFeature, {{"storage", "MappedFile"}});
+      kPersistentHistogramsFeature, {{"storage", "MappedFile"}});
 
   base::FilePath metrics_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir));
-  InstantiatePersistentHistograms(metrics_dir);
+  InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
   base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
   ASSERT_TRUE(base::PathExists(upload_dir));
 
@@ -456,11 +456,11 @@ TEST_F(AndroidMetricsServiceClientTest,
        TestBrowserMetricsDirExistsIfReportingEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      base::kPersistentHistogramsFeature, {{"storage", "MappedFile"}});
+      kPersistentHistogramsFeature, {{"storage", "MappedFile"}});
 
   base::FilePath metrics_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &metrics_dir));
-  InstantiatePersistentHistograms(metrics_dir);
+  InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
   base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
   ASSERT_TRUE(base::PathExists(upload_dir));
 

@@ -14,7 +14,9 @@ void WebLayerFieldTrials::OnVariationsSetupComplete() {
   // Persistent histograms must be enabled as soon as possible.
   base::FilePath metrics_dir;
   if (base::PathService::Get(DIR_USER_DATA, &metrics_dir)) {
-    InstantiatePersistentHistograms(metrics_dir);
+    InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
+  } else {
+    NOTREACHED();
   }
 }
 

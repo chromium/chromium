@@ -139,7 +139,7 @@ void RegisterOrRemovePreviousRunMetricsFile(
 
 bool IsSamplesCounterEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      base::kPersistentHistogramsFeature, "prev_run_metrics_count_only", false);
+      kPersistentHistogramsFeature, "prev_run_metrics_count_only", false);
 }
 
 // TODO(crbug.com/1152072): Unify this implementation with the one in

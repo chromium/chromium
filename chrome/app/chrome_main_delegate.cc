@@ -70,6 +70,7 @@
 #include "components/crash/core/common/crash_keys.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
+#include "components/metrics/persistent_histograms.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -749,6 +750,17 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   if (invoked_in_browser->is_running_test)
     chrome::DisableDelayLoadFailureHooksForCurrentModule();
 #endif
+
+#if !BUILDFLAG(IS_FUCHSIA)
+  // Schedule the cleanup of persistent histogram files. These tasks must only
+  // be scheduled in the main browser after taking the process singleton. They
+  // cannot be scheduled immediately after InstantiatePersistentHistograms()
+  // because ThreadPool is not ready at that time yet.
+  base::FilePath metrics_dir;
+  if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
+    PersistentHistogramsCleanup(metrics_dir);
+  }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // Chrome disallows cookies by default. All code paths that want to use
   // cookies need to go through one of Chrome's URLRequestContexts which have
@@ -1587,6 +1599,28 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
   InitLogging(process_type);
   SuppressWindowsErrorDialogs();
 #endif
+
+#if !BUILDFLAG(IS_FUCHSIA)
+  // If this is a browser process, initialize the persistent histograms system.
+  // This is done as soon as possible to ensure metrics collection coverage.
+  // For Fuchsia, persistent histogram initialization is done after field trial
+  // initialization (so that it can be controlled from the serverside and
+  // experimented with).
+  // Note: this is done before field trial initialization, so the values of
+  // `kPersistentHistogramsFeature` and `kPersistentHistogramsStorage` will
+  // not be used. Persist histograms to a memory-mapped file.
+  if (process_type.empty()) {
+    base::FilePath metrics_dir;
+    if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
+      InstantiatePersistentHistograms(
+          metrics_dir,
+          /*persistent_histograms_enabled=*/true,
+          /*storage=*/kPersistentHistogramStorageMappedFile);
+    } else {
+      NOTREACHED();
+    }
+  }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(ENABLE_NACL)
   ChromeContentClient::SetNaClEntryFunctions(nacl_plugin::PPP_GetInterface,

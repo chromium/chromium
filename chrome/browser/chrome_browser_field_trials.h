@@ -36,10 +36,6 @@ class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
   void RegisterSyntheticTrials() override;
 
  private:
-  // Instantiates dynamic trials by querying their state, to ensure they get
-  // reported as used.
-  void InstantiateDynamicTrials();
-
   // Weak pointer to the local state prefs store.
   const raw_ptr<PrefService> local_state_;
 

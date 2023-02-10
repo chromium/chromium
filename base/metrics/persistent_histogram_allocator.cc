@@ -101,17 +101,6 @@ size_t CalculateRequiredCountsBytes(size_t bucket_count) {
 
 }  // namespace
 
-BASE_FEATURE(
-    kPersistentHistogramsFeature,
-    "PersistentHistograms",
-#if BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/1295119): Enable once writable mmap() is supported.
-    FEATURE_DISABLED_BY_DEFAULT
-#else
-    FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_FUCHSIA)
-);
-
 PersistentSparseHistogramDataManager::PersistentSparseHistogramDataManager(
     PersistentMemoryAllocator* allocator)
     : allocator_(allocator), record_iterator_(allocator) {}
@@ -833,6 +822,11 @@ bool GlobalHistogramAllocator::ParseFilePath(const FilePath& path,
 
 bool GlobalHistogramAllocator::CreateSpareFile(const FilePath& spare_path,
                                                size_t size) {
+  // If the spare file already exists, it was created in a previous session and
+  // is still unused, so do nothing.
+  if (base::PathExists(spare_path)) {
+    return false;
+  }
   FilePath temp_spare_path = spare_path.AddExtension(FILE_PATH_LITERAL(".tmp"));
   bool success;
   {

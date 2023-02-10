@@ -44,15 +44,20 @@ ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
   DCHECK(local_state_);
 }
 
-ChromeBrowserFieldTrials::~ChromeBrowserFieldTrials() {
-}
+ChromeBrowserFieldTrials::~ChromeBrowserFieldTrials() = default;
 
 void ChromeBrowserFieldTrials::OnVariationsSetupComplete() {
-  // Persistent histograms must be enabled ASAP, but depends on Features.
+#if BUILDFLAG(IS_FUCHSIA)
+  // Persistent histograms must be enabled ASAP, but depends on Features. For
+  // non-Fuchsia platforms, it is enabled earlier on, and is not controlled by
+  // variations. See //chrome/app/chrome_main_delegate.cc.
   base::FilePath metrics_dir;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
-    InstantiatePersistentHistograms(metrics_dir);
+    InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
+  } else {
+    NOTREACHED();
   }
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(

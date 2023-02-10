@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -29,9 +28,6 @@ class FilePath;
 class PersistentSampleMapRecords;
 class PersistentSparseHistogramDataManager;
 class WritableSharedMemoryRegion;
-
-// Feature definition for enabling histogram persistence.
-BASE_EXPORT BASE_DECLARE_FEATURE(kPersistentHistogramsFeature);
 
 // A data manager for sparse histograms so each instance of such doesn't have
 // to separately iterate over the entire memory segment. Though this class

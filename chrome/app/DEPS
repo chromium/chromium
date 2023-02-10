@@ -27,6 +27,7 @@ include_rules = [
   "+components/gwp_asan/buildflags/buildflags.h",
   "+components/gwp_asan/client/gwp_asan.h",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
+  "+components/metrics/persistent_histograms.h",
   "+components/nacl/common",
   "+components/nacl/renderer/plugin/ppapi_entrypoints.h",
   "+components/nacl/zygote",

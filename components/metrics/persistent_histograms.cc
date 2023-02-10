@@ -21,13 +21,6 @@
 #include "components/metrics/persistent_system_profile.h"
 
 namespace {
-
-constexpr char kMappedFileStr[] = "MappedFile";
-constexpr char kLocalMemoryStr[] = "LocalMemory";
-
-const base::FeatureParam<std::string> kPersistentHistogramsStorage{
-    &base::kPersistentHistogramsFeature, "storage", kMappedFileStr};
-
 // Creating a "spare" file for persistent metrics involves a lot of I/O and
 // isn't important so delay the operation for a while after startup.
 #if BUILDFLAG(IS_ANDROID)
@@ -103,6 +96,11 @@ enum InitResult {
   kMaxValue = kNoUploadDir
 };
 
+base::FilePath GetSpareFilePath(const base::FilePath& metrics_dir) {
+  return base::GlobalHistogramAllocator::ConstructFilePath(
+      metrics_dir, kBrowserMetricsName + std::string("-spare"));
+}
+
 // Initializes persistent histograms with a memory-mapped file.
 InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
                               const base::FilePath& upload_dir) {
@@ -111,8 +109,7 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
   // and rename it with the current time and process id for use as |active_file|
   // (e.g. "BrowserMetrics/BrowserMetrics-1234ABCD-12345.pma").
   // Any unreported metrics in this file will be uploaded next session.
-  base::FilePath spare_file = base::GlobalHistogramAllocator::ConstructFilePath(
-      metrics_dir, kBrowserMetricsName + std::string("-spare"));
+  base::FilePath spare_file = GetSpareFilePath(metrics_dir);
   base::FilePath active_file =
       base::GlobalHistogramAllocator::ConstructFilePathForUploadDir(
           upload_dir, kBrowserMetricsName, base::Time::Now(),
@@ -145,15 +142,6 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
       result = kMappedFileFailed;
     }
   }
-  // Schedule the creation of a "spare" file for use on the next run.
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::LOWEST,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(
-          base::IgnoreResult(&base::GlobalHistogramAllocator::CreateSpareFile),
-          std::move(spare_file), kAllocSize),
-      base::Seconds(kSpareFileCreateDelaySeconds));
 
   return result;
 }
@@ -190,7 +178,6 @@ void InstantiatePersistentHistogramsImpl(const base::FilePath& metrics_dir,
       break;
     case kNotEnabled:
       // Persistent metric storage is disabled. Must return here.
-      // TODO(crbug.com/1183166): Run DeleteOldWindowsTempFiles() here too.
       // TODO(crbug.com/1183166): Log the histogram below in this case too.
       return;
   }
@@ -202,14 +189,13 @@ void InstantiatePersistentHistogramsImpl(const base::FilePath& metrics_dir,
   base::GlobalHistogramAllocator* allocator =
       base::GlobalHistogramAllocator::Get();
   if (!allocator) {
-    // If no allocator was created above, try to create a LocalMemomory one
-    // here. This avoids repeating the call many times above. In the case where
+    // If no allocator was created above, try to create a LocalMemory one here.
+    // This avoids repeating the call many times above. In the case where
     // persistence is disabled, an early return is done above.
     base::GlobalHistogramAllocator::CreateWithLocalMemory(kAllocSize, kAllocId,
                                                           kBrowserMetricsName);
     allocator = base::GlobalHistogramAllocator::Get();
     if (!allocator) {
-      // TODO(crbug.com/1183166): Run DeleteOldWindowsTempFiles() here too.
       return;
     }
   }
@@ -220,30 +206,41 @@ void InstantiatePersistentHistogramsImpl(const base::FilePath& metrics_dir,
 
   // Create tracking histograms for the allocator and record storage file.
   allocator->CreateTrackingHistograms(kBrowserMetricsName);
-
-#if BUILDFLAG(IS_WIN)
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::LOWEST,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&DeleteOldWindowsTempFiles, std::move(metrics_dir)),
-      kDeleteOldWindowsTempFilesDelay);
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace
 
+BASE_FEATURE(
+    kPersistentHistogramsFeature,
+    "PersistentHistograms",
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1295119): Enable once writable mmap() is supported. Also
+    // move the initialization earlier to chrome/app/chrome_main_delegate.cc.
+    base::FEATURE_DISABLED_BY_DEFAULT
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_FUCHSIA)
+);
+
+const char kPersistentHistogramStorageMappedFile[] = "MappedFile";
+const char kPersistentHistogramStorageLocalMemory[] = "LocalMemory";
+
+const base::FeatureParam<std::string> kPersistentHistogramsStorage{
+    &kPersistentHistogramsFeature, "storage",
+    kPersistentHistogramStorageMappedFile};
+
 const char kBrowserMetricsName[] = "BrowserMetrics";
 
-void InstantiatePersistentHistograms(const base::FilePath& metrics_dir) {
+void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
+                                     bool persistent_histograms_enabled,
+                                     base::StringPiece storage) {
   PersistentHistogramsMode mode = kNotEnabled;
   // Note: The extra feature check is needed so that we don't use the default
   // value of the storage param if the feature is disabled.
-  if (base::FeatureList::IsEnabled(base::kPersistentHistogramsFeature)) {
-    const std::string storage = kPersistentHistogramsStorage.Get();
-    if (storage == kMappedFileStr) {
+  if (persistent_histograms_enabled) {
+    if (storage == kPersistentHistogramStorageMappedFile) {
       mode = kMappedFile;
-    } else if (storage == kLocalMemoryStr) {
+    } else if (storage == kPersistentHistogramStorageLocalMemory) {
       mode = kLocalMemory;
     }
   }
@@ -263,4 +260,35 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir) {
 #endif
 
   InstantiatePersistentHistogramsImpl(metrics_dir, mode);
+}
+
+void PersistentHistogramsCleanup(const base::FilePath& metrics_dir) {
+  base::FilePath spare_file = GetSpareFilePath(metrics_dir);
+
+  // Schedule the creation of a "spare" file for use on the next run.
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::LOWEST,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(
+          base::IgnoreResult(&base::GlobalHistogramAllocator::CreateSpareFile),
+          std::move(spare_file), kAllocSize),
+      base::Seconds(kSpareFileCreateDelaySeconds));
+
+#if BUILDFLAG(IS_WIN)
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::LOWEST,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&DeleteOldWindowsTempFiles, metrics_dir),
+      kDeleteOldWindowsTempFilesDelay);
+#endif  // BUILDFLAG(IS_WIN)
+}
+
+void InstantiatePersistentHistogramsWithFeaturesAndCleanup(
+    const base::FilePath& metrics_dir) {
+  InstantiatePersistentHistograms(
+      metrics_dir, base::FeatureList::IsEnabled(kPersistentHistogramsFeature),
+      kPersistentHistogramsStorage.Get());
+  PersistentHistogramsCleanup(metrics_dir);
 }
