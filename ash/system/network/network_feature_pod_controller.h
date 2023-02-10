@@ -9,6 +9,7 @@
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/network/network_feature_pod_button.h"
+#include "ash/system/network/network_feature_tile.h"
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
@@ -27,6 +28,7 @@ class ASH_EXPORT NetworkFeaturePodController
     : public network_icon::AnimationObserver,
       public FeaturePodControllerBase,
       public NetworkFeaturePodButton::Delegate,
+      public NetworkFeatureTile::Delegate,
       public TrayNetworkStateObserver {
  public:
   explicit NetworkFeaturePodController(
@@ -50,6 +52,9 @@ class ASH_EXPORT NetworkFeaturePodController
   // NetworkFeaturePodButton::Delegate:
   void OnFeaturePodButtonThemeChanged() override;
 
+  // NetworkFeatureTile::Delegate:
+  void OnFeatureTileThemeChanged() override;
+
   // TrayNetworkStateObserver:
   void ActiveNetworkStateChanged() override;
 
@@ -59,6 +64,9 @@ class ASH_EXPORT NetworkFeaturePodController
   std::u16string ComputeButtonSubLabel(
       const chromeos::network_config::mojom::NetworkStateProperties* network)
       const;
+
+  // Purges network icon cache and updates the button state.
+  void PropagateThemeChanged();
 
   // Updates |button_| state to reflect the current state of networks.
   void UpdateButtonStateIfExists();

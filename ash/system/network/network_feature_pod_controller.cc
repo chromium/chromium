@@ -186,10 +186,10 @@ FeaturePodButton* NetworkFeaturePodController::CreateButton() {
 std::unique_ptr<FeatureTile> NetworkFeaturePodController::CreateTile(
     bool compact) {
   DCHECK(features::IsQsRevampEnabled());
-  auto tile = std::make_unique<FeatureTile>(
+  auto tile = std::make_unique<NetworkFeatureTile>(
+      /*delegate=*/this,
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
-                          weak_ptr_factory_.GetWeakPtr()),
-      /*is_togglable=*/true);
+                          weak_ptr_factory_.GetWeakPtr()));
   tile_ = tile.get();
   UpdateButtonStateIfExists();
   TrackVisibilityUMA();
@@ -222,7 +222,7 @@ void NetworkFeaturePodController::OnLabelPressed() {
   tray_controller_->ShowNetworkDetailedView(/*force=*/true);
 }
 
-void NetworkFeaturePodController::OnFeaturePodButtonThemeChanged() {
+void NetworkFeaturePodController::PropagateThemeChanged() {
   // All of the network icons will need to be redrawn.
   Shell::Get()
       ->system_tray_model()
@@ -230,6 +230,14 @@ void NetworkFeaturePodController::OnFeaturePodButtonThemeChanged() {
       ->PurgeNetworkIconCache();
 
   UpdateButtonStateIfExists();
+}
+
+void NetworkFeaturePodController::OnFeaturePodButtonThemeChanged() {
+  PropagateThemeChanged();
+}
+
+void NetworkFeaturePodController::OnFeatureTileThemeChanged() {
+  PropagateThemeChanged();
 }
 
 void NetworkFeaturePodController::ActiveNetworkStateChanged() {
@@ -274,12 +282,6 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
   // Modifying network state is not allowed when the screen is locked.
   if (is_qs_revamp_enabled) {
     tile_->SetEnabled(!Shell::Get()->session_controller()->IsScreenLocked());
-  } else {
-    button_->SetEnabled(!Shell::Get()->session_controller()->IsScreenLocked());
-  }
-
-  // TODO(263975225): Update colors of ActiveNetworkIcon in QsRevamp.
-  if (is_qs_revamp_enabled) {
     tile_->SetImage(
         tile_->GetEnabled()
             ? active_network_icon->GetImage(ActiveNetworkIcon::Type::kSingle,
@@ -288,8 +290,8 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
                   ActiveNetworkIcon::Type::kSingle,
                   network_icon::ICON_TYPE_FEATURE_POD_DISABLED,
                   &image_animating));
-
   } else {
+    button_->SetEnabled(!Shell::Get()->session_controller()->IsScreenLocked());
     button_->icon_button()->SetImage(
         views::Button::STATE_NORMAL,
         active_network_icon->GetImage(ActiveNetworkIcon::Type::kSingle,
@@ -318,27 +320,20 @@ void NetworkFeaturePodController::UpdateButtonStateIfExists() {
   if (is_qs_revamp_enabled) {
     tile_->SetLabel(ComputeButtonLabel(default_network));
     tile_->SetSubLabel(ComputeButtonSubLabel(default_network));
-  } else {
-    button_->SetLabel(ComputeButtonLabel(default_network));
-    button_->SetSubLabel(ComputeButtonSubLabel(default_network));
-  }
-
-  if (is_qs_revamp_enabled) {
     if (!tile_->drill_in_button()) {
       tile_->CreateDrillInButton(
           base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
                               weak_ptr_factory_.GetWeakPtr()),
           tooltip);
     }
-  }
-
-  if (is_qs_revamp_enabled) {
     if (!tile_->GetEnabled()) {
       tile_->SetTooltipText(tooltip);
       tile_->SetDrillInButtonTooltipText(tooltip);
       return;
     }
   } else {
+    button_->SetLabel(ComputeButtonLabel(default_network));
+    button_->SetSubLabel(ComputeButtonSubLabel(default_network));
     if (!button_->GetEnabled()) {
       button_->SetIconAndLabelTooltips(tooltip);
       return;

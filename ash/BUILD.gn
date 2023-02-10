@@ -1504,6 +1504,8 @@ component("ash") {
     "system/network/network_feature_pod_button.h",
     "system/network/network_feature_pod_controller.cc",
     "system/network/network_feature_pod_controller.h",
+    "system/network/network_feature_tile.cc",
+    "system/network/network_feature_tile.h",
     "system/network/network_icon.cc",
     "system/network/network_icon.h",
     "system/network/network_icon_animation.cc",

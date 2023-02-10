@@ -44,6 +44,8 @@ namespace network_icon {
 
 namespace {
 
+constexpr SkColor kQsRevampToggledIconColor = gfx::kGoogleGrey900;
+
 // class used for maintaining a map of network state and images.
 class NetworkIconImpl {
  public:
@@ -450,6 +452,8 @@ NetworkIconImpl* FindAndUpdateImageImpl(const NetworkStateProperties* network,
 // Public interface
 
 SkColor GetDefaultColorForIconType(IconType icon_type) {
+  // TODO(b/268644226): Use a ColorProvider accessed from a view to apply the
+  // new GM3 colors when jellyroll is enabled.
   auto* ash_color_provider = AshColorProvider::Get();
   switch (icon_type) {
     case ICON_TYPE_TRAY_OOBE:
@@ -458,8 +462,11 @@ SkColor GetDefaultColorForIconType(IconType icon_type) {
       return ash_color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kButtonIconColor);
     case ICON_TYPE_FEATURE_POD_TOGGLED:
-      return ash_color_provider->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
+      return features::IsQsRevampEnabled()
+                 ? kQsRevampToggledIconColor
+                 : ash_color_provider->GetContentLayerColor(
+                       AshColorProvider::ContentLayerType::
+                           kButtonIconColorPrimary);
     case ICON_TYPE_FEATURE_POD_DISABLED:
       return color_utils::GetResultingPaintColor(
           ColorUtil::GetDisabledColor(
