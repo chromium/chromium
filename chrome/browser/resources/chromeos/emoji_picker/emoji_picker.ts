@@ -87,6 +87,7 @@ export class EmojiPicker extends PolymerElement {
       incognito: {type: Boolean, value: true},
       gifSupport: {type: Boolean, value: false},
       gifDataInitialised: {type: Boolean, value: false},
+      nextGifPos: {type: Object, value: () => ({})},
       errorMessage: {type: String, value: null},
       status: {type: Status, value: null},
     };
@@ -115,6 +116,7 @@ export class EmojiPicker extends PolymerElement {
   private highlightBarMoving: boolean = false;
   private groupTabsMoving: boolean = false;
   private gifDataInitialised: boolean;
+  private nextGifPos: {[key: string]: string};
   private errorMessage: string|null;
   private status: Status|null;
   private previousGifValidation: Date;
@@ -335,6 +337,9 @@ export class EmojiPicker extends PolymerElement {
                   gif: this.setGifGroupsPagination(
                       [{name: constants.TRENDING}, ...gifCategories]),
                 };
+
+                gifCategories.map(
+                    category => this.nextGifPos[category.name] = '');
                 this.allCategoryTabs = gifCategoryTabs(categoryTabs);
               });
 
@@ -363,7 +368,7 @@ export class EmojiPicker extends PolymerElement {
               category: CategoryEnum.GIF,
               emoji: trendingGifsElement,
             }];
-
+            this.nextGifPos[constants.TRENDING] = featuredGifs.next;
             this.gifDataInitialised = true;
 
             this.updateCategoryData(trendingGifs, CategoryEnum.GIF);
@@ -470,7 +475,9 @@ export class EmojiPicker extends PolymerElement {
     });
 
     // Update emoji data for other features such as search.
-    this.push('categoriesData', ...data);
+    if (category !== CategoryEnum.GIF) {
+      this.push('categoriesData', ...data);
+    }
     // Update group elements for the emoji picker.
     this.push('categoriesGroupElements', ...categoriesGroupElements);
 
@@ -601,6 +608,7 @@ export class EmojiPicker extends PolymerElement {
               ?.name as string;
       const {searchGifs} = await this.apiProxy.searchGifs(searchQuery);
       const gifElements = this.apiProxy.convertTenorGifsToEmoji(searchGifs);
+      this.nextGifPos[searchQuery] = searchGifs.next;
 
       const activeCategoryIndex =
           this.allCategoryTabs.findIndex(tab => tab.groupId === activeGroupId);
@@ -649,6 +657,11 @@ export class EmojiPicker extends PolymerElement {
     this.scrollTimeout = setTimeout(() => {
       this.updateActiveCategory();
       this.updateActiveGroup();
+      // Using ! here as this.status will always exist when GIF support is on.
+      if (this.category === CategoryEnum.GIF &&
+          !this.isGifInErrorState(this.status!)) {
+        this.checkScrollPosition();
+      }
     }, 100);
   }
 
@@ -746,6 +759,11 @@ export class EmojiPicker extends PolymerElement {
     // get bounding rect of scrollable emoji region.
     const thisRect = this.$.groups.getBoundingClientRect();
 
+    return this.getActiveGroupAndId(thisRect).id;
+  }
+
+  getActiveGroupAndId(thisRect: DOMRect):
+      {group: HTMLElement|undefined, id: string} {
     const groupElements = Array.from(
         this.$['groups']?.querySelectorAll<HTMLElement>('[data-group]') ?? []);
 
@@ -755,20 +773,85 @@ export class EmojiPicker extends PolymerElement {
     const activeGroup = groupElements.find(
         el => el.getBoundingClientRect().bottom - thisRect.top >= 20);
 
+    let activeGroupId;
     if (activeGroup === undefined) {
       if (this.status && this.isGifInErrorState(this.status)) {
         // If there's an error Trending gifs will be empty, so activeGroup
         // cannot be found from scroll position, have to set it manually.
-        return constants.TRENDING_GROUP_ID;
+        activeGroupId = constants.TRENDING_GROUP_ID;
       } else {
-        return 'emoji-history';
+        activeGroupId = 'emoji-history';
       }
     } else {
-      return activeGroup.dataset['group'] ?? '';
+      activeGroupId = activeGroup.dataset['group'] ?? '';
+    }
+    return {group: activeGroup, id: activeGroupId};
+  }
+
+  private async checkScrollPosition(): Promise<void> {
+    if (this.activeInfiniteGroupId === null) {
+      return;
+    }
+
+    // get bounding rect of scrollable emoji region.
+    const thisRect = this.$.groups.getBoundingClientRect();
+
+    const activeGroupInfo = this.getActiveGroupAndId(thisRect);
+    if (!activeGroupInfo.group) {
+      return;
+    }
+
+    // Don't append new GIFs if the initial set is still rendering.
+    if (activeGroupInfo.group.getBoundingClientRect().height <=
+        thisRect.height) {
+      return;
+    }
+
+    // If there's less than 300px until the end of the GIF category, load more
+    // GIFs.
+    if (activeGroupInfo.group.getBoundingClientRect().bottom -
+            thisRect.bottom <=
+        300) {
+      // Using ! here as you can only scroll on a GIF category after the first
+      // set of fetched GIFs have been pushed to this.categoriesGroupElements,
+      // i.e. There will always be an element group that matches with the
+      // current activeInfiniteGroupId.
+      const searchQuery =
+          this.categoriesGroupElements
+              .find(
+                  group => group.groupId === this.activeInfiniteGroupId)!.name;
+      // No need to append to history group.
+      if (searchQuery === constants.RECENTLY_USED) {
+        return;
+      }
+
+      let gifElements;
+      if (searchQuery === constants.TRENDING) {
+        const {featuredGifs} =
+            await this.apiProxy.getFeaturedGifs(this.nextGifPos[searchQuery]);
+        gifElements = featuredGifs;
+      } else {
+        const {searchGifs} = await this.apiProxy.searchGifs(
+            searchQuery, this.nextGifPos[searchQuery]);
+        gifElements = searchGifs;
+      }
+
+      this.nextGifPos[searchQuery] = gifElements.next;
+      const gifs = this.apiProxy.convertTenorGifsToEmoji(gifElements);
+      this.appendGifElements(searchQuery, gifs);
     }
   }
 
-  /**
+  private appendGifElements(subcategory: string, gifs: EmojiVariants[]) {
+    const categoryIndex =
+        this.categoriesGroupElements.findIndex(tab => tab.name === subcategory);
+    if (categoryIndex === -1) {
+      return;
+    }
+    this.push(['categoriesGroupElements', categoryIndex, 'emoji'], ...gifs);
+  }
+
+  /*
    * Active group is updated with scroll position for emoji types with finite
    * elements (emojis, emoticons, symbols). However, active groups for emoji
    * types with infinite will be passed through a groupId because they cannot be
@@ -779,6 +862,11 @@ export class EmojiPicker extends PolymerElement {
     if (groupId == null) {
       activeGroupId = this.getActiveGroupIdFromScrollPosition();
     }
+
+    if (this.category === CategoryEnum.GIF) {
+      this.set('activeInfiniteGroupId', activeGroupId);
+    }
+
     this.set(
         'pagination', this.getPaginationFromGroupId(activeGroupId as string));
     this.updateChevrons();

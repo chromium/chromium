@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TRENDING_GROUP_ID} from 'chrome://emoji-picker/constants.js';
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EMOJI_IMG_BUTTON_CLICK, EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
@@ -9,7 +10,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {deepQuerySelector, waitForCondition, isGroupButtonActive, waitWithTimeout} from './emoji_picker_test_util.js';
+import {deepQuerySelector, isGroupButtonActive, timeout, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
 import {TestEmojiPickerApiProxyImpl} from './test_emoji_picker_api_proxy.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
@@ -28,6 +29,11 @@ function historyGroupSelector(category) {
       `emoji-group[category="${category}"]`;
 }
 
+function subcategoryGroupSelector(category, subcategory) {
+  return `[data-group="${subcategory}"] > ` +
+      `emoji-group[category="${category}"]`;
+}
+
 export function GifTestSuite(category) {
   suite(`emoji-picker-extension-${category}`, () => {
     /** @type {!EmojiPicker} */
@@ -36,6 +42,10 @@ export function GifTestSuite(category) {
     let findInEmojiPicker;
     /** @type {function(...!string): ?HTMLElement} */
     let findEmojiFirstButton;
+    /** @type {function(string): void} */
+    let scrollDown;
+    /** @type {function(): void} */
+    let scrollToBottom;
     /** @type {Array<string>} */
     const categoryList = ['emoji', 'symbol', 'emoticon', 'gif'];
     /** @type {number} */
@@ -74,6 +84,26 @@ export function GifTestSuite(category) {
           return emojiElement.firstEmojiButton();
         }
         return null;
+      };
+
+      scrollDown = (height) => {
+        const thisRect = emojiPicker.$['groups'];
+        if (thisRect) {
+          thisRect.scrollTop += height;
+        }
+      };
+
+      scrollToBottom = () => {
+        const thisRect = emojiPicker.$['groups'];
+        if (!thisRect) {
+          return;
+        }
+        const searchResultRect =
+            emojiPicker.getActiveGroupAndId(thisRect.getBoundingClientRect())
+                .group;
+        if (searchResultRect) {
+          thisRect.scrollTop += searchResultRect.getBoundingClientRect().bottom;
+        }
       };
 
       categoryIndex = categoryList.indexOf(category);
@@ -221,8 +251,8 @@ export function GifTestSuite(category) {
         });
 
     test(
-        `the first tab of the next pagination should be active when clicking at
-          either chevron.`,
+        `the first tab of the next pagination should be active when clicking
+        at either chevron.`,
         async () => {
           const leftChevron = findInEmojiPicker('#left-chevron');
           const rightChevron = findInEmojiPicker('#right-chevron');
@@ -247,5 +277,305 @@ export function GifTestSuite(category) {
               () => !isGroupButtonActive(firstGifTabInSecondPage) &&
                   isGroupButtonActive(firstGifTabInFirstPage));
         });
+
+    test('Trending should display GIFs.', async () => {
+      const categoryButton =
+          findInEmojiPicker('emoji-search')
+              .shadowRoot
+              .querySelectorAll('emoji-category-button')[categoryIndex]
+              .shadowRoot.querySelector('cr-icon-button');
+      categoryButton.click();
+      flush();
+
+      // Wait for correct activeInfiniteGroupId to be set.
+      await waitForCondition(
+          () => emojiPicker.activeInfiniteGroupId === TRENDING_GROUP_ID);
+
+      const gifResults =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('.emoji-button');
+      assertEquals(gifResults.length, 6);
+    });
+
+    test('Trending should display GIFs in the correct order.', async () => {
+      const categoryButton =
+          findInEmojiPicker('emoji-search')
+              .shadowRoot
+              .querySelectorAll('emoji-category-button')[categoryIndex]
+              .shadowRoot.querySelector('cr-icon-button');
+      categoryButton.click();
+      flush();
+
+      // Wait for correct activeInfiniteGroupId to be set.
+      await waitForCondition(
+          () => emojiPicker.activeInfiniteGroupId === TRENDING_GROUP_ID);
+
+      const gifResults =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('.emoji-button');
+      assertEquals(gifResults.length, 6);
+
+      // Check display is correct.
+      const leftColResults =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('div.left-column > .emoji-button');
+      assertEquals(leftColResults.length, 3);
+      assert(leftColResults[0].alt === 'Trending Left 1');
+      assert(leftColResults[1].alt === 'Trending Left 2');
+      assert(leftColResults[2].alt === 'Trending Left 3');
+
+      const rightColResults =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('div.right-column > .emoji-button');
+      assertEquals(rightColResults.length, 3);
+      assert(rightColResults[0].alt === 'Trending Right 1');
+      assert(rightColResults[1].alt === 'Trending Right 2');
+      assert(rightColResults[2].alt === 'Trending Right 3');
+    });
+
+    test(
+        'User does not load more GIFs if they have not scrolled down' +
+            ' far enough',
+        async () => {
+          const categoryButton =
+              findInEmojiPicker('emoji-search')
+                  .shadowRoot
+                  .querySelectorAll('emoji-category-button')[categoryIndex]
+                  .shadowRoot.querySelector('cr-icon-button');
+          categoryButton.click();
+          flush();
+
+          // Wait for correct activeInfiniteGroupId to be set.
+          await waitForCondition(
+              () => emojiPicker.activeInfiniteGroupId === TRENDING_GROUP_ID);
+
+          const gifResults1 =
+              findInEmojiPicker(
+                  subcategoryGroupSelector(
+                      category, emojiPicker.activeInfiniteGroupId))
+                  .shadowRoot.querySelectorAll('.emoji-button');
+          assertEquals(gifResults1.length, 6);
+
+          // Scroll down a little bit to activate checking if we need more GIFs.
+          scrollDown(100);
+
+          // Wait for emoji picker to scroll and check if more GIFs need to be
+          // appended. Not possible to use waitForCondition here as nothing is
+          // actually supposed to change.
+          await timeout(400);
+
+          const gifResults2 =
+              findInEmojiPicker(
+                  subcategoryGroupSelector(
+                      category, emojiPicker.activeInfiniteGroupId))
+                  .shadowRoot.querySelectorAll('.emoji-button');
+          assertEquals(gifResults2.length, 6);
+        });
+
+    test(
+        'More GIFs are loaded when user scrolls down far enough.', async () => {
+          const categoryButton =
+              findInEmojiPicker('emoji-search')
+                  .shadowRoot
+                  .querySelectorAll('emoji-category-button')[categoryIndex]
+                  .shadowRoot.querySelector('cr-icon-button');
+          categoryButton.click();
+          flush();
+
+          // Wait for correct activeInfiniteGroupId to be set.
+          await waitForCondition(
+              () => emojiPicker.activeInfiniteGroupId === TRENDING_GROUP_ID);
+
+          const gifResults1 =
+              findInEmojiPicker(
+                  subcategoryGroupSelector(
+                      category, emojiPicker.activeInfiniteGroupId))
+                  .shadowRoot.querySelectorAll('.emoji-button');
+          assertEquals(gifResults1.length, 6);
+
+          scrollToBottom();
+
+          // Wait for Emoji Picker to scroll and render new GIFs.
+          await waitForCondition(
+              () => findInEmojiPicker(
+                        subcategoryGroupSelector(
+                            category, emojiPicker.activeInfiniteGroupId))
+                        .shadowRoot.querySelectorAll('.emoji-button')
+                        .length === 12);
+
+          const gifResults2 =
+              findInEmojiPicker(
+                  subcategoryGroupSelector(
+                      category, emojiPicker.activeInfiniteGroupId))
+                  .shadowRoot.querySelectorAll('.emoji-button');
+          assertEquals(gifResults2.length, 12);
+        });
+
+    test('Appended GIFs are displayed in the correct order', async () => {
+      const categoryButton =
+          findInEmojiPicker('emoji-search')
+              .shadowRoot
+              .querySelectorAll('emoji-category-button')[categoryIndex]
+              .shadowRoot.querySelector('cr-icon-button');
+      categoryButton.click();
+      flush();
+
+      // Wait for correct activeInfiniteGroupId to be set.
+      await waitForCondition(
+          () => emojiPicker.activeInfiniteGroupId === TRENDING_GROUP_ID);
+
+      const gifResults1 =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('.emoji-button');
+      assertEquals(gifResults1.length, 6);
+
+      scrollToBottom();
+
+      // Wait for Emoji Picker to scroll and render new GIFs.
+      await waitForCondition(
+          () => findInEmojiPicker(
+                    subcategoryGroupSelector(
+                        category, emojiPicker.activeInfiniteGroupId))
+                    .shadowRoot.querySelectorAll('.emoji-button')
+                    .length === 12);
+
+      const gifResults2 =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('.emoji-button');
+      assertEquals(gifResults2.length, 12);
+
+      // Check display is correct.
+      const leftColResults =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('div.left-column > .emoji-button');
+      assertEquals(leftColResults.length, 6);
+      assert(leftColResults[0].alt === 'Trending Left 1');
+      assert(leftColResults[1].alt === 'Trending Left 2');
+      assert(leftColResults[2].alt === 'Trending Left 3');
+      assert(leftColResults[3].alt === 'Trending Left 4');
+      assert(leftColResults[4].alt === 'Trending Left 5');
+      assert(leftColResults[5].alt === 'Trending Left 6');
+
+      const rightColResults =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('div.right-column > .emoji-button');
+      assertEquals(rightColResults.length, 6);
+      assert(rightColResults[0].alt === 'Trending Right 1');
+      assert(rightColResults[1].alt === 'Trending Right 2');
+      assert(rightColResults[2].alt === 'Trending Right 3');
+      assert(rightColResults[3].alt === 'Trending Right 4');
+      assert(rightColResults[4].alt === 'Trending Right 5');
+      assert(rightColResults[5].alt === 'Trending Right 6');
+    });
+
+    test('New GIFs are loaded when swapping categories', async () => {
+      const categoryButton =
+          findInEmojiPicker('emoji-search')
+              .shadowRoot
+              .querySelectorAll('emoji-category-button')[categoryIndex]
+              .shadowRoot.querySelector('cr-icon-button');
+      categoryButton.click();
+      flush();
+
+      // Wait for correct activeInfiniteGroupId to be set.
+      await waitForCondition(
+          () => emojiPicker.activeInfiniteGroupId === TRENDING_GROUP_ID);
+
+      const rightChevron = findInEmojiPicker('#right-chevron');
+      await flush();
+      rightChevron.click();
+      await timeout(50);
+
+      const leftColResults =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('div.left-column > .emoji-button');
+      assertEquals(leftColResults.length, 3);
+      assert(leftColResults[0].alt === 'Left 1');
+      assert(leftColResults[1].alt === 'Left 2');
+      assert(leftColResults[2].alt === 'Left 3');
+
+      const rightColResults =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('div.right-column > .emoji-button');
+      assertEquals(rightColResults.length, 3);
+      assert(rightColResults[0].alt === 'Right 1');
+      assert(rightColResults[1].alt === 'Right 2');
+      assert(rightColResults[2].alt === 'Right 3');
+    });
+
+    test('GIFs append correctly for non-Trending categories.', async () => {
+      const categoryButton =
+          findInEmojiPicker('emoji-search')
+              .shadowRoot
+              .querySelectorAll('emoji-category-button')[categoryIndex]
+              .shadowRoot.querySelector('cr-icon-button');
+      categoryButton.click();
+      flush();
+
+      // Wait for correct activeInfiniteGroupId to be set.
+      await waitForCondition(
+          () => emojiPicker.activeInfiniteGroupId === TRENDING_GROUP_ID);
+
+      const rightChevron = findInEmojiPicker('#right-chevron');
+      await flush();
+      rightChevron.click();
+      await timeout(50);
+
+      const gifResults1 =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('.emoji-button');
+      assertEquals(gifResults1.length, 6);
+
+      scrollToBottom();
+
+      // Wait for Emoji Picker to scroll and render new GIFs.
+      await waitForCondition(
+          () => findInEmojiPicker(
+                    subcategoryGroupSelector(
+                        category, emojiPicker.activeInfiniteGroupId))
+                    .shadowRoot.querySelectorAll('.emoji-button')
+                    .length === 12);
+
+      const gifResults2 =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('.emoji-button');
+      assertEquals(gifResults2.length, 12);
+
+      const leftColResults =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('div.left-column > .emoji-button');
+      assertEquals(leftColResults.length, 6);
+      assert(leftColResults[0].alt === 'Left 1');
+      assert(leftColResults[1].alt === 'Left 2');
+      assert(leftColResults[2].alt === 'Left 3');
+      assert(leftColResults[3].alt === 'Left 4');
+      assert(leftColResults[4].alt === 'Left 5');
+      assert(leftColResults[5].alt === 'Left 6');
+
+      const rightColResults =
+          findInEmojiPicker(subcategoryGroupSelector(
+                                category, emojiPicker.activeInfiniteGroupId))
+              .shadowRoot.querySelectorAll('div.right-column > .emoji-button');
+      assertEquals(rightColResults.length, 6);
+      assert(rightColResults[0].alt === 'Right 1');
+      assert(rightColResults[1].alt === 'Right 2');
+      assert(rightColResults[2].alt === 'Right 3');
+      assert(rightColResults[3].alt === 'Right 4');
+      assert(rightColResults[4].alt === 'Right 5');
+      assert(rightColResults[5].alt === 'Right 6');
+    });
   });
 }

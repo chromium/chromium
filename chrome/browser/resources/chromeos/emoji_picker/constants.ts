@@ -50,6 +50,7 @@ export const EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX =
 export const TAB_BUTTON_MARGIN_PX = `${TAB_BUTTON_MARGIN}px`;
 export const TEXT_GROUP_BUTTON_PADDING_PX = `${TEXT_GROUP_BUTTON_PADDING}px`;
 export const TRENDING = 'Trending';
+export const RECENTLY_USED = 'Recently used';
 // If more groups are added to emoji, symbol or emoticon this number will change
 export const TRENDING_GROUP_ID = '30';  // TODO(b/266024083): Make this dynamic
 export const NO_INTERNET_ERROR_MSG = 'Connect to the internet to view GIFs';
