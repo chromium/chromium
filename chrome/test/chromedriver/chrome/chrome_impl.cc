@@ -27,6 +27,7 @@
 #include "chrome/test/chromedriver/chrome/page_tracker.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -499,15 +500,14 @@ Status ChromeImpl::SetWindowBounds(Window* window,
         &result);
     if (status.IsError())
       return Status(kUnknownError, "JavaScript code failed", status);
-    const base::Value* width =
-        result->FindKeyOfType("width", base::Value::Type::INTEGER);
-    const base::Value* height =
-        result->FindKeyOfType("height", base::Value::Type::INTEGER);
-    if (width == nullptr || height == nullptr)
+    const absl::optional<int> width = result->GetDict().FindInt("width");
+    const absl::optional<int> height = result->GetDict().FindInt("height");
+    if (!width || !height) {
       return Status(kUnknownError, "unexpected JavaScript result");
+    }
     auto window_bounds = std::make_unique<base::Value::Dict>();
-    window_bounds->Set("width", width->GetInt());
-    window_bounds->Set("height", height->GetInt());
+    window_bounds->Set("width", width.value());
+    window_bounds->Set("height", height.value());
     window_bounds->Set("left", 0);
     window_bounds->Set("top", 0);
     params.Set("bounds", window_bounds->Clone());
@@ -592,31 +592,32 @@ Status ChromeImpl::ParseWindow(const base::Value& params, Window* window) {
 
 Status ChromeImpl::ParseWindowBounds(const base::Value& params,
                                      Window* window) {
-  const base::Value* value = params.FindKey("bounds");
-  if (!value || !value->is_dict())
+  const base::Value::Dict* value = params.GetDict().FindDict("bounds");
+  if (!value) {
     return Status(kUnknownError, "no window bounds in response");
+  }
 
-  const std::string* state = value->FindStringKey("windowState");
+  const std::string* state = value->FindString("windowState");
   if (!state)
     return Status(kUnknownError, "no window state in window bounds");
   window->state = *state;
 
-  absl::optional<int> left = value->FindIntKey("left");
+  absl::optional<int> left = value->FindInt("left");
   if (!left)
     return Status(kUnknownError, "no left offset in window bounds");
   window->left = *left;
 
-  absl::optional<int> top = value->FindIntKey("top");
+  absl::optional<int> top = value->FindInt("top");
   if (!top)
     return Status(kUnknownError, "no top offset in window bounds");
   window->top = *top;
 
-  absl::optional<int> width = value->FindIntKey("width");
+  absl::optional<int> width = value->FindInt("width");
   if (!width)
     return Status(kUnknownError, "no width in window bounds");
   window->width = *width;
 
-  absl::optional<int> height = value->FindIntKey("height");
+  absl::optional<int> height = value->FindInt("height");
   if (!height)
     return Status(kUnknownError, "no height in window bounds");
   window->height = *height;
