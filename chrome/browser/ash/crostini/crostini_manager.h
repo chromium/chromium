@@ -20,12 +20,12 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crostini/crostini_low_disk_notification.h"
-#include "chrome/browser/ash/crostini/crostini_remover.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/termina_installer.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_remover.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
@@ -812,7 +812,7 @@ class CrostiniManager : public KeyedService,
                         base::OnceClosure closure);
 
   // Callback for CrostiniManager::RemoveCrostini.
-  void OnRemoveCrostini(CrostiniRemover::Result result);
+  void OnRemoveCrostini(guest_os::GuestOsRemover::Result result);
 
   void OnRemoveTermina(bool success);
 

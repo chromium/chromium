@@ -39,7 +39,6 @@
 #include "chrome/browser/ash/crostini/crostini_mount_provider.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/ash/crostini/crostini_remover.h"
 #include "chrome/browser/ash/crostini/crostini_reporting_util.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_sshfs.h"
@@ -51,6 +50,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_remover.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
@@ -2288,8 +2288,8 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
   }
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Currently, |remove_crostini_callbacks_| is only used just before running
-  // CrostiniRemover. If that changes, then we should check for a currently
-  // running uninstaller in some other way.
+  // guest_os::GuestOsRemover. If that changes, then we should check for a
+  // currently running uninstaller in some other way.
   if (!remove_crostini_callbacks_.empty()) {
     LOG(ERROR)
         << "Tried to install crostini while crostini uninstaller is running";
@@ -3451,7 +3451,7 @@ void CrostiniManager::RemoveCrostini(std::string vm_name,
                                      RemoveCrostiniCallback callback) {
   AddRemoveCrostiniCallback(std::move(callback));
 
-  auto crostini_remover = base::MakeRefCounted<CrostiniRemover>(
+  auto crostini_remover = base::MakeRefCounted<guest_os::GuestOsRemover>(
       profile_, guest_os::VmType::TERMINA, std::move(vm_name),
       base::BindOnce(&CrostiniManager::OnRemoveCrostini,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -3459,9 +3459,10 @@ void CrostiniManager::RemoveCrostini(std::string vm_name,
   auto abort_callback = base::BarrierClosure(
       restarters_by_container_.size(),
       base::BindOnce(
-          [](scoped_refptr<CrostiniRemover> remover) {
+          [](scoped_refptr<guest_os::GuestOsRemover> remover) {
             content::GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE, base::BindOnce(&CrostiniRemover::RemoveVm, remover));
+                FROM_HERE,
+                base::BindOnce(&guest_os::GuestOsRemover::RemoveVm, remover));
           },
           crostini_remover));
 
@@ -3470,18 +3471,19 @@ void CrostiniManager::RemoveCrostini(std::string vm_name,
   }
 }
 
-void CrostiniManager::OnRemoveCrostini(CrostiniRemover::Result result) {
+void CrostiniManager::OnRemoveCrostini(
+    guest_os::GuestOsRemover::Result result) {
   switch (result) {
-    case CrostiniRemover::Result::kStopVmNoResponse:
+    case guest_os::GuestOsRemover::Result::kStopVmNoResponse:
       FinishUninstall(CrostiniResult::STOP_VM_NO_RESPONSE);
       return;
-    case CrostiniRemover::Result::kStopVmFailed:
+    case guest_os::GuestOsRemover::Result::kStopVmFailed:
       FinishUninstall(CrostiniResult::VM_STOP_FAILED);
       return;
-    case CrostiniRemover::Result::kDestroyDiskImageFailed:
+    case guest_os::GuestOsRemover::Result::kDestroyDiskImageFailed:
       FinishUninstall(CrostiniResult::DESTROY_DISK_IMAGE_FAILED);
       return;
-    case CrostiniRemover::Result::kSuccess:
+    case guest_os::GuestOsRemover::Result::kSuccess:
       // Keep going instead of finishing now.
       break;
   }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crostini/crostini_remover.h"
+#include "chrome/browser/ash/guest_os/guest_os_remover.h"
 
 #include <string>
 #include <utility>
@@ -17,20 +17,20 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace crostini {
+namespace guest_os {
 
-CrostiniRemover::CrostiniRemover(Profile* profile,
-                                 guest_os::VmType vm_type,
-                                 std::string vm_name,
-                                 base::OnceCallback<void(Result)> callback)
+GuestOsRemover::GuestOsRemover(Profile* profile,
+                               guest_os::VmType vm_type,
+                               std::string vm_name,
+                               base::OnceCallback<void(Result)> callback)
     : profile_(profile),
       vm_type_(vm_type),
       vm_name_(std::move(vm_name)),
       callback_(std::move(callback)) {}
 
-CrostiniRemover::~CrostiniRemover() = default;
+GuestOsRemover::~GuestOsRemover() = default;
 
-void CrostiniRemover::RemoveVm() {
+void GuestOsRemover::RemoveVm() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   vm_tools::concierge::StopVmRequest request;
   request.set_owner_id(ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
@@ -38,10 +38,10 @@ void CrostiniRemover::RemoveVm() {
 
   ash::ConciergeClient::Get()->StopVm(
       std::move(request),
-      base::BindOnce(&CrostiniRemover::StopVmFinished, this));
+      base::BindOnce(&GuestOsRemover::StopVmFinished, this));
 }
 
-void CrostiniRemover::StopVmFinished(
+void GuestOsRemover::StopVmFinished(
     absl::optional<vm_tools::concierge::StopVmResponse> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!response) {
@@ -70,10 +70,10 @@ void CrostiniRemover::StopVmFinished(
 
   ash::ConciergeClient::Get()->DestroyDiskImage(
       std::move(request),
-      base::BindOnce(&CrostiniRemover::DestroyDiskImageFinished, this));
+      base::BindOnce(&GuestOsRemover::DestroyDiskImageFinished, this));
 }
 
-void CrostiniRemover::DestroyDiskImageFinished(
+void GuestOsRemover::DestroyDiskImageFinished(
     absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!response) {
@@ -94,4 +94,4 @@ void CrostiniRemover::DestroyDiskImageFinished(
   return;
 }
 
-}  // namespace crostini
+}  // namespace guest_os

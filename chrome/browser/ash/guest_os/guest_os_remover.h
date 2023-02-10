@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_REMOVER_H_
-#define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_REMOVER_H_
+#ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_REMOVER_H_
+#define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_REMOVER_H_
 
 #include <string>
 #include "base/functional/callback.h"
@@ -14,9 +14,9 @@
 
 class Profile;
 
-namespace crostini {
+namespace guest_os {
 
-class CrostiniRemover : public base::RefCountedThreadSafe<CrostiniRemover> {
+class GuestOsRemover : public base::RefCountedThreadSafe<GuestOsRemover> {
  public:
   enum class Result {
     kSuccess,
@@ -24,20 +24,20 @@ class CrostiniRemover : public base::RefCountedThreadSafe<CrostiniRemover> {
     kStopVmFailed,
     kDestroyDiskImageFailed,
   };
-  CrostiniRemover(Profile* profile,
-                  guest_os::VmType vm_type,
-                  std::string vm_name,
-                  base::OnceCallback<void(Result)> callback);
+  GuestOsRemover(Profile* profile,
+                 guest_os::VmType vm_type,
+                 std::string vm_name,
+                 base::OnceCallback<void(Result)> callback);
 
-  CrostiniRemover(const CrostiniRemover&) = delete;
-  CrostiniRemover& operator=(const CrostiniRemover&) = delete;
+  GuestOsRemover(const GuestOsRemover&) = delete;
+  GuestOsRemover& operator=(const GuestOsRemover&) = delete;
 
   void RemoveVm();
 
  private:
-  friend class base::RefCountedThreadSafe<CrostiniRemover>;
+  friend class base::RefCountedThreadSafe<GuestOsRemover>;
 
-  ~CrostiniRemover();
+  ~GuestOsRemover();
 
   void StopVmFinished(
       absl::optional<vm_tools::concierge::StopVmResponse> response);
@@ -50,6 +50,6 @@ class CrostiniRemover : public base::RefCountedThreadSafe<CrostiniRemover> {
   base::OnceCallback<void(Result)> callback_;
 };
 
-}  // namespace crostini
+}  // namespace guest_os
 
-#endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_REMOVER_H_
+#endif  // CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_REMOVER_H_
