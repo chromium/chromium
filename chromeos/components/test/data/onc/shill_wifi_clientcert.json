@@ -1,4 +1,5 @@
 {
+   "EAP.CACertPEM": [  ],
    "EAP.EAP": "TLS",
    "EAP.Identity": "abc ${LOGIN_ID}@my.domain.com",
    "EAP.UseProactiveKeyCaching": true,

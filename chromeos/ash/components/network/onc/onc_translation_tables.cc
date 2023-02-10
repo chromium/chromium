@@ -36,7 +36,8 @@ const FieldTranslationEntry eap_fields[] = {
     // { ::onc::eap::kOuter, shill::kEapMethodProperty },
     {::onc::eap::kPassword, shill::kEapPasswordProperty},
     {::onc::eap::kSaveCredentials, shill::kSaveCredentialsProperty},
-    {::onc::eap::kServerCAPEMs, shill::kEapCaCertPemProperty},
+    // This field is converted during translation, see onc_translator_*.
+    // {::onc::eap::kServerCAPEMs, shill::kEapCaCertPemProperty},
     {::onc::eap::kSubjectMatch, shill::kEapSubjectMatchProperty},
     // This field is converted during translation, see onc_translator_*.
     // {::onc::eap::kSubjectAlternativeNameMatch,

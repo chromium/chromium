@@ -1,8 +1,8 @@
 {
-  "EAP.CACertPEM": [  ],
+  "EAP.CACertPEM": ["some dummy certificate string"],
   "EAP.EAP":"TLS",
   "EAP.Identity":"abc ${LOGIN_ID}@my.domain.com",
-  "EAP.UseSystemCAs":true,
+  "EAP.UseSystemCAs":false,
   "GUID":"guid",
   "SaveCredentials":true,
   "StaticIPConfig": {},

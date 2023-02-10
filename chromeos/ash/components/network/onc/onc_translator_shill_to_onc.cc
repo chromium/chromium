@@ -849,6 +849,12 @@ void ShillToONCTranslator::TranslateEap() {
     }
   }
 
+  const base::Value::List* shill_ca_cert_pem =
+      shill_dictionary_->FindList(shill::kEapCaCertPemProperty);
+  if (shill_ca_cert_pem && !shill_ca_cert_pem->empty()) {
+    onc_object_.Set(::onc::eap::kServerCAPEMs, shill_ca_cert_pem->Clone());
+  }
+
   const std::string* shill_cert_id =
       shill_dictionary_->FindString(shill::kEapCertIdProperty);
   if (shill_cert_id && !shill_cert_id->empty()) {

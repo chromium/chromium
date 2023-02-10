@@ -414,6 +414,20 @@ void LocalTranslator::TranslateEAP() {
   }
 
   CopyFieldsAccordingToSignature();
+
+  // Set value or an empty list for ServerCAPEMs if it is not provided by onc.
+  // It will override the previous known list during properties merge.
+  if (onc_object_->contains(::onc::eap::kServerCAPEMs)) {
+    CopyFieldFromONCToShill(::onc::eap::kServerCAPEMs,
+                            shill::kEapCaCertPemProperty);
+  } else {
+    bool is_supported_ca_pem_protocols =
+        (outer == ::onc::eap::kEAP_TLS || outer == ::onc::eap::kEAP_TTLS ||
+         outer == ::onc::eap::kPEAP);
+    if (is_supported_ca_pem_protocols) {
+      shill_dictionary_->Set(shill::kEapCaCertPemProperty, base::Value::List());
+    }
+  }
 }
 
 void LocalTranslator::TranslateStaticIPConfig() {

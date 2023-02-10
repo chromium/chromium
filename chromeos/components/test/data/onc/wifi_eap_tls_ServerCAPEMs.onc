@@ -1,0 +1,28 @@
+{
+  "GUID": "{77db0089-0bc8-4358-929c-123xcv}",
+  "Type": "WiFi",
+  "Name": "WifiEapTls",
+  "WiFi": {
+    "Security": "WPA-EAP",
+    "EAP": {
+      "Outer": "EAP-TLS",
+      "Identity": "my_identity",
+      "UseSystemCAs": true,
+      "ClientCertType": "PKCS11Id",
+      "ClientCertPKCS11Id": "1:123456abcdef",
+      "DomainSuffixMatch": ["domain1.com", "domain2.com"],
+      "SaveCredentials": true,
+      "SubjectMatch": "my_subject",
+      "SubjectAlternativeNameMatch":[
+        {"Type": "EMAIL", "Value": "my_email_1"},
+        {"Type": "EMAIL", "Value": "my_email_2"},
+        {"Type": "EMAIL", "Value": "my;email"},
+        {"Type": "DNS", "Value": "my_dns"},
+        {"Type": "URI", "Value": "my_uri"}
+      ],
+      "TLSVersionMax": "1.2",
+      "UseSystemCAs": true,
+      "ServerCAPEMs": [ "some dummy certificate string" ],
+    }
+  },
+}

@@ -1,0 +1,25 @@
+{
+  "Ethernet":{
+    "Authentication":"8021X",
+    "EAP":{
+      "ClientCertPattern":{
+        "EnrollmentURI":[
+          "chrome-extension://delkjfjibodjclmdijflfnimdmgdagfk/generate-cert.html"
+        ],
+        "IssuerCAPEMs":[
+          "pem1",
+          "pem2"
+        ]
+      },
+      "ClientCertType":"Pattern",
+      "Identity":"abc ${LOGIN_ID}@my.domain.com",
+      "Outer":"EAP-TLS",
+      "SaveCredentials":true,
+      "UseSystemCAs":false,
+      "ServerCAPEMs": [ "some dummy certificate string" ]
+    }
+  },
+  "GUID":"guid",
+  "Name":"name",
+  "Type":"Ethernet"
+}
