@@ -234,6 +234,12 @@ class V4L2IoctlShim {
   [[nodiscard]] bool MediaRequestIocReinit(
       const std::unique_ptr<V4L2Queue>& queue) const;
 
+  // Finds available media device for video decoder. This function also checks
+  // to make sure either |bus_info| or |driver| field from |media_device_info|
+  // struct (obtained from MEDIA_IOC_DEVICE_INFO call) is matched from the same
+  // field in |v4l2_capability| struct (obtained from VIDIOC_QUERYCAP call).
+  [[nodiscard]] bool FindMediaDevice();
+
   // Verifies |v4l_fd| supports |compressed_format| for OUTPUT queues
   // and |uncompressed_format| for CAPTURE queues, respectively.
   [[nodiscard]] bool VerifyCapabilities(uint32_t compressed_format,

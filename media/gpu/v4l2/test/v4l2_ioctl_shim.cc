@@ -30,10 +30,10 @@ constexpr int kMaxRetryCount = 1 << 24;
 #define V4L2_REQUEST_CODE_AND_STRING(x) \
   { x, #x }
 
-constexpr uint32_t kMaximumDeviceNumber = 10;
+constexpr uint32_t kMaximumDeviceNumber = 20;
 
-constexpr std::string_view kDecoderDevicePrefix = "/dev/video-dec";
-constexpr std::string_view kMediaDevicePrefix = "/dev/media-dec";
+constexpr base::StringPiece kDecoderDevicePrefix = "/dev/video";
+constexpr base::StringPiece kMediaDevicePrefix = "/dev/media";
 
 // This map maintains a table with pairs of V4L2 request code
 // and corresponding name. New pair has to be added here
@@ -54,6 +54,7 @@ static const std::unordered_map<int, std::string>
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_STREAMON),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_STREAMOFF),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_S_EXT_CTRLS),
+        V4L2_REQUEST_CODE_AND_STRING(MEDIA_IOC_DEVICE_INFO),
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_IOC_REQUEST_ALLOC),
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_REQUEST_IOC_QUEUE),
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_REQUEST_IOC_REINIT)};
@@ -161,14 +162,13 @@ V4L2IoctlShim::V4L2IoctlShim(const uint32_t coded_fourcc) {
     decode_fd_.Close();
   }
 
-  // TODO(wenst) media devices should be matched by their driver name or bus
-  // info
-  media_fd_ = base::File(
-      base::FilePath(std::string(kMediaDevicePrefix) + base::NumberToString(i)),
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
-
   PCHECK(decode_fd_.IsValid()) << "Failed to find available decode device.";
-  PCHECK(media_fd_.IsValid()) << "Failed to find available media device.";
+
+  if (!FindMediaDevice()) {
+    LOG(FATAL) << "Failed to find available media device.";
+  }
+
+  PCHECK(media_fd_.IsValid()) << "Media device fd is not valid.";
 }
 
 V4L2IoctlShim::~V4L2IoctlShim() = default;
@@ -274,13 +274,26 @@ bool V4L2IoctlShim::Ioctl(int request_code, int* arg) const {
 
   base::PlatformFile ioctl_fd;
 
-  if (request_code == static_cast<int>(MEDIA_IOC_REQUEST_ALLOC))
+  if (request_code == static_cast<int>(MEDIA_IOC_REQUEST_ALLOC)) {
     ioctl_fd = media_fd_.GetPlatformFile();
-  else
+  } else {
     ioctl_fd = decode_fd_.GetPlatformFile();
+  }
 
   const int ret = ioctl(ioctl_fd, request_code, arg);
 
+  LogIoctlResult(ret, request_code);
+
+  return ret == kIoctlOk;
+}
+
+template <>
+bool V4L2IoctlShim::Ioctl(int request_code,
+                          struct media_device_info* info) const {
+  DCHECK_EQ(request_code, static_cast<int>(MEDIA_IOC_DEVICE_INFO));
+  LOG_ASSERT(info != nullptr) << "|media_device_info| check failed.";
+
+  const int ret = ioctl(media_fd_.GetPlatformFile(), request_code, info);
   LogIoctlResult(ret, request_code);
 
   return ret == kIoctlOk;
@@ -582,6 +595,58 @@ bool V4L2IoctlShim::MediaRequestIocReinit(
   const bool ret = Ioctl(MEDIA_REQUEST_IOC_REINIT, req_fd);
 
   return ret;
+}
+
+bool V4L2IoctlShim::FindMediaDevice() {
+  struct v4l2_capability caps;
+  bool ret = Ioctl(VIDIOC_QUERYCAP, &caps);
+  DCHECK(ret);
+
+  for (uint32_t i = 0; i < kMaximumDeviceNumber; ++i) {
+    media_fd_ = base::File(
+        base::FilePath(std::string(kMediaDevicePrefix) +
+                       base::NumberToString(i)),
+        base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
+
+    if (!media_fd_.IsValid()) {
+      continue;
+    }
+
+    struct media_device_info media_info;
+    ret = Ioctl(MEDIA_IOC_DEVICE_INFO, &media_info);
+    DCHECK(ret);
+
+    // Match the video device and the media controller by the |bus_info|
+    // field. This works better than |driver| field if there are multiple
+    // instances of the same decoder driver in the system. However, old MediaTek
+    // drivers didn't fill in the bus_info field for the media device.
+    if (strlen(reinterpret_cast<const char*>(caps.bus_info)) > 0 &&
+        strlen(reinterpret_cast<const char*>(media_info.bus_info)) > 0 &&
+        !strcmp(reinterpret_cast<const char*>(caps.bus_info),
+                reinterpret_cast<const char*>(media_info.bus_info))) {
+      LOG(INFO) << "Using \"" << media_info.bus_info
+                << "\" driver with /dev/media" << base::NumberToString(i)
+                << ".";
+
+      return true;
+    }
+
+    // Fall back to matching the video device and the media controller by the
+    // |driver| field. This is needed because the mtk-vcodec driver does not
+    // always fill the |card| and |bus_info| fields properly.
+    if (!strcmp(reinterpret_cast<const char*>(caps.driver),
+                reinterpret_cast<const char*>(media_info.driver))) {
+      LOG(INFO) << "Using \"" << media_info.driver
+                << "\" driver with /dev/media" << base::NumberToString(i)
+                << ".";
+
+      return true;
+    }
+
+    media_fd_.Close();
+  }
+
+  return false;
 }
 
 bool V4L2IoctlShim::QueryFormat(enum v4l2_buf_type type,
