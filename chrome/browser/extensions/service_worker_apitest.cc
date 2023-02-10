@@ -1085,7 +1085,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateRefreshesServiceWorker) {
                                    .AppendASCII("v2"),
                                scoped_temp_dir.GetPath().AppendASCII("v2.crx"),
                                pem_path, base::FilePath());
-  const char* kId = "hfaanndiiilofhfokeanhddpkfffchdi";
+  static constexpr char kId[] = "hfaanndiiilofhfokeanhddpkfffchdi";
 
   ExtensionTestMessageListener listener_v1("Pong from version 1");
   listener_v1.set_failure_message("FAILURE_V1");
@@ -1177,6 +1177,47 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateWithoutSkipWaiting) {
   web_contents = browsertest_util::AddTab(
       browser(), extension_after_update->GetResourceURL("page.html"));
   EXPECT_TRUE(listener3.WaitUntilSatisfied());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, UpdateToMV3RefreshesServiceWorker) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  base::FilePath pem_path = test_data_dir_.AppendASCII("service_worker")
+                                .AppendASCII("update")
+                                .AppendASCII("service_worker.pem");
+  base::FilePath path_v1 =
+      PackExtensionWithOptions(test_data_dir_.AppendASCII("service_worker")
+                                   .AppendASCII("update")
+                                   .AppendASCII("v1"),
+                               scoped_temp_dir.GetPath().AppendASCII("v1.crx"),
+                               pem_path, base::FilePath());
+  base::FilePath path_v3 =
+      PackExtensionWithOptions(test_data_dir_.AppendASCII("service_worker")
+                                   .AppendASCII("update")
+                                   .AppendASCII("v3_mv3"),
+                               scoped_temp_dir.GetPath().AppendASCII("v3.crx"),
+                               pem_path, base::FilePath());
+  static constexpr char kId[] = "hfaanndiiilofhfokeanhddpkfffchdi";
+
+  ExtensionTestMessageListener listener_v1("Pong from version 1");
+  listener_v1.set_failure_message("FAILURE_V1");
+  ExtensionTestMessageListener listener_v3("Pong from version 3");
+  listener_v3.set_failure_message("FAILURE_V3");
+
+  // Install version 1.0 that is a MV2 extension.
+  ASSERT_TRUE(InstallExtension(path_v1, 1));
+  EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())
+                  ->enabled_extensions()
+                  .GetByID(kId));
+  EXPECT_TRUE(listener_v1.WaitUntilSatisfied());
+
+  // Update to version 3.0 that is a MV3 extension.
+  EXPECT_TRUE(UpdateExtension(kId, path_v3, 0));
+  EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())
+                  ->enabled_extensions()
+                  .GetByID(kId));
+  EXPECT_TRUE(listener_v3.WaitUntilSatisfied());
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTest, FetchArbitraryPaths) {

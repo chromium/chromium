@@ -163,6 +163,12 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   void DeactivateExtension(const Extension* extension,
                            UnloadedExtensionReason reason);
 
+  // Unregister the service worker that is not from manifest and has extension
+  // root scope.
+  void UnregisterServiceWorkerWithRootScope(const Extension* extension);
+  void NotifyServiceWorkerUnregistered(const ExtensionId& extension_id,
+                                       bool success);
+
   // Given an extension that was disabled for reloading, completes the reload
   // by replacing the old extension with the new version and enabling it.
   // Returns true on success.

@@ -101,6 +101,7 @@ void ExtensionRegistrar::AddExtension(
       // the new one. ReloadExtension disables the extension, which is
       // sufficient.
       RemoveExtension(extension->id(), UnloadedExtensionReason::UPDATE);
+      UnregisterServiceWorkerWithRootScope(extension.get());
     }
     AddNewExtension(extension);
   }
@@ -500,6 +501,40 @@ void ExtensionRegistrar::DeactivateExtension(const Extension* extension,
   DeactivateTaskQueueForExtension(browser_context_, extension);
 
   delegate_->PostDeactivateExtension(extension);
+}
+
+void ExtensionRegistrar::UnregisterServiceWorkerWithRootScope(
+    const Extension* new_extension) {
+  // Only cleanup the old service worker if the new extension is
+  // service-worker-based.
+  if (!BackgroundInfo::IsServiceWorkerBased(new_extension)) {
+    return;
+  }
+
+  // Non service-worker based extensions could register root-scope service
+  // workers using regular web APIs. These service workers are not tracked by
+  // extension ServiceWorkerTaskQueue and would prevent newer service worker
+  // version from installing (crbug/1340341).
+  content::ServiceWorkerContext* context =
+      util::GetStoragePartitionForExtensionId(new_extension->id(),
+                                              browser_context_)
+          ->GetServiceWorkerContext();
+  // Even though the unregistration process for a service worker is
+  // asynchronous, we begin the process before the new extension is added, so
+  // the old worker will be unregistered before the new one is registered.
+  context->UnregisterServiceWorker(
+      new_extension->url(), blink::StorageKey(new_extension->origin()),
+      base::BindOnce(&ExtensionRegistrar::NotifyServiceWorkerUnregistered,
+                     weak_factory_.GetWeakPtr(), new_extension->id()));
+}
+
+void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
+    const ExtensionId& extension_id,
+    bool success) {
+  if (!success) {
+    LOG(ERROR) << "Failed to unregister service worker for extension "
+               << extension_id;
+  }
 }
 
 bool ExtensionRegistrar::ReplaceReloadedExtension(
