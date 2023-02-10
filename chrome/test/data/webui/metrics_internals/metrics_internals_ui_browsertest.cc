@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
@@ -21,6 +22,14 @@ void MetricsInternalsUIBrowserTest::SetUp() {
       true);
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
       &metrics_enabled_);
+
+  // When Chrome is run with a command line enabling a feature, metrics
+  // reporting is disabled. This avoids some users to pollute UMA.
+  //
+  // However, some tests like:
+  // MetricsInternalsUIBrowserTestWithLog.All
+  // are testing UI showing reported metrics. This needs to be ignored:
+  metrics::EnabledStateProvider::SetIgnoreForceFieldTrialsForTesting(true);
 
   // Simulate being sampled in so that metrics reporting is not disabled due to
   // being sampled out.

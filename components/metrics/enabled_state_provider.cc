@@ -10,8 +10,10 @@
 namespace metrics {
 
 namespace {
-// Some browser_tests (e.g. MetricsServiceBrowserFilesTest.FilesRemain) need to
-// enable metrics reporting independent of the presence of kForceFieldTrials.
+// Some browser_tests enable metrics reporting independent of the presence of
+// kForceFieldTrials:
+// - MetricsServiceBrowserFilesTest.FilesRemain
+// - MetricsInternalsUIBrowserTestWithLog.All
 bool g_ignore_force_field_trials_for_testing = false;
 }  // namespace
 
