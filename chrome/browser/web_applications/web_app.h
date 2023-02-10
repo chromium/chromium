@@ -11,7 +11,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -30,6 +30,10 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#endif
 
 namespace web_app {
 
@@ -102,7 +106,9 @@ class WebApp {
     ClientData(const ClientData& client_data);
     base::Value AsDebugValue() const;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     absl::optional<ash::SystemWebAppData> system_web_app_data;
+#endif
   };
 
   const ClientData& client_data() const { return client_data_; }
@@ -423,6 +429,10 @@ class WebApp {
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
   bool operator!=(const WebApp&) const;
+  // Used by the WebAppTest suite to cover only platform agnostic fields to
+  // avoid needing multiple platform specific expectation files per test.
+  // Otherwise, the same as AsDebugValue().
+  base::Value AsDebugValueWithOnlyPlatformAgnosticFields() const;
   base::Value AsDebugValue() const;
 
  private:

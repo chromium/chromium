@@ -13,7 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -23,6 +23,10 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#endif
 
 class Profile;
 
@@ -70,7 +74,9 @@ class WebAppInstallFinalizer {
     bool skip_icon_writes_on_download_failure = false;
 
     absl::optional<WebAppChromeOsData> chromeos_data;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     absl::optional<ash::SystemWebAppData> system_web_app_data;
+#endif
     absl::optional<AppId> parent_app_id;
     absl::optional<web_app::IsolationData> isolation_data;
 

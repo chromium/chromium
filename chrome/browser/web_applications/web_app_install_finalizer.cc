@@ -183,12 +183,14 @@ void WebAppInstallFinalizer::FinalizeInstall(
     web_app->SetWebAppChromeOsData(std::move(cros_data));
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // `WebApp::system_web_app_data` has a default value already. Only override if
   // the caller provided a new value.
   if (options.system_web_app_data.has_value()) {
     web_app->client_data()->system_web_app_data =
         options.system_web_app_data.value();
   }
+#endif
 
   if (options.isolation_data.has_value()) {
     web_app->SetIsolationData(*options.isolation_data);

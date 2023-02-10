@@ -28,6 +28,7 @@ absl::optional<AppId> GetAppIdForSystemApp(
   return registrar.LookupExternalAppId(app_install_url.value());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 absl::optional<ash::SystemWebAppType> GetSystemAppTypeForAppId(
     const WebAppRegistrar& registrar,
     const ash::SystemWebAppDelegateMap& delegates,
@@ -57,5 +58,6 @@ bool IsSystemWebApp(const WebAppRegistrar& registrar,
                     const AppId& app_id) {
   return GetSystemAppTypeForAppId(registrar, delegates, app_id).has_value();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace web_app

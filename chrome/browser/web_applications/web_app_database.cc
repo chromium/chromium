@@ -487,6 +487,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         chromeos_data.handles_file_open_intents);
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (web_app.client_data().system_web_app_data.has_value()) {
     auto& swa_data = web_app.client_data().system_web_app_data.value();
 
@@ -496,6 +497,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         static_cast<ash::SystemWebAppDataProto_SystemWebAppType>(
             swa_data.system_app_type));
   }
+#endif
 
   local_data->set_user_run_on_os_login_mode(
       ToWebAppProtoRunOnOsLoginMode(web_app.run_on_os_login_mode()));
@@ -923,6 +925,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (local_data.client_data().has_system_web_app_data()) {
     ash::SystemWebAppData& swa_data =
         web_app->client_data()->system_web_app_data.emplace();
@@ -930,6 +933,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     swa_data.system_app_type = static_cast<ash::SystemWebAppType>(
         local_data.client_data().system_web_app_data().system_app_type());
   }
+#endif
 
   // Optional fields:
   if (local_data.has_launch_query_params())

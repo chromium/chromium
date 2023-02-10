@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
@@ -27,6 +27,10 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -70,8 +74,10 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
                      WebAppRegistrar* registrar,
                      WebAppUiManager* ui_manager,
                      WebAppCommandScheduler* command_scheduler);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetSystemWebAppDelegateMap(
       const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
+#endif
 
   void Start();
   void Shutdown();
@@ -171,8 +177,10 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
 
   raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
   raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
       system_web_apps_delegate_map_ = nullptr;
+#endif
   raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_ = nullptr;
   raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
       nullptr;

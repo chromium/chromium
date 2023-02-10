@@ -45,9 +45,7 @@ the following command:
 
 base::Value WebAppToPlatformAgnosticDebugValue(
     std::unique_ptr<WebApp> web_app) {
-  // Force this to be nullopt to avoid platform specific differences.
-  web_app->SetWebAppChromeOsData(absl::nullopt);
-  return web_app->AsDebugValue();
+  return web_app->AsDebugValueWithOnlyPlatformAgnosticFields();
 }
 
 base::FilePath GetTestDataDir() {

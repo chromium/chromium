@@ -8,10 +8,6 @@
    "app_size_in_bytes": "",
    "background_color": "none",
    "capture_links": "kUndefined",
-   "chromeos_data": null,
-   "client_data": {
-      "system_web_app_data": null
-   },
    "current_os_integration_states": {
    },
    "dark_mode_background_color": "none",

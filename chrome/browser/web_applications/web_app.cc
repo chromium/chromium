@@ -632,9 +632,11 @@ WebApp::ClientData::ClientData(const ClientData& client_data) = default;
 
 base::Value WebApp::ClientData::AsDebugValue() const {
   base::Value::Dict root;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   root.Set("system_web_app_data", system_web_app_data
                                       ? system_web_app_data->AsDebugValue()
                                       : base::Value());
+#endif
   return base::Value(std::move(root));
 }
 
@@ -736,7 +738,9 @@ bool WebApp::operator==(const WebApp& other) const {
         app.capture_links_,
         app.manifest_url_,
         app.manifest_id_,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         app.client_data_.system_web_app_data,
+#endif
         app.file_handler_approval_state_,
         app.file_handler_os_integration_state_,
         app.window_controls_overlay_enabled_,
@@ -761,7 +765,7 @@ bool WebApp::operator!=(const WebApp& other) const {
   return !(*this == other);
 }
 
-base::Value WebApp::AsDebugValue() const {
+base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   base::Value::Dict root;
 
   auto ConvertList = [](const auto& list) {
@@ -819,11 +823,6 @@ base::Value WebApp::AsDebugValue() const {
            ColorToString(dark_mode_background_color_));
 
   root.Set("capture_links", base::StreamableToString(capture_links_));
-
-  root.Set("chromeos_data",
-           chromeos_data_ ? chromeos_data_->AsDebugValue() : base::Value());
-
-  root.Set("client_data", client_data_.AsDebugValue());
 
   if (data_size_in_bytes_.has_value()) {
     root.Set("data_size_in_bytes",
@@ -1054,6 +1053,18 @@ base::Value WebApp::AsDebugValue() const {
   }
 
   return base::Value(std::move(root));
+}
+
+base::Value WebApp::AsDebugValue() const {
+  base::Value value = AsDebugValueWithOnlyPlatformAgnosticFields();
+  auto& root = value.GetDict();
+
+  root.Set("chromeos_data",
+           chromeos_data_ ? chromeos_data_->AsDebugValue() : base::Value());
+
+  root.Set("client_data", client_data_.AsDebugValue());
+
+  return value;
 }
 
 std::ostream& operator<<(std::ostream& out, const WebApp& app) {

@@ -234,11 +234,13 @@ void WebAppInstallTask::UpdateFinalizerClientData(
     options->add_to_applications_menu = params->add_to_applications_menu;
     options->add_to_desktop = params->add_to_desktop;
     options->add_to_quick_launch_bar = params->add_to_quick_launch_bar;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (params->system_app_type.has_value()) {
       options->system_web_app_data.emplace();
       options->system_web_app_data->system_app_type =
           params->system_app_type.value();
     }
+#endif
   }
 }
 

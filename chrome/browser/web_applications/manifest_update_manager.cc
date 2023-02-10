@@ -137,10 +137,12 @@ void ManifestUpdateManager::SetSubsystems(
   command_scheduler_ = command_scheduler;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ManifestUpdateManager::SetSystemWebAppDelegateMap(
     const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map) {
   system_web_apps_delegate_map_ = system_web_apps_delegate_map;
 }
+#endif
 
 void ManifestUpdateManager::Start() {
   install_manager_observation_.Observe(install_manager_.get());
@@ -168,11 +170,13 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (system_web_apps_delegate_map_ &&
       IsSystemWebApp(*registrar_, *system_web_apps_delegate_map_, *app_id)) {
     NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsSystemWebApp);
     return;
   }
+#endif
 
   if (registrar_->IsPlaceholderApp(*app_id, WebAppManagement::kPolicy) ||
       registrar_->IsPlaceholderApp(*app_id, WebAppManagement::kKiosk)) {
