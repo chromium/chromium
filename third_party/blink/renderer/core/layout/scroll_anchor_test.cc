@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
@@ -1017,6 +1018,21 @@ TEST_F(MAYBE_ScrollAnchorTest, ClampAdjustsAnchorAnimation) {
   EXPECT_EQ(gfx::Vector2d(0, 0), LayoutViewport()
                                      ->GetScrollAnimator()
                                      .ImplOnlyAnimationAdjustmentForTesting());
+}
+
+// crbug.com/1413945
+TEST_F(MAYBE_ScrollAnchorTest, DynamicMultiColumnCrash) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="id125" style="container:foo/size; overflow-y:hidden;
+        writing-mode:vertical-rl;">
+    x</div>)HTML");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Element* target = GetDocument().getElementById("id125");
+  target->SetInlineStyleProperty(CSSPropertyID::kFontSize, "0");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  target->SetInlineStyleProperty(CSSPropertyID::kColumns, "2");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  // Pass if no crashes.
 }
 
 class ScrollAnchorTestFindInPageClient : public mojom::blink::FindInPageClient {

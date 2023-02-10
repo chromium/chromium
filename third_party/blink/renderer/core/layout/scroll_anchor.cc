@@ -425,6 +425,9 @@ ScrollAnchor::ExamineResult ScrollAnchor::ExaminePriorityCandidate(
 
 ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorRecursive(
     LayoutObject* candidate) {
+  if (!candidate->EverHadLayout()) {
+    return kSkip;
+  }
   ExamineResult result = Examine(candidate);
   WalkStatus status = result.status;
   if (IsViable(status)) {

@@ -1642,7 +1642,7 @@ void LayoutMultiColumnFlowThread::RestoreMultiColumnLayoutState(
 LayoutSize LayoutMultiColumnFlowThread::Size() const {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
-      !HasValidCachedGeometry()) {
+      !HasValidCachedGeometry() && EverHadLayout()) {
     // const_cast in order to update the cached value.
     auto* mutable_this = const_cast<LayoutMultiColumnFlowThread*>(this);
     mutable_this->SetHasValidCachedGeometry(true);
