@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -65,10 +66,10 @@ void ExpectAB(const sync_pb::ReadingListSpecifics& entryA,
               bool possible) {
   EXPECT_EQ(ReadingListSyncBridge::CompareEntriesForSync(entryA, entryB),
             possible);
-  std::unique_ptr<ReadingListEntry> a =
+  scoped_refptr<ReadingListEntry> a =
       ReadingListEntry::FromReadingListSpecifics(entryA,
                                                  base::Time::FromTimeT(10));
-  std::unique_ptr<ReadingListEntry> b =
+  scoped_refptr<ReadingListEntry> b =
       ReadingListEntry::FromReadingListSpecifics(entryB,
                                                  base::Time::FromTimeT(10));
   a->MergeWithEntry(*b);
@@ -145,9 +146,10 @@ class ReadingListSyncBridgeTest : public testing::Test {
 };
 
 TEST_F(ReadingListSyncBridgeTest, SaveOneRead) {
-  ReadingListEntry entry(GURL("http://read.example.com/"), "read title",
-                         AdvanceAndGetTime(&clock_));
-  entry.SetRead(true, AdvanceAndGetTime(&clock_));
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://read.example.com/"), "read title",
+      AdvanceAndGetTime(&clock_));
+  entry->SetRead(true, AdvanceAndGetTime(&clock_));
   AdvanceAndGetTime(&clock_);
   EXPECT_CALL(processor_,
               Put("http://read.example.com/",
@@ -155,38 +157,41 @@ TEST_F(ReadingListSyncBridgeTest, SaveOneRead) {
                                    sync_pb::ReadingListSpecifics::READ),
                   _));
   auto batch = model_->BeginBatchUpdatesWithSyncMetadata();
-  bridge()->DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
+  bridge()->DidAddOrUpdateEntry(*entry, batch->GetSyncMetadataChangeList());
 }
 
 TEST_F(ReadingListSyncBridgeTest, SaveOneUnread) {
-  ReadingListEntry entry(GURL("http://unread.example.com/"), "unread title",
-                         AdvanceAndGetTime(&clock_));
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://unread.example.com/"), "unread title",
+      AdvanceAndGetTime(&clock_));
   EXPECT_CALL(processor_,
               Put("http://unread.example.com/",
                   MatchesSpecifics("unread title", "http://unread.example.com/",
                                    sync_pb::ReadingListSpecifics::UNSEEN),
                   _));
   auto batch = model_->BeginBatchUpdatesWithSyncMetadata();
-  bridge()->DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
+  bridge()->DidAddOrUpdateEntry(*entry, batch->GetSyncMetadataChangeList());
 }
 
 TEST_F(ReadingListSyncBridgeTest, DeleteOneEntry) {
-  ReadingListEntry entry(GURL("http://unread.example.com/"), "unread title",
-                         AdvanceAndGetTime(&clock_));
+  auto entry = MakeRefCounted<ReadingListEntry>(
+      GURL("http://unread.example.com/"), "unread title",
+      AdvanceAndGetTime(&clock_));
   EXPECT_CALL(processor_, Delete("http://unread.example.com/", _));
   auto batch = model_->BeginBatchUpdatesWithSyncMetadata();
-  bridge()->DidRemoveEntry(entry, batch->GetSyncMetadataChangeList());
+  bridge()->DidRemoveEntry(*entry, batch->GetSyncMetadataChangeList());
 }
 
 TEST_F(ReadingListSyncBridgeTest, SyncMergeOneEntry) {
   EXPECT_CALL(processor_, Put(_, _, _)).Times(0);
 
   syncer::EntityChangeList remote_input;
-  ReadingListEntry entry(GURL("http://read.example.com/"), "read title",
-                         AdvanceAndGetTime(&clock_));
-  entry.SetRead(true, AdvanceAndGetTime(&clock_));
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://read.example.com/"), "read title",
+      AdvanceAndGetTime(&clock_));
+  entry->SetRead(true, AdvanceAndGetTime(&clock_));
   std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
-      entry.AsReadingListSpecifics();
+      entry->AsReadingListSpecifics();
 
   syncer::EntityData data;
   *data.specifics.mutable_reading_list() = *specifics;
@@ -210,11 +215,12 @@ TEST_F(ReadingListSyncBridgeTest, SyncMergeOneEntry) {
 TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneAdd) {
   EXPECT_CALL(processor_, Put(_, _, _)).Times(0);
 
-  ReadingListEntry entry(GURL("http://read.example.com/"), "read title",
-                         AdvanceAndGetTime(&clock_));
-  entry.SetRead(true, AdvanceAndGetTime(&clock_));
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://read.example.com/"), "read title",
+      AdvanceAndGetTime(&clock_));
+  entry->SetRead(true, AdvanceAndGetTime(&clock_));
   std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
-      entry.AsReadingListSpecifics();
+      entry->AsReadingListSpecifics();
   syncer::EntityData data;
   *data.specifics.mutable_reading_list() = *specifics;
 
@@ -239,11 +245,12 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneMerge) {
                             reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
 
-  ReadingListEntry new_entry(GURL("http://unread.example.com/"), "unread title",
-                             AdvanceAndGetTime(&clock_));
-  new_entry.SetRead(true, AdvanceAndGetTime(&clock_));
+  auto new_entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://unread.example.com/"), "unread title",
+      AdvanceAndGetTime(&clock_));
+  new_entry->SetRead(true, AdvanceAndGetTime(&clock_));
   std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
-      new_entry.AsReadingListSpecifics();
+      new_entry->AsReadingListSpecifics();
   syncer::EntityData data;
   *data.specifics.mutable_reading_list() = *specifics;
 
@@ -266,9 +273,10 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneMerge) {
 
 TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneIgnored) {
   // Read entry but with unread URL as it must update the other one.
-  ReadingListEntry old_entry(GURL("http://unread.example.com/"),
-                             "old unread title", AdvanceAndGetTime(&clock_));
-  old_entry.SetRead(true, AdvanceAndGetTime(&clock_));
+  auto old_entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://unread.example.com/"), "old unread title",
+      AdvanceAndGetTime(&clock_));
+  old_entry->SetRead(true, AdvanceAndGetTime(&clock_));
 
   AdvanceAndGetTime(&clock_);
   model_->AddOrReplaceEntry(GURL("http://unread.example.com/"),
@@ -277,7 +285,7 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneIgnored) {
                             /*estimated_read_time=*/base::TimeDelta());
 
   std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
-      old_entry.AsReadingListSpecifics();
+      old_entry->AsReadingListSpecifics();
   syncer::EntityData data;
   *data.specifics.mutable_reading_list() = *specifics;
 

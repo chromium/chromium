@@ -6,6 +6,7 @@
 
 #import "base/files/scoped_temp_dir.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/default_clock.h"
@@ -115,7 +116,7 @@ class PopupMenuMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<ReadingListEntry>()));
+                            std::vector<scoped_refptr<ReadingListEntry>>()));
     browser_state_ = builder.Build();
 
     web::test::OverrideJavaScriptFeatures(

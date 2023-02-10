@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
@@ -182,7 +183,8 @@ void ReadingListPageHandler::OpenURL(
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser->OpenURL(params);
 
-  const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model_->GetEntryByURL(url);
   if (entry) {
     base::RecordAction(base::UserMetricsAction(
         entry->IsRead() ? "DesktopReadingList.Navigation.FromReadList"
@@ -333,12 +335,13 @@ ReadingListPageHandler::CreateReadLaterEntriesByStatusData() {
   auto entries = reading_list::mojom::ReadLaterEntriesByStatus::New();
 
   for (const auto& url : reading_list_model_->GetKeys()) {
-    const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
+    scoped_refptr<const ReadingListEntry> entry =
+        reading_list_model_->GetEntryByURL(url);
     DCHECK(entry);
     if (entry->IsRead()) {
-      entries->read_entries.push_back(GetEntryData(entry));
+      entries->read_entries.push_back(GetEntryData(entry.get()));
     } else {
-      entries->unread_entries.push_back(GetEntryData(entry));
+      entries->unread_entries.push_back(GetEntryData(entry.get()));
     }
   }
 

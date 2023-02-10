@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -1234,7 +1235,7 @@ bool MarkCurrentTabAsReadInReadLater(Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents();
   if (!model || !GetTabURLAndTitleToSave(web_contents, &url, &title))
     return false;
-  const ReadingListEntry* entry = model->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry = model->GetEntryByURL(url);
   // Mark current tab as read.
   if (entry && !entry->IsRead())
     model->SetReadStatusIfExists(url, true);
@@ -1249,7 +1250,7 @@ bool IsCurrentTabUnreadInReadLater(Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents();
   if (!model || !GetTabURLAndTitleToSave(web_contents, &url, &title))
     return false;
-  const ReadingListEntry* entry = model->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry = model->GetEntryByURL(url);
   return entry && !entry->IsRead();
 }
 

@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/clock.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/model/entity_change.h"
@@ -113,10 +114,10 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeSyncData(
     const sync_pb::ReadingListSpecifics& specifics =
         change->data().specifics.reading_list();
     // Deserialize entry.
-    std::unique_ptr<ReadingListEntry> entry(
+    scoped_refptr<ReadingListEntry> entry(
         ReadingListEntry::FromReadingListSpecifics(specifics, clock_->Now()));
 
-    const ReadingListEntry* existing_entry =
+    scoped_refptr<const ReadingListEntry> existing_entry =
         model_->GetEntryByURL(entry->URL());
 
     if (!existing_entry) {
@@ -128,7 +129,7 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeSyncData(
       std::unique_ptr<sync_pb::ReadingListSpecifics> entry_sync_pb =
           merged_entry->AsReadingListSpecifics();
 #if !defined(NDEBUG)
-      std::unique_ptr<ReadingListEntry> initial_entry(
+      scoped_refptr<ReadingListEntry> initial_entry(
           ReadingListEntry::FromReadingListSpecifics(specifics, clock_->Now()));
       DCHECK(CompareEntriesForSync(*(initial_entry->AsReadingListSpecifics()),
                                    *entry_sync_pb));
@@ -144,7 +145,7 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeSyncData(
 
   // Commit local only entries to server.
   for (const auto& url : model_->GetKeys()) {
-    const ReadingListEntry* entry = model_->GetEntryByURL(url);
+    scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
     if (synced_entries.count(url.spec())) {
       // Entry already exists and has been merged above.
       continue;
@@ -189,10 +190,10 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::ApplySyncChanges(
       // Deserialize entry.
       const sync_pb::ReadingListSpecifics& specifics =
           change->data().specifics.reading_list();
-      std::unique_ptr<ReadingListEntry> entry(
+      scoped_refptr<ReadingListEntry> entry(
           ReadingListEntry::FromReadingListSpecifics(specifics, clock_->Now()));
 
-      const ReadingListEntry* existing_entry =
+      scoped_refptr<const ReadingListEntry> existing_entry =
           model_->GetEntryByURL(entry->URL());
 
       if (!existing_entry) {
@@ -221,7 +222,8 @@ void ReadingListSyncBridge::GetData(StorageKeyList storage_keys,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& url_string : storage_keys) {
-    const ReadingListEntry* entry = model_->GetEntryByURL(GURL(url_string));
+    scoped_refptr<const ReadingListEntry> entry =
+        model_->GetEntryByURL(GURL(url_string));
     if (entry) {
       AddEntryToBatch(batch.get(), *entry);
     }
@@ -235,7 +237,8 @@ void ReadingListSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const auto& url : model_->GetKeys()) {
-    const ReadingListEntry* entry = model_->GetEntryByURL(GURL(url));
+    scoped_refptr<const ReadingListEntry> entry =
+        model_->GetEntryByURL(GURL(url));
     AddEntryToBatch(batch.get(), *entry);
   }
 

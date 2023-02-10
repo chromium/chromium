@@ -4,6 +4,7 @@
 
 #include "components/reading_list/core/reading_list_model.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_clock.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
@@ -24,37 +25,37 @@ base::Time AdvanceAndGetTime(base::SimpleTestClock* clock) {
   return clock->Now();
 }
 
-std::vector<ReadingListEntry> PopulateSampleEntries(
+std::vector<scoped_refptr<ReadingListEntry>> PopulateSampleEntries(
     base::SimpleTestClock* clock) {
-  std::vector<ReadingListEntry> entries;
+  std::vector<scoped_refptr<ReadingListEntry>> entries;
   // Adds timer and interlace read/unread entry creation to avoid having two
   // entries with the same creation timestamp.
-  entries.emplace_back(GURL("http://unread_a.com"), "unread_a",
-                       AdvanceAndGetTime(clock));
+  entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://unread_a.com"), "unread_a", AdvanceAndGetTime(clock)));
 
-  ReadingListEntry read_a(GURL("http://read_a.com"), "read_a",
-                          AdvanceAndGetTime(clock));
-  read_a.SetRead(true, AdvanceAndGetTime(clock));
+  auto read_a = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://read_a.com"), "read_a", AdvanceAndGetTime(clock));
+  read_a->SetRead(true, AdvanceAndGetTime(clock));
   entries.push_back(std::move(read_a));
 
-  entries.emplace_back(GURL("http://unread_b.com"), "unread_b",
-                       AdvanceAndGetTime(clock));
+  entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://unread_b.com"), "unread_b", AdvanceAndGetTime(clock)));
 
-  ReadingListEntry read_b(GURL("http://read_b.com"), "read_b",
-                          AdvanceAndGetTime(clock));
-  read_b.SetRead(true, AdvanceAndGetTime(clock));
+  auto read_b = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://read_b.com"), "read_b", AdvanceAndGetTime(clock));
+  read_b->SetRead(true, AdvanceAndGetTime(clock));
   entries.push_back(std::move(read_b));
 
-  entries.emplace_back(GURL("http://unread_c.com"), "unread_c",
-                       AdvanceAndGetTime(clock));
+  entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://unread_c.com"), "unread_c", AdvanceAndGetTime(clock)));
 
-  ReadingListEntry read_c(GURL("http://read_c.com"), "read_c",
-                          AdvanceAndGetTime(clock));
-  read_c.SetRead(true, AdvanceAndGetTime(clock));
+  auto read_c = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://read_c.com"), "read_c", AdvanceAndGetTime(clock));
+  read_c->SetRead(true, AdvanceAndGetTime(clock));
   entries.push_back(std::move(read_c));
 
-  entries.emplace_back(GURL("http://unread_d.com"), "unread_d",
-                       AdvanceAndGetTime(clock));
+  entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://unread_d.com"), "unread_d", AdvanceAndGetTime(clock)));
 
   return entries;
 }
@@ -96,7 +97,7 @@ class ReadingListModelTest : public FakeReadingListModelStorage::Observer,
   size_t UnreadSize() {
     size_t size = 0;
     for (const auto& url : model_->GetKeys()) {
-      const ReadingListEntry* entry = model_->GetEntryByURL(url);
+      scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
       if (!entry->IsRead()) {
         size++;
       }
@@ -108,7 +109,7 @@ class ReadingListModelTest : public FakeReadingListModelStorage::Observer,
   size_t ReadSize() {
     size_t size = 0;
     for (const auto& url : model_->GetKeys()) {
-      const ReadingListEntry* entry = model_->GetEntryByURL(url);
+      scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
       if (entry->IsRead()) {
         size++;
       }
@@ -146,7 +147,7 @@ TEST_F(ReadingListModelTest, ModelLoadSuccess) {
   int size = 0;
   for (const auto& url : model_->GetKeys()) {
     size++;
-    const ReadingListEntry* entry = model_->GetEntryByURL(url);
+    scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
     loaded_entries[url] = entry->Title();
   }
   EXPECT_EQ(size, 7);
@@ -217,7 +218,8 @@ TEST_F(ReadingListModelTest, AddEntry) {
   EXPECT_EQ(1ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
 
-  const ReadingListEntry* other_entry = model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> other_entry =
+      model_->GetEntryByURL(url);
   EXPECT_NE(other_entry, nullptr);
   EXPECT_FALSE(other_entry->IsRead());
   EXPECT_EQ(url, other_entry->URL());
@@ -257,7 +259,8 @@ TEST_F(ReadingListModelTest, AddExistingEntry) {
   EXPECT_EQ(1ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
 
-  const ReadingListEntry* other_entry = model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> other_entry =
+      model_->GetEntryByURL(url);
   EXPECT_NE(other_entry, nullptr);
   EXPECT_FALSE(other_entry->IsRead());
   EXPECT_EQ(url, other_entry->URL());
@@ -271,8 +274,8 @@ TEST_F(ReadingListModelTest, SyncAddEntry) {
   // DCHECKs verify that sync updates are issued as batch updates.
   auto token = model_->BeginBatchUpdates();
 
-  auto entry = std::make_unique<ReadingListEntry>(url, "sample",
-                                                  AdvanceAndGetTime(&clock_));
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      url, "sample", AdvanceAndGetTime(&clock_));
   entry->SetRead(true, AdvanceAndGetTime(&clock_));
   ClearCounts();
 
@@ -302,10 +305,11 @@ TEST_F(ReadingListModelTest, SyncMergeEntry) {
   int64_t time = 100;
   model_->SetEntryDistilledInfoIfExists(url, distilled_path, distilled_url,
                                         size, base::Time::FromTimeT(time));
-  const ReadingListEntry* local_entry = model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> local_entry =
+      model_->GetEntryByURL(url);
   int64_t local_update_time = local_entry->UpdateTime();
 
-  auto sync_entry = std::make_unique<ReadingListEntry>(
+  auto sync_entry = base::MakeRefCounted<ReadingListEntry>(
       url, "sample", AdvanceAndGetTime(&clock_));
   sync_entry->SetRead(true, AdvanceAndGetTime(&clock_));
   ASSERT_GT(sync_entry->UpdateTime(), local_update_time);
@@ -459,7 +463,8 @@ TEST_F(ReadingListModelTest, ReadEntry) {
   EXPECT_EQ(1ul, ReadSize());
   EXPECT_EQ(0ul, model_->unseen_size());
 
-  const ReadingListEntry* other_entry = model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> other_entry =
+      model_->GetEntryByURL(url);
   EXPECT_NE(other_entry, nullptr);
   EXPECT_TRUE(other_entry->IsRead());
   EXPECT_EQ(url, other_entry->URL());
@@ -476,7 +481,7 @@ TEST_F(ReadingListModelTest, EntryFromURL) {
                             /*estimated_read_time=*/base::TimeDelta());
 
   // Check call with nullptr |read| parameter.
-  const ReadingListEntry* entry1 = model_->GetEntryByURL(url1);
+  scoped_refptr<const ReadingListEntry> entry1 = model_->GetEntryByURL(url1);
   EXPECT_NE(nullptr, entry1);
   EXPECT_EQ(entry1_title, entry1->Title());
 
@@ -490,7 +495,7 @@ TEST_F(ReadingListModelTest, EntryFromURL) {
   EXPECT_EQ(entry1_title, entry1->Title());
   EXPECT_EQ(entry1->IsRead(), true);
 
-  const ReadingListEntry* entry2 = model_->GetEntryByURL(url2);
+  scoped_refptr<const ReadingListEntry> entry2 = model_->GetEntryByURL(url2);
   EXPECT_EQ(nullptr, entry2);
 }
 
@@ -514,7 +519,8 @@ TEST_F(ReadingListModelTest, UnreadEntry) {
   EXPECT_EQ(1ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
 
-  const ReadingListEntry* other_entry = model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> other_entry =
+      model_->GetEntryByURL(url);
   EXPECT_NE(other_entry, nullptr);
   EXPECT_FALSE(other_entry->IsRead());
   EXPECT_EQ(url, other_entry->URL());
@@ -639,7 +645,7 @@ TEST_F(ReadingListModelTest, UpdateReadEntryTitle) {
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
   model_->SetReadStatusIfExists(url, true);
-  const ReadingListEntry* entry = model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
   ClearCounts();
 
   testing::InSequence seq;
@@ -658,7 +664,7 @@ TEST_F(ReadingListModelTest, UpdateReadEntryState) {
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
   model_->SetReadStatusIfExists(url, true);
-  const ReadingListEntry* entry = model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
   ClearCounts();
 
   testing::InSequence seq;
@@ -677,7 +683,7 @@ TEST_F(ReadingListModelTest, UpdateReadDistilledInfo) {
   model_->AddOrReplaceEntry(url, "sample", reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
   model_->SetReadStatusIfExists(url, true);
-  const ReadingListEntry* entry = model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
   ClearCounts();
 
   testing::InSequence seq;
@@ -707,7 +713,7 @@ TEST_F(ReadingListModelTest, TestTrimmingTitle) {
   model_->AddOrReplaceEntry(url, title, reading_list::ADDED_VIA_CURRENT_APP,
                             /*estimated_read_time=*/base::TimeDelta());
   model_->SetReadStatusIfExists(url, true);
-  const ReadingListEntry* entry = model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry = model_->GetEntryByURL(url);
   EXPECT_EQ(entry->Title(), "This title contains new line characters");
   model_->SetEntryTitleIfExists(url, "test");
   EXPECT_EQ(entry->Title(), "test");

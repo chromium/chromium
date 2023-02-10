@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/guid.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
@@ -119,9 +120,10 @@ TEST_F(ReadingListManagerImplTest, Load) {
   ASSERT_FALSE(manager()->IsLoaded());
 
   // Mimic the completion of storage loading with one initial entry.
-  std::vector<ReadingListEntry> entries;
+  std::vector<scoped_refptr<ReadingListEntry>> entries;
   GURL url(kURL);
-  entries.emplace_back(url, kTitle, clock()->Now());
+  entries.push_back(
+      base::MakeRefCounted<ReadingListEntry>(url, kTitle, clock()->Now()));
   ASSERT_TRUE(fake_storage->TriggerLoadCompletion(std::move(entries)));
   EXPECT_TRUE(manager()->IsLoaded());
 

@@ -4,6 +4,7 @@
 
 #include "components/reading_list/core/reading_list_model_storage_impl.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
@@ -23,7 +24,7 @@ using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
 MATCHER_P(EntryHasUrl, expected_url, "") {
-  return arg.second.URL() == expected_url;
+  return arg.second->URL() == expected_url;
 }
 
 // Helper function to load a storage and wait until loading completes.
@@ -76,7 +77,8 @@ TEST_F(ReadingListModelStorageImplTest, SaveEntry) {
   ASSERT_TRUE(LoadStorageAndWait(&storage, &clock_).has_value());
 
   storage.EnsureBatchCreated()->SaveEntry(
-      ReadingListEntry(GURL("http://example.com/"), "Title", clock_.Now()));
+      *base::MakeRefCounted<ReadingListEntry>(GURL("http://example.com/"),
+                                              "Title", clock_.Now()));
 
   // To verify the write, use another storage with the same underlying in-memory
   // leveldb.
@@ -94,9 +96,11 @@ TEST_F(ReadingListModelStorageImplTest, RemoveEntry) {
   ReadingListModelStorageImpl storage(shared_store_factory_);
   ASSERT_TRUE(LoadStorageAndWait(&storage, &clock_).has_value());
   storage.EnsureBatchCreated()->SaveEntry(
-      ReadingListEntry(GURL("http://example1.com/"), "Title 1", clock_.Now()));
+      *base::MakeRefCounted<ReadingListEntry>(GURL("http://example1.com/"),
+                                              "Title 1", clock_.Now()));
   storage.EnsureBatchCreated()->SaveEntry(
-      ReadingListEntry(GURL("http://example2.com/"), "Title 2", clock_.Now()));
+      *base::MakeRefCounted<ReadingListEntry>(GURL("http://example2.com/"),
+                                              "Title 2", clock_.Now()));
 
   // There should be two entries in storage.
   ReadingListModelStorageImpl second_storage(shared_store_factory_);
@@ -119,9 +123,11 @@ TEST_F(ReadingListModelStorageImplTest, DeleteAllEntriesAndSyncMetadata) {
   ReadingListModelStorageImpl storage(shared_store_factory_);
   ASSERT_TRUE(LoadStorageAndWait(&storage, &clock_).has_value());
   storage.EnsureBatchCreated()->SaveEntry(
-      ReadingListEntry(GURL("http://example1.com/"), "Title 1", clock_.Now()));
+      *base::MakeRefCounted<ReadingListEntry>(GURL("http://example1.com/"),
+                                              "Title 1", clock_.Now()));
   storage.EnsureBatchCreated()->SaveEntry(
-      ReadingListEntry(GURL("http://example2.com/"), "Title 2", clock_.Now()));
+      *base::MakeRefCounted<ReadingListEntry>(GURL("http://example2.com/"),
+                                              "Title 2", clock_.Now()));
 
   // There should be two entries in storage.
   ReadingListModelStorageImpl second_storage(shared_store_factory_);

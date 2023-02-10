@@ -8,6 +8,7 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -58,7 +59,8 @@ bool ReadingListWebStateObserver::ShouldObserveItem(
 }
 
 bool ReadingListWebStateObserver::IsUrlAvailableOffline(const GURL& url) const {
-  const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model_->GetEntryByURL(url);
   return entry && entry->DistilledState() == ReadingListEntry::PROCESSED;
 }
 
@@ -234,7 +236,7 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
   if (!pending_url_.is_valid() || !IsUrlAvailableOffline(pending_url_)) {
     return;
   }
-  const ReadingListEntry* entry =
+  scoped_refptr<const ReadingListEntry> entry =
       reading_list_model_->GetEntryByURL(pending_url_);
   last_load_was_offline_ = true;
   DCHECK(entry->DistilledState() == ReadingListEntry::PROCESSED);

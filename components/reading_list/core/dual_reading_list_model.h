@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_entry.h"
@@ -50,7 +51,8 @@ class DualReadingListModel : public ReadingListModel,
   size_t unseen_size() const override;
   void MarkAllSeen() override;
   bool DeleteAllEntries() override;
-  const ReadingListEntry* GetEntryByURL(const GURL& gurl) const override;
+  scoped_refptr<const ReadingListEntry> GetEntryByURL(
+      const GURL& gurl) const override;
   bool IsUrlSupported(const GURL& url) override;
   const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,

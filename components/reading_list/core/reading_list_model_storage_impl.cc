@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/clock.h"
 #include "components/reading_list/core/proto/reading_list.pb.h"
 #include "components/sync/model/metadata_batch.h"
@@ -121,7 +122,7 @@ void ReadingListModelStorageImpl::OnDatabaseLoad(
       // failure.
     }
 
-    std::unique_ptr<ReadingListEntry> entry(
+    scoped_refptr<ReadingListEntry> entry(
         ReadingListEntry::FromReadingListLocal(proto, clock_->Now()));
     if (!entry) {
       continue;
@@ -129,7 +130,7 @@ void ReadingListModelStorageImpl::OnDatabaseLoad(
 
     const GURL& url = entry->URL();
     DCHECK(!loaded_entries.count(url));
-    loaded_entries.emplace(url, std::move(*entry));
+    loaded_entries.emplace(url, std::move(entry));
   }
 
   store_->ReadAllMetadata(base::BindOnce(

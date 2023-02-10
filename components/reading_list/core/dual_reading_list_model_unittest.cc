@@ -4,6 +4,7 @@
 
 #include "components/reading_list/core/dual_reading_list_model.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_clock.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
@@ -51,16 +52,16 @@ class DualReadingListModelTest : public testing::Test {
       const std::vector<GURL>& initial_account_urls = {}) {
     ResetStorage();
 
-    std::vector<ReadingListEntry> initial_local_entries;
+    std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries;
     for (const auto& url : initial_local_urls) {
-      initial_local_entries.emplace_back(url, "Title for " + url.spec(),
-                                         clock_.Now());
+      initial_local_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+          url, "Title for " + url.spec(), clock_.Now()));
     }
 
-    std::vector<ReadingListEntry> initial_account_entries;
+    std::vector<scoped_refptr<ReadingListEntry>> initial_account_entries;
     for (const auto& url : initial_account_urls) {
-      initial_account_entries.emplace_back(url, "Title for " + url.spec(),
-                                           clock_.Now());
+      initial_account_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+          url, "Title for " + url.spec(), clock_.Now()));
     }
 
     return local_or_syncable_model_storage_ptr_->TriggerLoadCompletion(
@@ -72,7 +73,8 @@ class DualReadingListModelTest : public testing::Test {
   size_t UnreadSize() {
     size_t size = 0;
     for (const auto& url : dual_model_->GetKeys()) {
-      const ReadingListEntry* entry = dual_model_->GetEntryByURL(url);
+      scoped_refptr<const ReadingListEntry> entry =
+          dual_model_->GetEntryByURL(url);
       if (!entry->IsRead()) {
         size++;
       }
@@ -84,7 +86,8 @@ class DualReadingListModelTest : public testing::Test {
   size_t ReadSize() {
     size_t size = 0;
     for (const auto& url : dual_model_->GetKeys()) {
-      const ReadingListEntry* entry = dual_model_->GetEntryByURL(url);
+      scoped_refptr<const ReadingListEntry> entry =
+          dual_model_->GetEntryByURL(url);
       if (entry->IsRead()) {
         size++;
       }

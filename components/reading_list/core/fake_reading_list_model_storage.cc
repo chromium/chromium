@@ -4,6 +4,7 @@
 
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "components/sync/model/metadata_batch.h"
 
 FakeReadingListModelStorage::FakeScopedBatchUpdate::FakeScopedBatchUpdate(
@@ -51,12 +52,12 @@ bool FakeReadingListModelStorage::TriggerLoadCompletion(
 }
 
 bool FakeReadingListModelStorage::TriggerLoadCompletion(
-    std::vector<ReadingListEntry> entries) {
+    std::vector<scoped_refptr<ReadingListEntry>> entries) {
   LoadResult result;
   result.second = std::make_unique<syncer::MetadataBatch>();
-  for (ReadingListEntry& entry : entries) {
-    GURL url = entry.URL();
-    result.first.emplace(entry.URL(), std::move(entry));
+  for (auto& entry : entries) {
+    GURL url = entry->URL();
+    result.first.emplace(entry->URL(), std::move(entry));
   }
   return TriggerLoadCompletion(std::move(result));
 }

@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/memory/scoped_refptr.h"
 #import "base/time/default_clock.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -71,8 +72,9 @@ class ReadingListWebStateObserverTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    std::vector<ReadingListEntry> initial_entries;
-    initial_entries.emplace_back(GURL(kTestURL), kTestTitle, base::Time::Now());
+    std::vector<scoped_refptr<ReadingListEntry>> initial_entries;
+    initial_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+        GURL(kTestURL), kTestTitle, base::Time::Now()));
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
@@ -113,7 +115,8 @@ class ReadingListWebStateObserverTest : public PlatformTest {
 // Tests that failing loading an online version does not mark it read.
 TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListFailure) {
   GURL url(kTestURL);
-  const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model()->GetEntryByURL(url);
   FakeNavigationManager* fake_navigation_manager =
       static_cast<FakeNavigationManager*>(
           test_web_state_.GetNavigationManager());
@@ -139,7 +142,8 @@ TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListOnline) {
   reading_list_model()->SetEntryDistilledInfoIfExists(
       url, base::FilePath(distilled_path), GURL(kTestDistilledURL), 50,
       base::Time::FromTimeT(100));
-  const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model()->GetEntryByURL(url);
 
   FakeNavigationManager* fake_navigation_manager =
       static_cast<FakeNavigationManager*>(
@@ -167,7 +171,8 @@ TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListDistilledCommitted) {
   reading_list_model()->SetEntryDistilledInfoIfExists(
       url, base::FilePath(distilled_path), GURL(kTestDistilledURL), 50,
       base::Time::FromTimeT(100));
-  const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model()->GetEntryByURL(url);
   GURL distilled_url = reading_list::OfflineURLForURL(entry->URL());
 
   FakeNavigationManager* fake_navigation_manager =
@@ -200,7 +205,8 @@ TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListDistilledPending) {
   reading_list_model()->SetEntryDistilledInfoIfExists(
       url, base::FilePath(distilled_path), GURL(kTestDistilledURL), 50,
       base::Time::FromTimeT(100));
-  const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model()->GetEntryByURL(url);
   GURL distilled_url = reading_list::OfflineURLForURL(entry->URL());
 
   FakeNavigationManager* fake_navigation_manager =

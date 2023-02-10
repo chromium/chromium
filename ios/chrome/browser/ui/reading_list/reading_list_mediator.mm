@@ -7,6 +7,7 @@
 #import <algorithm>
 
 #import "base/mac/foundation_util.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/reading_list/core/reading_list_model.h"
@@ -30,7 +31,8 @@
 
 namespace {
 // Sorter function that orders ReadingListEntries by their update time.
-bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
+bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
+                 scoped_refptr<const ReadingListEntry> lhs) {
   return rhs->UpdateTime() > lhs->UpdateTime();
 }
 }  // namespace
@@ -80,7 +82,8 @@ bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
   return self;
 }
 
-- (const ReadingListEntry*)entryFromItem:(id<ReadingListListItem>)item {
+- (scoped_refptr<const ReadingListEntry>)entryFromItem:
+    (id<ReadingListListItem>)item {
   return self.model->GetEntryByURL(item.entryURL);
 }
 
@@ -91,7 +94,7 @@ bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
 #pragma mark - ReadingListDataSource
 
 - (BOOL)isItemRead:(id<ReadingListListItem>)item {
-  const ReadingListEntry* readingListEntry =
+  scoped_refptr<const ReadingListEntry> readingListEntry =
       self.model->GetEntryByURL(item.entryURL);
 
   if (!readingListEntry) {
@@ -111,7 +114,7 @@ bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
   self.model->SetReadStatusIfExists(item.entryURL, read);
 }
 
-- (const ReadingListEntry*)entryWithURL:(const GURL&)URL {
+- (scoped_refptr<const ReadingListEntry>)entryWithURL:(const GURL&)URL {
   return self.model->GetEntryByURL(URL);
 }
 
@@ -122,29 +125,31 @@ bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
 
 - (void)fillReadItems:(NSMutableArray<id<ReadingListListItem>>*)readArray
           unreadItems:(NSMutableArray<id<ReadingListListItem>>*)unreadArray {
-  std::vector<const ReadingListEntry*> readEntries;
-  std::vector<const ReadingListEntry*> unreadEntries;
+  std::vector<scoped_refptr<const ReadingListEntry>> readEntries;
+  std::vector<scoped_refptr<const ReadingListEntry>> unreadEntries;
 
   for (const auto& url : self.model->GetKeys()) {
-    const ReadingListEntry* entry = self.model->GetEntryByURL(url);
+    scoped_refptr<const ReadingListEntry> entry =
+        self.model->GetEntryByURL(url);
     DCHECK(entry);
     if (entry->IsRead()) {
-      readEntries.push_back(entry);
+      readEntries.push_back(std::move(entry));
     } else {
-      unreadEntries.push_back(entry);
+      unreadEntries.push_back(std::move(entry));
     }
   }
 
   std::sort(readEntries.begin(), readEntries.end(), EntrySorter);
   std::sort(unreadEntries.begin(), unreadEntries.end(), EntrySorter);
 
-  for (const ReadingListEntry* entry : readEntries) {
-    [readArray addObject:[self.itemFactory cellItemForReadingListEntry:entry]];
+  for (scoped_refptr<const ReadingListEntry> entry : readEntries) {
+    [readArray
+        addObject:[self.itemFactory cellItemForReadingListEntry:entry.get()]];
   }
 
-  for (const ReadingListEntry* entry : unreadEntries) {
+  for (scoped_refptr<const ReadingListEntry> entry : unreadEntries) {
     [unreadArray
-        addObject:[self.itemFactory cellItemForReadingListEntry:entry]];
+        addObject:[self.itemFactory cellItemForReadingListEntry:entry.get()]];
   }
 
   DCHECK(self.model->GetKeys().size() ==
@@ -287,7 +292,7 @@ bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
 
 // Logs the deletions histograms for the entry associated with `item`.
 - (void)logDeletionOfItem:(id<ReadingListListItem>)item {
-  const ReadingListEntry* entry = [self entryFromItem:item];
+  scoped_refptr<const ReadingListEntry> entry = [self entryFromItem:item];
 
   if (!entry)
     return;

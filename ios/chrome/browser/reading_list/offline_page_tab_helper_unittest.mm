@@ -7,6 +7,7 @@
 #import <memory>
 #import <vector>
 
+#import "base/memory/scoped_refptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/default_clock.h"
@@ -42,8 +43,9 @@ class OfflinePageTabHelperTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    std::vector<ReadingListEntry> initial_entries;
-    initial_entries.emplace_back(GURL(kTestURL), kTestTitle, base::Time::Now());
+    std::vector<scoped_refptr<ReadingListEntry>> initial_entries;
+    initial_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+        GURL(kTestURL), kTestTitle, base::Time::Now()));
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
@@ -120,7 +122,8 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
 // Tests that loading an online version does mark it read.
 TEST_F(OfflinePageTabHelperTest, TestLoadReadingListSuccess) {
   GURL url(kTestURL);
-  const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model()->GetEntryByURL(url);
   fake_web_state_.SetCurrentURL(url);
   web::FakeNavigationContext context;
   context.SetUrl(url);
@@ -142,7 +145,8 @@ TEST_F(OfflinePageTabHelperTest, TestLoadReadingListSuccess) {
 // Tests that failing loading an online version does not mark it read.
 TEST_F(OfflinePageTabHelperTest, TestLoadReadingListFailure) {
   GURL url(kTestURL);
-  const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model()->GetEntryByURL(url);
   web::FakeNavigationContext context;
   context.SetUrl(url);
   context.SetHasCommitted(true);
@@ -168,7 +172,8 @@ TEST_F(OfflinePageTabHelperTest, TestLoadReadingListDistilled) {
   reading_list_model()->SetEntryDistilledInfoIfExists(
       url, base::FilePath(distilled_path), GURL(kTestDistilledURL), 50,
       base::Time::FromTimeT(100));
-  const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model()->GetEntryByURL(url);
   fake_web_state_.SetCurrentURL(url);
   web::FakeNavigationContext context;
   context.SetHasCommitted(true);
@@ -197,7 +202,8 @@ TEST_F(OfflinePageTabHelperTest, TestLoadReadingListDistilled) {
 TEST_F(OfflinePageTabHelperTest, TestLoadReadingListFailureThenNavigate) {
   GURL url(kTestURL);
   GURL second_url(kTestSecondURL);
-  const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model()->GetEntryByURL(url);
   web::FakeNavigationContext context;
   context.SetHasCommitted(true);
   context.SetUrl(url);
@@ -263,11 +269,12 @@ TEST_F(OfflinePageTabHelperDelayedModelTest, TestLateReadingListModelLoading) {
       }));
   EXPECT_FALSE(offline_page_tab_helper->presenting_offline_page());
   // Complete the reading list model load from storage.
-  std::vector<ReadingListEntry> initial_entries;
-  initial_entries.emplace_back(GURL(kTestURL), kTestTitle, base::Time());
-  initial_entries.back().SetDistilledInfo(base::FilePath(kTestDistilledPath),
-                                          GURL(kTestDistilledURL), 50,
-                                          base::Time::FromTimeT(100));
+  std::vector<scoped_refptr<ReadingListEntry>> initial_entries;
+  initial_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL(kTestURL), kTestTitle, base::Time()));
+  initial_entries.back()->SetDistilledInfo(base::FilePath(kTestDistilledPath),
+                                           GURL(kTestDistilledURL), 50,
+                                           base::Time::FromTimeT(100));
   fake_reading_list_model_storage()->TriggerLoadCompletion(
       std::move(initial_entries));
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -275,7 +282,8 @@ TEST_F(OfflinePageTabHelperDelayedModelTest, TestLateReadingListModelLoading) {
         base::RunLoop().RunUntilIdle();
         return fake_web_state_.GetLastLoadedData();
       }));
-  const ReadingListEntry* entry = reading_list_model()->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model()->GetEntryByURL(url);
   EXPECT_TRUE(entry->IsRead());
   EXPECT_TRUE(offline_page_tab_helper->presenting_offline_page());
 }

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/sync/model/metadata_batch.h"
@@ -28,7 +29,7 @@ class MetadataChangeList;
 // All interface methods have to be called on main thread.
 class ReadingListModelStorage {
  public:
-  using ReadingListEntries = std::map<GURL, ReadingListEntry>;
+  using ReadingListEntries = std::map<GURL, scoped_refptr<ReadingListEntry>>;
   using LoadResult =
       std::pair<ReadingListEntries, std::unique_ptr<syncer::MetadataBatch>>;
   using LoadResultOrError = base::expected<LoadResult, std::string>;

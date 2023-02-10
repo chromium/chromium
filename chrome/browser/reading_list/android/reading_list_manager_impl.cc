@@ -8,6 +8,7 @@
 
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
@@ -70,7 +71,7 @@ void ReadingListManagerImpl::ReadingListModelLoaded(
   // Constructs the bookmark tree.
   root_->DeleteAll();
   for (const auto& url : model->GetKeys()) {
-    AddOrUpdateBookmark(model->GetEntryByURL(url));
+    AddOrUpdateBookmark(model->GetEntryByURL(url).get());
   }
 
   loaded_ = true;
@@ -83,7 +84,7 @@ void ReadingListManagerImpl::ReadingListDidAddEntry(
     const ReadingListModel* model,
     const GURL& url,
     reading_list::EntrySource source) {
-  AddOrUpdateBookmark(model->GetEntryByURL(url));
+  AddOrUpdateBookmark(model->GetEntryByURL(url).get());
 }
 
 void ReadingListManagerImpl::ReadingListWillRemoveEntry(
@@ -96,18 +97,20 @@ void ReadingListManagerImpl::ReadingListDidMoveEntry(
     const ReadingListModel* model,
     const GURL& url) {
   DCHECK(reading_list_model_->loaded());
-  const auto* moved_entry = reading_list_model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> moved_entry =
+      reading_list_model_->GetEntryByURL(url);
   DCHECK(moved_entry);
-  AddOrUpdateBookmark(moved_entry);
+  AddOrUpdateBookmark(moved_entry.get());
 }
 
 void ReadingListManagerImpl::ReadingListDidUpdateEntry(
     const ReadingListModel* model,
     const GURL& url) {
   DCHECK(reading_list_model_->loaded());
-  const auto* updated_entry = reading_list_model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> updated_entry =
+      reading_list_model_->GetEntryByURL(url);
   DCHECK(updated_entry);
-  AddOrUpdateBookmark(updated_entry);
+  AddOrUpdateBookmark(updated_entry.get());
 }
 
 void ReadingListManagerImpl::ReadingListDidApplyChanges(
@@ -224,7 +227,8 @@ size_t ReadingListManagerImpl::unread_size() const {
 void ReadingListManagerImpl::SetTitle(const GURL& url,
                                       const std::u16string& title) {
   DCHECK(reading_list_model_->loaded());
-  const auto* entry = reading_list_model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model_->GetEntryByURL(url);
   if (!entry)
     return;
 
@@ -238,7 +242,8 @@ void ReadingListManagerImpl::SetTitle(const GURL& url,
 
 void ReadingListManagerImpl::SetReadStatus(const GURL& url, bool read) {
   DCHECK(reading_list_model_->loaded());
-  const auto* entry = reading_list_model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model_->GetEntryByURL(url);
   if (!entry)
     return;
 

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
 
 #import "base/ios/ios_util.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -189,7 +190,8 @@
 - (void)readingListListViewController:(UIViewController*)viewController
                              openItem:(id<ReadingListListItem>)item {
   DCHECK_EQ(self.tableViewController, viewController);
-  const ReadingListEntry* entry = [self.mediator entryFromItem:item];
+  scoped_refptr<const ReadingListEntry> entry =
+      [self.mediator entryFromItem:item];
   if (!entry) {
     [self.tableViewController reloadData];
     return;
@@ -205,7 +207,8 @@
                      openItemInNewTab:(id<ReadingListListItem>)item
                             incognito:(BOOL)incognito {
   DCHECK_EQ(self.tableViewController, viewController);
-  const ReadingListEntry* entry = [self.mediator entryFromItem:item];
+  scoped_refptr<const ReadingListEntry> entry =
+      [self.mediator entryFromItem:item];
   if (!entry) {
     [self.tableViewController reloadData];
     return;
@@ -315,7 +318,8 @@
 }
 
 - (void)openItemOfflineInNewTab:(id<ReadingListListItem>)item {
-  const ReadingListEntry* entry = [self.mediator entryFromItem:item];
+  scoped_refptr<const ReadingListEntry> entry =
+      [self.mediator entryFromItem:item];
   if (!entry)
     return;
 
@@ -400,7 +404,8 @@
         }
         [menuElements addObject:openInNewIncognitoTab];
 
-        const ReadingListEntry* entry = [self.mediator entryFromItem:item];
+        scoped_refptr<const ReadingListEntry> entry =
+            [self.mediator entryFromItem:item];
         if (entry && entry->DistilledState() == ReadingListEntry::PROCESSED) {
           [menuElements
               addObject:[actionFactory

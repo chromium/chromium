@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
+#import "base/memory/scoped_refptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/default_clock.h"
@@ -66,7 +67,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<ReadingListEntry>()));
+                            std::vector<scoped_refptr<ReadingListEntry>>()));
     chrome_browser_state_ = test_cbs_builder.Build();
     large_icon_service_.reset(new favicon::LargeIconServiceImpl(
         &mock_favicon_service_, nullptr, 32, favicon_base::IconType::kTouchIcon,

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_source.h"
 
 class FaviconLoader;
@@ -29,7 +30,7 @@ class ReadingListModel;
 // Returns the entry corresponding to the `item`. The item should be of type
 // ReadingListCollectionViewItem. Returns nullptr if there is no corresponding
 // entry.
-- (nullable const ReadingListEntry*)entryFromItem:
+- (scoped_refptr<const ReadingListEntry>)entryFromItem:
     (nonnull id<ReadingListListItem>)item;
 
 // Marks the entry with `URL` as read.

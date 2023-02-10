@@ -9,6 +9,7 @@
 #import "base/command_line.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/default_clock.h"
@@ -95,7 +96,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<ReadingListEntry>()));
+                            std::vector<scoped_refptr<ReadingListEntry>>()));
     browser_state_ = builder.Build();
     abuse_detector_ = [[FakeAppLauncherAbuseDetector alloc] init];
     AppLauncherTabHelper::CreateForWebState(&web_state_, abuse_detector_);
@@ -180,7 +181,8 @@ class AppLauncherTabHelperTest : public PlatformTest {
     EXPECT_TRUE(callback_called);
     EXPECT_TRUE(policy_decision.ShouldCancelNavigation());
 
-    const ReadingListEntry* entry = model->GetEntryByURL(pending_url);
+    scoped_refptr<const ReadingListEntry> entry =
+        model->GetEntryByURL(pending_url);
     return entry->IsRead() == expected_read_status;
   }
 

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
@@ -57,7 +58,8 @@ class FakeReadingListModelStorage
 
   // Convenience overload that uses sensible defaults (empty store) for success
   // case.
-  bool TriggerLoadCompletion(std::vector<ReadingListEntry> entries = {});
+  bool TriggerLoadCompletion(
+      std::vector<scoped_refptr<ReadingListEntry>> entries = {});
 
   // ReadingListModelStorage implementation.
   void Load(base::Clock* clock, LoadCallback load_cb) override;

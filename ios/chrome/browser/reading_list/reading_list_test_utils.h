@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "ios/web/public/browser_state.h"
@@ -15,7 +16,7 @@
 // instances that use a fake persistency layer. The constructed model starts
 // loaded and initially contains the entries provided in `initial_entries`.
 std::unique_ptr<KeyedService> BuildReadingListModelWithFakeStorage(
-    const std::vector<ReadingListEntry>& initial_entries,
+    const std::vector<scoped_refptr<ReadingListEntry>>& initial_entries,
     web::BrowserState* context);
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_READING_LIST_TEST_UTILS_H_

@@ -8,6 +8,7 @@
 #import "base/files/file_enumerator.h"
 #import "base/files/file_util.h"
 #import "base/memory/ptr_util.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -333,7 +334,8 @@ void OfflinePageTabHelper::PresentOfflinePageForOnlineUrl(const GURL& url) {
     return;
   }
   GURL entry_url = GetOnlineURLFromNavigationURL(url);
-  const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(entry_url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model_->GetEntryByURL(entry_url);
   if (!is_offline_navigation_ && is_new_navigation_ && !navigation_committed_) {
     // If the current navigation was not committed, but it was a new navigation,
     // a new placeholder navigation with a chrome://offline URL can be created
@@ -376,7 +378,8 @@ void OfflinePageTabHelper::LoadOfflinePage(const GURL& url) {
           .DirName();
 
   if (@available(iOS 15, *)) {
-    const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
+    scoped_refptr<const ReadingListEntry> entry =
+        reading_list_model_->GetEntryByURL(url);
     base::FilePath offline_path = entry->DistilledPath();
     bool is_pdf = offline_path.Extension() == ".pdf";
 
@@ -398,7 +401,8 @@ bool OfflinePageTabHelper::HasDistilledVersionForOnlineUrl(
   }
 
   GURL url = GetOnlineURLFromNavigationURL(online_url);
-  const ReadingListEntry* entry = reading_list_model_->GetEntryByURL(url);
+  scoped_refptr<const ReadingListEntry> entry =
+      reading_list_model_->GetEntryByURL(url);
   if (!entry)
     return false;
 

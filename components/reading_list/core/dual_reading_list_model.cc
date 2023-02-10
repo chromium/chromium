@@ -4,6 +4,7 @@
 
 #include "components/reading_list/core/dual_reading_list_model.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -120,7 +121,7 @@ bool DualReadingListModel::DeleteAllEntries() {
   return false;
 }
 
-const ReadingListEntry* DualReadingListModel::GetEntryByURL(
+scoped_refptr<const ReadingListEntry> DualReadingListModel::GetEntryByURL(
     const GURL& gurl) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(crbug.com/1402196): Implement.
