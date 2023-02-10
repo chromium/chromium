@@ -334,6 +334,8 @@ void GPUDevice::OnCreateRenderPipelineAsyncCallback(
     }
 
     case WGPUCreatePipelineAsyncStatus_Error:
+    case WGPUCreatePipelineAsyncStatus_ValidationError:
+    case WGPUCreatePipelineAsyncStatus_InternalError:
     case WGPUCreatePipelineAsyncStatus_DeviceLost:
     case WGPUCreatePipelineAsyncStatus_DeviceDestroyed:
     case WGPUCreatePipelineAsyncStatus_Unknown: {
@@ -361,6 +363,8 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
     }
 
     case WGPUCreatePipelineAsyncStatus_Error:
+    case WGPUCreatePipelineAsyncStatus_ValidationError:
+    case WGPUCreatePipelineAsyncStatus_InternalError:
     case WGPUCreatePipelineAsyncStatus_DeviceLost:
     case WGPUCreatePipelineAsyncStatus_DeviceDestroyed:
     case WGPUCreatePipelineAsyncStatus_Unknown: {
