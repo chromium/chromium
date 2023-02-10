@@ -98,6 +98,9 @@ class SystemInfoCardProvider : public SearchProvider,
   std::bitset<::ash::settings::SizeCalculator::kCalculationTypeCount>
       calculation_state_;
 
+  // Last query. It is reset when view is closed.
+  std::u16string last_query_;
+
   Profile* const profile_;
   mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService>
       probe_service_;

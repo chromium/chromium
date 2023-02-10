@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
@@ -154,7 +155,7 @@ void SystemInfoCardProvider::BindCrosHealthdProbeServiceIfNecessary() {
 }
 
 ash::AppListSearchResultType SystemInfoCardProvider::ResultType() const {
-  return ash::AppListSearchResultType::kAnswerCard;
+  return ash::AppListSearchResultType::kSystemInfo;
 }
 
 void SystemInfoCardProvider::OnProbeServiceDisconnect() {

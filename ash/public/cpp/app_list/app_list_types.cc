@@ -42,6 +42,7 @@ bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
     case AppListSearchResultType::kOpenTab:
     case AppListSearchResultType::kPersonalization:
     case AppListSearchResultType::kImageSearch:
+    case AppListSearchResultType::kSystemInfo:
       return false;
   }
 }
@@ -74,6 +75,7 @@ bool IsZeroStateResultType(AppListSearchResultType result_type) {
     case AppListSearchResultType::kGames:
     case AppListSearchResultType::kPersonalization:
     case AppListSearchResultType::kImageSearch:
+    case AppListSearchResultType::kSystemInfo:
       return false;
   }
 }

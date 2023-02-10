@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/common/types_util.h"
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 
 namespace app_list {
@@ -60,6 +61,8 @@ std::string ResultTypeToString(const ash::AppListSearchResultType result_type) {
       return "Personalization";
     case ash::AppListSearchResultType::kImageSearch:
       return "Image search";
+    case ash::AppListSearchResultType::kSystemInfo:
+      return "System info";
   }
   NOTREACHED();
 }
@@ -172,6 +175,8 @@ std::string MetricsTypeToString(const ash::SearchResultType metrics_type) {
       return "PERSONALIZATION";
     case ash::SearchResultType::SEARCH_RESULT_TYPE_BOUNDARY:
       return "SEARCH_RESULT_TYPE_BOUNDARY";
+    case ash::SearchResultType::SYSTEM_INFO:
+      return "SYSTEM_INFO";
   }
   NOTREACHED();
 }

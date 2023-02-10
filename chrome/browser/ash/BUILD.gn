@@ -4788,6 +4788,7 @@ source_set("unit_tests") {
     "app_list/search/search_metrics_manager_unittest.cc",
     "app_list/search/search_session_metrics_manager_unittest.cc",
     "app_list/search/system_info/cpu_usage_data_unittest.cc",
+    "app_list/search/system_info/system_info_answer_result_unittest.cc",
     "app_list/search/test/ranking_test_util.cc",
     "app_list/search/test/ranking_test_util.h",
     "app_list/search/test/search_controller_test_util.cc",

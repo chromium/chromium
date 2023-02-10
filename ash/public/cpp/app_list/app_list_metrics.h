@@ -178,6 +178,8 @@ enum SearchResultType {
   PERSONALIZATION,
   // A Bruschetta App Result.
   BRUSCHETTA_APP,
+  // A System Info Answer Card Result.
+  SYSTEM_INFO,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };
