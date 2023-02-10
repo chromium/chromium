@@ -274,7 +274,6 @@ INSTANTIATE_TEST_SUITE_P(
                       OsIntegrationSubManagersState::kDisabled),
     test::GetOsIntegrationSubManagersTestName);
 
-#if !BUILDFLAG(IS_WIN)
 class FileHandlingSubManagerConfigureAndExecuteTest
     : public FileHandlingSubManagerConfigureTest {
  private:
@@ -444,7 +443,6 @@ INSTANTIATE_TEST_SUITE_P(
                       OsIntegrationSubManagersState::kSaveStateAndExecute,
                       OsIntegrationSubManagersState::kDisabled),
     test::GetOsIntegrationSubManagersTestName);
-#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace
 
