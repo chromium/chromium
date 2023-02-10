@@ -71,14 +71,7 @@ void ItemsBubbleController::OnPasswordAction(
   if (!profile)
     return;
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-      password_form.IsUsingAccountStore()
-          ? AccountPasswordStoreFactory::GetForProfile(
-                profile, ServiceAccessType::EXPLICIT_ACCESS)
-                .get()
-          : PasswordStoreFactory::GetForProfile(
-                profile, ServiceAccessType::EXPLICIT_ACCESS)
-                .get();
-
+      PasswordStoreForForm(password_form);
   DCHECK(password_store);
   if (action == PasswordAction::kRemovePassword)
     password_store->RemoveLogin(password_form);
@@ -125,6 +118,36 @@ void ItemsBubbleController::OnGooglePasswordManagerLinkClicked() {
   }
 }
 
+void ItemsBubbleController::UpdateStoredCredential(
+    const password_manager::PasswordForm& original_form,
+    password_manager::PasswordForm updated_form) {
+  Profile* profile = GetProfile();
+  if (!profile) {
+    return;
+  }
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+      PasswordStoreForForm(original_form);
+
+  if (original_form.username_value == updated_form.username_value) {
+    password_store->UpdateLogin(updated_form);
+    return;
+  }
+  if (updated_form.username_value.empty()) {
+    // The UI doesn't allow clearing the username.
+    NOTREACHED();
+    return;
+  }
+  // The UI allows updating the username for credentials with an empty username.
+  // Since the username is part of the the unique key, updating it requires
+  // calling another API on the password store.
+
+  // Phished and leaked issues are no longer relevant on username change.
+  // Weak and reused issues are still relevant.
+  updated_form.password_issues.erase(password_manager::InsecureType::kPhished);
+  updated_form.password_issues.erase(password_manager::InsecureType::kLeaked);
+  password_store->UpdateLoginWithPrimaryKey(updated_form, original_form);
+}
+
 void ItemsBubbleController::OnFaviconReady(
     base::OnceCallback<void(const gfx::Image&)> favicon_ready_callback,
     const favicon_base::FaviconImageResult& result) {
@@ -140,4 +163,16 @@ void ItemsBubbleController::ReportInteractions() {
 
 std::u16string ItemsBubbleController::GetTitle() const {
   return title_;
+}
+
+scoped_refptr<password_manager::PasswordStoreInterface>
+ItemsBubbleController::PasswordStoreForForm(
+    const password_manager::PasswordForm& password_form) const {
+  Profile* profile = GetProfile();
+  DCHECK(profile);
+  return password_form.IsUsingAccountStore()
+             ? AccountPasswordStoreFactory::GetForProfile(
+                   profile, ServiceAccessType::EXPLICIT_ACCESS)
+             : PasswordStoreFactory::GetForProfile(
+                   profile, ServiceAccessType::EXPLICIT_ACCESS);
 }

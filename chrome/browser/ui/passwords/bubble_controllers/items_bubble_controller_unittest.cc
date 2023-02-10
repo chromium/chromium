@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -38,6 +39,15 @@ constexpr char kUIDismissalReasonGeneralMetric[] =
     "PasswordManager.UIDismissalReason";
 
 constexpr char kSiteOrigin[] = "http://example.com/login/";
+
+password_manager::PasswordForm CreateTestForm(int index = 1) {
+  password_manager::PasswordForm form;
+  form.url = GURL(kSiteOrigin);
+  form.signon_realm = kSiteOrigin;
+  form.username_value = u"User" + base::NumberToString16(index);
+  form.password_value = u"Password" + base::NumberToString16(index);
+  return form;
+}
 
 }  // namespace
 
@@ -126,21 +136,11 @@ void ItemsBubbleControllerTest::DestroyController() {
 // static
 std::vector<std::unique_ptr<password_manager::PasswordForm>>
 ItemsBubbleControllerTest::GetCurrentForms() {
-  password_manager::PasswordForm form1;
-  form1.url = GURL(kSiteOrigin);
-  form1.signon_realm = kSiteOrigin;
-  form1.username_value = u"User1";
-  form1.password_value = u"123456";
-
-  password_manager::PasswordForm form2;
-  form2.url = GURL(kSiteOrigin);
-  form2.signon_realm = kSiteOrigin;
-  form2.username_value = u"User2";
-  form2.password_value = u"654321";
-
   std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
-  forms.push_back(std::make_unique<password_manager::PasswordForm>(form1));
-  forms.push_back(std::make_unique<password_manager::PasswordForm>(form2));
+  forms.push_back(
+      std::make_unique<password_manager::PasswordForm>(CreateTestForm(1)));
+  forms.push_back(
+      std::make_unique<password_manager::PasswordForm>(CreateTestForm(2)));
   return forms;
 }
 
@@ -167,11 +167,7 @@ TEST_F(ItemsBubbleControllerTest, OnManageClicked) {
 TEST_F(ItemsBubbleControllerTest, OnPasswordActionAddPassword) {
   Init();
 
-  password_manager::PasswordForm form;
-  form.url = GURL(kSiteOrigin);
-  form.signon_realm = kSiteOrigin;
-  form.username_value = u"User";
-  form.password_value = u"123456";
+  password_manager::PasswordForm form = CreateTestForm();
 
   EXPECT_CALL(*GetStore(), AddLogin(form, _));
 
@@ -182,11 +178,7 @@ TEST_F(ItemsBubbleControllerTest, OnPasswordActionAddPassword) {
 TEST_F(ItemsBubbleControllerTest, OnPasswordActionRemovePassword) {
   Init();
 
-  password_manager::PasswordForm form;
-  form.url = GURL(kSiteOrigin);
-  form.signon_realm = kSiteOrigin;
-  form.username_value = u"User";
-  form.password_value = u"123456";
+  password_manager::PasswordForm form = CreateTestForm();
 
   EXPECT_CALL(*GetStore(), RemoveLogin(form));
 
@@ -250,4 +242,67 @@ TEST_F(ItemsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {
   signin::MakePrimaryAccountAvailable(identity_manager, "test@email.com",
                                       signin::ConsentLevel::kSync);
   EXPECT_EQ(controller()->GetPrimaryAccountEmail(), u"test@email.com");
+}
+
+TEST_F(ItemsBubbleControllerTest, OnUpdatePasswordNote) {
+  Init();
+
+  password_manager::PasswordForm original_form = CreateTestForm();
+
+  password_manager::PasswordForm updated_form = original_form;
+  updated_form.SetNoteWithEmptyUniqueDisplayName(u"Important Note");
+
+  password_manager::PasswordForm expected_updated_form = updated_form;
+
+  EXPECT_CALL(*GetStore(), UpdateLogin(expected_updated_form, _));
+
+  controller()->UpdateStoredCredential(original_form, updated_form);
+}
+
+TEST_F(ItemsBubbleControllerTest, OnUpdateUsername) {
+  Init();
+
+  password_manager::PasswordForm original_form = CreateTestForm();
+  original_form.username_value = std::u16string();
+
+  original_form.password_issues.insert(
+      {password_manager::InsecureType::kLeaked,
+       password_manager::InsecurityMetadata()});
+  original_form.password_issues.insert(
+      {password_manager::InsecureType::kWeak,
+       password_manager::InsecurityMetadata()});
+
+  password_manager::PasswordForm updated_form = original_form;
+  // Update the username, only the Weak password issue is still relevant.
+  updated_form.username_value = u"uncommon username";
+
+  password_manager::PasswordForm expected_updated_form = updated_form;
+  expected_updated_form.password_issues.erase(
+      password_manager::InsecureType::kLeaked);
+
+  EXPECT_CALL(*GetStore(), UpdateLogin).Times(0);
+  EXPECT_CALL(*GetStore(), UpdateLoginWithPrimaryKey(expected_updated_form,
+                                                     original_form, _));
+
+  controller()->UpdateStoredCredential(original_form, updated_form);
+}
+
+TEST_F(ItemsBubbleControllerTest, OnUpdateUsernameAndPasswordNote) {
+  Init();
+
+  password_manager::PasswordForm original_form = CreateTestForm();
+  original_form.username_value = std::u16string();
+  original_form.SetNoteWithEmptyUniqueDisplayName(u"Original Important Note");
+
+  password_manager::PasswordForm updated_form = original_form;
+  updated_form.username_value = u"uncommon username";
+  updated_form.SetNoteWithEmptyUniqueDisplayName(u"Updated Important Note");
+
+  password_manager::PasswordForm expected_updated_form = updated_form;
+
+  EXPECT_CALL(*GetStore(), UpdateLogin).Times(0);
+  EXPECT_CALL(*GetStore(), UpdateLoginWithPrimaryKey(expected_updated_form,
+                                                     original_form, _));
+
+  controller()->UpdateStoredCredential(original_form, updated_form);
 }

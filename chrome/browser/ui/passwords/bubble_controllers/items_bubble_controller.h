@@ -20,6 +20,7 @@ struct FaviconImageResult;
 
 namespace password_manager {
 struct PasswordForm;
+class PasswordStoreInterface;
 enum class SyncState;
 }  // namespace password_manager
 
@@ -54,6 +55,14 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
   // bubble footer in clicked by the user.
   void OnGooglePasswordManagerLinkClicked();
 
+  // Called by the view code when the user updates a stored credentials. Since
+  // the UI allows adding username to credentials without a username, both the
+  // old and new forms are required to pick the suitable API to call in case the
+  // credential immutable unique key has been updated.
+  void UpdateStoredCredential(
+      const password_manager::PasswordForm& original_form,
+      password_manager::PasswordForm updated_form);
+
   // Returns the available credentials which match the current site.
   const std::vector<password_manager::PasswordForm>& local_credentials() const {
     return local_credentials_;
@@ -69,6 +78,10 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
   // PasswordBubbleControllerBase methods:
   std::u16string GetTitle() const override;
   void ReportInteractions() override;
+
+  // Returns the password store in which this password form is stored.
+  scoped_refptr<password_manager::PasswordStoreInterface> PasswordStoreForForm(
+      const password_manager::PasswordForm& password_form) const;
 
   const std::vector<password_manager::PasswordForm> local_credentials_;
 
