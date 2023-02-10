@@ -5080,6 +5080,21 @@
             ]
         }
     ],
+    "Floss": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Floss"
+                    ]
+                }
+            ]
+        }
+    ],
     "FollowOnboarding": [
         {
             "platforms": [
