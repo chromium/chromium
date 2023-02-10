@@ -74,7 +74,10 @@ class FamilyUserDeviceMetricsTest
   UserPolicyMixin user_policy_mixin_{&mixin_host_, kDefaultOwnerAccountId};
 };
 
-IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, IsDeviceOwner) {
+// TODO(crbug.com/1414899): Test is flaky. Too many histogram entries are
+// sometimes generated.
+#define MAYBE_IsDeviceOwner DISABLED_IsDeviceOwner
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, MAYBE_IsDeviceOwner) {
   base::HistogramTester histogram_tester;
 
   // Set the device owner to the logged in user.
@@ -86,7 +89,10 @@ IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, IsDeviceOwner) {
       /*sample=*/true, /*expected_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, IsNotDeviceOwner) {
+// TODO(crbug.com/1414899): Test is flaky. Too many histogram entries are
+// sometimes generated.
+#define MAYBE_IsNotDeviceOwner DISABLED_IsNotDeviceOwner
+IN_PROC_BROWSER_TEST_P(FamilyUserDeviceMetricsTest, MAYBE_IsNotDeviceOwner) {
   base::HistogramTester histogram_tester;
 
   // Set the device owner to an arbitrary account that's not logged in.
