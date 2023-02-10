@@ -243,6 +243,7 @@ namespace wifi {
 const char kAllowGatewayARPPolling[] = "AllowGatewayARPPolling";
 const char kAutoConnect[] = "AutoConnect";
 const char kBSSID[] = "BSSID";
+const char kBSSIDAllowlist[] = "BSSIDAllowlist";
 const char kEAP[] = "EAP";
 const char kFrequency[] = "Frequency";
 const char kFrequencyList[] = "FrequencyList";

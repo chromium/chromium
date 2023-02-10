@@ -260,6 +260,7 @@ namespace wifi {
 COMPONENT_EXPORT(ONC) extern const char kAllowGatewayARPPolling[];
 COMPONENT_EXPORT(ONC) extern const char kAutoConnect[];
 COMPONENT_EXPORT(ONC) extern const char kBSSID[];
+COMPONENT_EXPORT(ONC) extern const char kBSSIDAllowlist[];
 COMPONENT_EXPORT(ONC) extern const char kEAP[];
 COMPONENT_EXPORT(ONC) extern const char kFrequency[];
 COMPONENT_EXPORT(ONC) extern const char kFrequencyList[];

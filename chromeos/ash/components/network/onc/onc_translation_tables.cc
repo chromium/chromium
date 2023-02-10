@@ -164,6 +164,7 @@ const FieldTranslationEntry tether_fields[] = {
 const FieldTranslationEntry wifi_fields[] = {
     {::onc::wifi::kAutoConnect, shill::kAutoConnectProperty},
     {::onc::wifi::kBSSID, shill::kWifiBSsid},
+    {::onc::wifi::kBSSIDAllowlist, shill::kWifiBSSIDAllowlist},
     // This dictionary is converted during translation, see onc_translator_*.
     // { ::onc::wifi::kEAP, shill::kEap*},
     {::onc::wifi::kFrequency, shill::kWifiFrequency},

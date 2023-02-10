@@ -493,6 +493,19 @@ field **WiFi** must be set to an object of type [WiFi](#WiFi-type).
     * Indicating that the network should be connected to automatically when in
       range.
 
+* **BSSIDAllowlist**
+    * (optional) - **array of string**
+    * Array of BSSIDs that control what APs can be connected to. BSSIDs
+      should be formatted as colon-separated octets (e.g.
+      `"00:01:02:03:04:05"`).
+    * Values are:
+        * *Empty list*: The WiFi network can associate with any AP.
+        * *Non-empty list*: The Wifi network will only associate with the
+          specified BSSes.
+        * *["00:00:00:00:00:00"]*: Special value indicating the network
+          shouldn't associate with any AP. `"00:00:00:00:00:00"` shouldn't be a
+          part of any other list of values, otherwise it may cause an error.
+
 * **EAP**
     * (required if **Security** is
         *WEP-8021X* or *WPA-EAP*, otherwise ignored) - [EAP](#EAP-type)

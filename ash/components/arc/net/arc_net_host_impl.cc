@@ -802,6 +802,10 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
     }
   }
   wifi_dict.Set(onc::wifi::kBSSID, cfg->bssid);
+  if (cfg->bssid_allowlist.has_value()) {
+    wifi_dict.Set(onc::wifi::kBSSIDAllowlist,
+                  TranslateStringListToValue(cfg->bssid_allowlist.value()));
+  }
   properties.Set(onc::network_config::kWiFi, std::move(wifi_dict));
 
   // Set up static IPv4 config.
