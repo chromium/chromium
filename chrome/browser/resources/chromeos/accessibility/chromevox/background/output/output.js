@@ -868,35 +868,32 @@ export class Output {
 
       const parentRole = roleInfo.inherits || CustomRole.NO_ROLE;
       const rule = new AncestryOutputRule(
-          type, formatNode.role, parentRole, formatName,
-          this.formatOptions_.braille);
+          type, formatNode.role, parentRole, formatName, this.formatAsBraille);
+      if (!rule.defined) {
+        continue;
+      }
 
-      // First, look up the event type's format block.
-      const eventBlock = OutputRule.RULES[rule.event];
+      if (this.formatAsBraille) {
+        buff = /** @type {!Array<Spannable>} */ ([]);
+        formatLog.bufferClear();
+      }
 
-      if (eventBlock[rule.role][formatName]) {
-        if (this.formatOptions_.braille) {
-          buff = /** @type {!Array<Spannable>} */ ([]);
-          formatLog.bufferClear();
-        }
+      excludeRoles.add(formatNode.role);
+      formatLog.writeRule(rule.specifier);
+      this.formattedAncestors_.add(formatNode);
+      OutputFormatter.format(this, {
+        node: formatNode,
+        outputFormat: rule.enterFormat,
+        outputBuffer: buff,
+        outputFormatLogger: formatLog,
+        opt_prevNode: prevNode,
+      });
 
-        excludeRoles.add(formatNode.role);
-        formatLog.writeRule(rule.specifier);
-        this.formattedAncestors_.add(formatNode);
-        OutputFormatter.format(this, {
-          node: formatNode,
-          outputFormat: rule.enterFormat,
-          outputBuffer: buff,
-          outputFormatLogger: formatLog,
-          opt_prevNode: prevNode,
-        });
-
-        if (this.formatOptions_.braille && buff.length) {
-          const nodeSpan = this.mergeBraille_(buff);
-          nodeSpan.setSpan(
-              new outputTypes.OutputNodeSpan(formatNode), 0, nodeSpan.length);
-          originalBuff.push(nodeSpan);
-        }
+      if (this.formatAsBraille && buff.length) {
+        const nodeSpan = this.mergeBraille_(buff);
+        nodeSpan.setSpan(
+            new outputTypes.OutputNodeSpan(formatNode), 0, nodeSpan.length);
+        originalBuff.push(nodeSpan);
       }
     }
   }

@@ -144,6 +144,11 @@ export class AncestryOutputRule extends OutputRule {
     }
   }
 
+  /** @return {boolean} */
+  get defined() {
+    return Boolean(OutputRule.RULES[this.event_][this.role_][this.formatName_]);
+  }
+
   /** @return {string} */
   get enterFormat() {
     const rule = OutputRule.RULES[this.event_][this.role_][this.formatName_];
