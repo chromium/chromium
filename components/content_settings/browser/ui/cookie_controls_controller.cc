@@ -114,6 +114,7 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
 }
 
 bool CookieControlsController::FirstPartyCookiesBlocked() {
+  // No overrides are given since existing ones only pertain to 3P checks.
   const GURL& url = GetWebContents()->GetLastCommittedURL();
   return !cookie_settings_->IsFullCookieAccessAllowed(
       url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),

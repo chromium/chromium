@@ -91,6 +91,7 @@ void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
       CONTENT_SETTING_DEFAULT);
 }
 
+// TODO(crbug.com/1386190): Update to take in CookieSettingOverrides.
 bool CookieSettings::IsThirdPartyAccessAllowed(
     const GURL& first_party_url,
     content_settings::SettingSource* source,

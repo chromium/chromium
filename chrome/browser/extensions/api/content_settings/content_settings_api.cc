@@ -166,6 +166,8 @@ ContentSettingsContentSettingGetFunction::Run() {
     cookie_settings = CookieSettingsFactory::GetForProfile(profile).get();
   }
 
+  // TODO(crbug.com/1386190): Consider whether the following check should
+  // somehow determine real CookieSettingOverrides rather than default to none.
   ContentSetting setting =
       content_type == ContentSettingsType::COOKIES
           ? cookie_settings->GetCookieSetting(

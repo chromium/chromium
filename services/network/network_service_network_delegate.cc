@@ -286,6 +286,8 @@ bool NetworkServiceNetworkDelegate::OnCanQueueReportingReport(
       network_context_->cookie_manager()->cookie_settings();
   return cookie_settings.IsFullCookieAccessAllowed(
       origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
+      // Only storage access override is considered since other existing ones
+      // only pertain to 3P checks.
       cookie_settings.SettingOverridesForStorage(), QueryReason::kSiteStorage);
 }
 
@@ -320,6 +322,8 @@ bool NetworkServiceNetworkDelegate::OnCanSetReportingClient(
       network_context_->cookie_manager()->cookie_settings();
   return cookie_settings.IsFullCookieAccessAllowed(
       origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
+      // Only storage access override is considered since other existing ones
+      // only pertain to 3P checks.
       cookie_settings.SettingOverridesForStorage(), QueryReason::kSiteStorage);
 }
 
@@ -330,6 +334,8 @@ bool NetworkServiceNetworkDelegate::OnCanUseReportingClient(
       network_context_->cookie_manager()->cookie_settings();
   return cookie_settings.IsFullCookieAccessAllowed(
       origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
+      // Only storage access override is considered since other existing ones
+      // only pertain to 3P checks.
       cookie_settings.SettingOverridesForStorage(), QueryReason::kSiteStorage);
 }
 

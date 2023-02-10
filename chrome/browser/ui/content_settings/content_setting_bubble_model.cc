@@ -117,6 +117,9 @@ bool GetSettingManagedByUser(const GURL& url,
   SettingSource source;
   ContentSetting setting;
   if (type == ContentSettingsType::COOKIES) {
+    // TODO(crbug.com/1386190): Consider whether the following check should
+    // somehow determine real CookieSettingOverrides rather than default to
+    // none.
     setting = CookieSettingsFactory::GetForProfile(profile)->GetCookieSetting(
         url, url, net::CookieSettingOverrides(), &source,
         content_settings::CookieSettings::QueryReason::kSetting);

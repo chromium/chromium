@@ -13,6 +13,9 @@
 
 namespace signin {
 
+// TODO(crbug.com/1386190): Consider whether the following checks should
+// take in CookieSettingOverrides rather than default to none.
+
 bool SettingsAllowSigninCookies(
     const content_settings::CookieSettings* cookie_settings) {
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
