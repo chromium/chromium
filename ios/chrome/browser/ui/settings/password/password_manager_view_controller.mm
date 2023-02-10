@@ -1007,16 +1007,14 @@ NSInteger kTrailingSymbolSize = 18;
 }
 
 // TODO(crbug.com/1359392): Remove this.
-- (PasswordFormContentItem*)
-    savedFormItemWithText:(NSString*)text
-            andDetailText:(NSString*)detailText
-            forCredential:
-                (const password_manager::CredentialUIEntry&)credential {
+- (PasswordFormContentItem*)savedFormItemForCredential:
+    (const password_manager::CredentialUIEntry&)credential {
   PasswordFormContentItem* passwordItem =
       [[PasswordFormContentItem alloc] initWithType:ItemTypeSavedPassword];
-  passwordItem.title = text;
+  passwordItem.title =
+      base::SysUTF8ToNSString(password_manager::GetShownOrigin(credential));
   passwordItem.credential = credential;
-  passwordItem.detailText = detailText;
+  passwordItem.detailText = base::SysUTF16ToNSString(credential.username);
   passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(credential.GetURL())];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -1031,19 +1029,22 @@ NSInteger kTrailingSymbolSize = 18;
   return passwordItem;
 }
 
-- (PasswordFormContentItem*)savedFormItemWithText:(NSString*)text
-                                    andDetailText:(NSString*)detailText
-                               forAffiliatedGroup:
-                                   (const password_manager::AffiliatedGroup&)
-                                       affiliatedGroup {
+- (PasswordFormContentItem*)savedFormItemForAffiliatedGroup:
+    (const password_manager::AffiliatedGroup&)affiliatedGroup {
   PasswordFormContentItem* passwordItem =
       [[PasswordFormContentItem alloc] initWithType:ItemTypeSavedPassword];
-  passwordItem.title = text;
+  passwordItem.title =
+      base::SysUTF8ToNSString(affiliatedGroup.GetDisplayName());
   passwordItem.affiliatedGroup = affiliatedGroup;
   // TODO(crbug.com/1358978): Temporary credential object so Password Details
   // works.
   passwordItem.credential = *affiliatedGroup.GetCredentials().begin();
-  passwordItem.detailText = detailText;
+  const int nbAccounts = affiliatedGroup.GetCredentials().size();
+  passwordItem.detailText =
+      nbAccounts > 1
+          ? l10n_util::GetNSStringF(IDS_IOS_SETTINGS_PASSWORDS_NUMBER_ACCOUNT,
+                                    base::NumberToString16(nbAccounts))
+          : @"";
   // TODO(crbug.com/1355956): Fix favicon logic.
   passwordItem.URL =
       [[CrURL alloc] initWithGURL:GURL(passwordItem.credential.GetURL())];
@@ -1610,39 +1611,27 @@ NSInteger kTrailingSymbolSize = 18;
 - (void)updatePasswordsSectionWithSearchTerm:(NSString*)searchTerm {
   if (IsPasswordGroupingEnabled()) {
     for (const auto& affiliatedGroup : _affiliatedGroups) {
-      NSString* text =
-          base::SysUTF8ToNSString(affiliatedGroup.GetDisplayName());
-      bool hidden = searchTerm.length > 0 &&
-                    ![text localizedCaseInsensitiveContainsString:searchTerm];
+      PasswordFormContentItem* item =
+          [self savedFormItemForAffiliatedGroup:affiliatedGroup];
+      bool hidden =
+          searchTerm.length > 0 &&
+          ![item.title localizedCaseInsensitiveContainsString:searchTerm];
       if (hidden)
         continue;
-
-      int nbAccounts = affiliatedGroup.GetCredentials().size();
-      NSString* detailText =
-          nbAccounts > 1 ? l10n_util::GetNSStringF(
-                               IDS_IOS_SETTINGS_PASSWORDS_NUMBER_ACCOUNT,
-                               base::NumberToString16(nbAccounts))
-                         : @"";
-      [self.tableViewModel
-                          addItem:([self savedFormItemWithText:text
-                                                 andDetailText:detailText
-                                            forAffiliatedGroup:affiliatedGroup])
-          toSectionWithIdentifier:SectionIdentifierSavedPasswords];
+      [self.tableViewModel addItem:item
+           toSectionWithIdentifier:SectionIdentifierSavedPasswords];
     }
   } else {
     for (const auto& credential : _passwords) {
-      NSString* text =
-          base::SysUTF8ToNSString(password_manager::GetShownOrigin(credential));
-      NSString* detailText = base::SysUTF16ToNSString(credential.username);
+      PasswordFormContentItem* item =
+          [self savedFormItemForCredential:credential];
       bool hidden =
           searchTerm.length > 0 &&
-          ![text localizedCaseInsensitiveContainsString:searchTerm] &&
-          ![detailText localizedCaseInsensitiveContainsString:searchTerm];
+          ![item.title localizedCaseInsensitiveContainsString:searchTerm] &&
+          ![item.detailText localizedCaseInsensitiveContainsString:searchTerm];
       if (hidden)
         continue;
-      [self.tableViewModel addItem:[self savedFormItemWithText:text
-                                                 andDetailText:detailText
-                                                 forCredential:credential]
+      [self.tableViewModel addItem:item
            toSectionWithIdentifier:SectionIdentifierSavedPasswords];
     }
   }
