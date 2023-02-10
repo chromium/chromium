@@ -42,7 +42,9 @@ source_set("browser_tests") {
   deps = [ ":enhanced_network_tts_extjs_tests" ]
 
   data = [
-    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/",
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/background.html",
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/background.js",
+    "$root_out_dir/resources/chromeos/accessibility/enhanced_network_tts/enhanced_network_tts.js",
     "//chrome/browser/resources/chromeos/accessibility/common/",
     "//chrome/browser/resources/chromeos/accessibility/enhanced_network_tts/",
   ]
