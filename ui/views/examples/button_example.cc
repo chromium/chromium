@@ -138,23 +138,23 @@ class FabButton : public views::MdTextButton {
   FabButton& operator=(const FabButton&) = delete;
   ~FabButton() override = default;
 
-  void UpdateBackground() {
+  void UpdateBackgroundColor() override {
     SkColor bg_color = GetColorProvider()->GetColor(
         ExamplesColorIds::kColorButtonBackgroundFab);
     SetBackground(CreateBackgroundFromPainter(
         std::make_unique<SolidRoundRectPainterWithShadow>(
-            bg_color, SK_ColorTRANSPARENT, 2, gfx::Insets(),
+            bg_color, SK_ColorTRANSPARENT, GetCornerRadius(), gfx::Insets(),
             SkBlendMode::kSrcOver, true, use_shadow_)));
   }
 
   void OnHoverChanged() {
     use_shadow_ = !use_shadow_;
-    UpdateBackground();
+    UpdateBackgroundColor();
   }
 
   void OnThemeChanged() override {
     MdTextButton::OnThemeChanged();
-    UpdateBackground();
+    UpdateBackgroundColor();
   }
 
  private:
