@@ -390,7 +390,12 @@ void FloatController::MaybeUntuckFloatedWindowForTablet(
 bool FloatController::IsFloatedWindowTuckedForTablet(
     const aura::Window* floated_window) const {
   auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
-  DCHECK(floated_window_info);
+  // This can be called during state transition, where window is getting into
+  // float state but float info is not created, return false as default tuck
+  // status is false.
+  if (!floated_window_info) {
+    return false;
+  }
   return floated_window_info->is_tucked_for_tablet();
 }
 
