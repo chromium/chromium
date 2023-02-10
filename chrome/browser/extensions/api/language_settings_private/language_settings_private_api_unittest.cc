@@ -392,13 +392,13 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
   size_t languages_to_test_found_count = 0;
   for (auto& language_val : result->GetList()) {
     EXPECT_TRUE(language_val.is_dict());
-    std::string* language_code_ptr = language_val.FindStringKey("code");
+    std::string* language_code_ptr = language_val.GetDict().FindString("code");
     ASSERT_NE(nullptr, language_code_ptr);
     std::string language_code = *language_code_ptr;
     EXPECT_FALSE(language_code.empty());
 
     const absl::optional<bool> maybe_supports_spellcheck =
-        language_val.FindBoolKey("supportsSpellcheck");
+        language_val.GetDict().FindBool("supportsSpellcheck");
     const bool supports_spellcheck = maybe_supports_spellcheck.has_value()
                                          ? maybe_supports_spellcheck.value()
                                          : false;
@@ -417,7 +417,7 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
     // Check that zh and zh-HK aren't shown as supporting UI.
     if (language_code == "zh" || language_code == "zh-HK") {
       const absl::optional<bool> maybe_supports_ui =
-          language_val.FindBoolKey("supportsUI");
+          language_val.GetDict().FindBool("supportsUI");
       const bool supports_ui =
           maybe_supports_ui.has_value() ? maybe_supports_ui.value() : false;
       EXPECT_FALSE(supports_ui) << language_code << " should not support UI";

@@ -618,24 +618,25 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
 
   const base::Value& info = (*list)[0];
   ASSERT_TRUE(info.is_dict());
+  const base::Value::Dict& info_dict = info.GetDict();
 
-  ASSERT_EQ(id.uid, info.FindIntKey("menuItemId"));
-  ASSERT_EQ(parent_id.uid, info.FindIntKey("parentMenuItemId"));
+  ASSERT_EQ(id.uid, info_dict.FindInt("menuItemId"));
+  ASSERT_EQ(parent_id.uid, info_dict.FindInt("parentMenuItemId"));
 
-  const std::string* tmp = info.FindStringKey("mediaType");
+  const std::string* tmp = info_dict.FindString("mediaType");
   ASSERT_TRUE(tmp);
   ASSERT_EQ("image", *tmp);
-  tmp = info.FindStringKey("srcUrl");
+  tmp = info_dict.FindString("srcUrl");
   ASSERT_TRUE(tmp);
   ASSERT_EQ(params.src_url.spec(), *tmp);
-  tmp = info.FindStringKey("pageUrl");
+  tmp = info_dict.FindString("pageUrl");
   ASSERT_TRUE(tmp);
   ASSERT_EQ(params.page_url.spec(), *tmp);
-  tmp = info.FindStringKey("selectionText");
+  tmp = info_dict.FindString("selectionText");
   ASSERT_TRUE(tmp);
   ASSERT_EQ(params.selection_text, base::UTF8ToUTF16(*tmp));
 
-  absl::optional<bool> editable = info.FindBoolKey("editable");
+  absl::optional<bool> editable = info_dict.FindBool("editable");
   ASSERT_TRUE(editable.has_value());
   ASSERT_EQ(params.is_editable, editable.value());
 

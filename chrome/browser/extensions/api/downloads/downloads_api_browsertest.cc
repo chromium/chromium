@@ -1573,22 +1573,20 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(result_value->is_list());
   ASSERT_EQ(2UL, result_value->GetList().size());
   {
-    const base::Value& result_dict = result_value->GetList()[0];
-    ASSERT_TRUE(result_dict.is_dict());
-    const std::string* filename = result_dict.FindStringKey("filename");
+    const base::Value::Dict& result_dict = result_value->GetList()[0].GetDict();
+    const std::string* filename = result_dict.FindString("filename");
     ASSERT_TRUE(filename);
-    absl::optional<bool> is_incognito = result_dict.FindBoolKey("incognito");
+    absl::optional<bool> is_incognito = result_dict.FindBool("incognito");
     ASSERT_TRUE(is_incognito.has_value());
     EXPECT_TRUE(on_item->GetTargetFilePath() ==
                 base::FilePath::FromUTF8Unsafe(*filename));
     EXPECT_FALSE(is_incognito.value());
   }
   {
-    const base::Value& result_dict = result_value->GetList()[1];
-    ASSERT_TRUE(result_dict.is_dict());
-    const std::string* filename = result_dict.FindStringKey("filename");
+    const base::Value::Dict& result_dict = result_value->GetList()[1].GetDict();
+    const std::string* filename = result_dict.FindString("filename");
     ASSERT_TRUE(filename);
-    absl::optional<bool> is_incognito = result_dict.FindBoolKey("incognito");
+    absl::optional<bool> is_incognito = result_dict.FindBool("incognito");
     ASSERT_TRUE(is_incognito.has_value());
     EXPECT_TRUE(off_item->GetTargetFilePath() ==
                 base::FilePath::FromUTF8Unsafe(*filename));
@@ -1604,13 +1602,12 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(result_value->is_list());
   ASSERT_EQ(1UL, result_value->GetList().size());
   {
-    const base::Value& result_dict = result_value->GetList()[0];
-    ASSERT_TRUE(result_dict.is_dict());
-    const std::string* filename = result_dict.FindStringKey("filename");
+    const base::Value::Dict& result_dict = result_value->GetList()[0].GetDict();
+    const std::string* filename = result_dict.FindString("filename");
     ASSERT_TRUE(filename);
     EXPECT_TRUE(on_item->GetTargetFilePath() ==
                 base::FilePath::FromUTF8Unsafe(*filename));
-    absl::optional<bool> is_incognito = result_dict.FindBoolKey("incognito");
+    absl::optional<bool> is_incognito = result_dict.FindBool("incognito");
     ASSERT_TRUE(is_incognito.has_value());
     EXPECT_FALSE(is_incognito.value());
   }

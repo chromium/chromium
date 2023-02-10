@@ -385,14 +385,14 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     const base::Value* event_data = data.arg2();
     ASSERT_TRUE(event_data->is_dict());
 
-    absl::optional<bool> enabled = event_data->FindBoolKey("enabled");
+    absl::optional<bool> enabled = event_data->GetDict().FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());
     EXPECT_EQ(expected_enabled, *enabled);
 
-    const base::Value* pref_data = event_data->FindDictPath("pref");
-    ASSERT_TRUE(pref_data && pref_data->is_dict());
+    const base::Value::Dict* pref_data = event_data->GetDict().FindDict("pref");
+    ASSERT_TRUE(pref_data);
 
-    absl::optional<bool> value = pref_data->FindBoolKey("value");
+    absl::optional<bool> value = pref_data->FindBool("value");
     ASSERT_TRUE(value.has_value());
     EXPECT_EQ(expected_value, *value);
   }
@@ -513,11 +513,11 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     const base::Value* result = data.arg3();
     ASSERT_TRUE(result->is_dict());
 
-    absl::optional<bool> valid = result->FindBoolKey("isValid");
+    absl::optional<bool> valid = result->GetDict().FindBool("isValid");
     ASSERT_TRUE(valid.has_value());
     EXPECT_EQ(expected_validity, *valid);
 
-    const std::string* reason = result->FindStringKey("reason");
+    const std::string* reason = result->GetDict().FindString("reason");
     ASSERT_TRUE(reason);
     EXPECT_EQ(expected_reason, *reason);
   }
@@ -1901,13 +1901,14 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
   site_settings::AddExceptionForHostedApp("[*.]google.com", *extension.get(),
                                           &exceptions);
 
-  const base::Value& dictionary = exceptions[0];
-  CHECK(dictionary.is_dict());
-  CHECK(dictionary.FindStringKey(site_settings::kOrigin));
-  CHECK(dictionary.FindStringKey(site_settings::kDisplayName));
-  CHECK(dictionary.FindStringKey(site_settings::kEmbeddingOrigin));
-  CHECK(dictionary.FindStringKey(site_settings::kSetting));
-  CHECK(dictionary.FindBoolKey(site_settings::kIncognito).has_value());
+  const base::Value& dictionary_value = exceptions[0];
+  CHECK(dictionary_value.is_dict());
+  const base::Value::Dict& dictionary = dictionary_value.GetDict();
+  CHECK(dictionary.FindString(site_settings::kOrigin));
+  CHECK(dictionary.FindString(site_settings::kDisplayName));
+  CHECK(dictionary.FindString(site_settings::kEmbeddingOrigin));
+  CHECK(dictionary.FindString(site_settings::kSetting));
+  CHECK(dictionary.FindBool(site_settings::kIncognito).has_value());
 
   // Again, don't need to check the results.
   handler()->HandleSetCategoryPermissionForPattern(args);

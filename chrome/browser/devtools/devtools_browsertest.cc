@@ -3206,9 +3206,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
       })();
     )"));
   ASSERT_TRUE(result.value.is_dict());
-  EXPECT_TRUE(*result.value.FindBoolKey("isSyncActive"));
-  EXPECT_TRUE(*result.value.FindBoolKey("arePreferencesSynced"));
-  EXPECT_EQ(*result.value.FindStringKey("accountEmail"), "user@gmail.com");
+  EXPECT_TRUE(*result.value.GetDict().FindBool("isSyncActive"));
+  EXPECT_TRUE(*result.value.GetDict().FindBool("arePreferencesSynced"));
+  EXPECT_EQ(*result.value.GetDict().FindString("accountEmail"),
+            "user@gmail.com");
 }
 
 // Regression test for https://crbug.com/1270184.

@@ -66,21 +66,20 @@ class MockIdentityManagerLacros : public IdentityManagerLacros {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-void VerifyProfileEntry(const base::Value::Dict& value,
+void VerifyProfileEntry(const base::Value::Dict& dict,
                         ProfileAttributesEntry* entry) {
-  EXPECT_EQ(*value.Find("profilePath"),
-            base::FilePathToValue(entry->GetPath()));
-  EXPECT_EQ(*value.FindString("localProfileName"),
+  EXPECT_EQ(*dict.Find("profilePath"), base::FilePathToValue(entry->GetPath()));
+  EXPECT_EQ(*dict.FindString("localProfileName"),
             base::UTF16ToUTF8(entry->GetLocalProfileName()));
-  EXPECT_EQ(*value.FindBool("isSyncing"),
+  EXPECT_EQ(*dict.FindBool("isSyncing"),
             entry->GetSigninState() ==
                 SigninState::kSignedInWithConsentedPrimaryAccount);
-  EXPECT_EQ(*value.FindBool("needsSignin"), entry->IsSigninRequired());
-  EXPECT_EQ(*value.FindString("gaiaName"),
+  EXPECT_EQ(*dict.FindBool("needsSignin"), entry->IsSigninRequired());
+  EXPECT_EQ(*dict.FindString("gaiaName"),
             base::UTF16ToUTF8(entry->GetGAIANameToDisplay()));
-  EXPECT_EQ(*value.FindString("userName"),
+  EXPECT_EQ(*dict.FindString("userName"),
             base::UTF16ToUTF8(entry->GetUserName()));
-  EXPECT_EQ(*value.FindBool("isManaged"),
+  EXPECT_EQ(*dict.FindBool("isManaged"),
             AccountInfo::IsManaged(entry->GetHostedDomain()));
 }
 
@@ -142,6 +141,7 @@ class ProfilePickerHandlerTest : public testing::Test {
     size_t size = data.arg2()->GetList().size();
     ASSERT_EQ(size, ordered_profile_entries.size());
     for (size_t i = 0; i < size; ++i) {
+      ASSERT_TRUE(data.arg2()->GetList()[i].is_dict());
       VerifyProfileEntry(data.arg2()->GetList()[i].GetDict(),
                          ordered_profile_entries[i]);
     }
@@ -432,11 +432,11 @@ TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Available) {
   // order.
   base::flat_set<std::string> gaia_id_results;
   const std::string* gaia_id1 =
-      data2.arg2()->GetList()[0].FindStringPath("gaiaId");
+      data2.arg2()->GetList()[0].GetDict().FindString("gaiaId");
   EXPECT_NE(gaia_id1, nullptr);
   gaia_id_results.insert(*gaia_id1);
   const std::string* gaia_id2 =
-      data2.arg2()->GetList()[1].FindStringPath("gaiaId");
+      data2.arg2()->GetList()[1].GetDict().FindString("gaiaId");
   EXPECT_NE(gaia_id2, nullptr);
   gaia_id_results.insert(*gaia_id2);
   EXPECT_TRUE(gaia_id_results.contains(kGaiaId1));
@@ -749,7 +749,7 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
   EXPECT_EQ("available-accounts-changed", data2.arg1()->GetString());
   EXPECT_EQ(data2.arg2()->GetList().size(), 1u);
   const std::string* gaia_id =
-      data2.arg2()->GetList()[0].FindStringPath("gaiaId");
+      data2.arg2()->GetList()[0].GetDict().FindString("gaiaId");
   EXPECT_NE(gaia_id, nullptr);
   EXPECT_EQ(*gaia_id, kGaiaId2);
 }
@@ -776,18 +776,19 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
   EXPECT_EQ("available-accounts-changed", data1.arg1()->GetString());
   EXPECT_EQ(data1.arg2()->GetList().size(), 1u);
   const std::string* gaia_id =
-      data1.arg2()->GetList()[0].FindStringPath("gaiaId");
+      data1.arg2()->GetList()[0].GetDict().FindString("gaiaId");
   EXPECT_NE(gaia_id, nullptr);
   EXPECT_EQ(*gaia_id, kGaiaId1);
-  const std::string* email = data1.arg2()->GetList()[0].FindStringPath("email");
+  const std::string* email =
+      data1.arg2()->GetList()[0].GetDict().FindString("email");
   EXPECT_NE(email, nullptr);
   EXPECT_EQ(*email, kEmail1);
   const std::string* full_name =
-      data1.arg2()->GetList()[0].FindStringPath("name");
+      data1.arg2()->GetList()[0].GetDict().FindString("name");
   EXPECT_NE(full_name, nullptr);
   EXPECT_EQ(*full_name, kFullName1);
   const std::string* account_image_url =
-      data1.arg2()->GetList()[0].FindStringPath("accountImageUrl");
+      data1.arg2()->GetList()[0].GetDict().FindString("accountImageUrl");
   EXPECT_NE(account_image_url, nullptr);
 }
 
@@ -799,9 +800,9 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
   web_ui()->HandleReceivedMessage("getNewProfileSuggestedThemeInfo", args);
 
   // Check that the handler replied correctly.
-  const base::Value& theme_info = GetThemeInfoReply();
-  EXPECT_EQ(-1, *theme_info.FindIntKey("colorId"));  // -1: default color
-  EXPECT_EQ(absl::nullopt, theme_info.FindIntKey("color"));
+  const base::Value::Dict& theme_info = GetThemeInfoReply().GetDict();
+  EXPECT_EQ(-1, *theme_info.FindInt("colorId"));  // -1: default color
+  EXPECT_EQ(absl::nullopt, theme_info.FindInt("color"));
 }
 
 TEST_F(ProfilePickerHandlerInUserProfileTest,
@@ -816,9 +817,9 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
   web_ui()->HandleReceivedMessage("getNewProfileSuggestedThemeInfo", args);
 
   // Check that the handler replied correctly.
-  const base::Value& theme_info = GetThemeInfoReply();
-  EXPECT_EQ(0, *theme_info.FindIntKey("colorId"));  // 0: manually picked color.
-  EXPECT_EQ(SK_ColorRED, static_cast<SkColor>(*theme_info.FindIntKey("color")));
+  const base::Value::Dict& theme_info = GetThemeInfoReply().GetDict();
+  EXPECT_EQ(0, *theme_info.FindInt("colorId"));  // 0: manually picked color.
+  EXPECT_EQ(SK_ColorRED, static_cast<SkColor>(*theme_info.FindInt("color")));
 }
 
 TEST_F(ProfilePickerHandlerInUserProfileTest, NoAvailableAccount) {

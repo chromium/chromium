@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadExtensionAndSendMessages) {
                         request_reply_javascript);
     if (result.error.empty()) {
       LOG(INFO) << "Got a response from the extension.";
-      EXPECT_TRUE(result.value.FindBoolKey("pong").value_or(false));
+      EXPECT_TRUE(result.value.GetDict().FindBool("pong").value_or(false));
       break;
     }
     // An error indicates the extension's message listener isn't up yet. Wait a

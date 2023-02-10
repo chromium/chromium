@@ -228,15 +228,18 @@ TEST_F(PrintPreviewHandlerChromeOSTest, OnPrintServersChanged) {
   ChangePrintServersConfig(std::move(config));
   auto* call_data = web_ui()->call_data().back().get();
   AssertWebUIEventFired(*call_data, "print-servers-config-changed");
-  const base::Value::List& printer_list =
-      call_data->arg2()->FindListKey("printServers")->GetList();
+  const base::Value::List* printer_list =
+      call_data->arg2()->GetDict().FindList("printServers");
   bool is_single_server_fetching_mode =
-      call_data->arg2()->FindBoolKey("isSingleServerFetchingMode").value();
+      call_data->arg2()
+          ->GetDict()
+          .FindBool("isSingleServerFetchingMode")
+          .value();
 
-  ASSERT_EQ(printer_list.size(), 1u);
-  const base::Value& first_printer = printer_list.front();
-  EXPECT_EQ(*first_printer.FindStringKey("id"), kSelectedPrintServerId);
-  EXPECT_EQ(*first_printer.FindStringKey("name"), kSelectedPrintServerName);
+  ASSERT_EQ(printer_list->size(), 1u);
+  const base::Value::Dict& first_printer = printer_list->front().GetDict();
+  EXPECT_EQ(*first_printer.FindString("id"), kSelectedPrintServerId);
+  EXPECT_EQ(*first_printer.FindString("name"), kSelectedPrintServerName);
   EXPECT_EQ(is_single_server_fetching_mode, false);
 
   base::Value::List args;

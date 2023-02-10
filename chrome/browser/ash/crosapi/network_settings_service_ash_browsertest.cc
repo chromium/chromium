@@ -255,15 +255,15 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   EXPECT_EQ(result->extension->id, kExtensionId);
 
   EXPECT_EQ(*(proxy_pref->GetValue()), proxy_config);
-  EXPECT_EQ(
-      *extension_proxy_pref->GetValue()->FindStringKey(kPrefExtensionNameKey),
-      kExtensionName);
-  EXPECT_EQ(
-      *extension_proxy_pref->GetValue()->FindStringKey(kPrefExtensionIdKey),
-      kExtensionId);
-  EXPECT_EQ(
-      extension_proxy_pref->GetValue()->FindBoolKey(kPrefExtensionCanDisabled),
-      true);
+  EXPECT_EQ(*extension_proxy_pref->GetValue()->GetDict().FindString(
+                kPrefExtensionNameKey),
+            kExtensionName);
+  EXPECT_EQ(*extension_proxy_pref->GetValue()->GetDict().FindString(
+                kPrefExtensionIdKey),
+            kExtensionId);
+  EXPECT_EQ(extension_proxy_pref->GetValue()->GetDict().FindBool(
+                kPrefExtensionCanDisabled),
+            true);
 
   network_service_ash_->ClearExtensionProxy();
 

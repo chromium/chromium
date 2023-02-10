@@ -5,6 +5,7 @@
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/payments/secure_payment_confirmation_browsertest.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
@@ -570,37 +571,39 @@ IN_PROC_BROWSER_TEST_P(
   absl::optional<base::Value> value = base::JSONReader::Read(response);
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
-
-  std::string* type = value->FindStringKey("type");
+  const base::Value::Dict& value_dict = value->GetDict();
+  const std::string* type = value_dict.FindString("type");
   ASSERT_NE(nullptr, type) << response;
   EXPECT_EQ("payment.get", *type);
 
-  std::string* origin = value->FindStringKey("origin");
+  const std::string* origin = value_dict.FindString("origin");
   ASSERT_NE(nullptr, origin) << response;
   EXPECT_EQ(https_server()->GetURL("b.com", "/"), GURL(*origin));
 
-  absl::optional<bool> cross_origin = value->FindBoolKey("crossOrigin");
+  absl::optional<bool> cross_origin = value_dict.FindBool("crossOrigin");
   ASSERT_TRUE(cross_origin.has_value()) << response;
   EXPECT_TRUE(cross_origin.value());
 
-  std::string* payee_name = value->FindStringPath("payment.payeeName");
+  const std::string* payee_name =
+      value_dict.FindStringByDottedPath("payment.payeeName");
   ASSERT_EQ(nullptr, payee_name) << response;
 
-  std::string* payee_origin = value->FindStringPath("payment.payeeOrigin");
+  const std::string* payee_origin =
+      value_dict.FindStringByDottedPath("payment.payeeOrigin");
   ASSERT_NE(nullptr, payee_origin) << response;
   EXPECT_EQ(GURL("https://example-payee-origin.test"), GURL(*payee_origin));
 
-  std::string* top_origin = value->FindStringPath("payment.topOrigin");
+  const std::string* top_origin =
+      value_dict.FindStringByDottedPath("payment.topOrigin");
   ASSERT_NE(nullptr, top_origin) << response;
   EXPECT_EQ(https_server()->GetURL("a.com", "/"), GURL(*top_origin));
-
-  std::string* rpId = value->FindStringPath("payment.rpId");
+  const std::string* rpId = value_dict.FindStringByDottedPath("payment.rpId");
   ASSERT_NE(nullptr, rpId) << response;
   EXPECT_EQ("a.com", *rpId);
 
   // TODO(crbug.com/1356224): Remove legacy 'rp' parameter.
   if (IsRpFieldEnabled()) {
-    std::string* rp = value->FindStringPath("payment.rp");
+    const std::string* rp = value_dict.FindStringByDottedPath("payment.rp");
     ASSERT_NE(nullptr, rp) << response;
     EXPECT_EQ("a.com", *rp);
   }
