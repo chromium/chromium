@@ -1014,17 +1014,12 @@ class BuildConfigGenerator extends DefaultTask {
         }
         sb.append('}\n')
 
-        String out = "${BUILD_GN_TOKEN_START}\n$sb\n${BUILD_GN_TOKEN_END}"
-        if (buildFile.exists()) {
-            Matcher matcher = BUILD_GN_GEN_PATTERN.matcher(buildFile.text)
-            if (!matcher.find()) {
-                throw new IllegalStateException('BUILD.gn insertion point not found.')
-            }
-            out = matcher.replaceFirst(Matcher.quoteReplacement(out))
-        } else {
-            out = 'import("//build/config/android/rules.gni")\n' + out
+        Matcher matcher = BUILD_GN_GEN_PATTERN.matcher(buildFile.text)
+        if (!matcher.find()) {
+            throw new IllegalStateException('BUILD.gn insertion point not found.')
         }
-        buildFile.write(out)
+        String out = "${BUILD_GN_TOKEN_START}\n$sb\n${BUILD_GN_TOKEN_END}"
+        buildFile.write(matcher.replaceFirst(Matcher.quoteReplacement(out)))
     }
 
     private void validateDependencies(

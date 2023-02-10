@@ -275,6 +275,8 @@ def main():
     dependency_version_map = _parse_dir_list(dir_list)
     _process_build_gradle(dependency_version_map,
                           androidx_snapshot_repository_url)
+    shutil.copyfile(os.path.join(_ANDROIDX_PATH, 'BUILD.gn.template'),
+                    os.path.join(_ANDROIDX_PATH, 'BUILD.gn'))
 
     fetch_all_cmd = [
         _FETCH_ALL_PATH, '--android-deps-dir', _ANDROIDX_PATH,
