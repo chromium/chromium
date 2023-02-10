@@ -887,7 +887,7 @@ bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
         // Note that technically we could do a similar approach to
         // IsLockedForAccessibility by recording whether this context is locked
         // but allow paint. However, that situation is not possible since all
-        // locked contexts always prevent paint except for DeferredShaping.
+        // locked contexts always prevent paint.
         DCHECK(!context->IsLocked() || !context->ShouldPaintChildren());
         if (!context->ShouldPaintChildren()) {
           memoizer_->NotifyLocked(previous_ancestor);
