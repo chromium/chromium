@@ -4982,7 +4982,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, Navigation) {
 
 // Test that identifiability study of request cancellation produces expected
 // events with WebSocket.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, WebSocket) {
+// TODO(crbug.com/1414609): Re-enable this test
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest,
+                       DISABLED_WebSocket) {
   base::RunLoop run_loop;
   identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
 
