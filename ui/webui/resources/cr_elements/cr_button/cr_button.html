@@ -80,6 +80,10 @@
             var(--cr-fallback-color-primary));
         --hover-bg-color: transparent;
         --hover-border-color: var(--border-color);
+        --active-bg: transparent;
+        --active-shadow: none;
+        --ink-color: var(--cr-active-background-color);
+        --ripple-opacity: 1;
 
         /* Disabled default button colors. */
         --disabled-border-color: var(--color-button-border-disabled,
@@ -94,6 +98,9 @@
         --text-color-action: var(--color-button-foreground-prominent,
             var(--cr-fallback-color-on-primary));
         --hover-bg-action: var(--bg-action);
+        --active-shadow-action: none;
+        --ink-color-action: var(--cr-active-background-color);
+        --ripple-opacity-action: 1;
 
         /* Disabled action button colors. */
         --disabled-bg-action: var(--color-button-background-prominent-disabled,
@@ -197,6 +204,11 @@
           box-shadow:
               0 1px 2px 0 rgba(var(--hover-shadow-action-rgb), .3),
               0 1px 3px 1px rgba(var(--hover-shadow-action-rgb), .15);
+        }
+
+        :host-context([chrome-refresh-2023]):host(
+            .action-button:not(:active):hover) {
+          box-shadow: none;
         }
       }
 
