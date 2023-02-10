@@ -123,6 +123,8 @@ bool WasStartedInForegroundOptionalEventInForeground(
           event.value() <= delegate.GetTimeToFirstBackground().value());
 }
 
+// There is a copy of this function in prerender_page_load_metrics_observer.cc.
+// Please keep this consistent with the function.
 bool WasActivatedInForegroundOptionalEventInForeground(
     const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate) {
