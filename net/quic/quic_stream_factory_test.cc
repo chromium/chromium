@@ -14808,6 +14808,10 @@ TEST_P(QuicStreamFactoryTest, ConfigInitialRttForHandshake) {
     // IETF QUIC uses a different handshake timeout management system.
     return;
   }
+  if (!VersionUsesHttp3(version_.transport_version)) {
+    // Chrome no longer supports gQuic.
+    return;
+  }
   constexpr base::TimeDelta kInitialRtt = base::Milliseconds(400);
   quic_params_->initial_rtt_for_handshake = kInitialRtt;
   crypto_client_stream_factory_.set_handshake_mode(
