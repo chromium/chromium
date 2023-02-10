@@ -8,13 +8,17 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -37,6 +41,8 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     private final Callback<Tab> mSendToBackground;
     private final Callback<Tab> mOnTabChanged = this::onTabChanged;
     private final ObservableSupplier<Tab> mActivityTabSupplier;
+    private final Runnable mCallbackOnBackPress;
+
     private static Integer sVersionForTesting;
 
     @IntDef({MinimizeAppAndCloseTabType.MINIMIZE_APP, MinimizeAppAndCloseTabType.CLOSE_TAB,
@@ -58,12 +64,53 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
                 HISTOGRAM, type, MinimizeAppAndCloseTabType.NUM_TYPES);
     }
 
+    public static void assertOnLastBackPress(@Nullable Tab currentTab, @Nullable Tab activityTab,
+            Predicate<Tab> backShouldCloseTab,
+            Supplier<LayoutStateProvider> layoutStateProviderSupplier,
+            boolean isActivityFinishingOrDestroyed) {
+        boolean expectedShouldClose = false;
+        boolean expectedShouldMinimize = currentTab == null;
+        if (currentTab != null) {
+            expectedShouldClose = backShouldCloseTab.test(currentTab);
+            expectedShouldMinimize =
+                    !expectedShouldClose || TabAssociatedApp.isOpenedFromExternalApp(currentTab);
+        }
+
+        boolean actualShouldClose = false;
+        boolean actualShouldMinimize = activityTab == null;
+        if (activityTab != null) {
+            actualShouldClose = backShouldCloseTab.test(activityTab);
+            actualShouldMinimize =
+                    !actualShouldClose || TabAssociatedApp.isOpenedFromExternalApp(activityTab);
+        }
+
+        var layoutStateProvider = layoutStateProviderSupplier.get();
+        int layoutType = layoutStateProvider == null ? LayoutType.NONE
+                                                     : layoutStateProvider.getActiveLayoutType();
+
+        String msg = "Unexpected minimizeApp state: expect %s %s %s; actual %s %s %s; "
+                + "layoutType %s; destroy %s";
+        assert (actualShouldClose == expectedShouldClose)
+                && (actualShouldMinimize == expectedShouldMinimize)
+            : String.format(msg, currentTab, expectedShouldClose, expectedShouldMinimize,
+                    activityTab, actualShouldClose, actualShouldMinimize, layoutType,
+                    isActivityFinishingOrDestroyed);
+    }
+
+    /**
+     * @param activityTabSupplier Supplier giving the current interact-able tab.
+     * @param backShouldCloseTab Test whether the current tab should be closed on back press.
+     * @param sendToBackground Callback when app should be sent to background on back press.
+     * @param callbackOnBackPress Callback when back press is handled.
+     */
     public MinimizeAppAndCloseTabBackPressHandler(ObservableSupplier<Tab> activityTabSupplier,
-            Predicate<Tab> backShouldCloseTab, Callback<Tab> sendToBackground) {
+            Predicate<Tab> backShouldCloseTab, Callback<Tab> sendToBackground,
+            Runnable callbackOnBackPress) {
         mBackShouldCloseTab = backShouldCloseTab;
         mSendToBackground = sendToBackground;
         mActivityTabSupplier = activityTabSupplier;
         mBackPressSupplier.set(!shouldUseSystemBack());
+        mCallbackOnBackPress = callbackOnBackPress;
         if (shouldUseSystemBack()) {
             mActivityTabSupplier.addObserver(mOnTabChanged);
         }
@@ -95,6 +142,8 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
             //   exit Chrome on top of closing the tab
             minimizeApp = !shouldCloseTab || TabAssociatedApp.isOpenedFromExternalApp(currentTab);
         }
+
+        mCallbackOnBackPress.run();
 
         if (minimizeApp) {
             record(shouldCloseTab ? MinimizeAppAndCloseTabType.MINIMIZE_APP_AND_CLOSE_TAB

@@ -2303,6 +2303,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (currentTab == null) {
             BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
             MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
+            assertOnLastBackPress();
             moveTaskToBack(true);
             return true;
         }
@@ -2353,7 +2354,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         //   exit Chrome on top of closing the tab
         final boolean minimizeApp =
                 !shouldCloseTab || TabAssociatedApp.isOpenedFromExternalApp(currentTab);
+
         BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+        assertOnLastBackPress();
+
         if (minimizeApp) {
             if (shouldCloseTab) {
                 MinimizeAppAndCloseTabBackPressHandler.record(
@@ -2376,6 +2380,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return false;
     }
 
+    private void assertOnLastBackPress() {
+        var currentTab = getActivityTab();
+        var activityTab = getActivityTabProvider().get();
+        MinimizeAppAndCloseTabBackPressHandler.assertOnLastBackPress(currentTab, activityTab,
+                this::backShouldCloseTab, mLayoutStateProviderSupplier,
+                isActivityFinishingOrDestroyed());
+    }
+
     private void initializeBackPressHandlers() {
         if (mReturnToChromeBackPressHandler == null && !isTablet()) {
             mReturnToChromeBackPressHandler = new ReturnToChromeBackPressHandler(
@@ -2391,7 +2403,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
         if (mMinimizeAppAndCloseTabBackPressHandler == null) {
             mMinimizeAppAndCloseTabBackPressHandler = new MinimizeAppAndCloseTabBackPressHandler(
-                    getActivityTabProvider(), this::backShouldCloseTab, this::sendToBackground);
+                    getActivityTabProvider(), this::backShouldCloseTab, this::sendToBackground,
+                    this::assertOnLastBackPress);
             mBackPressManager.addHandler(mMinimizeAppAndCloseTabBackPressHandler,
                     BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
         }

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.back_press;
 
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
 import android.os.Build.VERSION_CODES;
 
 import androidx.test.filters.SmallTest;
@@ -61,6 +64,9 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     @Mock
     private Tab mTab;
 
+    @Mock
+    private Runnable mFinalCallback;
+
     private MinimizeAppAndCloseTabBackPressHandler mHandler;
     private ObservableSupplierImpl<Tab> mActivityTabSupplier;
 
@@ -98,10 +104,11 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
         mHandler.handleBackPress();
 
-        Mockito.verify(mSendToBackground,
-                       Mockito.description("App should be minimized with tab being closed"))
+        verify(mSendToBackground,
+                Mockito.description("App should be minimized with tab being closed"))
                 .onResult(mTab);
         Assert.assertEquals(1, d1.getDelta());
+        verify(mFinalCallback).run();
     }
 
     @Test
@@ -126,11 +133,11 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
         mHandler.handleBackPress();
 
-        Mockito.verify(mSendToBackground,
-                       Mockito.never().description(
-                               "Tab should be closed without minimizing the app."))
+        verify(mSendToBackground,
+                Mockito.never().description("Tab should be closed without minimizing the app."))
                 .onResult(mTab);
         Assert.assertEquals(1, d1.getDelta());
+        verify(mFinalCallback).run();
     }
 
     @Test
@@ -151,10 +158,11 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
         mHandler.handleBackPress();
 
-        Mockito.verify(mSendToBackground,
-                       Mockito.description("App should be minimized without closing any tab"))
+        verify(mSendToBackground,
+                Mockito.description("App should be minimized without closing any tab"))
                 .onResult(null);
         Assert.assertEquals(1, d1.getDelta());
+        verify(mFinalCallback).run();
     }
 
     @Test
@@ -170,6 +178,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         Assert.assertFalse("Back press should be handled by OS.",
                 mHandler.getHandleBackPressChangedSupplier().get());
         Assert.assertEquals(0, d1.getDelta());
+        verify(mFinalCallback, never()).run();
     }
 
     @Test
@@ -181,9 +190,9 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         Assert.assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
         mHandler.handleBackPress();
 
-        Mockito.verify(mSendToBackground).onResult(null);
-        Mockito.verify(mSendToBackground,
-                       Mockito.description("App should be minimized without closing any tab"))
+        verify(mSendToBackground).onResult(null);
+        verify(mSendToBackground,
+                Mockito.description("App should be minimized without closing any tab"))
                 .onResult(null);
         Assert.assertEquals(1, d1.getDelta());
     }
@@ -206,8 +215,8 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
         mHandler.handleBackPress();
 
-        Mockito.verify(mSendToBackground, Mockito.never()).onResult(Mockito.any());
-        Mockito.verify(mShouldCloseTab, Mockito.never()).test(Mockito.any());
+        verify(mSendToBackground, Mockito.never()).onResult(Mockito.any());
+        verify(mShouldCloseTab, Mockito.never()).test(Mockito.any());
         Assert.assertEquals(0, d1.getDelta());
     }
 
@@ -228,7 +237,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                 () -> { mActivityTabSupplier = new ObservableSupplierImpl<>(); });
         mHandler = TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
-                        -> new MinimizeAppAndCloseTabBackPressHandler(
-                                mActivityTabSupplier, mShouldCloseTab, mSendToBackground));
+                        -> new MinimizeAppAndCloseTabBackPressHandler(mActivityTabSupplier,
+                                mShouldCloseTab, mSendToBackground, mFinalCallback));
     }
 }

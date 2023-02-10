@@ -2195,7 +2195,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected final boolean handleOnBackPressed() {
         assert !BackPressManager.isEnabled()
             : "Back press should be handled by implementors of BackPressHandler if enabled";
-        if (mNativeInitialized) RecordUserAction.record("SystemBack");
+        RecordUserAction.record(
+                mNativeInitialized ? "SystemBack" : "SystemBackBeforeNativeInitialized");
+        if (isActivityFinishingOrDestroyed()) {
+            RecordUserAction.record("SystemBackOnActivityFinishingOrDestroyed");
+        }
 
         if (TextBubble.getCountSupplier().get() != null
                 && TextBubble.getCountSupplier().get() > 0) {
