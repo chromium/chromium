@@ -16,7 +16,8 @@
 
 namespace ash::mojo_service_manager {
 
-// Provides fake implementation of the service manager for testing.
+// Provides fake implementation of the service manager for testing. It also
+// overrides the global service manager connection and reset it when destructed.
 //
 // The behaviors are different from the real service:
 // * No permission checking. A fake identity can be set when binding the mojo
