@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/ui/reuse_check_utility.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,11 +89,11 @@ TEST(ReuseCheckUtilityTest, NoReuseIfWebsitesPSLMatch) {
 }
 
 TEST(ReuseCheckUtilityTest, NoReuseIfFromTheSameAffiliatedGroup) {
-  AffiliatedGroup affiliated_group;
-  affiliated_group.AddCredential(
-      CreateCredential(u"Jan", u"password", {"https://example.com"}));
-  affiliated_group.AddCredential(CreateCredential(
-      u"Mohamed", u"password", {"android://certificate_hash@test.com"}));
+  AffiliatedGroup affiliated_group(
+      {CreateCredential(u"Jan", u"password", {"https://example.com"}),
+       CreateCredential(u"Mohamed", u"password",
+                        {"android://certificate_hash@test.com"})},
+      FacetBrandingInfo());
 
   std::vector<CredentialUIEntry> credentials;
   credentials.insert(credentials.end(),

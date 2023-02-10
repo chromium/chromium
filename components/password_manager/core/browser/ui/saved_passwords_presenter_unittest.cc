@@ -1660,138 +1660,41 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
   scoped_feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordsGrouping);
 
-  PasswordForm form =
+  PasswordForm form1 =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-
   PasswordForm form2 =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-  form2.username_value = u"test2@gmail.com";
-  form2.password_value = u"password2";
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
+  PasswordForm form3 =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 2);
 
   PasswordForm blocked_form;
-  blocked_form.signon_realm = form.signon_realm;
+  blocked_form.signon_realm = form1.signon_realm;
   blocked_form.blocked_by_user = true;
   blocked_form.in_store = PasswordForm::Store::kProfileStore;
 
-  PasswordForm federated_form;
-  federated_form.signon_realm = "https://federated.com";
-  federated_form.username_value = u"example@gmail.com";
-  federated_form.federation_origin =
-      url::Origin::Create(GURL(u"federatedOrigin.com"));
-  federated_form.in_store = PasswordForm::Store::kProfileStore;
-
-  store().AddLogin(form);
+  store().AddLogin(form1);
   store().AddLogin(form2);
+  store().AddLogin(form3);
   store().AddLogin(blocked_form);
-  store().AddLogin(federated_form);
 
+  std::vector<password_manager::GroupedFacets> grouped_facets(1);
+  grouped_facets[0].facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm)),
+      Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm))};
   EXPECT_CALL(affiliation_service(), GetAllGroups)
-      .WillRepeatedly([&form, &federated_form](
-                          AffiliationService::GroupsCallback callback) {
-        // Setup callback result.
-        std::vector<password_manager::GroupedFacets> grouped_facets_to_return;
-
-        // Form, Form2 & Blocked form.
-        Facet facet(FacetURI::FromPotentiallyInvalidSpec(form.signon_realm));
-        GroupedFacets grouped_facets;
-        grouped_facets.facets.push_back(std::move(facet));
-        grouped_facets_to_return.push_back(std::move(grouped_facets));
-
-        // Federated form.
-        Facet facet2(
-            FacetURI::FromPotentiallyInvalidSpec(federated_form.signon_realm));
-        GroupedFacets grouped_facets2;
-        grouped_facets2.facets.push_back(std::move(facet2));
-        grouped_facets_to_return.push_back(std::move(grouped_facets2));
-
-        std::move(callback).Run(std::move(grouped_facets_to_return));
-      });
+      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
 
   RunUntilIdle();
 
-  ASSERT_THAT(
-      store().stored_passwords(),
+  CredentialUIEntry credential1(form1), credential2(form2), credential3(form3);
+  EXPECT_THAT(
+      presenter().GetAffiliatedGroups(),
       UnorderedElementsAre(
-          Pair(form.signon_realm,
-               UnorderedElementsAre(form, form2, blocked_form)),
-          Pair(federated_form.signon_realm, ElementsAre(federated_form))));
-
-  // Setup results to compare.
-  CredentialUIEntry credential1 = CredentialUIEntry(form);
-  CredentialUIEntry credential2 = CredentialUIEntry(form2);
-  AffiliatedGroup affiliated_group1;
-  affiliated_group1.AddCredential(credential1);
-  affiliated_group1.AddCredential(credential2);
-  FacetBrandingInfo branding_info1;
-  branding_info1.name = GetShownOrigin(credential1);
-  affiliated_group1.SetBrandingInfo(branding_info1);
-
-  CredentialUIEntry credential3 = CredentialUIEntry(federated_form);
-  AffiliatedGroup affiliated_group2;
-  affiliated_group2.AddCredential(credential3);
-  FacetBrandingInfo branding_info2;
-  branding_info2.name = GetShownOrigin(credential3);
-  affiliated_group2.SetBrandingInfo(branding_info2);
-
-  EXPECT_THAT(presenter().GetAffiliatedGroups(),
-              UnorderedElementsAre(affiliated_group1, affiliated_group2));
-}
-
-TEST_F(SavedPasswordsPresenterTest, GetBlockedSites) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordsGrouping);
-
-  PasswordForm form =
-      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
-
-  PasswordForm blocked_form;
-  blocked_form.signon_realm = form.signon_realm;
-  blocked_form.blocked_by_user = true;
-  blocked_form.in_store = PasswordForm::Store::kProfileStore;
-
-  PasswordForm blocked_form2;
-  blocked_form2.signon_realm = "https://test2.com";
-  blocked_form2.blocked_by_user = true;
-  blocked_form2.in_store = PasswordForm::Store::kProfileStore;
-
-  store().AddLogin(form);
-  store().AddLogin(blocked_form);
-  store().AddLogin(blocked_form2);
-
-  EXPECT_CALL(affiliation_service(), GetAllGroups)
-      .WillRepeatedly([&form, &blocked_form2](
-                          AffiliationService::GroupsCallback callback) {
-        // Setup callback result.
-        std::vector<password_manager::GroupedFacets> grouped_facets_to_return;
-
-        // Form & Blocked form.
-        Facet facet(FacetURI::FromPotentiallyInvalidSpec(form.signon_realm));
-        GroupedFacets grouped_facets;
-        grouped_facets.facets.push_back(std::move(facet));
-        grouped_facets_to_return.push_back(std::move(grouped_facets));
-
-        // Blocked form 2.
-        Facet facet2(
-            FacetURI::FromPotentiallyInvalidSpec(blocked_form2.signon_realm));
-        GroupedFacets grouped_facets2;
-        grouped_facets2.facets.push_back(std::move(facet2));
-        grouped_facets_to_return.push_back(std::move(grouped_facets2));
-
-        std::move(callback).Run(std::move(grouped_facets_to_return));
-      });
-
-  RunUntilIdle();
-
-  ASSERT_THAT(
-      store().stored_passwords(),
-      UnorderedElementsAre(
-          Pair(form.signon_realm, UnorderedElementsAre(form, blocked_form)),
-          Pair(blocked_form2.signon_realm, ElementsAre(blocked_form2))));
-
+          AffiliatedGroup({credential1, credential2},
+                          {GetShownOrigin(credential1)}),
+          AffiliatedGroup({credential3}, {GetShownOrigin(credential3)})));
   EXPECT_THAT(presenter().GetBlockedSites(),
-              UnorderedElementsAre(CredentialUIEntry(blocked_form),
-                                   CredentialUIEntry(blocked_form2)));
+              ElementsAre(CredentialUIEntry(blocked_form)));
 }
 
 // Prefixes like [m, mobile, www] are considered as "same-site".

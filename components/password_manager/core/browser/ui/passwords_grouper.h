@@ -49,31 +49,44 @@ struct PasswordGroupingInfo {
     map_group_id_to_forms.clear();
     blocked_sites.clear();
   }
-
-  // Returns the vector of PasswordForm corresponding to the CredentialUIEntry
-  // object.
-  std::vector<PasswordForm> GetPasswordFormsVector(
-      const CredentialUIEntry& credential) const;
-
-  // Returns a sorted vector of CredentialUIEntry corresponding to the user's
-  // blocked sites.
-  std::vector<CredentialUIEntry> GetBlockedSites() const;
 };
 
-// Apply grouping algorithm to credentials. The grouping algorithm group
-// together credentials with the same username and password under the same
-// affiliated group. For example, we have credential from "facebook.com" and
-// "m.facebook.com" that have the same username and password. These are
-// credentials are part of the same affiliated group so they will be grouped
-// together. This method will create the password grouping info which contains
-// the data structures used to create the list of affiliated groups.
-PasswordGroupingInfo GroupPasswords(
-    const std::vector<GroupedFacets>& groups,
-    const std::multimap<std::string, PasswordForm>& sort_key_to_password_forms);
+// Helper objects which handles passwords grouping. Passwords are grouped
+// together based on affiliation information.
+class PasswordsGrouper {
+ public:
+  PasswordsGrouper();
+  ~PasswordsGrouper();
 
-// Returns a list of affiliated groups created with the password grouping info.
-std::vector<AffiliatedGroup> GetAffiliatedGroupsWithGroupingInfo(
-    const PasswordGroupingInfo& password_grouping_info);
+  // Apply grouping algorithm to credentials. The grouping algorithm group
+  // together credentials with the same username and password under the same
+  // affiliated group. For example, we have credential from "facebook.com" and
+  // "m.facebook.com" that have the same username and password. These are
+  // credentials are part of the same affiliated group so they will be grouped
+  // together. This method will create the password grouping info which contains
+  // the data structures used to create the list of affiliated groups.
+  // TODO(crbug.com/1354196): Pass vector of PasswordForms instead.
+  void GroupPasswords(const std::vector<GroupedFacets>& groups,
+                      const std::multimap<std::string, PasswordForm>&
+                          sort_key_to_password_forms);
+
+  // Returns a list of affiliated groups created with the password grouping
+  // info.
+  std::vector<AffiliatedGroup> GetAffiliatedGroupsWithGroupingInfo() const;
+
+  // Returns all the credentials (excluding blocked sites) in a vector.
+  std::vector<CredentialUIEntry> GetAllCredentials() const;
+
+  // Returns blocked sites.
+  std::vector<CredentialUIEntry> GetBlockedSites() const;
+
+  // Returns PasswordForm corresponding to 'credential'.
+  std::vector<PasswordForm> GetPasswordFormsFor(
+      const CredentialUIEntry& credential) const;
+
+ private:
+  PasswordGroupingInfo password_grouping_info_;
+};
 
 }  // namespace password_manager
 

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/ui/password_grouping_util.h"
+#include "components/password_manager/core/browser/ui/passwords_grouper.h"
 
 #include "base/strings/string_util.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -42,52 +43,6 @@ PasswordGroupingInfo& PasswordGroupingInfo::operator=(
 
 PasswordGroupingInfo& PasswordGroupingInfo::operator=(
     PasswordGroupingInfo&& other) = default;
-
-std::vector<PasswordForm> PasswordGroupingInfo::GetPasswordFormsVector(
-    const CredentialUIEntry& credential) const {
-  std::vector<PasswordForm> forms;
-
-  // Verify if the credential is in blocked sites first.
-  if (credential.blocked_by_user) {
-    for (const auto& blocked_site : blocked_sites) {
-      if (credential.GetFirstSignonRealm() == blocked_site.signon_realm) {
-        forms.push_back(blocked_site);
-      }
-    }
-    return forms;
-  }
-
-  auto group_id_iterator = map_signon_realm_to_group_id.find(
-      SignonRealm(credential.GetFirstSignonRealm()));
-  if (group_id_iterator == map_signon_realm_to_group_id.end()) {
-    return forms;
-  }
-  GroupId group_id = group_id_iterator->second;
-  auto group_iterator = map_group_id_to_forms.find(group_id);
-  if (group_iterator == map_group_id_to_forms.end()) {
-    return forms;
-  }
-  std::map<UsernamePasswordKey, std::vector<PasswordForm>> map =
-      group_iterator->second;
-  auto forms_iterator =
-      map.find(UsernamePasswordKey(CreateUsernamePasswordSortKey(credential)));
-  if (forms_iterator != map.end()) {
-    forms = forms_iterator->second;
-  }
-  return forms;
-}
-
-std::vector<CredentialUIEntry> PasswordGroupingInfo::GetBlockedSites() const {
-  std::vector<CredentialUIEntry> results(blocked_sites.size());
-  std::transform(blocked_sites.begin(), blocked_sites.end(), results.begin(),
-                 [](const PasswordForm& password_form) {
-                   return CredentialUIEntry(password_form);
-                 });
-  // Sort blocked sites.
-  std::sort(results.begin(), results.end());
-
-  return results;
-}
 
 FacetBrandingInfo CreateBrandingInfoFromFacetURI(
     const CredentialUIEntry& credential) {
@@ -150,11 +105,14 @@ std::map<std::string, GroupId> MapFacetsToGroupId(
   return map_facet_to_group_id;
 }
 
-PasswordGroupingInfo GroupPasswords(
+PasswordsGrouper::PasswordsGrouper() = default;
+PasswordsGrouper::~PasswordsGrouper() = default;
+
+void PasswordsGrouper::GroupPasswords(
     const std::vector<GroupedFacets>& groups,
     const std::multimap<std::string, PasswordForm>&
         sort_key_to_password_forms) {
-  PasswordGroupingInfo password_grouping_info;
+  password_grouping_info_.clear();
 
   // Extract all sign-on realms to group.
   std::vector<std::string> signon_realms;
@@ -162,7 +120,7 @@ PasswordGroupingInfo GroupPasswords(
     const PasswordForm& form = element.second;
     // Do not group blocked by user password forms.
     if (form.blocked_by_user) {
-      password_grouping_info.blocked_sites.emplace_back(form);
+      password_grouping_info_.blocked_sites.emplace_back(form);
     } else {
       signon_realms.push_back(GetSignonRealm(form));
     }
@@ -170,7 +128,7 @@ PasswordGroupingInfo GroupPasswords(
 
   // Construct map to keep track of facet URI to group id mapping.
   std::map<std::string, GroupId> map_facet_to_group_id =
-      MapFacetsToGroupId(groups, signon_realms, password_grouping_info);
+      MapFacetsToGroupId(groups, signon_realms, password_grouping_info_);
 
   // Construct a map to keep track of group id to a map of credential groups
   // to password form.
@@ -178,53 +136,123 @@ PasswordGroupingInfo GroupPasswords(
     PasswordForm form = element.second;
 
     // Do not group blocked by user password forms.
-    if (form.blocked_by_user)
+    if (form.blocked_by_user) {
       continue;
+    }
     std::string signon_realm = GetSignonRealm(form);
 
     GroupId group_id = map_facet_to_group_id[signon_realm];
 
     UsernamePasswordKey key(CreateUsernamePasswordSortKey(form));
-    password_grouping_info.map_group_id_to_forms[group_id][key].push_back(
+    password_grouping_info_.map_group_id_to_forms[group_id][key].push_back(
         std::move(form));
 
     // Store group id for sign-on realm.
-    password_grouping_info
+    password_grouping_info_
         .map_signon_realm_to_group_id[SignonRealm(signon_realm)] = group_id;
   }
-
-  return password_grouping_info;
 }
 
-std::vector<AffiliatedGroup> GetAffiliatedGroupsWithGroupingInfo(
-    const PasswordGroupingInfo& password_grouping_info) {
+std::vector<AffiliatedGroup>
+PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
   std::vector<AffiliatedGroup> affiliated_groups;
-  // Key: Group id | Value: map of vectors of password forms.
-  for (auto const& it : password_grouping_info.map_group_id_to_forms) {
-    AffiliatedGroup affiliated_group;
+  for (auto const& [group_id, affiliated_group] :
+       password_grouping_info_.map_group_id_to_forms) {
+    std::vector<CredentialUIEntry> credentials;
 
-    // Key: Username-password key | Value: vector of password forms.
-    for (auto const& it3 : it.second) {
-      CredentialUIEntry credential(it3.second);
-      affiliated_group.AddCredential(std::move(credential));
+    // Convert each vector<PasswordForm> into CredentialUIEntry.
+    for (auto const& [username_password_key, forms] : affiliated_group) {
+      credentials.emplace_back(forms);
     }
 
     // Add branding information to the affiliated group.
-    auto it2 =
-        password_grouping_info.map_group_id_to_branding_info.find(it.first);
-    if (it2 != password_grouping_info.map_group_id_to_branding_info.end()) {
-      affiliated_group.SetBrandingInfo(it2->second);
+    FacetBrandingInfo brandingInfo;
+    auto branding_iterator =
+        password_grouping_info_.map_group_id_to_branding_info.find(group_id);
+    if (branding_iterator !=
+        password_grouping_info_.map_group_id_to_branding_info.end()) {
+      brandingInfo = branding_iterator->second;
     }
     // If the branding information is missing, create a default one with the
     // sign-on realm.
-    if (affiliated_group.GetDisplayName().empty() &&
-        affiliated_group.GetIconURL().is_empty()) {
-      affiliated_group.SetBrandingInfo(CreateBrandingInfoFromFacetURI(
-          *affiliated_group.GetCredentials().begin()));
+    if (brandingInfo.name.empty()) {
+      brandingInfo = CreateBrandingInfoFromFacetURI(credentials[0]);
     }
-    affiliated_groups.push_back(std::move(affiliated_group));
+    affiliated_groups.emplace_back(std::move(credentials), brandingInfo);
   }
+  // Sort affiliated groups.
+  std::sort(affiliated_groups.begin(), affiliated_groups.end(),
+            [](const AffiliatedGroup& lhs, const AffiliatedGroup& rhs) {
+              return lhs.GetDisplayName() < rhs.GetDisplayName();
+            });
   return affiliated_groups;
+}
+
+std::vector<CredentialUIEntry> PasswordsGrouper::GetAllCredentials() const {
+  std::vector<CredentialUIEntry> credentials;
+  for (const auto& [group_id, affiliated_credentials] :
+       password_grouping_info_.map_group_id_to_forms) {
+    for (const auto& [username_password_key, forms] : affiliated_credentials) {
+      credentials.emplace_back(forms);
+    }
+  }
+  return credentials;
+}
+
+std::vector<CredentialUIEntry> PasswordsGrouper::GetBlockedSites() const {
+  std::vector<CredentialUIEntry> results;
+  results.reserve(password_grouping_info_.blocked_sites.size());
+  base::ranges::transform(password_grouping_info_.blocked_sites,
+                          std::back_inserter(results),
+                          [](const PasswordForm& password_form) {
+                            return CredentialUIEntry(password_form);
+                          });
+  // Sort blocked sites.
+  std::sort(results.begin(), results.end());
+  return results;
+}
+
+std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
+    const CredentialUIEntry& credential) const {
+  std::vector<PasswordForm> forms;
+
+  // Verify if the credential is in blocked sites first.
+  if (credential.blocked_by_user) {
+    for (const auto& blocked_site : password_grouping_info_.blocked_sites) {
+      if (credential.GetFirstSignonRealm() == blocked_site.signon_realm) {
+        forms.push_back(blocked_site);
+      }
+    }
+    return {};
+  }
+
+  // Get group id based on signon_realm.
+  auto group_id_iterator =
+      password_grouping_info_.map_signon_realm_to_group_id.find(
+          SignonRealm(credential.GetFirstSignonRealm()));
+  if (group_id_iterator ==
+      password_grouping_info_.map_signon_realm_to_group_id.end()) {
+    return {};
+  }
+
+  // Get all username/password pairs related to this group.
+  GroupId group_id = group_id_iterator->second;
+  auto group_iterator =
+      password_grouping_info_.map_group_id_to_forms.find(group_id);
+  if (group_iterator == password_grouping_info_.map_group_id_to_forms.end()) {
+    return {};
+  }
+
+  // Get all password forms with matching username/password.
+  const std::map<UsernamePasswordKey, std::vector<PasswordForm>>&
+      username_to_forms = group_iterator->second;
+  auto forms_iterator = username_to_forms.find(
+      UsernamePasswordKey(CreateUsernamePasswordSortKey(credential)));
+  if (forms_iterator == username_to_forms.end()) {
+    return {};
+  }
+
+  return forms_iterator->second;
 }
 
 }  // namespace password_manager

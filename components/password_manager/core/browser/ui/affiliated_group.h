@@ -15,24 +15,18 @@ namespace password_manager {
 class AffiliatedGroup {
  public:
   AffiliatedGroup();
+  AffiliatedGroup(std::vector<CredentialUIEntry> credentials,
+                  const FacetBrandingInfo& branding);
   AffiliatedGroup(const AffiliatedGroup& other);
   AffiliatedGroup(AffiliatedGroup&& other);
   AffiliatedGroup& operator=(const AffiliatedGroup& other);
   AffiliatedGroup& operator=(AffiliatedGroup&& other);
   ~AffiliatedGroup();
 
-  // Method to add a credential to the credential group in order.
-  void AddCredential(const CredentialUIEntry& credential);
-
   // Credential Groups Getter.
   base::span<const CredentialUIEntry> GetCredentials() const {
     return base::make_span(credential_groups_.begin(),
                            credential_groups_.end());
-  }
-
-  // Branding Info Setter.
-  void SetBrandingInfo(const FacetBrandingInfo& branding_info) {
-    branding_info_ = branding_info;
   }
 
   // Method that returns the display name for this affiliated group.
@@ -47,7 +41,7 @@ class AffiliatedGroup {
   FacetBrandingInfo branding_info_;
 
   // List of credential groups in the affiliated group.
-  base::flat_set<CredentialUIEntry> credential_groups_;
+  std::vector<CredentialUIEntry> credential_groups_;
 };
 
 bool operator==(const AffiliatedGroup& lhs, const AffiliatedGroup& rhs);

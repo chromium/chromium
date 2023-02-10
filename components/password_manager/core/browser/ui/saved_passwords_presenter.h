@@ -18,7 +18,7 @@
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/password_manager/core/browser/ui/password_grouping_util.h"
+#include "components/password_manager/core/browser/ui/passwords_grouper.h"
 
 namespace password_manager {
 
@@ -232,14 +232,11 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   std::unique_ptr<PasswordUndoHelper> undo_helper_;
 
-  // Cache of the most recently generated affiliated groups.
-  std::vector<AffiliatedGroup> affiliated_groups_;
-
   // Structure used to deduplicate list of passwords.
   DuplicatePasswordsMap sort_key_to_password_forms_;
 
   // Structure used to keep track of password grouping data structures.
-  PasswordGroupingInfo password_grouping_info_;
+  PasswordsGrouper passwords_grouper_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
