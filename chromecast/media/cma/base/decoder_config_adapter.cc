@@ -45,6 +45,8 @@ AudioCodec ToAudioCodec(const ::media::AudioCodec audio_codec) {
       return kCodecDTS;
     case ::media::AudioCodec::kDTSXP2:
       return kCodecDTSXP2;
+    case ::media::AudioCodec::kDTSE:
+      return kCodecDTSE;
     default:
       LOG(ERROR) << "Unsupported audio codec " << audio_codec;
   }
@@ -60,6 +62,7 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
     case ::media::kSampleFormatDtsxP2:
     case ::media::kSampleFormatMpegHAudio:
     case ::media::kSampleFormatIECDts:
+    case ::media::kSampleFormatDtse:
       return kUnknownSampleFormat;
     case ::media::kSampleFormatU8:
       return kSampleFormatU8;
@@ -141,6 +144,8 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
       return ::media::AudioCodec::kDTS;
     case kCodecDTSXP2:
       return ::media::AudioCodec::kDTSXP2;
+    case kCodecDTSE:
+      return ::media::AudioCodec::kDTSE;
     default:
       return ::media::AudioCodec::kUnknown;
   }

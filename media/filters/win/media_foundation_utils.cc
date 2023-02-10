@@ -74,6 +74,7 @@ GUID AudioCodecToMediaFoundationSubtype(AudioCodec codec) {
       return MFAudioFormat_Dolby_AC3;
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     case AudioCodec::kDTS:
+    case AudioCodec::kDTSE:
       return MFAudioFormat_DTS_RAW;
     case AudioCodec::kDTSXP2:
       return MFAudioFormat_DTS_UHD;

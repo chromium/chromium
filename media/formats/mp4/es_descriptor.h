@@ -26,6 +26,7 @@ enum ObjectType {
   kAC3 = 0xa5,                 // AC3
   kEAC3 = 0xa6,                // EAC3 / Dolby Digital Plus
   kDTS = 0xa9,                 // DTS
+  kDTSE = 0xac,                // DTS Express/LBR
   kDTSX = 0xb2                 // DTS:X
 };
 

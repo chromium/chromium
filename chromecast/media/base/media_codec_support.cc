@@ -33,6 +33,8 @@ AudioCodec ToCastAudioCodec(const ::media::AudioCodec codec) {
       return kCodecDTS;
     case ::media::AudioCodec::kDTSXP2:
       return kCodecDTSXP2;
+    case ::media::AudioCodec::kDTSE:
+      return kCodecDTSE;
     case ::media::AudioCodec::kFLAC:
       return kCodecFLAC;
     case ::media::AudioCodec::kMpegHAudio:

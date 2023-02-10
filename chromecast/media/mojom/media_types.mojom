@@ -16,6 +16,7 @@ enum AudioCodec {
   kCodecAC3,
   kCodecDTS,
   kCodecDTSXP2,
+  kCodecDTSE,
   kCodecFLAC,
   kCodecMpegHAudio,
 };

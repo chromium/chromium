@@ -96,6 +96,9 @@ const StringToCodecMap& GetStringToCodecMap() {
       {"dtsc", MimeUtil::DTS},
       {"mp4a.a9", MimeUtil::DTS},
       {"mp4a.A9", MimeUtil::DTS},
+      {"dtse", MimeUtil::DTSE},
+      {"mp4a.ac", MimeUtil::DTSE},
+      {"mp4a.AC", MimeUtil::DTSE},
       {"dtsx", MimeUtil::DTSXP2},
       {"mp4a.b2", MimeUtil::DTSXP2},
       {"mp4a.B2", MimeUtil::DTSXP2},
@@ -192,6 +195,8 @@ AudioCodec MimeUtilToAudioCodec(MimeUtil::Codec codec) {
       return AudioCodec::kDTS;
     case MimeUtil::DTSXP2:
       return AudioCodec::kDTSXP2;
+    case MimeUtil::DTSE:
+      return AudioCodec::kDTSE;
     default:
       break;
   }
@@ -353,6 +358,7 @@ void MimeUtil::AddSupportedMediaFormats() {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   mp4_audio_codecs.emplace(DTS);
   mp4_audio_codecs.emplace(DTSXP2);
+  mp4_audio_codecs.emplace(DTSE);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
   CodecSet mp4_codecs(mp4_audio_codecs);
@@ -665,6 +671,7 @@ bool MimeUtil::IsCodecSupportedOnAndroid(Codec codec,
 
     case DTS:
     case DTSXP2:
+    case DTSE:
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
       return true;
 #else

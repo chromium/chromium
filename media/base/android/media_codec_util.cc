@@ -48,6 +48,7 @@ const char kVp8MimeType[] = "video/x-vnd.on2.vp8";
 const char kVp9MimeType[] = "video/x-vnd.on2.vp9";
 const char kAv1MimeType[] = "video/av01";
 const char kDtsMimeType[] = "audio/vnd.dts";
+const char kDtseMimeType[] = "audio/vnd.dts;profile=lbr";
 const char kDtsxP2MimeType[] = "audio/vnd.dts.uhd;profile=p2";
 }  // namespace
 
@@ -139,6 +140,8 @@ std::string MediaCodecUtil::CodecToAndroidMimeType(AudioCodec codec,
       return kEac3MimeType;
     case AudioCodec::kDTS:
       return kDtsMimeType;
+    case AudioCodec::kDTSE:
+      return kDtseMimeType;
     case AudioCodec::kDTSXP2:
       return kDtsxP2MimeType;
     default:
@@ -272,6 +275,8 @@ bool MediaCodecUtil::IsPassthroughAudioFormat(AudioCodec codec) {
   switch (codec) {
     case AudioCodec::kAC3:
     case AudioCodec::kEAC3:
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSXP2:
     case AudioCodec::kMpegHAudio:
       return true;
     default:

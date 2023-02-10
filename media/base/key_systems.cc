@@ -87,6 +87,8 @@ EmeCodec ToAudioEmeCodec(AudioCodec codec) {
       return EME_CODEC_DTS;
     case AudioCodec::kDTSXP2:
       return EME_CODEC_DTSXP2;
+    case AudioCodec::kDTSE:
+      return EME_CODEC_DTSE;
     default:
       DVLOG(1) << "Unsupported AudioCodec " << codec;
       return EME_CODEC_NONE;

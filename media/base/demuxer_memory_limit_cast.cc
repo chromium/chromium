@@ -21,6 +21,7 @@ size_t GetDemuxerStreamAudioMemoryLimit(
     case AudioCodec::kAC3:
     case AudioCodec::kDTS:
     case AudioCodec::kDTSXP2:
+    case AudioCodec::kDTSE:
     case AudioCodec::kMpegHAudio:
       return internal::kDemuxerStreamAudioMemoryLimitMedium;
     case AudioCodec::kAAC:

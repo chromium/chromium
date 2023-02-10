@@ -69,7 +69,8 @@ struct CodecInfo {
     HISTOGRAM_MPEG_H_AUDIO,
     HISTOGRAM_DTS,
     HISTOGRAM_DTSXP2,
-    HISTOGRAM_MAX = HISTOGRAM_DTSXP2  // Must be equal to largest logged entry.
+    HISTOGRAM_DTSE,
+    HISTOGRAM_MAX = HISTOGRAM_DTSE  // Must be equal to largest logged entry.
   };
 
   const char* pattern;
@@ -240,6 +241,12 @@ static const CodecInfo kDTSXCodecInfo2 = {"mp4a.b2", CodecInfo::AUDIO, nullptr,
                                           CodecInfo::HISTOGRAM_DTSXP2};
 static const CodecInfo kDTSXCodecInfo3 = {"mp4a.B2", CodecInfo::AUDIO, nullptr,
                                           CodecInfo::HISTOGRAM_DTSXP2};
+static const CodecInfo kDTSECodecInfo1 = {"dtse", CodecInfo::AUDIO, nullptr,
+                                          CodecInfo::HISTOGRAM_DTSE};
+static const CodecInfo kDTSECodecInfo2 = {"mp4a.ac", CodecInfo::AUDIO, nullptr,
+                                          CodecInfo::HISTOGRAM_DTSE};
+static const CodecInfo kDTSECodecInfo3 = {"mp4a.AC", CodecInfo::AUDIO, nullptr,
+                                          CodecInfo::HISTOGRAM_DTSE};
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
@@ -325,6 +332,9 @@ static const CodecInfo* const kAudioMP4Codecs[] = {&kMPEG4FLACCodecInfo,
                                                    &kDTSXCodecInfo1,
                                                    &kDTSXCodecInfo2,
                                                    &kDTSXCodecInfo3,
+                                                   &kDTSECodecInfo1,
+                                                   &kDTSECodecInfo2,
+                                                   &kDTSECodecInfo3,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
                                                    nullptr};
@@ -379,6 +389,10 @@ static StreamParser* BuildMP4Parser(base::span<const std::string> codecs,
                base::MatchPattern(codec_id, kDTSXCodecInfo2.pattern) ||
                base::MatchPattern(codec_id, kDTSXCodecInfo3.pattern)) {
       audio_object_types.insert(mp4::kDTSX);
+    } else if (base::MatchPattern(codec_id, kDTSECodecInfo1.pattern) ||
+               base::MatchPattern(codec_id, kDTSECodecInfo2.pattern) ||
+               base::MatchPattern(codec_id, kDTSECodecInfo3.pattern)) {
+      audio_object_types.insert(mp4::kDTSE);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     }

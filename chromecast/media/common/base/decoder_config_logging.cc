@@ -31,6 +31,8 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "DTS";
     case ::chromecast::media::kCodecDTSXP2:
       return stream << "DTS:X Profile 2";
+    case ::chromecast::media::kCodecDTSE:
+      return stream << "DTS Express";
     case ::chromecast::media::kCodecFLAC:
       return stream << "FLAC";
     case ::chromecast::media::kCodecMpegHAudio:

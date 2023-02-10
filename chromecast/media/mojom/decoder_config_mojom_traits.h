@@ -38,6 +38,8 @@ struct mojo::EnumTraits<chromecast::media::mojom::AudioCodec,
         return chromecast::media::mojom::AudioCodec::kCodecDTS;
       case (chromecast::media::AudioCodec::kCodecDTSXP2):
         return chromecast::media::mojom::AudioCodec::kCodecDTSXP2;
+      case (chromecast::media::AudioCodec::kCodecDTSE):
+        return chromecast::media::mojom::AudioCodec::kCodecDTSE;
       case (chromecast::media::AudioCodec::kCodecFLAC):
         return chromecast::media::mojom::AudioCodec::kCodecFLAC;
       case (chromecast::media::AudioCodec::kCodecMpegHAudio):
@@ -82,6 +84,9 @@ struct mojo::EnumTraits<chromecast::media::mojom::AudioCodec,
         return true;
       case (chromecast::media::mojom::AudioCodec::kCodecDTSXP2):
         *output = chromecast::media::AudioCodec::kCodecDTSXP2;
+        return true;
+      case (chromecast::media::mojom::AudioCodec::kCodecDTSE):
+        *output = chromecast::media::AudioCodec::kCodecDTSE;
         return true;
       case (chromecast::media::mojom::AudioCodec::kCodecFLAC):
         *output = chromecast::media::AudioCodec::kCodecFLAC;

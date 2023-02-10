@@ -1577,7 +1577,7 @@ bool AudioSampleEntry::Parse(BoxReader* reader) {
   }
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-  if (format == FOURCC_DTSC) {
+  if (format == FOURCC_DTSC || format == FOURCC_DTSE) {
     RCHECK_MEDIA_LOGGED(reader->ReadChild(&ddts), reader->media_log(),
                         "Failure parsing DtsSpecificBox (ddts)");
   } else if (format == FOURCC_DTSX) {

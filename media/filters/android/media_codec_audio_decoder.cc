@@ -108,6 +108,7 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
     case AudioCodec::kEAC3:
     case AudioCodec::kDTS:
     case AudioCodec::kDTSXP2:
+    case AudioCodec::kDTSE:
     case AudioCodec::kMpegHAudio:
       is_passthrough_ = sample_format_ != kUnknownSampleFormat;
       // Check if MediaCodec Library supports decoding of the sample format.

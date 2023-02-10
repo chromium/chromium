@@ -177,6 +177,7 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
       case media::AudioCodec::kDTS:
         supported_codecs |= media::EME_CODEC_DTS;
+        supported_codecs |= media::EME_CODEC_DTSE;
         supported_codecs |= media::EME_CODEC_DTSXP2;
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)

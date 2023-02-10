@@ -163,6 +163,7 @@ class AudioRendererAlgorithmTest : public testing::Test {
             1, 1, frame_size, kNoTimestamp);
         break;
       case kSampleFormatDts:
+      case kSampleFormatDtse:
       case kSampleFormatDtsxP2:
         buffer = MakeBitstreamAudioBuffer(
             sample_format_, channel_layout_,

@@ -532,6 +532,7 @@ void AudioBuffer::TrimRange(int start, int end) {
       case kSampleFormatDts:
       case kSampleFormatDtsxP2:
       case kSampleFormatIECDts:
+      case kSampleFormatDtse:
         NOTREACHED() << "Invalid sample format!";
     }
   } else {

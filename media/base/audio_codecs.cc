@@ -51,6 +51,8 @@ std::string GetCodecName(AudioCodec codec) {
       return "dts";
     case AudioCodec::kDTSXP2:
       return "dtsx-p2";
+    case AudioCodec::kDTSE:
+      return "dtse";
   }
 }
 
@@ -70,10 +72,15 @@ AudioCodec StringToAudioCodec(const std::string& codec_id) {
     return AudioCodec::kAC3;
   if (codec_id == "ec-3" || codec_id == "mp4a.A6" || codec_id == "mp4a.a6")
     return AudioCodec::kEAC3;
-  if (codec_id == "dtsc")
+  if (codec_id == "dtsc" || codec_id == "mp4a.A9" || codec_id == "mp4a.a9") {
     return AudioCodec::kDTS;
-  if (codec_id == "dtsx")
+  }
+  if (codec_id == "dtse" || codec_id == "mp4a.AC" || codec_id == "mp4a.ac") {
+    return AudioCodec::kDTSE;
+  }
+  if (codec_id == "dtsx" || codec_id == "mp4a.B2" || codec_id == "mp4a.b2") {
     return AudioCodec::kDTSXP2;
+  }
   if (codec_id == "mp3" || codec_id == "mp4a.69" || codec_id == "mp4a.6B")
     return AudioCodec::kMP3;
   if (codec_id == "alac")

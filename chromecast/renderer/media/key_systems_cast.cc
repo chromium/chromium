@@ -151,7 +151,8 @@ SupportedCodecs GetCastEmeSupportedCodecs() {
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-  codecs |= ::media::EME_CODEC_DTS | ::media::EME_CODEC_DTSXP2;
+  codecs |= ::media::EME_CODEC_DTS | ::media::EME_CODEC_DTSE |
+            ::media::EME_CODEC_DTSXP2;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)

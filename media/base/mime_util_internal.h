@@ -52,7 +52,8 @@ class MEDIA_EXPORT MimeUtil {
     MPEG_H_AUDIO,
     DTS,
     DTSXP2,
-    LAST_CODEC = DTSXP2
+    DTSE,
+    LAST_CODEC = DTSE
   };
 
   // Platform configuration structure.  Controls which codecs are supported at

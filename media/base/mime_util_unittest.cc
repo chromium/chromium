@@ -593,6 +593,7 @@ TEST(IsCodecSupportedOnAndroidTest, EncryptedCodecBehavior) {
 
           case MimeUtil::DTS:
           case MimeUtil::DTSXP2:
+          case MimeUtil::DTSE:
             EXPECT_EQ(BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO), result);
             break;
         }
@@ -659,6 +660,7 @@ TEST(IsCodecSupportedOnAndroidTest, ClearCodecBehavior) {
 
           case MimeUtil::DTS:
           case MimeUtil::DTSXP2:
+          case MimeUtil::DTSE:
             EXPECT_EQ(BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO), result);
             break;
         }

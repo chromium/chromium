@@ -426,6 +426,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
 #endif
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
           audio_format != FOURCC_DTSC && audio_format != FOURCC_DTSX &&
+          audio_format != FOURCC_DTSE &&
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
           audio_format != FOURCC_MHM1 && audio_format != FOURCC_MHA1 &&
@@ -494,6 +495,9 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
             audio_type = kDTS;
           if (audio_format == FOURCC_DTSX)
             audio_type = kDTSX;
+          if (audio_format == FOURCC_DTSE) {
+            audio_type = kDTSE;
+          }
         }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
         DVLOG(1) << "audio_type 0x" << std::hex << static_cast<int>(audio_type);
@@ -539,6 +543,10 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           // HDMI versions pre HDMI 2.0 can only transmit 8 raw PCM channels.
           // In the case of a 5_1_4 stream we downmix to 5_1.
           codec = AudioCodec::kDTSXP2;
+          channel_layout = GuessChannelLayout(entry.channelcount);
+          sample_per_second = entry.samplerate;
+        } else if (audio_type == kDTSE) {
+          codec = AudioCodec::kDTSE;
           channel_layout = GuessChannelLayout(entry.channelcount);
           sample_per_second = entry.samplerate;
 #endif

@@ -30,9 +30,10 @@ enum SampleFormat {
   kSampleFormatDts,         // Compressed DTS audio bitstream.
   kSampleFormatDtsxP2,      // Compressed DTSX audio bitstream.
   kSampleFormatIECDts,      // IEC-61937 encapsulated DTS audio bitstream.
+  kSampleFormatDtse,        // Compressed DTS Express audio bitstream.
 
   // Must always be equal to largest value ever logged.
-  kSampleFormatMax = kSampleFormatIECDts,
+  kSampleFormatMax = kSampleFormatDtse,
 };
 
 // Returns the number of bytes used per channel for the specified

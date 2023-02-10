@@ -80,6 +80,7 @@ const CodecInfo<media::AudioCodec> kMP4AudioCodecsToQuery[] = {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     {media::EME_CODEC_DTS, media::AudioCodec::kDTS},
     {media::EME_CODEC_DTSXP2, media::AudioCodec::kDTSXP2},
+    {media::EME_CODEC_DTSE, media::AudioCodec::kDTSE},
 #endif
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 };

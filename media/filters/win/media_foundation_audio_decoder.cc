@@ -87,6 +87,7 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                              const WaitingCB& waiting_cb) {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   if (config.codec() != AudioCodec::kDTS &&
+      config.codec() != AudioCodec::kDTSE &&
       config.codec() != AudioCodec::kDTSXP2) {
     std::move(init_cb).Run(
         DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec,
@@ -120,6 +121,7 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   if (config.codec() == AudioCodec::kDTS ||
+      config.codec() == AudioCodec::kDTSE ||
       config.codec() == AudioCodec::kDTSXP2) {
     std::move(init_cb).Run(
         CreateDecoder()
@@ -237,6 +239,7 @@ bool MediaFoundationAudioDecoder::CreateDecoder() {
       type_info = {MFMediaType_Audio, MFAudioFormat_DTS_UHD};
       break;
     case AudioCodec::kDTS:
+    case AudioCodec::kDTSE:
       type_info = {MFMediaType_Audio, MFAudioFormat_DTS_RAW};
       break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
@@ -286,37 +289,32 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
                          "Failed to get output subtype", false);
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-    if (config_.codec() == AudioCodec::kDTS ||
-        config_.codec() == AudioCodec::kDTSXP2) {
-      // Configuration specific to DTS Sound Unbound MFT v1.3.0
-      // DTS-CA 5.1 (6 channels)
-      constexpr uint32_t DTS_5_1 = 2;
-      // DTS:X P2 5.1 (6 channels) or 5.1.4 (downmix to 6 channels)
-      constexpr uint32_t DTSX_5_1_DOWNMIX = 3;
-      if ((out_subtype == MFAudioFormat_PCM && i == DTS_5_1 &&
-           config_.codec() == AudioCodec::kDTS) ||
-          (out_subtype == MFAudioFormat_PCM && i == DTSX_5_1_DOWNMIX &&
-           config_.codec() == AudioCodec::kDTSXP2)) {
-        RETURN_ON_HR_FAILURE(decoder_->SetOutputType(0, output_type.Get(), 0),
-                             "Failed to set output type IMFTransform", false);
+    // Configuration specific to DTS Sound Unbound MFT v1.3.0
+    // DTS-CA 5.1 (6 channels)
+    constexpr uint32_t DTS_5_1 = 2;
+    // DTS:X P2 5.1 (6 channels) or 5.1.4 (downmix to 6 channels)
+    constexpr uint32_t DTSX_5_1_DOWNMIX = 3;
 
-        MFT_OUTPUT_STREAM_INFO info = {0};
-        RETURN_ON_HR_FAILURE(decoder_->GetOutputStreamInfo(0, &info),
-                             "Failed to get output stream info", false);
+    if ((out_subtype == MFAudioFormat_PCM) &&
+        ((config_.codec() == AudioCodec::kDTS && i == DTS_5_1) ||
+         (config_.codec() == AudioCodec::kDTSE && i == DTS_5_1) ||
+         (config_.codec() == AudioCodec::kDTSXP2 && i == DTSX_5_1_DOWNMIX))) {
+      RETURN_ON_HR_FAILURE(decoder_->SetOutputType(0, output_type.Get(), 0),
+                           "Failed to set output type IMFTransform", false);
 
+      RETURN_ON_HR_FAILURE(
+          output_type->GetUINT32(MF_MT_AUDIO_NUM_CHANNELS, &channel_count_),
+          "Failed to get output channel count", false);
+
+      MFT_OUTPUT_STREAM_INFO info = {0};
+      RETURN_ON_HR_FAILURE(decoder_->GetOutputStreamInfo(0, &info),
+                           "Failed to get output stream info", false);
+
+      if (channel_count_ == 6) {
         output_sample_ =
             CreateEmptySampleWithBuffer(info.cbSize, info.cbAlignment);
         RETURN_ON_FAILURE(!!output_sample_, "Failed to create staging sample",
                           false);
-
-        RETURN_ON_HR_FAILURE(
-            output_type->GetUINT32(MF_MT_AUDIO_NUM_CHANNELS, &channel_count_),
-            "Failed to get output channel count", false);
-
-        if (channel_count_ != 6) {
-          output_type.Reset();
-          continue;
-        }
       }
     }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
@@ -366,6 +364,7 @@ int GetBytesPerFrame(AudioCodec codec) {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     // DTS Sound Unbound MFT v1.3 supports 24-bit PCM output only
     case AudioCodec::kDTS:
+    case AudioCodec::kDTSE:
     case AudioCodec::kDTSXP2:
       return 3;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
@@ -435,6 +434,7 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
   // DTS Sound Unbound MFT v1.3.0 outputs 24-bit PCM samples, and will
   // be converted to 32-bit float
   if (config_.codec() == AudioCodec::kDTS ||
+      config_.codec() == AudioCodec::kDTSE ||
       config_.codec() == AudioCodec::kDTSXP2) {
     float* channel_data =
         reinterpret_cast<float*>(audio_buffer->channel_data()[0]);
