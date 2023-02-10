@@ -2039,10 +2039,13 @@ LocalFrame::LazyLoadImageSetting LocalFrame::GetLazyLoadImageSetting() const {
   return LocalFrame::LazyLoadImageSetting::kEnabledExplicit;
 }
 
-WebURLLoaderFactory* LocalFrame::GetURLLoaderFactory() {
-  if (!url_loader_factory_)
-    url_loader_factory_ = Client()->CreateURLLoaderFactory();
-  return url_loader_factory_.get();
+scoped_refptr<network::SharedURLLoaderFactory>
+LocalFrame::GetURLLoaderFactory() {
+  return Client()->GetURLLoaderFactory();
+}
+
+std::unique_ptr<WebURLLoader> LocalFrame::CreateURLLoaderForTesting() {
+  return Client()->CreateURLLoaderForTesting();
 }
 
 WebPluginContainerImpl* LocalFrame::GetWebPluginContainer(Node* node) const {

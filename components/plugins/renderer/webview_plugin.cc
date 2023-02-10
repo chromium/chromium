@@ -364,13 +364,13 @@ void WebViewPlugin::WebViewHelper::ScheduleNonCompositedAnimation() {
   }
 }
 
-std::unique_ptr<blink::WebURLLoaderFactory>
-WebViewPlugin::WebViewHelper::CreateURLLoaderFactory() {
+scoped_refptr<network::SharedURLLoaderFactory>
+WebViewPlugin::WebViewHelper::GetURLLoaderFactory() {
   return plugin_->Container()
       ->GetDocument()
       .GetFrame()
       ->Client()
-      ->CreateURLLoaderFactory();
+      ->GetURLLoaderFactory();
 }
 
 void WebViewPlugin::WebViewHelper::BindToFrame(

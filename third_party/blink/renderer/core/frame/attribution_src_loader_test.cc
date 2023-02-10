@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
-#include "third_party/blink/renderer/platform/loader/testing/web_url_loader_factory_with_mock.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -58,9 +57,8 @@ class AttributionSrcLocalFrameClient : public EmptyLocalFrameClient {
  public:
   AttributionSrcLocalFrameClient() = default;
 
-  std::unique_ptr<WebURLLoaderFactory> CreateURLLoaderFactory() override {
-    return std::make_unique<WebURLLoaderFactoryWithMock>(
-        WebURLLoaderMockFactory::GetSingletonInstance());
+  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() override {
+    return WebURLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
   }
 
   void DispatchWillSendRequest(ResourceRequest& request) override {

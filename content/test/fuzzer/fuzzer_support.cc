@@ -35,7 +35,7 @@ RenderViewTestAdapter::RenderViewTestAdapter()
 
 void RenderViewTestAdapter::SetUp() {
   RenderViewTest::SetUp();
-  CreateFakeWebURLLoaderFactory();
+  CreateFakeURLLoaderFactory();
 }
 
 Env::Env() {

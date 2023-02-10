@@ -164,6 +164,22 @@ gpu::ContextType ToGpuContextType(blink::Platform::ContextType type) {
   return gpu::CONTEXT_TYPE_OPENGLES2;
 }
 
+blink::WebVector<blink::WebString> GetCorsExemptHeaderList() {
+  if (!RenderThreadImpl::current()) {
+    // Some tests (e.g. RenderViewTests) do not have RenderThreadImpl,
+    return blink::WebVector<blink::WebString>();
+  }
+  std::vector<std::string> cors_exempt_header_list =
+      RenderThreadImpl::current()->cors_exempt_header_list();
+  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+      cors_exempt_header_list.size());
+  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
+                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
+                   return blink::WebString::FromLatin1(h);
+                 });
+  return web_cors_exempt_header_list;
+}
+
 }  // namespace
 
 //------------------------------------------------------------------------------
@@ -248,20 +264,8 @@ RendererBlinkPlatformImpl::WrapURLLoaderFactory(
 std::unique_ptr<blink::WebURLLoaderFactory>
 RendererBlinkPlatformImpl::WrapURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  // Check that there is always a main thread. It used to be possible to run
-  // this code with a fuzzer without having a main thread, which is no longer
-  // possible now.
-  CHECK(RenderThreadImpl::current());
-  std::vector<std::string> cors_exempt_header_list =
-      RenderThreadImpl::current()->cors_exempt_header_list();
-  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
-      cors_exempt_header_list.size());
-  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
-                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
-                   return blink::WebString::FromLatin1(h);
-                 });
   return std::make_unique<blink::WebURLLoaderFactory>(
-      std::move(url_loader_factory), web_cors_exempt_header_list,
+      std::move(url_loader_factory), GetCorsExemptHeaderList(),
       /*terminate_sync_load_event=*/nullptr);
 }
 

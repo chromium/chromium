@@ -22,5 +22,6 @@ include_rules = [
   "+base/no_destructor.h",
   "+base/strings/utf_string_conversions.h",
   "+services/network/public/cpp/client_hints.h",
+  "+services/network/public/cpp/shared_url_loader_factory.h",
   "+url/url_features.h",
 ]

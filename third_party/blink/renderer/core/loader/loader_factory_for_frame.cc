@@ -134,11 +134,18 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
   IssueKeepAliveHandleIfRequested(
       request, frame->GetLocalFrameHostRemote(),
       pending_remote.InitWithNewPipeAndPassReceiver());
-  WebURLLoaderFactory* factory = frame->GetURLLoaderFactory();
-  return factory->CreateURLLoader(
-      webreq, CreateTaskRunnerHandle(freezable_task_runner),
-      CreateTaskRunnerHandle(unfreezable_task_runner),
-      std::move(pending_remote), back_forward_cache_loader_helper);
+
+  auto loader = frame->CreateURLLoaderForTesting();
+  if (loader) {
+    return loader;
+  }
+
+  return Platform::Current()
+      ->WrapURLLoaderFactory(frame->GetURLLoaderFactory())
+      ->CreateURLLoader(webreq, CreateTaskRunnerHandle(freezable_task_runner),
+                        CreateTaskRunnerHandle(unfreezable_task_runner),
+                        std::move(pending_remote),
+                        back_forward_cache_loader_helper);
 }
 
 std::unique_ptr<WebCodeCacheLoader>

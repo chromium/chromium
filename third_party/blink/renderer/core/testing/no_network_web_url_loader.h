@@ -8,7 +8,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
-#include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 
@@ -64,20 +63,6 @@ class NoNetworkWebURLLoader : public WebURLLoader {
   }
 };
 
-class NoNetworkWebURLLoaderFactory : public WebURLLoaderFactory {
- public:
-  NoNetworkWebURLLoaderFactory() = default;
-
-  std::unique_ptr<WebURLLoader> CreateURLLoader(
-      const WebURLRequest&,
-      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>,
-      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>,
-      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>,
-      WebBackForwardCacheLoaderHelper) override {
-    return std::make_unique<NoNetworkWebURLLoader>();
-  }
-};
-
 // A LocalFrameClient that uses NoNetworkWebURLLoader, so that nothing external
 // is ever loaded.
 class NoNetworkLocalFrameClient : public EmptyLocalFrameClient {
@@ -85,8 +70,8 @@ class NoNetworkLocalFrameClient : public EmptyLocalFrameClient {
   NoNetworkLocalFrameClient() = default;
 
  private:
-  std::unique_ptr<WebURLLoaderFactory> CreateURLLoaderFactory() override {
-    return std::make_unique<NoNetworkWebURLLoaderFactory>();
+  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() override {
+    return std::make_unique<NoNetworkWebURLLoader>();
   }
 };
 

@@ -387,7 +387,6 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::TaskType task_type) override;
   int GetEnabledBindings() override;
   void SetAccessibilityModeForTest(ui::AXMode new_mode) override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   const RenderFrameMediaPlaybackOptions& GetRenderFrameMediaPlaybackOptions()
       override;
   void SetRenderFrameMediaPlaybackOptions(
@@ -624,7 +623,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void CheckIfAudioSinkExistsAndIsAuthorized(
       const blink::WebString& sink_id,
       blink::WebSetSinkIdCompleteCallback callback) override;
-  std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   void OnStopLoading() override;
   void DraggableRegionsChanged() override;
   blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
@@ -756,10 +755,10 @@ class CONTENT_EXPORT RenderFrameImpl
 
   bool GetCaretBoundsFromFocusedPlugin(gfx::Rect& rect) override;
 
-  // Used in tests to install a fake WebURLLoaderFactory via
-  // RenderViewTest::CreateFakeWebURLLoaderFactory().
-  void SetWebURLLoaderFactoryOverrideForTest(
-      std::unique_ptr<blink::WebURLLoaderFactoryForTest> factory);
+  // Used in tests to install a fake URLLoaderFactory via
+  // RenderViewTest::CreateFakeURLLoaderFactory().
+  void SetURLLoaderFactoryOverrideForTest(
+      scoped_refptr<network::SharedURLLoaderFactory> factory);
 
   // Clones and returns `this` frame's blink::ChildURLLoaderFactoryBundle.
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> CloneLoaderFactories();
@@ -817,8 +816,6 @@ class CONTENT_EXPORT RenderFrameImpl
     T* scoped_variable_;
     T original_value_;
   };
-
-  class FrameURLLoaderFactory;
 
   // Creates a new RenderFrame. |browser_interface_broker| is the
   // RenderFrameHost's BrowserInterfaceBroker through which services are exposed
@@ -1452,8 +1449,8 @@ class CONTENT_EXPORT RenderFrameImpl
   class MHTMLBodyLoaderClient;
   std::unique_ptr<MHTMLBodyLoaderClient> mhtml_body_loader_client_;
 
-  std::unique_ptr<blink::WebURLLoaderFactoryForTest>
-      web_url_loader_factory_override_for_test_;
+  scoped_refptr<network::SharedURLLoaderFactory>
+      url_loader_factory_override_for_test_;
 
   // When the browser asks the renderer to commit a navigation, it should always
   // result in a committed navigation reported via DidCommitProvisionalLoad().

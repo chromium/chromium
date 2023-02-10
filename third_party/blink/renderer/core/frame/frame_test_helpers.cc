@@ -795,6 +795,10 @@ bool TestWebFrameClient::SwapIn(WebFrame* previous_frame) {
   return result;
 }
 
+std::unique_ptr<WebURLLoader> TestWebFrameClient::CreateURLLoaderForTesting() {
+  return WebURLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
+}
+
 void TestWebFrameClient::BeginNavigation(
     std::unique_ptr<WebNavigationInfo> info) {
   navigation_callback_.Cancel();

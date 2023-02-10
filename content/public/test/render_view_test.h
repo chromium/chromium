@@ -209,7 +209,7 @@ class RenderViewTest : public testing::Test {
   void TearDown() override;
 
   // Install a fake URL loader factory for the RenderFrameImpl.
-  void CreateFakeWebURLLoaderFactory();
+  void CreateFakeURLLoaderFactory();
 
   base::test::TaskEnvironment task_environment_;
 

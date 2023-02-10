@@ -398,15 +398,20 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
   void SetTextCheckerClientForTesting(WebTextCheckClient*);
   WebTextCheckClient* GetTextCheckerClient() const override;
 
-  std::unique_ptr<WebURLLoaderFactory> CreateURLLoaderFactory() override {
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
+      override {
     // Most consumers of EmptyLocalFrameClient should not make network requests.
     // If an exception needs to be made (e.g. in test code), then the consumer
     // should define their own subclass of LocalFrameClient or
-    // EmptyLocalFrameClient and override the CreateURLLoaderFactory method.
+    // EmptyLocalFrameClient and override the CreateURLLoaderForTesting method.
     // See also https://crbug.com/891872.
     // We use CHECK(false) instead of NOTREACHED() here to catch errors on
     // clusterfuzz and production.
     CHECK(false);
+    return nullptr;
+  }
+
+  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() override {
     return nullptr;
   }
 

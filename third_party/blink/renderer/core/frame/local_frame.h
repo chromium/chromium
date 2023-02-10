@@ -101,6 +101,10 @@ class Size;
 class SizeF;
 }  // namespace gfx
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace blink {
 
 class AdTracker;
@@ -150,7 +154,7 @@ class WebContentSettingsClient;
 class WebInputEventAttribution;
 class WebPluginContainerImpl;
 class WebPrescientNetworking;
-class WebURLLoaderFactory;
+class WebURLLoader;
 struct BlinkTransferableMessage;
 struct WebScriptSource;
 
@@ -493,8 +497,11 @@ class CORE_EXPORT LocalFrame final
   // Returns the enabled state of lazyloading of images.
   LazyLoadImageSetting GetLazyLoadImageSetting() const;
 
-  // The returned value is a off-heap raw-ptr and should not be stored.
-  WebURLLoaderFactory* GetURLLoaderFactory();
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
+
+  // For some tests, we use this method to create a WebURLLoader instead of
+  // using GetURLLoaderFactory().
+  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting();
 
   bool IsInert() const { return is_inert_; }
 
@@ -999,9 +1006,6 @@ class CORE_EXPORT LocalFrame final
 
   // Only set for outermost main frame.
   mojom::blink::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons_;
-
-  // Per-frame URLLoader factory.
-  std::unique_ptr<WebURLLoaderFactory> url_loader_factory_;
 
   ClientHintsPreferences client_hints_preferences_;
 

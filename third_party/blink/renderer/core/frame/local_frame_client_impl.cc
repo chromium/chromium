@@ -1004,9 +1004,14 @@ WebTextCheckClient* LocalFrameClientImpl::GetTextCheckerClient() const {
   return web_frame_->GetTextCheckerClient();
 }
 
-std::unique_ptr<blink::WebURLLoaderFactory>
-LocalFrameClientImpl::CreateURLLoaderFactory() {
-  return web_frame_->Client()->CreateURLLoaderFactory();
+scoped_refptr<network::SharedURLLoaderFactory>
+LocalFrameClientImpl::GetURLLoaderFactory() {
+  return web_frame_->Client()->GetURLLoaderFactory();
+}
+
+std::unique_ptr<WebURLLoader>
+LocalFrameClientImpl::CreateURLLoaderForTesting() {
+  return web_frame_->Client()->CreateURLLoaderForTesting();
 }
 
 blink::BrowserInterfaceBrokerProxy&

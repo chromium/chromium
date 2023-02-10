@@ -181,7 +181,7 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
     void BindToFrame(blink::WebNavigationControl* frame) override;
     void DidClearWindowObject() override;
     void FrameDetached() override;
-    std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory()
+    scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
         override;
 
     // blink::mojom::WidgetHost implementation.

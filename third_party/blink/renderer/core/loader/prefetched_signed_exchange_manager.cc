@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
@@ -244,13 +245,15 @@ PrefetchedSignedExchangeManager::MaybeCreateURLLoader(
 std::unique_ptr<WebURLLoader>
 PrefetchedSignedExchangeManager::CreateDefaultURLLoader(
     const WebURLRequest& request) {
-  return frame_->GetURLLoaderFactory()->CreateURLLoader(
-      request,
-      frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle(),
-      frame_->GetFrameScheduler()
-          ->CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle(),
-      /*keep_alive_handle=*/mojo::NullRemote(),
-      WebBackForwardCacheLoaderHelper());
+  return Platform::Current()
+      ->WrapURLLoaderFactory(frame_->GetURLLoaderFactory())
+      ->CreateURLLoader(
+          request,
+          frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle(),
+          frame_->GetFrameScheduler()
+              ->CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle(),
+          /*keep_alive_handle=*/mojo::NullRemote(),
+          WebBackForwardCacheLoaderHelper());
 }
 
 std::unique_ptr<WebURLLoader>

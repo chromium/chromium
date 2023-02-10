@@ -17,7 +17,7 @@ class ChromeContentSettingsAgentDelegateBrowserTest
 
     // Set up a fake url loader factory to ensure that script loader can create
     // a WebURLLoader.
-    CreateFakeWebURLLoaderFactory();
+    CreateFakeURLLoaderFactory();
 
     // Unbind the ContentSettingsAgent interface that would be registered by
     // the ChromeContentSettingsAgent created when the render frame is created.

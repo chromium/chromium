@@ -903,7 +903,7 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
       ukm::SourceId document_ukm_source_id,
       FinishChildFrameCreationFn finish_creation) override;
   void FrameDetached() override;
-  std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
   void CallOnReady();
   void ResizeForPrinting();
@@ -1153,10 +1153,10 @@ void PrepareFrameAndViewForPrint::FrameDetached() {
   frame_.Reset(nullptr);
 }
 
-std::unique_ptr<blink::WebURLLoaderFactory>
-PrepareFrameAndViewForPrint::CreateURLLoaderFactory() {
+scoped_refptr<network::SharedURLLoaderFactory>
+PrepareFrameAndViewForPrint::GetURLLoaderFactory() {
   blink::WebLocalFrame* frame = original_frame_.GetFrame();
-  return frame->Client()->CreateURLLoaderFactory();
+  return frame->Client()->GetURLLoaderFactory();
 }
 
 void PrepareFrameAndViewForPrint::CallOnReady() {

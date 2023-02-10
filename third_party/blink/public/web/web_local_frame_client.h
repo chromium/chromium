@@ -102,6 +102,10 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace blink {
 namespace mojom {
 enum class TreeScopeType;
@@ -128,6 +132,7 @@ class WebServiceWorkerProvider;
 class WebSocketHandshakeThrottle;
 class WebString;
 class WebURL;
+class WebURLLoader;
 class WebURLRequest;
 class WebURLResponse;
 class WebView;
@@ -665,8 +670,12 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Loading --------------------------------------------------------------
 
-  virtual std::unique_ptr<blink::WebURLLoaderFactory> CreateURLLoaderFactory() {
+  virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() {
     NOTREACHED();
+    return nullptr;
+  }
+
+  virtual std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() {
     return nullptr;
   }
 

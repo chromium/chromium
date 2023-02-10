@@ -50,10 +50,6 @@ class Rect;
 class RectF;
 }  // namespace gfx
 
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
-
 namespace content {
 
 class RenderAccessibility;
@@ -221,9 +217,6 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
 
   // Set the accessibility mode to force creation of RenderAccessibility.
   virtual void SetAccessibilityModeForTest(ui::AXMode new_mode) = 0;
-
-  virtual scoped_refptr<network::SharedURLLoaderFactory>
-  GetURLLoaderFactory() = 0;
 
   // Per-frame media playback options passed to each WebMediaPlayer.
   virtual const RenderFrameMediaPlaybackOptions&
