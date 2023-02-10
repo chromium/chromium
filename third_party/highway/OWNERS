@@ -1,8 +1,1 @@
-# Owners:
-noel@chromium.org
-scroggo@google.com
-
-# Reviewers:
-# deymo@chromium.org
-# firsching@google.com
-# lode@google.com
+file://third_party/distributed_point_functions/OWNERS
