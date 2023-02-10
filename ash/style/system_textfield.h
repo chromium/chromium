@@ -12,8 +12,6 @@
 
 namespace ash {
 
-class SystemTextfieldController;
-
 // SystemTextfield is an extension of `Views::Textfield` used for system UIs. It
 // has specific small, medium, and large types and applies dynamic colors.
 class ASH_EXPORT SystemTextfield : public views::Textfield {
@@ -43,10 +41,12 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
-  // Activates or deactivates the textfield. The method is mainly used by
-  // `SystemTextfieldController`.
+  // Activates or deactivates the textfield. The textfield can only be edited if
+  // it is active.
   void SetActive(bool active);
-  bool active() const { return active_; }
+  bool IsActive() const;
+  // Sets if the focus ring should be shown despite the active state.
+  void SetShowFocusRing(bool show);
   // Restores to previous text when the changes are discarded.
   void RestoreText();
 
@@ -68,10 +68,11 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   void UpdateBackground();
 
   Type type_;
-  bool active_ = false;
   // Text content to restore when changes are discarded.
   std::u16string restored_text_content_;
   Delegate* delegate_ = nullptr;
+  // Indicates if the textfield should show focus ring.
+  bool show_focus_ring_ = false;
   // Enabled state changed callback.
   base::CallbackListSubscription enabled_changed_subscription_;
 };

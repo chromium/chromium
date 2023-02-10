@@ -85,6 +85,8 @@ SystemTextfield::SystemTextfield(Type type) : type_(type) {
   const float halo_thickness = focus_ring->GetHaloThickness();
   focus_ring->SetHaloInset(-kFocusRingGap - 0.5f * halo_thickness);
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
+  focus_ring->SetHasFocusPredicate(
+      [&](views::View* view) -> bool { return show_focus_ring_; });
 
   enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
       &SystemTextfield::OnEnabledStateChanged, base::Unretained(this)));
@@ -93,13 +95,11 @@ SystemTextfield::SystemTextfield(Type type) : type_(type) {
 SystemTextfield::~SystemTextfield() = default;
 
 void SystemTextfield::SetActive(bool active) {
-  if (active_ == active) {
+  if (IsActive() == active) {
     return;
   }
 
-  active_ = active;
-
-  if (active_) {
+  if (active) {
     // Activate the textfield and record the text content.
     views::Textfield::OnFocus();
     restored_text_content_ = GetText();
@@ -109,6 +109,19 @@ void SystemTextfield::SetActive(bool active) {
     views::Textfield::OnBlur();
   }
 
+  SetShowFocusRing(active);
+  UpdateBackground();
+}
+
+bool SystemTextfield::IsActive() const {
+  return GetRenderText()->focused();
+}
+
+void SystemTextfield::SetShowFocusRing(bool show) {
+  if (show_focus_ring_ == show) {
+    return;
+  }
+  show_focus_ring_ = show;
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
@@ -158,7 +171,7 @@ void SystemTextfield::OnFocus() {
   if (delegate_) {
     delegate_->OnTextfieldFocused(this);
   } else {
-    views::Textfield::OnFocus();
+    SetActive(true);
   }
 
   UpdateBackground();
@@ -168,7 +181,7 @@ void SystemTextfield::OnBlur() {
   if (delegate_) {
     delegate_->OnTextfieldBlurred(this);
   } else {
-    views::Textfield::OnBlur();
+    SetActive(false);
   }
 
   UpdateBackground();

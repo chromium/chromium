@@ -13,22 +13,21 @@ SystemTextfieldController::SystemTextfieldController(SystemTextfield* textfield)
     : textfield_(textfield) {
   textfield_->SetController(this);
   textfield_->set_delegate(this);
-  views::FocusRing::Get(textfield_)
-      ->SetHasFocusPredicate(
-          [&](views::View* view) { return textfield_->active(); });
 }
 
 SystemTextfieldController::~SystemTextfieldController() = default;
 
 void SystemTextfieldController::OnTextfieldFocused(SystemTextfield* textfield) {
   DCHECK_EQ(textfield_, textfield);
-  // Do not activate the textfield immediately on focus.
+  // Do not activate the textfield immediately on focus but show focus ring.
+  textfield_->SetShowFocusRing(true);
 }
 
 void SystemTextfieldController::OnTextfieldBlurred(SystemTextfield* textfield) {
   DCHECK_EQ(textfield_, textfield);
-  // Deactivate the textfield on blur.
+  // Deactivate the textfield on blur and hide focus ring.
   textfield_->SetActive(false);
+  textfield_->SetShowFocusRing(false);
 }
 
 bool SystemTextfieldController::HandleKeyEvent(views::Textfield* sender,
@@ -39,7 +38,7 @@ bool SystemTextfieldController::HandleKeyEvent(views::Textfield* sender,
     return false;
   }
 
-  const bool active = textfield_->active();
+  const bool active = textfield_->IsActive();
   if (key_event.key_code() == ui::VKEY_RETURN) {
     // If the textfield is focused but not active, activate the textfield and
     // highlight all the text.
@@ -82,7 +81,7 @@ bool SystemTextfieldController::HandleMouseEvent(
       // When the mouse is pressed and the textfield is not active, activate
       // the textfield but defer selecting all text until the mouse is
       // released.
-      if (!textfield_->active()) {
+      if (!textfield_->IsActive()) {
         defer_select_all_ = true;
         textfield_->SetActive(true);
       }
