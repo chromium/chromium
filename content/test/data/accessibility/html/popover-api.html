@@ -26,8 +26,9 @@
 <div popover id=popover2>Popover (showing)
   <div popover id=popover3>Nested popover (showing)</div>
 </div>
-<button popoverhidetarget=manual2>Hide button pointing to showing manual</button>
+<button popoverhidetarget=manual2>Hide button pointing to showing manual (should add aria-details)</button>
 <input type=url popoverhidetarget=manual2>Url input pointing to showing manual</button>
+<button popoverhidetarget=manual2>Hide button pointing to showing manual (should NOT add aria-details)</button>
 <div popover=manual id=manual2>Manual (showing)</div>
 <script>
   popover2.showPopover();

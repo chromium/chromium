@@ -50,14 +50,14 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='Showing/visible popovers below'
 ++++++++++inlineTextBox name='Showing/visible popovers below'
-++++++button name='Button pointing to showing popover'
+++++++button name='Button pointing to showing popover' detailsIds=genericContainer
 ++++++++staticText name='Button pointing to showing popover'
 ++++++++++inlineTextBox name='Button pointing to showing popover'
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Tel input pointing to showing popover '
 ++++++++inlineTextBox name='Tel input pointing to showing popover '
-++++++button name='Show button pointing to nested popover'
+++++++button name='Show button pointing to nested popover' detailsIds=genericContainer
 ++++++++staticText name='Show button pointing to nested popover'
 ++++++++++inlineTextBox name='Show button pointing to nested popover'
 ++++++textField
@@ -70,13 +70,17 @@ rootWebArea
 ++++++++genericContainer ispopup=auto
 ++++++++++staticText name='Nested popover (showing)'
 ++++++++++++inlineTextBox name='Nested popover (showing)'
-++++++button name='Hide button pointing to showing manual'
-++++++++staticText name='Hide button pointing to showing manual'
-++++++++++inlineTextBox name='Hide button pointing to showing manual'
+++++++button name='Hide button pointing to showing manual (should add aria-details)' detailsIds=genericContainer
+++++++++staticText name='Hide button pointing to showing manual (should add aria-details)'
+++++++++++inlineTextBox name='Hide button pointing to showing manual (should add aria-details)'
 ++++++textField
 ++++++++genericContainer
-++++++staticText name='Url input pointing to showing manual'
-++++++++inlineTextBox name='Url input pointing to showing manual'
+++++++staticText name='Url input pointing to showing manual '
+++++++++inlineTextBox name='Url input pointing to showing '
+++++++++inlineTextBox name='manual '
+++++++button name='Hide button pointing to showing manual (should NOT add aria-details)'
+++++++++staticText name='Hide button pointing to showing manual (should NOT add aria-details)'
+++++++++++inlineTextBox name='Hide button pointing to showing manual (should NOT add aria-details)'
 ++++++genericContainer ispopup=manual
 ++++++++staticText name='Manual (showing)'
 ++++++++++inlineTextBox name='Manual (showing)'

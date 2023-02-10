@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -2246,6 +2247,16 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     }
   }
 
+  // See if we need to add aria-details for a popover invoker.
+  if (!node_data->HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kDetailsIds)) {
+    if (AXObject* popover = GetTargetPopoverForInvoker()) {
+      node_data->AddIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kDetailsIds,
+          {static_cast<int32_t>(popover->AXObjectID())});
+    }
+  }
+
   // Try to get an aria-controls listbox for an <input role="combobox">.
   if (!node_data->HasIntListAttribute(
           ax::mojom::blink::IntListAttribute::kControlsIds)) {
@@ -2267,6 +2278,25 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       SerializeHTMLAttributes(node_data);
     }
   }
+}
+
+// Popover invoking elements should have details relationships with their
+// target popover, when that popover is a) open, and b) not the next element
+// in the DOM (depth first search order).
+AXObject* AXObject::GetTargetPopoverForInvoker() {
+  auto* form_element = DynamicTo<HTMLFormControlElement>(GetElement());
+  if (!form_element) {
+    return nullptr;
+  }
+  HTMLElement* target_popover = form_element->popoverTargetElement().popover;
+  if (!target_popover || !target_popover->popoverOpen()) {
+    return nullptr;
+  }
+  if (ElementTraversal::NextSkippingChildren(*form_element) == target_popover) {
+    // The next element is already the popover.
+    return nullptr;
+  }
+  return AXObjectCache().GetOrCreate(target_popover);
 }
 
 // Try to get an aria-controls for an <input role="combobox">, because it

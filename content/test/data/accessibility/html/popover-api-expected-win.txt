@@ -25,8 +25,9 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++ROLE_SYSTEM_STATICTEXT name='Popover (showing)'
 ++++IA2_ROLE_SECTION ispopup:auto
 ++++++ROLE_SYSTEM_STATICTEXT name='Nested popover (showing)'
-++ROLE_SYSTEM_PUSHBUTTON name='Hide button pointing to showing manual' FOCUSABLE
+++ROLE_SYSTEM_PUSHBUTTON name='Hide button pointing to showing manual (should add aria-details)' FOCUSABLE
 ++ROLE_SYSTEM_TEXT FOCUSABLE
-++ROLE_SYSTEM_STATICTEXT name='Url input pointing to showing manual'
+++ROLE_SYSTEM_STATICTEXT name='Url input pointing to showing manual '
+++ROLE_SYSTEM_PUSHBUTTON name='Hide button pointing to showing manual (should NOT add aria-details)' FOCUSABLE
 ++IA2_ROLE_SECTION ispopup:manual
 ++++ROLE_SYSTEM_STATICTEXT name='Manual (showing)'

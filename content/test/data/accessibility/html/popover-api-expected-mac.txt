@@ -25,8 +25,9 @@ AXWebArea
 ++++AXStaticText AXValue='Popover (showing)'
 ++++AXGroup
 ++++++AXStaticText AXValue='Nested popover (showing)'
-++AXButton AXTitle='Hide button pointing to showing manual'
+++AXButton AXTitle='Hide button pointing to showing manual (should add aria-details)'
 ++AXTextField
-++AXStaticText AXValue='Url input pointing to showing manual'
+++AXStaticText AXValue='Url input pointing to showing manual '
+++AXButton AXTitle='Hide button pointing to showing manual (should NOT add aria-details)'
 ++AXGroup
 ++++AXStaticText AXValue='Manual (showing)'

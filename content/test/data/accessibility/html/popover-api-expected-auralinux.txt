@@ -15,18 +15,19 @@
 ++[static] name='Text input pointing to invalid popover value'
 ++[paragraph]
 ++++[static] name='Showing/visible popovers below'
-++[push button] name='Button pointing to showing popover'
+++[push button] name='Button pointing to showing popover' details
 ++[entry] selectable-text
 ++[static] name='Tel input pointing to showing popover '
-++[push button] name='Show button pointing to nested popover'
+++[push button] name='Show button pointing to nested popover' details
 ++[entry] selectable-text
 ++[static] name='Url input pointing to nested popover '
-++[section]
+++[section] details-for
 ++++[static] name='Popover (showing)'
-++++[section]
+++++[section] details-for
 ++++++[static] name='Nested popover (showing)'
-++[push button] name='Hide button pointing to showing manual'
+++[push button] name='Hide button pointing to showing manual (should add aria-details)' details
 ++[entry] selectable-text
-++[static] name='Url input pointing to showing manual'
-++[section]
+++[static] name='Url input pointing to showing manual '
+++[push button] name='Hide button pointing to showing manual (should NOT add aria-details)'
+++[section] details-for
 ++++[static] name='Manual (showing)'

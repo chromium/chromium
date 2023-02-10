@@ -786,6 +786,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Determines whether this object is a popup, and what type.
   virtual ax::mojom::blink::IsPopup IsPopup() const;
 
+  // Heuristic to get the target popover for an invoking element.
+  AXObject* GetTargetPopoverForInvoker();
+
   // Heuristic to get the listbox for an <input role="combobox">.
   AXObject* GetControlsListboxForTextfieldCombobox();
 
