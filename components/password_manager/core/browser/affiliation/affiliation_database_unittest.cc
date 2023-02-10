@@ -32,6 +32,7 @@ const char kTestFacetURI5[] = "https://epsilon.example.com";
 const char kTestFacetURI6[] = "https://zeta.example.com";
 const char kTestFacetURI7[] = "https://theta.example.com";
 const char kTestWebsiteName[] = "Example.com";
+const char kTestMainDomain[] = "example.com";
 
 const char kTestAndroidFacetURI[] = "android://hash@com.example.android";
 const char kTestAndroidPlayName[] = "Test Android App";
@@ -53,9 +54,9 @@ AffiliatedFacetsWithUpdateTime TestEquivalenceClass1() {
   AffiliatedFacetsWithUpdateTime affiliation;
   affiliation.last_update_time = base::Time::FromInternalValue(kTestTimeUs1);
   affiliation.facets = {
-      {FacetURI::FromCanonicalSpec(kTestFacetURI1)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI2)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
   };
   return affiliation;
 }
@@ -64,8 +65,8 @@ AffiliatedFacetsWithUpdateTime TestEquivalenceClass2() {
   AffiliatedFacetsWithUpdateTime affiliation;
   affiliation.last_update_time = base::Time::FromInternalValue(kTestTimeUs2);
   affiliation.facets = {
-      {FacetURI::FromCanonicalSpec(kTestFacetURI4)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI5)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI4)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI5)),
   };
   return affiliation;
 }
@@ -74,8 +75,8 @@ AffiliatedFacetsWithUpdateTime TestEquivalenceClass3() {
   AffiliatedFacetsWithUpdateTime affiliation;
   affiliation.last_update_time = base::Time::FromInternalValue(kTestTimeUs3);
   affiliation.facets = {
-      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURI),
-       FacetBrandingInfo{kTestAndroidPlayName, GURL(kTestAndroidIconURL)}},
+      Facet(FacetURI::FromCanonicalSpec(kTestAndroidFacetURI),
+            FacetBrandingInfo{kTestAndroidPlayName, GURL(kTestAndroidIconURL)}),
   };
   return affiliation;
 }
@@ -140,8 +141,8 @@ TEST_F(AffiliationDatabaseTest, Store) {
     expecter.ExpectError(SQLITE_CONSTRAINT);
     AffiliatedFacetsWithUpdateTime intersecting;
     intersecting.facets = {
-        {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
-        {FacetURI::FromCanonicalSpec(kTestFacetURI4)},
+        Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
+        Facet(FacetURI::FromCanonicalSpec(kTestFacetURI4)),
     };
     EXPECT_FALSE(db().Store(intersecting, GroupedFacets()));
     EXPECT_TRUE(expecter.SawExpectedErrors());
@@ -227,8 +228,8 @@ TEST_F(AffiliationDatabaseTest, StoreAndRemoveConflicting) {
     std::vector<AffiliatedFacetsWithUpdateTime> removed;
     intersecting.last_update_time = base::Time::FromInternalValue(5000000);
     intersecting.facets = {
-        {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
-        {FacetURI::FromCanonicalSpec(kTestFacetURI4)},
+        Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
+        Facet(FacetURI::FromCanonicalSpec(kTestFacetURI4)),
     };
     db().StoreAndRemoveConflicting(intersecting, GroupedFacets(), &removed);
 
@@ -324,7 +325,7 @@ TEST_F(AffiliationDatabaseTest, MigrateFromVersion1) {
   OpenDatabase();
 
   // Check that migration was successful and existing data was untouched.
-  EXPECT_EQ(3, db().GetDatabaseVersionForTesting());
+  EXPECT_EQ(4, db().GetDatabaseVersionForTesting());
   std::vector<AffiliatedFacetsWithUpdateTime> affiliations;
   db().GetAllAffiliationsAndBranding(&affiliations);
   ASSERT_EQ(3u, affiliations.size());
@@ -394,21 +395,67 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion3) {
   OpenDatabase();
   std::vector<GroupedFacets> groupings = db().GetAllGroups();
   ASSERT_EQ(3u, groupings.size());
-  std::vector<Facet> group1 = {{FacetURI::FromCanonicalSpec(kTestFacetURI1)},
-                               {FacetURI::FromCanonicalSpec(kTestFacetURI2)},
-                               {FacetURI::FromCanonicalSpec(kTestFacetURI3)}};
+  std::vector<Facet> group1 = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3))};
   EXPECT_THAT(groupings[0].facets, testing::UnorderedElementsAreArray(group1));
   EXPECT_THAT(groupings[0].branding_info,
               testing::Eq(FacetBrandingInfo{kTestWebsiteName,
                                             GURL(kTestAndroidIconURL)}));
 
-  std::vector<Facet> group2 = {{FacetURI::FromCanonicalSpec(kTestFacetURI4)},
-                               {FacetURI::FromCanonicalSpec(kTestFacetURI5)},
-                               {FacetURI::FromCanonicalSpec(kTestFacetURI7)}};
+  std::vector<Facet> group2 = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI4)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI5)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI7))};
   EXPECT_THAT(groupings[1].facets, testing::UnorderedElementsAreArray(group2));
   EXPECT_THAT(groupings[1].branding_info, testing::Eq(FacetBrandingInfo()));
   std::vector<Facet> group3 = {
-      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURI)}};
+      Facet(FacetURI::FromCanonicalSpec(kTestAndroidFacetURI))};
+  EXPECT_THAT(groupings[2].facets, testing::UnorderedElementsAreArray(group3));
+  EXPECT_THAT(groupings[2].branding_info,
+              testing::Eq(FacetBrandingInfo{kTestAndroidPlayName,
+                                            GURL(kTestAndroidIconURL)}));
+}
+
+TEST_F(AffiliationDatabaseTest, InitializeFromVersion4) {
+  // Close and delete the current database and create it from scratch with the
+  // SQLite statement stored in affiliation_db_v3.sql.
+  CloseDatabase();
+  AffiliationDatabase::Delete(db_path());
+  base::FilePath src_root_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
+  base::FilePath sql_path_v3 = src_root_dir.AppendASCII("components")
+                                   .AppendASCII("test")
+                                   .AppendASCII("data")
+                                   .AppendASCII("password_manager")
+                                   .AppendASCII("affiliation_db_v4.sql");
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), sql_path_v3));
+
+  // Expect the migration to be a no-op that does not modify the existing data.
+  OpenDatabase();
+  std::vector<GroupedFacets> groupings = db().GetAllGroups();
+  ASSERT_EQ(3u, groupings.size());
+  std::vector<Facet> group1 = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1), FacetBrandingInfo(),
+            GURL(), kTestMainDomain),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2), FacetBrandingInfo(),
+            GURL(), kTestMainDomain),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3), FacetBrandingInfo(),
+            GURL(), kTestMainDomain)};
+  EXPECT_THAT(groupings[0].facets, testing::UnorderedElementsAreArray(group1));
+  EXPECT_THAT(groupings[0].branding_info,
+              testing::Eq(FacetBrandingInfo{kTestWebsiteName,
+                                            GURL(kTestAndroidIconURL)}));
+
+  std::vector<Facet> group2 = {
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI4)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI5)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI7))};
+  EXPECT_THAT(groupings[1].facets, testing::UnorderedElementsAreArray(group2));
+  EXPECT_THAT(groupings[1].branding_info, testing::Eq(FacetBrandingInfo()));
+  std::vector<Facet> group3 = {
+      Facet(FacetURI::FromCanonicalSpec(kTestAndroidFacetURI))};
   EXPECT_THAT(groupings[2].facets, testing::UnorderedElementsAreArray(group3));
   EXPECT_THAT(groupings[2].branding_info,
               testing::Eq(FacetBrandingInfo{kTestAndroidPlayName,
@@ -440,16 +487,16 @@ TEST_F(AffiliationDatabaseTest, StoreAndRemoveConflictingUpdatesGrouping) {
   AffiliatedFacetsWithUpdateTime affiliation;
   affiliation.last_update_time = base::Time::FromInternalValue(kTestTimeUs1);
   affiliation.facets = {
-      {FacetURI::FromCanonicalSpec(kTestFacetURI1)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1)),
   };
 
   GroupedFacets group;
   group.branding_info =
       FacetBrandingInfo{kTestAndroidPlayName, GURL(kTestAndroidIconURL)};
   group.facets = {
-      {FacetURI::FromCanonicalSpec(kTestFacetURI1)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI2)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
   };
 
   OpenDatabase();

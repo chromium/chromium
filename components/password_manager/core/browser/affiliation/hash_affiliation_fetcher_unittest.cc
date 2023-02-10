@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_api.pb.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_fetcher_delegate.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "crypto/sha2.h"
@@ -309,12 +310,11 @@ TEST_F(HashAffiliationFetcherTest, ChangePasswordInfoIsReturnedIfPresent) {
   EXPECT_THAT(
       result->groupings[0].facets,
       testing::UnorderedElementsAre(
-          Facet{
-              .uri = FacetURI::FromCanonicalSpec(kExampleWebFacet1URI),
-              .change_password_url = GURL(kExampleWebFacet1ChangePasswordURI)},
-          Facet{.uri = FacetURI::FromCanonicalSpec(kExampleWebFacet2URI),
-                .change_password_url =
-                    GURL(kExampleWebFacet2ChangePasswordURI)}));
+          Facet(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI),
+                FacetBrandingInfo(), GURL(kExampleWebFacet1ChangePasswordURI)),
+          Facet(FacetURI::FromCanonicalSpec(kExampleWebFacet2URI),
+                FacetBrandingInfo(),
+                GURL(kExampleWebFacet2ChangePasswordURI))));
 }
 
 // The API contract of this class is to return an equivalence class for all

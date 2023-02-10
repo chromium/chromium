@@ -1450,11 +1450,9 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordsInCredentialGroup) {
   store().AddLogin(form2);
 
   std::vector<password_manager::GroupedFacets> grouped_facets(1);
-  Facet facet;
-  facet.uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+  Facet facet(FacetURI::FromPotentiallyInvalidSpec(form.signon_realm));
   grouped_facets[0].facets.push_back(std::move(facet));
-  Facet facet2;
-  facet2.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
+  Facet facet2(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm));
   grouped_facets[0].facets.push_back(std::move(facet2));
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
@@ -1507,11 +1505,9 @@ TEST_F(SavedPasswordsPresenterTest, DeletePasswordsInCredentialGroup) {
   store().AddLogin(form2);
 
   std::vector<password_manager::GroupedFacets> grouped_facets(1);
-  Facet facet;
-  facet.uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+  Facet facet(FacetURI::FromPotentiallyInvalidSpec(form.signon_realm));
   grouped_facets[0].facets.push_back(std::move(facet));
-  Facet facet2;
-  facet2.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
+  Facet facet2(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm));
   grouped_facets[0].facets.push_back(std::move(facet2));
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
@@ -1696,16 +1692,14 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
         std::vector<password_manager::GroupedFacets> grouped_facets_to_return;
 
         // Form, Form2 & Blocked form.
-        Facet facet;
-        facet.uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+        Facet facet(FacetURI::FromPotentiallyInvalidSpec(form.signon_realm));
         GroupedFacets grouped_facets;
         grouped_facets.facets.push_back(std::move(facet));
         grouped_facets_to_return.push_back(std::move(grouped_facets));
 
         // Federated form.
-        Facet facet2;
-        facet2.uri =
-            FacetURI::FromPotentiallyInvalidSpec(federated_form.signon_realm);
+        Facet facet2(
+            FacetURI::FromPotentiallyInvalidSpec(federated_form.signon_realm));
         GroupedFacets grouped_facets2;
         grouped_facets2.facets.push_back(std::move(facet2));
         grouped_facets_to_return.push_back(std::move(grouped_facets2));
@@ -1772,16 +1766,14 @@ TEST_F(SavedPasswordsPresenterTest, GetBlockedSites) {
         std::vector<password_manager::GroupedFacets> grouped_facets_to_return;
 
         // Form & Blocked form.
-        Facet facet;
-        facet.uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+        Facet facet(FacetURI::FromPotentiallyInvalidSpec(form.signon_realm));
         GroupedFacets grouped_facets;
         grouped_facets.facets.push_back(std::move(facet));
         grouped_facets_to_return.push_back(std::move(grouped_facets));
 
         // Blocked form 2.
-        Facet facet2;
-        facet2.uri =
-            FacetURI::FromPotentiallyInvalidSpec(blocked_form2.signon_realm);
+        Facet facet2(
+            FacetURI::FromPotentiallyInvalidSpec(blocked_form2.signon_realm));
         GroupedFacets grouped_facets2;
         grouped_facets2.facets.push_back(std::move(facet2));
         grouped_facets_to_return.push_back(std::move(grouped_facets2));

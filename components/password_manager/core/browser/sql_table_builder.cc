@@ -358,6 +358,10 @@ size_t SQLTableBuilder::NumberOfColumns() const {
       [this](const Column& column) { return IsColumnInLastVersion(column); }));
 }
 
+std::string SQLTableBuilder::TableName() const {
+  return table_name_;
+}
+
 bool SQLTableBuilder::MigrateToNextFrom(unsigned old_version,
                                         sql::Database* db) const {
   DCHECK_LT(old_version, sealed_version_);

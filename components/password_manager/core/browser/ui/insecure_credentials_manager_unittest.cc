@@ -1197,8 +1197,7 @@ TEST_F(InsecureCredentialsManagerTest, ReuseCheckUsesAffiliationInfo) {
 
   // Setup affiliated groups.
   std::vector<password_manager::GroupedFacets> grouped_facets(1);
-  Facet facet;
-  facet.uri = FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm);
+  Facet facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm));
   grouped_facets[0].facets.push_back(facet);
   facet.uri = FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm);
   grouped_facets[0].facets.push_back(facet);

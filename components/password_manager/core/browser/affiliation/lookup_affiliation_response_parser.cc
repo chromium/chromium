@@ -23,7 +23,7 @@ std::vector<Facet> ParseFacets(const MessageT& response) {
     // Ignore potential future kinds of facet URIs (e.g. for new platforms).
     if (!uri.is_valid())
       continue;
-    Facet new_facet = {uri};
+    Facet new_facet(uri);
     if (facet.has_branding_info()) {
       new_facet.branding_info = FacetBrandingInfo{
           facet.branding_info().name(), GURL(facet.branding_info().icon_url())};
@@ -31,6 +31,9 @@ std::vector<Facet> ParseFacets(const MessageT& response) {
     if (facet.has_change_password_info()) {
       new_facet.change_password_url =
           GURL(facet.change_password_info().change_password_url());
+    }
+    if (facet.has_main_domain()) {
+      new_facet.main_domain = facet.main_domain();
     }
     facets.push_back(std::move(new_facet));
   }
@@ -109,7 +112,7 @@ bool ParseResponse(const std::vector<FacetURI>& requested_facet_uris,
   // appear in the server response due to not being affiliated with any others.
   for (const FacetURI& uri : requested_facet_uris) {
     if (!facet_uri_to_class_index.count(uri.potentially_invalid_spec()))
-      AddSingleFacet(result, {uri});
+      AddSingleFacet(result, Facet(uri));
   }
 
   return true;

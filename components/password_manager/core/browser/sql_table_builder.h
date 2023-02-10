@@ -139,6 +139,9 @@ class SQLTableBuilder {
   // version must be sealed.
   size_t NumberOfColumns() const;
 
+  // Returns the table name.
+  std::string TableName() const;
+
  private:
   // Stores the information about one column (name, type, etc.).
   struct Column;

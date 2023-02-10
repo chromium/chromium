@@ -102,18 +102,15 @@ TEST(PasswordGroupingUtilTest, GroupPasswords) {
 
   // Form & Blocked form.
   GroupedFacets grouped_facets;
-  Facet facet;
-  facet.uri = FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
-  Facet facet2;
-  facet2.uri = FacetURI::FromPotentiallyInvalidSpec(blocked_form.signon_realm);
+  Facet facet(FacetURI::FromPotentiallyInvalidSpec(form.signon_realm));
+  Facet facet2(FacetURI::FromPotentiallyInvalidSpec(blocked_form.signon_realm));
   grouped_facets.facets.push_back(std::move(facet));
   grouped_facets.facets.push_back(std::move(facet2));
   grouped_facets_vect.push_back(std::move(grouped_facets));
 
   // Federated form.
-  Facet facet3;
-  facet3.uri =
-      FacetURI::FromPotentiallyInvalidSpec(federated_form.signon_realm);
+  Facet facet3(
+      FacetURI::FromPotentiallyInvalidSpec(federated_form.signon_realm));
   GroupedFacets grouped_facets2;
   grouped_facets2.facets.push_back(std::move(facet3));
   grouped_facets_vect.push_back(std::move(grouped_facets2));

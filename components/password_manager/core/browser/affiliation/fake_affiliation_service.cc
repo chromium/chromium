@@ -23,7 +23,7 @@ void FakeAffiliationService::GetAffiliationsAndBranding(
     AffiliationService::StrategyOnCacheMiss cache_miss_strategy,
     ResultCallback result_callback) {
   AffiliatedFacets affiliations;
-  affiliations.push_back(Facet{facet_uri, FacetBrandingInfo(), GURL()});
+  affiliations.push_back(Facet(facet_uri, FacetBrandingInfo(), GURL()));
   std::move(result_callback).Run(affiliations, /*success=*/true);
 }
 void FakeAffiliationService::Prefetch(const FacetURI& facet_uri,

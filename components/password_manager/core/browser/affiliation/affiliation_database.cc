@@ -16,7 +16,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/parameter_pack.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -28,7 +30,7 @@ namespace password_manager {
 namespace {
 
 // The current version number of the affiliation database schema.
-const int kVersion = 3;
+const int kVersion = 4;
 
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
@@ -37,6 +39,12 @@ const int kCompatibleVersion = 1;
 // Struct to hold table builder for "eq_classes", "eq_class_members",
 // and "eq_class_groups" tables.
 struct SQLTableBuilders {
+  std::vector<raw_ptr<SQLTableBuilder>> AsVector() const {
+    // It's important to keep builders in this order as tables are migrated one
+    // by one.
+    return {eq_classes, eq_class_members, eq_class_groups};
+  }
+
   raw_ptr<SQLTableBuilder> eq_classes;
   raw_ptr<SQLTableBuilder> eq_class_members;
   raw_ptr<SQLTableBuilder> eq_class_groups;
@@ -88,24 +96,22 @@ void InitializeTableBuilders(SQLTableBuilders builders) {
   builders.eq_classes->AddColumn("group_display_name", "VARCHAR");
   builders.eq_classes->AddColumn("group_icon_url", "VARCHAR");
   SealVersion(builders, /*expected_version=*/3u);
+
+  // Version 4 of the affiliation database.
+  builders.eq_class_groups->AddColumn("main_domain", "VARCHAR");
+  SealVersion(builders, /*expected_version=*/4u);
 }
 
-// Creates the tables in the database using the provided table builders.
-// Returns |false| on error, |true| on success.
-bool CreateTables(SQLTableBuilders builders, sql::Database* db) {
-  return builders.eq_classes->CreateTable(db) &&
-         builders.eq_class_members->CreateTable(db) &&
-         builders.eq_class_groups->CreateTable(db);
-}
-
-// Migrates an existing database from an earlier |version| using the provided
-// table builders. Returns |false| on error, |true| on success.
-bool MigrateTablesFrom(SQLTableBuilders builders,
-                       unsigned version,
-                       sql::Database* db) {
-  return builders.eq_classes->MigrateFrom(version, db) &&
-             builders.eq_class_members->MigrateFrom(version, db),
-         builders.eq_class_groups->MigrateFrom(version, db);
+// Migrates from a given version or creates table depending if table exists or
+// not.
+bool EnsureCurrentVersion(sql::Database* db,
+                          unsigned version,
+                          SQLTableBuilder* builder) {
+  if (db->DoesTableExist(builder->TableName())) {
+    return builder->MigrateFrom(version, db);
+  } else {
+    return builder->CreateTable(db);
+  }
 }
 
 }  // namespace
@@ -147,22 +153,16 @@ bool AffiliationDatabase::Init(const base::FilePath& path) {
                                &eq_class_groups_builder};
   InitializeTableBuilders(builders);
 
-  if (!CreateTables(builders, sql_connection_.get())) {
-    LOG(WARNING) << "Failed to create tables.";
-    sql_connection_->Poison();
-    return false;
-  }
-
   int version = metatable.GetVersionNumber();
-  if (version < kVersion) {
-    if (!MigrateTablesFrom(builders, version, sql_connection_.get())) {
-      LOG(WARNING) << "Failed to migrate tables from version " << version
-                   << ".";
+  for (raw_ptr<SQLTableBuilder> builder : builders.AsVector()) {
+    if (!EnsureCurrentVersion(sql_connection_.get(), version, builder)) {
+      LOG(WARNING) << "Failed to set up " << builder->TableName() << " table.";
       sql_connection_->Poison();
       return false;
     }
+  }
 
-    // Set the current version number is case of a successful migration.
+  if (version < kVersion) {
     metatable.SetVersionNumber(kVersion);
   }
 
@@ -184,11 +184,12 @@ bool AffiliationDatabase::GetAffiliationsAndBrandingForFacetURI(
   statement.BindString(0, facet_uri.canonical_spec());
 
   while (statement.Step()) {
-    result->facets.push_back(
-        {FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
-         FacetBrandingInfo{
-             statement.ColumnString(1), GURL(statement.ColumnString(2)),
-         }});
+    result->facets.emplace_back(
+        FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
+        FacetBrandingInfo{
+            statement.ColumnString(1),
+            GURL(statement.ColumnString(2)),
+        });
     result->last_update_time = statement.ColumnTime(3);
   }
 
@@ -215,11 +216,12 @@ void AffiliationDatabase::GetAllAffiliationsAndBranding(
       results->push_back(AffiliatedFacetsWithUpdateTime());
       last_eq_class_id = eq_class_id;
     }
-    results->back().facets.push_back(
-        {FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
-         FacetBrandingInfo{
-             statement.ColumnString(1), GURL(statement.ColumnString(2)),
-         }});
+    results->back().facets.emplace_back(
+        FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
+        FacetBrandingInfo{
+            statement.ColumnString(1),
+            GURL(statement.ColumnString(2)),
+        });
     results->back().last_update_time =
         base::Time::FromInternalValue(statement.ColumnInt64(3));
   }
@@ -230,25 +232,28 @@ std::vector<GroupedFacets> AffiliationDatabase::GetAllGroups() const {
 
   sql::Statement statement(sql_connection_->GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT g.facet_uri, c.id, c.group_display_name, c.group_icon_url "
+      "SELECT g.facet_uri, g.main_domain, c.id, c.group_display_name, "
+      "c.group_icon_url "
       "FROM eq_class_groups g, eq_classes c "
       "WHERE g.set_id = c.id "
       "ORDER BY c.id"));
 
   int64_t last_eq_class_id = 0;
   while (statement.Step()) {
-    int64_t eq_class_id = statement.ColumnInt64(1);
+    int64_t eq_class_id = statement.ColumnInt64(2);
     if (results.empty() || eq_class_id != last_eq_class_id) {
       GroupedFacets group;
       group.branding_info = FacetBrandingInfo{
-          statement.ColumnString(2),
-          GURL(statement.ColumnString(3)),
+          statement.ColumnString(3),
+          GURL(statement.ColumnString(4)),
       };
       results.push_back(std::move(group));
       last_eq_class_id = eq_class_id;
     }
-    results.back().facets.push_back(
-        {FacetURI::FromCanonicalSpec(statement.ColumnString(0))});
+    results.back().facets.emplace_back(
+        FacetURI::FromCanonicalSpec(statement.ColumnString(0)),
+        FacetBrandingInfo(), /*change_password_url=*/GURL(),
+        statement.ColumnString(1));
   }
   return results;
 }
@@ -298,7 +303,8 @@ bool AffiliationDatabase::Store(
 
   sql::Statement statement_groups(sql_connection_->GetCachedStatement(
       SQL_FROM_HERE,
-      "INSERT INTO eq_class_groups(facet_uri, set_id) VALUES (?, ?)"));
+      "INSERT INTO eq_class_groups(facet_uri, main_domain, set_id) "
+      "VALUES (?, ?, ?)"));
 
   sql::Transaction transaction(sql_connection_.get());
   if (!transaction.Begin())
@@ -325,7 +331,8 @@ bool AffiliationDatabase::Store(
   for (const Facet& facet : group.facets) {
     statement_groups.Reset(true);
     statement_groups.BindString(0, facet.uri.canonical_spec());
-    statement_groups.BindInt64(1, eq_class_id);
+    statement_groups.BindString(1, facet.main_domain);
+    statement_groups.BindInt64(2, eq_class_id);
     if (!statement_groups.Run())
       return false;
   }

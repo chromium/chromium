@@ -132,34 +132,35 @@ const char kTestFacetURIGamma1[] = "https://gamma.example.com";
 
 AffiliatedFacets GetTestEquivalenceClassAlpha() {
   return {
-      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha3)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha4),
-       FacetBrandingInfo{kTestFacetNameAlpha4, GURL(kTestFacetIconURLAlpha4)}},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha3)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha4),
+            FacetBrandingInfo{kTestFacetNameAlpha4,
+                              GURL(kTestFacetIconURLAlpha4)}),
   };
 }
 
 AffiliatedFacets GetTestEquivalenceClassBeta() {
   return {
-      {FacetURI::FromCanonicalSpec(kTestFacetURIBeta1)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURIBeta2)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIBeta1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIBeta2)),
   };
 }
 
 AffiliatedFacets GetTestEquivalenceClassGamma() {
   return {
-      {FacetURI::FromCanonicalSpec(kTestFacetURIGamma1)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIGamma1)),
   };
 }
 
 GroupedFacets GetTestGropingAlpha() {
   GroupedFacets group;
-  group.facets = {{FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)},
-                  {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2)},
-                  {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha3)},
-                  {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha4)},
-                  {FacetURI::FromCanonicalSpec(kTestFacetURIGamma1)}};
+  group.facets = {Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)),
+                  Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2)),
+                  Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha3)),
+                  Facet(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha4)),
+                  Facet(FacetURI::FromCanonicalSpec(kTestFacetURIGamma1))};
   group.branding_info =
       FacetBrandingInfo{kTestFacetNameAlpha4, GURL(kTestFacetIconURLAlpha4)};
   return group;
@@ -168,8 +169,8 @@ GroupedFacets GetTestGropingAlpha() {
 GroupedFacets GetTestGropingBeta() {
   GroupedFacets group;
   group.facets = {
-      {FacetURI::FromCanonicalSpec(kTestFacetURIBeta1)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURIBeta2)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIBeta1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURIBeta2)),
   };
   return group;
 }

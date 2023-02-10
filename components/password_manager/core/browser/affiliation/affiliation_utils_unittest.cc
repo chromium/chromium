@@ -49,8 +49,8 @@ TEST(AffiliationUtilsTest, FacetBrandingInfoOperatorEq) {
 }
 
 TEST(AffiliationUtilsTest, FacetOperatorEq) {
-  Facet facet_1 = {FacetURI::FromPotentiallyInvalidSpec(kTestFacetURI1)};
-  Facet facet_2 = {FacetURI::FromPotentiallyInvalidSpec(kTestFacetURI2)};
+  Facet facet_1(FacetURI::FromPotentiallyInvalidSpec(kTestFacetURI1));
+  Facet facet_2(FacetURI::FromPotentiallyInvalidSpec(kTestFacetURI2));
   EXPECT_EQ(facet_1, facet_1);
   EXPECT_NE(facet_1, facet_2);
   EXPECT_NE(facet_2, facet_1);
@@ -197,15 +197,15 @@ TEST(AffiliationUtilsTest, InvalidAndroidFacetURIs) {
 
 TEST(AffiliationUtilsTest, EqualEquivalenceClasses) {
   AffiliatedFacets a = {
-      {FacetURI::FromCanonicalSpec(kTestFacetURI1)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI2)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
   };
 
   AffiliatedFacets b = {
-      {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI1)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI2)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
   };
 
   EXPECT_TRUE(AreEquivalenceClassesEqual(a, a));
@@ -216,16 +216,16 @@ TEST(AffiliationUtilsTest, EqualEquivalenceClasses) {
 
 TEST(AffiliationUtilsTest, NotEqualEquivalenceClasses) {
   AffiliatedFacets a = {
-      {FacetURI::FromCanonicalSpec(kTestFacetURI1)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI2)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI2)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI1)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI2)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2)),
   };
 
   AffiliatedFacets b = {
-      {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
-      {FacetURI::FromCanonicalSpec(kTestFacetURI3)},
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
+      Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3)),
   };
 
   AffiliatedFacets c;

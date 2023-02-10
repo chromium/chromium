@@ -136,23 +136,23 @@ const char16_t kTestPassword[] = u"secret";
 
 AffiliatedFacets GetTestEquivalenceClassAlpha() {
   return {
-      {FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1)},
-      {FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha2)},
-      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
-       FacetBrandingInfo{kTestAndroidFacetNameAlpha3,
-                         GURL(kTestAndroidFacetIconURLAlpha3)}},
+      Facet(FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha2)),
+      Facet(FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3),
+            FacetBrandingInfo{kTestAndroidFacetNameAlpha3,
+                              GURL(kTestAndroidFacetIconURLAlpha3)}),
   };
 }
 
 AffiliatedFacets GetTestEquivalenceClassBeta() {
   return {
-      {FacetURI::FromCanonicalSpec(kTestWebFacetURIBeta1)},
-      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2),
-       FacetBrandingInfo{kTestAndroidFacetNameBeta2,
-                         GURL(kTestAndroidFacetIconURLBeta2)}},
-      {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta3),
-       FacetBrandingInfo{kTestAndroidFacetNameBeta3,
-                         GURL(kTestAndroidFacetIconURLBeta3)}},
+      Facet(FacetURI::FromCanonicalSpec(kTestWebFacetURIBeta1)),
+      Facet(FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2),
+            FacetBrandingInfo{kTestAndroidFacetNameBeta2,
+                              GURL(kTestAndroidFacetIconURLBeta2)}),
+      Facet(FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta3),
+            FacetBrandingInfo{kTestAndroidFacetNameBeta3,
+                              GURL(kTestAndroidFacetIconURLBeta3)}),
   };
 }
 
