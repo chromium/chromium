@@ -14,7 +14,7 @@ PREFIX="$1"
 #   - (x86|arm64)/<dessert letter>
 TARGET_DIR="$PREFIX/arm64/M"
 IN_ZIPFILE=android-cts-6.0_r32-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm-6.0_r32.zip
+OUT_ZIPFILE=android-cts-arm64-6.0_r32.zip
 
 # The CIPD source is a collection of zip files containing all CTS tests
 # The below is what we
@@ -49,7 +49,7 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 
 TARGET_DIR="$PREFIX/arm64/N"
 IN_ZIPFILE=android-cts-7.0_r33-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm-7.0_r33.zip
+OUT_ZIPFILE=android-cts-arm64-7.0_r33.zip
 
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
@@ -81,7 +81,7 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 
 TARGET_DIR="$PREFIX/arm64/O"
 IN_ZIPFILE=android-cts-8.0_R26-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm-8.0_r26.zip
+OUT_ZIPFILE=android-cts-arm64-8.0_r26.zip
 
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
@@ -115,7 +115,7 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 
 TARGET_DIR="$PREFIX/arm64/P"
 IN_ZIPFILE=android-cts-9.0_r20-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm-9.0_r20.zip
+OUT_ZIPFILE=android-cts-arm64-9.0_r20.zip
 
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
@@ -147,7 +147,7 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 
 TARGET_DIR="$PREFIX/arm64/Q"
 IN_ZIPFILE=android-cts-10_r13-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm-10_r13.zip
+OUT_ZIPFILE=android-cts-arm64-10_r13.zip
 
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
@@ -181,7 +181,7 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 
 TARGET_DIR="$PREFIX/arm64/R"
 IN_ZIPFILE=android-cts-11_r9-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm-11_r9.zip
+OUT_ZIPFILE=android-cts-arm64-11_r9.zip
 
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
@@ -221,7 +221,7 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 
 TARGET_DIR="$PREFIX/arm64/S"
 IN_ZIPFILE=android-cts-12_r5-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm-12_r5.zip
+OUT_ZIPFILE=android-cts-arm64-12_r5.zip
 
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
