@@ -78,11 +78,8 @@ class TestRenderingContext2D final
   cc::PaintCanvas* GetPaintCanvas() override {
     return recorder_.getRecordingCanvas();
   }
-  cc::PaintCanvas* GetPaintCanvasForDraw(
-      const SkIRect& dirty_rect,
-      CanvasPerformanceMonitor::DrawType) override {
-    return recorder_.getRecordingCanvas();
-  }
+  void WillDraw(const SkIRect& dirty_rect,
+                CanvasPerformanceMonitor::DrawType) override {}
 
   sk_sp<PaintFilter> StateGetFilter() override {
     return GetState().GetFilterForOffscreenCanvas({}, this);

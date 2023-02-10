@@ -1044,16 +1044,13 @@ void BaseRenderingContext2D::DrawPathInternal(
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType)
     InflateStrokeRect(bounds);
 
-  if (!GetOrCreatePaintCanvas())
-    return;
-
   Draw<OverdrawOp::kNone>(
       [sk_path, use_paint_cache](cc::PaintCanvas* c,
                                  const cc::PaintFlags* flags)  // draw lambda
       { c->drawPath(sk_path, *flags, use_paint_cache); },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
-      gfx::RectFToSkRect(bounds), paint_type,
+      bounds, paint_type,
       GetState().HasPattern(paint_type)
           ? CanvasRenderingContext2DState::kNonOpaqueImage
           : CanvasRenderingContext2DState::kNoImage,
@@ -1123,13 +1120,6 @@ void BaseRenderingContext2D::fillRect(double x,
                                                 width, height);
   }
 
-  // clamp to float to avoid float cast overflow when used as SkScalar
-  AdjustRectForCanvas(x, y, width, height);
-  float fx = ClampTo<float>(x);
-  float fy = ClampTo<float>(y);
-  float fwidth = ClampTo<float>(width);
-  float fheight = ClampTo<float>(height);
-
   // We are assuming that if the pattern is not accelerated and the current
   // canvas is accelerated, the texture of the pattern will not be able to be
   // moved to the texture of the canvas receiving the pattern (because if the
@@ -1146,15 +1136,15 @@ void BaseRenderingContext2D::fillRect(double x,
         GPUFallbackToCPUScenario::kLargePatternDrawnToGPU);
   }
 
-  SkRect rect = SkRect::MakeXYWH(fx, fy, fwidth, fheight);
+  // clamp to float to avoid float cast overflow when used as SkScalar
+  AdjustRectForCanvas(x, y, width, height);
+  gfx::RectF rect(ClampTo<float>(x), ClampTo<float>(y), ClampTo<float>(width),
+                  ClampTo<float>(height));
   Draw<OverdrawOp::kNone>(
       [rect](cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
-      { c->drawRect(rect, *flags); },
+      { c->drawRect(gfx::RectFToSkRect(rect), *flags); },
       [rect, this](const SkIRect& clip_bounds)  // overdraw test lambda
-      {
-        return RectContainsTransformedRect(gfx::SkRectToRectF(rect),
-                                           clip_bounds);
-      },
+      { return RectContainsTransformedRect(rect, clip_bounds); },
       rect, CanvasRenderingContext2DState::kFillPaintType,
       GetState().HasPattern(CanvasRenderingContext2DState::kFillPaintType)
           ? CanvasRenderingContext2DState::kNonOpaqueImage
@@ -1210,8 +1200,7 @@ void BaseRenderingContext2D::strokeRect(double x,
   Draw<OverdrawOp::kNone>(
       [rect](cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       { StrokeRectOnCanvas(rect, c, flags); },
-      kNoOverdraw, gfx::RectFToSkRect(bounds),
-      CanvasRenderingContext2DState::kStrokePaintType,
+      kNoOverdraw, bounds, CanvasRenderingContext2DState::kStrokePaintType,
       GetState().HasPattern(CanvasRenderingContext2DState::kStrokePaintType)
           ? CanvasRenderingContext2DState::kNonOpaqueImage
           : CanvasRenderingContext2DState::kNoImage,
@@ -1368,23 +1357,19 @@ void BaseRenderingContext2D::clearRect(double x,
     if (for_reset) {
       // In the reset case, we can use kUntransformedUnclippedFill because we
       // know the state state was reset.
-      CheckOverdraw(gfx::RectFToSkRect(rect), &clear_flags,
-                    CanvasRenderingContext2DState::kNoImage,
+      CheckOverdraw(&clear_flags, CanvasRenderingContext2DState::kNoImage,
                     OverdrawOp::kContextReset);
     } else {
-      CheckOverdraw(gfx::RectFToSkRect(rect), &clear_flags,
-                    CanvasRenderingContext2DState::kNoImage,
+      CheckOverdraw(&clear_flags, CanvasRenderingContext2DState::kNoImage,
                     OverdrawOp::kClearRect);
     }
-    GetPaintCanvasForDraw(clip_bounds,
-                          CanvasPerformanceMonitor::DrawType::kOther)
-        ->drawRect(gfx::RectFToSkRect(rect), clear_flags);
+    WillDraw(clip_bounds, CanvasPerformanceMonitor::DrawType::kOther);
+    c->drawRect(gfx::RectFToSkRect(rect), clear_flags);
   } else {
     SkIRect dirty_rect;
     if (ComputeDirtyRect(rect, clip_bounds, &dirty_rect)) {
-      GetPaintCanvasForDraw(clip_bounds,
-                            CanvasPerformanceMonitor::DrawType::kOther)
-          ->drawRect(gfx::RectFToSkRect(rect), clear_flags);
+      WillDraw(clip_bounds, CanvasPerformanceMonitor::DrawType::kOther);
+      c->drawRect(gfx::RectFToSkRect(rect), clear_flags);
     }
   }
 }
@@ -1726,17 +1711,10 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
       },
       [this, dst_rect](const SkIRect& clip_bounds)  // overdraw test lambda
       { return RectContainsTransformedRect(dst_rect, clip_bounds); },
-      gfx::RectFToSkRect(dst_rect),
-      CanvasRenderingContext2DState::kImagePaintType,
+      dst_rect, CanvasRenderingContext2DState::kImagePaintType,
       image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
                                : CanvasRenderingContext2DState::kNonOpaqueImage,
       CanvasPerformanceMonitor::DrawType::kImage);
-}
-
-void BaseRenderingContext2D::ClearCanvasForSrcCompositeOp() {
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
-  if (c)
-    c->clear(HasAlpha() ? SkColors::kTransparent : SkColors::kBlack);
 }
 
 bool BaseRenderingContext2D::RectContainsTransformedRect(
@@ -2207,15 +2185,19 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
         NOTREACHED() << "Failed to convert ImageData with writePixels.";
 
       PutByteArray(converted_bitmap.pixmap(), source_rect, dest_offset);
-      GetPaintCanvasForDraw(gfx::RectToSkIRect(dest_rect),
-                            CanvasPerformanceMonitor::DrawType::kImageData);
+      if (GetPaintCanvas()) {
+        WillDraw(gfx::RectToSkIRect(dest_rect),
+                 CanvasPerformanceMonitor::DrawType::kImageData);
+      }
       return;
     }
   }
 
   PutByteArray(data_pixmap, source_rect, dest_offset);
-  GetPaintCanvasForDraw(gfx::RectToSkIRect(dest_rect),
-                        CanvasPerformanceMonitor::DrawType::kImageData);
+  if (GetPaintCanvas()) {
+    WillDraw(gfx::RectToSkIRect(dest_rect),
+             CanvasPerformanceMonitor::DrawType::kImageData);
+  }
 }
 
 void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,

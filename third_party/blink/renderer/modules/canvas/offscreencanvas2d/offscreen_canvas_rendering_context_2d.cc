@@ -298,11 +298,12 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvas() {
   return GetCanvasResourceProvider()->Canvas();
 }
 
-cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvasForDraw(
+void OffscreenCanvasRenderingContext2D::WillDraw(
     const SkIRect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  if (!is_valid_size_ || !GetCanvasResourceProvider())
-    return nullptr;
+  // Call sites should ensure GetPaintCanvas() returns non-null before calling
+  // this.
+  DCHECK(GetPaintCanvas());
   dirty_rect_for_commit_.join(dirty_rect);
   GetCanvasPerformanceMonitor().DidDraw(draw_type);
   Host()->DidDraw(dirty_rect_for_commit_);
@@ -310,7 +311,6 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvasForDraw(
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
     GetCanvasResourceProvider()->FlushIfRecordingLimitExceeded();
   }
-  return GetCanvasResourceProvider()->Canvas();
 }
 
 sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
@@ -735,8 +735,7 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
-      gfx::RectFToSkRect(bounds), paint_type,
-      CanvasRenderingContext2DState::kNoImage,
+      bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
 
   // |paint_canvas| maybe rese during Draw. If that happens,

@@ -179,9 +179,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   cc::PaintCanvas* GetOrCreatePaintCanvas() final;
   cc::PaintCanvas* GetPaintCanvas() final;
-  cc::PaintCanvas* GetPaintCanvasForDraw(
-      const SkIRect& dirty_rect,
-      CanvasPerformanceMonitor::DrawType) final;
+  void WillDraw(const SkIRect& dirty_rect,
+                CanvasPerformanceMonitor::DrawType) final;
 
   SkColorInfo CanvasRenderingContextSkColorInfo() const override {
     return color_params_.GetSkColorInfo();
