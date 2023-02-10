@@ -2536,10 +2536,8 @@ if (!is_android) {
       if (enable_printing) {
         sources += [ "../browser/pdf/pdf_extension_printing_test.cc" ]
 
-        # TODO(crbug.com/1240796): Page.printToPdf is currently available only
-        # when Chrome is running in headless mode and native headless mode is
-        # currently available only on Linux, Windows and Mac platforms.
-        if (is_linux || is_win || is_mac) {
+        # TODO(crbug.com/1414651): All printToPdf tests consistenly fail on ChromeOS
+        if (!is_chromeos) {
           sources += [
             "../browser/devtools/protocol/devtools_printtopdf_browsertest.cc",
           ]

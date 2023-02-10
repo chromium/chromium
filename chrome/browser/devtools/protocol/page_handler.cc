@@ -258,7 +258,7 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
       protocol::Page::PrintToPDF::TransferModeEnum::ReturnAsStream;
 
   // First check if headless printer manager is active and use it if so.
-  // Note that headless mode uses alternae print manager that shortcuts
+  // Note that headless mode uses alternate print manager that shortcuts
   // most of the regular print manager calls providing only the PrintToPDF
   // functionality.
   if (auto* print_manager = headless::HeadlessPrintManager::FromWebContents(
