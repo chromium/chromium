@@ -20,12 +20,8 @@
 
 namespace {
 
-struct ErrorDialogOverride {
-  base::RepeatingClosure show_dialog;
-};
-
-ErrorDialogOverride& GetErrorDialogOverride() {
-  static base::NoDestructor<ErrorDialogOverride> error_dialog_override;
+base::RepeatingClosure& GetErrorDialogOverride() {
+  static base::NoDestructor<base::RepeatingClosure> error_dialog_override;
   return *error_dialog_override;
 }
 
@@ -39,8 +35,9 @@ void ShowPrintErrorDialogTask(const std::u16string& title,
   // Block opening dialog from nested task.
   base::AutoReset<bool> auto_reset(&is_dialog_shown, true);
 
-  if (GetErrorDialogOverride().show_dialog) {
-    GetErrorDialogOverride().show_dialog.Run();
+  base::RepeatingClosure& error_dialog_override = GetErrorDialogOverride();
+  if (error_dialog_override) {
+    error_dialog_override.Run();
     return;
   }
 
@@ -73,5 +70,5 @@ void ShowPrintErrorDialogForGenericError() {
 
 void SetShowPrintErrorDialogForTest(base::RepeatingClosure callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  GetErrorDialogOverride().show_dialog = std::move(callback);
+  GetErrorDialogOverride() = std::move(callback);
 }
