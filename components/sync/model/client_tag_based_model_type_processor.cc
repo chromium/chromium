@@ -911,6 +911,15 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
                     << ModelTypeToDebugString(type_);
       continue;
     }
+
+    if (!bridge_->IsEntityDataValid(update.entity)) {
+      SyncRecordModelTypeUpdateDropReason(UpdateDropReason::kDroppedByBridge,
+                                          type_);
+      DLOG(WARNING) << "Received entity with invalid update for "
+                    << ModelTypeToDebugString(type_);
+      continue;
+    }
+
     if (bridge_->SupportsGetClientTag() &&
         client_tag_hash != ClientTagHash::FromUnhashed(
                                type_, bridge_->GetClientTag(update.entity))) {
@@ -918,14 +927,6 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
           UpdateDropReason::kInconsistentClientTag, type_);
       DLOG(WARNING) << "Received unexpected client tag hash: "
                     << client_tag_hash << " for "
-                    << ModelTypeToDebugString(type_);
-      continue;
-    }
-
-    if (!bridge_->IsEntityDataValid(update.entity)) {
-      SyncRecordModelTypeUpdateDropReason(UpdateDropReason::kDroppedByBridge,
-                                          type_);
-      DLOG(WARNING) << "Received entity with invalid update for "
                     << ModelTypeToDebugString(type_);
       continue;
     }

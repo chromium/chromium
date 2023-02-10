@@ -122,6 +122,8 @@ class ModelTypeSyncBridge {
   //
   // If a model type was never launched pre-USS, then method does not need to be
   // different from GetStorageKey(). Only the hash of this value is kept.
+  //
+  // IsEntityDataValid() is guaranteed to hold for the |entity_data|.
   virtual std::string GetClientTag(const EntityData& entity_data) = 0;
 
   // Must not be called unless SupportsGetStorageKey() returns true.
@@ -135,6 +137,8 @@ class ModelTypeSyncBridge {
   // type should strive to keep these keys as small as possible.
   // Returning an empty string means the remote creation should be ignored (i.e.
   // it contains invalid data).
+  //
+  // IsEntityDataValid() is guaranteed to hold for the |entity_data|.
   virtual std::string GetStorageKey(const EntityData& entity_data) = 0;
 
   // Whether or not the bridge is capable of producing a client tag from

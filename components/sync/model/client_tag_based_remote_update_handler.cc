@@ -301,14 +301,14 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
 
 ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
     const UpdateResponseData& update) {
+  if (!bridge_->IsEntityDataValid(update.entity)) {
+    return nullptr;
+  }
   DCHECK(!update.entity.client_tag_hash.value().empty());
   if (bridge_->SupportsGetClientTag()) {
     DCHECK_EQ(update.entity.client_tag_hash,
               ClientTagHash::FromUnhashed(
                   type_, bridge_->GetClientTag(update.entity)));
-  }
-  if (!bridge_->IsEntityDataValid(update.entity)) {
-    return nullptr;
   }
   std::string storage_key;
   if (bridge_->SupportsGetStorageKey()) {
