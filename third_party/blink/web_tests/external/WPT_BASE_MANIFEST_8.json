@@ -81210,7 +81210,7 @@
       ]
      ],
      "border-image-repeat-space-10.html": [
-      "44cd8558008e68c17393cb052724cea1c5d8d701",
+      "306a91370674925106489003205362ee73792484",
       [
        null,
        [
@@ -81219,7 +81219,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            80
+           ],
+           [
+            0,
+            1472
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "border-image-repeat-space-2.html": [
@@ -83197,6 +83213,19 @@
      ]
     },
     "css-borders": {
+     "border-radius-greater-than-width.html": [
+      "8c421a213bc2b6b1c5df705ee8e89f774cb81619",
+      [
+       null,
+       [
+        [
+         "/css/css-borders/reference/border-radius-greater-than-width-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "borders-on-sub-unit-sized-elements.html": [
       "1aff3c9a6b22a8bbaebf8c6b91dfdcc8a6a08e44",
       [
@@ -220845,6 +220874,19 @@
        {}
       ]
      ],
+     "content-with-child-with-transparent-background.html": [
+      "6c447aa1a8f0d3b4d6d3551a388baec9f33db619",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/content-with-child-with-transparent-background-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "content-with-clip-max-texture-size.html": [
       "376ecb6c9b72a2529ac4bd208c9595819182ab4e",
       [
@@ -220978,6 +221020,19 @@
         ],
         "timeout": "long"
        }
+      ]
+     ],
+     "content-with-transparent-background.html": [
+      "b961a095e727247ecc805be6b19e7744160afff2",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/content-with-transparent-background-ref.html",
+         "=="
+        ]
+       ],
+       {}
       ]
      ],
      "css-tags-paint-order-with-entry.html": [
@@ -252209,7 +252264,7 @@
        ]
       ],
       "popover-anchor-display.tentative.html": [
-       "af9e3329bbf795b6df4e507365ad9f7208089cd2",
+       "7a08491cb1d138440f8d298998200682e7b32881",
        [
         null,
         [
@@ -252235,7 +252290,7 @@
        ]
       ],
       "popover-anchor-scroll-display.tentative.html": [
-       "06304778129a7d22932e4a6656db1046bfc717e4",
+       "536fa4512d1a79f15d61e13f46788a4e0505bfba",
        [
         null,
         [
@@ -263784,16 +263839,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "263fc2130cba879ce601e892cdedd8bf23535784",
-     []
-    ],
-    "mtime.json": [
-     "0c055a65352d085dc8f500cfdd3048656e4a503f",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -282991,6 +283036,10 @@
     },
     "css-borders": {
      "reference": {
+      "border-radius-greater-than-width-ref.html": [
+       "3c8c470ef5ac93ed8d29fb26d40a2c4bbea47827",
+       []
+      ],
       "borders-on-sub-unit-sized-elements-ref.html": [
        "19233778ed87c6153924a153e5fdaadc5925a057",
        []
@@ -329746,6 +329795,10 @@
       "cf1ea938991eae99ee4109439f934d5e0f4ee063",
       []
      ],
+     "content-with-child-with-transparent-background-ref.html": [
+      "7b8c15b87f11993ae95529fe669bfb2a513ae833",
+      []
+     ],
      "content-with-clip-max-texture-size-ref.html": [
       "ed8998839ded3de854f9d174ca0050bc6f4ee019",
       []
@@ -329796,6 +329849,10 @@
      ],
      "content-with-transform-ref.html": [
       "568e040c1e221c4f92391e6466d71287931a1d60",
+      []
+     ],
+     "content-with-transparent-background-ref.html": [
+      "7349d131d7dfb0876eff9ccb65040675a6d2192a",
       []
      ],
      "css-tags-paint-order-ref.html": [
@@ -364352,7 +364409,7 @@
        []
       ],
       "popover-anchor-display-ref.tentative.html": [
-       "b9710ee5b5ee536b6c0f8219990a212a2e2e14da",
+       "f701810da2d1b32d9506d9aa49a2827a2ba51055",
        []
       ],
       "popover-anchor-display.tentative.html.ini": [
@@ -364376,7 +364433,7 @@
        []
       ],
       "popover-anchor-scroll-display-ref.tentative.html": [
-       "dbaa30b047f7d933cbbaabe769f86976c6098dd1",
+       "1bac806d11191823bdcf87b61693b00c7d507450",
        []
       ],
       "popover-anchor-scroll-display.tentative.html.ini": [
@@ -595107,6 +595164,13 @@
      ],
      "view-timeline-range.html": [
       "5042c6c2a02f670b7f9d5eb3fd4d513540849054",
+      [
+       null,
+       {}
+      ]
+     ],
+     "view-timeline-root-source.html": [
+      "20ac9c54642698b0ade0261a7aa9d2f6b8c23025",
       [
        null,
        {}
