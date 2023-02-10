@@ -54,10 +54,6 @@ function LIBLOUIS_TEST_F(testName, testFunc, opt_preamble) {
   TEST_F('ChromeVoxLibLouisTest', testName, wrappedTestFunc, opt_preamble);
 }
 
-function LIBLOUIS_TEST_F_WITH_PREAMBLE(preamble, testName, testFunc) {
-  LIBLOUIS_TEST_F(testName, testFunc, preamble);
-}
-
 LIBLOUIS_TEST_F('testTranslateComputerBraille', function(liblouis) {
   this.withTranslator(liblouis, 'en-us-comp8.ctb', function(translator) {
     translator.translate(
@@ -70,32 +66,23 @@ LIBLOUIS_TEST_F('testTranslateComputerBraille', function(liblouis) {
   });
 });
 
-LIBLOUIS_TEST_F_WITH_PREAMBLE(
-    `
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_CheckAllTables DISABLED_CheckAllTables
-#else
-#define MAYBE_CheckAllTables CheckAllTables
-#endif
-`,
-    'MAYBE_CheckAllTables', function(liblouis) {
-      BrailleTable.getAll(this.newCallback(tables => {
-        let i = 0;
-        const checkNextTable = () => {
-          const table = tables[i++];
-          if (table) {
-            this.withTranslator(
-                liblouis, table.fileNames, function(translator) {
-                  assertNotEquals(
-                      null, translator,
-                      'Table ' + JSON.stringify(table) + ' should be valid');
-                  checkNextTable();
-                });
-          }
-        };
-        checkNextTable();
-      }));
-    });
+LIBLOUIS_TEST_F('CheckAllTables', function(liblouis) {
+  BrailleTable.getAll(this.newCallback(tables => {
+    let i = 0;
+    const checkNextTable = () => {
+      const table = tables[i++];
+      if (table) {
+        this.withTranslator(liblouis, table.fileNames, function(translator) {
+          assertNotEquals(
+              null, translator,
+              'Table ' + JSON.stringify(table) + ' should be valid');
+          checkNextTable();
+        });
+      }
+    };
+    checkNextTable();
+  }));
+});
 
 LIBLOUIS_TEST_F('testBackTranslateComputerBraille', function(liblouis) {
   this.withTranslator(liblouis, 'en-us-comp8.ctb', function(translator) {
