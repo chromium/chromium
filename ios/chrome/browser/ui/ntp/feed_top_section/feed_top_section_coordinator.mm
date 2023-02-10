@@ -28,7 +28,7 @@
 @property(nonatomic, strong) FeedTopSectionMediator* feedTopSectionMediator;
 @property(nonatomic, strong)
     FeedTopSectionViewController* feedTopSectionViewController;
-@property(nonatomic, strong) SigninPromoViewMediator* signinPromoViewMediator;
+@property(nonatomic, strong) SigninPromoViewMediator* signinPromoMediator;
 
 // Returns |YES| if the promo is visible in the NTP at the current scroll point.
 @property(nonatomic, assign) BOOL isPromoVisible;
@@ -49,7 +49,7 @@
   self.feedTopSectionMediator = [[FeedTopSectionMediator alloc]
       initWithConsumer:self.feedTopSectionViewController
           browserState:browserState];
-  self.signinPromoViewMediator = [[SigninPromoViewMediator alloc]
+  self.signinPromoMediator = [[SigninPromoViewMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                         GetForBrowserState(browserState)
                         authService:AuthenticationServiceFactory::
@@ -58,12 +58,11 @@
                         accessPoint:signin_metrics::AccessPoint::
                                         ACCESS_POINT_NTP_FEED_TOP_PROMO
                           presenter:self];
-  self.signinPromoViewMediator.consumer = self.feedTopSectionMediator;
-  self.feedTopSectionMediator.signinPromoMediator =
-      self.signinPromoViewMediator;
+  self.signinPromoMediator.consumer = self.feedTopSectionMediator;
+  self.feedTopSectionMediator.signinPromoMediator = self.signinPromoMediator;
   self.feedTopSectionMediator.ntpDelegate = self.ntpDelegate;
   self.feedTopSectionViewController.signinPromoDelegate =
-      self.signinPromoViewMediator;
+      self.signinPromoMediator;
   self.feedTopSectionViewController.delegate = self.feedTopSectionMediator;
   self.feedTopSectionViewController.ntpDelegate = self.ntpDelegate;
   [self.feedTopSectionMediator setUp];
@@ -72,6 +71,9 @@
 - (void)stop {
   _viewController = nil;
   [self.feedTopSectionMediator shutdown];
+  [self.signinPromoMediator disconnect];
+  self.signinPromoMediator.consumer = nil;
+  self.signinPromoMediator = nil;
   self.feedTopSectionMediator = nil;
   self.feedTopSectionViewController = nil;
 }
@@ -84,10 +86,10 @@
     return;
   }
   if (visible) {
-    [self.signinPromoViewMediator signinPromoViewIsVisible];
+    [self.signinPromoMediator signinPromoViewIsVisible];
     self.isPromoVisible = visible;
   } else {
-    [self.signinPromoViewMediator signinPromoViewIsHidden];
+    [self.signinPromoMediator signinPromoViewIsHidden];
     self.isPromoVisible = visible;
   }
 }

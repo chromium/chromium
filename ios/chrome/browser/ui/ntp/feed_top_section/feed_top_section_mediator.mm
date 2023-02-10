@@ -62,8 +62,6 @@
 }
 
 - (void)shutdown {
-  [_signinPromoMediator disconnect];
-  _signinPromoMediator = nil;
   _identityObserverBridge.reset();
 }
 
@@ -117,8 +115,7 @@
   // appear. Then update it to match the new configurator if it will show.
   [self updateShouldShowSigninPromo];
   if (self.shouldShowSigninPromo) {
-    [self.consumer
-        updateSigninPromoWithConfigurator:[self signinPromoConfigurator]];
+    [self.consumer updateSigninPromoWithConfigurator:configurator];
   }
 }
 
