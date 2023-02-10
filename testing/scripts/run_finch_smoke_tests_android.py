@@ -740,12 +740,20 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
 
         # Crop away the Android status bar and the WebView shell's support
         # action bar. We will do this by removing one fifth of the image
-        # from the top. We can do this by setting the new top point of the
-        # image to height / height_factor. height_factor is set to 5.
-        height_factor = 5
+        # from the top.
+        top_bar_height_factor = 0.2
+
+        # Crop away the bottom navigation bar from the screenshot. We can
+        # do this by cropping away one tenth of the image from the bottom.
+        navigation_bar_height_factor = 0.1
+
         image = Image.open(screenshot_artifact_abspath)
         width, height = image.size
-        cropped_image = image.crop((0, height // height_factor, width, height))
+        cropped_image = image.crop(
+            (0,
+             int(height * top_bar_height_factor),
+             width,
+             int(height * (1 - navigation_bar_height_factor))))
         image.close()
         cropped_image.save(screenshot_artifact_abspath)
 
