@@ -52,7 +52,7 @@
 <translation id="3329013043687509092">Saturació</translation>
 <translation id="3450233048674729344">El valor ha de ser igual o inferior a <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
-<translation id="3754210790023674521">Surt de pantalla en pantalla</translation>
+<translation id="3754210790023674521">Surt d'imatge sobre imatge</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3822383571486410024">Allargueu aquest text fins a un mínim de <ph name="MIN_CHARACTERS" /> caràcters (ara n'utilitzeu <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Un nom d'usuari seguit de "<ph name="ATSIGN" />" no pot contenir el símbol "<ph name="INVALIDCHARACTER" />".</translation>
@@ -62,7 +62,7 @@
 <translation id="4360991593054037559">Introduïu un valor vàlid. Els valors vàlids més propers són <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalls</translation>
 <translation id="4664250907885839816">Un domini precedit per "<ph name="ATSIGN" />" no pot contenir el símbol "<ph name="INVALIDCHARACTER" />".</translation>
-<translation id="4718048029184481307">S'està reproduint en pantalla en pantalla</translation>
+<translation id="4718048029184481307">S'està reproduint imatge sobre imatge</translation>
 <translation id="4748357248530471599">activa o desactiva la pantalla completa al retall de pantalla</translation>
 <translation id="4763480195061959176">vídeo</translation>
 <translation id="4812940957355064477">Introduïu un número.</translation>
@@ -109,7 +109,7 @@
 <translation id="6165053282446038410">està desplegat; hi ha <ph name="COUNT" /> opcions de compleció automàtica disponibles.</translation>
 <translation id="6212595056017402527">pàgina actual</translation>
 <translation id="6281588256137006900">Lluminositat</translation>
-<translation id="6310801910862476708">Surt de pantalla en pantalla</translation>
+<translation id="6310801910862476708">Surt d'imatge sobre imatge</translation>
 <translation id="6398862346408813489">Mostra el tauler de la selecció de mes</translation>
 <translation id="6404546809543547843">barra de moment de l'àudio</translation>
 <translation id="6443871981718447451">mostra el menú de subtítols</translation>
@@ -140,7 +140,7 @@
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7673697353781729403">Hores</translation>
-<translation id="7750228210027921155">Pantalla en pantalla</translation>
+<translation id="7750228210027921155">Imatge sobre imatge</translation>
 <translation id="775297008183122718">Entrada no vàlida</translation>
 <translation id="7782515065589691344">1,25</translation>
 <translation id="7789962463072032349">posa en pausa</translation>
@@ -172,10 +172,10 @@
 <translation id="894736920926684893">Commutador per al format</translation>
 <translation id="8987927404178983737">Mes</translation>
 <translation id="901493112792887934">temps actual en segons</translation>
-<translation id="9093215626363556771">surt de pantalla en pantalla</translation>
+<translation id="9093215626363556771">surt d'imatge sobre imatge</translation>
 <translation id="9132465097189459683">Altres...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, a partir del dia <ph name="WEEK_START_DATE" /></translation>
-<translation id="916607977885256133">Pantalla en pantalla</translation>
+<translation id="916607977885256133">Imatge sobre imatge</translation>
 <translation id="945780513535800434">Marcada parcialment</translation>
-<translation id="954003015749068518">entra a pantalla en pantalla</translation>
+<translation id="954003015749068518">entra a imatge sobre imatge</translation>
 </translationbundle>
