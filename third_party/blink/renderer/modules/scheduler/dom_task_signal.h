@@ -8,9 +8,9 @@
 #include "base/functional/callback_forward.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 class ExceptionState;
@@ -36,7 +36,8 @@ class MODULES_EXPORT DOMTaskSignal final : public AbortSignal {
   AtomicString priority();
   DEFINE_ATTRIBUTE_EVENT_LISTENER(prioritychange, kPrioritychange)
 
-  void AddPriorityChangeAlgorithm(base::RepeatingClosure algorithm);
+  [[nodiscard]] DOMTaskSignal::AlgorithmHandle* AddPriorityChangeAlgorithm(
+      base::RepeatingClosure algorithm);
   void SignalPriorityChange(const AtomicString& priority, ExceptionState&);
 
   bool IsTaskSignal() const override { return true; }
@@ -53,7 +54,7 @@ class MODULES_EXPORT DOMTaskSignal final : public AbortSignal {
   PriorityChangeStatus priority_change_status_ =
       PriorityChangeStatus::kNoPriorityChange;
 
-  Vector<base::RepeatingClosure> priority_change_algorithms_;
+  HeapLinkedHashSet<WeakMember<AlgorithmHandle>> priority_change_algorithms_;
 
   bool is_priority_changing_ = false;
 };

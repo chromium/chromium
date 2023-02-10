@@ -15,6 +15,22 @@
 
 namespace blink {
 
+namespace {
+
+class RepeatingCallbackAlgorithm final : public DOMTaskSignal::Algorithm {
+ public:
+  explicit RepeatingCallbackAlgorithm(base::RepeatingClosure callback)
+      : callback_(std::move(callback)) {}
+  ~RepeatingCallbackAlgorithm() override = default;
+
+  void Run() override { callback_.Run(); }
+
+ private:
+  base::RepeatingClosure callback_;
+};
+
+}  // namespace
+
 DOMTaskSignal::DOMTaskSignal(ExecutionContext* context,
                              const AtomicString& priority,
                              SignalType signal_type)
@@ -26,9 +42,14 @@ AtomicString DOMTaskSignal::priority() {
   return priority_;
 }
 
-void DOMTaskSignal::AddPriorityChangeAlgorithm(
+DOMTaskSignal::AlgorithmHandle* DOMTaskSignal::AddPriorityChangeAlgorithm(
     base::RepeatingClosure algorithm) {
-  priority_change_algorithms_.push_back(std::move(algorithm));
+  auto* callback_algorithm =
+      MakeGarbageCollected<RepeatingCallbackAlgorithm>(std::move(algorithm));
+  auto* handle = MakeGarbageCollected<AlgorithmHandle>(callback_algorithm);
+  // This always appends since `handle` is not already in the collection.
+  priority_change_algorithms_.insert(handle);
+  return handle;
 }
 
 void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
@@ -46,8 +67,8 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
   priority_ = priority;
   priority_change_status_ = PriorityChangeStatus::kPriorityHasChanged;
 
-  for (base::RepeatingClosure& closure : priority_change_algorithms_) {
-    closure.Run();
+  for (AlgorithmHandle* handle : priority_change_algorithms_) {
+    handle->GetAlgorithm()->Run();
   }
 
   auto* init = TaskPriorityChangeEventInit::Create();
@@ -59,6 +80,7 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
 
 void DOMTaskSignal::Trace(Visitor* visitor) const {
   AbortSignal::Trace(visitor);
+  visitor->Trace(priority_change_algorithms_);
 }
 
 }  // namespace blink

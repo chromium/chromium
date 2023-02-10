@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -26,7 +27,6 @@ class SingleThreadTaskRunner;
 namespace blink {
 
 class DOMTask;
-class DOMTaskSignal;
 class ExceptionState;
 class SchedulerPostTaskOptions;
 class DOMSchedulerTest;
@@ -98,11 +98,13 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
   // in on-heap collections.
   class DOMTaskQueue final : public GarbageCollected<DOMTaskQueue> {
    public:
-    explicit DOMTaskQueue(std::unique_ptr<WebSchedulingTaskQueue> task_queue,
-                          WebSchedulingPriority priority);
+    DOMTaskQueue(
+        std::unique_ptr<WebSchedulingTaskQueue> task_queue,
+        WebSchedulingPriority priority,
+        DOMTaskSignal::AlgorithmHandle* priority_change_handle = nullptr);
     ~DOMTaskQueue();
 
-    void Trace(Visitor* visitor) const {}
+    void Trace(Visitor* visitor) const;
 
     base::SingleThreadTaskRunner& GetTaskRunner() { return *task_runner_; }
 
@@ -114,6 +116,7 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
     std::unique_ptr<WebSchedulingTaskQueue> web_scheduling_task_queue_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
     WebSchedulingPriority priority_;
+    Member<DOMTaskSignal::AlgorithmHandle> priority_change_handle_;
   };
 
   void CreateFixedPriorityTaskQueues(ExecutionContext*);
@@ -134,9 +137,9 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
   // |signal_to_task_queue_map_| tracks the associated task queue for task
   // signals the scheduler knows about that are still alive, with each signal
   // mapping to the corresponding dynamic priority DOMTaskQueue. Mappings are
-  // removed automatically when the corresponding signal is garbage collected.
-  // This will be empty when the window is detached.
-  HeapHashMap<WeakMember<DOMTaskSignal>, Member<DOMTaskQueue>>
+  // removed automatically when either the corresponding signal or DOMTaskQueue
+  // is garbage collected. This will be empty when the window is detached.
+  HeapHashMap<WeakMember<DOMTaskSignal>, WeakMember<DOMTaskQueue>>
       signal_to_task_queue_map_;
 };
 
