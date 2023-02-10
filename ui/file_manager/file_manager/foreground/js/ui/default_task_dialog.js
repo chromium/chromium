@@ -17,9 +17,9 @@ import {ListSingleSelectionModel} from './list_single_selection_model.js';
  * cancel button.
  * This dialog should be used as task picker for file operations.
  */
-  /**
-   * Creates dialog in DOM tree.
-   */
+/**
+ * Creates dialog in DOM tree.
+ */
 export class DefaultTaskDialog extends FileManagerDialogBase {
   /**
    * @param {HTMLElement} parentNode Node to be parent for this dialog.
@@ -75,8 +75,10 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
     }
 
     this.listScrollRaf_ = window.requestAnimationFrame(() => {
-      const atTheBottom = this.list_.scrollHeight - this.list_.scrollTop ===
-          this.list_.clientHeight;
+      const atTheBottom =
+          Math.abs(
+              this.list_.scrollHeight - this.list_.clientHeight -
+              this.list_.scrollTop) < 1;
       this.frame.classList.toggle('bottom-shadow', !atTheBottom);
 
       this.listScrollRaf_ = null;
