@@ -2344,6 +2344,9 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE" desc="Accessibility label used for an unactivated cellular network in quick settings network list that opens the activation flow when clicked.">
         Click to activate <ph name="NETWORK_NAME">$1<ex>Verizon</ex></ph>
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE_AFTER_SETUP" desc="Accessibility label used for an unactivated cellular network in quick settings network list that informs the user a network can only be activated after device setup.">
+        Activate after device setup <ph name="NETWORK_NAME">$1<ex>Verizon</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_SUBTEXT" desc="Accessibility label used for a network in quick settings network list that has a subtext message (e.g. when offline signin is required).">
         <ph name="NETWORK_NAME">$1<ex>CaptivePortalNetwork</ex></ph>, <ph name="SUBTEXT">$2<ex>Sign in to network</ex></ph>
       </message>
@@ -2400,6 +2403,9 @@ Connect your device to power.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE" desc="The label used in quick settings to indicate an unactivated cellular network that can be clicked to launch activation through setup flow. [CHAR_LIMIT=29]">
         Click to activate
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_ACTIVATE_AFTER_DEVICE_SETUP" desc="The label used in quick settings to indicate an unactivated cellular network that can only be activated after the device is fully setup. [CHAR_LIMIT=29]">
+        Activate after device setup
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_UNAVAILABLE_SIM_NETWORK" desc="Label used in quick settings to indicate a SIM network that is not available to be setup. [CHAR_LIMIT=29]">
         Not activated. Contact your carrier.

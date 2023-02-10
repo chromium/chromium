@@ -224,6 +224,18 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectCellularSublabel) {
                 IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE),
             network_list_network_item_view()->sub_text_label()->GetText());
 
+  // Simulate user logout and check label for pSIM networks that are
+  // connected but not activated.
+  GetSessionControllerClient()->Reset();
+  base::RunLoop().RunUntilIdle();
+  UpdateViewForNetwork(cellular_network);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_NETWORK_STATUS_ACTIVATE_AFTER_DEVICE_SETUP),
+            network_list_network_item_view()->sub_text_label()->GetText());
+
+  CreateUserSessions(/*session_count=*/1);
+  base::RunLoop().RunUntilIdle();
+
   // Label for unactivated eSIM networks.
   cellular_network->type_state->get_cellular()->eid = kEid;
   UpdateViewForNetwork(cellular_network);
@@ -422,6 +434,19 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
                 base::UTF8ToUTF16(kCellularName)),
             network_list_network_item_view()->GetAccessibleName());
 
+  // Simulate user logout and check label for pSIM networks that are
+  // connected but not activated.
+  GetSessionControllerClient()->Reset();
+  base::RunLoop().RunUntilIdle();
+  UpdateViewForNetwork(cellular_network);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE_AFTER_SETUP,
+                base::UTF8ToUTF16(kCellularName)),
+            network_list_network_item_view()->GetAccessibleName());
+
+  CreateUserSessions(/*session_count=*/1);
+  base::RunLoop().RunUntilIdle();
+
   // Contact carrier A11Y label is shown when a eSIM network is connected but
   // not yet activated.
   cellular_network->type_state->get_cellular()->eid = kEid;
@@ -546,6 +571,17 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForCellular) {
       cellular_network,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE));
+
+  // Cellular is not activate and user is not logged in.
+  GetSessionControllerClient()->Reset();
+  base::RunLoop().RunUntilIdle();
+  AssertA11yDescription(
+      cellular_network,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_STATUS_ACTIVATE_AFTER_DEVICE_SETUP));
+
+  CreateUserSessions(/*session_count=*/1);
+  base::RunLoop().RunUntilIdle();
 
   // Cellular is not activated and is an eSIM network.
   cellular_network->type_state->get_cellular()->eid = kEid;

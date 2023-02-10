@@ -152,7 +152,7 @@ bool IsNetworkManagedByPolicy(
          network_properties->source == OncSource::kUserPolicy;
 }
 
-bool ShouldShowActivateCellularNetwork(
+bool IsCellularNetworkUnActivated(
     const NetworkStatePropertiesPtr& network_properties) {
   return GetNetworkActivationState(network_properties) ==
              ActivationStateType::kNotActivated &&
@@ -201,8 +201,14 @@ gfx::ImageSkia GetNetworkImageForNetwork(
 
 int GetCellularNetworkSubText(
     const NetworkStatePropertiesPtr& network_properties) {
-  if (ShouldShowActivateCellularNetwork(network_properties))
+  if (IsCellularNetworkUnActivated(network_properties)) {
+    if (Shell::Get()->session_controller()->login_status() ==
+        LoginStatus::NOT_LOGGED_IN) {
+      return IDS_ASH_STATUS_TRAY_NETWORK_STATUS_ACTIVATE_AFTER_DEVICE_SETUP;
+    }
     return IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE;
+  }
+
   if (ShouldShowContactCarrier(network_properties))
     return IDS_ASH_STATUS_TRAY_NETWORK_UNAVAILABLE_SIM_NETWORK;
   if (!IsCellularNetworkSimLocked(network_properties))
@@ -383,7 +389,12 @@ std::u16string NetworkListNetworkItemView::GenerateAccessibilityLabel(
         IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_CONNECT, label);
   }
 
-  if (ShouldShowActivateCellularNetwork(network_properties())) {
+  if (IsCellularNetworkUnActivated(network_properties())) {
+    if (Shell::Get()->session_controller()->login_status() ==
+        LoginStatus::NOT_LOGGED_IN) {
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE_AFTER_SETUP, label);
+    }
     return l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE, label);
   }
@@ -487,7 +498,12 @@ std::u16string
 NetworkListNetworkItemView::GenerateAccessibilityDescriptionForCellular(
     const std::u16string& connection_status,
     int signal_strength) {
-  if (ShouldShowActivateCellularNetwork(network_properties())) {
+  if (IsCellularNetworkUnActivated(network_properties())) {
+    if (Shell::Get()->session_controller()->login_status() ==
+        LoginStatus::NOT_LOGGED_IN) {
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_STATUS_ACTIVATE_AFTER_DEVICE_SETUP);
+    }
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE);
   }

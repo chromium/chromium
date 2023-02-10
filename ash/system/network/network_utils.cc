@@ -106,6 +106,13 @@ bool IsNetworkDisabled(
     return true;
   }
 
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
+      cellular->activation_state ==
+          chromeos::network_config::mojom::ActivationStateType::kNotActivated &&
+      network_properties->type_state->get_cellular()->eid.empty()) {
+    return true;
+  }
+
   if (cellular->activation_state ==
       chromeos::network_config::mojom::ActivationStateType::kActivating) {
     return true;
