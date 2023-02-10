@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
@@ -128,10 +129,12 @@ class PasswordGenerationPopupControllerImpl
   bool IsVisible() const;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // ZoomObserver implementation.
+  // ZoomObserver:
+  void OnZoomControllerDestroyed(
+      zoom::ZoomController* zoom_controller) override;
   void OnZoomChanged(
       const zoom::ZoomController::ZoomChangedEventData& data) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
 #if defined(UNIT_TEST)
   PasswordGenerationPopupView* view() const { return view_; }
@@ -243,6 +246,11 @@ class PasswordGenerationPopupControllerImpl
 #endif
 
   std::unique_ptr<KeyPressRegistrator> key_press_handler_manager_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
+      zoom_observation_{this};
+#endif
 
   base::WeakPtrFactory<PasswordGenerationPopupControllerImpl> weak_ptr_factory_{
       this};

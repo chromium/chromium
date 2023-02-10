@@ -41,7 +41,7 @@ ZoomChangedWatcher::ZoomChangedWatcher(ZoomController* zoom_controller,
       predicate_(predicate),
       message_loop_runner_(new content::MessageLoopRunner) {
   DCHECK(zoom_controller_);
-  zoom_controller_->AddObserver(this);
+  zoom_observation_.Observe(zoom_controller_);
 }
 
 ZoomChangedWatcher::ZoomChangedWatcher(content::WebContents* web_contents,
@@ -68,6 +68,11 @@ ZoomChangedWatcher::~ZoomChangedWatcher() {
 void ZoomChangedWatcher::Wait() {
   if (!change_received_)
     message_loop_runner_->Run();
+}
+
+void ZoomChangedWatcher::OnZoomControllerDestroyed(
+    zoom::ZoomController* zoom_controller) {
+  zoom_observation_.Reset();
 }
 
 void ZoomChangedWatcher::OnZoomChanged(

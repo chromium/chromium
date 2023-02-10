@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/zoom/zoom_controller.h"
 #include "components/zoom/zoom_observer.h"
 
@@ -47,6 +48,8 @@ class ZoomChangedWatcher : public zoom::ZoomObserver {
   void Wait();
 
   // zoom::ZoomObserver:
+  void OnZoomControllerDestroyed(
+      zoom::ZoomController* zoom_controller) override;
   void OnZoomChanged(
       const ZoomController::ZoomChangedEventData& event_data) override;
 
@@ -55,6 +58,8 @@ class ZoomChangedWatcher : public zoom::ZoomObserver {
   ZoomEventPred predicate_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   bool change_received_ = false;
+  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
+      zoom_observation_{this};
 };
 
 }  // namespace zoom

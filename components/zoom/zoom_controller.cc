@@ -325,7 +325,6 @@ void ZoomController::WebContentsDestroyed() {
   for (auto& observer : observers_) {
     observer.OnZoomControllerDestroyed(this);
   }
-  observers_.Clear();
 }
 
 void ZoomController::RenderFrameHostChanged(

@@ -72,6 +72,8 @@ class TabsEventRouter : public TabStripModelObserver,
                               int index) override;
 
   // ZoomObserver:
+  void OnZoomControllerDestroyed(
+      zoom::ZoomController* zoom_controller) override;
   void OnZoomChanged(
       const zoom::ZoomController::ZoomChangedEventData& data) override;
 
@@ -212,6 +214,8 @@ class TabsEventRouter : public TabStripModelObserver,
   base::ScopedMultiSourceObservation<favicon::FaviconDriver,
                                      favicon::FaviconDriverObserver>
       favicon_scoped_observations_{this};
+  base::ScopedMultiSourceObservation<zoom::ZoomController, zoom::ZoomObserver>
+      zoom_scoped_observations_{this};
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 

@@ -152,11 +152,11 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
       state_(kOfferGeneration),
       key_press_handler_manager_(new KeyPressRegistrator(frame)) {
 #if !BUILDFLAG(IS_ANDROID)
-  zoom::ZoomController* zoom_controller =
-      zoom::ZoomController::FromWebContents(web_contents);
   // There may not always be a ZoomController, e.g. in tests.
-  if (zoom_controller)
-    zoom_controller->AddObserver(this);
+  if (auto* zoom_controller =
+          zoom::ZoomController::FromWebContents(web_contents)) {
+    zoom_observation_.Observe(zoom_controller);
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -168,14 +168,7 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
 }
 
 PasswordGenerationPopupControllerImpl::
-    ~PasswordGenerationPopupControllerImpl() {
-#if !BUILDFLAG(IS_ANDROID)
-  zoom::ZoomController* zoom_controller =
-      zoom::ZoomController::FromWebContents(web_contents());
-  if (zoom_controller)
-    zoom_controller->RemoveObserver(this);
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
+    ~PasswordGenerationPopupControllerImpl() = default;
 
 base::WeakPtr<PasswordGenerationPopupControllerImpl>
 PasswordGenerationPopupControllerImpl::GetWeakPtr() {
@@ -358,6 +351,11 @@ void PasswordGenerationPopupControllerImpl::PrimaryPageChanged(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+void PasswordGenerationPopupControllerImpl::OnZoomControllerDestroyed(
+    zoom::ZoomController* zoom_controller) {
+  zoom_observation_.Reset();
+}
+
 void PasswordGenerationPopupControllerImpl::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
   HideImpl();

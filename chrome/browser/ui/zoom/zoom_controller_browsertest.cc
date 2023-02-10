@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -414,13 +415,11 @@ class ZoomControllerForPrerenderingTest : public ZoomControllerBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    zoom_controller_ = ZoomController::FromWebContents(GetWebContents());
-    zoom_controller_->AddObserver(this);
+    auto* zoom_controller = ZoomController::FromWebContents(GetWebContents());
+    zoom_observation_.Observe(zoom_controller);
   }
 
-  void TearDownOnMainThread() override {
-    zoom_controller_->RemoveObserver(this);
-  }
+  void TearDownOnMainThread() override { zoom_observation_.Reset(); }
 
   content::test::PrerenderTestHelper& prerender_helper() {
     return prerender_helper_;
@@ -431,6 +430,10 @@ class ZoomControllerForPrerenderingTest : public ZoomControllerBrowserTest,
   }
 
   // ZoomObserver implementation:
+  void OnZoomControllerDestroyed(
+      zoom::ZoomController* zoom_controller) override {
+    zoom_observation_.Reset();
+  }
   void OnZoomChanged(
       const zoom::ZoomController::ZoomChangedEventData& data) override {
     is_on_zoom_changed_called_ = true;
@@ -443,7 +446,8 @@ class ZoomControllerForPrerenderingTest : public ZoomControllerBrowserTest,
   bool is_on_zoom_changed_called_ = false;
 
   content::test::PrerenderTestHelper prerender_helper_;
-  raw_ptr<ZoomController, DanglingUntriaged> zoom_controller_;
+  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
+      zoom_observation_{this};
 };
 
 IN_PROC_BROWSER_TEST_F(ZoomControllerForPrerenderingTest,
