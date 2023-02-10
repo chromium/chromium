@@ -897,8 +897,14 @@ class CommerceHintCacaoTest : public CommerceHintAgentTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeatures(
-        {ntp_features::kNtpChromeCartModule,
-         optimization_guide::features::kOptimizationHints},
+        {
+#if !BUILDFLAG(IS_ANDROID)
+          ntp_features::kNtpChromeCartModule,
+#else
+          commerce::kCommerceHintAndroid,
+#endif
+              optimization_guide::features::kOptimizationHints
+        },
         {});
   }
 
