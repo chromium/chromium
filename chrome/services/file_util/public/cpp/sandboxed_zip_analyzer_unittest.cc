@@ -96,8 +96,9 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
-    scoped_refptr<SandboxedZipAnalyzer> analyzer(new SandboxedZipAnalyzer(
-        file_path, results_getter.GetCallback(), std::move(remote)));
+    std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter> analyzer =
+        SandboxedZipAnalyzer::CreateAnalyzer(
+            file_path, results_getter.GetCallback(), std::move(remote));
     analyzer->Start();
     run_loop.Run();
   }
@@ -431,8 +432,9 @@ TEST_F(SandboxedZipAnalyzerTest, CanDeleteDuringExecution) {
         std::move(callback).Run(safe_browsing::ArchiveAnalyzerResults());
         run_loop.Quit();
       });
-  scoped_refptr<SandboxedZipAnalyzer> analyzer(new SandboxedZipAnalyzer(
-      temp_path, base::DoNothing(), std::move(remote)));
+  std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter> analyzer =
+      SandboxedZipAnalyzer::CreateAnalyzer(temp_path, base::DoNothing(),
+                                           std::move(remote));
   analyzer->Start();
   run_loop.Run();
 }

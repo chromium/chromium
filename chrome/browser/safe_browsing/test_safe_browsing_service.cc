@@ -7,9 +7,6 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "chrome/common/url_constants.h"
 #include "components/safe_browsing/buildflags.h"
@@ -18,6 +15,12 @@
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
+#endif
 
 namespace safe_browsing {
 

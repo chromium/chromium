@@ -125,7 +125,8 @@ class FileAnalyzer {
   base::Time start_time_;
   Results results_;
 
-  scoped_refptr<SandboxedZipAnalyzer> zip_analyzer_;
+  std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter>
+      zip_analyzer_;
 
   scoped_refptr<SandboxedRarAnalyzer> rar_analyzer_;
 
