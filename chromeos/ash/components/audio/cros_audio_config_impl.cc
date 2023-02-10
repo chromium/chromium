@@ -287,10 +287,7 @@ void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {
     return;
   }
 
-  // TODO(b/265077695): put the SetNoiseCancellationPrefState code inside
-  // SetNoiseCancellationState in CrasAudioHandler.
   audio_handler->SetNoiseCancellationState(enabled);
-  audio_handler->SetNoiseCancellationPrefState(enabled);
 }
 
 void CrosAudioConfigImpl::OnOutputNodeVolumeChanged(uint64_t node_id,

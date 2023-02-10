@@ -108,7 +108,6 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationNotEnabled) {
 
   // Explicitly disable noise cancellation.
   cras_audio_handler()->SetNoiseCancellationState(false);
-  cras_audio_handler()->SetNoiseCancellationPrefState(false);
 
   // Noise cancellation effect state is disabled.
   absl::optional<int> effect_state = audio_effects_controller()->GetEffectState(
@@ -117,7 +116,6 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationNotEnabled) {
   EXPECT_EQ(effect_state, 0);
 
   cras_audio_handler()->SetNoiseCancellationState(true);
-  cras_audio_handler()->SetNoiseCancellationPrefState(true);
   effect_state = audio_effects_controller()->GetEffectState(
       AudioEffectsController::AudioEffectId::kNoiseCancellation);
   EXPECT_TRUE(effect_state.has_value());
@@ -133,7 +131,6 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationEnabled) {
 
   // Explicitly enable noise cancellation.
   cras_audio_handler()->SetNoiseCancellationState(true);
-  cras_audio_handler()->SetNoiseCancellationPrefState(true);
 
   // Noise cancellation effect state is disabled.
   absl::optional<int> effect_state = audio_effects_controller()->GetEffectState(
@@ -151,7 +148,6 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationSetNotEnabled) {
 
   // Explicitly enable noise cancellation.
   cras_audio_handler()->SetNoiseCancellationState(true);
-  cras_audio_handler()->SetNoiseCancellationPrefState(true);
 
   // Check that noise cancellation is enabled.
   EXPECT_TRUE(cras_audio_handler()->GetNoiseCancellationState());
@@ -173,7 +169,6 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationSetEnabled) {
 
   // Explicitly disable noise cancellation.
   cras_audio_handler()->SetNoiseCancellationState(false);
-  cras_audio_handler()->SetNoiseCancellationPrefState(false);
 
   // Check that noise cancellation is disabled.
   EXPECT_FALSE(cras_audio_handler()->GetNoiseCancellationState());

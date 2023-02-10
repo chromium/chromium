@@ -77,7 +77,6 @@ void AudioEffectsController::OnEffectControlActivated(
       CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
       bool new_state = !audio_handler->GetNoiseCancellationState();
       audio_handler->SetNoiseCancellationState(new_state);
-      audio_handler->SetNoiseCancellationPrefState(new_state);
       return;
     }
     case AudioEffectId::kLiveCaption: {

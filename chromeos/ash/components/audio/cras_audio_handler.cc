@@ -528,17 +528,16 @@ void CrasAudioHandler::RefreshNoiseCancellationState() {
     return;
   }
 
-  SetNoiseCancellationState(
+  // Refresh should only update the state in CRAS and leave the preference
+  // as-is.
+  CrasAudioClient::Get()->SetNoiseCancellationEnabled(
       GetNoiseCancellationState() &&
       (internal_mic->audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION));
 }
 
-void CrasAudioHandler::SetNoiseCancellationState(bool state) {
-  CrasAudioClient::Get()->SetNoiseCancellationEnabled(state);
-}
-
-void CrasAudioHandler::SetNoiseCancellationPrefState(bool state) {
-  audio_pref_handler_->SetNoiseCancellationState(state);
+void CrasAudioHandler::SetNoiseCancellationState(bool noise_cancellation_on) {
+  CrasAudioClient::Get()->SetNoiseCancellationEnabled(noise_cancellation_on);
+  audio_pref_handler_->SetNoiseCancellationState(noise_cancellation_on);
 }
 
 void CrasAudioHandler::RequestNoiseCancellationSupported(

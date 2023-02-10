@@ -298,11 +298,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Refreshes the input device noise cancellation state.
   void RefreshNoiseCancellationState();
 
-  // Sends a DBus signal to set the state of input noise cancellation.
-  void SetNoiseCancellationState(bool state);
-
-  // Sets the state of input noise cancellation in preferences.
-  void SetNoiseCancellationPrefState(bool state);
+  // Updates noise cancellation state in `CrasAudioClient` and
+  // `AudioDevicesPrefHandler` to the provided value.
+  void SetNoiseCancellationState(bool noise_cancellation_on);
 
   // Get if noise cancellation is supported by the board.
   void RequestNoiseCancellationSupported(

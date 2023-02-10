@@ -489,7 +489,6 @@ void AudioDetailedView::OnInputNoiseCancellationTogglePressed() {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   const bool new_state = !audio_handler->GetNoiseCancellationState();
   audio_handler->SetNoiseCancellationState(new_state);
-  audio_handler->SetNoiseCancellationPrefState(new_state);
   if (features::IsQsRevampEnabled()) {
     noise_cancellation_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         new_state ? kUnifiedMenuMicNoiseCancelHighIcon
