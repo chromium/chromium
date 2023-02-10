@@ -2200,6 +2200,7 @@
         'browser_config': 'release_x64',
         'mixins': [
           'isolate_profile_data',
+          'win10'
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
