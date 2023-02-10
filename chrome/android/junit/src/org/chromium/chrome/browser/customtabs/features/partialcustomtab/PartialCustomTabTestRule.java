@@ -90,7 +90,7 @@ public class PartialCustomTabTestRule implements TestRule {
     @Mock
     Display mDisplay;
     @Mock
-    PartialCustomTabHeightStrategy.OnResizedCallback mOnResizedCallback;
+    CustomTabHeightStrategy.OnResizedCallback mOnResizedCallback;
     @Mock
     ViewGroup mCoordinatorLayout;
     @Mock

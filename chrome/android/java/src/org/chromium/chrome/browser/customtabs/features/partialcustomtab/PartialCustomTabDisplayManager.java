@@ -220,7 +220,7 @@ public class PartialCustomTabDisplayManager
             @PartialCustomTabType int type, boolean maximized) {
         switch (type) {
             case PartialCustomTabType.BOTTOM_SHEET: {
-                return new PartialCustomTabHeightStrategy(mActivity, mUnclampedInitialHeight,
+                return new PartialCustomTabBottomSheetStrategy(mActivity, mUnclampedInitialHeight,
                         mIsFixedHeight, mOnResizedCallback, mActivityLifecycleDispatcher,
                         mFullscreenManager, mIsTablet, mInteractWithBackground, maximized,
                         mHandleStrategyFactory);

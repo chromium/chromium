@@ -38,8 +38,8 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabHeightStrategy;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
-import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabHeightStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
@@ -220,8 +220,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 softInputCallback = ((
                         PartialCustomTabDisplayManager) mCustomTabHeightStrategy)::onShowSoftInput;
             } else {
-                softInputCallback = ((
-                        PartialCustomTabHeightStrategy) mCustomTabHeightStrategy)::onShowSoftInput;
+                softInputCallback = ((PartialCustomTabBottomSheetStrategy)
+                                mCustomTabHeightStrategy)::onShowSoftInput;
             }
 
             mTabController.get().registerTabObserver(

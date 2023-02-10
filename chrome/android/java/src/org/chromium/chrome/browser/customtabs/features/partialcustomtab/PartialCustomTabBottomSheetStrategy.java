@@ -55,7 +55,7 @@ import java.lang.annotation.RetentionPolicy;
  * https://docs.google.com/document/d/1YuFXHai2JECqAPE_HgamcKid3VTR05GAvJcyb4jaL6o/edit?usp=sharing}
  * for detailed inner workings and issues addressed along the way.
  */
-public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
+public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStrategy
         implements ConfigurationChangedObserver, ValueAnimator.AnimatorUpdateListener,
                    PartialCustomTabHandleStrategy.DragEventCallback {
     @VisibleForTesting
@@ -125,7 +125,7 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     // This is a workaround to an issue of the host app briefly flashing when the tab is resized.
     private boolean mInitFirstHeight;
 
-    public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
+    public PartialCustomTabBottomSheetStrategy(Activity activity, @Px int initialHeight,
             boolean isFixedHeight, OnResizedCallback onResizedCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
             boolean isTablet, boolean interactWithBackground, boolean startMaximized,

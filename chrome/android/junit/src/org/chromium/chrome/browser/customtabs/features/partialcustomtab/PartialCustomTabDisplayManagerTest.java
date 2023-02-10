@@ -230,7 +230,7 @@ public class PartialCustomTabDisplayManagerTest {
 
         // Strategy is now set to bottom sheet. Verify it starts in expanded state.
         var bottomSheetStrategy =
-                (PartialCustomTabHeightStrategy) displayManager.getSizeStrategyForTesting();
+                (PartialCustomTabBottomSheetStrategy) displayManager.getSizeStrategyForTesting();
         assertTrue("Bottom sheet must start in expanded state.", bottomSheetStrategy.isMaximized());
 
         mPCCTTestRule.configLandscapeMode();

@@ -13,7 +13,7 @@ import androidx.core.view.MotionEventCompat;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabHeightStrategy.HeightStatus;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy.HeightStatus;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 
 import java.util.function.BooleanSupplier;
