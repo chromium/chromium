@@ -8,7 +8,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/skia/include/utils/SkRandom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace tab_groups {
