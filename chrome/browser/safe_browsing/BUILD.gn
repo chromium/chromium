@@ -334,7 +334,6 @@ static_library("safe_browsing") {
         "incident_reporting/tracked_preference_incident.h",
         "services_delegate_desktop.cc",
         "services_delegate_desktop.h",
-        "services_delegate_desktop.h",
         "tailored_security/notification_handler_desktop.cc",
         "tailored_security/notification_handler_desktop.h",
       ]
