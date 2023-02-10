@@ -12,7 +12,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/pref_autofill_field_large_top_margin"
         android:layout_marginBottom="@dimen/pref_autofill_field_bottom_margin"
-        android:layout_marginStart="@dimen/pref_autofill_field_start_margin">
+        android:layout_marginHorizontal="@dimen/pref_autofill_field_horizontal_margin">
 
         <ImageView
             android:id="@+id/card_icon"
@@ -24,20 +24,38 @@ found in the LICENSE file.
             android:scaleType="fitCenter"
             android:importantForAccessibility="no" />
 
-        <!-- Name of the card (type + obfuscated number) -->
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/card_name_and_last_four_container"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@id/card_icon"
-            style="@style/PreferenceTitle" />
+            android:layout_toEndOf="@id/card_icon">
+
+            <TextView
+                android:id="@+id/card_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:layout_weight="1"
+                style="@style/PreferenceTitle" />
+
+            <TextView
+                android:id="@+id/card_last_four"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_page_margin_between_card_name_and_last_four_digits"
+                android:maxLines="1"
+                android:layout_weight="0"
+                style="@style/PreferenceTitle" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/summary"
-            android:layout_width="match_parent"
+            android:id="@+id/card_expiration"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/title"
+            android:layout_below="@+id/card_name_and_last_four_container"
             android:layout_toEndOf="@id/card_icon"
             style="@style/PreferenceSummary" />
     </RelativeLayout>
