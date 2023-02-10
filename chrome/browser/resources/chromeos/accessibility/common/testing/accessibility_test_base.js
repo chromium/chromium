@@ -21,4 +21,24 @@ AccessibilityTestBase = class extends testing.Test {
    * ES6 modules.
    */
   async setUpDeferred() {}
+
+  /**
+   * @param {Object} object The object the method is called on.
+   * @param {string} method The name of the method being called.
+   * @param {Function} callback The callback to be called once the method has
+   *     finished. It receives the same parameters as the original method.
+   * @param {function(): boolean} reset Whether the callback should be removed
+   *     after is has been called. Defaults to an always false function.
+   *     Receives the same parameters as the original method.
+   */
+  addCallbackPostMethod(object, method, callback, reset = () => false) {
+    const original = object[method].bind(object);
+    object[method] = (...args) => {
+      original(...args);
+      callback(...args);
+      if (reset(...args)) {
+        object[method] = original;
+      }
+    };
+  }
 };

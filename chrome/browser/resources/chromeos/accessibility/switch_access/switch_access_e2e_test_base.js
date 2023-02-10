@@ -97,16 +97,13 @@ SwitchAccessE2ETest = class extends E2ETestBase {
         resolve(Navigator.byItem.node_);
         return;
       }
-      const original = Navigator.byItem.setNode_.bind(Navigator.byItem);
-      Navigator.byItem.setNode_ = node => {
-        original(node);
+      this.addCallbackPostMethod(Navigator.byItem, 'setNode_', node => {
         lastFocusChangeTime = new Date();
         if (doesMatch(expected)) {
-          Navigator.byItem.setNode_ = original;
           didResolve = true;
           resolve(Navigator.byItem.node_);
         }
-      };
+      }, () => doesMatch(expected));
     });
   }
 };

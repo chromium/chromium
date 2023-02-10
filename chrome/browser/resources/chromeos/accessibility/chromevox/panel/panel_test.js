@@ -82,25 +82,15 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
 
   async waitForMenu(menuMsg) {
     const menuManager = this.getPanel().instance.menuManager_;
-    // Menu and menu item updates occur in a different js context, so tests need
-    // to wait until an update has been made. Swap in our hook, wait, then
-    // restore after.
-    const makeAssertions = () => {
-      const menu = menuManager.activeMenu_;
-      assertEquals(menuMsg, menu.menuMsg);
-    };
 
-    return new Promise(resolve => {
-      const Panel = this.getPanel();
-      // eslint-disable-next-line prefer-arrow-callback
-      const original = menuManager.activateMenu.bind(menuManager);
-      menuManager.activateMenu = (menu, activateFirstItem) => {
-        menuManager.activateMenu = original;
-        original(menu, activateFirstItem);
-        makeAssertions();
-        resolve();
-      };
-    });
+    // Menu and menu item updates occur in a different js context, so tests need
+    // to wait until an update has been made.
+    return new Promise(
+        resolve =>
+            this.addCallbackPostMethod(menuManager, 'activateMenu', () => {
+              assertEquals(menuMsg, menuManager.activeMenu_.menuMsg);
+              resolve();
+            }, () => true));
   }
 
   assertActiveMenuItem(menuMsg, menuItemTitle, opt_menuItemShortcut) {
