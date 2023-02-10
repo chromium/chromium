@@ -279,7 +279,7 @@ def main():
     fetch_all_cmd = [
         _FETCH_ALL_PATH, '--android-deps-dir', _ANDROIDX_PATH,
         '--ignore-vulnerabilities'
-    ]
+    ] + ['-v'] * args.verbose_count
     # Overrides do not work with local snapshots since the repository_url is
     # different.
     if not args.local_repo:
