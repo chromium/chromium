@@ -107,7 +107,7 @@ struct MemberHashRecordReplayRegisteredPointerId
   // Member. Prefer compressing raw pointers instead of decompressing Members,
   // assuming the former is cheaper.
   static unsigned GetHash(const T* key) {
-    if (IsRecordingOrReplaying("pointer-ids")) {
+    if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
       int ptr = recordreplay::PointerId(key);
       CHECK(ptr != 0);
       return Base::GetHash(ptr);
@@ -120,7 +120,7 @@ struct MemberHashRecordReplayRegisteredPointerId
   template <typename Member,
             std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
   static unsigned GetHash(const Member& m) {
-    if (IsRecordingOrReplaying("pointer-ids")) {
+    if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
       int ptr = recordreplay::PointerId(m.Get());
       CHECK(ptr != 0);
       return Base::GetHash(ptr);
@@ -150,7 +150,7 @@ struct MemberHashRecordReplayId
   // Member. Prefer compressing raw pointers instead of decompressing Members,
   // assuming the former is cheaper.
   static unsigned GetHash(const T* key) {
-    if (IsRecordingOrReplaying()) {
+    if (recordreplay::IsRecordingOrReplaying()) {
       return Base::GetHash(key->RecordReplayId());
     } else {
       cppgc::internal::MemberBase::RawStorage st(key);
@@ -161,7 +161,7 @@ struct MemberHashRecordReplayId
   template <typename Member,
             std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
   static unsigned GetHash(const Member& m) {
-    if (IsRecordingOrReplaying()) {
+    if (recordreplay::IsRecordingOrReplaying()) {
       return Base::GetHash(m.Get()->RecordReplayId());
     } else {
       return Base::GetHash(m.GetRawStorage().GetAsInteger());
