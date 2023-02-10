@@ -2212,7 +2212,6 @@ component("base") {
       "files/file_path_watcher.h",
       "sync_socket.cc",
       "sync_socket.h",
-      "synchronization/waitable_event_watcher.h",
     ]
   }
 
