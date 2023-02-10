@@ -39,14 +39,15 @@ bool TtsVoices::Parse(const base::Value::List& tts_voices,
                       std::u16string* error,
                       Extension* extension) {
   bool added_gender_warning = false;
-  for (const base::Value& one_tts_voice : tts_voices) {
-    if (!one_tts_voice.is_dict()) {
+  for (const base::Value& one_tts_voice_val : tts_voices) {
+    if (!one_tts_voice_val.is_dict()) {
       *error = errors::kInvalidTtsVoices;
       return false;
     }
 
+    const base::Value::Dict& one_tts_voice = one_tts_voice_val.GetDict();
     TtsVoice voice_data;
-    const base::Value* name = one_tts_voice.FindKey(keys::kTtsVoicesVoiceName);
+    const base::Value* name = one_tts_voice.Find(keys::kTtsVoicesVoiceName);
     if (name) {
       if (!name->is_string()) {
         *error = errors::kInvalidTtsVoicesVoiceName;
@@ -55,7 +56,7 @@ bool TtsVoices::Parse(const base::Value::List& tts_voices,
       voice_data.voice_name = name->GetString();
     }
 
-    const base::Value* lang = one_tts_voice.FindKey(keys::kTtsVoicesLang);
+    const base::Value* lang = one_tts_voice.Find(keys::kTtsVoicesLang);
     if (lang) {
       if (!lang->is_string() ||
           !l10n_util::IsValidLocaleSyntax(lang->GetString())) {
@@ -66,7 +67,7 @@ bool TtsVoices::Parse(const base::Value::List& tts_voices,
     }
     // TODO(katie): After M73, consider deprecating this installation warning,
     // since the warning landed in M70 and gender was deprecated in M71.
-    if (one_tts_voice.FindKey(keys::kTtsVoicesGender) &&
+    if (one_tts_voice.contains(keys::kTtsVoicesGender) &&
         !added_gender_warning) {
       extension->AddInstallWarning(
           InstallWarning(errors::kTtsGenderIsDeprecated));
@@ -74,7 +75,7 @@ bool TtsVoices::Parse(const base::Value::List& tts_voices,
       added_gender_warning = true;
     }
 
-    const base::Value* remote = one_tts_voice.FindKey(keys::kTtsVoicesRemote);
+    const base::Value* remote = one_tts_voice.Find(keys::kTtsVoicesRemote);
     if (remote) {
       if (!remote->is_bool()) {
         *error = errors::kInvalidTtsVoicesRemote;
@@ -84,7 +85,7 @@ bool TtsVoices::Parse(const base::Value::List& tts_voices,
     }
 
     const base::Value* event_types =
-        one_tts_voice.FindKey(keys::kTtsVoicesEventTypes);
+        one_tts_voice.Find(keys::kTtsVoicesEventTypes);
     if (event_types) {
       if (!event_types->is_list()) {
         *error = errors::kInvalidTtsVoicesEventTypes;
