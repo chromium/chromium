@@ -1,1 +1,4 @@
+# The paint worklet code makes heavy use of canvas interfaces.
+file://third_party/blink/renderer/modules/canvas/OWNERS
+
 flackr@chromium.org
