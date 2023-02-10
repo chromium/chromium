@@ -179,7 +179,7 @@ class PreFinalizerVectorBackingExpandForbidden final
     vector_.push_back(MakeGarbageCollected<IntWrapper>(1));
   }
 
-  void Dispose() { EXPECT_DEATH(Test(), ""); }
+  void Dispose() { EXPECT_DEATH_IF_SUPPORTED(Test(), ""); }
 
   void Test() {
     // vector_'s backing will need to expand.
@@ -210,7 +210,7 @@ class PreFinalizerHashTableBackingExpandForbidden final
     map_.insert(123, MakeGarbageCollected<IntWrapper>(123));
   }
 
-  void Dispose() { EXPECT_DEATH(Test(), ""); }
+  void Dispose() { EXPECT_DEATH_IF_SUPPORTED(Test(), ""); }
 
   void Test() {
     // map_'s backing will need to expand.
@@ -277,7 +277,7 @@ class HeapTestResurrectingPreFinalizer
   }
 
  private:
-  void Dispose() { EXPECT_DEATH(Test(), ""); }
+  void Dispose() { EXPECT_DEATH_IF_SUPPORTED(Test(), ""); }
 
   void Test() {
     switch (test_type_) {
