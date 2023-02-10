@@ -8746,10 +8746,10 @@ void NavigationRequest::
     MaybeRegisterOriginForUnpartitionedSessionStorageAccess() {
   // If we are missing critical data or the frame isn't the main frame then
   // we shouldn't try to check the origin trial token. We only read the origin
-  // trial token on the main frame as the narrow issue this function seeks
-  // to address is related to an auth redirect flow (see crbug.com/1407150).
+  // trial token on the outermost main frame as the narrow issue this function
+  // seeks to address is related to an auth redirect flow (see crbug.com/1407150).
   if (!common_params_ || !response_head_ || !response_head_->headers ||
-      !render_frame_host_->is_main_frame()) {
+      !render_frame_host_->IsOutermostMainFrame()) {
     return;
   }
   if (!blink::TrialTokenValidator().RequestEnablesDeprecatedFeature(
