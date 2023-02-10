@@ -33,8 +33,9 @@ bool IsToday(const base::Time selected_date) {
 
 bool IsTheSameDay(absl::optional<base::Time> date_a,
                   absl::optional<base::Time> date_b) {
-  if (!date_a.has_value() || !date_b.has_value())
+  if (!date_a.has_value() || !date_b.has_value()) {
     return false;
+  }
 
   return calendar_utils::GetMonthDayYear(date_a.value()) ==
          calendar_utils::GetMonthDayYear(date_b.value());
@@ -259,7 +260,8 @@ ASH_EXPORT bool ShouldFetchEvents() {
 ASH_EXPORT bool IsActiveUser() {
   absl::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
-  return (user_type && *user_type == user_manager::USER_TYPE_REGULAR) &&
+  return (user_type && (*user_type == user_manager::USER_TYPE_REGULAR ||
+                        *user_type == user_manager::USER_TYPE_CHILD)) &&
          !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
 
@@ -294,8 +296,9 @@ ASH_EXPORT const std::pair<base::Time, base::Time> GetFetchStartEndTimes(
 
 int GetDayOfWeekInt(const base::Time date) {
   int day_int;
-  if (base::StringToInt(GetDayOfWeek(date), &day_int))
+  if (base::StringToInt(GetDayOfWeek(date), &day_int)) {
     return day_int;
+  }
 
   // For a few special locales the day of week is not in a number. In these
   // cases, use the default day of week from time exploded. For example:
@@ -352,9 +355,10 @@ ASH_EXPORT const std::tuple<base::Time, base::Time> GetStartAndEndTime(
   // `base::Time` which are set to UTC midnight in the response, so we need to
   // negate the timezone, so when the formatter formats, it will make the dates
   // midnight in the local timezone.
-  if (event->all_day_event())
+  if (event->all_day_event()) {
     return std::make_tuple(selected_date_midnight_utc,
                            selected_last_minute_utc);
+  }
 
   base::Time start_time = calendar_utils::GetMaxTime(
       event->start_time().date_time(), selected_date_midnight_utc);

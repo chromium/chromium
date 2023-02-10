@@ -28,6 +28,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
+#include "components/user_manager/user_type.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
 
@@ -185,15 +186,17 @@ class CalendarModelTest : public AshTestBase {
   int EventsNumberOfDay(const char* day, SingleDayEventList* events) {
     base::Time day_base = calendar_test_utils::GetTimeFromString(day);
 
-    if (events)
+    if (events) {
       events->clear();
+    }
 
     return calendar_model_->EventsNumberOfDay(day_base, events);
   }
 
   int EventsNumberOfDay(base::Time day, SingleDayEventList* events) {
-    if (events)
+    if (events) {
       events->clear();
+    }
 
     return calendar_model_->EventsNumberOfDay(day, events);
   }
@@ -202,8 +205,9 @@ class CalendarModelTest : public AshTestBase {
                                 SingleDayEventList* events) const {
     base::Time day_base = calendar_test_utils::GetTimeFromString(day);
 
-    if (events)
+    if (events) {
       events->clear();
+    }
 
     return calendar_model_->EventsNumberOfDay(day_base, events);
   }
@@ -226,8 +230,9 @@ class CalendarModelTest : public AshTestBase {
     DCHECK_GE(end_index, start_index);
 
     for (int i = start_index; i < end_index; ++i) {
-      if (!EventsPresentAtIndex(months, i))
+      if (!EventsPresentAtIndex(months, i)) {
         return false;
+      }
     }
 
     return true;
@@ -242,20 +247,25 @@ class CalendarModelTest : public AshTestBase {
     for (int i = start_index; i < end_index; ++i) {
       const base::Time& start_of_month =
           calendar_utils::GetFirstDayOfMonth(months[i]).UTCMidnight();
-      if (base::Contains(non_prunable_months(), start_of_month))
+      if (base::Contains(non_prunable_months(), start_of_month)) {
         continue;
+      }
 
-      if (EventsPresentAtIndex(months, i))
+      if (EventsPresentAtIndex(months, i)) {
         return false;
+      }
     }
 
     return true;
   }
 
-  void UpdateSession(uint32_t session_id, const std::string& email) {
+  void UpdateSession(uint32_t session_id,
+                     const std::string& email,
+                     bool is_child = false) {
     UserSession session;
     session.session_id = session_id;
-    session.user_info.type = user_manager::USER_TYPE_REGULAR;
+    session.user_info.type = is_child ? user_manager::USER_TYPE_CHILD
+                                      : user_manager::USER_TYPE_REGULAR;
     session.user_info.account_id = AccountId::FromUserEmail(email);
     session.user_info.display_name = email;
     session.user_info.display_email = email;
@@ -628,8 +638,9 @@ TEST_F(CalendarModelTest, PruneEvents) {
 
   std::vector<base::Time> init_prunable_months;
   for (auto& month : event_months()) {
-    if (!base::Contains(non_prunable_months(), month.first))
+    if (!base::Contains(non_prunable_months(), month.first)) {
       init_prunable_months.push_back(month.first);
+    }
   }
 
   EXPECT_EQ((int)init_prunable_months.size(),
@@ -643,8 +654,9 @@ TEST_F(CalendarModelTest, PruneEvents) {
     auto months = calendar_utils::GetSurroundingMonthsUTC(on_screen_month, 1);
 
     // Fetch events.
-    for (auto& month : months)
+    for (auto& month : months) {
       calendar_model()->FetchEvents(month);
+    }
 
     WaitUntilFetched();
 
@@ -683,8 +695,9 @@ TEST_F(CalendarModelTest, RecordFetchResultHistogram_Success) {
 
   // Now fetch the events, which will get all events from the current month,
   // as well as next/prev months.
-  for (auto& month : non_prunable_months())
+  for (auto& month : non_prunable_months()) {
     calendar_model()->FetchEvents(month);
+  }
 
   WaitUntilFetched();
 
@@ -814,6 +827,53 @@ TEST_F(CalendarModelTest, ActiveUserChange) {
   WaitUntilFetched();
 
   // Now we have an event on kStartTime0.
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
+  EXPECT_FALSE(events.empty());
+  EXPECT_TRUE(events.size() == 1);
+
+  // Make user2 the active user, and we should clear the cached events.
+  order = {2u, 1u};
+  SessionController::Get()->SetUserSessionOrder(order);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
+  EXPECT_TRUE(events.empty());
+  EXPECT_TRUE(event_months().empty());
+}
+
+TEST_F(CalendarModelTest, ActiveChildUserChange) {
+  // Sets the timezone to "GMT".
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+
+  // Set up two users, user1 is the active user.
+  UpdateSession(1u, "user1@test.com", /*is_child*/ true);
+  UpdateSession(2u, "user2@test.com", /*is_child*/ true);
+  std::vector<uint32_t> order = {1u, 2u};
+  SessionController::Get()->SetUserSessionOrder(order);
+  base::RunLoop().RunUntilIdle();
+
+  // Current date is just `kStartTime0`.
+  SetTodayFromStr(kStartTime0);
+  std::set<base::Time> months =
+      calendar_utils::GetSurroundingMonthsUTC(base::Time::Now(), 1);
+
+  // Haven't injected anything yet, so no events on `kStartTime0`.
+  SingleDayEventList events;
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
+  EXPECT_TRUE(events.empty());
+
+  // Set up list of events.
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  std::unique_ptr<google_apis::calendar::CalendarEvent> event =
+      calendar_test_utils::CreateEvent(kId0, kSummary0, kStartTime0, kEndTime0);
+  event_list->InjectItemForTesting(std::move(event));
+  SetEventList(std::move(event_list));
+
+  // Now fetch the events.
+  calendar_model()->FetchEvents(now());
+  WaitUntilFetched();
+
+  // Now we have an event on kStartTime0 for chlid user1.
   EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_FALSE(events.empty());
   EXPECT_TRUE(events.size() == 1);

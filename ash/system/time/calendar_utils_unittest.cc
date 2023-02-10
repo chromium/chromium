@@ -451,6 +451,16 @@ TEST_F(CalendarUtilsUnitTest, GetYearOfDay) {
   SetDefaultLocale("en");
 }
 
+TEST_F(CalendarUtilsUnitTest, ChildLoggedIn) {
+  SimulateUserLogin("test@test.test", user_manager::UserType::USER_TYPE_CHILD);
+  EXPECT_TRUE(calendar_utils::IsActiveUser());
+}
+
+TEST_F(CalendarUtilsUnitTest, InactiveUser) {
+  SimulateUserLogin("test@test.test", user_manager::UserType::USER_TYPE_GUEST);
+  EXPECT_FALSE(calendar_utils::IsActiveUser());
+}
+
 struct TimezoneTestParams {
   const char* midnight_string;
   const char* midnight_utc_string;
