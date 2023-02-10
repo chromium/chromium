@@ -22,7 +22,7 @@ class GpuChannelTest : public GpuChannelTestCommon {
   ~GpuChannelTest() override = default;
 };
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
 const SurfaceHandle kFakeSurfaceHandle = reinterpret_cast<SurfaceHandle>(1);
 #else
 const SurfaceHandle kFakeSurfaceHandle = 1;
