@@ -296,7 +296,8 @@ Config::Config() {
             exclude_entities_that_have_no_collections_from_content_clustering);
 
     collections_to_block_from_content_clustering =
-        JourneysCollectionContentClusteringBlocklist();
+        JourneysCollectionContentClusteringBlocklist(
+            collections_to_block_from_content_clustering);
 
     use_pairwise_merge = GetFieldTrialParamByFeatureAsBool(
         features::kOnDeviceClusteringContentClustering, "use_pairwise_merge",
@@ -401,7 +402,8 @@ void SetConfigForTesting(const Config& config) {
   GetConfigInternal() = config;
 }
 
-base::flat_set<std::string> JourneysCollectionContentClusteringBlocklist() {
+base::flat_set<std::string> JourneysCollectionContentClusteringBlocklist(
+    const base::flat_set<std::string>& default_value) {
   const base::FeatureParam<std::string>
       kJourneysCollectionContentClusteringBlocklist{
           &features::kOnDeviceClusteringContentClustering,
@@ -409,14 +411,14 @@ base::flat_set<std::string> JourneysCollectionContentClusteringBlocklist() {
   std::string blocklist_string =
       kJourneysCollectionContentClusteringBlocklist.Get();
   if (blocklist_string.empty())
-    return {};
+    return default_value;
 
   auto blocklist = base::SplitString(blocklist_string, ",",
                                      base::WhitespaceHandling::TRIM_WHITESPACE,
                                      base::SplitResult::SPLIT_WANT_NONEMPTY);
 
   return blocklist.empty()
-             ? base::flat_set<std::string>()
+             ? default_value
              : base::flat_set<std::string>(blocklist.begin(), blocklist.end());
 }
 
