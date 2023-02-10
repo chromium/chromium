@@ -22,7 +22,7 @@ OverlayStrategyFullscreen::OverlayStrategyFullscreen(
 
 OverlayStrategyFullscreen::~OverlayStrategyFullscreen() {}
 
-void OverlayStrategyFullscreen::ProposePrioritized(
+void OverlayStrategyFullscreen::Propose(
     const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
@@ -69,7 +69,7 @@ void OverlayStrategyFullscreen::ProposePrioritized(
   candidates->push_back({front, candidate, this});
 }
 
-bool OverlayStrategyFullscreen::AttemptPrioritized(
+bool OverlayStrategyFullscreen::Attempt(
     const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,

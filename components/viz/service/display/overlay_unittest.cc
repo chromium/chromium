@@ -248,7 +248,7 @@ class MultiOverlayProcessorBase : public TestOverlayProcessor {
   }
 
   // Sort required overlay candidates first, then just by input order.
-  void SortProposedOverlayCandidatesPrioritized(
+  void SortProposedOverlayCandidates(
       std::vector<OverlayProposedCandidate>* proposed_candidates) override {
     // We want the power gains to be assigned for the OverlayCombinationCache.
     size_t order = proposed_candidates->size();
@@ -305,7 +305,7 @@ class SizeSortedMultiOverlayProcessor : public MultiOverlayProcessorBase {
   }
 
   // Sort candidates only by their display_rect area.
-  void SortProposedOverlayCandidatesPrioritized(
+  void SortProposedOverlayCandidates(
       std::vector<OverlayProposedCandidate>* proposed_candidates) override {
     // We want the power gains to be assigned for the OverlayCombinationCache.
     for (auto& proposed_candidate : *proposed_candidates) {

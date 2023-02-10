@@ -185,7 +185,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // pass through to hardware through CheckOverlaySupport. It is not passed
   // through as a const member because the underlay strategy changes the
   // |primary_plane|'s blending setting.
-  bool AttemptWithStrategiesPrioritized(
+  bool AttemptWithStrategies(
       const SkM44& output_color_matrix,
       const OverlayProcessorInterface::FilterOperationsMap&
           render_pass_backdrop_filters,
@@ -228,7 +228,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // heuristic designed to maximize the effectiveness of the limited number
   // of Hardware overlays. Effectiveness here is primarily about power and
   // secondarily about of performance.
-  virtual void SortProposedOverlayCandidatesPrioritized(
+  virtual void SortProposedOverlayCandidates(
       std::vector<OverlayProposedCandidate>* proposed_candidates);
 
   // Used by Android pre-SurfaceControl to notify promotion hints.

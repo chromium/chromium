@@ -20,7 +20,7 @@ OverlayStrategySingleOnTop::OverlayStrategySingleOnTop(
 
 OverlayStrategySingleOnTop::~OverlayStrategySingleOnTop() {}
 
-void OverlayStrategySingleOnTop::ProposePrioritized(
+void OverlayStrategySingleOnTop::Propose(
     const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
@@ -48,7 +48,7 @@ void OverlayStrategySingleOnTop::ProposePrioritized(
   }
 }
 
-bool OverlayStrategySingleOnTop::AttemptPrioritized(
+bool OverlayStrategySingleOnTop::Attempt(
     const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,

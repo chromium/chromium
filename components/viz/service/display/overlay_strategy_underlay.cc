@@ -23,7 +23,7 @@ OverlayStrategyUnderlay::OverlayStrategyUnderlay(
 
 OverlayStrategyUnderlay::~OverlayStrategyUnderlay() {}
 
-void OverlayStrategyUnderlay::ProposePrioritized(
+void OverlayStrategyUnderlay::Propose(
     const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
@@ -66,7 +66,7 @@ void OverlayStrategyUnderlay::ProposePrioritized(
   }
 }
 
-bool OverlayStrategyUnderlay::AttemptPrioritized(
+bool OverlayStrategyUnderlay::Attempt(
     const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
