@@ -35,7 +35,7 @@ constexpr int kKeyItemViewLineHeight = 24;
 
 }  // namespace
 
-KeyItemView::KeyItemView(ui::KeyboardCode key_code) : key_code_(key_code) {
+KeyItemView::KeyItemView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 }
