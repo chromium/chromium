@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
@@ -68,7 +67,7 @@ class DeviceCommandScreenshotJob : public RemoteCommandJob,
   // dependencies.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Returns true if screenshots are allowed in this session. Returns false
     // if the current session is not an auto-launched kiosk session, or there

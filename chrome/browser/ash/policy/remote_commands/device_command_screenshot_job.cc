@@ -17,9 +17,7 @@
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/uploading/upload_job_impl.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "content/public/browser/browser_thread.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

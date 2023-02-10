@@ -17,8 +17,6 @@
 #include "base/values.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -88,7 +86,7 @@ MockUploadJob::MockUploadJob(const GURL& upload_url,
       delegate_(delegate),
       error_code_(std::move(error_code)) {}
 
-MockUploadJob::~MockUploadJob() {}
+MockUploadJob::~MockUploadJob() = default;
 
 void MockUploadJob::AddDataSegment(
     const std::string& name,
@@ -156,7 +154,7 @@ MockScreenshotDelegate::MockScreenshotDelegate(
     : upload_job_error_code_(std::move(upload_job_error_code)),
       screenshot_allowed_(screenshot_allowed) {}
 
-MockScreenshotDelegate::~MockScreenshotDelegate() {}
+MockScreenshotDelegate::~MockScreenshotDelegate() = default;
 
 bool MockScreenshotDelegate::IsScreenshotAllowed() {
   return screenshot_allowed_;

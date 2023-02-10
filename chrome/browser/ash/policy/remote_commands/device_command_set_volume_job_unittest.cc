@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/test_future.h"
@@ -65,15 +63,13 @@ class DeviceCommandSetVolumeTest : public ChromeAshTestBase {
       delete;
 
  protected:
-  DeviceCommandSetVolumeTest();
+  DeviceCommandSetVolumeTest() = default;
 
   // testing::Test
   void SetUp() override;
 
   base::TimeTicks test_start_time_;
 };
-
-DeviceCommandSetVolumeTest::DeviceCommandSetVolumeTest() {}
 
 void DeviceCommandSetVolumeTest::SetUp() {
   ChromeAshTestBase::SetUp();
