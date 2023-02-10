@@ -276,11 +276,6 @@ public final class TabImpl extends ITab.Stub {
             }
 
             @Override
-            public void didStartNavigationNoop(NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
                 ensureDisplayCutoutController();
                 mDisplayCutoutController.setViewportFit(value);

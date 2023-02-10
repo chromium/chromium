@@ -101,9 +101,6 @@ public class EmptyTabObserver implements TabObserver {
     }
 
     @Override
-    public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle) {}
-
-    @Override
     public void onDidRedirectNavigation(Tab tab, NavigationHandle navigationHandle) {}
 
     @Override

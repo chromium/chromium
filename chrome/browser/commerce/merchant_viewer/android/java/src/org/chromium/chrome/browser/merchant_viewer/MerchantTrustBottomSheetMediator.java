@@ -102,12 +102,6 @@ public class MerchantTrustBottomSheetMediator {
             }
 
             @Override
-            public void didStartNavigationNoop(NavigationHandle navigation) {
-                mMetrics.recordNavigateLinkOnBottomSheet();
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void titleWasSet(String title) {
                 if (!MerchantViewerConfig.doesTrustSignalsSheetUsePageTitle()) return;
                 mToolbarModel.set(BottomSheetToolbarProperties.TITLE, title);

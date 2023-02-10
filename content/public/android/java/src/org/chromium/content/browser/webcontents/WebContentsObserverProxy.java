@@ -137,17 +137,6 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void didStartNavigationNoop(NavigationHandle navigation) {
-        handleObserverCall();
-        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
-        for (; observersIterator.hasNext();) {
-            observersIterator.next().didStartNavigationNoop(navigation);
-        }
-        finishObserverCall();
-    }
-
-    @Override
-    @CalledByNative
     public void didRedirectNavigation(NavigationHandle navigation) {
         handleObserverCall();
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();

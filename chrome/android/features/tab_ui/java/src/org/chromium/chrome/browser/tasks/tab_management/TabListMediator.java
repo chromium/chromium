@@ -470,11 +470,6 @@ class TabListMediator {
         }
 
         @Override
-        public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
-            if (!navigationHandle.isInPrimaryMainFrame()) return;
-        }
-
-        @Override
         public void onTitleUpdated(Tab updatedTab) {
             int index = mModel.indexFromId(updatedTab.getId());
             // TODO(crbug.com/1098100) The null check for tab here should be redundant once we have

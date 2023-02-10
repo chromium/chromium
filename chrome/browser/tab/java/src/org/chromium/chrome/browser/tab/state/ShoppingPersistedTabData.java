@@ -366,11 +366,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             }
 
             @Override
-            public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void onDidFinishNavigationInPrimaryMainFrame(
                     Tab tab, NavigationHandle navigationHandle) {
                 if (navigationHandle.isSameDocument() || !navigationHandle.hasCommitted()) {

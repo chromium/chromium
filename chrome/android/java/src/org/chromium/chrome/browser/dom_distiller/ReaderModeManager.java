@@ -428,11 +428,6 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             }
 
             @Override
-            public void didStartNavigationNoop(NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
                 // TODO(cjhopman): This should possibly ignore navigations that replace the entry
                 // (like those from history.replaceState()).

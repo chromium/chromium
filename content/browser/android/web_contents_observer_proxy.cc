@@ -149,17 +149,8 @@ void WebContentsObserverProxy::PrimaryMainDocumentElementAvailable() {
 
 void WebContentsObserverProxy::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  // TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf
-  // experiment is finished.
-  TRACE_EVENT0("browser", "Java_WebContentsObserverProxy_didStartNavigation");
-
   if (navigation_handle->IsInPrimaryMainFrame()) {
     Java_WebContentsObserverProxy_didStartNavigationInPrimaryMainFrame(
-        AttachCurrentThread(), java_observer_,
-        navigation_handle->GetJavaNavigationHandle());
-  } else if (base::FeatureList::IsEnabled(
-                 features::kNotifyJavaSpuriouslyToMeasurePerf)) {
-    Java_WebContentsObserverProxy_didStartNavigationNoop(
         AttachCurrentThread(), java_observer_,
         navigation_handle->GetJavaNavigationHandle());
   }

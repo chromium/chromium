@@ -411,11 +411,6 @@ public class CouponPersistedTabData extends PersistedTabData {
             }
 
             @Override
-            public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void onDidFinishNavigationInPrimaryMainFrame(
                     Tab tab, NavigationHandle navigationHandle) {
                 String scheme = navigationHandle.getUrl().getScheme();

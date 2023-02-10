@@ -396,11 +396,6 @@ public class OverlayPanelContent {
                     }
 
                     @Override
-                    public void didStartNavigationNoop(NavigationHandle navigation) {
-                        if (!navigation.isInPrimaryMainFrame()) return;
-                    }
-
-                    @Override
                     public void titleWasSet(String title) {
                         mContentDelegate.onTitleUpdated(title);
                     }

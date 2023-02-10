@@ -57,13 +57,6 @@ public abstract class WebContentsObserver {
     public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {}
 
     /**
-     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
-     * No-op, for measuring performance of calling didStartNavigation in only the primary main
-     * frame vs calling it in all frames.
-     */
-    public void didStartNavigationNoop(NavigationHandle navigationHandle) {}
-
-    /**
      * Called when the browser process redirect a navigation.
      * @param navigationHandle
      *        NavigationHandle are proided to several WebContentsObserver methods to allow

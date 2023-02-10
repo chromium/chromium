@@ -119,11 +119,6 @@ import org.chromium.url.GURL;
     }
 
     @Override
-    public void didStartNavigationNoop(NavigationHandle navigation) {
-        if (!navigation.isInPrimaryMainFrame()) return;
-    }
-
-    @Override
     public void titleWasSet(String title) {
         mModel.set(PaymentHandlerToolbarProperties.TITLE, title);
     }

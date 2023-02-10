@@ -59,11 +59,6 @@ public class LoadProgressMediator {
             }
 
             @Override
-            public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
                 if (!toDifferentDocument) return;
 

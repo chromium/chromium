@@ -327,11 +327,6 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         }
 
         @Override
-        public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
-            if (!navigationHandle.isInPrimaryMainFrame()) return;
-        }
-
-        @Override
         public void onHidden(Tab tab, @TabHidingType int hidingType) {
             dismissSnackbar();
 

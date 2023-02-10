@@ -127,11 +127,5 @@ public class DemoPaintPreview implements PlayerManager.Listener {
             if (!mTabbedPaintPreview.isAttached()) return;
             removePaintPreviewDemo();
         }
-
-        @Override
-        public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
-            if (!mTabbedPaintPreview.isAttached()) return;
-            if (!navigationHandle.isInPrimaryMainFrame()) return;
-        }
     }
 }
