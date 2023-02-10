@@ -6088,12 +6088,12 @@
   {
     "name": "request-desktop-site-exceptions",
     "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 114
   },
   {
     "name": "request-desktop-site-exceptions-downgrade",
     "owners": [ "aishwaryarj", "twellington", "clank-app-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 114
   },
   {
     "name": "request-desktop-site-per-site-iph",
