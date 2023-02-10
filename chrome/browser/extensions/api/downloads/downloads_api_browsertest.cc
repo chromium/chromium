@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/values.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 
 #include <stddef.h>
@@ -173,18 +174,23 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
         if (!args_.is_list() || !other.args_.is_list() ||
             args_.GetList().empty() || other.args_.GetList().empty())
           return false;
-        const base::Value& left_dict = args_.GetList()[0];
-        const base::Value& right_dict = other.args_.GetList()[0];
-        if (!left_dict.is_dict() || !right_dict.is_dict())
+        const base::Value& left_value = args_.GetList()[0];
+        const base::Value& right_value = other.args_.GetList()[0];
+        if (!left_value.is_dict() || !right_value.is_dict()) {
           return false;
+        }
+
+        const base::Value::Dict& left_dict = left_value.GetDict();
+        const base::Value::Dict& right_dict = right_value.GetDict();
         // Expect that all keys present in both dictionaries are equal. If a key
         // is only present in one of the dictionaries, ignore it. This allows us
         // to verify the properties we care about in the test without needing to
         // specify each.
-        for (auto it : left_dict.DictItems()) {
-          const base::Value* right_value = right_dict.FindKey(it.first);
-          if (!right_value || *right_value != it.second)
+        for (const auto [left_dict_key, left_dict_value] : left_dict) {
+          const base::Value* right_dict_value = right_dict.Find(left_dict_key);
+          if (!right_dict_value || *right_dict_value != left_dict_value) {
             return false;
+          }
         }
         return true;
       }
