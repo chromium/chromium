@@ -19,6 +19,7 @@ enum class Destination {
   Settings = 7,
   WhatsNew = 8,
   SpotlightDebugger = 9,
+  PriceNotifications = 10,
 };
 
 // Ingests `destination` string representation and returns corresponding

@@ -213,6 +213,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuDestination* downloadsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* historyDestination;
 @property(nonatomic, strong) OverflowMenuDestination* passwordsDestination;
+@property(nonatomic, strong)
+    OverflowMenuDestination* priceNotificationsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* readingListDestination;
 @property(nonatomic, strong) OverflowMenuDestination* recentTabsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* settingsDestination;
@@ -535,6 +537,37 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   }
 
   if (UseSymbols()) {
+    // Price Tracking destination.
+    self.priceNotificationsDestination =
+        [self createOverflowMenuDestination:
+                  IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE
+                                destination:overflow_menu::Destination::
+                                                PriceNotifications
+                                 symbolName:kDownTrendSymbol
+                               systemSymbol:NO
+                            accessibilityID:kToolsMenuPriceNotifications
+                                    handler:^{
+                                      [weakSelf openPriceNotifications];
+                                    }];
+  } else {
+    // Price Tracking destination.
+    // TODO:(crbug.com/1385781) Rename the `imageName` to
+    // 'overflow_menu_destination_price_notifications' when the Price tracking
+    // action item is being removed.
+    self.priceNotificationsDestination = [self
+        createOverflowMenuDestination:
+            IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE
+                          destination:overflow_menu::Destination::
+                                          PriceNotifications
+                            imageName:
+                                @"overflow_menu_action_price_notifications"
+                      accessibilityID:kToolsMenuPriceNotifications
+                              handler:^{
+                                [weakSelf openPriceNotifications];
+                              }];
+  }
+
+  if (UseSymbols()) {
     // Reading List destination.
     self.readingListDestination = [self
         createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
@@ -737,6 +770,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           [weakSelf addToReadingList];
         });
 
+    // TODO:(crbug.com/1385781) Remove once the PriceNotificationsDestination
+    // has landed.
     self.openPriceNotificationsAction = CreateOverflowMenuAction(
         IDS_IOS_PRICE_NOTIFICATIONS_OVERFLOW_MENU_TITLE, kDownTrendSymbol,
         /*systemSymbol=*/YES, /*monochromeSymbol=*/NO,
@@ -864,6 +899,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           [weakSelf addToReadingList];
         });
 
+    // TODO:(crbug.com/1385781) Remove once the PriceNotificationsDestination
+    // has landed.
     self.openPriceNotificationsAction = CreateOverflowMenuAction(
         IDS_IOS_PRICE_NOTIFICATIONS_OVERFLOW_MENU_TITLE,
         @"overflow_menu_action_price_notifications",
@@ -1138,6 +1175,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     self.recentTabsDestination,
     self.siteInfoDestination,
     self.settingsDestination,
+    self.priceNotificationsDestination,
   ];
 
   if (self.destinationUsageHistory && IsSmartSortingNewOverflowMenuEnabled()) {

@@ -21,6 +21,8 @@ Destination DestinationForStringName(std::string destination) {
     return overflow_menu::Destination::ReadingList;
   } else if (destination == "overflow_menu::Destination::Passwords") {
     return overflow_menu::Destination::Passwords;
+  } else if (destination == "overflow_menu::Destination::PriceNotifications") {
+    return overflow_menu::Destination::PriceNotifications;
   } else if (destination == "overflow_menu::Destination::Downloads") {
     return overflow_menu::Destination::Downloads;
   } else if (destination == "overflow_menu::Destination::RecentTabs") {
@@ -53,6 +55,8 @@ std::string StringNameForDestination(Destination destination) {
       return "overflow_menu::Destination::ReadingList";
     case overflow_menu::Destination::Passwords:
       return "overflow_menu::Destination::Passwords";
+    case overflow_menu::Destination::PriceNotifications:
+      return "overflow_menu::Destination::PriceNotifications";
     case overflow_menu::Destination::Downloads:
       return "overflow_menu::Destination::Downloads";
     case overflow_menu::Destination::RecentTabs:
@@ -83,6 +87,10 @@ void RecordUmaActionForDestination(Destination destination) {
       break;
     case Destination::Passwords:
       base::RecordAction(base::UserMetricsAction("MobileMenuPasswords"));
+      break;
+    case Destination::PriceNotifications:
+      base::RecordAction(
+          base::UserMetricsAction("MobileMenuPriceNotifications"));
       break;
     case Destination::Downloads:
       base::RecordAction(
