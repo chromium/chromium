@@ -79,12 +79,7 @@ bool AudioDeviceDescription::UseSessionIdToSelectDevice(
 
 // static
 std::string AudioDeviceDescription::GetDefaultDeviceName() {
-#if !BUILDFLAG(IS_IOS)
   return GetLocalizedStringUTF8(DEFAULT_AUDIO_DEVICE_NAME);
-#else
-  NOTREACHED();
-  return "";
-#endif
 }
 
 // static

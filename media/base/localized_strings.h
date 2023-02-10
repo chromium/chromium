@@ -33,7 +33,6 @@ using LocalizedStringProvider = std::u16string (*)(MessageId message_id);
 // Initializes the global LocalizedStringProvider function.
 MEDIA_EXPORT void SetLocalizedStringProvider(LocalizedStringProvider func);
 
-#if !BUILDFLAG(IS_IOS)
 // The LocalizedStringProvider has probably not been initialized on iOS. This
 // will give an early compile warning for clients attempting to use it.
 
@@ -42,7 +41,6 @@ MEDIA_EXPORT void SetLocalizedStringProvider(LocalizedStringProvider func);
 // initialized or if the ID is unrecognized.
 MEDIA_EXPORT std::string GetLocalizedStringUTF8(MessageId message_id);
 std::u16string GetLocalizedStringUTF16(MessageId message_id);
-#endif
 
 }  // namespace media
 
