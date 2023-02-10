@@ -1,0 +1,25 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// ModifierKey contains the set of physical keys supported for modifier
+// remapping.
+enum ModifierKey {
+  kMeta = 0,
+  kControl = 1,
+  kAlt = 2,
+  // kVoid is used as a key that has no action. This key does not physically
+  // exist on a keyboard, but a user may remap any modifier to function like a
+  // void key.
+  kVoid = 3,
+  kCapsLock = 4,
+  kEscape = 5,
+  kBackspace = 6,
+  kAssistant = 7,
+  // kIsoLevel5ShiftMod3 is used to mark a special case where the keyboard
+  // layout used has a conflicting use of Mod3 which is generally used to mark
+  // `kCapsLock` in ChromeOS.
+  kIsoLevel5ShiftMod3 = 8,
+};

@@ -5,6 +5,7 @@
 module ash.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "ui/chromeos/events/mojom/modifier_key.mojom";
 
 // MetaKey denotes all the possible options deducable from the users external or
 // internal keyboard. Used to show the correct key to the user in the settings
@@ -14,22 +15,6 @@ enum MetaKey {
   kLauncher,
   kExternalMeta,
   kCommand
-};
-
-// ModifierKey contains the set of physical keys supported for modifier
-// remapping.
-enum ModifierKey {
-  kMeta = 0,
-  kControl = 1,
-  kAlt = 2,
-  // kVoid is used as a key that has no action. This key does not physically
-  // exist on a keyboard, but a user may remap any modifier to function like a
-  // void key.
-  kVoid = 3,
-  kCapsLock = 4,
-  kEscape = 5,
-  kBackspace = 6,
-  kAssistant = 7,
 };
 
 // Contains all information needed to display, apply, and update keyboard
@@ -50,13 +35,13 @@ struct Keyboard {
   // Meta key type (launcher, search, etc) for this keyboard.
   MetaKey meta_key;
   // List of modifier keys (caps lock, assistant, etc) present on this device.
-  array<ModifierKey> modifier_keys;
+  array<ui.mojom.ModifierKey> modifier_keys;
   KeyboardSettings settings;
 };
 
 // Contains all existing keyboard settings available for use.
 struct KeyboardSettings {
-  map<ModifierKey, ModifierKey> modifier_remappings;
+  map<ui.mojom.ModifierKey, ui.mojom.ModifierKey> modifier_remappings;
   bool top_row_are_fkeys;
   bool suppress_meta_fkey_rewrites;
   bool auto_repeat_enabled;

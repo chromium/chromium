@@ -17,7 +17,6 @@ source_set("events") {
     "keyboard_capability.h",
     "keyboard_layout_util.cc",
     "keyboard_layout_util.h",
-    "modifier_key.h",
     "pref_names.cc",
     "pref_names.h",
   ]
@@ -28,6 +27,7 @@ source_set("events") {
     "//ui/base",
     "//ui/base:features",
     "//ui/base/ime/ash",
+    "//ui/chromeos/events/mojom",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events/devices",

@@ -43,12 +43,16 @@ class EventRewriterChromeOS : public EventRewriter {
  public:
   // Things that keyboard-related rewriter phases can change about an Event.
   struct MutableKeyState {
-    MutableKeyState();
+    constexpr MutableKeyState() = default;
     explicit MutableKeyState(const KeyEvent* key_event);
-    MutableKeyState(int input_flags,
-                    DomCode input_code,
-                    DomKey::Base input_key,
-                    KeyboardCode input_key_code);
+    constexpr MutableKeyState(int input_flags,
+                              DomCode input_code,
+                              DomKey::Base input_key,
+                              KeyboardCode input_key_code)
+        : flags(input_flags),
+          code(input_code),
+          key(input_key),
+          key_code(input_key_code) {}
 
     friend bool operator==(const MutableKeyState& lhs,
                            const MutableKeyState& rhs) {
@@ -61,10 +65,10 @@ class EventRewriterChromeOS : public EventRewriter {
       return !(lhs == rhs);
     }
 
-    int flags;
-    DomCode code;
-    DomKey::Base key;
-    KeyboardCode key_code;
+    int flags = 0;
+    DomCode code = DomCode::NONE;
+    DomKey::Base key = 0;
+    KeyboardCode key_code = KeyboardCode::VKEY_NONAME;
   };
 
   class Delegate {

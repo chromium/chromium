@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
@@ -21,6 +20,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
 
 namespace ash {
 namespace {
@@ -66,10 +66,12 @@ constexpr int kNumModifiers =
 // 32-bit int will fit without any overflow or UB.
 // Modifier hash is limited to 32 bits as metrics can only handle 32 bit ints.
 static_assert((sizeof(int32_t) * 8) >= (kModifierHashWidth * kNumModifiers));
-static_assert(static_cast<int>(mojom::ModifierKey::kMaxValue) <=
+// `kIsoLevel5ShiftMod3` is not a valid modifier for the purposes of these
+// metrics so there is 1 less modifier than the max value.
+static_assert(static_cast<int>(ui::mojom::ModifierKey::kMaxValue) - 1 <=
               kMaxModifierValue);
 
-constexpr mojom::ModifierKey GetDefaultModifier(size_t index) {
+constexpr ui::mojom::ModifierKey GetDefaultModifier(size_t index) {
   return KeyboardModifierMetricsRecorder::kKeyboardModifierPrefs[index]
       .default_modifier_key;
 }
@@ -144,7 +146,7 @@ void KeyboardModifierMetricsRecorder::OnActiveUserPrefServiceChanged(
       const int value = pref_member->GetValue();
       DCHECK(IsValidModifier(value));
       RecordModifierRemappingInit(index,
-                                  static_cast<mojom::ModifierKey>(value));
+                                  static_cast<ui::mojom::ModifierKey>(value));
     }
     RecordModifierRemappingHash();
   }
@@ -160,12 +162,13 @@ void KeyboardModifierMetricsRecorder::OnModifierRemappingChanged(
 
   int value = pref_member->GetValue();
   DCHECK(IsValidModifier(value));
-  RecordModifierRemappingChanged(index, static_cast<mojom::ModifierKey>(value));
+  RecordModifierRemappingChanged(index,
+                                 static_cast<ui::mojom::ModifierKey>(value));
 }
 
 void KeyboardModifierMetricsRecorder::RecordModifierRemappingChanged(
     size_t index,
-    mojom::ModifierKey modifier_key) {
+    ui::mojom::ModifierKey modifier_key) {
   const std::string changed_metric_name = base::StrCat(
       {kModifierMetricPrefix, kKeyboardModifierPrefs[index].key_name,
        kModifierMetricIndividualChangedSuffix});
@@ -174,8 +177,9 @@ void KeyboardModifierMetricsRecorder::RecordModifierRemappingChanged(
 
 void KeyboardModifierMetricsRecorder::RecordModifierRemappingInit(
     size_t index,
-    mojom::ModifierKey modifier_key) {
+    ui::mojom::ModifierKey modifier_key) {
   DCHECK_LT(index, std::size(kKeyboardModifierPrefs));
+
   // Skip publishing the metric if the pref is set to its default value.
   if (GetDefaultModifier(index) == modifier_key) {
     return;
@@ -202,7 +206,7 @@ void KeyboardModifierMetricsRecorder::RecordModifierRemappingHash() {
     const int value = pref_members_[i]->GetValue();
 
     // Check that shifting and adding value will not overflow `hash`.
-    DCHECK(value <= kMaxModifierValue && value >= 0);
+    DCHECK(IsValidModifier(value));
     DCHECK(hash < (1u << ((sizeof(uint32_t) * 8u) - kModifierHashWidth)));
 
     hash <<= kModifierHashWidth;

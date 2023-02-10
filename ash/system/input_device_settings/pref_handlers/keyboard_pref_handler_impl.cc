@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
 
 namespace ash {
 namespace {
@@ -101,15 +102,16 @@ mojom::KeyboardSettingsPtr KeyboardPrefHandlerImpl::RetreiveKeyboardSettings(
     }
     to_int = to.GetInt();
 
-    // Validate the ints can be cast to `mojom::ModifierKey` and cast them.
+    // Validate the ints can be cast to `ui::mojom::ModifierKey` and cast them.
     if (!IsValidModifier(from_int) || !IsValidModifier(to_int)) {
       LOG(ERROR) << "Read invalid modifier keys from pref. From: " << from_int
                  << " To: " << to_int;
       continue;
     }
-    const mojom::ModifierKey from_key =
-        static_cast<mojom::ModifierKey>(from_int);
-    const mojom::ModifierKey to_key = static_cast<mojom::ModifierKey>(to_int);
+    const ui::mojom::ModifierKey from_key =
+        static_cast<ui::mojom::ModifierKey>(from_int);
+    const ui::mojom::ModifierKey to_key =
+        static_cast<ui::mojom::ModifierKey>(to_int);
 
     settings->modifier_remappings[from_key] = to_key;
   }
@@ -152,8 +154,8 @@ void KeyboardPrefHandlerImpl::UpdateKeyboardSettings(
                     settings.top_row_are_fkeys);
 
   // Modifier remappings get stored in a dict by casting the
-  // `mojom::ModifierKey` enum to ints. Since `base::Value::Dict` only supports
-  // strings as keys, this is then converted into a string.
+  // `ui::mojom::ModifierKey` enum to ints. Since `base::Value::Dict` only
+  // supports strings as keys, this is then converted into a string.
   base::Value::Dict modifier_remappings;
   for (const auto& [from, to] : settings.modifier_remappings) {
     modifier_remappings.Set(base::NumberToString(static_cast<int>(from)),

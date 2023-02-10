@@ -10,7 +10,7 @@
 
 namespace ash {
 
-// Checks if a given value is within the bounds set by `mojom::ModifierKey`.
+// Checks if a given value is within the bounds set by `ui::mojom::ModifierKey`.
 bool IsValidModifier(int val);
 
 // Builds `device_key` for use in storing device settings in prefs.

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
 
 namespace ash {
 
@@ -49,10 +50,10 @@ const mojom::KeyboardSettings kKeyboardSettings1(
     /*auto_repeat_interval=*/base::Milliseconds(500));
 
 const mojom::KeyboardSettings kKeyboardSettings2(
-    /*modifier_remappings=*/{{mojom::ModifierKey::kControl,
-                              mojom::ModifierKey::kAlt},
-                             {mojom::ModifierKey::kAssistant,
-                              mojom::ModifierKey::kVoid}},
+    /*modifier_remappings=*/{{ui::mojom::ModifierKey::kControl,
+                              ui::mojom::ModifierKey::kAlt},
+                             {ui::mojom::ModifierKey::kAssistant,
+                              ui::mojom::ModifierKey::kVoid}},
     /*top_row_are_fkeys=*/true,
     /*suppress_meta_fkey_rewrites=*/true,
     /*auto_repeat_enabled=*/true,
@@ -60,14 +61,14 @@ const mojom::KeyboardSettings kKeyboardSettings2(
     /*auto_repeat_interval=*/base::Milliseconds(100));
 
 const mojom::KeyboardSettings kKeyboardSettings3(
-    /*modifier_remappings=*/{{mojom::ModifierKey::kAlt,
-                              mojom::ModifierKey::kCapsLock},
-                             {mojom::ModifierKey::kAssistant,
-                              mojom::ModifierKey::kVoid},
-                             {mojom::ModifierKey::kBackspace,
-                              mojom::ModifierKey::kEscape},
-                             {mojom::ModifierKey::kControl,
-                              mojom::ModifierKey::kAssistant}},
+    /*modifier_remappings=*/{{ui::mojom::ModifierKey::kAlt,
+                              ui::mojom::ModifierKey::kCapsLock},
+                             {ui::mojom::ModifierKey::kAssistant,
+                              ui::mojom::ModifierKey::kVoid},
+                             {ui::mojom::ModifierKey::kBackspace,
+                              ui::mojom::ModifierKey::kEscape},
+                             {ui::mojom::ModifierKey::kControl,
+                              ui::mojom::ModifierKey::kAssistant}},
     /*top_row_are_fkeys=*/true,
     /*suppress_meta_fkey_rewrites=*/false,
     /*auto_repeat_enabled=*/true,
@@ -241,7 +242,7 @@ TEST_F(KeyboardPrefHandlerTest, UpdateSettings) {
 
   mojom::KeyboardSettings updated_settings = kKeyboardSettings1;
   updated_settings.modifier_remappings = {
-      {mojom::ModifierKey::kAlt, mojom::ModifierKey::kControl}};
+      {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kControl}};
   updated_settings.auto_repeat_enabled = !updated_settings.auto_repeat_enabled;
   updated_settings.suppress_meta_fkey_rewrites =
       !updated_settings.suppress_meta_fkey_rewrites;
@@ -338,23 +339,25 @@ TEST_F(KeyboardPrefHandlerTest, InvalidModifierRemappings) {
 
   base::Value::Dict invalid_modifier_remappings;
   invalid_modifier_remappings.Set(
-      base::NumberToString(static_cast<int>(mojom::ModifierKey::kMaxValue) + 1),
-      static_cast<int>(mojom::ModifierKey::kControl));
+      base::NumberToString(static_cast<int>(ui::mojom::ModifierKey::kMaxValue) +
+                           1),
+      static_cast<int>(ui::mojom::ModifierKey::kControl));
   invalid_modifier_remappings.Set(
-      base::NumberToString(static_cast<int>(mojom::ModifierKey::kMinValue) - 1),
-      static_cast<int>(mojom::ModifierKey::kControl));
+      base::NumberToString(static_cast<int>(ui::mojom::ModifierKey::kMinValue) -
+                           1),
+      static_cast<int>(ui::mojom::ModifierKey::kControl));
   invalid_modifier_remappings.Set(
-      base::NumberToString(static_cast<int>(mojom::ModifierKey::kControl)),
-      static_cast<int>(mojom::ModifierKey::kMaxValue) + 1);
+      base::NumberToString(static_cast<int>(ui::mojom::ModifierKey::kControl)),
+      static_cast<int>(ui::mojom::ModifierKey::kMaxValue) + 1);
   invalid_modifier_remappings.Set(
-      base::NumberToString(static_cast<int>(mojom::ModifierKey::kAlt)),
-      static_cast<int>(mojom::ModifierKey::kMinValue) - 1);
+      base::NumberToString(static_cast<int>(ui::mojom::ModifierKey::kAlt)),
+      static_cast<int>(ui::mojom::ModifierKey::kMinValue) - 1);
 
   // Set 1 valid modifier remapping to check that it skips invalid remappings,
   // and keeps the valid.
   invalid_modifier_remappings.Set(
-      base::NumberToString(static_cast<int>(mojom::ModifierKey::kAlt)),
-      static_cast<int>(mojom::ModifierKey::kControl));
+      base::NumberToString(static_cast<int>(ui::mojom::ModifierKey::kAlt)),
+      static_cast<int>(ui::mojom::ModifierKey::kControl));
 
   // Set modifier remappings to the invalid set.
   settings_dict->Set(prefs::kKeyboardSettingModifierRemappings,
@@ -368,10 +371,10 @@ TEST_F(KeyboardPrefHandlerTest, InvalidModifierRemappings) {
       CallInitializeKeyboardSettings(kKeyboardKey1);
 
   ASSERT_EQ(1u, settings->modifier_remappings.size());
-  ASSERT_TRUE(
-      base::Contains(settings->modifier_remappings, mojom::ModifierKey::kAlt));
-  EXPECT_EQ(mojom::ModifierKey::kControl,
-            settings->modifier_remappings[mojom::ModifierKey::kAlt]);
+  ASSERT_TRUE(base::Contains(settings->modifier_remappings,
+                             ui::mojom::ModifierKey::kAlt));
+  EXPECT_EQ(ui::mojom::ModifierKey::kControl,
+            settings->modifier_remappings[ui::mojom::ModifierKey::kAlt]);
 
   // Saved prefs should not be modified and should be left as they were in their
   // invalid state.

@@ -23,7 +23,7 @@
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/chromeos/events/modifier_key.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/chromeos/events/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event_utils.h"
@@ -61,51 +61,64 @@ constexpr int kSearchLeftButton = (EF_COMMAND_DOWN | EF_LEFT_MOUSE_BUTTON);
 // is set in the incoming event. Using the |pref_name| in the table entry,
 // it likewise uses |GetRemappedKey()| to find the properties of the
 // user preference target key, and replaces the flag accordingly.
-const struct ModifierRemapping {
+constexpr struct ModifierRemapping {
   int flag;
-  chromeos::ModifierKey remap_to;
+  ui::mojom::ModifierKey remap_to;
   const char* pref_name;
   EventRewriterChromeOS::MutableKeyState result;
 } kModifierRemappings[] = {
     {EF_CONTROL_DOWN,
-     chromeos::ModifierKey::kControlKey,
+     ui::mojom::ModifierKey::kControl,
      prefs::kLanguageRemapControlKeyTo,
      {EF_CONTROL_DOWN, DomCode::CONTROL_LEFT, DomKey::CONTROL, VKEY_CONTROL}},
-    {// kModifierRemappingNeoMod3 references this entry by index.
-     EF_MOD3_DOWN | EF_ALTGR_DOWN,
-     chromeos::ModifierKey::kNumModifierKeys,
+    {EF_MOD3_DOWN | EF_ALTGR_DOWN,
+     mojom::ModifierKey::kIsoLevel5ShiftMod3,
      nullptr,
      {EF_MOD3_DOWN | EF_ALTGR_DOWN, DomCode::CAPS_LOCK, DomKey::ALT_GRAPH,
       VKEY_ALTGR}},
     {EF_COMMAND_DOWN,
-     chromeos::ModifierKey::kSearchKey,
+     ui::mojom::ModifierKey::kMeta,
      prefs::kLanguageRemapSearchKeyTo,
      {EF_COMMAND_DOWN, DomCode::META_LEFT, DomKey::META, VKEY_LWIN}},
     {EF_ALT_DOWN,
-     chromeos::ModifierKey::kAltKey,
+     ui::mojom::ModifierKey::kAlt,
      prefs::kLanguageRemapAltKeyTo,
      {EF_ALT_DOWN, DomCode::ALT_LEFT, DomKey::ALT, VKEY_MENU}},
     {EF_NONE,
-     chromeos::ModifierKey::kVoidKey,
+     ui::mojom::ModifierKey::kVoid,
      nullptr,
      {EF_NONE, DomCode::NONE, DomKey::NONE, VKEY_UNKNOWN}},
     {EF_MOD3_DOWN,
-     chromeos::ModifierKey::kCapsLockKey,
+     ui::mojom::ModifierKey::kCapsLock,
      prefs::kLanguageRemapCapsLockKeyTo,
      {EF_MOD3_DOWN, DomCode::CAPS_LOCK, DomKey::CAPS_LOCK, VKEY_CAPITAL}},
     {EF_NONE,
-     chromeos::ModifierKey::kEscapeKey,
+     ui::mojom::ModifierKey::kEscape,
      prefs::kLanguageRemapEscapeKeyTo,
      {EF_NONE, DomCode::ESCAPE, DomKey::ESCAPE, VKEY_ESCAPE}},
     {EF_NONE,
-     chromeos::ModifierKey::kBackspaceKey,
+     ui::mojom::ModifierKey::kBackspace,
      prefs::kLanguageRemapBackspaceKeyTo,
      {EF_NONE, DomCode::BACKSPACE, DomKey::BACKSPACE, VKEY_BACK}},
     {EF_NONE,
-     chromeos::ModifierKey::kAssistantKey,
+     ui::mojom::ModifierKey::kAssistant,
      prefs::kLanguageRemapAssistantKeyTo,
      {EF_NONE, DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT,
       VKEY_ASSISTANT}}};
+
+// Finds the remapping for Neo Mod3 in the list. Used only to set the value of
+// |kModifierRemappingIsoLevel5ShiftMod3|.
+constexpr const ModifierRemapping* GetModifierRemappingNeoMod3() {
+  for (auto& remapping : kModifierRemappings) {
+    if (remapping.remap_to == mojom::ModifierKey::kIsoLevel5ShiftMod3) {
+      return &remapping;
+    }
+  }
+  return nullptr;
+}
+constexpr const ModifierRemapping* kModifierRemappingIsoLevel5ShiftMod3 =
+    GetModifierRemappingNeoMod3();
+static_assert(kModifierRemappingIsoLevel5ShiftMod3 != nullptr);
 
 const EventRewriterChromeOS::MutableKeyState kCustomTopRowLayoutFKeys[] = {
     {EF_NONE, DomCode::F1, DomKey::F1, VKEY_F1},
@@ -130,8 +143,6 @@ constexpr KeyboardCode kMaxCustomTopRowLayoutFKeyCode = VKEY_F15;
 bool IsCustomLayoutFunctionKey(KeyboardCode key_code) {
   return key_code >= VKEY_F1 && key_code <= kMaxCustomTopRowLayoutFKeyCode;
 }
-
-const ModifierRemapping* kModifierRemappingNeoMod3 = &kModifierRemappings[1];
 
 // Gets a remapped key for |pref_name| key. For example, to find out which
 // key Ctrl is currently remapped to, call the function with
@@ -701,25 +712,12 @@ void RecordSixPackEventRewrites(ui::EventType event_type,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-EventRewriterChromeOS::MutableKeyState::MutableKeyState()
-    : MutableKeyState(0, DomCode::NONE, 0, KeyboardCode::VKEY_NONAME) {}
-
 EventRewriterChromeOS::MutableKeyState::MutableKeyState(
     const KeyEvent* key_event)
     : MutableKeyState(key_event->flags(),
                       key_event->code(),
                       key_event->GetDomKey(),
                       key_event->key_code()) {}
-
-EventRewriterChromeOS::MutableKeyState::MutableKeyState(
-    int input_flags,
-    DomCode input_code,
-    DomKey::Base input_key,
-    KeyboardCode input_key_code)
-    : flags(input_flags),
-      code(input_code),
-      key(input_key),
-      key_code(input_key_code) {}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -934,7 +932,7 @@ bool EventRewriterChromeOS::RewriteModifierKeys(const KeyEvent& key_event,
         }
       }
       if (remapped_key && remapped_key->result.key_code == VKEY_CAPITAL) {
-        remapped_key = kModifierRemappingNeoMod3;
+        remapped_key = kModifierRemappingIsoLevel5ShiftMod3;
       }
       break;
     case DomKey::ALT_GRAPH_LATCH:
@@ -1032,7 +1030,7 @@ bool EventRewriterChromeOS::RewriteModifierKeys(const KeyEvent& key_event,
       // turn on the Capslock modifier when the key has been remapped.
       incoming.flags &= ~EF_CAPS_LOCK_ON;
     }
-    if (remapped_key->remap_to == chromeos::ModifierKey::kCapsLockKey) {
+    if (remapped_key->remap_to == ui::mojom::ModifierKey::kCapsLock) {
       characteristic_flag |= EF_CAPS_LOCK_ON;
     }
     state->code = RelocateModifier(
@@ -1161,7 +1159,7 @@ int EventRewriterChromeOS::GetRemappedModifierMasks(const Event& event,
       case EF_MOD3_DOWN | EF_ALTGR_DOWN:
         if ((original_flags & EF_ALTGR_DOWN) &&
             IsISOLevel5ShiftUsedByCurrentInputMethod()) {
-          remapped_key = kModifierRemappingNeoMod3;
+          remapped_key = kModifierRemappingIsoLevel5ShiftMod3;
         }
         break;
       default:

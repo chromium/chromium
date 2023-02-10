@@ -19,7 +19,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/events/modifier_key.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
 #include "ui/chromeos/events/pref_names.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -93,7 +93,7 @@ bool CapsLockNotificationController::IsSearchKeyMappedToCapsLock() {
   // to worry about sync changing the pref while the menu or notification is
   // visible.
   return prefs->GetInteger(prefs::kLanguageRemapSearchKeyTo) ==
-         static_cast<int>(ui::chromeos::ModifierKey::kCapsLockKey);
+         static_cast<int>(ui::mojom::ModifierKey::kCapsLock);
 }
 
 void CapsLockNotificationController::OnCapsLockChanged(bool enabled) {

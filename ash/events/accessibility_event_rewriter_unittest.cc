@@ -12,12 +12,13 @@
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/check_op.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
-#include "ui/chromeos/events/modifier_key.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/chromeos/events/pref_names.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/event.h"
@@ -134,7 +135,8 @@ class ChromeVoxAccessibilityEventRewriterTest
   }
 
   void SetModifierRemapping(const std::string& pref_name,
-                            ui::chromeos::ModifierKey value) {
+                            ui::mojom::ModifierKey value) {
+    DCHECK_NE(ui::mojom::ModifierKey::kIsoLevel5ShiftMod3, value);
     modifier_remapping_[pref_name] = static_cast<int>(value);
   }
 
@@ -360,7 +362,7 @@ TEST_F(ChromeVoxAccessibilityEventRewriterTest,
 
   // Map Control key to Search.
   SetModifierRemapping(prefs::kLanguageRemapControlKeyTo,
-                       ui::chromeos::ModifierKey::kSearchKey);
+                       ui::mojom::ModifierKey::kMeta);
 
   // Anything with Search gets captured.
   generator_->PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN);
@@ -541,7 +543,8 @@ class SwitchAccessAccessibilityEventRewriterTest
   }
 
   void SetModifierRemapping(const std::string& pref_name,
-                            ui::chromeos::ModifierKey value) {
+                            ui::mojom::ModifierKey value) {
+    DCHECK_NE(ui::mojom::ModifierKey::kIsoLevel5ShiftMod3, value);
     modifier_remapping_[pref_name] = static_cast<int>(value);
   }
 
@@ -794,7 +797,7 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest, RespectsModifierRemappings) {
 
   // Map Control key to Alt.
   SetModifierRemapping(prefs::kLanguageRemapControlKeyTo,
-                       ui::chromeos::ModifierKey::kAltKey);
+                       ui::mojom::ModifierKey::kAlt);
 
   // Send a key event for Control.
   generator_->PressKey(ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN,

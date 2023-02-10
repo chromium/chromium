@@ -4,10 +4,10 @@
 
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 
-#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
 
 namespace ash {
 
@@ -22,9 +22,11 @@ std::string HexEncode(uint16_t v) {
 }
 }  // namespace
 
+// `kIsoLevel5ShiftMod3` is not a valid modifier value.
 bool IsValidModifier(int val) {
-  return val >= static_cast<int>(mojom::ModifierKey::kMinValue) &&
-         val <= static_cast<int>(mojom::ModifierKey::kMaxValue);
+  return val >= static_cast<int>(ui::mojom::ModifierKey::kMinValue) &&
+         val <= static_cast<int>(ui::mojom::ModifierKey::kMaxValue) &&
+         val != static_cast<int>(ui::mojom::ModifierKey::kIsoLevel5ShiftMod3);
 }
 
 std::string BuildDeviceKey(const ui::InputDevice& device) {

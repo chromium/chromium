@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_prefs.h"
-#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -20,6 +19,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
 #include "ui/chromeos/events/pref_names.h"
 
 namespace ash {
@@ -35,44 +35,44 @@ struct KeyboardModifierMetricsRecorderTestData {
   std::string pref_name;
   std::string changed_metric_name;
   std::string started_metric_name;
-  mojom::ModifierKey default_modifier_key;
+  ui::mojom::ModifierKey default_modifier_key;
 } kKeyboardModifierMetricTestData[] = {
     {prefs::kLanguageRemapAltKeyTo,
      "ChromeOS.Settings.Keyboard.Modifiers.AltRemappedTo.Changed",
      "ChromeOS.Settings.Keyboard.Modifiers.AltRemappedTo.Started",
-     mojom::ModifierKey::kAlt},
+     ui::mojom::ModifierKey::kAlt},
     {prefs::kLanguageRemapControlKeyTo,
      "ChromeOS.Settings.Keyboard.Modifiers.ControlRemappedTo.Changed",
      "ChromeOS.Settings.Keyboard.Modifiers.ControlRemappedTo.Started",
-     mojom::ModifierKey::kControl},
+     ui::mojom::ModifierKey::kControl},
     {prefs::kLanguageRemapEscapeKeyTo,
      "ChromeOS.Settings.Keyboard.Modifiers.EscapeRemappedTo.Changed",
      "ChromeOS.Settings.Keyboard.Modifiers.EscapeRemappedTo.Started",
-     mojom::ModifierKey::kEscape},
+     ui::mojom::ModifierKey::kEscape},
     {prefs::kLanguageRemapBackspaceKeyTo,
      "ChromeOS.Settings.Keyboard.Modifiers.BackspaceRemappedTo.Changed",
      "ChromeOS.Settings.Keyboard.Modifiers.BackspaceRemappedTo.Started",
-     mojom::ModifierKey::kBackspace},
+     ui::mojom::ModifierKey::kBackspace},
     {prefs::kLanguageRemapAssistantKeyTo,
      "ChromeOS.Settings.Keyboard.Modifiers.AssistantRemappedTo.Changed",
      "ChromeOS.Settings.Keyboard.Modifiers.AssistantRemappedTo.Started",
-     mojom::ModifierKey::kAssistant},
+     ui::mojom::ModifierKey::kAssistant},
     {prefs::kLanguageRemapCapsLockKeyTo,
      "ChromeOS.Settings.Keyboard.Modifiers.CapsLockRemappedTo.Changed",
      "ChromeOS.Settings.Keyboard.Modifiers.CapsLockRemappedTo.Started",
-     mojom::ModifierKey::kCapsLock},
+     ui::mojom::ModifierKey::kCapsLock},
     {prefs::kLanguageRemapSearchKeyTo,
      "ChromeOS.Settings.Keyboard.Modifiers.SearchRemappedTo.Changed",
      "ChromeOS.Settings.Keyboard.Modifiers.SearchRemappedTo.Started",
-     mojom::ModifierKey::kMeta},
+     ui::mojom::ModifierKey::kMeta},
     {prefs::kLanguageRemapExternalMetaKeyTo,
      "ChromeOS.Settings.Keyboard.Modifiers.ExternalMetaRemappedTo.Changed",
      "ChromeOS.Settings.Keyboard.Modifiers.ExternalMetaRemappedTo.Started",
-     mojom::ModifierKey::kMeta},
+     ui::mojom::ModifierKey::kMeta},
     {prefs::kLanguageRemapExternalCommandKeyTo,
      "ChromeOS.Settings.Keyboard.Modifiers.ExternalCommandRemappedTo.Changed",
      "ChromeOS.Settings.Keyboard.Modifiers.ExternalCommandRemappedTo.Started",
-     mojom::ModifierKey::kControl},
+     ui::mojom::ModifierKey::kControl},
 };
 }  // namespace
 
@@ -113,8 +113,9 @@ class KeyboardModifierMetricsRecorderPrefChangedTest
     KeyboardModifierMetricsRecorderTest::SetUp();
     int int_modifier_key_from, int_modifier_key_to;
     std::tie(data_, int_modifier_key_from, int_modifier_key_to) = GetParam();
-    modifier_key_from_ = static_cast<mojom::ModifierKey>(int_modifier_key_from);
-    modifier_key_to_ = static_cast<mojom::ModifierKey>(int_modifier_key_to);
+    modifier_key_from_ =
+        static_cast<ui::mojom::ModifierKey>(int_modifier_key_from);
+    modifier_key_to_ = static_cast<ui::mojom::ModifierKey>(int_modifier_key_to);
 
     pref_service_ = Shell::Get()->session_controller()->GetActivePrefService();
     pref_service_->SetInteger(data_.pref_name,
@@ -126,8 +127,8 @@ class KeyboardModifierMetricsRecorderPrefChangedTest
   raw_ptr<PrefService> pref_service_;
 
   KeyboardModifierMetricsRecorderTestData data_;
-  mojom::ModifierKey modifier_key_from_;
-  mojom::ModifierKey modifier_key_to_;
+  ui::mojom::ModifierKey modifier_key_from_;
+  ui::mojom::ModifierKey modifier_key_to_;
 };
 
 // Instantiates the test case with every combination of the modifiers in
@@ -139,10 +140,10 @@ INSTANTIATE_TEST_SUITE_P(
     KeyboardModifierMetricsRecorderPrefChangedTest,
     testing::Combine(
         testing::ValuesIn(kKeyboardModifierMetricTestData),
-        testing::Range(static_cast<int>(mojom::ModifierKey::kMinValue),
-                       static_cast<int>(mojom::ModifierKey::kMaxValue) + 1),
-        testing::Range(static_cast<int>(mojom::ModifierKey::kMinValue),
-                       static_cast<int>(mojom::ModifierKey::kMaxValue) + 1)),
+        testing::Range(static_cast<int>(ui::mojom::ModifierKey::kMinValue),
+                       static_cast<int>(ui::mojom::ModifierKey::kMaxValue)),
+        testing::Range(static_cast<int>(ui::mojom::ModifierKey::kMinValue),
+                       static_cast<int>(ui::mojom::ModifierKey::kMaxValue))),
     ([](const testing::TestParamInfo<
          KeyboardModifierMetricsRecorderPrefChangedTest::ParamType>& info) {
       const auto& [data, int_modifier_key_from, int_modifier_key_to] =
@@ -185,26 +186,26 @@ class KeyboardModifierMetricsRecorderPrefStartedTest
     KeyboardModifierMetricsRecorderTest::SetUp();
     int int_modifier_key;
     std::tie(data_, int_modifier_key) = GetParam();
-    modifier_key_ = static_cast<mojom::ModifierKey>(int_modifier_key);
+    modifier_key_ = static_cast<ui::mojom::ModifierKey>(int_modifier_key);
     ResetHistogramTester();
   }
 
  protected:
   KeyboardModifierMetricsRecorderTestData data_;
-  mojom::ModifierKey modifier_key_;
+  ui::mojom::ModifierKey modifier_key_;
 };
 
 // Instantiates the test case with every combination of the modifiers in
 // `kKeyboardModifierMetricTestData` and with every possible remapped value in
-// `mojom::ModifierKey`. A custom name generator is implemented to simplify
+// `ui::mojom::ModifierKey`. A custom name generator is implemented to simplify
 // searching through test results for failed cases.
 INSTANTIATE_TEST_SUITE_P(
     ,
     KeyboardModifierMetricsRecorderPrefStartedTest,
     testing::Combine(
         testing::ValuesIn(kKeyboardModifierMetricTestData),
-        testing::Range(static_cast<int>(mojom::ModifierKey::kMinValue),
-                       static_cast<int>(mojom::ModifierKey::kMaxValue) + 1)),
+        testing::Range(static_cast<int>(ui::mojom::ModifierKey::kMinValue),
+                       static_cast<int>(ui::mojom::ModifierKey::kMaxValue))),
     ([](const testing::TestParamInfo<
          KeyboardModifierMetricsRecorderPrefStartedTest::ParamType>& info) {
       const auto& [data, int_modifier_key] = info.param;
@@ -272,7 +273,7 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
 // value after a user signs in. If `expected_value` is empty, then no metric is
 // expected.
 struct KeyboardModifierMetricsRecorderHashTestData {
-  base::flat_map<std::string, mojom::ModifierKey> modifier_remappings;
+  base::flat_map<std::string, ui::mojom::ModifierKey> modifier_remappings;
   absl::optional<int32_t> expected_value;
 };
 
@@ -299,50 +300,58 @@ INSTANTIATE_TEST_SUITE_P(
         // With only default remappings, no metric is expected.
         {{}, absl::nullopt},
 
-        // All keys remapped to `mojom::ModifierKey::kMeta` should hash to 0.
-        {{{::prefs::kLanguageRemapAltKeyTo, mojom::ModifierKey::kMeta},
-          {::prefs::kLanguageRemapCapsLockKeyTo, mojom::ModifierKey::kMeta},
-          {::prefs::kLanguageRemapBackspaceKeyTo, mojom::ModifierKey::kMeta},
-          {::prefs::kLanguageRemapEscapeKeyTo, mojom::ModifierKey::kMeta},
-          {::prefs::kLanguageRemapControlKeyTo, mojom::ModifierKey::kMeta},
-          {::prefs::kLanguageRemapAssistantKeyTo, mojom::ModifierKey::kMeta},
-          {::prefs::kLanguageRemapExternalMetaKeyTo, mojom::ModifierKey::kMeta},
+        // All keys remapped to `ui::mojom::ModifierKey::kMeta` should hash to
+        // 0.
+        {{{::prefs::kLanguageRemapAltKeyTo, ui::mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapCapsLockKeyTo, ui::mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapBackspaceKeyTo,
+           ui::mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapEscapeKeyTo, ui::mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapControlKeyTo, ui::mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapAssistantKeyTo,
+           ui::mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapExternalMetaKeyTo,
+           ui::mojom::ModifierKey::kMeta},
           {::prefs::kLanguageRemapExternalCommandKeyTo,
-           mojom::ModifierKey::kMeta},
-          {::prefs::kLanguageRemapSearchKeyTo, mojom::ModifierKey::kMeta}},
+           ui::mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapSearchKeyTo, ui::mojom::ModifierKey::kMeta}},
          0x0},
 
-        // All keys remapped to `mojom::ModifierKey::kBackspace` should hash to
+        // All keys remapped to `ui::mojom::ModifierKey::kBackspace` should hash
+        // to
         // 0x6db6db6.
-        {{{::prefs::kLanguageRemapAltKeyTo, mojom::ModifierKey::kBackspace},
+        {{{::prefs::kLanguageRemapAltKeyTo, ui::mojom::ModifierKey::kBackspace},
           {::prefs::kLanguageRemapCapsLockKeyTo,
-           mojom::ModifierKey::kBackspace},
+           ui::mojom::ModifierKey::kBackspace},
           {::prefs::kLanguageRemapBackspaceKeyTo,
-           mojom::ModifierKey::kBackspace},
-          {::prefs::kLanguageRemapEscapeKeyTo, mojom::ModifierKey::kBackspace},
-          {::prefs::kLanguageRemapControlKeyTo, mojom::ModifierKey::kBackspace},
+           ui::mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapEscapeKeyTo,
+           ui::mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapControlKeyTo,
+           ui::mojom::ModifierKey::kBackspace},
           {::prefs::kLanguageRemapAssistantKeyTo,
-           mojom::ModifierKey::kBackspace},
+           ui::mojom::ModifierKey::kBackspace},
           {::prefs::kLanguageRemapExternalMetaKeyTo,
-           mojom::ModifierKey::kBackspace},
+           ui::mojom::ModifierKey::kBackspace},
           {::prefs::kLanguageRemapExternalCommandKeyTo,
-           mojom::ModifierKey::kBackspace},
-          {::prefs::kLanguageRemapSearchKeyTo, mojom::ModifierKey::kBackspace}},
+           ui::mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapSearchKeyTo,
+           ui::mojom::ModifierKey::kBackspace}},
          0x6db6db6},
 
         // Random assortment of keys with a manually computed hash.
-        {{{::prefs::kLanguageRemapAltKeyTo, mojom::ModifierKey::kControl},
-          {::prefs::kLanguageRemapCapsLockKeyTo, mojom::ModifierKey::kAlt},
+        {{{::prefs::kLanguageRemapAltKeyTo, ui::mojom::ModifierKey::kControl},
+          {::prefs::kLanguageRemapCapsLockKeyTo, ui::mojom::ModifierKey::kAlt},
           {::prefs::kLanguageRemapBackspaceKeyTo,
-           mojom::ModifierKey::kAssistant},
-          {::prefs::kLanguageRemapEscapeKeyTo, mojom::ModifierKey::kVoid},
-          {::prefs::kLanguageRemapControlKeyTo, mojom::ModifierKey::kMeta},
-          {::prefs::kLanguageRemapAssistantKeyTo, mojom::ModifierKey::kAlt},
+           ui::mojom::ModifierKey::kAssistant},
+          {::prefs::kLanguageRemapEscapeKeyTo, ui::mojom::ModifierKey::kVoid},
+          {::prefs::kLanguageRemapControlKeyTo, ui::mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapAssistantKeyTo, ui::mojom::ModifierKey::kAlt},
           {::prefs::kLanguageRemapExternalMetaKeyTo,
-           mojom::ModifierKey::kControl},
+           ui::mojom::ModifierKey::kControl},
           {::prefs::kLanguageRemapExternalCommandKeyTo,
-           mojom::ModifierKey::kCapsLock},
-          {::prefs::kLanguageRemapSearchKeyTo, mojom::ModifierKey::kAlt}},
+           ui::mojom::ModifierKey::kCapsLock},
+          {::prefs::kLanguageRemapSearchKeyTo, ui::mojom::ModifierKey::kAlt}},
          0x4452ec1},
     }));
 

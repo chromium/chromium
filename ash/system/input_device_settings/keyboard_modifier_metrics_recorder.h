@@ -10,9 +10,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/public/mojom/input_device_settings.mojom-shared.h"
+#include "base/containers/flat_set.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_member.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
 #include "ui/chromeos/events/pref_names.h"
 
 class PrefService;
@@ -29,24 +30,25 @@ class ASH_EXPORT KeyboardModifierMetricsRecorder : public SessionObserver {
   static constexpr struct {
     const char* key_name;
     const char* pref_name;
-    mojom::ModifierKey default_modifier_key;
+    ui::mojom::ModifierKey default_modifier_key;
   } kKeyboardModifierPrefs[] = {
-      {"Alt", ::prefs::kLanguageRemapAltKeyTo, mojom::ModifierKey::kAlt},
+      {"Alt", ::prefs::kLanguageRemapAltKeyTo, ui::mojom::ModifierKey::kAlt},
       {"Control", ::prefs::kLanguageRemapControlKeyTo,
-       mojom::ModifierKey::kControl},
+       ui::mojom::ModifierKey::kControl},
       {"Escape", ::prefs::kLanguageRemapEscapeKeyTo,
-       mojom::ModifierKey::kEscape},
+       ui::mojom::ModifierKey::kEscape},
       {"Backspace", ::prefs::kLanguageRemapBackspaceKeyTo,
-       mojom::ModifierKey::kBackspace},
+       ui::mojom::ModifierKey::kBackspace},
       {"Assistant", ::prefs::kLanguageRemapAssistantKeyTo,
-       mojom::ModifierKey::kAssistant},
+       ui::mojom::ModifierKey::kAssistant},
       {"CapsLock", ::prefs::kLanguageRemapCapsLockKeyTo,
-       mojom::ModifierKey::kCapsLock},
+       ui::mojom::ModifierKey::kCapsLock},
       {"ExternalMeta", ::prefs::kLanguageRemapExternalMetaKeyTo,
-       mojom::ModifierKey::kMeta},
-      {"Search", ::prefs::kLanguageRemapSearchKeyTo, mojom::ModifierKey::kMeta},
+       ui::mojom::ModifierKey::kMeta},
+      {"Search", ::prefs::kLanguageRemapSearchKeyTo,
+       ui::mojom::ModifierKey::kMeta},
       {"ExternalCommand", ::prefs::kLanguageRemapExternalCommandKeyTo,
-       mojom::ModifierKey::kControl},
+       ui::mojom::ModifierKey::kControl},
   };
 
   KeyboardModifierMetricsRecorder();
@@ -68,9 +70,9 @@ class ASH_EXPORT KeyboardModifierMetricsRecorder : public SessionObserver {
   void ResetPrefMembers();
 
   void RecordModifierRemappingChanged(size_t index,
-                                      mojom::ModifierKey modifier_key);
+                                      ui::mojom::ModifierKey modifier_key);
   void RecordModifierRemappingInit(size_t index,
-                                   mojom::ModifierKey modifier_key);
+                                   ui::mojom::ModifierKey modifier_key);
 
   // TODO(dpad): Remove pref members once transitioned to per device settings.
   std::array<std::unique_ptr<IntegerPrefMember>,

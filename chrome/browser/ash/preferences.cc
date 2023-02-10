@@ -76,7 +76,7 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
-#include "ui/chromeos/events/modifier_key.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
 #include "ui/chromeos/events/pref_names.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -305,19 +305,19 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapSearchKeyTo,
-      static_cast<int>(ui::chromeos::ModifierKey::kSearchKey),
+      static_cast<int>(ui::mojom::ModifierKey::kMeta),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapControlKeyTo,
-      static_cast<int>(ui::chromeos::ModifierKey::kControlKey),
+      static_cast<int>(ui::mojom::ModifierKey::kControl),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapAltKeyTo,
-      static_cast<int>(ui::chromeos::ModifierKey::kAltKey),
+      static_cast<int>(ui::mojom::ModifierKey::kAlt),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapAssistantKeyTo,
-      static_cast<int>(ui::chromeos::ModifierKey::kAssistantKey),
+      static_cast<int>(ui::mojom::ModifierKey::kAssistant),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
 
   // Even though most of the Chrome OS devices don't have the CapsLock key - the
@@ -325,28 +325,28 @@ void Preferences::RegisterProfilePrefs(
   // syncing the pref to support this case.
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapCapsLockKeyTo,
-      static_cast<int>(ui::chromeos::ModifierKey::kCapsLockKey),
+      static_cast<int>(ui::mojom::ModifierKey::kCapsLock),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
 
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapEscapeKeyTo,
-      static_cast<int>(ui::chromeos::ModifierKey::kEscapeKey),
+      static_cast<int>(ui::mojom::ModifierKey::kEscape),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapBackspaceKeyTo,
-      static_cast<int>(ui::chromeos::ModifierKey::kBackspaceKey),
+      static_cast<int>(ui::mojom::ModifierKey::kBackspace),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   // The Command key on external Apple keyboards is remapped by default to Ctrl
   // until the user changes it from the keyboard settings.
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapExternalCommandKeyTo,
-      static_cast<int>(ui::chromeos::ModifierKey::kControlKey),
+      static_cast<int>(ui::mojom::ModifierKey::kControl),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   // The Meta key (Search or Windows keys) on external keyboards is remapped by
   // default to Search until the user changes it from the keyboard settings.
   registry->RegisterIntegerPref(
       ::prefs::kLanguageRemapExternalMetaKeyTo,
-      static_cast<int>(ui::chromeos::ModifierKey::kSearchKey),
+      static_cast<int>(ui::mojom::ModifierKey::kMeta),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   // The following pref isn't synced since the user may desire a different value
   // depending on whether an external keyboard is attached to a particular
