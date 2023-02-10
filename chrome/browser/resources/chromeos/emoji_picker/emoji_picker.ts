@@ -325,6 +325,17 @@ export class EmojiPicker extends PolymerElement {
 
     if (this.gifSupport) {
       this.validateRecentlyUsedGifs();
+
+      // Set Recently Used and Trending in the GIF tabs first before fetching
+      // Tenor API data
+      const trendingGifData = {name: constants.TRENDING};
+      const initialCategoryTabs = {
+        ...CATEGORY_TABS,
+        gif: this.setGifGroupsPagination([trendingGifData]),
+      };
+      this.allCategoryTabs = gifCategoryTabs(initialCategoryTabs);
+
+      // Fetch Tenor API category groups
       const categoriesFetchPromise =
           prevFetchPromise.then(() => this.apiProxy.getCategories());
 
@@ -335,14 +346,22 @@ export class EmojiPicker extends PolymerElement {
                 const categoryTabs = {
                   ...CATEGORY_TABS,
                   gif: this.setGifGroupsPagination(
-                      [{name: constants.TRENDING}, ...gifCategories]),
+                      [trendingGifData, ...gifCategories]),
                 };
 
                 gifCategories.map(
                     category => this.nextGifPos[category.name] = '');
                 this.allCategoryTabs = gifCategoryTabs(categoryTabs);
-              });
 
+                // If user is on GIF category, update emojiGroupTabs to
+                // re-render emoji picker and display newly fetched GIF tabs
+                if (this.category === CategoryEnum.GIF) {
+                  const gifTabs = this.allCategoryTabs.filter(
+                      tab => tab.category === CategoryEnum.GIF);
+                  this.set('emojiGroupTabs', gifTabs);
+                  this.updateActiveGroup();
+                }
+              });
       const featuredGifFetchPromise =
           categoriesFetchPromise.then(() => this.apiProxy.getFeaturedGifs());
       Promise.all([categoriesRenderPromise, featuredGifFetchPromise])
@@ -1270,13 +1289,6 @@ export class EmojiPicker extends PolymerElement {
   }
 
   private onCategoryButtonClick(newCategory: CategoryEnum) {
-    // TODO(b/264485361): Change the below if statement so that some sort of
-    // indication that GIFs are still loading appears on the Emoji Picker
-    // instead of not allowing the user to change to the GIF section
-    if (newCategory === CategoryEnum.GIF && !this.gifDataInitialised) {
-      return;
-    }
-
     this.set('category', newCategory);
     this.set('pagination', 1);
 
