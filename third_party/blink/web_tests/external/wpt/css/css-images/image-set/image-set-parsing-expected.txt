@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 64 tests; 52 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 70 tests; 58 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['background-image'] = "image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "image-set('example.jpg' 1x)" should set the property value
@@ -42,6 +42,12 @@ PASS e.style['background-image'] = "image-set(type('image/png') url(example.png)
 PASS e.style['background-image'] = "-webkit-image-set(type('image/png') url(example.png) 1x)" should not set the property value
 PASS e.style['cursor'] = "image-set(linear-gradient(black, white) 1x)" should not set the property value
 PASS e.style['cursor'] = "-webkit-image-set(linear-gradient(black, white) 1x)" should not set the property value
+PASS e.style['background-image'] = "image-set(url(example.png) 1x url(example.jpeg))" should not set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x url(example.jpeg))" should not set the property value
+PASS e.style['background-image'] = "image-set(url(example.png) 1x 2x)" should not set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x 2x)" should not set the property value
+PASS e.style['background-image'] = "image-set(image-set(url(example.png)) 2x)" should not set the property value
+PASS e.style['background-image'] = "-webkit-image-set(image-set(url(example.png)) 2x)" should not set the property value
 PASS e.style['background-image'] = "image-set(url(foo))" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(foo))" should set the property value
 PASS e.style['background-image'] = "image-set(url(foo), url(bar) 1x)" should set the property value

@@ -1,6 +1,8 @@
-// META: global=worker
+// META: global=dedicatedworker,sharedworker
 //
-// Tentative test for https://github.com/whatwg/html/issues/3255
+// Tests for https://github.com/whatwg/html/issues/8869
+
+importScripts("/resources/testharness.js");
 
 let test_cases = [
   // Supported mimetypes:
@@ -42,11 +44,23 @@ let test_cases = [
 
 for (const [mimeType, isScriptType] of test_cases) {
   test(t => {
-    let import_url = "/workers/support/imported_script.py?mime=" + mimeType;
+    let import_url = `data:${ mimeType },`;
     if (isScriptType) {
       assert_equals(undefined, importScripts(import_url));
     } else {
       assert_throws_dom("NetworkError", _ => { importScripts(import_url) })
     }
-  }, "importScripts() requires scripty MIME types: " + mimeType + " is " + (isScriptType ? "allowed" : "blocked") + ".");
+  }, "importScripts() requires scripty MIME types for data: URLs: " + mimeType + " is " + (isScriptType ? "allowed" : "blocked") + ".");
 }
+
+for (const [mimeType, isScriptType] of test_cases) {
+  test(t => {
+    let import_url = URL.createObjectURL(new Blob([""], { type: mimeType }));
+    if (isScriptType) {
+      assert_equals(undefined, importScripts(import_url));
+    } else {
+      assert_throws_dom("NetworkError", _ => { importScripts(import_url) })
+    }
+  }, "importScripts() requires scripty MIME types for blob: URLs: " + mimeType + " is " + (isScriptType ? "allowed" : "blocked") + ".");
+}
+done();
