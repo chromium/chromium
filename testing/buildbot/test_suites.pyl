@@ -3992,7 +3992,11 @@
           'shards': 12,
         },
       },
-      'ios_chrome_web_eg2tests_module': {},
+      'ios_chrome_web_eg2tests_module': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'ios_showcase_eg2tests_module': {},
     },
 
