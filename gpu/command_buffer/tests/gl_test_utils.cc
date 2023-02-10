@@ -24,10 +24,6 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "ui/gl/gl_image_native_pixmap.h"
-#endif
-
 namespace gpu {
 
 // GCC requires these declarations, but MSVC requires they not be present.
@@ -458,45 +454,5 @@ void GpuCommandBufferTestEGL::RestoreGLDefault() {
   egl_extensions_.clear();
   window_system_binding_info_ = gl::GLWindowSystemBindingInfo();
 }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-scoped_refptr<gl::GLImageNativePixmap>
-GpuCommandBufferTestEGL::CreateGLImageNativePixmap(gfx::BufferFormat format,
-                                                   gfx::Size size,
-                                                   uint8_t* pixels) const {
-  // Upload raw pixels to a new GL texture.
-  GLuint tex_client_id = 0;
-  glGenTextures(1, &tex_client_id);
-  DCHECK_NE(0u, tex_client_id);
-  glBindTexture(GL_TEXTURE_2D, tex_client_id);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.width(), size.height(), 0,
-               GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-  // Make sure the texture exists in the service side.
-  glFinish();
-
-  // This works because the test run in a similar mode as In-Process-GPU.
-  unsigned int tex_service_id = 0;
-  gl_.decoder()->GetServiceTextureId(tex_client_id, &tex_service_id);
-  EXPECT_NE(0u, tex_service_id);
-
-  // Create an EGLImage from the real texture id.
-  auto image =
-      gl::GLImageNativePixmap::CreateFromTexture(size, format, tex_service_id);
-  DCHECK(image);
-
-  // The test will own the EGLImage no need to keep a reference on the GL
-  // texture after returning from this function. This is covered by the
-  // EGL_KHR_image_base.txt specification, i.e. the underlying memory remains
-  // allocated as long as there is at least one sibling (like ref count).
-  glDeleteTextures(1, &tex_client_id);
-
-  return image;
-}
-#endif
 
 }  // namespace gpu
