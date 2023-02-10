@@ -250,17 +250,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.ContentDeleteEvent.Time" units="ms"
-    expires_after="M92">
-  <owner>rayankans@chromium.org</owner>
-  <owner>platform-capabilities@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a ContentDeleteEvent to a Service Worker
-    and receiving a message that it finished handling the event. Includes the
-    time for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.Database.DestroyDatabaseResult"
     enum="ServiceWorkerDatabaseStatus" expires_after="2023-10-09">
   <owner>yyanagisawa@google.com</owner>
@@ -348,16 +337,6 @@ chromium-metrics-reviews@google.com.
     The time taken between dispatching an ExtendableMessageEvent to a Service
     Worker and receiving a message that it finished handling the event. Includes
     the time for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.ExternalRequest.Time" units="ms"
-    expires_after="M85">
-  <owner>lazyboy@chromium.org</owner>
-  <summary>
-    The duration an external request spent to keep a service worker alive.
-    Currently, extension service workers use external requests to keep the
-    worker alive during the time the worker requests an extension API.
   </summary>
 </histogram>
 
@@ -792,28 +771,6 @@ chromium-metrics-reviews@google.com.
   <token key="ServiceWorkerEventType" variants="ServiceWorkerEventType"/>
 </histogram>
 
-<histogram name="ServiceWorker.NotificationClickEvent.Time" units="ms"
-    expires_after="M96">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a NotificationClickEvent to a Service
-    Worker and receiving a message that it finished handling the event. Includes
-    the time for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.NotificationCloseEvent.Time" units="ms"
-    expires_after="M96">
-  <owner>nsatragno@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a NotificationCloseEvent to a Service
-    Worker and receiving a message that it finished handling the event. Includes
-    the time for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.NumberOfRegisteredFetchHandlers"
     units="handlers" expires_after="2023-06-30">
   <owner>yyanagisawa@chromium.org</owner>
@@ -921,19 +878,6 @@ chromium-metrics-reviews@google.com.
     The time taken between dispatching a PushEvent to a Service Worker and
     receiving a message that it finished handling the event. Includes the time
     for the waitUntil() promise to settle.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.PushSubscriptionChangeEvent.Time" units="ms"
-    expires_after="M96">
-  <owner>peter@chromium.org</owner>
-  <owner>rayankans@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    The time taken between dispatching a PushSubscriptionChangeEvent to a
-    Service Worker and receiving a message that it finished handling the event.
-    Includes the time for the waitUntil() promise to settle. The event is
-    dispatched and finishes in PushMessagingRouter::FireSubscriptionChangeEvent.
   </summary>
 </histogram>
 
