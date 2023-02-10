@@ -246,6 +246,19 @@ PrivacySandboxSettingsImpl::GetM1AttributionReportingAllowedStatus(
                                     reporting_origin.GetURL());
 }
 
+bool PrivacySandboxSettingsImpl::IsAttributionReportingEverAllowed() const {
+  // M1 specific
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    Status status = GetM1PrivacySandboxApiEnabledStatus(
+        prefs::kPrivacySandboxM1AdMeasurementEnabled);
+    base::UmaHistogramEnumeration(
+        "PrivacySandbox.IsAttributionReportingEverAllowed", status);
+    return IsAllowed(status);
+  }
+
+  return IsPrivacySandboxEnabled();
+}
+
 bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {

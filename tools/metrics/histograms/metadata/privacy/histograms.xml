@@ -727,6 +727,8 @@ reviewer.
   <token key="ApiType">
     <variant name="IsAttributionReportingAllowed"
         summary="IsAttributionReportingAllowed"/>
+    <variant name="IsAttributionReportingEverAllowed"
+        summary="IsAttributionReportingEverAllowed"/>
     <variant name="IsFledgeAllowed" summary="IsFledgeAllowed"/>
     <variant name="IsPrivateAggregationAllowed"
         summary="IsPrivateAggregationAllowed"/>

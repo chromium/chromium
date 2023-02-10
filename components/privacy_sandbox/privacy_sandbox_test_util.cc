@@ -639,6 +639,25 @@ void CheckOutput(
                               prefs::kPrivacySandboxM1AdMeasurementEnabled));
       return;
     }
+    case (OutputKey::kIsAttributionReportingEverAllowed): {
+      SCOPED_TRACE("Check Output: Is Attribution Reporting Ever Allowed");
+      bool expected = GetItemValue<bool>(output_value);
+      ASSERT_EQ(expected,
+                privacy_sandbox_settings->IsAttributionReportingEverAllowed());
+      return;
+    }
+    case (OutputKey::kIsAttributionReportingEverAllowedMetric): {
+      SCOPED_TRACE(
+          "Check Output: PrivacySandbox.IsAttributionReportingEverAllowed");
+      base::HistogramTester histogram_tester;
+      std::ignore =
+          privacy_sandbox_settings->IsAttributionReportingEverAllowed();
+      auto histogram_value = GetItemValue<int>(output_value);
+      histogram_tester.ExpectUniqueSample(
+          "PrivacySandbox.IsAttributionReportingEverAllowed", histogram_value,
+          1);
+      return;
+    }
   }
 }
 

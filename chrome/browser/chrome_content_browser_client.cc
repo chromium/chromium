@@ -3366,7 +3366,7 @@ bool ChromeContentBrowserClient::IsAttributionReportingOperationAllowed(
       return privacy_sandbox_settings->MaySendAttributionReport(
           *source_origin, *destination_origin, *reporting_origin);
     case AttributionReportingOperation::kAny:
-      return privacy_sandbox_settings->IsPrivacySandboxEnabled();
+      return privacy_sandbox_settings->IsAttributionReportingEverAllowed();
   }
 }
 
