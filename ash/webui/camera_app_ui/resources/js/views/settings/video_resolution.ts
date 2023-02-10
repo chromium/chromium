@@ -120,12 +120,12 @@ export class VideoResolutionSettings extends BaseSettings {
       const checked = fpsOption?.checked ?? false;
       fpsButton.classList.toggle('checked', checked);
       if (!checked) {
-        fpsButton.addEventListener('click', () => {
+        fpsButton.addEventListener('click', async () => {
           // We don't want to reconfigure the stream when changing the FPS
           // preference for resolution level which is not currently selected.
           const shouldReconfigure =
               option.checked && this.cameraManager.getDeviceId() === deviceId;
-          this.cameraManager.setPrefVideoConstFps(
+          await this.cameraManager.setPrefVideoConstFps(
               deviceId, option.resolutionLevel, fps, shouldReconfigure);
         });
       } else {
@@ -165,8 +165,8 @@ export class VideoResolutionSettings extends BaseSettings {
   private toggleFPSPickerVisiblity(): void {
     const isFPSEnabled =
         expert.isEnabled(expert.ExpertOption.ENABLE_FPS_PICKER_FOR_BUILTIN);
-    const fpsButtons = dom.getAllFrom(
-      this.menu, '.fps-buttons button', HTMLButtonElement);
+    const fpsButtons =
+        dom.getAllFrom(this.menu, '.fps-buttons button', HTMLButtonElement);
     for (const fpsButton of fpsButtons) {
       fpsButton.hidden = !isFPSEnabled;
     }
