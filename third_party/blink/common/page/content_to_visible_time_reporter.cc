@@ -11,17 +11,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
 namespace {
 
-//  Used to generate unique "TabSwitching::Latency" event ids. Note: The address
-//  of ContentToVisibleTimeReporter can't be used as an id because a single
-//  ContentToVisibleTimeReporter can generate multiple overlapping events.
-int g_num_trace_events_in_process = 0;
+using TabSwitchResult = ContentToVisibleTimeReporter::TabSwitchResult;
 
 const char* GetHistogramSuffix(
     bool has_saved_frames,
@@ -46,6 +47,53 @@ void RecordBackForwardCacheRestoreMetric(
   base::UmaHistogramCustomTimes(
       "BackForwardCache.Restore.NavigationToFirstPaint", delta,
       base::Milliseconds(10), base::Minutes(10), 100);
+}
+
+void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
+                               base::TimeTicks end_time,
+                               TabSwitchResult result,
+                               bool has_saved_frames,
+                               bool destination_is_loaded) {
+  // Avoid unnecessary work to compute a track.
+  bool category_enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("latency", &category_enabled);
+  if (!category_enabled) {
+    return;
+  }
+
+  using TabSwitchMeasurement = perfetto::protos::pbzero::TabSwitchMeasurement;
+  DCHECK_GE(end_time, start_time);
+  const auto track = perfetto::Track(base::trace_event::GetNextGlobalTraceId());
+  TRACE_EVENT_BEGIN(
+      "latency", "TabSwitching::Latency", track, start_time,
+      [&](perfetto::EventContext ctx) {
+        TabSwitchMeasurement* measurement =
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_tab_switch_measurement();
+        switch (result) {
+          case TabSwitchResult::kSuccess:
+            measurement->set_result(TabSwitchMeasurement::RESULT_SUCCESS);
+            break;
+          case TabSwitchResult::kIncomplete:
+            measurement->set_result(TabSwitchMeasurement::RESULT_INCOMPLETE);
+            break;
+          case TabSwitchResult::kMissedTabHide:
+            measurement->set_result(
+                TabSwitchMeasurement::RESULT_MISSED_TAB_HIDE);
+            break;
+        }
+        if (has_saved_frames) {
+          measurement->set_tab_state(
+              TabSwitchMeasurement::STATE_WITH_SAVED_FRAMES);
+        } else if (destination_is_loaded) {
+          measurement->set_tab_state(
+              TabSwitchMeasurement::STATE_LOADED_NO_SAVED_FRAMES);
+        } else {
+          measurement->set_tab_state(
+              TabSwitchMeasurement::STATE_NOT_LOADED_NO_SAVED_FRAMES);
+        }
+      });
+  TRACE_EVENT_END("latency", track, end_time);
 }
 
 }  // namespace
@@ -142,23 +190,17 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
         tab_switch_start_state_->event_start_time, presentation_timestamp);
   }
 
-  if (!show_reason_tab_switching)
+  if (!show_reason_tab_switching) {
     return;
+  }
+
+  RecordTabSwitchTraceEvent(tab_switch_start_state_->event_start_time,
+                            presentation_timestamp, tab_switch_result,
+                            has_saved_frames_,
+                            tab_switch_start_state_->destination_is_loaded);
 
   const auto tab_switch_duration =
       presentation_timestamp - tab_switch_start_state_->event_start_time;
-
-  // Record trace events.
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "latency", "TabSwitching::Latency",
-      TRACE_ID_LOCAL(g_num_trace_events_in_process),
-      tab_switch_start_state_->event_start_time);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP2(
-      "latency", "TabSwitching::Latency",
-      TRACE_ID_LOCAL(g_num_trace_events_in_process), presentation_timestamp,
-      "result", tab_switch_result, "latency",
-      tab_switch_duration.InMillisecondsF());
-  ++g_num_trace_events_in_process;
 
   const char* suffix =
       GetHistogramSuffix(has_saved_frames_, *tab_switch_start_state_);

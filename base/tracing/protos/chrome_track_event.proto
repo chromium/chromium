@@ -1034,6 +1034,7 @@ message BlinkSourceLocation {
   optional string stack_trace = 6;
   repeated V8StackFrame stack_frames = 7;
 }
+
 // Contains the meta information for high entropy events (like api calls)
 // that are to be traced for debugging in the context of identifiability study.
 message BlinkHighEntropyAPI {
@@ -1070,9 +1071,44 @@ message BlinkHighEntropyAPI {
   optional CalledJsApi called_api = 2;
 }
 
+// Contains information about a tab switch measurement.
+message TabSwitchMeasurement {
+  // Possible outcomes of a tab switch. Maps to
+  // blink::ContentToVisibleTimeReporter::TabSwitchResult.
+  enum Result {
+    RESULT_UNSPECIFIED = 0;
+    // A frame was successfully presented after a tab switch.
+    RESULT_SUCCESS = 1;
+    // Tab was hidden before a frame was presented after a tab switch.
+    RESULT_INCOMPLETE = 2;
+    // TabWasShown called twice for a frame without TabWasHidden between. Treat
+    // the first TabWasShown as an incomplete tab switch.
+    RESULT_MISSED_TAB_HIDE = 3;
+  }
+
+  // State of the target tab. Corresponds to the suffixes of the
+  // Browser.TabSwitchResult2.* histograms.
+  enum TabState {
+    STATE_UNSPECIFIED = 0;
+    // The tab has frames in the frame cache, which can be composited in the
+    // browser process.
+    STATE_WITH_SAVED_FRAMES = 1;
+    // The tab has no frames in the frame cache so must be rendered and
+    // composited in a renderer process.
+    STATE_LOADED_NO_SAVED_FRAMES = 2;
+    // The tab has no frames in the frame cache and is not fully loaded, so it
+    // must be reloaded before it can be rendered and composited in a renderer
+    // process.
+    STATE_NOT_LOADED_NO_SAVED_FRAMES = 3;
+  }
+
+  optional Result result = 1;
+  optional TabState tab_state = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1046
+  // Next ID: 1047
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1170,5 +1206,7 @@ message ChromeTrackEvent {
     optional UkmPageLoadTimingUpdate ukm_page_load_timing_update = 1044;
 
     optional BlinkHighEntropyAPI high_entropy_api = 1045;
+
+    optional TabSwitchMeasurement tab_switch_measurement = 1046;
   }
 }
