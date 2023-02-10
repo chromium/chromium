@@ -13329,6 +13329,12 @@
   "LogUploadEnabled": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
+  "DeviceActivityHeartbeatEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
+  "DeviceActivityHeartbeatCollectionRateMs": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
   "EnableDeviceGranularReporting": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },

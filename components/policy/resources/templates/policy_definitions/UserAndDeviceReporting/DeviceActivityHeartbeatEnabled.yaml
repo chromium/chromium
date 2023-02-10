@@ -1,0 +1,29 @@
+arc_support: This policy has no effect on the logging done by Android.
+caption: Enable device activity heartbeat reporting
+default: false
+desc: |-
+  Reports device activity state on enrolled devices for affiliated users.
+
+        If the policy is Disabled or left unset, device activity state will not be reported.
+        If Enabled, the device activity state is reported to the server allowing it to detect if the device is offline, as long as the user is affiliated.
+device_only: true
+example_value: false
+features:
+  dynamic_refresh: true
+items:
+- caption: Enable device activity heartbeat
+  value: true
+- caption: Disable device activity heartbeat
+  value: false
+owners:
+- vshenvi@google.com
+- cros-reporting-team@google.com
+schema:
+  type: boolean
+supported_chrome_os_management:
+- google_cloud
+future_on:
+- chrome_os
+tags:
+- admin-sharing
+type: main

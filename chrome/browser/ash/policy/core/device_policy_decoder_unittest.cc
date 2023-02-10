@@ -182,6 +182,38 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeSuccess) {
   EXPECT_TRUE(error.empty());
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceActivityHeartbeatEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceActivityHeartbeatEnabled);
+
+  base::Value device_activity_heartbeat_enabled_value(true);
+  device_policy.mutable_device_reporting()
+      ->set_device_activity_heartbeat_enabled(
+          device_activity_heartbeat_enabled_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceActivityHeartbeatEnabled,
+      std::move(device_activity_heartbeat_enabled_value));
+}
+
+TEST_F(DevicePolicyDecoderTest, DeviceActivityHeartbeatCollectionRateMs) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceActivityHeartbeatCollectionRateMs);
+
+  base::Value device_activity_heartbeat_collection_rate_ms_value(120000);
+  device_policy.mutable_device_reporting()
+      ->set_device_activity_heartbeat_collection_rate_ms(
+          device_activity_heartbeat_collection_rate_ms_value.GetInt());
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kDeviceActivityHeartbeatCollectionRateMs,
+      std::move(device_activity_heartbeat_collection_rate_ms_value));
+}
+
 TEST_F(DevicePolicyDecoderTest, ReportDeviceLoginLogout) {
   em::ChromeDeviceSettingsProto device_policy;
 

@@ -1074,6 +1074,8 @@ policies:
   1073: ChromeAppsWebViewPermissiveBehaviorAllowed
   1074: ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls
   1075: AutomatedKeyRotationEnabled
+  1076: DeviceActivityHeartbeatEnabled
+  1077: DeviceActivityHeartbeatCollectionRateMs
 atomic_groups:
   1: Homepage
   2: RemoteAccess

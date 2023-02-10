@@ -900,6 +900,17 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
           POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
           base::Value(std::move(signal_strength_telemetry_list)), nullptr);
     }
+    if (container.has_device_activity_heartbeat_enabled()) {
+      policies->Set(
+          key::kDeviceActivityHeartbeatEnabled, POLICY_LEVEL_MANDATORY,
+          POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+          base::Value(container.device_activity_heartbeat_enabled()), nullptr);
+    }
+    if (container.has_device_activity_heartbeat_collection_rate_ms()) {
+      DecodeIntegerReportingPolicy(
+          policies, key::kDeviceActivityHeartbeatCollectionRateMs,
+          container.device_activity_heartbeat_collection_rate_ms());
+    }
   }
 
   if (policy.has_device_heartbeat_settings()) {

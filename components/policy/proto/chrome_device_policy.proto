@@ -187,6 +187,11 @@ message DeviceReportingProto {
       [default = 600000];
 
   optional StringList report_signal_strength_event_driven_telemetry = 38;
+
+  // Device activity heartbeat policies.
+  optional bool device_activity_heartbeat_enabled = 39 [default = false];
+  optional int64 device_activity_heartbeat_collection_rate_ms = 40
+      [default = 900000];
 }
 
 message EphemeralUsersEnabledProto {
