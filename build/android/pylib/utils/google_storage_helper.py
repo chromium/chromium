@@ -25,9 +25,8 @@ if host_paths.DEVIL_PATH not in sys.path:
   sys.path.append(host_paths.DEVIL_PATH)
 from devil.utils import cmd_helper
 
-_GSUTIL_PATH = os.path.join(
-    host_paths.DIR_SOURCE_ROOT, 'third_party', 'catapult',
-    'third_party', 'gsutil', 'gsutil.py')
+_GSUTIL_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party',
+                            'catapult', 'third_party', 'gsutil', 'gsutil')
 _PUBLIC_URL = 'https://storage.googleapis.com/%s/'
 _AUTHENTICATED_URL = 'https://storage.cloud.google.com/%s/'
 
