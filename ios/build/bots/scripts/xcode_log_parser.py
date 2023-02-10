@@ -262,6 +262,13 @@ class Xcode11LogParser(object):
                     TestStatus.FAIL,
                     expected_status=TestStatus.FAIL,
                     duration=duration))
+          elif test_status_value == 'Skipped':
+            result.add_test_result(
+                TestResult(
+                    test_name,
+                    TestStatus.SKIP,
+                    expected_status=TestStatus.SKIP,
+                    duration=duration))
           else:
             # Parse data for failed test by its id. See SINGLE_TEST_SUMMARY_REF
             # in xcode_log_parser_test.py for an example of |summary_ref|.
@@ -399,7 +406,9 @@ class Xcode11LogParser(object):
             for test_case in test_suite.get('subtests', {}).get('_values', []):
               for test in test_case.get('subtests', {}).get('_values', []):
                 test_status_value = test['testStatus']['_value']
-                if test_status_value not in ['Success', 'Expected Failure']:
+                if test_status_value not in [
+                    'Success', 'Expected Failure', 'Skipped'
+                ]:
                   summary_ref = test['summaryRef']['id']['_value']
                   test_summary_refs[test['identifier']['_value']] = summary_ref
 

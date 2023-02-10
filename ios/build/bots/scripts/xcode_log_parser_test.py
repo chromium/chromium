@@ -188,6 +188,23 @@ TESTS_REF = """
                             "name": {
                               "_value": "testMethod2"
                             }
+                          },
+                          {
+                            "testStatus": {
+                              "_value": "Skipped"
+                            },
+                            "duration" : {
+                              "_type" : {
+                                 "_name" : "Double"
+                              },
+                              "_value" : "0.0606716156"
+                            },
+                            "identifier": {
+                              "_value": "PageStateTestCase/testMethod3"
+                            },
+                            "name": {
+                              "_value": "testMethod3"
+                            }
                           }]
                         }
                       }]
@@ -497,8 +514,10 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         'file: , line: \n'
         'Immediately halt execution of testcase '
         '(EarlGreyInternalTestInterruptException)\n')
-    expected_expected_tests = set(
-        ['PageStateTestCase/testMethod1', 'PageStateTestCase/testMethod2'])
+    expected_expected_tests = set([
+        'PageStateTestCase/testMethod1', 'PageStateTestCase/testMethod2',
+        'PageStateTestCase/testMethod3'
+    ])
     results = xcode_log_parser.Xcode11LogParser()._get_test_statuses(
         OUTPUT_PATH)
     self.assertEqual(expected_expected_tests, results.expected_tests())
@@ -525,6 +544,8 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         self.assertEqual(test_result.duration, 35384)
       if test_result.name == 'PageStateTestCase/testMethod2':
         self.assertEqual(test_result.duration, 28988)
+      if test_result.name == 'PageStateTestCase/testMethod3':
+        self.assertEqual(test_result.duration, 60)
 
     self.assertTrue(seen_failed_test)
 
@@ -534,8 +555,10 @@ class XCode11LogParserTest(test_runner_test.TestCase):
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
   def testCollectTestTesults(self, mock_root, mock_exist_file, *args):
-    expected_passed = set(
-        ['PageStateTestCase/testMethod1', 'PageStateTestCase/testMethod2'])
+    expected_passed = set([
+        'PageStateTestCase/testMethod1', 'PageStateTestCase/testMethod2',
+        'PageStateTestCase/testMethod3'
+    ])
     expected_failed = set(['PageStateTestCase/testZeroContentOffsetAfterLoad'])
 
     mock_root.side_effect = _xcresulttool_get_side_effect
@@ -545,7 +568,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
 
     # Length ensures no duplicate results from |_get_test_statuses| and
     # |_list_of_failed_tests|.
-    self.assertEqual(len(results.test_results), 3)
+    self.assertEqual(len(results.test_results), 4)
     self.assertEqual(expected_passed, results.expected_tests())
     self.assertEqual(expected_failed, results.unexpected_tests())
     # Ensure format.
