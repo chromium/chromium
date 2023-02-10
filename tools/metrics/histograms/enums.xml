@@ -102464,6 +102464,11 @@ Full version information for the fingerprint enum values:
   <int value="22" label="Auto-never translate snackbar impression"/>
   <int value="23" label="Cancel clicked on auto-always translate snackbar"/>
   <int value="24" label="Cancel clicked on auto-never translate snackbar"/>
+  <int value="25"
+      label="[Deprecated] before M112 was both 'Never translate language
+             unchecked' and 'Never translate site unchecked'"/>
+  <int value="26" label="Never translate unchecked in the options menu"/>
+  <int value="27" label="Never translate site unchecked in the options menu"/>
 </enum>
 
 <enum name="TranslateError">
