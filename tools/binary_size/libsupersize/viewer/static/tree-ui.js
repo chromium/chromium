@@ -36,6 +36,31 @@ class TreeUi {
      * listeners and other methods can query the original data.
      */
     this._uiNodeData = new WeakMap();
+
+    // Event listeners need to be bound to this, but each fresh .bind creates a
+    // function, which wastes memory and not usable for removeEventListener().
+    // The |_bound*()| functions aim to solve the abolve.
+
+    /** @private @const {function(!MouseEvent): *} */
+    this._boundToggleTreeElement = this._toggleTreeElement.bind(this);
+
+    /** @private @const {function(!KeyboardEvent): *} */
+    this._boundHandleKeyNavigation = this._handleKeyNavigation.bind(this);
+
+    /** @private @const {function(!MouseEvent): *} */
+    this._boundHandleMouseOver = this._handleMouseOver.bind(this);
+
+    /** @private @const {function(!MouseEvent): *} */
+    this._boundHandleRefocus = this._handleRefocus.bind(this);
+
+    /** @private @const {function(!MouseEvent): *} */
+    this._boundHandleFocusIn = this._handleFocusIn.bind(this);
+
+    /** @private @const {function(!MouseEvent): *} */
+    this._boundHandleFocusOut = this._handleFocusOut.bind(this);
+
+    /** @private @const {function(!!TreeNode): DocumentFragment} */
+    this._boundMakeTreeElement = this.makeTreeElement.bind(this);
   }
 
   /**
@@ -80,7 +105,7 @@ class TreeUi {
 
   /**
    * Click event handler to expand or close the child group of a tree.
-   * @param {Event} event
+   * @param {!Event} event
    * @private
    */
   async _toggleTreeElement(event) {
@@ -115,7 +140,7 @@ class TreeUi {
         this._uiNodeData.set(link, data);
       }
 
-      const newElements = data.children.map(this.makeTreeElement.bind(this));
+      const newElements = data.children.map(this._boundMakeTreeElement);
       if (newElements.length === 1) {
         // Open the inner element if it only has a single child.
         // Ensures nodes like "java"->"com"->"google" are opened all at once.
@@ -145,7 +170,7 @@ class TreeUi {
 
   /**
    * Tree view keydown event handler to move focus for the given element.
-   * @param {KeyboardEvent} event Event passed from keydown event listener.
+   * @param {!KeyboardEvent} event Event passed from keydown event listener.
    * @private
    */
   _handleKeyNavigation(event) {
@@ -289,7 +314,7 @@ class TreeUi {
   /**
    * Displays the infocard when a node is hovered over, unless a node is
    * currently focused.
-   * @param {MouseEvent} event Event from mouseover listener.
+   * @param {!MouseEvent} event Event from mouseover listener.
    * @private
    */
   _handleMouseOver(event) {
@@ -302,7 +327,7 @@ class TreeUi {
 
   /**
    * Mousedown handler for an already-focused leaf node, to toggle it off.
-   * @param {!Event} event
+   * @param {!MouseEvent} event
    * @private
    */
   _handleRefocus(event) {
@@ -314,13 +339,13 @@ class TreeUi {
 
   /**
    * Focusin handler for a node.
-   * @param {!Event} event
+   * @param {!MouseEvent} event
    * @private
    */
   _handleFocusIn(event) {
     const node = /** @type {!HTMLElement} */ (event.target);
     if (this._isLeafNode(node)) {
-      node.addEventListener('mousedown', this._handleRefocus.bind(this));
+      node.addEventListener('mousedown', this._boundHandleRefocus);
     }
     displayInfocard(/** @type {!TreeNode} */ (this._uiNodeData.get(node)));
     /** @type {HTMLElement} */ (event.currentTarget)
@@ -329,13 +354,13 @@ class TreeUi {
 
   /**
    * Focusout handler for a node.
-   * @param {!Event} event
+   * @param {!MouseEvent} event
    * @private
    */
   _handleFocusOut(event) {
     const node = /** @type {!HTMLElement} */ (event.target);
     if (this._isLeafNode(node)) {
-      node.removeEventListener('mousedown', this._handleRefocus.bind(this));
+      node.removeEventListener('mousedown', this._boundHandleRefocus);
     }
     /** @type {HTMLElement} */ (event.currentTarget)
         .parentElement.classList.remove('focused');
@@ -346,7 +371,7 @@ class TreeUi {
    * The element will represent a tree or a leaf, depending on if the tree node
    * object has any children. Trees use a slightly different template and have
    * click event listeners attached.
-   * @param {TreeNode} node Data to use for the UI.
+   * @param {!TreeNode} node Data to use for the UI.
    * @public
    * @returns {DocumentFragment}
    */
@@ -388,9 +413,9 @@ class TreeUi {
     // Set the byte size and hover text.
     this._setSize(element.querySelector('.size'), node);
 
-    link.addEventListener('mouseover', this._handleMouseOver.bind(this));
+    link.addEventListener('mouseover', this._boundHandleMouseOver);
     if (!isLeaf) {
-      link.addEventListener('click', this._toggleTreeElement.bind(this));
+      link.addEventListener('click', this._boundToggleTreeElement);
     }
 
     return element;
@@ -408,11 +433,9 @@ class TreeUi {
     });
 
     g_el.ulSymbolTree.addEventListener(
-        'keydown', this._handleKeyNavigation.bind(this));
-    g_el.ulSymbolTree.addEventListener(
-        'focusin', this._handleFocusIn.bind(this));
-    g_el.ulSymbolTree.addEventListener(
-        'focusout', this._handleFocusOut.bind(this));
+        'keydown', this._boundHandleKeyNavigation);
+    g_el.ulSymbolTree.addEventListener('focusin', this._boundHandleFocusIn);
+    g_el.ulSymbolTree.addEventListener('focusout', this._boundHandleFocusOut);
 
     window.addEventListener('keydown', event => {
       if (event.key === '?' &&
