@@ -689,14 +689,6 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
       if (priority)
         builder.SetPaintTiming_LargestContentfulPaintRequestPriority(*priority);
     }
-    if (cwv_lcp_timing_info.ImageLoadStart().has_value()) {
-      builder.SetPaintTiming_LargestContentfulPaintImageLoadStart(
-          cwv_lcp_timing_info.ImageLoadStart().value().InMilliseconds());
-    }
-    if (cwv_lcp_timing_info.ImageLoadEnd().has_value()) {
-      builder.SetPaintTiming_LargestContentfulPaintImageLoadEnd(
-          cwv_lcp_timing_info.ImageLoadEnd().value().InMilliseconds());
-    }
   }
   RecordInternalTimingMetrics(cwv_lcp_timing_info);
 

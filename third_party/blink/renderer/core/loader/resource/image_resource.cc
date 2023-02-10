@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
@@ -86,13 +85,6 @@ class ImageResource::ImageResourceInfoImpl final
   const KURL& Url() const override { return resource_->Url(); }
   base::TimeTicks LoadResponseEnd() const override {
     return resource_->LoadResponseEnd();
-  }
-  base::TimeTicks LoadStart() const override {
-    if (ResourceLoadTiming* load_timing =
-            resource_->GetResponse().GetResourceLoadTiming()) {
-      return load_timing->SendStart();
-    }
-    return base::TimeTicks();
   }
   const ResourceResponse& GetResponse() const override {
     return resource_->GetResponse();

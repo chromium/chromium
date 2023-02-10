@@ -15744,24 +15744,6 @@ be describing additional metrics about the same event.
       image, and omitted when it is text.
     </summary>
   </metric>
-  <metric name="PaintTiming.LargestContentfulPaintImageLoadEnd">
-    <summary>
-      Measures the time in milliseconds from navigation timing's navigation
-      start to the time when the LCP element(image) finishes loading. For
-      animated images, this is when the image resource finishes loading
-      completely, not the first frame time. See web.dev/optimize-lcp for more
-      details. This metric is not recorded when the LCP element is text or
-      video.
-    </summary>
-  </metric>
-  <metric name="PaintTiming.LargestContentfulPaintImageLoadStart">
-    <summary>
-      Measures the time in milliseconds from navigation timing's navigation
-      start to the time when the LCP element(image) starts loading. See
-      web.dev/optimize-lcp for more details. This metric is not recorded when
-      the LCP element is text or video.
-    </summary>
-  </metric>
   <metric name="PaintTiming.LargestContentfulPaintRequestPriority"
       enum="NetRequestPriority">
     <summary>

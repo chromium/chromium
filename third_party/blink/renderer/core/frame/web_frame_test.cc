@@ -11219,12 +11219,13 @@ TEST_F(WebFrameTest, ImageDocumentLoadResponseEnd) {
   ImageResourceContent* image_content = img_document->CachedImage();
 
   EXPECT_TRUE(image_content);
-  EXPECT_NE(base::TimeTicks(), image_content->LoadEnd());
+  EXPECT_NE(base::TimeTicks(), image_content->LoadResponseEnd());
 
   DocumentLoader* loader = document->Loader();
 
   EXPECT_TRUE(loader);
-  EXPECT_EQ(loader->GetTiming().ResponseEnd(), image_content->LoadEnd());
+  EXPECT_EQ(loader->GetTiming().ResponseEnd(),
+            image_content->LoadResponseEnd());
 }
 
 TEST_F(WebFrameTest, CopyImageDocument) {
