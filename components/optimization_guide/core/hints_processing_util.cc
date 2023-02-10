@@ -106,24 +106,6 @@ std::string HashHostForDictionary(const std::string& host) {
   return base::StringPrintf("%x", base::PersistentHash(host));
 }
 
-net::EffectiveConnectionType ConvertProtoEffectiveConnectionType(
-    proto::EffectiveConnectionType proto_ect) {
-  switch (proto_ect) {
-    case proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
-      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
-    case proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
-      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_OFFLINE;
-    case proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
-      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
-    case proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_2G:
-      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_2G;
-    case proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_3G:
-      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_3G;
-    case proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G:
-      return net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G;
-  }
-}
-
 bool IsValidURLForURLKeyedHint(const GURL& url) {
   if (!url.has_host())
     return false;

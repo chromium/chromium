@@ -58,30 +58,6 @@ TEST(HintsProcessingUtilTest, FindPageHintForSubstringPagePattern) {
                             GURL("https://www.foo.org/bar/three.jpg"), &hint1));
 }
 
-TEST(HintsProcessingUtilTest, ConvertProtoEffectiveConnectionType) {
-  EXPECT_EQ(
-      ConvertProtoEffectiveConnectionType(
-          proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
-  EXPECT_EQ(
-      ConvertProtoEffectiveConnectionType(
-          proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_OFFLINE),
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_OFFLINE);
-  EXPECT_EQ(
-      ConvertProtoEffectiveConnectionType(
-          proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G),
-      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
-  EXPECT_EQ(ConvertProtoEffectiveConnectionType(
-                proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_2G),
-            net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_2G);
-  EXPECT_EQ(ConvertProtoEffectiveConnectionType(
-                proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_3G),
-            net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_3G);
-  EXPECT_EQ(ConvertProtoEffectiveConnectionType(
-                proto::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G),
-            net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G);
-}
-
 TEST(HintsProcessingUtilTest, IsValidURLForURLKeyedHints) {
   EXPECT_TRUE(IsValidURLForURLKeyedHint(GURL("https://blerg.com")));
   EXPECT_TRUE(IsValidURLForURLKeyedHint(GURL("http://blerg.com")));
