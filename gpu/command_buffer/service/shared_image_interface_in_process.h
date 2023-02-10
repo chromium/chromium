@@ -194,7 +194,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   bool MakeContextCurrent(bool needs_gl = false);
   bool LazyCreateSharedImageFactory();
   void CreateSharedImageOnGpuThread(const Mailbox& mailbox,
-                                    viz::ResourceFormat format,
+                                    viz::SharedImageFormat format,
                                     gpu::SurfaceHandle surface_handle,
                                     const gfx::Size& size,
                                     const gfx::ColorSpace& color_space,
@@ -203,7 +203,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                                     uint32_t usage,
                                     const SyncToken& sync_token);
   void CreateSharedImageWithDataOnGpuThread(const Mailbox& mailbox,
-                                            viz::ResourceFormat format,
+                                            viz::SharedImageFormat format,
                                             const gfx::Size& size,
                                             const gfx::ColorSpace& color_space,
                                             GrSurfaceOrigin surface_origin,
