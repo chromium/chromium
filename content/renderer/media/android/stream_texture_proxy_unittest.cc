@@ -18,6 +18,8 @@
 
 namespace content {
 
+namespace {
+
 // GpuChannelHost is expected to be created on the IO thread, and posts tasks to
 // setup its IPC listener, so it must be created after the thread task runner
 // handle is set.
@@ -34,6 +36,8 @@ class TestGpuChannelHost : public gpu::GpuChannelHost {
  protected:
   ~TestGpuChannelHost() override {}
 };
+
+}  // namespace
 
 class StreamTextureProxyTest : public testing::Test {
  public:
