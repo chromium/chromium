@@ -16,6 +16,7 @@ config("config") {
     "//ios/third_party/earl_grey2/src/AppFramework/DistantObject",
     "//ios/third_party/earl_grey2/src/AppFramework/Error",
     "//ios/third_party/earl_grey2/src/AppFramework/Event",
+    "//ios/third_party/earl_grey2/src/AppFramework/IdlingResources",
     "//ios/third_party/earl_grey2/src/AppFramework/Keyboard",
     "//ios/third_party/earl_grey2/src/AppFramework/Matcher",
     "//ios/third_party/earl_grey2/src/AppFramework/Synchronization",
@@ -80,6 +81,8 @@ source_set("common_lib") {
     "src/CommonLib/Assertion/GREYAssertionBlock.h",
     "src/CommonLib/Assertion/GREYAssertionBlock.m",
     "src/CommonLib/Assertion/GREYAssertionDefinesPrivate.h",
+    "src/CommonLib/Assertion/GREYDescribeVariable.h",
+    "src/CommonLib/Assertion/GREYDescribeVariable.m",
     "src/CommonLib/Assertion/GREYFatalAsserts.h",
     "src/CommonLib/Assertion/GREYThrowDefines.h",
     "src/CommonLib/Config/GREYAppState.h",
@@ -178,6 +181,7 @@ source_set("ui_lib_shared_headers") {
   sources = [
     "src/UILib/GREYElementHierarchy.h",
     "src/UILib/GREYScreenshotter.h",
+    "src/UILib/Provider/GREYUIWindowProvider.h",
     "src/UILib/Visibility/GREYVisibilityChecker.h",
   ]
 }
@@ -197,7 +201,6 @@ source_set("ui_lib") {
     "src/UILib/Provider/GREYDataEnumerator.m",
     "src/UILib/Provider/GREYElementProvider.h",
     "src/UILib/Provider/GREYElementProvider.m",
-    "src/UILib/Provider/GREYUIWindowProvider.h",
     "src/UILib/Provider/GREYUIWindowProvider.m",
     "src/UILib/Traversal/GREYTraversalBFS.h",
     "src/UILib/Traversal/GREYTraversalBFS.m",
