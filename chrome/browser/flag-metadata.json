@@ -7066,11 +7066,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "variable-colrv1",
-    "owners": [ "drott", "layout-dev@chromium.org" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "vc-background-replace",
     "owners": [ "shafron", "skyostil", "charleszhao", "jmpollock" ],
     "expiry_milestone": 120

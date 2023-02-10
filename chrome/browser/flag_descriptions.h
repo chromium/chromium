@@ -1783,9 +1783,6 @@ extern const char kVcBackgroundReplaceDescription[];
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 
-extern const char kVariableCOLRV1Name[];
-extern const char kVariableCOLRV1Description[];
-
 extern const char kGlobalVaapiLockName[];
 extern const char kGlobalVaapiLockDescription[];
 

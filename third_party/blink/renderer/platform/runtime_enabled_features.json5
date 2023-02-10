@@ -2993,11 +2993,6 @@
       public: true,
     },
     {
-      name: "VariableCOLRV1",
-      status: "stable",
-      base_feature: "VariableCOLRV1",
-    },
-    {
       // Whether a video element should automatically play fullscreen unless
       // 'playsinline' is set.
       name: "VideoAutoFullscreen",

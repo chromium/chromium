@@ -3149,11 +3149,6 @@ const char kV8VmFutureDescription[] =
     "This enables upcoming and experimental V8 VM features. "
     "This flag does not enable experimental JavaScript features.";
 
-const char kVariableCOLRV1Name[] = "Variable COLRv1 Fonts";
-const char kVariableCOLRV1Description[] =
-    "Enable rendering of COLRv1 glyphs with font variations applied. When this "
-    "flag is off, variations to COLRv1 tables are ignored.";
-
 const char kGlobalVaapiLockName[] = "Global lock on the VA-API wrapper.";
 const char kGlobalVaapiLockDescription[] =
     "Enable or disable the global VA-API lock for platforms and paths that "

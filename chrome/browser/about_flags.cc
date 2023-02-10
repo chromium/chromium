@@ -3405,9 +3405,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"top-chrome-touch-ui", flag_descriptions::kTopChromeTouchUiName,
      flag_descriptions::kTopChromeTouchUiDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kTopChromeTouchUiChoices)},
-    {"variable-colrv1", flag_descriptions::kVariableCOLRV1Name,
-     flag_descriptions::kVariableCOLRV1Description, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kVariableCOLRV1)},
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
     {flag_descriptions::kWebUITabStripFlagId,
      flag_descriptions::kWebUITabStripName,
