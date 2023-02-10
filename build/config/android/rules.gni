@@ -5076,11 +5076,11 @@ if (enable_java_templates && is_android) {
     _all_module_unused_resources_deps = []
     foreach(_module, _modules) {
       _module_target = _module.module_target
-      _module_target_name = get_label_info(_module_target, "name")
       _module_build_config = _module.build_config
       _module_build_config_target = _module.build_config_target
 
       if (!_proguard_enabled) {
+        _module_target_name = get_label_info(_module_target, "name")
         _dex_target = "${_module_target_name}__final_dex"
         _rebased_module_build_config =
             rebase_path(_module_build_config, root_build_dir)
