@@ -9066,6 +9066,29 @@
             ]
         }
     ],
+    "PrewarmLookalikeCheck": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_TwoRedirects",
+                    "params": {
+                        "redirect_lookup_cache_limit": "2"
+                    },
+                    "enable_features": [
+                        "PrewarmLookalikeCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "PriceDropNtpIPH": [
         {
             "platforms": [
