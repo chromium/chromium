@@ -21,7 +21,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/device_management/dm_storage.h"
@@ -167,7 +166,7 @@ class DMFetch : public base::RefCountedThreadSafe<DMFetch> {
   scoped_refptr<DMStorage> storage_;
 
   std::unique_ptr<update_client::NetworkFetcher> network_fetcher_;
-  int http_status_code_;
+  int http_status_code_ = 0;
 
   Callback callback_;
   SEQUENCE_CHECKER(sequence_checker_);
@@ -177,8 +176,7 @@ DMFetch::DMFetch(std::unique_ptr<DMClient::Configurator> config,
                  scoped_refptr<DMStorage> storage)
     : config_(std::move(config)),
       storage_(storage),
-      network_fetcher_(config_->CreateNetworkFetcher()),
-      http_status_code_(0) {}
+      network_fetcher_(config_->CreateNetworkFetcher()) {}
 
 DMFetch::~DMFetch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -306,8 +304,9 @@ void OnDMRegisterRequestComplete(scoped_refptr<DMFetch> dm_fetch,
       result = DMClient::RequestResult::kUnexpectedResponse;
     } else {
       VLOG(1) << "Register request completed, got DM token: " << dm_token;
-      if (!dm_fetch->storage()->StoreDmToken(dm_token))
+      if (!dm_fetch->storage()->StoreDmToken(dm_token)) {
         result = DMClient::RequestResult::kSerializationError;
+      }
     }
   }
 
@@ -333,8 +332,9 @@ void OnDMPolicyFetchRequestComplete(
     } else {
       VLOG(1) << "Policy fetch request completed, got " << policies.size()
               << " new policies.";
-      if (!storage->PersistPolicies(policies))
+      if (!storage->PersistPolicies(policies)) {
         result = DMClient::RequestResult::kSerializationError;
+      }
     }
   }
 

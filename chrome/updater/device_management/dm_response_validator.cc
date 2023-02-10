@@ -114,8 +114,9 @@ void OmahaPolicyValidator::ValidateAutoUpdateCheckPeriodPolicy(
 
 void OmahaPolicyValidator::ValidateDownloadPreferencePolicy(
     PolicyValidationResult& validation_result) const {
-  if (!omaha_settings_.has_download_preference())
+  if (!omaha_settings_.has_download_preference()) {
     return;
+  }
 
   if (!base::EqualsCaseInsensitiveASCII(omaha_settings_.download_preference(),
                                         kDownloadPreferenceCacheable)) {
@@ -127,8 +128,9 @@ void OmahaPolicyValidator::ValidateDownloadPreferencePolicy(
 }
 void OmahaPolicyValidator::ValidateUpdatesSuppressedPolicies(
     PolicyValidationResult& validation_result) const {
-  if (!omaha_settings_.has_updates_suppressed())
+  if (!omaha_settings_.has_updates_suppressed()) {
     return;
+  }
 
   if (omaha_settings_.updates_suppressed().start_hour() < 0 ||
       omaha_settings_.updates_suppressed().start_hour() >= 24) {
@@ -453,8 +455,9 @@ bool DMResponseValidator::ValidatePolicyResponse(
     return false;
   }
 
-  if (fetch_policy_data.has_policy_token())
+  if (fetch_policy_data.has_policy_token()) {
     validation_result.policy_token = fetch_policy_data.policy_token();
+  }
 
   if (!ValidateDMToken(fetch_policy_data, validation_result) ||
       !ValidateDeviceId(fetch_policy_data, validation_result) ||
@@ -463,11 +466,13 @@ bool DMResponseValidator::ValidatePolicyResponse(
   }
 
   std::string signature_key;
-  if (!ValidateNewPublicKey(fetch_response, signature_key, validation_result))
+  if (!ValidateNewPublicKey(fetch_response, signature_key, validation_result)) {
     return false;
+  }
 
-  if (fetch_policy_data.has_policy_type())
+  if (fetch_policy_data.has_policy_type()) {
     validation_result.policy_type = fetch_policy_data.policy_type();
+  }
   if (validation_result.policy_type.empty()) {
     VLOG(1) << "Missing policy type in the policy response.";
     validation_result.status =

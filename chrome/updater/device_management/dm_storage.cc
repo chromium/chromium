@@ -15,17 +15,11 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
-#include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -58,11 +52,13 @@ bool DeleteObsoletePolicies(const base::FilePath& cache_root,
   for (base::FilePath file = cached_files.Next(); !file.empty();
        file = cached_files.Next()) {
     const std::string file_base_name = file.BaseName().MaybeAsASCII();
-    if (policy_types_base64.count(file_base_name))
+    if (policy_types_base64.count(file_base_name)) {
       continue;
+    }
 
-    if (!base::DeletePathRecursively(file))
+    if (!base::DeletePathRecursively(file)) {
       result = false;
+    }
   }
 
   return result;
@@ -114,8 +110,9 @@ bool DMStorage::CanPersistPolicies() const {
 
 bool DMStorage::PersistPolicies(const DMPolicyMap& policy_map) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (policy_map.empty())
+  if (policy_map.empty()) {
     return true;
+  }
 
   // Each policy in the map should be signed in the same way. If a policy
   // in the map contains a public key, normally it means the server rotates the
@@ -144,8 +141,9 @@ bool DMStorage::PersistPolicies(const DMPolicyMap& policy_map) const {
 
     base::FilePath policy_dir =
         policy_cache_root_.AppendASCII(encoded_policy_type);
-    if (!base::CreateDirectory(policy_dir))
+    if (!base::CreateDirectory(policy_dir)) {
       return false;
+    }
     base::FilePath policy_file = policy_dir.AppendASCII(kPolicyFileName);
     if (!base::ImportantFileWriter::WriteFileAtomically(policy_file,
                                                         policy_value)) {
@@ -161,8 +159,9 @@ std::unique_ptr<CachedPolicyInfo> DMStorage::GetCachedPolicyInfo() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto cached_info = std::make_unique<CachedPolicyInfo>();
 
-  if (!IsValidDMToken())
+  if (!IsValidDMToken()) {
     return cached_info;
+  }
 
   std::string policy_info_data;
   if (!base::PathExists(policy_info_file_) ||
@@ -179,8 +178,9 @@ std::unique_ptr<
 DMStorage::GetOmahaPolicySettings() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsValidDMToken())
+  if (!IsValidDMToken()) {
     return nullptr;
+  }
 
   std::string encoded_omaha_policy_type;
   base::Base64Encode(kGoogleUpdatePolicyType, &encoded_omaha_policy_type);

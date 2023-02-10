@@ -26,8 +26,9 @@ constexpr char kDmTokenFilepath[] =
 
 std::string GetMachineId() {
   std::string machine_id;
-  if (!base::ReadFileToString(base::FilePath("/etc/machine-id"), &machine_id))
+  if (!base::ReadFileToString(base::FilePath("/etc/machine-id"), &machine_id)) {
     return std::string();
+  }
   return machine_id;
 }
 
@@ -35,8 +36,9 @@ std::string GetMachineId() {
 // not be read.
 std::string LoadTokenFromFile(const std::string& token_file_path) {
   std::string token_value;
-  if (!base::ReadFileToString(base::FilePath(token_file_path), &token_value))
+  if (!base::ReadFileToString(base::FilePath(token_file_path), &token_value)) {
     return std::string();
+  }
 
   return std::string(base::TrimWhitespaceASCII(token_value, base::TRIM_ALL));
 }

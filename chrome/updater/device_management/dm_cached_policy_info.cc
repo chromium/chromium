@@ -25,8 +25,9 @@ bool CachedPolicyInfo::Populate(const std::string& raw_response) {
   }
 
   key_ = verification_data.new_public_key();
-  if (verification_data.has_new_public_key_version())
+  if (verification_data.has_new_public_key_version()) {
     key_version_ = verification_data.new_public_key_version();
+  }
   timestamp_ = policy_data.timestamp();
   return true;
 }

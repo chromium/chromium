@@ -44,8 +44,9 @@ std::string TokenService::GetDeviceID() const {
   std::wstring device_id;
   base::win::RegKey key;
   key.Open(HKEY_LOCAL_MACHINE, kRegKeyCryptographyKey, Wow6432(KEY_READ));
-  if (key.ReadValue(kRegValueMachineGuid, &device_id) != ERROR_SUCCESS)
+  if (key.ReadValue(kRegValueMachineGuid, &device_id) != ERROR_SUCCESS) {
     return std::string();
+  }
 
   return base::SysWideToUTF8(device_id);
 }
@@ -74,8 +75,9 @@ std::string TokenService::GetEnrollmentToken() const {
   base::win::RegKey key;
   key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
            Wow6432(KEY_READ));
-  if (key.ReadValue(kRegValueEnrollmentToken, &token) != ERROR_SUCCESS)
+  if (key.ReadValue(kRegValueEnrollmentToken, &token) != ERROR_SUCCESS) {
     return std::string();
+  }
 
   return base::SysWideToUTF8(token);
 }
@@ -94,13 +96,15 @@ bool TokenService::DeleteDmToken() {
 
   // The registry key which stores the DMToken value was not found, so deletion
   // is not necessary.
-  if (result == ERROR_FILE_NOT_FOUND)
+  if (result == ERROR_FILE_NOT_FOUND) {
     return true;
+  }
 
-  if (result == ERROR_SUCCESS)
+  if (result == ERROR_SUCCESS) {
     result = key.DeleteValue(kRegValueDmToken);
-  else
+  } else {
     return false;
+  }
 
   // Delete the key if no other values are present.
   base::win::RegKey(HKEY_LOCAL_MACHINE, L"", Wow6432(KEY_QUERY_VALUE))
@@ -112,8 +116,9 @@ std::string TokenService::GetDmToken() const {
   std::wstring token;
   base::win::RegKey key;
   key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment, Wow6432(KEY_READ));
-  if (key.ReadValue(kRegValueDmToken, &token) != ERROR_SUCCESS)
+  if (key.ReadValue(kRegValueDmToken, &token) != ERROR_SUCCESS) {
     return std::string();
+  }
 
   return base::SysWideToUTF8(token);
 }
