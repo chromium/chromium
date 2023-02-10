@@ -42,9 +42,10 @@ bool Base64UrlDecode(base::StringPiece input, std::string* output) {
 
 // Base64url-decodes the value of `key` from `dict`. Returns `nullopt` if the
 // key isn't present or decoding failed.
-absl::optional<std::string> Base64UrlDecodeStringKey(const base::Value& dict,
-                                                     const std::string& key) {
-  const std::string* b64url_data = dict.FindStringKey(key);
+absl::optional<std::string> Base64UrlDecodeStringKey(
+    const base::Value::Dict& dict,
+    const std::string& key) {
+  const std::string* b64url_data = dict.FindString(key);
   if (!b64url_data) {
     return absl::nullopt;
   }
@@ -65,9 +66,9 @@ absl::optional<std::string> Base64UrlDecodeStringKey(const base::Value& dict,
 // ArrayBuffers in the WebIDL since the JS `null` value maps to
 // `base::Value::Type::NONE`.
 std::tuple<bool, absl::optional<std::string>> Base64UrlDecodeNullableStringKey(
-    const base::Value& dict,
+    const base::Value::Dict& dict,
     const std::string& key) {
-  const base::Value* value = dict.FindKey(key);
+  const base::Value* value = dict.Find(key);
   if (!value || (!value->is_string() && !value->is_none())) {
     return {false, absl::nullopt};
   }
@@ -75,7 +76,7 @@ std::tuple<bool, absl::optional<std::string>> Base64UrlDecodeNullableStringKey(
     return {true, absl::nullopt};
   }
   DCHECK(value->is_string());
-  const std::string* b64url_data = dict.FindStringKey(key);
+  const std::string* b64url_data = dict.FindString(key);
   if (!b64url_data) {
     return {false, absl::nullopt};
   }
@@ -436,7 +437,8 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     return {nullptr, "value is not a dict"};
   }
 
-  const std::string* type = value.FindStringKey("type");
+  const base::Value::Dict& dict = value.GetDict();
+  const std::string* type = dict.FindString("type");
   if (!type || *type != device::kPublicKey) {
     return {nullptr, "invalid type"};
   }
@@ -444,19 +446,19 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   auto response = blink::mojom::MakeCredentialAuthenticatorResponse::New();
   response->info = blink::mojom::CommonCredentialInfo::New();
 
-  const std::string* id = value.FindStringKey("id");
+  const std::string* id = dict.FindString("id");
   if (!id) {
     return {nullptr, "invalid id"};
   }
   response->info->id = *id;
-  absl::optional<std::string> raw_id = Base64UrlDecodeStringKey(value, "rawId");
+  absl::optional<std::string> raw_id = Base64UrlDecodeStringKey(dict, "rawId");
   if (!raw_id) {
     return {nullptr, "invalid rawId"};
   }
   response->info->raw_id = ToByteVector(*raw_id);
 
   const base::Value* authenticator_attachment_value =
-      value.FindKey("authenticatorAttachment");
+      dict.Find("authenticatorAttachment");
   if (!authenticator_attachment_value) {
     return {nullptr, "invalid authenticatorAttachment"};
   }
@@ -467,7 +469,7 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   }
   response->authenticator_attachment = *authenticator_attachment;
 
-  const base::Value* attestation_response = value.FindDictKey("response");
+  const base::Value::Dict* attestation_response = dict.FindDict("response");
   if (!attestation_response) {
     return {nullptr, "invalid response"};
   }
@@ -504,18 +506,18 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   }
 
   absl::optional<int> public_key_algorithm =
-      attestation_response->FindIntKey("publicKeyAlgorithm");
+      attestation_response->FindInt("publicKeyAlgorithm");
   if (!public_key_algorithm) {
     return {nullptr, "invalid publicKeyAlgorithm"};
   }
   response->public_key_algo = *public_key_algorithm;
 
-  const base::Value* transports =
-      attestation_response->FindListKey("transports");
+  const base::Value::List* transports =
+      attestation_response->FindList("transports");
   if (!transports) {
     return {nullptr, "invalid transports"};
   }
-  for (const base::Value& transport_name : transports->GetList()) {
+  for (const base::Value& transport_name : *transports) {
     absl::optional<device::FidoTransportProtocol> transport =
         FidoTransportProtocolFromValue(transport_name);
     if (!transport) {
@@ -524,38 +526,38 @@ MakeCredentialResponseFromValue(const base::Value& value) {
     response->transports.push_back(*transport);
   }
 
-  const base::Value* client_extension_results =
-      value.FindDictKey("clientExtensionResults");
+  const base::Value::Dict* client_extension_results =
+      dict.FindDict("clientExtensionResults");
   if (!client_extension_results) {
     return {nullptr, "invalid clientExtensionResults"};
   }
   absl::optional<bool> cred_blob =
-      client_extension_results->FindBoolKey("credBlob");
+      client_extension_results->FindBool("credBlob");
   if (cred_blob) {
     response->echo_cred_blob = true;
     response->cred_blob = *cred_blob;
   }
-  const base::Value* cred_props =
-      client_extension_results->FindDictKey("credProps");
+  const base::Value::Dict* cred_props =
+      client_extension_results->FindDict("credProps");
   if (cred_props) {
     response->echo_cred_props = true;
-    absl::optional<bool> rk = cred_props->FindBoolKey("rk");
+    absl::optional<bool> rk = cred_props->FindBool("rk");
     if (rk) {
       response->has_cred_props_rk = true;
       response->cred_props_rk = *rk;
     }
   }
   const absl::optional<bool> hmac_create_secret =
-      client_extension_results->FindBoolKey("hmacCreateSecret");
+      client_extension_results->FindBool("hmacCreateSecret");
   if (hmac_create_secret) {
     response->echo_hmac_create_secret = true;
     response->hmac_create_secret = *hmac_create_secret;
   }
-  const base::Value* large_blob =
-      client_extension_results->FindDictKey("largeBlob");
+  const base::Value::Dict* large_blob =
+      client_extension_results->FindDict("largeBlob");
   if (large_blob) {
     response->echo_large_blob = true;
-    const absl::optional<bool> supported = large_blob->FindBoolKey("supported");
+    const absl::optional<bool> supported = large_blob->FindBool("supported");
     if (!supported) {
       return {nullptr, "invalid largeBlob extension"};
     }
@@ -571,7 +573,8 @@ GetAssertionResponseFromValue(const base::Value& value) {
     return {nullptr, "value is not a dict"};
   }
 
-  const std::string* type = value.FindStringKey("type");
+  const base::Value::Dict& dict = value.GetDict();
+  const std::string* type = dict.FindString("type");
   if (!type || *type != device::kPublicKey) {
     return {nullptr, "invalid type"};
   }
@@ -579,19 +582,19 @@ GetAssertionResponseFromValue(const base::Value& value) {
   auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
   response->info = blink::mojom::CommonCredentialInfo::New();
 
-  const std::string* id = value.FindStringKey("id");
+  const std::string* id = dict.FindString("id");
   if (!id) {
     return {nullptr, "invalid id"};
   }
   response->info->id = *id;
-  absl::optional<std::string> raw_id = Base64UrlDecodeStringKey(value, "rawId");
+  absl::optional<std::string> raw_id = Base64UrlDecodeStringKey(dict, "rawId");
   if (!raw_id) {
     return {nullptr, "invalid rawId"};
   }
   response->info->raw_id = ToByteVector(*raw_id);
 
   const base::Value* authenticator_attachment_value =
-      value.FindKey("authenticatorAttachment");
+      dict.Find("authenticatorAttachment");
   if (!authenticator_attachment_value) {
     return {nullptr, "invalid authenticatorAttachment"};
   }
@@ -602,7 +605,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
   }
   response->authenticator_attachment = *authenticator_attachment;
 
-  const base::Value* assertion_response = value.FindDictKey("response");
+  const base::Value::Dict* assertion_response = dict.FindDict("response");
   if (!assertion_response) {
     return {nullptr, "invalid response"};
   }
@@ -638,18 +641,18 @@ GetAssertionResponseFromValue(const base::Value& value) {
     response->user_handle = ToByteVector(*opt_user_handle);
   }
 
-  const base::Value* client_extension_results =
-      value.FindDictKey("clientExtensionResults");
+  const base::Value::Dict* client_extension_results =
+      dict.FindDict("clientExtensionResults");
   if (!client_extension_results) {
     return {nullptr, "invalid clientExtensionResults"};
   }
   const absl::optional<bool> app_id =
-      client_extension_results->FindBoolKey("appid");
+      client_extension_results->FindBool("appid");
   if (app_id) {
     response->echo_appid_extension = true;
     response->appid_extension = *app_id;
   }
-  if (client_extension_results->FindKey("getCredBlob")) {
+  if (client_extension_results->contains("getCredBlob")) {
     absl::optional<std::string> cred_blob =
         Base64UrlDecodeStringKey(*client_extension_results, "getCredBlob");
     if (!cred_blob) {
@@ -657,11 +660,11 @@ GetAssertionResponseFromValue(const base::Value& value) {
     }
     response->get_cred_blob = ToByteVector(*cred_blob);
   }
-  const base::Value* large_blob =
-      client_extension_results->FindDictKey("largeBlob");
+  const base::Value::Dict* large_blob =
+      client_extension_results->FindDict("largeBlob");
   if (large_blob) {
     response->echo_large_blob = true;
-    if (large_blob->FindStringKey("blob")) {
+    if (large_blob->contains("blob")) {
       absl::optional<std::string> blob =
           Base64UrlDecodeStringKey(*large_blob, "blob");
       if (!blob) {
@@ -669,7 +672,7 @@ GetAssertionResponseFromValue(const base::Value& value) {
       }
       response->large_blob = ToByteVector(*blob);
     }
-    const absl::optional<bool> written = large_blob->FindBoolKey("written");
+    const absl::optional<bool> written = large_blob->FindBool("written");
     if (written) {
       response->echo_large_blob_written = true;
       response->large_blob_written = *written;
