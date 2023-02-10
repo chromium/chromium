@@ -1278,6 +1278,9 @@
                   'ios/chrome/browser/experimental_flags\.(h|mm)|'\
                   'ios/chrome/browser/resources/Settings.bundle/Experimental\.plist',
     },
+    'ios_ntp': {
+      'filepath': 'ios/chrome/browser/ui/ntp/',
+    },
     'ios_showcase': {
       'filepath': 'ios/showcase/',
     },
@@ -2758,6 +2761,7 @@
                   'marq+scrutinize@chromium.org'],
     'ios_credential_provider': ['rkgibson+watch@chromium.org'],
     'ios_flags': ['noyau+watch@chromium.org'],
+    'ios_ntp': ['thegreenfrog+watch@chromium.org'],
     'ios_showcase': ['ios-reviews+showcase@chromium.org',
                      'marq+watch@chromium.org'],
     'ios_web': ['ios-reviews+web@chromium.org'],
