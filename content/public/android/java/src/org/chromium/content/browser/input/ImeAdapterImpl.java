@@ -1087,6 +1087,11 @@ public class ImeAdapterImpl
                                 mNativeImeAdapterAndroid, ImeAdapterImpl.this,
                                 gestureData.serialize());
                     }
+
+                    @Override
+                    public void finishComposingText() {
+                        ImeAdapterImpl.this.finishComposingText();
+                    }
                 });
     }
 

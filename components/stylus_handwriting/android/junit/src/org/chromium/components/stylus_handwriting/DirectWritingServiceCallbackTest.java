@@ -255,6 +255,7 @@ public class DirectWritingServiceCallbackTest {
         shadowOf(Looper.getMainLooper()).idle();
         verify(mImeCallback, never()).setEditableSelectionOffsets(anyInt(), anyInt());
         verify(mImeCallback, never()).sendCompositionToNative(any(), anyInt(), anyBoolean());
+        verify(mImeCallback, never()).finishComposingText();
 
         // Text received from service replaces the current text in input.
         mDwServiceCallback.setImeCallback(mImeCallback);
@@ -262,6 +263,7 @@ public class DirectWritingServiceCallbackTest {
         mDwServiceCallback.updateInputState(currentInputText, 4, 4);
         mDwServiceCallback.setTextSelection(SAMPLE_INPUT, index);
         shadowOf(Looper.getMainLooper()).idle();
+        verify(mImeCallback).finishComposingText();
         verify(mImeCallback).setEditableSelectionOffsets(0, currentInputText.length());
         verify(mImeCallback).sendCompositionToNative(SAMPLE_INPUT, index, true);
         verify(mImeCallback).setEditableSelectionOffsets(index, index);

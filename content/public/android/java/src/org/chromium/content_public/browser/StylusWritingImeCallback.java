@@ -72,4 +72,9 @@ public interface StylusWritingImeCallback {
      *                    gesture is invalid in current input, as applicable wrt gesture type.
      */
     void handleStylusWritingGestureAction(StylusWritingGestureData gestureData);
+
+    /**
+     * Finish current text composition in the input field.
+     */
+    void finishComposingText();
 }
