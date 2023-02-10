@@ -166,7 +166,7 @@ public class AutofillProfileBridge {
      * @param languageCode The language code associated with the saved autofill profile that ui
      *                     components are being retrieved for; can be null if ui components are
      *                     being retrieved for a new profile.
-     * @param validation The target usage validation rules.
+     * @param validationType The target usage validation rules.
      * @return A list of address UI components. The ordering in the list specifies the order these
      *         components should appear in the UI.
      */

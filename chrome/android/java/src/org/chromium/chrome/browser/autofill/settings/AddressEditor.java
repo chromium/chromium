@@ -23,8 +23,13 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.Addre
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -145,8 +150,36 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
             editTitle = mContext.getString(R.string.autofill_edit_address_dialog_title);
         }
 
-        mEditor = new EditorModel(editTitle, mCustomDoneButtonText);
         mProfile = address.getProfile();
+
+        String footerMessageText = null;
+        String deleteConfirmationText = null;
+        String deleteConfirmationTitle =
+                mContext.getString(R.string.autofill_delete_address_confirmation_dialog_title);
+        if (mProfile.getSource() == Source.ACCOUNT) {
+            final IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(
+                            Profile.getLastUsedRegularProfile());
+            CoreAccountInfo accountInfo =
+                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+            @Nullable
+            String email = CoreAccountInfo.getEmailFrom(accountInfo);
+
+            if (email != null) {
+                footerMessageText =
+                        mContext.getString(R.string.autofill_edit_account_address_source_notice)
+                                .replace("$1", email);
+                deleteConfirmationText =
+                        mContext.getString(R.string.autofill_delete_account_address_source_notice)
+                                .replace("$1", email);
+            }
+        } else {
+            deleteConfirmationText =
+                    mContext.getString(R.string.autofill_delete_sync_address_source_notice);
+        }
+
+        mEditor = new EditorModel(editTitle, mCustomDoneButtonText, footerMessageText,
+                deleteConfirmationTitle, deleteConfirmationText);
 
         // The country dropdown is always present on the editor.
         if (mCountryField == null) {

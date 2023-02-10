@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MarginLayoutParamsCompat;
 
@@ -114,6 +115,8 @@ public class EditorDialog
     private Profile mProfile;
     @Nullable
     private UiConfig mUiConfig;
+    @Nullable
+    private AlertDialog mConfirmationDialog;
 
     /**
      * Builds the editor dialog.
@@ -212,8 +215,13 @@ public class EditorDialog
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.delete_menu_id) {
-                    mDeleteRunnable.run();
-                    animateOutDialog();
+                    if (mEditorModel.getDeleteConfirmationTitle() != null
+                            || mEditorModel.getDeleteConfirmationText() != null) {
+                        handleDeleteWithConfirmation(mEditorModel.getDeleteConfirmationTitle(),
+                                mEditorModel.getDeleteConfirmationText());
+                    } else {
+                        handleDelete();
+                    }
                 } else if (item.getItemId() == R.id.help_menu_id) {
                     HelpAndFeedbackLauncherImpl.getInstance().show(mActivity,
                             mActivity.getString(R.string.help_context_autofill), mProfile, null);
@@ -378,6 +386,8 @@ public class EditorDialog
     }
 
     private void prepareFooter() {
+        assert mEditorModel != null;
+
         TextView requiredFieldsNotice = mLayout.findViewById(R.id.required_fields_notice);
         int requiredFieldsNoticeVisibility = View.GONE;
         for (int i = 0; i < mFieldViews.size(); i++) {
@@ -387,6 +397,15 @@ public class EditorDialog
             }
         }
         requiredFieldsNotice.setVisibility(requiredFieldsNoticeVisibility);
+
+        TextView footerMessage = mLayout.findViewById(R.id.footer_message);
+        String footerMessageText = mEditorModel.getFooterMessageText();
+        if (footerMessageText != null) {
+            footerMessage.setText(footerMessageText);
+            footerMessage.setVisibility(View.VISIBLE);
+        } else {
+            footerMessage.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -666,6 +685,44 @@ public class EditorDialog
         });
     }
 
+    private void handleDelete() {
+        mDeleteRunnable.run();
+        animateOutDialog();
+    }
+
+    private void handleDeleteWithConfirmation(
+            @Nullable String confirmationTitle, @Nullable String confirmationText) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View body = inflater.inflate(R.layout.confirmation_dialog_view, null);
+        TextView titleView = body.findViewById(R.id.confirmation_dialog_title);
+        titleView.setText(confirmationTitle);
+        TextView messageView = body.findViewById(R.id.confirmation_dialog_message);
+        messageView.setText(confirmationText);
+
+        mConfirmationDialog =
+                new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setView(body)
+                        .setNegativeButton(R.string.cancel,
+                                (dialog, which) -> {
+                                    dialog.cancel();
+                                    mConfirmationDialog = null;
+                                    if (sObserverForTest != null) {
+                                        sObserverForTest.onEditorReadyToEdit();
+                                    }
+                                })
+                        .setPositiveButton(R.string.delete,
+                                (dialog, which) -> {
+                                    handleDelete();
+                                    mConfirmationDialog = null;
+                                })
+                        .create();
+        mConfirmationDialog.show();
+
+        if (sObserverForTest != null) {
+            sObserverForTest.onEditorConfirmationDialogShown();
+        }
+    }
+
     private List<EditorFieldView> getViewsWithInvalidInformation(boolean findAll) {
         List<EditorFieldView> invalidViews = new ArrayList<>();
         for (int i = 0; i < mFieldViews.size(); i++) {
@@ -688,6 +745,11 @@ public class EditorDialog
     @VisibleForTesting
     public List<Spinner> getDropdownFieldsForTest() {
         return mDropdownFields;
+    }
+
+    @VisibleForTesting
+    public AlertDialog getConfirmationDialogForTest() {
+        return mConfirmationDialog;
     }
 
     @VisibleForTesting

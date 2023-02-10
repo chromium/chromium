@@ -28,4 +28,9 @@ public interface EditorObserverForTest {
      * Called when the editor is dismissed.
      */
     void onEditorDismiss();
+
+    /**
+     * Called when the delete confirmation dialog shown.
+     */
+    void onEditorConfirmationDialogShown();
 }

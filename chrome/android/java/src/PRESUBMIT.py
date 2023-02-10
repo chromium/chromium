@@ -83,6 +83,7 @@ def _CheckAlertDialogBuilder(input_api, output_api):
   # In general, preference and FRE related UIs are not relevant to VR mode.
   files_to_skip = (
       BROWSER_ROOT + 'autofill/AutofillPopupBridge.java',
+      BROWSER_ROOT + 'autofill/prefeditor/EditorDialog.java',
       BROWSER_ROOT + 'browserservices/ClearDataDialogActivity.java',
       BROWSER_ROOT + 'browsing_data/ConfirmImportantSitesDialogFragment.java',
       BROWSER_ROOT + 'browsing_data/OtherFormsOfHistoryDialogFragment.java',

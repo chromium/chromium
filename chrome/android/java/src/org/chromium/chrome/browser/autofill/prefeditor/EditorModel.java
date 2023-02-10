@@ -18,6 +18,12 @@ public class EditorModel {
     private final String mTitle;
     @Nullable
     private final String mCustomDoneButtonText;
+    @Nullable
+    private final String mFooterMessageText;
+    @Nullable
+    private final String mDeleteConfirmationTitle;
+    @Nullable
+    private final String mDeleteConfirmationText;
     private final List<EditorFieldModel> mFields;
     @Nullable
     private Runnable mDoneCallback;
@@ -30,7 +36,7 @@ public class EditorModel {
      * @param title The title for the editor window.
      */
     public EditorModel(String title) {
-        this(title, null);
+        this(title, null, null, null, null);
     }
 
     /**
@@ -39,10 +45,18 @@ public class EditorModel {
      * @param title The title for the editor window.
      * @param customDoneButtonText The text to display on the done button. If null, the default
      *        value will be used.
+     * @param footerMessageText The text of the optional footer message.
+     * @param deleteConfirmationTitle The title of the delete confirmation dialog.
+     * @param deleteConfirmationText The message text of the delete confirmation dialog.
      */
-    public EditorModel(String title, @Nullable String customDoneButtonText) {
+    public EditorModel(String title, @Nullable String customDoneButtonText,
+            @Nullable String footerMessageText, @Nullable String deleteConfirmationTitle,
+            @Nullable String deleteConfirmationText) {
         mTitle = title;
         mCustomDoneButtonText = customDoneButtonText;
+        mFooterMessageText = footerMessageText;
+        mDeleteConfirmationTitle = deleteConfirmationTitle;
+        mDeleteConfirmationText = deleteConfirmationText;
         mFields = new ArrayList<>();
     }
 
@@ -55,6 +69,24 @@ public class EditorModel {
     @Nullable
     public String getCustomDoneButtonText() {
         return mCustomDoneButtonText;
+    }
+
+    /** @return The text of the optional footer message. */
+    @Nullable
+    public String getFooterMessageText() {
+        return mFooterMessageText;
+    }
+
+    /** @return The title of the delete confirmation dialog. */
+    @Nullable
+    public String getDeleteConfirmationTitle() {
+        return mDeleteConfirmationTitle;
+    }
+
+    /** @return The message text of the delete confirmation dialog. */
+    @Nullable
+    public String getDeleteConfirmationText() {
+        return mDeleteConfirmationText;
     }
 
     /** @return The input fields for the editor. */

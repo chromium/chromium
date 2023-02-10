@@ -920,6 +920,11 @@ import java.util.concurrent.atomic.AtomicReference;
     }
 
     @Override
+    public void onEditorConfirmationDialogShown() {
+        // Not used.
+    }
+
+    @Override
     public void onPaymentRequestReadyToPay(PaymentRequestUI ui) {
         ThreadUtils.assertOnUiThread();
         // This happens when the payment request is created by a direct js function call rather than

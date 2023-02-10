@@ -18,6 +18,14 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
         android:text="@string/payments_required_field_message" />
 
+    <TextView
+        android:id="@+id/footer_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+
     <include layout="@layout/autofill_editor_base_buttons" />
 
 </LinearLayout>
