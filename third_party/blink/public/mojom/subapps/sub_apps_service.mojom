@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-enum SubAppsServiceResult {
+enum SubAppsServiceResultCode {
   kSuccess,
   kFailure,
 };
@@ -14,22 +14,25 @@ enum SubAppsServiceResult {
 // of the full url.
 // `install_url_path` is a path to a page hosting or containing a link to the
 // app's manifest.
-struct SubAppsServiceAddInfo {
+// Name of this struct can't be "SubAppsServiceAddParams" because it causes a
+// collision in the Android mojo bindings (interface name "SubAppsService" plus
+// method name "Add" plus suffix "Params" create the colliding name).
+struct SubAppsServiceAddParameters {
   string unhashed_app_id_path;
   string install_url_path;
 };
 
 struct SubAppsServiceAddResult {
   string unhashed_app_id_path;
-  SubAppsServiceResult result_code;
+  SubAppsServiceResultCode result_code;
 };
 
 struct SubAppsServiceListResult {
-  SubAppsServiceResult code;
-  array<SubAppsServiceListInfo> sub_apps_list;
+  SubAppsServiceResultCode result_code;
+  array<SubAppsServiceListResultEntry> sub_apps_list;
 };
 
-struct SubAppsServiceListInfo {
+struct SubAppsServiceListResultEntry {
   string unhashed_app_id_path;
   string app_name;
 };
@@ -45,12 +48,12 @@ struct SubAppsServiceListInfo {
 interface SubAppsService {
   // Installs one or more sub-apps of an already-installed app corresponding to
   // this instance of SubAppsService.
-  Add(array<SubAppsServiceAddInfo> sub_apps_to_add) => (array<SubAppsServiceAddResult> result);
+  Add(array<SubAppsServiceAddParameters> sub_apps_to_add) => (array<SubAppsServiceAddResult> result);
 
   // List all sub-apps installed by the app making the API call.
   List() => (SubAppsServiceListResult result);
 
   // Uninstalls the sub-app represented by the given argument previously
   // installed via the `Add` method by the same app making the current API call.
-  Remove(string unhashed_app_id_path) => (SubAppsServiceResult result);
+  Remove(string unhashed_app_id_path) => (SubAppsServiceResultCode result);
 };

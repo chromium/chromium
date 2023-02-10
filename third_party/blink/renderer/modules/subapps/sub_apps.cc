@@ -10,8 +10,8 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_add_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_list_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_add_params.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_list_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_result_code.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -27,12 +27,12 @@
 namespace blink {
 
 using mojom::blink::SubAppsService;
-using mojom::blink::SubAppsServiceAddInfo;
-using mojom::blink::SubAppsServiceAddInfoPtr;
+using mojom::blink::SubAppsServiceAddParameters;
+using mojom::blink::SubAppsServiceAddParametersPtr;
 using mojom::blink::SubAppsServiceAddResultPtr;
-using mojom::blink::SubAppsServiceListInfoPtr;
+using mojom::blink::SubAppsServiceListResultEntryPtr;
 using mojom::blink::SubAppsServiceListResultPtr;
-using mojom::blink::SubAppsServiceResult;
+using mojom::blink::SubAppsServiceResultCode;
 
 namespace {
 
@@ -43,7 +43,7 @@ Vector<std::pair<String, V8SubAppsResultCode>> AddResultsFromMojo(
   Vector<std::pair<String, V8SubAppsResultCode>> add_results_idl;
   for (auto& add_result : add_results_mojo) {
     auto result_code =
-        add_result->result_code == SubAppsServiceResult::kSuccess
+        add_result->result_code == SubAppsServiceResultCode::kSuccess
             ? V8SubAppsResultCode(V8SubAppsResultCode::Enum::kSuccess)
             : V8SubAppsResultCode(V8SubAppsResultCode::Enum::kFailure);
     add_results_idl.emplace_back(add_result->unhashed_app_id_path, result_code);
@@ -51,25 +51,25 @@ Vector<std::pair<String, V8SubAppsResultCode>> AddResultsFromMojo(
   return add_results_idl;
 }
 
-Vector<SubAppsServiceAddInfoPtr> AddOptionsToMojo(
-    HeapVector<std::pair<String, Member<SubAppsAddOptions>>>
+Vector<SubAppsServiceAddParametersPtr> AddOptionsToMojo(
+    HeapVector<std::pair<String, Member<SubAppsAddParams>>>
         sub_apps_to_add_idl) {
-  Vector<SubAppsServiceAddInfoPtr> sub_apps_to_add_mojo;
-  for (auto& [unhashed_app_id_path, add_options] : sub_apps_to_add_idl) {
-    sub_apps_to_add_mojo.emplace_back(SubAppsServiceAddInfo::New(
-        unhashed_app_id_path, add_options->installUrl()));
+  Vector<SubAppsServiceAddParametersPtr> sub_apps_to_add_mojo;
+  for (auto& [unhashed_app_id_path, add_params] : sub_apps_to_add_idl) {
+    sub_apps_to_add_mojo.emplace_back(SubAppsServiceAddParameters::New(
+        unhashed_app_id_path, add_params->installURL()));
   }
   return sub_apps_to_add_mojo;
 }
 
-HeapVector<std::pair<String, Member<SubAppsListInfo>>> ListResultsFromMojo(
-    Vector<SubAppsServiceListInfoPtr> sub_apps_list_mojo) {
-  HeapVector<std::pair<String, Member<SubAppsListInfo>>> sub_apps_list_idl;
+HeapVector<std::pair<String, Member<SubAppsListResult>>> ListResultsFromMojo(
+    Vector<SubAppsServiceListResultEntryPtr> sub_apps_list_mojo) {
+  HeapVector<std::pair<String, Member<SubAppsListResult>>> sub_apps_list_idl;
   for (auto& sub_app_entry : sub_apps_list_mojo) {
-    SubAppsListInfo* list_info = SubAppsListInfo::Create();
-    list_info->setAppName(std::move(sub_app_entry->app_name));
+    SubAppsListResult* list_result = SubAppsListResult::Create();
+    list_result->setAppName(std::move(sub_app_entry->app_name));
     sub_apps_list_idl.emplace_back(
-        std::move(sub_app_entry->unhashed_app_id_path), list_info);
+        std::move(sub_app_entry->unhashed_app_id_path), list_result);
   }
   return sub_apps_list_idl;
 }
@@ -119,7 +119,7 @@ void SubApps::OnConnectionError() {
 
 ScriptPromise SubApps::add(
     ScriptState* script_state,
-    const HeapVector<std::pair<String, Member<SubAppsAddOptions>>>&
+    const HeapVector<std::pair<String, Member<SubAppsAddParams>>>&
         sub_apps_to_add,
     ExceptionState& exception_state) {
   // [SecureContext] from the IDL ensures this.
@@ -156,7 +156,7 @@ ScriptPromise SubApps::add(
   // Check that the arguments are root-relative paths.
   for (const auto& [unhashed_app_id_path, add_params] : sub_apps_to_add) {
     if (KURL(unhashed_app_id_path).IsValid() ||
-        KURL(add_params->installUrl()).IsValid()) {
+        KURL(add_params->installURL()).IsValid()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           "Arguments must be root-relative paths.");
@@ -171,7 +171,8 @@ ScriptPromise SubApps::add(
           WTF::BindOnce([](ScriptPromiseResolver* resolver,
                            Vector<SubAppsServiceAddResultPtr> results_mojo) {
             for (const auto& add_result : results_mojo) {
-              if (add_result->result_code == SubAppsServiceResult::kFailure) {
+              if (add_result->result_code ==
+                  SubAppsServiceResultCode::kFailure) {
                 return resolver->Reject(
                     AddResultsFromMojo(std::move(results_mojo)));
               }
@@ -190,7 +191,7 @@ ScriptPromise SubApps::list(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   GetService()->List(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
       [](ScriptPromiseResolver* resolver, SubAppsServiceListResultPtr result) {
-        if (result->code == SubAppsServiceResult::kSuccess) {
+        if (result->result_code == SubAppsServiceResultCode::kSuccess) {
           resolver->Resolve(
               ListResultsFromMojo(std::move(result->sub_apps_list)));
         } else {
@@ -223,8 +224,8 @@ ScriptPromise SubApps::remove(ScriptState* script_state,
   GetService()->Remove(
       unhashed_app_id_path,
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver, SubAppsServiceResult result) {
-            if (result == SubAppsServiceResult::kSuccess) {
+          [](ScriptPromiseResolver* resolver, SubAppsServiceResultCode result) {
+            if (result == SubAppsServiceResultCode::kSuccess) {
               resolver->Resolve();
             } else {
               resolver->Reject(V8ThrowDOMException::CreateOrDie(

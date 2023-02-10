@@ -18,7 +18,7 @@ class ExceptionState;
 class Navigator;
 class ScriptPromise;
 class ScriptState;
-class SubAppsAddOptions;
+class SubAppsAddParams;
 
 class SubApps : public ScriptWrappable, public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
@@ -37,7 +37,7 @@ class SubApps : public ScriptWrappable, public Supplement<Navigator> {
   // SubApps API.
   ScriptPromise add(
       ScriptState*,
-      const HeapVector<std::pair<String, Member<SubAppsAddOptions>>>&
+      const HeapVector<std::pair<String, Member<SubAppsAddParams>>>&
           sub_apps_to_add,
       ExceptionState&);
   ScriptPromise list(ScriptState*, ExceptionState&);

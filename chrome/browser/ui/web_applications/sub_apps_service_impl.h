@@ -22,8 +22,8 @@ namespace web_app {
 class SubAppsServiceImpl
     : public content::DocumentService<blink::mojom::SubAppsService> {
  public:
-  using AddResults =
-      std::vector<std::pair<UnhashedAppId, blink::mojom::SubAppsServiceResult>>;
+  using AddResults = std::vector<
+      std::pair<UnhashedAppId, blink::mojom::SubAppsServiceResultCode>>;
   using AddResultsMojo = std::vector<blink::mojom::SubAppsServiceAddResultPtr>;
 
   SubAppsServiceImpl(const SubAppsServiceImpl&) = delete;
@@ -37,8 +37,9 @@ class SubAppsServiceImpl
       mojo::PendingReceiver<blink::mojom::SubAppsService> receiver);
 
   // blink::mojom::SubAppsService
-  void Add(std::vector<blink::mojom::SubAppsServiceAddInfoPtr> sub_apps_to_add,
-           AddCallback result_callback) override;
+  void Add(
+      std::vector<blink::mojom::SubAppsServiceAddParametersPtr> sub_apps_to_add,
+      AddCallback result_callback) override;
   void List(ListCallback result_callback) override;
   void Remove(const UnhashedAppId& unhashed_app_id_path,
               RemoveCallback result_callback) override;

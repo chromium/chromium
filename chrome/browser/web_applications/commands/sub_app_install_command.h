@@ -39,7 +39,7 @@ class WebAppUrlLoader;
 class WebAppDataRetriever;
 
 using AppInstallResults =
-    std::vector<std::pair<AppId, blink::mojom::SubAppsServiceResult>>;
+    std::vector<std::pair<AppId, blink::mojom::SubAppsServiceResultCode>>;
 using SubAppInstallResultCallback = base::OnceCallback<void(AppInstallResults)>;
 
 class SubAppInstallCommand
@@ -113,11 +113,12 @@ class SubAppInstallCommand
       const UnhashedAppId& unhashed_app_id,
       webapps::InstallResultCode result);
   bool IsWebContentsDestroyed();
-  void AddResultToDebugData(const UnhashedAppId& unhashed_app_id,
-                            const GURL& url,
-                            const AppId& installed_app_id,
-                            webapps::InstallResultCode detailed_code,
-                            const blink::mojom::SubAppsServiceResult& code);
+  void AddResultToDebugData(
+      const UnhashedAppId& unhashed_app_id,
+      const GURL& url,
+      const AppId& installed_app_id,
+      webapps::InstallResultCode detailed_code,
+      const blink::mojom::SubAppsServiceResultCode& result_code);
 
   std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;

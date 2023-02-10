@@ -30,13 +30,13 @@
 #include "url/origin.h"
 
 using blink::mojom::SubAppsService;
-using blink::mojom::SubAppsServiceAddInfoPtr;
+using blink::mojom::SubAppsServiceAddParametersPtr;
 using blink::mojom::SubAppsServiceAddResult;
 using blink::mojom::SubAppsServiceAddResultPtr;
-using blink::mojom::SubAppsServiceListInfo;
-using blink::mojom::SubAppsServiceListInfoPtr;
 using blink::mojom::SubAppsServiceListResult;
-using blink::mojom::SubAppsServiceResult;
+using blink::mojom::SubAppsServiceListResultEntry;
+using blink::mojom::SubAppsServiceListResultEntryPtr;
+using blink::mojom::SubAppsServiceResultCode;
 
 namespace web_app {
 
@@ -65,7 +65,7 @@ std::string ConvertUrlToPath(const UnhashedAppId& unhashed_app_id) {
 base::expected<std::vector<std::pair<UnhashedAppId, GURL>>, std::string>
 AddOptionsFromMojo(
     const url::Origin& origin,
-    const std::vector<SubAppsServiceAddInfoPtr>& sub_apps_to_add_mojo) {
+    const std::vector<SubAppsServiceAddParametersPtr>& sub_apps_to_add_mojo) {
   std::vector<std::pair<UnhashedAppId, GURL>> sub_apps;
   for (const auto& sub_app : sub_apps_to_add_mojo) {
     base::expected<std::string, std::string> unhashed_app_id =
@@ -116,8 +116,8 @@ void OnRemove(SubAppsServiceImpl::RemoveCallback result_callback,
               webapps::UninstallResultCode code) {
   std::move(result_callback)
       .Run(code == webapps::UninstallResultCode::kSuccess
-               ? SubAppsServiceResult::kSuccess
-               : SubAppsServiceResult::kFailure);
+               ? SubAppsServiceResultCode::kSuccess
+               : SubAppsServiceResultCode::kFailure);
 }
 
 }  // namespace
@@ -153,7 +153,7 @@ void SubAppsServiceImpl::CreateIfAllowed(
 }
 
 void SubAppsServiceImpl::Add(
-    std::vector<SubAppsServiceAddInfoPtr> sub_apps_to_add,
+    std::vector<SubAppsServiceAddParametersPtr> sub_apps_to_add,
     AddCallback result_callback) {
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   if (!provider->on_registry_ready().is_signaled()) {
@@ -173,7 +173,7 @@ void SubAppsServiceImpl::Add(
     std::vector<SubAppsServiceAddResultPtr> result;
     for (const auto& sub_app : sub_apps_to_add) {
       result.emplace_back(SubAppsServiceAddResult::New(
-          sub_app->unhashed_app_id_path, SubAppsServiceResult::kFailure));
+          sub_app->unhashed_app_id_path, SubAppsServiceResultCode::kFailure));
     }
     return std::move(result_callback).Run(/*mojom_results=*/std::move(result));
   }
@@ -211,23 +211,23 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
   if (!parent_app_id) {
     return std::move(result_callback)
         .Run(SubAppsServiceListResult::New(
-            SubAppsServiceResult::kFailure,
-            std::vector<SubAppsServiceListInfoPtr>()));
+            SubAppsServiceResultCode::kFailure,
+            std::vector<SubAppsServiceListResultEntryPtr>()));
   }
 
   WebAppRegistrar& registrar = provider->registrar_unsafe();
 
-  std::vector<SubAppsServiceListInfoPtr> sub_apps_list;
+  std::vector<SubAppsServiceListResultEntryPtr> sub_apps_list;
   for (const AppId& sub_app_id : registrar.GetAllSubAppIds(*parent_app_id)) {
     const WebApp* sub_app = registrar.GetAppById(sub_app_id);
     UnhashedAppId unhashed_app_id =
         GenerateAppIdUnhashed(sub_app->manifest_id(), sub_app->start_url());
-    sub_apps_list.push_back(SubAppsServiceListInfo::New(
+    sub_apps_list.push_back(SubAppsServiceListResultEntry::New(
         ConvertUrlToPath(unhashed_app_id), sub_app->untranslated_name()));
   }
 
   std::move(result_callback)
-      .Run(SubAppsServiceListResult::New(SubAppsServiceResult::kSuccess,
+      .Run(SubAppsServiceListResult::New(SubAppsServiceResultCode::kSuccess,
                                          std::move(sub_apps_list)));
 }
 
@@ -246,7 +246,7 @@ void SubAppsServiceImpl::Remove(const UnhashedAppId& unhashed_app_id_path,
   // Verify that the calling app is installed itself (cf. `Add`).
   const AppId* calling_app_id = GetAppId(render_frame_host());
   if (!calling_app_id) {
-    return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
+    return std::move(result_callback).Run(SubAppsServiceResultCode::kFailure);
   }
 
   // Convert `unhashed_app_id_path` from path form to full URL form.
@@ -265,7 +265,7 @@ void SubAppsServiceImpl::Remove(const UnhashedAppId& unhashed_app_id_path,
   if (!app || !app->parent_app_id() ||
       *calling_app_id != *app->parent_app_id() ||
       !app->is_locally_installed()) {
-    return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
+    return std::move(result_callback).Run(SubAppsServiceResultCode::kFailure);
   }
 
   provider->install_finalizer().UninstallExternalWebApp(

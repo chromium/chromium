@@ -1199,10 +1199,10 @@ void WebAppIntegrationTestDriver::InstallSubApp(
 
   std::string sub_url = GetSiteConfiguration(subapp).relative_url;
   // The argument of add() is a dictionary-valued dictionary:
-  // { $unhashed_app_id : {'install_url' : $install_url} }
-  // In our case, both $unhashed_app_id and $install_url are sub_url.
+  // { $unhashed_app_id : {'installURL' : $installURL} }
+  // In our case, both $unhashed_app_id and $installURL are sub_url.
   base::Value::Dict inner_dict;
-  inner_dict.Set("install_url", sub_url);
+  inner_dict.Set("installURL", sub_url);
   base::Value::Dict outer_dict;
   outer_dict.Set(sub_url, std::move(inner_dict));
 

@@ -46,13 +46,13 @@ std::string StreamableToString(const Streamable& value) {
   return ss.str();
 }
 
-blink::mojom::SubAppsServiceResult InstallResultCodeToMojo(
+blink::mojom::SubAppsServiceResultCode InstallResultCodeToMojo(
     webapps::InstallResultCode install_result_code) {
   switch (install_result_code) {
     // Success result codes.
     case webapps::InstallResultCode::kSuccessNewInstall:
     case webapps::InstallResultCode::kSuccessAlreadyInstalled:
-      return blink::mojom::SubAppsServiceResult::kSuccess;
+      return blink::mojom::SubAppsServiceResultCode::kSuccess;
     // Failure result codes.
     case webapps::InstallResultCode::kUserInstallDeclined:
     case webapps::InstallResultCode::kExpectedAppIdCheckFailed:
@@ -60,9 +60,9 @@ blink::mojom::SubAppsServiceResult InstallResultCodeToMojo(
     case webapps::InstallResultCode::kInstallURLLoadTimeOut:
     case webapps::InstallResultCode::kInstallURLLoadFailed:
     case webapps::InstallResultCode::kNotValidManifestForWebApp:
-      return blink::mojom::SubAppsServiceResult::kFailure;
+      return blink::mojom::SubAppsServiceResultCode::kFailure;
     default:
-      return blink::mojom::SubAppsServiceResult::kFailure;
+      return blink::mojom::SubAppsServiceResultCode::kFailure;
   }
 }
 
@@ -165,7 +165,7 @@ void SubAppInstallCommand::StartWithLock(
         requested_installs_, std::inserter(results_, results_.begin()),
         [](auto const& pair) {
           return std::pair{pair.first,
-                           blink::mojom::SubAppsServiceResult::kFailure};
+                           blink::mojom::SubAppsServiceResultCode::kFailure};
         });
     SignalCompletionAndSelfDestruct(
         CommandResult::kFailure,
@@ -475,12 +475,12 @@ void SubAppInstallCommand::AddResultToDebugData(
     const GURL& install_url,
     const AppId& installed_app_id,
     webapps::InstallResultCode detailed_code,
-    const blink::mojom::SubAppsServiceResult& code) {
+    const blink::mojom::SubAppsServiceResultCode& result_code) {
   base::Value::Dict install_info;
   install_info.Set("unhashed_app_id", unhashed_app_id);
   install_info.Set("install_url", install_url.spec());
   install_info.Set("detailed_result_code", StreamableToString(detailed_code));
-  install_info.Set("result_code", StreamableToString(code));
+  install_info.Set("result_code", StreamableToString(result_code));
   debug_install_results_.Set(installed_app_id,
                              base::Value(std::move(install_info)));
 }

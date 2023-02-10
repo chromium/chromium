@@ -12,7 +12,7 @@ function doPromise(promise) {
 function callAdd() {
   var arg = {};
   var app_id = document.getElementById('subAppUrl').value;
-  arg[app_id] = {'install_url': app_id};
+  arg[app_id] = {'installURL': app_id};
   doPromise(navigator.subApps.add(arg));
 }
 
