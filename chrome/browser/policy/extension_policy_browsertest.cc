@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -17,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_contents_service.h"
@@ -2624,8 +2626,9 @@ class MixinBasedExtensionPolicyTest
   MixinBasedExtensionPolicyTest() = default;
 
   std::string GetKeyFromProxyPrefs(const PrefService::Preference* prefs,
-                                   std::string key) {
-    return prefs->GetValue()->FindKey(key)->GetString();
+                                   const std::string& key) {
+    const base::Value::Dict& pref = prefs->GetValue()->GetDict();
+    return CHECK_DEREF(pref.FindString(key));
   }
 
   const PrefService::Preference* GetOriginalProxyPrefs() {
