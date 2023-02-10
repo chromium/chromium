@@ -775,14 +775,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
 }
 
-// Flaky on linux and mac: https://crbug.com/1299762.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_BlockLargeFiles DISABLED_BlockLargeFiles
-#else
-#define MAYBE_BlockLargeFiles BlockLargeFiles
-#endif
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       MAYBE_BlockLargeFiles) {
+                       BlockLargeFiles) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
@@ -814,17 +808,12 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
 
   CreateFilesForTest({"large.doc"}, {std::string()}, &data);
 
-  // Write data to the file in chunks to avoid memory allocation errors.
-  constexpr int64_t kChunkSize = 50 * 1024 * 1024;  // 100 MB
-  constexpr int64_t kLargeSize = 42 * kChunkSize;   // ~2.1 GB, just over maxint
-  int64_t total_size = 0;
-  std::string chunk = std::string(kChunkSize, 'a');
+  constexpr int64_t kLargeSize = 51 * 1024 * 1024;
+  std::string chunk = std::string(kLargeSize, 'a');
   base::File file(created_file_paths()[0],
                   base::File::FLAG_OPEN | base::File::FLAG_WRITE);
-  while (total_size != kLargeSize) {
-    file.WriteAtCurrentPos(chunk.data(), chunk.size());
-    total_size += chunk.size();
-  }
+  file.WriteAtCurrentPos(chunk.data(), chunk.size());
+
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
 
@@ -835,10 +824,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       /*source*/ "",
       /*destination*/ "",
       /*filename*/ "large.doc",
-      // python3 -c "print('a' * (42 * 50 * 1024 * 1024), end='')" |\
+      // python3 -c "print('a' * (51 * 1024 * 1024), end='')" |\
       // sha256sum |  tr '[:lower:]' '[:upper:]'
       /*sha*/
-      "E061612733D5D991F3BD676A51F77B1F0C824282909B7C1C89BD1612FC52E073",
+      "6F040FFDD67004CA3074BFB39936F553A49669427C477CC60DBE064C355EE1B1",
       /*trigger*/ SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
       /*reason*/ "FILE_TOO_LARGE",
       /*mimetypes*/ DocMimeTypes(),
