@@ -65,7 +65,8 @@ void PairerBrokerImpl::RemoveObserver(Observer* observer) {
 }
 
 void PairerBrokerImpl::PairDevice(scoped_refptr<Device> device) {
-  if (device->protocol() == Protocol::kFastPairRetroactive &&
+  if (ash::features::IsFastPairBleRotationEnabled() &&
+      device->protocol() == Protocol::kFastPairRetroactive &&
       model_id_to_current_ble_address_map_.contains(device->metadata_id()) &&
       model_id_to_current_ble_address_map_[device->metadata_id()] !=
           device->ble_address()) {
@@ -148,8 +149,9 @@ void PairerBrokerImpl::PairFastPairDevice(scoped_refptr<Device> device) {
 }
 
 void PairerBrokerImpl::CreateHandshake(scoped_refptr<Device> device) {
-  if (device->ble_address() !=
-      model_id_to_current_ble_address_map_[device->metadata_id()]) {
+  if (ash::features::IsFastPairBleRotationEnabled() &&
+      device->ble_address() !=
+          model_id_to_current_ble_address_map_[device->metadata_id()]) {
     // If the current |device| has a different BLE Address than the address in
     // the map, abort creating the handshake and return early;
     QP_LOG(VERBOSE)

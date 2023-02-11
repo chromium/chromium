@@ -398,6 +398,8 @@ TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
 }
 
 TEST_F(PairerBrokerImplTest, Ble_Address_Matches_Create_Handshake) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairBleRotation};
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
 
@@ -408,6 +410,8 @@ TEST_F(PairerBrokerImplTest, Ble_Address_Matches_Create_Handshake) {
 }
 
 TEST_F(PairerBrokerImplTest, Ble_Address_Mismatch_No_Handshake) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairBleRotation};
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
 
@@ -419,6 +423,8 @@ TEST_F(PairerBrokerImplTest, Ble_Address_Mismatch_No_Handshake) {
 }
 
 TEST_F(PairerBrokerImplTest, Ble_Address_Mismatch_Set_Callback) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairBleRotation};
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
   // Populate the ble_address map with a different address than the current BLE
@@ -438,6 +444,8 @@ TEST_F(PairerBrokerImplTest, Ble_Address_Mismatch_Set_Callback) {
 }
 
 TEST_F(PairerBrokerImplTest, OnBleAddressRotation_Pairs_Successfully) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairBleRotation};
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);

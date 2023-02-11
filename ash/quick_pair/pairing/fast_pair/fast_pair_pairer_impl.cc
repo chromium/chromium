@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/quick_pair/common/account_key_failure.h"
@@ -530,7 +531,8 @@ void FastPairPairerImpl::OnIsDeviceSavedToAccount(
 
   // If the BLE address has rotated writing the account key is guaranteed to
   // fail. Instead of proceeding, call the callback and return.
-  if (fast_pair_handshake_->DidBleAddressRotate()) {
+  if (ash::features::IsFastPairBleRotationEnabled() &&
+      fast_pair_handshake_->DidBleAddressRotate()) {
     // TODO (b/268055837): add metric for when we get in this scenario.
     QP_LOG(VERBOSE) << __func__ << ": BLE Address rotated, running callback";
     fast_pair_handshake_->RunBleAddressRotationCallback();

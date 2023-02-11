@@ -2544,6 +2544,8 @@ TEST_F(FastPairPairerImplTest, RetroactiveNotLoggedToInitial) {
 }
 
 TEST_F(FastPairPairerImplTest, BleAddressRotatedCallsCallback) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairBleRotation};
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
