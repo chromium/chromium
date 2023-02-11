@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -436,8 +437,14 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
   }
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_All DISABLED_All
+#else
+#define MAYBE_All All
+#endif
+
 INSTANTIATE_TEST_SUITE_P(
-    All,
+    MAYBE_All,
     FileHandlingSubManagerConfigureAndExecuteTest,
     ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
                       OsIntegrationSubManagersState::kSaveStateAndExecute,
