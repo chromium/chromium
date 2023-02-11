@@ -12,8 +12,7 @@ To build and run WebEngine Shell, execute the following commands:
 $ autoninja -C $OUTDIR web_engine_shell
 $ $OUTDIR/bin/deploy_web_engine_shell --fuchsia-out-dir $FUCHSIA_OUTDIR
 $ cd $FUCHSIA
-$ fx shell
-$ run fuchsia-pkg://fuchsia.com/web_engine_shell#meta/web_engine_shell.cmx --remote-debugging-port=1234 http://www.example.com
+$ ffx test run fuchsia-pkg://fuchsia.com/web_engine_shell#meta/web_engine_shell.cm -- --remote-debugging-port=1234 http://www.example.com
 ```
 
 Local files can be deployed with the WebEngine Shell and accessed via the
@@ -22,5 +21,5 @@ by placing them under the path `//fuchsia_web/webengine/data`.
 
 Here is an example command line which loads a local file:
 ```
-$ run fuchsia-pkg://fuchsia.com/web_engine_shell#meta/web_engine_shell.cmx fuchsia-dir://data/index.html
+$ ffx test run fuchsia-pkg://fuchsia.com/web_engine_shell#meta/web_engine_shell.cm -- fuchsia-dir://data/index.html
 ```

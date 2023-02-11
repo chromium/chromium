@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 
 using ::component_testing::ChildRef;
 using ::component_testing::Directory;
@@ -22,24 +23,61 @@ using ::component_testing::Route;
 
 namespace test {
 
+namespace {
+
+void AppendCommandLineArgumentsToProgram(
+    fuchsia::component::decl::Program& program,
+    const base::CommandLine& command_line) {
+  // Find the "args" list in the program declaration.
+  fuchsia::data::DictionaryEntry* args_entry = nullptr;
+  auto* entries = program.mutable_info()->mutable_entries();
+  for (auto& entry : *entries) {
+    if (entry.key == "args") {
+      DCHECK(entry.value->is_str_vec());
+      args_entry = &entry;
+      break;
+    }
+  }
+  if (!args_entry) {
+    // Create a new "args" list and insert it at the proper location in the
+    // program's entries; entries' keys must be sorted as per
+    // https://fuchsia.dev/reference/fidl/fuchsia.data?hl=en#Dictionary.
+    auto lower_bound = base::ranges::lower_bound(
+        *entries, "args", /*comp=*/{},
+        [](const fuchsia::data::DictionaryEntry& entry) { return entry.key; });
+    auto it = entries->emplace(lower_bound);
+    it->key = "args";
+    it->value = fuchsia::data::DictionaryValue::New();
+    it->value->set_str_vec({});
+    args_entry = &*it;
+  }
+
+  // Append all args following the program name in `command_line` to the
+  // program's args.
+  args_entry->value->str_vec().insert(args_entry->value->str_vec().end(),
+                                      command_line.argv().begin() + 1,
+                                      command_line.argv().end());
+}
+
+}  // namespace
+
 void AppendCommandLineArguments(RealmBuilder& realm_builder,
                                 base::StringPiece child_name,
                                 const base::CommandLine& command_line) {
   const std::string child_name_str(child_name);
-  auto context_provider_decl = realm_builder.GetComponentDecl(child_name_str);
-  for (auto& entry : *context_provider_decl.mutable_program()
-                          ->mutable_info()
-                          ->mutable_entries()) {
-    if (entry.key == "args") {
-      DCHECK(entry.value->is_str_vec());
-      entry.value->str_vec().insert(entry.value->str_vec().end(),
-                                    command_line.argv().begin() + 1,
-                                    command_line.argv().end());
-      break;
-    }
-  }
+  auto child_component_decl = realm_builder.GetComponentDecl(child_name_str);
+  AppendCommandLineArgumentsToProgram(*child_component_decl.mutable_program(),
+                                      command_line);
   realm_builder.ReplaceComponentDecl(child_name_str,
-                                     std::move(context_provider_decl));
+                                     std::move(child_component_decl));
+}
+
+void AppendCommandLineArgumentsForRealm(
+    ::component_testing::RealmBuilder& realm_builder,
+    const base::CommandLine& command_line) {
+  auto decl = realm_builder.GetRealmDecl();
+  AppendCommandLineArgumentsToProgram(*decl.mutable_program(), command_line);
+  realm_builder.ReplaceRealmDecl(std::move(decl));
 }
 
 void AddSyslogRoutesFromParent(RealmBuilder& realm_builder,

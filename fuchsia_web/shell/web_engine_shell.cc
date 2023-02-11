@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuchsia/component/cpp/fidl.h>
 #include <fuchsia/ui/policy/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fdio/directory.h>
+#include <lib/fidl/cpp/interface_ptr.h>
+#include <lib/sys/component/cpp/testing/realm_builder.h>
 #include <lib/sys/cpp/component_context.h>
+#include <lib/sys/cpp/service_directory.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
-#include <lib/vfs/cpp/pseudo_file.h>
+
 #include <iostream>
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
@@ -27,9 +32,10 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "fuchsia_web/common/init_logging.h"
+#include "fuchsia_web/common/test/test_realm_support.h"
 #include "fuchsia_web/shell/remote_debugging_port.h"
+#include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_constants.h"
-#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "url/gurl.h"
 
@@ -38,6 +44,9 @@ namespace {
 constexpr char kHeadlessSwitch[] = "headless";
 constexpr char kEnableProtectedMediaIdentifier[] =
     "enable-protected-media-identifier";
+// Included on the command line when the shell is relaunched for use of
+// WebInstanceHost; see web_engine_shell_for_web_instance_host.cml.
+constexpr char kFromLauncher[] = "from-launcher";
 constexpr char kUseWebInstance[] = "use-web-instance";
 constexpr char kEnableWebInstanceTmp[] = "enable-web-instance-tmp";
 
@@ -69,17 +78,51 @@ GURL GetUrlFromArgs(const base::CommandLine::StringVector& args) {
   return url;
 }
 
+// web_engine_shell needs to provide capabilities to children it launches (via
+// WebInstanceHost, for example). Test components are not able to do this, so
+// use RealmBuilder to relaunch web_engine_shell via
+// `web_engine_shell_for_web_instance_host_component` (which includes
+// `--from-launcher` on its command line) with the contents of this process's
+// command line.
+int RelaunchForWebInstanceHost(const base::CommandLine& command_line) {
+  auto realm_builder = component_testing::RealmBuilder::CreateFromRelativeUrl(
+      "#meta/web_engine_shell_for_web_instance_host.cm");
+  test::AppendCommandLineArgumentsForRealm(realm_builder,  // IN-TEST
+                                           command_line);
+
+  auto realm = realm_builder.Build();
+
+  fuchsia::component::BinderPtr binder_proxy =
+      realm.component().Connect<fuchsia::component::Binder>();
+
+  // Wait for binder_proxy to be closed.
+  base::RunLoop run_loop;
+  binder_proxy.set_error_handler(
+      [quit_closure = run_loop.QuitClosure()](zx_status_t status) {
+        std::move(quit_closure).Run();
+      });
+  run_loop.Run();
+
+  // Nothing depends on the process exit code of web_engine_shell today, so
+  // simply return success in all cases.
+  return 0;
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
+  base::CommandLine::Init(argc, argv);
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  CHECK(InitLoggingFromCommandLine(*command_line));
+
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
 
-  // Parse the command line arguments and set up logging.
-  CHECK(base::CommandLine::Init(argc, argv));
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-  CHECK(InitLoggingFromCommandLineDefaultingToStderrForTest(  // IN-TEST
-      command_line));
+  const bool is_run_from_launcher = command_line->HasSwitch(kFromLauncher);
+  const bool use_context_provider = !command_line->HasSwitch(kUseWebInstance);
+  if (!is_run_from_launcher && !use_context_provider) {
+    return RelaunchForWebInstanceHost(*command_line);
+  }
 
   absl::optional<uint16_t> remote_debugging_port =
       GetRemoteDebuggingPort(*command_line);
@@ -91,7 +134,6 @@ int main(int argc, char** argv) {
   const bool is_headless = command_line->HasSwitch(kHeadlessSwitch);
   const bool enable_protected_media_identifier_access =
       command_line->HasSwitch(kEnableProtectedMediaIdentifier);
-  const bool use_context_provider = !command_line->HasSwitch(kUseWebInstance);
   const bool enable_web_instance_tmp =
       command_line->HasSwitch(kEnableWebInstanceTmp);
   const bool with_webui = command_line->HasSwitch(switches::kWithWebui);
@@ -173,12 +215,9 @@ int main(int argc, char** argv) {
 
   base::RunLoop run_loop;
 
-  // Create the browser |context|.
-  fuchsia::web::ContextPtr context;
-
-  // Keep alive in run_loop scope.
   fuchsia::web::ContextProviderPtr web_context_provider;
-  std::unique_ptr<WebInstanceHostV1> web_instance_host;
+  std::unique_ptr<WebInstanceHost> web_instance_host;
+  fuchsia::web::ContextPtr context;
   fuchsia::io::DirectoryHandle tmp_directory;
 
   if (use_context_provider) {
@@ -189,7 +228,7 @@ int main(int argc, char** argv) {
     web_context_provider->Create(std::move(create_context_params),
                                  context.NewRequest());
   } else {
-    web_instance_host = std::make_unique<WebInstanceHostV1>();
+    web_instance_host = std::make_unique<WebInstanceHost>();
     if (enable_web_instance_tmp) {
       const zx_status_t status = fdio_open(
           "/tmp",
@@ -289,6 +328,8 @@ int main(int argc, char** argv) {
   }
 
   LOG(INFO) << "Launched browser at URL " << url.spec();
+
+  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
 
   // Run until the process is killed with CTRL-C or the connections to Web
   // Engine interfaces are dropped.

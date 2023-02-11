@@ -146,7 +146,6 @@ std::vector<std::string> GetRequiredServicesForConfig(
       "fuchsia.settings.Display",  // Used if preferred theme is DEFAULT.
       "fuchsia.sysmem.Allocator",
       "fuchsia.tracing.perfetto.ProducerConnector",
-      "fuchsia.tracing.provider.Registry",
       "fuchsia.ui.scenic.Scenic"};
 
   // TODO(crbug.com/1209031): Provide these conditionally, once corresponding
@@ -186,6 +185,7 @@ std::vector<std::string> GetRequiredServicesForConfig(
 
   if ((features & fuchsia::web::ContextFeatureFlags::VULKAN) ==
       fuchsia::web::ContextFeatureFlags::VULKAN) {
+    services.emplace_back("fuchsia.tracing.provider.Registry");
     services.emplace_back("fuchsia.vulkan.loader.Loader");
   }
 

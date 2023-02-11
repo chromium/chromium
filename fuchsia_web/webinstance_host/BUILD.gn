@@ -29,7 +29,10 @@ source_set("webinstance_host") {
     "web_instance_host_internal.cc",
     "web_instance_host_internal.h",
   ]
-  public = [ "web_instance_host.h" ]
+  public = [
+    "web_instance_host.h",
+    "web_instance_host_constants.h",
+  ]
   deps = [
     "//base:base_static",
     "//build:chromecast_buildflags",

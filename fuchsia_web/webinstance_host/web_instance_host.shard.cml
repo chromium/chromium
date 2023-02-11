@@ -56,7 +56,6 @@
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
-        "fuchsia.tracing.provider.Registry",
       ],
       from: "parent",
       to: "#web_instances",
@@ -78,12 +77,6 @@
       from: "parent",
       to: "#web_instances",
       availability: "optional",
-      source_availability: "unknown",
-    },
-    {
-      storage: "cache",
-      from: "parent",
-      to: "#web_instances",
     },
   ],
 }
