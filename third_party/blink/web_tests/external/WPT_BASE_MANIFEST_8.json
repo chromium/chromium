@@ -1437,6 +1437,13 @@
         {}
        ]
       ],
+      "content-visibility-selection-crash.html": [
+       "78b610b72ee481c015ba17671e6c916d22fd6b9d",
+       [
+        null,
+        {}
+       ]
+      ],
       "contentvisibility-nestedslot-crash.html": [
        "f4f07814e6010687e95e3f62a8b837992c8b894d",
        [
@@ -105354,7 +105361,7 @@
        ]
       ],
       "system-cyclic.html": [
-       "9d96b820e73bbe29f4d8509425ae7c4bbc1da051",
+       "4244610d0010f4f0fcd1430cc2b5ac1a22148ad1",
        [
         null,
         [
@@ -287794,7 +287801,7 @@
        []
       ],
       "system-cyclic-ref.html": [
-       "605a7ecda9975d7212a0b604af97ec54a4d7807f",
+       "11ff5f96a437dac526d9164a8219c98d08e29e6a",
        []
       ],
       "system-extends-invalid-ref.html": [
@@ -344342,11 +344349,11 @@
        []
       ],
       "request-structure-expected.txt": [
-       "fcdfb85ec7bb34c6866aa96509ddccbb85786864",
+       "a99fb7451a776e1544d686e51b27703f629ee3ef",
        []
       ],
       "request-structure.any-expected.txt": [
-       "70e536c1a7a7f0dfa5d8684633afdde81f651630",
+       "46c2a5e70cedec28cf1b4bb6cd05af0eb3642e9a",
        []
       ],
       "request-structure.any.js.ini": [
@@ -344354,15 +344361,15 @@
        []
       ],
       "request-structure.any.serviceworker-expected.txt": [
-       "70e536c1a7a7f0dfa5d8684633afdde81f651630",
+       "46c2a5e70cedec28cf1b4bb6cd05af0eb3642e9a",
        []
       ],
       "request-structure.any.sharedworker-expected.txt": [
-       "70e536c1a7a7f0dfa5d8684633afdde81f651630",
+       "46c2a5e70cedec28cf1b4bb6cd05af0eb3642e9a",
        []
       ],
       "request-structure.any.worker-expected.txt": [
-       "70e536c1a7a7f0dfa5d8684633afdde81f651630",
+       "46c2a5e70cedec28cf1b4bb6cd05af0eb3642e9a",
        []
       ],
       "resources": {
@@ -499162,6 +499169,17 @@
         {}
        ]
       ],
+      "request-init-priority.any.js": [
+       "eb5073c85785c37d1b82e1fe7139988216236587",
+       [
+        "fetch/api/request/request-init-priority.any.html",
+        {}
+       ],
+       [
+        "fetch/api/request/request-init-priority.any.worker.html",
+        {}
+       ]
+      ],
       "request-init-stream.any.js": [
        "f0ae441a00258ddd37998387a347d801b4029cec",
        [
@@ -499339,7 +499357,7 @@
        ]
       ],
       "request-structure.any.js": [
-       "3d55c70ac1e667fcc7f2b6f886ad022d310faa19",
+       "5e7855385554bd1c3ef04cfbec78dcfd9f9e9678",
        [
         "fetch/api/request/request-structure.any.html",
         {
@@ -578867,17 +578885,6 @@
     }
    },
    "priority-hints": {
-    "fetch-api-request.tentative.any.js": [
-     "1b576e52da801ad23fe23355995d37e71f366d10",
-     [
-      "priority-hints/fetch-api-request.tentative.any.html",
-      {}
-     ],
-     [
-      "priority-hints/fetch-api-request.tentative.any.worker.html",
-      {}
-     ]
-    ],
     "iframe-attr-fetchpriority.tentative.html": [
      "386577690b2557cf5f54e586a4b95f638d237ecf",
      [
