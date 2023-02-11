@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_events.h"
+
 namespace blink {
 
 FrameRequestCallbackCollection::FrameRequestCallbackCollection(
@@ -89,6 +91,10 @@ void FrameRequestCallbackCollection::ExecuteFrameCallbacks(
     probe::AsyncTask async_task(context_, callback->async_task_context());
     probe::UserCallback probe(context_, "requestAnimationFrame", AtomicString(),
                               true);
+
+    recordreplay::UserEventProbe replayEvent("requestAnimationFrame",
+                                             AtomicString());
+
     if (callback->GetUseLegacyTimeBase())
       callback->Invoke(high_res_now_ms_legacy);
     else

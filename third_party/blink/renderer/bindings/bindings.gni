@@ -70,6 +70,8 @@ blink_core_sources_bindings =
                     "core/v8/profiler_trace_builder.h",
                     "core/v8/record_replay_interface.cc",
                     "core/v8/record_replay_interface.h",
+                    "core/v8/record_replay_events.cc",
+                    "core/v8/record_replay_events.h",
                     "core/v8/referrer_script_info.cc",
                     "core/v8/referrer_script_info.h",
                     "core/v8/rejected_promises.cc",

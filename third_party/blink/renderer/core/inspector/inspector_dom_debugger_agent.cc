@@ -727,16 +727,6 @@ void InspectorDOMDebuggerAgent::ScriptExecutionBlockedByCSP(
   PauseOnNativeEventIfNeeded(std::move(event_data), true);
 }
 
-// Call `ReplayOnEvent` for the given event *before* it happened.
-static void ReplayNotifyBeforeEvent(const String& eventName,
-                              EventTarget* eventTarget = nullptr,
-                              bool isCallback = false);
-
-// Call `ReplayOnEvent` for the given event *after* it happened.
-static void ReplayNotifyAfterEvent(const String& eventName,
-                            EventTarget* eventTarget = nullptr,
-                            bool isCallback = false);
-
 void InspectorDOMDebuggerAgent::Will(const probe::ExecuteScript& probe) {
   AllowNativeBreakpoint("scriptFirstStatement", nullptr, false);
 }
@@ -752,23 +742,14 @@ void InspectorDOMDebuggerAgent::Will(const probe::UserCallback& probe) {
     Node* node = probe.event_target->ToNode();
     String target_name =
         node ? node->nodeName() : probe.event_target->InterfaceName();
-    ReplayNotifyBeforeEvent(name, probe.event_target, false);
     AllowNativeBreakpoint(name, &target_name, false);
     return;
   }
-  ReplayNotifyBeforeEvent(name, nullptr, true);
   AllowNativeBreakpoint(name + ".callback", nullptr, false);
 }
 
 void InspectorDOMDebuggerAgent::Did(const probe::UserCallback& probe) {
   String name = probe.name ? String(probe.name) : probe.atomic_name;
-
-  if (probe.event_target) {
-    ReplayNotifyAfterEvent(name, probe.event_target, false);
-  } else {
-    ReplayNotifyAfterEvent(name, nullptr, true);
-  }
-
   CancelNativeBreakpoint();
 }
 
@@ -927,75 +908,6 @@ void InspectorDOMDebuggerAgent::OnContentSecurityPolicyViolation(
       v8_inspector::protocol::Debugger::API::Paused::ReasonEnum::CSPViolation);
 
   v8_session_->breakProgram(listener, json_view);
-}
-
-
-// [replay]
-
-// This gathers and encodes the data points necessary for the "event breakpoint
-// matching logic" of CDT. Based on DOMDebuggerModel:
-// https://chromium.googlesource.com/devtools/devtools-frontend/+/3a80260722c77d984a637b923cad4883857e57dc/front_end/core/sdk/DOMDebuggerModel.ts#L958
-static String MakeReplayEventType(const String& eventTypeRaw,
-                                         EventTarget* eventTarget,
-                                         bool isCallback) {
-  // build final name
-  StringBuilder builder;
-  builder.Append(eventTypeRaw);
-  if (isCallback) {
-    builder.Append(".callback");
-  }
-
-  if (eventTarget) {
-    // Sadly, this is necessary because the lookup logic needs to distinguish
-    // between event and target name:
-    // The event name itself is ambiguous. To resolve it, sometimes the target
-    // name needs to be used, sometimes it needs to be omitted.
-    // Thus, we need to keep them logically separate.
-    Node* node = eventTarget->ToNode();
-    auto targetName = node ? node->nodeName() : eventTarget->InterfaceName();
-    builder.Append(",");
-    builder.Append(targetName);
-  }
-
-  return builder.ToString();
-}
-
-static int gIsEventInFlight = 0;
-
-void ReplayNotifyBeforeEvent(const String& eventName, 
-                             EventTarget* eventTarget,
-                             bool isCallback) {
-  String replayEventType =
-      MakeReplayEventType(eventName, eventTarget, isCallback);
-
-  // Disabled by default, see https://linear.app/replay/issue/RUN-1251
-  if (recordreplay::IsRecordingOrReplaying() &&
-      !recordreplay::FeatureEnabled("disable-collect-events")) {
-    if (!recordreplay::AreEventsDisallowed()) {
-      recordreplay::Assert("[RUN-1226] ReplayNotifyBeforeEvent %d %s",
-                           gIsEventInFlight, replayEventType.Ascii().c_str());
-      recordreplay::OnEvent(replayEventType.Ascii().c_str(), true);
-      ++gIsEventInFlight;
-    }
-  }
-}
-
-void ReplayNotifyAfterEvent(const String& eventName,
-                            EventTarget* eventTarget,
-                            bool isCallback) {
-  String replayEventType =
-      MakeReplayEventType(eventName, eventTarget, isCallback);
-
-  // Disabled by default, see https://linear.app/replay/issue/RUN-1251
-  if (recordreplay::IsRecordingOrReplaying() &&
-      !recordreplay::FeatureEnabled("disable-collect-events")) {
-    if (gIsEventInFlight) {
-      recordreplay::Assert("[RUN-1226] ReplayNotifyAfterEvent %d %s",
-                           gIsEventInFlight, replayEventType.Ascii().c_str());
-      recordreplay::OnEvent(replayEventType.Ascii().c_str(), false);
-      --gIsEventInFlight;
-    }
-  }
 }
 
 }  // namespace blink

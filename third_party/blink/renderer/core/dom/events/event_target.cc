@@ -67,6 +67,8 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_events.h"
+
 namespace blink {
 namespace {
 
@@ -904,6 +906,8 @@ bool EventTarget::FireEventListeners(Event& event,
     probe::AsyncTask async_task(context, listener->async_task_context(),
                                 "event",
                                 IsInstrumentedForAsyncStack(event.type()));
+
+    recordreplay::UserEventProbe replayEvent(nullptr, event.type(), this);
 
     // To match Mozilla, the AT_TARGET phase fires both capturing and bubbling
     // event listeners, even though that violates some versions of the DOM spec.
