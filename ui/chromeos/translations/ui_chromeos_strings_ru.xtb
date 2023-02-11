@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Английский (США), раскладка Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Google Таблицы</translation>
-<translation id="1521795806314479294">Подготовка объекта "<ph name="FILE_NAME" />"…</translation>
 <translation id="1538729222189715449">Файлы Linux открываются…</translation>
 <translation id="1547964879613821194">Канадская (английская)</translation>
 <translation id="1556189134700913550">Применить ко всем</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Архивирование объектов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="1722687688096767818">Добавление профиля…</translation>
 <translation id="1726100011689679555">Серверы имен</translation>
-<translation id="1727562178154619254">Готово к синхронизации</translation>
 <translation id="1729953886957086472">Немецкий (Германия)</translation>
 <translation id="1730235522912993863">Китайский, цанцзе</translation>
 <translation id="1731889557567069540">Скопировано объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -513,7 +511,6 @@
    Дождитесь окончания операции и извлеките устройство с помощью приложения "Файлы". В противном случае некоторые данные могут быть утеряны.</translation>
 <translation id="5163869187418756376">Не удалось предоставить доступ. Проверьте подключение к сети и повторите попытку.</translation>
 <translation id="516592729076796170">Клавиатура Дворака для программистов (США)</translation>
-<translation id="5167102019886320507">Подготовка объектов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="5177526793333269655">Уменьшенные изображения</translation>
 <translation id="5181896909298187506">Нет недавних файлов.</translation>
 <translation id="5194713942430106590">Нажмите, чтобы отсортировать значения в столбце по возрастанию.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Нет недавних изображений.</translation>
 <translation id="7460898608667578234">Украинский</translation>
 <translation id="7469894403370665791">Автоматически подключаться к этой сети</translation>
+<translation id="7481358317100446445">Готово</translation>
 <translation id="7486315294984620427">Чтобы загрузить файлы в Parallels Desktop, скопируйте их в папку "Файлы Windows".</translation>
 <translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малаялам, фонетический</translation>

@@ -501,7 +501,6 @@
 <translation id="2148613324460538318">कार्ड जोडा</translation>
 <translation id="2149968176347646218">कनेक्शन सुरक्षित नाही</translation>
 <translation id="2153609454945889823">Google Play Services for AR इंस्टॉल करायचे आहे का?</translation>
-<translation id="2154054054215849342">आपल्या डोमेनसाठी सिंक उपलब्ध नाही</translation>
 <translation id="2154484045852737596">कार्ड संपादित करा</translation>
 <translation id="2155260325161282517">५ x ७ इं</translation>
 <translation id="2157640075051554492">किमतीचा माग ठेवण्यासंबंधी सूचना</translation>
@@ -540,6 +539,7 @@
 <translation id="2241693394036365668">फाइल डाउनलोड केली गेली</translation>
 <translation id="2246264294482514010">१० x १२ इं</translation>
 <translation id="2246480341630108201">तुमच्या पालकांनी अद्याप परवानगी दिलेली नाही</translation>
+<translation id="2247789808226901522">कार्ड एक्स्पायर झाले आहे</translation>
 <translation id="2248949050832152960">WebAuthn वापरा</translation>
 <translation id="2250931979407627383">एज स्टिच लेफ्ट</translation>
 <translation id="225207911366869382">हे मूल्य या धोरणासाठी नापसंत करण्‍यात आले आहे.</translation>
@@ -1077,6 +1077,7 @@
 <translation id="3646643500201740985">जाहिरात किती चांगल्या पद्धतीने परफॉर्म करते हे मोजणे</translation>
 <translation id="3647286794400715637">प्रत्येक URLs स्ट्रिंग एंट्रीमध्ये एक ते दोन URLs असणे आवश्यक आहे.</translation>
 <translation id="3650584904733503804">प्रमाणीकरण यशस्वी</translation>
+<translation id="3650594806107685466">तुमचे कार्ड सुरक्षित ठेवण्यात मदत करण्यासाठी, <ph name="SIDE_OF_CARD" /> वरील CVC एंटर करा</translation>
 <translation id="3653033846669030038">थीम पार्क</translation>
 <translation id="3655241534245626312">परवानगी सेटिंग्जवर जा</translation>
 <translation id="3655670868607891010">तुम्ही हे वारंवार पहात असल्यास, हे वापरून पहा <ph name="HELP_LINK" />.</translation>
@@ -1856,6 +1857,7 @@
 <translation id="5552137475244467770">ऑनलाइन प्रकाशित केलेल्या सूचींनुसार Chrome ठरावीक काळाने तुमचे पासवर्ड तपासते. हे करत असताना, तुमचे पासवर्ड आणि वापरकर्ता नावे एंक्रिप्ट केली जातात जेणेकरून Google च्या समावेशासह इतर कोणाकडून ती वाचली जाऊ नयेत.</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="5558125320634132440">ही साइट ब्लॉक केली गेली आहे कारण तिच्यावर प्रौढांसाठी आशय असू शकतो</translation>
+<translation id="5559311991468302423">पत्ता हटवा</translation>
 <translation id="5560088892362098740">एक्सपायर होण्याची तारीख</translation>
 <translation id="55635442646131152">दस्तऐवज आउटलाइन</translation>
 <translation id="5565613213060953222">गुप्त टॅब उघडा</translation>
@@ -2458,6 +2460,7 @@
 <translation id="7112327784801341716">तुमची सध्याची माहिती दिसत नाही का? ती अपडेट करण्यासाठी तुमच्या बँकशी संपर्क साधा.</translation>
 <translation id="7118618213916969306">क्लिपबोर्ड URL, <ph name="SHORT_URL" /> शोधा</translation>
 <translation id="7119414471315195487">अन्य टॅब आणि प्रोग्राम बंद करा</translation>
+<translation id="7124354851782353862">तुमचा CVC एंटर करा</translation>
 <translation id="7129355289156517987">तुम्ही Chromium मधील सर्व गुप्त टॅब बंद करता, तेव्हा त्या टॅबमधील तुमची अ‍ॅक्टिव्हिटी ही या डिव्हाइसवरून साफ केली जाते:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ब्राउझिंग अ‍ॅक्टिव्हिटी<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{काहीही नाही}=1{एक अ‍ॅप <ph name="EXAMPLE_APP_1" />}=2{२ अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />}other{# अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">त्यानंतर, तुम्ही पाहत असलेल्या जाहिराती पर्सनलाइझ करण्यासाठी तुम्ही भेट देता ती साइट Chrome कडे तुमचे विषय मागू शकते. तुमचा ब्राउझिंग इतिहास आणि ओळख संरक्षित करत, Chrome कमाल तीन विषय शेअर करते.</translation>
+<translation id="7860345425589240791">तुमची एक्स्पायरीची नवीन तारीख आणि <ph name="SIDE_OF_CARD" /> वरील CVC एंटर करा</translation>
 <translation id="7862185352068345852">साइट सोडायची?</translation>
 <translation id="7865448901209910068">सर्वोत्तम गती</translation>
 <translation id="7871445724586827387">तुमचा Google खाते पासवर्ड बदला</translation>

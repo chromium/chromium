@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Anglų k. (JAV) su Dvorako klaviatūra</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – priegloba</translation>
 <translation id="1521655867290435174">„Google“ skaičiuoklės</translation>
-<translation id="1521795806314479294">Ruošiamas failas <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Atidaromi „Linux“ failai...</translation>
 <translation id="1547964879613821194">Kanados anglų</translation>
 <translation id="1556189134700913550">Taikyti visiems</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Archyvuojama elementų: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="1722687688096767818">Pridedamas profilis...</translation>
 <translation id="1726100011689679555">Pavadinimų serveriai</translation>
-<translation id="1727562178154619254">Paruošta sinchronizuoti</translation>
 <translation id="1729953886957086472">Vokiečių k. (Vokietija)</translation>
 <translation id="1730235522912993863">Kinų k. „Cangjie“</translation>
 <translation id="1731889557567069540">Nukopijuota tiek elementų: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -513,7 +511,6 @@
    Pašalinę dar naudojamą įrenginį galite prarasti duomenų. Palaukite, kol pasibaigs operacija, ir pašalinkite įrenginį naudodami programą „Failai“.</translation>
 <translation id="5163869187418756376">Nepavyko bendrinti. Patikrinkite ryšį ir vėliau bandykite dar kartą.</translation>
 <translation id="516592729076796170">Programuotojų JAV Dvorako</translation>
-<translation id="5167102019886320507">Ruošiama tiek elementų: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="5177526793333269655">Miniatiūros rodinys</translation>
 <translation id="5181896909298187506">Nėra naujausių failų</translation>
 <translation id="5194713942430106590">Spustelėkite, kad galėtumėte rūšiuoti stulpelį didėjimo tvarka.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Nėra naujausių vaizdų</translation>
 <translation id="7460898608667578234">Ukrainiečių</translation>
 <translation id="7469894403370665791">Automatiškai prisijungti prie šio tinklo</translation>
+<translation id="7481358317100446445">Paruošta</translation>
 <translation id="7486315294984620427">Kad galėtumėte nuvilkti failus į „Parallels Desktop“, jie turi būti nukopijuoti į „Windows“ failų aplanką.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalių k. fonetinė</translation>

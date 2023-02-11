@@ -501,7 +501,6 @@
 <translation id="2148613324460538318">Карт нэмэх</translation>
 <translation id="2149968176347646218">Холболт аюултай байна</translation>
 <translation id="2153609454945889823">Google Play Services for AR-г суулгах уу?</translation>
-<translation id="2154054054215849342">Таны домайнд синк хийх боломжгүй байна</translation>
 <translation id="2154484045852737596">Картыг засах</translation>
 <translation id="2155260325161282517">5 x 7 инч</translation>
 <translation id="2157640075051554492">Үнэ хяналтын мэдэгдэл</translation>
@@ -540,6 +539,7 @@
 <translation id="2241693394036365668">Файлыг татдаг</translation>
 <translation id="2246264294482514010">10 x 12 инч</translation>
 <translation id="2246480341630108201">Таны эцэг эх одоогоор БОЛНО гэж хэлээгүй байна</translation>
+<translation id="2247789808226901522">Картын хугацаа дууссан</translation>
 <translation id="2248949050832152960">WebAuthn ашиглах</translation>
 <translation id="2250931979407627383">Зүүн ирмэгийг нь нийлүүлж үдэх</translation>
 <translation id="225207911366869382">Энэ бодлогын хувьд энэхүү утга нь хуучирсан байна.</translation>
@@ -1079,6 +1079,7 @@
 <translation id="3646643500201740985">Зар хэр сайн гүйцэтгэлтэй байгааг хэмжих</translation>
 <translation id="3647286794400715637">URL-н мөрийн оролт бүр 1-ээс 2-ын хооронд URL агуулсан байх ёстой.</translation>
 <translation id="3650584904733503804">Баталгаажуулалтын амжилттай боллоо</translation>
+<translation id="3650594806107685466">Та картаа аюулгүй байлгахад туслахын тулд <ph name="SIDE_OF_CARD" /> дээрх Карт баталгаажуулалтын кодоо оруулна уу</translation>
 <translation id="3653033846669030038">Сэдэвчилсэн парк</translation>
 <translation id="3655241534245626312">Зөвшөөрлийн тохиргоо руу очих</translation>
 <translation id="3655670868607891010">Хэрэв та энэ мессежийг хэт олон удаа харж байга бол <ph name="HELP_LINK" />-ийг үзээрэй.</translation>
@@ -1858,6 +1859,7 @@
 <translation id="5552137475244467770">Chrome нь таны нууц үгийг онлайнаар нийтэлсэн жагсаалтуудтай үе үе харьцуулж шалгадаг. Үүнийг хийх үед таны нууц үг болон хэрэглэгчийн нэр кодчилогдсон байх бөгөөд ингэснээр Google-г оролцуулаад хэн ч тэдгээрийг унших боломжгүй болно.</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="5558125320634132440">Энэ сайт нь насанд хүрэгчдийн контент агуулж болзошгүй тул түүнийг хориглосон</translation>
+<translation id="5559311991468302423">Хаягийг устгах</translation>
 <translation id="5560088892362098740">Дуусах огноо</translation>
 <translation id="55635442646131152">Баримт бичгийн тойм</translation>
 <translation id="5565613213060953222">Нууцлалтай табыг нээх</translation>
@@ -2458,6 +2460,7 @@
 <translation id="7112327784801341716">Одоогийн мэдээлэл тань харагдахгүй байна уу? Үүнийг шинэчлэхийн тулд банктайгаа холбогдоно уу.</translation>
 <translation id="7118618213916969306">Түр санах ойн URL болох <ph name="SHORT_URL" />-г хайх</translation>
 <translation id="7119414471315195487">Бусад таб, эсвэл программыг хаах</translation>
+<translation id="7124354851782353862">Карт баталгаажуулалтын кодоо оруулна уу</translation>
 <translation id="7129355289156517987">Таныг Chromium-н бүх нууцлалтай табыг хаах үед таны тэдгээр таб дахь үйл ажиллагааг энэ төхөөрөмжөөс арилгана:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Хөтчийн үйл ажиллагаа<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Байхгүй}=1{1 апп (<ph name="EXAMPLE_APP_1" />)}=2{2 апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# апп (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Дараа нь таны зочилдог сайт таны харж буй зарыг хувийн болгохын тулд Chrome-с сэдвийг асууж болно. Chrome нь таны хөтчийн түүх болон хувийн мэдээллийг хамгаалахын зэрэгцээ 3 хүртэлх сэдвийг хуваалцдаг.</translation>
+<translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> дээрх шинэ хүчинтэй хугацаа болон Карт баталгаажуулалтын кодоо оруулна уу</translation>
 <translation id="7862185352068345852">Сайтыг орхих уу?</translation>
 <translation id="7865448901209910068">Хамгийн оновчтой хурд</translation>
 <translation id="7871445724586827387">Google Бүртгэлийнхээ нууц үгийг өөрчлөөрэй</translation>

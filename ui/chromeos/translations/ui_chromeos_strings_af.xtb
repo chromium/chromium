@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Engels (VSA) met Dvorak-sleutelbord</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Gasheer</translation>
 <translation id="1521655867290435174">Google Blaaie</translation>
-<translation id="1521795806314479294">Maak tans <ph name="FILE_NAME" /> gereed …</translation>
 <translation id="1538729222189715449">Maak tans Linux-lêers oop …</translation>
 <translation id="1547964879613821194">Kanadese Engels</translation>
 <translation id="1556189134700913550">Pas op almal toe</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Kompakteer tans <ph name="NUMBER_OF_ITEMS" /> items …</translation>
 <translation id="1722687688096767818">Voeg tans profiel by …</translation>
 <translation id="1726100011689679555">Naambedieners</translation>
-<translation id="1727562178154619254">Gereed om te sinkroniseer</translation>
 <translation id="1729953886957086472">Duits (Duitsland)</translation>
 <translation id="1730235522912993863">Chinees-Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> items is gekopieer.</translation>
@@ -513,7 +511,6 @@
    As jy jou toestel verwyder terwyl dit gebruik word, kan dit dataverlies veroorsaak. Wag asseblief tot die aktiwiteit verby is en verwyder die toestel deur die Lêers-program te gebruik.</translation>
 <translation id="5163869187418756376">Deling het misluk. Gaan jou verbinding na en probeer later weer.</translation>
 <translation id="516592729076796170">VSA-programmeerder-Dvorak</translation>
-<translation id="5167102019886320507">Maak tans <ph name="NUMBER_OF_ITEMS" /> items gereed …</translation>
 <translation id="5177526793333269655">Miniprent-aansig</translation>
 <translation id="5181896909298187506">Geen onlangse lêers nie</translation>
 <translation id="5194713942430106590">Kies om die kolom in stygende volgorde te rangskik.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Geen onlangse prente nie</translation>
 <translation id="7460898608667578234">Oekraïens</translation>
 <translation id="7469894403370665791">Koppel outomaties aan hierdie netwerk</translation>
+<translation id="7481358317100446445">Gereed</translation>
 <translation id="7486315294984620427">Die lêer moet na Windows-lêers gekopieer word om in Parallels Desktop gelos te word.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malabaars-foneties</translation>

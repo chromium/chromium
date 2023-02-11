@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">अङ्ग्रेजी (सं. रा. अमेरिकी) ड्भोराक किबोर्ड</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - होस्ट</translation>
 <translation id="1521655867290435174">Google पाना</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> सिंक गरिँदै छ…</translation>
 <translation id="1538729222189715449">Linux का फाइलहरू खोल्दै...</translation>
 <translation id="1547964879613821194">क्यानाडाली अंग्रेजी</translation>
 <translation id="1556189134700913550">सबैमा लागू गर्नुहोस्</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू जिप गर्दै...</translation>
 <translation id="1722687688096767818">प्रोफाइल थपिँदै छ…</translation>
 <translation id="1726100011689679555">नामका सर्भरहरू</translation>
-<translation id="1727562178154619254">सिंक गर्न सकिन्छ</translation>
 <translation id="1729953886957086472">जर्मन (जर्मनी)</translation>
 <translation id="1730235522912993863">चिनियाँ क्यान्जी</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु कपी गरिए।</translation>
@@ -513,7 +511,6 @@
    तपाइँको यन्त्र प्रयोगमा हुँदा प्रयोग गर्नाले लगत हराउन सक्छ।  कृपया सञ्चालन नसक्किएसम्म प्रतिक्षा गर्नुहोस् र, त्यसपछि फाइल एप प्रयोग गर्दै यन्त्र हटाउनुहोस्।</translation>
 <translation id="5163869187418756376">साझा गर्न असफल। आफ्नो जडान जाँच गर्नुहोस् र पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="516592729076796170">अमेरिकी प्रोग्रामर भोराक किबोर्ड</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> वटा सामग्री सिंक गरिँदै छन्…</translation>
 <translation id="5177526793333269655">थम्बनेल दृश्य</translation>
 <translation id="5181896909298187506">हालसालै कुनै पनि फाइल हेरिएको छैन</translation>
 <translation id="5194713942430106590">स्तम्भलाई बढ्दो क्रममा क्रमबद्ध गर्न क्लिक गर्नुहोस्।</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">हालसालै कुनै पनि फोटो हेरिएको छैन</translation>
 <translation id="7460898608667578234">युक्रेनियन</translation>
 <translation id="7469894403370665791">यो नेटवर्कमा स्वचालित रूपमा कनेक्ट गर्नुहोस्</translation>
+<translation id="7481358317100446445">तयार छ</translation>
 <translation id="7486315294984620427">फाइल ड्र्याग गरेर Parallels Desktop मा ड्रप गर्न सो फाइल कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नु पर्ने हुन्छ।</translation>
 <translation id="749452993132003881">हिरागाना</translation>
 <translation id="7495372004724182530">मलयालम फोनेटिक</translation>

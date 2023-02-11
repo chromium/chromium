@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Angielski (USA) z klawiaturą Dvoraka</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Arkusze Google</translation>
-<translation id="1521795806314479294">Przygotowuję plik <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Otwieram pliki Linuksa…</translation>
 <translation id="1547964879613821194">kanadyjski angielski</translation>
 <translation id="1556189134700913550">Zastosuj do wszystkich</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Pakuję elementy (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="1722687688096767818">Dodawanie profilu…</translation>
 <translation id="1726100011689679555">Serwery nazw</translation>
-<translation id="1727562178154619254">Gotowe do synchronizacji</translation>
 <translation id="1729953886957086472">Niemiecki (Niemcy)</translation>
 <translation id="1730235522912993863">Chiński cangjie</translation>
 <translation id="1731889557567069540">Liczba skopiowanych elementów: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -513,7 +511,6 @@
        Jeśli to zrobisz w trakcie pracy, możesz spowodować utratę danych. Poczekaj na zakończenie operacji, a następnie odłącz urządzenie, używając aplikacji Pliki.</translation>
 <translation id="5163869187418756376">Niepowodzenie udostępniania. Sprawdź połączenie i spróbuj ponownie później.</translation>
 <translation id="516592729076796170">Amerykańska dewelopera (Dvorak)</translation>
-<translation id="5167102019886320507">Przygotowuję elementy (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="5177526793333269655">Widok miniatur</translation>
 <translation id="5181896909298187506">Brak nowych plików</translation>
 <translation id="5194713942430106590">Kliknij, by posortować kolumnę w kolejności rosnącej.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Brak nowych obrazów</translation>
 <translation id="7460898608667578234">Ukraiński</translation>
 <translation id="7469894403370665791">Automatycznie łącz się z tą siecią</translation>
+<translation id="7481358317100446445">Gotowa</translation>
 <translation id="7486315294984620427">Aby można było przeciągnąć plik do Parallels Desktop, należy go skopiować do folderu Pliki systemu Windows.</translation>
 <translation id="749452993132003881">hiragana</translation>
 <translation id="7495372004724182530">Malajalam (znaki fonetyczne)</translation>

@@ -18,7 +18,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1066060668811609597">Administrer synkronisering</translation>
 <translation id="1076421457278169141">Koden er skannet</translation>
 <translation id="1076785341346483463">Synkroniser med administrert konto</translation>
-<translation id="1080365971383768617">Passord på alle enhetene dine</translation>
 <translation id="1084365883616172403">Facebook-innlegget er fullført.</translation>
 <translation id="1085696779717592361">Bruk Chrome som standard</translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3181825792072797598">Slå på synkronisering</translation>
 <translation id="3181954750937456830">Safe Browsing (beskytter deg og enheten din mot farlige nettsteder)</translation>
 <translation id="3184767182050912705">Lås opp med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Bokmerket</translation>
 <translation id="3214379938835224220">Du ble logget av som en del av tilbakestillingen av iPad. Trykk på Fortsett under for å logge på.</translation>
 <translation id="3224641773458703735">For å eksportere passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -320,7 +318,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3311748811247479259">Av</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Informasjon om nettstedet</translation>
-<translation id="3329904751041170572">Kunne ikke koble til tjeneren.</translation>
 <translation id="3371831930909698441">Oversetter er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="3377063233124932127">Nå finner du blant annet de lagrede bokmerkene og passordene dine øverst.</translation>
 <translation id="3393920035788932672">Tillat forgrunnsvinduer</translation>
@@ -362,7 +359,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3638472932233958418">Last inn nettsider på forhånd</translation>
 <translation id="3661160521073045932">En konfigurasjonsprofil er tilgjengelig</translation>
 <translation id="3670030362669914947">Nummer</translation>
-<translation id="3691593122358196899">Satt som bokmerke i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Merk som ulest</translation>
 <translation id="371230970611282515">Forutser og advarer deg om farlige hendelser før de inntreffer.</translation>
 <translation id="37207012422556617">Søk på vei opp</translation>
@@ -548,7 +544,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5056446788882570708">Fant problemer <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disk</translation>
-<translation id="50641035439563602">Passord lagres nå i Google-kontoen din (<ph name="ACCOUNT" />). Du kan bruke dem alle steder hvor du er logget på. Gå til <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" /> for å slå av dette.</translation>
 <translation id="5083464117946352670">Kan ikke fastslå filstørrelsen.</translation>
 <translation id="5090832849094901128">Sletting av dette passordet sletter ikke kontoen din på <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Twitter-meldingen er fullført.</translation>
@@ -712,7 +707,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6284652193729350524">Tilby å oversette <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Sluttet å følge <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">For å slå på Safe Browsing, åpne <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" /> og trykk på Safe Browsing.</translation>
-<translation id="6320780930074869063">Når på, lagres passordene i <ph name="ACCOUNT" />. Når av, lagres passord bare på denne enheten.</translation>
 <translation id="6321526113093607004">Legg til i bokmerker</translation>
 <translation id="6324669097367352121">Påloggingsinnstillinger</translation>
 <translation id="6337234675334993532">Kryptering</translation>
@@ -756,7 +750,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6476800141292307438">Oversetter siden til <ph name="LANGUAGE" />. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="648164694371393720">Autentiseringsfeil</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementer slettet</translation>
-<translation id="6495429111159337775">Bruk og lagre passord fra Google-kontoen din</translation>
 <translation id="6497772452874122664">Hvis du stoler på <ph name="TIME" />, kan du bruke lagrede passord for andre nettsteder.
 
 Prøv å bruke unike passord for hvert nettsted.</translation>
@@ -1040,7 +1033,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8680787084697685621">Kontoens påloggingsdetaljer er utdaterte.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Lukk fanen}other{Lukk fanene}}</translation>
 <translation id="8706588385081740091">Passord</translation>
-<translation id="8712637175834984815">Skjønner</translation>
 <translation id="8717864919010420084">Kopiér linken</translation>
 <translation id="8721297211384281569">Verktøy-menyen</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>

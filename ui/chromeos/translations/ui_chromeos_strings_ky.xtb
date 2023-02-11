@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Англисче (АКШ) жана Dvorak баскычтобу</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Башкы түйүн</translation>
 <translation id="1521655867290435174">Google Таблицалары</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> даярдалууда...</translation>
 <translation id="1538729222189715449">Linux файлдары ачылууда...</translation>
 <translation id="1547964879613821194">Англисче (Канада)</translation>
 <translation id="1556189134700913550">Бардыгы үчүн колдонуу</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> файл кысылууда…</translation>
 <translation id="1722687688096767818">Профиль кошулууда...</translation>
 <translation id="1726100011689679555">Ысым серверлери</translation>
-<translation id="1727562178154619254">Шайкештирүүгө даяр</translation>
 <translation id="1729953886957086472">Немисче (Германия)</translation>
 <translation id="1730235522912993863">Кытайча (цанцзе)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> нерсе көчүрүлдү.</translation>
@@ -513,7 +511,6 @@
    Түзмөгүңүз колдонулуп жатканда суурулса, дайындар жоголуп кетиши мүмкүн. Иш-аракет аяктагыча күтүп, андан соң түзмөктү Файлдар колдонмосу аркылуу чыгарып салыңыз.</translation>
 <translation id="5163869187418756376">Бөлүшүлбөй калды. Туташууңузду текшерип туруп, бир аздан кийин кайталап көрүңүз.</translation>
 <translation id="516592729076796170">АКШ Программачы Dvorak</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> нерсе даярдалууда...</translation>
 <translation id="5177526793333269655">Бармакбасым көрүнүшү</translation>
 <translation id="5181896909298187506">Жаңы файлдар жок</translation>
 <translation id="5194713942430106590">Тилкени чоңойгон ыраатта иреттөө үчүн чыкылдатыңыз.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Жаңы сүрөттөр жок</translation>
 <translation id="7460898608667578234">Украинче</translation>
 <translation id="7469894403370665791">Бул тармакка автоматтык түрдө туташуу</translation>
+<translation id="7481358317100446445">Даяр</translation>
 <translation id="7486315294984620427">Parallels Desktop'ко файлды көчүрүү үчүн файл Windows файлдарына көчүрүлүшү керек.</translation>
 <translation id="749452993132003881">Хираганача</translation>
 <translation id="7495372004724182530">Малайаламча, фонетикалык</translation>

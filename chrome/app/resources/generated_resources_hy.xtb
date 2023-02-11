@@ -631,6 +631,7 @@
 <translation id="1567387640189251553">Գաղտնաբառի մուտքագրումից հետո այլ ստեղնաշար է միացվել։ Հնարավոր է՝ ինչ-որ մեկը փորձում է իմանալ, թե ինչ ստեղներ եք սեղմում։</translation>
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» ստեղնն արդեն նշանակված է «<ph name="ACTION" />» գործողության համար։ Սեղմեք որևէ ստեղն՝ <ph name="RESPONSE" /> համար։</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
+<translation id="1569466257325986920">Հաջորդ անգամ, երբ ձեր Google հաշվի գաղտնաբառը փոխվի, ձեր լոկալ տվյալներն ավտոմատ կերպով կվերականգնվեն, հենց որ մուտք գործեք Google հաշիվ</translation>
 <translation id="1570604804919108255">Միացնել ծանուցումների ձայնը</translation>
 <translation id="1571304935088121812">Պատճենել օգտանունը</translation>
 <translation id="1571738973904005196">Դիտել ներդիրը՝ <ph name="TAB_ORIGIN" /></translation>
@@ -889,6 +890,7 @@
 <translation id="1781979858217752599">Հասանելի դարձնել պատուհանի աուդիո բովանդակությունը</translation>
 <translation id="1782101999402987960">Ադմինիստրատորն արգելափակում է թարմացումները</translation>
 <translation id="1782196717298160133">Ձեր հեռախոսը որոնվում է</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 նշում}one{# նշում}other{# նշում}}</translation>
 <translation id="1784707308176068866">Աշխատեցնել ֆոնային ռեժիմում, եթե դա պահանջում է համագործակցող որևէ հավելված</translation>
 <translation id="1784849162047402014">Սարքի սկավառակում ազատ տարածքը քիչ է</translation>
 <translation id="1787350673646245458">Օգտատիրոջ պատկեր</translation>
@@ -1681,6 +1683,7 @@
 <translation id="2467755475704469005">Սարքեր չեն հայտնաբերվել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Հպահարթակով ոլորման արագացում</translation>
 <translation id="2468205691404969808">Օգտագործում է քուքիները՝ ձեր նախընտրանքները հիշելու համար, նույնիսկ եթե չեք այցելում այդ կայքեր</translation>
+<translation id="2468247643665097563">Դասավորել</translation>
 <translation id="2468402215065996499">Տամագոչի</translation>
 <translation id="2468470085922875120">Դուք օգտագործում եք գաղտնաբառեր, որոնք դժվար է կռահել</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 ներդիր}one{<ph name="GROUP_TITLE" /> – # ներդիր}other{<ph name="GROUP_TITLE" /> – # ներդիր}}</translation>
@@ -5955,6 +5958,7 @@
 <translation id="6410668567036790476">Որոնման համակարգի ավելացում</translation>
 <translation id="641469293210305670">Թարմացումների և հավելվածների տեղադրում</translation>
 <translation id="6414878884710400018">Բացել համակարգի կարգավորումները</translation>
+<translation id="6415816101512323589">Միացնե՞լ լոկալ տվյալների վերականգնումը՝ ձեր տվյալները պաշտպանելու համար</translation>
 <translation id="6415900369006735853">Միացեք համացանցին հեռախոսի միջոցով։</translation>
 <translation id="6416743254476733475">Թույլատրեք կամ արգելափակեք ձեր համակարգչում։</translation>
 <translation id="6417265370957905582">Google Օգնական</translation>
@@ -6749,7 +6753,6 @@
 <translation id="711840821796638741">Ցուցադրել կառավարվող էջանիշները</translation>
 <translation id="711985611146095797">Այս էջում կարող եք կառավարել ձեր Google հաշիվները, որոնցում մուտք եք գործել։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome դիտարկիչի և Android սարքի թրաֆիկը կարգելահանվեն, երբ VPN-ի հետ կապը վերականգնվի</translation>
-<translation id="7120865473764644444">Չհաջողվեց միանալ համաժամացման սերվերին: Նորից ենք փորձում…</translation>
 <translation id="7121438501124788993">Մշակողի ռեժիմ</translation>
 <translation id="7121728544325372695">Խելացի գծիկներ</translation>
 <translation id="7123030151043029868">Թույլատրվում է ավտոմատ ներբեռնել մի քանի ֆայլ</translation>

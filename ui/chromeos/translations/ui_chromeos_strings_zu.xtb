@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">English (US) enekhibhodi ye-Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Umsingathi</translation>
 <translation id="1521655867290435174">Amashidi we-Google</translation>
-<translation id="1521795806314479294">Ilungiselela i-<ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Ivula amafayela e-Linux...</translation>
 <translation id="1547964879613821194">I-Canadian English</translation>
 <translation id="1556189134700913550">Sebenzisa kukho konke</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Izipha izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="1722687688096767818">Ingeza Iphrofayela...</translation>
 <translation id="1726100011689679555">Amagama wamasevisi</translation>
-<translation id="1727562178154619254">Ilungele ukuvumelanisa</translation>
 <translation id="1729953886957086472">German (Germany)</translation>
 <translation id="1730235522912993863">Chinese Cangjie</translation>
 <translation id="1731889557567069540">izinto ezingu-<ph name="NUMBER_OF_ITEMS" /> zikopishiwe.</translation>
@@ -513,7 +511,6 @@
    Ukususa idivayisi yakho ngenkathi isebenza kungabangela ukulahleka kwedatha. Sicela ulinde kuze kuphele ukusebenza, bese ukhipha idivayisi usebenzisa uhlelo lokusebenza lwamafayela.</translation>
 <translation id="5163869187418756376">Ukwabelana kuhlulekile. Hlola ukuxhumeka kwakho uphinde uzame futhi emuva kwesikhathi.</translation>
 <translation id="516592729076796170">Umhleli wase-US we-Dvorak</translation>
-<translation id="5167102019886320507">Ilungiselela izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="5177526793333269655">Ukubuka kwesithombe esincane</translation>
 <translation id="5181896909298187506">Awekho amafayela akamuva</translation>
 <translation id="5194713942430106590">Chofoza ukuze uhlunge ikholomu nge-oda elikhuphukayo.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Ayikho imifanekiso yakamuva</translation>
 <translation id="7460898608667578234">Isi-Ukrainian</translation>
 <translation id="7469894403370665791">Xhumeka ngokuzenzakalela kule nethiwekhi</translation>
+<translation id="7481358317100446445">Isikulungele</translation>
 <translation id="7486315294984620427">Ukuze udedele amafayela ku-Parallels Desktop, ifayela kufanele likopishelwe kumafayela e-Windows.</translation>
 <translation id="749452993132003881">Isi-Hiragana</translation>
 <translation id="7495372004724182530">I-Malayalam Phonetic</translation>

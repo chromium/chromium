@@ -18,7 +18,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1066060668811609597">Menaxho sinkronizimin</translation>
 <translation id="1076421457278169141">Kodi u skanua</translation>
 <translation id="1076785341346483463">Sinkronizo me një llogari të menaxhuar</translation>
-<translation id="1080365971383768617">Fjalëkalimet në të gjitha pajisjet e tua</translation>
 <translation id="1084365883616172403">Postimi në Facebook u krye.</translation>
 <translation id="1085696779717592361">Përdor Chrome si parazgjedhje</translation>
 <translation id="1103523840287552314">Përkthe gjithmonë nga <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3181825792072797598">Aktivizo "Sinkronizimin"</translation>
 <translation id="3181954750937456830">"Shfletimi i sigurt" (të mbron ty dhe pajisjen tënde nga sajtet e rrezikshme)</translation>
 <translation id="3184767182050912705">Shkyçe me <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Regjistruar në faqeshënues</translation>
 <translation id="3214379938835224220">Ke dalë si pjesë e rivendosjes së iPad. Trokit te "Vazhdo" më poshtë për t'u identifikuar.</translation>
 <translation id="3224641773458703735">Për të eksportuar fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
@@ -320,7 +318,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3311748811247479259">Joaktiv</translation>
 <translation id="3324193307694657476">Adresa 2</translation>
 <translation id="3328801116991980348">Informacionet rreth sajtit</translation>
-<translation id="3329904751041170572">Nuk mund të lidhej me serverin.</translation>
 <translation id="3371831930909698441">Ofrohet "Përkthe". Opsionet ofrohen pranë fundit të ekranit</translation>
 <translation id="3377063233124932127">Tani faqeshënuesit, fjalëkalimet e ruajtura etj. janë në krye.</translation>
 <translation id="3393920035788932672">Lejohen dritaret kërcyese</translation>
@@ -362,7 +359,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3638472932233958418">Ngarko paraprakisht faqet e uebit</translation>
 <translation id="3661160521073045932">Ofrohet profili i konfigurimit</translation>
 <translation id="3670030362669914947">Numri</translation>
-<translation id="3691593122358196899">Faqeshënuesi u shtua te <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Shëno si të palexuar</translation>
 <translation id="371230970611282515">Parashikon dhe të paralajmëron rreth ngjarjeve të rrezikshme përpara se ato të ndodhin.</translation>
 <translation id="37207012422556617">Kërkimet në tendencë</translation>
@@ -548,7 +544,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5056446788882570708">U gjetën probleme: <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Në rregull</translation>
 <translation id="5062321486222145940">Instalo "Diskun e Google"</translation>
-<translation id="50641035439563602">Fjalëkalimet tani ruhen në "Llogarinë tënde të Google" (<ph name="ACCOUNT" />). Mund t'i përdorësh ato kudo ku je identifikuar. Për ta çaktivizuar këtë, shko te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Madhësia nuk mund të përcaktohet.</translation>
 <translation id="5090832849094901128">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet përfundoi.</translation>
@@ -712,7 +707,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6284652193729350524">Ofro përkthimin në <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Ndjekja e <ph name="CHANNEL_NAME" /> u anulua</translation>
 <translation id="6293101329759844770">Për të aktivizuar "Shfletimin e sigurt", hap <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" /> dhe trokit te "Shfletimi i sigurt".</translation>
-<translation id="6320780930074869063">Kur kjo është aktive, fjalëkalimet ruhen te <ph name="ACCOUNT" />. Kur kjo është joaktive, fjalëkalimet ruhen vetëm në këtë pajisje.</translation>
 <translation id="6321526113093607004">Shto te faqeshënuesit</translation>
 <translation id="6324669097367352121">Cilësimet e identifikimit</translation>
 <translation id="6337234675334993532">Enkriptimi</translation>
@@ -756,7 +750,6 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="6476800141292307438">Po përkthen faqen në <ph name="LANGUAGE" />. Opsionet që ofrohen janë pranë fundit të ekranit.</translation>
 <translation id="648164694371393720">Gabim i vërtetimit</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementë u fshinë</translation>
-<translation id="6495429111159337775">Përdor dhe ruaj fjalëkalimet nga "Llogaria jote e Google"</translation>
 <translation id="6497772452874122664">Nëse ke besim te <ph name="TIME" />, mund të përdorësh një fjalëkalim të ruajtur nga një sajt tjetër.
 
 Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
@@ -1040,7 +1033,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8680787084697685621">Detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Mbylle skedën}other{Mbylli skedat}}</translation>
 <translation id="8706588385081740091">Fjalëkalimet</translation>
-<translation id="8712637175834984815">E kuptova</translation>
 <translation id="8717864919010420084">Kopjo lidhjen</translation>
 <translation id="8721297211384281569">Menyja e veglave</translation>
 <translation id="8725066075913043281">Provo sërish</translation>

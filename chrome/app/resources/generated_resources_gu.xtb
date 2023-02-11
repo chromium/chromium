@@ -627,6 +627,7 @@
 <translation id="1567387640189251553">તમે છેલ્લે પાસવર્ડ દાખલ કર્યો, ત્યાર પછી એક અલગ કીબોર્ડ કનેક્ટ કરવામાં આવ્યું છે. તે તમારા કીસ્ટ્રોકની ચોરી કરવાનો પ્રયાસ કરતું હોઈ શકે છે.</translation>
 <translation id="156793199942386351">'<ph name="ACTION" />' ક્રિયાને '<ph name="CURRENTKEY" />' કી પહેલેથી સોંપવામાં આવી છે. <ph name="RESPONSE" /> માટે કોઈપણ કી દબાવો.</translation>
 <translation id="1567993339577891801">JavaScript કન્સોલ</translation>
+<translation id="1569466257325986920">આગલી વખતે જ્યારે તમારા Google એકાઉન્ટનો પાસવર્ડ બદલાય, ત્યારે તમે તમારા Google એકાઉન્ટમાં સાઇન ઇન કર્યા પછી તમારો સ્થાનિક ડેટા રિકવર કરવામાં આવશે</translation>
 <translation id="1570604804919108255">નોટિફિકેશનને અનમ્યૂટ કરો</translation>
 <translation id="1571304935088121812">વપરાશકર્તાનામ કૉપિ કરો</translation>
 <translation id="1571738973904005196">આ ટૅબ જુઓ: <ph name="TAB_ORIGIN" /></translation>
@@ -884,6 +885,7 @@
 <translation id="1781979858217752599">વિન્ડો ઑડિયો શેર કરો</translation>
 <translation id="1782101999402987960">તમારા વ્યવસ્થાપક દ્વારા અપડેટ બ્લૉક કરવામાં આવી છે</translation>
 <translation id="1782196717298160133">તમારો ફોન શોધી રહ્યું છે</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 નોંધ}one{# નોંધ}other{# નોંધ}}</translation>
 <translation id="1784707308176068866">સહયોગ કરનાર મૂળ ઍપ્લિકેશન દ્વારા વિનંતી કરવામાં આવી હોય ત્યારે બૅકગ્રાઉન્ડમાં ચલાવો</translation>
 <translation id="1784849162047402014">ઉપકરણમાં ડિસ્ક સ્થાન ઓછું છે</translation>
 <translation id="1787350673646245458">વપરાશકર્તાની છબી</translation>
@@ -1677,6 +1679,7 @@
 <translation id="2467755475704469005">કોઈ ડિવાઇસ મળ્યું નથી. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">ટચપૅડના સ્ક્રોલની ઝડપના સેટિંગ</translation>
 <translation id="2468205691404969808">તમારી પસંદગીઓ યાદ રાખવા માટે કુકીનો ઉપયોગ કરે છે, પછી ભલે તમે તે પેજની મુલાકાત ન પણ લો</translation>
+<translation id="2468247643665097563">ઑર્ડર</translation>
 <translation id="2468402215065996499">ટેમાગોચી</translation>
 <translation id="2468470085922875120">તમે એવા પાસવર્ડનો ઉપયોગ કરી રહ્યાં છો જેનું અનુમાન લગાવવું મુશ્કેલ છે</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ટૅબ}one{<ph name="GROUP_TITLE" /> - # ટૅબ}other{<ph name="GROUP_TITLE" /> - # ટૅબ}}</translation>
@@ -5953,6 +5956,7 @@ USB ડિવાઇસ</translation>
 <translation id="6410668567036790476">શોધ એન્જિન ઉમેરો</translation>
 <translation id="641469293210305670">અપડેટ અને ઍપ ઇન્સ્ટૉલ કરો</translation>
 <translation id="6414878884710400018">સિસ્ટમની પસંદગીઓ ખોલો</translation>
+<translation id="6415816101512323589">તમારા ડેટાને સુરક્ષિત રાખવા માટે સ્થાનિક ડેટા રિકવરી ચાલુ કરીએ?</translation>
 <translation id="6415900369006735853">તમારા ફોન મારફત ઇન્ટરનેટ સાથે કનેક્ટ કરો</translation>
 <translation id="6416743254476733475">તમારા કમ્પ્યુટર પર મંજૂરી આપો અથવા બ્લૉક કરો.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -6747,7 +6751,6 @@ USB ડિવાઇસ</translation>
 <translation id="711840821796638741">મેનેજ કરેલા બુકમાર્ક બતાવો</translation>
 <translation id="711985611146095797">આ પેજ તમને તમારા સાઇન ઇન કરેલા હોય એવા Google એકાઉન્ટ મેનેજ કરવાની મંજૂરી આપે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">જ્યાં સુધી VPNથી કનેક્ટ થવામાં ન આવે, ત્યાં સુધી Chrome બ્રાઉઝર અને Android ટ્રાફિક બ્લૉક કરવામાં આવશે</translation>
-<translation id="7120865473764644444">સમન્વયન સર્વર સાથે કનેક્ટ કરી શકાયું નથી. ફરી પ્રયાસ કરી રહ્યાં છે...</translation>
 <translation id="7121438501124788993">ડેવલપર મોડ</translation>
 <translation id="7121728544325372695">સ્માર્ટ ડૅશ</translation>
 <translation id="7123030151043029868">એકથી વધારે ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરવાની મંજૂરી છે</translation>

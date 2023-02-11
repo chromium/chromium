@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Англійская (ЗША) з раскладкай Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Табліцы Google</translation>
-<translation id="1521795806314479294">Ідзе падрыхтоўка файла "<ph name="FILE_NAME" />"...</translation>
 <translation id="1538729222189715449">Адкрываюцца файлы Linux...</translation>
 <translation id="1547964879613821194">Англійская (Канада)</translation>
 <translation id="1556189134700913550">Прымяніць да ўсяго</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Элементы (<ph name="NUMBER_OF_ITEMS" />) архівуюцца...</translation>
 <translation id="1722687688096767818">Ідзе дадаванне профілю...</translation>
 <translation id="1726100011689679555">Серверы даменных імён</translation>
-<translation id="1727562178154619254">Можна сінхранізаваць</translation>
 <translation id="1729953886957086472">Нямецкая (Германія)</translation>
 <translation id="1730235522912993863">Кітайская (цанцзе)</translation>
 <translation id="1731889557567069540">Скапіраваны элементы (<ph name="NUMBER_OF_ITEMS" />).</translation>
@@ -513,7 +511,6 @@
    Выдаленне прылады падчас яе выкарыстання можа прывесці да страты даных.  Дачакайцеся заканчэння аперацыі, затым выміце прыладу, выкарыстаўшы праграму "Файлы".</translation>
 <translation id="5163869187418756376">Збой абагульвання. Праверце падключэнне і паўтарыце спробу пазней.</translation>
 <translation id="516592729076796170">Праграмісцкая Дворака для ЗША</translation>
-<translation id="5167102019886320507">Ідзе падрыхтоўка элементаў (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="5177526793333269655">Рэжым мініяцюр</translation>
 <translation id="5181896909298187506">Няма нядаўніх файлаў</translation>
 <translation id="5194713942430106590">Каб адсартаваць слупок па ўзрастанні, націсніце тут.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Няма нядаўніх відарысаў</translation>
 <translation id="7460898608667578234">Украінская</translation>
 <translation id="7469894403370665791">Падключацца да гэтай сеткі аўтаматычна</translation>
+<translation id="7481358317100446445">Гатова</translation>
 <translation id="7486315294984620427">Каб перацягнуць файл у Parallels Desktop, яго неабходна скапіраваць у папку "Файлы Windows".</translation>
 <translation id="749452993132003881">Хірагана</translation>
 <translation id="7495372004724182530">Малаялам (фанетычная раскладка)</translation>

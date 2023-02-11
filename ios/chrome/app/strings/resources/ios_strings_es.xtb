@@ -18,7 +18,6 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1066060668811609597">Gestionar sincronización</translation>
 <translation id="1076421457278169141">Código escaneado</translation>
 <translation id="1076785341346483463">Sincronizar con cuenta gestionada</translation>
-<translation id="1080365971383768617">Contraseñas en todos tus dispositivos</translation>
 <translation id="1084365883616172403">Publicado en Facebook</translation>
 <translation id="1085696779717592361">Usa Chrome de forma predeterminada</translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3181825792072797598">Activar sincronización</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios peligrosos)</translation>
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3214379938835224220">Se ha cerrado tu sesión al restablecer tu iPad. Toca Continuar abajo para iniciar sesión.</translation>
 <translation id="3224641773458703735">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder exportar las contraseñas.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -320,7 +318,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3311748811247479259">Desactivada</translation>
 <translation id="3324193307694657476">Dirección 2</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
-<translation id="3329904751041170572">No se ha podido establecer conexión con el servidor.</translation>
 <translation id="3371831930909698441">El Traductor está disponible. Opciones disponibles cerca de la parte inferior de la pantalla.</translation>
 <translation id="3377063233124932127">Ahora tus marcadores, contraseñas y otros elementos guardados se muestran en la parte superior.</translation>
 <translation id="3393920035788932672">Pop-ups permitidos</translation>
@@ -362,7 +359,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3638472932233958418">Precargar páginas web</translation>
 <translation id="3661160521073045932">Perfil de configuración disponible</translation>
 <translation id="3670030362669914947">Número</translation>
-<translation id="3691593122358196899">Marcador añadido a <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Marcar como no leído</translation>
 <translation id="371230970611282515">Predice y te advierte de eventos peligrosos antes de que se produzcan.</translation>
 <translation id="37207012422556617">Tendencias de búsqueda</translation>
@@ -548,7 +544,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5056446788882570708">Problemas detectados <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
-<translation id="50641035439563602">Las contraseñas ahora se guardan en tu cuenta de Google (<ph name="ACCOUNT" />). Puedes usarlas en cualquier dispositivo cuando inicies sesión. Para desactivar esta opción, ve a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Tamaño de archivo desconocido.</translation>
 <translation id="5090832849094901128">Aunque quites esta contraseña, no se eliminará tu cuenta de <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tuit enviado</translation>
@@ -712,7 +707,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6284652193729350524">Ofrecer traducir del <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Has dejado de seguir a <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6293101329759844770">Para activar Navegación segura, abre <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" /> y toca Navegación segura.</translation>
-<translation id="6320780930074869063">Cuando esta opción está activada, las contraseñas se guardan en <ph name="ACCOUNT" />. Si está desactivada, las contraseñas solo se guardan en este dispositivo.</translation>
 <translation id="6321526113093607004">Añadir a Marcadores</translation>
 <translation id="6324669097367352121">Configuración de inicio de sesión</translation>
 <translation id="6337234675334993532">Cifrado</translation>
@@ -756,7 +750,6 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="6476800141292307438">La página se está traduciendo al <ph name="LANGUAGE" />. Encontrarás opciones disponibles cerca de la parte inferior de la pantalla.</translation>
 <translation id="648164694371393720">Error de autenticación</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
-<translation id="6495429111159337775">Usar y guardar contraseñas de tu cuenta de Google</translation>
 <translation id="6497772452874122664">Si confías en <ph name="TIME" />, puedes usar una contraseña guardada de otro sitio.
 
 Se recomienda usar una contraseña única en cada sitio.</translation>
@@ -1040,7 +1033,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8680787084697685621">La información de inicio de sesión no está actualizada.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Cerrar pestaña}other{Cerrar pestañas}}</translation>
 <translation id="8706588385081740091">Contraseñas</translation>
-<translation id="8712637175834984815">Entendido</translation>
 <translation id="8717864919010420084">Copiar enlace</translation>
 <translation id="8721297211384281569">Menú de herramientas</translation>
 <translation id="8725066075913043281">Reintentar</translation>

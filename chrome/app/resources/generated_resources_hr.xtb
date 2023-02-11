@@ -6758,7 +6758,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="711840821796638741">Prikaži upravljane oznake</translation>
 <translation id="711985611146095797">Na ovoj stranici možete upravljati Google računima na koje ste prijavljeni. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Promet putem preglednika Chrome i Androida blokirat će se ako VPN nije povezan</translation>
-<translation id="7120865473764644444">Povezivanje s poslužiteljem za sinkronizaciju nije uspjelo. Ponovni pokušaj...</translation>
 <translation id="7121438501124788993">Način razvojnog programera</translation>
 <translation id="7121728544325372695">Pametne crtice</translation>
 <translation id="7123030151043029868">Dopušteno je automatsko preuzimanje više datoteka</translation>
@@ -8122,6 +8121,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8358912028636606457">Kartica audio sustava za emitiranje nije podržana na ovom uređaju.</translation>
 <translation id="835951711479681002">Spremi na Google račun</translation>
 <translation id="8360140320636871023">Prilagodite temu zaslona</translation>
+<translation id="8360267485906769442">Gumb za slanje povratnih informacija</translation>
 <translation id="8363095875018065315">stabilan</translation>
 <translation id="8363142353806532503">Mikrofon je blokiran</translation>
 <translation id="8366396658833131068">Veza s mrežom ponovno je uspostavljena. Odaberite neku drugu mrežu ili pritisnite gumb "Nastavi" u nastavku kako biste pokrenuli aplikaciju kioska.</translation>

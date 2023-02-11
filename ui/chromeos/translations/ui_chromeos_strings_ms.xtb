@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Inggeris (AS) dengan papan kekunci Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Hos</translation>
 <translation id="1521655867290435174">Helaian Google</translation>
-<translation id="1521795806314479294">Menyediakan <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Membuka fail Linux...</translation>
 <translation id="1547964879613821194">Bahasa Inggeris Kanada</translation>
 <translation id="1556189134700913550">Gunakan pada semua</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Mengezip <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="1722687688096767818">Menambah Profil...</translation>
 <translation id="1726100011689679555">Pelayan nama</translation>
-<translation id="1727562178154619254">Sedia untuk disegerakkan</translation>
 <translation id="1729953886957086472">Jerman (Jerman)</translation>
 <translation id="1730235522912993863">Cangjie Cina</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> item disalin.</translation>
@@ -513,7 +511,6 @@
    Mengalih keluar peranti anda semasa sedang digunakan boleh menyebabkan kehilangan data. Sila tunggu sehingga operasi telah selesai, kemudian lentingkan peranti menggunakan apl Fail.</translation>
 <translation id="5163869187418756376">Perkongsian gagal. Periksa sambungan anda dan cuba lagi nanti.</translation>
 <translation id="516592729076796170">Dvorak Pengatur Cara AS</translation>
-<translation id="5167102019886320507">Menyediakan <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="5177526793333269655">Paparan lakaran kenit</translation>
 <translation id="5181896909298187506">Tiada fail baru-baru ini</translation>
 <translation id="5194713942430106590">Klik untuk mengisih lajur dalam tertib menaik.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Tiada imej baru-baru ini</translation>
 <translation id="7460898608667578234">Bahasa Ukraine</translation>
 <translation id="7469894403370665791">Menyambung ke rangkaian ini secara automatik</translation>
+<translation id="7481358317100446445">Sedia</translation>
 <translation id="7486315294984620427">Untuk melepaskan fail dalam Parallels Desktop, fail itu mesti disalin ke fail Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Fonetik Malayalam</translation>

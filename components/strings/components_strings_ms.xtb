@@ -501,7 +501,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2148613324460538318">Tambahkan Kad</translation>
 <translation id="2149968176347646218">Sambungan tidak selamat</translation>
 <translation id="2153609454945889823">Pasang Google Play Services for AR?</translation>
-<translation id="2154054054215849342">Penyegerakan tidak tersedia untuk domain anda</translation>
 <translation id="2154484045852737596">Edit kad</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
 <translation id="2157640075051554492">Pemberitahuan penjejakan harga</translation>
@@ -540,6 +539,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2241693394036365668">Fail dimuat turun</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
 <translation id="2246480341630108201">Ibu/bapa anda belum mengatakan OK</translation>
+<translation id="2247789808226901522">Kad tamat tempoh</translation>
 <translation id="2248949050832152960">Gunakan WebAuthn</translation>
 <translation id="2250931979407627383">Jahitan tepi kiri</translation>
 <translation id="225207911366869382">Nilai ini tidak lagi digunakan untuk dasar ini.</translation>
@@ -1079,6 +1079,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3646643500201740985">Mengukur prestasi iklan</translation>
 <translation id="3647286794400715637">Setiap entri rentetan url mesti mengandungi antara 1 hingga 2 URL.</translation>
 <translation id="3650584904733503804">Pengesahan berjaya</translation>
+<translation id="3650594806107685466">Untuk membantu memastikan kad anda selamat, masukkan CVC pada <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Taman tema</translation>
 <translation id="3655241534245626312">Pergi ke tetapan kebenaran</translation>
 <translation id="3655670868607891010">Jika anda kerap melihatnya, cuba <ph name="HELP_LINK" /> ini.</translation>
@@ -1858,6 +1859,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5552137475244467770">Chrome menyemak kata laluan anda secara berkala pada senarai yang telah diterbitkan dalam talian. Apabila melakukan tindakan ini, kata laluan dan nama pengguna anda akan disulitkan supaya data ini tidak dapat dibaca oleh sesiapa termasuk Google.</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="5558125320634132440">Tapak ini disekat kerana mungkin mengandungi kandungan matang</translation>
+<translation id="5559311991468302423">Padamkan alamat</translation>
 <translation id="5560088892362098740">Tarikh Tamat Tempoh</translation>
 <translation id="55635442646131152">Rangka dokumen</translation>
 <translation id="5565613213060953222">Buka tap Inkognito</translation>
@@ -2459,6 +2461,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7112327784801341716">Maklumat yang dipaparkan telah lapuk? Hubungi bank anda untuk mengemas kini maklumat.</translation>
 <translation id="7118618213916969306">Cari URL papan keratan, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Tutup tab atau atur cara lain</translation>
+<translation id="7124354851782353862">Masukkan CVC anda</translation>
 <translation id="7129355289156517987">Apabila anda menutup semua tab Inkognito Chromium, aktiviti anda dalam tab tersebut dikosongkan daripada peranti ini:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Aktiviti penyemakan imbas<ph name="END_LIST_ITEM" />
@@ -2785,6 +2788,7 @@ Butiran tambahan:
 <translation id="7844689747373518809">{COUNT,plural, =0{Tiada}=1{1 apl (<ph name="EXAMPLE_APP_1" />)}=2{2 apl (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apl (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Kemudian, laman yang anda lawati boleh meminta topik anda daripada Chrome untuk memeribadikan iklan yang anda lihat. Chrome berkongsi sehingga 3 topik sambil melindungi sejarah penyemakan imbas dan identiti anda.</translation>
+<translation id="7860345425589240791">Masukkan tarikh tamat tempoh dan CVC baharu anda pada <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Tinggalkan tapak?</translation>
 <translation id="7865448901209910068">Kelajuan terbaik</translation>
 <translation id="7871445724586827387">Tukar kata laluan Google Account anda</translation>

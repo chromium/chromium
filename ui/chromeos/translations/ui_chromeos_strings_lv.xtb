@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Angļu (ASV), ar Dvorak tastatūru</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> — saimniekdators</translation>
 <translation id="1521655867290435174">Google izklājlapas</translation>
-<translation id="1521795806314479294">Notiek faila “<ph name="FILE_NAME" />” sagatavošana…</translation>
 <translation id="1538729222189715449">Notiek Linux failu atvēršana…</translation>
 <translation id="1547964879613821194">Kanādas angļu</translation>
 <translation id="1556189134700913550">Lietot visiem</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Notiek <ph name="NUMBER_OF_ITEMS" /> vienumu tilpsaspiešana...</translation>
 <translation id="1722687688096767818">Notiek profila pievienošana...</translation>
 <translation id="1726100011689679555">Nosaukumu serveri</translation>
-<translation id="1727562178154619254">Gatavs sinhronizēšanai</translation>
 <translation id="1729953886957086472">Vācu (Vācija)</translation>
 <translation id="1730235522912993863">Ķīniešu, Candže</translation>
 <translation id="1731889557567069540">Nokopēti vienumi: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -513,7 +511,6 @@
    Atvienojot ierīci lietošanas laikā, var tikt zaudēti dati. Lūdzu, uzgaidiet, līdz tiks pabeigta darbība, un pēc tam atvienojiet ierīci, izmantojot lietotni Faili.</translation>
 <translation id="5163869187418756376">Kopīgošana neizdevās. Pārbaudiet savienojumu un vēlāk mēģiniet vēlreiz.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167102019886320507">Notiek <ph name="NUMBER_OF_ITEMS" /> faila(-u) sagatavošana…</translation>
 <translation id="5177526793333269655">Sīktēlu skatījums</translation>
 <translation id="5181896909298187506">Nav nesenu failu</translation>
 <translation id="5194713942430106590">Noklikšķiniet, lai kārtotu kolonnas augošā secībā.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Nav nesenu attēlu</translation>
 <translation id="7460898608667578234">Ukraiņu valoda</translation>
 <translation id="7469894403370665791">Automātiski pievienoties šim tīklam</translation>
+<translation id="7481358317100446445">Gatavs</translation>
 <translation id="7486315294984620427">Lai nomestu failus darbvirsmā Parallels Desktop, attiecīgajam failam ir jābūt kopētam Windows failos.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalu, fonētiskā</translation>

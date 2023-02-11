@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Anglisht (SHBA) me tastierë Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - pritësi</translation>
 <translation id="1521655867290435174">Fletët e Google</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> po përgatitet...</translation>
 <translation id="1538729222189715449">Po hapen skedarët e Linux...</translation>
 <translation id="1547964879613821194">Anglishte kanadeze</translation>
 <translation id="1556189134700913550">Zbatoje për të gjitha</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Po ngjesh <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="1722687688096767818">Po shton profilin...</translation>
 <translation id="1726100011689679555">Serverët e emrave</translation>
-<translation id="1727562178154619254">Gati për të sinkronizuar</translation>
 <translation id="1729953886957086472">Gjermanisht (Gjermani)</translation>
 <translation id="1730235522912993863">Kinezisht Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> artikuj të kopjuar.</translation>
@@ -513,7 +511,6 @@
    Heqja e pajisjes kur është në përdorim mund të shkaktojë humbje të të dhënave. Prit deri sa të përfundojë operacioni dhe më pas nxirre pajisjen duke përdorur aplikacionin "Skedarët".</translation>
 <translation id="5163869187418756376">Ndarja dështoi. Kontrollo lidhjen dhe provo përsëri më vonë.</translation>
 <translation id="516592729076796170">Amerikane Dvorak për programues</translation>
-<translation id="5167102019886320507">Po përgatiten <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
 <translation id="5177526793333269655">Pamje miniaturë</translation>
 <translation id="5181896909298187506">Nuk ka skedarë të fundit</translation>
 <translation id="5194713942430106590">Kliko për të renditur kolonën në rend ngjitës.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Nuk ka imazhe të fundit</translation>
 <translation id="7460898608667578234">Ukrainisht</translation>
 <translation id="7469894403370665791">Lidhu automatikisht me këtë rrjet</translation>
+<translation id="7481358317100446445">Gati</translation>
 <translation id="7486315294984620427">Për t'i lëshuar skedarët në Parallels Desktop, skedari duhet të kopjohet te dosja e skedarëve të Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malajalamisht fonetike</translation>

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">անգլերեն (ԱՄՆ)՝ Dvorak ստեղնաշարով</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Հոսթ</translation>
 <translation id="1521655867290435174">Google Աղյուսակներ</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> ֆայլի նախապատրաստում…</translation>
 <translation id="1538729222189715449">Լինուքսի ֆայլերը բացվում են…</translation>
 <translation id="1547964879613821194">Կանադական (անգլիական)</translation>
 <translation id="1556189134700913550">Կիրառել բոլորին</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Արխիվացվում է <ph name="NUMBER_OF_ITEMS" /> տարր…</translation>
 <translation id="1722687688096767818">Պրոֆիլն ավելացվում է…</translation>
 <translation id="1726100011689679555">Անունների սերվերներ</translation>
-<translation id="1727562178154619254">Պատրաստ են համաժամացման</translation>
 <translation id="1729953886957086472">գերմաներեն (Գերմանիա)</translation>
 <translation id="1730235522912993863">չինարեն (ցանցզե)</translation>
 <translation id="1731889557567069540">Պատճենվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
@@ -513,7 +511,6 @@
    Եթե սարքը հեռացնեք օգտագործման ընթացքում, կարող եք որոշ տվյալներ կորցնել: Սպասեք մինչև գործողությունն ավարտվի, ապա Ֆայլեր հավելվածի միջոցով անջատեք սարքը:</translation>
 <translation id="5163869187418756376">Համօգտագործումը չհաջողվեց: Ստուգեք ձեր կապակցումը և փորձեք ավելի ուշ:</translation>
 <translation id="516592729076796170">ԱՄՆ ծրագրավորող Դվորակ</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> տարրի նախապատրաստում…</translation>
 <translation id="5177526793333269655">Մանրապատկերի տեսք</translation>
 <translation id="5181896909298187506">Վերջերս բացված ֆայլեր չկան</translation>
 <translation id="5194713942430106590">Սեղմեք՝ սյունակներն ըստ աճման կարգի տեսակավորելու համար։</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Վերջերս դիտված պատկերներ չկան</translation>
 <translation id="7460898608667578234">Ուկրաինական</translation>
 <translation id="7469894403370665791">Ավտոմատ միանալ այս ցանցին</translation>
+<translation id="7481358317100446445">Պատրաստ է</translation>
 <translation id="7486315294984620427">Ֆայլերը Parallels Desktop քաշելու և թողնելու համար նախ պատճենեք դրանք «Windows-ի ֆայլեր» պանակում։</translation>
 <translation id="749452993132003881">հիրագանա</translation>
 <translation id="7495372004724182530">մալայալամ (հնչյունային)</translation>

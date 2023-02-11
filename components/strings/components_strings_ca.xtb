@@ -501,7 +501,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2148613324460538318">Afegeix una targeta</translation>
 <translation id="2149968176347646218">La connexió no és segura</translation>
 <translation id="2153609454945889823">Vols instal·lar Serveis de Google Play per a RA?</translation>
-<translation id="2154054054215849342">La sincronització no està disponible per al teu domini</translation>
 <translation id="2154484045852737596">Edita la targeta</translation>
 <translation id="2155260325161282517">5 x 7 polzades</translation>
 <translation id="2157640075051554492">Notificacions de seguiment de preus</translation>
@@ -540,6 +539,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2241693394036365668">Es baixa un fitxer</translation>
 <translation id="2246264294482514010">10 x 12 polzades</translation>
 <translation id="2246480341630108201">El teu pare o mare encara no ho ha autoritzat</translation>
+<translation id="2247789808226901522">Targeta caducada</translation>
 <translation id="2248949050832152960">Utilitza WebAuthn</translation>
 <translation id="2250931979407627383">Cosit de la vora a l'esquerra</translation>
 <translation id="225207911366869382">El valor d'aquesta política és obsolet.</translation>
@@ -1078,6 +1078,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3646643500201740985">Mesurar el rendiment d'un anunci</translation>
 <translation id="3647286794400715637">Cada entrada de la cadena d'URL ha de contenir 1 o 2 URL.</translation>
 <translation id="3650584904733503804">Validació correcta</translation>
+<translation id="3650594806107685466">Per mantenir la targeta protegida, introdueix el CVC que figura <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Parcs temàtics</translation>
 <translation id="3655241534245626312">Ves a la configuració del permís</translation>
 <translation id="3655670868607891010">Si aquest missatge apareix sovint, proveu aquests <ph name="HELP_LINK" />.</translation>
@@ -1857,6 +1858,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5552137475244467770">Chrome contrasta periòdicament les teves contrasenyes amb les d'una sèrie de llistes publicades en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
 <translation id="5558125320634132440">Aquest lloc web s'ha bloquejat perquè pot tenir contingut no apte per a menors</translation>
+<translation id="5559311991468302423">Suprimeix l'adreça</translation>
 <translation id="5560088892362098740">Data de caducitat</translation>
 <translation id="55635442646131152">Esquema del document</translation>
 <translation id="5565613213060953222">Obre una pestanya d'incògnit</translation>
@@ -2458,6 +2460,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7112327784801341716">No es mostren les teves dades actuals? Contacta amb el teu banc per actualitzar-les.</translation>
 <translation id="7118618213916969306">Cerca l'URL (<ph name="SHORT_URL" />) del porta-retalls</translation>
 <translation id="7119414471315195487">Tanca altres pestanyes o programes</translation>
+<translation id="7124354851782353862">Introdueix el CVC</translation>
 <translation id="7129355289156517987">Quan tanques totes les pestanyes d'incògnit a Chromium, la teva activitat en aquelles pestanyes s'esborra del dispositiu:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Activitat de navegació<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@ Detalls addicionals:
 <translation id="7844689747373518809">{COUNT,plural, =0{Cap}=1{1 aplicació (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacions (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplicacions (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Després, un lloc web que visitis pot demanar els teus temes a Chrome per personalitzar els anuncis que veus. Chrome comparteix fins a 3 temes i, alhora, protegeix el teu historial de navegació i la teva identitat.</translation>
+<translation id="7860345425589240791">Introdueix la nova data de caducitat i el CVC que figura al <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Vols sortir del lloc web?</translation>
 <translation id="7865448901209910068">Velocitat òptima</translation>
 <translation id="7871445724586827387">Canvia la contrasenya del teu Compte de Google.</translation>

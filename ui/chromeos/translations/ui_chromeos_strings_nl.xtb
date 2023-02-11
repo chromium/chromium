@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Engels (VS) met Dvorak-toetsenbord</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" />: host</translation>
 <translation id="1521655867290435174">Google Spreadsheets</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> voorbereiden...</translation>
 <translation id="1538729222189715449">Linux-bestanden openen…</translation>
 <translation id="1547964879613821194">Canadees Engels</translation>
 <translation id="1556189134700913550">Op alles toepassen</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> items inpakken...</translation>
 <translation id="1722687688096767818">Profiel toevoegen...</translation>
 <translation id="1726100011689679555">Naamservers</translation>
-<translation id="1727562178154619254">Klaar om te synchroniseren</translation>
 <translation id="1729953886957086472">Duits (Duitsland)</translation>
 <translation id="1730235522912993863">Chinees (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> items gekopieerd.</translation>
@@ -514,7 +512,6 @@
        Als je je apparaat verwijdert terwijl het wordt gebruikt, raak je mogelijk gegevens kwijt. Wacht totdat de bewerking is voltooid en werp het apparaat vervolgens uit via de app Bestanden.</translation>
 <translation id="5163869187418756376">Delen mislukt. Controleer de verbinding en probeer het later opnieuw.</translation>
 <translation id="516592729076796170">Amerikaans Programmer Dvorak</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> items voorbereiden...</translation>
 <translation id="5177526793333269655">Miniatuurweergave</translation>
 <translation id="5181896909298187506">Geen recente bestanden</translation>
 <translation id="5194713942430106590">Klik om de kolom in oplopende volgorde te sorteren.</translation>
@@ -794,6 +791,7 @@
 <translation id="7458955835361612701">Geen recente afbeeldingen</translation>
 <translation id="7460898608667578234">Oekraïens</translation>
 <translation id="7469894403370665791">Automatisch verbinding maken met dit netwerk</translation>
+<translation id="7481358317100446445">Klaar</translation>
 <translation id="7486315294984620427">Als je bestanden wilt neerzetten in Parallels Desktop, moet het bestand worden gekopieerd naar de map met Windows-bestanden.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (fonetisch)</translation>

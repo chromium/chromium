@@ -501,7 +501,6 @@
 <translation id="2148613324460538318">添加支付卡</translation>
 <translation id="2149968176347646218">连接不安全</translation>
 <translation id="2153609454945889823">安装“面向 AR 的 Google Play 服务”？</translation>
-<translation id="2154054054215849342">您的网域不支持同步</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
 <translation id="2155260325161282517">5 x 7 英寸</translation>
 <translation id="2157640075051554492">价格跟踪通知</translation>
@@ -1855,6 +1854,7 @@
 <translation id="5552137475244467770">Chrome 会定期检查您的密码是否已被列在网上发布的外泄密码列表内。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5558125320634132440">此网站已被屏蔽，因为它可能含有少儿不宜的内容</translation>
+<translation id="5559311991468302423">删除此地址</translation>
 <translation id="5560088892362098740">到期日期</translation>
 <translation id="55635442646131152">文档大纲</translation>
 <translation id="5565613213060953222">打开无痕式标签页</translation>

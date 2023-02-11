@@ -629,6 +629,7 @@
 <translation id="1567387640189251553">Свързана е различна клавиатура, откакто последно въведохте паролата си. Тя може да се опитва да записва кои клавиши натискате.</translation>
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> вече се използва за действието „<ph name="ACTION" />“. Натиснете произволен клавиш, за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола на JavaScript</translation>
+<translation id="1569466257325986920">При следващата промяна на паролата за профила ви в Google, след като влезете в него, локалните ви данни ще бъдат възстановени автоматично</translation>
 <translation id="1570604804919108255">Включване на известията</translation>
 <translation id="1571304935088121812">Копиране на потребителското име</translation>
 <translation id="1571738973904005196">Преглед на раздела <ph name="TAB_ORIGIN" /></translation>
@@ -894,6 +895,7 @@
 <translation id="1781979858217752599">Споделяне на звука в прозореца</translation>
 <translation id="1782101999402987960">Актуализациите са блокирани от администратора ви</translation>
 <translation id="1782196717298160133">Намиране на телефона ви</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 бележка}other{# бележки}}</translation>
 <translation id="1784707308176068866">Изпълняване на заден план при поискване от съдействащо приложение с директно изпълнение</translation>
 <translation id="1784849162047402014">Дисковото пространство на устройството е малко</translation>
 <translation id="1787350673646245458">Изображение на потребител</translation>
@@ -1690,6 +1692,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2467755475704469005">Няма открити устройства. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Ускоряване на превъртането със сензорния панел</translation>
 <translation id="2468205691404969808">Използва „бисквитки“ за запомняне на предпочитанията ви дори ако не посещавате тези страници</translation>
+<translation id="2468247643665097563">Поръчка</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
 <translation id="2468470085922875120">Използвате пароли, които изглеждат трудни за отгатване</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 раздел}other{<ph name="GROUP_TITLE" /> – # раздела}}</translation>
@@ -5967,6 +5970,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6410668567036790476">Добавяне на търсеща машина</translation>
 <translation id="641469293210305670">Инсталиране на актуализации и приложения</translation>
 <translation id="6414878884710400018">Отваряне на системните предпочитания</translation>
+<translation id="6415816101512323589">Искате ли да включите функцията за възстановяване на локалните данни, за да защитите информацията си?</translation>
 <translation id="6415900369006735853">Свързвайте се с интернет през телефона си</translation>
 <translation id="6416743254476733475">Разрешаване или блокиране на компютъра ви.</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
@@ -6759,7 +6763,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="711840821796638741">Показване на управляваните отметки</translation>
 <translation id="711985611146095797">От тази страница можете да управлявате профилите си в Google, в които сте влезли. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Трафикът в браузъра Chrome и Android ще бъде блокиран, освен ако не е свързана VPN</translation>
-<translation id="7120865473764644444">Не можа да се установи връзка със синхронизиращия сървър. Извършва се нов опит...</translation>
 <translation id="7121438501124788993">Режим за програмисти</translation>
 <translation id="7121728544325372695">Smart Dashes</translation>
 <translation id="7123030151043029868">Сайтове с разрешение за автоматично изтегляне на няколко файла</translation>

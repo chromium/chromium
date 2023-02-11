@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Anglais (États-Unis) avec clavier Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Hôte</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294">Préparation de <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Ouverture des fichiers Linux…</translation>
 <translation id="1547964879613821194">Anglais canadien</translation>
 <translation id="1556189134700913550">Appliquer à toutes les entrées</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Compression de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
 <translation id="1722687688096767818">Ajout du profil…</translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
-<translation id="1727562178154619254">Prêt pour la synchronisation</translation>
 <translation id="1729953886957086472">Allemand (Allemagne)</translation>
 <translation id="1730235522912993863">Chinois (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> éléments copiés.</translation>
@@ -513,7 +511,6 @@
        Si vous retirez votre périphérique pendant qu'il est utilisé, vous risquez de perdre des données. Veuillez attendre la fin de l'opération, puis éjecter le périphérique à l'aide de l'application Fichiers.</translation>
 <translation id="5163869187418756376">Échec du partage. Veuillez vérifier la connexion, puis réessayer.</translation>
 <translation id="516592729076796170">Dvorak américain pour programmeurs</translation>
-<translation id="5167102019886320507">Préparation de <ph name="NUMBER_OF_ITEMS" /> éléments…</translation>
 <translation id="5177526793333269655">Afficher les vignettes</translation>
 <translation id="5181896909298187506">Aucun fichier récent</translation>
 <translation id="5194713942430106590">Cliquez pour trier la colonne par ordre croissant.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Aucune image récente</translation>
 <translation id="7460898608667578234">Ukrainien</translation>
 <translation id="7469894403370665791">Se connecter automatiquement à ce réseau</translation>
+<translation id="7481358317100446445">Prêt</translation>
 <translation id="7486315294984620427">Pour déposer des fichiers dans Parallels Desktop, vous devez copier le fichier dans le dossier "Fichiers Windows".</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonétique)</translation>

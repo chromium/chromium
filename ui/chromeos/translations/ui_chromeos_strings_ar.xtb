@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - مضيف</translation>
 <translation id="1521655867290435174">‏جداول بيانات Google</translation>
-<translation id="1521795806314479294">جارٍ تحضير <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">‏جارٍ فتح ملفات نظام التشغيل Linux...</translation>
 <translation id="1547964879613821194">الإنجليزية الكندية</translation>
 <translation id="1556189134700913550">تطبيق على الكل</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">جارٍ ضغط <ph name="NUMBER_OF_ITEMS" /> من العناصر...</translation>
 <translation id="1722687688096767818">جارٍ إضافة الملف الشخصي...</translation>
 <translation id="1726100011689679555">خوادم الأسماء</translation>
-<translation id="1727562178154619254">الملف جاهز للمزامنة.</translation>
 <translation id="1729953886957086472">الألمانية (ألمانيا)</translation>
 <translation id="1730235522912993863">‏الصينية باستخدام لوحة مفاتيح Cangjie</translation>
 <translation id="1731889557567069540">تم نسخ <ph name="NUMBER_OF_ITEMS" /> عنصر.</translation>
@@ -513,7 +511,6 @@
    قد تؤدي إزالة جهازك أثناء وجوده قيد الاستخدام إلى فقدان البيانات.  يُرجى الانتظار حتى انتهاء العملية، ثم إخراج الجهاز باستخدام تطبيق الملفات.</translation>
 <translation id="5163869187418756376">تعذّرت المشاركة. تحقق من اتصالك وأعد المحاولة لاحقًا.</translation>
 <translation id="516592729076796170">‏لوحة مفاتيح المطور الأمريكية Dvorak</translation>
-<translation id="5167102019886320507">جارٍ تحضير <ph name="NUMBER_OF_ITEMS" /> ملف…</translation>
 <translation id="5177526793333269655">عرض الصور المصغرة</translation>
 <translation id="5181896909298187506">ما مِن ملفات حديثة.</translation>
 <translation id="5194713942430106590">انقر لترتيب محتوى العمود ترتيبًا تصاعديًا.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">ما مِن صور حديثة.</translation>
 <translation id="7460898608667578234">الأوكرانية</translation>
 <translation id="7469894403370665791">الاتصال بهذه الشبكة تلقائيًا</translation>
+<translation id="7481358317100446445">جاهزة</translation>
 <translation id="7486315294984620427">‏لإفلات ملفات في Parallels Desktop، يجب نسخ الملف إلى مجلد ملفات Windows.</translation>
 <translation id="749452993132003881">هيراغانا</translation>
 <translation id="7495372004724182530">الماليالامية الصوتية</translation>

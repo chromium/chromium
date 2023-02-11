@@ -18,7 +18,6 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1066060668811609597">Xestionar sincronización</translation>
 <translation id="1076421457278169141">Escaneouse o código</translation>
 <translation id="1076785341346483463">Sincronizar cunha conta xestionada</translation>
-<translation id="1080365971383768617">Contrasinais en todos os teus dispositivos</translation>
 <translation id="1084365883616172403">Completouse a publicación de Facebook.</translation>
 <translation id="1085696779717592361">Utilizar Chrome de forma predeterminada</translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3181825792072797598">Activar sincronización</translation>
 <translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Engadida a marcadores</translation>
 <translation id="3214379938835224220">Pechouse sesión como parte do restablecemento do iPad. Para iniciar sesión, toca debaixo a opción de continuar.</translation>
 <translation id="3224641773458703735">Para exportar os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -320,7 +318,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3311748811247479259">Non</translation>
 <translation id="3324193307694657476">Enderezo 2</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
-<translation id="3329904751041170572">Non se puido conectar ao servidor.</translation>
 <translation id="3371831930909698441">A tradución está dispoñible. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="3377063233124932127">Agora os marcadores e os contrasinais que teñas gardados, ademais doutros elementos, aparecen na parte superior.</translation>
 <translation id="3393920035788932672">Ventás emerxentes permitidas</translation>
@@ -362,7 +359,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3638472932233958418">Precargar páxinas web</translation>
 <translation id="3661160521073045932">Hai un perfil de configuración dispoñible</translation>
 <translation id="3670030362669914947">Número</translation>
-<translation id="3691593122358196899">Marcador engadido a <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Marcar como non lido</translation>
 <translation id="371230970611282515">Predí eventos perigosos antes de que se produzan e móstrache unha advertencia.</translation>
 <translation id="37207012422556617">Buscas populares</translation>
@@ -548,7 +544,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5056446788882570708">Atopáronse problemas <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
-<translation id="50641035439563602">Agora, os contrasinais gárdanse na túa Conta de Google (<ph name="ACCOUNT" />). Podes usalos en calquera dispositivo onde teñas iniciada a sesión. Para desactivar esta opción, vai a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Imposible determinar tamaño.</translation>
 <translation id="5090832849094901128">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Completouse o chío.</translation>
@@ -712,7 +707,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6284652193729350524">Ofrecer traducir contido en <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Deixaches de seguir a canle <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Para activar a opción Navegación segura, abre <ph name="BEGIN_LINK" />Servizos de Google<ph name="END_LINK" /> e toca Navegación segura.</translation>
-<translation id="6320780930074869063">Cando a opción está activada, os contrasinais gárdanse en <ph name="ACCOUNT" />. Se está desactivada, só se gardan neste dispositivo.</translation>
 <translation id="6321526113093607004">Engadir aos marcadores</translation>
 <translation id="6324669097367352121">Conf. inicio sesión</translation>
 <translation id="6337234675334993532">Encriptado</translation>
@@ -756,7 +750,6 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="6476800141292307438">Traducindo a páxina ao <ph name="LANGUAGE" />. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="648164694371393720">Produciuse un erro de autenticación</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
-<translation id="6495429111159337775">Usar e gardar contrasinais da túa Conta de Google</translation>
 <translation id="6497772452874122664">Se confías en <ph name="TIME" />, podes usar un contrasinal gardado doutro sitio.
 
 Tenta usar un contrasinal distinto para cada sitio.</translation>
@@ -1040,7 +1033,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8680787084697685621">Os detalles de inicio de sesión da conta están caducados.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Pechar pestana}other{Pechar pestanas}}</translation>
 <translation id="8706588385081740091">Contrasinais</translation>
-<translation id="8712637175834984815">De acordo</translation>
 <translation id="8717864919010420084">Copiar ligazón</translation>
 <translation id="8721297211384281569">Menú Ferramentas</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>

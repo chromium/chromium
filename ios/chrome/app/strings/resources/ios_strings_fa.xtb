@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">مدیریت همگام‌سازی</translation>
 <translation id="1076421457278169141">کد اسکن شد</translation>
 <translation id="1076785341346483463">همگام‌سازی با حساب مدیریت‌شده</translation>
-<translation id="1080365971383768617">گذرواژه‌ها در همه دستگاه‌ها دردسترس است</translation>
 <translation id="1084365883616172403">‏پست Facebook ارسال شد.</translation>
 <translation id="1085696779717592361">‏استفاده از Chrome به‌طور پیش‌فرض</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> همیشه ترجمه شود</translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">روشن کردن همگام‌سازی</translation>
 <translation id="3181954750937456830">مرور ایمن (از شما و دستگاهتان درمقابل سایت‌های خطرناک محافظت می‌کند)</translation>
 <translation id="3184767182050912705">باز کردن قفل با <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">نشانک‌گذاری شده</translation>
 <translation id="3214379938835224220">‏به‌عنوان بخشی از بازنشانی iPad، از سیستم خارج شده‌اید. برای ورود به سیستم، روی Continue (ادامه) در زیر ضربه بزنید.</translation>
 <translation id="3224641773458703735">برای صادر کردن گذرواژه‌ها، ابتدا باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
 <translation id="3227137524299004712">میکروفن</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">خاموش</translation>
 <translation id="3324193307694657476">آدرس ۲</translation>
 <translation id="3328801116991980348">اطلاعات سایت</translation>
-<translation id="3329904751041170572">اتصال به سرور امکان‌پذیر نیست.</translation>
 <translation id="3371831930909698441">‏«ترجمه Google» دردسترس است. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
 <translation id="3377063233124932127">اکنون نشانک‌ها، گذرواژه‌ها، و دیگر موارد ذخیره‌شده در بالا نمایش داده می‌شوند.</translation>
 <translation id="3393920035788932672">پنجره‌های بازشو مجاز است</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">صفحات وب از پیش بارگیری شده</translation>
 <translation id="3661160521073045932">پیکربندی نمایه دردسترس است</translation>
 <translation id="3670030362669914947">عدد</translation>
-<translation id="3691593122358196899">نشانک به <ph name="FOLDER_TITLE" /> اضافه شد</translation>
 <translation id="3709582977625132201">علامت‌گذاری به‌عنوان خوانده‌نشده</translation>
 <translation id="371230970611282515">رویدادهای خطرناک را پیش از اینکه اتفاق بیفتند پیش‌بینی می‌کند و درباره آن‌ها به شما هشدار می‌دهد.</translation>
 <translation id="37207012422556617">جستجوهای پرطرفدار</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708"><ph name="TIME" /> مشکلاتی پیدا شد.</translation>
 <translation id="5059136629401106827">خوب</translation>
 <translation id="5062321486222145940">‏نصب Google Drive</translation>
-<translation id="50641035439563602">‏ازاین‌پس گذرواژه‌ها در «حساب Google» شما (<ph name="ACCOUNT" />) ذخیره می‌شود. می‌توانید در هر جایی که به سیستم وارد شده‌اید از آن‌ها استفاده کنید. برای خاموش کردن این ویژگی، به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> بروید.</translation>
 <translation id="5083464117946352670">تعیین اندازه فایل ممکن نیست.</translation>
 <translation id="5090832849094901128">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="WEBSITE" /> نمی‌شود.</translation>
 <translation id="5094827893301452931">‏Tweet انجام شد.</translation>
@@ -712,7 +707,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6284652193729350524">پیشنهاد ترجمه <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">دنبال کردن <ph name="CHANNEL_NAME" /> لغو شد</translation>
 <translation id="6293101329759844770">‏برای روشن کردن «مرور ایمن»، <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> را باز کنید و روی «مرور ایمن» ضربه بزنید.</translation>
-<translation id="6320780930074869063">وقتی روشن باشد، گذرواژه‌ها در <ph name="ACCOUNT" /> ذخیره می‌شود. وقتی خاموش باشد، گذرواژه‌ها فقط در این دستگاه ذخیره می‌شود.</translation>
 <translation id="6321526113093607004">افزودن به نشانک‌ها</translation>
 <translation id="6324669097367352121">تنظیمات ورود به سیستم</translation>
 <translation id="6337234675334993532">رمزگذاری</translation>
@@ -756,7 +750,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6476800141292307438">ترجمه صفحه به <ph name="LANGUAGE" />. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
 <translation id="648164694371393720">خطای اصالت‌سنجی</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> مورد حذف شد</translation>
-<translation id="6495429111159337775">‏استفاده و ذخیره «گذرواژه‌ها» از «حساب Google» شما</translation>
 <translation id="6497772452874122664">اگر به <ph name="TIME" /> اعتماد دارید، می‌توانید از گذرواژه ذخیره‌شده برای سایتی دیگر استفاده کنید.
 
 از گذرواژه غیرتکراری برای همه سایت‌ها استفاده کنید.</translation>
@@ -1040,7 +1033,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8680787084697685621">جزئیات ورود به سیستم حساب قدیمی است.</translation>
 <translation id="8693663554456874301">{count,plural, =1{بستن برگه}one{بستن برگه}other{بستن برگه‌ها}}</translation>
 <translation id="8706588385081740091">گذرواژه‌ها</translation>
-<translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8717864919010420084">کپی پیوند</translation>
 <translation id="8721297211384281569">منوی ابزارها</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>

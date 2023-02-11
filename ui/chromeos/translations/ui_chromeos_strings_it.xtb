@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Inglese (USA) con tastiera Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Fogli Google</translation>
-<translation id="1521795806314479294">Preparazione di <ph name="FILE_NAME" /> in corso…</translation>
 <translation id="1538729222189715449">Apertura di file Linux…</translation>
 <translation id="1547964879613821194">Inglese canadese</translation>
 <translation id="1556189134700913550">Applica a tutti</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Compressione di <ph name="NUMBER_OF_ITEMS" /> elementi...</translation>
 <translation id="1722687688096767818">Aggiunta del profilo in corso…</translation>
 <translation id="1726100011689679555">Server dei nomi</translation>
-<translation id="1727562178154619254">File pronti per la sincronizzazione</translation>
 <translation id="1729953886957086472">Tedesco (Germania)</translation>
 <translation id="1730235522912993863">Cinese Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementi copiati.</translation>
@@ -513,7 +511,6 @@
    La rimozione del dispositivo mentre è in uso potrebbe causare la perdita di dati. Attendi fino al termine dell'operazione, quindi espelli il dispositivo utilizzando l'app File.</translation>
 <translation id="5163869187418756376">Condivisione non riuscita. Controlla la connessione e riprova più tardi.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167102019886320507">Preparazione di <ph name="NUMBER_OF_ITEMS" /> elementi in corso…</translation>
 <translation id="5177526793333269655">Visualizzazione Miniature</translation>
 <translation id="5181896909298187506">Nessun file recente</translation>
 <translation id="5194713942430106590">Fai clic per ordinare la colonna in ordine decrescente.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Nessuna immagine recente</translation>
 <translation id="7460898608667578234">Ucraino</translation>
 <translation id="7469894403370665791">Collegati automaticamente a questa rete</translation>
+<translation id="7481358317100446445">Pronta</translation>
 <translation id="7486315294984620427">Per trascinare file in Parallels Desktop, devi prima copiarli in File di Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam fonetica</translation>

@@ -501,7 +501,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2148613324460538318">Gehitu txartela</translation>
 <translation id="2149968176347646218">Konexioa ez da segurua</translation>
 <translation id="2153609454945889823">Errealitate areagoturako Google Play Services instalatu nahi duzu?</translation>
-<translation id="2154054054215849342">Sinkronizazioa ez dago erabilgarri zure domeinuan</translation>
 <translation id="2154484045852737596">Editatu txartela</translation>
 <translation id="2155260325161282517">12,7 × 17,78 cm (5 × 7 in)</translation>
 <translation id="2157640075051554492">Prezioen jarraipenari buruzko jakinarazpenak</translation>
@@ -540,6 +539,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2241693394036365668">Fitxategi bat deskargatu da</translation>
 <translation id="2246264294482514010">25,4 × 30,48 cm (10 × 12 in)</translation>
 <translation id="2246480341630108201">Zure gurasoak ez du baimenik eman oraindik</translation>
+<translation id="2247789808226901522">Iraungi egin da txartela</translation>
 <translation id="2248949050832152960">Erabili WebAuthn</translation>
 <translation id="2250931979407627383">Ezkerreko ertza josita</translation>
 <translation id="225207911366869382">Balioa zaharregia da gidalerro honetarako.</translation>
@@ -1074,6 +1074,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3646643500201740985">Iragarkien errendimendua neurtzea</translation>
 <translation id="3647286794400715637">URL kate bakoitzak URL bat edo bi izan behar ditu.</translation>
 <translation id="3650584904733503804">Behar bezala baliozkotu da</translation>
+<translation id="3650594806107685466">Txartela babestuta edukitzeko, idatzi <ph name="SIDE_OF_CARD" /> dagoen CVCa</translation>
 <translation id="3653033846669030038">Parke tematikoak</translation>
 <translation id="3655241534245626312">Joan baimenaren ezarpenetara</translation>
 <translation id="3655670868607891010">Hau maiz agertzen bazaizu, saiatu honekin: <ph name="HELP_LINK" />.</translation>
@@ -1853,6 +1854,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5552137475244467770">Sarean argitaratu diren zerrendetan zure pasahitzak dauden egiaztatzen du noizean behin Chrome-k. Hori egiteko, pasahitzak eta erabiltzaile-izenak enkriptatu egiten ditu, inork ezin ditzan irakurri, Google barne.</translation>
 <translation id="5556459405103347317">Kargatu berriro</translation>
 <translation id="5558125320634132440">Webgunea blokeatu egin da, agian helduentzako edukiak baititu</translation>
+<translation id="5559311991468302423">Ezabatu helbidea</translation>
 <translation id="5560088892362098740">Iraungitze-data</translation>
 <translation id="55635442646131152">Dokumentuaren eskema</translation>
 <translation id="5565613213060953222">Ireki ezkutuko moduko fitxa bat</translation>
@@ -2453,6 +2455,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7112327784801341716">Informazioa ez dago eguneratuta? Jarri bankuarekin harremanetan egunera dezaten.</translation>
 <translation id="7118618213916969306">Bilatu arbeleko URLa (<ph name="SHORT_URL" />)</translation>
 <translation id="7119414471315195487">Itxi beste fitxa edo programa batzuk</translation>
+<translation id="7124354851782353862">Idatzi CVCa</translation>
 <translation id="7129355289156517987">Chromium-eko ezkutuko moduko fitxa guztiak ixten dituzunean, fitxa horietan egindako jarduerak gailutik ezabatuko dira:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />arakatze-jarduerak<ph name="END_LIST_ITEM" />
@@ -2779,6 +2782,7 @@ Xehetasun gehiago:
 <translation id="7844689747373518809">{COUNT,plural, =0{Bat ere ez}=1{1 aplikazio (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikazio (<ph name="EXAMPLE_APP_1" /> eta <ph name="EXAMPLE_APP_2" />)}other{# aplikazio (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> eta<ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Beranduago, bisitatzen duzun webgune batek zure gaiak zein diren galde diezaioke Chrome-ri, agertzen zaizkizun iragarkiak pertsonalizatze aldera. Chrome-k hiru gai partekatzen ditu gehienez, baina zure arakatze-historia eta identitatea babesten ditu.</translation>
+<translation id="7860345425589240791">Idatzi iraungitze-data berria eta <ph name="SIDE_OF_CARD" /> dagoen CVCa</translation>
 <translation id="7862185352068345852">Webgunetik irten nahi duzu?</translation>
 <translation id="7865448901209910068">Abiadurarik onena</translation>
 <translation id="7871445724586827387">Aldatu Google-ko kontuko pasahitza</translation>

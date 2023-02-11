@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">同期の管理</translation>
 <translation id="1076421457278169141">コードをスキャンしました</translation>
 <translation id="1076785341346483463">管理対象アカウントとの同期</translation>
-<translation id="1080365971383768617">すべてのデバイスでパスワードを使用</translation>
 <translation id="1084365883616172403">Facebookへの投稿が完了しました。</translation>
 <translation id="1085696779717592361">Chrome をデフォルトに設定する</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">同期を有効にする</translation>
 <translation id="3181954750937456830">セーフ ブラウジング（危険なサイトからユーザーとデバイスを保護します）</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でロックを解除</translation>
-<translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3214379938835224220">iPad をリセットする途中でログアウトしました。下の [続行] をタップしてログインしてください。</translation>
 <translation id="3224641773458703735">パスワードをエクスポートするには、まずデバイスでパスコードを設定する必要があります。</translation>
 <translation id="3227137524299004712">マイク</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">オフ</translation>
 <translation id="3324193307694657476">住所2行目</translation>
 <translation id="3328801116991980348">サイト情報</translation>
-<translation id="3329904751041170572">サーバーに接続できませんでした。</translation>
 <translation id="3371831930909698441">翻訳が利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="3377063233124932127">保存したブックマークやパスワードなどが上部に表示されます。</translation>
 <translation id="3393920035788932672">ポップアップ許可済み</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">ウェブページのプリロード</translation>
 <translation id="3661160521073045932">設定プロファイルを使用できます</translation>
 <translation id="3670030362669914947">番号</translation>
-<translation id="3691593122358196899">「<ph name="FOLDER_TITLE" />」にブックマークしました</translation>
 <translation id="3709582977625132201">未読にする</translation>
 <translation id="371230970611282515">危険なイベントの発生を予測して警告します。</translation>
 <translation id="37207012422556617">急上昇ワード</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708"><ph name="TIME" />に問題が見つかりました。</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">ドライブをインストール</translation>
-<translation id="50641035439563602">パスワードは Google アカウント（<ph name="ACCOUNT" />）に保存されました。ログインしているすべてのデバイスでパスワードを使用できます。この機能をオフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] に移動します。</translation>
 <translation id="5083464117946352670">ファイルサイズが不明です。</translation>
 <translation id="5090832849094901128">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。</translation>
 <translation id="5094827893301452931">ツイートが完了しました。</translation>
@@ -712,7 +707,6 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" />を翻訳するか尋ねる</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> のフォローを解除しました</translation>
 <translation id="6293101329759844770">セーフ ブラウジングをオンにするには、[<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />] を開いて [セーフ ブラウジング] をタップします。</translation>
-<translation id="6320780930074869063">オンにすると、パスワードは <ph name="ACCOUNT" /> に保存されます。オフにすると、パスワードはこのデバイスのみに保存されます。</translation>
 <translation id="6321526113093607004">ブックマークに追加</translation>
 <translation id="6324669097367352121">ログインの設定</translation>
 <translation id="6337234675334993532">暗号化</translation>
@@ -756,7 +750,6 @@
 <translation id="6476800141292307438">ページを<ph name="LANGUAGE" />に翻訳しています。画面の下の方にオプションがあります。</translation>
 <translation id="648164694371393720">認証エラー</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件の項目を削除しました</translation>
-<translation id="6495429111159337775">Google アカウントのパスワードの使用と保存</translation>
 <translation id="6497772452874122664"><ph name="TIME" /> を信用できる場合は、他のサイトで保存したパスワードを使用できます。
 
 各サイトで個別のパスワードを使用することをご検討ください。</translation>
@@ -1041,7 +1034,6 @@
 <translation id="8680787084697685621">アカウントのログイン情報が古くなっています。</translation>
 <translation id="8693663554456874301">{count,plural, =1{タブを閉じる}other{タブを閉じる}}</translation>
 <translation id="8706588385081740091">パスワード</translation>
-<translation id="8712637175834984815">閉じる</translation>
 <translation id="8717864919010420084">リンクをコピー</translation>
 <translation id="8721297211384281569">ツールメニュー</translation>
 <translation id="8725066075913043281">やり直し</translation>

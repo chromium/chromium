@@ -18,7 +18,6 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1066060668811609597">Gestisci la sincronizzazione</translation>
 <translation id="1076421457278169141">Scansione del codice eseguita</translation>
 <translation id="1076785341346483463">Sincronizza con account gestito</translation>
-<translation id="1080365971383768617">Password su tutti i tuoi dispositivi</translation>
 <translation id="1084365883616172403">Pubblicazione su Facebook completata.</translation>
 <translation id="1085696779717592361">Usa Chrome per impostazione predefinita</translation>
 <translation id="1103523840287552314">Traduci sempre <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3181825792072797598">Attiva la funzione Sincronizzazione</translation>
 <translation id="3181954750937456830">Navigazione sicura (protegge te e il tuo dispositivo da siti pericolosi)</translation>
 <translation id="3184767182050912705">Sblocca con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Aggiunto ai preferiti</translation>
 <translation id="3214379938835224220">Il tuo account è stato disconnesso durante il ripristino dell'iPad. Tocca Continua sotto per accedere.</translation>
 <translation id="3224641773458703735">Per esportare le password devi innanzitutto impostare un passcode sul dispositivo.</translation>
 <translation id="3227137524299004712">Microfono</translation>
@@ -320,7 +318,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3311748811247479259">Off</translation>
 <translation id="3324193307694657476">Indirizzo 2</translation>
 <translation id="3328801116991980348">Informazioni sito</translation>
-<translation id="3329904751041170572">Connessione al server non riuscita.</translation>
 <translation id="3371831930909698441">Traduttore disponibile. Opzioni disponibili nella parte inferiore dello schermo.</translation>
 <translation id="3377063233124932127">Ora i tuoi preferiti, le password e altri dati salvati sono visualizzati in alto.</translation>
 <translation id="3393920035788932672">Popup consentiti</translation>
@@ -362,7 +359,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3638472932233958418">Precarica pagine web</translation>
 <translation id="3661160521073045932">Profilo di configurazione disponibile</translation>
 <translation id="3670030362669914947">Numero</translation>
-<translation id="3691593122358196899">Preferito aggiunto in: <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Contrassegna come da leggere</translation>
 <translation id="371230970611282515">Prevede e ti avvisa quando stanno per verificarsi eventi pericolosi.</translation>
 <translation id="37207012422556617">Ricerche di tendenza</translation>
@@ -548,7 +544,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5056446788882570708">Sono stati riscontrati problemi <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installa Google Drive</translation>
-<translation id="50641035439563602">Le password sono state salvate nel tuo Account Google (<ph name="ACCOUNT" />). Puoi usarle ovunque tu abbia eseguito l'accesso. Per disattivare questa impostazione, vai alle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Impossibile stabilire le dimensioni del file.</translation>
 <translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet completato.</translation>
@@ -712,7 +707,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6284652193729350524">Proponi di tradurre dalla lingua <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Non segui più <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Per attivare Navigazione sicura, apri <ph name="BEGIN_LINK" />Servizi Google<ph name="END_LINK" /> e tocca Navigazione sicura.</translation>
-<translation id="6320780930074869063">Quando l'opzione è attiva, le password vengono salvate in <ph name="ACCOUNT" />. Quando l'opzione non è attiva, le password vengono salvate soltanto su questo dispositivo.</translation>
 <translation id="6321526113093607004">Aggiungi ai preferiti</translation>
 <translation id="6324669097367352121">Impostazioni accesso</translation>
 <translation id="6337234675334993532">Crittografia</translation>
@@ -756,7 +750,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6476800141292307438">Traduzione della pagina in <ph name="LANGUAGE" />. Opzioni disponibili nella parte inferiore dello schermo.</translation>
 <translation id="648164694371393720">Errore di autenticazione</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementi eliminati</translation>
-<translation id="6495429111159337775">Usa e salva password dal tuo Account Google</translation>
 <translation id="6497772452874122664">Se ritieni attendibile il sito <ph name="TIME" />, puoi usare una password salvata da un altro sito.
 
 Cerca di usare una password univoca per ogni sito.</translation>
@@ -1041,7 +1034,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8680787084697685621">I dati di accesso dell'account sono obsoleti.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Chiudi scheda}other{Chiudi schede}}</translation>
 <translation id="8706588385081740091">Password</translation>
-<translation id="8712637175834984815">Fatto</translation>
 <translation id="8717864919010420084">Copia link</translation>
 <translation id="8721297211384281569">Menu Strumenti</translation>
 <translation id="8725066075913043281">Riprova</translation>

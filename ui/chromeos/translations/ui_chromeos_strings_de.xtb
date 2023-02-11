@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Englisch (USA) mit Dvorak-Tastatur</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Host</translation>
 <translation id="1521655867290435174">Google Tabellen</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> wird vorbereitet…</translation>
 <translation id="1538729222189715449">Linux-Dateien werden geöffnet…</translation>
 <translation id="1547964879613821194">Kanadisches Englisch</translation>
 <translation id="1556189134700913550">Auf alle anwenden</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> Elemente werden gezippt...</translation>
 <translation id="1722687688096767818">Profil wird hinzugefügt…</translation>
 <translation id="1726100011689679555">Nameserver</translation>
-<translation id="1727562178154619254">Bereit zur Synchronisierung</translation>
 <translation id="1729953886957086472">Deutsch (Deutschland)</translation>
 <translation id="1730235522912993863">Chinesisch (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> Elemente kopiert.</translation>
@@ -513,7 +511,6 @@
    Wenn du dein Gerät entfernst, während es verwendet wird, können Daten verloren gehen. Warte, bis der Vorgang abgeschlossen ist, und wirf das Gerät dann über die App „Dateien“ aus.</translation>
 <translation id="5163869187418756376">Fehler bei der Freigabe. Bitte überprüfe deine Verbindung und versuche es später erneut.</translation>
 <translation id="516592729076796170">USA – Programmer Dvorak</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> Elemente werden vorbereitet…</translation>
 <translation id="5177526793333269655">Miniaturbildansicht</translation>
 <translation id="5181896909298187506">Keine kürzlich verwendeten Dateien</translation>
 <translation id="5194713942430106590">Klicken, um die Spalte in aufsteigender Reihenfolge zu sortieren.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Keine zuletzt angesehenen Bilder</translation>
 <translation id="7460898608667578234">Ukrainisch</translation>
 <translation id="7469894403370665791">Verbindung zu diesem Netzwerk automatisch herstellen</translation>
+<translation id="7481358317100446445">Bereit</translation>
 <translation id="7486315294984620427">Um Dateien in Parallels Desktop per Drag-and-drop abzulegen, muss die Datei in „Windows-Dateien“ kopiert werden.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam (phonetisch)</translation>

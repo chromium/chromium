@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux opnieuw starten?</translation>
 <translation id="1047431265488717055">Lin&amp;ktekst kopiëren</translation>
 <translation id="1048286738600630630">Schermen</translation>
+<translation id="1048770690598418849">Je kunt dit nu overslaan. We proberen het automatisch opnieuw als je klaar bent met instellen.</translation>
 <translation id="1048986595386481879">Dynamisch toegewezen</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ontvangen van <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> ontvangen van <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incognito</translation>
@@ -1623,6 +1624,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2410754283952462441">Een account selecteren</translation>
 <translation id="241082044617551207">Onbekende plug-in</translation>
 <translation id="2410940059315936967">Een site die je bezoekt, kan content van andere sites insluiten, zoals afbeeldingen, advertenties en tekst. Cookies die door deze andere sites worden ingesteld, worden cookies van derden genoemd.</translation>
+<translation id="2411666601450687801">Er zijn geen virtuele machines toegestaan op dit apparaat</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Functietoetsen toetsenbord</translation>
 <translation id="2418307627282545839">Houd alles licht en luchtig</translation>
@@ -1884,6 +1886,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="265390580714150011">Veldwaarde</translation>
 <translation id="2654553774144920065">Afdrukverzoek</translation>
+<translation id="265748523151262387">Blijf verbonden met je telefoon</translation>
 <translation id="2657612187216250073">Toegankelijkheidsinstellingen voor aanwijzer</translation>
 <translation id="2658941648214598230">Oorspronkelijke content bekijken?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Functies verschillen per apparaat</translation>
@@ -5295,6 +5298,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5801051031414037185">Telefoon instellen</translation>
 <translation id="5801568494490449797">Voorkeuren</translation>
 <translation id="5804241973901381774">Rechten</translation>
+<translation id="5804259315582798390">Kan herstel van lokale gegevens niet aanzetten</translation>
 <translation id="5805268472388605531">Houd de toetsenbordtoetsen ingedrukt om accenttekens en speciale tekens te bekijken</translation>
 <translation id="5805697420284793859">Vensterbeheer</translation>
 <translation id="5806447147478173900">Totale opslagruimte gebruikt door getoonde sites: <ph name="TOTAL_USAGE" /></translation>
@@ -6675,6 +6679,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7047059339731138197">Een achtergrond kiezen</translation>
 <translation id="7049293980323620022">Bestand behouden?</translation>
 <translation id="7050037487872780845">Ongeldige hotspotconfiguratie</translation>
+<translation id="7051551856857948729">IBAN-waarde verbergen</translation>
 <translation id="7052237160939977163">Gegevens over het bijhouden van prestaties verzenden</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
 <translation id="7055152154916055070">Omleiding geblokkeerd:</translation>
@@ -6742,7 +6747,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="711840821796638741">Beheerde bookmarks bekijken</translation>
 <translation id="711985611146095797">Via deze pagina kun je je ingelogde Google-accounts beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">De Chrome-browser en Android-verkeer worden geblokkeerd tenzij je verbinding maakt met een VPN</translation>
-<translation id="7120865473764644444">Kan geen verbinding maken met de synchronisatieserver. Opnieuw proberen...</translation>
 <translation id="7121438501124788993">Ontwikkelaarsmodus</translation>
 <translation id="7121728544325372695">Slimme streepjes</translation>
 <translation id="7123030151043029868">Toestemming om automatisch meerdere bestanden te downloaden</translation>
@@ -8542,6 +8546,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8767621466733104912">Chrome automatisch updaten voor alle gebruikers</translation>
 <translation id="8770406935328356739">Hoofddirectory van extensie</translation>
 <translation id="8771300903067484968">De achtergrond van de startpagina is gereset naar de standaardachtergrond.</translation>
+<translation id="8773280816776735812">IBAN-waarde tonen</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> opslaan</translation>
 <translation id="8774379074441005279">Herstel bevestigen</translation>
 <translation id="8774934320277480003">Marge bovenkant</translation>

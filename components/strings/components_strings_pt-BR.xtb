@@ -501,7 +501,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2148613324460538318">Adicionar Cartão</translation>
 <translation id="2149968176347646218">A conexão não é segura</translation>
 <translation id="2153609454945889823">Instalar o Google Play Services para RA?</translation>
-<translation id="2154054054215849342">O serviço de sincronização não está disponível para seu domínio</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
 <translation id="2155260325161282517">5 x 7 pol.</translation>
 <translation id="2157640075051554492">Notificações de monitoramento de preço</translation>
@@ -1182,7 +1181,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">É possível mudar isso quando quiser nas configurações do Chrome</translation>
-<translation id="3921869355029467742">Digite o código de segurança</translation>
+<translation id="3921869355029467742">Digitar o código de segurança</translation>
 <translation id="3927932062596804919">Negar</translation>
 <translation id="393316646445601645">Internet e telecomunicações</translation>
 <translation id="3939773374150895049">Usar WebAuthn em vez de CVC?</translation>
@@ -1859,6 +1858,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5552137475244467770">O Chrome verifica periodicamente se suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5558125320634132440">Este site foi bloqueado porque pode apresentar conteúdo para maiores</translation>
+<translation id="5559311991468302423">Excluir endereço</translation>
 <translation id="5560088892362098740">Data de validade</translation>
 <translation id="55635442646131152">Visualização do documento</translation>
 <translation id="5565613213060953222">Abrir guia anônima</translation>

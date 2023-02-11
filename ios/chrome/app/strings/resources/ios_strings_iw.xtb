@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">ניהול הסנכרון</translation>
 <translation id="1076421457278169141">הקוד נסרק</translation>
 <translation id="1076785341346483463">סנכרון עם חשבון מנוהל</translation>
-<translation id="1080365971383768617">סיסמאות בכל המכשירים</translation>
 <translation id="1084365883616172403">‏הפרסום ב-‏Facebook בוצע.</translation>
 <translation id="1085696779717592361">‏שימוש ב-Chrome כברירת מחדל</translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">הפעלת סנכרון</translation>
 <translation id="3181954750937456830">גלישה בטוחה (מגנה עליך ועל המכשיר מפני אתרים מסוכנים)</translation>
 <translation id="3184767182050912705">ביטול נעילה עם <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">מסומן בסימנייה</translation>
 <translation id="3214379938835224220">‏יצאת מהחשבון במהלך האיפוס של iPad. כדי להיכנס אליו, יש להקיש על 'המשך' למטה.</translation>
 <translation id="3224641773458703735">כדי שניתן יהיה לייצא את הסיסמאות, יש להגדיר קוד גישה במכשיר.</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">כבוי</translation>
 <translation id="3324193307694657476">כתובת, שורה 2</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
-<translation id="3329904751041170572">לא ניתן להתחבר לשרת.</translation>
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="3377063233124932127">עכשיו הסימניות, הסיסמאות ונתונים נוספים ששמרת מופיעים למעלה.</translation>
 <translation id="3393920035788932672">חלונות קופצים מותרים</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">טעינה מראש של דפי אינטרנט</translation>
 <translation id="3661160521073045932">יש פרופיל של הגדרות אישיות</translation>
 <translation id="3670030362669914947">מספר</translation>
-<translation id="3691593122358196899">התווסף לסימניות ב-<ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">סימון כפריט שלא נקרא</translation>
 <translation id="371230970611282515">המערכת חוזה אירועים מסוכנים ומזהירה אותך לגביהם לפני שהם מתרחשים.</translation>
 <translation id="37207012422556617">שאילתות חיפוש פופולריות</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708">נמצאו בעיות <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">אישור</translation>
 <translation id="5062321486222145940">‏התקנת Google Drive</translation>
-<translation id="50641035439563602">‏הסיסמאות נשמרות עכשיו בחשבון Google שלך (<ph name="ACCOUNT" />). אפשר להשתמש בהן בכל מקום לאחר התחברות לחשבון. כדי להשבית את ההגדרה הזו, עוברים אל <ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">גודל הקובץ אינו ידוע.</translation>
 <translation id="5090832849094901128">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">הציוץ בוצע.</translation>
@@ -712,7 +707,6 @@
 <translation id="6284652193729350524">הצגת הצעה לתרגום <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">בוטל המעקב אחר <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> ולהקיש על 'גלישה בטוחה'.</translation>
-<translation id="6320780930074869063">כשההגדרה מופעלת, הסיסמאות נשמרות בחשבון <ph name="ACCOUNT" />. כשההגדרה מושבתת, הסיסמאות נשמרות רק במכשיר הזה.</translation>
 <translation id="6321526113093607004">הוספה לסימניות</translation>
 <translation id="6324669097367352121">הגדרות כניסה</translation>
 <translation id="6337234675334993532">הצפנה</translation>
@@ -756,7 +750,6 @@
 <translation id="6476800141292307438">מתבצע תרגום של הדף ל<ph name="LANGUAGE" />. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="648164694371393720">שגיאת אימות</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> פריטים נמחקו</translation>
-<translation id="6495429111159337775">‏שימוש בסיסמאות ושמירה שלהן בחשבון Google</translation>
 <translation id="6497772452874122664">אם הכתובת <ph name="TIME" /> מהימנה מבחינתך, אפשר להשתמש בסיסמה שנשמרה באתר אחר.
 
 כדאי לנסות להשתמש בסיסמה ייחודית בכל אתר.</translation>
@@ -1040,7 +1033,6 @@
 <translation id="8680787084697685621">פרטי הכניסה לחשבון אינם מעודכנים.</translation>
 <translation id="8693663554456874301">{count,plural, =1{סגירת הכרטיסייה}one{סגירת הכרטיסיות}two{סגירת הכרטיסיות}other{סגירת הכרטיסיות}}</translation>
 <translation id="8706588385081740091">סיסמאות</translation>
-<translation id="8712637175834984815">הבנתי</translation>
 <translation id="8717864919010420084">העתקת הקישור</translation>
 <translation id="8721297211384281569">התפריט 'כלים'</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak гартай англи (АНУ)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - хост</translation>
 <translation id="1521655867290435174">Google Хүснэгт</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" />-г бэлтгэж байна...</translation>
 <translation id="1538729222189715449">Linux-н файлуудыг нээж байна...</translation>
 <translation id="1547964879613821194">Канадын Англи хэл</translation>
 <translation id="1556189134700913550">Бүгдэд хамааруулах</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> зүйлийг zip хийж байна...</translation>
 <translation id="1722687688096767818">Профайл нэмж байна...</translation>
 <translation id="1726100011689679555">Нэрийн сервер</translation>
-<translation id="1727562178154619254">Синк хийхэд бэлэн</translation>
 <translation id="1729953886957086472">Герман (Герман)</translation>
 <translation id="1730235522912993863">Хятад Цанцзе</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хуулсан.</translation>
@@ -511,7 +509,6 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" /> Та өөрийн төхөөрөмжийг бүү салгана уу! <ph name="END_BOLD" /> <ph name="LINE_BREAKS" /> Хэрэв та өөрийн төхөөрөмжийг ашиглаж байхдаа гэнэт салгасан тохиолдолд төхөөрөмж дээр хадгалагдаж буй мэдээллийнхээ тодорхой хэсгийг алдах магадлалтай. Тиймээс холбогдох үйлдлийг хийж дуусах хүртэл түр хүлээнэ үү. Файлтай холбоотой апп ашигласны дараагаар төхөөрөмжийг салгана уу.</translation>
 <translation id="5163869187418756376">Хуваалцах ажиллагаа амжилтгүй боллоо. Холболтоо шалгаад, дараа дахин оролдож үзнэ үү.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> зүйлийг бэлтгэж байна...</translation>
 <translation id="5177526793333269655">Хажуугийн талбарт жижгээр харах</translation>
 <translation id="5181896909298187506">Саяхны файл байхгүй байна</translation>
 <translation id="5194713942430106590">Баганыг өсөх дарааллаар эрэмбэлэхийн тулд товшино уу.</translation>
@@ -790,6 +787,7 @@
 <translation id="7458955835361612701">Саяхны зураг байхгүй байна</translation>
 <translation id="7460898608667578234">Украйн</translation>
 <translation id="7469894403370665791">Автоматаар энэ сүлжээ рүү холбогдох</translation>
+<translation id="7481358317100446445">Бэлэн</translation>
 <translation id="7486315294984620427">Parallels Desktop-д файлууд буулгахын тулд файлыг Windows-н файлуудад хуулсан байх ёстой.</translation>
 <translation id="749452993132003881">Хирагана</translation>
 <translation id="7495372004724182530">Малайлам авиа зүй</translation>

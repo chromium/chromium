@@ -18,7 +18,6 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1066060668811609597">Sinxronizasiyanı İdarə Edin</translation>
 <translation id="1076421457278169141">Kod skan olundu</translation>
 <translation id="1076785341346483463">İdarə olunan hesabla sinxronizasiya edin</translation>
-<translation id="1080365971383768617">Bütün cihazlarınızda parollar</translation>
 <translation id="1084365883616172403">Facebook paylaşımı tamamlandı.</translation>
 <translation id="1085696779717592361">Defolt olaraq Chrome istifadə edin</translation>
 <translation id="1103523840287552314">Həmişə <ph name="LANGUAGE" /> dilinə tərcümə edin</translation>
@@ -303,7 +302,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3181825792072797598">Sinxronizasiyanı aktiv edin</translation>
 <translation id="3181954750937456830">Təhlükəsiz Axtarış (Sizi və cihazınızı təhlükəli saytlardan qoruyur)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ilə kiliddən çıxarın</translation>
-<translation id="3207960819495026254">Əlfəcinlənib</translation>
 <translation id="3214379938835224220">iPad sıfırlamasının bir hissəsi olaraq hesabınızdan çıxmısınız. Daxil olmaq üçün aşağıda "davam edin" seçiminə toxunun.</translation>
 <translation id="3224641773458703735">Parolları eksport etmək üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -320,7 +318,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3311748811247479259">Deaktiv</translation>
 <translation id="3324193307694657476">Ünvan 2</translation>
 <translation id="3328801116991980348">Sayt haqqında</translation>
-<translation id="3329904751041170572">Server qoşulmaq mümkün olması.</translation>
 <translation id="3371831930909698441">Tərcümə əlçatandır. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
 <translation id="3377063233124932127">İndi yadda saxladığınız əlfəcinlər, parollar və s. yuxarıdadır.</translation>
 <translation id="3393920035788932672">Popuplara icazə verilir</translation>
@@ -362,7 +359,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3638472932233958418">Əvvəldən yüklənilən Veb səhifələr</translation>
 <translation id="3661160521073045932">Konfiqurasiya Profili Əlçatandır</translation>
 <translation id="3670030362669914947">Nömrə</translation>
-<translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> qovluğuna əlfəcinləndi</translation>
 <translation id="3709582977625132201">Oxunmamış kimi qeyd edin</translation>
 <translation id="371230970611282515">Təhlükəli hadisələr baş vermədən əvvəl onları proqnozlaşdırır və sizə xəbərdarlıq edir.</translation>
 <translation id="37207012422556617">Aktual Axtarışlar</translation>
@@ -548,7 +544,6 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5056446788882570708">Problemlər tapıldı: <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Diski quraşdırın</translation>
-<translation id="50641035439563602">Parollar indi Google Hesabınızda saxlanılır (<ph name="ACCOUNT" />). Daxil olduğunuz yerdə onlardan istifadə edə bilərsiniz. Bunu deaktiv etmək üçün <ph name="BEGIN_LINK" />ayarlara<ph name="END_LINK" /> keçin.</translation>
 <translation id="5083464117946352670">Fayl ölçüsünü müəyyənləşdirmək olmur.</translation>
 <translation id="5090832849094901128">Bu parolu sildikdə <ph name="WEBSITE" /> saytında hesabınız silinməyəcək.</translation>
 <translation id="5094827893301452931">Tweet tamamlandı.</translation>
@@ -712,7 +707,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> dilindən tərcümə etməyi təklif edin</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> izləmədən çıxarıldı</translation>
 <translation id="6293101329759844770">Təhlükəsiz Baxışı aktiv etmək üçün <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> bölməsini açın və Təhlükəsiz Baxış seçiminə toxunun.</translation>
-<translation id="6320780930074869063">Aktiv olduqda parollar burada saxlanılır: <ph name="ACCOUNT" />. Deaktiv olduqda parollar yalnız bu cihazda saxlanılır.</translation>
 <translation id="6321526113093607004">Əlfəcinlərə əlavə edin</translation>
 <translation id="6324669097367352121">Daxil olma ayarları</translation>
 <translation id="6337234675334993532">Şifrələmə</translation>
@@ -756,7 +750,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="6476800141292307438">Səhifə <ph name="LANGUAGE" /> dilinə tərcümə edilir. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
 <translation id="648164694371393720">Doğrulama Xətası</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> element silindi</translation>
-<translation id="6495429111159337775">Google Hesabınızdan Parollardan İstifadə Edin və Saxlayın</translation>
 <translation id="6497772452874122664"><ph name="TIME" /> mənbəyinə etibar edirsinizsə, başqa saytdan saxlanmış parolu istifadə edə bilərsiniz.
 
 Hər sayt üçün unikal parol istifadə edin.</translation>
@@ -1040,7 +1033,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8680787084697685621">Hesaba avtomatik giriş detallarının vaxtı keçib.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Tabı bağlayın}other{Tabları bağlayın}}</translation>
 <translation id="8706588385081740091">Parollar</translation>
-<translation id="8712637175834984815">Anladım</translation>
 <translation id="8717864919010420084">Linki Kopyalayın</translation>
 <translation id="8721297211384281569">Alətlər Menyusu</translation>
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>

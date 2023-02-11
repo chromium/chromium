@@ -629,6 +629,7 @@
 <translation id="1567387640189251553">Таныг хамгийн сүүлд нууц үгээ оруулснаас хойш өөр гар холбосон байна. Энэ нь таны түлхүүрийн цуглуулгыг хулгайлахаар оролдож байж болзошгүй.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />'-г аль хэдийн '<ph name="ACTION" />' үйлдэлд оноосон байна. <ph name="RESPONSE" />-н тулд дурын товчлуурыг дарна уу.</translation>
 <translation id="1567993339577891801">JavaScript консол</translation>
+<translation id="1569466257325986920">Дараагийн удаа таны Google Бүртгэлийн нууц үг өөрчлөгдөхөд таныг Google Бүртгэлдээ нэвтэрсний дараа дотоод өгөгдлийг тань автоматаар сэргээнэ</translation>
 <translation id="1570604804919108255">Мэдэгдлийн дууг нээх</translation>
 <translation id="1571304935088121812">Хэрэглэгчийн нэрийг хуулах</translation>
 <translation id="1571738973904005196">Таб үзэх: <ph name="TAB_ORIGIN" /></translation>
@@ -894,6 +895,7 @@
 <translation id="1781979858217752599">Цонхны аудиог хуваалцах</translation>
 <translation id="1782101999402987960">Шинэчлэлтийг танай администратор блоклосон байна</translation>
 <translation id="1782196717298160133">Таны утсыг олж байна</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 тэмдэглэл}other{# тэмдэглэл}}</translation>
 <translation id="1784707308176068866">Хамтарч буй суурин аппаас хүсэлт тавьсан үед цаана ажиллуулах</translation>
 <translation id="1784849162047402014">Төхөөрөмжийн дискний багтаамж бага байна</translation>
 <translation id="1787350673646245458">Хэрэглэгчийн зураг</translation>
@@ -1690,6 +1692,7 @@
 <translation id="2467755475704469005">Ямар ч төхөөрөмж илэрсэнгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Мэдрэгч самбарын гүйлгэлтийн хурдасгуур</translation>
 <translation id="2468205691404969808">Таны сонголтыг таныг тэдгээр хуудсанд зочлоогүй байсан ч санахын тулд күүки ашигладаг</translation>
+<translation id="2468247643665097563">Захиалах</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
 <translation id="2468470085922875120">Та таахад хэцүү харагдаж байгаа нууц үгнүүд ашиглаж байна</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 таб}other{<ph name="GROUP_TITLE" /> - # таб}}</translation>
@@ -5964,6 +5967,7 @@
 <translation id="6410668567036790476">Хайлтын систем нэмэх</translation>
 <translation id="641469293210305670">Шинэчлэлтүүд болон аппууд суулгах</translation>
 <translation id="6414878884710400018">Системийн сонголтыг нээх</translation>
+<translation id="6415816101512323589">Та өгөгдлөө хамгаалахын тулд дотоод өгөгдөл сэргээлтийг асаах уу?</translation>
 <translation id="6415900369006735853">Утсаараа интернэтэд холбогдох</translation>
 <translation id="6416743254476733475">Компьютер дээрээ зөвшөөрч эсвэл хориглоно уу.</translation>
 <translation id="6417265370957905582">Google туслах</translation>
@@ -6756,7 +6760,6 @@
 <translation id="711840821796638741">Удирдлагатай хадгалагдсан хуудсуудыг харуулах</translation>
 <translation id="711985611146095797">Энэ хуудас танд нэвтэрсэн Google Бүртгэлүүдээ удирдах боломжийг олгоно. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN холбогдоогүй тохиолдолд Chrome хөтөч болон Android-н ачааллыг блоклоно</translation>
-<translation id="7120865473764644444">Синк серверт холбогдож чадсангүй. Дахин оролдож байна...</translation>
 <translation id="7121438501124788993">Хөгжүүлэгч горим</translation>
 <translation id="7121728544325372695">Ухаалаг зураас</translation>
 <translation id="7123030151043029868">Автоматаар олон файл татахыг зөвшөөрсөн</translation>

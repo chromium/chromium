@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ინგლისური (აშშ) Dvorak კლავიატურით</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> — ჰოსტი</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294">მზადდება <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">მიმდინარეობს Linux ფაილების გახსნა...</translation>
 <translation id="1547964879613821194">კანადური ინგლისური</translation>
 <translation id="1556189134700913550">ყველასთვის გამოყენება</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის დაარქივება…</translation>
 <translation id="1722687688096767818">მიმდინარეობს პროფილის დამატება...</translation>
 <translation id="1726100011689679555">სახელთა სერვერები</translation>
-<translation id="1727562178154619254">მზადაა სინქრონიზაციისთვის</translation>
 <translation id="1729953886957086472">გერმანული (გერმანია)</translation>
 <translation id="1730235522912993863">ჩინური ჩანჯი</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ერთეული დაკოპირდა.</translation>
@@ -513,7 +511,6 @@
    თუ ამოიღებთ მოწყობილობას, სანამ გამოიყენება, შეიძლება დაკარგოთ მონაცემები. დაელოდეთ ოპერაციის დასრულებას და შემდეგ ამოიღეთ მოწყობილობა პროგრამის „ფაილები“ მეშვეობით.</translation>
 <translation id="5163869187418756376">გაზიარება ვერ მოხერხდა. შეამოწმეთ კავშირი და ხელახლა სცადეთ.</translation>
 <translation id="516592729076796170">შეერთებული შტატების დვორაკი პროგრამისტებისთვის</translation>
-<translation id="5167102019886320507">მზადდება <ph name="NUMBER_OF_ITEMS" /> ერთეული...</translation>
 <translation id="5177526793333269655">ესკიზების ხედი</translation>
 <translation id="5181896909298187506">ბოლოდროინდელი ფაილები არ არის</translation>
 <translation id="5194713942430106590">დააწკაპუნეთ სვეტის ზრდადი მიმდევრობით დასალაგებლად.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">ბოლოდროინდელი სურათები არ არის</translation>
 <translation id="7460898608667578234">უკრაინული</translation>
 <translation id="7469894403370665791">ამ ქსელთან ავტომატური დაკავშირება</translation>
+<translation id="7481358317100446445">მზად არის</translation>
 <translation id="7486315294984620427">Parallels Desktop-ში ფაილის ჩავლებით გადასატანად ის უნდა დააკოპიროთ Windows ფაილებში.</translation>
 <translation id="749452993132003881">ჰირაგანა</translation>
 <translation id="7495372004724182530">მალაიალამური ფონეტიკური</translation>

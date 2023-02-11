@@ -632,6 +632,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1567387640189251553">Pärast parooli viimast sisestamist on ühendatud teine klaviatuur. See võib üritada varastada teie klahvivajutusi.</translation>
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> on juba määratud toimingu „<ph name="ACTION" />” jaoks. Vajutage ükskõik millist klahvi, et <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScripti konsool</translation>
+<translation id="1569466257325986920">Järgmine kord, kui teie Google'i konto parool muutub, taastatakse teie kohalikud andmed automaatselt pärast seda, kui oma Google'i kontole sisse logite</translation>
 <translation id="1570604804919108255">Tühista märguannete summutus</translation>
 <translation id="1571304935088121812">Kasutajanime kopeerimine</translation>
 <translation id="1571738973904005196">Kuva vaheleht: <ph name="TAB_ORIGIN" /></translation>
@@ -890,6 +891,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1781979858217752599">Jaga akna heli</translation>
 <translation id="1782101999402987960">Administraator on värskendused blokeerinud</translation>
 <translation id="1782196717298160133">Teie telefoni otsimine</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 märkus}other{# märkust}}</translation>
 <translation id="1784707308176068866">Käitatakse taustal, kui seda taotleb koostööd tegev omarakendus</translation>
 <translation id="1784849162047402014">Seadmes on vähe kettaruumi</translation>
 <translation id="1787350673646245458">Kasutaja pilt</translation>
@@ -1685,6 +1687,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2467755475704469005">Seadet ei tuvastatud. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Puuteplaadil kerimise kiirendamine</translation>
 <translation id="2468205691404969808">Kasutage küpsisefaile, et oma eelistusi meeles pidada, isegi kui te neid lehti ei külasta</translation>
+<translation id="2468247643665097563">Järjestus</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">Kasutate paroole, mida on raske ära arvata</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 vaheleht}other{<ph name="GROUP_TITLE" /> – # vahelehte}}</translation>
@@ -5959,6 +5962,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6410668567036790476">Otsingumootori lisamine</translation>
 <translation id="641469293210305670">Värskenduste ja rakenduste installimine</translation>
 <translation id="6414878884710400018">Ava süsteemieelistused</translation>
+<translation id="6415816101512323589">Kas soovite kohalike andmete taastamise oma andmete kaitsmiseks sisse lülitada?</translation>
 <translation id="6415900369006735853">Looge Interneti-ühendus telefoni kaudu</translation>
 <translation id="6416743254476733475">Lubage või blokeerige oma arvutis.</translation>
 <translation id="6417265370957905582">Google'i assistent</translation>
@@ -6751,7 +6755,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="711840821796638741">Kuva hallatud järjehoidjad</translation>
 <translation id="711985611146095797">See leht võimaldab teil hallata oma Google'i kontosid, millele olete sisse logitud. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome'i brauseri ja Androidi liiklus blokeeritakse, kui VPN-i ei ühendata</translation>
-<translation id="7120865473764644444">Sünkroonimisserveriga ei saanud ühendust luua. Uuesti proovimine …</translation>
 <translation id="7121438501124788993">Arendaja režiim</translation>
 <translation id="7121728544325372695">Nutikad sidekriipsud</translation>
 <translation id="7123030151043029868">Lubatud automaatselt mitu faili alla laadida</translation>

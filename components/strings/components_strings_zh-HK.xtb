@@ -501,7 +501,6 @@
 <translation id="2148613324460538318">新增付款卡</translation>
 <translation id="2149968176347646218">連線不安全</translation>
 <translation id="2153609454945889823">要安裝「Google Play 服務 (AR)」嗎？</translation>
-<translation id="2154054054215849342">您的網域無法使用同步處理功能</translation>
 <translation id="2154484045852737596">編輯付款信用卡</translation>
 <translation id="2155260325161282517">5 x 7 吋</translation>
 <translation id="2157640075051554492">價格追蹤通知</translation>
@@ -1858,6 +1857,7 @@
 <translation id="5552137475244467770">Chrome 會定期將您的密碼與網上發佈的清單互相核對。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558125320634132440">由於此網站含有兒童不宜內容，因此已被封鎖</translation>
+<translation id="5559311991468302423">刪除地址</translation>
 <translation id="5560088892362098740">到期日</translation>
 <translation id="55635442646131152">文件大綱</translation>
 <translation id="5565613213060953222">開啟無痕式分頁</translation>
@@ -2575,6 +2575,7 @@
 <translation id="7388594495505979117">{0,plural, =1{裝置將於 1 分鐘後重新啟動}other{裝置將於 # 分鐘後重新啟動}}</translation>
 <translation id="7390545607259442187">驗證信用卡</translation>
 <translation id="7392089738299859607">更新地址</translation>
+<translation id="739728382607845710">付款處理常式圖示</translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7400418766976504921">網址</translation>
 <translation id="7403392780200267761">透過分享連結、建立 QR 碼、投放及其他功能來分享這個分頁</translation>

@@ -18,7 +18,6 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1066060668811609597">Správa synchronizácie</translation>
 <translation id="1076421457278169141">Kód bol naskenovaný</translation>
 <translation id="1076785341346483463">Synchronizácia so spravovaným účtom</translation>
-<translation id="1080365971383768617">Heslá vo všetkých vašich zariadeniach</translation>
 <translation id="1084365883616172403">Príspevok bol uverejnený na Facebook.</translation>
 <translation id="1085696779717592361">Predvolené používanie Chromu</translation>
 <translation id="1103523840287552314">Vždy preložiť nasledujúci jazyk: <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3181825792072797598">Zapnúť synchronizáciu</translation>
 <translation id="3181954750937456830">Bezpečné prehliadanie (chráni vás aj zariadenie pred nebezpečnými webmi)</translation>
 <translation id="3184767182050912705">Odomknúť funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Pridané medzi záložky</translation>
 <translation id="3214379938835224220">V rámci resetovania iPadu vás systém odhlásil. Ak sa chcete prihlásiť, klepnite na Pokračovať nižšie.</translation>
 <translation id="3224641773458703735">Ak chcete exportovať heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="3227137524299004712">Mikrofón</translation>
@@ -320,7 +318,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3311748811247479259">Vypnuté</translation>
 <translation id="3324193307694657476">Adresa 2</translation>
 <translation id="3328801116991980348">Informácie o stránkach</translation>
-<translation id="3329904751041170572">Nepodarilo sa pripojiť k serveru.</translation>
 <translation id="3371831930909698441">Prekladač je k dispozícii. Možnosti nájdete v dolnej časti obrazovky.</translation>
 <translation id="3377063233124932127">Uložené záložky, heslá a ďalšie položky nájdete odteraz na začiatku.</translation>
 <translation id="3393920035788932672">Povolené okná</translation>
@@ -362,7 +359,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3638472932233958418">Predbežne načítavať webové stránky</translation>
 <translation id="3661160521073045932">K dispozícii je profil konfigurácie</translation>
 <translation id="3670030362669914947">Číslo</translation>
-<translation id="3691593122358196899">Uložené ako záložka v priečinku <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Označiť ako neprečítané</translation>
 <translation id="371230970611282515">Predpovedá nebezpečné udalosti a upozorní vás, než k nim dôjde.</translation>
 <translation id="37207012422556617">Populárne vyhľadávania</translation>
@@ -548,7 +544,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5056446788882570708">Problémy boli nájdené o <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Nainštalovať Disk Google</translation>
-<translation id="50641035439563602">Heslá sa teraz ukladajú do vášho účtu Google (<ph name="ACCOUNT" />). Môžete ich používať všade, kde sa prihlásite. Vypnúť ich môžete v <ph name="BEGIN_LINK" />nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Nedá sa zistiť veľkosť súboru.</translation>
 <translation id="5090832849094901128">Odstránením tohto hesla nevymažete svoj účet na <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet bol uverejnený.</translation>
@@ -712,7 +707,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6284652193729350524">Ponúkať preklad jazyka <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Prestali ste sledovať <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Ak chcete zapnúť Bezpečné prehliadanie, otvorte <ph name="BEGIN_LINK" />Služby Googlu<ph name="END_LINK" /> a klepnite na Bezpečné prehliadanie.</translation>
-<translation id="6320780930074869063">Keď je táto funkcia zapnutá, heslá sa ukladajú do účtu <ph name="ACCOUNT" />. Keď je táto funkcia vypnutá, heslá sa ukladajú iba do tohto zariadenia.</translation>
 <translation id="6321526113093607004">Pridať medzi záložky</translation>
 <translation id="6324669097367352121">Nastavenia prihlásenia</translation>
 <translation id="6337234675334993532">Šifrovanie</translation>
@@ -756,7 +750,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6476800141292307438">Stránka sa prekladá do jazyka <ph name="LANGUAGE" />. Možnosti nájdete v dolnej časti obrazovky.</translation>
 <translation id="648164694371393720">Chyba overenia</translation>
 <translation id="6482629121755362506">Počet odstránených položiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="6495429111159337775">Používať a ukladať heslá z účtu Google</translation>
 <translation id="6497772452874122664">Ak webu <ph name="TIME" /> dôverujete, môžete použiť uložené heslo z iného webu.
 
 Pre každý web skúste použiť jedinečné heslo.</translation>
@@ -1040,7 +1033,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8680787084697685621">Informácie o prihlásení do účtu sú neaktuálne.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zavrieť kartu}few{Zavrieť karty}many{Close Tabs}other{Zavrieť karty}}</translation>
 <translation id="8706588385081740091">Heslá</translation>
-<translation id="8712637175834984815">Dobre</translation>
 <translation id="8717864919010420084">Kopírovať odkaz</translation>
 <translation id="8721297211384281569">Ponuka Nástroje</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>

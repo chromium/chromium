@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Tiếng Anh (Mỹ) bằng bàn phím Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Máy chủ lưu trữ</translation>
 <translation id="1521655867290435174">Google Trang tính</translation>
-<translation id="1521795806314479294">Đang chuẩn bị <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Đang mở tệp Linux...</translation>
 <translation id="1547964879613821194">Tiếng Anh ở Canada</translation>
 <translation id="1556189134700913550">Áp dụng cho tất cả</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Đang nén <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="1722687688096767818">Đang thêm hồ sơ...</translation>
 <translation id="1726100011689679555">Máy chủ định danh</translation>
-<translation id="1727562178154619254">Sẵn sàng đồng bộ hoá</translation>
 <translation id="1729953886957086472">Tiếng Đức (Đức)</translation>
 <translation id="1730235522912993863">Tiếng Trung (Thương Hiệt)</translation>
 <translation id="1731889557567069540">Đã sao chép <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
@@ -513,7 +511,6 @@
    Tháo thiết bị của bạn khi đang được sử dụng có thể gây mất dữ liệu. Vui lòng đợi cho đến khi thao tác kết thúc, sau đó đẩy thiết bị ra bằng ứng dụng Tệp.</translation>
 <translation id="5163869187418756376">Chia sẻ không thành công. Hãy kiểm tra kết nối và thử lại sau.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167102019886320507">Đang chuẩn bị <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="5177526793333269655">Chế độ xem hình thu nhỏ</translation>
 <translation id="5181896909298187506">Không có tệp nào gần đây</translation>
 <translation id="5194713942430106590">Nhấp để sắp xếp cột theo thứ tự tăng dần.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Không có hình ảnh nào gần đây</translation>
 <translation id="7460898608667578234">Tiếng Ukraina</translation>
 <translation id="7469894403370665791">Tự động kết nối vào mạng này</translation>
+<translation id="7481358317100446445">Sẵn sàng</translation>
 <translation id="7486315294984620427">Để thả tệp vào Parallels Desktop, bạn phải sao chép tệp đó vào thư mục tệp Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Tiếng Malayalam (phiên âm)</translation>

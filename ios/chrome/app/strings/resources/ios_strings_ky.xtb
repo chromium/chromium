@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Шайкештирүүнү башкаруу</translation>
 <translation id="1076421457278169141">Код скандалды</translation>
 <translation id="1076785341346483463">Көзөмөлдөнгөн аккаунт менен шайкештирүү</translation>
-<translation id="1080365971383768617">Бардык түзмөктөрүңүздөгү сырсөздөр</translation>
 <translation id="1084365883616172403">Facebook'ка жайгаштырылды.</translation>
 <translation id="1085696779717592361">Chrome'ду демейки катары колдонуу</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">Шайкештирүүнү күйгүзүү</translation>
 <translation id="3181954750937456830">Коопсуз серептөө (сизди жана түзмөгүңүздү кооптуу сайттардан коргойт)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен кулпуну ачуу</translation>
-<translation id="3207960819495026254">Кыстармаланды</translation>
 <translation id="3214379938835224220">iPad түзмөгүңүз баштапкы абалга келтирилип жатканда аккаунтуңуздан чыктыңыз. Кирүү үчүн төмөндөгү "Улантуу" дегенди таптаңыз.</translation>
 <translation id="3224641773458703735">Сырсөздөрдү экспорттоо үчүн, адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">Өчүк</translation>
 <translation id="3324193307694657476">2-дарек</translation>
 <translation id="3328801116991980348">Сайт жөнүндө маалымат</translation>
-<translation id="3329904751041170572">Серверге туташкан жок.</translation>
 <translation id="3371831930909698441">Котормочу жеткиликтүү. Параметрлер экрандын төмөн жагында берилген.</translation>
 <translation id="3377063233124932127">Эми сакталган кыстармаларыңыз, сырсөздөрүңүз жана башка нерселер жогору жакта.</translation>
 <translation id="3393920035788932672">Калк чыкм урукс берл</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">Желебет алдн-ал жүкт</translation>
 <translation id="3661160521073045932">Профилдин конфигурациясы жеткиликтүү</translation>
 <translation id="3670030362669914947">Сан</translation>
-<translation id="3691593122358196899">Кыстарма <ph name="FOLDER_TITLE" /> куржунуна кошулду</translation>
 <translation id="3709582977625132201">Окула элек деп белгилөө</translation>
 <translation id="371230970611282515">Кооптуу нерселер орун алганга чейин аларды аныктап, сизге кабарлап турат.</translation>
 <translation id="37207012422556617">Көп изделген нерселер</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708"><ph name="TIME" /> маселелер табылды.</translation>
 <translation id="5059136629401106827">Жарайт</translation>
 <translation id="5062321486222145940">Google Drive'ды орнотуу</translation>
-<translation id="50641035439563602">Сырсөздөр эми Google аккаунтуңузга (<ph name="ACCOUNT" />) сакталат. Аларды аккаунтуңузга кирип турган бардык түзмөктөн колдоно аласыз. Аны өчүрүү үчүн <ph name="BEGIN_LINK" />параметрлерге<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="5083464117946352670">Файлдын өлчөмү аныкталбайт.</translation>
 <translation id="5090832849094901128">Бул сырсөздү жок кылуу менен <ph name="WEBSITE" /> аккаунтуңуз өчпөйт.</translation>
 <translation id="5094827893301452931">Твиттелди.</translation>
@@ -712,7 +707,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> тилин которууну сунуштоо</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> каналына жазылуу токтотулду</translation>
 <translation id="6293101329759844770">Коопсуз серептөөнү күйгүзүү үчүн <ph name="BEGIN_LINK" />Google кызматтарын<ph name="END_LINK" /> ачып, Коопсуз серептөөнү таптаңыз.</translation>
-<translation id="6320780930074869063">Күйгүзүлсө, сырсөздөр <ph name="ACCOUNT" /> аккаунтунда сакталат. Өчүрүлсө, сырсөздөр ушул түзмөктө гана сакталат.</translation>
 <translation id="6321526113093607004">Кыстармаларга кошуу</translation>
 <translation id="6324669097367352121">Жөндөөлөргө кирүү</translation>
 <translation id="6337234675334993532">Шифрлөө</translation>
@@ -756,7 +750,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6476800141292307438">Барак <ph name="LANGUAGE" /> тилине которулууда. Параметрлер экрандын төмөн жагында жеткиликтүү.</translation>
 <translation id="648164694371393720">Аныктыгын текшерүү катасы</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> нерсе өчүрүлдү</translation>
-<translation id="6495429111159337775">Google аккаунтуңуздагы сырсөздөрдү колдонуп жана сактоо</translation>
 <translation id="6497772452874122664">Эгер <ph name="TIME" /> сайтына ишенсеңиз, башка сайтта сакталган сырсөзүңүздү колдоно бериңиз.
 
 Ар бир сайт үчүн өзүнчө сырсөздү колдонуу сунушталат.</translation>
@@ -1040,7 +1033,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8680787084697685621">Аккаунтка кирүү чоо-жайлары эскирип калды.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Өтмөктү жабуу}other{Өтмөктөрдү жабуу}}</translation>
 <translation id="8706588385081740091">Сырсөздөр</translation>
-<translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8717864919010420084">Шилтемени көчүрүү</translation>
 <translation id="8721297211384281569">Куралдар менюсу</translation>
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>

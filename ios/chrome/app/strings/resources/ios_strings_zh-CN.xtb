@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">管理同步数据</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
 <translation id="1076785341346483463">与受管理的帐号同步</translation>
-<translation id="1080365971383768617">在所有设备上使用您的密码</translation>
 <translation id="1084365883616172403">Facebook 信息发布已完成。</translation>
 <translation id="1085696779717592361">默认使用 Chrome</translation>
 <translation id="1103523840287552314">一律翻译<ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">开启同步功能</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
 <translation id="3184767182050912705">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁</translation>
-<translation id="3207960819495026254">已加书签</translation>
 <translation id="3214379938835224220">您在 iPad 重置过程中退出了帐号。点按下方的“继续”即可登录。</translation>
 <translation id="3224641773458703735">要想导出密码，您必须先在设备上设置屏幕锁定。</translation>
 <translation id="3227137524299004712">麦克风</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">已关闭</translation>
 <translation id="3324193307694657476">地址第2行</translation>
 <translation id="3328801116991980348">网站信息</translation>
-<translation id="3329904751041170572">无法连接到服务器。</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
 <translation id="3393920035788932672">允许显示弹出式窗口</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">预先加载网页</translation>
 <translation id="3661160521073045932">有可用的配置文件</translation>
 <translation id="3670030362669914947">卡号</translation>
-<translation id="3691593122358196899">已将书签添加到“<ph name="FOLDER_TITLE" />”</translation>
 <translation id="3709582977625132201">标记为未读</translation>
 <translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
 <translation id="37207012422556617">热搜字词</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708"><ph name="TIME" />发现了问题。</translation>
 <translation id="5059136629401106827">知道了</translation>
 <translation id="5062321486222145940">安装Google云端硬盘</translation>
-<translation id="50641035439563602">现在，系统会将密码保存到您的 Google 帐号 (<ph name="ACCOUNT" />)。无论您在哪部设备上登录，都可以使用这些密码。如需关闭此功能，请前往<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />页面。</translation>
 <translation id="5083464117946352670">无法确定文件大小。</translation>
 <translation id="5090832849094901128">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的帐号。</translation>
 <translation id="5094827893301452931">Tweet 信息发布已完成。</translation>
@@ -712,7 +707,6 @@
 <translation id="6284652193729350524">主动询问是否翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="6289501276895392862">已取消关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="6293101329759844770">如需开启“安全浏览”功能，请打开 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />，然后点按“安全浏览”。</translation>
-<translation id="6320780930074869063">当此设置处于开启状态时，密码会保存到 <ph name="ACCOUNT" /> 中。当此设置处于关闭状态时，密码只会保存在该设备上。</translation>
 <translation id="6321526113093607004">添加到书签</translation>
 <translation id="6324669097367352121">登录设置</translation>
 <translation id="6337234675334993532">加密</translation>
@@ -756,7 +750,6 @@
 <translation id="6476800141292307438">将页面翻译成<ph name="LANGUAGE" />。选项位于屏幕底部附近。</translation>
 <translation id="648164694371393720">身份验证出错</translation>
 <translation id="6482629121755362506">删除了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
-<translation id="6495429111159337775">将密码保存到您的 Google 帐号并自动填充</translation>
 <translation id="6497772452874122664">如果您信任 <ph name="TIME" />，则可使用您为另一网站保存的密码。
 
 请尽量为每个网站使用独一无二的密码。</translation>
@@ -1041,7 +1034,6 @@
 <translation id="8680787084697685621">帐号登录详细信息已过期。</translation>
 <translation id="8693663554456874301">{count,plural, =1{关闭这个标签页}other{关闭这些标签页}}</translation>
 <translation id="8706588385081740091">密码</translation>
-<translation id="8712637175834984815">知道了</translation>
 <translation id="8717864919010420084">复制链接</translation>
 <translation id="8721297211384281569">工具菜单</translation>
 <translation id="8725066075913043281">重试</translation>

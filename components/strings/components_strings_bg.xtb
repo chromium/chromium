@@ -501,7 +501,6 @@
 <translation id="2148613324460538318">Добавяне на карта</translation>
 <translation id="2149968176347646218">Връзката не е защитена</translation>
 <translation id="2153609454945889823">Да се инсталират ли услугите за Google Play за AR?</translation>
-<translation id="2154054054215849342">Синхронизирането не е налице за въведения от вас домейн</translation>
 <translation id="2154484045852737596">Редактиране на картата</translation>
 <translation id="2155260325161282517">5 x 7 инча</translation>
 <translation id="2157640075051554492">Известия за следене на цени</translation>
@@ -540,6 +539,7 @@
 <translation id="2241693394036365668">Изтегляне на файл</translation>
 <translation id="2246264294482514010">10 x 12 инча</translation>
 <translation id="2246480341630108201">Родителят ви още не е дал разрешение</translation>
+<translation id="2247789808226901522">Картата е изтекла</translation>
 <translation id="2248949050832152960">Използване на WebAuthn</translation>
 <translation id="2250931979407627383">Зашиване на левия ръб</translation>
 <translation id="225207911366869382">Стойността е оттеглена за това правило.</translation>
@@ -1078,6 +1078,7 @@
 <translation id="3646643500201740985">Измерване на ефективността на дадена реклама</translation>
 <translation id="3647286794400715637">Всеки въведен низ за URL адреси трябва да съдържа 1 или 2 URL адреса.</translation>
 <translation id="3650584904733503804">Потвърждаването е успешно</translation>
+<translation id="3650594806107685466">За да защитите картата си, въведете кода за проверка, който се намира на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Тематични паркове</translation>
 <translation id="3655241534245626312">Към настройките за разрешенията</translation>
 <translation id="3655670868607891010">Ако виждате това често, опитайте <ph name="HELP_LINK" />.</translation>
@@ -1857,6 +1858,7 @@
 <translation id="5552137475244467770">Chrome периодично проверява паролите ви в списъци, които са били публикувани онлайн. Когато го прави, паролите и потребителските ви имена са шифровани, така че да не могат да бъдат прочетени от никого, включително от Google.</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="5558125320634132440">Този сайт е блокиран, защото в него може да има съдържание за възрастни</translation>
+<translation id="5559311991468302423">Изтриване на адреса</translation>
 <translation id="5560088892362098740">Дата на изтичане</translation>
 <translation id="55635442646131152">Структура на документа</translation>
 <translation id="5565613213060953222">Отваряне на раздел в режим „инкогнито“</translation>
@@ -2458,6 +2460,7 @@
 <translation id="7112327784801341716">Не виждате текущите си данни? Свържете се с банката си, за да ги актуализирате.</translation>
 <translation id="7118618213916969306">Търсене на URL адреса от буферната памет, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Затворете другите раздели или програми.</translation>
+<translation id="7124354851782353862">Въведете кода за проверка</translation>
 <translation id="7129355289156517987">Когато затворите всички раздели на Chromium в режим „инкогнито“, активността ви в тях се изчиства от устройството. Това включва:
 <ph name="BEGIN_LIST" />
 <ph name="LIST_ITEM" />активността при сърфиране;<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">По-късно посетен от вас сайт може да поиска от Chrome информация за темите ви, за да персонализира показваните ви реклами. Браузърът споделя до 3 теми, като същевременно защитава историята ви на сърфиране и самоличността ви.</translation>
+<translation id="7860345425589240791">Въведете новата дата на валидност и кода за проверка, който се намира на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Искате ли да напуснете сайта?</translation>
 <translation id="7865448901209910068">Най-добра скорост</translation>
 <translation id="7871445724586827387">Промяна на паролата за профила ви в Google</translation>

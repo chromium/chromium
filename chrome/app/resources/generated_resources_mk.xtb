@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Да се рестартира Linux?</translation>
 <translation id="1047431265488717055">Копирај го &amp;текстот на врската</translation>
 <translation id="1048286738600630630">Екрани</translation>
+<translation id="1048770690598418849">Засега, може да прескокнете, па ќе се обидеме пак автоматски откако ќе завршите со поставувањето</translation>
 <translation id="1048986595386481879">Динамички доделена</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Се презема <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}one{Се презема <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}other{Се преземаат <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
@@ -633,6 +634,7 @@
 <translation id="1567387640189251553">Поврзана е друга тастатура од последниот пат кога ја внесовте вашата лозинка. Можеби се обидува да ви ги украде ударите на тастатурата.</translation>
 <translation id="156793199942386351">Копчето „<ph name="CURRENTKEY" />“ е веќе назначено за дејството „<ph name="ACTION" />“. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола за JavaScript</translation>
+<translation id="1569466257325986920">Следниот пат кога ќе се промени лозинката на вашата сметка на Google, вашите локални податоци ќе се вратат автоматски по најавувањето на сметката на Google</translation>
 <translation id="1570604804919108255">Вклучете го звукот на известувањата</translation>
 <translation id="1571304935088121812">Копирај го корисничкото име</translation>
 <translation id="1571738973904005196">Прикажи ја картичката: <ph name="TAB_ORIGIN" /></translation>
@@ -899,6 +901,7 @@
 <translation id="1781979858217752599">Сподели аудио од прозорецот</translation>
 <translation id="1782101999402987960">Администраторот ги блокирал ажурирањата</translation>
 <translation id="1782196717298160133">Се бара вашиот телефон</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 белешка}one{# белешка}other{# белешки}}</translation>
 <translation id="1784707308176068866">Извршувај во заднина кога тоа ќе го побара матична апликација што соработува</translation>
 <translation id="1784849162047402014">Уредот нема доволно простор на дискот</translation>
 <translation id="1787350673646245458">Слика на корисникот</translation>
@@ -1637,6 +1640,7 @@
 <translation id="2410754283952462441">Изберете сметка</translation>
 <translation id="241082044617551207">Непознат приклучок</translation>
 <translation id="2410940059315936967">Сајтот што го посетувате може да вметне содржини од други сајтови, на пример, слики, реклами и текст. Колачињата поставени од овие други сајтови се нарекуваат колачиња од трети страни.</translation>
+<translation id="2411666601450687801">Не се дозволени виртуелни машини на уредов</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Функциски копчиња на тастатурата</translation>
 <translation id="2418307627282545839">Работите на екранот нека бидат светли и нежни</translation>
@@ -1695,6 +1699,7 @@
 <translation id="2467755475704469005">Не е откриен уред. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Забрзување на лизгањето на подлогата за допир</translation>
 <translation id="2468205691404969808">Користи колачиња за да ги запамети вашите поставки, дури и ако не ги посетувате тие страници</translation>
+<translation id="2468247643665097563">Подредување</translation>
 <translation id="2468402215065996499">Тамагочи</translation>
 <translation id="2468470085922875120">Користите лозинки што се тешки за погаѓање</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 картичка}one{<ph name="GROUP_TITLE" /> - # картичка}other{<ph name="GROUP_TITLE" /> - # картички}}</translation>
@@ -1897,6 +1902,7 @@
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="265390580714150011">Вредност на поле</translation>
 <translation id="2654553774144920065">Барање за печатење</translation>
+<translation id="265748523151262387">Останете поврзани со телефонот</translation>
 <translation id="2657612187216250073">Поставки за пристапност за покажувач</translation>
 <translation id="2658941648214598230">Да се прикажуваат оригинални содржини?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Функциите се разликуваат во зависност од уредот</translation>
@@ -5313,6 +5319,7 @@
 <translation id="5801051031414037185">Постави го телефонот</translation>
 <translation id="5801568494490449797">Претпочитани вредности</translation>
 <translation id="5804241973901381774">Дозволи</translation>
+<translation id="5804259315582798390">Не може да се овозможи враќање на локални податоци</translation>
 <translation id="5805268472388605531">Притиснете и задржете ги копчињата на тастатурата за да ги видите ознаките за акцент и специјалните знаци</translation>
 <translation id="5805697420284793859">Управник со прозорци</translation>
 <translation id="5806447147478173900">Вкупен капацитет искористен од прикажаните сајтови: <ph name="TOTAL_USAGE" /></translation>
@@ -5970,6 +5977,7 @@
 <translation id="6410668567036790476">Додајте пребарувач</translation>
 <translation id="641469293210305670">Инсталирајте ажурирања и апликации</translation>
 <translation id="6414878884710400018">Отворете ги поставките за системот</translation>
+<translation id="6415816101512323589">Дали да се вклучи враќање на локалните податоци за заштита на вашите податоци?</translation>
 <translation id="6415900369006735853">Поврзете се на интернет преку телефонот</translation>
 <translation id="6416743254476733475">Дозволете или блокирајте на компјутерот.</translation>
 <translation id="6417265370957905582">Помошник на Google</translation>
@@ -6697,6 +6705,7 @@
 <translation id="7047059339731138197">Изберете заднина</translation>
 <translation id="7049293980323620022">Да се задржи датотеката?</translation>
 <translation id="7050037487872780845">Погрешна конфигурација на точка на пристап</translation>
+<translation id="7051551856857948729">Сокриј ја вредноста за IBAN</translation>
 <translation id="7052237160939977163">Испрати податоци во траги за учинок</translation>
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7055152154916055070">Пренасочувањето е блокирано:</translation>
@@ -6764,7 +6773,6 @@
 <translation id="711840821796638741">Покажи управувани обележувачи</translation>
 <translation id="711985611146095797">Страницава ви овозможува да управувате со вашите најавени сметки на Google. <ph name="LINK_BEGIN" />Дознај повеќе<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Прелистувачот Chrome и сообраќајот на Android ќе бидат блокирани освен ако не се поврзе VPN</translation>
-<translation id="7120865473764644444">Не може да се поврзе на серверот за синхронизација. Се обидува повторно…</translation>
 <translation id="7121438501124788993">Режим на програмер</translation>
 <translation id="7121728544325372695">Паметни цртички</translation>
 <translation id="7123030151043029868">Дозволено им е автоматски да преземаат повеќе датотеки</translation>
@@ -8407,6 +8415,7 @@
 <translation id="8634348081024879304">Веќе нема да може да ја користите вашата виртуелна картичка со Google Pay. <ph name="BEGIN_LINK" />Дознајте повеќе за виртуелните картички<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Се вчитува повторно…</translation>
 <translation id="8636284842992792762">Се иницијализираат екстензиите…</translation>
+<translation id="8636323803535540285">За побрзо пристапување, додајте кратенка до <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Не им дозволувај на сајтовите да испраќаат скокачки програми или да користат пренасочувања</translation>
 <translation id="8637688295594795546">Достапно е ажурирање за системот. Се подготвува за преземање…</translation>
 <translation id="8639047128869322042">Се проверува за штетен софтвер…</translation>
@@ -8566,6 +8575,7 @@
 <translation id="8767621466733104912">Автоматски ажурирај го Chrome за сите корисници</translation>
 <translation id="8770406935328356739">Основен именик на екстензии</translation>
 <translation id="8771300903067484968">Заднината на почетната страница е ресетирана на стандардната заднина.</translation>
+<translation id="8773280816776735812">Прикажи ја вредноста за IBAN</translation>
 <translation id="8773302562181397928">Зачувај го <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Потврдете го враќањето</translation>
 <translation id="8774934320277480003">Маргина на врв</translation>

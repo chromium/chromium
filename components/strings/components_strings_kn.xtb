@@ -500,7 +500,6 @@
 <translation id="2148613324460538318">ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="2149968176347646218">ಕನೆಕ್ಷನ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="2153609454945889823">Google Play Services for AR ಗಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆ?</translation>
-<translation id="2154054054215849342">ಸಿಂಕ್ ಸೇವೆಯು ನಿಮ್ಮ ಡೊಮೇನ್‌ಗೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="2154484045852737596">ಕಾರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2155260325161282517">5 x 7 ಇಂಚು</translation>
 <translation id="2157640075051554492">ಬೆಲೆ ಟ್ರ್ಯಾಕಿಂಗ್ ಅಧಿಸೂಚನೆಗಳು</translation>
@@ -539,6 +538,7 @@
 <translation id="2241693394036365668">ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಆದಾಗ</translation>
 <translation id="2246264294482514010">10 x 12 ಇಂಚು</translation>
 <translation id="2246480341630108201">ನಿಮ್ಮ ಪೋಷಕರು ಇನ್ನೂ ಸರಿ ಎಂದು ಹೇಳಿಲ್ಲ</translation>
+<translation id="2247789808226901522">ಕಾರ್ಡ್ ಅವಧಿ ಮೀರಿದೆ</translation>
 <translation id="2248949050832152960">WebAuthn ಬಳಸಿ</translation>
 <translation id="2250931979407627383">ಎಡಭಾಗದ ಅಂಚನ್ನು ಹೊಲಿಯಿರಿ</translation>
 <translation id="225207911366869382">ಈ ನೀತಿಗಾಗಿ ಈ ಮೌಲ್ಯವನ್ನು ಅಸಮ್ಮತಿಸಲಾಗಿದೆ.</translation>
@@ -1074,6 +1074,7 @@
 <translation id="3646643500201740985">ಜಾಹೀರಾತು ಎಷ್ಟು ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ಮಾಪನ ಮಾಡುವುದು</translation>
 <translation id="3647286794400715637">ಪ್ರತಿ URL ಗಳ ಸ್ಟ್ರಿಂಗ್ ನಮೂದು 1 ರಿಂದ 2 URL ಗಳ ನಡುವೆ ಇರಬೇಕು.</translation>
 <translation id="3650584904733503804">ಊರ್ಜಿತಗೊಳಿಸುವಿಕೆಯು ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
+<translation id="3650594806107685466">ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು ಸಹಾಯ ಮಾಡಲು, <ph name="SIDE_OF_CARD" /> ನಲ್ಲಿ CVC ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="3653033846669030038">ಥೀಮ್ ಪಾರ್ಕ್‌ಗಳು</translation>
 <translation id="3655241534245626312">ಅನುಮತಿಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="3655670868607891010">ಇದು ನಿಮಗೆ ಪದೇ ಪದೇ ಎದುರಾಗುತ್ತಿದ್ದರೆ, <ph name="HELP_LINK" /> ಇವುಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1853,6 +1854,7 @@
 <translation id="5552137475244467770">Chrome, ನಿಯತಕಾಲಿಕವಾಗಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರಕಟಿಸಲಾದ ಪಟ್ಟಿಗಳಿಗೆ ಹೋಲಿಸಿ ಪರಿಶೀಲಿಸುತ್ತದೆ. ಪರಿಶೀಲಿಸುವಾಗ, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಬಳಕೆದಾರರ ಹೆಸರುಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಅವುಗಳನ್ನು Google ಸೇರಿದಂತೆ ಯಾರಿಂದಲೂ ಓದಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="5556459405103347317">ಮರುಲೋಡ್‌</translation>
 <translation id="5558125320634132440">ಈ ಸೈಟ್ ವಯಸ್ಕರ ವಿಷಯವನ್ನು ಒಳಗೊಂಡಿರಬಹುದಾದ ಕಾರಣ, ಇದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="5559311991468302423">ವಿಳಾಸವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="5560088892362098740">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ</translation>
 <translation id="55635442646131152">ಡಾಕ್ಯುಮೆಂಟ್‌ ಔಟ್‌ಲೈನ್‌</translation>
 <translation id="5565613213060953222">ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
@@ -2453,6 +2455,7 @@
 <translation id="7112327784801341716">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಮಾಹಿತಿ ಕಾಣಿಸುತ್ತಿಲ್ಲವೇ? ಅದನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="7118618213916969306">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ URL ಗಾಗಿ ಹುಡುಕಿ, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">ಇತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅಥವಾ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="7124354851782353862">ನಿಮ್ಮ CVC ನಮೂದಿಸಿ</translation>
 <translation id="7129355289156517987">ನೀವು ಎಲ್ಲಾ Chromium ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿದ ನಂತರ, ಆ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಈ ಸಾಧನದಿಂದ ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆ<ph name="END_LIST_ITEM" />
@@ -2778,6 +2781,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{ಒಂದೂ ಇಲ್ಲ}=1{1 ಆ್ಯಪ್ (<ph name="EXAMPLE_APP_1" />)}=2{2 ಆ್ಯಪ್‌ಗಳು (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# ಆ್ಯಪ್‌ಗಳು (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# ಆ್ಯಪ್‌ಗಳು (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">ಆನಂತರ, ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್ ನೀವು ನೋಡುವ ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ವಿಷಯಗಳಿಗಾಗಿ Chrome ಅನ್ನು ಕೇಳಬಹುದು. ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ ಮತ್ತು ಗುರುತನ್ನು ರಕ್ಷಿಸುವಾಗ Chrome 3 ವಿಷಯಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ.</translation>
+<translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> ನಲ್ಲಿನ ನಿಮ್ಮ ಹೊಸ ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ ಮತ್ತು CVC ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="7862185352068345852">ಸೈಟ್‌ ಅನ್ನು ತೊರೆಯುವುದೇ?</translation>
 <translation id="7865448901209910068">ಉತ್ತಮ ವೇಗ</translation>
 <translation id="7871445724586827387">ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಬದಲಾಯಿಸಿ</translation>

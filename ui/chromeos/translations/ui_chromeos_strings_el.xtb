@@ -60,7 +60,6 @@
 <translation id="1499943022354839699">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Κεντρικός υπολογιστής</translation>
 <translation id="1521655867290435174">Υπολογιστικά φύλλα Google</translation>
-<translation id="1521795806314479294">Προετοιμασία αρχείου <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Άνοιγμα αρχείων Linux…</translation>
 <translation id="1547964879613821194">Αγγλικά Καναδά</translation>
 <translation id="1556189134700913550">Εφαρμογή σε όλα</translation>
@@ -85,7 +84,6 @@
 <translation id="1722487484194605434">Συμπίεση <ph name="NUMBER_OF_ITEMS" /> στοιχείων...</translation>
 <translation id="1722687688096767818">Προσθήκη προφίλ…</translation>
 <translation id="1726100011689679555">Διακομιστές ονομάτων</translation>
-<translation id="1727562178154619254">Έτοιμο για συγχρονισμό</translation>
 <translation id="1729953886957086472">Γερμανικά (Γερμανίας)</translation>
 <translation id="1730235522912993863">Κινεζικά Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> στοιχεία αντιγράφηκαν.</translation>
@@ -525,7 +523,6 @@
    Η αφαίρεση της συσκευής σας ενώ εξακολουθεί να χρησιμοποιείται μπορεί να οδηγήσει σε απώλεια δεδομένων. Περιμένετε έως ότου ολοκληρωθεί η λειτουργία και έπειτα αφαιρέστε τη συσκευή χρησιμοποιώντας την εφαρμογή Αρχεία.</translation>
 <translation id="5163869187418756376">Αποτυχία κοινής χρήσης. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά αργότερα.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167102019886320507">Προετοιμασία <ph name="NUMBER_OF_ITEMS" /> στοιχείων…</translation>
 <translation id="5177526793333269655">Προβολή μικρογραφιών</translation>
 <translation id="5181896909298187506">Δεν υπάρχουν πρόσφατα αρχεία</translation>
 <translation id="5194713942430106590">Κάντε κλικ για ταξινόμηση της στήλης σε αύξουσα σειρά.</translation>
@@ -808,6 +805,7 @@
 <translation id="7460898608667578234">Ουκρανικά
 </translation>
 <translation id="7469894403370665791">Αυτόματη σύνδεση σε αυτό το δίκτυο</translation>
+<translation id="7481358317100446445">Έτοιμο</translation>
 <translation id="7486315294984620427">Για να αποθέσετε αρχεία στο Parallels Desktop, το αρχείο θα πρέπει να αντιγραφεί στα αρχεία των Windows.</translation>
 <translation id="749452993132003881">Χιραγκάνα</translation>
 <translation id="7495372004724182530">Φωνητική εισαγωγή Μαλαγιαλαμικών</translation>

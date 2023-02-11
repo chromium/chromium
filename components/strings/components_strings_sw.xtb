@@ -501,7 +501,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2148613324460538318">Ongeza Kadi</translation>
 <translation id="2149968176347646218">Muunganisho si salama</translation>
 <translation id="2153609454945889823">Ungependa kusakinisha Huduma za Google Play za AR?</translation>
-<translation id="2154054054215849342">Huduma ya usawazishaji haipatikani kwa ajili ya kikoa chako</translation>
 <translation id="2154484045852737596">Badilisha kadi</translation>
 <translation id="2155260325161282517">Inchi 5 x 7</translation>
 <translation id="2157640075051554492">Arifa za ufuatiliaji wa bei</translation>
@@ -540,6 +539,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2241693394036365668">Faili inapopakuliwa</translation>
 <translation id="2246264294482514010">Inchi 10 x 12</translation>
 <translation id="2246480341630108201">Mzazi wako bado hajaruhusu</translation>
+<translation id="2247789808226901522">Kadi imekwisha muda wake</translation>
 <translation id="2248949050832152960">Tumia WebAuthn</translation>
 <translation id="2250931979407627383">Shona ncha ya kushoto</translation>
 <translation id="225207911366869382">Thamani hii inapingwa kwa sera hii.</translation>
@@ -1078,6 +1078,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3646643500201740985">Kupima kiwango cha utendaji wa tangazo</translation>
 <translation id="3647286794400715637">Kila ingizo la URL lazima liwe na kati ya URL 1 hadi 2.</translation>
 <translation id="3650584904733503804">Uhalalishaji umefanikiwa</translation>
+<translation id="3650594806107685466">Ili kulinda kadi yako, weka CVC iliyo <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Hifadhi za maudhui maalumu</translation>
 <translation id="3655241534245626312">Nenda kwenye mipangilio ya ruhusa</translation>
 <translation id="3655670868607891010">Ikiwa unaliona tatizo hili mara kwa mara, jaribu <ph name="HELP_LINK" /> haya.</translation>
@@ -1857,6 +1858,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5552137475244467770">Chrome hukagua mara kwa mara manenosiri yako ikilinganisha na orodha ambazo zimechapishwa mtandaoni. Wakati inafanya hivyo, manenosiri na majina yako ya mtumiaji huwa yamesimbwa kwa njia fiche, kwa hivyo hayawezi kusomwa na mtu mwingine, ikiwemo Google.</translation>
 <translation id="5556459405103347317">Pakia upya</translation>
 <translation id="5558125320634132440">Tovuti hii imezuiwa kwa sababu huenda ina maudhui ya watu wazima</translation>
+<translation id="5559311991468302423">Futa anwani</translation>
 <translation id="5560088892362098740">Tarehe ya Mwisho wa Matumizi</translation>
 <translation id="55635442646131152">Muhtasari wa hati</translation>
 <translation id="5565613213060953222">Fungua kichupo fiche</translation>
@@ -2458,6 +2460,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7112327784801341716">Je, huoni taarifa zako za sasa? Wasiliana na benki yako ili uzisasishe.</translation>
 <translation id="7118618213916969306">Tafuta URL ya ubao wa kunakili, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Funga vichupo au programu nyingine</translation>
+<translation id="7124354851782353862">Weka CVC yako</translation>
 <translation id="7129355289156517987">Unapofunga vichupo vyote fiche kwenye Chromium, shughuli zako kwenye vichupo hivyo zitafutwa katika kifaa hiki:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Shughuli za kuvinjari<ph name="END_LIST_ITEM" />
@@ -2782,6 +2785,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7844689747373518809">{COUNT,plural, =0{Hamna}=1{Programu 1 (<ph name="EXAMPLE_APP_1" />)}=2{Programu 2 (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{Programu # (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Baadaye, tovuti unayoitembelea inaweza kuiomba Chrome ili ione mada zako na iweke mapendeleo ya matangazo unayoona. Chrome hushiriki hadi mada 3 huku ikilinda historia ya kuvinjari na utambulisho wako.</translation>
+<translation id="7860345425589240791">Weka tarehe yako mpya ya mwisho wa matumizi na CVC iliyo <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Ungependa kufunga tovuti?</translation>
 <translation id="7865448901209910068">Kasi bora zaidi</translation>
 <translation id="7871445724586827387">Badilisha nenosiri la Akaunti yako ya Google</translation>

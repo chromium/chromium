@@ -629,6 +629,7 @@
 <translation id="1567387640189251553">ඔබ ඔබගේ මුරපදය අවසානයට ඇතුළත් කළ අවස්ථාවෙන් පසු වෙනස් යතුරු පුවරුවක් සම්බන්ධ කර ඇත. එය ඔබගේ යතුරු පහර සොරකම් කිරීමට උත්සාහ ගන්නවා විය හැක.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' දැනටමත් '<ph name="ACTION" />' ක්‍රියාව වෙත පවරා ඇත. <ph name="RESPONSE" />ට ඕනෑම යතුරක් ඔබන්න.</translation>
 <translation id="1567993339577891801">JavaScript කොන්සෝලය</translation>
+<translation id="1569466257325986920">මීළඟ වතාවේ ඔබගේ Google ගිණුමේ මුරපදය වෙනස් වන විට, ඔබ ඔබේ Google ගිණුමට පුරනය වූ පසු ඔබේ ස්ථානීය දත්ත ස්වයංක්‍රීයව ප්‍රතිසාධනය වනු ඇත</translation>
 <translation id="1570604804919108255">දැනුම්දීම් නිහඬ කිරීම ඉවත් කරන්න</translation>
 <translation id="1571304935088121812">පරිශීලක නාමය පිටපත් කරන්න</translation>
 <translation id="1571738973904005196">ටැබය බලන්න: <ph name="TAB_ORIGIN" /></translation>
@@ -887,6 +888,7 @@
 <translation id="1781979858217752599">කවුළු ශ්‍රව්‍යය බෙදා ගන්න</translation>
 <translation id="1782101999402987960">ඔබගේ පරිපාලක විසින් යාවත්කාලීන කිරීම් අවහිර කර ඇත.</translation>
 <translation id="1782196717298160133">ඔබගේ දුරකථනය සොයමින්</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 සටහනක්}one{සටහන් #ක්}other{සටහන් #ක්}}</translation>
 <translation id="1784707308176068866">සහයෝගය දක්වන ස්වකීය යෙදුමකින් ඉල්ලනු ලැබූ විට පසුබිමේ ධාවන වන්න</translation>
 <translation id="1784849162047402014">උපාංගයේ තැටි ඉඩ අඩුය</translation>
 <translation id="1787350673646245458">පරිශීලක රූපය</translation>
@@ -1683,6 +1685,7 @@
 <translation id="2467755475704469005">උපාංගයක් අනාවරණය කර නොගන්නා ලදි. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">ස්පර්ශ පුවරු අනුචලන ත්වරණය</translation>
 <translation id="2468205691404969808">ඔබ එම පිටුවලට නොපිවිසුණත්, ඔබගේ අභිරුචි මතක තබා ගැනීමට කුකී භාවිතා කරයි</translation>
+<translation id="2468247643665097563">අනුපිළිවෙල</translation>
 <translation id="2468402215065996499">ටමගොචි</translation>
 <translation id="2468470085922875120">ඔබ අනුමාන කිරීමට අපහසු මුරපද භාවිතා කරයි</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - ටැබ 1}one{<ph name="GROUP_TITLE" /> - ටැබ #}other{<ph name="GROUP_TITLE" /> - ටැබ #}}</translation>
@@ -5959,6 +5962,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6410668567036790476">සෙවීම් යාන්ත්‍රණය එක් කරන්න</translation>
 <translation id="641469293210305670">යාවත්කාලීන සහ යෙදුම් ස්ථාපන කරන්න</translation>
 <translation id="6414878884710400018">පද්ධති අභිරුචි විවෘත කරන්න</translation>
+<translation id="6415816101512323589">ඔබේ දත්ත ආරක්ෂා කිරීම සඳහා ස්ථානීය දත්ත ප්‍රතිසාධනය ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="6415900369006735853">ඔබේ දුරකථනය හරහා අන්තර්ජාලයට සම්බන්ධ කරන්න</translation>
 <translation id="6416743254476733475">ඔබේ පරිගණකයේ ඉඩ දෙන්න, නැති නම් අවහිර කරන්න.</translation>
 <translation id="6417265370957905582">Google සහායක</translation>
@@ -6751,7 +6755,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="711840821796638741">කළමනාකරණය කළ පිටු සලකුණු පෙන්වන්න</translation>
 <translation id="711985611146095797">මෙම පිටුව ඔබට ඔබගේ පුරන ලද Google ගිණුම් කළමනාකරණය කිරීමට ඉඩ දෙයි. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN සම්බන්ධ කර තිබේ නම් මිස Chrome බ්‍රවුසරය සහ Android තදබදය අවහිර කරනු ඇත</translation>
-<translation id="7120865473764644444">සමමුහුර්ත සේවාදායකය වෙත සම්බන්ධ විය නොහැකි විය. යළි උත්සාහ කරමින්...</translation>
 <translation id="7121438501124788993">සංවර්ධක ප්‍රකාරය</translation>
 <translation id="7121728544325372695">ස්මාර්ට් ඩෑෂ්</translation>
 <translation id="7123030151043029868">ගොනු කිහිපයක් ස්වයංක්‍රියව බාගැනීමට ඉඩ දේ</translation>

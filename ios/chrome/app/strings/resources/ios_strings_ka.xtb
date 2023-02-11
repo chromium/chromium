@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">სინქრონიზაციის მართვა</translation>
 <translation id="1076421457278169141">კოდი დასკანირდა</translation>
 <translation id="1076785341346483463">შეასრულეთ მართული ანგარიშის სინქრონიზაცია</translation>
-<translation id="1080365971383768617">პაროლები თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="1084365883616172403">Facebook-ის პოსტი დასრულებულია.</translation>
 <translation id="1085696779717592361">გამოიყენეთ Chrome ნაგულისხმევად</translation>
 <translation id="1103523840287552314">ყოველთვის თარგმნე ამ ენიდან: <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">სინქრონიზაციის ჩართვა</translation>
 <translation id="3181954750937456830">Safe Browsing (თქვენ და თქვენს მოწყობილობებს გიცავთ სახიფათო საიტებისგან)</translation>
 <translation id="3184767182050912705">განსაბლოკად გამოყენებული იყოს <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">ჩანიშნულია</translation>
 <translation id="3214379938835224220">თქვენი iPad-ის გადაყენების გამო, სისტემიდან გახვედით. სისტემაში შესასვლელად შეეხეთ „გაგრძელებას“ ქვემოთ.</translation>
 <translation id="3224641773458703735">პაროლების ექსპორტირებისთვის, პირველ რიგში, საჭიროა თქვენს მოწყობილობაზე საიდუმლო კოდის დაყენება.</translation>
 <translation id="3227137524299004712">მიკროფონი</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">გამორთული</translation>
 <translation id="3324193307694657476">მისამართი 2</translation>
 <translation id="3328801116991980348">საიტის ინფორმაცია</translation>
-<translation id="3329904751041170572">ვერ დაუკავშირდა სერვერს.</translation>
 <translation id="3371831930909698441">ხელმისაწვდომია თარგმნის ფუნქცია. ვარიანტებს იპოვით ეკრანის ქვედა ნაწილთან.</translation>
 <translation id="3377063233124932127">თქვენი შენახული ჩანართები, პაროლები და სხვა კონტენტი ამიერიდან ზედა ნაწილშია.</translation>
 <translation id="3393920035788932672">კონტექსტური ფანჯრები ნებადართულია</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">ვებგვერდების წინასწარი ჩატვირთვა</translation>
 <translation id="3661160521073045932">ხელმისაწვდომია კონფიგურაციის პროფილი</translation>
 <translation id="3670030362669914947">ნომერი</translation>
-<translation id="3691593122358196899">სანიშნე შენახულია „<ph name="FOLDER_TITLE" />“-ში</translation>
 <translation id="3709582977625132201">წაუკითხავად მონიშვნა</translation>
 <translation id="371230970611282515">პროგნოზირებს სახიფათო მოვლენებს და გაგაფრთხილებთ მათ შესახებ.</translation>
 <translation id="37207012422556617">პოპულარული ძიებები</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708">პრობლემები ნაპოვნია: <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">კარგი</translation>
 <translation id="5062321486222145940">Google Drive-ის ინსტალაცია</translation>
-<translation id="50641035439563602">პაროლები ახლა ინახება თქვენს Google ანგარიშში (<ph name="ACCOUNT" />). მათი გამოყენება შეგიძლიათ ყველგან, სადაც შესული ხართ სისტემაში. ამ ფუნქციის გამოსართავად გადადით <ph name="BEGIN_LINK" />პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">ფაილის ზომის განსაზღვრა შეუძლებელია.</translation>
 <translation id="5090832849094901128">ამ პაროლის წაშლის შემთხვევაში თქვენი ანგარიში <ph name="WEBSITE" />-ზე არ წაიშლება.</translation>
 <translation id="5094827893301452931">ტვიტი დასრულებულია.</translation>
@@ -712,7 +707,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ენის თარგმნის შემოთავაზება</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> აღარ არის თვალმიდევნებული</translation>
 <translation id="6293101329759844770">Safe Browsing-ის ჩასართავად გახსენით <ph name="BEGIN_LINK" />Google სერვისები<ph name="END_LINK" /> და შეეხეთ Safe Browsing-ს.</translation>
-<translation id="6320780930074869063">ჩართვის შემთხვევაში, პაროლები შეინახება <ph name="ACCOUNT" />-ში. გამორთვის შემთხვევაში, პაროლები შეინახება მხოლოდ ამ მოწყობილობაზე.</translation>
 <translation id="6321526113093607004">სანიშნეებში დამატება</translation>
 <translation id="6324669097367352121">შესვლის პარამეტრები</translation>
 <translation id="6337234675334993532">დაშიფვრა</translation>
@@ -756,7 +750,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6476800141292307438">მიმდინარეობს გვერდის <ph name="LANGUAGE" /> ვერსიის მომზადება. ვარიანტებს იპოვით ეკრანის ქვედა ნაწილთან.</translation>
 <translation id="648164694371393720">ავტორიზაციის შეცდომა</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ელემენტი წაშლილია</translation>
-<translation id="6495429111159337775">პაროლების გამოყენება და შენახვა თქვენი Google ანგარიშიდან</translation>
 <translation id="6497772452874122664">თუ <ph name="TIME" />-ს ენდობით, შეგიძლიათ სხვა საიტისთვის შენახული პაროლის გამოყენება.
 
 შეეცადეთ, თითოეული საიტისთვის უნიკალური პაროლი გამოიყენოთ.</translation>
@@ -1040,7 +1033,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8680787084697685621">ანგარიშზე შესვლის დეტალები მოძველებულია.</translation>
 <translation id="8693663554456874301">{count,plural, =1{ჩანართის დახურვა}other{ჩანართების დახურვა}}</translation>
 <translation id="8706588385081740091">პაროლები</translation>
-<translation id="8712637175834984815">კარგი</translation>
 <translation id="8717864919010420084">ბმულის კოპირება</translation>
 <translation id="8721297211384281569">ხელსაწყოების მენიუ</translation>
 <translation id="8725066075913043281">ხელახლა სცადეთ</translation>

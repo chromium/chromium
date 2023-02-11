@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">సింక్‌ను నిర్వహించండి</translation>
 <translation id="1076421457278169141">కోడ్ స్కాన్ చేయబడింది</translation>
 <translation id="1076785341346483463">మేనేజ్ చేయబడే ఖాతాతో సింక్ చేయండి</translation>
-<translation id="1080365971383768617">మీ అన్ని పరికరాలలోని పాస్‌వర్డ్‌లు</translation>
 <translation id="1084365883616172403">Facebook పోస్ట్ పూర్తయింది.</translation>
 <translation id="1085696779717592361">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా ఉపయోగించండి</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />‌ను ఎల్లప్పుడూ అనువదించండి</translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">సింక్‌ను ఆన్ చేయి</translation>
 <translation id="3181954750937456830">సురక్షిత బ్రౌజింగ్ (ప్రమాదకరమైన సైట్‌ల నుండి మిమ్మల్ని, మీ పరికరాన్ని రక్షిస్తుంది)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />తో అన్‌లాక్ చేయండి</translation>
-<translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3214379938835224220">మీ iPad రీసెట్ ప్రాసెస్‌లో భాగంగా మీరు సైన్ అవుట్ చేయబడ్డారు. సైన్ ఇన్ చేయడానికి దిగువున ఉన్న కొనసాగించండి ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="3224641773458703735">పాస్‌వర్డ్‌లను ఎగుమతి చేయడానికి, మీరు ముందుగా మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="3227137524299004712">మైక్రోఫోన్</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="3324193307694657476">అడ్రస్‌ 2</translation>
 <translation id="3328801116991980348">సైట్ సమాచారం</translation>
-<translation id="3329904751041170572">సర్వర్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="3371831930909698441">అనువాదం అందుబాటులో ఉంది. స్క్రీన్ దిగువ భాగానికి సమీపంలో ఎంపికలు అందుబాటులో ఉంటాయి.</translation>
 <translation id="3377063233124932127">ఇప్పుడు మీరు సేవ్ చేసిన మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, ఇంకా మరిన్ని పేజీ ఎగువున కనిపిస్తాయి.</translation>
 <translation id="3393920035788932672">పాప్-అప్‌లు అనుమతించబడ్డాయి</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">వెబ్‌పేజీలను ముందే లోడ్ చేయి</translation>
 <translation id="3661160521073045932">కాన్ఫిగరేషన్ ప్రొఫైల్ అందుబాటులో ఉంది</translation>
 <translation id="3670030362669914947">నంబర్</translation>
-<translation id="3691593122358196899"><ph name="FOLDER_TITLE" />కి బుక్‌మార్క్ చేయబడింది</translation>
 <translation id="3709582977625132201">చదవనిదిగా గుర్తు పెట్టు</translation>
 <translation id="371230970611282515">ప్రమాదకరమైన సంఘటనలు జరగడానికి ముందే, వాటిని గుర్తించి, మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="37207012422556617">ట్రెండింగ్ సెర్చ్‌లు</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708">సమస్యలు కనుగొనబడింది: <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">సరే</translation>
 <translation id="5062321486222145940">ఇన్‌స్టాల్ Google Drive‌</translation>
-<translation id="50641035439563602">పాస్‌వర్డ్‌లు ఇప్పుడు మీ Google ఖాతా (<ph name="ACCOUNT" />)లో సేవ్ చేయబడ్డాయి. మీరు ఎక్కడ సైన్ ఇన్ చేసినా వాటిని ఉపయోగించవచ్చు. దీన్ని ఆఫ్ చేయడానికి, <ph name="BEGIN_LINK" />సెట్టింగ్‌లు<ph name="END_LINK" /> ఆప్షన్‌కు వెళ్లండి.</translation>
 <translation id="5083464117946352670">ఫైల్ సైజ్‌ గుర్తించలేకపో..</translation>
 <translation id="5090832849094901128">ఈ పాస్‌వర్డ్‌ను తొలగించడం వలన <ph name="WEBSITE" />లో మీ ఖాతా తొలగించబడదు.</translation>
 <translation id="5094827893301452931">ట్వీట్ చేయడం పూర్తయింది.</translation>
@@ -712,7 +707,6 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" />లోకి అనువాదం అందించే సూచన</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" />‌ను అన్-ఫాలో చేశారు</translation>
 <translation id="6293101329759844770">సురక్షిత బ్రౌజింగ్ ఆన్ చేయడానికి, <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />ను తెరిచి, 'సురక్షిత బ్రౌజింగ్'ను ట్యాప్ చేయండి.</translation>
-<translation id="6320780930074869063">ఈమెయిల్ ఆన్‌లో ఉన్నప్పుడు, పాస్‌వర్డ్‌లు <ph name="ACCOUNT" />ఈమెయిల్‌కు సేవ్ చేయబడతాయి. ఈమెయిల్ ఆఫ్‌లో ఉన్నప్పుడు, పాస్‌వర్డ్‌లు ఈ పరికరంలో మాత్రమే సేవ్ చేయబడతాయి.</translation>
 <translation id="6321526113093607004">బుక్‌మార్క్‌లకు జోడించండి</translation>
 <translation id="6324669097367352121">సైన్ ఇన్ సెట్టింగ్‌లు</translation>
 <translation id="6337234675334993532">ఎన్‌క్రిప్షన్</translation>
@@ -756,7 +750,6 @@
 <translation id="6476800141292307438">పేజీని <ph name="LANGUAGE" />లోకి అనువదిస్తోంది. స్క్రీన్ దిగువ భాగానికి దగ్గర్లో ఎంపికలు అందుబాటులో ఉంటాయి.</translation>
 <translation id="648164694371393720">ప్రామాణీకరణ ఎర్రర్</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> అంశాలు తొలగించబడ్డాయి</translation>
-<translation id="6495429111159337775">మీ Google ఖాతా నుండి పాస్‌వర్డ్‌లను ఉపయోగించండి, సేవ్ చేయండి</translation>
 <translation id="6497772452874122664">మీకు <ph name="TIME" /> మీద నమ్మకం ఉంటే, మరొక సైట్ కోసం సేవ్ అయిన పాస్ట్‌వర్డ్‌ను మీరు ఉపయోగించవచ్చు.
 
 ప్రతి సైట్‌కు ఒక విభిన్నమైన పాస్‌వర్డ్‌ను ఉపయోగించడానికి ట్రై చేయండి.</translation>
@@ -1041,7 +1034,6 @@
 <translation id="8680787084697685621">ఖాతా సైన్-ఇన్ వివరాల గడువు తేదీ ముగిసింది.</translation>
 <translation id="8693663554456874301">{count,plural, =1{ట్యాబ్‌ను మూసివేయి}other{ట్యాబ్‌లను మూసివేయి}}</translation>
 <translation id="8706588385081740091">పాస్‌వర్డ్‌లు</translation>
-<translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8717864919010420084">లింక్‌ని కాపీ చేయి</translation>
 <translation id="8721297211384281569">సాధనాల మెనూ</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">‏انگلیسی (آمریکایی) با صفحه‌کلید Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - میزبان</translation>
 <translation id="1521655867290435174">‏کاربرگ‌نگار Google</translation>
-<translation id="1521795806314479294">درحال آماده‌سازی <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">‏درحال باز کردن فایل‌های Linux…</translation>
 <translation id="1547964879613821194">انگلیسی کانادا</translation>
 <translation id="1556189134700913550">اعمال به همه</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">در حال فشرده‌سازی <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="1722687688096767818">درحال افزودن نمایه…</translation>
 <translation id="1726100011689679555">سرورهای نام</translation>
-<translation id="1727562178154619254">آماده همگام‌سازی</translation>
 <translation id="1729953886957086472">آلمانی (آلمان)</translation>
 <translation id="1730235522912993863">چینی (کانجی)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> مورد کپی شد.</translation>
@@ -513,7 +511,6 @@
  جداکردن دستگاه هنگامی که در حال استفاده است ممکن است باعث از دست رفتن داده‌ها شود.  لطفاً تا به پایان رسیدن عملیات صبر کنید، سپس دستگاه را با استفاده از برنامه Files خارج نمایید.</translation>
 <translation id="5163869187418756376">اشتراک‌گذاری انجام نشد. اتصال خود را بررسی کرده، بعداً دوباره امتحان کنید.</translation>
 <translation id="516592729076796170">دووراک آمریکایی برنامه‌نویس‌ها</translation>
-<translation id="5167102019886320507">درحال آماده‌سازی <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="5177526793333269655">نمای تصویر کوچک</translation>
 <translation id="5181896909298187506">هیچ فایلی در موارد اخیر وجود ندارد</translation>
 <translation id="5194713942430106590">کلیک کنید تا ستون به‌صورت صعودی مرتب شود.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">هیچ تصویری در موارد اخیر وجود ندارد</translation>
 <translation id="7460898608667578234">اوکراینی</translation>
 <translation id="7469894403370665791">اتصال به این شبکه به صورت خودکار</translation>
+<translation id="7481358317100446445">آماده</translation>
 <translation id="7486315294984620427">‏برای رها کردن فایل‌ها در Parallels Desktop، فایل موردنظر باید در فایل‌های Windows کپی شود.</translation>
 <translation id="749452993132003881">هیراگانا</translation>
 <translation id="7495372004724182530">مالایالم (آوایی)</translation>

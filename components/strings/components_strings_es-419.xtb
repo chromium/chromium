@@ -501,7 +501,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2148613324460538318">Agregar tarjeta</translation>
 <translation id="2149968176347646218">La conexión no es segura</translation>
 <translation id="2153609454945889823">¿Quieres instalar los Servicios de Google Play para RA?</translation>
-<translation id="2154054054215849342">El servicio de sincronización no está disponible para tu dominio</translation>
 <translation id="2154484045852737596">Editar tarjeta</translation>
 <translation id="2155260325161282517">12.7 × 17.8 cm (5 × 7 in)</translation>
 <translation id="2157640075051554492">Notificaciones de seguimiento de precios</translation>
@@ -540,6 +539,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2241693394036365668">Se descargó un archivo</translation>
 <translation id="2246264294482514010">25.4 × 30.5 cm (10 × 12 in)</translation>
 <translation id="2246480341630108201">Tu madre o padre aún no dió su aprobación</translation>
+<translation id="2247789808226901522">Se venció la tarjeta</translation>
 <translation id="2248949050832152960">Usar WebAuthn</translation>
 <translation id="2250931979407627383">Costura de borde a la izquierda</translation>
 <translation id="225207911366869382">Este valor ya no se utiliza para esta política.</translation>
@@ -1079,6 +1079,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3646643500201740985">Medición del rendimiento de un anuncio</translation>
 <translation id="3647286794400715637">Cada entrada de string de URL debe contener entre 1 y 2 URLs.</translation>
 <translation id="3650584904733503804">Validación correcta</translation>
+<translation id="3650594806107685466">Para ayudar a proteger tu tarjeta, ingresa el CVC que aparece en el <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Parques temáticos</translation>
 <translation id="3655241534245626312">Ir a la configuración de permisos</translation>
 <translation id="3655670868607891010">Si este mensaje aparece con frecuencia, haz clic aquí: <ph name="HELP_LINK" />.</translation>
@@ -1181,7 +1182,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Puedes cambiar de opinión en cualquier momento en la configuración de Chrome</translation>
-<translation id="3921869355029467742">Ingresa el código de seguridad</translation>
+<translation id="3921869355029467742">Ingresar el código de seguridad</translation>
 <translation id="3927932062596804919">Rechazar</translation>
 <translation id="393316646445601645">Internet y telecomunicaciones</translation>
 <translation id="3939773374150895049">¿Deseas usar WebAuthn en lugar de CVC?</translation>
@@ -1858,6 +1859,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5552137475244467770">Chrome revisa tus contraseñas de forma periódica para comprobar si aparecen en listas que se hayan publicado en línea. Durante esta acción, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5558125320634132440">Se bloqueó este sitio porque puede incluir contenido para mayores de edad</translation>
+<translation id="5559311991468302423">Borrar dirección</translation>
 <translation id="5560088892362098740">Fecha de vencimiento</translation>
 <translation id="55635442646131152">Esquema del documento</translation>
 <translation id="5565613213060953222">Abrir pestaña de incógnito</translation>
@@ -2459,6 +2461,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7112327784801341716">Si no aparece tu información actual, comunícate con tu banco para actualizarla.</translation>
 <translation id="7118618213916969306">Buscar la URL <ph name="SHORT_URL" /> del portapapeles</translation>
 <translation id="7119414471315195487">Cierra las demás pestañas o programas.</translation>
+<translation id="7124354851782353862">Ingresa tu CVC</translation>
 <translation id="7129355289156517987">Cuando cierras todas las pestañas de incógnito en Chromium, tu actividad en ellas se borra del dispositivo:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Actividad de navegación<ph name="END_LIST_ITEM" />
@@ -2785,6 +2788,7 @@ Detalles adicionales:
 <translation id="7844689747373518809">{COUNT,plural, =0{Ninguna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Luego, los sitios que visites pueden consultar a Chrome sobre tus temas para personalizar los anuncios que ves. Chrome comparte hasta 3 temas mientras protege tu identidad y tu historial de navegación.</translation>
+<translation id="7860345425589240791">Ingresa tu nueva fecha de vencimiento y el CVC que aparece en el <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">¿Deseas abandonar el sitio?</translation>
 <translation id="7865448901209910068">Mejor velocidad</translation>
 <translation id="7871445724586827387">Cambiar la contraseña de tu Cuenta de Google</translation>

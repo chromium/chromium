@@ -52,6 +52,7 @@
 <translation id="104710386808485638">I-restart ang Linux?</translation>
 <translation id="1047431265488717055">Kopyahin ang Text ng Link</translation>
 <translation id="1048286738600630630">Mga Display</translation>
+<translation id="1048770690598418849">Puwede mong laktawan sa ngayon at awtomatiko naming susubukan ulit kapag natapos mo na ang pag-set up</translation>
 <translation id="1048986595386481879">Dynamic na na-allocate</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Tumatanggap ng <ph name="ATTACHMENTS" /> mula sa <ph name="DEVICE_NAME" />}one{Tumatanggap ng <ph name="ATTACHMENTS" /> mula sa <ph name="DEVICE_NAME" />}other{Tumatanggap ng <ph name="ATTACHMENTS" /> mula sa <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incognito</translation>
@@ -1639,6 +1640,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2410754283952462441">Pumili ng account</translation>
 <translation id="241082044617551207">Hindi kilalang plugin</translation>
 <translation id="2410940059315936967">Puwedeng mag-embed ng content mula sa iba pang site ang site na binibisita mo, halimbawa, mga larawan, ad, at text. Ang cookies na itinatakda ng iba pang site na ito ay tinatawag na mga third-party na cookie.</translation>
+<translation id="2411666601450687801">Hindi pinapayagan ang mga Virtual Machine sa device na ito</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Mga function key ng keyboard</translation>
 <translation id="2418307627282545839">Panatilihing maliwanag at maaliwalas ang mga bagay</translation>
@@ -1900,6 +1902,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="265390580714150011">Field Value</translation>
 <translation id="2654553774144920065">Kahilingan sa pag-print</translation>
+<translation id="265748523151262387">Manatiling nakakonekta sa iyong telepono</translation>
 <translation id="2657612187216250073">Mga setting ng accessibility ng pointer</translation>
 <translation id="2658941648214598230">Ipakita ang orihinal na content?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Nag-iiba-iba ang feature depende sa device</translation>
@@ -5316,6 +5319,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5801051031414037185">I-set up ang telepono</translation>
 <translation id="5801568494490449797">Mga Kagustuhan</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
+<translation id="5804259315582798390">Hindi na-enable ang pag-recover ng lokal na data</translation>
 <translation id="5805268472388605531">Pindutin nang matagal ang mga keyboard key para makita ang mga accent mark at special character</translation>
 <translation id="5805697420284793859">Window manager</translation>
 <translation id="5806447147478173900">Kabuuang storage na ginagamit ng mga naka-display na site: <ph name="TOTAL_USAGE" /></translation>
@@ -6701,6 +6705,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7047059339731138197">Pumili ng background</translation>
 <translation id="7049293980323620022">Gusto mo bang panatilihin ang file?</translation>
 <translation id="7050037487872780845">Invalid na configuration ng hotspot</translation>
+<translation id="7051551856857948729">Itago ang value ng IBAN</translation>
 <translation id="7052237160939977163">Ipadala ang data ng pagte-trace sa pagganap</translation>
 <translation id="7053983685419859001">I-block</translation>
 <translation id="7055152154916055070">Na-block ang pag-redirect:</translation>
@@ -6768,7 +6773,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="711840821796638741">Ipakita ang Mga Pinamamahalaang Bookmark</translation>
 <translation id="711985611146095797">Binibigyang-daan ka ng page na ito na pamahalaan ang iyong mga naka-sign in na Google Account. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Iba-block ang trapiko sa Chrome browser at Android maliban kung may nakakonektang VPN.</translation>
-<translation id="7120865473764644444">Hindi makakonekta sa server ng pag-sync. Muling sinusubukan...</translation>
 <translation id="7121438501124788993">Developer Mode</translation>
 <translation id="7121728544325372695">Mga Smart na Gitling</translation>
 <translation id="7123030151043029868">Pinapayagang awtomatikong mag-download ng maraming file</translation>
@@ -8569,6 +8573,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8767621466733104912">Awtomatikong i-update ang Chrome para sa lahat ng user</translation>
 <translation id="8770406935328356739">Root directory ng extension</translation>
 <translation id="8771300903067484968">Na-reset sa default na background ang background ng start page.</translation>
+<translation id="8773280816776735812">Ipakita ang value ng IBAN</translation>
 <translation id="8773302562181397928">Makatipid ng <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Kumpirmahin ang Pag-restore</translation>
 <translation id="8774934320277480003">Tuktok na margin</translation>

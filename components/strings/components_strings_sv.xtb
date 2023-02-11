@@ -501,7 +501,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2148613324460538318">Lägg till kort</translation>
 <translation id="2149968176347646218">Anslutningen är inte säker</translation>
 <translation id="2153609454945889823">Vill du installera Google Play-tjänster för AR?</translation>
-<translation id="2154054054215849342">Synkronisering är inte tillgänglig för din domän</translation>
 <translation id="2154484045852737596">Redigera kortet</translation>
 <translation id="2155260325161282517">5 x 7 tum</translation>
 <translation id="2157640075051554492">Aviseringar för prisbevakningar</translation>
@@ -540,6 +539,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2241693394036365668">Fil laddas ned</translation>
 <translation id="2246264294482514010">10 x 12 tum</translation>
 <translation id="2246480341630108201">Din förälder har inte godkänt detta än</translation>
+<translation id="2247789808226901522">Kortet har gått ut</translation>
 <translation id="2248949050832152960">Använd WebAuthn</translation>
 <translation id="2250931979407627383">Kanthäftning till vänster</translation>
 <translation id="225207911366869382">Värdet är inte längre giltigt för policyn.</translation>
@@ -1078,6 +1078,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3646643500201740985">Mäta hur bra resultatet är för en annons</translation>
 <translation id="3647286794400715637">Varje webbadressträng måste innehålla en till två webbadresser.</translation>
 <translation id="3650584904733503804">Valideringen har genomförts</translation>
+<translation id="3650594806107685466">Skydda kortet genom att ange CVC-koden på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Nöjesfält</translation>
 <translation id="3655241534245626312">Öppna behörighetsinställningarna</translation>
 <translation id="3655670868607891010">Om du ser detta ofta provar du <ph name="HELP_LINK" />.</translation>
@@ -1857,6 +1858,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5552137475244467770">Chrome kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="5558125320634132440">Webbplatsen har blockerats eftersom innehållet kan vara avsett för vuxna</translation>
+<translation id="5559311991468302423">Radera adressen</translation>
 <translation id="5560088892362098740">Sista giltighetsdatum</translation>
 <translation id="55635442646131152">Dokumentdisposition</translation>
 <translation id="5565613213060953222">Öppna inkognitoflik</translation>
@@ -2458,6 +2460,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7112327784801341716">Saknar du aktuella uppgifter? Kontakta banken för att uppdatera dem.</translation>
 <translation id="7118618213916969306">Sök efter webbadressen i Urklipp, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Stäng andra flikar eller program</translation>
+<translation id="7124354851782353862">Ange CVC-koden</translation>
 <translation id="7129355289156517987">När du stänger inkognitoflikar i Chromium rensas följande aktivitet i flikarna från denna enhet:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Webbaktivitet<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@ Mer information.
 <translation id="7844689747373518809">{COUNT,plural, =0{Inga}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Senare kan en webbplats du besöker fråga efter dina ämnen i Chrome för att anpassa vilka annonser som visas. Chrome delar upp till tre ämnen, samtidigt som din webbhistorik och identitet skyddas.</translation>
+<translation id="7860345425589240791">Ange ett nytt sista giltighetsdatum och CVC-koden på <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Vill du lämna webbplatsen?</translation>
 <translation id="7865448901209910068">Bästa hastighet</translation>
 <translation id="7871445724586827387">Byt lösenord till Google-kontot</translation>

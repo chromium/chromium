@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">English (US) with Dvorak keyboard</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294">Preparing <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Opening Linux files...</translation>
 <translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Apply to all</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Zipping <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="1722687688096767818">Adding profile…</translation>
 <translation id="1726100011689679555">Name servers</translation>
-<translation id="1727562178154619254">Ready to sync</translation>
 <translation id="1729953886957086472">German (Germany)</translation>
 <translation id="1730235522912993863">Chinese Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> items copied.</translation>
@@ -513,7 +511,6 @@
    Removing your device while it is in use may cause data loss. Please wait until the operation is over, then eject the device using the Files app.</translation>
 <translation id="5163869187418756376">Sharing failed. Please check your connection and try again later.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167102019886320507">Preparing <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="5177526793333269655">Thumbnail view</translation>
 <translation id="5181896909298187506">No recent files</translation>
 <translation id="5194713942430106590">Click to sort the column in ascending order.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">No recent images</translation>
 <translation id="7460898608667578234">Ukrainian</translation>
 <translation id="7469894403370665791">Automatically connect to this network</translation>
+<translation id="7481358317100446445">Ready</translation>
 <translation id="7486315294984620427">To drop files in Parallels Desktop, the file must be copied to Windows files.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam phonetic</translation>

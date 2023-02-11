@@ -501,7 +501,6 @@
 <translation id="2148613324460538318">カードを追加</translation>
 <translation id="2149968176347646218">接続は安全ではありません</translation>
 <translation id="2153609454945889823">Google Play 開発者サービス（AR）をインストールしますか？</translation>
-<translation id="2154054054215849342">お使いのドメインでは同期機能をご利用いただけません</translation>
 <translation id="2154484045852737596">カードを編集</translation>
 <translation id="2155260325161282517">5x7 インチ（2L 判）</translation>
 <translation id="2157640075051554492">価格トラッキングの通知</translation>
@@ -1859,6 +1858,7 @@
 <translation id="5552137475244467770">Chrome では、定期的にパスワードをオンライン上の公開リストと照合し、確認しています。その際、パスワードとユーザー名は Google を含め誰も読み取ることができないよう暗号化されます。</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5558125320634132440">このサイトは成人向けコンテンツを含んでいる可能性があるためブロックされました</translation>
+<translation id="5559311991468302423">アドレスを削除</translation>
 <translation id="5560088892362098740">有効期限</translation>
 <translation id="55635442646131152">ドキュメントの概要</translation>
 <translation id="5565613213060953222">シークレット タブを開く</translation>

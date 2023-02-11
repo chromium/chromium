@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Inggris (AS) dengan keyboard Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Google Spreadsheet</translation>
-<translation id="1521795806314479294">Menyiapkan <ph name="FILE_NAME" /> ...</translation>
 <translation id="1538729222189715449">Membuka file Linux...</translation>
 <translation id="1547964879613821194">Inggris Kanada</translation>
 <translation id="1556189134700913550">Terapkan untuk semua</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Membuat file zip <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="1722687688096767818">Menambahkan Profil ...</translation>
 <translation id="1726100011689679555">Nama server</translation>
-<translation id="1727562178154619254">Siap disinkronkan</translation>
 <translation id="1729953886957086472">Jerman (Jerman)</translation>
 <translation id="1730235522912993863">Cangjie China</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> item disalin.</translation>
@@ -513,7 +511,6 @@
        Menghapus perangkat Anda saat digunakan dapat menyebabkan hilangnya data.  Tunggu hingga operasi berakhir, lalu keluarkan perangkat menggunakan aplikasi File.</translation>
 <translation id="5163869187418756376">Gagal berbagi. Periksa sambungan Anda dan coba lagi nanti.</translation>
 <translation id="516592729076796170">Programmer Dvorak AS</translation>
-<translation id="5167102019886320507">Menyiapkan <ph name="NUMBER_OF_ITEMS" /> item ...</translation>
 <translation id="5177526793333269655">Tampilan thumbnail</translation>
 <translation id="5181896909298187506">Tidak ada file terbaru</translation>
 <translation id="5194713942430106590">Klik untuk mengurutkan kolom dari atas ke bawah.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Tidak ada gambar terbaru</translation>
 <translation id="7460898608667578234">Ukraina</translation>
 <translation id="7469894403370665791">Otomatis hubungkan ke jaringan ini</translation>
+<translation id="7481358317100446445">Siap</translation>
 <translation id="7486315294984620427">Untuk melepaskan file di Parallels Desktop, file harus disalin ke file Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Fonetik Malayalam</translation>

@@ -628,6 +628,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1567387640189251553">Conectouse un teclado diferente desde a última vez que inseriches o teu contrasinal. É posible que estea tentando detectar as teclas que premes.</translation>
 <translation id="156793199942386351">A tecla <ph name="CURRENTKEY" /> xa se lle asignou á acción <ph name="ACTION" />. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">consola de JavaScript</translation>
+<translation id="1569466257325986920">A próxima vez que cambie o contrasinal da túa Conta de Google, os teus datos locais recuperaranse automaticamente despois de iniciar sesión nela</translation>
 <translation id="1570604804919108255">Deixar de silenciar notificacións</translation>
 <translation id="1571304935088121812">Copia o nome de usuario</translation>
 <translation id="1571738973904005196">Ver pestana: <ph name="TAB_ORIGIN" /></translation>
@@ -886,6 +887,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1781979858217752599">Compartir audio da ventá</translation>
 <translation id="1782101999402987960">O teu administrador bloquea as actualizacións</translation>
 <translation id="1782196717298160133">Buscando o teu teléfono</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 nota}other{# notas}}</translation>
 <translation id="1784707308176068866">Executar en segundo plano cando o solicite unha aplicación nativa de cooperación</translation>
 <translation id="1784849162047402014">O dispositivo ten pouco espazo restante no disco</translation>
 <translation id="1787350673646245458">Imaxe do usuario</translation>
@@ -1678,6 +1680,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2467755475704469005">Non se detectou ningún dispositivo. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Aceleración de desprazamento do panel táctil</translation>
 <translation id="2468205691404969808">Utiliza cookies para lembrar as túas preferencias, mesmo se non visitas esas páxinas</translation>
+<translation id="2468247643665097563">Facer pedido</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">Estás usando contrasinais difíciles de adiviñar</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 pestana)}other{<ph name="GROUP_TITLE" /> (# pestanas)}}</translation>
@@ -5949,6 +5952,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6410668567036790476">Engadir motor de busca</translation>
 <translation id="641469293210305670">Instalar actualizacións e aplicacións</translation>
 <translation id="6414878884710400018">Abrir Preferencias do sistema</translation>
+<translation id="6415816101512323589">Queres activar a recuperación de datos locais para protexer os teus datos?</translation>
 <translation id="6415900369006735853">Conéctase a Internet a través do teléfono</translation>
 <translation id="6416743254476733475">Permíteos ou bloquéaos no teu ordenador.</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
@@ -6741,7 +6745,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="711840821796638741">Mostrar os marcadores xestionados</translation>
 <translation id="711985611146095797">Desde esta páxina podes xestionar as Contas de Google nas que teñas a sesión iniciada. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Bloquearanse o navegador Chrome e o tráfico de Android a menos que se conecte unha VPN</translation>
-<translation id="7120865473764644444">Non se puido conectar co servidor de sincronización. Tentándoo de novo...</translation>
 <translation id="7121438501124788993">Modo de programador</translation>
 <translation id="7121728544325372695">Trazos intelixentes</translation>
 <translation id="7123030151043029868">Sitios que poden descargar automaticamente varios ficheiros</translation>

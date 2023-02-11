@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Керуйте синхронізацією</translation>
 <translation id="1076421457278169141">Код зіскановано</translation>
 <translation id="1076785341346483463">Синхронізувати з керованим обліковим записом</translation>
-<translation id="1080365971383768617">Паролі на всіх ваших пристроях</translation>
 <translation id="1084365883616172403">Опубліковано у Facebook</translation>
 <translation id="1085696779717592361">Використовувати Chrome за умовчанням</translation>
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">Увімкнути синхронізацію</translation>
 <translation id="3181954750937456830">Безпечний перегляд (захищає вас і ваш пристрій від небезпечних сайтів)</translation>
 <translation id="3184767182050912705">Розблокувати, використовуючи <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Створено закладку</translation>
 <translation id="3214379938835224220">Ви вийшли з облікового запису, коли було скинуто налаштування iPad. Щоб увійти, натисніть "Продовжити" нижче.</translation>
 <translation id="3224641773458703735">Щоб експортувати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="3227137524299004712">Мікрофон</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">Вимкнено</translation>
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
-<translation id="3329904751041170572">Не вдалось під’єднатися до сервера.</translation>
 <translation id="3371831930909698441">Доступний Перекладач. Параметри можна знайти внизу екрана</translation>
 <translation id="3377063233124932127">Тепер ваші збережені закладки, паролі тощо відображаються вгорі екрана.</translation>
 <translation id="3393920035788932672">Спливаючі вікна дозволені</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">Попер.завантаж.стор.</translation>
 <translation id="3661160521073045932">Доступний профіль конфігурації</translation>
 <translation id="3670030362669914947">Номер</translation>
-<translation id="3691593122358196899">Закладку збережено в папці "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Позначити як непрочитане</translation>
 <translation id="371230970611282515">Передбачає небезпечні події та повідомляє про них ще до того, як вони відбудуться.</translation>
 <translation id="37207012422556617">Популярні запити</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708">Проблеми виявлено <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Установити Google Диск</translation>
-<translation id="50641035439563602">Тепер паролі зберігаються у вашому обліковому записі Google (<ph name="ACCOUNT" />). Їх можна використовувати на всіх пристроях, де ви ввійшли в обліковий запис. Щоб вимкнути цю функцію, перейдіть у <ph name="BEGIN_LINK" />налаштування<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Невідомий розмір файлу.</translation>
 <translation id="5090832849094901128">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="WEBSITE" /> залишиться.</translation>
 <translation id="5094827893301452931">Твіт опубліковано.</translation>
@@ -712,7 +707,6 @@
 <translation id="6284652193729350524">Пропонувати переклад для такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Ви скасували підписку на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Щоб увімкнути Безпечний перегляд, відкрийте параметр <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" /> і натисніть "Безпечний перегляд".</translation>
-<translation id="6320780930074869063">Якщо ввімкнути цю функцію, паролі зберігатимуться в обліковому записі <ph name="ACCOUNT" />. Якщо її вимкнути, паролі зберігатимуться лише на цьому пристрої.</translation>
 <translation id="6321526113093607004">Додати в закладки</translation>
 <translation id="6324669097367352121">Налаштування входу</translation>
 <translation id="6337234675334993532">Шифрування</translation>
@@ -756,7 +750,6 @@
 <translation id="6476800141292307438">Сторінка перекладається такою мовою: <ph name="LANGUAGE" />. Параметри розташовано внизу екрана.</translation>
 <translation id="648164694371393720">Помилка автентифікації</translation>
 <translation id="6482629121755362506">Видалено елементів: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="6495429111159337775">Використовувати й зберігати паролі з облікового запису Google</translation>
 <translation id="6497772452874122664">Якщо ви довіряєте сайту <ph name="TIME" />, то можете скористатися збереженим паролем з іншого сайту.
 
 Намагайтеся використовувати для кожного сайту унікальний пароль.</translation>
@@ -1040,7 +1033,6 @@
 <translation id="8680787084697685621">Дані для входу в обліковий запис застаріли.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрити вкладку}one{Закрити вкладки}few{Закрити вкладки}many{Закрити вкладки}other{Закрити вкладки}}</translation>
 <translation id="8706588385081740091">Паролі</translation>
-<translation id="8712637175834984815">Виконано</translation>
 <translation id="8717864919010420084">Скопіювати посилання</translation>
 <translation id="8721297211384281569">Меню інструментів</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>

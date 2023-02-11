@@ -501,7 +501,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2148613324460538318">Shto kartë</translation>
 <translation id="2149968176347646218">Lidhja nuk është e sigurt</translation>
 <translation id="2153609454945889823">Të instalohen "Shërbimet e Google Play për AR"?</translation>
-<translation id="2154054054215849342">Sinkronizimi nuk ofrohet për domenin tënd</translation>
 <translation id="2154484045852737596">Redakto kartën</translation>
 <translation id="2155260325161282517">5 x 7 inç</translation>
 <translation id="2157640075051554492">Njoftimet e monitorimit të çmimeve</translation>
@@ -540,6 +539,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2241693394036365668">Skedari është shkarkuar</translation>
 <translation id="2246264294482514010">10 x 12 inç</translation>
 <translation id="2246480341630108201">Prindi yt nuk e ka dhënë ende lejen</translation>
+<translation id="2247789808226901522">Karta ka skaduar</translation>
 <translation id="2248949050832152960">Përdor WebAuthn</translation>
 <translation id="2250931979407627383">Qepje anësore majtas</translation>
 <translation id="225207911366869382">Kjo vlerë është tërhequr për këtë politikë.</translation>
@@ -1078,6 +1078,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3646643500201740985">Matja se sa mirë po funksionon një reklamë</translation>
 <translation id="3647286794400715637">Çdo hyrje e vargjeve të URL-ve duhet të përfshijë nga 1 deri në 2 URL.</translation>
 <translation id="3650584904733503804">Vlerësimi është i suksesshëm</translation>
+<translation id="3650594806107685466">Për ta mbajtur të sigurt kartën tënde, fut kodin CVC në <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Parqet e lojërave</translation>
 <translation id="3655241534245626312">Shko te cilësimet e lejeve</translation>
 <translation id="3655670868607891010">Nëse e shikon këtë vazhdimisht, provo këto <ph name="HELP_LINK" />.</translation>
@@ -1857,6 +1858,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5552137475244467770">Chrome i kontrollon periodikisht fjalëkalimet e tua për t'i krahasuar me listat që janë publikuar në linjë. Kur vepron kështu, fjalëkalimet dhe emrat e tu të përdoruesit janë të enkriptuara, në mënyrë që të mos lexohen nga askush, duke përfshirë Google.</translation>
 <translation id="5556459405103347317">Ringarko</translation>
 <translation id="5558125320634132440">Kjo faqe është bllokuar sepse mund të ketë përmbajtje për të rritur</translation>
+<translation id="5559311991468302423">Fshi adresën</translation>
 <translation id="5560088892362098740">Data e skadimit</translation>
 <translation id="55635442646131152">Konturi i dokumentit</translation>
 <translation id="5565613213060953222">Hap skedën "e fshehtë"</translation>
@@ -2457,6 +2459,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7112327784801341716">Nuk shfaqen informacionet aktuale? Kontakto bankën për t'i përditësuar ato.</translation>
 <translation id="7118618213916969306">Kërko për URL-në e kujtesës së fragmenteve, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Mbyll skedat ose programet e tjera</translation>
+<translation id="7124354851782353862">Fut kodin CVC</translation>
 <translation id="7129355289156517987">Kur mbyll të gjitha skedat "e fshehta" në Chromium, aktiviteti yt në këto skeda fshihet nga kjo pajisje:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Aktiviteti i shfletimit<ph name="END_LIST_ITEM" />
@@ -2783,6 +2786,7 @@ Detaje shtesë:
 <translation id="7844689747373518809">{COUNT,plural, =0{Asnjë}=1{1 aplikacion (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Më vonë, një sajt që viziton ti mund t'i kërkojë Chrome temat e tua që të personalizojë reklamat që shikon ti. Chrome ndan deri në 3 tema ndërkohë që mbron historikun e shfletimit dhe identitetin tënd.</translation>
+<translation id="7860345425589240791">Fut datën e re të skadimit dhe kodin CVC në <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Dëshiron të largohesh nga sajti?</translation>
 <translation id="7865448901209910068">Shpejtësia më e mirë</translation>
 <translation id="7871445724586827387">Ndrysho fjalëkalimin e "Llogarisë sate të Google"</translation>

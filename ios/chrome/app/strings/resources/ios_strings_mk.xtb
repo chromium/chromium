@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Управувајте со синхронизацијата</translation>
 <translation id="1076421457278169141">Кодот е скениран</translation>
 <translation id="1076785341346483463">Синхронизација со управувана сметка</translation>
-<translation id="1080365971383768617">Лозинки на сите ваши уреди</translation>
 <translation id="1084365883616172403">Објавата на Facebook е завршена.</translation>
 <translation id="1085696779717592361">Стандардно користете Chrome</translation>
 <translation id="1103523840287552314">Секогаш преведувај <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">Вклучи синхронизација</translation>
 <translation id="3181954750937456830">Безбедно прелистување (ве заштитува вас и вашиот уред од опасни сајтови)</translation>
 <translation id="3184767182050912705">Отклучете со <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Обележано</translation>
 <translation id="3214379938835224220">Бевте одјавени како дел од ресетирањето на вашиот iPad. Допрете „Продолжи“ подолу за да се најавите.</translation>
 <translation id="3224641773458703735">За да ги извезете лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">Исклучено</translation>
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Информации за веб-локација</translation>
-<translation id="3329904751041170572">Не може да се поврзе на серверот.</translation>
 <translation id="3371831930909698441">„Преведи“ е достапна. Достапни се опции на дното на екранот.</translation>
 <translation id="3377063233124932127">Отсега вашите зачувани обележувачи, лозинки и друго се најгоре.</translation>
 <translation id="3393920035788932672">Појавни прозорци се дозволени</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">Вчитај веб-страници</translation>
 <translation id="3661160521073045932">Достапен е профил за конфигурација</translation>
 <translation id="3670030362669914947">Број</translation>
-<translation id="3691593122358196899">Додаден е обележувач во <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Обележи како непрочитано</translation>
 <translation id="371230970611282515">Предвидува опасни настани и ве предупредува пред да се случат.</translation>
 <translation id="37207012422556617">Пребарувања во тренд</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708">Најдени се проблеми <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Во ред</translation>
 <translation id="5062321486222145940">Инсталирајте Диск на Google</translation>
-<translation id="50641035439563602">Лозинките сега се зачувуваат на вашата сметка на Google (<ph name="ACCOUNT" />). Можете да ги користите секогаш кога сте најавени. За да го исклучите ова, одете до <ph name="BEGIN_LINK" />поставките<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Не може да утврди големина на датотека.</translation>
 <translation id="5090832849094901128">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Твитот е завршен.</translation>
@@ -712,7 +707,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6284652193729350524">Понудувај превод од <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Се отследи <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">За да го вклучите „Безбедното прелистување“, отворете <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" /> и допрете „Безбедно прелистување“.</translation>
-<translation id="6320780930074869063">Кога е вклучено, лозинките се зачувуваат на <ph name="ACCOUNT" />. Кога е исклучено, лозинките се зачувуваат само на уредов.</translation>
 <translation id="6321526113093607004">Додај во „Обележувачи“</translation>
 <translation id="6324669097367352121">Поставки за најавување</translation>
 <translation id="6337234675334993532">Шифрирање</translation>
@@ -756,7 +750,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6476800141292307438">Страницата се преведува на <ph name="LANGUAGE" />. Достапни се опции на дното на екранот.</translation>
 <translation id="648164694371393720">Грешка при проверката</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ставки се избришани</translation>
-<translation id="6495429111159337775">Користете и зачувувајте лозинки од вашата сметка на Google</translation>
 <translation id="6497772452874122664">Ако имате доверба во <ph name="TIME" />, може да користите зачувана лозинка од друг сајт.
 
 Добро би било да користите единствена лозинка за секој сајт.</translation>
@@ -819,6 +812,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6869389390665537774">Може да ги гледате страниците што сте ги посетиле или да ги избришете од историјата</translation>
 <translation id="687135068089457384">Прикажете ги поставките</translation>
 <translation id="6873263987691478642">Поделен приказ</translation>
+<translation id="6873366418270195926">Ќе добиете известување ако цената се намали на кој било сајт. Страницава е зачувана во <ph name="BEGIN_LINK" />Обележувачи<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтови, преземања и екстензии за коишто се знае дека се опасни.</translation>
 <translation id="6888009575607455378">Дали сигурно сакате да ги отфрлите промените?</translation>
 <translation id="6896758677409633944">Копирај</translation>
@@ -1040,7 +1034,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8680787084697685621">Деталите за најавување на сметка се застарени.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Затвори ја картичката}one{Затвори ги картичките}other{Затвори ги картичките}}</translation>
 <translation id="8706588385081740091">Лозинки</translation>
-<translation id="8712637175834984815">Сфатив</translation>
 <translation id="8717864919010420084">Копирај го линкот</translation>
 <translation id="8721297211384281569">Мени со алатки</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
@@ -1122,6 +1115,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="952704832371081537">Откажи</translation>
 <translation id="953008885340860025">Chrome е одјавен</translation>
 <translation id="959066944189734975">Го следите <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">Ново</translation>
 <translation id="981498610235328462">Вашата организација ви дозволува да се најавите само со одредени сметки. Сметките што не се дозволени се сокриени.</translation>
 <translation id="984509647832111802">Синхронизацијата не функционира.</translation>
 <translation id="988141524645182168">Други уреди</translation>

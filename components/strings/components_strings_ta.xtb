@@ -501,7 +501,6 @@
 <translation id="2148613324460538318">கார்டைச் சேர்</translation>
 <translation id="2149968176347646218">பாதுகாப்பற்ற இணைப்பு</translation>
 <translation id="2153609454945889823">Google Play Services for ARரை நிறுவ வேண்டுமா?</translation>
-<translation id="2154054054215849342">உங்கள் டொமைனுக்கு ஒத்திசைத்தல் சேவை முடக்கப்பட்டுள்ளது</translation>
 <translation id="2154484045852737596">கார்டைத் திருத்தவும்</translation>
 <translation id="2155260325161282517">5 x 7 இன்ச்</translation>
 <translation id="2157640075051554492">விலைக் கண்காணிப்பு அறிவிப்புகள்</translation>
@@ -540,6 +539,7 @@
 <translation id="2241693394036365668">ஃபைல் பதிவிறக்கப்படும்போது</translation>
 <translation id="2246264294482514010">10 x 12 இன்ச்</translation>
 <translation id="2246480341630108201">உங்கள் பெற்றோர் இன்னும் அனுமதிக்கவில்லை</translation>
+<translation id="2247789808226901522">கார்டு காலாவதியாகிவிட்டது</translation>
 <translation id="2248949050832152960">WebAuthnனைப் பயன்படுத்து</translation>
 <translation id="2250931979407627383">எட்ஜ் ஸ்டிட்ச் லெஃப்ட்</translation>
 <translation id="225207911366869382">இந்த கொள்கைக்கான மதிப்பு நிறுத்தப்பட்டது.</translation>
@@ -1074,6 +1074,7 @@
 <translation id="3646643500201740985">விளம்பரம் எவ்வளவு சிறப்பாகச் செயல்படுகிறது என்பதை அளவிடுதல்</translation>
 <translation id="3647286794400715637">ஒவ்வொரு URLலுக்கும் அதன் வார்த்தைகள் பகுதியில் 1 முதல் 2 URLகள் வரை இருக்க வேண்டும்.</translation>
 <translation id="3650584904733503804">சரிபார்ப்பு வெற்றி</translation>
+<translation id="3650594806107685466">உங்கள் கார்டைப் பாதுகாப்பாக வைத்திருக்க உதவ, <ph name="SIDE_OF_CARD" /> உள்ள CVCயை டைப் செய்யுங்கள்</translation>
 <translation id="3653033846669030038">தீம் பார்க்குகள்</translation>
 <translation id="3655241534245626312">அனுமதி அமைப்புகளுக்குச் செல்லும்</translation>
 <translation id="3655670868607891010">இதை அடிக்கடி காண்கிறீர்கள் எனில், <ph name="HELP_LINK" /> ஐ முயற்சிக்கவும்.</translation>
@@ -1853,6 +1854,7 @@
 <translation id="5552137475244467770">ஆன்லைனில் வெளியிடப்பட்டுள்ளவற்றில் உங்களுடைய கடவுச்சொற்கள் இருக்கிறதா என்பதை Chrome அவ்வப்போது சரிபார்க்கும். இதைச் செய்யும்போது உங்கள் கடவுச்சொற்களும் பயனர்பெயர்களும் என்க்ரிப்ட் செய்யப்படுவதால் Google உட்பட எவராலும் அவற்றைக் கண்டறிய முடியாது.</translation>
 <translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
 <translation id="5558125320634132440">இந்தத் தளத்தில் வயதுவந்தோருக்கான உள்ளடக்கம் இருப்பதால் இது தடுக்கப்பட்டுள்ளது</translation>
+<translation id="5559311991468302423">முகவரியை நீக்குதல்</translation>
 <translation id="5560088892362098740">காலாவதியாகும் தேதி</translation>
 <translation id="55635442646131152">ஆவணத்தின் மேலோட்டம்</translation>
 <translation id="5565613213060953222">மறைநிலைப் பக்கத்தைத் திற</translation>
@@ -2453,6 +2455,7 @@
 <translation id="7112327784801341716">தற்போதைய தகவல்கள் காட்டப்படவில்லையா? அவற்றைப் புதுப்பிக்க பேங்க்கைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="7118618213916969306"><ph name="SHORT_URL" /> எனும் கிளிப்-போர்டு URLலைத் தேடும்</translation>
 <translation id="7119414471315195487">பிற தாவல்கள் அல்லது நிரல்களை மூடவும்</translation>
+<translation id="7124354851782353862">CVCயை டைப் செய்யுங்கள்</translation>
 <translation id="7129355289156517987">Chromium மறைநிலைப் பக்கங்கள் அனைத்தையும் மூடும்போது அந்தப் பக்கங்களில் நீங்கள் மேற்கொண்ட செயல்பாடுகள் இந்தச் சாதனத்தில் இருந்து அழிக்கப்படும்:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />உலாவல் செயல்பாடு<ph name="END_LIST_ITEM" />
@@ -2779,6 +2782,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{எதுவுமில்லை}=1{1 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />)}=2{2 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">அதன்பிறகு நீங்கள் பார்க்கும் விளம்பரங்களைப் பிரத்தியேகமாக்க உங்கள் தலைப்புகளை Chromeமிடம் இருந்து நீங்கள் பார்வையிடும் தளம் பெற முடியும். உங்கள் அடையாளத்தையும் 'இதுவரை இணையத்தில் பார்த்தவை' தகவலையும் பாதுகாக்கும் அதே சமயம் 3 தலைப்புகள் வரை Chrome பகிரும்.</translation>
+<translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> உள்ள உங்கள் புதிய காலாவதித் தேதியையும் CVCயையும் டைப் செய்யுங்கள்</translation>
 <translation id="7862185352068345852">தளத்திலிருந்து வெளியேறவா?</translation>
 <translation id="7865448901209910068">சிறந்த வேகம்</translation>
 <translation id="7871445724586827387">உங்கள் Google கணக்கின் கடவுச்சொல்லை மாற்றலாம்</translation>

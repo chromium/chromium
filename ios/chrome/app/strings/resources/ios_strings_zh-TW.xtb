@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">管理同步功能</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
 <translation id="1076785341346483463">與受管理帳戶同步</translation>
-<translation id="1080365971383768617">在所有裝置上都能使用自己的密碼</translation>
 <translation id="1084365883616172403">已順利發布到 Facebook。</translation>
 <translation id="1085696779717592361">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">開啟同步功能</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護你和你的裝置不受危險網站攻擊)</translation>
 <translation id="3184767182050912705">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖</translation>
-<translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3214379938835224220">你已在重設 iPad 時登出，輕觸下方的「繼續」即可登入。</translation>
 <translation id="3224641773458703735">你必須先在裝置上設定螢幕解鎖密碼才能匯出密碼。</translation>
 <translation id="3227137524299004712">麥克風</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">關閉</translation>
 <translation id="3324193307694657476">地址 2</translation>
 <translation id="3328801116991980348">網站資訊</translation>
-<translation id="3329904751041170572">無法連上伺服器。</translation>
 <translation id="3371831930909698441">有可用的翻譯。翻譯選項的位置接近畫面底部。</translation>
 <translation id="3377063233124932127">你儲存的書籤、密碼等內容現在會顯示在頂端。</translation>
 <translation id="3393920035788932672">已允許的彈出式視窗</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">預先載入網頁</translation>
 <translation id="3661160521073045932">有可用的設定描述檔</translation>
 <translation id="3670030362669914947">號碼</translation>
-<translation id="3691593122358196899">已將書籤加入「<ph name="FOLDER_TITLE" />」</translation>
 <translation id="3709582977625132201">標示為未讀取</translation>
 <translation id="371230970611282515">可預測不安全事件，並在這類事件發生前顯示警告訊息。</translation>
 <translation id="37207012422556617">熱門搜尋</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708"><ph name="TIME" />發現問題。</translation>
 <translation id="5059136629401106827">確定</translation>
 <translation id="5062321486222145940">安裝 Google 雲端硬碟</translation>
-<translation id="50641035439563602">密碼目前已儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />)，只要登入帳戶即可使用。如要關閉這項功能，請前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />。</translation>
 <translation id="5083464117946352670">無法確定檔案大小。</translation>
 <translation id="5090832849094901128">刪除這組密碼並不會刪除你的 <ph name="WEBSITE" /> 帳戶。</translation>
 <translation id="5094827893301452931">已順利發布到 Twitter。</translation>
@@ -712,7 +707,6 @@
 <translation id="6284652193729350524">針對<ph name="LANGUAGE" />提供翻譯選項</translation>
 <translation id="6289501276895392862">已取消追蹤「<ph name="CHANNEL_NAME" />」</translation>
 <translation id="6293101329759844770">如要啟用安全瀏覽功能，請開啟 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />並輕觸 [安全瀏覽]。</translation>
-<translation id="6320780930074869063">如果開啟，系統就會將密碼儲存到 <ph name="ACCOUNT" />；如果關閉，系統只會將密碼儲存在這部裝置上。</translation>
 <translation id="6321526113093607004">加入書籤</translation>
 <translation id="6324669097367352121">登入設定</translation>
 <translation id="6337234675334993532">加密</translation>
@@ -756,7 +750,6 @@
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項位於靠近畫面底部的位置。</translation>
 <translation id="648164694371393720">驗證錯誤</translation>
 <translation id="6482629121755362506">已刪除 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
-<translation id="6495429111159337775">將密碼儲存到 Google 帳戶並自動填入</translation>
 <translation id="6497772452874122664">如果你信任 <ph name="TIME" />，可以使用已在其他網站儲存的密碼。
 
 建議你為每個網站設定專屬的密碼。</translation>
@@ -1041,7 +1034,6 @@
 <translation id="8680787084697685621">帳戶登入詳細資料已過期。</translation>
 <translation id="8693663554456874301">{count,plural, =1{關閉分頁}other{關閉多個分頁}}</translation>
 <translation id="8706588385081740091">密碼</translation>
-<translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8717864919010420084">複製連結</translation>
 <translation id="8721297211384281569">工具選單</translation>
 <translation id="8725066075913043281">再試一次</translation>

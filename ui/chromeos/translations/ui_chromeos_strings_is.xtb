@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Enska (bandarísk) með Dvorak-lyklaborði</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – hýsill</translation>
 <translation id="1521655867290435174">Google töflureiknar</translation>
-<translation id="1521795806314479294">Undirbýr <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Opnar Linux-skrár...</translation>
 <translation id="1547964879613821194">Kanadísk enska</translation>
 <translation id="1556189134700913550">Nota á allt</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Zip-þjappar <ph name="NUMBER_OF_ITEMS" /> atriði...</translation>
 <translation id="1722687688096767818">Bætir prófíl við...</translation>
 <translation id="1726100011689679555">Nafnaþjónar</translation>
-<translation id="1727562178154619254">Tilbúið fyrir samstillingu</translation>
 <translation id="1729953886957086472">Þýska (Þýskaland)</translation>
 <translation id="1730235522912993863">Kínverska Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> atriði afrituð.</translation>
@@ -513,7 +511,6 @@
    Ef tækið er fjarlægt á meðan það er í notkun kunna gögn að tapast. Bíddu þangað til aðgerðinni er lokið og aftengdu síðan tækið úr skráaforritinu.</translation>
 <translation id="5163869187418756376">Mistókst að deila. Athugaðu nettenginguna og reyndu aftur síðar.</translation>
 <translation id="516592729076796170">Bandarískt Dvorak-lyklaborð fyrir forritara</translation>
-<translation id="5167102019886320507">Undirbýr <ph name="NUMBER_OF_ITEMS" /> atriði...</translation>
 <translation id="5177526793333269655">Smámyndayfirlit</translation>
 <translation id="5181896909298187506">Engar nýlegar skrár</translation>
 <translation id="5194713942430106590">Smelltu til að raða dálkinum í hækkandi röð.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Engar nýlegar myndir</translation>
 <translation id="7460898608667578234">Úkraínskt</translation>
 <translation id="7469894403370665791">Tengjast þessu neti sjálfkrafa</translation>
+<translation id="7481358317100446445">Tilbúið</translation>
 <translation id="7486315294984620427">Svo hægt sé að sleppa skrám í Parallels Desktop verða þær að vera afritaðar í Windows-skrár.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam hljóðritun</translation>

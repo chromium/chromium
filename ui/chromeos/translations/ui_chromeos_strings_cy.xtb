@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Saesneg (UDA) gyda bysellfwrdd Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Gwesteiwr</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294">Wrthi'n paratoi <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Wrthi'n agor ffeiliau Linux...</translation>
 <translation id="1547964879613821194">Saesneg Canada</translation>
 <translation id="1556189134700913550">Gweithredu ar gyfer pob un</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Wrthi'n rhoi <ph name="NUMBER_OF_ITEMS" /> eitem mewn ffeil sip…</translation>
 <translation id="1722687688096767818">Wrthi'n ychwanegu proffil...</translation>
 <translation id="1726100011689679555">Gweinyddwyr enwau</translation>
-<translation id="1727562178154619254">Yn barod i gysoni</translation>
 <translation id="1729953886957086472">Almaeneg (Yr Almaen)</translation>
 <translation id="1730235522912993863">Cangjie Tsieinëeg</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> o eitemau wedi'u copïo.</translation>
@@ -513,7 +511,6 @@
    Mae'n bosib y bydd tynnu'ch dyfais tra'i bod yn cael ei defnyddio achosi colli data.  Arhoswch nes bod y weithred wedi gorffen, yna tynnwch y ddyfais gan ddefnyddio'r ap Files.</translation>
 <translation id="5163869187418756376">Wedi methu â rhannu. Gwiriwch eich cysylltiad a rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="516592729076796170">Dvorak Rhaglennwr UDA</translation>
-<translation id="5167102019886320507">Wrthi'n paratoi <ph name="NUMBER_OF_ITEMS" /> eitem...</translation>
 <translation id="5177526793333269655">Gwedd fân-lun</translation>
 <translation id="5181896909298187506">Nid oes unrhyw ffeiliau diweddar</translation>
 <translation id="5194713942430106590">Cliciwch i drefnu'r golofn mewn trefn esgynnol.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Dim lluniau diweddar</translation>
 <translation id="7460898608667578234">Iwcranaidd</translation>
 <translation id="7469894403370665791">Cysylltu'n awtomatig â'r rhwydwaith hwn</translation>
+<translation id="7481358317100446445">Yn barod</translation>
 <translation id="7486315294984620427">I ollwng ffeiliau yn Parallels Desktop, rhaid copïo'r ffeil i ffeiliau Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Seinegol Malayalam</translation>

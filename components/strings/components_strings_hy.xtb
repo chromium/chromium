@@ -501,7 +501,6 @@
 <translation id="2148613324460538318">Ավելացնել քարտ</translation>
 <translation id="2149968176347646218">Կապը պաշտպանված չէ</translation>
 <translation id="2153609454945889823">Տեղադրե՞լ Google Play ծառայություններն AR-ի համար</translation>
-<translation id="2154054054215849342">Համաժամացումը հասանելի չէ ձեր տիրույթի համար</translation>
 <translation id="2154484045852737596">Քարտի փոփոխություն</translation>
 <translation id="2155260325161282517">5 x 7 դյույմ</translation>
 <translation id="2157640075051554492">Գների հետագծման մասին ծանուցումներ</translation>
@@ -540,6 +539,7 @@
 <translation id="2241693394036365668">Ֆայլի ներբեռնում</translation>
 <translation id="2246264294482514010">10 x 12 դյույմ</translation>
 <translation id="2246480341630108201">Ձեր ծնողը դեռ չի հաստատել այս կայքը</translation>
+<translation id="2247789808226901522">Քարտը ժամկետանց է</translation>
 <translation id="2248949050832152960">Օգտագործել WebAuthn</translation>
 <translation id="2250931979407627383">Ձախ եզրակար</translation>
 <translation id="225207911366869382">Այս արժեքը տվյալ կանոնի համար այլևս չի օգտագործվում:</translation>
@@ -1078,6 +1078,7 @@
 <translation id="3646643500201740985">Գովազդի արդյունավետության գնահատում</translation>
 <translation id="3647286794400715637">URL-ների տողի յուրաքանչյուր գրառում պետք է պարունակի 1-ից 2 URL։</translation>
 <translation id="3650584904733503804">Վավերացումը հաջողվեց</translation>
+<translation id="3650594806107685466">Ձեր քարտն ապահով պահելու գամար մուտքագրեք <ph name="SIDE_OF_CARD" /> գտնվող CVC կոդը</translation>
 <translation id="3653033846669030038">Թեմատիկ այգիներ</translation>
 <translation id="3655241534245626312">Բացել թույլտվության կարգավորումները</translation>
 <translation id="3655670868607891010">Եթե հաճախակի եք տեսնում այս հաղորդագրությունը, փորձեք հետևյալ <ph name="HELP_LINK" />-ը:</translation>
@@ -1858,6 +1859,7 @@
 <translation id="5552137475244467770">Chrome-ը պարբերաբար hամեմատում է ձեր գաղտնաբառերը ցուցակների հետ, որոնք հրապարակվել են առցանց։ Այդ ժամանակ ձեր գաղտնաբառերը և օգտանունները գաղտնագրվում են, այնպես որ ոչ ոք չի կարող կարդալ դրանք, նույնիսկ Google-ը։</translation>
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="5558125320634132440">Կայքն արգելափակվել է, քանի որ այն կարող է պարունակել մեծահասակների համար բովանդակություն</translation>
+<translation id="5559311991468302423">Հասցեի ջնջում</translation>
 <translation id="5560088892362098740">Գործողության ժամկետի սպառման ամսաթիվը</translation>
 <translation id="55635442646131152">Փաստաթղթի կառուցվածքը</translation>
 <translation id="5565613213060953222">Բացել ինկոգնիտո ներդիր</translation>
@@ -2459,6 +2461,7 @@
 <translation id="7112327784801341716">Տեղեկությունները չե՞ն թարմացվել։ Դիմեք ձեր բանկ։</translation>
 <translation id="7118618213916969306">Սեղմատախտակին պահված URL-ի որոնում, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Փակեք մյուս ներդիրներն ու ծրագրերը</translation>
+<translation id="7124354851782353862">Մուտքագրեք ձեր CVC կոդը</translation>
 <translation id="7129355289156517987">Երբ փակեք Chromium-ի բոլոր ինկոգնիտո ներդիրները, այս սարքից կհեռացվեն այդ ներդիրներում ձեր կատարած գործողությունները, այդ թվում՝
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />գործողությունները դիտարկիչում,<ph name="END_LIST_ITEM" />
@@ -2785,6 +2788,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Չկա}=1{1 հավելված (<ph name="EXAMPLE_APP_1" />)}=2{2 հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Ավելի ուշ կայքը, որն այցելում եք, կարող է ձեր թեմաների մասին տեղեկություններ խնդրել Chrome-ից՝ ձեզ ցուցադրվող գովազդն անհատականացնելու նպատակով։ Chrome-ը կիսվում է մինչև 3 թեմայով՝ միաժամանակ պաշտպանելով ձեր այցելությունների պատմությունը և ինքնությունը։</translation>
+<translation id="7860345425589240791">Մուտքագրեք <ph name="SIDE_OF_CARD" /> նշված վավերականության նոր ժամկետը և CVC կոդը</translation>
 <translation id="7862185352068345852">Փակե՞լ կայքը</translation>
 <translation id="7865448901209910068">Լավագույն արագություն</translation>
 <translation id="7871445724586827387">Փոխել Google հաշվի գաղտնաբառը</translation>

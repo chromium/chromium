@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Кіраванне сінхранізацыяй</translation>
 <translation id="1076421457278169141">Код сканіраваны</translation>
 <translation id="1076785341346483463">Сінхранізацыя з уліковым запісам пад кіраваннем</translation>
-<translation id="1080365971383768617">Паролі на ўсіх вашых прыладах</translation>
 <translation id="1084365883616172403">Публікацыя ў Facebook выканана.</translation>
 <translation id="1085696779717592361">Выкарыстоўвайце Chrome стандартна</translation>
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">Уключыць сінхранізацыю</translation>
 <translation id="3181954750937456830">Бяспечны прагляд (абараняе вас і прыладу ад небяспечных сайтаў)</translation>
 <translation id="3184767182050912705">Разблакіраваць, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3214379938835224220">У выніку скіду налад iPad адбыўся выхад з уліковага запісу. Каб увайсці ў яго, націсніце Continue ("Працягнуць") ніжэй.</translation>
 <translation id="3224641773458703735">Каб экспартаваць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
 <translation id="3227137524299004712">Мікрафон</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">Выключана</translation>
 <translation id="3324193307694657476">Радок адраса 2</translation>
 <translation id="3328801116991980348">Звесткі пра сайт</translation>
-<translation id="3329904751041170572">Не ўдалося падключыцца да сервера.</translation>
 <translation id="3371831930909698441">Пераклад гатовы. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="3377063233124932127">Цяпер вашы захаваныя закладкі, паролі і іншае змесціва будуць паказвацца ўверсе.</translation>
 <translation id="3393920035788932672">Усплывальныя вокны дазволены</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">Перадзагрузка старонак</translation>
 <translation id="3661160521073045932">Даступны профіль канфігурацыі</translation>
 <translation id="3670030362669914947">Нумар</translation>
-<translation id="3691593122358196899">Закладка дададзена ў папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Пазначыць як непрачытанае</translation>
 <translation id="371230970611282515">Прадказвае небяспечныя падзеі і папярэджвае пра іх да таго, як яны здараюцца.</translation>
 <translation id="37207012422556617">Папулярныя пошукавыя запыты</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708">Праблемы знойдзены <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Усталяваць Google Дыск</translation>
-<translation id="50641035439563602">Цяпер паролі захоўваюцца ў вашым Уліковым запісе Google (<ph name="ACCOUNT" />). Іх можна выкарыстоўваць на любой прыладзе, з якой у яго быў выкананы ўваход. Каб адключыць гэту функцыю, перайдзіце ў <ph name="BEGIN_LINK" />налады<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Не ўдалося вызначыць памер файла.</translation>
 <translation id="5090832849094901128">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="WEBSITE" /> не выдаліцца.</translation>
 <translation id="5094827893301452931">Твіт апублікаваны.</translation>
@@ -712,7 +707,6 @@
 <translation id="6284652193729350524">Прапаноўваць перакласці з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Вы адпісаліся ад канала "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="6293101329759844770">Каб уключыць Бяспечны прагляд, адкрыйце старонку <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" /> і націсніце на пункт "Бяспечны прагляд".</translation>
-<translation id="6320780930074869063">Калі гэты параметр уключаны, паролі захоўваюцца ва ўліковым запісе <ph name="ACCOUNT" />, а калі выключаны, захоўваюцца толькі на гэтай прыладзе.</translation>
 <translation id="6321526113093607004">Дадаць у Закладкі</translation>
 <translation id="6324669097367352121">Налады ўваходу</translation>
 <translation id="6337234675334993532">Шыфраванне</translation>
@@ -756,7 +750,6 @@
 <translation id="6476800141292307438">Старонка перакладаецца на мову "<ph name="LANGUAGE" />". Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="648164694371393720">Памылка аўтэнтыфікацыі</translation>
 <translation id="6482629121755362506">Выдалена элементаў: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="6495429111159337775">Захоўваць паролі ва Уліковы запіс Google</translation>
 <translation id="6497772452874122664">Калі вы давяраеце сайту <ph name="TIME" />, можаце выкарыстаць захаваны пароль з іншага сайта.
 
 Паспрабуйце выкарыстоўваць унікальны пароль для кожнага сайта.</translation>
@@ -1041,7 +1034,6 @@
 <translation id="8680787084697685621">Даныя ўліковага запісу для ўваходу састарэлі.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрыць укладку}one{Закрыць укладкі}few{Закрыць укладкі}many{Закрыць укладкі}other{Закрыць укладкі}}</translation>
 <translation id="8706588385081740091">Паролі</translation>
-<translation id="8712637175834984815">Зразумела</translation>
 <translation id="8717864919010420084">Скапіраваць спасылку</translation>
 <translation id="8721297211384281569">Меню "Інструменты"</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>

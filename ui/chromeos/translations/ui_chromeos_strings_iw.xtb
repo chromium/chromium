@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">‏מקלדת Dvorak באנגלית (ארה"ב)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – מארח</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> בהכנה…</translation>
 <translation id="1538729222189715449">‏מתבצעת פתיחה של קובצי Linux...</translation>
 <translation id="1547964879613821194">אנגלית קנדית</translation>
 <translation id="1556189134700913550">החלה על הכול</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">מתבצע כיווץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="1722687688096767818">בתהליך הוספת פרופיל…</translation>
 <translation id="1726100011689679555">שרתי שמות</translation>
-<translation id="1727562178154619254">הקבצים מוכנים לסנכרון</translation>
 <translation id="1729953886957086472">גרמנית (גרמניה)</translation>
 <translation id="1730235522912993863">‏סינית Cangjie</translation>
 <translation id="1731889557567069540">הועתקו <ph name="NUMBER_OF_ITEMS" /> פריטים.</translation>
@@ -513,7 +511,6 @@
        הסרת המכשיר בעודו בשימוש תגרום לאובדן נתונים. יש להמתין עד לסיום הפעולה, ולאחר מכן לנתק את המכשיר דרך היישום Files.</translation>
 <translation id="5163869187418756376">השיתוף נכשל. כדאי לבדוק את החיבור ולנסות שוב מאוחר יותר.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> פריטים בהכנה…</translation>
 <translation id="5177526793333269655">תצוגת תמונה ממוזערת</translation>
 <translation id="5181896909298187506">לא פתחת קבצים לאחרונה</translation>
 <translation id="5194713942430106590">יש ללחוץ כדי למיין את העמודה בסדר עולה.</translation>
@@ -794,6 +791,7 @@
 <translation id="7458955835361612701">אין תמונות מהזמן האחרון</translation>
 <translation id="7460898608667578234">אוקראינית</translation>
 <translation id="7469894403370665791">התחברות באופן אוטומטי לרשת זו.</translation>
+<translation id="7481358317100446445">מוכן</translation>
 <translation id="7486315294984620427">‏כדי לשחרר קובץ ב-Parallels Desktop, צריך להעתיק אותו לקובצי Windows.</translation>
 <translation id="749452993132003881">היראגאנה</translation>
 <translation id="7495372004724182530">מליאלאם פונטית</translation>

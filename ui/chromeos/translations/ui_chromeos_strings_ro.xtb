@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Engleză (S.U.A.) cu tastatură Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – gazdă</translation>
 <translation id="1521655867290435174">Foi de calcul Google</translation>
-<translation id="1521795806314479294">Se pregătesc <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Se deschid fișierele Linux...</translation>
 <translation id="1547964879613821194">Engleză canadiană</translation>
 <translation id="1556189134700913550">Aplicați tuturor</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Se arhivează <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
 <translation id="1722687688096767818">Se adaugă profilul...</translation>
 <translation id="1726100011689679555">Servere de nume</translation>
-<translation id="1727562178154619254">Gata de sincronizare</translation>
 <translation id="1729953886957086472">Germană (Germania)</translation>
 <translation id="1730235522912993863">Chineză Cangjie</translation>
 <translation id="1731889557567069540">Elemente copiate: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -513,7 +511,6 @@
    Dacă scoateți dispozitivul în timp ce este folosit, puteți pierde date. Așteptați finalizarea operației, apoi scoateți dispozitivul folosind aplicația Fișiere.</translation>
 <translation id="5163869187418756376">Trimiterea nu a reușit. Verificați conexiunea la internet și încercați din nou mai târziu.</translation>
 <translation id="516592729076796170">Programator S.U.A. Dvorak</translation>
-<translation id="5167102019886320507">Se pregătesc <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
 <translation id="5177526793333269655">Vizualizare cu miniaturi</translation>
 <translation id="5181896909298187506">Niciun fișier recent</translation>
 <translation id="5194713942430106590">Dă clic pentru a sorta coloana în ordine crescătoare.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Nicio imagine recentă</translation>
 <translation id="7460898608667578234">Ucraineană</translation>
 <translation id="7469894403370665791">Conectează-te automat la această rețea</translation>
+<translation id="7481358317100446445">Gata</translation>
 <translation id="7486315294984620427">Pentru a plasa fișiere în Parallels Desktop, trebuie să le copiezi în dosarul cu fișiere Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam fonetică</translation>

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">英文 (美國) 搭配 Dvorak 鍵盤</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - 主機</translation>
 <translation id="1521655867290435174">Google 試算表</translation>
-<translation id="1521795806314479294">正在準備「<ph name="FILE_NAME" />」...</translation>
 <translation id="1538729222189715449">正在開啟 Linux 檔案…</translation>
 <translation id="1547964879613821194">加拿大英文</translation>
 <translation id="1556189134700913550">全部套用</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">正在壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
 <translation id="1722687688096767818">正在新增設定檔…</translation>
 <translation id="1726100011689679555">名稱伺服器</translation>
-<translation id="1727562178154619254">可以進行同步了</translation>
 <translation id="1729953886957086472">德文 (德國)</translation>
 <translation id="1730235522912993863">中文 (倉頡)</translation>
 <translation id="1731889557567069540">已複製 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
@@ -513,7 +511,6 @@
    你的裝置仍在運作中，如果立即移除裝置，你的資料很可能會遺失。請耐心等候作業結束，再使用「檔案」應用程式退出裝置。</translation>
 <translation id="5163869187418756376">共用失敗。請檢查連線狀態，然後再試一次。</translation>
 <translation id="516592729076796170">Programmer Dvorak 美式配置</translation>
-<translation id="5167102019886320507">正在準備 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
 <translation id="5177526793333269655">縮圖檢視</translation>
 <translation id="5181896909298187506">最近沒有任何檔案</translation>
 <translation id="5194713942430106590">按一下即可依遞增順序排列資料欄。</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">最近沒有任何圖片</translation>
 <translation id="7460898608667578234">烏克蘭語</translation>
 <translation id="7469894403370665791">自動連線至這個網路</translation>
+<translation id="7481358317100446445">準備就緒</translation>
 <translation id="7486315294984620427">如要將檔案拖曳到 Parallels Desktop，必須先將檔案複製到 Windows 檔案中。</translation>
 <translation id="749452993132003881">平假名</translation>
 <translation id="7495372004724182530">馬拉雅拉姆文 (拼音)</translation>

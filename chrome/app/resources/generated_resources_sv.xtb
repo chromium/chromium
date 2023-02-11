@@ -632,6 +632,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1567387640189251553">Ett annat tangentbord har anslutits sedan du senast angav lösenordet. Det kan försöka stjäla dina tangenttryckningar.</translation>
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> har redan tilldelats åtgärden <ph name="ACTION" />. Tryck på valfri tangent för att <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsol</translation>
+<translation id="1569466257325986920">Nästa gång ditt lösenord för Google-kontot ändras återställs din lokala data automatiskt när du loggar in på Google-kontot</translation>
 <translation id="1570604804919108255">Slå på ljudet för aviseringar</translation>
 <translation id="1571304935088121812">Kopiera användarnamn</translation>
 <translation id="1571738973904005196">Visa fliken <ph name="TAB_ORIGIN" /></translation>
@@ -898,6 +899,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1781979858217752599">Dela ljud från fönster</translation>
 <translation id="1782101999402987960">Uppdateringar blockeras av administratören</translation>
 <translation id="1782196717298160133">Sök efter din mobil</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 anteckning}other{# anteckningar}}</translation>
 <translation id="1784707308176068866">Kör i bakgrunden när en samverkande inbyggd app begär det</translation>
 <translation id="1784849162047402014">Enheten har ont om diskutrymme</translation>
 <translation id="1787350673646245458">Användarbild</translation>
@@ -1694,6 +1696,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2467755475704469005">Ingen enhet upptäcktes. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Scrollningsacceleration för styrplattan</translation>
 <translation id="2468205691404969808">Kommer ihåg med hjälp av cookies vad du brukar välja även om du inte besöker sidorna i fråga</translation>
+<translation id="2468247643665097563">Ordning</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">Du använder lösenord som verkar svåra att lista ut</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 flik}other{<ph name="GROUP_TITLE" /> – # flikar}}</translation>
@@ -5969,6 +5972,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6410668567036790476">Lägg till sökmotor</translation>
 <translation id="641469293210305670">Installera uppdateringar och appar</translation>
 <translation id="6414878884710400018">Öppna Systeminställningar</translation>
+<translation id="6415816101512323589">Vill du skydda din data genom att aktivera återställning av lokal data?</translation>
 <translation id="6415900369006735853">Anslut till internet via mobilen</translation>
 <translation id="6416743254476733475">Tillåt eller blockera på datorn.</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
@@ -6761,7 +6765,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="711840821796638741">Visa hanterade bokmärken</translation>
 <translation id="711985611146095797">På den här sidan kan du hantera alla Google-konton som du är inloggad på. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Trafik till webbläsaren Chrome och Android blockeras om det inte finns någon VPN-anslutning</translation>
-<translation id="7120865473764644444">Det gick inte att ansluta till synkroniseringsservern. Försöker igen …</translation>
 <translation id="7121438501124788993">Utvecklarläge</translation>
 <translation id="7121728544325372695">Smarta bindestreck</translation>
 <translation id="7123030151043029868">Får ladda ned flera filer automatiskt</translation>

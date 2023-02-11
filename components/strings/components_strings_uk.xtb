@@ -501,7 +501,6 @@
 <translation id="2148613324460538318">Додати картку</translation>
 <translation id="2149968176347646218">З'єднання ненадійне</translation>
 <translation id="2153609454945889823">Установити Сервіси Google Play для AR?</translation>
-<translation id="2154054054215849342">Синхронізація недоступна для вашого домену</translation>
 <translation id="2154484045852737596">Редагувати картку</translation>
 <translation id="2155260325161282517">5 x 7 дюйм.</translation>
 <translation id="2157640075051554492">Сповіщення про відстеження цін</translation>
@@ -540,6 +539,7 @@
 <translation id="2241693394036365668">Завантажено файл</translation>
 <translation id="2246264294482514010">10 x 12 дюйм.</translation>
 <translation id="2246480341630108201">Ще немає схвалення від батька чи матері</translation>
+<translation id="2247789808226901522">Строк дії картки закінчився</translation>
 <translation id="2248949050832152960">Використовувати веб-автентифікацію</translation>
 <translation id="2250931979407627383">Зшити вздовж лівого краю</translation>
 <translation id="225207911366869382">Дію цього значення припинено для цього правила</translation>
@@ -1078,6 +1078,7 @@
 <translation id="3646643500201740985">Оцінювання ефективності реклами</translation>
 <translation id="3647286794400715637">Кожен рядок URL-адреси має містити від 1 до 2 URL-адрес.</translation>
 <translation id="3650584904733503804">Перевірку закінчено</translation>
+<translation id="3650594806107685466">Для захисту введіть код CVC, указаний на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Тематичні парки</translation>
 <translation id="3655241534245626312">Перейти на сторінку дозволів</translation>
 <translation id="3655670868607891010">Якщо ви бачите це часто, спробуйте <ph name="HELP_LINK" />.</translation>
@@ -1857,6 +1858,7 @@
 <translation id="5552137475244467770">Chrome періодично зіставляє ваші паролі зі списками, які були опубліковані онлайн. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5558125320634132440">Сайт заблоковано, оскільки він може містити контент для повнолітніх.</translation>
+<translation id="5559311991468302423">Видалити адресу</translation>
 <translation id="5560088892362098740">Термін дії</translation>
 <translation id="55635442646131152">Структура документа</translation>
 <translation id="5565613213060953222">Відкрити анонімну вкладку</translation>
@@ -2458,6 +2460,7 @@
 <translation id="7112327784801341716">Не відображається актуальна інформація? Попросіть представника банку оновити її.</translation>
 <translation id="7118618213916969306">Пошук URL-адреси з буфера обміну, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Закрийте інші вкладки та програми</translation>
+<translation id="7124354851782353862">Введіть код CVC</translation>
 <translation id="7129355289156517987">Коли ви закриваєте всі анонімні вкладки в Chromium, з пристрою видаляються дані про ваші дії в них, зокрема:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />дії у веб-переглядачі;<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Немає}=1{1 додаток (<ph name="EXAMPLE_APP_1" />)}=2{2 додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# додаток (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# додатків (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# додатка (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Коли ви пізніше відвідаєте якийсь сайт, він може запитати в Chrome про ваші теми, щоб персоналізувати для вас оголошення. Chrome надає інформацію про щонайбільше 3 теми та водночас захищає вашу історію веб-перегляду й особу.</translation>
+<translation id="7860345425589240791">Введіть нову дату закінчення строку дії і код CVC, указаний на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Залишити сайт?</translation>
 <translation id="7865448901209910068">Оптимальна швидкість</translation>
 <translation id="7871445724586827387">Змініть пароль облікового запису Google</translation>

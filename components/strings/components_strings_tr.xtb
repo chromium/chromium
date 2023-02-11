@@ -501,7 +501,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2148613324460538318">Kart Ekle</translation>
 <translation id="2149968176347646218">Bağlantı güvenli değil</translation>
 <translation id="2153609454945889823">AR için Google Play Hizmetleri yüklensin mi?</translation>
-<translation id="2154054054215849342">Senkronizasyon alan adınızda kullanılamıyor</translation>
 <translation id="2154484045852737596">Kartı düzenle</translation>
 <translation id="2155260325161282517">5 x 7 inç</translation>
 <translation id="2157640075051554492">Fiyat takibi bildirimleri</translation>
@@ -540,6 +539,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2241693394036365668">Dosya indirme</translation>
 <translation id="2246264294482514010">10 x 12 inç</translation>
 <translation id="2246480341630108201">Ebeveyniniz henüz onaylamadı</translation>
+<translation id="2247789808226901522">Kartın geçerlilik süresi doldu</translation>
 <translation id="2248949050832152960">WebAuthn'u kullan</translation>
 <translation id="2250931979407627383">Solda kenar dikişi</translation>
 <translation id="225207911366869382">Bu değer bu politika için kullanımdan kaldırıldı.</translation>
@@ -1078,6 +1078,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3646643500201740985">Bir reklamın ne kadar iyi performans gösterdiğini ölçme</translation>
 <translation id="3647286794400715637">Her URL dizesi girişinde 1-2 URL bulunmalıdır.</translation>
 <translation id="3650584904733503804">Doğrulama başarılı</translation>
+<translation id="3650594806107685466">Kartınızı güvende tutmak için <ph name="SIDE_OF_CARD" /> yer alan CVC'yi girin</translation>
 <translation id="3653033846669030038">Eğlence parkları</translation>
 <translation id="3655241534245626312">İzin ayarlarına git</translation>
 <translation id="3655670868607891010">Bunu çok sık görüyorsanız, şunları deneyin: <ph name="HELP_LINK" />.</translation>
@@ -1180,7 +1181,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Fikrinizi değiştirirseniz istediğiniz zaman Chrome ayarlarından değişiklik yapabilirsiniz</translation>
-<translation id="3921869355029467742">Güvenlik kodunuzu girin</translation>
+<translation id="3921869355029467742">Güvenlik koduyla</translation>
 <translation id="3927932062596804919">Reddet</translation>
 <translation id="393316646445601645">İnternet ve telekom</translation>
 <translation id="3939773374150895049">CVC yerine WebAuthn kullanılsın mı?</translation>
@@ -1450,7 +1451,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4568329205873177285">Çerez ve site verileri listesini yeni bir pencerede inceleyin</translation>
 <translation id="457875822857220463">Teslimat</translation>
 <translation id="4582204425268416675">Kartı kaldır</translation>
-<translation id="4582595824823167856">Kısa mesaj alma</translation>
+<translation id="4582595824823167856">Kısa mesajla</translation>
 <translation id="4587425331216688090">Adres Chrome'dan kaldırılsın mı?</translation>
 <translation id="459089498662672729">Yönetici politikası, <ph name="ORIGIN_NAME" /> sitesinden buraya yapıştırma işlevini önermiyor</translation>
 <translation id="4592951414987517459"><ph name="DOMAIN" /> ile olan bağlantınız modern bir şifre seti kullanılarak şifrelendi.</translation>
@@ -1857,6 +1858,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5552137475244467770">Chrome, internette yayınlanan listelerle karşılaştırarak şifrelerinizi belirli aralıklarla kontrol eder. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
 <translation id="5556459405103347317">Yeniden Yükle</translation>
 <translation id="5558125320634132440">Bu site, erişkinlere uygun içerik barındırdığından engellendi</translation>
+<translation id="5559311991468302423">Adresi sil</translation>
 <translation id="5560088892362098740">Son Kullanma Tarihi</translation>
 <translation id="55635442646131152">Dokümanın ana hatları</translation>
 <translation id="5565613213060953222">Gizli sekme aç</translation>
@@ -2458,6 +2460,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7112327784801341716">Güncel bilgilerinizi göremiyor musunuz? Bilgilerin güncellenmesi için bankanızla iletişime geçin.</translation>
 <translation id="7118618213916969306">Panoda URL'yi (<ph name="SHORT_URL" />) ara</translation>
 <translation id="7119414471315195487">Diğer sekmeleri veya programları kapatın</translation>
+<translation id="7124354851782353862">CVC'nizi girin</translation>
 <translation id="7129355289156517987">Tüm Chromium gizli sekmelerini kapattığınızda bu sekmelerde bulunan aşağıdaki etkinlikleriniz cihazdan temizlenir:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Tarama etkinliği<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@ Ek ayrıntılar:
 <translation id="7844689747373518809">{COUNT,plural, =0{Yok}=1{1 uygulama (<ph name="EXAMPLE_APP_1" />)}=2{2 uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# uygulama (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan konularınızı göstermesini isteyebilir. Chrome, tarama geçmişinizi ve kimliğinizi korurken en fazla 3 konu paylaşır.</translation>
+<translation id="7860345425589240791"><ph name="SIDE_OF_CARD" /> yer alan yeni son kullanma tarihini ve CVC'yi girin</translation>
 <translation id="7862185352068345852">Siteden çıkılsın mı?</translation>
 <translation id="7865448901209910068">En iyi hız</translation>
 <translation id="7871445724586827387">Google Hesabınızın şifresini değiştirin</translation>

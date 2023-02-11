@@ -18,7 +18,6 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1066060668811609597">Kelola Sinkronisasi</translation>
 <translation id="1076421457278169141">Kode telah dipindai</translation>
 <translation id="1076785341346483463">Sinkronkan dengan Akun Terkelola</translation>
-<translation id="1080365971383768617">Sandi di semua perangkat Anda</translation>
 <translation id="1084365883616172403">Kirim Facebook selesai.</translation>
 <translation id="1085696779717592361">Gunakan Chrome secara Default</translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3181825792072797598">Aktifkan Sinkronisasi</translation>
 <translation id="3181954750937456830">Safe Browsing (melindungi Anda dan perangkat dari situs berbahaya)</translation>
 <translation id="3184767182050912705">Buka Kunci dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Diberi bookmark</translation>
 <translation id="3214379938835224220">Anda telah logout sebagai bagian dari proses reset iPad. Ketuk lanjutkan di bawah untuk login.</translation>
 <translation id="3224641773458703735">Untuk mengekspor sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -320,7 +318,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3311748811247479259">Nonaktif</translation>
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
-<translation id="3329904751041170572">Tidak dapat terhubung ke server.</translation>
 <translation id="3371831930909698441">Terjemahan tersedia. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="3377063233124932127">Kini bookmark, sandi, dan data tersimpan lainnya ada di bagian atas.</translation>
 <translation id="3393920035788932672">Pop-up Diizinkan</translation>
@@ -362,7 +359,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3638472932233958418">Pramuat Halaman Web</translation>
 <translation id="3661160521073045932">Profil Konfigurasi Tersedia</translation>
 <translation id="3670030362669914947">Nomor</translation>
-<translation id="3691593122358196899">Dibookmark ke <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Tandai sebagai Belum Dibaca</translation>
 <translation id="371230970611282515">Memperkirakan dan memberikan peringatan terkait peristiwa berbahaya sebelum terjadi.</translation>
 <translation id="37207012422556617">Penelusuran Trending</translation>
@@ -548,7 +544,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5056446788882570708">Masalah ditemukan <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Oke</translation>
 <translation id="5062321486222145940">Instal Google Drive</translation>
-<translation id="50641035439563602">Sandi kini disimpan ke Akun Google Anda (<ph name="ACCOUNT" />). Anda dapat menggunakannya di perangkat mana pun yang Anda gunakan untuk login. Untuk menonaktifkannya, buka <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Tidak dapat menentukan ukuran file.</translation>
 <translation id="5090832849094901128">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet selesai.</translation>
@@ -712,7 +707,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6284652193729350524">Tawarkan untuk menerjemahkan bahasa <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Berhenti mengikuti <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Untuk mengaktifkan Safe Browsing, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" /> dan ketuk Safe Browsing.</translation>
-<translation id="6320780930074869063">Jika diaktifkan, sandi akan disimpan ke <ph name="ACCOUNT" />. Jika dinonaktifkan, sandi hanya akan disimpan di perangkat ini.</translation>
 <translation id="6321526113093607004">Tambahkan ke Bookmark</translation>
 <translation id="6324669097367352121">Setelan masuk</translation>
 <translation id="6337234675334993532">Enkripsi</translation>
@@ -756,7 +750,6 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="6476800141292307438">Menerjemahkan halaman ke dalam bahasa <ph name="LANGUAGE" />. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="648164694371393720">Error saat Autentikasi</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> item dihapus</translation>
-<translation id="6495429111159337775">Simpan dan Gunakan Sandi dari Akun Google Anda</translation>
 <translation id="6497772452874122664">Jika Anda memercayai <ph name="TIME" />, Anda dapat menggunakan sandi yang tersimpan dari situs lainnya.
 
 Coba gunakan sandi yang unik untuk setiap situs.</translation>
@@ -1040,7 +1033,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8680787084697685621">Detail proses masuk akun sudah usang.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Tutup Tab}other{Tutup Tab}}</translation>
 <translation id="8706588385081740091">Sandi</translation>
-<translation id="8712637175834984815">Mengerti</translation>
 <translation id="8717864919010420084">Salin Link</translation>
 <translation id="8721297211384281569">Menu Alat</translation>
 <translation id="8725066075913043281">Coba lagi</translation>

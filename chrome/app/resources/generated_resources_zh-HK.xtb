@@ -38,6 +38,7 @@
 <translation id="103279545524624934">請釋出磁碟的儲存空間，以啟動 Android 應用程式。</translation>
 <translation id="1033780634303702874">存取您的序列裝置</translation>
 <translation id="1034484273907870301">平板電腦模式適用的縮圖分頁列</translation>
+<translation id="1035875743511577452">按一下「變更主題」以探索靈感來自藝術家、大自然和更多元素的主題</translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1036511912703768636">存取清單中所有 USB 裝置</translation>
 <translation id="1038168778161626396">只有 Encipher</translation>
@@ -52,7 +53,7 @@
 <translation id="104710386808485638">要重新啟動 Linux 嗎？</translation>
 <translation id="1047431265488717055">複製連結文字(&amp;X)</translation>
 <translation id="1048286738600630630">顯示</translation>
-<translation id="1048770690598418849">你可以暫時略過這個步驟，系統會在你完成設定程序後自動重試</translation>
+<translation id="1048770690598418849">您可暫時略過，我們會在您完成設定後自動重試</translation>
 <translation id="1048986595386481879">動態分配</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{現正從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}other{現正從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="1049743911850919806">無痕</translation>
@@ -1389,6 +1390,7 @@
 <translation id="2203088913459920044">名稱可以使用字母、數字和特殊字元</translation>
 <translation id="220321590587754225">無法連接。請再試一次。</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> 可在您使用 Google 帳戶登入時檢查密碼</translation>
+<translation id="2204020417499639567">填入咗電郵。</translation>
 <translation id="2204034823255629767">讀取及變更您輸入的任何設定</translation>
 <translation id="2204387456724731099">翻譯唔到呢個揀咗嘅項目</translation>
 <translation id="2210462644007531147">無法完成安裝</translation>
@@ -1639,7 +1641,7 @@
 <translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="241082044617551207">不明的外掛程式</translation>
 <translation id="2410940059315936967">您瀏覽的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。其他網站設定的 Cookie 就稱為第三方 Cookie。</translation>
-<translation id="2411666601450687801">這部裝置不允許使用任何虛擬機器</translation>
+<translation id="2411666601450687801">此裝置不允許「虛擬機器」</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">鍵盤功能鍵</translation>
 <translation id="2418307627282545839">讓畫面保持鮮明光亮</translation>
@@ -1846,6 +1848,7 @@
 <translation id="2603355571917519942">Voice Match 已準備就緒</translation>
 <translation id="2604129989323098489">網站通常會要求關於顯示屏的資料，以便智能地開啟和放置視窗，例如並排顯示文件或全螢幕內容</translation>
 <translation id="2604255671529671813">網絡連線錯誤</translation>
+<translation id="2604805099836652105">填入咗<ph name="ADDRESS_LABEL" />地址表格。</translation>
 <translation id="2605668923777146443">前往「<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />」以查看您 Better Together 的選項。﻿</translation>
 <translation id="2606246518223360146">連結資料</translation>
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
@@ -1901,7 +1904,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="265390580714150011">欄位值</translation>
 <translation id="2654553774144920065">列印要求</translation>
-<translation id="265748523151262387">讓手機保持連線</translation>
+<translation id="265748523151262387">透過手機保持連線</translation>
 <translation id="2657612187216250073">指標無障礙設定</translation>
 <translation id="2658941648214598230">要顯示原始內容嗎？</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />提供的功能因裝置而異</translation>
@@ -2437,6 +2440,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">無法建立數據目錄</translation>
 <translation id="3124111068741548686">USER 控制代碼</translation>
+<translation id="3124332159330678621">自訂 Chrome 以便為瀏覽器套用新風格</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">為避免發生充電和效能的問題，請使用兼容的 Dell 或 USB-C 電源適配器。</translation>
 <translation id="3127862849166875294">調整 Linux 磁碟大小</translation>
@@ -3062,6 +3066,7 @@
 <translation id="3713091615825314967">已開啟自動更新功能。</translation>
 <translation id="371370241367527062">前置麥克風</translation>
 <translation id="3714195043138862580">此示範裝置已設為取消權限狀態。</translation>
+<translation id="3719310907809321183">填入咗 <ph name="CARD_IDENTIFIER" />。</translation>
 <translation id="3719826155360621982">首頁</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">您和 Google</translation>
@@ -3669,6 +3674,7 @@
 <translation id="426652736638196239">此 IBAN 只會儲存在此裝置上</translation>
 <translation id="4266679478228765574">移除資料夾會停止與他人共用檔案，但不會刪除檔案。</translation>
 <translation id="4267455501101322486">您需要獲得家長的許可，才能新增可存取教育資源的帳戶</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{搵唔到密碼}=1{搵到 1 個結果}other{搵到 {COUNT} 個結果}}</translation>
 <translation id="4267924571297947682">請要求家長授予權限</translation>
 <translation id="4267953847983678297">自動連線至流動網絡</translation>
 <translation id="4268025649754414643">金鑰編密</translation>
@@ -3950,6 +3956,7 @@
 <translation id="4522890784888918985">不支援子帳戶</translation>
 <translation id="4523876148417776526">尚未擷取的 XML 網站清單。</translation>
 <translation id="4524832533047962394">此版本的作業系統不支援目前提供的註冊模式。請確保您使用的是最新版本。</translation>
+<translation id="4526853756266614740">選取圖片以立即套用主題</translation>
 <translation id="452750746583162491">查看您已同步的資料</translation>
 <translation id="4527929807707405172">啟用反向捲動功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">翻譯建議</translation>
@@ -4249,6 +4256,7 @@
 <translation id="4800839971935185386">查看名稱和圖示變動</translation>
 <translation id="4801448226354548035">隱藏帳戶</translation>
 <translation id="4801512016965057443">允許流動數據漫遊</translation>
+<translation id="4804311503028830356">按一下向後箭嘴以探索其他選項</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="4804827417948292437">牛油果</translation>
 <translation id="4806457879608775995">詳閱條款並控制您的資料</translation>
@@ -5764,6 +5772,7 @@
 <translation id="6208725777148613371">無法儲存至「<ph name="WEB_DRIVE" />」- <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">正在更新組件</translation>
 <translation id="6209908325007204267">您的裝置包含一項 Chrome Enterprise 升級，但您的使用者名稱尚未連結企業賬戶。請透過另一部裝置前往 g.co/ChromeEnterpriseAccount 建立企業帳戶。</translation>
+<translation id="6210005727706242461">大功告成！您現在可以隨時為瀏覽器套用新風格。</translation>
 <translation id="6210282067670792090">請在網址列中輸入相關的鍵盤快速鍵和快捷字詞，以使用搜尋引擎和網站搜尋</translation>
 <translation id="621172521139737651">{COUNT,plural, =0{在新分頁群組中開啟所有網址(&amp;N)}=1{在新分頁群組中開啟所有網址(&amp;N)}other{在新分頁群組中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="6212039847102026977">顯示進階網絡屬性</translation>
@@ -6700,7 +6709,7 @@
 <translation id="7047059339731138197">選擇背景</translation>
 <translation id="7049293980323620022">要保留檔案嗎？</translation>
 <translation id="7050037487872780845">無效的熱點設定</translation>
-<translation id="7051551856857948729">隱藏 IBAN 值</translation>
+<translation id="7051551856857948729">隱藏 IBAN 號碼</translation>
 <translation id="7052237160939977163">傳送效能追蹤數據</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
@@ -6768,7 +6777,6 @@
 <translation id="711840821796638741">顯示受管理書籤</translation>
 <translation id="711985611146095797">您可在此頁面管理已登入的 Google 帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">除非連線至 VPN，否則系統將封鎖 Chrome 瀏覽器和 Android 流量</translation>
-<translation id="7120865473764644444">無法連線至同步處理伺服器，正在重試…</translation>
 <translation id="7121438501124788993">開發人員模式</translation>
 <translation id="7121728544325372695">智能破折號</translation>
 <translation id="7123030151043029868">已允許自動下載多個檔案</translation>
@@ -8132,6 +8140,7 @@
 <translation id="8358912028636606457">此裝置不支援投放分頁音訊。</translation>
 <translation id="835951711479681002">儲存在 Google 帳戶中</translation>
 <translation id="8360140320636871023">個人化您的螢幕主題</translation>
+<translation id="8360267485906769442">傳送意見按鈕</translation>
 <translation id="8363095875018065315">穩定</translation>
 <translation id="8363142353806532503">已禁止使用麥克風</translation>
 <translation id="8366396658833131068">您的網絡連線已恢復。請選取其他網絡，或按下方的 [繼續] 按鈕啟動 Kiosk 應用程式。</translation>
@@ -8278,6 +8287,7 @@
 <translation id="8498214519255567734">讓您在光線昏暗的環境下輕易觀看螢幕內容或閱讀</translation>
 <translation id="8498395510292172881">在 Chrome 中繼續閱讀</translation>
 <translation id="8499083585497694743">將麥克風取消靜音</translation>
+<translation id="8499526927826495298">傳送<ph name="BEGIN_LINK1" />自動填入元數據<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">如要使用從 Google Play 下載的應用程式，請先還原您的應用程式。此操作可能會導致部分資料遺失。</translation>
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="850382998924680137">今天曾查看</translation>
@@ -8409,7 +8419,7 @@
 <translation id="8634348081024879304">您將無法再透過 Google Pay 使用虛擬卡。<ph name="BEGIN_LINK" />瞭解虛擬卡<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">正在重新載入…</translation>
 <translation id="8636284842992792762">正在初始化擴充程式…</translation>
-<translation id="8636323803535540285">只要新增 <ph name="BRAND" />捷徑，就能更快地使用這項服務</translation>
+<translation id="8636323803535540285">如要迅速開啟此程式，請將捷徑新增至 <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">不允許網站傳送彈出式視窗或使用重新導向</translation>
 <translation id="8637688295594795546">可安裝系統更新，正在準備下載…</translation>
 <translation id="8639047128869322042">正在檢查有害軟件…</translation>
@@ -8569,7 +8579,7 @@
 <translation id="8767621466733104912">自動為所有使用者更新 Chrome</translation>
 <translation id="8770406935328356739">擴充程式根目錄</translation>
 <translation id="8771300903067484968">起始網頁背景重設咗做預設背景。</translation>
-<translation id="8773280816776735812">顯示 IBAN 值</translation>
+<translation id="8773280816776735812">顯示 IBAN 號碼</translation>
 <translation id="8773302562181397928">儲存 <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>

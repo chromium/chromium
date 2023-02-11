@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">እንግሊዝኛ (አሜሪካ) ከድቮራክ ቁልፍ ሰሌዳ ጋር</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - አስተናጋጅ</translation>
 <translation id="1521655867290435174">Google ሉሆች</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" />ን በማዘጋጀት ላይ...</translation>
 <translation id="1538729222189715449">የLinux ፋይሎችን በመክፈት ላይ...</translation>
 <translation id="1547964879613821194">የካናዳ እንግሊዝኛ</translation>
 <translation id="1556189134700913550">ሁሉም ላይ ተግብር</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን በማመቅ ላይ...</translation>
 <translation id="1722687688096767818">መገለጫ በማከል ላይ...</translation>
 <translation id="1726100011689679555">የስም አገልጋዩች</translation>
-<translation id="1727562178154619254">ለመስመር ዝግጁ ነው</translation>
 <translation id="1729953886957086472">ጀርመንኛ (ጀርመን)</translation>
 <translation id="1730235522912993863">ቻይንኛ ካንግጂ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች ተቀድተዋል።</translation>
@@ -513,7 +511,6 @@
        መሣሪያዎ ስራ ላይ እያለ ማስወገድ የውሂብ መጥፋት ሊያስከትል ይችላል።  እባክዎ ክወናው እስኪጠናቀቅ ድረስ ይጠብቁ፣ ከዚያ የፋይሎች መተግበሪያውን በመጠቀም መሣሪያውን ያስወጡት።</translation>
 <translation id="5163869187418756376">ማጋራት አልተሳካም። ግንኙነትዎን ይፈትሹ እና ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="516592729076796170">የአሜሪካ Dvorak ፕሮግራመር</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን በማዘጋጀት ላይ...</translation>
 <translation id="5177526793333269655">ድንክዬ ትይታ</translation>
 <translation id="5181896909298187506">ምንም የቅርብ ጊዜ ፋይሎች የሉም</translation>
 <translation id="5194713942430106590">በሽቅብታ ቅደም ተከተል ዓምዱን ለመደርደር ጠቅ ያድርጉ።</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">ምንም የቅርብ ጊዜ ምስሎች የሉም</translation>
 <translation id="7460898608667578234">ዩክረኒኛ</translation>
 <translation id="7469894403370665791">ከዚህ አውታረ መረብ ጋር በራስ-ሰር ይገናኙ</translation>
+<translation id="7481358317100446445">ዝግጁ</translation>
 <translation id="7486315294984620427">በParallels Desktop ውስጥ ፋይሎችን ለመጣል ፋይሉ ወደ Windows ፋይሎች መቀዳት አለበት።</translation>
 <translation id="749452993132003881">ሂራጋንኛ</translation>
 <translation id="7495372004724182530">ማሊያላም ፎነቲክ</translation>

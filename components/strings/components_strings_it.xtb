@@ -501,7 +501,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2148613324460538318">Aggiungi carta</translation>
 <translation id="2149968176347646218">La connessione non è sicura</translation>
 <translation id="2153609454945889823">Installare Google Play Services per AR?</translation>
-<translation id="2154054054215849342">Il servizio di sincronizzazione non è disponibile per il tuo dominio</translation>
 <translation id="2154484045852737596">Modifica la carta</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
 <translation id="2157640075051554492">Notifiche per il monitoraggio dei prezzi</translation>
@@ -1093,7 +1092,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3678529606614285348">Apri la pagina in un'altra finestra di navigazione in incognito (CTRL-MAIUSC-N)</translation>
 <translation id="3681007416295224113">Informazioni certificato</translation>
 <translation id="3681421644246505351">Chrome rileva argomenti di interesse in base alla tua cronologia di navigazione recente.</translation>
-<translation id="3693327506115126094">Scegli la modalità di verifica della tua identità</translation>
+<translation id="3693327506115126094">Scegli come verificare la tua identità</translation>
 <translation id="3701427423622901115">Reimpostazione confermata.</translation>
 <translation id="3704162925118123524">La rete che stai utilizzando può richiedere di visitare la relativa pagina di accesso.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1856,6 +1855,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5552137475244467770">Chrome confronta periodicamente le tue password con gli elenchi pubblicati online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5558125320634132440">Questo sito è bloccato perché potrebbe mostrare contenuti inappropriati per i minori</translation>
+<translation id="5559311991468302423">Elimina indirizzo</translation>
 <translation id="5560088892362098740">Data di scadenza</translation>
 <translation id="55635442646131152">Struttura documento</translation>
 <translation id="5565613213060953222">Apri scheda di navigazione in incognito</translation>

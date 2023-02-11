@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">إدارة المزامنة</translation>
 <translation id="1076421457278169141">تم مسح الرمز ضوئيًا</translation>
 <translation id="1076785341346483463">المزامنة مع الحساب المُدار</translation>
-<translation id="1080365971383768617">كلمات المرور على جميع أجهزتك</translation>
 <translation id="1084365883616172403">‏اكتمل النشر على Facebook.</translation>
 <translation id="1085696779717592361">‏استخدام Chrome بشكلٍ تلقائي</translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
@@ -305,7 +304,6 @@
 <translation id="3181825792072797598">تفعيل المزامنة</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
 <translation id="3184767182050912705">الفتح باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3214379938835224220">‏تم تسجيل خروجك كجزء من عملية إعادة ضبط جهاز iPad. انقر على زر المتابعة أدناه لتسجيل الدخول.</translation>
 <translation id="3224641773458703735">لتصدير كلمات المرور، يلزمك أولاً تعيين رمز مرور على جهازك.</translation>
 <translation id="3227137524299004712">الميكروفون</translation>
@@ -322,7 +320,6 @@
 <translation id="3311748811247479259">غير مفعَّل</translation>
 <translation id="3324193307694657476">العنوان 2</translation>
 <translation id="3328801116991980348">معلومات الموقع الإلكتروني</translation>
-<translation id="3329904751041170572">تعذر الاتصال بالخادم.</translation>
 <translation id="3371831930909698441">الترجمة متوفّرة. الخيارات المتاحة بالقرب من الجزء السفلي من الشاشة</translation>
 <translation id="3377063233124932127">ستظهر الآن الإشارات المرجعية وكلمات المرور المحفوظة وغيرها في أعلى الشاشة.</translation>
 <translation id="3393920035788932672">النوافذ المنبثقة المسموح بها</translation>
@@ -364,7 +361,6 @@
 <translation id="3638472932233958418">تحميل صفحات الويب مسبقًا</translation>
 <translation id="3661160521073045932">يتوفّر ملف شخصي يتضمّن إعدادات</translation>
 <translation id="3670030362669914947">رقم</translation>
-<translation id="3691593122358196899">أُضيفَت إشارة مرجعية إلى <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">وضع علامة "غير مقروءة"</translation>
 <translation id="371230970611282515">توقّع الأحداث الخطيرة قبل حدوثها والتحذير منها</translation>
 <translation id="37207012422556617">طلبات البحث الرائجة</translation>
@@ -551,7 +547,6 @@
 <translation id="5056446788882570708">تم العثور على مشاكل <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">حسنًا</translation>
 <translation id="5062321486222145940">‏تثبيت Google Drive</translation>
-<translation id="50641035439563602">‏تم الآن حفظ كلمات المرور في حسابك على Google (<ph name="ACCOUNT" />)، ويمكنك استخدامها على أي جهاز تسجِّل الدخول عليه. لإيقاف هذا الإعداد، انتقِل إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">تعذر تحديد حجم الملف.</translation>
 <translation id="5090832849094901128">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">‏اكتملت مشاركة Tweet.</translation>
@@ -715,7 +710,6 @@
 <translation id="6284652193729350524">اقتراح ترجمة <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">تم إلغاء متابعة <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6293101329759844770">‏لتفعيل "التصفّح الآمن"، افتح <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" /> وانقر على "التصفّح الآمن".</translation>
-<translation id="6320780930074869063">عند تفعيل هذه الميزة، يتم حفظ كلمات المرور في <ph name="ACCOUNT" />. وعند إيقافها، يتم حفظ كلمات المرور على هذا الجهاز فقط.</translation>
 <translation id="6321526113093607004">إضافة إلى الإشارات المرجعية</translation>
 <translation id="6324669097367352121">إعدادات تسجيل الدخول</translation>
 <translation id="6337234675334993532">ترميز</translation>
@@ -759,7 +753,6 @@
 <translation id="6476800141292307438">ترجمة صفحة إلى <ph name="LANGUAGE" />. وتتوفّر الخيارات بالقرب من أسفل الشاشة.</translation>
 <translation id="648164694371393720">خطأ في المصادقة</translation>
 <translation id="6482629121755362506">تم حذف <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> من العناصر</translation>
-<translation id="6495429111159337775">‏استخدام كلمات المرور من حسابك على Google وحفظها</translation>
 <translation id="6497772452874122664">إذا كنت تثِق بالنطاق <ph name="TIME" />، يمكنك استخدام كلمة المرور نفسها المحفوظة من موقع إلكتروني آخر.
 
 حاوِل استخدام كلمة مرور فريدة لكل موقع إلكتروني.</translation>
@@ -1043,7 +1036,6 @@
 <translation id="8680787084697685621">تفاصيل تسجيل الدخول إلى الحساب قديمة.</translation>
 <translation id="8693663554456874301">{count,plural, =1{إغلاق علامة التبويب}zero{إغلاق علامات التبويب}two{إغلاق علامتَي التبويب}few{إغلاق علامات التبويب}many{إغلاق علامات التبويب}other{إغلاق علامات التبويب}}</translation>
 <translation id="8706588385081740091">كلمات المرور</translation>
-<translation id="8712637175834984815">حسنًا</translation>
 <translation id="8717864919010420084">نسخ الرابط</translation>
 <translation id="8721297211384281569">قائمة الأدوات</translation>
 <translation id="8725066075913043281">إعادة المحاولة</translation>

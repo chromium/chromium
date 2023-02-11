@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Inglés (EUA) con teclado Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" />: host</translation>
 <translation id="1521655867290435174">Follas de cálculo de Google</translation>
-<translation id="1521795806314479294">Preparando <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Abrindo ficheiros de Linux…</translation>
 <translation id="1547964879613821194">Inglés canadense</translation>
 <translation id="1556189134700913550">Aplicar a todas</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Comprimindo <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
 <translation id="1722687688096767818">Engadindo perfil…</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
-<translation id="1727562178154619254">Todo listo para sincronizar os ficheiros</translation>
 <translation id="1729953886957086472">Alemán (Alemaña)</translation>
 <translation id="1730235522912993863">Chinés (Cangjie)</translation>
 <translation id="1731889557567069540">Copiáronse <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
@@ -513,7 +511,6 @@
    Retirar o dispositivo mentres se está usando pode provocar a perda de datos. Agarda a que finalice a operación e, a continuación, expulsa o dispositivo mediante a aplicación Ficheiros.</translation>
 <translation id="5163869187418756376">Non se puido compartir. Comproba a túa conexión e téntao de novo máis tarde.</translation>
 <translation id="516592729076796170">Dvorak de programador para EUA</translation>
-<translation id="5167102019886320507">Preparando <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
 <translation id="5177526793333269655">Vista de miniaturas</translation>
 <translation id="5181896909298187506">Non hai ficheiros recentes</translation>
 <translation id="5194713942430106590">Fai clic para organizar a columna en orde ascendente.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Non hai imaxes recentes</translation>
 <translation id="7460898608667578234">Ucraíno</translation>
 <translation id="7469894403370665791">Conectarse automaticamente a esta rede</translation>
+<translation id="7481358317100446445">Listo</translation>
 <translation id="7486315294984620427">Para soltar ficheiros en Parallels Desktop, estes deben copiarse en Ficheiros de Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malabar (fonético)</translation>

@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">সিঙ্ক পরিচালনা করুন</translation>
 <translation id="1076421457278169141">কোড স্ক্যান করা হয়েছে</translation>
 <translation id="1076785341346483463">ম্যানেজ করা অ্যাকাউন্ট ব্যবহার করে সিঙ্ক করুন</translation>
-<translation id="1080365971383768617">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড</translation>
 <translation id="1084365883616172403">Facebook পোষ্ট সম্পূর্ণ হয়েছে৷</translation>
 <translation id="1085696779717592361">ডিফল্ট হিসেবে Chrome ব্যবহার করুন</translation>
 <translation id="1103523840287552314">সর্বদা অনুবাদ করুন <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">সিঙ্ক চালু করুন</translation>
 <translation id="3181954750937456830">নিরাপদ ব্রাউজিং (বিপজ্জনক সাইট থেকে আপনাকে এবং আপনার ডিভাইসকে রক্ষা করে)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> দিয়ে আনলক করুন</translation>
-<translation id="3207960819495026254">বুকমার্ক করা হয়েছে</translation>
 <translation id="3214379938835224220">আপনার iPad রিসেটের অংশ হিসেবে আপনি সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য নিচে 'চালিয়ে যান' বোতামে ট্যাপ করুন।</translation>
 <translation id="3224641773458703735">পাসওয়ার্ড এক্সপোর্ট করার জন্য আপনার ডিভাইসে আপনাকে অবশ্যই একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">বন্ধ করা আছে</translation>
 <translation id="3324193307694657476">ঠিকানা ২</translation>
 <translation id="3328801116991980348">সাইট তথ্য</translation>
-<translation id="3329904751041170572">সার্ভারের সাথে সংযোগ করা যাযনি৷</translation>
 <translation id="3371831930909698441">অনুবাদ পাওয়া যাচ্ছে। স্ক্রিনের একটু নিচের দিকে বিকল্পগুলি দেওয়া আছে।</translation>
 <translation id="3377063233124932127">আপনার সেভ করা বুকমার্ক, পাসওয়ার্ড এবং আরও অনেক কিছু এখন উপরে থাকবে।</translation>
 <translation id="3393920035788932672">মঞ্জুরিপ্রাপ্ত পপ-আপ</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">পূর্বলোড ওয়েবপৃষ্ঠা</translation>
 <translation id="3661160521073045932">কনফিগারেশন প্রোফাইল উপলভ্য আছে</translation>
 <translation id="3670030362669914947">নম্বর</translation>
-<translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> এ বুকমার্ক করা হয়েছে</translation>
 <translation id="3709582977625132201">'পড়া হয়নি' হিসেবে চিহ্নিত করুন</translation>
 <translation id="371230970611282515">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি অনুমান করে আপনাকে সতর্ক করা হয়।</translation>
 <translation id="37207012422556617">জনপ্রিয় সার্চ</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708"><ph name="TIME" /> যে সমস্যাগুলি পাওয়া গেছে।</translation>
 <translation id="5059136629401106827">ঠিক আছে</translation>
 <translation id="5062321486222145940">Google ড্রাইভ ইনস্টল করুন</translation>
-<translation id="50641035439563602">পাসওয়ার্ড এখন আপনার Google অ্যাকাউন্টে (<ph name="ACCOUNT" />) সেভ হয়। আপনি সাইন-ইন করার সময় সেগুলি ব্যবহার করতে পারেন। এটি বন্ধ করার জন্য, <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্পে যান।</translation>
 <translation id="5083464117946352670">ফাইলের আকার নির্ধারণ করা যাচ্ছে না।</translation>
 <translation id="5090832849094901128">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="WEBSITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না।</translation>
 <translation id="5094827893301452931">Tweet সম্পূর্ণ হয়েছে৷</translation>
@@ -713,7 +708,6 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ভাষায় অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> ফলো করা বন্ধ করেছেন</translation>
 <translation id="6293101329759844770">Safe Browsing চালু করতে, <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> বিকল্পটি খুলে Safe Browsing-এ ট্যাপ করুন।</translation>
-<translation id="6320780930074869063">চালু থাকলে, পাসওয়ার্ড <ph name="ACCOUNT" />-এ সেভ হয়। বন্ধ থাকলে, পাসওয়ার্ড শুধুমাত্র এই ডিভাইসে সেভ হয়।</translation>
 <translation id="6321526113093607004">বুকমার্কে যোগ করুন</translation>
 <translation id="6324669097367352121">সাইন-ইন সেটিংস</translation>
 <translation id="6337234675334993532">এনক্রিপশন</translation>
@@ -757,7 +751,6 @@
 <translation id="6476800141292307438">পৃষ্ঠাটি <ph name="LANGUAGE" /> ভাষাতে অনুবাদ হচ্ছে। স্ক্রিনের নিচের দিকে বিকল্পগুলি দেওয়া আছে।</translation>
 <translation id="648164694371393720">যাচাইকরণের সময় সমস্যা হয়েছে</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি আইটেম মোছা হয়েছে</translation>
-<translation id="6495429111159337775">আপনার Google অ্যাকাউন্ট থেকে পাসওয়ার্ড ব্যবহার করে সেভ করুন</translation>
 <translation id="6497772452874122664"><ph name="TIME" />-এর উপর ভরসা থাকলে, আপনি অন্য কোনও সাইটে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।
 
 প্রতিটি সাইটের জন্য অনন্য পাসওয়ার্ড ব্যবহার করার চেষ্টা করুন।</translation>
@@ -1041,7 +1034,6 @@
 <translation id="8680787084697685621">অ্যাকাউন্ট সাইন-ইনের বিশদ বিবরণের তারিখ সীমার বাইরে৷</translation>
 <translation id="8693663554456874301">{count,plural, =1{'ট্যাব' বন্ধ করুন}one{'ট্যাব' বন্ধ করুন}other{'ট্যাব' বন্ধ করুন}}</translation>
 <translation id="8706588385081740091">পাসওয়ার্ড</translation>
-<translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8717864919010420084">লিঙ্কটি কপি করুন</translation>
 <translation id="8721297211384281569">টুল মেনু</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>

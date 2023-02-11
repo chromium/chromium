@@ -18,7 +18,6 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1066060668811609597">Sinxronizatsiyani boshqarish</translation>
 <translation id="1076421457278169141">Kod skanerlandi</translation>
 <translation id="1076785341346483463">Boshqaruvdagi hisob bilan sinxronlash</translation>
-<translation id="1080365971383768617">Barcha qurlimalardagi parollar</translation>
 <translation id="1084365883616172403">Facebook’ka joylandi.</translation>
 <translation id="1085696779717592361">Chrome birlamchi boʻlsin</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
@@ -303,7 +302,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3181825792072797598">Sinxronizatsiyani yoqish</translation>
 <translation id="3181954750937456830">Saytlarni xavfsiz kezish (sizni va qurilmangizni xavfli saytlardan himoya qiladi)</translation>
 <translation id="3184767182050912705">Qulfni <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan ochish</translation>
-<translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
 <translation id="3214379938835224220">iPad qurilmasini tiklash mobaynida hisobingizdan chiqarildingiz. Hisobga kirish uchun quyida davom etish ustiga bosing.</translation>
 <translation id="3224641773458703735">Parollarni eksport qilish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -320,7 +318,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3311748811247479259">Yoqilmagan</translation>
 <translation id="3324193307694657476">Manzil, 2-qator</translation>
 <translation id="3328801116991980348">Sayt haqida ma’lumot</translation>
-<translation id="3329904751041170572">Server bilan aloqa o‘rnatib bo‘lmadi.</translation>
 <translation id="3371831930909698441">Tarjima mavjud. Parametrlar ekranning quyi qismiga yaqinroq joyda</translation>
 <translation id="3377063233124932127">Endi saqlangan bukmarklar, parollar va boshqalar yuqorida chiqadi.</translation>
 <translation id="3393920035788932672">Qalqib chiquvchi oynalarga ruxsat</translation>
@@ -362,7 +359,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3638472932233958418">Oldindan yuklash</translation>
 <translation id="3661160521073045932">Profil konfiguratsiyasi mavjud</translation>
 <translation id="3670030362669914947">Raqam</translation>
-<translation id="3691593122358196899">Xatcho‘p “<ph name="FOLDER_TITLE" />” jildiga saqlandi</translation>
 <translation id="3709582977625132201">Oʻqilmagan deb belgilash</translation>
 <translation id="371230970611282515">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
 <translation id="37207012422556617">Qidiruv trendlari</translation>
@@ -548,7 +544,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5056446788882570708">Muammolar aniqlandi <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive’ni o‘rnatish</translation>
-<translation id="50641035439563602">Parollar Google hisobiga (<ph name="ACCOUNT" />) saqlanadi. Ulardan hisobga kirilgan istalgan joyda foydalanish mumkin. Buni <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali faolsizlantirish mumkin.</translation>
 <translation id="5083464117946352670">Fayl hajmi aniqlanmadi</translation>
 <translation id="5090832849094901128">Bu parol olib tashlangani bilan <ph name="WEBSITE" /> hisobingiz oʻchib ketmaydi.</translation>
 <translation id="5094827893301452931">Tvit joylandi.</translation>
@@ -712,7 +707,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6284652193729350524">Bu tildagi sahifalar tarjimasi taklif qilinsin: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> mavzusiga obuna bekor qilindi</translation>
 <translation id="6293101329759844770">Saytlarni xavfsiz kezish rejimini yoqish uchun <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> bandini oching va Saytlarni xavfsiz kezish ustiga bosing.</translation>
-<translation id="6320780930074869063">Yoniq boʻlsa, parollar <ph name="ACCOUNT" /> hisobingizga saqlanadi. Oʻchiq boʻlsa, parollar faqat bu qurilmaga saqlanadi.</translation>
 <translation id="6321526113093607004">Bukmarklash</translation>
 <translation id="6324669097367352121">Kirish sozlamalari</translation>
 <translation id="6337234675334993532">Shifrlash</translation>
@@ -756,7 +750,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="6476800141292307438">Sahifa <ph name="LANGUAGE" /> tiliga tarjima qilinmoqda. Parametrlar ekranning pastiga yaqin joyda joylashgan.</translation>
 <translation id="648164694371393720">Autentifikatsiya xatosi</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p o‘chirildi</translation>
-<translation id="6495429111159337775">Parollarni Google hisobi orqali saqlash va ishlatish</translation>
 <translation id="6497772452874122664"><ph name="TIME" /> saytiga ishonsangiz, saqlangan parolingizni boshqa saytda ishlatishingiz mumkin.
 
 Har bir sayt uchun alohida parol ishlating.</translation>
@@ -1041,7 +1034,6 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8680787084697685621">Hisob haqidagi ma’lumotlar eskirgan.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Varaqni yopish}other{Varaqlarni yopish}}</translation>
 <translation id="8706588385081740091">Parollar</translation>
-<translation id="8712637175834984815">Tushunarli</translation>
 <translation id="8717864919010420084">Havolani nusxalash</translation>
 <translation id="8721297211384281569">“Vositalar” menyusi</translation>
 <translation id="8725066075913043281">Qayta urinib ko‘ring</translation>

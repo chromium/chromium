@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Kudeatu sinkronizazioa</translation>
 <translation id="1076421457278169141">Eskaneatu da kodea</translation>
 <translation id="1076785341346483463">Sinkronizatu kontu kudeatuarekin</translation>
-<translation id="1080365971383768617">Pasahitzak gailu guztietan</translation>
 <translation id="1084365883616172403">Mezua Facebook-en argitaratu da.</translation>
 <translation id="1085696779717592361">Erabili Chrome modu lehenetsian</translation>
 <translation id="1103523840287552314">Itzuli <ph name="LANGUAGE" /> beti</translation>
@@ -303,7 +302,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3181825792072797598">Aktibatu sinkronizazioa</translation>
 <translation id="3181954750937456830">Arakatze segurua (webgune arriskutsuen aurka babesten zaituzte gailua eta zu)</translation>
 <translation id="3184767182050912705">Desblokeatu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
-<translation id="3207960819495026254">Laster-marka gisa gordea</translation>
 <translation id="3214379938835224220">iPad-a berrezarri duzunez, saioa amaitu zaizu. Saioa hasteko, sakatu aurrera egiteko aukera.</translation>
 <translation id="3224641773458703735">Pasahitzak esportatzeko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
@@ -320,7 +318,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3311748811247479259">Desaktibatuta</translation>
 <translation id="3324193307694657476">Helbidea (2)</translation>
 <translation id="3328801116991980348">Webgunearen informazioa</translation>
-<translation id="3329904751041170572">Ezin izan da konektatu zerbitzarira.</translation>
 <translation id="3371831930909698441">Translate zerbitzua erabilgarri dago. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
 <translation id="3377063233124932127">Orain, gordetako laster-markak, pasahitzak eta gauza gehiago goialdean daude.</translation>
 <translation id="3393920035788932672">Leiho gainerakorrak onartzen dira</translation>
@@ -362,7 +359,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3638472932233958418">Aurrekargatu web-orriak</translation>
 <translation id="3661160521073045932">Konfigurazio-profila erabilgarri dago</translation>
 <translation id="3670030362669914947">Zenbakia</translation>
-<translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> karpetan gehitu da laster-marka</translation>
 <translation id="3709582977625132201">Markatu irakurri gabeko gisa</translation>
 <translation id="371230970611282515">Gertaera arriskutsuak iragartzen ditu eta haien berri ematen dizu gertatu aurretik.</translation>
 <translation id="37207012422556617">Pil-pilean dauden bilaketak</translation>
@@ -548,7 +544,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5056446788882570708"><ph name="TIME" /> arazo aurkitu dira.</translation>
 <translation id="5059136629401106827">Ados</translation>
 <translation id="5062321486222145940">Instalatu Google Drive</translation>
-<translation id="50641035439563602">Orain, pasahitzak zure Google-ko kontuan (<ph name="ACCOUNT" />) gordetzen dira. Saioa hasten duzun bakoitzean erabil ditzakezu. Hori desaktibatzeko, joan <ph name="BEGIN_LINK" />ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Ezin da zehaztu fitxategiaren tamaina.</translation>
 <translation id="5090832849094901128">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="WEBSITE" /> webguneko kontua.</translation>
 <translation id="5094827893301452931">Txio egin da.</translation>
@@ -712,7 +707,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6284652193729350524">Eskaini <ph name="LANGUAGE" /> itzultzea</translation>
 <translation id="6289501276895392862">Utzi diozu <ph name="CHANNEL_NAME" /> kanalari jarraitzeari</translation>
 <translation id="6293101329759844770">Arakatze segurua aktibatzeko, ireki <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> eta sakatu Arakatze segurua.</translation>
-<translation id="6320780930074869063">Aktibatuta badago, pasahitzak <ph name="ACCOUNT" /> kontuan gordetzen dira. Desaktibatuta badago, pasahitzak gailu honetan soilik gordetzen dira.</translation>
 <translation id="6321526113093607004">Gehitu Laster-markak atalean</translation>
 <translation id="6324669097367352121">Saioa hasteko ezarpenak</translation>
 <translation id="6337234675334993532">Enkriptatzea</translation>
@@ -756,7 +750,6 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="6476800141292307438">Orria itzultzen ari gara. <ph name="LANGUAGE" /> erabiliko da orria bistaratzeko. Pantailaren behealdean agertzen dira dauden aukerak.</translation>
 <translation id="648164694371393720">Autentifikazio-errorea</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementu ezabatu dira</translation>
-<translation id="6495429111159337775">Erabili eta gorde Google-ko kontuko pasahitzak</translation>
 <translation id="6497772452874122664"><ph name="TIME" /> fidagarria dela uste baduzu, beste webgune batetik gordetako pasahitz bat erabil dezakezu.
 
 Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
@@ -1040,7 +1033,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8680787084697685621">Kontuan saioa hasteko xehetasunak zaharkituta daude.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Itxi fitxa}other{Itxi fitxak}}</translation>
 <translation id="8706588385081740091">Pasahitzak</translation>
-<translation id="8712637175834984815">Ados</translation>
 <translation id="8717864919010420084">Kopiatu esteka</translation>
 <translation id="8721297211384281569">Tresnak menua</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>

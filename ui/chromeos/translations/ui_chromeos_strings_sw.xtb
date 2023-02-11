@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Kiingereza (Marekani) kwenye kibodi ya Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Seva Pangishi</translation>
 <translation id="1521655867290435174">Majedwali ya Google</translation>
-<translation id="1521795806314479294">Inaandaa <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Inafungua faili za Linux...</translation>
 <translation id="1547964879613821194">Kiingereza cha Kanada</translation>
 <translation id="1556189134700913550">Tumia kwa zote</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Inabana vipengee <ph name="NUMBER_OF_ITEMS" /> ...</translation>
 <translation id="1722687688096767818">Inaweka Maelezo ya eSIM...</translation>
 <translation id="1726100011689679555">Seva za majina</translation>
-<translation id="1727562178154619254">Iko tayari kusawazisha</translation>
 <translation id="1729953886957086472">Kijerumani (Ujerumani)</translation>
 <translation id="1730235522912993863">Cangjie ya Kichina</translation>
 <translation id="1731889557567069540">Vipengee <ph name="NUMBER_OF_ITEMS" /> vimenakiliwa.</translation>
@@ -513,7 +511,6 @@
       Kuondoa kifaa chako kikiwa kinatumika kunaweza kusababisha kupoteza data. Tafadhali subiri hadi uendeshaji ukamilike, kisha uondoe kifaa kwa kutumia programu ya Faili.</translation>
 <translation id="5163869187418756376">Kushiriki kumeshindwa. Angalia muunganisho wako na ujaribu tena baadaye.</translation>
 <translation id="516592729076796170">Kibodi ya Programmer Dvorak, Marekani</translation>
-<translation id="5167102019886320507">Inaandaa vipengee <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="5177526793333269655">Mwonekano wa vijipicha</translation>
 <translation id="5181896909298187506">Hakuna faili za hivi karibuni</translation>
 <translation id="5194713942430106590">Bofya ili upange safu wima katika mpangilio wa kupanda.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Hakuna picha za hivi karibuni</translation>
 <translation id="7460898608667578234">Kiukrania</translation>
 <translation id="7469894403370665791">Unganisha otomatiki kwenye mtandao huu</translation>
+<translation id="7481358317100446445">Iko tayari</translation>
 <translation id="7486315294984620427">Ili uweze kudondosha faili katika Parallels Desktop, ni lazima faili hiyo iwe imenakiliwa kwenye folda ya faili za Windows.</translation>
 <translation id="749452993132003881">Kihiragana</translation>
 <translation id="7495372004724182530">Fonetiki ya Kimalayalamu</translation>

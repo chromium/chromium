@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">ຈັດການການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="1076421457278169141">ສະແກນລະຫັດແລ້ວ</translation>
 <translation id="1076785341346483463">ຊິ້ງໂດຍບັນຊີທີ່ມີການຈັດການ</translation>
-<translation id="1080365971383768617">ລະຫັດຜ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="1084365883616172403">ການ​ໂພ​ສ​ທ໌ Facebook ສຳ​ເລັດ.</translation>
 <translation id="1085696779717592361">ໃຊ້ Chrome ເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="1103523840287552314">ແປ <ph name="LANGUAGE" /> ຢູ່ສະເໝີ</translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">ເປີດ Sync</translation>
 <translation id="3181954750937456830">Safe Browsing (ປົກປ້ອງທ່ານ ແລະ ອຸປະກອນຂອງທ່ານຈາກເວັບໄຊອັນຕະລາຍ)</translation>
 <translation id="3184767182050912705">ປົດລັອກດ້ວຍ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">ໃສ່ບຸກ​ມາກ​໌​ແລ້ວ</translation>
 <translation id="3214379938835224220">ທ່ານອອກຈາກລະບົບເປັນສ່ວນໜຶ່ງຂອງການຣີເຊັດ iPad ທ່ານແລ້ວ. ແຕະສືບຕໍ່ທາງລຸ່ມເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3224641773458703735">ເພື່ອສົ່ງອອກລະຫັດຜ່ານ, ທ່ານຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານກ່ອນ.</translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">ປິດ</translation>
 <translation id="3324193307694657476">ທີ່ຢູ່ 2</translation>
 <translation id="3328801116991980348">ຂໍ້​ມູນ​ເວັບ​ໄຊທ໌</translation>
-<translation id="3329904751041170572">ບໍ່​ສາ​ມາດ​ເຊື່ອມ​ຕໍ່​ກັບ​ເຊີບ​ເວີ​ໄດ້.</translation>
 <translation id="3371831930909698441">ມີບໍລິການແປພາສາ. ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
 <translation id="3377063233124932127">ຕອນນີ້ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ອື່ນໆທີ່ບັນທຶກໄວ້ຂອງທ່ານແມ່ນຢູ່ເທິງສຸດ.</translation>
 <translation id="3393920035788932672">ອະ​ນຸ​ຍາດ​ໃຫ້ປັອບອັບແລ້ວ</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">ໜ້າເວັບໂຫຼດມາກ່ອນ</translation>
 <translation id="3661160521073045932">ມີໂປຣໄຟລ໌ການຕັ້ງຄ່າທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="3670030362669914947">ໝາຍເລກ</translation>
-<translation id="3691593122358196899">ເພີ່ມບຸກມາກໃສ່ <ph name="FOLDER_TITLE" /> ແລ້ວ</translation>
 <translation id="3709582977625132201">ໝາຍວ່າຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="371230970611282515">ຄາດເດົາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍກ່ອນທີ່ພວກມັນຈະເກີດຂຶ້ນ.</translation>
 <translation id="37207012422556617">ການຊອກຫາມາແຮງ</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708">ພົບ <ph name="TIME" /> ບັນຫາ.</translation>
 <translation id="5059136629401106827">ຕົກລົງ</translation>
 <translation id="5062321486222145940">ຕິດ​ຕັ້ງ Google Drive</translation>
-<translation id="50641035439563602">ຕອນນີ້ໄດ້ບັນທຶກລະຫັດຜ່ານທັງໝົດໃສ່ບັນຊີ Google ຂອງທ່ານແລ້ວ (<ph name="ACCOUNT" />). ທ່ານສາມາດໃຊ້ພວກມັນໄດ້ທຸກບ່ອນທີ່ທ່ານເຂົ້າສູ່ລະບົບ. ເພື່ອປິດສິ່ງນີ້, ໃຫ້ໄປທີ່ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">ບໍ່​ສາ​ມາດ​ກຳ​ນົດ​ຂະ​ໜາດ​ໄຟ​ລ໌​ໄດ້.</translation>
 <translation id="5090832849094901128">ການລຶບລະຫັດຜ່ານນີ້ຈະບໍ່ລຶບບັນຊີຂອງທ່ານໃນ <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet ສໍາ​ເລັດ​.</translation>
@@ -712,7 +707,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6284652193729350524">ສະເໜີແປ <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">ເຊົາຕິດຕາມ <ph name="CHANNEL_NAME" /> ແລ້ວ</translation>
 <translation id="6293101329759844770">ເພື່ອເປີດ Safe Browsing, ກະລຸນາເປີດ <ph name="BEGIN_LINK" />ການບໍລິການ Google<ph name="END_LINK" /> ແລະ ແຕະ Safe Browsing.</translation>
-<translation id="6320780930074869063">ເມື່ອເປີດໄວ້, ລະບົບຈະບັນທຶກລະຫັດຜ່ານໄວ້ໃນ <ph name="ACCOUNT" />. ເມື່ອປິດໄວ້, ລະບົບຈະບັນທຶກລະຫັດຜ່ານຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ.</translation>
 <translation id="6321526113093607004">ເພີ່ມໃສ່ບຸກມາກ</translation>
 <translation id="6324669097367352121">ເຂົ້າ​ສູ່​ລະ​ບົບ​ການ​ຕັ້ງ​ຄ່າ</translation>
 <translation id="6337234675334993532">ການເຂົ້າລະຫັດ</translation>
@@ -756,7 +750,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6476800141292307438">ກຳລັງແປໜ້າເວັບເປັນ <ph name="LANGUAGE" />. ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
 <translation id="648164694371393720">ການຮອງຮັບຄວາມຖືກຕ້ອງຜິດພາດ</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ລາຍ​ການ​ຖືກ​ລຶບ​ແລ້ວ</translation>
-<translation id="6495429111159337775">ນຳໃຊ້ ແລະ ບັນທຶກລະຫັດຜ່ານຈາກບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="6497772452874122664">ຖ້າທ່ານເຊື່ອຖື <ph name="TIME" />, ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຈາກເວັບໄຊອື່ນໄດ້.
 
 ພະຍາຍາມໃຊ້ລະຫັດຜ່ານສະເພາະສຳລັບທຸກໆເວັບໄຊ.</translation>
@@ -1040,7 +1033,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8680787084697685621">ລາຍ​ລະ​ອຽດ​ການລົງຊື່ເຂົ້າໃຊ້ບັນຊີລ້າສະໄໝແລ້ວ.</translation>
 <translation id="8693663554456874301">{count,plural, =1{ປິດແຖບ}other{ປິດແຖບ}}</translation>
 <translation id="8706588385081740091">ລະຫັດຜ່ານ</translation>
-<translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8717864919010420084">ສຳເນົາລິ້ງ</translation>
 <translation id="8721297211384281569">ເມ​ນູ​ເຄື່ອງ​ມື</translation>
 <translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>

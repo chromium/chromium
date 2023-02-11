@@ -18,7 +18,6 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1066060668811609597">Zarządzanie synchronizacją</translation>
 <translation id="1076421457278169141">Kod został zeskanowany</translation>
 <translation id="1076785341346483463">Synchronizacja z kontem zarządzanym</translation>
-<translation id="1080365971383768617">Hasła na wszystkich Twoich urządzeniach</translation>
 <translation id="1084365883616172403">Post na Facebooku dodany.</translation>
 <translation id="1085696779717592361">Domyślne korzystanie z Chrome</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3181825792072797598">Włącz synchronizację</translation>
 <translation id="3181954750937456830">Bezpieczne przeglądanie (chroni Ciebie i Twoje urządzenie przed niebezpiecznymi witrynami)</translation>
 <translation id="3184767182050912705">Odblokuj za pomocą <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3214379938835224220">W ramach resetowania iPada nastąpiło wylogowanie. Aby się zalogować, poniżej kliknij Dalej.</translation>
 <translation id="3224641773458703735">Aby wyeksportować hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -320,7 +318,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3311748811247479259">Wyłączono</translation>
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
-<translation id="3329904751041170572">Nie można połączyć się z serwerem.</translation>
 <translation id="3371831930909698441">Dostępne jest tłumaczenie. Opcje znajdują się u dołu ekranu.</translation>
 <translation id="3377063233124932127">Zapisane zakładki, hasła i inne elementy będą widoczne u góry.</translation>
 <translation id="3393920035788932672">Pop-upy akceptowane</translation>
@@ -362,7 +359,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3638472932233958418">Wstępne wczytywanie stron</translation>
 <translation id="3661160521073045932">Dostępny jest profil konfiguracji</translation>
 <translation id="3670030362669914947">Numer</translation>
-<translation id="3691593122358196899">Utworzono zakładkę w folderze <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Oznacz jako nieprzeczytane</translation>
 <translation id="371230970611282515">Przewiduje niebezpieczne zdarzenia i ostrzega Cię przed nimi, zanim nastąpią.</translation>
 <translation id="37207012422556617">Wyszukiwania zyskujące popularność</translation>
@@ -548,7 +544,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5056446788882570708">Znaleziono problemy <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Zainstaluj Dysk Google</translation>
-<translation id="50641035439563602">Hasła są teraz zapisywane na Twoim koncie Google (<ph name="ACCOUNT" />). Możesz ich używać wszędzie, gdzie się zalogujesz. Aby wyłączyć tę funkcję, otwórz <ph name="BEGIN_LINK" />ustawienia<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Nie można ustalić rozmiaru pliku.</translation>
 <translation id="5090832849094901128">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet opublikowany.</translation>
@@ -712,7 +707,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6284652193729350524">Proponuj tłumaczenie z języka: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Usunięto z obserwowanych: <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Aby włączyć Bezpieczne przeglądanie, otwórz <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" /> i kliknij Bezpieczne przeglądanie.</translation>
-<translation id="6320780930074869063">Gdy to ustawienie jest włączone, hasła są zapisywane na koncie <ph name="ACCOUNT" />. Gdy jest wyłączone, hasła są zapisywane tylko na tym urządzeniu.</translation>
 <translation id="6321526113093607004">Dodaj do Zakładek</translation>
 <translation id="6324669097367352121">Ustawienia logowania</translation>
 <translation id="6337234675334993532">Szyfrowanie</translation>
@@ -756,7 +750,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="6476800141292307438">Tłumaczę stronę na <ph name="LANGUAGE" />. Opcje znajdują się na dole ekranu.</translation>
 <translation id="648164694371393720">Błąd uwierzytelniania</translation>
 <translation id="6482629121755362506">Usunięte elementy: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="6495429111159337775">Używaj haseł ze swojego konta Google i zapisuj je</translation>
 <translation id="6497772452874122664">Jeśli ufasz stronie <ph name="TIME" />, możesz użyć zapisanego hasła z innej witryny.
 
 Postaraj się używać innego hasła w każdej witrynie.</translation>
@@ -1041,7 +1034,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8680787084697685621">Dane logowania na konto są nieaktualne.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zamknij kartę}few{Zamknij karty}many{Zamknij karty}other{Zamknij karty}}</translation>
 <translation id="8706588385081740091">Hasła</translation>
-<translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8717864919010420084">Skopiuj link</translation>
 <translation id="8721297211384281569">Menu Narzędzia</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>

@@ -933,7 +933,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1819721979226826163">Tippe auf „App-Benachrichtigungen“ &gt; „Google Play-Dienste“.</translation>
 <translation id="1820028137326691631">Vom Administrator vergebenes Passwort eingeben</translation>
 <translation id="1822140782238030981">Bist du bereits Chrome-Nutzer? Anmelden</translation>
-<translation id="1823781806707127806">Bestehende Browserdaten dem verwalteten Profil hinzufügen</translation>
+<translation id="1823781806707127806">Bestehende Browserdaten zum verwalteten Profil hinzufügen</translation>
 <translation id="18245044880483936">Sicherungsdaten werden nicht auf das Google Drive-Speicherkontingent deines Kindes angerechnet.</translation>
 <translation id="1825565032302550710">Port muss zwischen 1024 und 65535 liegen</translation>
 <translation id="182577151972096764">Kürzlich angesehene Rezepte</translation>
@@ -6743,7 +6743,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="711840821796638741">Verwaltete Lesezeichen anzeigen</translation>
 <translation id="711985611146095797">Auf dieser Seite kannst du deine angemeldeten Google-Konten verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome- und Android-Traffic wird blockiert, wenn keine Verbindung mit einem VPN besteht</translation>
-<translation id="7120865473764644444">Verbindung zum Synchronisierungsserver konnte nicht hergestellt werden. Neuer Versuch...</translation>
 <translation id="7121438501124788993">Entwicklermodus</translation>
 <translation id="7121728544325372695">Intelligente Gedankenstriche</translation>
 <translation id="7123030151043029868">Dürfen automatisch mehrere Dateien herunterladen</translation>

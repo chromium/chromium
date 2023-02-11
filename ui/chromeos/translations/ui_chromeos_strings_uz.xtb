@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Ingliz (AQSH) va Dvorak klaviaturasi</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> tayyorlanmoqda...</translation>
 <translation id="1538729222189715449">Linux fayllari ochilmoqda...</translation>
 <translation id="1547964879613821194">Kanada (Ingliz)</translation>
 <translation id="1556189134700913550">Barchasiga qo‘llash</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ta element arxivlanmoqda...</translation>
 <translation id="1722687688096767818">Profil kiritilmoqda...</translation>
 <translation id="1726100011689679555">Nom serverlari (NS)</translation>
-<translation id="1727562178154619254">Sinxronizatsiya uchun tayyor</translation>
 <translation id="1729953886957086472">Nemis (Germaniya)</translation>
 <translation id="1730235522912993863">Xitoy (Kangji)</translation>
 <translation id="1731889557567069540">Nusxa olindi: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -513,7 +511,6 @@
 Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. Aks holda ba’zi ma’lumotlar o‘chib ketishi mumkin.</translation>
 <translation id="5163869187418756376">Ulashish amalga oshmadi. Ulanishni tekshirib ko‘rib, qayta urining.</translation>
 <translation id="516592729076796170">Dasturchilar uchun Dvorak klaviaturasi</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> ta fayl tayyorlanmoqda...</translation>
 <translation id="5177526793333269655">Kichiklashtirilgan rasmlar</translation>
 <translation id="5181896909298187506">Oxirgi fayllar yoʻq</translation>
 <translation id="5194713942430106590">Ustundagi fayllar roʻyxatini oʻsish boʻyicha tartiblash.</translation>
@@ -792,6 +789,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7458955835361612701">Oxirgi rasmlar yoʻq</translation>
 <translation id="7460898608667578234">Ukrayin tili</translation>
 <translation id="7469894403370665791">Bu tarmoqqa avtomatik ravishda ulanish</translation>
+<translation id="7481358317100446445">Tayyor</translation>
 <translation id="7486315294984620427">Windowsga nusxalanishi kerak fayllarni Parallels Desktop oynasiga tashlang.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam, fonetik</translation>

@@ -501,7 +501,6 @@
 <translation id="2148613324460538318">Додајте картичка</translation>
 <translation id="2149968176347646218">Врската не е безбедна</translation>
 <translation id="2153609454945889823">Да се инсталира „Услуги на Google Play за AR“?</translation>
-<translation id="2154054054215849342">Не е достапна синхронизација за вашиот домен</translation>
 <translation id="2154484045852737596">Уредете ја картичката</translation>
 <translation id="2155260325161282517">5 x 7 инчи</translation>
 <translation id="2157640075051554492">Известувања за следење на цените</translation>
@@ -540,6 +539,7 @@
 <translation id="2241693394036365668">Преземена е датотека</translation>
 <translation id="2246264294482514010">10 x 12 инчи</translation>
 <translation id="2246480341630108201">Твојот родител не рече дека е во ред сè уште</translation>
+<translation id="2247789808226901522">Картичката е истечена</translation>
 <translation id="2248949050832152960">Користи WebAuthn</translation>
 <translation id="2250931979407627383">Шиење на работ лево</translation>
 <translation id="225207911366869382">Оваа вредност е застарена за ова правило.</translation>
@@ -1078,6 +1078,7 @@
 <translation id="3646643500201740985">Мерење на изведбата на реклама</translation>
 <translation id="3647286794400715637">Секој запис во низата со URL-адреси мора да содржи помеѓу 1 и 2 URL-адреси.</translation>
 <translation id="3650584904733503804">Потврдувањето е успешно</translation>
+<translation id="3650594806107685466">За зачувување на безбедноста на вашата картичка, внесете го CVC на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Тематски паркови</translation>
 <translation id="3655241534245626312">Оди до поставките за дозвола</translation>
 <translation id="3655670868607891010">Доколку ова го гледате често, обидете се со овие <ph name="HELP_LINK" />.</translation>
@@ -1857,6 +1858,7 @@
 <translation id="5552137475244467770">Chrome повремено ги споредува лозинките со списоци објавени онлајн. Кога го прави ова, вашите лозинки и кориснички имиња се шифрирани, па нив не може да ги прочита никој, вклучително и Google.</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5558125320634132440">Сајтов е блокиран затоа што може да има содржини за возрасни</translation>
+<translation id="5559311991468302423">Избришете ја адресата</translation>
 <translation id="5560088892362098740">Датум на истекување</translation>
 <translation id="55635442646131152">Преглед на документ</translation>
 <translation id="5565613213060953222">Отвори картичка „Инкогнито“</translation>
@@ -2458,6 +2460,7 @@
 <translation id="7112327784801341716">Ова не се вашите тековни податоци? Контактирајте со вашата банка за да ги ажурирате.</translation>
 <translation id="7118618213916969306">Пребарајте URL-адреса во привремената меморија, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Затворете ги другите картички или програми</translation>
+<translation id="7124354851782353862">Внесување на вашиот CVC</translation>
 <translation id="7129355289156517987">Кога ќе ги затворите сите картички „Инкогнито“ на Chromium, вашата активност во тие картички се брише од уредов:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />активност од прелистувањето<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@
 <translation id="7844689747373518809">{COUNT,plural, =0{Ништо}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7857116075376571629">Подоцна, сајтот што го посетувате може да ги побара вашите теми од Chrome за да ги персонализира рекламите што ги гледате. Chrome споделува до 3 теми додека ви ги штити историјата на прелистувањето и идентитетот.</translation>
+<translation id="7860345425589240791">Внесете ги новиот датум на истекување и CVC на <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Да се напушти ли сајтот?</translation>
 <translation id="7865448901209910068">Најдобра брзина</translation>
 <translation id="7871445724586827387">Променете ја лозинката за сметката на Google</translation>

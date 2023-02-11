@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Ingelesa (AEB), Dvorak teklatuarekin</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Ostalaria</translation>
 <translation id="1521655867290435174">Google Kalkulu-orriak</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> prestatzen…</translation>
 <translation id="1538729222189715449">Linux fitxategiak irekitzen…</translation>
 <translation id="1547964879613821194">Ingelesa (Kanada)</translation>
 <translation id="1556189134700913550">Aplikatu guztiei</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> elementu konpimatzen…</translation>
 <translation id="1722687688096767818">Profila gehitzen…</translation>
 <translation id="1726100011689679555">Izen-zerbitzariak</translation>
-<translation id="1727562178154619254">Sinkronizatzeko prest</translation>
 <translation id="1729953886957086472">Alemana (Alemania)</translation>
 <translation id="1730235522912993863">Txinatarra (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatu dira.</translation>
@@ -513,7 +511,6 @@
    Gailua erabili bitartean kentzen baduzu, datuak gal ditzakezu. Itxaron eragiketa amaitu arte eta kanporatu gailua Fitxategiak aplikazioa erabilita.</translation>
 <translation id="5163869187418756376">Ezin izan da partekatu. Egiaztatu konektatuta zaudela eta saiatu berriro geroago.</translation>
 <translation id="516592729076796170">AEBko programatzaileen Dvorak teklatua</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> elementu prestatzen…</translation>
 <translation id="5177526793333269655">Irudi txikien ikuspegia</translation>
 <translation id="5181896909298187506">Ez dago azkenaldiko fitxategirik</translation>
 <translation id="5194713942430106590">Egin klik zutabea goranzko ordenan ezartzeko.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">Ez dago azkenaldiko irudirik</translation>
 <translation id="7460898608667578234">Ukrainarra</translation>
 <translation id="7469894403370665791">Konektatu automatikoki sare honetara</translation>
+<translation id="7481358317100446445">Prest</translation>
 <translation id="7486315294984620427">Fitxategiak Parallels Desktop-en jaregin ahal izateko, Windows-eko fitxategien karpetan kopiatu behar dira lehendabizi.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malabartar fonetikoa</translation>

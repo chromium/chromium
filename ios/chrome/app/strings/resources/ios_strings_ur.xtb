@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">مطابقت پذیری کا نظم کريں</translation>
 <translation id="1076421457278169141">کوڈ اسکین ہوگیا</translation>
 <translation id="1076785341346483463">نظم کردہ اکاؤنٹ کے ساتھ سِنک کریں</translation>
-<translation id="1080365971383768617">آپ کے تمام آلات پر پاس ورڈز</translation>
 <translation id="1084365883616172403">‏Facebook کی اشاعت مکمل ہوگئی۔</translation>
 <translation id="1085696779717592361">‏بطور ڈیفالٹ Chrome کا استعمال کریں</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">مطابقت پذیری آن کریں</translation>
 <translation id="3181954750937456830">محفوظ براؤزنگ (آپ اور آپ کے آلہ کی خطرناک سائٹس سے حفاظت کرتی ہے)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے غیر مقفل کریں</translation>
-<translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3214379938835224220">‏آپ اپنے iPad ری سیٹ کے حصے کے طور پر سائن آؤٹ ہو گئے تھے۔ سائن ان کرنے کے لیے نیچے جاری رکھیں پر تھپتھپائیں۔</translation>
 <translation id="3224641773458703735">پاس ورڈز برآمد کرنے کیلئے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">آف</translation>
 <translation id="3324193307694657476">پتہ 2</translation>
 <translation id="3328801116991980348">سائٹ کی معلومات</translation>
-<translation id="3329904751041170572">سرور سے منسلک نہیں ہو سکے۔</translation>
 <translation id="3371831930909698441">ترجمہ دستیاب ہے۔ اسکرین کے نچلے حصہ کے قریب اختیارات دستیاب ہیں۔</translation>
 <translation id="3377063233124932127">اب آپ کے محفوظ کردہ بک مارکس، پاس ورڈز اور بہت کچھ سب سے اوپر ہیں۔</translation>
 <translation id="3393920035788932672">پاپ اپس کی اجازت ہے</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">ویب صفحات کو پیشگی لوڈ کریں</translation>
 <translation id="3661160521073045932">کنفیگریشن پروفائل دستیاب ہے</translation>
 <translation id="3670030362669914947">نمبر</translation>
-<translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> میں بُک مارک کردہ</translation>
 <translation id="3709582977625132201">بغیر پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="371230970611282515">خطرناک ایونٹس ہونے سے پہلے ان کی پیشین گوئی کرتا ہے اور آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
 <translation id="37207012422556617">رجحان ساز تلاشیں</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708"><ph name="TIME" /> مسائل کا پتا چلا۔</translation>
 <translation id="5059136629401106827">ٹھیک ہے</translation>
 <translation id="5062321486222145940">‏Google Drive انسٹال کریں</translation>
-<translation id="50641035439563602">‏پاس ورڈز اب آپ کے Google اکاؤنٹ (<ph name="ACCOUNT" />) میں محفوظ ہیں۔ جہاں بھی آپ سائن ان ہوں آپ انہیں استعمال کر سکتے ہیں۔ اسے آف کرنے کے لیے، <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="5083464117946352670">فائل سائز کا تعین نہیں کیا جا سکتا ہے۔</translation>
 <translation id="5090832849094901128">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="WEBSITE" /> سے حذف نہیں ہوگا۔</translation>
 <translation id="5094827893301452931">ٹویٹ مکمل ہوگیا۔</translation>
@@ -712,7 +707,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> کی پیروی ختم کی گئی</translation>
 <translation id="6293101329759844770">‏محفوظ براؤزنگ کو آن کرنے کے لیے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> کھولیں اور محفوظ براؤزنگ پر تھپتھپائیں۔</translation>
-<translation id="6320780930074869063">آن ہونے پر پاس ورڈز <ph name="ACCOUNT" /> میں محفوظ کیے جاتے ہیں۔ آف ہونے پر پاس ورڈز صرف اس آلے پر محفوظ کیے جاتے ہیں۔</translation>
 <translation id="6321526113093607004">بُک مارکس میں شامل کریں</translation>
 <translation id="6324669097367352121">سائن ان کی ترتیبات</translation>
 <translation id="6337234675334993532">مرموزکاری</translation>
@@ -756,7 +750,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6476800141292307438">صفحہ کا <ph name="LANGUAGE" /> میں ترجمہ کیا جا رہا ہے۔ اسکرین کے نچلے حصے کے قریب اختیارات دستیاب ہیں۔</translation>
 <translation id="648164694371393720">توثیق کی خرابی</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> آئٹم کو حذف کر دیا گیا</translation>
-<translation id="6495429111159337775">‏اپنے Google اکاؤنٹ سے پاس ورڈ استعمال کریں اور محفوظ کریں</translation>
 <translation id="6497772452874122664">اگر آپ کو <ph name="TIME" /> پر اعتماد ہے تو آپ کسی اور سائٹ سے محفوظ کردہ پاس ورڈ استعمال کر سکتے ہیں۔
 
 ہر سائٹ کے لئے ایک منفرد پاس ورڈ استعمال کرنے کی کوشش کریں۔</translation>
@@ -1040,7 +1033,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8680787084697685621">اکاؤنٹ سائن ان کی تفصیلات پرانی ہیں۔</translation>
 <translation id="8693663554456874301">{count,plural, =1{ٹیب بند کریں}other{ٹیبز بند کریں}}</translation>
 <translation id="8706588385081740091">پاس ورڈز</translation>
-<translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8717864919010420084">لنک کاپی کریں</translation>
 <translation id="8721297211384281569">ٹولز مینو</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>

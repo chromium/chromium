@@ -629,6 +629,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1567387640189251553">Kibodi tofauti imeunganishwa baada ya tukio lako la hivi karibuni la kuweka nenosiri. Huenda inajaribu kuiba mibofyo yako.</translation>
 <translation id="156793199942386351">Tayari '<ph name="CURRENTKEY" />' imekabidhiwa kwenye kitendo cha '<ph name="ACTION" />'. Bonyeza kitufe chochote ili <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Kidhibiti JavaScript</translation>
+<translation id="1569466257325986920">Nenosiri la Akaunti yako ya Google litakapobadilika, data yako iliyo kwenye kifaa itarejeshwa kiotomatiki baada ya kuingia katika Akaunti yako ya Google</translation>
 <translation id="1570604804919108255">Rejesha Sauti ya Arifa</translation>
 <translation id="1571304935088121812">Nakili jina la mtumiaji</translation>
 <translation id="1571738973904005196">Angalia kichupo: <ph name="TAB_ORIGIN" /></translation>
@@ -895,6 +896,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1781979858217752599">Shiriki sauti iliyo kwenye dirisha hili</translation>
 <translation id="1782101999402987960">Masasisho yamezuiwa na msimamizi wako</translation>
 <translation id="1782196717298160133">Inatafuta simu yako</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{Dokezo 1}other{Madokezo #}}</translation>
 <translation id="1784707308176068866">Tumia chinichini unapoombwa na programu ya mfumo inayokubalika</translation>
 <translation id="1784849162047402014">Kifaa hakina nafasi ya hifadhi ya kutosha</translation>
 <translation id="1787350673646245458">Picha ya mtumiaji</translation>
@@ -1691,6 +1693,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2467755475704469005">Hakuna kifaa kilichotambuliwa. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Kuongeza kasi ya kusogeza padi ya kugusa</translation>
 <translation id="2468205691404969808">Hutumia vidakuzi kukumbuka mapendeleo yako, hata kama hutembelei kurasa hizo</translation>
+<translation id="2468247643665097563">Agiza</translation>
 <translation id="2468402215065996499">Tamagochi</translation>
 <translation id="2468470085922875120">Unatumia manenosiri ambayo si rahisi kukisia</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - kichupo kimoja}other{<ph name="GROUP_TITLE" /> - vichupo #}}</translation>
@@ -5964,6 +5967,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6410668567036790476">Ongeza mtambo wa kutafuta</translation>
 <translation id="641469293210305670">Sakinisha Programu na Masasisho</translation>
 <translation id="6414878884710400018">Fungua Mapendeleo ya Mfumo</translation>
+<translation id="6415816101512323589">Je, ungependa kuwasha kipengele cha urejeshaji data iliyo kwenye kifaa ili kulinda data yako?</translation>
 <translation id="6415900369006735853">Unganisha kwenye intaneti kupitia simu yako</translation>
 <translation id="6416743254476733475">Ruhusu au zuia kwenye kompyuta yako.</translation>
 <translation id="6417265370957905582">Mratibu wa Google</translation>
@@ -6756,7 +6760,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="711840821796638741">Onyesha Alamisho Zinazosimamiwa</translation>
 <translation id="711985611146095797">Ukurasa huu hukuwezesha kudhibiti Akaunti zako za Google ulizotumia kuingia katika tovuti na programu. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Kivinjari cha Chrome na trafiki ya Android zitazuiwa usipounganisha VPN</translation>
-<translation id="7120865473764644444">Haikuweza kuunganisha kwenye seva ya usawazishaji. Inajaribu tena...</translation>
 <translation id="7121438501124788993">Hali ya Wasanidi Programu</translation>
 <translation id="7121728544325372695">Dashi Mahiri</translation>
 <translation id="7123030151043029868">Zinazoruhusiwa kupakua faili nyingi kiotomatiki</translation>

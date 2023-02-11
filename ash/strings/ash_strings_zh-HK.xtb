@@ -133,6 +133,7 @@
 <translation id="163517899691012366">「請勿騷擾」功能開啟時，系統會忽略通知</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="1639239467298939599">載入中</translation>
+<translation id="1647986356840967552">上一頁</translation>
 <translation id="1654477262762802994">開始語音查詢</translation>
 <translation id="1668469839109562275">內置 VPN</translation>
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">計算中…</translation>
 <translation id="397726367135689299">電池充電可能不可靠。</translation>
 <translation id="3977512764614765090">電量有 <ph name="PERCENTAGE" />%，宜家差緊電。</translation>
+<translation id="3984536049089846927">下一頁</translation>
 <translation id="3986082989454912832">接聽</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右側後方連接埠)</translation>
 <translation id="40062176907008878">手寫</translation>
@@ -718,7 +720,7 @@
 <translation id="481455355267255546">即將舉行的活動</translation>
 <translation id="4831034276697007977">確定要關閉自動點擊功能嗎？</translation>
 <translation id="4849058404725798627">突顯鍵盤焦點所在的物件</translation>
-<translation id="4855250849489639581">向下滑動即可查看更多版面配置選項</translation>
+<translation id="4855250849489639581">向下滑動以查看更多版面配置選項</translation>
 <translation id="485592688953820832">不執行任何操作 (暫停)</translation>
 <translation id="485634149294284819">輸入鍵盤選單</translation>
 <translation id="4860284199500934869">請檢查網路連線以下載「<ph name="FILENAME" />」</translation>

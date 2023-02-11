@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">동기화 관리</translation>
 <translation id="1076421457278169141">코드 스캔됨</translation>
 <translation id="1076785341346483463">관리 계정과 동기화</translation>
-<translation id="1080365971383768617">모든 기기의 비밀번호</translation>
 <translation id="1084365883616172403">Facebook 게시가 완료되었습니다.</translation>
 <translation id="1085696779717592361">Chrome을 기본 브라우저로 사용</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
@@ -303,7 +302,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3181825792072797598">동기화 사용 설정</translation>
 <translation id="3181954750937456830">세이프 브라우징(사용자와 사용자의 기기를 위험한 사이트로부터 보호)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 인증으로 잠금 해제</translation>
-<translation id="3207960819495026254">북마크에 추가됨</translation>
 <translation id="3214379938835224220">iPad 재설정 중 로그아웃되었습니다. 아래에서 '계속'을 탭하여 로그인하세요.</translation>
 <translation id="3224641773458703735">비밀번호를 내보내려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="3227137524299004712">마이크</translation>
@@ -320,7 +318,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3311748811247479259">사용 안함</translation>
 <translation id="3324193307694657476">주소 2</translation>
 <translation id="3328801116991980348">사이트 정보</translation>
-<translation id="3329904751041170572">서버에 연결하지 못했습니다.</translation>
 <translation id="3371831930909698441">번역을 사용할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="3377063233124932127">저장된 북마크, 비밀번호 등이 상단에 표시됩니다</translation>
 <translation id="3393920035788932672">팝업 허용</translation>
@@ -362,7 +359,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3638472932233958418">웹페이지 미리 로드하기</translation>
 <translation id="3661160521073045932">구성 프로필 이용 가능</translation>
 <translation id="3670030362669914947">번호</translation>
-<translation id="3691593122358196899">북마크를 <ph name="FOLDER_TITLE" />에 추가함</translation>
 <translation id="3709582977625132201">읽지않음으로 표시</translation>
 <translation id="371230970611282515">위험한 이벤트가 발생하기 전에 이를 예측하여 알립니다.</translation>
 <translation id="37207012422556617">인기 검색어</translation>
@@ -548,7 +544,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5056446788882570708"><ph name="TIME" />에 문제가 발견되었습니다.</translation>
 <translation id="5059136629401106827">확인</translation>
 <translation id="5062321486222145940">Google Drive 설치</translation>
-<translation id="50641035439563602">비밀번호가 Google 계정(<ph name="ACCOUNT" />)에 저장되었습니다. 로그인하면 어디서나 비밀번호를 사용할 수 있습니다. 사용 중지하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="5083464117946352670">파일 크기를 알 수 없습니다.</translation>
 <translation id="5090832849094901128">비밀번호를 삭제해도 <ph name="WEBSITE" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="5094827893301452931">Tweet이 완료되었습니다.</translation>
@@ -712,7 +707,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> 번역 옵션 제공</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> 팔로우를 해제했습니다.</translation>
 <translation id="6293101329759844770">세이프 브라우징을 사용 설정하려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />를 열고 세이프 브라우징을 탭하세요.</translation>
-<translation id="6320780930074869063">사용 설정하면 비밀번호가 <ph name="ACCOUNT" />에 저장됩니다. 사용 중지하면 비밀번호가 이 기기에만 저장됩니다.</translation>
 <translation id="6321526113093607004">북마크에 추가</translation>
 <translation id="6324669097367352121">로그인 설정</translation>
 <translation id="6337234675334993532">암호화</translation>
@@ -756,7 +750,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6476800141292307438">페이지를 <ph name="LANGUAGE" />로 번역합니다. 화면 하단에 옵션이 있습니다.</translation>
 <translation id="648164694371393720">인증 오류</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />개 항목 삭제함</translation>
-<translation id="6495429111159337775">Google 계정에서 비밀번호 사용 및 저장</translation>
 <translation id="6497772452874122664"><ph name="TIME" /> 사이트를 신뢰한다면 다른 사이트의 저장된 비밀번호를 사용할 수 있습니다.
 
 하지만 사이트마다 고유한 비밀번호를 사용하는 것이 좋습니다.</translation>
@@ -1040,7 +1033,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8680787084697685621">계정 로그인 세부정보의 유효기간이 만료되었습니다.</translation>
 <translation id="8693663554456874301">{count,plural, =1{탭 닫기}other{탭 닫기}}</translation>
 <translation id="8706588385081740091">비밀번호</translation>
-<translation id="8712637175834984815">확인</translation>
 <translation id="8717864919010420084">링크 복사</translation>
 <translation id="8721297211384281569">도구 메뉴</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>

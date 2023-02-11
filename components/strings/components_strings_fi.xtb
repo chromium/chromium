@@ -501,7 +501,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2148613324460538318">Lisää kortti</translation>
 <translation id="2149968176347646218">Yhteys ei ole turvallinen</translation>
 <translation id="2153609454945889823">Asennetaanko Google Play Services for AR?</translation>
-<translation id="2154054054215849342">Synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="2154484045852737596">Muokkaa korttia</translation>
 <translation id="2155260325161282517">5 x 7 tuumaa</translation>
 <translation id="2157640075051554492">Hintaseurannan ilmoitukset</translation>
@@ -1860,6 +1859,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5552137475244467770">Chrome vertaa salasanojasi säännöllisesti listoihin salasanoista, jotka on julkaistu verkossa. Tätä varten salasanat ja käyttäjänimet salataan, joten kukaan (myöskään Google) ei voi lukea niitä.</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5558125320634132440">Sivusto on estetty, koska sillä voi olla aikuisille suunnattua sisältöä</translation>
+<translation id="5559311991468302423">Osoitteen poistaminen</translation>
 <translation id="5560088892362098740">Viimeinen voimassaolopäivä</translation>
 <translation id="55635442646131152">Dokumentin asettelu</translation>
 <translation id="5565613213060953222">Avaa incognito-välilehti</translation>

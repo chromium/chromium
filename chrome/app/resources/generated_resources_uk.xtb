@@ -635,6 +635,7 @@
 <translation id="1567387640189251553">Після останнього введення пароля було під’єднано іншу клавіатуру. Можливо, це спроба викрасти введені символи.</translation>
 <translation id="156793199942386351">Клавіші "<ph name="CURRENTKEY" />" уже призначено дію "<ph name="ACTION" />". Щоб <ph name="RESPONSE" />, натисніть будь-яку клавішу.</translation>
 <translation id="1567993339577891801">Консоль JavaScript</translation>
+<translation id="1569466257325986920">Наступного разу, коли ви зміните пароль облікового запису Google, ваші локальні дані буде відновлено автоматично після входу в цей обліковий запис Google</translation>
 <translation id="1570604804919108255">Увімкнути звук сповіщень</translation>
 <translation id="1571304935088121812">Копіювати ім’я користувача</translation>
 <translation id="1571738973904005196">Переглянути вкладку: <ph name="TAB_ORIGIN" /></translation>
@@ -901,6 +902,7 @@
 <translation id="1781979858217752599">Надати доступ до аудіо у вікні</translation>
 <translation id="1782101999402987960">Адміністратор заблокував оновлення</translation>
 <translation id="1782196717298160133">Пошук вашого телефона</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 нотатка}one{# нотатка}few{# нотатки}many{# нотаток}other{# нотатки}}</translation>
 <translation id="1784707308176068866">Запускати у фоновому режимі, коли про це просить партнерський рідний додаток</translation>
 <translation id="1784849162047402014">На диску пристрою мало вільного місця</translation>
 <translation id="1787350673646245458">Зображення користувача</translation>
@@ -1697,6 +1699,7 @@
 <translation id="2467755475704469005">Пристроїв не виявлено. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Прискорення прокрутки сенсорною панеллю</translation>
 <translation id="2468205691404969808">Використовує файли cookie, щоб запам’ятовувати налаштування, навіть якщо ви не відвідуєте ці сторінки</translation>
+<translation id="2468247643665097563">Упорядкувати</translation>
 <translation id="2468402215065996499">Тамагочі</translation>
 <translation id="2468470085922875120">Ви використовуєте паролі, які важко вгадати</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{"<ph name="GROUP_TITLE" />" – 1 вкладка}one{"<ph name="GROUP_TITLE" />" – # вкладка}few{"<ph name="GROUP_TITLE" />" – # вкладки}many{"<ph name="GROUP_TITLE" />" – # вкладок}other{"<ph name="GROUP_TITLE" />" – # вкладки}}</translation>
@@ -5969,6 +5972,7 @@
 <translation id="6410668567036790476">Додати пошукову систему</translation>
 <translation id="641469293210305670">Установити оновлення та додатки</translation>
 <translation id="6414878884710400018">Відкрити налаштування системи</translation>
+<translation id="6415816101512323589">Увімкнути функцію відновлення, щоб захистити ваші локальні дані?</translation>
 <translation id="6415900369006735853">Підключайтеся до Інтернету через телефон</translation>
 <translation id="6416743254476733475">Дозвольте або заблокуйте на комп’ютері.</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
@@ -6767,7 +6771,6 @@
 <translation id="711840821796638741">Показати закладки, якими керує адміністратор</translation>
 <translation id="711985611146095797">На цій сторінці можна керувати обліковими записами Google, у які ви ввійшли. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Без підключення до VPN веб-переглядач Chrome і трафік Android буде заблоковано</translation>
-<translation id="7120865473764644444">Не вдалося з’єднатись із сервером синхронізації. Повторна спроба…</translation>
 <translation id="7121438501124788993">Режим розробника</translation>
 <translation id="7121728544325372695">Розумні тире</translation>
 <translation id="7123030151043029868">Дозволено автоматично завантажувати кілька файлів</translation>

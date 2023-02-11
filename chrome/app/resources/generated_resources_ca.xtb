@@ -629,6 +629,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1567387640189251553">S'ha connectat un altre teclat des de la darrera vegada que vas introduir la contrasenya. Pot ser que estigui provant de robar-te les combinacions de tecles.</translation>
 <translation id="156793199942386351">La tecla <ph name="CURRENTKEY" /> ja està assignada a l'acció <ph name="ACTION" />. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
+<translation id="1569466257325986920">La propera vegada que es canviï la contrasenya del teu Compte de Google, les dades locals es recuperaran automàticament quan iniciïs la sessió al compte</translation>
 <translation id="1570604804919108255">Deixa de silenciar les notificacions</translation>
 <translation id="1571304935088121812">Copia el nom d'usuari</translation>
 <translation id="1571738973904005196">Mostra la pestanya <ph name="TAB_ORIGIN" /></translation>
@@ -887,6 +888,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1781979858217752599">Comparteix l'àudio de la finestra</translation>
 <translation id="1782101999402987960">El teu administrador ha bloquejat les actualitzacions</translation>
 <translation id="1782196717298160133">S'està cercant el telèfon</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 nota}other{# notes}}</translation>
 <translation id="1784707308176068866">Executa en segon pla quan una aplicació nativa col·laboradora ho sol·liciti</translation>
 <translation id="1784849162047402014">Queda poc espai de disc del dispositiu</translation>
 <translation id="1787350673646245458">Imatge de l'usuari</translation>
@@ -1679,6 +1681,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2467755475704469005">No s'ha detectat cap dispositiu. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Acceleració de desplaçament del ratolí tàctil</translation>
 <translation id="2468205691404969808">Utilitza galetes per recordar les teves preferències, fins i tot si no visites aquestes pàgines</translation>
+<translation id="2468247643665097563">Ordre</translation>
 <translation id="2468402215065996499">Tamagotxi</translation>
 <translation id="2468470085922875120">Estàs utilitzant contrasenyes que semblen difícils d'endevinar</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 pestanya)}other{<ph name="GROUP_TITLE" /> (# pestanyes)}}</translation>
@@ -5951,6 +5954,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6410668567036790476">Afegeix un motor de cerca</translation>
 <translation id="641469293210305670">Instal·la actualitzacions i aplicacions</translation>
 <translation id="6414878884710400018">Obre les preferències del sistema</translation>
+<translation id="6415816101512323589">Vols activar la recuperació de dades locals per protegir les teves dades?</translation>
 <translation id="6415900369006735853">Connecta't a Internet a través del telèfon</translation>
 <translation id="6416743254476733475">Permet o bloqueja a l'ordinador.</translation>
 <translation id="6417265370957905582">Assistent de Google</translation>
@@ -6743,7 +6747,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="711840821796638741">Mostra les adreces d'interès gestionades</translation>
 <translation id="711985611146095797">En aquesta pàgina pots gestionar els Comptes de Google en què tinguis la sessió iniciada. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">El navegador Chrome i el trànsit d'Android es bloquejaran tret que es connecti una VPN</translation>
-<translation id="7120865473764644444">No s'ha pogut connectar amb el servidor de sincronització. S'està tornant a provar…</translation>
 <translation id="7121438501124788993">Mode de desenvolupador</translation>
 <translation id="7121728544325372695">Guions intel·ligents</translation>
 <translation id="7123030151043029868">Amb permís per baixar automàticament diversos fitxers</translation>

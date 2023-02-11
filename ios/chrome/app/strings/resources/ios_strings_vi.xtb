@@ -18,7 +18,6 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1066060668811609597">Quản lý dữ liệu đồng bộ hóa</translation>
 <translation id="1076421457278169141">Đã quét mã</translation>
 <translation id="1076785341346483463">Đồng bộ hoá với tài khoản được quản lý</translation>
-<translation id="1080365971383768617">Mật khẩu trên tất cả thiết bị của bạn</translation>
 <translation id="1084365883616172403">Đã đăng lên Facebook.</translation>
 <translation id="1085696779717592361">Sử dụng Chrome theo mặc định</translation>
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3181825792072797598">Bật Đồng bộ hóa</translation>
 <translation id="3181954750937456830">Duyệt web an toàn (bảo vệ bạn cũng như thiết bị của bạn khỏi các trang web nguy hiểm)</translation>
 <translation id="3184767182050912705">Mở khóa bằng <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Đã đánh dấu trang</translation>
 <translation id="3214379938835224220">Bạn đã bị đăng xuất trong quá trình đặt lại iPad. Nhấn vào Tiếp tục bên dưới để đăng nhập.</translation>
 <translation id="3224641773458703735">Để xuất mật khẩu, trước tiên bạn phải đặt mật mã trên thiết bị của mình.</translation>
 <translation id="3227137524299004712">Micrô</translation>
@@ -320,7 +318,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3311748811247479259">Đang tắt</translation>
 <translation id="3324193307694657476">Địa chỉ 2</translation>
 <translation id="3328801116991980348">Thông tin về trang web</translation>
-<translation id="3329904751041170572">Không thể kết nối với máy chủ.</translation>
 <translation id="3371831930909698441">Có tính năng dịch. Các tùy chọn nằm ở gần cuối màn hình.</translation>
 <translation id="3377063233124932127">Dấu trang, mật khẩu, v.v. mà bạn đã lưu hiện sẽ xuất hiện ở trên cùng.</translation>
 <translation id="3393920035788932672">Cửa sổ bật lên được cho phép</translation>
@@ -362,7 +359,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3638472932233958418">Tải trước trang web</translation>
 <translation id="3661160521073045932">Hồ sơ cấu hình có sẵn</translation>
 <translation id="3670030362669914947">Số</translation>
-<translation id="3691593122358196899">Đã đánh dấu trang vào <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Đánh dấu là chưa đọc</translation>
 <translation id="371230970611282515">Dự đoán và cảnh báo cho bạn các sự kiện nguy hiểm trước khi các sự kiện đó xảy ra.</translation>
 <translation id="37207012422556617">Nội dung tìm kiếm thịnh hành</translation>
@@ -548,7 +544,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5056446788882570708">Đã phát hiện thấy sự cố <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Cài đặt Google Drive</translation>
-<translation id="50641035439563602">Mật khẩu hiện được lưu vào Tài khoản Google của bạn (<ph name="ACCOUNT" />). Bạn có thể sử dụng các mật khẩu này trên mọi thiết bị bạn đăng nhập. Để tắt tính năng này, hãy vào phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Không thể xác định kích thước tệp.</translation>
 <translation id="5090832849094901128">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Đã đăng lên Twitter.</translation>
@@ -712,7 +707,6 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6284652193729350524">Đề xuất dịch <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Đã ngừng theo dõi <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Để bật tính năng Duyệt web an toàn, hãy mở <ph name="BEGIN_LINK" />Các dịch vụ của Google<ph name="END_LINK" /> rồi nhấn vào Duyệt web an toàn.</translation>
-<translation id="6320780930074869063">Khi chế độ này bật, mật khẩu sẽ được lưu vào <ph name="ACCOUNT" />. Khi chế độ này tắt, mật khẩu chỉ được lưu trên thiết bị này.</translation>
 <translation id="6321526113093607004">Thêm vào Dấu trang</translation>
 <translation id="6324669097367352121">Cài đặt đăng nhập</translation>
 <translation id="6337234675334993532">Mã hóa</translation>
@@ -756,7 +750,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="6476800141292307438">Đang dịch trang sang <ph name="LANGUAGE" />. Các tùy chọn nằm ở gần cuối màn hình.</translation>
 <translation id="648164694371393720">Lỗi xác thực</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dấu trang đã bị xóa</translation>
-<translation id="6495429111159337775">Sử dụng và lưu mật khẩu từ Tài khoản Google của bạn</translation>
 <translation id="6497772452874122664">Nếu tin tưởng <ph name="TIME" />, bạn có thể sử dụng mật khẩu đã lưu của một trang web khác.
 
 Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</translation>
@@ -1041,7 +1034,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8680787084697685621">Chi tiết đăng nhập tài khoản đã lỗi thời.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Đóng thẻ}other{Đóng các thẻ}}</translation>
 <translation id="8706588385081740091">Mật khẩu</translation>
-<translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8717864919010420084">Sao chép đường liên kết</translation>
 <translation id="8721297211384281569">Menu công cụ</translation>
 <translation id="8725066075913043281">Thử lại</translation>

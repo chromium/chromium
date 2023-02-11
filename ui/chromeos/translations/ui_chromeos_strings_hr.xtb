@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">engleski (SAD) s programerskom tipkovnicom Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – host</translation>
 <translation id="1521655867290435174">Google tablice</translation>
-<translation id="1521795806314479294">Priprema <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Otvaranje Linux datoteka...</translation>
 <translation id="1547964879613821194">kanadska (engleska)</translation>
 <translation id="1556189134700913550">Primijeni na sve</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Komprimiranje stavki (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="1722687688096767818">Dodaje se profil...</translation>
 <translation id="1726100011689679555">Poslužitelji naziva</translation>
-<translation id="1727562178154619254">Spremno za sinkronizaciju</translation>
 <translation id="1729953886957086472">njemački (Njemačka)</translation>
 <translation id="1730235522912993863">kineski cangjie</translation>
 <translation id="1731889557567069540">Kopirano stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -513,7 +511,6 @@
        Uklanjanje uređaja dok je još u upotrebi može uzrokovati gubitak podataka. Pričekajte da uređaj dovrši radnju, a potom ga izbacite pomoću aplikacije Datoteke.</translation>
 <translation id="5163869187418756376">Dijeljenje nije uspjelo. Provjerite vezu i pokušajte ponovo kasnije.</translation>
 <translation id="516592729076796170">Američka programerska Dvorak</translation>
-<translation id="5167102019886320507">Priprema sljedećeg broja stavki: <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="5177526793333269655">Prikaz minijatura</translation>
 <translation id="5181896909298187506">Nema nedavnih datoteka</translation>
 <translation id="5194713942430106590">Kliknite da biste stavke u stupcu poredali uzlaznim redoslijedom.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Nema nedavnih slika</translation>
 <translation id="7460898608667578234">Ukrajinski</translation>
 <translation id="7469894403370665791">Automatski se povežite s tom mrežom</translation>
+<translation id="7481358317100446445">Spremno</translation>
 <translation id="7486315294984620427">Da biste ispustili datoteke na Parallels Desktop, morate ih kopirati u Windows datoteke.</translation>
 <translation id="749452993132003881">hiragana</translation>
 <translation id="7495372004724182530">malajalamski, fonetski</translation>

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">英语（美国）Dvorak 键盘</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - 主机</translation>
 <translation id="1521655867290435174">Google 表格</translation>
-<translation id="1521795806314479294">正在准备“<ph name="FILE_NAME" />”…</translation>
 <translation id="1538729222189715449">正在打开 Linux 文件…</translation>
 <translation id="1547964879613821194">加拿大英语</translation>
 <translation id="1556189134700913550">全部应用</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">正在压缩 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="1722687688096767818">正在添加配置文件…</translation>
 <translation id="1726100011689679555">域名服务器</translation>
-<translation id="1727562178154619254">可以开始同步了</translation>
 <translation id="1729953886957086472">德语（德国）</translation>
 <translation id="1730235522912993863">中文仓颉</translation>
 <translation id="1731889557567069540">已复制 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
@@ -513,7 +511,6 @@
    取出使用中的设备可能会导致数据丢失。请等待操作完成，然后使用“文件”菜单弹出设备。</translation>
 <translation id="5163869187418756376">共享失败。请检查连接是否正常，然后重试。</translation>
 <translation id="516592729076796170">美式 Programmer Dvorak 键盘</translation>
-<translation id="5167102019886320507">正在准备 <ph name="NUMBER_OF_ITEMS" /> 项内容…</translation>
 <translation id="5177526793333269655">缩略图视图</translation>
 <translation id="5181896909298187506">没有任何近期文件</translation>
 <translation id="5194713942430106590">点击即可按升序对此列排序。</translation>
@@ -788,6 +785,7 @@
 <translation id="7458955835361612701">没有任何近期图片</translation>
 <translation id="7460898608667578234">乌克兰语</translation>
 <translation id="7469894403370665791">自动连接到该网络</translation>
+<translation id="7481358317100446445">准备就绪</translation>
 <translation id="7486315294984620427">若要将某个文件拖放到 Parallels Desktop，必须先将此文件复制到“Windows 文件”文件夹。</translation>
 <translation id="749452993132003881">平假名</translation>
 <translation id="7495372004724182530">马拉雅拉姆语注音</translation>

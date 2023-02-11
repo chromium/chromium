@@ -18,7 +18,6 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
 <translation id="1076421457278169141">Code scanné</translation>
 <translation id="1076785341346483463">Synchroniser avec un compte géré</translation>
-<translation id="1080365971383768617">Mots de passe sur tous vos appareils</translation>
 <translation id="1084365883616172403">Post Facebook publié.</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3181825792072797598">Activer la synchronisation</translation>
 <translation id="3181954750937456830">Navigation sécurisée (assure votre protection et celle de votre appareil contre les sites dangereux)</translation>
 <translation id="3184767182050912705">Déverrouiller avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Favori</translation>
 <translation id="3214379938835224220">Vous avez été déconnecté lors de la réinitialisation de votre iPad. Appuyez sur "Continuer" ci-dessous pour vous connecter.</translation>
 <translation id="3224641773458703735">Pour exporter les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="3227137524299004712">Micro</translation>
@@ -320,7 +318,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3311748811247479259">Désactivé</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Informations sur le site</translation>
-<translation id="3329904751041170572">Impossible de se connecter au serveur.</translation>
 <translation id="3371831930909698441">La traduction est disponible. Options disponibles au bas de l'écran.</translation>
 <translation id="3377063233124932127">Vos favoris, vos mots de passe et d'autres éléments sont désormais affichés en haut de la page.</translation>
 <translation id="3393920035788932672">Pop-up autorisés</translation>
@@ -362,7 +359,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3638472932233958418">Précharger pages Web</translation>
 <translation id="3661160521073045932">Profil de configuration disponible</translation>
 <translation id="3670030362669914947">Numéro</translation>
-<translation id="3691593122358196899">Ajouté aux favoris dans "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Marquer comme non lu</translation>
 <translation id="371230970611282515">Il prédit les événements dangereux et vous en informe avant qu'ils ne surviennent.</translation>
 <translation id="37207012422556617">Recherches populaires</translation>
@@ -548,7 +544,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5056446788882570708">Problèmes identifiés <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Drive</translation>
-<translation id="50641035439563602">Les mots de passe sont à présent enregistrés dans votre compte Google (<ph name="ACCOUNT" />). Vous pouvez les utiliser sur tous les appareils sur lesquels vous êtes connecté. Pour désactiver cette fonctionnalité, accédez aux <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Impos. déterm. taille fichier.</translation>
 <translation id="5090832849094901128">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet publié.</translation>
@@ -712,7 +707,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6284652193729350524">Proposer de traduire la langue suivante : <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Vous ne suivez plus <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Pour activer la navigation sécurisée, ouvrez <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /> et appuyez sur "Navigation sécurisée".</translation>
-<translation id="6320780930074869063">Lorsque cette option est activée, les mots de passe sont enregistrés dans <ph name="ACCOUNT" />. Lorsqu'elle est désactivée, ils ne sont enregistrés que sur cet appareil.</translation>
 <translation id="6321526113093607004">Ajouter aux favoris</translation>
 <translation id="6324669097367352121">Paramètres connexion</translation>
 <translation id="6337234675334993532">Chiffrement</translation>
@@ -756,7 +750,6 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="6476800141292307438">Traduction de la page en <ph name="LANGUAGE" />. Options disponibles au bas de l'écran.</translation>
 <translation id="648164694371393720">Erreur d'authentification</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments supprimés.</translation>
-<translation id="6495429111159337775">Utiliser et enregistrer les mots de passe de votre compte Google</translation>
 <translation id="6497772452874122664">Si vous jugez le site <ph name="TIME" /> fiable, vous pouvez utiliser un mot de passe enregistré pour un autre site.
 
 Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</translation>
@@ -1041,7 +1034,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8680787084697685621">Les informations de connexion au compte sont obsolètes.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
 <translation id="8706588385081740091">Mots de passe</translation>
-<translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">Copier le lien</translation>
 <translation id="8721297211384281569">Menu "Outils"</translation>
 <translation id="8725066075913043281">Réessayer</translation>

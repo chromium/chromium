@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ভাষায় Dvorak কীবোর্ড</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - হোস্ট</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> প্রস্তুত করা হচ্ছে...</translation>
 <translation id="1538729222189715449">Linux ফাইল খোলা হচ্ছে...</translation>
 <translation id="1547964879613821194">কানাডীয় ইংরেজি</translation>
 <translation id="1556189134700913550">সবগুলিতে প্রয়োগ করুন</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />টি আইটেম জিপ করা হচ্ছে…</translation>
 <translation id="1722687688096767818">প্রোফাইল যোগ করা হচ্ছে...</translation>
 <translation id="1726100011689679555">নেম সার্ভারগুলি</translation>
-<translation id="1727562178154619254">এখন সিঙ্ক করা যাবে</translation>
 <translation id="1729953886957086472">জার্মান (জার্মানি)</translation>
 <translation id="1730235522912993863">চীনা কাংগজি</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" />টি আইটেম কপি করা হয়েছে।</translation>
@@ -513,7 +511,6 @@
        ব্যবহার চলাকালীন অবস্থায় আপনার ডিভাইস সরিয়ে ফেলা হলে ডেটা হারিয়ে যেতে পারে৷ অনুগ্রহ করে কাজ শেষ হওয়া পর্যন্ত অপেক্ষা করুন, তারপর ফাইলগুলির অ্যাপ ব্যবহার করে ডিভাইসটি বের করে নিন৷</translation>
 <translation id="5163869187418756376">শেয়ার করে ব্যর্থ হয়েছে৷ আপনার সংযোগটি পরীক্ষা করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="516592729076796170">মার্কিন যুক্তরাষ্ট্র প্রোগ্রামার ডিভোরাক</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" />টি আইটেম প্রস্তুত করা হচ্ছে...</translation>
 <translation id="5177526793333269655">থাম্বনেল ভিউ</translation>
 <translation id="5181896909298187506">কোনও সাম্প্রতিক ফাইল নেই</translation>
 <translation id="5194713942430106590">কলামের মানগুলি ছোট থেকে বড় ক্রমানুযায়ী সাজাতে ক্লিক করুন।</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">কোনও সাম্প্রতিক ছবি নেই</translation>
 <translation id="7460898608667578234">ইউক্রেনীয়</translation>
 <translation id="7469894403370665791">স্বয়ংক্রিয়ভাবে এই নেটওয়ার্কে সংযোগ করুন</translation>
+<translation id="7481358317100446445">প্রস্তুত</translation>
 <translation id="7486315294984620427">Parallels Desktop-এ ফাইল রাখতে হলে ফাইলকে অবশ্যই Windows ফাইলের ফোল্ডারে কপি করতে হবে।</translation>
 <translation id="749452993132003881">হিরাগানা</translation>
 <translation id="7495372004724182530">মালয়ালাম ফোনেটিক</translation>

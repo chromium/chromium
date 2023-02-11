@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Управление на синхронизирането</translation>
 <translation id="1076421457278169141">Кодът бе сканиран</translation>
 <translation id="1076785341346483463">Синхронизиране с управляван профил</translation>
-<translation id="1080365971383768617">Паролите са достъпни на всичките ви устройства</translation>
 <translation id="1084365883616172403">Публикацията във Facebook е завършена.</translation>
 <translation id="1085696779717592361">Използване на Chrome по подразбиране</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">Включване на синхронизирането</translation>
 <translation id="3181954750937456830">„Безопасно сърфиране“ (защитава вас и устройството ви от опасни сайтове)</translation>
 <translation id="3184767182050912705">Отключване с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">С отметка</translation>
 <translation id="3214379938835224220">Излязохте от профила си при нулирането на своя iPad. Докоснете бутона за продължаване по-долу, за да влезете отново.</translation>
 <translation id="3224641773458703735">За да експортирате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">Изключено</translation>
 <translation id="3324193307694657476">Адрес 2</translation>
 <translation id="3328801116991980348">Информация за сайта</translation>
-<translation id="3329904751041170572">Не можа да се установи връзка със сървъра.</translation>
 <translation id="3371831930909698441">Налице е превод. Опциите са достъпни в долната част на екрана.</translation>
 <translation id="3377063233124932127">Запазените ви отметки, пароли и др. вече се показват най-горе.</translation>
 <translation id="3393920035788932672">Изск. прозорци са разр.</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">Предв. зареждане на уеб стр.</translation>
 <translation id="3661160521073045932">Налице е конфигурационен профил</translation>
 <translation id="3670030362669914947">Номер</translation>
-<translation id="3691593122358196899">Отметката бе запазена в/ъв „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="3709582977625132201">Означав. като непрочетено</translation>
 <translation id="371230970611282515">Предвижда и ви предупреждава за опасни събития, преди да се случат.</translation>
 <translation id="37207012422556617">Набиращи популярност търсения</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708">Бяха намерени проблеми <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Инсталиране на Google Диск</translation>
-<translation id="50641035439563602">Паролите вече се запазват в профила ви в Google (<ph name="ACCOUNT" />). Можете да ги използвате навсякъде, където сте влезли в него. За да изключите това, отворете <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Неизвестен файлов размер.</translation>
 <translation id="5090832849094901128">Изтриването на тази парола няма да премахне профила ви за <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Съобщението в Twitter е завършено.</translation>
@@ -712,7 +707,6 @@
 <translation id="6284652193729350524">Предлагане на превод от <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Следенето на <ph name="CHANNEL_NAME" /> бе прекратено</translation>
 <translation id="6293101329759844770">За да включите „Безопасно сърфиране“, отворете <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" /> и докоснете съответната опция.</translation>
-<translation id="6320780930074869063">Когато функцията е включена, паролите се запазват в(ъв) <ph name="ACCOUNT" />. Когато е изключена, те се запазват само на това устройство.</translation>
 <translation id="6321526113093607004">Добавяне към отметките</translation>
 <translation id="6324669097367352121">Настройки за вход</translation>
 <translation id="6337234675334993532">Шифроване</translation>
@@ -756,7 +750,6 @@
 <translation id="6476800141292307438">Страницата се превежда на <ph name="LANGUAGE" />. Опциите са достъпни в долната част на екрана.</translation>
 <translation id="648164694371393720">Грешка при удостоверяването</translation>
 <translation id="6482629121755362506">Изтрихте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> елемента</translation>
-<translation id="6495429111159337775">Използване и запазване на пароли в профила ви в Google</translation>
 <translation id="6497772452874122664">Ако имате доверие на <ph name="TIME" />, можете да използвате запазена парола за друг сайт.
 
 Опитайте да използвате уникална парола за всеки сайт.</translation>
@@ -1041,7 +1034,6 @@
 <translation id="8680787084697685621">Данните за вход в профила ви не са актуални.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Затваряне на раздела}other{Затваряне на разделите}}</translation>
 <translation id="8706588385081740091">Пароли</translation>
-<translation id="8712637175834984815">Разбрах</translation>
 <translation id="8717864919010420084">Копиране на връзката</translation>
 <translation id="8721297211384281569">Меню „Инструменти“</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>

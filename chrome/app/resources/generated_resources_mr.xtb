@@ -632,6 +632,7 @@
 <translation id="1567387640189251553">तुम्ही शेवटचा पासवर्ड टाकल्या नंतर वेगळा कीबोर्ड कनेक्ट करण्यात आला आहे. तो कदाचित तुमचे कीस्ट्रोक चोरण्याचा प्रयत्न करत असेल.</translation>
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' ही आधीपासून '<ph name="ACTION" />' या कृतीसाठी असाइन केलेली आहे. <ph name="RESPONSE" /> साठी कोणतीही की दाबा.</translation>
 <translation id="1567993339577891801">JavaScript कन्सोल</translation>
+<translation id="1569466257325986920">पुढच्या वेळी तुमचा Google खाते पासवर्ड बदलल्यावर, तुम्ही तुमच्या Google खाते मध्ये साइन इन केल्यानंतर तुमचा स्थानिक डेटा आपोआप रिकव्‍हर केला जाईल</translation>
 <translation id="1570604804919108255">सूचना अनम्यूट करा</translation>
 <translation id="1571304935088121812">वापरकर्ता नाव कॉपी करा</translation>
 <translation id="1571738973904005196">टॅब पहा: <ph name="TAB_ORIGIN" /></translation>
@@ -897,6 +898,7 @@
 <translation id="1781979858217752599">विंडो ऑडिओ शेअर करा</translation>
 <translation id="1782101999402987960">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अपडेट ब्लॉक केले आहेत</translation>
 <translation id="1782196717298160133">तुमचा फोन शोधणे</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{एक टीप}other{# टिपा}}</translation>
 <translation id="1784707308176068866">सहयोगी मूळ ॲप्लिकेशनने विनंती केल्यास बॅकग्राउंडमध्ये रन करा</translation>
 <translation id="1784849162047402014">डिव्हाइसवर डिस्क स्‍थान कमी आहे</translation>
 <translation id="1787350673646245458">वापरकर्ता इमेज</translation>
@@ -1693,6 +1695,7 @@
 <translation id="2467755475704469005">कोणतेही डिव्हाइस डिटेक्ट केले नाही. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">टचपॅड स्क्रोल अ‍ॅक्सिलरेशन</translation>
 <translation id="2468205691404969808">जरी तुम्ही त्या पेजना भेट देत नसलात तरी, तुमची प्राधान्ये लक्षात ठेवण्यासाठी कुकीजचा वापर करते</translation>
+<translation id="2468247643665097563">ऑर्डर करा</translation>
 <translation id="2468402215065996499">तामागोची</translation>
 <translation id="2468470085922875120">तुम्ही असे पासवर्ड वापरत आहात ज्यांचा अंदाज लावणे कठीण आहे</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - एक टॅब}other{<ph name="GROUP_TITLE" /> - # टॅब}}</translation>
@@ -5967,6 +5970,7 @@
 <translation id="6410668567036790476">शोध इंजीन जोडा</translation>
 <translation id="641469293210305670">अपडेट आणि अ‍ॅप्स इंस्टॉल करा</translation>
 <translation id="6414878884710400018">सिस्टम प्राधान्ये उघडा</translation>
+<translation id="6415816101512323589">तुमच्या डेटाचे संरक्षण करण्यासाठी स्थानिक डेटा रिकव्‍हरी सुरू करायची आहे का?</translation>
 <translation id="6415900369006735853">तुमच्या फोनमधून इंटरनेटशी कनेक्ट करा</translation>
 <translation id="6416743254476733475">अनुमती द्या किंवा तुमच्या कॉंप्युटरवर ब्लॉक करा.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
@@ -6759,7 +6763,6 @@
 <translation id="711840821796638741">व्यवस्थापित बुकमार्क दर्शवा</translation>
 <translation id="711985611146095797">हे पेज तुम्हाला तुमची साइन-इन केलेली Google खाती व्यवस्थापित करू देते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN कनेक्ट करेपर्यंत Chrome ब्राउझर आणि Android ट्रॅफिक ब्लॉक केले जाईल</translation>
-<translation id="7120865473764644444">संंकालित सर्व्हरशी कनेक्ट करणे शक्य झाले नाही. पुन्हा प्रयत्न करीत आहे...</translation>
 <translation id="7121438501124788993">डेव्हलपर मोड</translation>
 <translation id="7121728544325372695">स्मार्ट डॅश</translation>
 <translation id="7123030151043029868">एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची अनुमती आहे</translation>

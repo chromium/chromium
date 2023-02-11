@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ໂຮສ</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294">ກຳລັງກະກຽມ <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">ກຳລັງເປີດໄຟລ໌ Linux...</translation>
 <translation id="1547964879613821194">ພາ​ສາ​ອັງ​ກິດກາ​ນາ​ດາ​</translation>
 <translation id="1556189134700913550">ໃຊ້ກັບ​ທັງ​ຫມົດ</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">ກຳລັງຊິບ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="1722687688096767818">ກຳລັງເພີ່ມໂປຣໄຟລ໌...</translation>
 <translation id="1726100011689679555">ຕັ້ງຊື່ເຊີບເວີ</translation>
-<translation id="1727562178154619254">ພ້ອມທີ່ຈະຊິ້ງແລ້ວ</translation>
 <translation id="1729953886957086472">ພາສາເຢຍລະມັນ (ເຢຍລະມັນ)</translation>
 <translation id="1730235522912993863">ພາສາຈີນ (Cangjie)</translation>
 <translation id="1731889557567069540">ສຳເນົາ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ.</translation>
@@ -513,7 +511,6 @@
    ການເອົາອຸປະກອນຂອງທ່ານອອກໃນຂະນະທີ່ມັນໃຊ້ງານຢູ່ ອາດຈະເຮັດໃຫ້ຂໍ້ມູນເສຍໄດ້.  ກະລຸນາລໍຖ້າຈົນກ່ວາຈົບການດໍາເນີນງານ, ຈາກນັ້ນດີດອຸປະກອນອອກດ້ວຍການໃຊ້ແອັບໄຟລ໌.</translation>
 <translation id="5163869187418756376">ການແຊຣ໌ລົ້ມເຫຼວ.ກວດເບິ່ງການເຊື່ອມຕໍ່ຂອງທ່ານ ແລະລອງໃໝ່ອີກພາຍຫຼັງ.</translation>
 <translation id="516592729076796170">Dvorak ຜູ້​ຂຽນ​ໂປ​ຣ​ແກ​ຣມ​ສະ​ຫະ​ລັດ</translation>
-<translation id="5167102019886320507">ກຳລັງກະກຽມ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="5177526793333269655">ມຸມມອງຮູບນ້ອຍ</translation>
 <translation id="5181896909298187506">ບໍ່ມີໄຟລ໌ຫຼ້າສຸດ</translation>
 <translation id="5194713942430106590">ຄລິກເພື່ອຮຽງລຳດັບຖັນແຕ່ນ້ອຍຫາໃຫຍ່.</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">ບໍ່ມີຮູບຫຼ້າສຸດ</translation>
 <translation id="7460898608667578234">ພາສາຢູ​ເຄຣນ</translation>
 <translation id="7469894403370665791">ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ອັດຕະໂນມັດ</translation>
+<translation id="7481358317100446445">ພ້ອມແລ້ວ</translation>
 <translation id="7486315294984620427">ເພື່ອວາງໄຟລ໌ໃນ Parallels Desktop, ໄຟລ໌ນັ້ນຈະຕ້ອງຖືກສຳເນົາໄປໃສ່ໄຟລ໌ Windows ກ່ອນ.</translation>
 <translation id="749452993132003881">ຮິຣະງະນະ</translation>
 <translation id="7495372004724182530">ການອອກສຽງພາສາມາລາຢາລຳ</translation>

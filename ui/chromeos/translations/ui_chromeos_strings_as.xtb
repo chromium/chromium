@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - হ’ষ্ট</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> সাজু কৰি থকা হৈছে...</translation>
 <translation id="1538729222189715449">Linux ফাইল খুলি থকা হৈছে...</translation>
 <translation id="1547964879613821194">কানাডিয়ান ইংৰাজী</translation>
 <translation id="1556189134700913550">সকলোতে প্ৰয়োগ কৰক</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />টা বস্তু জিপ কৰি থকা হৈছে...</translation>
 <translation id="1722687688096767818">প্ৰ’ফাইল যোগ দি থকা হৈছে...</translation>
 <translation id="1726100011689679555">নাম সম্পর্কীয় ছার্ভাৰ</translation>
-<translation id="1727562178154619254">ছিংক কৰিবলৈ সাজু</translation>
 <translation id="1729953886957086472">জাৰ্মান (জাৰ্মানী)</translation>
 <translation id="1730235522912993863">চীনা কেঞ্জি</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> টা বস্তুৰ প্ৰতিলিপি কৰা হ'ল।</translation>
@@ -513,7 +511,6 @@
    ব্যৱহাৰ হৈ থকা সময়ত এই ডিভাইচটো এৰুৱালে ডেটা ক্ষয় হ’ব পাৰে।  কাৰ্যটো সম্পূৰ্ণ হোৱালৈকে অপেক্ষা কৰক আৰু তাৰপিছত Files এপ্ ব্যৱহাৰ কৰি ডিভাইচটো বাহিৰ কৰক।</translation>
 <translation id="5163869187418756376">শ্বেয়াৰ কৰিব পৰা নগ'ল। ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="516592729076796170">ইউ.এছ. প্ৰ‘গ্ৰামাৰ ডভ‘ৰাক</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু সাজু কৰি থকা হৈছে...</translation>
 <translation id="5177526793333269655">থাম্বনেইল ভিউ</translation>
 <translation id="5181896909298187506">কোনো শেহতীয়া ফাইল নাই</translation>
 <translation id="5194713942430106590">স্তম্ভটো ঊৰ্ধ্বক্ৰমিক ভাৱে সজাবলৈ ক্লিক কৰক।</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">কোনো শেহতীয়া প্ৰতিচ্ছবি নাই</translation>
 <translation id="7460898608667578234">ইউক্ৰেনিয়ান</translation>
 <translation id="7469894403370665791">এই নেটৱেৰ্কটোত স্বয়ংক্ৰিয়ভাৱে সংযোগ কৰক</translation>
+<translation id="7481358317100446445">সাজু</translation>
 <translation id="7486315294984620427">Parallels Desktopত ফাইল টানি আনি এৰিবলৈ, ফাইলটো Windows ফাইললৈ প্ৰতিলিপি কৰিবই লাগিব।</translation>
 <translation id="749452993132003881">হিৰাগনা</translation>
 <translation id="7495372004724182530">মালায়ালম ফ’নেটিক</translation>

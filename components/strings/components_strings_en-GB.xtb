@@ -501,7 +501,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2148613324460538318">Add Card</translation>
 <translation id="2149968176347646218">Connection is not secure</translation>
 <translation id="2153609454945889823">Install Google Play Services for AR?</translation>
-<translation id="2154054054215849342">Sync is not available for your domain</translation>
 <translation id="2154484045852737596">Edit card</translation>
 <translation id="2155260325161282517">5 in x 7 in</translation>
 <translation id="2157640075051554492">Price tracking notifications</translation>
@@ -1859,6 +1858,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5552137475244467770">Chrome periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5558125320634132440">This site is blocked because it may have mature content</translation>
+<translation id="5559311991468302423">Delete address</translation>
 <translation id="5560088892362098740">Expiry Date</translation>
 <translation id="55635442646131152">Document outline</translation>
 <translation id="5565613213060953222">Open incognito tab</translation>

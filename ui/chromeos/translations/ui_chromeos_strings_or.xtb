@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">ଡିଭୋରାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ହୋଷ୍ଟ</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" />କୁ ପ୍ରସ୍ତୁତ କରାଯାଉଛି...</translation>
 <translation id="1538729222189715449">Linux ଫାଇଲ୍‌ଗୁଡ଼ିକ ଖୋଲୁଛି...</translation>
 <translation id="1547964879613821194">କାନାଡିଆନ୍ ଇଂରାଜୀ</translation>
 <translation id="1556189134700913550">ସମସ୍ତ ପାଇଁ ଲାଗୁ ହେବ</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଜିପ୍ ହେଉଛି...</translation>
 <translation id="1722687688096767818">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରାଯାଉଛି...</translation>
 <translation id="1726100011689679555">ନାମ ସର୍ଭର୍</translation>
-<translation id="1727562178154619254">ସିଙ୍କ କରିବାକୁ ପ୍ରସ୍ତୁତ</translation>
 <translation id="1729953886957086472">ଜର୍ମାନ (ଜର୍ମାନୀ)</translation>
 <translation id="1730235522912993863">ଚାଇନିଜ୍ କାଙ୍ଗଜି</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ କପି ହୋଇଛି।</translation>
@@ -513,7 +511,6 @@
    ବ୍ୟବହାର କରିବା ସମୟରେ ଆପଣଙ୍କର ଡିଭାଇସ୍‍କୁ କାଢ଼ିଦେବା ଦ୍ୱାରା ଡାଟା କ୍ଷତି ହୋଇପାରେ।  ଦୟାକରି ଅପରେସନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପର୍ଯ୍ୟନ୍ତ ଅପେକ୍ଷା କରନ୍ତୁ, ତା'ପରେ Files ଆପ୍ ବ୍ୟବହାର କରି ଡିଭାଇସ୍‍କୁ ବାହାର କରିଦିଅନ୍ତୁ।</translation>
 <translation id="5163869187418756376">ସେୟାର୍ ହେଇପାରିଲା ନାହିଁ ନିଜ ସଂଯୋଗ ଯାଞ୍ଚ କରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="516592729076796170">US ପ୍ରୋଗ୍ରାମର୍ ଡିଭୋରାକ୍</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମକୁ ପ୍ରସ୍ତୁତ କରାଯାଉଛି...</translation>
 <translation id="5177526793333269655">ଥମ୍ଵନେଲ୍ ଦର୍ଶନ</translation>
 <translation id="5181896909298187506">ବର୍ତ୍ତମାନର କୌଣସି ଫାଇଲ ନାହିଁ</translation>
 <translation id="5194713942430106590">କଲମ୍‍କୁ ସାନରୁ ବଡ଼ କ୍ରମରେ ସଜାଇବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
@@ -787,6 +784,7 @@
 <translation id="7458955835361612701">ବର୍ତ୍ତମାନର କୌଣସି ଇମେଜ ନାହିଁ</translation>
 <translation id="7460898608667578234">ୟୁକ୍ରାନିଆନ୍</translation>
 <translation id="7469894403370665791">ସ୍ୱଚାଳିତ ଭାବେ ଏହି ନେଟ୍‍ୱର୍କ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
+<translation id="7481358317100446445">ପ୍ରସ୍ତୁତ</translation>
 <translation id="7486315294984620427">Parallels Desktopରେ ଫାଇଲଗୁଡ଼ିକୁ ଡ୍ରପ୍ କରିବା ପାଇଁ ଫାଇଲକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="749452993132003881">ହିରାଗାନା</translation>
 <translation id="7495372004724182530">ମାଲାୟଲମ୍ ଫୋନେଟିକ୍</translation>

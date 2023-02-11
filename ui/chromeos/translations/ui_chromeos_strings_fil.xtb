@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">English (US) na may Dvorak keyboard</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294">Inihahanda ang <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">Binubuksan ang mga Linux file...</translation>
 <translation id="1547964879613821194">Canadian English</translation>
 <translation id="1556189134700913550">Ilapat sa lahat</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Zini-zip ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="1722687688096767818">Idinaragdag ang Profile...</translation>
 <translation id="1726100011689679555">Mga name server</translation>
-<translation id="1727562178154619254">Handa nang mag-sync</translation>
 <translation id="1729953886957086472">German (Germany)</translation>
 <translation id="1730235522912993863">Chinese Cangjie</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> (na) item ang nakopya.</translation>
@@ -513,7 +511,6 @@
    Maaaring magsanhi ng pagkawala ng data ang pag-aalis sa iyong device habang ginagamit ito.  Mangyaring maghintay hanggang matapos ang operasyon, pagkatapos ay i-eject ang device gamit ang Files app.</translation>
 <translation id="5163869187418756376">Nabigo ang pagbabahagi. Suriin ang iyong koneksyon at subukan ulit sa ibang pagkakataon.</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167102019886320507">Inihahanda ang <ph name="NUMBER_OF_ITEMS" /> (na) item...</translation>
 <translation id="5177526793333269655">View na thumbnail</translation>
 <translation id="5181896909298187506">Walang kamakailang file</translation>
 <translation id="5194713942430106590">I-click para pagbukud-bukurin ang column sa pataas na pagkakasunud-sunod.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Walang kamakailang larawan</translation>
 <translation id="7460898608667578234">Ukrainian</translation>
 <translation id="7469894403370665791">Awtomatikong kumonekta sa network na ito</translation>
+<translation id="7481358317100446445">Handa</translation>
 <translation id="7486315294984620427">Para makapag-drop ng mga file sa Parallels Desktop, dapat kopyahin ang file sa mga Windows file.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malayalam Phonetic</translation>

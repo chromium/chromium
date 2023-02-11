@@ -18,7 +18,6 @@
 <translation id="1066060668811609597">Синхронизация</translation>
 <translation id="1076421457278169141">Код отсканирован</translation>
 <translation id="1076785341346483463">Синхронизация с управляемым аккаунтом</translation>
-<translation id="1080365971383768617">Пароли на всех ваших устройствах</translation>
 <translation id="1084365883616172403">Опубликовано в Facebook.</translation>
 <translation id="1085696779717592361">Используйте Chrome по умолчанию</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@
 <translation id="3181825792072797598">Включить</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
 <translation id="3184767182050912705">Разблокировать с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Добавлено в закладки.</translation>
 <translation id="3214379938835224220">В результате сброса настроек iPad произошел выход из аккаунта. Нажмите "Продолжить" ниже, чтобы войти в него.</translation>
 <translation id="3224641773458703735">Чтобы экспортировать пароли, настройте на устройстве код доступа.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -320,7 +318,6 @@
 <translation id="3311748811247479259">Отключено</translation>
 <translation id="3324193307694657476">Адрес, строка 2</translation>
 <translation id="3328801116991980348">Информация о сайте</translation>
-<translation id="3329904751041170572">Не удалось установить соединение с сервером.</translation>
 <translation id="3371831930909698441">Доступен перевод. Параметры указаны в нижней части экрана.</translation>
 <translation id="3377063233124932127">Теперь ваши сохраненные закладки, пароли и другие данные будут отображаться наверху.</translation>
 <translation id="3393920035788932672">Вспл. окна разрешены</translation>
@@ -362,7 +359,6 @@
 <translation id="3638472932233958418">Предварительная загрузка</translation>
 <translation id="3661160521073045932">Доступен профиль конфигурации</translation>
 <translation id="3670030362669914947">Номер</translation>
-<translation id="3691593122358196899">Закладка добавлена в папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3709582977625132201">Отметить как непрочитанное</translation>
 <translation id="371230970611282515">Предсказывает опасные события и предупреждает вас до того, как они происходят.</translation>
 <translation id="37207012422556617">Популярные запросы</translation>
@@ -548,7 +544,6 @@
 <translation id="5056446788882570708">Проблемы обнаружены <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">ОК</translation>
 <translation id="5062321486222145940">Установить Google Диск</translation>
-<translation id="50641035439563602">Теперь пароли сохраняются в вашем аккаунте Google (<ph name="ACCOUNT" />). Они доступны на любом устройстве, где выполнен вход. Чтобы отключить эту функцию, перейдите в <ph name="BEGIN_LINK" />настройки<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Не установлен размер файла</translation>
 <translation id="5090832849094901128">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Опубликовано в Твиттере.</translation>
@@ -712,7 +707,6 @@
 <translation id="6284652193729350524">Предлагать перевести страницы на этом языке (<ph name="LANGUAGE" />)</translation>
 <translation id="6289501276895392862">Подписка на "<ph name="CHANNEL_NAME" />" отменена.</translation>
 <translation id="6293101329759844770">Чтобы включить Безопасный просмотр, откройте <ph name="BEGIN_LINK" />сервисы Google<ph name="END_LINK" /> и нажмите "Безопасный просмотр".</translation>
-<translation id="6320780930074869063">Если параметр включен, пароли сохраняются в аккаунте <ph name="ACCOUNT" />. Иначе они сохраняются только на этом устройстве.</translation>
 <translation id="6321526113093607004">Добавить в закладки</translation>
 <translation id="6324669097367352121">Настройки входа</translation>
 <translation id="6337234675334993532">Шифрование</translation>
@@ -756,7 +750,6 @@
 <translation id="6476800141292307438">Перевод страницы на <ph name="LANGUAGE" />. Параметры указаны в нижней части экрана.</translation>
 <translation id="648164694371393720">Ошибка аутентификации</translation>
 <translation id="6482629121755362506">Удалено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="6495429111159337775">Сохранять пароли в аккаунте Google и использовать их</translation>
 <translation id="6497772452874122664">Если вы доверяете сайту <ph name="TIME" />, то можете использовать для него сохраненный пароль из другого сервиса.
 
 Для каждого сайта желательно использовать уникальный пароль.</translation>
@@ -1040,7 +1033,6 @@
 <translation id="8680787084697685621">Данные для входа в аккаунт устарели.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрыть вкладку}one{Закрыть вкладки}few{Закрыть вкладки}many{Закрыть вкладки}other{Закрыть вкладки}}</translation>
 <translation id="8706588385081740091">Пароли</translation>
-<translation id="8712637175834984815">Готово</translation>
 <translation id="8717864919010420084">Копировать ссылку</translation>
 <translation id="8721297211384281569">Меню "Инструменты"</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>

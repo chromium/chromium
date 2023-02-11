@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Anglès (EUA) amb teclat Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Amfitrió</translation>
 <translation id="1521655867290435174">Fulls de càlcul de Google</translation>
-<translation id="1521795806314479294">S'està preparant <ph name="FILE_NAME" />...</translation>
 <translation id="1538729222189715449">S'estan obrint els fitxers de Linux...</translation>
 <translation id="1547964879613821194">Anglès canadenc</translation>
 <translation id="1556189134700913550">Aplica-ho a tot</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">S'estan comprimint <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="1722687688096767818">S'està afegint el perfil...</translation>
 <translation id="1726100011689679555">Servidors de noms</translation>
-<translation id="1727562178154619254">A punt per sincronitzar</translation>
 <translation id="1729953886957086472">Alemany (Alemanya)</translation>
 <translation id="1730235522912993863">Xinès (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> elements copiats.</translation>
@@ -513,7 +511,6 @@
        Si retireu el dispositiu mentre encara s'està utilitzant, es poden perdre dades. Espereu fins que hagi acabat l'operació i, a continuació, expulseu el dispositiu amb l'aplicació Fitxers.</translation>
 <translation id="5163869187418756376">S'ha produït un error en compartir. Comproveu la connexió i torneu-ho a provar més tard.</translation>
 <translation id="516592729076796170">Dvorak nord-americà per a programadors</translation>
-<translation id="5167102019886320507">S'estan preparant <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
 <translation id="5177526793333269655">Visualització de miniatures</translation>
 <translation id="5181896909298187506">No hi ha cap fitxer recent</translation>
 <translation id="5194713942430106590">Fes clic per veure les dades de la columna en ordre ascendent.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">No hi ha cap imatge recent</translation>
 <translation id="7460898608667578234">Ucraïnès</translation>
 <translation id="7469894403370665791">Connecta automàticament a aquesta xarxa</translation>
+<translation id="7481358317100446445">A punt</translation>
 <translation id="7486315294984620427">Per deixar anar fitxers a Parallels Desktop, s'han de copiar a Fitxers de Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malaiàlam fonètic</translation>

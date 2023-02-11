@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">englanti (Yhdysvallat), Dvorak-näppäimistö</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – isäntä</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294">Valmistellaan: <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Avataan Linux-tiedostoja…</translation>
 <translation id="1547964879613821194">englanti (Kanada)</translation>
 <translation id="1556189134700913550">Käytä kaikkiin</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Pakataan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="1722687688096767818">Lisätään profiilia…</translation>
 <translation id="1726100011689679555">Nimipalvelimet</translation>
-<translation id="1727562178154619254">Valmis synkronoimaan</translation>
 <translation id="1729953886957086472">saksa (Saksa)</translation>
 <translation id="1730235522912993863">kiina (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> kohdetta kopioitu</translation>
@@ -513,7 +511,6 @@
        Jos irrotat laitteen sen ollessa käytössä, voit menettää tietoja. Odota, kunnes toiminto on suoritettu, ja poista laite sitten käytöstä Tiedostot-sovelluksen kautta.</translation>
 <translation id="5163869187418756376">Jakaminen epäonnistui. Tarkista internetyhteytesi ja yritä myöhemmin uudelleen.</translation>
 <translation id="516592729076796170">US, Dvorak ohjelmoijille</translation>
-<translation id="5167102019886320507">Valmistellaan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
 <translation id="5177526793333269655">Pikkukuvanäkymä</translation>
 <translation id="5181896909298187506">Ei viimeaikaisia tiedostoja</translation>
 <translation id="5194713942430106590">Klikkaa, jos haluat lajitella nousevaan järjestykseen.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Ei viimeaikaisia kuvia</translation>
 <translation id="7460898608667578234">ukraina</translation>
 <translation id="7469894403370665791">Yhdistä automaattisesti tähän verkkoon</translation>
+<translation id="7481358317100446445">Valmis</translation>
 <translation id="7486315294984620427">Jotta voit pudottaa tiedostoja Parallels Desktopiin, tiedosto on kopioitava Windows-tiedostoihin.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">foneettinen malajalam</translation>

@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">અંગ્રેજી (યુએસ), Dvorak કીબોર્ડ સાથે</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - હોસ્ટ</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> તૈયાર કરી રહ્યાં છીએ...</translation>
 <translation id="1538729222189715449">Linux ફાઇલો ખોલી રહ્યાં છીએ...</translation>
 <translation id="1547964879613821194">કેનેડિયન અંગ્રેજી</translation>
 <translation id="1556189134700913550">બધા પર લાગુ કરો</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> આઇટમને ઝિપ કરી રહ્યું છે...</translation>
 <translation id="1722687688096767818">પ્રોફાઇલ ઉમેરી રહ્યાં છીએ...</translation>
 <translation id="1726100011689679555">નામ સર્વર</translation>
-<translation id="1727562178154619254">સિંક કરવા માટે તૈયાર</translation>
 <translation id="1729953886957086472">જર્મન (જર્મની)</translation>
 <translation id="1730235522912993863">ચાઇનીઝ (કેન્જી)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> આઇટમ કૉપિ કરી.</translation>
@@ -513,7 +511,6 @@
        ઉપયોગમાં રહેલા તમારા ડિવાઇસને દૂર કરવાથી ડેટાનું નુકસાન થઈ શકે છે. ક્રિયા પૂર્ણ થાય ત્યાં સુધી કૃપા કરીને રાહ જુઓ, તે પછી Files ઍપનો ઉપયોગ કરીને ડિવાઇસને કાઢી નાખો.</translation>
 <translation id="5163869187418756376">શેરિંગ નિષ્ફળ થયું. તમારું કનેક્શન તપાસો અને થોડીવાર પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="516592729076796170">યુએસ પ્રોગ્રામર ડ્વોરેક</translation>
-<translation id="5167102019886320507"><ph name="NUMBER_OF_ITEMS" /> આઇટમ તૈયાર કરી રહ્યાં છીએ...</translation>
 <translation id="5177526793333269655">થંબનેલ દૃશ્ય</translation>
 <translation id="5181896909298187506">તાજેતરની કોઈ ફાઇલ નથી</translation>
 <translation id="5194713942430106590">કૉલમને ચઢતા ક્રમમાં સૉર્ટ કરવા માટે ક્લિક કરો.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">તાજેતરની કોઈ છબી નથી</translation>
 <translation id="7460898608667578234">યુક્રેનિયન</translation>
 <translation id="7469894403370665791">આ નેટવર્કમાં ઑટોમૅટિક રીતે કનેક્ટ કરો</translation>
+<translation id="7481358317100446445">હવે તૈયાર</translation>
 <translation id="7486315294984620427">ફાઇલોને Parallels Desktopમાં મૂકવા માટે, ફાઇલને Windows ફાઇલોમાં ખસેડવી આવશ્યક છે.</translation>
 <translation id="749452993132003881">હિરગાન</translation>
 <translation id="7495372004724182530">મલયાલમ ફોનેટિક</translation>

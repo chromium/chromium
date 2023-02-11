@@ -501,7 +501,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2148613324460538318">Legg til et kort</translation>
 <translation id="2149968176347646218">Tilkoblingen er ikke sikker</translation>
 <translation id="2153609454945889823">Vil du installere Google Play-tjenester for AR?</translation>
-<translation id="2154054054215849342">Synkronisering er ikke tilgjengelig for domenet ditt</translation>
 <translation id="2154484045852737596">Endre kortet</translation>
 <translation id="2155260325161282517">5 x 7 tommer</translation>
 <translation id="2157640075051554492">Varsler om prissporing</translation>
@@ -1859,6 +1858,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5552137475244467770">Chrome sjekker passordene dine regelmessig mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="5558125320634132440">Dette nettstedet er blokkert fordi det kan ha innhold for voksne.</translation>
+<translation id="5559311991468302423">Slett adressen</translation>
 <translation id="5560088892362098740">Utløpsdato</translation>
 <translation id="55635442646131152">Dokumentoversikt</translation>
 <translation id="5565613213060953222">Åpne en inkognitofane</translation>

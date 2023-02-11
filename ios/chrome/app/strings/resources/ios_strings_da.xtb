@@ -18,7 +18,6 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1066060668811609597">Administrer synkronisering</translation>
 <translation id="1076421457278169141">Koden er scannet</translation>
 <translation id="1076785341346483463">Synkroniser med managerstyret konto</translation>
-<translation id="1080365971383768617">Adgangskoder på alle dine enheder</translation>
 <translation id="1084365883616172403">Indlæg delt på Facebook.</translation>
 <translation id="1085696779717592361">Brug Chrome som standard</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
@@ -303,7 +302,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3181825792072797598">Aktivér synkronisering</translation>
 <translation id="3181954750937456830">Beskyttet browsing (beskytter dig og din enhed mod farlige websites)</translation>
 <translation id="3184767182050912705">Lås op med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
-<translation id="3207960819495026254">Gemt som bogmærke</translation>
 <translation id="3214379938835224220">Du blev logget ud som en del af nulstillingen af din iPad. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="3224641773458703735">Angiv en adgangskode på din enhed, før du kan eksportere adgangskoder.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -320,7 +318,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3311748811247479259">Fra</translation>
 <translation id="3324193307694657476">Adresse 2</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>
-<translation id="3329904751041170572">Der kunne ikke oprettes forbindelse til serveren.</translation>
 <translation id="3371831930909698441">Oversættelse er tilgængelig. Du finder indstillingerne nederst på skærmen.</translation>
 <translation id="3377063233124932127">Du finder nu dine gemte bogmærker, adgangskoder m.m. øverst.</translation>
 <translation id="3393920035788932672">Pop op-vinduer tilladt</translation>
@@ -362,7 +359,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3638472932233958418">Forudindlæs websider</translation>
 <translation id="3661160521073045932">Der er en tilgængelig konfigurationsprofil</translation>
 <translation id="3670030362669914947">Nummer</translation>
-<translation id="3691593122358196899">Bogmærket er gemt i <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Markér som ulæst</translation>
 <translation id="371230970611282515">Forudser og advarer dig om skadelige hændelser, før de opstår.</translation>
 <translation id="37207012422556617">Populære søgninger</translation>
@@ -548,7 +544,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5056446788882570708">Der blev registreret problemer <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Drev</translation>
-<translation id="50641035439563602">Adgangskoder gemmes nu på din Google-konto (<ph name="ACCOUNT" />). Du kan bruge dem, uanset hvor du er logget ind. Gå til <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" /> for at deaktivere denne funktion.</translation>
 <translation id="5083464117946352670">Kan ikke fastslå filstørrelse.</translation>
 <translation id="5090832849094901128">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Indlæg delt på Twitter.</translation>
@@ -712,7 +707,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6284652193729350524">Tilbyd at oversætte fra <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Følger ikke længere <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
-<translation id="6320780930074869063">Når denne indstilling er aktiveret, gemmes adgangskoder på <ph name="ACCOUNT" />. Når indstillingen er deaktiveret, gemmes adgangskoder kun på denne enhed.</translation>
 <translation id="6321526113093607004">Føj til Bogmærker</translation>
 <translation id="6324669097367352121">Loginindstillinger</translation>
 <translation id="6337234675334993532">Kryptering</translation>
@@ -756,7 +750,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="6476800141292307438">Siden oversættes til <ph name="LANGUAGE" />. Valgmulighederne findes nederst på skærmen.</translation>
 <translation id="648164694371393720">Godkendelsesfejl</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> bogmærker blev slettet</translation>
-<translation id="6495429111159337775">Brug og gem adgangskoder fra din Google-konto</translation>
 <translation id="6497772452874122664">Hvis du har tillid til <ph name="TIME" />, kan du bruge en gemt adgangskode fra et andet website.
 
 Du bør bruge en unik adgangskode for hvert website.</translation>
@@ -1040,7 +1033,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8680787084697685621">Oplysningerne om kontologin er forældede.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Luk fane}one{Luk fane}other{Luk faner}}</translation>
 <translation id="8706588385081740091">Adgangskoder</translation>
-<translation id="8712637175834984815">Forstået</translation>
 <translation id="8717864919010420084">Kopiér link</translation>
 <translation id="8721297211384281569">Menuen Værktøjer</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>

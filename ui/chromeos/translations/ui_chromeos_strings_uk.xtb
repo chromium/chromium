@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Англійська (США), розкладка Дворака</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – хост</translation>
 <translation id="1521655867290435174">Google Таблиці</translation>
-<translation id="1521795806314479294">Підготовка файлу "<ph name="FILE_NAME" />"…</translation>
 <translation id="1538729222189715449">Відкриваються файли Linux…</translation>
 <translation id="1547964879613821194">Англійська (Канада)</translation>
 <translation id="1556189134700913550">Застосувати до всіх</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Архівування елементів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="1722687688096767818">Додається профіль…</translation>
 <translation id="1726100011689679555">Сервери імен</translation>
-<translation id="1727562178154619254">Можна синхронізувати</translation>
 <translation id="1729953886957086472">Німецька (Німеччина)</translation>
 <translation id="1730235522912993863">Китайська, цанцзе</translation>
 <translation id="1731889557567069540">Скопійовано елементів: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -513,7 +511,6 @@
    Видалення пристрою під час його використання може спричинити втрату даних. Зачекайте, доки операція завершиться, а потім відключіть пристрій за допомогою програми "Файли".</translation>
 <translation id="5163869187418756376">Помилка надання доступу. Перевірте з’єднання та повторіть спробу пізніше.</translation>
 <translation id="516592729076796170">Розкладка Дворака для програмістів (США)</translation>
-<translation id="5167102019886320507">Підготовка файлів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="5177526793333269655">Перегляд ескізів</translation>
 <translation id="5181896909298187506">Немає нещодавніх файлів</translation>
 <translation id="5194713942430106590">Натисніть, щоб відсортувати стовпці в порядку зростання.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Немає нещодавніх зображень</translation>
 <translation id="7460898608667578234">Українська</translation>
 <translation id="7469894403370665791">Автоматично з'єднувати з цією мережею</translation>
+<translation id="7481358317100446445">Готова</translation>
 <translation id="7486315294984620427">Щоб перетягнути файли в Parallels Desktop, спершу скопіюйте їх у папку "Файли Windows".</translation>
 <translation id="749452993132003881">Хірагана</translation>
 <translation id="7495372004724182530">Малаялам, фонетична розкладка</translation>

@@ -501,7 +501,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2148613324460538318">Dodaj karticu</translation>
 <translation id="2149968176347646218">Veza nije sigurna</translation>
 <translation id="2153609454945889823">Instalirati Google Play usluge za AR?</translation>
-<translation id="2154054054215849342">Sinhronizacija nije dostupna za vašu domenu</translation>
 <translation id="2154484045852737596">Uredi karticu</translation>
 <translation id="2155260325161282517">5 x 7 in</translation>
 <translation id="2157640075051554492">Obavještenja o praćenju cijene</translation>
@@ -1079,7 +1078,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3646643500201740985">Mjerenje performansi oglasa</translation>
 <translation id="3647286794400715637">Svaki uneseni niz URL-a mora sadržavati između 1 i 2 URL-a.</translation>
 <translation id="3650584904733503804">Potvrda valjanosti je uspjela</translation>
-<translation id="3650594806107685466">Da biste bolje zaštitili svoju karticu, unesite CVC (<ph name="SIDE_OF_CARD" />)</translation>
+<translation id="3650594806107685466">Radi trajne sigurnosti kartice unesite CVC (<ph name="SIDE_OF_CARD" />)</translation>
 <translation id="3653033846669030038">Tematski parkovi</translation>
 <translation id="3655241534245626312">Idi u postavke odobrenja</translation>
 <translation id="3655670868607891010">Ako vam se često prikazuje ova poruka, probajte sljedeće <ph name="HELP_LINK" />.</translation>
@@ -1859,6 +1858,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5552137475244467770">Chrome povremeno provjerava nalaze li se vaše lozinke na listama koje su objavljene na mreži. Prilikom toga, vaše lozinke i korisnička imena su šifrirana i niko, uključujući Google, ih ne može pročitati.</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5558125320634132440">Ova web lokacija je blokirana zbog mogućeg sadržaja za odrasle</translation>
+<translation id="5559311991468302423">Izbrišite adresu</translation>
 <translation id="5560088892362098740">Rok trajanja</translation>
 <translation id="55635442646131152">Pregled dokumenta</translation>
 <translation id="5565613213060953222">Otvori anonimnu karticu</translation>
@@ -2460,7 +2460,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7112327784801341716">Ne vidite svoje trenutne informacije? Kontaktirajte banku da ih ažurirate.</translation>
 <translation id="7118618213916969306">Traženje URL-a u međumemoriji, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Zatvorite druge kartice ili programe</translation>
-<translation id="7124354851782353862">Unesite svoj CVC</translation>
+<translation id="7124354851782353862">Unesite CVC</translation>
 <translation id="7129355289156517987">Kada zatvorite sve kartice u anonimnom načinu rada u Chromiumu, vaša aktivnost na tim karticama se briše s ovog uređaja:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />aktivnost pregledanja<ph name="END_LIST_ITEM" />
@@ -2576,6 +2576,7 @@ Dodatni detalji:
 <translation id="7388594495505979117">{0,plural, =1{Uređaj će se ponovo pokrenuti za 1 min}one{Uređaj će se ponovo pokrenuti za # min}few{Uređaj će se ponovo pokrenuti za # min}other{Uređaj će se ponovo pokrenuti za # min}}</translation>
 <translation id="7390545607259442187">Potvrdite karticu</translation>
 <translation id="7392089738299859607">Ažurirajte adresu</translation>
+<translation id="739728382607845710">Ikona rukovatelja plaćanjem</translation>
 <translation id="7399802613464275309">Sigurnosna provjera</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Dijelite ovu karticu dijeljenjem linka, kreiranjem QR koda, emitiranjem i drugo</translation>

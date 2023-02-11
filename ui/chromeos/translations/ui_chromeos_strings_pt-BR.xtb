@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Inglês (EUA) com teclado Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - Host</translation>
 <translation id="1521655867290435174">Planilhas Google</translation>
-<translation id="1521795806314479294">Preparando <ph name="FILE_NAME" />…</translation>
 <translation id="1538729222189715449">Abrindo arquivos do Linux…</translation>
 <translation id="1547964879613821194">Inglês canadense</translation>
 <translation id="1556189134700913550">Aplicar a todas</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Compactando <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="1722687688096767818">Adicionando perfil…</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
-<translation id="1727562178154619254">Pronto para sincronizar</translation>
 <translation id="1729953886957086472">Alemão (Alemanha)</translation>
 <translation id="1730235522912993863">Chinês (cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> itens copiados.</translation>
@@ -513,7 +511,6 @@
        A remoção do dispositivo enquanto ele está em uso pode causar perda de dados. Espere até que a operação esteja terminada e remova o dispositivo usando o aplicativo Arquivos.</translation>
 <translation id="5163869187418756376">Falha no compartilhamento. Verifique sua conexão e tente novamente mais tarde.</translation>
 <translation id="516592729076796170">Programmer Dvorak americano</translation>
-<translation id="5167102019886320507">Preparando <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="5177526793333269655">Visualização em miniatura</translation>
 <translation id="5181896909298187506">Nenhum arquivo recente</translation>
 <translation id="5194713942430106590">Clique para classificar a coluna em ordem crescente.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Nenhuma imagem recente</translation>
 <translation id="7460898608667578234">Ucraniano</translation>
 <translation id="7469894403370665791">Conectar automaticamente a esta rede</translation>
+<translation id="7481358317100446445">Pronto</translation>
 <translation id="7486315294984620427">Para arrastar arquivos até o Parallels Desktop, é necessário primeiro copiá-los para a pasta "Arquivos" do Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malaiala (fonético)</translation>

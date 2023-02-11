@@ -501,7 +501,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2148613324460538318">Lisa kaart</translation>
 <translation id="2149968176347646218">Ühendus ei ole turvaline</translation>
 <translation id="2153609454945889823">Kas installida rakendus Google Play Services for AR?</translation>
-<translation id="2154054054215849342">Sünkroonimisteenus pole domeeni jaoks saadaval</translation>
 <translation id="2154484045852737596">Kaardi muutmine</translation>
 <translation id="2155260325161282517">5 × 7 tolli</translation>
 <translation id="2157640075051554492">Hinna jälgimise märguanded</translation>
@@ -540,6 +539,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2241693394036365668">Fail on alla laaditud</translation>
 <translation id="2246264294482514010">10 × 12 tolli</translation>
 <translation id="2246480341630108201">Sinu vanem pole seda veel lubanud</translation>
+<translation id="2247789808226901522">Kaart on aegunud</translation>
 <translation id="2248949050832152960">Kasuta WebAuthn-autentimist</translation>
 <translation id="2250931979407627383">Õmblus vasakus servas</translation>
 <translation id="225207911366869382">Väärtus on eeskirjade jaoks aegunud.</translation>
@@ -1078,6 +1078,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3646643500201740985">Reklaami toimivuse mõõtmine</translation>
 <translation id="3647286794400715637">Iga URL-i string peab sisaldama 1–2 URL-i.</translation>
 <translation id="3650584904733503804">Valideerimine õnnestus</translation>
+<translation id="3650594806107685466">Kaardi turvalisuse tagamiseks sisestage kaardi <ph name="SIDE_OF_CARD" /> olev CVC</translation>
 <translation id="3653033846669030038">Teemapargid</translation>
 <translation id="3655241534245626312">Ava lubade seaded</translation>
 <translation id="3655670868607891010">Kui näete seda sageli, proovige järgmist: <ph name="HELP_LINK" />.</translation>
@@ -1857,6 +1858,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5552137475244467770">Chrome võrdleb teie paroole regulaarselt veebis avaldatud loenditega. Selle käigus on teie paroolid ja kasutajanimed krüpteeritud, et mitte keegi (sh Google) ei saaks neid lugeda.</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="5558125320634132440">See sait blokeeriti, kuna see võib sisaldada täiskasvanutele mõeldud sisu</translation>
+<translation id="5559311991468302423">Kustuta aadress</translation>
 <translation id="5560088892362098740">Aegumiskuupäev</translation>
 <translation id="55635442646131152">Dokumendi liigendus</translation>
 <translation id="5565613213060953222">Ava inkognito vaheleht</translation>
@@ -2458,6 +2460,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7112327784801341716">Kas kuvatav teave ei ole ajakohane? Võtke värskendamiseks ühendust pangaga.</translation>
 <translation id="7118618213916969306">Lõikelaua URL-i otsimine, <ph name="SHORT_URL" /></translation>
 <translation id="7119414471315195487">Sulgege muud vahelehed või programmid</translation>
+<translation id="7124354851782353862">Sisestage oma CVC</translation>
 <translation id="7129355289156517987">Kui sulgete kõik Chromiumi inkognito vahelehed, kustutatakse järgmised nendel vahelehtedel tehtud toimingud sellest seadmest.
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Sirvimistegevused.<ph name="END_LIST_ITEM" />
@@ -2784,6 +2787,7 @@ Lisateave:
 <translation id="7844689747373518809">{COUNT,plural, =0{Puudub}=1{1 rakendus (<ph name="EXAMPLE_APP_1" />)}=2{2 rakendust (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# rakendust (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Hiljem saab teie külastatav sait küsida Chrome'ilt teie teemasid, et isikupärastada teile kuvatavaid reklaame. Chrome jagab kuni 3 teemat, kaitstes teie sirvimisajaloo ja identiteedi privaatsust.</translation>
+<translation id="7860345425589240791">Sisestage uus aegumiskuupäev ja kaardi <ph name="SIDE_OF_CARD" /> olev CVC</translation>
 <translation id="7862185352068345852">Kas lahkuda saidilt?</translation>
 <translation id="7865448901209910068">Suurim kiirus</translation>
 <translation id="7871445724586827387">Google'i konto parooli muutmine</translation>

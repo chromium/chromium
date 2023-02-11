@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Английски (САЩ) с клавиатура „Дворак“</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – Хост</translation>
 <translation id="1521655867290435174">Google Таблици</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> се подготвя…</translation>
 <translation id="1538729222189715449">Файловете за Linux се отварят...</translation>
 <translation id="1547964879613821194">Канадска (английски) клавиатура</translation>
 <translation id="1556189134700913550">Прилагане за всички</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> елемента се компресират...</translation>
 <translation id="1722687688096767818">Потребителският профил се добавя...</translation>
 <translation id="1726100011689679555">Сървъри за имена</translation>
-<translation id="1727562178154619254">Готово за синхронизиране</translation>
 <translation id="1729953886957086472">Немски (Германия)</translation>
 <translation id="1730235522912993863">Китайски (цандзие)</translation>
 <translation id="1731889557567069540">Копирахте <ph name="NUMBER_OF_ITEMS" /> елемента.</translation>
@@ -513,7 +511,6 @@
    Премахването на устройството, докато се използва, може да доведе до загуба на данни. Моля, изчакайте завършването на операцията, след което го извадете посредством приложението Файлове.</translation>
 <translation id="5163869187418756376">Споделянето не бе успешно. Проверете връзката си и опитайте отново по-късно.</translation>
 <translation id="516592729076796170">Американска (Дворак) клавиатура за програмисти</translation>
-<translation id="5167102019886320507">Подготвят се <ph name="NUMBER_OF_ITEMS" /> елемента…</translation>
 <translation id="5177526793333269655">Изглед с миниизображения</translation>
 <translation id="5181896909298187506">Няма скорошни файлове</translation>
 <translation id="5194713942430106590">Кликнете, за да сортирате колоната във възходящ ред.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Няма скорошни изображения</translation>
 <translation id="7460898608667578234">украински</translation>
 <translation id="7469894403370665791">Автоматично свързване с тази мрежа</translation>
+<translation id="7481358317100446445">Готова</translation>
 <translation id="7486315294984620427">За да хванете и преместите файлове в Parallels Desktop, те трябва да бъдат копирани в папката с файлове на Windows.</translation>
 <translation id="749452993132003881">хирагана</translation>
 <translation id="7495372004724182530">Малаялам (фонетична клавиатура)</translation>

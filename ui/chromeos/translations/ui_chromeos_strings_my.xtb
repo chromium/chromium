@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">Dvorak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - ဆာဗာပင်ရင်း</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521795806314479294"><ph name="FILE_NAME" /> ကို ပြင်ဆင်နေသည်...</translation>
 <translation id="1538729222189715449">Linux ဖိုင်များကို ဖွင့်နေသည်...</translation>
 <translation id="1547964879613821194">ကနေဒါ အင်္ဂလိပ်</translation>
 <translation id="1556189134700913550">အားလုံး အတွက် အသုံးပြုရန်</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ဇစ်လုပ်နေသည်…</translation>
 <translation id="1722687688096767818">ပရိုဖိုင် ပေါင်းထည့်နေသည်...</translation>
 <translation id="1726100011689679555">အမည်ဆာဗာများ</translation>
-<translation id="1727562178154619254">စင့်ခ်လုပ်ရန် အသင့်ဖြစ်ပြီ</translation>
 <translation id="1729953886957086472">ဂျာမန် (ဂျာမနီ)</translation>
 <translation id="1730235522912993863">တရုတ် ချန်ကျီ</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ခု မိတ္တူကူးထားသည်။</translation>
@@ -513,7 +511,6 @@
    အသုံးပြုနေစဉ် ဖြုတ်ပစ်လျှင် ဒေတာများပေျာက်သွားမည်။ ဆောင်ရွက်မှုပြီးသည်ထိ စောင့်ပြီးနောက်၊ Files အက်ပ် ကို သုံးကာဖြုတ်ပါ။</translation>
 <translation id="5163869187418756376">မျှဝေခြင်း မအောင်မြင်ပါ။ သင့်ချိတ်ဆက်မှုအား စစ်ဆေးကာ နောက်မှ ထပ်မံကြိုးစားပါ။</translation>
 <translation id="516592729076796170">US Programmer Dvorak</translation>
-<translation id="5167102019886320507">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ပြင်ဆင်နေသည်...</translation>
 <translation id="5177526793333269655">လက်သည်းပုံ ကြည့်ရန်</translation>
 <translation id="5181896909298187506">လတ်တလောဖိုင်များ မရှိပါ</translation>
 <translation id="5194713942430106590">ကော်လံကို ငယ်စဉ်ကြီးလိုက်စီရန် နှိပ်ပါ။</translation>
@@ -792,6 +789,7 @@
 <translation id="7458955835361612701">လတ်တလောပုံများ မရှိပါ</translation>
 <translation id="7460898608667578234">ယူကရိန်းနီးယန်း</translation>
 <translation id="7469894403370665791">ဒီကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ရန်</translation>
+<translation id="7481358317100446445">အသင့်ဖြစ်ပြီ</translation>
 <translation id="7486315294984620427">Parallels Desktop တွင် ဖိုင်များဆွဲချရန် ဖိုင်ကို Windows ဖိုင်များသို့ မိတ္တူကူးရပါမည်။</translation>
 <translation id="749452993132003881">ဟိရဂန</translation>
 <translation id="7495372004724182530">မလေယာလမ် အသံထွက်</translation>

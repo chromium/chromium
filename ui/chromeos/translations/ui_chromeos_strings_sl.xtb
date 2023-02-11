@@ -59,7 +59,6 @@
 <translation id="1499943022354839699">angleščina (ZDA) s tipkovnico Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> – gostitelj</translation>
 <translation id="1521655867290435174">Google Preglednice</translation>
-<translation id="1521795806314479294">Pripravljanje datoteke <ph name="FILE_NAME" /> …</translation>
 <translation id="1538729222189715449">Odpiranje datotek za Linux ...</translation>
 <translation id="1547964879613821194">kanadska angleščina</translation>
 <translation id="1556189134700913550">Uporabi za vse</translation>
@@ -84,7 +83,6 @@
 <translation id="1722487484194605434">Ustvarjanje arhiva zip s toliko elementi: <ph name="NUMBER_OF_ITEMS" /> …</translation>
 <translation id="1722687688096767818">Dodajanje profila …</translation>
 <translation id="1726100011689679555">Imenski strežniki</translation>
-<translation id="1727562178154619254">Pripravljeno za sinhronizacijo</translation>
 <translation id="1729953886957086472">nemščina (Nemčija)</translation>
 <translation id="1730235522912993863">kitajščina (cangče)</translation>
 <translation id="1731889557567069540">Št. kopiranih elementov: <ph name="NUMBER_OF_ITEMS" />.</translation>
@@ -513,7 +511,6 @@
        Če odstranite napravo, ko je še v uporabi, lahko izgubite podatke. Počakajte do konca postopka in nato napravo izvrzite z aplikacijo Datoteke.</translation>
 <translation id="5163869187418756376">Souporaba ni uspela. Preverite povezavo in poskusite znova.</translation>
 <translation id="516592729076796170">Angleška tipkovnica Dvorak za programerje (ZDA)</translation>
-<translation id="5167102019886320507">Pripravljanje več elementov (<ph name="NUMBER_OF_ITEMS" />) …</translation>
 <translation id="5177526793333269655">Pogled sličic</translation>
 <translation id="5181896909298187506">Ni nedavnih datotek</translation>
 <translation id="5194713942430106590">Kliknite, če želite razvrstiti elemente stolpca v naraščajočem vrstnem redu.</translation>
@@ -793,6 +790,7 @@
 <translation id="7458955835361612701">Ni nedavnih slik</translation>
 <translation id="7460898608667578234">ukrajinščina</translation>
 <translation id="7469894403370665791">Samodejno vzpostavi povezavo s tem omrežjem</translation>
+<translation id="7481358317100446445">Pripravljeno</translation>
 <translation id="7486315294984620427">Če želite spustiti datoteke v program Parallels Desktop, morate datoteko kopirati med datoteke sistema Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">malajalščina (fonetična)</translation>

@@ -629,6 +629,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1567387640189251553">Beste teklatu bat konektatu duzu pasahitza azkenekoz idatzi zenuenetik. Agian sakatzen ari zaren teklak erregistratzen ari da, pasahitzak lapurtzeko asmoz.</translation>
 <translation id="156793199942386351">"<ph name="ACTION" />" ekintzari esleitu zaio dagoeneko "<ph name="CURRENTKEY" />". Sakatu edozein tekla <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-en kontsola</translation>
+<translation id="1569466257325986920">Google-ko kontuko pasahitza aldatzen den hurrengoan, gailuko datuak automatikoki berreskuratuko dira Google-ko kontuan saioa hasten duzunean</translation>
 <translation id="1570604804919108255">Erakutsi jakinarazpenak</translation>
 <translation id="1571304935088121812">Kopiatu erabiltzaile-izena</translation>
 <translation id="1571738973904005196">Ikusi fitxa: <ph name="TAB_ORIGIN" /></translation>
@@ -887,6 +888,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1781979858217752599">Partekatu leihoaren audioa</translation>
 <translation id="1782101999402987960">Administratzaileak blokeatu egin ditu eguneratzeak</translation>
 <translation id="1782196717298160133">Telefonoa bilatzen</translation>
+<translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 ohar}other{# ohar}}</translation>
 <translation id="1784707308176068866">Abiarazi atzeko planoan lankidetzarako aplikazio natibo batek hala eskatzen duenean</translation>
 <translation id="1784849162047402014">Toki gutxi gelditzen da gailuan</translation>
 <translation id="1787350673646245458">Erabiltzailearen irudia</translation>
@@ -1679,6 +1681,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2467755475704469005">Ez da hauteman gailurik. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Ukipen-panelarekin gora eta behera bizkorrago egiteko aukera</translation>
 <translation id="2468205691404969808">Zure hobespenak gogoratzeko erabiltzen ditu cookieak, orri horietara joaten ez bazara ere</translation>
+<translation id="2468247643665097563">Ordenatu</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470085922875120">Asmatzen zailak diruditen pasahitzak darabiltzazu</translation>
 <translation id="2468845464436879514">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" />: 1 fitxa}other{<ph name="GROUP_TITLE" />: # fitxa}}</translation>
@@ -5950,6 +5953,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6410668567036790476">Gehitu bilatzailea</translation>
 <translation id="641469293210305670">Instalatu eguneratzeak eta aplikazioak</translation>
 <translation id="6414878884710400018">Ireki sistemaren hobespenak</translation>
+<translation id="6415816101512323589">Gailuko datuak berreskuratzeko aukera aktibatu nahi duzu?</translation>
 <translation id="6415900369006735853">Konektatu Internetera telefonoa erabiliz</translation>
 <translation id="6416743254476733475">Onartu edo blokeatu ordenagailuan.</translation>
 <translation id="6417265370957905582">Google-ren Laguntzailea</translation>
@@ -6742,7 +6746,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="711840821796638741">Erakutsi kudeatutako laster-markak</translation>
 <translation id="711985611146095797">Orri honen bitartez, saioa hasita daukaten Google-ko kontuak kudea ditzakezu. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome arakatzailea eta Android-eko trafikoa blokeatu egingo dira VPN bat konektatzen ez bada</translation>
-<translation id="7120865473764644444">Ezin izan da konektatu sinkronizazio-zerbitzarira. Berriro saiatzen…</translation>
 <translation id="7121438501124788993">Garatzaile modua</translation>
 <translation id="7121728544325372695">Marra adimendunak</translation>
 <translation id="7123030151043029868">Hainbat fitxategi deskarga ditzakete automatikoki</translation>
