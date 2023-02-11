@@ -10,10 +10,6 @@
 #include "base/component_export.h"
 #include "base/values.h"
 
-namespace base {
-class Value;
-}
-
 namespace ash {
 
 struct NetworkProfile;
@@ -31,18 +27,18 @@ extern COMPONENT_EXPORT(CHROMEOS_NETWORK) const char kFakeCredential[];
 // Each of the arguments can be null.
 // TODO(pneubeck): Add documentation of the returned format, see
 //   https://crbug.com/408990 .
-base::Value CreateManagedONC(const base::Value* global_policy,
-                             const base::Value* network_policy,
-                             const base::Value* user_settings,
-                             const base::Value* active_settings,
-                             const NetworkProfile* profile);
+base::Value::Dict CreateManagedONC(const base::Value* global_policy,
+                                   const base::Value* network_policy,
+                                   const base::Value* user_settings,
+                                   const base::Value::Dict* active_settings,
+                                   const NetworkProfile* profile);
 
 // Adds properties to |shill_properties_to_update|, which are enforced on an
 // unmanaged network by the global config |global_network_policy| of the policy.
 // |shill_dictionary| are the network's current properties read from Shill.
 void SetShillPropertiesForGlobalPolicy(
     const base::Value::Dict& shill_dictionary,
-    const base::Value& global_network_policy,
+    const base::Value::Dict& global_network_policy,
     base::Value::Dict* shill_properties_to_update);
 
 // Creates a Shill property dictionary from the given arguments. The resulting
@@ -50,31 +46,32 @@ void SetShillPropertiesForGlobalPolicy(
 // type, |network_policy| is interpreted as the user or device policy and
 // |user_settings| as the user or shared settings. |network_policy| or
 // |user_settings| can be NULL, but not both.
-base::Value CreateShillConfiguration(const NetworkProfile& profile,
-                                     const std::string& guid,
-                                     const base::Value* global_policy,
-                                     const base::Value* network_policy,
-                                     const base::Value* user_settings);
+base::Value::Dict CreateShillConfiguration(
+    const NetworkProfile& profile,
+    const std::string& guid,
+    const base::Value* global_policy,
+    const base::Value::Dict* network_policy,
+    const base::Value* user_settings);
 
 // Returns true if |policy| matches |actual_network|, which must be part of a
 // ONC NetworkConfiguration. This should be the only such matching function
 // within Chrome. Shill does such matching in several functions for network
 // identification. For compatibility, we currently should stick to Shill's
 // matching behavior.
-bool IsPolicyMatching(const base::Value& policy,
-                      const base::Value& actual_network);
+bool IsPolicyMatching(const base::Value::Dict& policy,
+                      const base::Value::Dict& actual_network);
 
 // Returns if the given |onc_config| is Cellular type configuration.
-bool IsCellularPolicy(const base::Value& onc_config);
+bool IsCellularPolicy(const base::Value::Dict& onc_config);
 
 // Returns the ICCID value from the given |onc_config|, returns nullptr if it
 // is not a Cellular type ONC or no ICCID field is found.
-const std::string* GetIccidFromONC(const base::Value& onc_config);
+const std::string* GetIccidFromONC(const base::Value::Dict& onc_config);
 
 // Returns the Cellular.SMDPAddress ONC field of the passed ONC
 // NetworkConfiguration if it is a Cellular NetworkConfiguration.
 // If there is no SMDPAddress, returns nullptr.
-const std::string* GetSMDPAddressFromONC(const base::Value& onc_config);
+const std::string* GetSMDPAddressFromONC(const base::Value::Dict& onc_config);
 
 }  // namespace policy_util
 }  // namespace ash

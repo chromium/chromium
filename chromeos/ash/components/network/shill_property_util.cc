@@ -50,14 +50,14 @@ std::string ValidateUTF8(const std::string& str) {
 
 // If existent and non-empty, copies the string at |key| from |source| to
 // |dest|. Returns true if the string was copied.
-bool CopyStringFromDictionary(const base::Value& source,
+bool CopyStringFromDictionary(const base::Value::Dict& source,
                               const std::string& key,
-                              base::Value* dest) {
-  const std::string* string_value = source.FindStringKey(key);
+                              base::Value::Dict* dest) {
+  const std::string* string_value = source.FindString(key);
   if (!string_value || string_value->empty()) {
     return false;
   }
-  dest->SetKey(key, base::Value(*string_value));
+  dest->Set(key, *string_value);
   return true;
 }
 
@@ -239,7 +239,7 @@ void SetRandomMACPolicy(::onc::ONCSource onc_source,
   if (!base::FeatureList::IsEnabled(
           features::kWifiConnectMacAddressRandomization)) {
     shill_dictionary->Set(shill::kWifiRandomMACPolicy,
-                          base::Value(shill::kWifiRandomMacPolicyHardware));
+                          shill::kWifiRandomMacPolicyHardware);
     return;
   }
 
@@ -251,22 +251,20 @@ void SetRandomMACPolicy(::onc::ONCSource onc_source,
       // to force Hardware address by user in experimental mode.
       onc_source == ::onc::ONCSource::ONC_SOURCE_USER_IMPORT) {
     shill_dictionary->Set(shill::kWifiRandomMACPolicy,
-                          base::Value(shill::kWifiRandomMacPolicyHardware));
+                          shill::kWifiRandomMacPolicyHardware);
     return;
   }
 
   // In all other cases, set the MAC Address Policy
-  // to Persistant-Random (Randomized per SSID, but persistent
+  // to Persistent-Random (Randomized per SSID, but persistent
   // once randomized).
-  shill_dictionary->Set(
-      shill::kWifiRandomMACPolicy,
-      base::Value(shill::kWifiRandomMacPolicyPersistentRandom));
+  shill_dictionary->Set(shill::kWifiRandomMACPolicy,
+                        shill::kWifiRandomMacPolicyPersistentRandom);
 }
 
 void SetUIDataAndSource(const NetworkUIData& ui_data,
                         base::Value::Dict* shill_dictionary) {
-  shill_dictionary->Set(shill::kUIDataProperty,
-                        base::Value(ui_data.GetAsJson()));
+  shill_dictionary->Set(shill::kUIDataProperty, ui_data.GetAsJson());
   std::string source;
   switch (ui_data.onc_source()) {
     case ::onc::ONC_SOURCE_UNKNOWN:
@@ -285,12 +283,12 @@ void SetUIDataAndSource(const NetworkUIData& ui_data,
       source = shill::kONCSourceUserPolicy;
       break;
   }
-  shill_dictionary->Set(shill::kONCSourceProperty, base::Value(source));
+  shill_dictionary->Set(shill::kONCSourceProperty, source);
 }
 
-bool CopyIdentifyingProperties(const base::Value& service_properties,
+bool CopyIdentifyingProperties(const base::Value::Dict& service_properties,
                                const bool properties_read_from_shill,
-                               base::Value* dest) {
+                               base::Value::Dict* dest) {
   bool success = true;
 
   // GUID is optional.
@@ -298,11 +296,11 @@ bool CopyIdentifyingProperties(const base::Value& service_properties,
 
   std::string type;
   const std::string* type_str =
-      service_properties.FindStringKey(shill::kTypeProperty);
+      service_properties.FindString(shill::kTypeProperty);
   if (type_str)
     type = *type_str;
   success &= !type.empty();
-  dest->SetKey(shill::kTypeProperty, base::Value(type));
+  dest->Set(shill::kTypeProperty, type);
   if (type == shill::kTypeWifi) {
     success &= CopyStringFromDictionary(service_properties,
                                         shill::kSecurityClassProperty, dest);
@@ -320,37 +318,36 @@ bool CopyIdentifyingProperties(const base::Value& service_properties,
     std::string vpn_provider_type;
     std::string vpn_provider_host;
     if (properties_read_from_shill) {
-      const base::Value* provider_properties =
-          service_properties.FindDictKey(shill::kProviderProperty);
+      const base::Value::Dict* provider_properties =
+          service_properties.FindDict(shill::kProviderProperty);
       if (!provider_properties) {
         NET_LOG(ERROR) << "Missing VPN provider dict: "
-                       << GetNetworkIdFromProperties(
-                              service_properties.GetDict());
+                       << GetNetworkIdFromProperties(service_properties);
         return false;
       }
       const std::string* vpn_provider_type_str =
-          provider_properties->FindStringKey(shill::kTypeProperty);
+          provider_properties->FindString(shill::kTypeProperty);
       if (vpn_provider_type_str)
         vpn_provider_type = *vpn_provider_type_str;
       const std::string* vpn_provider_host_str =
-          provider_properties->FindStringKey(shill::kHostProperty);
+          provider_properties->FindString(shill::kHostProperty);
       if (vpn_provider_host_str)
         vpn_provider_host = *vpn_provider_host_str;
     } else {
       const std::string* vpn_provider_type_str =
-          service_properties.FindStringKey(shill::kProviderTypeProperty);
+          service_properties.FindString(shill::kProviderTypeProperty);
       if (vpn_provider_type_str)
         vpn_provider_type = *vpn_provider_type_str;
       const std::string* vpn_provider_host_str =
-          service_properties.FindStringKey(shill::kProviderHostProperty);
+          service_properties.FindString(shill::kProviderHostProperty);
       if (vpn_provider_host_str)
         vpn_provider_host = *vpn_provider_host_str;
     }
     success &= !vpn_provider_type.empty();
-    dest->SetKey(shill::kProviderTypeProperty, base::Value(vpn_provider_type));
+    dest->Set(shill::kProviderTypeProperty, vpn_provider_type);
 
     success &= !vpn_provider_host.empty();
-    dest->SetKey(shill::kProviderHostProperty, base::Value(vpn_provider_host));
+    dest->Set(shill::kProviderHostProperty, vpn_provider_host);
   } else if (type == shill::kTypeEthernet || type == shill::kTypeEthernetEap ||
              type == shill::kTypeCellular) {
     // Ethernet, EthernetEAP and Cellular don't have any additional identifying
@@ -361,20 +358,20 @@ bool CopyIdentifyingProperties(const base::Value& service_properties,
   }
   if (!success) {
     NET_LOG(ERROR) << "Missing required properties: "
-                   << GetNetworkIdFromProperties(service_properties.GetDict());
+                   << GetNetworkIdFromProperties(service_properties);
   }
   return success;
 }
 
-bool DoIdentifyingPropertiesMatch(const base::Value& new_properties,
-                                  const base::Value& old_properties) {
-  base::Value new_identifying(base::Value::Type::DICT);
+bool DoIdentifyingPropertiesMatch(const base::Value::Dict& new_properties,
+                                  const base::Value::Dict& old_properties) {
+  base::Value::Dict new_identifying;
   if (!CopyIdentifyingProperties(
           new_properties, false /* properties were not read from Shill */,
           &new_identifying)) {
     return false;
   }
-  base::Value old_identifying(base::Value::Type::DICT);
+  base::Value::Dict old_identifying;
   if (!CopyIdentifyingProperties(old_properties,
                                  true /* properties were read from Shill */,
                                  &old_identifying)) {

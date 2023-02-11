@@ -322,8 +322,9 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
   if (network_policy)
     NET_LOG(DEBUG) << "Configuration is managed: " << NetworkId(state);
 
-  base::Value shill_dictionary = policy_util::CreateShillConfiguration(
-      *profile, guid, policies->GetGlobalNetworkConfig(), network_policy,
+  base::Value::Dict shill_dictionary = policy_util::CreateShillConfiguration(
+      *profile, guid, policies->GetGlobalNetworkConfig(),
+      network_policy ? &network_policy->GetDict() : nullptr,
       &validated_user_settings);
 
   SetShillProperties(service_path, std::move(shill_dictionary),
@@ -332,30 +333,26 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
 
 void ManagedNetworkConfigurationHandlerImpl::SetManagedActiveProxyValues(
     const std::string& guid,
-    base::Value* dictionary) {
+    base::Value::Dict* dictionary) {
   DCHECK(ui_proxy_config_service_);
   const std::string proxy_settings_key = ::onc::network_config::kProxySettings;
-  base::Value::Dict* proxy_settings =
-      dictionary->GetDict().FindDict(proxy_settings_key);
 
-  if (!proxy_settings) {
-    proxy_settings = dictionary->GetDict()
-                         .Set(proxy_settings_key, base::Value::Dict())
-                         ->GetIfDict();
-  }
+  base::Value::Dict* proxy_settings =
+      dictionary->EnsureDict(proxy_settings_key);
   ui_proxy_config_service_->MergeEnforcedProxyConfig(guid, proxy_settings);
 
-  if (proxy_settings->empty())
-    dictionary->GetDict().Remove(proxy_settings_key);
+  if (proxy_settings->empty()) {
+    dictionary->Remove(proxy_settings_key);
+  }
 }
 
 void ManagedNetworkConfigurationHandlerImpl::SetShillProperties(
     const std::string& service_path,
-    base::Value shill_dictionary,
+    base::Value::Dict shill_dictionary,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   network_configuration_handler_->SetShillProperties(
-      service_path, shill_dictionary.GetDict(), std::move(callback),
+      service_path, shill_dictionary, std::move(callback),
       std::move(error_callback));
 }
 
@@ -465,23 +462,22 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     guid = base::GenerateGUID();
   }
 
-  base::Value shill_dictionary =
+  base::Value::Dict shill_dictionary =
       policy_util::CreateShillConfiguration(*profile, guid,
                                             nullptr,  // no global policy
                                             nullptr,  // no network policy
                                             &validated_properties);
 
   network_configuration_handler_->CreateShillConfiguration(
-      shill_dictionary.GetDict(), std::move(callback),
-      std::move(error_callback));
+      shill_dictionary, std::move(callback), std::move(error_callback));
 }
 
 void ManagedNetworkConfigurationHandlerImpl::ConfigurePolicyNetwork(
-    const base::Value& shill_properties,
+    const base::Value::Dict& shill_properties,
     base::OnceClosure callback) const {
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   network_configuration_handler_->CreateShillConfiguration(
-      shill_properties.GetDict(),
+      shill_properties,
       base::BindOnce(
           &ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork,
           weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.first)),
@@ -682,7 +678,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnProfileAdded(
 
   // The profile's network policy may have a GlobalNetworkConfiguration which
   // can affect unmanaged networks (see ApplyGlobalPolicyOnUnmanagedEntry in
-  // PolicyAppliactor), so set can_affect_other_networks to true.
+  // PolicyApplicator), so set can_affect_other_networks to true.
   ApplyOrQueuePolicies(profile.userhash, policies->GetAllPolicyGuids(),
                        /*can_affect_other_networks=*/true);
 }
@@ -693,7 +689,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnProfileRemoved(
 }
 
 void ManagedNetworkConfigurationHandlerImpl::CreateConfigurationFromPolicy(
-    const base::Value& shill_properties,
+    const base::Value::Dict& shill_properties,
     base::OnceClosure callback) {
   ConfigurePolicyNetwork(shill_properties, std::move(callback));
 }
@@ -701,9 +697,9 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfigurationFromPolicy(
 void ManagedNetworkConfigurationHandlerImpl::
     UpdateExistingConfigurationWithPropertiesFromPolicy(
         const base::Value& existing_properties,
-        const base::Value& new_properties,
+        const base::Value::Dict& new_properties,
         base::OnceClosure callback) {
-  base::Value shill_properties(base::Value::Type::DICT);
+  base::Value::Dict shill_properties;
 
   const std::string* profile =
       existing_properties.FindStringKey(shill::kProfileProperty);
@@ -716,21 +712,21 @@ void ManagedNetworkConfigurationHandlerImpl::
     std::move(callback).Run();
     return;
   }
-  shill_properties.SetKey(shill::kProfileProperty, base::Value(*profile));
+  shill_properties.Set(shill::kProfileProperty, *profile);
 
   if (!shill_property_util::CopyIdentifyingProperties(
-          existing_properties, true /* properties were read from Shill */,
-          &shill_properties)) {
+          existing_properties.GetDict(),
+          /*properties_read_from_shill=*/true, &shill_properties)) {
     NET_LOG(ERROR) << "Missing identifying properties",
         shill_property_util::GetNetworkIdFromProperties(
             existing_properties.GetDict());
   }
 
-  shill_properties.MergeDictionary(&new_properties);
+  shill_properties.Merge(new_properties.Clone());
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   network_configuration_handler_->CreateShillConfiguration(
-      shill_properties.GetDict(),
+      shill_properties,
       base::BindOnce(
           &ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork,
           weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.first)),
@@ -749,7 +745,7 @@ void ManagedNetworkConfigurationHandlerImpl::TriggerCellularPolicyApplication(
     DCHECK(network_policy);
 
     const std::string* smdp_address =
-        policy_util::GetSMDPAddressFromONC(*network_policy);
+        policy_util::GetSMDPAddressFromONC(network_policy->GetDict());
     if (smdp_address) {
       NET_LOG(EVENT)
           << "Found ONC configuration with SMDP: " << *smdp_address
@@ -1086,7 +1082,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnPolicyAppliedToNetwork(
     const std::string& service_path,
     const std::string& guid) const {
   // When this is called, the policy has been fully applied and is reflected in
-  // NetworkStateHandler, so it is safe to notify obserers.
+  // NetworkStateHandler, so it is safe to notify observers.
   // Notifying observers is the last step of policy application to
   // |service_path|.
   NotifyPolicyAppliedToNetwork(service_path);
@@ -1259,14 +1255,14 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
       network_state_handler_->GetNetworkState(service_path);
   ::onc::ONCSource onc_source;
   FindPolicyByGUID(userhash, *guid, &onc_source);
-  base::Value onc_network = onc::TranslateShillServiceToONCPart(
-      *shill_properties, onc_source, &chromeos::onc::kNetworkWithStateSignature,
-      network_state);
+  base::Value::Dict onc_network = onc::TranslateShillServiceToONCPart(
+      shill_properties->GetDict(), onc_source,
+      &chromeos::onc::kNetworkWithStateSignature, network_state);
 
   if (properties_type == PropertiesType::kUnmanaged) {
-    std::move(callback).Run(service_path,
-                            absl::make_optional(std::move(onc_network)),
-                            absl::nullopt);
+    std::move(callback).Run(
+        service_path, absl::make_optional(base::Value(std::move(onc_network))),
+        absl::nullopt);
     return;
   }
 
@@ -1313,12 +1309,13 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
     global_policy = policies->GetGlobalNetworkConfig();
   }
 
-  base::Value augmented_properties = policy_util::CreateManagedONC(
+  base::Value::Dict augmented_properties = policy_util::CreateManagedONC(
       global_policy, network_policy, user_settings, &onc_network, profile);
   SetManagedActiveProxyValues(*guid, &augmented_properties);
-  std::move(callback).Run(service_path,
-                          absl::make_optional(std::move(augmented_properties)),
-                          absl::nullopt);
+  std::move(callback).Run(
+      service_path,
+      absl::make_optional(base::Value(std::move(augmented_properties))),
+      absl::nullopt);
 }
 
 void ManagedNetworkConfigurationHandlerImpl::NotifyPolicyAppliedToNetwork(

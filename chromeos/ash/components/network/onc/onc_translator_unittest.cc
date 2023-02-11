@@ -27,13 +27,13 @@ class ONCTranslatorOncToShillTest
 // Test the translation from ONC to Shill json.
 TEST_P(ONCTranslatorOncToShillTest, TranslateOncToShill) {
   std::string source_onc_filename = GetParam().first;
-  base::Value onc_network =
-      test_utils::ReadTestDictionaryValue(source_onc_filename);
+  base::Value::Dict onc_network =
+      test_utils::ReadTestDictionary(source_onc_filename);
   std::string result_shill_filename = GetParam().second;
-  base::Value expected_shill_network =
-      test_utils::ReadTestDictionaryValue(result_shill_filename);
+  base::Value::Dict expected_shill_network =
+      test_utils::ReadTestDictionary(result_shill_filename);
 
-  base::Value translation = TranslateONCObjectToShill(
+  base::Value::Dict translation = TranslateONCObjectToShill(
       &chromeos::onc::kNetworkConfigurationSignature, onc_network);
 
   EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
@@ -100,12 +100,12 @@ TEST_F(ONCTranslatorOncToShillTest, TranslateCellularApnRevamp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
 
-  base::Value onc_network =
-      test_utils::ReadTestDictionaryValue("cellular_apn_revamp.onc");
-  base::Value expected_shill_network =
-      test_utils::ReadTestDictionaryValue("shill_cellular_apn_revamp.json");
+  base::Value::Dict onc_network =
+      test_utils::ReadTestDictionary("cellular_apn_revamp.onc");
+  base::Value::Dict expected_shill_network =
+      test_utils::ReadTestDictionary("shill_cellular_apn_revamp.json");
 
-  base::Value translation = TranslateONCObjectToShill(
+  base::Value::Dict translation = TranslateONCObjectToShill(
       &chromeos::onc::kNetworkConfigurationSignature, onc_network);
 
   EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
@@ -121,14 +121,14 @@ class ONCTranslatorShillToOncTest
 
 TEST_P(ONCTranslatorShillToOncTest, Translate) {
   std::string source_shill_filename = GetParam().first;
-  base::Value shill_network =
-      test_utils::ReadTestDictionaryValue(source_shill_filename);
+  base::Value::Dict shill_network =
+      test_utils::ReadTestDictionary(source_shill_filename);
 
   std::string result_onc_filename = GetParam().second;
-  base::Value expected_onc_network =
-      test_utils::ReadTestDictionaryValue(result_onc_filename);
+  base::Value::Dict expected_onc_network =
+      test_utils::ReadTestDictionary(result_onc_filename);
 
-  base::Value translation = TranslateShillServiceToONCPart(
+  base::Value::Dict translation = TranslateShillServiceToONCPart(
       shill_network, ::onc::ONC_SOURCE_NONE,
       &chromeos::onc::kNetworkWithStateSignature, /*network_state=*/nullptr);
 
@@ -216,12 +216,12 @@ TEST_F(ONCTranslatorShillToOncTest, TranslateCellularApnRevamp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
 
-  base::Value shill_network = test_utils::ReadTestDictionaryValue(
+  base::Value::Dict shill_network = test_utils::ReadTestDictionary(
       "shill_cellular_with_state_apn_revamp.json");
-  base::Value expected_onc_network = test_utils::ReadTestDictionaryValue(
+  base::Value::Dict expected_onc_network = test_utils::ReadTestDictionary(
       "translation_of_shill_cellular_with_state_apn_revamp.onc");
 
-  base::Value translation = TranslateShillServiceToONCPart(
+  base::Value::Dict translation = TranslateShillServiceToONCPart(
       shill_network, ::onc::ONC_SOURCE_NONE,
       &chromeos::onc::kNetworkWithStateSignature, /*network_state=*/nullptr);
 

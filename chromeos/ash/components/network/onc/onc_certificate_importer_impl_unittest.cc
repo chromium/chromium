@@ -74,10 +74,10 @@ class ONCCertificateImporterImplTest : public testing::Test {
                                ImportType import_type,
                                bool expected_parse_success,
                                bool expected_import_success) {
-    base::Value onc =
-        chromeos::onc::test_utils::ReadTestDictionaryValue(filename);
+    base::Value::Dict onc =
+        chromeos::onc::test_utils::ReadTestDictionary(filename);
     absl::optional<base::Value> certificates_value =
-        onc.ExtractKey(::onc::toplevel_config::kCertificates);
+        onc.Extract(::onc::toplevel_config::kCertificates);
     onc_certificates_ = std::move(*certificates_value).TakeList();
 
     CertificateImporterImpl importer(task_runner_, test_nssdb_.get());
@@ -134,7 +134,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
 
     const base::Value& certificate = onc_certificates_[0];
     const std::string* guid_value =
-        certificate.FindStringKey(::onc::certificate::kGUID);
+        certificate.GetDict().FindString(::onc::certificate::kGUID);
     *guid = *guid_value;
   }
 

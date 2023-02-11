@@ -18,16 +18,16 @@ namespace {
 namespace test_utils = ::chromeos::onc::test_utils;
 
 // Checks that both dictionaries contain an entry at |path| with the same value.
-::testing::AssertionResult HaveSameValueAt(const base::Value& a,
-                                           const base::Value& b,
+::testing::AssertionResult HaveSameValueAt(const base::Value::Dict& a,
+                                           const base::Value::Dict& b,
                                            const std::string& path) {
-  const base::Value* a_value = a.FindPath(path);
+  const base::Value* a_value = a.FindByDottedPath(path);
   if (!a_value) {
     return ::testing::AssertionFailure()
            << "First dictionary '" << a << "' doesn't contain " << path;
   }
 
-  const base::Value* b_value = b.FindPath(path);
+  const base::Value* b_value = b.FindByDottedPath(path);
   if (!b_value) {
     return ::testing::AssertionFailure()
            << "Second dictionary '" << b << "' doesn't contain " << path;
@@ -53,7 +53,7 @@ class ONCMergerTest : public testing::Test {
   base::Value policy_;
   base::Value policy_without_recommended_;
   base::Value device_policy_;
-  base::Value active_;
+  base::Value::Dict active_;
 
   void SetUp() override {
     policy_ = test_utils::ReadTestDictionaryValue("managed_vpn.onc");
@@ -61,93 +61,97 @@ class ONCMergerTest : public testing::Test {
         "managed_vpn_without_recommended.onc");
     user_ = test_utils::ReadTestDictionaryValue("user.onc");
     device_policy_ = test_utils::ReadTestDictionaryValue("device_policy.onc");
-    active_ = test_utils::ReadTestDictionaryValue("vpn_active_settings.onc");
+    active_ = test_utils::ReadTestDictionary("vpn_active_settings.onc");
   }
 };
 
 TEST_F(ONCMergerTest, MandatoryValueOverwritesUserValue) {
-  base::Value merged(
-      MergeSettingsAndPoliciesToEffective(&policy_, nullptr, &user_, nullptr));
-  EXPECT_TRUE(HaveSameValueAt(merged, policy_, "Type"));
-  EXPECT_TRUE(HaveSameValueAt(merged, policy_, "StaticIPConfig"));
+  base::Value::Dict merged = MergeSettingsAndPoliciesToEffective(
+      &policy_.GetDict(), nullptr, &user_, nullptr);
+  EXPECT_TRUE(HaveSameValueAt(merged, policy_.GetDict(), "Type"));
+  EXPECT_TRUE(HaveSameValueAt(merged, policy_.GetDict(), "StaticIPConfig"));
 }
 
 TEST_F(ONCMergerTest, MandatoryValueAndNoUserValue) {
-  base::Value merged(
-      MergeSettingsAndPoliciesToEffective(&policy_, nullptr, &user_, nullptr));
-  EXPECT_TRUE(HaveSameValueAt(merged, policy_, "GUID"));
-  EXPECT_TRUE(HaveSameValueAt(merged, policy_, "VPN.OpenVPN.Username"));
+  base::Value::Dict merged = MergeSettingsAndPoliciesToEffective(
+      &policy_.GetDict(), nullptr, &user_, nullptr);
+  EXPECT_TRUE(HaveSameValueAt(merged, policy_.GetDict(), "GUID"));
+  EXPECT_TRUE(
+      HaveSameValueAt(merged, policy_.GetDict(), "VPN.OpenVPN.Username"));
 }
 
 TEST_F(ONCMergerTest, MandatoryDictionaryAndNoUserValue) {
-  base::Value merged(
-      MergeSettingsAndPoliciesToEffective(&policy_, nullptr, &user_, nullptr));
-  EXPECT_TRUE(HaveSameValueAt(merged, policy_without_recommended_,
+  base::Value::Dict merged = MergeSettingsAndPoliciesToEffective(
+      &policy_.GetDict(), nullptr, &user_, nullptr);
+  EXPECT_TRUE(HaveSameValueAt(merged, policy_without_recommended_.GetDict(),
                               "VPN.OpenVPN.ClientCertPattern"));
 }
 
 TEST_F(ONCMergerTest, UserValueOverwritesRecommendedValue) {
-  base::Value merged(
-      MergeSettingsAndPoliciesToEffective(&policy_, nullptr, &user_, nullptr));
-  EXPECT_TRUE(HaveSameValueAt(merged, user_, "VPN.Host"));
+  base::Value::Dict merged = MergeSettingsAndPoliciesToEffective(
+      &policy_.GetDict(), nullptr, &user_, nullptr);
+  EXPECT_TRUE(HaveSameValueAt(merged, user_.GetDict(), "VPN.Host"));
 }
 
 TEST_F(ONCMergerTest, UserValueAndRecommendedUnset) {
-  base::Value merged(
-      MergeSettingsAndPoliciesToEffective(&policy_, nullptr, &user_, nullptr));
-  EXPECT_TRUE(HaveSameValueAt(merged, user_, "VPN.OpenVPN.Password"));
+  base::Value::Dict merged = MergeSettingsAndPoliciesToEffective(
+      &policy_.GetDict(), nullptr, &user_, nullptr);
+  EXPECT_TRUE(HaveSameValueAt(merged, user_.GetDict(), "VPN.OpenVPN.Password"));
 }
 
 TEST_F(ONCMergerTest, UserDictionaryAndNoPolicyValue) {
-  base::Value merged(
-      MergeSettingsAndPoliciesToEffective(&policy_, nullptr, &user_, nullptr));
-  EXPECT_FALSE(merged.GetDict().contains("ProxySettings"));
+  base::Value::Dict merged = MergeSettingsAndPoliciesToEffective(
+      &policy_.GetDict(), nullptr, &user_, nullptr);
+  EXPECT_FALSE(merged.contains("ProxySettings"));
 }
 
 TEST_F(ONCMergerTest, MergeWithEmptyPolicyProhibitsEverything) {
-  base::Value emptyDict(base::Value::Type::DICT);
-  base::Value merged(MergeSettingsAndPoliciesToEffective(&emptyDict, nullptr,
-                                                         &user_, nullptr));
-  EXPECT_TRUE(merged.DictEmpty());
+  base::Value::Dict empty_dict;
+  base::Value::Dict merged = MergeSettingsAndPoliciesToEffective(
+      &empty_dict, nullptr, &user_, nullptr);
+  EXPECT_TRUE(merged.empty());
 }
 
 TEST_F(ONCMergerTest, MergeWithoutPolicyAllowsAnything) {
-  base::Value merged(
-      MergeSettingsAndPoliciesToEffective(nullptr, nullptr, &user_, nullptr));
-  EXPECT_TRUE(test_utils::Equals(&user_, &merged));
+  base::Value::Dict merged =
+      MergeSettingsAndPoliciesToEffective(nullptr, nullptr, &user_, nullptr);
+  EXPECT_TRUE(test_utils::Equals(&user_.GetDict(), &merged));
 }
 
 TEST_F(ONCMergerTest, MergeWithoutUserSettings) {
-  base::Value emptyDict(base::Value::Type::DICT);
-  base::Value merged;
+  base::Value empty_dict(base::Value::Type::DICT);
+  base::Value::Dict merged;
 
-  merged = MergeSettingsAndPoliciesToEffective(&policy_, nullptr, &emptyDict,
-                                               nullptr);
-  EXPECT_TRUE(test_utils::Equals(&policy_without_recommended_, &merged));
+  merged = MergeSettingsAndPoliciesToEffective(&policy_.GetDict(), nullptr,
+                                               &empty_dict, nullptr);
+  EXPECT_TRUE(
+      test_utils::Equals(&policy_without_recommended_.GetDict(), &merged));
 
-  merged =
-      MergeSettingsAndPoliciesToEffective(&policy_, nullptr, nullptr, nullptr);
-  EXPECT_TRUE(test_utils::Equals(&policy_without_recommended_, &merged));
+  merged = MergeSettingsAndPoliciesToEffective(&policy_.GetDict(), nullptr,
+                                               nullptr, nullptr);
+  EXPECT_TRUE(
+      test_utils::Equals(&policy_without_recommended_.GetDict(), &merged));
 }
 
 TEST_F(ONCMergerTest, MandatoryUserPolicyOverwritesDevicePolicy) {
-  base::Value merged(MergeSettingsAndPoliciesToEffective(
-      &policy_, &device_policy_, &user_, nullptr));
-  EXPECT_TRUE(HaveSameValueAt(merged, policy_, "VPN.OpenVPN.Port"));
+  base::Value::Dict merged = MergeSettingsAndPoliciesToEffective(
+      &policy_.GetDict(), &device_policy_.GetDict(), &user_, nullptr);
+  EXPECT_TRUE(HaveSameValueAt(merged, policy_.GetDict(), "VPN.OpenVPN.Port"));
 }
 
 TEST_F(ONCMergerTest, MandatoryDevicePolicyOverwritesRecommendedUserPolicy) {
-  base::Value merged(MergeSettingsAndPoliciesToEffective(
-      &policy_, &device_policy_, &user_, nullptr));
-  EXPECT_TRUE(HaveSameValueAt(merged, device_policy_, "VPN.OpenVPN.Username"));
+  base::Value::Dict merged = MergeSettingsAndPoliciesToEffective(
+      &policy_.GetDict(), &device_policy_.GetDict(), &user_, nullptr);
+  EXPECT_TRUE(HaveSameValueAt(merged, device_policy_.GetDict(),
+                              "VPN.OpenVPN.Username"));
 }
 
 TEST_F(ONCMergerTest, MergeToAugmented) {
-  base::Value expected_augmented =
-      test_utils::ReadTestDictionaryValue("augmented_merge.json");
-  base::Value merged(MergeSettingsAndPoliciesToAugmented(
+  base::Value::Dict expected_augmented =
+      test_utils::ReadTestDictionary("augmented_merge.json");
+  base::Value::Dict merged = MergeSettingsAndPoliciesToAugmented(
       chromeos::onc::kNetworkConfigurationSignature, &policy_, &device_policy_,
-      &user_, nullptr, &active_));
+      &user_, nullptr, &active_);
   EXPECT_TRUE(test_utils::Equals(&expected_augmented, &merged));
 }
 

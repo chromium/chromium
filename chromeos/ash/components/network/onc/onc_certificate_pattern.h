@@ -9,12 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}
 
 namespace net {
 class X509Certificate;

@@ -125,7 +125,7 @@ bool ParseCellularSIMSlotInfo(const base::Value::List& list,
 // This includes properties from the corresponding NetworkState if it exists.
 // Assumed to be called from the primary user profile.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::Value TranslateNetworkStateToONC(const NetworkState* network);
+base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network);
 
 // Retrieves the list of network services by passing |pattern|,
 // |configured_only|, and |visible_only| to NetworkStateHandler::

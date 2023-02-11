@@ -110,7 +110,7 @@ class NetworkingPrivateChromeOS : public NetworkingPrivateDelegate {
   // Populate ThirdPartyVPN.ProviderName with the provider name for third-party
   // VPNs. The provider name needs to be looked up from the list of extensions
   // which is not available to the chromeos/ash/components/network module.
-  void AppendThirdPartyProviderName(base::Value* dictionary);
+  void AppendThirdPartyProviderName(base::Value::Dict* dictionary);
 
   content::BrowserContext* browser_context_;
   base::WeakPtrFactory<NetworkingPrivateChromeOS> weak_ptr_factory_{this};

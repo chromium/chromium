@@ -17,9 +17,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 
-namespace chromeos {
-namespace onc {
-namespace test_utils {
+namespace chromeos::onc::test_utils {
+
 namespace {
 
 bool GetTestDataPath(const std::string& filename, base::FilePath* result_path) {
@@ -84,6 +83,23 @@ base::Value ReadTestDictionaryValue(const std::string& filename) {
   return content;
 }
 
+base::Value::Dict ReadTestDictionary(const std::string& filename) {
+  base::Value content = ReadTestJson(filename);
+  CHECK(content.is_dict())
+      << "File '" << filename
+      << "' does not contain a dictionary as expected, but type "
+      << content.type();
+  return std::move(content.GetDict());
+}
+
+base::Value::List ReadTestList(const std::string& filename) {
+  base::Value content = ReadTestJson(filename);
+  CHECK(content.is_list()) << "File '" << filename
+                           << "' does not contain a list as expected, but type "
+                           << content.type();
+  return std::move(content.GetList());
+}
+
 ::testing::AssertionResult Equals(const base::Value* expected,
                                   const base::Value* actual) {
   CHECK(expected != nullptr);
@@ -116,6 +132,4 @@ base::Value ReadTestDictionaryValue(const std::string& filename) {
                                        << *actual;
 }
 
-}  // namespace test_utils
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace chromeos::onc::test_utils

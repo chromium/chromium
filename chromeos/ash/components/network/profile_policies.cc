@@ -25,8 +25,8 @@ namespace {
 
 bool DefaultShillPropertiesMatcher(const base::Value& onc_network_configuration,
                                    const base::Value& shill_properties) {
-  return policy_util::IsPolicyMatching(onc_network_configuration,
-                                       shill_properties);
+  return policy_util::IsPolicyMatching(onc_network_configuration.GetDict(),
+                                       shill_properties.GetDict());
 }
 
 base::flat_map<std::string, std::string> GetAllExpansions(
@@ -231,15 +231,15 @@ bool ProfilePolicies::HasPolicyMatchingShillProperties(
   return false;
 }
 
-base::flat_map<std::string, base::Value> ProfilePolicies::GetGuidToPolicyMap()
-    const {
-  std::vector<std::pair<std::string, base::Value>> result;
+base::flat_map<std::string, base::Value::Dict>
+ProfilePolicies::GetGuidToPolicyMap() const {
+  std::vector<std::pair<std::string, base::Value::Dict>> result;
   result.reserve(guid_to_policy_.size());
   for (const auto& [guid, policy] : guid_to_policy_) {
-    result.push_back(
-        std::make_pair(guid, policy.GetPolicyWithRuntimeValues().Clone()));
+    result.emplace_back(guid,
+                        policy.GetPolicyWithRuntimeValues().GetDict().Clone());
   }
-  return base::flat_map<std::string, base::Value>(std::move(result));
+  return base::flat_map<std::string, base::Value::Dict>(std::move(result));
 }
 
 void ProfilePolicies::SetShillPropertiesMatcherForTesting(

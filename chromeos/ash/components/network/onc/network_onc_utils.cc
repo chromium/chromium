@@ -190,27 +190,28 @@ void SetProxyForScheme(const net::ProxyConfig::ProxyRules& proxy_rules,
   dict.Set(onc_scheme, std::move(url_dict));
 }
 
-// Returns the NetworkConfiugration with |guid| from |network_configs|, or
+// Returns the NetworkConfiguration with |guid| from |network_configs|, or
 // nullptr if no such NetworkConfiguration is found.
-const base::Value* GetNetworkConfigByGUID(const base::Value& network_configs,
-                                          const std::string& guid) {
-  for (const auto& network : network_configs.GetList()) {
+const base::Value::Dict* GetNetworkConfigByGUID(
+    const base::Value::List& network_configs,
+    const std::string& guid) {
+  for (const auto& network : network_configs) {
     DCHECK(network.is_dict());
 
     std::string current_guid =
         GetString(network.GetDict(), ::onc::network_config::kGUID);
     if (current_guid == guid)
-      return &network;
+      return &network.GetDict();
   }
   return nullptr;
 }
 
 // Returns the first Ethernet NetworkConfiguration from |network_configs| with
 // "Authentication: None", or nullptr if no such NetworkConfiguration is found.
-const base::Value* GetNetworkConfigForEthernetWithoutEAP(
-    const base::Value& network_configs) {
+const base::Value::Dict* GetNetworkConfigForEthernetWithoutEAP(
+    const base::Value::List& network_configs) {
   VLOG(2) << "Search for ethernet policy without EAP.";
-  for (const auto& network : network_configs.GetList()) {
+  for (const auto& network : network_configs) {
     DCHECK(network.is_dict());
 
     const base::Value::Dict& network_dict = network.GetDict();
@@ -225,7 +226,7 @@ const base::Value* GetNetworkConfigForEthernetWithoutEAP(
 
     std::string auth = GetString(*ethernet, ::onc::ethernet::kAuthentication);
     if (auth == ::onc::ethernet::kAuthenticationNone)
-      return &network;
+      return &network_dict;
   }
   return nullptr;
 }
@@ -236,8 +237,8 @@ const base::Value* GetNetworkConfigForEthernetWithoutEAP(
 // is an Ethernet network, tries lookup of the GUID of the shared EthernetEAP
 // service, or otherwise returns the first Ethernet NetworkConfiguration with
 // "Authentication: None".
-const base::Value* GetNetworkConfigForNetworkFromOnc(
-    const base::Value& network_configs,
+const base::Value::Dict* GetNetworkConfigForNetworkFromOnc(
+    const base::Value::List& network_configs,
     const NetworkState& network) {
   // In all cases except Ethernet, we use the GUID of |network|.
   if (!network.Matches(NetworkTypePattern::Ethernet()))
@@ -270,9 +271,10 @@ const base::Value* GetNetworkConfigForNetworkFromOnc(
 // Returns the NetworkConfiguration ONC object for |network| from this ONC, or
 // nullptr if no configuration is found. See |GetNetworkConfigForNetworkFromOnc|
 // for the NetworkConfiguration lookup rules.
-const base::Value* GetPolicyForNetworkFromPref(const PrefService* pref_service,
-                                               const char* pref_name,
-                                               const NetworkState& network) {
+const base::Value::Dict* GetPolicyForNetworkFromPref(
+    const PrefService* pref_service,
+    const char* pref_name,
+    const NetworkState& network) {
   if (!pref_service) {
     VLOG(2) << "No pref service";
     return nullptr;
@@ -302,13 +304,14 @@ const base::Value* GetPolicyForNetworkFromPref(const PrefService* pref_service,
   const base::Value* onc_policy_value = preference->GetValue();
   DCHECK(onc_policy_value);
 
-  return GetNetworkConfigForNetworkFromOnc(*onc_policy_value, network);
+  return GetNetworkConfigForNetworkFromOnc(onc_policy_value->GetList(),
+                                           network);
 }
 
 // Returns the global network configuration dictionary from the ONC policy of
 // the active user if |for_active_user| is true, or from device policy if it is
 // false.
-const base::Value* GetGlobalConfigFromPolicy(bool for_active_user) {
+const base::Value::Dict* GetGlobalConfigFromPolicy(bool for_active_user) {
   std::string username_hash;
   if (for_active_user) {
     const user_manager::User* user =
@@ -319,9 +322,10 @@ const base::Value* GetGlobalConfigFromPolicy(bool for_active_user) {
     }
     username_hash = user->username_hash();
   }
-  return NetworkHandler::Get()
-      ->managed_network_configuration_handler()
-      ->GetGlobalConfigFromPolicy(username_hash);
+  return &NetworkHandler::Get()
+              ->managed_network_configuration_handler()
+              ->GetGlobalConfigFromPolicy(username_hash)
+              ->GetDict();
 }
 
 // Replaces user-specific string placeholders in |network_configs|, which must
@@ -501,26 +505,26 @@ int ImportNetworksForUser(const user_manager::User* user,
 
   bool ethernet_not_found = false;
   int networks_created = 0;
-  for (const auto& network : expanded_networks) {
-    DCHECK(network.is_dict());
+  for (const auto& network_value : expanded_networks) {
+    const base::Value::Dict& network = network_value.GetDict();
+
     // Remove irrelevant fields.
     onc::Normalizer normalizer(true /* remove recommended fields */);
     base::Value::Dict normalized_network = normalizer.NormalizeObject(
-        &chromeos::onc::kNetworkConfigurationSignature, network.GetDict());
+        &chromeos::onc::kNetworkConfigurationSignature, network);
 
     // TODO(b/235297258): Use ONC and ManagedNetworkConfigurationHandler
     // instead.
-    base::Value shill_dict = onc::TranslateONCObjectToShill(
+    base::Value::Dict shill_dict = onc::TranslateONCObjectToShill(
         &chromeos::onc::kNetworkConfigurationSignature,
-        base::Value(std::move(normalized_network)));
+        std::move(normalized_network));
 
     std::unique_ptr<NetworkUIData> ui_data(
         NetworkUIData::CreateFromONC(::onc::ONC_SOURCE_USER_IMPORT));
-    shill_dict.SetKey(shill::kUIDataProperty,
-                      base::Value(ui_data->GetAsJson()));
-    shill_dict.SetKey(shill::kProfileProperty, base::Value(profile->path));
+    shill_dict.Set(shill::kUIDataProperty, ui_data->GetAsJson());
+    shill_dict.Set(shill::kProfileProperty, profile->path);
 
-    std::string type = GetString(shill_dict.GetDict(), shill::kTypeProperty);
+    std::string type = GetString(shill_dict, shill::kTypeProperty);
     NetworkConfigurationHandler* config_handler =
         NetworkHandler::Get()->network_configuration_handler();
     if (NetworkTypePattern::Ethernet().MatchesType(type)) {
@@ -529,16 +533,16 @@ int ImportNetworksForUser(const user_manager::User* user,
           NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
               NetworkTypePattern::Ethernet());
       if (ethernet) {
-        config_handler->SetShillProperties(
-            ethernet->path(), shill_dict.GetDict(), base::OnceClosure(),
-            network_handler::ErrorCallback());
+        config_handler->SetShillProperties(ethernet->path(), shill_dict,
+                                           base::OnceClosure(),
+                                           network_handler::ErrorCallback());
       } else {
         ethernet_not_found = true;
       }
 
     } else {
       config_handler->CreateShillConfiguration(
-          shill_dict.GetDict(), network_handler::ServiceResultCallback(),
+          shill_dict, network_handler::ServiceResultCallback(),
           network_handler::ErrorCallback());
       ++networks_created;
     }
@@ -550,24 +554,26 @@ int ImportNetworksForUser(const user_manager::User* user,
 }
 
 bool PolicyAllowsOnlyPolicyNetworksToAutoconnect(bool for_active_user) {
-  const base::Value* global_config = GetGlobalConfigFromPolicy(for_active_user);
+  const base::Value::Dict* global_config =
+      GetGlobalConfigFromPolicy(for_active_user);
   if (!global_config)
     return false;  // By default, all networks are allowed to autoconnect.
 
   return global_config
-      ->FindBoolKey(
+      ->FindBool(
           ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect)
       .value_or(false);
 }
 
-const base::Value* GetPolicyForNetwork(const PrefService* profile_prefs,
-                                       const PrefService* local_state_prefs,
-                                       const NetworkState& network,
-                                       ::onc::ONCSource* onc_source) {
+const base::Value::Dict* GetPolicyForNetwork(
+    const PrefService* profile_prefs,
+    const PrefService* local_state_prefs,
+    const NetworkState& network,
+    ::onc::ONCSource* onc_source) {
   VLOG(2) << "GetPolicyForNetwork: " << network.path();
   *onc_source = ::onc::ONC_SOURCE_NONE;
 
-  const base::Value* network_policy = GetPolicyForNetworkFromPref(
+  const base::Value::Dict* network_policy = GetPolicyForNetworkFromPref(
       profile_prefs, ::onc::prefs::kOpenNetworkConfiguration, network);
   if (network_policy) {
     VLOG(1) << "Network " << network.path() << " is managed by user policy.";
@@ -590,12 +596,12 @@ bool HasPolicyForNetwork(const PrefService* profile_prefs,
                          const PrefService* local_state_prefs,
                          const NetworkState& network) {
   ::onc::ONCSource ignored_onc_source;
-  const base::Value* policy = onc::GetPolicyForNetwork(
+  const base::Value::Dict* policy = onc::GetPolicyForNetwork(
       profile_prefs, local_state_prefs, network, &ignored_onc_source);
   return policy != nullptr;
 }
 
-bool HasUserPasswordSubsitutionVariable(
+bool HasUserPasswordSubstitutionVariable(
     const chromeos::onc::OncValueSignature& signature,
     const base::Value::Dict& onc_object) {
   if (&signature == &chromeos::onc::kEAPSignature) {
@@ -621,7 +627,7 @@ bool HasUserPasswordSubsitutionVariable(
     if (!field_signature)
       continue;
 
-    bool result = HasUserPasswordSubsitutionVariable(
+    bool result = HasUserPasswordSubstitutionVariable(
         *field_signature->value_signature, it.second.GetDict());
     if (result)
       return true;
@@ -630,11 +636,11 @@ bool HasUserPasswordSubsitutionVariable(
   return false;
 }
 
-bool HasUserPasswordSubsitutionVariable(
+bool HasUserPasswordSubstitutionVariable(
     const base::Value::List& network_configs) {
   for (const auto& network : network_configs) {
     DCHECK(network.is_dict());
-    bool result = HasUserPasswordSubsitutionVariable(
+    bool result = HasUserPasswordSubstitutionVariable(
         chromeos::onc::kNetworkConfigurationSignature, network.GetDict());
     if (result)
       return true;

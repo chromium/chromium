@@ -18,8 +18,7 @@ namespace test_utils = ::chromeos::onc::test_utils;
 TEST(ONCNormalizerTest, RemoveUnnecessaryAddressStaticIPConfigFields) {
   Normalizer normalizer(true);
   base::Value::Dict data =
-      test_utils::ReadTestDictionaryValue("settings_with_normalization.json")
-          .TakeDict();
+      test_utils::ReadTestDictionary("settings_with_normalization.json");
 
   const base::Value::Dict* original =
       data.FindDict("unnecessary-address-staticipconfig");
@@ -37,8 +36,7 @@ TEST(ONCNormalizerTest, RemoveUnnecessaryAddressStaticIPConfigFields) {
 TEST(ONCNormalizerTest, RetainExtraStaticIPConfigFields) {
   Normalizer normalizer(true);
   base::Value::Dict data =
-      test_utils::ReadTestDictionaryValue("settings_with_normalization.json")
-          .TakeDict();
+      test_utils::ReadTestDictionary("settings_with_normalization.json");
 
   const base::Value::Dict* original =
       data.FindDict("unnecessary-address-staticipconfig");
@@ -55,8 +53,7 @@ TEST(ONCNormalizerTest, RetainExtraStaticIPConfigFields) {
 TEST(ONCNormalizerTest, RemoveStaticIPConfigFields) {
   Normalizer normalizer(true);
   base::Value::Dict data =
-      test_utils::ReadTestDictionaryValue("settings_with_normalization.json")
-          .TakeDict();
+      test_utils::ReadTestDictionary("settings_with_normalization.json");
 
   const base::Value::Dict* original =
       data.FindDict("irrelevant-staticipconfig-fields");
@@ -73,8 +70,7 @@ TEST(ONCNormalizerTest, RemoveStaticIPConfigFields) {
 TEST(ONCNormalizerTest, RemoveNameServers) {
   Normalizer normalizer(true);
   base::Value::Dict data =
-      test_utils::ReadTestDictionaryValue("settings_with_normalization.json")
-          .TakeDict();
+      test_utils::ReadTestDictionary("settings_with_normalization.json");
 
   const base::Value::Dict* original = data.FindDict("irrelevant-nameservers");
   const base::Value::Dict* expected_normalized =
@@ -90,8 +86,7 @@ TEST(ONCNormalizerTest, RemoveNameServers) {
 TEST(ONCNormalizerTest, RemoveIPFieldsForIncompleteConfig) {
   Normalizer normalizer(true);
   base::Value::Dict data =
-      test_utils::ReadTestDictionaryValue("settings_with_normalization.json")
-          .TakeDict();
+      test_utils::ReadTestDictionary("settings_with_normalization.json");
 
   const base::Value::Dict* original = data.FindDict("missing-ip-fields");
   const base::Value::Dict* expected_normalized =
@@ -105,8 +100,7 @@ TEST(ONCNormalizerTest, RemoveIPFieldsForIncompleteConfig) {
 TEST(ONCNormalizerTest, NormalizeNetworkConfigurationEthernetAndVPN) {
   Normalizer normalizer(true);
   base::Value::Dict data =
-      test_utils::ReadTestDictionaryValue("settings_with_normalization.json")
-          .TakeDict();
+      test_utils::ReadTestDictionary("settings_with_normalization.json");
 
   const base::Value::Dict* original = data.FindDict("ethernet-and-vpn");
   const base::Value::Dict* expected_normalized =
@@ -121,8 +115,7 @@ TEST(ONCNormalizerTest, NormalizeNetworkConfigurationEthernetAndVPN) {
 TEST(ONCNormalizerTest, NormalizeNetworkConfigurationWifi) {
   Normalizer normalizer(true);
   base::Value::Dict data =
-      test_utils::ReadTestDictionaryValue("settings_with_normalization.json")
-          .TakeDict();
+      test_utils::ReadTestDictionary("settings_with_normalization.json");
 
   const base::Value::Dict* original = data.FindDict("wifi");
   const base::Value::Dict* expected_normalized =

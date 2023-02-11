@@ -243,11 +243,10 @@ base::Value::Dict CellularPolicyHandler::GetNewShillProperties() {
           ::onc::network_config::kGUID);
   DCHECK(guid);
 
-  return std::move(policy_util::CreateShillConfiguration(
-                       *profile, *guid, /*global_policy=*/nullptr,
-                       &(remaining_install_requests_.front()->onc_config),
-                       /*user_settings=*/nullptr)
-                       .GetDict());
+  return policy_util::CreateShillConfiguration(
+      *profile, *guid, /*global_policy=*/nullptr,
+      &(remaining_install_requests_.front()->onc_config.GetDict()),
+      /*user_settings=*/nullptr);
 }
 
 const std::string& CellularPolicyHandler::GetCurrentSmdpAddress() const {
@@ -271,7 +270,7 @@ void CellularPolicyHandler::OnConfigureESimService(
   NET_LOG(EVENT) << "Successfully configured service for existing eSIM profile";
   current_request->retry_backoff.InformOfRequest(/*succeeded=*/true);
   const std::string* iccid =
-      policy_util::GetIccidFromONC(current_request->onc_config);
+      policy_util::GetIccidFromONC(current_request->onc_config.GetDict());
   managed_cellular_pref_handler_->AddIccidSmdpPair(
       *iccid, current_request->smdp_address);
   ProcessRequests();
@@ -349,7 +348,7 @@ void CellularPolicyHandler::PopRequest() {
 absl::optional<dbus::ObjectPath>
 CellularPolicyHandler::FindExistingMatchingESimProfile() {
   const std::string* iccid = policy_util::GetIccidFromONC(
-      remaining_install_requests_.front()->onc_config);
+      remaining_install_requests_.front()->onc_config.GetDict());
   if (!iccid) {
     return absl::nullopt;
   }

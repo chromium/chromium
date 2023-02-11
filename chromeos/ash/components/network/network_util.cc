@@ -142,31 +142,39 @@ bool ParseCellularScanResults(const base::Value::List& list,
   scan_results->clear();
   scan_results->reserve(list.size());
   for (const auto& value : list) {
-    if (!value.is_dict())
+    const base::Value::Dict* value_dict = value.GetIfDict();
+    if (!value_dict) {
       return false;
+    }
+
     CellularScanResult scan_result;
     // If the network id property is not present then this network cannot be
     // connected to so don't include it in the results.
     const std::string* network_id =
-        value.FindStringKey(shill::kNetworkIdProperty);
-    if (!network_id)
+        value_dict->FindString(shill::kNetworkIdProperty);
+    if (!network_id) {
       continue;
+    }
     scan_result.network_id = *network_id;
-    const std::string* status = value.FindStringKey(shill::kStatusProperty);
-    if (status)
+    const std::string* status = value_dict->FindString(shill::kStatusProperty);
+    if (status) {
       scan_result.status = *status;
+    }
     const std::string* long_name =
-        value.FindStringKey(shill::kLongNameProperty);
-    if (long_name)
+        value_dict->FindString(shill::kLongNameProperty);
+    if (long_name) {
       scan_result.long_name = *long_name;
+    }
     const std::string* short_name =
-        value.FindStringKey(shill::kShortNameProperty);
-    if (short_name)
+        value_dict->FindString(shill::kShortNameProperty);
+    if (short_name) {
       scan_result.short_name = *short_name;
+    }
     const std::string* technology =
-        value.FindStringKey(shill::kTechnologyProperty);
-    if (technology)
+        value_dict->FindString(shill::kTechnologyProperty);
+    if (technology) {
       scan_result.technology = *technology;
+    }
     scan_results->push_back(scan_result);
   }
   return true;
@@ -178,24 +186,26 @@ bool ParseCellularSIMSlotInfo(
   sim_slot_infos->clear();
   sim_slot_infos->reserve(list.size());
   for (size_t i = 0; i < list.size(); i++) {
-    const auto& value = list[i];
-    if (!value.is_dict())
+    const base::Value::Dict* value = list[i].GetIfDict();
+    if (!value) {
       return false;
+    }
 
     CellularSIMSlotInfo sim_slot_info;
     // The |slot_id| should start with 1.
     sim_slot_info.slot_id = i + 1;
 
-    const std::string* eid = value.FindStringKey(shill::kSIMSlotInfoEID);
-    if (eid)
+    const std::string* eid = value->FindString(shill::kSIMSlotInfoEID);
+    if (eid) {
       sim_slot_info.eid = *eid;
+    }
 
-    const std::string* iccid = value.FindStringKey(shill::kSIMSlotInfoICCID);
-    if (iccid)
+    const std::string* iccid = value->FindString(shill::kSIMSlotInfoICCID);
+    if (iccid) {
       sim_slot_info.iccid = *iccid;
+    }
 
-    absl::optional<bool> primary =
-        value.FindBoolKey(shill::kSIMSlotInfoPrimary);
+    absl::optional<bool> primary = value->FindBool(shill::kSIMSlotInfoPrimary);
     sim_slot_info.primary = primary.has_value() ? *primary : false;
 
     sim_slot_infos->push_back(sim_slot_info);
@@ -203,7 +213,7 @@ bool ParseCellularSIMSlotInfo(
   return true;
 }
 
-base::Value TranslateNetworkStateToONC(const NetworkState* network) {
+base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network) {
   // Get the properties from the NetworkState.
   base::Value shill_dictionary(base::Value::Type::DICT);
   network->GetStateProperties(&shill_dictionary);
@@ -236,17 +246,17 @@ base::Value TranslateNetworkStateToONC(const NetworkState* network) {
       ->managed_network_configuration_handler()
       ->FindPolicyByGUID(user_id_hash, network->guid(), &onc_source);
 
-  base::Value onc_dictionary = onc::TranslateShillServiceToONCPart(
-      shill_dictionary, onc_source, &chromeos::onc::kNetworkWithStateSignature,
-      network);
+  base::Value::Dict onc_dictionary = onc::TranslateShillServiceToONCPart(
+      shill_dictionary.GetDict(), onc_source,
+      &chromeos::onc::kNetworkWithStateSignature, network);
 
   // Remove IPAddressConfigType/NameServersConfigType as these were
   // historically not provided by TranslateNetworkStateToONC.
   // The source shill properties for those ONC properties are not provided by
   // NetworkState::GetStateProperties, however since CL:2530330 these are
   // assumed to have defaults that are always enforced during ONC translation.
-  onc_dictionary.RemoveKey(::onc::network_config::kIPAddressConfigType);
-  onc_dictionary.RemoveKey(::onc::network_config::kNameServersConfigType);
+  onc_dictionary.Remove(::onc::network_config::kIPAddressConfigType);
+  onc_dictionary.Remove(::onc::network_config::kNameServersConfigType);
 
   return onc_dictionary;
 }

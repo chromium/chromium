@@ -29,7 +29,7 @@ ManagedNetworkConfigurationHandler::InitializeForTesting(
                 /*managed_cellular_pref_handler=*/nullptr,
                 network_state_handler, network_profile_handler,
                 network_configuration_handler, network_device_handler,
-                /*prohibitied_technologies_handler=*/nullptr);
+                /*prohibited_technologies_handler=*/nullptr);
   handler->set_ui_proxy_config_service(ui_proxy_config_service);
   return base::WrapUnique(handler);
 }

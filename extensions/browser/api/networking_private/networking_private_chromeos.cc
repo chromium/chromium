@@ -172,31 +172,36 @@ void NetworkHandlerFailureCallback(
 // Returns the string corresponding to |key|. If the property is a managed
 // dictionary, returns the active value. If the property does not exist or
 // has no active value, returns an empty string.
-std::string GetStringFromDictionary(const base::Value& dictionary,
+std::string GetStringFromDictionary(const base::Value::Dict& dictionary,
                                     const std::string& key) {
-  const std::string* result = dictionary.FindStringKey(key);
-  if (result)
+  const std::string* result = dictionary.FindString(key);
+  if (result) {
     return *result;
-  const base::Value* managed = dictionary.FindDictKey(key);
-  if (managed)
-    result = managed->FindStringKey(::onc::kAugmentationActiveSetting);
+  }
+  const base::Value::Dict* managed = dictionary.FindDict(key);
+  if (managed) {
+    result = managed->FindString(::onc::kAugmentationActiveSetting);
+  }
   return result ? *result : std::string();
 }
 
-base::Value* GetThirdPartyVPNDictionary(base::Value* dictionary) {
+base::Value::Dict* GetThirdPartyVPNDictionary(base::Value::Dict* dictionary) {
   const std::string type =
       GetStringFromDictionary(*dictionary, ::onc::network_config::kType);
-  if (type != ::onc::network_config::kVPN)
+  if (type != ::onc::network_config::kVPN) {
     return nullptr;
-  base::Value* vpn_dict = dictionary->FindDictKey(::onc::network_config::kVPN);
-  if (!vpn_dict)
+  }
+  base::Value::Dict* vpn_dict =
+      dictionary->FindDict(::onc::network_config::kVPN);
+  if (!vpn_dict) {
     return nullptr;
+  }
   if (GetStringFromDictionary(*vpn_dict, ::onc::vpn::kType) !=
       ::onc::vpn::kThirdPartyVpn) {
     return nullptr;
   }
-  base::Value* third_party_vpn =
-      dictionary->FindDictKey(::onc::vpn::kThirdPartyVpn);
+  base::Value::Dict* third_party_vpn =
+      dictionary->FindDict(::onc::vpn::kThirdPartyVpn);
   return third_party_vpn;
 }
 
@@ -267,7 +272,7 @@ NetworkingPrivateChromeOS::NetworkingPrivateChromeOS(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-NetworkingPrivateChromeOS::~NetworkingPrivateChromeOS() {}
+NetworkingPrivateChromeOS::~NetworkingPrivateChromeOS() = default;
 
 void NetworkingPrivateChromeOS::GetProperties(const std::string& guid,
                                               PropertiesCallback callback) {
@@ -334,11 +339,11 @@ void NetworkingPrivateChromeOS::GetState(const std::string& guid,
     return;
   }
 
-  base::Value network_properties =
+  base::Value::Dict network_properties =
       ash::network_util::TranslateNetworkStateToONC(network_state);
   AppendThirdPartyProviderName(&network_properties);
 
-  std::move(success_callback).Run(std::move(network_properties));
+  std::move(success_callback).Run(base::Value(std::move(network_properties)));
 }
 
 void NetworkingPrivateChromeOS::SetProperties(
@@ -403,8 +408,8 @@ void NetworkingPrivateChromeOS::CreateNetwork(
     return;
   }
 
-  const std::string guid =
-      GetStringFromDictionary(properties, ::onc::network_config::kGUID);
+  const std::string guid = GetStringFromDictionary(
+      properties.GetDict(), ::onc::network_config::kGUID);
   NET_LOG(USER) << "networkingPrivate.CreateNetwork. GUID=" << guid;
   GetManagedConfigurationHandler()->CreateConfiguration(
       user_id_hash, properties,
@@ -493,9 +498,10 @@ void NetworkingPrivateChromeOS::GetNetworks(
                                                    visible_only, limit);
 
   for (auto& value : network_properties_list) {
-    DCHECK(value.is_dict());
-    if (GetThirdPartyVPNDictionary(&value))
-      AppendThirdPartyProviderName(&value);
+    base::Value::Dict& value_dict = value.GetDict();
+    if (GetThirdPartyVPNDictionary(&value_dict)) {
+      AppendThirdPartyProviderName(&value_dict);
+    }
   }
 
   std::move(success_callback).Run(std::move(network_properties_list));
@@ -787,16 +793,18 @@ void NetworkingPrivateChromeOS::GetPropertiesCallback(
     const std::string& service_path,
     absl::optional<base::Value> dictionary,
     absl::optional<std::string> error) {
-  if (dictionary)
-    AppendThirdPartyProviderName(&dictionary.value());
+  if (dictionary) {
+    AppendThirdPartyProviderName(&dictionary.value().GetDict());
+  }
   std::move(callback).Run(std::move(dictionary), std::move(error));
 }
 
 void NetworkingPrivateChromeOS::AppendThirdPartyProviderName(
-    base::Value* dictionary) {
-  base::Value* third_party_vpn = GetThirdPartyVPNDictionary(dictionary);
-  if (!third_party_vpn)
+    base::Value::Dict* dictionary) {
+  base::Value::Dict* third_party_vpn = GetThirdPartyVPNDictionary(dictionary);
+  if (!third_party_vpn) {
     return;
+  }
 
   const std::string extension_id = GetStringFromDictionary(
       *third_party_vpn, ::onc::third_party_vpn::kExtensionID);
@@ -806,8 +814,8 @@ void NetworkingPrivateChromeOS::AppendThirdPartyProviderName(
     if (extension->permissions_data()->HasAPIPermission(
             mojom::APIPermissionID::kVpnProvider) &&
         extension->id() == extension_id) {
-      third_party_vpn->SetKey(::onc::third_party_vpn::kProviderName,
-                              base::Value(extension->name()));
+      third_party_vpn->Set(::onc::third_party_vpn::kProviderName,
+                           extension->name());
       break;
     }
   }

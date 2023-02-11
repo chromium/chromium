@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/values.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"

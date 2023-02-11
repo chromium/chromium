@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // before calling this method. |callback| will be called after the
   // configuration update has been reflected in NetworkStateHandler, or on
   // error. This fires OnPolicyApplied notification on success.
-  virtual void ConfigurePolicyNetwork(const base::Value& shill_properties,
+  virtual void ConfigurePolicyNetwork(const base::Value::Dict& shill_properties,
                                       base::OnceClosure callback) const = 0;
 
   // Removes the user's configuration from the network with |service_path|. The
