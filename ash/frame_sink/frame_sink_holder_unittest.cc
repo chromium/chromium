@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -360,7 +361,7 @@ TEST_F(FrameSinkHolderTest,
   // FrameSinkHolder will get deleted straight away since it has not submitted
   // any resources to the display compositor.
   EXPECT_TRUE(FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
-      std::move(frame_sink_holder_), host_window_.get()));
+      std::move(frame_sink_holder_), host_window_));
 
   // Since FrameSinkHolder is deleted immediately, we expect the weak_ptr to be
   // not valid.
@@ -392,7 +393,7 @@ TEST_F(FrameSinkHolderTest, ExtendLifeTimeOfHolderToRootWindow) {
   // Since FrameSinkHolder has not received the resources back from display
   // compositor, it extend its lifetime.
   EXPECT_FALSE(FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
-      std::move(frame_sink_holder_), host_window_.get()));
+      std::move(frame_sink_holder_), host_window_));
 
   // Since FrameSinkHolder lifetime is extend, we expect the weak_ptr to be
   // valid.
@@ -457,7 +458,7 @@ TEST_F(FrameSinkHolderTest, DeleteHolderAfterReclaimingAllResources) {
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
 
   EXPECT_FALSE(FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
-      std::move(frame_sink_holder_), host_window_.get()));
+      std::move(frame_sink_holder_), host_window_));
 
   // The lifetime of frame_sink_holder has been extended since there are still
   // some exported resources.
@@ -515,7 +516,7 @@ TEST_F(FrameSinkHolderTest,
   frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
 
   EXPECT_FALSE(FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
-      std::move(frame_sink_holder_), host_window_.get()));
+      std::move(frame_sink_holder_), host_window_));
 
   // The lifetime of frame_sink_holder has been extended since there are still
   // some exported resources.
@@ -531,9 +532,8 @@ TEST_F(FrameSinkHolderTest,
   ASSERT_FALSE(holder_weak_ptr_);
 }
 
-// TODO(crbug.com/1414296): disabled due to failures on try bots.
 TEST_F(FrameSinkHolderTest,
-       DISABLED_DeleteSinkHolderWithExportedResources_DuringShutdown) {
+       DeleteSinkHolderWithExportedResources_DuringShutdown) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
   viz::ResourceId id_1 =
@@ -555,12 +555,17 @@ TEST_F(FrameSinkHolderTest,
   // removing the host window from the window hierarchy.
   aura::Window* root_window =
       Shell::Get()->GetRootWindowForDisplayId(GetPrimaryDisplay().id());
-  root_window->RemoveChild(host_window_.get());
+  root_window->RemoveChild(host_window_);
+
+  // Since `host_window_` is removed from window tree hierarchy, wrapping it in
+  // a unique_ptr to delete this object as it goes out of scope and stop it
+  // from leaking memory.
+  auto host_window = base::WrapUnique<aura::Window>(host_window_);
 
   // Since FrameSinkHolder cannot extend its lifetime, it marks the resources
   // as lost and deletes itself immediately.
   EXPECT_TRUE(FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
-      std::move(frame_sink_holder_), host_window_.get()));
+      std::move(frame_sink_holder_), host_window_));
 
   // Since FrameSinkHolder is deleted immediately, we expect the weak_ptr to be
   // not valid.
@@ -595,7 +600,7 @@ TEST_F(FrameSinkHolderTest,
   ASSERT_EQ(GetResourceManager().exported_resources_count(), 0u);
 
   EXPECT_TRUE(FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
-      std::move(frame_sink_holder_), host_window_.get()));
+      std::move(frame_sink_holder_), host_window_));
 
   // Since FrameSinkHolder is deleted immediately, we expect the weak_ptr to be
   // not valid.
