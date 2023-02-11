@@ -1,0 +1,4 @@
+Tests input field clipboard operations.
+input: input_value
+input: 123
+input: 123input_value
