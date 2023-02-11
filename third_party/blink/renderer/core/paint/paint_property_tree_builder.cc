@@ -535,7 +535,9 @@ static bool NeedsPaintOffsetTranslation(
     // their containing blocks. TODO(crbug.com/780242): This can be avoided if
     // we have fully correct paint property tree states for floating objects
     // and column spans.
-    if (box_model.IsLayoutBlock() || object.IsLayoutReplaced()) {
+    if (box_model.IsLayoutBlock() || object.IsLayoutReplaced() ||
+        (direct_compositing_reasons &
+         CompositingReason::kViewTransitionElement)) {
       const PaintLayer* layer =
           base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)
               ? painting_layer
