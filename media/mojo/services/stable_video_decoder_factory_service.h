@@ -33,7 +33,8 @@ class MojoMediaClient;
 class MEDIA_MOJO_EXPORT StableVideoDecoderFactoryService
     : public stable::mojom::StableVideoDecoderFactory {
  public:
-  StableVideoDecoderFactoryService();
+  StableVideoDecoderFactoryService(const gpu::GpuFeatureInfo& gpu_feature_info,
+                                   bool enable_direct_video_decoder);
   StableVideoDecoderFactoryService(const StableVideoDecoderFactoryService&) =
       delete;
   StableVideoDecoderFactoryService& operator=(
@@ -52,7 +53,8 @@ class MEDIA_MOJO_EXPORT StableVideoDecoderFactoryService
   }
 
   void BindReceiver(
-      mojo::PendingReceiver<stable::mojom::StableVideoDecoderFactory> receiver);
+      mojo::PendingReceiver<stable::mojom::StableVideoDecoderFactory> receiver,
+      base::OnceClosure disconnect_cb);
 
   // stable::mojom::StableVideoDecoderFactory implementation.
   void CreateStableVideoDecoder(

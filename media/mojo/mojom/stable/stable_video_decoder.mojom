@@ -4,6 +4,7 @@
 
 module media.stable.mojom;
 
+import "gpu/ipc/common/gpu_feature_info.mojom";
 import "media/mojo/mojom/stable/stable_video_decoder_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -157,14 +158,38 @@ const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox
 const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox
  = sandbox.mojom.Sandbox.kNoSandbox;
 
-// A StableVideoDecoderFactory service is intended to be hosted in a utility
-// process in either ash-chrome or Chrome-for-Linux. It allows the browser
-// process to bind a StableVideoDecoder on behalf of some client which can be,
-// e.g., the lacros-chrome browser process or a renderer process in ash-chrome.
+// A StableVideoDecoderFactory allows the browser process to bind a
+// StableVideoDecoder on behalf of some client which can be, e.g., the
+// lacros-chrome browser process or a renderer process in ash-chrome.
 // Next min method ID: 1
-[ServiceSandbox=kStableVideoDecoderFactoryServiceSandbox, Stable,
-Uuid="d6047fd9-fffb-4e37-ad9b-383a1c9e1d2d"]
+[Stable, Uuid="d6047fd9-fffb-4e37-ad9b-383a1c9e1d2d"]
 interface StableVideoDecoderFactory {
   // Creates a StableVideoDecoder and should be called by the browser process.
   CreateStableVideoDecoder@0(pending_receiver<StableVideoDecoder> receiver);
+};
+
+// A StableVideoDecoderFactoryProcess is intended to be hosted in a utility
+// process in either ash-chrome or Chrome-for-linux. The client is expected to
+// be the browser process of ash-chrome or Chrome-for-linux. The intended usage
+// is as follows:
+//
+// 1) The browser process of ash-chrome or Chrome-for-linux receives a request
+//    to bind a pending_receiver<StableVideoDecoderFactory>.
+//
+// 2) That browser process starts a utility process to bind a
+//    pending_receiver<StableVideoDecoderFactoryProcess>. It then uses this
+//    connection to call InitializeStableVideoDecoderFactory() with the
+//    pending_receiver<StableVideoDecoderFactory> from (1).
+[ServiceSandbox=kStableVideoDecoderFactoryServiceSandbox,
+EnableIf=is_linux_or_chromeos_ash]
+interface StableVideoDecoderFactoryProcess {
+  // Initializes a StableVideoDecoderFactory using |gpu_feature_info| to
+  // restrict the supported video decode configurations. If
+  // |enable_direct_video_decoder| is true, the StableVideoDecoderFactory shall
+  // create video decoders backed by the direct video decoder stack. Otherwise,
+  // it will use the legacy VDA implementations.
+  InitializeStableVideoDecoderFactory(
+      gpu.mojom.GpuFeatureInfo gpu_feature_info,
+      bool enable_direct_video_decoder,
+      pending_receiver<StableVideoDecoderFactory> receiver);
 };

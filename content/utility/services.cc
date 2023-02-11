@@ -89,7 +89,7 @@ extern sandbox::TargetServices* g_utility_target_services;
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
-#include "media/mojo/services/stable_video_decoder_factory_service.h"  // nogncheck
+#include "media/mojo/services/stable_video_decoder_factory_process_service.h"  // nogncheck
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 
@@ -321,12 +321,11 @@ auto RunOOPArcVideoAcceleratorFactoryService(
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
-auto RunStableVideoDecoderFactoryService(
-    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>
-        receiver) {
-  auto factory = std::make_unique<media::StableVideoDecoderFactoryService>();
-  factory->BindReceiver(std::move(receiver));
-  return factory;
+auto RunStableVideoDecoderFactoryProcessService(
+    mojo::PendingReceiver<
+        media::stable::mojom::StableVideoDecoderFactoryProcess> receiver) {
+  return std::make_unique<media::StableVideoDecoderFactoryProcessService>(
+      std::move(receiver));
 }
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
@@ -391,7 +390,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
-  services.Add(RunStableVideoDecoderFactoryService);
+  services.Add(RunStableVideoDecoderFactoryProcessService);
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 

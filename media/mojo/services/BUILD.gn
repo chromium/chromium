@@ -199,6 +199,8 @@ component("services") {
 
   if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {
     sources += [
+      "stable_video_decoder_factory_process_service.cc",
+      "stable_video_decoder_factory_process_service.h",
       "stable_video_decoder_factory_service.cc",
       "stable_video_decoder_factory_service.h",
       "stable_video_decoder_service.cc",

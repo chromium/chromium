@@ -279,7 +279,10 @@ std::unique_ptr<AuxiliaryEndpoints> ConstructStableVideoDecoder(
 
 class StableVideoDecoderServiceTest : public testing::Test {
  public:
-  StableVideoDecoderServiceTest() {
+  StableVideoDecoderServiceTest()
+      : stable_video_decoder_factory_service_(
+            gpu::GpuFeatureInfo(),
+            /*enable_direct_video_decoder=*/true) {
     stable_video_decoder_factory_service_
         .SetVideoDecoderCreationCallbackForTesting(
             video_decoder_creation_cb_.Get());
@@ -298,7 +301,8 @@ class StableVideoDecoderServiceTest : public testing::Test {
             stable_video_decoder_factory_receiver
                 .InitWithNewPipeAndPassRemote());
     stable_video_decoder_factory_service_.BindReceiver(
-        std::move(stable_video_decoder_factory_receiver));
+        std::move(stable_video_decoder_factory_receiver),
+        /*disconnect_cb=*/base::DoNothing());
     ASSERT_TRUE(stable_video_decoder_factory_remote_.is_connected());
   }
 

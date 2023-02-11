@@ -20,13 +20,20 @@ is_cast_media_device = is_castos || is_cast_android
 # which makes the interaction with platform drivers (for the purposes of
 # hardware accelerated video decoding) happen on utility processes for stability
 # and security purposes. When |allow_oop_video_decoder| is true, code to
-# implement this feature is compiled. Note that even if
-# |allow_oop_video_decoder| is true, the feature may be disabled by a runtime
-# flag.
+# use this feature is compiled. Note that even if |allow_oop_video_decoder| is
+# true, the feature may be disabled by a runtime flag.
+#
+# When |allow_hosting_oop_video_decoder| is true, code to host the video decoder
+# utility processes is compiled. Note that even if
+# |allow_hosting_oop_video_decoder| is true, the hosting of these utility
+# processes may be disabled by a runtime flag.
 #
 # TODO(b/195769334): finish replacing usages of (is_linux || is_chromeos) with
-# allow_oop_video_decoder where appropriate.
+# allow_oop_video_decoder where appropriate. Also, finish replacing usages of
+# (is_linux || is_chromeos_ash) with allow_hosting_oop_video_decoder where
+# appropriate.
 allow_oop_video_decoder = is_linux || is_chromeos
+allow_hosting_oop_video_decoder = is_linux || is_chromeos_ash
 
 declare_args() {
   # Allows distributions to link pulseaudio directly (DT_NEEDED) instead of

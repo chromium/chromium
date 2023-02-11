@@ -20,6 +20,7 @@ mojom("stable_video_decoder") {
 
   public_deps = [
     ":native_pixmap_handle",
+    "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom:encryption_pattern",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
