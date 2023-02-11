@@ -482,12 +482,11 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   }
   data.link_url = result.AbsoluteLinkURL();
 
-  DomPathUtils dom_path_utils;
-  std::string css_selector = dom_path_utils.GetCssSelector(result.InnerNode(), true);
+  std::string css_selector = DomPathUtils::GetCssSelector(result.InnerNode(), true);
   data.css_selector = css_selector;
 
   if (css_selector.empty() && result.InnerNode()) {
-    data.parent_css_selector = dom_path_utils.GetCssSelector(result.InnerNode()->parentNode(), true);
+    data.parent_css_selector = DomPathUtils::GetCssSelector(result.InnerNode()->parentNode(), true);
   }
   auto* html_element = DynamicTo<HTMLElement>(result.InnerNode());
   if (html_element) {

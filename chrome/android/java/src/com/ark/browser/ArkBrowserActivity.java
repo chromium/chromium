@@ -37,14 +37,26 @@ import com.zpj.skin.SkinLayoutInflater;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeActivitySessionTracker;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
+import org.chromium.chrome.browser.cookies.CookiesFetcher;
+import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
+import org.chromium.chrome.browser.incognito.IncognitoStartup;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+
+import java.util.HashSet;
 
 public class ArkBrowserActivity extends AsyncInitializationActivity {
 
@@ -127,13 +139,55 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     }
 
     @Override
+    public void onStartWithNative() {
+        super.onStartWithNative();
+    }
+
+    public static final String MAIN_LAUNCHER_ACTIVITY_NAME = "com.google.android.apps.chrome.Main";
+    public static final HashSet<String> TABBED_MODE_COMPONENT_NAMES = new HashSet<String>() {
+        {
+            add(ArkBrowserActivity.class.getName());
+            add(ChromeTabbedActivity.class.getName());
+            add(MultiInstanceChromeTabbedActivity.class.getName());
+            add(ChromeTabbedActivity2.class.getName());
+            add(MAIN_LAUNCHER_ACTIVITY_NAME);
+        }
+    };
+
+    @Override
     public void onResumeWithNative() {
+        if (!ProfileManager.isInitialized()) {
+            ProfileManager.addObserver(new ProfileManager.Observer() {
+                @Override
+                public void onProfileAdded(Profile profile) {
+                    ProfileManager.removeObserver(this);
+                    onPostResumeWithNative();
+                }
+
+                @Override
+                public void onProfileDestroyed(Profile profile) {
+                    ProfileManager.removeObserver(this);
+                }
+            });
+            return;
+        }
+
+        onPostResumeWithNative();
+    }
+
+    private void onPostResumeWithNative() {
         super.onResumeWithNative();
+        IncognitoStartup.onResumeWithNative(
+                TabListManager.getInstance().isIncognitoSelected(),
+                TABBED_MODE_COMPONENT_NAMES);
 
         ChromeSessionState.setIsInMultiWindowMode(
                 MultiWindowUtils.getInstance().isInMultiWindowMode(this));
 
         ChromeSessionState.setDarkModeState(false, false);
+
+
+
 
         if (isWarmOnResume()) {
             NavigationPredictorBridge.onActivityWarmResumed();
@@ -191,12 +245,15 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     @Override
     public void initializeCompositor() {
-
+        mFragment.initializeCompositor();
     }
 
     @Override
     public void startNativeInitialization() {
-//        super.startNativeInitialization();
+        DownloadManagerService.getDownloadManagerService().initForBackgroundTask();
+        ChromeActivitySessionTracker.getInstance().onStartWithNative();
+        ChromeCachedFlags.getInstance().cacheNativeFlags();
+        super.startNativeInitialization();
     }
 
     @Override

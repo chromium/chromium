@@ -21,11 +21,11 @@ public:
             this->optimized = optimized;
         }
     };
-    std::string GetCssSelector(Node* node, bool optimized);
+    static std::string GetCssSelector(Node* node, bool optimized);
 private:
-    std::vector<std::string> prefixedElementClassNames(Element* node);
-    std::string idSelector(std::string& id);
-    Step* cssPathStep(Element* node, bool optimized, bool isTargetNode);
+    static std::vector<std::string> prefixedElementClassNames(Element* node);
+    static std::string idSelector(std::string& id);
+    static Step* cssPathStep(Element* node, bool optimized, bool isTargetNode);
 };
 
 }  // namespace blink

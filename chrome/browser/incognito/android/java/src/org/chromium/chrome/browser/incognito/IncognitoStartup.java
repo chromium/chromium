@@ -40,6 +40,19 @@ public class IncognitoStartup {
         }
     }
 
+    public static void onResumeWithNative(
+            boolean isIncognito, Set<String> componentNames) {
+        if (shouldDestroyIncognitoProfileOnStartup(
+                isIncognito,
+                componentNames)) {
+            Profile.getLastUsedRegularProfile()
+                    .getPrimaryOTRProfile(/*createIfNeeded=*/true)
+                    .destroyWhenAppropriate();
+        } else {
+            CookiesFetcher.restoreCookies();
+        }
+    }
+
     /**
      * Determine whether the incognito profile needs to be destroyed as part of startup.  This is
      * only needed on L+ when it is possible to swipe away tasks from Android recents without

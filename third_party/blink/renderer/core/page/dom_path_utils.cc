@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/page/dom_path_utils.h"
 
+#include <algorithm>
 #include <set>
 #include <sstream>
 #include "third_party/blink/renderer/core/html_names.h"
@@ -76,6 +77,7 @@ DomPathUtils::Step* DomPathUtils::cssPathStep(Element* node, bool optimized, boo
     }
 
     std::string nodeNameLower = node->nodeName().Utf8();
+    transform(nodeNameLower.begin(), nodeNameLower.end(), nodeNameLower.begin(), ::tolower);
     if ("body" == nodeNameLower || "head" == nodeNameLower || "html" == nodeNameLower) {
         return new Step(node->nodeName().Utf8(), true);
     }
@@ -133,7 +135,7 @@ DomPathUtils::Step* DomPathUtils::cssPathStep(Element* node, bool optimized, boo
     }
 
     std::string result = nodeName;
-    if (isTargetNode && "input" == nodeName
+    if (isTargetNode && "input" == nodeNameLower
         && !node->getAttribute(html_names::kTypeAttr).Utf8().empty()
         && node->getAttribute(html_names::kIdAttr).Utf8().empty()
         && node->getAttribute(html_names::kClassAttr).Utf8().empty()) {

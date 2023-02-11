@@ -460,7 +460,7 @@ by a child template that "extends" this file.
 <!--        </activity-alias>-->
 
         <activity-alias android:name="com.google.android.apps.chrome.Main"
-            android:targetActivity="org.chromium.chrome.browser.ChromeTabbedActivity"
+            android:targetActivity="com.ark.browser.ArkBrowserActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

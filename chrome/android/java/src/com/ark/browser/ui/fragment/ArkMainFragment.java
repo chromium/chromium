@@ -272,14 +272,13 @@ public class ArkMainFragment extends BaseFragment implements
 
         mViewHolder.setInsetObserverView(insetObserverView);
 
-        initMessageDispatcher();
-        initCompositor();
 
-        isViewCreated = true;
-        if (mOpenPage != null) {
-            mOpenPage.run();
-            mOpenPage = null;
-        }
+
+//        isViewCreated = true;
+//        if (mOpenPage != null) {
+//            mOpenPage.run();
+//            mOpenPage = null;
+//        }
     }
 
     @Override
@@ -317,9 +316,7 @@ public class ArkMainFragment extends BaseFragment implements
 
     @Override
     public void onStartWithNative() {
-        DownloadManagerService.getDownloadManagerService().initForBackgroundTask();
-        ChromeActivitySessionTracker.getInstance().onStartWithNative();
-        ChromeCachedFlags.getInstance().cacheNativeFlags();
+
     }
 
     @Override
@@ -341,6 +338,18 @@ public class ArkMainFragment extends BaseFragment implements
     @Override
     public void onPauseWithNative() {
         NavigationPredictorBridge.onPause();
+    }
+
+    public void initializeCompositor() {
+        postOnLazyInit(() -> {
+            initMessageDispatcher();
+            initCompositor();
+            isViewCreated = true;
+            if (mOpenPage != null) {
+                mOpenPage.run();
+                mOpenPage = null;
+            }
+        });
     }
 
     private void initCompositor() {
@@ -542,17 +551,21 @@ public class ArkMainFragment extends BaseFragment implements
         private long mAutodismissDurationWithA11yMs;
 
         public ChromeMessageAutodismissDurationProvider() {
-            mAutodismissDurationMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE, "autodismiss_duration_ms",
-                    10 * (int) DateUtils.SECOND_IN_MILLIS);
 
-            mAutodismissDurationWithA11yMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
-                    "autodismiss_duration_with_a11y_ms", 30 * (int) DateUtils.SECOND_IN_MILLIS);
         }
 
         @Override
         public long get(@MessageIdentifier int messageIdentifier, long customDuration) {
+            if (mAutodismissDurationMs <= 0) {
+                mAutodismissDurationMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE, "autodismiss_duration_ms",
+                        10 * (int) DateUtils.SECOND_IN_MILLIS);
+            }
+            if (mAutodismissDurationWithA11yMs <= 0) {
+                mAutodismissDurationWithA11yMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
+                        "autodismiss_duration_with_a11y_ms", 30 * (int) DateUtils.SECOND_IN_MILLIS);
+            }
             long nonA11yDuration = Math.max(mAutodismissDurationMs, customDuration);
             long finchControlledDuration = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                     ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,

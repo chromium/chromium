@@ -16,11 +16,13 @@ using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 
 static void JNI_NavigationPredictorBridge_OnColdStart(JNIEnv* env) {
+  LOG(ERROR) << "JNI_NavigationPredictorBridge_OnColdStart profile=" << ProfileManager::GetLastUsedProfile();
   NavigationPredictorKeyedService* navigation_predictor_service =
       NavigationPredictorKeyedServiceFactory::GetForProfile(
           ProfileManager::GetLastUsedProfile());
   if (!navigation_predictor_service)
     return;
+  LOG(ERROR) << "JNI_NavigationPredictorBridge_OnColdStart search_engine_preconnector=" << navigation_predictor_service->search_engine_preconnector();
   navigation_predictor_service->search_engine_preconnector()
       ->StartPreconnecting(
           /*with_startup_delay=*/true);
