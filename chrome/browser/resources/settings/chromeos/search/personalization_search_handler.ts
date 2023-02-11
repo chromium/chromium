@@ -10,7 +10,7 @@
  * personalization search.
  */
 
-import {SearchHandler, SearchHandlerInterface} from '../../mojom-webui/personalization/search.mojom-webui.js';
+import {SearchHandler, SearchHandlerInterface} from '../../mojom-webui/search/personalization_search.mojom-webui.js';
 
 let personalizationSearchHandler: SearchHandlerInterface|null = null;
 

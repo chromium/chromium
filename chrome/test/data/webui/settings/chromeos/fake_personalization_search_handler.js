@@ -7,22 +7,24 @@
  * testing.
  */
 
+import {personalizationSearchMojom} from 'chrome://os-settings/chromeos/os_settings.js';
+
 /**
- * @implements {ash.personalizationApp.mojom.SearchHandlerInterface}
+ * @implements {personalizationSearchMojom.SearchHandlerInterface}
  */
 export class FakePersonalizationSearchHandler {
   constructor() {
-    /** @private {!Array<ash.personalizationApp.mojom.SearchResult>} */
+    /** @private {!Array<personalizationSearchMojom.SearchResult>} */
     this.fakeResults_ = [];
 
     /**
-     * @private {!ash.personalizationApp.mojom.SearchResultsObserverInterface}
+     * @private {!personalizationSearchMojom.SearchResultsObserverInterface}
      */
     this.observer_;
   }
 
   /**
-   * @param {!Array<ash.personalizationApp.mojom.SearchResult>} results Fake
+   * @param {!Array<personalizationSearchMojom.SearchResult>} results Fake
    *     results that will be returned when Search() is called.
    */
   setFakeResults(results) {

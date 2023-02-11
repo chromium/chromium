@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, personalizationSearchMojomWebui, Router, routes, routesMojomWebui, searchMojomWebui, searchResultIconMojomWebui, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojomWebui, setUserActionRecorderForTesting, userActionRecorderMojomWebui} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, personalizationSearchMojom, Router, routes, routesMojomWebui, searchMojomWebui, searchResultIconMojomWebui, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojomWebui, setUserActionRecorderForTesting, userActionRecorderMojomWebui} from 'chrome://os-settings/chromeos/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -155,13 +155,12 @@ suite('OSSettingsSearchBox', () => {
    * @param {string} text
    * @param {string} relativeUrl
    * @param {number} relevanceScore
-   * @return {!personalizationSearchMojomWebui.SearchResult}
+   * @return {!personalizationSearchMojom.SearchResult}
    */
   function fakePersonalizationResult(
       text, relativeUrl = '', relevanceScore = DEFAULT_RELEVANCE_SCORE) {
-    return /** @type {!personalizationSearchMojomWebui.SearchResult} */ ({
-      searchConceptId:
-          personalizationSearchMojomWebui.SearchConceptId.MIN_VALUE,
+    return /** @type {!personalizationSearchMojom.SearchResult} */ ({
+      searchConceptId: personalizationSearchMojom.SearchConceptId.MIN_VALUE,
       text: {
         data: Array.from(text, c => c.charCodeAt()),
       },

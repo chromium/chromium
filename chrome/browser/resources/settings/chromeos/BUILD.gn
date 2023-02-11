@@ -125,7 +125,7 @@ group("generate_mojom_webui") {
   public_deps = [
     ":copy_mojom_ts",
     ":generate_ash_search_mojo_webui",
-    ":generate_personalization_search_mojo_webui",
+    ":generate_personalization_search_mojom",
     ":generate_settings_mojo_webui",
   ]
 }
@@ -153,11 +153,15 @@ copy("generate_settings_mojo_webui") {
   outputs = [ "$tsc_input_dir/mojom-webui/{{source_file_part}}" ]
 }
 
-copy("generate_personalization_search_mojo_webui") {
-  deps = [ "//ash/webui/personalization_app/search:mojo_bindings_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/ash/webui/personalization_app/search/search.mojom-webui.js" ]
-  outputs =
-      [ "$tsc_input_dir/mojom-webui/personalization/{{source_file_part}}" ]
+copy("generate_personalization_search_mojom") {
+  deps =
+      [ "//ash/webui/personalization_app/search:mojo_bindings_ts__generator" ]
+  sources = [
+    "$root_gen_dir/ash/webui/personalization_app/search/search.mojom-webui.ts",
+  ]
+  outputs = [
+    "$tsc_input_dir/mojom-webui/search/personalization_search.mojom-webui.ts",
+  ]
 }
 
 copy("generate_ash_search_mojo_webui") {

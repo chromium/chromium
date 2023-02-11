@@ -10,5 +10,6 @@ assert(is_chromeos_ash)
 mojom("mojo_bindings") {
   sources = [ "search.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
-  webui_module_path = "/personalization"
+  webui_module_path = "/search"
+  use_typescript_sources = true
 }

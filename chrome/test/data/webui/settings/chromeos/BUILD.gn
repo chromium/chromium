@@ -10,14 +10,9 @@ import("//tools/typescript/ts_library.gni")
 
 js_type_check("closure_compile") {
   deps = [
-    ":fake_personalization_search_handler",
     ":fake_settings_search_handler",
     ":fake_user_action_recorder",
   ]
-}
-
-js_library("fake_personalization_search_handler") {
-  deps = [ "//ash/webui/personalization_app/search:mojo_bindings_js_library_for_compile" ]
 }
 
 js_library("fake_settings_search_handler") {

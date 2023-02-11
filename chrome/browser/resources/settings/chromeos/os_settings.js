@@ -125,8 +125,8 @@ import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_ch
 
 import * as appNotificationHandlerMojom from '../mojom-webui/app_notification_handler.mojom-webui.js';
 import * as crosAudioConfigMojom from '../mojom-webui/cros_audio_config.mojom-webui.js';
-import * as personalizationSearchMojomWebui from '../mojom-webui/personalization/search.mojom-webui.js';
 import * as routesMojomWebui from '../mojom-webui/routes.mojom-webui.js';
+import * as personalizationSearchMojom from '../mojom-webui/search/personalization_search.mojom-webui.js';
 import * as searchMojomWebui from '../mojom-webui/search/search.mojom-webui.js';
 import * as searchResultIconMojomWebui from '../mojom-webui/search/search_result_icon.mojom-webui.js';
 import * as userActionRecorderMojomWebui from '../mojom-webui/search/user_action_recorder.mojom-webui.js';
@@ -216,7 +216,7 @@ export {
   appNotificationHandlerMojom,
   crosAudioConfigMojom,
   fakeCrosAudioConfig,
-  personalizationSearchMojomWebui,
+  personalizationSearchMojom,
   routesMojomWebui,
   searchMojomWebui,
   searchResultIconMojomWebui,
