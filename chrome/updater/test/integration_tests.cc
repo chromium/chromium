@@ -399,9 +399,7 @@ TEST_F(IntegrationTest, Install) {
 
 // TODO(crbug.com/1398845) Enable test once SetupRealUpdaterLowerVersion
 // is implemented.
-// TODO(crbug.com/1339108): Re-enable once the CIPD build is rolled to a version
-// that uses mojo for IPC.
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(IntegrationTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -810,9 +808,6 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 // TODO(crbug.com/1398845): Enable test once SetupRealUpdaterLowerVersion
 // is implemented.
 #if !BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1412450): Enable test once CIPD has rolled to pick up the
-// test override path change.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
@@ -857,7 +852,6 @@ TEST_F(IntegrationTest, InstallLowerVersion) {
 #endif  // IS_WIN
 }
 
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 #endif  // !BUILDFLAG(IS_LINUX)
 #endif
 #endif
