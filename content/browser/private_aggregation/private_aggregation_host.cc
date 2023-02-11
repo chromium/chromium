@@ -118,6 +118,20 @@ void PrivateAggregationHost::SendHistogramReport(
              contribution_ptr) { return contribution_ptr.is_null(); }));
   DCHECK(!debug_mode_details.is_null());
 
+  if (base::ranges::any_of(
+          contribution_ptrs,
+          [](const mojom::AggregatableReportHistogramContributionPtr&
+                 contribution_ptr) { return contribution_ptr->value < 0; })) {
+    mojo::ReportBadMessage("Negative value encountered");
+    RecordSendHistogramReportResultHistogram(
+        SendHistogramReportResult::kNegativeValue);
+    return;
+  }
+
+  // TODO(alexmt): Consider eliding contributions with values of zero as well as
+  // potentially merging contributions with the same bucket (although that
+  // should probably be done after budgeting).
+
   bool too_many_contributions =
       contribution_ptrs.size() > kMaxNumberOfContributions;
   if (too_many_contributions) {
@@ -173,8 +187,6 @@ void PrivateAggregationHost::SendHistogramReport(
                                         std::move(shared_info),
                                         std::move(reporting_path), debug_key);
   if (!report_request.has_value()) {
-    // TODO(crbug.com/1323324): Add histograms for monitoring failures here,
-    // possibly broken out by failure reason.
     mojo::ReportBadMessage("Invalid report request parameters");
     RecordSendHistogramReportResultHistogram(
         SendHistogramReportResult::kReportRequestCreationFailed);

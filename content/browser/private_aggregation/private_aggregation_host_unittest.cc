@@ -412,9 +412,7 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
     remote.FlushForTesting();
     histogram.ExpectUniqueSample(
         kSendHistogramReportResultHistogram,
-        PrivateAggregationHost::SendHistogramReportResult::
-            kReportRequestCreationFailed,
-        1);
+        PrivateAggregationHost::SendHistogramReportResult::kNegativeValue, 1);
   }
   {
     base::HistogramTester histogram;
