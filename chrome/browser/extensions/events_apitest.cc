@@ -6,6 +6,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -13,14 +14,18 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/common/extensions/api/tabs.h"
+#include "chrome/common/extensions/api/web_navigation.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/test/extension_background_page_waiter.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -109,6 +114,148 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
   // Sanity check: app.runtime.onLaunched should have a lazy listener.
   EXPECT_TRUE(
       event_router->HasLazyEventListenerForTesting("app.runtime.onLaunched"));
+}
+
+// Tests that registering a listener for an event that requires a permission and
+// then removing that permission using the permissions API does not lead to a
+// crash. Regression test for crbug.com/1402642.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventAfterPermissionRemoved) {
+  // Add an extension which registers an event on a permission which it has
+  // declared as optional.
+  constexpr char kManifest[] = R"({
+    "name": "Test",
+    "manifest_version": 3,
+    "version": "1.0",
+    "background": {"service_worker": "worker.js"},
+    "optional_permissions": ["webNavigation"]
+  })";
+  constexpr char kWorker[] = R"(
+    var restrictedListenerCallCount = 0;
+    var unrestrictedListenerCallCount = 0;
+
+    function queryRestrictedListenerCallCount() {
+      chrome.test.sendScriptResult(restrictedListenerCallCount);
+    }
+
+    function queryUnrestrictedListenerCallCount() {
+      chrome.test.sendScriptResult(unrestrictedListenerCallCount);
+    }
+
+    function restrictedListener() {
+      restrictedListenerCallCount++;
+    }
+
+    function unrestrictedListener() {
+      unrestrictedListenerCallCount++;
+      chrome.test.sendMessage('onActivated called');
+    }
+    chrome.tabs.onActivated.addListener(unrestrictedListener);
+
+    async function requestPermission() {
+      let result = await chrome.permissions.request(
+          {permissions: ['webNavigation']});
+      chrome.webNavigation.onCommitted.addListener(restrictedListener);
+      chrome.test.sendScriptResult(result);
+    }
+
+    async function removePermission() {
+      let result = await chrome.permissions.remove(
+          {permissions: ['webNavigation']});
+      chrome.test.sendScriptResult(result);
+    };
+  )";
+
+  PermissionsRequestFunction::SetAutoConfirmForTests(true);
+  PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+
+  scoped_refptr<const Extension> extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // A helper function to run the script in the worker context.
+  auto run_script_in_worker = [this, extension](const std::string& script) {
+    return BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), script,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  };
+
+  // A helper function to broadcast two events, one which requires a permission
+  // and one that does not. Note: We rely on the FIFO nature of events here so
+  // we can be sure that the restricted event will be processed before the
+  // unrestricted one reports back that it has arrived.
+  auto send_events = [this]() {
+    EventRouter* event_router = EventRouter::Get(profile());
+
+    // The webNavigation.onCommitted event requires the webNavigation permission
+    // to listen to. Send that one out first.
+    {
+      auto event_details = api::web_navigation::OnCommitted::Details();
+      event_details.document_lifecycle =
+          api::extension_types::DOCUMENT_LIFECYCLE_PRERENDER;
+      event_details.frame_type =
+          api::extension_types::FRAME_TYPE_OUTERMOST_FRAME;
+      event_details.transition_type = api::web_navigation::TRANSITION_TYPE_LINK;
+      event_router->BroadcastEvent(std::make_unique<Event>(
+          events::FOR_TEST, "webNavigation.onCommitted",
+          api::web_navigation::OnCommitted::Create(event_details)));
+    }
+
+    // The tabs.onActivated event listener in the extension will send a message
+    // after it receives it, so we wait for that to come back.
+    {
+      auto event_details = api::tabs::OnActivated::ActiveInfo();
+      ExtensionTestMessageListener listener_listener("onActivated called");
+      event_router->BroadcastEvent(std::make_unique<Event>(
+          events::FOR_TEST, "tabs.onActivated",
+          api::tabs::OnActivated::Create(event_details)));
+      ASSERT_TRUE(listener_listener.WaitUntilSatisfied());
+    }
+  };
+
+  // Initially the listeners should not have been called yet.
+  ASSERT_EQ(base::Value(0),
+            run_script_in_worker("queryRestrictedListenerCallCount()"));
+  ASSERT_EQ(base::Value(0),
+            run_script_in_worker("queryUnrestrictedListenerCallCount()"));
+
+  // Trigger the event, which should only increase the unrestricted count as the
+  // restricted event hasn't been registered.
+  send_events();
+  ASSERT_EQ(base::Value(0),
+            run_script_in_worker("queryRestrictedListenerCallCount()"));
+  ASSERT_EQ(base::Value(1),
+            run_script_in_worker("queryUnrestrictedListenerCallCount()"));
+
+  // Next have the extension request the permission and add the restricted
+  // listener, then trigger the event again which should increase both call
+  // counts.
+  ASSERT_EQ(base::Value(true), run_script_in_worker("requestPermission()"));
+  send_events();
+  ASSERT_EQ(base::Value(1),
+            run_script_in_worker("queryRestrictedListenerCallCount()"));
+  ASSERT_EQ(base::Value(2),
+            run_script_in_worker("queryUnrestrictedListenerCallCount()"));
+
+  // Now have the extension remove the permission and trigger the event, which
+  // should not trigger the restricted listener.
+  ASSERT_EQ(base::Value(true), run_script_in_worker("removePermission()"));
+  send_events();
+  ASSERT_EQ(base::Value(1),
+            run_script_in_worker("queryRestrictedListenerCallCount()"));
+  ASSERT_EQ(base::Value(3),
+            run_script_in_worker("queryUnrestrictedListenerCallCount()"));
+
+  // Finally add the permission again and trigger the event. The listeners
+  // should both be called.
+  ASSERT_EQ(base::Value(true), run_script_in_worker("requestPermission()"));
+  send_events();
+  ASSERT_EQ(base::Value(2),
+            run_script_in_worker("queryRestrictedListenerCallCount()"));
+  ASSERT_EQ(base::Value(4),
+            run_script_in_worker("queryUnrestrictedListenerCallCount()"));
 }
 
 namespace {

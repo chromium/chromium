@@ -1041,11 +1041,11 @@ void EventRouter::DispatchEventToProcess(
           CheckAliasStatus::ALLOWED,
           util::GetBrowserContextId(browser_context_));
   if (!availability.is_available()) {
-    // It shouldn't be possible to reach here, because access is checked on
-    // registration. However, for paranoia, check on dispatch as well.
-    NOTREACHED() << "Trying to dispatch event " << event.event_name
-                 << " which the target does not have access to: "
-                 << availability.message();
+    // TODO(crbug.com/1412151): Ideally it shouldn't be possible to reach here,
+    // because access is checked on registration. However, we don't always
+    // refresh the list of events an extension has registered when other factors
+    // which affect availability change (e.g. API allowlists changing). Those
+    // situations should be identified and addressed.
     return;
   }
 
