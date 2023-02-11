@@ -33,6 +33,28 @@ class AdvancedProtectionStatusManager
     : public KeyedService,
       public signin::IdentityManager::Observer {
  public:
+  // Tracks Advanced Protection status. Might be recorded multiple times for
+  // the same user. Recorded in histograms, do not reorder or delete items.
+  enum class UmaEvent {
+    kNone = 0,
+    // Advanced Protection is disabled. Either the user hasn't signed in or
+    // the signed-in user isn't under AP.
+    kDisabled = 1,
+    // Advanced Protection is enabled for the signed-in user.
+    kEnabled = 2,
+    // Advanced Protection was enabled for the user, but is now disabled.
+    // This is only recorded within a browser session and is only a rough count.
+    // If the user unenrolls from AP and closes Chrome before the next refresh,
+    // we'll record kDisabled on startup instead of kDisabledAfterEnabled.
+    kDisabledAfterEnabled = 3,
+    // Advanced Protection was disabled for the user, but is now enabled.
+    // Also a rough count. If the user enrolls to AP and closes Chrome before
+    // the next refresh, we'll record kEnabled on startup instead of
+    // kEnabledAfterDisabled.
+    kEnabledAfterDisabled = 4,
+    kMaxValue = kEnabledAfterDisabled,
+  };
+
   AdvancedProtectionStatusManager(PrefService* pref_service,
                                   signin::IdentityManager* identity_manager);
 

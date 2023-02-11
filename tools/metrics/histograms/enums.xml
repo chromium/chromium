@@ -1641,6 +1641,17 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Received activation"/>
 </enum>
 
+<enum name="AdvancedProtectionEnabledStatus">
+  <int value="0" label="Advanced Protection enabled status unknown"/>
+  <int value="1" label="User not signed-in or isn't under Advanced Protection"/>
+  <int value="2" label="User is signed in and under Advanced Protection"/>
+  <int value="3"
+      label="User was under Advanced Protection but disabled it or signed out"/>
+  <int value="4"
+      label="User was signed out or wasn't under Advanced Protection but now
+             is"/>
+</enum>
+
 <enum name="AffiliationFetchResult">
   <int value="0" label="Success"/>
   <int value="1" label="Network/server error"/>

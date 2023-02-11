@@ -134,6 +134,18 @@ chromium-metrics-reviews@google.com.
       summary="url allowlist on client side phishing detection"/>
 </variants>
 
+<histogram name="SafeBrowsing.AdvancedProtection.Enabled"
+    enum="AdvancedProtectionEnabledStatus" expires_after="2023-12-01">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records whether the user has Advanced Protection enabled. Logged on startup
+    when the enabled status changes. Can be logged multiple times for a user. In
+    practice, this counts the number of Chrome startups with Advanced Protection
+    enabled/disabled, rather than the actual user count.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.Android.RealTimeAllowlist.InstallerLoadFromDiskPbFileEmpty"
     units="bool" expires_after="2023-10-26">

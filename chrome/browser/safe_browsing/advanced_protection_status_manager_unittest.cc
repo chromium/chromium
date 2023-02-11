@@ -19,6 +19,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using UmaEvent = safe_browsing::AdvancedProtectionStatusManager::UmaEvent;
+
 namespace safe_browsing {
 namespace {
 
@@ -30,6 +32,8 @@ static const char* kIdTokenAdvancedProtectionDisabled =
     "dummy-header."
     "eyAic2VydmljZXMiOiBbXSB9"  // payload: { "services": [] }
     ".dummy-signature";
+
+static const char* kAPEnabledMetric = "SafeBrowsing.AdvancedProtection.Enabled";
 
 // Helper class that ensure RegisterProfilePrefs() is called on the test
 // PrefService's registry before the IdentityTestEnvironment constructor
@@ -86,6 +90,8 @@ class AdvancedProtectionStatusManagerTest : public TestWithPrefService {
 }  // namespace
 
 TEST_F(AdvancedProtectionStatusManagerTest, NotSignedInOnStartUp) {
+  base::HistogramTester histograms;
+
   ASSERT_FALSE(
       pref_service_.HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs));
   AdvancedProtectionStatusManager aps_manager(
@@ -99,6 +105,8 @@ TEST_F(AdvancedProtectionStatusManagerTest, NotSignedInOnStartUp) {
   EXPECT_FALSE(
       pref_service_.HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs));
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(histograms.GetAllSamples(kAPEnabledMetric), testing::IsEmpty());
 }
 
 TEST_F(AdvancedProtectionStatusManagerTest,
@@ -128,6 +136,9 @@ TEST_F(AdvancedProtectionStatusManagerTest,
   EXPECT_FALSE(
       pref_service_.HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs));
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(histograms.GetAllSamples(kAPEnabledMetric),
+              testing::ElementsAre(base::Bucket(UmaEvent::kDisabled, 1)));
 }
 
 TEST_F(AdvancedProtectionStatusManagerTest,
@@ -152,6 +163,9 @@ TEST_F(AdvancedProtectionStatusManagerTest,
   // No retry should be scheduled.
   EXPECT_FALSE(aps_manager.IsRefreshScheduled());
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(histograms.GetAllSamples(kAPEnabledMetric),
+              testing::ElementsAre(base::Bucket(UmaEvent::kDisabled, 1)));
 }
 
 TEST_F(AdvancedProtectionStatusManagerTest, SignedInLongTimeAgoNotUnderAP) {
@@ -178,9 +192,14 @@ TEST_F(AdvancedProtectionStatusManagerTest, SignedInLongTimeAgoNotUnderAP) {
       pref_service_.HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs));
 
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(histograms.GetAllSamples(kAPEnabledMetric),
+              testing::ElementsAre(base::Bucket(UmaEvent::kDisabled, 1)));
 }
 
 TEST_F(AdvancedProtectionStatusManagerTest, SignedInLongTimeAgoUnderAP) {
+  base::HistogramTester histograms;
+
   // Simulates the situation where user signed in long time ago, thus
   // has no advanced protection status yet.
   CoreAccountId account_id = SignIn("test@test.com",
@@ -199,9 +218,16 @@ TEST_F(AdvancedProtectionStatusManagerTest, SignedInLongTimeAgoUnderAP) {
   EXPECT_TRUE(
       pref_service_.HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs));
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(
+      histograms.GetAllSamples(kAPEnabledMetric),
+      testing::ElementsAre(base::Bucket(UmaEvent::kDisabled, 1),
+                           base::Bucket(UmaEvent::kEnabledAfterDisabled, 1)));
 }
 
 TEST_F(AdvancedProtectionStatusManagerTest, AlreadySignedInAndUnderAP) {
+  base::HistogramTester histograms;
+
   pref_service_.SetInt64(
       prefs::kAdvancedProtectionLastRefreshInUs,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -219,9 +245,14 @@ TEST_F(AdvancedProtectionStatusManagerTest, AlreadySignedInAndUnderAP) {
   // A refresh is scheduled in the future.
   EXPECT_TRUE(aps_manager.IsRefreshScheduled());
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(histograms.GetAllSamples(kAPEnabledMetric),
+              testing::ElementsAre(base::Bucket(UmaEvent::kEnabled, 1)));
 }
 
 TEST_F(AdvancedProtectionStatusManagerTest, AlreadySignedInAndNotUnderAP) {
+  base::HistogramTester histograms;
+
   pref_service_.SetInt64(
       prefs::kAdvancedProtectionLastRefreshInUs,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -238,9 +269,14 @@ TEST_F(AdvancedProtectionStatusManagerTest, AlreadySignedInAndNotUnderAP) {
   // original profile.
   EXPECT_FALSE(aps_manager.IsUnderAdvancedProtection());
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(histograms.GetAllSamples(kAPEnabledMetric),
+              testing::ElementsAre(base::Bucket(UmaEvent::kDisabled, 1)));
 }
 
 TEST_F(AdvancedProtectionStatusManagerTest, StayInAdvancedProtection) {
+  base::HistogramTester histograms;
+
   base::Time last_update = base::Time::Now();
   pref_service_.SetInt64(
       prefs::kAdvancedProtectionLastRefreshInUs,
@@ -262,11 +298,16 @@ TEST_F(AdvancedProtectionStatusManagerTest, StayInAdvancedProtection) {
       last_update);
   EXPECT_TRUE(aps_manager.IsRefreshScheduled());
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(histograms.GetAllSamples(kAPEnabledMetric),
+              testing::ElementsAre(base::Bucket(UmaEvent::kEnabled, 1)));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Not applicable to Chrome OS.
 TEST_F(AdvancedProtectionStatusManagerTest, SignInAndSignOutEvent) {
+  base::HistogramTester histograms;
+
   AdvancedProtectionStatusManager aps_manager(
       &pref_service_, identity_test_env_.identity_manager(),
       base::TimeDelta() /*no min delay*/);
@@ -284,10 +325,17 @@ TEST_F(AdvancedProtectionStatusManagerTest, SignInAndSignOutEvent) {
       pref_service_.HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs));
   EXPECT_FALSE(aps_manager.IsRefreshScheduled());
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(
+      histograms.GetAllSamples(kAPEnabledMetric),
+      testing::ElementsAre(base::Bucket(UmaEvent::kDisabledAfterEnabled, 1),
+                           base::Bucket(UmaEvent::kEnabledAfterDisabled, 1)));
 }
 #endif
 
 TEST_F(AdvancedProtectionStatusManagerTest, AccountRemoval) {
+  base::HistogramTester histograms;
+
   AdvancedProtectionStatusManager aps_manager(
       &pref_service_, identity_test_env_.identity_manager(),
       base::TimeDelta() /*no min delay*/);
@@ -318,10 +366,17 @@ TEST_F(AdvancedProtectionStatusManagerTest, AccountRemoval) {
       pref_service_.HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs));
   EXPECT_FALSE(aps_manager.IsRefreshScheduled());
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(
+      histograms.GetAllSamples(kAPEnabledMetric),
+      testing::ElementsAre(base::Bucket(UmaEvent::kDisabledAfterEnabled, 1),
+                           base::Bucket(UmaEvent::kEnabledAfterDisabled, 1)));
 }
 
 TEST_F(AdvancedProtectionStatusManagerTest,
        AdvancedProtectionDisabledAfterSignin) {
+  base::HistogramTester histograms;
+
   AdvancedProtectionStatusManager aps_manager(
       &pref_service_, identity_test_env_.identity_manager(),
       base::TimeDelta() /*no min delay*/);
@@ -345,10 +400,16 @@ TEST_F(AdvancedProtectionStatusManagerTest,
   EXPECT_FALSE(aps_manager.IsRefreshScheduled());
 
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(
+      histograms.GetAllSamples(kAPEnabledMetric),
+      testing::ElementsAre(base::Bucket(UmaEvent::kDisabledAfterEnabled, 1),
+                           base::Bucket(UmaEvent::kEnabledAfterDisabled, 1)));
 }
 
 TEST_F(AdvancedProtectionStatusManagerTest,
        StartupAfterLongWaitRefreshesImmediately) {
+  base::HistogramTester histograms;
   CoreAccountId account_id = SignIn("test@test.com",
                                     /* is_under_advanced_protection = */ true);
   base::RunLoop().RunUntilIdle();
@@ -372,12 +433,19 @@ TEST_F(AdvancedProtectionStatusManagerTest,
   EXPECT_FALSE(aps_manager.IsRefreshScheduled());
 
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(
+      histograms.GetAllSamples(kAPEnabledMetric),
+      testing::ElementsAre(base::Bucket(UmaEvent::kEnabled, 1),
+                           base::Bucket(UmaEvent::kDisabledAfterEnabled, 1)));
 }
 
 // On ChromeOS, there is no unconsented primary account. We can only track the
 // primary account.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AdvancedProtectionStatusManagerTest, TracksUnconsentedPrimaryAccount) {
+  base::HistogramTester histograms;
+
   AdvancedProtectionStatusManager aps_manager(
       &pref_service_, identity_test_env_.identity_manager(),
       base::TimeDelta() /*no min delay*/);
@@ -394,6 +462,10 @@ TEST_F(AdvancedProtectionStatusManagerTest, TracksUnconsentedPrimaryAccount) {
   EXPECT_TRUE(aps_manager.IsRefreshScheduled());
 
   aps_manager.UnsubscribeFromSigninEvents();
+
+  EXPECT_THAT(
+      histograms.GetAllSamples(kAPEnabledMetric),
+      testing::ElementsAre(base::Bucket(UmaEvent::kEnabledAfterDisabled, 1)));
 }
 #endif
 
