@@ -380,8 +380,7 @@ BASE_FEATURE(kEnumerateDevicesHideDeviceIDs,
 
 // Content counterpart of ExperimentalContentSecurityPolicyFeatures in
 // third_party/blink/renderer/platform/runtime_enabled_features.json5. Enables
-// experimental Content Security Policy features ('navigate-to' and
-// 'prefetch-src').
+// experimental Content Security Policy features ('navigate-to').
 BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
              "ExperimentalContentSecurityPolicyFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);

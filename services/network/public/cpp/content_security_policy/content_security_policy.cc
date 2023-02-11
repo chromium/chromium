@@ -99,9 +99,6 @@ CSPDirectiveName ToCSPDirectiveName(base::StringPiece name) {
   if (base::EqualsCaseInsensitiveASCII(name, "object-src")) {
     return CSPDirectiveName::ObjectSrc;
   }
-  if (base::EqualsCaseInsensitiveASCII(name, "prefetch-src")) {
-    return CSPDirectiveName::PrefetchSrc;
-  }
   if (base::EqualsCaseInsensitiveASCII(name, "report-uri")) {
     return CSPDirectiveName::ReportURI;
   }
@@ -173,7 +170,6 @@ bool SupportedInReportOnly(CSPDirectiveName directive) {
     case CSPDirectiveName::MediaSrc:
     case CSPDirectiveName::NavigateTo:
     case CSPDirectiveName::ObjectSrc:
-    case CSPDirectiveName::PrefetchSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
     case CSPDirectiveName::RequireTrustedTypesFor:
@@ -212,7 +208,6 @@ bool SupportedInMeta(CSPDirectiveName directive) {
     case CSPDirectiveName::MediaSrc:
     case CSPDirectiveName::NavigateTo:
     case CSPDirectiveName::ObjectSrc:
-    case CSPDirectiveName::PrefetchSrc:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::ScriptSrc:
@@ -248,9 +243,6 @@ const char* ErrorMessage(CSPDirectiveName directive) {
              "following Content Security Policy directive: \"$2\".";
     case CSPDirectiveName::NavigateTo:
       return "Refused to navigate to '$1' because it violates the "
-             "following Content Security Policy directive: \"$2\".";
-    case CSPDirectiveName::PrefetchSrc:
-      return "Refused to prefetch content from '$1' because it violates the "
              "following Content Security Policy directive: \"$2\".";
 
     case CSPDirectiveName::BaseURI:
@@ -1118,7 +1110,6 @@ void AddContentSecurityPolicyFromHeader(
       case CSPDirectiveName::MediaSrc:
       case CSPDirectiveName::NavigateTo:
       case CSPDirectiveName::ObjectSrc:
-      case CSPDirectiveName::PrefetchSrc:
       case CSPDirectiveName::ScriptSrc:
       case CSPDirectiveName::ScriptSrcAttr:
       case CSPDirectiveName::ScriptSrcElem:
@@ -1209,7 +1200,6 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::ImgSrc:
     case CSPDirectiveName::ManifestSrc:
     case CSPDirectiveName::MediaSrc:
-    case CSPDirectiveName::PrefetchSrc:
     case CSPDirectiveName::ObjectSrc:
     case CSPDirectiveName::ScriptSrc:
     case CSPDirectiveName::StyleSrc:
@@ -1547,8 +1537,6 @@ std::string ToString(CSPDirectiveName name) {
       return "media-src";
     case CSPDirectiveName::ObjectSrc:
       return "object-src";
-    case CSPDirectiveName::PrefetchSrc:
-      return "prefetch-src";
     case CSPDirectiveName::ReportURI:
       return "report-uri";
     case CSPDirectiveName::RequireTrustedTypesFor:

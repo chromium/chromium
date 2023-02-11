@@ -2377,6 +2377,10 @@
       name: "RenderPriorityAttribute"
     },
     {
+      name: "ResourceHintsLeastRestrictiveCSP",
+      status: "experimental",
+    },
+    {
       name: "ResourceTimingContentType",
       status: "experimental",
     },

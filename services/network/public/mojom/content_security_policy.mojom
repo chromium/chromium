@@ -109,7 +109,6 @@ enum CSPDirectiveName {
   MediaSrc,
   NavigateTo,
   ObjectSrc,
-  PrefetchSrc,
   ReportTo,
   ReportURI,
   RequireTrustedTypesFor,

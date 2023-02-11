@@ -1180,9 +1180,9 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
       CSPDirectiveName::FontSrc,       CSPDirectiveName::FormAction,
       CSPDirectiveName::FrameSrc,      CSPDirectiveName::ImgSrc,
       CSPDirectiveName::ManifestSrc,   CSPDirectiveName::MediaSrc,
-      CSPDirectiveName::ObjectSrc,     CSPDirectiveName::PrefetchSrc,
-      CSPDirectiveName::ScriptSrcElem, CSPDirectiveName::StyleSrcElem,
-      CSPDirectiveName::WorkerSrc,     CSPDirectiveName::FencedFrameSrc};
+      CSPDirectiveName::ObjectSrc,     CSPDirectiveName::ScriptSrcElem,
+      CSPDirectiveName::StyleSrcElem,  CSPDirectiveName::WorkerSrc,
+      CSPDirectiveName::FencedFrameSrc};
   for (auto type : types_to_test) {
     EXPECT_TRUE(
         csp->AllowFromSource(type, example_url, example_url,

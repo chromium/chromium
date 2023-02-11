@@ -5688,19 +5688,6 @@ net::Error NavigationRequest::CheckCSPDirectives(
         // overridden by the checks below.
         error = net::ERR_ABORTED;
       }
-
-      // [prefetch-src]
-      if (frame_tree_node_->frame_tree().is_prerendering()) {
-        if (!IsAllowedByCSPDirective(
-                initiator_policies->content_security_policies,
-                &initiator_context,
-                network::mojom::CSPDirectiveName::PrefetchSrc,
-                has_followed_redirect, url_upgraded_after_redirect,
-                is_response_check, /*is_opaque_fenced_frame=*/false,
-                disposition)) {
-          error = net::ERR_BLOCKED_BY_CSP;
-        }
-      }
     }
   }
 

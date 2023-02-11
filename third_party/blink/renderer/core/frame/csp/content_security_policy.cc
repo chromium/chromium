@@ -31,6 +31,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
@@ -69,6 +70,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
@@ -544,7 +546,8 @@ String ContentSecurityPolicy::WasmEvalDisabledErrorMessage() const {
   return String();
 }
 
-static absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
+namespace {
+absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     mojom::blink::RequestContextType context) {
   switch (context) {
     case mojom::blink::RequestContextType::AUDIO:
@@ -565,9 +568,6 @@ static absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::EMBED:
     case mojom::blink::RequestContextType::OBJECT:
       return CSPDirectiveName::ObjectSrc;
-
-    case mojom::blink::RequestContextType::PREFETCH:
-      return CSPDirectiveName::PrefetchSrc;
 
     case mojom::blink::RequestContextType::FAVICON:
     case mojom::blink::RequestContextType::IMAGE:
@@ -599,6 +599,9 @@ static absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::STYLE:
       return CSPDirectiveName::StyleSrcElem;
 
+    case mojom::blink::RequestContextType::PREFETCH:
+      return CSPDirectiveName::DefaultSrc;
+
     case mojom::blink::RequestContextType::CSP_REPORT:
     case mojom::blink::RequestContextType::DOWNLOAD:
     case mojom::blink::RequestContextType::HYPERLINK:
@@ -610,6 +613,54 @@ static absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
   }
 }
 
+// [spec] https://w3c.github.io/webappsec-csp/#does-resource-hint-violate-policy
+bool AllowResourceHintRequestForPolicy(
+    network::mojom::blink::ContentSecurityPolicy& csp,
+    ContentSecurityPolicy* policy,
+    const KURL& url,
+    const String& nonce,
+    const IntegrityMetadataSet& integrity_metadata,
+    ParserDisposition parser_disposition,
+    const KURL& url_before_redirects,
+    RedirectStatus redirect_status,
+    ReportingDisposition reporting_disposition,
+    ContentSecurityPolicy::CheckHeaderType check_header_type) {
+  // The loop ignores default-src directives, which is the directive to report
+  // for resource hints. So we don't need to check report-only policies.
+  if (csp.header->type == ContentSecurityPolicyType::kEnforce) {
+    for (CSPDirectiveName type : {
+             CSPDirectiveName::ChildSrc,
+             CSPDirectiveName::ConnectSrc,
+             CSPDirectiveName::FontSrc,
+             CSPDirectiveName::FrameSrc,
+             CSPDirectiveName::ImgSrc,
+             CSPDirectiveName::ManifestSrc,
+             CSPDirectiveName::MediaSrc,
+             CSPDirectiveName::ObjectSrc,
+             CSPDirectiveName::ScriptSrc,
+             CSPDirectiveName::ScriptSrcElem,
+             CSPDirectiveName::StyleSrc,
+             CSPDirectiveName::StyleSrcElem,
+             CSPDirectiveName::WorkerSrc,
+         }) {
+      if (CSPDirectiveListAllowFromSource(
+              csp, policy, type, url, url_before_redirects, redirect_status,
+              ReportingDisposition::kSuppressReporting, nonce,
+              integrity_metadata, parser_disposition)) {
+        return true;
+      }
+    }
+  }
+  // Check default-src with the given reporting disposition, to allow reporting
+  // if needed.
+  return CSPDirectiveListAllowFromSource(
+      csp, policy, CSPDirectiveName::DefaultSrc, url, url_before_redirects,
+      redirect_status, reporting_disposition, nonce, integrity_metadata,
+      parser_disposition);
+}
+}  // namespace
+
+// https://w3c.github.io/webappsec-csp/#does-request-violate-policy
 bool ContentSecurityPolicy::AllowRequest(
     mojom::blink::RequestContextType context,
     network::mojom::RequestDestination request_destination,
@@ -621,6 +672,23 @@ bool ContentSecurityPolicy::AllowRequest(
     RedirectStatus redirect_status,
     ReportingDisposition reporting_disposition,
     CheckHeaderType check_header_type) {
+  // [spec] https://w3c.github.io/webappsec-csp/#does-request-violate-policy
+  // 1. If request’s initiator is "prefetch", then return the result of
+  // executing "Does resource hint request violate policy?" on request and
+  // policy.
+  if (context == mojom::blink::RequestContextType::PREFETCH) {
+    if (!RuntimeEnabledFeatures::ResourceHintsLeastRestrictiveCSPEnabled()) {
+      return true;
+    }
+
+    return base::ranges::all_of(policies_, [&](const auto& policy) {
+      return AllowResourceHintRequestForPolicy(
+          *policy, this, url, nonce, integrity_metadata, parser_disposition,
+          url_before_redirects, redirect_status, reporting_disposition,
+          check_header_type);
+    });
+  }
+
   absl::optional<CSPDirectiveName> type =
       GetDirectiveTypeFromRequestContextType(context);
 
@@ -1295,8 +1363,6 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "navigate-to";
     case CSPDirectiveName::ObjectSrc:
       return "object-src";
-    case CSPDirectiveName::PrefetchSrc:
-      return "prefetch-src";
     case CSPDirectiveName::ReportTo:
       return "report-to";
     case CSPDirectiveName::ReportURI:
@@ -1366,8 +1432,6 @@ CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {
     return CSPDirectiveName::NavigateTo;
   if (name == "object-src")
     return CSPDirectiveName::ObjectSrc;
-  if (name == "prefetch-src")
-    return CSPDirectiveName::PrefetchSrc;
   if (name == "report-to")
     return CSPDirectiveName::ReportTo;
   if (name == "report-uri")
