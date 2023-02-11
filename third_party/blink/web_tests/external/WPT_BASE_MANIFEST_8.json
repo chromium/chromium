@@ -221529,6 +221529,19 @@
        {}
       ]
      ],
+     "new-content-captures-positioned-spans.html": [
+      "b88654cd379c92316e6eee6ed6e27ba0c80038fb",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/new-content-captures-positioned-spans-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "new-content-captures-root.html": [
       "84e55de58a79ae2efc205ecb406cc3c4360d5fd7",
       [
@@ -221536,6 +221549,19 @@
        [
         [
          "/css/css-view-transitions/new-content-captures-root-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "new-content-captures-spans.html": [
+      "5467d411565ef1ae3b26fad40256b1e590cd2348",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/new-content-captures-positioned-spans-ref.html",
          "=="
         ]
        ],
@@ -266583,6 +266609,50 @@
      }
     }
    },
+   "browsing-topics": {
+    "browsing-topics-permissions-policy-none.tentative.https.sub.html.headers": [
+     "9c93ff7384f22e80dc874a59598fdc92f384e20e",
+     []
+    ],
+    "browsing-topics-permissions-policy-self.tentative.https.sub.html.headers": [
+     "6eb902eb6830b1ec83a932e8ffca9bf365f1d766",
+     []
+    ],
+    "resources": {
+     "check-topics-request-header.py": [
+      "569b75449635c51e6581afecb582cdb818e6c120",
+      []
+     ],
+     "document-api-notify-parent.tentative.https.html": [
+      "2fd55ebeb2c1d1df0773c50c5f0271ebcb4de857",
+      []
+     ],
+     "empty.html": [
+      "c50eddd41faba2ecc8928e459288fe612b999170",
+      []
+     ],
+     "fetch-topics-header-not-visible-in-service-worker-helper.tentative.https.html": [
+      "e9cb8144e0a17807863879fc140665af3e6767ed",
+      []
+     ],
+     "fetch-topics.js": [
+      "71064a90c5b04ce6fa7f154da440c2dcc62a3602",
+      []
+     ],
+     "intercept-request.js": [
+      "c19efb5f2f3fe5469b63b5772c875d9e62fb47b5",
+      []
+     ],
+     "permissions-policy-util.sub.js": [
+      "e8bf45049c53ab23fee369c058ffe4904bed45ce",
+      []
+     ],
+     "topics-not-allowed-for-service-worker-fetch-helper.tentative.https.html": [
+      "2278d5bc76d31b96a3759f1e20a9c2ed13f485e1",
+      []
+     ]
+    }
+   },
    "clear-site-data": {
     "DIR_METADATA": [
      "a19d4eeecc75654a46966efa7badc560e5ebc3e1",
@@ -269740,20 +269810,6 @@
       []
      ]
     },
-    "prefetch-src": {
-     "prefetch-header-allowed.html.headers": [
-      "2b1d42a8d16c04cf339366b05262c27516e4196c",
-      []
-     ],
-     "prefetch-header-blocked-by-default.html.headers": [
-      "6d19ed181eeb513622eab41dcd8f94967338b387",
-      []
-     ],
-     "prefetch-header-blocked.html.headers": [
-      "732f62d58a5989786ec98d1c14eb4d54574a8d93",
-      []
-     ]
-    },
     "reporting": {
      "multiple-report-policies.html.sub.headers": [
       "485b6832e7f3e0113cc48eb109fce40eed3f28cf",
@@ -270506,7 +270562,7 @@
       []
      ],
      "prefetch-helper.js": [
-      "cb6fd4823f008f940bb1c292a3ef504194856df6",
+      "c0c0be91571676fd9ea1d8d16415c16ebd4437d6",
       []
      ],
      "prefetch-subresource.css": [
@@ -270515,6 +270571,10 @@
      ],
      "prefetch-subresource.css.headers": [
       "eaf7b1663850063a03f89d40b1f072d9e3a29749",
+      []
+     ],
+     "prefetch-with-csp.html": [
+      "8185a3abee8d9d9c256f3e150496ab748823bcb1",
       []
      ],
      "resource.py": [
@@ -330181,12 +330241,20 @@
       "d7050b65f96330547518a1c4d9f4550b7cf14912",
       []
      ],
+     "new-content-captures-positioned-spans-ref.html": [
+      "6d906fc6f1c7db141556d67ef097203a67925598",
+      []
+     ],
      "new-content-captures-root-ref.html": [
       "2f2e5e769406ffb2b5eb9909a59dc4bb6ebff6be",
       []
      ],
      "new-content-captures-root.html.ini": [
       "81041064ae9dd711b5a5d17f0bb09ecb552a941e",
+      []
+     ],
+     "new-content-captures-spans-ref.html": [
+      "b95233d71238233cbfe3ee59ae521164be893842",
       []
      ],
      "new-content-container-writing-modes-ref.html": [
@@ -386317,14 +386385,6 @@
       "d2694155a639797c499efcf8a0879afad87b13df",
       []
      ],
-     "csp-prefetch-src-allow.html.ini": [
-      "f180003f1d7192ece696047c0edebbb124bef4fe",
-      []
-     ],
-     "csp-prefetch-src-disallow.html.ini": [
-      "2fb25afc51749284072dec2960e091e2b2c57436",
-      []
-     ],
      "csp-script-src-elem-inline-speculation-rules.tentative.html.ini": [
       "b5d19a0c4c602084e4cc3837332daa589c586792",
       []
@@ -386480,14 +386540,6 @@
       ],
       "cross-origin-isolated.https.html.headers": [
        "5f8621ef83660c66f0d037ea28fafefb558140f1",
-       []
-      ],
-      "csp-prefetch-src-allow.sub.html": [
-       "bb631b3554e8d9bef31f334414c2fe938b76f474",
-       []
-      ],
-      "csp-prefetch-src-disallow.sub.html": [
-       "7be73c8c6f2e856b49b9127e959e3e23796e749a",
        []
       ],
       "csp-script-src-elem-inline-speculation-rules.html": [
@@ -423642,6 +423694,99 @@
      }
     }
    },
+   "browsing-topics": {
+    "browsing-topics-permissions-policy-default.tentative.https.sub.html": [
+     "a7c5a95cff33407b1ec172a8881964450e758a8f",
+     [
+      null,
+      {}
+     ]
+    ],
+    "browsing-topics-permissions-policy-none.tentative.https.sub.html": [
+     "7d33f3bdaee21e4c522d53cff14c258b2f9921ac",
+     [
+      null,
+      {}
+     ]
+    ],
+    "browsing-topics-permissions-policy-self.tentative.https.sub.html": [
+     "7647998c8562cc70379e5238b440dec47fb6a665",
+     [
+      null,
+      {}
+     ]
+    ],
+    "document-api-insecure-context.tentative.http.html": [
+     "b2f0abf8e0080637495989e0270955249fd0e2da",
+     [
+      null,
+      {}
+     ]
+    ],
+    "document-api.tentative.https.html": [
+     "d1d515ccba98a4fa095a3ccfa0b2f8e618e41468",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fetch-topics-header-not-visible-in-service-worker.tentative.https.html": [
+     "76f7b909578c4049793a16c296181f6f8b7d9f52",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fetch-topics-insecure-context.tentative.http.html": [
+     "d4cdd9ae95c3550474b0a090c29a598a730aea3d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fetch-topics.tentative.https.html": [
+     "e5dd1d9b98688637ce96230a10aaa9a66212eaf6",
+     [
+      null,
+      {}
+     ]
+    ],
+    "fetch-without-topics-flag.tentative.https.html": [
+     "f942915a7f79ecbc0a7344ddd59d2d8e64cda468",
+     [
+      null,
+      {}
+     ]
+    ],
+    "topics-not-allowed-for-service-worker-fetch.tentative.https.html": [
+     "1bd578e9bf74fb942fa1bfcc6c001c0c096364bf",
+     [
+      null,
+      {}
+     ]
+    ],
+    "xhr-topics-insecure-context.tentative.http.html": [
+     "5e32b83f9e4afd41af406a545c9740572e6b24b1",
+     [
+      null,
+      {}
+     ]
+    ],
+    "xhr-topics.tentative.https.html": [
+     "532a0404240593173a79b0d1009bacc1d85ff02d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "xhr-without-topics-attribute.tentative.https.html": [
+     "47bc1049e4c26839ead80c6379eff60726a123e4",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
    "clear-site-data": {
     "executionContexts.sub.html": [
      "b3ae17576a3b09fe576c24d8d454b5ef504832a8",
@@ -430759,50 +430904,6 @@
       ]
      ]
     },
-    "prefetch-src": {
-     "prefetch-allowed.html": [
-      "b738823c4cd133a87f40dfed4de3ed480ccd4749",
-      [
-       null,
-       {}
-      ]
-     ],
-     "prefetch-blocked-by-default.html": [
-      "0e54de66de541426eb55b1719f9db81bdc3dbabf",
-      [
-       null,
-       {}
-      ]
-     ],
-     "prefetch-blocked.html": [
-      "890a65f82cf58b045bffc91fd10f6f7aa91ae185",
-      [
-       null,
-       {}
-      ]
-     ],
-     "prefetch-header-allowed.html": [
-      "45f6289e34ef7ca419209a7b78d0e5661a0529b6",
-      [
-       null,
-       {}
-      ]
-     ],
-     "prefetch-header-blocked-by-default.html": [
-      "e43dca76599dd1471634c000a179f7a84dd40760",
-      [
-       null,
-       {}
-      ]
-     ],
-     "prefetch-header-blocked.html": [
-      "a2abef3c17b899ec13973ebd438e2528be31bda7",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
     "reporting": {
      "multiple-report-policies.html": [
       "c28e9ae44a51c85ea614d86c6b18eda8bdffcaa6",
@@ -431052,6 +431153,71 @@
      ],
      "reporting-api-works-on-frame-src.https.sub.html": [
       "b83a05ce4b5bd4cbf05bbb0ef7fb5bb3f85f96e4",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "resource-hints": {
+     "prefetch-allowed-by-any-directive.sub.html": [
+      "c1954641b11bb55507fb379e08a1ce0dbd4f3732",
+      [
+       null,
+       {}
+      ]
+     ],
+     "prefetch-allowed-by-default.html": [
+      "fa31e941ebb10e71e0a32e4366b739410ae1ca2a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "prefetch-allowed-no-default.html": [
+      "195c927a8d1630abdb1ab47447cc792f68cd2213",
+      [
+       null,
+       {}
+      ]
+     ],
+     "prefetch-allowed-with-conflicting-permissive-policies.html": [
+      "fe7cce0efbc6cc07b316798e726ccc0296fba8f6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "prefetch-blocked-by-default-multiple-policies.html": [
+      "b53b021e6d94a83f606c8d7f3c5f545b2c813c08",
+      [
+       null,
+       {}
+      ]
+     ],
+     "prefetch-blocked-by-default.html": [
+      "6780c80e8a61fa634d3d65a6a0af5d89dc192275",
+      [
+       null,
+       {}
+      ]
+     ],
+     "prefetch-generate-directives.html": [
+      "b08d885c1ecc5eff19c7bc8aa3c45fd0c415ed46",
+      [
+       null,
+       {}
+      ]
+     ],
+     "prefetch-ignores-prefetch-src.sub.html": [
+      "f9350bd65717e163e2d2e3516f25a56400150386",
+      [
+       null,
+       {}
+      ]
+     ],
+     "prefetch-no-csp.html": [
+      "87f2937b84ed8d0c7685550b68e2affe628cdcaf",
       [
        null,
        {}
@@ -603342,24 +603508,6 @@
        }
       ]
      ],
-     "csp-prefetch-src-allow.html": [
-      "f323756ce39792f12c1fb5c84dfa5be6ea890bb4",
-      [
-       null,
-       {
-        "timeout": "long"
-       }
-      ]
-     ],
-     "csp-prefetch-src-disallow.html": [
-      "e8ed74b45787a30f78adfa45322d8f9465512f29",
-      [
-       null,
-       {
-        "timeout": "long"
-       }
-      ]
-     ],
      "csp-script-src-elem-inline-speculation-rules.tentative.html": [
       "0a3b3b8a70ad1a5416b1014658c949f4d24c3bcf",
       [
@@ -632605,7 +632753,7 @@
      ]
     ],
     "RTCRtpParameters-encodings.html": [
-     "b68347cbaf92814b1a9c8cddc7c0bbc7a6c79676",
+     "22abbb3718a91fca24ca4c0c378c7cc5b265ee05",
      [
       null,
       {}
