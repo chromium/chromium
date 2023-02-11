@@ -47,8 +47,7 @@
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"  // nogncheck
 #endif
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 
 namespace {
 
@@ -90,12 +89,12 @@ class TraceEventTestFixture : public testing::Test {
       WaitableEvent* flush_complete_event,
       const scoped_refptr<base::RefCountedString>& events_str,
       bool has_more_events);
-  const Value* FindMatchingTraceEntry(const JsonKeyValue* key_values);
-  const Value* FindNamePhase(const char* name, const char* phase);
-  const Value* FindNamePhaseKeyValue(const char* name,
-                                     const char* phase,
-                                     const char* key,
-                                     const char* value);
+  const Value::Dict* FindMatchingTraceEntry(const JsonKeyValue* key_values);
+  const Value::Dict* FindNamePhase(const char* name, const char* phase);
+  const Value::Dict* FindNamePhaseKeyValue(const char* name,
+                                           const char* phase,
+                                           const char* key,
+                                           const char* value);
   void DropTracedMetadataRecords();
   bool FindMatchingValue(const char* key,
                          const char* value);
@@ -240,14 +239,15 @@ static bool CompareJsonValues(const std::string& lhs,
   return false;
 }
 
-static bool IsKeyValueInDict(const JsonKeyValue* key_value, const Value* dict) {
-  const std::string* value_str = dict->FindStringPath(key_value->key);
+static bool IsKeyValueInDict(const JsonKeyValue* key_value,
+                             const Value::Dict* dict) {
+  const std::string* value_str = dict->FindStringByDottedPath(key_value->key);
   if (value_str &&
       CompareJsonValues(*value_str, key_value->value, key_value->op))
     return true;
 
   // Recurse to test arguments
-  const Value* args_dict = dict->FindDictPath("args");
+  const Value::Dict* args_dict = dict->FindDictByDottedPath("args");
   if (args_dict)
     return IsKeyValueInDict(key_value, args_dict);
 
@@ -255,50 +255,55 @@ static bool IsKeyValueInDict(const JsonKeyValue* key_value, const Value* dict) {
 }
 
 static bool IsAllKeyValueInDict(const JsonKeyValue* key_values,
-                                const Value* dict) {
+                                const Value::Dict* dict) {
   // Scan all key_values, they must all be present and equal.
   while (key_values && key_values->key) {
-    if (!IsKeyValueInDict(key_values, dict))
+    if (!IsKeyValueInDict(key_values, dict)) {
       return false;
+    }
     ++key_values;
   }
   return true;
 }
 
-const Value* TraceEventTestFixture::FindMatchingTraceEntry(
+const Value::Dict* TraceEventTestFixture::FindMatchingTraceEntry(
     const JsonKeyValue* key_values) {
   // Scan all items
   for (const Value& value : trace_parsed_) {
-    if (!value.is_dict())
+    if (!value.is_dict()) {
       continue;
+    }
 
-    if (IsAllKeyValueInDict(key_values, &value))
-      return &value;
+    if (IsAllKeyValueInDict(key_values, &value.GetDict())) {
+      return &value.GetDict();
+    }
   }
   return nullptr;
 }
 
 void TraceEventTestFixture::DropTracedMetadataRecords() {
   trace_parsed_.EraseIf([](const Value& value) {
-    if (!value.is_dict())
+    if (!value.is_dict()) {
       return false;
+    }
     const std::string* ph = value.GetDict().FindString("ph");
     return ph && *ph == "M";
   });
 }
 
-const Value* TraceEventTestFixture::FindNamePhase(const char* name,
-                                                  const char* phase) {
+const Value::Dict* TraceEventTestFixture::FindNamePhase(const char* name,
+                                                        const char* phase) {
   JsonKeyValue key_values[] = {{"name", name, IS_EQUAL},
                                {"ph", phase, IS_EQUAL},
                                {nullptr, nullptr, IS_EQUAL}};
   return FindMatchingTraceEntry(key_values);
 }
 
-const Value* TraceEventTestFixture::FindNamePhaseKeyValue(const char* name,
-                                                          const char* phase,
-                                                          const char* key,
-                                                          const char* value) {
+const Value::Dict* TraceEventTestFixture::FindNamePhaseKeyValue(
+    const char* name,
+    const char* phase,
+    const char* key,
+    const char* value) {
   JsonKeyValue key_values[] = {{"name", name, IS_EQUAL},
                                {"ph", phase, IS_EQUAL},
                                {key, value, IS_EQUAL},
@@ -320,8 +325,8 @@ bool TraceEventTestFixture::FindNonMatchingValue(const char* key,
   return FindMatchingTraceEntry(key_values);
 }
 
-bool IsStringInDict(const char* string_to_match, const Value* dict) {
-  for (const auto pair : dict->DictItems()) {
+bool IsStringInDict(const char* string_to_match, const Value::Dict* dict) {
+  for (const auto pair : *dict) {
     if (pair.first.find(string_to_match) != std::string::npos)
       return true;
 
@@ -333,42 +338,51 @@ bool IsStringInDict(const char* string_to_match, const Value* dict) {
   }
 
   // Recurse to test arguments
-  const Value* args_dict = dict->FindDictKey("args");
-  if (args_dict)
+  const Value::Dict* args_dict = dict->FindDict("args");
+  if (args_dict) {
     return IsStringInDict(string_to_match, args_dict);
+  }
 
   return false;
 }
 
-const Value* FindTraceEntry(const Value::List& trace_parsed,
-                            const char* string_to_match,
-                            const Value* match_after_this_item = nullptr) {
-  // Scan all items
+const Value::Dict* FindTraceEntry(
+    const Value::List& trace_parsed,
+    const char* string_to_match,
+    const Value::Dict* match_after_this_item = nullptr) {
+  // Scan all items.
   for (const Value& value : trace_parsed) {
-    if (match_after_this_item) {
-      if (&value == match_after_this_item)
-        match_after_this_item = nullptr;
+    const Value::Dict* dict = value.GetIfDict();
+    if (!dict) {
       continue;
     }
-    if (!value.is_dict())
+    if (match_after_this_item) {
+      if (dict == match_after_this_item) {
+        match_after_this_item = nullptr;
+      }
       continue;
+    }
 
-    if (IsStringInDict(string_to_match, &value))
-      return &value;
+    if (IsStringInDict(string_to_match, dict)) {
+      return dict;
+    }
   }
   return nullptr;
 }
 
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-std::vector<const Value*> FindTraceEntries(const Value::List& trace_parsed,
-                                           const char* string_to_match) {
-  std::vector<const Value*> hits;
+std::vector<const Value::Dict*> FindTraceEntries(
+    const Value::List& trace_parsed,
+    const char* string_to_match) {
+  std::vector<const Value::Dict*> hits;
   for (const Value& value : trace_parsed) {
-    if (!value.is_dict())
+    if (!value.is_dict()) {
       continue;
+    }
 
-    if (IsStringInDict(string_to_match, &value))
-      hits.push_back(&value);
+    if (IsStringInDict(string_to_match, &value.GetDict())) {
+      hits.push_back(&value.GetDict());
+    }
   }
   return hits;
 }
@@ -478,7 +492,7 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
 }
 
 void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
-  const Value* item = nullptr;
+  const Value::Dict* item = nullptr;
 
 #define EXPECT_FIND_(string) \
     item = FindTraceEntry(trace_parsed, string); \
@@ -493,7 +507,7 @@ void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
   EXPECT_FIND_("TRACE_EVENT0 call");
   {
     EXPECT_TRUE((item = FindTraceEntry(trace_parsed, "TRACE_EVENT0 call")));
-    EXPECT_EQ(*item->FindStringKey("ph"), "X");
+    EXPECT_EQ(*item->FindString("ph"), "X");
     item = FindTraceEntry(trace_parsed, "TRACE_EVENT0 call", item);
     EXPECT_FALSE(item);
   }
@@ -507,13 +521,13 @@ void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
   EXPECT_SUB_FIND_("value\\2");
 
   EXPECT_FIND_("TRACE_EVENT_INSTANT0 call");
-  { EXPECT_EQ(*item->FindStringKey("s"), "g"); }
+  { EXPECT_EQ(*item->FindString("s"), "g"); }
   EXPECT_FIND_("TRACE_EVENT_INSTANT1 call");
-  { EXPECT_EQ(*item->FindStringKey("s"), "p"); }
+  { EXPECT_EQ(*item->FindString("s"), "p"); }
   EXPECT_SUB_FIND_("name1");
   EXPECT_SUB_FIND_("value1");
   EXPECT_FIND_("TRACE_EVENT_INSTANT2 call");
-  { EXPECT_EQ(*item->FindStringKey("s"), "t"); }
+  { EXPECT_EQ(*item->FindString("s"), "t"); }
   EXPECT_SUB_FIND_("name1");
   EXPECT_SUB_FIND_("value1");
   EXPECT_SUB_FIND_("name2");
@@ -577,58 +591,58 @@ void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
 
   EXPECT_FIND_("TRACE_COUNTER1 call");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "C");
+    EXPECT_EQ(*item->FindString("ph"), "C");
 
-    EXPECT_EQ(*item->FindIntPath("args.value"), 31415);
+    EXPECT_EQ(*item->FindIntByDottedPath("args.value"), 31415);
   }
 
   EXPECT_FIND_("TRACE_COUNTER2 call");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "C");
+    EXPECT_EQ(*item->FindString("ph"), "C");
 
-    EXPECT_EQ(*item->FindIntPath("args.a"), 30000);
+    EXPECT_EQ(*item->FindIntByDottedPath("args.a"), 30000);
 
-    EXPECT_EQ(*item->FindIntPath("args.b"), 1415);
+    EXPECT_EQ(*item->FindIntByDottedPath("args.b"), 1415);
   }
 
   EXPECT_FIND_("TRACE_COUNTER_WITH_TIMESTAMP1 call");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "C");
+    EXPECT_EQ(*item->FindString("ph"), "C");
 
-    EXPECT_EQ(*item->FindIntPath("args.value"), 31415);
+    EXPECT_EQ(*item->FindIntByDottedPath("args.value"), 31415);
 
-    EXPECT_EQ(*item->FindIntKey("ts"), 42);
+    EXPECT_EQ(*item->FindInt("ts"), 42);
   }
 
   EXPECT_FIND_("TRACE_COUNTER_WITH_TIMESTAMP2 call");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "C");
+    EXPECT_EQ(*item->FindString("ph"), "C");
 
-    EXPECT_EQ(*item->FindIntPath("args.a"), 30000);
+    EXPECT_EQ(*item->FindIntByDottedPath("args.a"), 30000);
 
-    EXPECT_EQ(*item->FindIntPath("args.b"), 1415);
+    EXPECT_EQ(*item->FindIntByDottedPath("args.b"), 1415);
 
-    EXPECT_EQ(*item->FindIntKey("ts"), 42);
+    EXPECT_EQ(*item->FindInt("ts"), 42);
   }
 
   EXPECT_FIND_("TRACE_COUNTER_ID1 call");
   {
-    EXPECT_EQ(*item->FindStringKey("id"), "0x319009");
+    EXPECT_EQ(*item->FindString("id"), "0x319009");
 
-    EXPECT_EQ(*item->FindStringKey("ph"), "C");
+    EXPECT_EQ(*item->FindString("ph"), "C");
 
-    EXPECT_EQ(*item->FindIntPath("args.value"), 31415);
+    EXPECT_EQ(*item->FindIntByDottedPath("args.value"), 31415);
   }
 
   EXPECT_FIND_("TRACE_COUNTER_ID2 call");
   {
-    EXPECT_EQ(*item->FindStringKey("id"), "0x319009");
+    EXPECT_EQ(*item->FindString("id"), "0x319009");
 
-    EXPECT_EQ(*item->FindStringKey("ph"), "C");
+    EXPECT_EQ(*item->FindString("ph"), "C");
 
-    EXPECT_EQ(*item->FindIntPath("args.a"), 30000);
+    EXPECT_EQ(*item->FindIntByDottedPath("args.a"), 30000);
 
-    EXPECT_EQ(*item->FindIntPath("args.b"), 1415);
+    EXPECT_EQ(*item->FindIntByDottedPath("args.b"), 1415);
   }
 
   EXPECT_FIND_("TRACE_EVENT_ASYNC_STEP_PAST0 call");
@@ -646,39 +660,39 @@ void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
 
   EXPECT_FIND_("tracked object 1");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "N");
-    EXPECT_FALSE(item->FindKey("scope"));
-    EXPECT_EQ(*item->FindStringKey("id"), "0x42");
+    EXPECT_EQ(*item->FindString("ph"), "N");
+    EXPECT_FALSE(item->Find("scope"));
+    EXPECT_EQ(*item->FindString("id"), "0x42");
 
     item = FindTraceEntry(trace_parsed, "tracked object 1", item);
     EXPECT_TRUE(item);
-    EXPECT_EQ(*item->FindStringKey("ph"), "O");
-    EXPECT_FALSE(item->FindKey("scope"));
-    EXPECT_EQ(*item->FindStringKey("id"), "0x42");
-    EXPECT_EQ(*item->FindStringPath("args.snapshot"), "hello");
+    EXPECT_EQ(*item->FindString("ph"), "O");
+    EXPECT_FALSE(item->Find("scope"));
+    EXPECT_EQ(*item->FindString("id"), "0x42");
+    EXPECT_EQ(*item->FindStringByDottedPath("args.snapshot"), "hello");
 
     item = FindTraceEntry(trace_parsed, "tracked object 1", item);
     EXPECT_TRUE(item);
-    EXPECT_EQ(*item->FindStringKey("ph"), "D");
-    EXPECT_FALSE(item->FindKey("scope"));
-    EXPECT_EQ(*item->FindStringKey("id"), "0x42");
+    EXPECT_EQ(*item->FindString("ph"), "D");
+    EXPECT_FALSE(item->Find("scope"));
+    EXPECT_EQ(*item->FindString("id"), "0x42");
   }
 
   EXPECT_FIND_("tracked object 2");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "N");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x2128506");
+    EXPECT_EQ(*item->FindString("ph"), "N");
+    EXPECT_EQ(*item->FindString("id"), "0x2128506");
 
     item = FindTraceEntry(trace_parsed, "tracked object 2", item);
     EXPECT_TRUE(item);
-    EXPECT_EQ(*item->FindStringKey("ph"), "O");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x2128506");
-    EXPECT_EQ(*item->FindStringPath("args.snapshot"), "world");
+    EXPECT_EQ(*item->FindString("ph"), "O");
+    EXPECT_EQ(*item->FindString("id"), "0x2128506");
+    EXPECT_EQ(*item->FindStringByDottedPath("args.snapshot"), "world");
 
     item = FindTraceEntry(trace_parsed, "tracked object 2", item);
     EXPECT_TRUE(item);
-    EXPECT_EQ(*item->FindStringKey("ph"), "D");
-    EXPECT_EQ(*item->FindStringKey("id"), "0x2128506");
+    EXPECT_EQ(*item->FindString("ph"), "D");
+    EXPECT_EQ(*item->FindString("id"), "0x2128506");
   }
 
   EXPECT_FIND_("tracked object 3");
@@ -688,22 +702,22 @@ void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
 #else
     auto* id_hash = "0x42";
 #endif
-    EXPECT_EQ(*item->FindStringKey("ph"), "N");
-    EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), id_hash);
+    EXPECT_EQ(*item->FindString("ph"), "N");
+    EXPECT_EQ(*item->FindString("scope"), "scope");
+    EXPECT_EQ(*item->FindString("id"), id_hash);
 
     item = FindTraceEntry(trace_parsed, "tracked object 3", item);
     EXPECT_TRUE(item);
-    EXPECT_EQ(*item->FindStringKey("ph"), "O");
-    EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), id_hash);
-    EXPECT_EQ(*item->FindStringPath("args.snapshot"), "hello");
+    EXPECT_EQ(*item->FindString("ph"), "O");
+    EXPECT_EQ(*item->FindString("scope"), "scope");
+    EXPECT_EQ(*item->FindString("id"), id_hash);
+    EXPECT_EQ(*item->FindStringByDottedPath("args.snapshot"), "hello");
 
     item = FindTraceEntry(trace_parsed, "tracked object 3", item);
     EXPECT_TRUE(item);
-    EXPECT_EQ(*item->FindStringKey("ph"), "D");
-    EXPECT_EQ(*item->FindStringKey("scope"), "scope");
-    EXPECT_EQ(*item->FindStringKey("id"), id_hash);
+    EXPECT_EQ(*item->FindString("ph"), "D");
+    EXPECT_EQ(*item->FindString("scope"), "scope");
+    EXPECT_EQ(*item->FindString("id"), id_hash);
   }
 
   EXPECT_FIND_(kControlCharacters);
@@ -711,40 +725,40 @@ void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
 
   EXPECT_FIND_("async default process scope");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "S");
+    EXPECT_EQ(*item->FindString("ph"), "S");
 
-    EXPECT_EQ(*item->FindStringKey("id"), "0x1000");
+    EXPECT_EQ(*item->FindString("id"), "0x1000");
   }
 
   EXPECT_FIND_("async local id");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "S");
+    EXPECT_EQ(*item->FindString("ph"), "S");
 
-    EXPECT_EQ(*item->FindStringPath("id2.local"), "0x2000");
+    EXPECT_EQ(*item->FindStringByDottedPath("id2.local"), "0x2000");
   }
 
   EXPECT_FIND_("async global id");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "S");
+    EXPECT_EQ(*item->FindString("ph"), "S");
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     const char kIdPath[] = "id";
 #else
     const char kIdPath[] = "id2.global";
 #endif
-    EXPECT_EQ(*item->FindStringPath(kIdPath), "0x3000");
+    EXPECT_EQ(*item->FindStringByDottedPath(kIdPath), "0x3000");
   }
 
   EXPECT_FIND_("async global id with scope string");
   {
-    EXPECT_EQ(*item->FindStringKey("ph"), "S");
+    EXPECT_EQ(*item->FindString("ph"), "S");
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     const char kIdPath[] = "id";
 #else
     const char kIdPath[] = "id2.global";
 #endif
-    EXPECT_EQ(*item->FindStringPath(kIdPath), "0x4000");
+    EXPECT_EQ(*item->FindStringByDottedPath(kIdPath), "0x4000");
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     const char kExpectedScope[] = "test_all:scope string";
@@ -752,7 +766,7 @@ void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
     const char kExpectedScope[] = "scope string";
 #endif
 
-    EXPECT_EQ(*item->FindStringPath("scope"), kExpectedScope);
+    EXPECT_EQ(*item->FindStringByDottedPath("scope"), kExpectedScope);
   }
 }
 
@@ -774,15 +788,17 @@ void ValidateInstantEventPresentOnEveryThread(const Value::List& trace_parsed,
   std::map<int, std::map<int, bool>> results;
 
   for (const Value& value : trace_parsed) {
-    if (!value.is_dict())
+    const Value::Dict* dict = value.GetIfDict();
+    if (!dict) {
       continue;
+    }
 
-    const std::string* name = value.FindStringKey("name");
+    const std::string* name = dict->FindString("name");
     if (!name || *name != "multi thread event")
       continue;
 
-    absl::optional<int> maybe_thread = value.FindIntPath("args.thread");
-    absl::optional<int> maybe_event = value.FindIntPath("args.event");
+    absl::optional<int> maybe_thread = dict->FindIntByDottedPath("args.thread");
+    absl::optional<int> maybe_event = dict->FindIntByDottedPath("args.event");
 
     EXPECT_TRUE(maybe_thread.has_value());
     EXPECT_TRUE(maybe_event.has_value());
@@ -1255,16 +1271,19 @@ TEST_F(TraceEventTestFixture, AsyncBeginEndPointerNotMangled) {
   TRACE_EVENT_ASYNC_END0("cat", "name1", ptr);
   EndTraceAndFlush();
 
-  const Value* async_begin = FindNamePhase("name1", "S");
-  const Value* async_begin2 = FindNamePhase("name2", "S");
-  const Value* async_end = FindNamePhase("name1", "F");
+  const Value::Dict* async_begin = FindNamePhase("name1", "S");
+  const Value::Dict* async_begin2 = FindNamePhase("name2", "S");
+  const Value::Dict* async_end = FindNamePhase("name1", "F");
   EXPECT_TRUE(async_begin);
   EXPECT_TRUE(async_begin2);
   EXPECT_TRUE(async_end);
 
-  std::string async_begin_id_str = *async_begin->FindStringPath("id2.local");
-  std::string async_begin2_id_str = *async_begin2->FindStringPath("id2.local");
-  std::string async_end_id_str = *async_end->FindStringPath("id2.local");
+  std::string async_begin_id_str =
+      *async_begin->FindStringByDottedPath("id2.local");
+  std::string async_begin2_id_str =
+      *async_begin2->FindStringByDottedPath("id2.local");
+  std::string async_end_id_str =
+      *async_end->FindStringByDottedPath("id2.local");
 
   // Since all ids are process-local and not mangled, they should be equal.
   EXPECT_STREQ(async_begin_id_str.c_str(), async_begin2_id_str.c_str());
@@ -1368,8 +1387,8 @@ TEST_F(TraceEventTestFixture, DataCapturedManyThreads) {
                                   task_complete_events[i]));
   }
 
-  for (int i = 0; i < num_threads; i++) {
-    task_complete_events[i]->Wait();
+  for (auto* event : task_complete_events) {
+    event->Wait();
   }
 
   // Let half of the threads end before flush.
@@ -1422,8 +1441,8 @@ TEST_F(TraceEventTestFixture, ThreadNames) {
         FROM_HERE, base::BindOnce(&TraceManyInstantEvents, i, kNumEvents,
                                   task_complete_events[i]));
   }
-  for (int i = 0; i < kNumThreads; i++) {
-    task_complete_events[i]->Wait();
+  for (auto* event : task_complete_events) {
+    event->Wait();
   }
 
   // Shut things down.
@@ -1438,13 +1457,12 @@ TEST_F(TraceEventTestFixture, ThreadNames) {
   // Make sure we get thread name metadata.
   // Note, the test suite may have created a ton of threads.
   // So, we'll have thread names for threads we didn't create.
-  std::vector<const Value*> items =
+  std::vector<const Value::Dict*> items =
       FindTraceEntries(trace_parsed_, "thread_name");
-  for (const Value* item : items) {
+  for (const Value::Dict* item : items) {
     ASSERT_TRUE(item);
-    ASSERT_TRUE(item->is_dict());
 
-    absl::optional<int> maybe_tid = item->FindIntKey("tid");
+    absl::optional<int> maybe_tid = item->FindInt("tid");
     EXPECT_TRUE(maybe_tid.has_value());
 
     // See if this thread name is one of the threads we just created
@@ -1452,14 +1470,14 @@ TEST_F(TraceEventTestFixture, ThreadNames) {
       if (static_cast<int>(thread_ids[j]) != maybe_tid.value())
         continue;
 
-      EXPECT_EQ(*item->FindStringKey("ph"), "M");
-      EXPECT_EQ(*item->FindIntKey("pid"),
+      EXPECT_EQ(*item->FindString("ph"), "M");
+      EXPECT_EQ(*item->FindInt("pid"),
                 static_cast<int>(base::GetCurrentProcId()));
 
       // If the thread name changes or the tid gets reused, the name will be
       // a comma-separated list of thread names, so look for a substring.
       std::string expected_name = StringPrintf("Thread %d", j);
-      const std::string* name = item->FindStringPath("args.name");
+      const std::string* name = item->FindStringByDottedPath("args.name");
       EXPECT_TRUE(name && name->find(expected_name) != std::string::npos);
     }
   }
@@ -1475,7 +1493,7 @@ TEST_F(TraceEventTestFixture, DisabledCategories) {
   TRACE_EVENT_INSTANT0("test_included", "first", TRACE_EVENT_SCOPE_THREAD);
   EndTraceAndFlush();
   {
-    const Value* item = nullptr;
+    const Value::Dict* item = nullptr;
     Value::List& trace_parsed = trace_parsed_;
     EXPECT_NOT_FIND_("disabled-by-default-cc");
     EXPECT_FIND_("test_included");
@@ -1490,7 +1508,7 @@ TEST_F(TraceEventTestFixture, DisabledCategories) {
   EndTraceAndFlush();
 
   {
-    const Value* item = nullptr;
+    const Value::Dict* item = nullptr;
     Value::List& trace_parsed = trace_parsed_;
     EXPECT_FIND_("disabled-by-default-cc");
     EXPECT_FIND_("test_other_included");
@@ -1507,7 +1525,7 @@ TEST_F(TraceEventTestFixture, DisabledCategories) {
   EndTraceAndFlush();
 
   {
-    const Value* item = nullptr;
+    const Value::Dict* item = nullptr;
     Value::List& trace_parsed = trace_parsed_;
     EXPECT_FIND_("test,disabled-by-default-cc,test_other_included");
     EXPECT_FIND_("test_other_included,disabled-by-default-cc");
@@ -1557,16 +1575,16 @@ TEST_F(TraceEventTestFixture, DeepCopy) {
 
   EXPECT_FALSE(FindTraceEntry(trace_parsed_, name.c_str()));
 
-  const Value* entry = FindTraceEntry(trace_parsed_, kOriginalName);
+  const Value::Dict* entry = FindTraceEntry(trace_parsed_, kOriginalName);
   ASSERT_TRUE(entry);
 
-  EXPECT_FALSE(entry->FindIntPath("args.@rg1"));
+  EXPECT_FALSE(entry->FindIntByDottedPath("args.@rg1"));
 
-  ASSERT_TRUE(entry->FindIntPath("args.arg1"));
-  EXPECT_EQ(*entry->FindIntPath("args.arg1"), 5);
+  ASSERT_TRUE(entry->FindIntByDottedPath("args.arg1"));
+  EXPECT_EQ(*entry->FindIntByDottedPath("args.arg1"), 5);
 
-  ASSERT_TRUE(entry->FindStringPath("args.arg2"));
-  EXPECT_EQ(*entry->FindStringPath("args.arg2"), "val");
+  ASSERT_TRUE(entry->FindStringByDottedPath("args.arg2"));
+  EXPECT_EQ(*entry->FindStringByDottedPath("args.arg2"), "val");
 }
 
 // Test that TraceResultBuffer outputs the correct result whether it is added
@@ -1638,7 +1656,7 @@ TEST_F(TraceEventTestFixture, TraceCategoriesAfterNestedEnable) {
   trace_log->SetEnabled(TraceConfig("foo2", ""), TraceLog::RECORDING_MODE);
   EXPECT_TRUE(*trace_log->GetCategoryGroupEnabled("foo2"));
   EXPECT_FALSE(*trace_log->GetCategoryGroupEnabled("baz"));
-  // The "" becomes the default catergory set when applied.
+  // The "" becomes the default category set when applied.
   trace_log->SetEnabled(TraceConfig(), TraceLog::RECORDING_MODE);
   EXPECT_TRUE(*trace_log->GetCategoryGroupEnabled("foo"));
   EXPECT_TRUE(*trace_log->GetCategoryGroupEnabled("baz"));
@@ -1765,66 +1783,66 @@ TEST_F(TraceEventTestFixture, ConvertableTypes) {
   EndTraceAndFlush();
 
   // One arg version.
-  const Value* dict = FindNamePhase("bar", "X");
+  const Value::Dict* dict = FindNamePhase("bar", "X");
   ASSERT_TRUE(dict);
 
-  const Value* args_dict = dict->FindDictKey("args");
+  const Value::Dict* args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
 
-  const Value* convertable_dict = args_dict->FindDictKey("data");
+  const Value::Dict* convertable_dict = args_dict->FindDict("data");
   ASSERT_TRUE(convertable_dict);
 
-  EXPECT_EQ(*convertable_dict->FindIntKey("foo"), 1);
+  EXPECT_EQ(*convertable_dict->FindInt("foo"), 1);
 
   // Two arg version.
   dict = FindNamePhase("baz", "X");
   ASSERT_TRUE(dict);
 
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
 
-  convertable_dict = args_dict->FindDictKey("data1");
+  convertable_dict = args_dict->FindDict("data1");
   ASSERT_TRUE(convertable_dict);
 
-  convertable_dict = args_dict->FindDictKey("data2");
+  convertable_dict = args_dict->FindDict("data2");
   ASSERT_TRUE(convertable_dict);
 
   // Convertable with other types.
   dict = FindNamePhase("string_first", "X");
   ASSERT_TRUE(dict);
 
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
 
-  EXPECT_EQ(*args_dict->FindStringKey("str"), "string value 1");
+  EXPECT_EQ(*args_dict->FindString("str"), "string value 1");
 
-  convertable_dict = args_dict->FindDictKey("convert");
+  convertable_dict = args_dict->FindDict("convert");
   ASSERT_TRUE(convertable_dict);
 
-  EXPECT_EQ(*convertable_dict->FindIntKey("foo"), 1);
+  EXPECT_EQ(*convertable_dict->FindInt("foo"), 1);
 
   dict = FindNamePhase("string_second", "X");
   ASSERT_TRUE(dict);
 
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
 
-  EXPECT_EQ(*args_dict->FindStringKey("str"), "string value 2");
+  EXPECT_EQ(*args_dict->FindString("str"), "string value 2");
 
-  convertable_dict = args_dict->FindDictKey("convert");
+  convertable_dict = args_dict->FindDict("convert");
   ASSERT_TRUE(convertable_dict);
 
-  EXPECT_EQ(*convertable_dict->FindIntKey("foo"), 1);
+  EXPECT_EQ(*convertable_dict->FindInt("foo"), 1);
 
   dict = FindNamePhase("both_conv", "X");
   ASSERT_TRUE(dict);
 
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
 
-  convertable_dict = args_dict->FindDictKey("convert1");
+  convertable_dict = args_dict->FindDict("convert1");
   ASSERT_TRUE(convertable_dict);
-  convertable_dict = args_dict->FindDictKey("convert2");
+  convertable_dict = args_dict->FindDict("convert2");
   ASSERT_TRUE(convertable_dict);
 }
 
@@ -1859,111 +1877,111 @@ TEST_F(TraceEventTestFixture, PrimitiveArgs) {
   }
   EndTraceAndFlush();
 
-  const Value* args_dict = nullptr;
-  const Value* dict = nullptr;
+  const Value::Dict* args_dict = nullptr;
+  const Value::Dict* dict = nullptr;
   std::string str_value;
 
   dict = FindNamePhase("event1", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindIntKey("int_one"), 1);
+  EXPECT_EQ(*args_dict->FindInt("int_one"), 1);
 
   dict = FindNamePhase("event2", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindIntKey("int_neg_ten"), -10);
+  EXPECT_EQ(*args_dict->FindInt("int_neg_ten"), -10);
 
-  // 1f must be serlized to JSON as "1.0" in order to be a double, not an int.
+  // 1f must be serialized to JSON as "1.0" in order to be a double, not an int.
   dict = FindNamePhase("event3", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindDoubleKey("float_one"), 1.0);
+  EXPECT_EQ(*args_dict->FindDouble("float_one"), 1.0);
 
-  // .5f must be serlized to JSON as "0.5".
+  // .5f must be serialized to JSON as "0.5".
   dict = FindNamePhase("event4", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindDoubleKey("float_half"), 0.5);
+  EXPECT_EQ(*args_dict->FindDouble("float_half"), 0.5);
 
-  // -.5f must be serlized to JSON as "-0.5".
+  // -.5f must be serialized to JSON as "-0.5".
   dict = FindNamePhase("event5", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindDoubleKey("float_neghalf"), -0.5);
+  EXPECT_EQ(*args_dict->FindDouble("float_neghalf"), -0.5);
 
   // Infinity is serialized to JSON as a string.
   dict = FindNamePhase("event6", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindStringKey("float_infinity"), "Infinity");
+  EXPECT_EQ(*args_dict->FindString("float_infinity"), "Infinity");
   dict = FindNamePhase("event6b", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindStringKey("float_neg_infinity"), "-Infinity");
+  EXPECT_EQ(*args_dict->FindString("float_neg_infinity"), "-Infinity");
 
   // NaN is serialized to JSON as a string.
   dict = FindNamePhase("event7", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindStringKey("double_nan"), "NaN");
+  EXPECT_EQ(*args_dict->FindString("double_nan"), "NaN");
 
   // NULL pointers should be serialized as "0x0".
   dict = FindNamePhase("event8", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindStringKey("pointer_null"), "0x0");
+  EXPECT_EQ(*args_dict->FindString("pointer_null"), "0x0");
 
   // Other pointers should be serlized as a hex string.
   dict = FindNamePhase("event9", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindStringKey("pointer_badf00d"), "0xbadf00d");
+  EXPECT_EQ(*args_dict->FindString("pointer_badf00d"), "0xbadf00d");
 
   dict = FindNamePhase("event10", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindBoolKey("bool_true"), true);
+  EXPECT_EQ(*args_dict->FindBool("bool_true"), true);
 
   dict = FindNamePhase("event11", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindBoolKey("bool_false"), false);
+  EXPECT_EQ(*args_dict->FindBool("bool_false"), false);
 
   dict = FindNamePhase("event12", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindIntKey("time_null"), 0);
+  EXPECT_EQ(*args_dict->FindInt("time_null"), 0);
 
   dict = FindNamePhase("event13", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindIntKey("time_one"), 1);
+  EXPECT_EQ(*args_dict->FindInt("time_one"), 1);
 
   dict = FindNamePhase("event14", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindIntKey("timeticks_null"), 0);
+  EXPECT_EQ(*args_dict->FindInt("timeticks_null"), 0);
 
   dict = FindNamePhase("event15", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindIntKey("timeticks_one"), 1);
+  EXPECT_EQ(*args_dict->FindInt("timeticks_one"), 1);
 }
 
 TEST_F(TraceEventTestFixture, NameIsEscaped) {
@@ -2019,29 +2037,28 @@ TEST_F(TraceEventTestFixture, ArgsAllowlisting) {
 
   EndTraceAndFlush();
 
-  const Value* args_dict = nullptr;
-  const Value* dict = nullptr;
+  const Value::Dict* args_dict = nullptr;
+  const Value::Dict* dict = nullptr;
 
   dict = FindNamePhase("event1", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
-  EXPECT_EQ(*args_dict->FindIntKey("int_one"), 1);
-  EXPECT_FALSE(args_dict->FindIntKey("int_two"));
+  EXPECT_EQ(*args_dict->FindInt("int_one"), 1);
+  EXPECT_FALSE(args_dict->FindInt("int_two"));
 
   dict = FindNamePhase("event2", "X");
   ASSERT_TRUE(dict);
-  EXPECT_EQ(*dict->FindStringKey("args"), "__stripped__");
+  EXPECT_EQ(*dict->FindString("args"), "__stripped__");
 
   dict = FindNamePhase("granularly_allowed", "X");
   ASSERT_TRUE(dict);
-  args_dict = dict->FindDictKey("args");
+  args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
 
-  EXPECT_EQ(*args_dict->FindStringKey("granular_arg_allowed"), "allowed_value");
+  EXPECT_EQ(*args_dict->FindString("granular_arg_allowed"), "allowed_value");
 
-  EXPECT_EQ(*args_dict->FindStringKey("granular_arg_disallowed"),
-            "__stripped__");
+  EXPECT_EQ(*args_dict->FindString("granular_arg_disallowed"), "__stripped__");
 }
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
@@ -2062,15 +2079,15 @@ TEST_F(TraceEventTestFixture, TraceBufferVectorReportFull) {
 
   EndTraceAndFlush();
 
-  const Value* trace_full_metadata = nullptr;
+  const Value::Dict* trace_full_metadata = nullptr;
 
   trace_full_metadata = FindTraceEntry(trace_parsed_,
                                        "overflowed_at_ts");
 
   EXPECT_TRUE(trace_full_metadata);
-  EXPECT_EQ(*trace_full_metadata->FindStringKey("ph"), "M");
+  EXPECT_EQ(*trace_full_metadata->FindString("ph"), "M");
   absl::optional<double> maybe_buffer_limit_reached_timestamp =
-      trace_full_metadata->FindDoublePath("args.overflowed_at_ts");
+      trace_full_metadata->FindDoubleByDottedPath("args.overflowed_at_ts");
 
   EXPECT_EQ(*maybe_buffer_limit_reached_timestamp,
             static_cast<double>(
@@ -2083,7 +2100,7 @@ TEST_F(TraceEventTestFixture, TraceBufferVectorReportFull) {
   const Value& last_trace_event = trace_parsed_.back();
   EXPECT_TRUE(last_trace_event.is_dict());
   absl::optional<double> maybe_last_trace_event_timestamp =
-      last_trace_event.FindDoubleKey("ts");
+      last_trace_event.GetDict().FindDouble("ts");
   EXPECT_TRUE(maybe_last_trace_event_timestamp.has_value());
   EXPECT_LE(maybe_last_trace_event_timestamp.value(),
             maybe_buffer_limit_reached_timestamp.value());
@@ -2457,7 +2474,7 @@ TEST_F(TraceEventTestFixture, TimeOffset) {
   double last_timestamp = 0;
   for (const Value& item : trace_parsed_) {
     EXPECT_TRUE(item.is_dict());
-    absl::optional<double> timestamp = item.FindDoubleKey("ts");
+    absl::optional<double> timestamp = item.GetDict().FindDouble("ts");
     EXPECT_TRUE(timestamp.has_value());
     EXPECT_GE(timestamp.value(), last_timestamp);
     EXPECT_LE(timestamp.value(), end_time);
@@ -2484,18 +2501,17 @@ TEST_F(TraceEventTestFixture, ContextLambda) {
   }
   EndTraceAndFlush();
 
-  const Value* dict = FindNamePhase("Name", "X");
+  const Value::Dict* dict = FindNamePhase("Name", "X");
   ASSERT_TRUE(dict);
 
-  const Value* args_dict = dict->FindDictKey("args");
+  const Value::Dict* args_dict = dict->FindDict("args");
   ASSERT_TRUE(args_dict);
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  EXPECT_EQ(*args_dict->FindStringKey("arg"), "foobar");
+  EXPECT_EQ(*args_dict->FindString("arg"), "foobar");
 #else
   // Pre-client-lib, these types of TracedValues can't be serialized to JSON.
-  EXPECT_EQ(*args_dict->FindStringKey("arg"),
-            "Unsupported (crbug.com/1225176)");
+  EXPECT_EQ(*args_dict->FindString("arg"), "Unsupported (crbug.com/1225176)");
 #endif
 }
 
@@ -2546,5 +2562,4 @@ TEST_F(TraceEventTestFixture, GetCurrentTraceConfig) {
 }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event
