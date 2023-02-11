@@ -496,10 +496,7 @@ void AmbientController::OnMouseEvent(ui::MouseEvent* event) {
   // |DismissUI| on actual mouse move only if the screen saver widget is shown
   // (images are downloaded).
   if (event->type() == ui::ET_MOUSE_MOVED) {
-    if (last_mouse_event_was_move_ &&
-        Shell::GetPrimaryRootWindowController()->HasAmbientWidget()) {
-      DismissUI();
-    }
+    MaybeDismissUIOnMouseMove();
     last_mouse_event_was_move_ = true;
     return;
   }
@@ -912,6 +909,9 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
 }
 
 void AmbientController::CreateAndShowWidgets() {
+  if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kPreview) {
+    preview_widget_created_at_ = base::Time::Now();
+  }
   // Hide cursor.
   Shell::Get()->cursor_manager()->HideCursor();
   for (auto* root_window_controller :
@@ -982,4 +982,22 @@ AmbientAnimationTheme AmbientController::GetCurrentTheme() const {
   return *current_theme_from_pref_;
 }
 
+void AmbientController::MaybeDismissUIOnMouseMove() {
+  // If the move was not an actual mouse move event or the screen saver widget
+  // is not shown yet (images are not downloaded), don't dismiss.
+  if (!last_mouse_event_was_move_ ||
+      !Shell::GetPrimaryRootWindowController()->HasAmbientWidget()) {
+    return;
+  }
+
+  // In preview mode, don't dismiss until the timer stops running (avoids
+  // accidental dismissal).
+  if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kPreview) {
+    auto elapsed = base::Time::Now() - preview_widget_created_at_;
+    if (elapsed < kDismissPreviewOnMouseMoveDelay) {
+      return;
+    }
+  }
+  DismissUI();
+}
 }  // namespace ash

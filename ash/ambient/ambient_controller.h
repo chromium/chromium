@@ -48,6 +48,9 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+// Delay for dismissing screensaver preview on mouse move.
+constexpr base::TimeDelta kDismissPreviewOnMouseMoveDelay = base::Seconds(3);
+
 class AmbientAnimationFrameRateController;
 class AmbientAnimationProgressTracker;
 class AmbientBackendController;
@@ -186,6 +189,7 @@ class ASH_EXPORT AmbientController
   void StartRefreshingImages();
   void StopRefreshingImages();
   void MaybeStartScreenSaver();
+  void MaybeDismissUIOnMouseMove();
   AmbientAnimationTheme GetCurrentTheme() const;
 
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after
@@ -252,6 +256,9 @@ class ASH_EXPORT AmbientController
 
   // Used to record Ambient mode engagement metrics.
   absl::optional<base::Time> start_time_ = absl::nullopt;
+
+  // Records the time when preview widgets are created.
+  base::Time preview_widget_created_at_;
 
   base::OneShotTimer delayed_lock_timer_;
 

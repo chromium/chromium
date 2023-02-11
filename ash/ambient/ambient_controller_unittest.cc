@@ -1526,6 +1526,19 @@ TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnMouseClick) {
   EXPECT_FALSE(ambient_controller()->IsShown());
 }
 
+TEST_F(AmbientControllerTest, MaybeDismissUIOnMouseMove) {
+  ambient_controller()->StartScreenSaverPreview();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  GetEventGenerator()->MoveMouseTo(gfx::Point(5, 5), /*count=*/2);
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  task_environment()->FastForwardBy(kDismissPreviewOnMouseMoveDelay);
+  FastForwardTiny();
+  GetEventGenerator()->MoveMouseTo(gfx::Point(5, 5), /*count=*/2);
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
 TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnTouch) {
   ambient_controller()->StartScreenSaverPreview();
   EXPECT_TRUE(ambient_controller()->IsShown());
