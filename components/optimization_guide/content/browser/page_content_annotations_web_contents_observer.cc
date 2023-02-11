@@ -82,9 +82,15 @@ PageContentAnnotationsWebContentsObserver::
       no_state_prefetch_manager_(no_state_prefetch_manager) {
   DCHECK(page_content_annotations_service_);
 
-  if (features::RemotePageMetadataEnabled() && optimization_guide_decider_) {
-    optimization_guide_decider_->RegisterOptimizationTypes(
-        {proto::PAGE_ENTITIES});
+  std::vector<proto::OptimizationType> optimization_types;
+  if (features::RemotePageMetadataEnabled()) {
+    optimization_types.emplace_back(proto::PAGE_ENTITIES);
+  }
+  if (features::ShouldPersistSalientImageMetadata()) {
+    optimization_types.emplace_back(proto::SALIENT_IMAGE);
+  }
+  if (optimization_guide_decider_ && !optimization_types.empty()) {
+    optimization_guide_decider_->RegisterOptimizationTypes(optimization_types);
   }
 }
 
@@ -125,8 +131,18 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
     optimization_guide_decider_->CanApplyOptimizationAsync(
         navigation_handle, proto::PAGE_ENTITIES,
         base::BindOnce(&PageContentAnnotationsWebContentsObserver::
-                           OnRemotePageMetadataReceived,
-                       weak_ptr_factory_.GetWeakPtr(), history_visit));
+                           OnOptimizationGuideResponseReceived,
+                       weak_ptr_factory_.GetWeakPtr(), history_visit,
+                       proto::PAGE_ENTITIES));
+  }
+  if (features::ShouldPersistSalientImageMetadata() &&
+      optimization_guide_decider_) {
+    optimization_guide_decider_->CanApplyOptimizationAsync(
+        navigation_handle, proto::SALIENT_IMAGE,
+        base::BindOnce(&PageContentAnnotationsWebContentsObserver::
+                           OnOptimizationGuideResponseReceived,
+                       weak_ptr_factory_.GetWeakPtr(), history_visit,
+                       proto::SALIENT_IMAGE));
   }
 
   bool is_google_search_url =
@@ -231,21 +247,38 @@ void PageContentAnnotationsWebContentsObserver::
   }
 }
 
-void PageContentAnnotationsWebContentsObserver::OnRemotePageMetadataReceived(
-    const HistoryVisit& history_visit,
-    OptimizationGuideDecision decision,
-    const OptimizationMetadata& metadata) {
-  if (decision != OptimizationGuideDecision::kTrue)
+void PageContentAnnotationsWebContentsObserver::
+    OnOptimizationGuideResponseReceived(
+        const HistoryVisit& history_visit,
+        proto::OptimizationType optimization_type,
+        OptimizationGuideDecision decision,
+        const OptimizationMetadata& metadata) {
+  if (decision != OptimizationGuideDecision::kTrue) {
     return;
+  }
 
-  absl::optional<proto::PageEntitiesMetadata> page_entities_metadata =
-      metadata.ParsedMetadata<proto::PageEntitiesMetadata>();
-  if (!page_entities_metadata)
-    return;
-
-  // Persist remote page metadata.
-  page_content_annotations_service_->PersistRemotePageMetadata(
-      history_visit, *page_entities_metadata);
+  switch (optimization_type) {
+    case proto::OptimizationType::PAGE_ENTITIES: {
+      absl::optional<proto::PageEntitiesMetadata> page_entities_metadata =
+          metadata.ParsedMetadata<proto::PageEntitiesMetadata>();
+      if (page_entities_metadata) {
+        page_content_annotations_service_->PersistRemotePageMetadata(
+            history_visit, *page_entities_metadata);
+      }
+      break;
+    }
+    case proto::OptimizationType::SALIENT_IMAGE: {
+      absl::optional<proto::SalientImageMetadata> salient_image_metadata =
+          metadata.ParsedMetadata<proto::SalientImageMetadata>();
+      if (salient_image_metadata) {
+        page_content_annotations_service_->PersistSalientImageMetadata(
+            history_visit, *salient_image_metadata);
+      }
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsObserver);

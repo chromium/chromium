@@ -264,6 +264,10 @@ class HistoryService : public KeyedService {
   void AddPageMetadataForVisit(const std::string& alternative_title,
                                VisitID visit_id);
 
+  // Updates the history database by setting the `has_url_keyed_image` bit for
+  // the visit.
+  void SetHasUrlKeyedImageForVisit(bool has_url_keyed_image, VisitID visit_id);
+
   // Querying ------------------------------------------------------------------
 
   // Returns the information about the requested URL. If the URL is found,

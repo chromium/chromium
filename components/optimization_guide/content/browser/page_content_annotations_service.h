@@ -34,6 +34,7 @@
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
+#include "components/optimization_guide/proto/salient_image_metadata.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -98,6 +99,11 @@ enum class PageContentAnnotationsType {
   kSearchMetadata = 3,
   // Metadata received from the remote Optimization Guide service.
   kRemoteMetdata = 4,
+  // Salient image metadata.
+  kSalientImageMetadata = 5,
+
+  // New entries should be added to the PageContentAnnotationsStorageType in
+  // optimization/histograms.xml.
 };
 
 // A KeyedService that annotates page content.
@@ -254,6 +260,13 @@ class PageContentAnnotationsService : public KeyedService,
   virtual void PersistRemotePageMetadata(
       const HistoryVisit& visit,
       const proto::PageEntitiesMetadata& page_entities_metadata);
+
+  // Persist |salient_image_metadata| for |visit| in |history_service_|.
+  //
+  // Virtualized for testing.
+  virtual void PersistSalientImageMetadata(
+      const HistoryVisit& visit,
+      const proto::SalientImageMetadata& salient_image_metadata);
 
   // Called when entity metadata for |entity_id| that had weight |weight| on
   // page with |url| has been retrieved.

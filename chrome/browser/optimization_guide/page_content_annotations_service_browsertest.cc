@@ -820,6 +820,104 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
       0);
 }
 
+class PageContentAnnotationsServiceSalientImageMetadataBrowserTest
+    : public PageContentAnnotationsServiceBrowserTest {
+ public:
+  PageContentAnnotationsServiceSalientImageMetadataBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationHints, {}},
+         {features::kPageContentAnnotations, {}},
+         {features::kPageContentAnnotationsPersistSalientImageMetadata, {}}},
+        /*disabled_features=*/{});
+    set_load_model_on_startup(false);
+  }
+  ~PageContentAnnotationsServiceSalientImageMetadataBrowserTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceSalientImageMetadataBrowserTest,
+    EmptyMetadataNotStored) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+
+  proto::SalientImageMetadata salient_image_metadata;
+  OptimizationMetadata metadata;
+  metadata.SetAnyMetadataForTesting(salient_image_metadata);
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->AddHintForTesting(url, proto::SALIENT_IMAGE, metadata);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus.SalientImageMetadata",
+      0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceSalientImageMetadataBrowserTest,
+    MetadataWithNoNonEmptyUrlNotStored) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+
+  proto::SalientImageMetadata salient_image_metadata;
+  salient_image_metadata.add_thumbnails();
+  salient_image_metadata.add_thumbnails();
+  OptimizationMetadata metadata;
+  metadata.SetAnyMetadataForTesting(salient_image_metadata);
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->AddHintForTesting(url, proto::SALIENT_IMAGE, metadata);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus.SalientImageMetadata",
+      0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentAnnotationsServiceSalientImageMetadataBrowserTest,
+    MetadataWithNonEmptyUrlStored) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+
+  proto::SalientImageMetadata salient_image_metadata;
+  salient_image_metadata.add_thumbnails();
+  salient_image_metadata.add_thumbnails()->set_image_url(
+      "http://gstatic.com/image");
+  OptimizationMetadata metadata;
+  metadata.SetAnyMetadataForTesting(salient_image_metadata);
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->AddHintForTesting(url, proto::SALIENT_IMAGE, metadata);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus.SalientImageMetadata",
+      1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotationsService."
+      "ContentAnnotationsStorageStatus.SalientImageMetadata",
+      PageContentAnnotationsStorageStatus::kSuccess, 1);
+
+  absl::optional<history::VisitContentAnnotations> got_content_annotations =
+      GetContentAnnotationsForURL(url);
+  ASSERT_TRUE(got_content_annotations.has_value());
+  EXPECT_TRUE(got_content_annotations->has_url_keyed_image);
+}
+
 class PageContentAnnotationsServiceNoHistoryTest
     : public PageContentAnnotationsServiceBrowserTest {
  public:

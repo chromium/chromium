@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/content/browser/salient_image_retriever.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -62,11 +63,13 @@ class PageContentAnnotationsWebContentsObserver
   void TitleWasSet(content::NavigationEntry* navigation_entry) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
-  // Callback invoked when the page metadata has been received from
-  // |optimization_guide_decider_| for |visit|.
-  void OnRemotePageMetadataReceived(const HistoryVisit& visit,
-                                    OptimizationGuideDecision decision,
-                                    const OptimizationMetadata& metadata);
+  // Callback invoked when a response for |optimization_type| has been received
+  // from |optimization_guide_decider_| for |visit|.
+  void OnOptimizationGuideResponseReceived(
+      const HistoryVisit& visit,
+      proto::OptimizationType optimization_type,
+      OptimizationGuideDecision decision,
+      const OptimizationMetadata& metadata);
 
   void DidStopLoading() override;
 

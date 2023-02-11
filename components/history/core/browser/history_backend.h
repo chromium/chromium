@@ -281,6 +281,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                                  const std::u16string& search_terms);
   void AddPageMetadataForVisit(VisitID visit_id,
                                const std::string& alternative_title);
+  void SetHasUrlKeyedImageForVisit(VisitID visit_id, bool has_url_keyed_image);
 
   // Querying ------------------------------------------------------------------
 

@@ -738,6 +738,29 @@ void HistoryBackend::AddPageMetadataForVisit(
   }
 }
 
+void HistoryBackend::SetHasUrlKeyedImageForVisit(VisitID visit_id,
+                                                 bool has_url_keyed_image) {
+  TRACE_EVENT0("browser", "HistoryBackend::SetHasUrlKeyedImageForVisit");
+
+  if (!db_) {
+    return;
+  }
+  // Only add to the annotations table if the visit_id exists in the visits
+  // table.
+  VisitRow visit_row;
+  if (db_->GetRowForVisit(visit_id, &visit_row)) {
+    VisitContentAnnotations annotations;
+    if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
+      annotations.has_url_keyed_image = has_url_keyed_image;
+      db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
+    } else {
+      annotations.has_url_keyed_image = has_url_keyed_image;
+      db_->AddContentAnnotationsForVisit(visit_id, annotations);
+    }
+    ScheduleCommit();
+  }
+}
+
 void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
   if (!db_)
     return;

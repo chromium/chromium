@@ -47,6 +47,7 @@ BASE_DECLARE_FEATURE(kRemotePageMetadata);
 BASE_DECLARE_FEATURE(kOptimizationHintsComponent);
 BASE_DECLARE_FEATURE(kOptimizationGuideInstallWideModelStore);
 BASE_DECLARE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse);
+BASE_DECLARE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -312,6 +313,9 @@ bool ShouldCheckFailedComponentVersionPref();
 // Returns whether the feature for new model store that is tied with Chrome
 // installation and shares the models across user profiles, is enabled.
 bool IsInstallWideModelStoreEnabled();
+
+// Whether to persist salient image metadata for each visit.
+bool ShouldPersistSalientImageMetadata();
 
 }  // namespace features
 }  // namespace optimization_guide

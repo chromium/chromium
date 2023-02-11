@@ -2065,6 +2065,50 @@ TEST_F(HistoryBackendTest, AddPageMetadata) {
       visit_id, &got_content_annotations));
 }
 
+TEST_F(HistoryBackendTest, SetHasUrlKeyedImage) {
+  ASSERT_TRUE(backend_.get());
+
+  GURL url("http://pagewithvisit.com");
+  ContextID context_id = 1;
+  int nav_entry_id = 1;
+
+  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
+                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                             false, SOURCE_BROWSED, false, true);
+  backend_->AddPage(request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitID visit_id = visits[0].visit_id;
+
+  backend_->SetHasUrlKeyedImageForVisit(visit_id, /*has_url_keyed_image=*/true);
+
+  VisitContentAnnotations got_content_annotations;
+  EXPECT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
+      visit_id, &got_content_annotations));
+
+  EXPECT_EQ(VisitContentAnnotationFlag::kNone,
+            got_content_annotations.annotation_flags);
+  EXPECT_EQ(-1.0f, got_content_annotations.model_annotations.visibility_score);
+  EXPECT_TRUE(got_content_annotations.model_annotations.categories.empty());
+  EXPECT_EQ(
+      -1, got_content_annotations.model_annotations.page_topics_model_version);
+  EXPECT_TRUE(got_content_annotations.model_annotations.entities.empty());
+  EXPECT_TRUE(got_content_annotations.related_searches.empty());
+  EXPECT_TRUE(got_content_annotations.search_normalized_url.is_empty());
+  EXPECT_TRUE(got_content_annotations.search_terms.empty());
+  EXPECT_TRUE(got_content_annotations.alternative_title.empty());
+  EXPECT_TRUE(got_content_annotations.has_url_keyed_image);
+
+  // Now, delete the URL. Content Annotations should be deleted.
+  backend_->DeleteURL(url);
+  ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(
+      visit_id, &got_content_annotations));
+}
+
 TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
   ASSERT_TRUE(backend_.get());
 

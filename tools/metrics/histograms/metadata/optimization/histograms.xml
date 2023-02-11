@@ -123,6 +123,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ModelAnnotations" summary="Model Annotations"/>
   <variant name="RelatedSearches" summary="Related Searches"/>
   <variant name="RemoteMetadata" summary="Remote Metadata"/>
+  <variant name="SalientImageMetadata" summary="Salient Image Metadata"/>
   <variant name="SearchMetadata" summary="Search Metadata"/>
   <variant name="Unknown" summary="Unknown"/>
 </variants>

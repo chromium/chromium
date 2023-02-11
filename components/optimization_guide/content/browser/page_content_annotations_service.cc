@@ -58,6 +58,8 @@ std::string PageContentAnnotationsTypeToString(
       return "SearchMetadata";
     case PageContentAnnotationsType::kRemoteMetdata:
       return "RemoteMetadata";
+    case PageContentAnnotationsType::kSalientImageMetadata:
+      return "SalientImageMetadata";
   }
 }
 
@@ -752,6 +754,26 @@ void PageContentAnnotationsService::PersistRemotePageMetadata(
                             history_service_->AsWeakPtr(),
                             page_entities_metadata.alternative_title()),
              PageContentAnnotationsType::kRemoteMetdata);
+  }
+}
+
+void PageContentAnnotationsService::PersistSalientImageMetadata(
+    const HistoryVisit& visit,
+    const proto::SalientImageMetadata& salient_image_metadata) {
+  if (salient_image_metadata.thumbnails_size() <= 0) {
+    return;
+  }
+
+  // Persist the detail if at least one thumbnail has a non-empty URL.
+  for (const auto& thumbnail : salient_image_metadata.thumbnails()) {
+    if (!thumbnail.image_url().empty()) {
+      QueryURL(visit,
+               base::BindOnce(
+                   &history::HistoryService::SetHasUrlKeyedImageForVisit,
+                   history_service_->AsWeakPtr(), /*has_url_keyed_image=*/true),
+               PageContentAnnotationsType::kSalientImageMetadata);
+      return;
+    }
   }
 }
 

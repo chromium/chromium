@@ -622,6 +622,16 @@ void HistoryService::AddPageMetadataForVisit(
                               history_backend_, visit_id, alternative_title));
 }
 
+void HistoryService::SetHasUrlKeyedImageForVisit(bool has_url_keyed_image,
+                                                 VisitID visit_id) {
+  TRACE_EVENT0("browser", "HistoryService::SetHasUrlKeyedImageForVisit");
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleTask(PRIORITY_NORMAL,
+               base::BindOnce(&HistoryBackend::SetHasUrlKeyedImageForVisit,
+                              history_backend_, visit_id, has_url_keyed_image));
+}
+
 void HistoryService::AddPageWithDetails(const GURL& url,
                                         const std::u16string& title,
                                         int visit_count,
