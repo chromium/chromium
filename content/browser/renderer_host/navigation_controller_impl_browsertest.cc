@@ -11440,6 +11440,243 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
             cloned_previous_entry->root_node()->frame_entry->url());
 }
 
+// Test that shared FrameNavigationEntries with opaque initiator origins can be
+// restored in future sessions, even if the internal nonce is not preserved.
+// See https://crbug.com/1354634.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       RestoreSharedFrameEntryWithOpaqueInitiator) {
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // 1. Start at a data: URL with an iframe, giving the iframe an opaque
+  // initiator origin.
+  GURL data_url("data:text/html,<iframe></iframe>");
+  EXPECT_TRUE(NavigateToURL(shell(), data_url));
+  NavigationEntryImpl* entry1 = controller.GetLastCommittedEntry();
+  FrameTreeNode* child = root->child_at(0);
+  ASSERT_TRUE(entry1->GetFrameEntry(child)->initiator_origin()->opaque());
+
+  // 2. Navigate to a fragment, staying in the same document. This shares the
+  // iframe's FrameNavigationEntry from entry1.
+  GURL data_url_fragment("data:text/html,<iframe></iframe>#foo");
+  EXPECT_TRUE(NavigateToURL(shell(), data_url_fragment));
+  NavigationEntryImpl* entry2 = controller.GetLastCommittedEntry();
+  ASSERT_EQ(entry1->GetFrameEntry(child), entry2->GetFrameEntry(child));
+
+  // 3. Simulate session restore by cloning the NavigationEntries but calling
+  // SetPageState with saved PageStates from the entries, using a shared
+  // RestoreContext. The second SetPageState call used to fail a DCHECK that the
+  // initiator origin of the de-duplicated FrameNavigationEntries should match,
+  // because the internal nonce of the opaque origin isn't preserved. See
+  // https://crbug.com/1354634.
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  std::unique_ptr<NavigationEntryImpl> restored_entry1 = entry1->Clone();
+  restored_entry1->SetPageState(entry1->GetPageState(), context.get());
+  std::unique_ptr<NavigationEntryImpl> restored_entry2 = entry2->Clone();
+  restored_entry2->SetPageState(entry2->GetPageState(), context.get());
+  std::vector<std::unique_ptr<NavigationEntry>> restored_entries;
+  restored_entries.push_back(std::move(restored_entry1));
+  restored_entries.push_back(std::move(restored_entry2));
+
+  // 4. Create a new tab and restore the entries, confirming that it works.
+  Shell* new_shell = Shell::CreateNewWindow(
+      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  WebContentsImpl* new_web_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+  NavigationControllerImpl& new_controller =
+      static_cast<NavigationControllerImpl&>(new_web_contents->GetController());
+  new_controller.Restore(restored_entries.size() - 1, RestoreType::kRestored,
+                         &restored_entries);
+  {
+    TestNavigationObserver restore_observer(new_shell->web_contents());
+    new_controller.LoadIfNecessary();
+    restore_observer.Wait();
+  }
+  NavigationEntryImpl* new_entry2 = new_controller.GetEntryAtIndex(1);
+  EXPECT_EQ(new_entry2, new_controller.GetLastCommittedEntry());
+}
+
+// Test that duplicate FrameNavigationEntries from pre-M93 can diverge in URL
+// and other values (e.g., initiator origin), and will only be de-duplicated if
+// their URLs, item sequence numbers, and targets match. See
+// https://crbug.com/1275257. Also tests that we do not fail a DCHECK if
+// remaining values like initiator origin still differ when de-duplicating them,
+// per https://crbug.com/1354634.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       RestoreNonSharedFrameEntryWithCrossOriginInitiator) {
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // 1. Visit an a.com URL.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  NavigationEntryImpl* entry1 = controller.GetLastCommittedEntry();
+
+  // 2. Do a renderer-initiated navigation to a cross-origin URL, so that the
+  // initiator origin is cross-origin.
+  GURL url2(embedded_test_server()->GetURL(
+      "b.com", "/navigation_controller/page_with_iframe_simple.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url2));
+  NavigationEntryImpl* entry2 = controller.GetLastCommittedEntry();
+  url::Origin initiator_origin2 =
+      entry2->GetFrameEntry(root)->initiator_origin().value();
+  ASSERT_EQ(initiator_origin2, url::Origin::Create(url1));
+
+  // Serialize the state of `entry1` and `entry2` now, before `entry2` starts
+  // sharing its main frame FNE in the next step. This simulates a pre-M93 saved
+  // session where FNEs were not shared.  (See https://crbug.com/1211683).
+  blink::PageState entry1_state = entry1->GetPageState();
+  blink::PageState entry2_state = entry2->GetPageState();
+
+  // 3. Navigate the subframe to create a shared FrameNavigationEntry in the
+  // main frame.
+  GURL frame_url(embedded_test_server()->GetURL(
+      "b.com", "/navigation_controller/simple_page_2.html"));
+  FrameTreeNode* child = root->child_at(0);
+  {
+    FrameNavigateParamsCapturer capturer(child);
+    ASSERT_TRUE(NavigateFrameToURL(child, frame_url));
+    capturer.Wait();
+  }
+  NavigationEntryImpl* entry3 = controller.GetLastCommittedEntry();
+
+  // 4. Do a replaceState in the main frame, changing the initiator origin to
+  // the current origin.
+  GURL url2_fragment(url2.spec() + "#foo");
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    std::string script =
+        "history.replaceState({}, 'replaced', '" + url2_fragment.spec() + "')";
+    EXPECT_TRUE(ExecJs(root, script));
+    capturer.Wait();
+  }
+  url::Origin initiator_origin3 =
+      entry3->GetFrameEntry(root)->initiator_origin().value();
+  ASSERT_EQ(initiator_origin3, url::Origin::Create(url2));
+  EXPECT_NE(initiator_origin3, initiator_origin2);
+
+  // Serialize the state of `entry3` now, to simulate a diverging main-frame FNE
+  // from pre-M93.
+  blink::PageState entry3_state = entry3->GetPageState();
+
+  // Simulate session restore in a post-M93 version by cloning the
+  // NavigationEntries but calling SetPageState with the previously saved
+  // PageStates, using a shared RestoreContext. This attempts to de-duplicate
+  // FNEs if they match by item sequence number, URL, and target.
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context1 =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  std::unique_ptr<NavigationEntryImpl> restored_entry1 = entry1->Clone();
+  restored_entry1->SetPageState(entry1_state, context1.get());
+  std::unique_ptr<NavigationEntryImpl> restored_entry2 = entry2->Clone();
+  restored_entry2->SetPageState(entry2_state, context1.get());
+  std::unique_ptr<NavigationEntryImpl> restored_entry3 = entry3->Clone();
+  restored_entry3->SetPageState(entry3_state, context1.get());
+
+  // The main frame FNE will not be de-duplicated, because the URL of the two
+  // PageStates differs.  See https://crbug.com/1275257.
+  EXPECT_NE(restored_entry2->GetFrameEntry(root),
+            restored_entry3->GetFrameEntry(root));
+  EXPECT_NE(restored_entry2->GetFrameEntry(root)->initiator_origin().value(),
+            restored_entry3->GetFrameEntry(root)->initiator_origin().value());
+
+  // 5. Actually restore the entries in a new tab.
+  std::vector<std::unique_ptr<NavigationEntry>> restored_entries;
+  restored_entries.push_back(std::move(restored_entry1));
+  restored_entries.push_back(std::move(restored_entry2));
+  restored_entries.push_back(std::move(restored_entry3));
+  Shell* shell2 = Shell::CreateNewWindow(
+      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  WebContentsImpl* web_contents2 =
+      static_cast<WebContentsImpl*>(shell2->web_contents());
+  FrameTreeNode* root2 = static_cast<WebContentsImpl*>(shell2->web_contents())
+                             ->GetPrimaryFrameTree()
+                             .root();
+  NavigationControllerImpl& controller2 =
+      static_cast<NavigationControllerImpl&>(web_contents2->GetController());
+  controller2.Restore(restored_entries.size() - 1, RestoreType::kRestored,
+                      &restored_entries);
+  {
+    TestNavigationObserver restore_observer(shell2->web_contents());
+    controller2.LoadIfNecessary();
+    restore_observer.Wait();
+  }
+  NavigationEntryImpl* new_entry1 = controller2.GetEntryAtIndex(0);
+  NavigationEntryImpl* new_entry2 = controller2.GetEntryAtIndex(1);
+  NavigationEntryImpl* new_entry3 = controller2.GetEntryAtIndex(2);
+  EXPECT_EQ(new_entry3, controller2.GetLastCommittedEntry());
+
+  // 6. Now do a replaceState in the main frame back to the original URL, such
+  // that the FNEs can be de-duplicated on a future restore.
+  {
+    FrameNavigateParamsCapturer capturer(root2);
+    std::string script = "history.replaceState({}, '', '" + url2.spec() + "')";
+    EXPECT_TRUE(ExecJs(root2, script));
+    capturer.Wait();
+  }
+
+  // The duplicate main frame FNEs should now have matching URLs and ISNs but
+  // mismatched initiator origins.
+  EXPECT_NE(new_entry2->GetFrameEntry(root2), new_entry3->GetFrameEntry(root2));
+  EXPECT_EQ(new_entry2->GetFrameEntry(root2)->url(),
+            new_entry3->GetFrameEntry(root2)->url());
+  EXPECT_EQ(new_entry2->GetFrameEntry(root2)->item_sequence_number(),
+            new_entry3->GetFrameEntry(root2)->item_sequence_number());
+  EXPECT_NE(new_entry2->GetFrameEntry(root2)->initiator_origin().value(),
+            new_entry3->GetFrameEntry(root2)->initiator_origin().value());
+
+  // Simulate another session restore across GetPageState and SetPageState.
+  // This time the main frame FNEs will be de-duplicated, despite not being
+  // fully identical. This used to fail a DCHECK that the initiator origin of
+  // de-duplicated FrameNavigationEntries should match. See
+  // https://crbug.com/1354634.
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context2 =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  std::unique_ptr<NavigationEntryImpl> restored2_entry1 = new_entry1->Clone();
+  restored2_entry1->SetPageState(new_entry1->GetPageState(), context2.get());
+  std::unique_ptr<NavigationEntryImpl> restored2_entry2 = new_entry2->Clone();
+  restored2_entry2->SetPageState(new_entry2->GetPageState(), context2.get());
+  std::unique_ptr<NavigationEntryImpl> restored2_entry3 = new_entry3->Clone();
+  restored2_entry3->SetPageState(new_entry3->GetPageState(), context2.get());
+
+  // The main frame FrameNavigationEntries should be shared in the new session.
+  EXPECT_EQ(restored2_entry2->GetFrameEntry(root2),
+            restored2_entry3->GetFrameEntry(root2));
+
+  // 7. Actually restore the entries in a new tab.
+  Shell* shell3 = Shell::CreateNewWindow(
+      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  WebContentsImpl* web_contents3 =
+      static_cast<WebContentsImpl*>(shell3->web_contents());
+  FrameTreeNode* root3 = static_cast<WebContentsImpl*>(shell3->web_contents())
+                             ->GetPrimaryFrameTree()
+                             .root();
+  NavigationControllerImpl& controller3 =
+      static_cast<NavigationControllerImpl&>(web_contents3->GetController());
+  std::vector<std::unique_ptr<NavigationEntry>> restored_entries2;
+  restored_entries2.push_back(std::move(restored2_entry1));
+  restored_entries2.push_back(std::move(restored2_entry2));
+  restored_entries2.push_back(std::move(restored2_entry3));
+  controller3.Restore(restored_entries2.size() - 1, RestoreType::kRestored,
+                      &restored_entries2);
+  {
+    TestNavigationObserver restore_observer(shell3->web_contents());
+    controller3.LoadIfNecessary();
+    restore_observer.Wait();
+  }
+
+  // Verify that the main frame FNE is now shared.
+  FrameNavigationEntry* root3_fne =
+      controller3.GetEntryAtIndex(2)->GetFrameEntry(root3);
+  EXPECT_EQ(root3_fne, controller3.GetEntryAtIndex(1)->GetFrameEntry(root3));
+}
+
 // Tests the value of history.state after same-document replacement, in all
 // affected entries.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
