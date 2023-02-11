@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -33,8 +35,6 @@
 using ::content::WebContents;
 using ::extensions::MimeHandlerViewGuest;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
-
-using PDFExtensionPrintingTest = PDFExtensionTestBase;
 
 namespace {
 
@@ -99,8 +99,24 @@ class PrintObserver : public printing::PrintViewManagerBase::Observer {
 
 }  // namespace
 
-// TODO(crbug.com/1258561): Fix flakes.
-IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, DISABLED_BasicPrintCommand) {
+class PDFExtensionPrintingTest : public PDFExtensionTestBase {
+ public:
+  PDFExtensionPrintingTest() = default;
+  ~PDFExtensionPrintingTest() override = default;
+
+  // PDFExtensionTestBase:
+  void SetUpOnMainThread() override {
+    // Avoid getting blocked by modal print error dialogs.
+    SetShowPrintErrorDialogForTest(base::DoNothing());
+    PDFExtensionTestBase::SetUpOnMainThread();
+  }
+  void TearDownOnMainThread() override {
+    SetShowPrintErrorDialogForTest(base::NullCallback());
+    PDFExtensionTestBase::TearDownOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, BasicPrintCommand) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* frame = GetPluginFrame(guest);
