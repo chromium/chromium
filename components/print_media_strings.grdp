@@ -530,12 +530,12 @@
       44 x 68 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_GOVT_LEGAL_8X13IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Government Legal''">
-      Government Legal
+             desc="In Title Case: Media size shown to user in print preview for media ``8 x 13 in''">
+      8 x 13 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_GOVT_LETTER_8X10IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Government Letter''">
-      Government Letter
+             desc="In Title Case: Media size shown to user in print preview for media ``8 x 10 in''">
+      8 x 10 in
     </message>
     <message name="PRINT_PREVIEW_MEDIA_NA_INDEX_3X5_3X5IN"
              desc="In Title Case: Media size shown to user in print preview for media ``3 x 5 in'' with dimensions in inches">

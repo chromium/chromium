@@ -48,6 +48,8 @@ TEST(PrintMediaL10N, LocalizeSomeCommonNames) {
       {"iso_a0_841x1189mm", u"A0", MediaSizeGroup::kSizeNamed},
       {"iso_a1_594x841mm", u"A1", MediaSizeGroup::kSizeNamed},
       {"iso_a4_210x297mm", u"A4", MediaSizeGroup::kSizeNamed},
+      {"na_govt-legal_8x13in", u"8 x 13 in", MediaSizeGroup::kSizeIn},
+      {"na_govt-letter_8x10in", u"8 x 10 in", MediaSizeGroup::kSizeIn},
       {"na_letter_8.5x11in", u"Letter", MediaSizeGroup::kSizeNamed},
       {"oe_photo-l_3.5x5in", u"3.5 x 5 in", MediaSizeGroup::kSizeIn},
       {"om_business-card_55x91mm", u"55 x 91 mm", MediaSizeGroup::kSizeMm},
