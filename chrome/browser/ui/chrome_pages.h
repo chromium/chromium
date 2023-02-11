@@ -110,6 +110,7 @@ enum FeedbackSource {
   kFeedbackSourceOsSettingsSearch,
   kFeedbackSourceAutofillContextMenu,
   kFeedbackSourceUnknownLacrosSource,
+  kFeedbackSourceWindowLayoutMenu,
 
   // Must be last.
   kFeedbackSourceCount,

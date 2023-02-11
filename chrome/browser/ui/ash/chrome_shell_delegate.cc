@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -101,6 +102,16 @@ content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
 
   TabStripModel* tab_strip_model = GetTabstripModelForWindowIfAny(window);
   return tab_strip_model ? tab_strip_model->GetActiveWebContents() : nullptr;
+}
+
+chrome::FeedbackSource ToChromeFeedbackSource(
+    ash::ShellDelegate::FeedbackSource source) {
+  switch (source) {
+    case ash::ShellDelegate::FeedbackSource::kBentoBar:
+      return chrome::FeedbackSource::kFeedbackSourceBentoBar;
+    case ash::ShellDelegate::FeedbackSource::kWindowLayoutMenu:
+      return chrome::FeedbackSource::kFeedbackSourceWindowLayoutMenu;
+  }
 }
 
 }  // namespace
@@ -331,10 +342,12 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
   return base::FilePath();
 }
 
-void ChromeShellDelegate::OpenFeedbackPageForPersistentDesksBar() {
+void ChromeShellDelegate::OpenFeedbackDialog(
+    ShellDelegate::FeedbackSource source,
+    const std::string& description_template) {
   chrome::OpenFeedbackDialog(/*browser=*/nullptr,
-                             chrome::kFeedbackSourceBentoBar,
-                             /*description_template=*/"#BentoBar\n\n");
+                             ToChromeFeedbackSource(source),
+                             description_template);
 }
 
 // static

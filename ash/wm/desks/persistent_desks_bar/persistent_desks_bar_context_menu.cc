@@ -42,7 +42,9 @@ void PersistentDesksBarContextMenu::ExecuteCommand(int command_id,
   auto* shell = Shell::Get();
   switch (static_cast<CommandId>(command_id)) {
     case CommandId::kFeedBack:
-      shell->shell_delegate()->OpenFeedbackPageForPersistentDesksBar();
+      shell->shell_delegate()->OpenFeedbackDialog(
+          ShellDelegate::FeedbackSource::kBentoBar,
+          /*description_template=*/"#BentoBar\n\n");
       break;
     case CommandId::kShowOrHideBar:
       shell->persistent_desks_bar_controller()->ToggleEnabledState();

@@ -77,7 +77,8 @@ class TestShellDelegate : public ShellDelegate {
   void SetSessionRestoreInProgress(bool in_progress);
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
-  void OpenFeedbackPageForPersistentDesksBar() override {}
+  void OpenFeedbackDialog(FeedbackSource source,
+                          const std::string& description_template) override {}
   void SetLastCommittedURLForWindow(const GURL& url);
   version_info::Channel GetChannel() override;
   std::string GetVersionString() override;

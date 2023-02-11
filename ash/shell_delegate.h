@@ -46,6 +46,11 @@ class SystemSoundsDelegate;
 // Delegate of the Shell.
 class ASH_EXPORT ShellDelegate {
  public:
+  enum class FeedbackSource {
+    kBentoBar,
+    kWindowLayoutMenu,
+  };
+
   // The Shell owns the delegate.
   virtual ~ShellDelegate() = default;
 
@@ -150,10 +155,11 @@ class ASH_EXPORT ShellDelegate {
   // primary user Downloads folder if user has already logged in.
   virtual base::FilePath GetPrimaryUserDownloadsFolder() const = 0;
 
-  // Opens the feedback page with pre-populated description #BentoBar for
-  // persistent desks bar. Note, this will be removed once the feature is fully
-  // launched or removed.
-  virtual void OpenFeedbackPageForPersistentDesksBar() = 0;
+  // Opens the feedback page with pre-populated `source` and
+  // `description_template` fields. Note, this will only be used by features
+  // before they are fully launched or removed.
+  virtual void OpenFeedbackDialog(FeedbackSource source,
+                                  const std::string& description_template) = 0;
 
   // Returns the last committed URL from the web contents if the given |window|
   // contains a browser frame, otherwise returns GURL::EmptyURL().
