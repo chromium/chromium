@@ -118,32 +118,20 @@ void InteractiveTestPrivate::OnSequenceComplete() {
 }
 
 void InteractiveTestPrivate::OnSequenceAborted(
-    int active_step,
-    TrackedElement* last_element,
-    ElementIdentifier last_id,
-    InteractionSequence::StepType last_step_type,
-    InteractionSequence::AbortedReason aborted_reason,
-    std::string description) {
+    const InteractionSequence::AbortedData& data) {
   if (aborted_callback_for_testing_) {
-    std::move(aborted_callback_for_testing_)
-        .Run(active_step, last_element, last_id, last_step_type, aborted_reason,
-             description);
+    std::move(aborted_callback_for_testing_).Run(data);
     return;
   }
   if (sequence_skipped_) {
-    LOG(WARNING) << "Interactive test halted on step " << active_step
-                 << ". Step type was " << last_step_type << " with element "
-                 << last_id << " description: " << description;
+    LOG(WARNING) << "Interactive test halted " << data;
     if (on_incompatible_action_ == OnIncompatibleAction::kSkipTest) {
       GTEST_SKIP();
     } else {
       DCHECK_EQ(OnIncompatibleAction::kHaltTest, on_incompatible_action_);
     }
   } else {
-    GTEST_FAIL() << "Interactive test failed on step " << active_step
-                 << " for reason " << aborted_reason << ". Step type was "
-                 << last_step_type << " with element " << last_id
-                 << " description: " << description;
+    GTEST_FAIL() << "Interactive test failed " << data;
   }
 }
 

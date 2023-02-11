@@ -247,9 +247,21 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
   SafeElementReference& operator=(const SafeElementReference& other);
   ~SafeElementReference();
 
-  TrackedElement* get() { return element_; }
+  TrackedElement* get() const { return element_; }
   explicit operator bool() const { return element_; }
   bool operator!() const { return !element_; }
+  bool operator==(const SafeElementReference& other) const {
+    return element_ == other.element_;
+  }
+  bool operator!=(const SafeElementReference& other) const {
+    return element_ != other.element_;
+  }
+  bool operator==(const TrackedElement* other) const {
+    return element_ == other;
+  }
+  bool operator!=(const TrackedElement* other) const {
+    return element_ != other;
+  }
 
  private:
   void Subscribe();

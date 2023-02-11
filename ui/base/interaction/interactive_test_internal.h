@@ -103,13 +103,7 @@ class InteractiveTestPrivate {
   // Called when the sequence ends, but before we break out of the run loop
   // in RunTestSequenceImpl().
   virtual void OnSequenceComplete();
-  virtual void OnSequenceAborted(
-      int active_step,
-      TrackedElement* last_element,
-      ElementIdentifier last_id,
-      InteractionSequence::StepType last_step_type,
-      InteractionSequence::AbortedReason aborted_reason,
-      std::string description);
+  virtual void OnSequenceAborted(const InteractionSequence::AbortedData& data);
 
   // Sets a callback that is called if the test sequence fails instead of
   // failing the current test. Should only be called in tests that are testing

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -76,8 +77,50 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // further specify a required element name or ID to filter down which
     // events you actually want to step on vs. ignore.
     kCustomEvent,
-    // Update this if values are added to the enumeration.
-    kMaxValue = kCustomEvent
+    // Represents one or more nested, conditional subsequences. An element may
+    // be provided for use in `SubsequenceCondition` checks. See
+    // `SubsequenceMode` for more information on how subsequences work.
+    //
+    // Note that while a subsequence step can have an element name or ID, it is
+    // not required. Furthermore, the element will be located at the start of
+    // the step and if it is not present, null will be passed to the
+    // SubsequenceCondition (unless must_be_visible is true, in which case the
+    // step will fail). This allows subsequences to be conditional on the
+    // presence of an element.
+    //
+    // Known limitations:
+    // - If the triggering condition for the step following this one occurs
+    //   during execution of one of the subsequences, it may be missed/lost.
+    // - If there is no element specified, or the element does not exist, then
+    //   the following step will not be able to effectively use
+    //   ContextMode::kFromPreviousStep.
+    kSubsequence,
+    kMaxValue = kSubsequence
+  };
+
+  // Describes how the subsequences in a `StepType::kSubsequence` step are
+  // executed.
+  enum class SubsequenceMode {
+    // The first subsequence whose condition is met is executed, and the step
+    // finishes if the subsequence completes. If no subsequences run, the step
+    // succeeds.
+    kAtMostOne,
+    // The first subsequence whose condition is met is executed, and the step
+    // finishes if the subsequence completes. If no subsequences run, the step
+    // fails.
+    kExactlyOne,
+    // All subsequences whose conditions are met are executed, and the step
+    // finishes if any of the subsequences completes successfully. The others
+    // may fail, and are destroyed immediately as soon as the first succeeds. If
+    // no sequences run, the step fails.
+    kAtLeastOne,
+    // All subsequences whose conditions are met are executed, and the step
+    // finishes if all of the subsequences complete. If no sequences run, the
+    // step succeeds.
+    //
+    // This is the default behavior.
+    kAll,
+    kMaxValue = kAll
   };
 
   // Details why a sequence was aborted.
@@ -90,6 +133,13 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     kElementNotVisibleAtStartOfStep,
     // An element should have remained visible during a step but did not.
     kElementHiddenDuringStep,
+    // One or more subsequences were expected to run, but none could due to
+    // failed preconditions.
+    kNoSubsequenceRun,
+    // One or more subsequences needed to succeed, but one or more unexpectedly
+    // failed. Details will be the failed step from the first subsequence that
+    // should have completed but did not.
+    kSubsequenceFailed,
     // The sequence was explicitly failed as part of a test.
     kFailedForTesting,
     // Update this if values are added to the enumeration.
@@ -108,6 +158,18 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     kFromPreviousStep
   };
 
+  // Determines whether a subsequence will run. `seq` is the parent sequence,
+  // and `el` is the reference element, and may be null if the element is not
+  // specified or if there is no matching element. This is unlike other steps
+  // where an element is typically required to be present before the step can
+  // proceed.
+  using SubsequenceCondition =
+      base::OnceCallback<bool(const InteractionSequence* seq,
+                              const TrackedElement* el)>;
+
+  // Returns a callback that causes the subsequence to always run.
+  static SubsequenceCondition AlwaysRun();
+
   // A step context is either an explicit context or a ContextMode.
   using StepContext = absl::variant<ElementContext, ContextMode>;
 
@@ -121,26 +183,52 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // available, it will be null.
   using StepEndCallback = base::OnceCallback<void(TrackedElement* element)>;
 
+  // Information passed when a sequence fails or is aborted.
+  struct AbortedData {
+    AbortedData();
+    ~AbortedData();
+    AbortedData(const AbortedData& other);
+    AbortedData& operator=(const AbortedData& other);
+
+    // The index of the step where the failure occurred. 0 before the sequence
+    // starts, and is incremented on each step transition after the previous
+    // step's end callback is called, or if the next step's precondition fails
+    // (so that it refers to the correct step).
+    int step_index = 0;
+
+    // The description of the failed step.
+    std::string step_description;
+
+    // The step type of the failed step.
+    StepType step_type = StepType::kShown;
+
+    // A reference to the element used by the failed step. This is a weak
+    // reference and may be null if the element was hidden or destroyed.
+    SafeElementReference element;
+
+    // The identifier of the element used by the failed step.
+    ElementIdentifier element_id;
+
+    // The reason the step failed/the sequence was aborted.
+    AbortedReason aborted_reason = AbortedReason::kSequenceDestroyed;
+
+    // If this failure was due to a subsequence failing, the failure information
+    // for the subsequences will be stored here.
+    std::vector<absl::optional<AbortedData>> subsequence_failures;
+  };
+
   // Callback for when the user aborts the sequence by failing to follow the
-  // sequence of steps, or if this object is deleted after the sequence starts.
-  // The most recent event is described by the parameters; if the target element
-  // is no longer available it will be null.
+  // sequence of steps, or if this object is deleted after the sequence starts,
+  // or when the sequence fails for some other reason.
   //
-  // The active step will be 0 before the sequence starts, and is incremented on
-  // each step transition after the previous step's end callback is called, or
-  // if the next step's precondition fails (so that it refers to the correct
-  // step).
-  using AbortedCallback = base::OnceCallback<void(int active_step,
-                                                  TrackedElement* last_element,
-                                                  ElementIdentifier last_id,
-                                                  StepType last_step_type,
-                                                  AbortedReason aborted_reason,
-                                                  std::string description)>;
+  // The most recent step is described by the `AbortedData` block.
+  using AbortedCallback = base::OnceCallback<void(const AbortedData&)>;
 
   using CompletedCallback = base::OnceClosure;
 
   struct Configuration;
   class StepBuilder;
+  struct SubsequenceData;
 
   struct COMPONENT_EXPORT(UI_BASE) Step {
     Step();
@@ -176,6 +264,10 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Provides a useful description for debugging that can be read or passed
     // to the abort callback on failure.
     std::string description;
+
+    // These only apply if the type of the step is kSubsequence.
+    SubsequenceMode subsequence_mode = SubsequenceMode::kAll;
+    std::vector<SubsequenceData> subsequence_data;
   };
 
   // Use a Builder to specify parameters when creating an InteractionSequence.
@@ -216,6 +308,11 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     std::unique_ptr<InteractionSequence> Build();
 
    private:
+    friend class InteractionSequence;
+
+    std::unique_ptr<InteractionSequence> BuildSubsequence(
+        const Step* owning_step);
+
     std::unique_ptr<Configuration> configuration_;
   };
 
@@ -246,6 +343,18 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     StepBuilder& SetType(
         StepType step_type,
         CustomElementEventType event_type = CustomElementEventType());
+
+    // Changes the subsequence mode from the default. See `SubsequenceMode` for
+    // details. Implicitly sets the step type to kSubsequence.
+    StepBuilder& SetSubsequenceMode(SubsequenceMode subsequence_mode);
+
+    // Adds a subsequence to the step. The subsequence will run if `condition`
+    // returns true. Implicitly changes the step type to kSubsequence.
+    //
+    // The subsequence will not actually be built until it is needed. It will
+    // inherit the named elements of its parent unless otherwise specified.
+    StepBuilder& AddSubsequence(Builder subsequence,
+                                SubsequenceCondition condition = AlwaysRun());
 
     // Indicates that the specified element must be visible at the start of the
     // step. Defaults to true for StepType::kActivated, false otherwise. Failure
@@ -368,7 +477,10 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   const TrackedElement* GetNamedElement(const base::StringPiece& name) const;
 
  private:
-  explicit InteractionSequence(std::unique_ptr<Configuration> configuration);
+  FRIEND_TEST_ALL_PREFIXES(InteractionSequenceSubsequenceTest, NamedElements);
+
+  explicit InteractionSequence(std::unique_ptr<Configuration> configuration,
+                               const Step* reference_step);
 
   // Callbacks from the ElementTracker.
   void OnElementShown(TrackedElement* element);
@@ -381,10 +493,11 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   void OnElementHiddenDuringStepTransition(TrackedElement* element);
   void OnElementHiddenWaitingForActivate(TrackedElement* element);
 
-  // While we're transitioning steps, it's possible for an activation that
-  // would trigger the following step to come in. This method adds a callback
-  // that's valid only during the step transition to watch for this event.
-  void MaybeWatchForTriggerDuringStepTransition();
+  // While we're transitioning steps or staging a subsequence, it's possible for
+  // an activation that would trigger the following step to come in. This method
+  // adds a callback that's valid only during the step transition to watch for
+  // this event.
+  void MaybeWatchForEarlyTrigger(const Step* current_step);
 
   // A note on the next three methods - DoStepTransition(), StageNextStep(), and
   // Abort(): To prevent re-entrancy issues, they must always be the final call
@@ -413,9 +526,6 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   bool MatchesNameIfSpecified(const TrackedElement* element,
                               const base::StringPiece& name) const;
 
-  // The following would be inline if not for the fact that the data that holds
-  // the values is an implementation detail.
-
   // Returns the next step, or null if none.
   Step* next_step();
 
@@ -426,7 +536,15 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // Returns an element context if one is determined; null context if the step
   // allows any context.
   // Do not call for named elements.
-  ElementContext UpdateNextStepContext();
+  ElementContext UpdateNextStepContext(const Step* current_step);
+
+  // Callbacks for when subsequences terminate.
+  using SubsequenceHandle = const SubsequenceData*;
+  void OnSubsequenceCompleted(SubsequenceHandle subsequence);
+  void OnSubsequenceAborted(SubsequenceHandle subsequence,
+                            const AbortedData& aborted_data);
+  void BuildSubsequences(const Step* current_step);
+  SubsequenceData* FindSubsequenceData(SubsequenceHandle subsequence);
 
   int active_step_index_ = 0;
   bool missing_first_element_ = false;
@@ -452,12 +570,29 @@ extern void PrintTo(InteractionSequence::AbortedReason reason,
                     std::ostream* os);
 
 COMPONENT_EXPORT(UI_BASE)
+extern void PrintTo(InteractionSequence::SubsequenceMode mode,
+                    std::ostream* os);
+
+COMPONENT_EXPORT(UI_BASE)
+extern void PrintTo(const InteractionSequence::AbortedData& aborted_data,
+                    std::ostream* os);
+
+COMPONENT_EXPORT(UI_BASE)
 extern std::ostream& operator<<(std::ostream& os,
                                 InteractionSequence::StepType step_type);
 
 COMPONENT_EXPORT(UI_BASE)
 extern std::ostream& operator<<(std::ostream& os,
                                 InteractionSequence::AbortedReason reason);
+
+COMPONENT_EXPORT(UI_BASE)
+extern std::ostream& operator<<(std::ostream& os,
+                                InteractionSequence::SubsequenceMode mode);
+
+COMPONENT_EXPORT(UI_BASE)
+extern std::ostream& operator<<(
+    std::ostream& os,
+    const InteractionSequence::AbortedData& aborted_data);
 
 }  // namespace ui
 

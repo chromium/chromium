@@ -306,11 +306,8 @@ std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
   // steps; `current_step` in this case is the visual bubble count, which does
   // not count hidden steps.
   builder.SetAbortedCallback(base::BindOnce(
-      [](int step_number, TutorialService* tutorial_service, int sequence_step,
-         ui::TrackedElement* last_element, ui::ElementIdentifier last_id,
-         ui::InteractionSequence::StepType last_step_type,
-         ui::InteractionSequence::AbortedReason aborted_reason,
-         std::string description) {
+      [](int step_number, TutorialService* tutorial_service,
+         const ui::InteractionSequence::AbortedData&) {
         tutorial_service->AbortTutorial(step_number);
       },
       current_step, tutorial_service));

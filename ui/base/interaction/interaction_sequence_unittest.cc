@@ -4,6 +4,8 @@
 
 #include "ui/base/interaction/interaction_sequence.h"
 
+#include <sstream>
+
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
@@ -19,6 +21,7 @@
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/interaction/interaction_sequence_test_util.h"
 
 namespace ui {
 
@@ -139,9 +142,10 @@ TEST(InteractionSequenceTest, AbortIfWithInitialElementHiddenBeforeStart) {
   element.reset();
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(1, nullptr, kTestIdentifier1, InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementHiddenBeforeSequenceStart,
-          std::string()),
+      Run(test::SequenceAbortedMatcher(1, nullptr, kTestIdentifier1,
+                                       InteractionSequence::StepType::kShown,
+                                       InteractionSequence::AbortedReason::
+                                           kElementHiddenBeforeSequenceStart)),
       sequence->Start());
 }
 
@@ -480,10 +484,10 @@ TEST(InteractionSeuenceTest, TransitionOnCustomEventFailsIfMustBeVisible) {
           .Build();
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(2, nullptr, element2.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          2, nullptr, element2.identifier(),
           InteractionSequence::StepType::kCustomEvent,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
-          std::string()),
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep)),
       sequence->Start());
 }
 
@@ -533,10 +537,11 @@ TEST(InteractionSequenceTest, TransitionFailsOnElementShownIfMustBeVisible) {
           .Build();
   EXPECT_CALL(
       aborted,
-      Run(2, nullptr, element2.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          2, nullptr, element2.identifier(),
           InteractionSequence::StepType::kShown,
           InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
-          std::string(kStepDescription)))
+          std::string(kStepDescription))))
       .Times(1);
   sequence->Start();
 }
@@ -640,10 +645,10 @@ TEST(InteractionSequenceTest, FailOnOtherElementAlreadyHiddenIfMustBeVisible) {
           .Build();
   EXPECT_CALL(
       aborted,
-      Run(2, nullptr, element2.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          2, nullptr, element2.identifier(),
           InteractionSequence::StepType::kHidden,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
-          std::string()))
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep)))
       .Times(1);
   sequence->Start();
 }
@@ -968,10 +973,11 @@ TEST(InteractionSequenceTest, CancelMidSequenceWhenViewHidden) {
 
   EXPECT_CALLS_IN_SCOPE_2(
       step2_end, Run, aborted,
-      Run(3, testing::_, element2.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          3, testing::_, element2.identifier(),
           InteractionSequence::StepType::kActivated,
           InteractionSequence::AbortedReason::kElementHiddenDuringStep,
-          std::string(kStepDescription)),
+          std::string(kStepDescription))),
       element2.Hide());
 }
 
@@ -1709,10 +1715,11 @@ TEST(InteractionSequenceTest, ElementHiddenDuringStepEndDuringAbort) {
   // called.
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(3, nullptr, element2.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          3, nullptr, element2.identifier(),
           InteractionSequence::StepType::kActivated,
           InteractionSequence::AbortedReason::kSequenceDestroyed,
-          std::string(kStepDescription)),
+          std::string(kStepDescription))),
       sequence.reset());
 }
 
@@ -1781,10 +1788,9 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepAbort) {
   element1.Show();
 
   std::unique_ptr<InteractionSequence> sequence;
-  auto callback = [&](int, TrackedElement*, ElementIdentifier,
-                      InteractionSequence::StepType,
-                      InteractionSequence::AbortedReason,
-                      std::string) { sequence.reset(); };
+  auto callback = [&](const InteractionSequence::AbortedData&) {
+    sequence.reset();
+  };
   sequence =
       InteractionSequence::Builder()
           .SetAbortedCallback(base::BindLambdaForTesting(callback))
@@ -1890,10 +1896,9 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringMidSequenceAbort) {
   element1.Show();
 
   std::unique_ptr<InteractionSequence> sequence;
-  auto callback = [&](int, TrackedElement*, ElementIdentifier,
-                      InteractionSequence::StepType,
-                      InteractionSequence::AbortedReason,
-                      std::string) { sequence.reset(); };
+  auto callback = [&](const InteractionSequence::AbortedData&) {
+    sequence.reset();
+  };
   sequence =
       InteractionSequence::Builder()
           .SetAbortedCallback(base::BindLambdaForTesting(callback))
@@ -2027,9 +2032,9 @@ TEST(InteractionSequenceTest, SimulateTestTimeout) {
   // succeeded.
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(2, nullptr, kTestIdentifier2, InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kSequenceDestroyed,
-          std::string()),
+      Run(test::SequenceAbortedMatcher(
+          2, nullptr, kTestIdentifier2, InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kSequenceDestroyed)),
       sequence->RunSynchronouslyForTesting());
 }
 
@@ -2694,10 +2699,10 @@ TEST(InteractionSequenceTest, MustBeVisibleAtStart_DefaultsToTrueForActivated) {
   sequence->Start();
   EXPECT_CALLS_IN_SCOPE_3(
       step1_end, Run, step2_end, Run, aborted,
-      Run(3, nullptr, element3.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          3, nullptr, element3.identifier(),
           InteractionSequence::StepType::kActivated,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
-          std::string()),
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep)),
       element1.Show());
 }
 
@@ -2735,10 +2740,10 @@ TEST(InteractionSequenceTest,
   sequence->Start();
   EXPECT_CALLS_IN_SCOPE_3(
       step1_end, Run, step2_end, Run, aborted,
-      Run(3, nullptr, element3.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          3, nullptr, element3.identifier(),
           InteractionSequence::StepType::kCustomEvent,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
-          std::string()),
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep)),
       element1.Show());
 }
 
@@ -2831,10 +2836,10 @@ TEST(InteractionSequenceTest,
   // Fail step four.
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(4, &element3, element3.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          4, &element3, element3.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementHiddenDuringStep,
-          std::string()),
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep)),
       element3.Hide());
 }
 
@@ -2892,10 +2897,10 @@ TEST(InteractionSequenceTest,
   // Fail step four.
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(4, &element3, element3.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          4, &element3, element3.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementHiddenDuringStep,
-          std::string()),
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep)),
       element3.Hide());
 }
 
@@ -2940,10 +2945,10 @@ TEST(InteractionSequenceTest,
   // Break the sequence at step 3.
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(3, testing::_, element1.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          3, testing::_, element1.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementHiddenDuringStep,
-          std::string()),
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep)),
       element1.Hide());
 }
 
@@ -3193,10 +3198,10 @@ TEST(InteractionSequenceTest,
   element1.Hide();
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(1, nullptr, element1.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          1, nullptr, element1.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
-          std::string()),
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep)),
       sequence->Start());
 }
 
@@ -3228,10 +3233,10 @@ TEST(InteractionSequenceTest,
   element2.Hide();
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(3, nullptr, element2.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          3, nullptr, element2.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
-          std::string()),
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep)),
       element1.Activate());
 }
 
@@ -4487,9 +4492,10 @@ TEST(InteractionSequenceTest, FailForTestingBetweenSteps) {
   sequence->Start();
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(1, &element, element.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          1, &element, element.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kFailedForTesting, std::string()),
+          InteractionSequence::AbortedReason::kFailedForTesting)),
       sequence->FailForTesting());
 }
 
@@ -4519,9 +4525,10 @@ TEST(InteractionSequenceTest, FailForTestingOnLastStepCallback) {
   sequence->Start();
   EXPECT_CALL_IN_SCOPE(
       aborted,
-      Run(2, &element, element.identifier(),
+      Run(test::SequenceAbortedMatcher(
+          2, &element, element.identifier(),
           InteractionSequence::StepType::kActivated,
-          InteractionSequence::AbortedReason::kFailedForTesting, std::string()),
+          InteractionSequence::AbortedReason::kFailedForTesting)),
       element.Activate());
 }
 
@@ -4711,5 +4718,1093 @@ TEST(InteractionSequenceTest, AnyContext_TransitionOnEventDuringCallback) {
   sequence->Start();
   EXPECT_CALL_IN_SCOPE(completed, Run, element2.Activate());
 }
+
+// Subsequence tests.
+
+class InteractionSequenceSubsequenceTest
+    : public testing::TestWithParam<InteractionSequence::SubsequenceMode> {
+ public:
+  InteractionSequenceSubsequenceTest() = default;
+  ~InteractionSequenceSubsequenceTest() override = default;
+
+  static void FlushEvents() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  static auto DoNotRun() {
+    return base::BindOnce([](const InteractionSequence*,
+                             const TrackedElement*) { return false; });
+  }
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+TEST_P(InteractionSequenceSubsequenceTest, SubsequenceRuns) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step3);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetSubsequenceMode(GetParam())
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element2.identifier())
+                                   .SetStartCallback(subsequence.Get()))))
+                       .SetStartCallback(step2.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element3.identifier())
+                       .SetStartCallback(step3.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  EXPECT_CALLS_IN_SCOPE_2(subsequence, Run, step2, Run, {
+    FlushEvents();
+    element2.Show();
+  });
+  EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, element3.Show());
+}
+
+TEST_P(InteractionSequenceSubsequenceTest,
+       SubsequenceWithFailedConditionSkips) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetSubsequenceMode(GetParam())
+                       // This subsequence will not run.
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element2.identifier())
+                                   .SetStartCallback(subsequence1.Get()))),
+                           DoNotRun())
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element3.identifier())
+                                   .SetStartCallback(subsequence2.Get()))))
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  FlushEvents();
+  EXPECT_CALLS_IN_SCOPE_3(subsequence2, Run, step2, Run, completed, Run,
+                          element3.Show());
+}
+
+TEST_P(InteractionSequenceSubsequenceTest, SubsequenceDoesNotRun) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step3);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetSubsequenceMode(GetParam())
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element2.identifier())
+                                   .SetStartCallback(subsequence.Get()))),
+                           DoNotRun())
+                       .SetStartCallback(step2.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element3.identifier())
+                       .SetStartCallback(step3.Get()))
+          .Build();
+
+  switch (GetParam()) {
+    case InteractionSequence::SubsequenceMode::kAll:
+    case InteractionSequence::SubsequenceMode::kAtMostOne:
+      // These will skip the test and then succeed.
+      EXPECT_CALLS_IN_SCOPE_2(step1, Run, step2, Run, sequence->Start());
+      FlushEvents();
+      element2.Show();
+      EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, element3.Show());
+      break;
+    case InteractionSequence::SubsequenceMode::kAtLeastOne:
+    case InteractionSequence::SubsequenceMode::kExactlyOne:
+      // These will fail.
+      EXPECT_CALLS_IN_SCOPE_2(step1, Run, aborted, Run, sequence->Start());
+      // Ensure no crashes if items fail to queue.
+      FlushEvents();
+      break;
+  }
+}
+
+TEST_P(InteractionSequenceSubsequenceTest, TwoEligibleSubsequences) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetSubsequenceMode(GetParam())
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element2.identifier())
+                                   .SetStartCallback(subsequence1.Get()))))
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element3.identifier())
+                                   .SetStartCallback(subsequence2.Get()))))
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  FlushEvents();
+  switch (GetParam()) {
+    case InteractionSequence::SubsequenceMode::kAll:
+      // Both sequences must complete before the sequence proceeds.
+      EXPECT_CALL_IN_SCOPE(subsequence1, Run, element2.Show());
+      EXPECT_CALLS_IN_SCOPE_3(subsequence2, Run, step2, Run, completed, Run,
+                              element3.Show());
+      break;
+    case InteractionSequence::SubsequenceMode::kAtMostOne:
+    case InteractionSequence::SubsequenceMode::kAtLeastOne:
+    case InteractionSequence::SubsequenceMode::kExactlyOne:
+      // Only the first sequence will run, or the second will abort as soon as
+      // the first completes.
+      EXPECT_CALLS_IN_SCOPE_3(subsequence1, Run, step2, Run, completed, Run,
+                              element2.Show());
+      break;
+  }
+}
+
+TEST_P(InteractionSequenceSubsequenceTest,
+       MultipleEligibleSubsequencesSomeIneligible) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence3);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get())
+                       .SetMustRemainVisible(false))
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .SetSubsequenceMode(GetParam())
+                  // This subsequence will not run.
+                  .AddSubsequence(
+                      std::move(InteractionSequence::Builder().AddStep(
+                          InteractionSequence::StepBuilder()
+                              .SetElementID(element2.identifier())
+                              .SetStartCallback(subsequence1.Get()))),
+                      DoNotRun())
+                  // The following two subsequences are identical and will call
+                  // the same callback.
+                  .AddSubsequence(
+                      std::move(InteractionSequence::Builder().AddStep(
+                          InteractionSequence::StepBuilder()
+                              .SetElementID(element3.identifier())
+                              .SetStartCallback(subsequence2.Get()))))
+                  .AddSubsequence(
+                      std::move(InteractionSequence::Builder().AddStep(
+                          InteractionSequence::StepBuilder()
+                              .SetElementID(element3.identifier())
+                              .SetStartCallback(subsequence2.Get()))))
+                  // This subsequence is unique.
+                  .AddSubsequence(
+                      std::move(InteractionSequence::Builder().AddStep(
+                          InteractionSequence::StepBuilder()
+                              .SetType(InteractionSequence::StepType::kHidden)
+                              .SetElementID(element1.identifier())
+                              .SetStartCallback(subsequence3.Get()))))
+                  .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  FlushEvents();
+  element2.Show();
+  switch (GetParam()) {
+    case InteractionSequence::SubsequenceMode::kAll:
+      // All three enabled sequences must complete before the sequence proceeds.
+      EXPECT_CALL(subsequence2, Run).Times(2);
+      element3.Show();
+      EXPECT_CALLS_IN_SCOPE_3(subsequence3, Run, step2, Run, completed, Run,
+                              element1.Hide());
+      break;
+    case InteractionSequence::SubsequenceMode::kAtMostOne:
+    case InteractionSequence::SubsequenceMode::kAtLeastOne:
+    case InteractionSequence::SubsequenceMode::kExactlyOne:
+      // In these cases, either only one subsequence will run, or only one
+      // will complete. Therefore, there should only be one subsequence
+      // callback.
+      EXPECT_CALLS_IN_SCOPE_3(subsequence2, Run, step2, Run, completed, Run,
+                              element3.Show());
+      element1.Hide();
+      break;
+  }
+}
+
+TEST_P(InteractionSequenceSubsequenceTest, SubsequenceWithMultipleSteps) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .SetSubsequenceMode(GetParam())
+                  .AddSubsequence(std::move(
+                      InteractionSequence::Builder()
+                          .AddStep(InteractionSequence::StepBuilder()
+                                       .SetElementID(element2.identifier())
+                                       .SetStartCallback(subsequence1.Get()))
+                          .AddStep(InteractionSequence::StepBuilder()
+                                       .SetElementID(element3.identifier())
+                                       .SetStartCallback(subsequence2.Get()))))
+                  .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  EXPECT_CALL_IN_SCOPE(subsequence1, Run, {
+    FlushEvents();
+    element2.Show();
+  });
+  EXPECT_CALLS_IN_SCOPE_3(subsequence2, Run, step2, Run, completed, Run,
+                          element3.Show());
+}
+
+TEST_P(InteractionSequenceSubsequenceTest, SubsequenceFailsAtStart) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetSubsequenceMode(GetParam())
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element2.identifier())
+                                   .SetMustBeVisibleAtStart(true)
+                                   .SetStartCallback(subsequence1.Get()))))
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(test::SequenceAbortedMatcher(
+          2, nullptr, ElementIdentifier(),
+          InteractionSequence::StepType::kSubsequence,
+          InteractionSequence::AbortedReason::kSubsequenceFailed, testing::_,
+          testing::ElementsAre(testing::Optional(test::SequenceAbortedMatcher(
+              1, nullptr, element2.identifier(),
+              InteractionSequence::StepType::kShown,
+              InteractionSequence::AbortedReason::
+                  kElementNotVisibleAtStartOfStep))))),
+      FlushEvents());
+}
+
+TEST_P(InteractionSequenceSubsequenceTest, SubsequenceFailsInMiddle) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .SetSubsequenceMode(GetParam())
+                  .AddSubsequence(std::move(
+                      InteractionSequence::Builder()
+                          .AddStep(InteractionSequence::StepBuilder()
+                                       .SetElementID(element2.identifier())
+                                       .SetStartCallback(subsequence1.Get()))
+                          .AddStep(InteractionSequence::StepBuilder()
+                                       .SetElementID(element3.identifier())
+                                       .SetMustBeVisibleAtStart(true)
+                                       .SetStartCallback(subsequence2.Get()))))
+                  .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  EXPECT_CALLS_IN_SCOPE_2(
+      subsequence1, Run, aborted,
+      Run(test::SequenceAbortedMatcher(
+          2, nullptr, ElementIdentifier(),
+          InteractionSequence::StepType::kSubsequence,
+          InteractionSequence::AbortedReason::kSubsequenceFailed, testing::_,
+          testing::ElementsAre(testing::Optional(test::SequenceAbortedMatcher(
+              2, nullptr, element3.identifier(),
+              InteractionSequence::StepType::kShown,
+              InteractionSequence::AbortedReason::
+                  kElementNotVisibleAtStartOfStep))))),
+      {
+        FlushEvents();
+        element2.Show();
+      });
+}
+
+TEST_P(InteractionSequenceSubsequenceTest, FirstFailsSecondSucceeds) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetSubsequenceMode(GetParam())
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element2.identifier())
+                                   .SetMustBeVisibleAtStart(true)
+                                   .SetStartCallback(subsequence1.Get()))))
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element3.identifier())
+                                   .SetStartCallback(subsequence2.Get()))))
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+
+  switch (GetParam()) {
+    case InteractionSequence::SubsequenceMode::kAll:
+    case InteractionSequence::SubsequenceMode::kAtMostOne:
+    case InteractionSequence::SubsequenceMode::kExactlyOne:
+      // The first failure should scuttle this attempt.
+      EXPECT_CALL_IN_SCOPE(
+          aborted,
+          Run(test::SequenceAbortedMatcher(
+              2, nullptr, ElementIdentifier(),
+              InteractionSequence::StepType::kSubsequence,
+              InteractionSequence::AbortedReason::kSubsequenceFailed,
+              testing::_,
+              testing::ElementsAre(
+                  testing::Optional(test::SequenceAbortedMatcher(
+                      1, nullptr, element2.identifier(),
+                      InteractionSequence::StepType::kShown,
+                      InteractionSequence::AbortedReason::
+                          kElementNotVisibleAtStartOfStep)),
+                  testing::Eq(absl::nullopt)))),
+          FlushEvents());
+      break;
+    case InteractionSequence::SubsequenceMode::kAtLeastOne:
+      // As long as one of the sequences succeeds, the step succeeds.
+      FlushEvents();
+      EXPECT_CALLS_IN_SCOPE_3(subsequence2, Run, step2, Run, completed, Run,
+                              element3.Show());
+      break;
+  }
+}
+
+TEST_P(InteractionSequenceSubsequenceTest, FirstSucceedsSecondFails) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetSubsequenceMode(GetParam())
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element2.identifier())
+                                   .SetStartCallback(subsequence1.Get()))))
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element3.identifier())
+                                   .SetMustBeVisibleAtStart(true)
+                                   .SetStartCallback(subsequence2.Get()))))
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+
+  switch (GetParam()) {
+    case InteractionSequence::SubsequenceMode::kAll:
+      // The first failure should scuttle this attempt.
+      EXPECT_CALL_IN_SCOPE(
+          aborted,
+          Run(test::SequenceAbortedMatcher(
+              2, nullptr, ElementIdentifier(),
+              InteractionSequence::StepType::kSubsequence,
+              InteractionSequence::AbortedReason::kSubsequenceFailed,
+              testing::_,
+              testing::ElementsAre(
+                  testing::Eq(absl::nullopt),
+                  testing::Optional(test::SequenceAbortedMatcher(
+                      1, nullptr, element3.identifier(),
+                      InteractionSequence::StepType::kShown,
+                      InteractionSequence::AbortedReason::
+                          kElementNotVisibleAtStartOfStep))))),
+          FlushEvents());
+      break;
+    case InteractionSequence::SubsequenceMode::kAtMostOne:
+    case InteractionSequence::SubsequenceMode::kExactlyOne:
+    case InteractionSequence::SubsequenceMode::kAtLeastOne:
+      // As long as one of the sequences succeeds, the step succeeds.
+      FlushEvents();
+      EXPECT_CALLS_IN_SCOPE_3(subsequence1, Run, step2, Run, completed, Run,
+                              element2.Show());
+      break;
+  }
+}
+
+TEST_F(InteractionSequenceSubsequenceTest, ElementPassedToCondition) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::SubsequenceCondition, condition);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+  element2.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element3.identifier())
+                                   .SetStartCallback(subsequence.Get()))),
+                           condition.Get())
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL(condition, Run(sequence.get(), &element2))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  EXPECT_CALLS_IN_SCOPE_3(subsequence, Run, step2, Run, completed, Run, {
+    FlushEvents();
+    element3.Show();
+  });
+}
+
+TEST_F(InteractionSequenceSubsequenceTest,
+       ElementNotPassedToConditionIfNotVisible) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::SubsequenceCondition, condition);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element3.identifier())
+                                   .SetStartCallback(subsequence.Get()))),
+                           condition.Get())
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL(condition, Run(sequence.get(), nullptr))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  EXPECT_CALLS_IN_SCOPE_3(subsequence, Run, step2, Run, completed, Run, {
+    FlushEvents();
+    element3.Show();
+  });
+}
+
+TEST_F(InteractionSequenceSubsequenceTest, TriggerDuringPreviousStep) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&element1](InteractionSequence*, TrackedElement*) {
+                             element1.SendCustomEvent(kCustomEventType1);
+                           })))
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .AddSubsequence(
+                      std::move(InteractionSequence::Builder().AddStep(
+                          InteractionSequence::StepBuilder()
+                              .SetElementID(element1.identifier())
+                              .SetType(
+                                  InteractionSequence::StepType::kCustomEvent,
+                                  kCustomEventType1)
+                              .SetStartCallback(subsequence.Get()))))
+                  .SetStartCallback(step2.Get()))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALLS_IN_SCOPE_3(subsequence, Run, step2, Run, completed, Run,
+                          FlushEvents());
+}
+
+TEST_F(InteractionSequenceSubsequenceTest, SubsequenceAsFirstStep) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element1.identifier())
+                                   .SetStartCallback(subsequence.Get()))))
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALLS_IN_SCOPE_2(subsequence, Run, step1, Run, FlushEvents());
+  EXPECT_CALLS_IN_SCOPE_2(step2, Run, completed, Run, element2.Show());
+}
+
+TEST_F(InteractionSequenceSubsequenceTest, NestedSubsequenceAsFirstStep) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .AddSubsequence(
+                      std::move(InteractionSequence::Builder().AddStep(
+                          InteractionSequence::StepBuilder()
+                              .AddSubsequence(std::move(
+                                  InteractionSequence::Builder().AddStep(
+                                      InteractionSequence::StepBuilder()
+                                          .SetElementID(element1.identifier())
+                                          .SetStartCallback(
+                                              subsequence2.Get()))))
+                              .SetStartCallback(subsequence1.Get()))))
+                  .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALLS_IN_SCOPE_3(subsequence2, Run, subsequence1, Run, step1, Run, {
+    FlushEvents();
+    FlushEvents();
+  });
+  EXPECT_CALLS_IN_SCOPE_2(step2, Run, completed, Run, element2.Show());
+}
+
+TEST_F(InteractionSequenceSubsequenceTest,
+       NestedSubsequencesTriggeredByEventBeforeStarted) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&element1](InteractionSequence*, TrackedElement*) {
+                             element1.SendCustomEvent(kCustomEventType1);
+                           })))
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .AddSubsequence(
+                      std::move(InteractionSequence::Builder().AddStep(
+                          InteractionSequence::StepBuilder()
+                              .AddSubsequence(std::move(
+                                  InteractionSequence::Builder().AddStep(
+                                      InteractionSequence::StepBuilder()
+                                          .SetElementID(element1.identifier())
+                                          .SetType(InteractionSequence::
+                                                       StepType::kCustomEvent,
+                                                   kCustomEventType1)
+                                          .SetStartCallback(
+                                              subsequence2.Get()))))
+                              .SetStartCallback(subsequence1.Get()))))
+                  .SetStartCallback(step2.Get()))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALL(subsequence2, Run);
+  EXPECT_CALL(subsequence1, Run);
+  EXPECT_CALL(step2, Run);
+  EXPECT_CALL(completed, Run);
+  FlushEvents();
+  FlushEvents();
+}
+
+TEST_F(InteractionSequenceSubsequenceTest, SubsequenceInSameContext) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step3);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier1, kTestContext2);
+  test::TestElement element3(kTestIdentifier2, kTestContext2);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetContext(element2.context())
+                       .SetStartCallback(step2.Get()))
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .AddSubsequence(
+                      std::move(InteractionSequence::Builder().AddStep(
+                          InteractionSequence::StepBuilder()
+                              .SetElementID(element3.identifier())
+                              .SetContext(InteractionSequence::ContextMode::
+                                              kFromPreviousStep)
+                              .SetStartCallback(subsequence1.Get()))))
+                  .SetStartCallback(step3.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  EXPECT_CALL_IN_SCOPE(step2, Run, element2.Show());
+  EXPECT_CALLS_IN_SCOPE_3(subsequence1, Run, step3, Run, completed, Run, {
+    FlushEvents();
+    element3.Show();
+  });
+}
+
+TEST_F(InteractionSequenceSubsequenceTest, NestedSubsequenceInSameContext) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step3);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier1, kTestContext2);
+  test::TestElement element3(kTestIdentifier2, kTestContext2);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetContext(element2.context())
+                       .SetStartCallback(step2.Get()))
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .AddSubsequence(
+                      std::move(InteractionSequence::Builder().AddStep(
+                          InteractionSequence::StepBuilder()
+                              .AddSubsequence(std::move(
+                                  InteractionSequence::Builder().AddStep(
+                                      InteractionSequence::StepBuilder()
+                                          .SetElementID(element3.identifier())
+                                          .SetContext(
+                                              InteractionSequence::ContextMode::
+                                                  kFromPreviousStep)
+                                          .SetStartCallback(
+                                              subsequence2.Get()))))
+                              .SetStartCallback(subsequence1.Get()))))
+                  .SetStartCallback(step3.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  EXPECT_CALL_IN_SCOPE(step2, Run, element2.Show());
+  EXPECT_CALL(subsequence2, Run);
+  EXPECT_CALL(subsequence1, Run);
+  EXPECT_CALL(step3, Run);
+  EXPECT_CALL(completed, Run);
+  FlushEvents();
+  FlushEvents();
+  element3.Show();
+}
+
+TEST_P(InteractionSequenceSubsequenceTest, SequenceDeletedDuringSubsequences) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, subsequence2);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(step1.Get()))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetSubsequenceMode(GetParam())
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element2.identifier())
+                                   .SetStartCallback(subsequence1.Get()))))
+                       .AddSubsequence(
+                           std::move(InteractionSequence::Builder().AddStep(
+                               InteractionSequence::StepBuilder()
+                                   .SetElementID(element3.identifier())
+                                   .SetStartCallback(subsequence2.Get()))))
+                       .SetStartCallback(step2.Get()))
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(step1, Run, sequence->Start());
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(test::SequenceAbortedMatcher(
+          2, nullptr, ElementIdentifier(),
+          InteractionSequence::StepType::kSubsequence,
+          InteractionSequence::AbortedReason::kSequenceDestroyed, testing::_,
+          // TODO(dfried): Should kill and capture where each subsequence
+          // aborted.
+          testing::IsEmpty())),
+      sequence.reset());
+}
+
+TEST_P(InteractionSequenceSubsequenceTest, NamedElements) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  test::TestElement element3(kTestIdentifier3, kTestContext1);
+  element1.Show();
+  element2.Show();
+  element3.Show();
+
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(element1.context())
+          // Name a single element.
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&element2](InteractionSequence* seq,
+                                       TrackedElement* el) {
+                             seq->NameElement(&element2, kElementName1);
+                           })))
+          // Run one or more subsequences which refer to the named element
+          // above, and which [re-]assign conflicting names.
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .SetSubsequenceMode(GetParam())
+                  .AddSubsequence(std::move(
+                      InteractionSequence::Builder()
+                          .AddStep(
+                              InteractionSequence::StepBuilder()
+                                  .SetElementName(kElementName1)
+                                  .SetStartCallback(base::BindLambdaForTesting(
+                                      [&element3](InteractionSequence* seq,
+                                                  TrackedElement* el) {
+                                        // This assigns a second name.
+                                        seq->NameElement(&element3,
+                                                         kElementName2);
+                                      })))
+                          // Verify that the element is named as above, then
+                          // reassign the first name.
+                          .AddStep(
+                              InteractionSequence::StepBuilder()
+                                  .SetElementName(kElementName2)
+                                  .SetStartCallback(base::BindLambdaForTesting(
+                                      [&element1, &element3](
+                                          InteractionSequence* seq,
+                                          TrackedElement* el) {
+                                        EXPECT_EQ(&element3, el);
+                                        seq->NameElement(&element1,
+                                                         kElementName1);
+                                      })))
+                          // Verify the reassignmed name.
+                          .AddStep(
+                              InteractionSequence::StepBuilder()
+                                  .SetElementName(kElementName1)
+                                  .SetStartCallback(base::BindLambdaForTesting(
+                                      [&element1](TrackedElement* el) {
+                                        EXPECT_EQ(&element1, el);
+                                      })))))
+                  .AddSubsequence(std::move(
+                      InteractionSequence::Builder()
+                          .AddStep(
+                              InteractionSequence::StepBuilder()
+                                  .SetElementID(element3.identifier())
+                                  .SetStartCallback(base::BindLambdaForTesting(
+                                      [&element2](InteractionSequence* seq,
+                                                  TrackedElement* el) {
+                                        // This assigns a second name.
+                                        seq->NameElement(&element2,
+                                                         kElementName2);
+                                      })))
+                          // Verify that the element is named above. Then
+                          // reassign the original name.
+                          .AddStep(
+                              InteractionSequence::StepBuilder()
+                                  .SetElementName(kElementName2)
+                                  .SetStartCallback(base::BindLambdaForTesting(
+                                      [&element2, &element3](
+                                          InteractionSequence* seq,
+                                          TrackedElement* el) {
+                                        EXPECT_EQ(&element2, el);
+                                        seq->NameElement(&element3,
+                                                         kElementName1);
+                                      })))
+                          // Verify the reassignmed name.
+                          .AddStep(
+                              InteractionSequence::StepBuilder()
+                                  .SetElementName(kElementName1)
+                                  .SetStartCallback(base::BindLambdaForTesting(
+                                      [&element3](TrackedElement* el) {
+                                        EXPECT_EQ(&element3, el);
+                                      }))))))
+          // None of the (possibly conflicting) names changed in subsequences
+          // should be present here.
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .SetElementName(kElementName1)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&element2](InteractionSequence* seq,
+                                  TrackedElement* el) {
+                        EXPECT_EQ(&element2, el)
+                            << "Original named element should be unchanged.";
+                        EXPECT_FALSE(
+                            base::Contains(seq->named_elements_, kElementName2))
+                            << "Element named in subsequence should not be "
+                               "present here.";
+                      })))
+          .Build();
+
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(completed, Run, FlushEvents());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    InteractionSequenceSubsequenceTest,
+    testing::Values(InteractionSequence::SubsequenceMode::kAtMostOne,
+                    InteractionSequence::SubsequenceMode::kExactlyOne,
+                    InteractionSequence::SubsequenceMode::kAtLeastOne,
+                    InteractionSequence::SubsequenceMode::kAll),
+    [](const testing::TestParamInfo<InteractionSequence::SubsequenceMode>&
+           mode) {
+      std::ostringstream oss;
+      oss << mode.param;
+      return oss.str();
+    });
 
 }  // namespace ui
