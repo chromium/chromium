@@ -1228,7 +1228,7 @@ bool ContentBrowserClient::HandleTopicsWebApi(
     bool get_topics,
     bool observe,
     std::vector<blink::mojom::EpochTopicPtr>& topics) {
-  return false;
+  return true;
 }
 
 bool ContentBrowserClient::IsBluetoothScanningBlocked(

@@ -1321,6 +1321,18 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "browsing-topics",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/browsing-topics"
+    ],
+    "exclusive_tests": [
+      "external/wpt/browsing-topics"
+    ],
+    "args": ["--enable-features=BrowsingTopics,BrowsingTopicsXHR,PrivacySandboxAdsAPIsOverride"],
+    "expires": "Aug 10, 2023"
+  },
+  {
     "prefix": "shared-storage-fenced-frame-mparch",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
