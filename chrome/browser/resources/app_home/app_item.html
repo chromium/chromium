@@ -17,11 +17,12 @@
   margin-inline-end: auto;
   margin-inline-start: auto;
   margin-top: 14px;
+  transition: all 250ms;
   width: 64px;
 }
 
 .icon-container:active {
-  animation: prepare-launch 50ms 1 forwards;
+  transform: scale(0.94);
 }
 
 .text-container {
@@ -52,31 +53,6 @@ cr-checkbox::part(label-container) {
   clip: rect(0,0,0,0);
   display: block;
   position: fixed;
-}
-
-.launch {
-  animation: launch 50ms 1 forwards;
-}
-
-@keyframes launch {
-  0% {
-    transform: scale(0.8);
-  }
-  99% {
-    transform: scale(1.25);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes prepare-launch {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(0.8);
-  }
 }
 
 </style>

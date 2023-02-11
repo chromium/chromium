@@ -70,12 +70,6 @@ export class AppItemElement extends PolymerElement {
       return;
     }
 
-    const iconDiv = this.$.iconContainer;
-    iconDiv.classList.remove('launch');
-    // Trigger reflow to reset the animation to the beginning.
-    void iconDiv.offsetWidth;
-    iconDiv.classList.add('launch');
-
     const clickEvent: ClickEvent = {
       button: e.button,
       altKey: e.altKey,
