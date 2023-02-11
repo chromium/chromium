@@ -89,7 +89,9 @@ constexpr ui::KeyboardCode kNotNeedingModifierKeys[] = {
     ui::VKEY_UP,
     ui::VKEY_DOWN,
     ui::VKEY_LEFT,
-    ui::VKEY_RIGHT};
+    ui::VKEY_RIGHT,
+    ui::VKEY_ASSISTANT,
+    ui::VKEY_SETTINGS};
 
 // Returns true if `key_code` is a non-modifier key for which a `KeyComboViewer`
 // can be shown even if there are no modifier keys are currently pressed.
