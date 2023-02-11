@@ -754,6 +754,7 @@ cc_test("cc_unittests") {
     "paint/paint_image_unittest.cc",
     "paint/paint_op_buffer_unittest.cc",
     "paint/paint_op_helper_unittest.cc",
+    "paint/paint_op_writer_reader_unittest.cc",
     "paint/paint_shader_unittest.cc",
     "paint/paint_worklet_input_unittest.cc",
     "paint/scoped_raster_flags_unittest.cc",

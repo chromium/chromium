@@ -175,7 +175,7 @@ void PaintOpWriter::WriteFlattenable(const SkFlattenable* val) {
     return;
   }
 
-  size_t* size_memory = WriteSize(0u);
+  uint64_t* size_memory = WriteSize(0u);
   if (!valid_)
     return;
 
@@ -189,9 +189,11 @@ void PaintOpWriter::WriteFlattenable(const SkFlattenable* val) {
   DidWrite(bytes_written);
 }
 
-size_t* PaintOpWriter::WriteSize(size_t size) {
-  size_t* memory = reinterpret_cast<size_t*>(memory_.get());
-  WriteSimple(size);
+uint64_t* PaintOpWriter::WriteSize(size_t size) {
+  // size_t is always serialized as uint64_t to make the serialized result
+  // portable between 32bit and 64bit processes.
+  uint64_t* memory = reinterpret_cast<uint64_t*>(memory_.get());
+  WriteSimple(static_cast<uint64_t>(size));
   return memory;
 }
 
@@ -256,7 +258,7 @@ void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
   } else {
     Write(static_cast<uint32_t>(PaintCacheEntryState::kInlinedDoNotCache));
   }
-  size_t* bytes_to_skip = WriteSize(0u);
+  uint64_t* bytes_to_skip = WriteSize(0u);
   if (!valid_)
     return;
 
@@ -349,7 +351,7 @@ void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
   uint32_t id = skottie->id();
   Write(id);
 
-  size_t* bytes_to_skip = WriteSize(0u);
+  uint64_t* bytes_to_skip = WriteSize(0u);
   if (!valid_)
     return;
 
@@ -453,7 +455,7 @@ void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
     return;
 
   AssertFieldAlignment();
-  size_t* size_memory = WriteSize(0u);
+  uint64_t* size_memory = WriteSize(0u);
   if (!valid_)
     return;
 
@@ -971,7 +973,7 @@ void PaintOpWriter::Write(const PaintRecord& record,
   // We need to record how many bytes we will serialize, but we don't know this
   // information until we do the serialization. So, write 0 as the size first,
   // and amend it after writing.
-  size_t* size_memory = WriteSize(0u);
+  uint64_t* size_memory = WriteSize(0u);
   if (!valid_)
     return;
 

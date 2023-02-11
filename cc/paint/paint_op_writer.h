@@ -91,19 +91,35 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // A field can also use a larger alignment by calling AlignMemory().
   static constexpr size_t kDefaultAlignment = alignof(uint32_t);
 
+ private:
+  template <typename T>
+  static constexpr size_t SerializedSizeSimple() {
+    static_assert(!std::is_pointer_v<T>);
+    return base::bits::AlignUp(sizeof(T), kDefaultAlignment);
+  }
+  // size_t is always serialized as uint64_t to make the serialized result
+  // portable between 32bit and 64bit processes.
+  template <>
+  constexpr size_t SerializedSizeSimple<size_t>() {
+    return base::bits::AlignUp(sizeof(uint64_t), kDefaultAlignment);
+  }
+
+ public:
   // SerializedSize() returns the maximum serialized size of the given type or
   // the given parameter. For a buffer to contain serialization of multiple
   // data, the size can be the accumulated results of SerializedSize() of each
-  // data.
+  // data. When possible, the parameterized version should be used to make it
+  // easier to keep serialized size calculation in sync with serialization and
+  // deserialization, and make it possible to allow dynamic sizing for some
+  // data types (see the specialized/overloaded functions).
   template <typename T>
   static constexpr size_t SerializedSize() {
     static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
-    return base::bits::AlignUp(sizeof(T), kDefaultAlignment);
+    return SerializedSizeSimple<T>();
   }
   template <typename T>
   static constexpr size_t SerializedSize(const T& data) {
-    static_assert(!std::is_pointer_v<T>);
-    return base::bits::AlignUp(sizeof(T), kDefaultAlignment);
+    return SerializedSizeSimple<T>();
   }
   static size_t SerializedSize(const PaintImage& image);
   static size_t SerializedSize(const PaintRecord& record);
@@ -170,7 +186,14 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // alignment.
   size_t size() const { return valid_ ? size_ - remaining_bytes_ : 0u; }
 
-  size_t* WriteSize(size_t size);
+  // Writes a size_t. The return value can be used when the size is unknown
+  // before writing some data:
+  //   uint64_t* memory = WriteSize(0u);
+  //   size_t data_size = WriteSomeData();
+  //   *memory = data_size;
+  // Note that size_t is always serialized as uint64_t to make the serialized
+  // result portable between 32bit and 64bit processes.
+  uint64_t* WriteSize(size_t size);
 
   void Write(SkScalar data);
   void Write(SkMatrix data);

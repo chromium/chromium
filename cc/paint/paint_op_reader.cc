@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/optional_util.h"
@@ -179,7 +180,11 @@ void PaintOpReader::ReadData(size_t bytes, void* data) {
 }
 
 void PaintOpReader::ReadSize(size_t* size) {
-  ReadSimple(size);
+  // size_t is always serialized as uint64_t to make the serialized result
+  // portable between 32bit and 64bit processes.
+  uint64_t size64 = 0;
+  ReadSimple(&size64);
+  *size = base::checked_cast<size_t>(size64);
 }
 
 void PaintOpReader::Read(SkScalar* data) {
