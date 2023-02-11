@@ -419,6 +419,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
                          const std::string& name,
                          const AppId& id);
 
+  bool IsFileHandledBySite(Site site, FileExtension file_extension);
   void SetFileHandlingEnabled(Site site, bool enabled);
   void LaunchFile(Site site, FilesOptions files_options);
 
