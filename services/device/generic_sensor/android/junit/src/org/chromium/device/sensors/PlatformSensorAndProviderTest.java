@@ -27,6 +27,7 @@ import android.hardware.SensorManager;
 import android.os.Handler;
 import android.util.SparseArray;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +37,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.mojom.ReportingMode;
 import org.chromium.device.mojom.SensorType;
 
@@ -104,6 +108,10 @@ public class PlatformSensorAndProviderTest {
 
     @Before
     public void setUp() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(DeviceFeatureList.ASYNC_SENSOR_CALLS, false);
+        FeatureList.setTestValues(testValues);
+
         MockitoAnnotations.initMocks(this);
         // Remove all mock sensors before the test.
         mMockSensors.clear();
@@ -123,6 +131,11 @@ public class PlatformSensorAndProviderTest {
                 .when(mSensorManager)
                 .registerListener(any(SensorEventListener.class), any(Sensor.class), anyInt(),
                         any(Handler.class));
+    }
+
+    @After
+    public void tearDown() {
+        FeatureList.setTestValues(null);
     }
 
     /**
@@ -186,6 +199,8 @@ public class PlatformSensorAndProviderTest {
         PlatformSensor sensor = createPlatformSensor(50000, Sensor.TYPE_LIGHT,
                 SensorType.AMBIENT_LIGHT, Sensor.REPORTING_MODE_ON_CHANGE);
         assertNotNull(sensor);
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -222,6 +237,8 @@ public class PlatformSensorAndProviderTest {
         verify(mPlatformSensorProvider, times(3)).sensorStopped(sensor);
         verify(mSensorManager, times(4))
                 .unregisterListener(any(SensorEventListener.class), any(Sensor.class));
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -231,6 +248,8 @@ public class PlatformSensorAndProviderTest {
     @Test
     @Feature({"PlatformSensor"})
     public void testSensorStartStop2() {
+        Features.getInstance().enable(DeviceFeatureList.ASYNC_SENSOR_CALLS);
+
         addMockSensor(50000, Sensor.TYPE_ACCELEROMETER, Sensor.REPORTING_MODE_CONTINUOUS);
         PlatformSensor sensor = PlatformSensor.create(
                 mPlatformSensorProvider, SensorType.ACCELEROMETER, PLATFORM_SENSOR_ANDROID);
@@ -258,6 +277,8 @@ public class PlatformSensorAndProviderTest {
         verify(mPlatformSensorProvider, times(3)).sensorStopped(sensor);
         verify(mSensorManager, times(4))
                 .unregisterListener(any(SensorEventListener.class), any(Sensor.class));
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -282,6 +303,8 @@ public class PlatformSensorAndProviderTest {
         verify(mPlatformSensorProvider, times(1)).sensorStarted(sensor);
         verify(mPlatformSensorProvider, times(1)).sensorStopped(sensor);
         verify(mPlatformSensorProvider, times(1)).getHandler();
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -292,6 +315,8 @@ public class PlatformSensorAndProviderTest {
     @Test
     @Feature({"PlatformSensor"})
     public void testSensorStartFails2() {
+        Features.getInstance().enable(DeviceFeatureList.ASYNC_SENSOR_CALLS);
+
         TestPlatformSensor sensor = createTestPlatformSensor(
                 50000, Sensor.TYPE_ACCELEROMETER, 3, Sensor.REPORTING_MODE_CONTINUOUS);
         TestPlatformSensor spySensor = spy(sensor);
@@ -311,6 +336,8 @@ public class PlatformSensorAndProviderTest {
         verify(mPlatformSensorProvider, times(2)).sensorStopped(spySensor);
         verify(mPlatformSensorProvider, times(1)).getHandler();
         verify(spySensor, times(2)).sensorError();
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -332,6 +359,8 @@ public class PlatformSensorAndProviderTest {
         verify(mPlatformSensorProvider, times(1)).sensorStarted(sensor);
         verify(mPlatformSensorProvider, times(1)).sensorStopped(sensor);
         verify(mPlatformSensorProvider, times(1)).getHandler();
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -340,6 +369,8 @@ public class PlatformSensorAndProviderTest {
     @Test
     @Feature({"PlatformSensor"})
     public void testSensorStartFailsWithException2() {
+        Features.getInstance().enable(DeviceFeatureList.ASYNC_SENSOR_CALLS);
+
         TestPlatformSensor sensor = createTestPlatformSensor(
                 50000, Sensor.TYPE_ACCELEROMETER, 3, Sensor.REPORTING_MODE_CONTINUOUS);
         TestPlatformSensor spySensor = spy(sensor);
@@ -358,6 +389,8 @@ public class PlatformSensorAndProviderTest {
         verify(mPlatformSensorProvider, times(2)).sensorStopped(spySensor);
         verify(mPlatformSensorProvider, times(1)).getHandler();
         verify(spySensor, times(2)).sensorError();
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -371,6 +404,8 @@ public class PlatformSensorAndProviderTest {
                 SensorType.ACCELEROMETER, Sensor.REPORTING_MODE_CONTINUOUS);
         assertTrue(sensor.checkSensorConfiguration(5));
         assertFalse(sensor.checkSensorConfiguration(6));
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -382,6 +417,8 @@ public class PlatformSensorAndProviderTest {
         PlatformSensor sensor = createPlatformSensor(50000, Sensor.TYPE_LIGHT,
                 SensorType.AMBIENT_LIGHT, Sensor.REPORTING_MODE_ON_CHANGE);
         assertEquals(ReportingMode.ON_CHANGE, sensor.getReportingMode());
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -394,10 +431,14 @@ public class PlatformSensorAndProviderTest {
                 SensorType.AMBIENT_LIGHT, Sensor.REPORTING_MODE_ON_CHANGE);
         assertEquals(20, sensor.getMaximumSupportedFrequency(), 0.001);
 
+        sensor.sensorDestroyed();
+
         sensor = createPlatformSensor(
                 0, Sensor.TYPE_LIGHT, SensorType.AMBIENT_LIGHT, Sensor.REPORTING_MODE_ON_CHANGE);
         assertEquals(
                 sensor.getDefaultConfiguration(), sensor.getMaximumSupportedFrequency(), 0.001);
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -417,6 +458,8 @@ public class PlatformSensorAndProviderTest {
 
         verify(spySensor, times(1))
                 .updateSensorReading(timestamp, getFakeReadingValue(1), 0.0, 0.0, 0.0);
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -438,6 +481,8 @@ public class PlatformSensorAndProviderTest {
         verify(spySensor, times(1))
                 .updateSensorReading(timestamp, getFakeReadingValue(1), getFakeReadingValue(2),
                         getFakeReadingValue(3), getFakeReadingValue(4));
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -455,6 +500,8 @@ public class PlatformSensorAndProviderTest {
         assertNotNull(event);
         spySensor.onSensorChanged(event);
         verify(spySensor, times(1)).sensorError();
+
+        sensor.sensorDestroyed();
     }
 
     /**
@@ -493,6 +540,9 @@ public class PlatformSensorAndProviderTest {
                         any(Handler.class));
         verify(mSensorManager, times(2))
                 .unregisterListener(any(SensorEventListener.class), any(Sensor.class));
+
+        lightSensor.sensorDestroyed();
+        accelerometerSensor.sensorDestroyed();
     }
 
     /**
@@ -502,6 +552,8 @@ public class PlatformSensorAndProviderTest {
     @Test
     @Feature({"PlatformSensor"})
     public void testMultipleSensorTypeInstances2() {
+        Features.getInstance().enable(DeviceFeatureList.ASYNC_SENSOR_CALLS);
+
         addMockSensor(200000, Sensor.TYPE_LIGHT, Sensor.REPORTING_MODE_ON_CHANGE);
         addMockSensor(50000, Sensor.TYPE_ACCELEROMETER, Sensor.REPORTING_MODE_CONTINUOUS);
 
@@ -531,6 +583,9 @@ public class PlatformSensorAndProviderTest {
                         any(Handler.class));
         verify(mSensorManager, times(2))
                 .unregisterListener(any(SensorEventListener.class), any(Sensor.class));
+
+        lightSensor.sensorDestroyed();
+        accelerometerSensor.sensorDestroyed();
     }
 
     /**

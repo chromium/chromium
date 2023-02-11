@@ -19,7 +19,9 @@ import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.mojom.ReportingMode;
 import org.chromium.device.mojom.SensorType;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Implementation of PlatformSensor that uses Android Sensor Framework. Lifetime is controlled by
@@ -77,10 +79,16 @@ public class PlatformSensor implements SensorEventListener {
     private final PlatformSensorProvider mProvider;
 
     /**
+     * Detect crbug.com/1383180 by checking if multiple instances of PlatformSensor exist at the
+     * same time for the same sensor type.
+     */
+    private static Set<Integer> sExistingSensorObjects = new HashSet<>();
+
+    /**
      * Creates new PlatformSensor.
      *
      * @param provider object that shares SensorManager and polling thread Handler with sensors.
-     * @param sensorType type of the sensor to be constructed. @see android.hardware.Sensor.TYPE_*
+     * @param type type of the sensor to be constructed. @see android.hardware.Sensor.TYPE_*
      * @param nativePlatformSensorAndroid identifier of device::PlatformSensorAndroid instance.
      */
     @CalledByNative
@@ -89,45 +97,46 @@ public class PlatformSensor implements SensorEventListener {
         SensorManager sensorManager = provider.getSensorManager();
         if (sensorManager == null) return null;
 
-        List<Sensor> sensors;
+        int sensorType;
         int readingCount;
         switch (type) {
             case SensorType.AMBIENT_LIGHT:
-                sensors = sensorManager.getSensorList(Sensor.TYPE_LIGHT);
+                sensorType = Sensor.TYPE_LIGHT;
                 readingCount = 1;
                 break;
             case SensorType.ACCELEROMETER:
-                sensors = sensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
+                sensorType = Sensor.TYPE_ACCELEROMETER;
                 readingCount = 3;
                 break;
             case SensorType.LINEAR_ACCELERATION:
-                sensors = sensorManager.getSensorList(Sensor.TYPE_LINEAR_ACCELERATION);
+                sensorType = Sensor.TYPE_LINEAR_ACCELERATION;
                 readingCount = 3;
                 break;
             case SensorType.GRAVITY:
-                sensors = sensorManager.getSensorList(Sensor.TYPE_GRAVITY);
+                sensorType = Sensor.TYPE_GRAVITY;
                 readingCount = 3;
                 break;
             case SensorType.GYROSCOPE:
-                sensors = sensorManager.getSensorList(Sensor.TYPE_GYROSCOPE);
+                sensorType = Sensor.TYPE_GYROSCOPE;
                 readingCount = 3;
                 break;
             case SensorType.MAGNETOMETER:
-                sensors = sensorManager.getSensorList(Sensor.TYPE_MAGNETIC_FIELD);
+                sensorType = Sensor.TYPE_MAGNETIC_FIELD;
                 readingCount = 3;
                 break;
             case SensorType.ABSOLUTE_ORIENTATION_QUATERNION:
-                sensors = sensorManager.getSensorList(Sensor.TYPE_ROTATION_VECTOR);
+                sensorType = Sensor.TYPE_ROTATION_VECTOR;
                 readingCount = 4;
                 break;
             case SensorType.RELATIVE_ORIENTATION_QUATERNION:
-                sensors = sensorManager.getSensorList(Sensor.TYPE_GAME_ROTATION_VECTOR);
+                sensorType = Sensor.TYPE_GAME_ROTATION_VECTOR;
                 readingCount = 4;
                 break;
             default:
                 return null;
         }
 
+        List<Sensor> sensors = sensorManager.getSensorList(sensorType);
         if (sensors.isEmpty()) return null;
         return new PlatformSensor(
                 sensors.get(0), readingCount, provider, nativePlatformSensorAndroid);
@@ -143,6 +152,10 @@ public class PlatformSensor implements SensorEventListener {
         mSensor = sensor;
         mNativePlatformSensorAndroid = nativePlatformSensorAndroid;
         mMinDelayUsec = mSensor.getMinDelay();
+
+        Integer sensorType = Integer.valueOf(mSensor.getType());
+        assert !sExistingSensorObjects.contains(sensorType);
+        sExistingSensorObjects.add(sensorType);
     }
 
     /**
@@ -276,6 +289,10 @@ public class PlatformSensor implements SensorEventListener {
      */
     @CalledByNative
     protected void sensorDestroyed() {
+        Integer sensorType = Integer.valueOf(mSensor.getType());
+        assert sExistingSensorObjects.contains(sensorType);
+        sExistingSensorObjects.remove(sensorType);
+
         if (!DeviceFeatureList.isEnabled(DeviceFeatureList.ASYNC_SENSOR_CALLS)) {
             stopSensor();
         }
