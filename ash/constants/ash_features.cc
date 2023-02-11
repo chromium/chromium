@@ -1077,9 +1077,6 @@ BASE_FEATURE(kProductivityLauncherImageSearch,
              "ProductivityLauncherImageSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables chat integration for launcher search.
-BASE_FEATURE(kLauncherChat, "LauncherChat", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables a privacy improvement that removes wrongly configured hidden
 // networks and mitigates the creation of these networks. crbug/1327803.
 BASE_FEATURE(kHiddenNetworkMigration,
@@ -2747,10 +2744,6 @@ bool IsLoginScreenDeviceTrustConnectorFeatureEnabled() {
 
 bool IsProductivityLauncherImageSearchEnabled() {
   return base::FeatureList::IsEnabled(kProductivityLauncherImageSearch);
-}
-
-bool IsLauncherChatEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherChat);
 }
 
 bool IsMacAddressRandomizationEnabled() {

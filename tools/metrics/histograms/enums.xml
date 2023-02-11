@@ -59345,7 +59345,6 @@ from previous Chrome versions.
   <int value="-1282992935"
       label="AutofillLocalCardMigrationShowFeedback:disabled"/>
   <int value="-1282488703" label="LocationBarModelOptimizations:enabled"/>
-  <int value="-1282453483" label="LauncherChat:disabled"/>
   <int value="-1282433319" label="WebRtcAllowInputVolumeAdjustment:enabled"/>
   <int value="-1281491005" label="DisableDnsProxy:disabled"/>
   <int value="-1281465357" label="MacV2GPUSandbox:disabled"/>
@@ -61106,7 +61105,6 @@ from previous Chrome versions.
   <int value="-284470280" label="ShelfPalmRejectionTouchArea:enabled"/>
   <int value="-284328071" label="LocalWebApprovals:enabled"/>
   <int value="-284279318" label="LacrosMoveProfileMigration:enabled"/>
-  <int value="-284271090" label="LauncherChat:enabled"/>
   <int value="-283706169" label="ArcInstantResponseWindowOpen:enabled"/>
   <int value="-283388027" label="ManualFallbacksFilling:disabled"/>
   <int value="-283220112" label="RevampedPasswordManagementBubble:enabled"/>

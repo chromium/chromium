@@ -4628,11 +4628,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "launcher-chat",
-    "owners": [ "yulunwu","tby","cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "launcher-fuzzy-match-for-omnibox",
     "owners": ["wrong", "laurencom"],
     "expiry_milestone": 120

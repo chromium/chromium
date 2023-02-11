@@ -5809,11 +5809,6 @@ const char kProductivityLauncherImageSearchDescription[] =
     "To evaluate the viability of image search as part of Productivity "
     "Launcher Search.";
 
-const char kLauncherChatName[] = "Launcher experiment: conversational search.";
-const char kLauncherChatDescription[] =
-    "To evaluate the viability of a conversational search provider as part of "
-    "launcher search.";
-
 const char kQuickActionShowBubbleLauncherName[] =
     "Swipe to show bubble launcher";
 const char kQuickActionShowBubbleLauncherDescription[] =
