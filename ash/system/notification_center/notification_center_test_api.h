@@ -65,7 +65,8 @@ class NotificationCenterTestApi {
       const message_center::NotifierId& notifier_id =
           message_center::NotifierId(),
       const message_center::NotificationPriority =
-          message_center::NotificationPriority::DEFAULT_PRIORITY);
+          message_center::NotificationPriority::DEFAULT_PRIORITY,
+      const bool pinned = false);
 
   // Adds a notification and returns the associated id.
   std::string AddNotification();
@@ -73,6 +74,9 @@ class NotificationCenterTestApi {
   // Adds a notification with the source url and notifier id corresponding to
   // the provided url as a string. Useful for testing notification grouping.
   std::string AddNotificationWithSourceUrl(const std::string& url);
+
+  // Adds a pinned notification and return the associated id.
+  std::string AddPinnedNotification();
 
   // Adds a notification with the system component notifier and system priority
   // level.
@@ -86,6 +90,9 @@ class NotificationCenterTestApi {
 
   // Returns true if `NotificationCenterBubble` is shown, false otherwise.
   bool IsBubbleShown();
+
+  // Returns true if a pinned icons is shown in the `NotificationCenterTray`.
+  bool IsPinnedIconShown();
 
   // Returns true if a popup associated with the provided `id` exists, false
   // otherwise.

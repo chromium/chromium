@@ -15,6 +15,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -224,6 +225,17 @@ TEST_F(NotificationCenterTrayTest, DoNotDisturbIconVisibility) {
   message_center::MessageCenter::Get()->SetQuietMode(false);
   EXPECT_TRUE(test_api()->IsTrayShown());
   EXPECT_FALSE(test_api()->IsDoNotDisturbIconShown());
+}
+
+TEST_F(NotificationCenterTrayTest, DoNotDisturbUpdatesPinnedIcons) {
+  test_api()->AddPinnedNotification();
+  EXPECT_TRUE(test_api()->IsPinnedIconShown());
+
+  message_center::MessageCenter::Get()->SetQuietMode(true);
+  EXPECT_FALSE(test_api()->IsPinnedIconShown());
+
+  message_center::MessageCenter::Get()->SetQuietMode(false);
+  EXPECT_TRUE(test_api()->IsPinnedIconShown());
 }
 
 TEST_F(NotificationCenterTrayTest, NoPrivacyIndicators) {

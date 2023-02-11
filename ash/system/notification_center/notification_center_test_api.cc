@@ -72,12 +72,14 @@ std::string NotificationCenterTestApi::AddCustomNotification(
     const std::u16string& display_source,
     const GURL& url,
     const message_center::NotifierId& notifier_id,
-    const message_center::NotificationPriority priority) {
+    const message_center::NotificationPriority priority,
+    const bool pinned) {
   const std::string id = GenerateNotificationId();
 
   auto notification = CreateNotification(id, title, message, icon,
                                          display_source, url, notifier_id);
   notification->set_priority(priority);
+  notification->set_pinned(pinned);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
   return id;
@@ -98,6 +100,14 @@ std::string NotificationCenterTestApi::AddNotificationWithSourceUrl(
       base::EmptyString16(), gurl, message_center::NotifierId(gurl)));
 
   return id;
+}
+
+std::string NotificationCenterTestApi::AddPinnedNotification() {
+  return AddCustomNotification(
+      /*title=*/u"test_title",
+      /*message=*/u"test_message", ui::ImageModel(), base::EmptyString16(),
+      GURL(), message_center::NotifierId(),
+      message_center::NotificationPriority::DEFAULT_PRIORITY, /*pinned=*/true);
 }
 
 std::string NotificationCenterTestApi::AddSystemNotification() {
@@ -122,6 +132,12 @@ size_t NotificationCenterTestApi::GetNotificationCount() const {
 
 bool NotificationCenterTestApi::IsBubbleShown() {
   return notification_center_tray_->is_active() && GetWidget()->IsVisible();
+}
+
+bool NotificationCenterTestApi::IsPinnedIconShown() {
+  return notification_center_tray_->notification_icons_controller_->tray_items()
+      .back()
+      ->GetVisible();
 }
 
 bool NotificationCenterTestApi::IsPopupShown(const std::string& id) {

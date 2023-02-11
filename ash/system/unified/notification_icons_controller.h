@@ -108,6 +108,7 @@ class ASH_EXPORT NotificationIconsController
   void OnNotificationAdded(const std::string& id) override;
   void OnNotificationRemoved(const std::string& id, bool by_user) override;
   void OnNotificationUpdated(const std::string& id) override;
+  void OnQuietModeChanged(bool in_quiet_mode) override;
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;

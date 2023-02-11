@@ -292,6 +292,11 @@ void NotificationIconsController::OnNotificationUpdated(const std::string& id) {
   UpdateNotificationIndicators();
 }
 
+void NotificationIconsController::OnQuietModeChanged(bool in_quiet_mode) {
+  UpdateNotificationIcons();
+  UpdateNotificationIndicators();
+}
+
 void NotificationIconsController::OnSessionStateChanged(
     session_manager::SessionState state) {
   UpdateNotificationIcons();
