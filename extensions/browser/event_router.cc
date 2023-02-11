@@ -352,8 +352,9 @@ void EventRouter::AddLazyListenerForServiceWorker(
   // assign correct browser context and use it to create both lazy
   // listeners.
   std::unique_ptr<EventListener> listener = EventListener::CreateLazyListener(
-      event_name, extension_id, browser_context_, true, worker_scope_url,
-      absl::nullopt);
+      event_name, extension_id, browser_context_,
+      /*is_for_service_worker=*/true, worker_scope_url,
+      /*filter=*/absl::nullopt);
   AddLazyEventListenerImpl(std::move(listener),
                            RegisteredEventType::kServiceWorker);
 }
