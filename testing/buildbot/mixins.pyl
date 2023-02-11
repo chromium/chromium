@@ -585,6 +585,13 @@
       'has_native_resultdb_integration': True,
     },
   },
+  'integrity_high': {
+    'swarming': {
+      'dimensions': {
+        'integrity': 'high',
+      },
+    },
+  },
   'ios_custom_webkit': {
     '$mixin_append': {
       'args': [
@@ -886,6 +893,22 @@
       'dimensions': {
         'cpu': 'x86-64',
         'os': 'Mac-12',
+      },
+    },
+  },
+  'mac_13_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-13',
+      },
+    },
+  },
+  'mac_13_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-13',
       },
     },
   },
@@ -1251,6 +1274,28 @@
     'swarming': {
       'hard_timeout': 900,
       'io_timeout': 900,
+    },
+  },
+  'updater-default-pool': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chromium.tests',
+      },
+    },
+  },
+  'updater-mac-pool': {
+    'swarming': {
+      'dimensions': {
+        # Bots in this pool support passwordless sudo.
+        'pool': 'chromium.updater.mac',
+      },
+    },
+  },
+  'updater-win-uac-pool': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chromium.win.uac',
+      },
     },
   },
   'vr_instrumentation_test': {

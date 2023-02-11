@@ -13,7 +13,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -35,7 +36,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
+              "os": "Ubuntu-18.04",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -82,7 +84,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-10.13"
+              "os": "Mac-10.13.6",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -100,7 +103,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-10.13",
+              "os": "Mac-10.13.6",
               "pool": "chromium.updater.mac"
             }
           ],
@@ -123,7 +126,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-10.13"
+              "os": "Mac-10.13.6",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -141,7 +145,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-10.13",
+              "os": "Mac-10.13.6",
               "pool": "chromium.updater.mac"
             }
           ],
@@ -164,7 +168,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-10.14"
+              "os": "Mac-10.14.6",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -182,7 +187,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-10.14",
+              "os": "Mac-10.14.6",
               "pool": "chromium.updater.mac"
             }
           ],
@@ -205,7 +210,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-10.14"
+              "os": "Mac-10.14.6",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -223,7 +229,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-10.14",
+              "os": "Mac-10.14.6",
               "pool": "chromium.updater.mac"
             }
           ],
@@ -246,7 +252,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-10.15"
+              "os": "Mac-10.15",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -287,7 +294,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-10.15"
+              "os": "Mac-10.15",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -327,8 +335,9 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "arm-64",
-              "os": "Mac-11"
+              "cpu": "arm64",
+              "os": "Mac-11",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -345,7 +354,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "arm-64",
+              "cpu": "arm64",
               "os": "Mac-11",
               "pool": "chromium.updater.mac"
             }
@@ -368,8 +377,9 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "arm-64",
-              "os": "Mac-11"
+              "cpu": "arm64",
+              "os": "Mac-11",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -386,7 +396,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "arm-64",
+              "cpu": "arm64",
               "os": "Mac-11",
               "pool": "chromium.updater.mac"
             }
@@ -410,7 +420,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11"
+              "os": "Mac-11|Mac-10.16",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -428,7 +439,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11",
+              "os": "Mac-11|Mac-10.16",
               "pool": "chromium.updater.mac"
             }
           ],
@@ -451,7 +462,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11"
+              "os": "Mac-11|Mac-10.16",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -469,7 +481,7 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-11",
+              "os": "Mac-11|Mac-10.16",
               "pool": "chromium.updater.mac"
             }
           ],
@@ -491,8 +503,9 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "arm-64",
-              "os": "Mac-12"
+              "cpu": "arm64",
+              "os": "Mac-12",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -509,7 +522,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "arm-64",
+              "cpu": "arm64",
               "os": "Mac-12",
               "pool": "chromium.updater.mac"
             }
@@ -533,7 +546,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-12"
+              "os": "Mac-12",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -573,8 +587,9 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "arm-64",
-              "os": "Mac-13"
+              "cpu": "arm64",
+              "os": "Mac-13",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -591,7 +606,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "arm-64",
+              "cpu": "arm64",
               "os": "Mac-13",
               "pool": "chromium.updater.mac"
             }
@@ -615,7 +630,8 @@
           "dimension_sets": [
             {
               "cpu": "x86-64",
-              "os": "Mac-13"
+              "os": "Mac-13",
+              "pool": "chromium.tests"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"

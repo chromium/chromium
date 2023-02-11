@@ -5052,48 +5052,54 @@
     },
 
     'updater_gtests_linux': {
-      'updater_tests': {},
+      'updater_tests': {
+        'mixins': [
+          'updater-default-pool',
+        ],
+      },
       # 'updater_tests_system' is not yet supported on Linux.
     },
 
     'updater_gtests_mac': {
-      'updater_tests': {},
+      'updater_tests': {
+        'mixins': [
+          'updater-default-pool',
+        ],
+      },
       'updater_tests_system': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              # These tests require passwordless sudo on mac.
-              'pool': 'chromium.updater.mac',
-            }
-          ]
-        },
+        'mixins': [
+          'updater-mac-pool',
+        ],
       },
     },
 
     'updater_gtests_win': {
-      'updater_tests': {},
+      'updater_tests': {
+        'mixins': [
+          'integrity_high',
+          'updater-default-pool',
+        ],
+      },
       'updater_tests_system': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'integrity': 'high',
-            }
-          ]
-        }
+        'mixins': [
+          'integrity_high',
+          'updater-default-pool',
+        ],
       },
     },
 
     'updater_gtests_win_uac': {
       'updater_tests_system': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'integrity': 'high',
-            }
-          ]
-        }
+        'mixins': [
+          'integrity_high',
+          'updater-win-uac-pool',
+        ],
       },
-      'updater_tests_win_uac': {},
+      'updater_tests_win_uac': {
+        'mixins': [
+          'updater-win-uac-pool',
+        ],
+      },
     },
 
     'upload_perfetto': {
