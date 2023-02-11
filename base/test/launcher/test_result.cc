@@ -106,7 +106,7 @@ void TestResult::AddLink(const std::string& name, const std::string& url) {
 }
 
 void TestResult::AddTag(const std::string& name, const std::string& value) {
-  tags.insert({name, value});
+  tags[name].push_back(value);
 }
 
 void TestResult::AddProperty(const std::string& name,

@@ -48,7 +48,50 @@ TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithTagInResult) {
   std::string content;
   ASSERT_TRUE(ReadFileToString(temp_file, &content));
   std::string expected_content = R"raw("tags":{"tag_name":)raw"
-                                 R"raw({"value":"tag_value"}})raw";
+                                 R"raw({"values":["tag_value"]}})raw";
+  EXPECT_TRUE(content.find(expected_content) != std::string::npos)
+      << expected_content << " not found in " << content;
+}
+
+TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithMultiTagsInResult) {
+  TestResultsTracker tracker;
+  TestResult result;
+  result.AddTag("tag_name1", "tag_value1");
+  result.AddTag("tag_name2", "tag_value2");
+  TestResultsTracker::AggregateTestResult aggregate_result;
+  aggregate_result.test_results.push_back(result);
+  tracker.per_iteration_data_.emplace_back();
+  tracker.per_iteration_data_.back().results["dummy"] = aggregate_result;
+  FilePath temp_file;
+  CreateTemporaryFile(&temp_file);
+  ASSERT_TRUE(tracker.SaveSummaryAsJSON(temp_file, std::vector<std::string>()));
+  std::string content;
+  ASSERT_TRUE(ReadFileToString(temp_file, &content));
+  std::string expected_content = R"raw("tags":{"tag_name1":)raw"
+                                 R"raw({"values":["tag_value1"]})raw"
+                                 R"raw(,"tag_name2":)raw"
+                                 R"raw({"values":["tag_value2"]}})raw";
+  EXPECT_TRUE(content.find(expected_content) != std::string::npos)
+      << expected_content << " not found in " << content;
+}
+
+TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithMultiTagsSameNameInResult) {
+  TestResultsTracker tracker;
+  TestResult result;
+  result.AddTag("tag_name", "tag_value1");
+  result.AddTag("tag_name", "tag_value2");
+  TestResultsTracker::AggregateTestResult aggregate_result;
+  aggregate_result.test_results.push_back(result);
+  tracker.per_iteration_data_.emplace_back();
+  tracker.per_iteration_data_.back().results["dummy"] = aggregate_result;
+  FilePath temp_file;
+  CreateTemporaryFile(&temp_file);
+  ASSERT_TRUE(tracker.SaveSummaryAsJSON(temp_file, std::vector<std::string>()));
+  std::string content;
+  ASSERT_TRUE(ReadFileToString(temp_file, &content));
+  std::string expected_content = R"raw("tags":{"tag_name":)raw"
+                                 R"raw({"values":)raw"
+                                 R"raw(["tag_value1","tag_value2"]}})raw";
   EXPECT_TRUE(content.find(expected_content) != std::string::npos)
       << expected_content << " not found in " << content;
 }

@@ -135,7 +135,7 @@ struct TestResult {
   std::map<std::string, std::string> properties;
 
   // The key is tag name.
-  std::map<std::string, std::string> tags;
+  std::map<std::string, std::vector<std::string>> tags;
 };
 
 }  // namespace base

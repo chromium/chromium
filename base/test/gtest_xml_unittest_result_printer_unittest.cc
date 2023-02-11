@@ -77,6 +77,54 @@ TEST_F(XmlUnitTestResultPrinterTest, TagInXmlFile) {
       << expected_content << " not found in " << content;
 }
 
+TEST_F(XmlUnitTestResultPrinterTest, MultiTagsInXmlFile) {
+  XmlUnitTestResultPrinter::Get()->AddTag("tag_name1", "tag_value1");
+  XmlUnitTestResultPrinter::Get()->AddTag("tag_name2", "tag_value2");
+  std::string file_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kTestLauncherOutput);
+  std::string content;
+  ASSERT_TRUE(
+      base::ReadFileToString(FilePath::FromUTF8Unsafe(file_path), &content));
+  std::string expected_content_1 =
+      "<tag name=\"MultiTagsInXmlFile\" "
+      "classname=\"XmlUnitTestResultPrinterTest\" "
+      "tag_name=\"tag_name1\">tag_value1</tag>";
+  EXPECT_TRUE(content.find(expected_content_1) != std::string::npos)
+      << expected_content_1 << " not found in " << content;
+
+  std::string expected_content_2 =
+      "<tag name=\"MultiTagsInXmlFile\" "
+      "classname=\"XmlUnitTestResultPrinterTest\" "
+      "tag_name=\"tag_name2\">tag_value2</tag>";
+  EXPECT_TRUE(content.find(expected_content_2) != std::string::npos)
+      << expected_content_2 << " not found in " << content;
+}
+
+TEST_F(XmlUnitTestResultPrinterTest, MultiTagsWithSameNameInXmlFile) {
+  XmlUnitTestResultPrinter::Get()->AddTag("tag_name", "tag_value1");
+  XmlUnitTestResultPrinter::Get()->AddTag("tag_name", "tag_value2");
+  std::string file_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kTestLauncherOutput);
+  std::string content;
+  ASSERT_TRUE(
+      base::ReadFileToString(FilePath::FromUTF8Unsafe(file_path), &content));
+  std::string expected_content_1 =
+      "<tag name=\"MultiTagsWithSameNameInXmlFile\" "
+      "classname=\"XmlUnitTestResultPrinterTest\" "
+      "tag_name=\"tag_name\">tag_value1</tag>";
+  EXPECT_TRUE(content.find(expected_content_1) != std::string::npos)
+      << expected_content_1 << " not found in " << content;
+
+  std::string expected_content_2 =
+      "<tag name=\"MultiTagsWithSameNameInXmlFile\" "
+      "classname=\"XmlUnitTestResultPrinterTest\" "
+      "tag_name=\"tag_name\">tag_value2</tag>";
+  EXPECT_TRUE(content.find(expected_content_2) != std::string::npos)
+      << expected_content_2 << " not found in " << content;
+}
+
 class XmlUnitTestResultPrinterTimestampTest : public ::testing::Test {
  public:
   static void TearDownTestSuite() {

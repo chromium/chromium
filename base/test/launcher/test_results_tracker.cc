@@ -511,8 +511,12 @@ bool TestResultsTracker::SaveSummaryAsJSON(
         if (!test_result.tags.empty()) {
           Value::Dict tags;
           for (const auto& tag : test_result.tags) {
+            Value::List tag_values;
+            for (const auto& tag_value : tag.second) {
+              tag_values.Append(tag_value);
+            }
             Value::Dict tag_info;
-            tag_info.Set("value", tag.second);
+            tag_info.Set("values", std::move(tag_values));
             tags.SetByDottedPath(tag.first, std::move(tag_info));
           }
           test_result_value.Set("tags", std::move(tags));
