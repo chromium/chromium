@@ -58,7 +58,7 @@ TEST_F(TabletModeMultitaskCueTest, BasicShowCue) {
   auto* multitask_cue = GetMultitaskCue();
   ASSERT_TRUE(multitask_cue);
 
-  ui::Layer* cue_layer = multitask_cue->cue_layer_for_testing();
+  ui::Layer* cue_layer = multitask_cue->cue_layer();
   ASSERT_TRUE(cue_layer);
 
   EXPECT_EQ(gfx::Rect((window_bounds.width() - kCueWidth) / 2, kCueYOffset,
@@ -79,7 +79,7 @@ TEST_F(TabletModeMultitaskCueTest, SplitCueBounds) {
   gfx::Rect split_bounds((window1->bounds().width() - kCueWidth) / 2,
                          kCueYOffset, kCueWidth, kCueHeight);
 
-  ui::Layer* cue_layer = GetMultitaskCue()->cue_layer_for_testing();
+  ui::Layer* cue_layer = GetMultitaskCue()->cue_layer();
   ASSERT_TRUE(cue_layer);
   EXPECT_EQ(cue_layer->bounds(), split_bounds);
 
@@ -87,7 +87,7 @@ TEST_F(TabletModeMultitaskCueTest, SplitCueBounds) {
   split_view_controller->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
 
-  cue_layer = GetMultitaskCue()->cue_layer_for_testing();
+  cue_layer = GetMultitaskCue()->cue_layer();
   ASSERT_TRUE(cue_layer);
   EXPECT_EQ(cue_layer->bounds(), split_bounds);
 }
@@ -100,7 +100,7 @@ TEST_F(TabletModeMultitaskCueTest, DismissTimerFiring) {
   auto window = CreateAppWindow();
 
   auto* multitask_cue = GetMultitaskCue();
-  ui::Layer* cue_layer = multitask_cue->cue_layer_for_testing();
+  ui::Layer* cue_layer = multitask_cue->cue_layer();
   ASSERT_TRUE(cue_layer);
 
   // Wait for fade in to finish.
@@ -111,7 +111,7 @@ TEST_F(TabletModeMultitaskCueTest, DismissTimerFiring) {
 
   // Wait for fade out to finish.
   animation_waiter.Wait(cue_layer);
-  EXPECT_FALSE(multitask_cue->cue_layer_for_testing());
+  EXPECT_FALSE(multitask_cue->cue_layer());
 }
 
 // Tests that the cue dismisses properly during the fade out animation.
@@ -122,7 +122,7 @@ TEST_F(TabletModeMultitaskCueTest, DismissEarly) {
   auto window = CreateAppWindow();
 
   auto* multitask_cue = GetMultitaskCue();
-  ui::Layer* cue_layer = multitask_cue->cue_layer_for_testing();
+  ui::Layer* cue_layer = multitask_cue->cue_layer();
   ASSERT_TRUE(cue_layer);
 
   // Wait for fade in to finish.
@@ -130,7 +130,7 @@ TEST_F(TabletModeMultitaskCueTest, DismissEarly) {
 
   multitask_cue->FireCueDismissTimerForTesting();
   multitask_cue->DismissCue();
-  EXPECT_FALSE(multitask_cue->cue_layer_for_testing());
+  EXPECT_FALSE(multitask_cue->cue_layer());
 }
 
 // Tests that the cue dismisses properly when the float keyboard accelerator is
@@ -142,7 +142,7 @@ TEST_F(TabletModeMultitaskCueTest, FloatWindow) {
 
   auto* multitask_cue = GetMultitaskCue();
   ASSERT_TRUE(multitask_cue);
-  EXPECT_FALSE(multitask_cue->cue_layer_for_testing());
+  EXPECT_FALSE(multitask_cue->cue_layer());
 }
 
 }  // namespace ash

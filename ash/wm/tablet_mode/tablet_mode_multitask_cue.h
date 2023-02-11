@@ -33,6 +33,8 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
 
   ~TabletModeMultitaskCue() override;
 
+  ui::Layer* cue_layer() { return cue_layer_.get(); }
+
   // Shows the cue if `active_window` is an maximizable app window that is not
   // floated. Also sets a `OneShotTimer` to dismiss the cue after a short
   // duration.
@@ -58,7 +60,6 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   void OnPostWindowStateTypeChange(WindowState* window_state,
                                    chromeos::WindowStateType old_type) override;
 
-  ui::Layer* cue_layer_for_testing() { return cue_layer_.get(); }
   void FireCueDismissTimerForTesting() { cue_dismiss_timer_.FireNow(); }
 
  private:

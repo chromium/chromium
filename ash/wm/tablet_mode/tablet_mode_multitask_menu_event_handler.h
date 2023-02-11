@@ -5,8 +5,10 @@
 #ifndef ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_EVENT_HANDLER_H_
 #define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_EVENT_HANDLER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace ash {
 
@@ -33,7 +35,7 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   // TODO(crbug.com/1336836): Temporarily allow mouse wheel events to show or
   // hide the multitask menu for developers. Remove this before launch.
   void OnMouseEvent(ui::MouseEvent* event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnTouchEvent(ui::TouchEvent* event) override;
 
   TabletModeMultitaskMenu* multitask_menu_for_testing() {
     return multitask_menu_.get();
@@ -43,10 +45,20 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   }
 
  private:
-  // True while a drag to open or close the menu is in progress. Needed to
-  // consume GestureScrollBegin, GestureScrollUpdate, and GestureScrollEnd
-  // events in order.
-  bool is_drag_active_ = false;
+  // Drag data needed to process menu events. `initial_location` is the initial
+  // touch in screen coordinates, `can_open` indicates whether the drag was
+  // started from the target area, and `is_drag` indicates whether this was
+  // actually a drag, since the touch may have pressed and released on a button.
+  struct InitialDragData {
+    gfx::PointF initial_location;
+    bool can_open;
+    bool is_drag;
+  };
+
+  bool CanProcessEvent(aura::Window* window) const;
+
+  // Valid if we may need to handle the event.
+  absl::optional<InitialDragData> initial_drag_data_;
 
   // Creates a draggable bar when app windows are activated.
   std::unique_ptr<TabletModeMultitaskCue> multitask_cue_;
