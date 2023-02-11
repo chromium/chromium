@@ -224,7 +224,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2088116547584365419">games</translation>
 <translation id="209965399369889474">Not connected to network</translation>
 <translation id="2107914222138020205">Your USB-C cable does not support Thunderbolt. Device performance may be limited.</translation>
-<translation id="2108303511227308752">The Alt + backspace keyboard shortcut has changed. To use the delete key, press the <ph name="LAUNCHER_KEY_NAME" /> key + backspace.</translation>
+<translation id="2108303511227308752">The Alt + Backspace keyboard shortcut has changed. To use the Delete key, press the <ph name="LAUNCHER_KEY_NAME" /> key + Backspace.</translation>
 <translation id="2126242104232412123">New desk</translation>
 <translation id="2132302418721800944">Record full screen</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
@@ -595,7 +595,7 @@ Connect your device to power.</translation>
 <translation id="425364040945105958">No SIM</translation>
 <translation id="4261870227682513959">Show notification settings. Notifications are off</translation>
 <translation id="4269883910223712419">The admin of this device has the ability to:</translation>
-<translation id="4274537685965975248">The Ctrl + Alt + down arrow keyboard shortcut has changed. To use the End key, press the <ph name="LAUNCHER_KEY_NAME" /> key + right arrow.</translation>
+<translation id="4274537685965975248">The Ctrl + Alt + Down Arrow keyboard shortcut has changed. To use the End key, press the <ph name="LAUNCHER_KEY_NAME" /> key + Right Arrow.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4283888303416325161">Enter password for more security</translation>
 <translation id="4285498937028063278">Unpin</translation>
@@ -631,7 +631,7 @@ Connect your device to power.</translation>
 <translation id="4445159312344259901">Sign in to unlock</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 important notification}other{# important notifications}}</translation>
 <translation id="4450893287417543264">Don't show again</translation>
-<translation id="4451374464530248585">The Alt + down arrow keyboard shortcut has changed. To use the page down key, press the <ph name="LAUNCHER_KEY_NAME" /> key + down arrow.</translation>
+<translation id="4451374464530248585">The Alt + Down Arrow keyboard shortcut has changed. To use the Page Down key, press the <ph name="LAUNCHER_KEY_NAME" /> key + Down Arrow.</translation>
 <translation id="4455051983450390249">View your phone's notifications on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">Good evening,</translation>
 <translation id="4458688154122353284">Stop screen recording</translation>
