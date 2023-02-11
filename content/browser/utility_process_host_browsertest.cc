@@ -262,6 +262,34 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcess) {
                      base::Unretained(this)));
 }
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+
+// TODO(crbug.com/1407089): Re-enable this test on Android when
+// `files_to_preload` is actually fixed there.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_FileDescriptorStore DISABLED_FileDescriptorStore
+#else
+#define MAYBE_FileDescriptorStore FileDescriptorStore
+#endif
+IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
+                       MAYBE_FileDescriptorStore) {
+  // Tests whether base::FileDescriptorStore works in content by passing it a
+  // file descriptor for a pipe on launch. This test ensures the process is
+  // launched without a zygote.
+#if BUILDFLAG(USE_ZYGOTE)
+  host_->SetZygoteForTesting(nullptr);
+#endif
+
+  base::ScopedFD read_fd;
+  base::ScopedFD write_fd;
+  ASSERT_TRUE(base::CreatePipe(&read_fd, &write_fd));
+  host_->AddFileToPreload(mojom::kTestPipeKey, std::move(write_fd));
+  RunUtilityProcess(
+      base::BindOnce(&UtilityProcessHostBrowserTest::RunFileDescriptorStoreTest,
+                     base::Unretained(this), std::move(read_fd)));
+}
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && BUILDFLAG(USE_ZYGOTE)
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
                        FileDescriptorStoreWithUnsandboxedZygote) {

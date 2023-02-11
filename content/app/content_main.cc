@@ -241,7 +241,7 @@ RunContentProcess(ContentMainParams params,
     base::CommandLine::Init(argc, argv);
 
 #if BUILDFLAG(IS_POSIX)
-    PopulateFileDescriptorStoreFromGlobalDescriptors();
+    PopulateFileDescriptorStoreFromFdTable();
 #endif
 
     base::EnableTerminationOnHeapCorruption();

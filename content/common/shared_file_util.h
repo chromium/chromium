@@ -14,6 +14,20 @@
 
 namespace content {
 
+// Populates the global instance of base::FileDescriptorStore using the
+// information from the command line, assuming base::GlobalDescriptors has been
+// initialized to hold the dynamically-generated descriptors (e.g. as happens in
+// the zygote).
+void PopulateFileDescriptorStoreFromGlobalDescriptors();
+
+// Similar to PopulateFileDescriptorStoreFromGlobalDescriptors(), this will
+// populate the global instance of base::FileDescriptorStore, but takes the FDs
+// directly from the FD table, using the default FD numbers (i.e. descriptor_id
+// + base::GlobalDescriptors::kBaseDescriptor). On Posix systems, exec'd
+// processes should use this instead of
+// PopulateFileDescriptorStoreFromGlobalDescriptors().
+void PopulateFileDescriptorStoreFromFdTable();
+
 class SharedFileSwitchValueBuilder final {
  public:
   void AddEntry(const std::string& key_str, int key_id);
@@ -22,10 +36,6 @@ class SharedFileSwitchValueBuilder final {
  private:
   std::string switch_value_;
 };
-
-// Populates base::FileDescriptorStore using the information from the command
-// line.
-void PopulateFileDescriptorStoreFromGlobalDescriptors();
 
 absl::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
     const std::string& value);

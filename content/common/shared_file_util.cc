@@ -15,16 +15,8 @@
 
 namespace content {
 
-void SharedFileSwitchValueBuilder::AddEntry(const std::string& key_str,
-                                            int key_id) {
-  if (!switch_value_.empty()) {
-    switch_value_ += ",";
-  }
-  switch_value_ += key_str, switch_value_ += ":";
-  switch_value_ += base::NumberToString(key_id);
-}
-
-void PopulateFileDescriptorStoreFromGlobalDescriptors() {
+namespace {
+void PopulateFDsFromCommandLine(bool use_global_descriptors) {
   const std::string& shared_file_param =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kSharedFiles);
@@ -42,10 +34,37 @@ void PopulateFileDescriptorStoreFromGlobalDescriptors() {
     base::MemoryMappedFile::Region region;
     const std::string& key = descriptor.second;
     base::ScopedFD fd;
-    fd = base::GlobalDescriptors::GetInstance()->TakeFD(descriptor.first,
-                                                        &region);
+    if (use_global_descriptors) {
+      fd = base::GlobalDescriptors::GetInstance()->TakeFD(descriptor.first,
+                                                          &region);
+    } else {
+      DCHECK_EQ(
+          base::GlobalDescriptors::GetInstance()->MaybeGet(descriptor.first),
+          -1);
+      fd.reset(descriptor.first + base::GlobalDescriptors::kBaseDescriptor);
+      region = base::MemoryMappedFile::Region::kWholeFile;
+    }
     base::FileDescriptorStore::GetInstance().Set(key, std::move(fd), region);
   }
+}
+}  // namespace
+
+void PopulateFileDescriptorStoreFromGlobalDescriptors() {
+  PopulateFDsFromCommandLine(/*use_global_descriptors=*/true);
+}
+
+void PopulateFileDescriptorStoreFromFdTable() {
+  PopulateFDsFromCommandLine(/*use_global_descriptors=*/false);
+}
+
+void SharedFileSwitchValueBuilder::AddEntry(const std::string& key_str,
+                                            int key_id) {
+  if (!switch_value_.empty()) {
+    switch_value_ += ",";
+  }
+  switch_value_ += key_str;
+  switch_value_ += ":";
+  switch_value_ += base::NumberToString(key_id);
 }
 
 absl::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
