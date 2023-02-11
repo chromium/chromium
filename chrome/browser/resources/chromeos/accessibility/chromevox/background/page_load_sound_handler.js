@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles page loading sounds based on automation events.
  */
+import {AsyncUtil} from '../../common/async_util.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
 import {ChromeVoxEvent} from '../common/custom_automation_event.js';
@@ -29,22 +30,24 @@ export class PageLoadSoundHandler extends BaseAutomationHandler {
 
     /** @private {boolean} */
     this.didRequestLoadSound_ = false;
-
-    chrome.automation.getDesktop(desktop => {
-      this.node_ = desktop;
-
-      this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
-      this.addListener_(EventType.LOAD_START, this.onLoadStart);
-
-      ChromeVoxRange.addObserver(this);
-    });
   }
 
-  static init() {
+  /** @private */
+  async initListeners_() {
+    this.node_ = await AsyncUtil.getDesktop();
+
+    this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
+    this.addListener_(EventType.LOAD_START, this.onLoadStart);
+
+    ChromeVoxRange.addObserver(this);
+  }
+
+  static async init() {
     if (PageLoadSoundHandler.instance) {
       throw 'Error: Trying to create two instances of singleton PageLoadSoundHandler';
     }
     PageLoadSoundHandler.instance = new PageLoadSoundHandler();
+    await PageLoadSoundHandler.instance.initListeners_();
   }
 
   /**

@@ -140,7 +140,6 @@ export class Background extends ChromeVoxState {
     LocaleOutputHelper.init();
     LogStore.init();
     LogUrlWatcher.init();
-    PageLoadSoundHandler.init();
     PanelBackground.init();
     RangeAutomationHandler.init();
     SmartStickyMode.init();
@@ -152,6 +151,7 @@ export class Background extends ChromeVoxState {
       DesktopAutomationHandler.init(),
       EventStreamLogger.init(),
       MediaAutomationHandler.init(),
+      PageLoadSoundHandler.init(),
       PermissionChecker.init(),
     ]);
     ChromeVoxState.resolveReadyPromise_();
