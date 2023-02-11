@@ -242,7 +242,7 @@ void FeatureTilesContainerView::OnWillChangeFocus(views::View* before,
 
 void FeatureTilesContainerView::OnDidChangeFocus(views::View* before,
                                                  views::View* now) {
-  if (!now || !views::IsViewClass<FeatureTile>(now)) {
+  if (!now || !views::IsViewClass<FeatureTile>(now) || !Contains(now)) {
     return;
   }
 
