@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
+#include "media/base/timestamp_constants.h"
 #include "media/gpu/buffer_validation.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
 
@@ -453,8 +454,13 @@ bool StructTraits<media::stable::mojom::DecoderBufferDataView,
   decoder_buffer->set_timestamp(timestamp);
 
   base::TimeDelta duration;
-  if (!input.ReadTimestamp(&duration))
+  if (!input.ReadDuration(&duration)) {
     return false;
+  }
+  if (duration != media::kNoTimestamp &&
+      (duration < base::TimeDelta() || duration == media::kInfiniteDuration)) {
+    return false;
+  }
   decoder_buffer->set_duration(duration);
 
   decoder_buffer->set_is_key_frame(input.is_key_frame());

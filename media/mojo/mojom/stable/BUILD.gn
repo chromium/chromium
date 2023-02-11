@@ -192,3 +192,12 @@ mojom("native_pixmap_handle") {
     ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "stable_video_decoder_types_mojom_traits_unittest.cc" ]
+  deps = [
+    ":stable_video_decoder",
+    "//testing/gtest",
+  ]
+}
