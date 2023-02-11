@@ -8075,7 +8075,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Click the back arrow to explore other options
       </message>
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY" desc="The description of the body text in the 'success' step in customize chrome tutorial">
-        That’s it! You can now give your browser a new look at any time.
+        You can now give your browser a new look at any time.
       </message>
 
       <!-- Browser Hung Plugin Detector -->
