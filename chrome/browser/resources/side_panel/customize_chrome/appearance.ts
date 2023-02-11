@@ -104,6 +104,10 @@ export class AppearanceElement extends PolymerElement {
     this.callbackRouter_.removeListener(this.setThemeListenerId_);
   }
 
+  focusOnThemeButton() {
+    this.$.editThemeButton.focus();
+  }
+
   private computeThirdPartyThemeId_(): string|null {
     if (this.theme_ && this.theme_.thirdPartyThemeInfo) {
       return this.theme_.thirdPartyThemeInfo.id;

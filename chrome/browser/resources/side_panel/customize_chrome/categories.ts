@@ -117,6 +117,10 @@ export class CategoriesElement extends CategoriesElementBase {
         CHANGE_CHROME_THEME_CLASSIC_ELEMENT_ID, '#classicChromeTile');
   }
 
+  focusOnBackButton() {
+    this.$.backButton.focus();
+  }
+
   private onCollectionsRendered_() {
     const collections = this.root!.querySelectorAll('.collection');
     if (collections.length >= 5) {
