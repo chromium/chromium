@@ -112,6 +112,21 @@ UnifiedVolumeView::UnifiedVolumeView(
             /*is_togglable=*/true,
             /*has_border=*/true),
         GetIndexOf(more_button_).value());
+    // Sets the icon, icon color, background color for `live_caption_button_`
+    // when it's toggled.
+    live_caption_button_->SetToggledVectorIcon(kUnifiedMenuLiveCaptionIcon);
+    live_caption_button_->SetIconToggledColorId(
+        cros_tokens::kCrosSysSystemOnPrimaryContainer);
+    live_caption_button_->SetBackgroundToggledColorId(
+        cros_tokens::kCrosSysSystemPrimaryContainer);
+    // Sets the icon, icon color, background color for `live_caption_button_`
+    // when it's not toggled.
+    live_caption_button_->SetVectorIcon(kUnifiedMenuLiveCaptionOffIcon);
+    live_caption_button_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
+    live_caption_button_->SetBackgroundColorId(
+        cros_tokens::kCrosSysSystemOnBase);
+
+    live_caption_button_->SetToggled(enabled);
   }
 
   Update(/*by_user=*/false);
@@ -268,10 +283,9 @@ void UnifiedVolumeView::OnAccessibilityStatusChanged() {
 
   const bool enabled = a11y_controller_->live_caption().enabled();
 
-  // Updates the icon of `live_caption_button_`.
-  live_caption_button_->SetVectorIcon(a11y_controller_->live_caption().enabled()
-                                          ? kUnifiedMenuLiveCaptionIcon
-                                          : kUnifiedMenuLiveCaptionOffIcon);
+  // Sets `live_caption_button_` toggle state to update its icon, icon color,
+  // and background color.
+  live_caption_button_->SetToggled(enabled);
 
   // Updates the tooltip of `live_caption_button_`.
   std::u16string toggle_tooltip = l10n_util::GetStringUTF16(

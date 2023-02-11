@@ -75,6 +75,22 @@ UnifiedBrightnessView::UnifiedBrightnessView(
                     : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_DISABLED_STATE_TOOLTIP)),
         /*is_togglable=*/true,
         /*has_border=*/true));
+    // Sets the icon, icon color, background color for `night_light_button_`
+    // when it's toggled.
+    night_light_button_->SetToggledVectorIcon(kUnifiedMenuNightLightIcon);
+    night_light_button_->SetIconToggledColorId(
+        cros_tokens::kCrosSysSystemOnPrimaryContainer);
+    night_light_button_->SetBackgroundToggledColorId(
+        cros_tokens::kCrosSysSystemPrimaryContainer);
+    // Sets the icon, icon color, background color for `night_light_button_`
+    // when it's not toggled.
+    night_light_button_->SetVectorIcon(kUnifiedMenuNightLightOffIcon);
+    night_light_button_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
+    night_light_button_->SetBackgroundColorId(
+        cros_tokens::kCrosSysSystemOnBase);
+
+    night_light_button_->SetToggled(enabled);
+
     AddChildView(std::make_unique<IconButton>(
         std::move(detailed_button_callback.value()),
         IconButton::Type::kMediumFloating, &kQuickSettingsRightArrowIcon,
@@ -115,9 +131,9 @@ void UnifiedBrightnessView::OnNightLightButtonPressed() {
 void UnifiedBrightnessView::UpdateNightLightButton() {
   const bool enabled = night_light_controller_->GetEnabled();
 
-  // Updates the icon of `night_light_button_`.
-  night_light_button_->SetVectorIcon(enabled ? kUnifiedMenuNightLightIcon
-                                             : kUnifiedMenuNightLightOffIcon);
+  // Sets `night_light_button_` toggle state to update its icon, icon color,
+  // and background color.
+  night_light_button_->SetToggled(enabled);
 
   // Updates the tooltip of `night_light_button_`.
   std::u16string toggle_tooltip = l10n_util::GetStringUTF16(
