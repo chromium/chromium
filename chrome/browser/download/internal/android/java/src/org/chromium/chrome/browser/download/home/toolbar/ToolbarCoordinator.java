@@ -10,11 +10,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -25,7 +28,7 @@ import java.util.List;
 /**
  * A top level class to handle various toolbar related functionalities in download home.
  */
-public class ToolbarCoordinator implements SelectionObserver<ListItem> {
+public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPressHandler {
     /**
      * A delegate to handle various actions taken by user that relate to list items.
      */
@@ -71,6 +74,8 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem> {
     private final ViewGroup mView;
     private final DownloadHomeToolbar mToolbar;
     private final FadingShadowView mShadow;
+    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
+            new ObservableSupplierImpl<>();
 
     private boolean mShowToolbarShadow;
 
@@ -113,6 +118,8 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem> {
         mShadow.init(context.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
 
         if (!hasCloseButton) mToolbar.removeMenuItem(R.id.close_menu_id);
+        mBackPressStateSupplier.set(mToolbar.isSearching());
+        mToolbar.isSearchingSupplier().addObserver(mBackPressStateSupplier::set);
     }
 
     /**
@@ -158,6 +165,17 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem> {
         }
 
         return false;
+    }
+
+    @Override
+    public void handleBackPress() {
+        var ret = handleBackPressed();
+        assert ret;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
     }
 
     // SelectionObserver<ListItem> implementation.

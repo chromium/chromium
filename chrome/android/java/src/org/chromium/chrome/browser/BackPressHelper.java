@@ -61,13 +61,31 @@ public final class BackPressHelper {
     }
 
     /**
+     * Register a list of {@link BackPressHandler} on a given {@link  OnBackPressedDispatcher}.
+     * The first handler has the top priority and the last one has the least.
+     * TODO(https://crbug.com/1406012): consider introducing a lightweight
+     * {@link org.chromium.chrome.browser.back_press.BackPressManager} if too many handlers should
+     * be registered.
+     * @param lifecycleOwner {@link LifecycleOwner} managing the back press logic's lifecycle.
+     * @param dispatcher {@link OnBackPressedDispatcher} that holds other callbacks.
+     * @param handlers {@link BackPressHandler} observing back press state and consuming back press.
+     */
+    public static void create(LifecycleOwner lifecycleOwner, OnBackPressedDispatcher dispatcher,
+            BackPressHandler[] handlers) {
+        // OnBackPressedDispatcher triggers handlers in a reversed order.
+        for (int i = handlers.length - 1; i >= 0; i--) {
+            create(lifecycleOwner, dispatcher, handlers[i]);
+        }
+    }
+
+    /**
      * Let the back press event be processed by next {@link OnBackPressedCallback}. A callback
      * needs to be in enabled state only when it plans to handle back press event. If the callback
      * cannot handle it for whatever reason, it can call this method to give the next callback
      * or a fallback runnable an opportunity to process it. If the callback needs to receive
      * back press events in the future again, it should enable itself after this call.
      * @param dispatcher {@link OnBackPressedDispatcher} holding other callbacks.
-     * @param callback {@link OnBackkPressedCallback} which just received the event but ended up
+     * @param callback {@link OnBackPressedCallback} which just received the event but ended up
      *        not handling it.
      */
     public static void onBackPressed(

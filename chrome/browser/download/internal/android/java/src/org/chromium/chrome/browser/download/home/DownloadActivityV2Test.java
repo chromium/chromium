@@ -51,9 +51,13 @@ import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.BackPressHelper;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.home.rename.RenameUtils;
@@ -63,6 +67,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -93,6 +98,7 @@ import java.util.Map;
 /** Tests the download home V2. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Batch(Batch.UNIT_TESTS)
 public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Mock
     private Tracker mTracker;
@@ -197,6 +203,13 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                         settingsLauncher, mSnackbarManager, mModalDialogManager, mTracker,
                         faviconProvider, mStubbedOfflineContentProvider, mDiscardableReferencePool);
         getActivity().setContentView(mDownloadCoordinator.getView());
+        if (BackPressManager.isSecondaryActivityEnabled()) {
+            BackPressHelper.create(getActivity(), getActivity().getOnBackPressedDispatcher(),
+                    mDownloadCoordinator.getBackPressHandlers());
+        } else {
+            BackPressHelper.create(getActivity(), getActivity().getOnBackPressedDispatcher(),
+                    mDownloadCoordinator::onBackPressed);
+        }
 
         mDownloadCoordinator.updateForUrl(UrlConstants.DOWNLOADS_URL);
     }
@@ -570,6 +583,44 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         // Close the search view, by clicking back button on toolbar.
         onView(withContentDescription("Go back")).perform(ViewActions.click());
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
+    public void testDismissSearchViewByBackPress() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
+
+        final DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
+        onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                (Runnable) () -> toolbar.getMenu().performIdentifierAction(R.id.search_menu_id, 0));
+
+        // The selection should be cleared when a search is started.
+        onView(withId(R.id.search_text)).check(matches(isDisplayed()));
+
+        // Select an item and assert that the search view is no longer showing.
+        onView(withText("page 4")).perform(ViewActions.longClick());
+        onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
+
+        // Clear the selection by back press and assert that the search view is showing again.
+        TestThreadUtils.runOnUiThreadBlocking(
+                getActivity().getOnBackPressedDispatcher()::onBackPressed);
+        onView(withId(R.id.search_text)).check(matches(isDisplayed()));
+
+        // Close the search view, by performing a back press.
+        TestThreadUtils.runOnUiThreadBlocking(
+                getActivity().getOnBackPressedDispatcher()::onBackPressed);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> { onView(withId(R.id.search_text)).check(matches(not(isDisplayed()))); });
+    }
+
+    @Test
+    @MediumTest
+    @Features.DisableFeatures({ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY})
+    public void testDismissSearchViewByBackPress_BackPressRefactor() {
+        testDismissSearchViewByBackPress();
     }
 
     /**

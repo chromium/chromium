@@ -14,6 +14,8 @@ import androidx.core.util.Pair;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.DiscardableReferencePool;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.FaviconProvider;
 import org.chromium.chrome.browser.download.home.JustNowProvider;
@@ -39,6 +41,7 @@ import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider.ThumbnailRequest;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProviderImpl;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.offline_items_collection.LaunchLocation;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -57,7 +60,7 @@ import java.util.List;
  * A Mediator responsible for converting an OfflineContentProvider to a list of items in downloads
  * home.  This includes support for filtering, deleting, etc..
  */
-class DateOrderedListMediator {
+class DateOrderedListMediator implements BackPressHandler {
     /** Helper interface for handling share requests by the UI. */
     @FunctionalInterface
     public interface ShareController {
@@ -116,6 +119,9 @@ class DateOrderedListMediator {
     private final TypeOfflineItemFilter mTypeFilter;
     private final SearchOfflineItemFilter mSearchFilter;
 
+    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
+            new ObservableSupplierImpl<>();
+
     /**
      * A selection observer that correctly updates the selection state for each item in the list.
      */
@@ -138,8 +144,9 @@ class DateOrderedListMediator {
                 mModel.update(i, item);
             }
             mModel.dispatchLastEvent();
-            mModel.getProperties().set(
-                    ListProperties.SELECTION_MODE_ACTIVE, mSelectionDelegate.isSelectionEnabled());
+            boolean selectionEnabled = mSelectionDelegate.isSelectionEnabled();
+            mModel.getProperties().set(ListProperties.SELECTION_MODE_ACTIVE, selectionEnabled);
+            mBackPressStateSupplier.set(selectionEnabled);
         }
     }
 
@@ -222,6 +229,8 @@ class DateOrderedListMediator {
                 ListProperties.CALLBACK_PAGINATION_CLICK, mListMutationController::loadMorePages);
         mModel.getProperties().set(ListProperties.CALLBACK_GROUP_PAGINATION_CLICK,
                 mListMutationController::loadMoreItemsOnCard);
+
+        mBackPressStateSupplier.set(mSelectionDelegate.isSelectionEnabled());
     }
 
     /** Tears down this mediator. */
@@ -273,8 +282,19 @@ class DateOrderedListMediator {
         return itemCount;
     }
 
+    @Override
+    public void handleBackPress() {
+        var ret = onBackPressed();
+        assert ret;
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
+    }
+
     /** Called to handle a back press event. */
-    public boolean handleBackPressed() {
+    public boolean onBackPressed() {
         if (mSelectionDelegate.isSelectionEnabled()) {
             mSelectionDelegate.clearSelection();
             return true;

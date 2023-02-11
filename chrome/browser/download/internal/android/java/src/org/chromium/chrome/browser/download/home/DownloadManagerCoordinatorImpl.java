@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.download.home.toolbar.ToolbarCoordinator;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -50,6 +51,7 @@ class DownloadManagerCoordinatorImpl
 
     private final Activity mActivity;
     private final Callback<Context> mSettingsLauncher;
+    private final BackPressHandler[] mBackPressHandlers;
 
     private ViewGroup mMainView;
 
@@ -77,6 +79,8 @@ class DownloadManagerCoordinatorImpl
             updateForUrl(Filters.toUrl(Filters.FilterType.PREFETCHED));
         }
         RecordUserAction.record("Android.DownloadManager.Open");
+        mBackPressHandlers = new BackPressHandler[] {
+                mListCoordinator.getBackPressHandler(), mToolbarCoordinator};
     }
 
     /**
@@ -133,8 +137,12 @@ class DownloadManagerCoordinatorImpl
     @Override
     public boolean onBackPressed() {
         if (mListCoordinator.handleBackPressed()) return true;
-        if (mToolbarCoordinator.handleBackPressed()) return true;
-        return false;
+        return mToolbarCoordinator.handleBackPressed();
+    }
+
+    @Override
+    public BackPressHandler[] getBackPressHandlers() {
+        return mBackPressHandlers;
     }
 
     @Override

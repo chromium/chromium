@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.SnackbarActivity;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
@@ -78,8 +79,13 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         setContentView(mDownloadCoordinator.getView());
         if (!showPrefetchContent) mDownloadCoordinator.updateForUrl(mCurrentUrl);
         mDownloadCoordinator.addObserver(mUiObserver);
-        BackPressHelper.create(
-                this, getOnBackPressedDispatcher(), mDownloadCoordinator::onBackPressed);
+        if (BackPressManager.isSecondaryActivityEnabled()) {
+            BackPressHelper.create(this, getOnBackPressedDispatcher(),
+                    mDownloadCoordinator.getBackPressHandlers());
+        } else {
+            BackPressHelper.create(
+                    this, getOnBackPressedDispatcher(), mDownloadCoordinator::onBackPressed);
+        }
     }
 
     @Override

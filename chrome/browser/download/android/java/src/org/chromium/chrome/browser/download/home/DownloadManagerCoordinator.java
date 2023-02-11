@@ -6,13 +6,15 @@ package org.chromium.chrome.browser.download.home;
 
 import android.view.View;
 
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+
 /**
  * A coordinator that represents the main download manager UI page. This visually shows a list of
  * downloaded items and allows the user to interact with those items.
  */
 public interface DownloadManagerCoordinator {
     /**
-     * An obsever to be notified of internal state changes that should be represented as a URL
+     * An observer to be notified of internal state changes that should be represented as a URL
      * change externally.
      */
     public interface Observer {
@@ -28,6 +30,13 @@ public interface DownloadManagerCoordinator {
      * @return Whether or not the back event has been consumed by this coordinator.
      */
     boolean onBackPressed();
+
+    /**
+     * Handlers interested in intercepting back events. The first handler has the top priority
+     * and the last one has the least.
+     * @return  Handlers which are interested in consuming back press event.
+     */
+    BackPressHandler[] getBackPressHandlers();
 
     /** @return A {@link View} representing this coordinator. */
     View getView();

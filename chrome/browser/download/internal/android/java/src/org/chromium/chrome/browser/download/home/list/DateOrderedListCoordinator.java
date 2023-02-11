@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.download.home.rename.RenameDialogManager;
 import org.chromium.chrome.browser.download.home.storage.StorageCoordinator;
 import org.chromium.chrome.browser.download.home.toolbar.ToolbarCoordinator;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
@@ -184,7 +185,14 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
 
     /** Called to handle a back press event. */
     public boolean handleBackPressed() {
-        return mMediator.handleBackPressed();
+        return mMediator.onBackPressed();
+    }
+
+    /**
+     * @return A list of {@link BackPressHandler}, which supports predictive back press.
+     */
+    public BackPressHandler getBackPressHandler() {
+        return mMediator;
     }
 
     @Override
