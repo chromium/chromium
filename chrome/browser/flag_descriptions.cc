@@ -1716,6 +1716,12 @@ const char kTabAudioMutingDescription[] =
     "When enabled, the audio indicators in the tab strip double as tab audio "
     "mute controls.";
 
+const char kCrasSplitAlsaUsbInternalName[] =
+    "CRAS Split USB/Internal refactor control";
+const char kCrasSplitAlsaUsbInternalDescription[] =
+    "When enable, CRAS will create different iodev with USB and internal "
+    "device.";
+
 const char kTabSelectionEditorV2Name[] = "Tab selection editor V2";
 const char kTabSelectionEditorV2Description[] =
     "Enable improved bulk tab editing capabilities.";
