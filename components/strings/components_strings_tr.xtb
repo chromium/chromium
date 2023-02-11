@@ -1182,7 +1182,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Fikrinizi değiştirirseniz istediğiniz zaman Chrome ayarlarından değişiklik yapabilirsiniz</translation>
-<translation id="3921869355029467742">Güvenlik kodunuzu girin</translation>
+<translation id="3921869355029467742">Güvenlik koduyla</translation>
 <translation id="3927932062596804919">Reddet</translation>
 <translation id="393316646445601645">İnternet ve telekom</translation>
 <translation id="3939773374150895049">CVC yerine WebAuthn kullanılsın mı?</translation>
@@ -1453,7 +1453,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4568329205873177285">Çerez ve site verileri listesini yeni bir pencerede inceleyin</translation>
 <translation id="457875822857220463">Teslimat</translation>
 <translation id="4582204425268416675">Kartı kaldır</translation>
-<translation id="4582595824823167856">Kısa mesaj alma</translation>
+<translation id="4582595824823167856">Kısa mesajla</translation>
 <translation id="4587425331216688090">Adres Chrome'dan kaldırılsın mı?</translation>
 <translation id="459089498662672729">Yönetici politikası, <ph name="ORIGIN_NAME" /> sitesinden buraya yapıştırma işlevini önermiyor</translation>
 <translation id="4592951414987517459"><ph name="DOMAIN" /> ile olan bağlantınız modern bir şifre seti kullanılarak şifrelendi.</translation>

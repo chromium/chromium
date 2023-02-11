@@ -1095,7 +1095,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3678529606614285348">Abre una página en una nueva ventana de Incógnito (Ctrl + Mayús + N).</translation>
 <translation id="3681007416295224113">Datos del certificado</translation>
 <translation id="3681421644246505351">Chrome tiene en cuenta temas de interés basándose en tu historial de navegación reciente.</translation>
-<translation id="3693327506115126094">Elige cómo vas a verificar tu identidad</translation>
+<translation id="3693327506115126094">Elige cómo verificar tu identidad</translation>
 <translation id="3701427423622901115">Se han restablecido los ajustes.</translation>
 <translation id="3704162925118123524">La red que estás utilizando puede requerir el acceso a su página de inicio de sesión.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1182,7 +1182,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Puedes cambiar de opinión en cualquier momento modificando la configuración de Chrome</translation>
-<translation id="3921869355029467742">Introduce el código de seguridad</translation>
+<translation id="3921869355029467742">Introducir el código de seguridad</translation>
 <translation id="3927932062596804919">Denegar</translation>
 <translation id="393316646445601645">Internet y telecomunicaciones</translation>
 <translation id="3939773374150895049">¿Usar WebAuthn en lugar de CVC?</translation>
@@ -1453,7 +1453,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4568329205873177285">Ver una lista con las cookies y los datos de sitios en una ventana nueva</translation>
 <translation id="457875822857220463">Envío</translation>
 <translation id="4582204425268416675">Eliminar tarjeta</translation>
-<translation id="4582595824823167856">Recibe un mensaje de texto</translation>
+<translation id="4582595824823167856">Recibir un mensaje de texto</translation>
 <translation id="4587425331216688090">¿Eliminar dirección de Chrome?</translation>
 <translation id="459089498662672729">Según la política del administrador, no se recomienda pegar contenido de <ph name="ORIGIN_NAME" /> en esta ubicación</translation>
 <translation id="4592951414987517459">Tu conexión con <ph name="DOMAIN" /> está cifrada con un conjunto de cifrado moderno.</translation>
