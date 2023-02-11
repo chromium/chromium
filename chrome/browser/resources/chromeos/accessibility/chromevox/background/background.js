@@ -88,9 +88,6 @@ export class Background extends ChromeVoxState {
 
   /** @private */
   init_() {
-    chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
-        () => this.onIntroduceChromeVox_());
-
     // Export globals on ChromeVox.
     ChromeVox.braille = BrailleBackground.instance;
     // Read-only earcons.
@@ -104,8 +101,6 @@ export class Background extends ChromeVoxState {
         });
     chrome.accessibilityPrivate.onCustomSpokenFeedbackToggled.addListener(
         enabled => this.talkBackEnabled_ = enabled);
-    chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
-        () => this.onIntroduceChromeVox_());
     chrome.accessibilityPrivate.onShowChromeVoxTutorial.addListener(() => {
       (new PanelCommand(PanelCommandType.TUTORIAL)).send();
     });
@@ -153,8 +148,10 @@ export class Background extends ChromeVoxState {
       MediaAutomationHandler.init(),
       PageLoadSoundHandler.init(),
       PermissionChecker.init(),
+      waitForIntroducePromise,
     ]);
     ChromeVoxState.resolveReadyPromise_();
+    ChromeVoxState.instance.onIntroduceChromeVox_();
   }
 
   /** @override */
@@ -435,4 +432,7 @@ export class Background extends ChromeVoxState {
 }
 
 InstanceChecker.closeExtraInstances();
+const waitForIntroducePromise = new Promise(
+    resolve =>
+        chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(resolve));
 Background.init();
