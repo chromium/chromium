@@ -288,7 +288,6 @@ js_type_check("closure_compile_local_module") {
 
   deps = [
     ":lazy_load",
-    ":os_page_visibility",
     ":os_route",
     ":os_settings",
     ":os_settings_routes",
@@ -308,10 +307,6 @@ js_library("os_settings") {
 }
 
 js_library("lazy_load") {
-}
-
-js_library("os_page_visibility") {
-  deps = [ "//ash/webui/common/resources:load_time_data.m" ]
 }
 
 js_library("os_route") {

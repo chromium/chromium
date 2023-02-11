@@ -39,7 +39,7 @@ import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '../../people_page/profil
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
-import {OSPageVisibility} from '../os_page_visibility.js';
+import {OsPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -182,7 +182,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
   }
 
   syncStatus: SyncStatus;
-  pageVisibility: OSPageVisibility;
+  pageVisibility: OsPageVisibility;
   private authToken_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private profileIconUrl_: string;
   private profileName_: string;

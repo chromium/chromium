@@ -374,7 +374,7 @@ non_web_component_files = [
   "chromeos/os_languages_page/languages_browser_proxy.ts",
   "chromeos/os_languages_page/languages_metrics_proxy.ts",
   "chromeos/os_languages_page/languages_types.ts",
-  "chromeos/os_page_visibility.js",
+  "chromeos/os_page_visibility.ts",
   "chromeos/os_people_page/account_manager_browser_proxy.ts",
   "chromeos/os_people_page/fingerprint_browser_proxy.ts",
   "chromeos/os_people_page/lock_state_behavior.js",

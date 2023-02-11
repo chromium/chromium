@@ -21,7 +21,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
-import {OSPageVisibility} from '../os_page_visibility.js';
+import {OsPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -113,7 +113,7 @@ class OsSettingsMainElement extends OsSettingsMainElementBase {
   prefs: Object;
   advancedToggleExpanded: boolean;
   toolbarSpinnerActive: boolean;
-  pageVisibility: OSPageVisibility;
+  pageVisibility: OsPageVisibility;
   showAndroidApps: boolean;
   showArcvmManageUsb: boolean;
   showCrostini: boolean;

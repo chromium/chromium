@@ -35,7 +35,7 @@ import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
-import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
+import {OsPageVisibility, osPageVisibility} from '../os_page_visibility.js';
 import {OsToolbarElement} from '../os_toolbar/os_toolbar.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -164,7 +164,7 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
   private advancedOpenedInMain_: boolean;
   private advancedOpenedInMenu_: boolean;
   private toolbarSpinnerActive_: boolean;
-  private pageVisibility_: OSPageVisibility;
+  private pageVisibility_: OsPageVisibility;
   private havePlayStoreApp_: boolean;
   private showAndroidApps_: boolean;
   private showArcvmManageUsb_: boolean;
