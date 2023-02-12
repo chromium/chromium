@@ -13,14 +13,23 @@
     android:layout_weight="1" >
 
     <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_wallpaper"
+        />
+
+    <FrameLayout
         android:id="@+id/launcher_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        />
 
     <include layout="@layout/layout_browser"
         android:id="@+id/browser_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        />
 
     <include layout="@layout/layout_smart_search"
         android:visibility="invisible"
@@ -29,7 +38,9 @@
     <com.ark.browser.ui.widget.homepage.TabSwitcherLayout
         android:id="@+id/tab_switcher_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        />
 
 </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 

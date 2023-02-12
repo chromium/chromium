@@ -297,7 +297,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/password_entry_exception.xml",
 
 
-
+    "//chrome/android/java/res_app/drawable-xxhdpi/bg_wallpaper.webp",
     "//chrome/android/java/res_app/drawable-xxhdpi/btn_suggestion_refine.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/download_item_pause_icon_style2.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/download_item_resume_icon_style2.png",

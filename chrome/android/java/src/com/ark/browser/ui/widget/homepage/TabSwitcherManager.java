@@ -26,6 +26,13 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         mSwitcher = mTabSwitcherLayout.getSwitcher();
         mSwitcher.addCallback(this);
         mSwitcher.setAdapter(new ArkTabAdapter());
+
+        // TODO
+        mLauncherLayout.setOnClickListener(v -> {
+            if (isInLauncher()) {
+                mSwitcher.open();
+            }
+        });
     }
 
     public SwitcherRecyclerLayout getSwitcher() {
@@ -37,10 +44,13 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     public void showSwitcher() {
+        mLauncherLayout.setVisibility(View.VISIBLE);
         mBrowserLayout.setVisibility(View.INVISIBLE);
-//        ArkCompositorViewHolder viewHolder = mBrowserLayout.findViewById(R.id.compositor_view_holder);
-//        viewHolder.setTab(null);
         mTabSwitcherLayout.showSwitcher();
+    }
+
+    public void onRestore() {
+        mTabSwitcherLayout.onRestore();
     }
 
     @Override
@@ -61,6 +71,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     @Override
     public void onBeforeIdle(int position) {
         showSwitcher();
+        mLauncherLayout.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -80,7 +91,8 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     @Override
     public void onOpen(float percent) {
-
+        mLauncherLayout.setVisibility(View.VISIBLE);
+        mLauncherLayout.setAlpha(1 - percent);
     }
 
     @Override
@@ -95,10 +107,28 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
     @Override
     public void onClose(float percent) {
+        mLauncherLayout.setVisibility(View.VISIBLE);
+        mLauncherLayout.setAlpha(percent);
+    }
 
+    private boolean isVisible(View view) {
+        return view.getVisibility() == View.VISIBLE;
+    }
+
+    public boolean isInBrowser() {
+        return isVisible(mTabSwitcherLayout) && !isVisible(mTabSwitcherLayout.getSwitcher());
+    }
+
+    public boolean isInLauncher() {
+        return isVisible(mLauncherLayout) && !isVisible(mTabSwitcherLayout);
+    }
+
+    public boolean isInTabSwitcher() {
+        return isVisible(mTabSwitcherLayout) && isVisible(mTabSwitcherLayout.getSwitcher());
     }
 
     public void goToBrowser(boolean animated) {
+        mLauncherLayout.setVisibility(View.INVISIBLE);
         mBrowserLayout.setVisibility(View.VISIBLE);
         mTabSwitcherLayout.showBrowser();
     }
@@ -113,9 +143,8 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     public void goToLauncher(boolean animated) {
-        // TODO make it
-//        mSwitcher.setVisibility(View.INVISIBLE);
-        goToBrowser();
+        mLauncherLayout.setVisibility(View.VISIBLE);
+        mTabSwitcherLayout.setVisibility(View.INVISIBLE);
     }
 
     public void goToLauncher() {
@@ -123,23 +152,15 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     }
 
     public boolean onBackPressed() {
-        if (mSwitcher.getVisibility() == View.VISIBLE) {
+        if (isInTabSwitcher()) {
             mSwitcher.close();
             return true;
         }
-//        else if (!isInLauncher()) {
-////            if (isFromBrowser) {
-////                isFromBrowser = false;
-////                goToBrowser();
-////            } else {
-////                goToLauncher();
-////            }
-//            goToLauncher();
-//            return true;
-//        }
-
+        else if (!isInLauncher()) {
+            goToLauncher();
+            return true;
+        }
         return false;
-//        return mSlideUp.onBackPressed();
     }
 
     public void transitionToBrowser(Rect startRect, Runnable endRunnable) {
@@ -185,6 +206,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                mLauncherLayout.setVisibility(View.INVISIBLE);
                 if (endRunnable != null) {
                     endRunnable.run();
                 }

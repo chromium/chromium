@@ -55,7 +55,6 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
     private final int mMaxV = 3000;
 
-
     // 缓存不再使用的View
     private final Queue<View> mViewQueue = new ArrayDeque<>();
 
@@ -1002,10 +1001,6 @@ public class SwitcherRecyclerLayout extends ViewGroup {
 
     public void moveDrag(float dx, float dy) {
         mPosition = adapter.getPosition();
-
-        if (getChildCount() == 0) {
-
-        }
 
         selectChildView();
 

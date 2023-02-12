@@ -33,7 +33,6 @@ import com.ark.browser.ui.fragment.dialog.DownloadDialog;
 import com.ark.browser.ui.fragment.dialog.ExitDialog;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
-import com.ark.browser.ui.widget.homepage.TabSwitcherLayout;
 import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -43,19 +42,14 @@ import com.zpj.utils.FileUtils;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivitySessionTracker;
-import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.download.DownloadLocationDialogType;
-import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.messages.DismissReason;
@@ -71,7 +65,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.url.GURL;
 
 public class ArkMainFragment extends BaseFragment implements
         PauseResumeWithNativeObserver, StartStopWithNativeObserver, InsetObserverView.WindowInsetObserver {
@@ -82,9 +75,6 @@ public class ArkMainFragment extends BaseFragment implements
 
     private BottomController mBottomController;
     private TabSwitcherManager mSwitcherManager;
-
-    private boolean isViewCreated = false;
-    private Runnable mOpenPage;
 
     @Nullable
     protected ManagedMessageDispatcher mMessageDispatcher;
@@ -203,29 +193,9 @@ public class ArkMainFragment extends BaseFragment implements
                 .subscribe();
 
         TabListManager.getInstance().restore(result -> {
-            Runnable runnable = () -> {
-                ITabGroup tabGroup = TabListManager.getInstance().getTabGroup(false);
-                int count = tabGroup.getCount();
-                ArkLogger.e(TAG, "restore count=" + count);
-
-                if (count > 0) {
-                    ArkLogger.e(TAG, "restore selectTabAt " + tabGroup.getIndex());
-                    tabGroup.selectTabAt(tabGroup.getIndex());
-                } else {
-                    ArkLogger.e(TAG, "restore openNewTab");
-                    LoadUrlParams params = new LoadUrlParams("www.baidu.com", PageTransition.LINK);
-                    TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
-                }
-            };
             ThreadPool.postOnUIThread(() -> {
-                if (isViewCreated) {
-                    runnable.run();
-                } else {
-                    mOpenPage = runnable;
-                }
-
                 if (mSwitcherManager != null) {
-                    mSwitcherManager.getTabSwitcherLayout().onRestore();
+                    mSwitcherManager.onRestore();
                 }
             });
         });
@@ -271,14 +241,6 @@ public class ArkMainFragment extends BaseFragment implements
         rootView.addView(insetObserverView, 0);
 
         mViewHolder.setInsetObserverView(insetObserverView);
-
-
-
-//        isViewCreated = true;
-//        if (mOpenPage != null) {
-//            mOpenPage.run();
-//            mOpenPage = null;
-//        }
     }
 
     @Override
@@ -286,7 +248,6 @@ public class ArkMainFragment extends BaseFragment implements
         if (mSwitcherManager != null && mSwitcherManager.onBackPressed()) {
             return true;
         }
-
 
         if (mViewHolder != null && mViewHolder.onBackPressed()) {
             return true;
@@ -344,11 +305,6 @@ public class ArkMainFragment extends BaseFragment implements
         postOnLazyInit(() -> {
             initMessageDispatcher();
             initCompositor();
-            isViewCreated = true;
-            if (mOpenPage != null) {
-                mOpenPage.run();
-                mOpenPage = null;
-            }
         });
     }
 

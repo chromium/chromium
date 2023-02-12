@@ -156,6 +156,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     @Override
     public void onResumeWithNative() {
+        super.onResumeWithNative();
         if (!ProfileManager.isInitialized()) {
             ProfileManager.addObserver(new ProfileManager.Observer() {
                 @Override
@@ -176,7 +177,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     }
 
     private void onPostResumeWithNative() {
-        super.onResumeWithNative();
+
         IncognitoStartup.onResumeWithNative(
                 TabListManager.getInstance().isIncognitoSelected(),
                 TABBED_MODE_COMPONENT_NAMES);
