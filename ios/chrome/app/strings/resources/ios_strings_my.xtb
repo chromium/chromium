@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">ရှာဖွေမှု အသစ်</translation>
 <translation id="1209206284964581585">ယခု ဖျောက်ထားပါ</translation>
 <translation id="1219674500290482172">အင်တာနက်သို့ ချိတ်ဆက်၍ မရနိုင်ပါ</translation>
+<translation id="1226238226094914652">သင့်စက်အားလုံးပေါ်ရှိ စကားဝှက်များ</translation>
 <translation id="122699739164161391">တဘ်အားလုံး ပိတ်ရန်</translation>
 <translation id="1229222343402087523">Chrome တွင် ${searchPhrase} ရှာရန်</translation>
 <translation id="1242044645101871359">ထပ်၍လက်မှတ်ထိုးဝင်ပါ</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">အားလုံးကို ဖွင့်ရန်</translation>
 <translation id="2556092377360758201">ကာကွယ်မှုမရှိပါ (အကြံပြုမထားပါ)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> သို့ ပို့နေသည်...</translation>
+<translation id="2576499762020411840">သင့် Google Account တွင် စကားဝှက်များ သုံးရန်နှင့် သိမ်းရန်</translation>
 <translation id="2578571896248130439">ဝဘ်စာမျက်နှာ ပို့ရန်</translation>
 <translation id="2584132361465095047">အကောင့် ထည့်သွင်းပါ…</translation>
 <translation id="2600682495497606169">ဝဘ်ဆိုက်ကွတ်ကီးများ ရှင်းထုတ်ခြင်း</translation>
@@ -409,6 +411,7 @@
 <translation id="4063300985191096908">ဖိဒ်သို့သွားရန်</translation>
 <translation id="408404951701638773">ရှာဖွေမှုဘားတန်းကို ယခုအခါ ပိုမိုလွယ်ကူစွာ အသုံးပြုနိုင်ပါပြီ</translation>
 <translation id="4092655288299341041">အကူအညီပြပါ</translation>
+<translation id="4101942614374785540">စကားဝှက်များကို သင့် Google Account (<ph name="ACCOUNT" />) တွင် သိမ်းလိုက်ပါပြီ။ သင်လက်မှတ်ထိုးဝင်တိုင်း ၎င်းတို့ကို သုံးနိုင်သည်။ ၎င်းကိုပိတ်ရန် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> သို့ သွားပါ။</translation>
 <translation id="4108998448622696017">အန္တရာယ်ရှိသည့် ဖြစ်ရပ်များ ဖြစ်ပွားလာသည့်အခါ သိရှိပြီး သင့်အား သတိပေးသည်။</translation>
 <translation id="411254640334432676">ဒေါင်းလုဒ် မအောင်မြင်ခဲ့</translation>
 <translation id="4112644173421521737">ရှာဖွေရန်</translation>
@@ -691,6 +694,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6184086493125982861">တဲဘ်များ ပြမည်</translation>
 <translation id="6187302354554850004">နောက်ဆုံး ထပ်တူပြုခြင်း: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">မဖတ်ရသေးသောစာ</translation>
+<translation id="6193424046394092997">{count,plural, =1{{title} သို့ စာညှပ်ကို သိမ်းထားသည်}other{{title} သို့ စာညှပ်ကို သိမ်းထားသည်}}</translation>
 <translation id="6196207969502475924">အသံဖြင့် ရှာဖွေမှု</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{တဘ် {COUNT} ခု ပိတ်ရန်}other{တဘ် {COUNT} ခု ပိတ်ရန်}}</translation>
 <translation id="6219550825416862075">ပြန်လည်ကြိုဆိုပါသည်</translation>
@@ -836,6 +840,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7062545763355031412">လက်ခံပြီး အကောင့်များကိုပြောင်းပါ</translation>
 <translation id="7080806333218412752">URL များကို စစ်ဆေးရန် Safe Browsing သို့ ပို့ပေးသည်။ အန္တရာယ်အသစ်များကို ရှာဖွေရာ၌ အထောက်အကူဖြစ်စေရန် စာမျက်နှာများ၊ ဒေါင်းလုဒ်များ၊ နောက်ဆက်တွဲလုပ်ဆောင်ချက်နှင့် စနစ်အချက်အလက်များ၏ နမူနာအချို့ကိုလည်း ပို့သည်။ သင်လက်မှတ်ထိုးဝင်ထားသည့်အခါ Google အက်ပ်များတစ်လျှောက် သင့်အားကာကွယ်ရန် ဤဒေတာကို သင့် Google Account သို့ ယာယီလင့်ခ်ချိတ်ပေးသည်။</translation>
+<translation id="7083860864742905105">ဖွင့်ထားသည့်အခါ စကားဝှက်များကို <ph name="ACCOUNT" /> တွင် သိမ်းသည်။ ပိတ်ထားသည့်အခါ စကားဝှက်များကို ဤစက်တွင်သာ သိမ်းသည်။</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> အတွက် ‘Google စကားဝှက်မန်နေဂျာ’ သို့</translation>
 <translation id="7099761977003084116">မကြာသေးမီကဖွင့်ထားသော တဘ်များ</translation>
 <translation id="7102005569666697658">ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="FILE_SIZE" /></translation>
@@ -912,6 +917,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7756478488453921771">မီနူး → ဆက်တင်များ → ငွေပေးချေနည်းလမ်းများ</translation>
 <translation id="7765158879357617694">ရွှေ့ရန်</translation>
 <translation id="7772032839648071052">စကားစုဝှက်ကို အတည်ပြုရန်</translation>
+<translation id="777572173400717978">{count,plural, =1{လိပ်စာမှတ်ထားသည်}other{လိပ်စာမှတ်ထားသည်}}</translation>
 <translation id="7781011649027948662">စာမျက်နှာကို ဘာသာပြန်လိုပါသလား။</translation>
 <translation id="7781069478569868053">တဘ် စာမျက်နှာ အသစ်</translation>
 <translation id="7781829728241885113">မနေ့က</translation>

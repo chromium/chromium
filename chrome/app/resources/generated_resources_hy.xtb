@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Վերագործարկե՞լ Լինուքսը</translation>
 <translation id="1047431265488717055">Պատճենել հղման տեքստը</translation>
 <translation id="1048286738600630630">Էկրաններ</translation>
+<translation id="1048770690598418849">Կարող եք բաց թողնել այս քայլը, և երբ ավարտեք կարգավորումը, մենք ավտոմատ նորից կփորձենք</translation>
 <translation id="1048986595386481879">Դինամիկ կերպով հատկացված</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="ATTACHMENTS" />ի ստացում <ph name="DEVICE_NAME" /> սարքից}one{<ph name="ATTACHMENTS" />ի ստացում <ph name="DEVICE_NAME" /> սարքից}other{<ph name="ATTACHMENTS" />ի ստացում <ph name="DEVICE_NAME" /> սարքից}}</translation>
 <translation id="1049743911850919806">Ինկոգնիտո</translation>
@@ -1625,6 +1626,7 @@
 <translation id="2410754283952462441">Ընտրեք հաշիվ</translation>
 <translation id="241082044617551207">Անհայտ փլագին</translation>
 <translation id="2410940059315936967">Կայքը, որն այցելել եք, կարող է այլ կայքերից զետեղել բովանդակություն, օրինակ՝ պատկերներ, գովազդ և տեքստ։ Այդպիսի կայքերի քուքիները կոչվում են երրորդ կողմի քուքիներ։</translation>
+<translation id="2411666601450687801">Այս սարքում արգելված է վիրտուալ մեքենաների օգտագործումը</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Ստեղնաշարի գործառական ստեղներ</translation>
 <translation id="2418307627282545839">Պահպանում է պայծառ և նուրբ գույները</translation>
@@ -1886,6 +1888,7 @@
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="265390580714150011">Դաշտի արժեք</translation>
 <translation id="2654553774144920065">Տպելու հարցում</translation>
+<translation id="265748523151262387">Մնացեք կապի մեջ ձեր հեռախոսի օգնությամբ</translation>
 <translation id="2657612187216250073">Նշորդի հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="2658941648214598230">Ցույց տա՞լ սկզբնական բովանդակությունը</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Տարբեր սարքերում գործառույթները կարող են տարբեր լինել</translation>
@@ -5302,6 +5305,7 @@
 <translation id="5801051031414037185">Կարգավորել հեռախոսը</translation>
 <translation id="5801568494490449797">Նախընտրանքներ</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
+<translation id="5804259315582798390">Չհաջողվեց միացնել սարքի տվյալների վերականգնումը</translation>
 <translation id="5805268472388605531">Շեշտը և հատուկ նշանները տեսնելու համար սեղմած պահեք ստեղնաշարի ստեղները</translation>
 <translation id="5805697420284793859">Պատուհանների կառավարիչ</translation>
 <translation id="5806447147478173900">Ցուցադրվող կայքերի կողմից օգտագործվող ընդհանուր տարածքը՝ <ph name="TOTAL_USAGE" /></translation>
@@ -6686,6 +6690,7 @@
 <translation id="7047059339731138197">Ընտրեք ֆոնը</translation>
 <translation id="7049293980323620022">Պահե՞լ ֆայլը:</translation>
 <translation id="7050037487872780845">Թեժ կետի սխալ կազմաձև</translation>
+<translation id="7051551856857948729">Թաքցնել IBAN-ի արժեքը</translation>
 <translation id="7052237160939977163">Ուղարկել կատարողականության հետագծման տվյալները</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>
 <translation id="7055152154916055070">Վերահասցեավորումն արգելափակված է՝</translation>
@@ -8550,6 +8555,7 @@
 <translation id="8767621466733104912">Ինքնաթարմացնել Chrome-ը բոլոր օգտատերերի համար</translation>
 <translation id="8770406935328356739">Ընդլայնման արմատային գրացուցակ</translation>
 <translation id="8771300903067484968">Գլխավոր էջը վերակայվել է կանխադրված ֆոնով։</translation>
+<translation id="8773280816776735812">Ցույց տալ IBAN-ի արժեքը</translation>
 <translation id="8773302562181397928">Պահել «<ph name="PRINTER_NAME" />» տպիչը</translation>
 <translation id="8774379074441005279">Հաստատեք վերականգնումը</translation>
 <translation id="8774934320277480003">Վերին լուսանցք</translation>
