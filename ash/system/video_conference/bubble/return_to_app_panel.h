@@ -18,12 +18,8 @@ namespace base {
 class UnguessableToken;
 }  // namespace base
 
-namespace ui {
-class Event;
-}  // namespace ui
-
 namespace views {
-class ImageButton;
+class ImageView;
 class Label;
 class View;
 }  // namespace views
@@ -75,13 +71,13 @@ class ASH_EXPORT ReturnToAppButton : public views::Button {
 
   views::Label* label() { return label_; }
   views::View* icons_container() { return icons_container_; }
-  views::ImageButton* expand_button() { return expand_button_; }
+  views::ImageView* expand_indicator() { return expand_indicator_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ReturnToAppPanelTest, ExpandCollapse);
 
-  // Callback for `expand_button_`.
-  void OnExpandButtonToggled(const ui::Event& event);
+  // Callback for the button.
+  void OnButtonClicked(const base::UnguessableToken& id);
 
   // Indicates if the running app is using camera, microphone, or screen
   // sharing.
@@ -109,9 +105,9 @@ class ASH_EXPORT ReturnToAppButton : public views::Button {
   // capturing of the media app.
   views::View* icons_container_ = nullptr;
 
-  // The button to toggle expand/collapse the panel. Only available if the
-  // button is in the top row.
-  views::ImageButton* expand_button_ = nullptr;
+  // The indicator showing if the panel is in expanded or collapsed state. Only
+  // available if the button is in the top row.
+  views::ImageView* expand_indicator_ = nullptr;
 
   base::WeakPtrFactory<ReturnToAppButton> weak_ptr_factory_{this};
 };

@@ -17,8 +17,7 @@
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/events/test/test_event.h"
-#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
 namespace {
@@ -149,7 +148,7 @@ TEST_F(ReturnToAppPanelTest, OneApp) {
 
   auto* app_button = static_cast<ReturnToAppButton*>(
       return_to_app_container->children().front());
-  EXPECT_FALSE(app_button->expand_button()->GetVisible());
+  EXPECT_FALSE(app_button->expand_indicator()->GetVisible());
   VerifyReturnToAppButtonInfo(app_button, is_capturing_camera,
                               is_capturing_microphone, is_capturing_screen,
                               kExpectedGoogleMeetDisplayedUrl);
@@ -214,7 +213,7 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   auto* return_to_app_container = GetReturnToAppContainer(panel.get());
   auto* summary_row = static_cast<ReturnToAppButton*>(
       return_to_app_container->children().front());
-  EXPECT_TRUE(summary_row->expand_button()->GetVisible());
+  EXPECT_TRUE(summary_row->expand_indicator()->GetVisible());
 
   auto* first_app_row =
       static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
@@ -228,24 +227,24 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   EXPECT_TRUE(summary_row->icons_container()->GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP),
-            summary_row->expand_button()->GetTooltipText());
+            summary_row->expand_indicator()->GetTooltipText());
   EXPECT_FALSE(first_app_row->GetVisible());
   EXPECT_FALSE(second_app_row->GetVisible());
 
-  // Clicking the expand button should expand the panel.
-  summary_row->OnExpandButtonToggled(ui::test::TestEvent());
+  // Clicking the summary row should expand the panel.
+  summary_row->OnButtonClicked(/*id=*/base::UnguessableToken::Null());
   EXPECT_TRUE(summary_row->expanded());
 
   // Verify the views in expanded state:
   EXPECT_FALSE(summary_row->icons_container()->GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_HIDE_TOOLTIP),
-            summary_row->expand_button()->GetTooltipText());
+            summary_row->expand_indicator()->GetTooltipText());
   EXPECT_TRUE(first_app_row->GetVisible());
   EXPECT_TRUE(second_app_row->GetVisible());
 
   // Click again. Should be in collapsed state.
-  summary_row->OnExpandButtonToggled(ui::test::TestEvent());
+  summary_row->OnButtonClicked(/*id=*/base::UnguessableToken::Null());
   EXPECT_FALSE(summary_row->expanded());
 }
 
@@ -314,12 +313,12 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
   auto* second_app_row =
       static_cast<ReturnToAppButton*>(return_to_app_container->children()[2]);
 
-  // Clicking on the summary row should not launch any apps.
+  // Clicking on the summary row should not launch any apps (it switched the
+  // panel to expanded state).
   LeftClickOn(summary_row);
+  ASSERT_TRUE(summary_row->expanded());
   EXPECT_FALSE(controller()->app_to_launch_state_[app_id1]);
   EXPECT_FALSE(controller()->app_to_launch_state_[app_id2]);
-
-  LeftClickOn(summary_row->expand_button());
 
   // Clicking each row should open the corresponding app.
   LeftClickOn(first_app_row);

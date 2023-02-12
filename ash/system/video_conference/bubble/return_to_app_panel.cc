@@ -8,7 +8,6 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,11 +17,8 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -90,23 +86,13 @@ std::u16string GetMediaAppDisplayText(
                                 : media_app->title;
 }
 
-void ReturnToApp(const base::UnguessableToken& id) {
-  // Returns early for the summary row, which has empty `id`.
-  if (id.is_empty()) {
-    return;
-  }
-  ash::VideoConferenceTrayController::Get()->ReturnToApp(id);
-}
-
 // A customized toggle button for the return to app panel, which rotates
 // depending on the expand state.
-class ReturnToAppExpandButton : public views::ImageButton,
+class ReturnToAppExpandButton : public views::ImageView,
                                 ReturnToAppButton::Observer {
  public:
-  ReturnToAppExpandButton(PressedCallback callback,
-                          ReturnToAppButton* return_to_app_button)
-      : views::ImageButton(std::move(callback)),
-        return_to_app_button_(return_to_app_button) {
+  explicit ReturnToAppExpandButton(ReturnToAppButton* return_to_app_button)
+      : return_to_app_button_(return_to_app_button) {
     return_to_app_button_->AddObserver(this);
   }
 
@@ -117,8 +103,8 @@ class ReturnToAppExpandButton : public views::ImageButton,
     return_to_app_button_->RemoveObserver(this);
   }
 
-  // views::ImageButton:
-  void PaintButtonContents(gfx::Canvas* canvas) override {
+  // views::ImageView:
+  void OnPaint(gfx::Canvas* canvas) override {
     // Rotate the canvas to rotate the button depending on the panel's expanded
     // state.
     gfx::ScopedCanvas scoped(canvas);
@@ -126,7 +112,7 @@ class ReturnToAppExpandButton : public views::ImageButton,
     if (!expanded_) {
       canvas->sk_canvas()->rotate(180.);
     }
-    gfx::ImageSkia image = GetImageToPaint();
+    gfx::ImageSkia image = GetImage();
     canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
   }
 
@@ -163,11 +149,13 @@ ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
                                      bool is_capturing_microphone,
                                      bool is_capturing_screen,
                                      const std::u16string& display_text)
-    : views::Button(base::BindRepeating(&ReturnToApp, id)),
-      is_capturing_camera_(is_capturing_camera),
+    : is_capturing_camera_(is_capturing_camera),
       is_capturing_microphone_(is_capturing_microphone),
       is_capturing_screen_(is_capturing_screen),
       panel_(panel) {
+  SetCallback(base::BindRepeating(&ReturnToAppButton::OnButtonClicked,
+                                  weak_ptr_factory_.GetWeakPtr(), id));
+
   auto spacing = is_top_row ? kReturnToAppButtonTopRowSpacing / 2
                             : kReturnToAppButtonSpacing / 2;
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -189,17 +177,12 @@ ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
   label_ = AddChildView(std::make_unique<views::Label>(display_text));
 
   if (is_top_row) {
-    auto expand_button = std::make_unique<ReturnToAppExpandButton>(
-        base::BindRepeating(&ReturnToAppButton::OnExpandButtonToggled,
-                            weak_ptr_factory_.GetWeakPtr()),
-        this);
-    expand_button->SetImageModel(
-        views::Button::ButtonState::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kUnifiedMenuExpandIcon,
-                                       cros_tokens::kCrosSysSecondary, 16));
-    expand_button->SetTooltipText(l10n_util::GetStringUTF16(
+    auto expand_indicator = std::make_unique<ReturnToAppExpandButton>(this);
+    expand_indicator->SetImage(ui::ImageModel::FromVectorIcon(
+        kUnifiedMenuExpandIcon, cros_tokens::kCrosSysSecondary, 16));
+    expand_indicator->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP));
-    expand_button_ = AddChildView(std::move(expand_button));
+    expand_indicator_ = AddChildView(std::move(expand_indicator));
   }
 
   // TODO(b/253646076): Double check accessible name for this button.
@@ -216,7 +199,15 @@ void ReturnToAppButton::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ReturnToAppButton::OnExpandButtonToggled(const ui::Event& event) {
+void ReturnToAppButton::OnButtonClicked(const base::UnguessableToken& id) {
+  // For rows that are not the summary row (which has non-empty `id`), perform
+  // return to app.
+  if (!id.is_empty()) {
+    ash::VideoConferenceTrayController::Get()->ReturnToApp(id);
+    return;
+  }
+
+  // For summary row, toggle the expand state.
   expanded_ = !expanded_;
 
   for (auto& observer : observer_list_) {
@@ -227,7 +218,7 @@ void ReturnToAppButton::OnExpandButtonToggled(const ui::Event& event) {
   auto tooltip_text_id =
       expanded_ ? IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_HIDE_TOOLTIP
                 : IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP;
-  expand_button_->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
+  expand_indicator_->SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
 }
 
 // -----------------------------------------------------------------------------
@@ -292,7 +283,7 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
         /*is_top_row=*/true, app->id, app->is_capturing_camera,
         app->is_capturing_microphone, app->is_capturing_screen,
         GetMediaAppDisplayText(app));
-    app_button->expand_button()->SetVisible(false);
+    app_button->expand_indicator()->SetVisible(false);
     container_view_->AddChildView(std::move(app_button));
 
     return;
