@@ -243,7 +243,23 @@ source_set("protobuf_support") {
   ]
 }
 
-if (use_blink) {
+static_library("test_sink") {
+  testonly = true
+  sources = [
+    "ipc_security_test_util.cc",
+    "ipc_security_test_util.h",
+    "ipc_test_sink.cc",
+    "ipc_test_sink.h",
+  ]
+  public_deps = [ ":ipc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//mojo/core/test:test_support",
+  ]
+}
+
+if (!is_ios) {
   source_set("run_all_unittests") {
     testonly = true
 
@@ -336,16 +352,15 @@ if (use_blink) {
   static_library("test_support") {
     testonly = true
     sources = [
-      "ipc_security_test_util.cc",
-      "ipc_security_test_util.h",
       "ipc_test_base.cc",
       "ipc_test_base.h",
       "ipc_test_channel_listener.cc",
       "ipc_test_channel_listener.h",
-      "ipc_test_sink.cc",
-      "ipc_test_sink.h",
     ]
-    public_deps = [ ":ipc" ]
+    public_deps = [
+      ":ipc",
+      ":test_sink",
+    ]
     deps = [
       "//base",
       "//base/test:test_support",
