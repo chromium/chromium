@@ -59,8 +59,6 @@ crbug.com/856601 [ Linux ] fast/js/toString-stack-overflow.html [ Pass Timeout ]
 # Sheriff 2019-02-13
 crbug.com/931660 [ Linux ] fast/history/replacestate-nocrash.html [ Pass Timeout ]
 
-# Time out on MSAN
-crbug.com/856601 [ Linux ] webaudio/Analyser/realtimeanalyser-freq-data.html [ Pass Timeout ]
 
 # Sheriff 2019-11-11
 

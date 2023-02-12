@@ -1335,7 +1335,6 @@ crbug.com/1211460 external/wpt/css/css-fonts/alternates-order.html [ Failure ]
 crbug.com/641861 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure ]
 crbug.com/443467 external/wpt/css/css-fonts/font-feature-settings-descriptor-01.html [ Failure ]
 crbug.com/819816 external/wpt/css/css-fonts/font-kerning-03.html [ Failure ]
-crbug.com/451346 external/wpt/css/css-fonts/size-adjust-02.html [ Failure ]
 crbug.com/451346 external/wpt/css/css-fonts/font-size-adjust-009.html [ Failure ]
 crbug.com/451346 external/wpt/css/css-fonts/font-size-adjust-010.html [ Failure ]
 crbug.com/451346 external/wpt/css/css-fonts/font-size-adjust-011.html [ Failure ]
@@ -1902,7 +1901,6 @@ crbug.com/944583 [ Mac11 Release ] fast/scrolling/percentage-mousewheel-scroll-o
 crbug.com/944583 [ Mac11-arm64 Release ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
 crbug.com/944583 [ Mac12 ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
 crbug.com/944583 [ Mac12-arm64 Release ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
-crbug.com/944583 [ Debug Mac12 ] fast/events/platform-wheelevent-paging-x-in-scrolling-page.html [ Failure Pass Timeout ]
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-y-in-scrolling-page.html [ Failure Pass Timeout ]
 # Sheriff: 2020-05-18
 
@@ -3077,7 +3075,6 @@ crbug.com/626703 [ Linux ] external/wpt/webxr/render_state_update.https.html [ T
 crbug.com/626703 [ Linux ] external/wpt/webxr/webxr_feature_policy.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xrSession_end.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/webxr/xrSession_visibilityState.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/xr_viewport_scale.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/abort-signal-remove/external/wpt/web-nfc/NDEFReader_scan.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Timeout ]
@@ -5627,7 +5624,6 @@ crbug.com/1373055 external/wpt/css/css-transforms/transform-translate-background
 # Revisit once crbug.com/1123886 is addressed.
 # Likely has the same root cause for crashes.
 crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash Failure Pass Timeout ]
-crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-with-non-ascii-name.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1233826 external/wpt/animation-worklet/worklet-animation-local-time-after-duration.https.html [ Crash Failure Pass Timeout ]
 crbug.com/930462 external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Crash Failure Pass Timeout ]
