@@ -42,12 +42,10 @@ UIControlsAura* GetUIControlsForRootWindow(aura::Window* root_window) {
 }
 
 // Returns the UIControls object for the RootWindow at |point_in_screen|.
-UIControlsAura* GetUIControlsAt(const gfx::Point& point_in_screen,
-                                aura::Window* window_hint = nullptr) {
+UIControlsAura* GetUIControlsAt(const gfx::Point& point_in_screen) {
   // TODO(mazda): Support the case passive grab is taken.
   return GetUIControlsForRootWindow(
-      window_hint ? window_hint->GetRootWindow()
-                  : window_util::GetRootWindowAt(point_in_screen));
+      window_util::GetRootWindowAt(point_in_screen));
 }
 
 }  // namespace
@@ -87,49 +85,45 @@ class UIControlsAsh : public UIControlsAura {
                window, key, control, shift, alt, command, std::move(closure));
   }
 
-  bool SendMouseMove(int x, int y, aura::Window* window_hint) override {
+  bool SendMouseMove(int x, int y) override {
     gfx::Point p(x, y);
     UIControlsAura* ui_controls = GetUIControlsAt(p);
-    return ui_controls && ui_controls->SendMouseMove(p.x(), p.y(), window_hint);
+    return ui_controls && ui_controls->SendMouseMove(p.x(), p.y());
   }
 
   bool SendMouseMoveNotifyWhenDone(int x,
                                    int y,
-                                   base::OnceClosure closure,
-                                   aura::Window* window_hint) override {
+                                   base::OnceClosure closure) override {
     gfx::Point p(x, y);
-    UIControlsAura* ui_controls = GetUIControlsAt(p, window_hint);
+    UIControlsAura* ui_controls = GetUIControlsAt(p);
     return ui_controls && ui_controls->SendMouseMoveNotifyWhenDone(
-                              p.x(), p.y(), std::move(closure), window_hint);
+                              p.x(), p.y(), std::move(closure));
   }
 
   bool SendMouseEvents(MouseButton type,
                        int button_state,
-                       int accelerator_state,
-                       aura::Window* window_hint) override {
+                       int accelerator_state) override {
     gfx::Point p(display::Screen::GetScreen()->GetCursorScreenPoint());
-    UIControlsAura* ui_controls = GetUIControlsAt(p, window_hint);
+    UIControlsAura* ui_controls = GetUIControlsAt(p);
     return ui_controls &&
-           ui_controls->SendMouseEvents(type, button_state, accelerator_state,
-                                        window_hint);
+           ui_controls->SendMouseEvents(type, button_state, accelerator_state);
   }
 
   bool SendMouseEventsNotifyWhenDone(MouseButton type,
                                      int button_state,
                                      base::OnceClosure closure,
-                                     int accelerator_state,
-                                     aura::Window* window_hint) override {
+                                     int accelerator_state) override {
     gfx::Point p(aura::Env::GetInstance()->last_mouse_location());
-    UIControlsAura* ui_controls = GetUIControlsAt(p, window_hint);
-    return ui_controls && ui_controls->SendMouseEventsNotifyWhenDone(
-                              type, button_state, std::move(closure),
-                              accelerator_state, window_hint);
+    UIControlsAura* ui_controls = GetUIControlsAt(p);
+    return ui_controls &&
+           ui_controls->SendMouseEventsNotifyWhenDone(
+               type, button_state, std::move(closure), accelerator_state);
   }
 
-  bool SendMouseClick(MouseButton type, aura::Window* window_hint) override {
+  bool SendMouseClick(MouseButton type) override {
     gfx::Point p(display::Screen::GetScreen()->GetCursorScreenPoint());
-    UIControlsAura* ui_controls = GetUIControlsAt(p, window_hint);
-    return ui_controls && ui_controls->SendMouseClick(type, window_hint);
+    UIControlsAura* ui_controls = GetUIControlsAt(p);
+    return ui_controls && ui_controls->SendMouseClick(type);
   }
 
   bool SendTouchEvents(int action, int id, int x, int y) override {

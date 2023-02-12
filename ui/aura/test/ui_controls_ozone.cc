@@ -7,7 +7,6 @@
 #include <tuple>
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -118,17 +117,13 @@ bool UIControlsOzone::SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
   return true;
 }
 
-bool UIControlsOzone::SendMouseMove(int screen_x,
-                                    int screen_y,
-                                    aura::Window* window_hint) {
-  return SendMouseMoveNotifyWhenDone(screen_x, screen_y, base::OnceClosure(),
-                                     window_hint);
+bool UIControlsOzone::SendMouseMove(int screen_x, int screen_y) {
+  return SendMouseMoveNotifyWhenDone(screen_x, screen_y, base::OnceClosure());
 }
 
 bool UIControlsOzone::SendMouseMoveNotifyWhenDone(int screen_x,
                                                   int screen_y,
-                                                  base::OnceClosure closure,
-                                                  aura::Window* window_hint) {
+                                                  base::OnceClosure closure) {
   gfx::PointF host_location(screen_x, screen_y);
   int64_t display_id = display::kInvalidDisplayId;
   if (!ScreenDIPToHostPixels(&host_location, &display_id))
@@ -141,25 +136,23 @@ bool UIControlsOzone::SendMouseMoveNotifyWhenDone(int screen_x,
     event_type = ui::ET_MOUSE_MOVED;
 
   PostMouseEvent(event_type, host_location, button_down_mask_, 0, display_id,
-                 std::move(closure), window_hint);
+                 std::move(closure));
 
   return true;
 }
 
 bool UIControlsOzone::SendMouseEvents(ui_controls::MouseButton type,
                                       int button_state,
-                                      int accelerator_state,
-                                      aura::Window* window_hint) {
+                                      int accelerator_state) {
   return SendMouseEventsNotifyWhenDone(type, button_state, base::OnceClosure(),
-                                       accelerator_state, window_hint);
+                                       accelerator_state);
 }
 
 bool UIControlsOzone::SendMouseEventsNotifyWhenDone(
     ui_controls::MouseButton type,
     int button_state,
     base::OnceClosure closure,
-    int accelerator_state,
-    aura::Window* window_hint) {
+    int accelerator_state) {
   gfx::PointF host_location(Env::GetInstance()->last_mouse_location());
   int64_t display_id = display::kInvalidDisplayId;
   if (!ScreenDIPToHostPixels(&host_location, &display_id))
@@ -199,23 +192,21 @@ bool UIControlsOzone::SendMouseEventsNotifyWhenDone(
     PostMouseEvent(ui::ET_MOUSE_PRESSED, host_location,
                    button_down_mask_ | flag, changed_button_flag, display_id,
                    (button_state & ui_controls::UP) ? base::OnceClosure()
-                                                    : std::move(closure),
-                   window_hint);
+                                                    : std::move(closure));
   }
   if (button_state & ui_controls::UP) {
     button_down_mask_ &= ~flag;
     PostMouseEvent(ui::ET_MOUSE_RELEASED, host_location,
                    button_down_mask_ | flag, changed_button_flag, display_id,
-                   std::move(closure), window_hint);
+                   std::move(closure));
   }
 
   return true;
 }
 
-bool UIControlsOzone::SendMouseClick(ui_controls::MouseButton type,
-                                     aura::Window* window_hint) {
+bool UIControlsOzone::SendMouseClick(ui_controls::MouseButton type) {
   return SendMouseEvents(type, ui_controls::UP | ui_controls::DOWN,
-                         ui_controls::kNoAccelerator, window_hint);
+                         ui_controls::kNoAccelerator);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -306,27 +297,20 @@ void UIControlsOzone::PostMouseEvent(ui::EventType type,
                                      int flags,
                                      int changed_button_flags,
                                      int64_t display_id,
-                                     base::OnceClosure closure,
-                                     aura::Window* window_hint) {
-  base::WeakPtr<WindowTreeHost> host_hint =
-      (window_hint && window_hint->GetHost())
-          ? window_hint->GetHost()->GetWeakPtr()
-          : nullptr;
+                                     base::OnceClosure closure) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&UIControlsOzone::PostMouseEventTask,
-                                base::Unretained(this), type, host_location,
-                                flags, changed_button_flags, display_id,
-                                std::move(closure), host_hint));
+      FROM_HERE,
+      base::BindOnce(&UIControlsOzone::PostMouseEventTask,
+                     base::Unretained(this), type, host_location, flags,
+                     changed_button_flags, display_id, std::move(closure)));
 }
 
-void UIControlsOzone::PostMouseEventTask(
-    ui::EventType type,
-    const gfx::PointF& host_location,
-    int flags,
-    int changed_button_flags,
-    int64_t display_id,
-    base::OnceClosure closure,
-    base::WeakPtr<WindowTreeHost> host_hint) {
+void UIControlsOzone::PostMouseEventTask(ui::EventType type,
+                                         const gfx::PointF& host_location,
+                                         int flags,
+                                         int changed_button_flags,
+                                         int64_t display_id,
+                                         base::OnceClosure closure) {
   ui::MouseEvent mouse_event(type, host_location, host_location,
                              ui::EventTimeForNow(), flags,
                              changed_button_flags);
@@ -334,8 +318,7 @@ void UIControlsOzone::PostMouseEventTask(
   // This hack is necessary to set the repeat count for clicks.
   ui::MouseEvent mouse_event2(&mouse_event);
 
-  SendEventToSink(&mouse_event2, display_id, std::move(closure),
-                  host_hint.get());
+  SendEventToSink(&mouse_event2, display_id, std::move(closure));
 }
 
 void UIControlsOzone::PostTouchEvent(ui::EventType type,
