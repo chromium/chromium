@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+PASS e.style['background'] = "url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box, rgb(5, 6, 7) url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box" should set the property value
+FAIL e.style['background'] = "none" should set background-attachment assert_equals: background-attachment should be canonical expected "scroll" but got "initial"
+FAIL e.style['background'] = "none" should set background-clip assert_equals: background-clip should be canonical expected "border-box" but got "initial"
+FAIL e.style['background'] = "none" should set background-color assert_equals: background-color should be canonical expected "transparent" but got "initial"
+PASS e.style['background'] = "none" should set background-image
+FAIL e.style['background'] = "none" should set background-origin assert_equals: background-origin should be canonical expected "padding-box" but got "initial"
+FAIL e.style['background'] = "none" should set background-position assert_equals: background-position should be canonical expected "0%" but got "initial"
+FAIL e.style['background'] = "none" should set background-repeat assert_equals: background-repeat should be canonical expected "repeat" but got "initial"
+FAIL e.style['background'] = "none" should set background-size assert_equals: background-size should be canonical expected "auto" but got "initial"
+PASS e.style['background'] = "none" should not set unrelated longhands
+PASS e.style['background'] = "url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box, rgb(5, 6, 7) url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box" should set background-attachment
+PASS e.style['background'] = "url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box, rgb(5, 6, 7) url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box" should set background-clip
+PASS e.style['background'] = "url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box, rgb(5, 6, 7) url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box" should set background-color
+PASS e.style['background'] = "url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box, rgb(5, 6, 7) url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box" should set background-image
+PASS e.style['background'] = "url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box, rgb(5, 6, 7) url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box" should set background-origin
+PASS e.style['background'] = "url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box, rgb(5, 6, 7) url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box" should set background-position
+PASS e.style['background'] = "url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box, rgb(5, 6, 7) url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box" should set background-repeat
+PASS e.style['background'] = "url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box, rgb(5, 6, 7) url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box" should set background-size
+PASS e.style['background'] = "url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box, rgb(5, 6, 7) url(\"https://example.com/\") 1px 2px / 3px 4px space round local padding-box content-box" should not set unrelated longhands
+Harness: the test ran to completion.
+

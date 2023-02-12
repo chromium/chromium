@@ -263967,6 +263967,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "b465dcfc282ee8f1500ed10d601e8baf90695cce",
+     []
+    ],
+    "mtime.json": [
+     "4f52593b40e6ddcf84cdebe6e2a82a0f682e8488",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -266610,12 +266620,36 @@
     }
    },
    "browsing-topics": {
+    "browsing-topics-permissions-policy-default.tentative.https.sub.html.ini": [
+     "09feb942fdec3cf0321b5b259fe60236b161e3e8",
+     []
+    ],
     "browsing-topics-permissions-policy-none.tentative.https.sub.html.headers": [
      "9c93ff7384f22e80dc874a59598fdc92f384e20e",
      []
     ],
+    "browsing-topics-permissions-policy-none.tentative.https.sub.html.ini": [
+     "fa09975dff4c1c1278b0c902098b3d074ed86b0d",
+     []
+    ],
     "browsing-topics-permissions-policy-self.tentative.https.sub.html.headers": [
      "6eb902eb6830b1ec83a932e8ffca9bf365f1d766",
+     []
+    ],
+    "browsing-topics-permissions-policy-self.tentative.https.sub.html.ini": [
+     "2d025ecf12e62bddb8c40cb3d2cb4cbf4bf9e041",
+     []
+    ],
+    "document-api.tentative.https.html.ini": [
+     "5c5c567f85e5b2ce77266042c4c7080c49970135",
+     []
+    ],
+    "fetch-topics-insecure-context.tentative.http.html.ini": [
+     "c68eda5f322f35aef7a4e3ea5518fb437bfeeb52",
+     []
+    ],
+    "fetch-topics.tentative.https.html.ini": [
+     "c6db0c465e1a7ab2df2feaaaf236e77723fd2674",
      []
     ],
     "resources": {
@@ -266651,7 +266685,11 @@
       "2278d5bc76d31b96a3759f1e20a9c2ed13f485e1",
       []
      ]
-    }
+    },
+    "xhr-topics.tentative.https.html.ini": [
+     "fa8ed1a245bf2ddec09438b596a543c966b82e22",
+     []
+    ]
    },
    "clear-site-data": {
     "DIR_METADATA": [
@@ -282356,6 +282394,14 @@
        "2b9527286d74390b96ec004db0a51c437d590881",
        []
       ],
+      "background-valid-expected.txt": [
+       "c973f6842b7373ff3f69429975aa994f165f6e8a",
+       []
+      ],
+      "background-valid.html.ini": [
+       "77b1ee915cf99d25e2eeb2f8f6caff7e764569b8",
+       []
+      ],
       "border-shorthand-expected.txt": [
        "f78d14d1f75bbaeb39b547fa94bd3498e7f45f1b",
        []
@@ -286756,6 +286802,10 @@
        "228eebfaa6b6018dc60db090971f2f8176614a27",
        []
       ],
+      "content-visibility-selection-crash.html.ini": [
+       "6ca73d23996caf612dbf5ebe0b7a002627d33e12",
+       []
+      ],
       "content-visibility-video-ref.html": [
        "5e1e9bdde841828cbd4fc3d6cc165305361f4f36",
        []
@@ -287873,7 +287923,7 @@
        []
       ],
       "system-extends.html.ini": [
-       "cce2bed8622a3a0a0dd36e8fdb474eec038580dc",
+       "19562ba7d01c458bcc7983c5c3d7013ae7091908",
        []
       ],
       "system-fixed-ref.html": [
@@ -292232,7 +292282,7 @@
       []
      ],
      "cjk-kerning.html.ini": [
-      "5f57054ae95563dfd924ace4a18776bd51a65c77",
+      "cf10f40714d0b64c83f8037bd93071a2b6b95c94",
       []
      ],
      "crash-large-grapheme-cluster.html.ini": [
@@ -307397,11 +307447,11 @@
        []
       ],
       "mask-valid.sub-expected.txt": [
-       "a2b33f8a02c4a36a14061930cfa21fa17b895c3f",
+       "45cd27d3aab74e4a6e50d30be816ed5ad90d7016",
        []
       ],
       "mask-valid.sub.html.ini": [
-       "676590518e5c5aa165ff2bbfbc8fcc3ab9f0c1d6",
+       "3c6f0aaef67708ae94c97b9bc574a3981873133a",
        []
       ]
      },
@@ -329998,7 +330048,7 @@
       []
      ],
      "content-with-clip-max-texture-size.html.ini": [
-      "243c1b5ef4502506132f9ea05d027bb40cf3aa8d",
+      "9adefd74cdd6b0dfc74d5b6bd340137511be6705",
       []
      ],
      "content-with-clip-ref.html": [
@@ -330238,11 +330288,15 @@
       []
      ],
      "new-content-captures-opacity.html.ini": [
-      "d7050b65f96330547518a1c4d9f4550b7cf14912",
+      "bb2bfdd1762ce7a2b4b0782637bf6df588ef8e95",
       []
      ],
      "new-content-captures-positioned-spans-ref.html": [
       "6d906fc6f1c7db141556d67ef097203a67925598",
+      []
+     ],
+     "new-content-captures-positioned-spans.html.ini": [
+      "eb373420a9d241249fd79ec15b1dd266a69944e4",
       []
      ],
      "new-content-captures-root-ref.html": [
@@ -330255,6 +330309,10 @@
      ],
      "new-content-captures-spans-ref.html": [
       "b95233d71238233cbfe3ee59ae521164be893842",
+      []
+     ],
+     "new-content-captures-spans.html.ini": [
+      "9ec596fcd3935dd766b5d7f2436950575a50b23d",
       []
      ],
      "new-content-container-writing-modes-ref.html": [
@@ -330282,7 +330340,7 @@
       []
      ],
      "new-content-intrinsic-aspect-ratio.html.ini": [
-      "dd8121062b36f51c0fa600189adf4b6f97f99a35",
+      "fa18c60023d714471cc7816cca3c1a820af84951",
       []
      ],
      "new-content-is-empty-div-ref.html": [
@@ -330410,7 +330468,7 @@
       []
      ],
      "old-content-captures-clip-path.html.ini": [
-      "5e0c020943684fd36081e23fba848db166e87d69",
+      "45a8fde5ae257a7af4f71f40bb02c8295770e2ed",
       []
      ],
      "old-content-captures-different-size-ref.html": [
@@ -330608,7 +330666,7 @@
       []
      ],
      "root-to-shared-animation-incoming.html.ini": [
-      "af41c454f3be96f8d74b116fc11c54b40cac09e2",
+      "395fe994d6edbbad6fb9049cc2782692c3587040",
       []
      ],
      "root-to-shared-animation-start-ref.html": [
@@ -377014,7 +377072,7 @@
       []
      ],
      "performance-navigation-timing-same-origin-bfcache.tentative.window.js.ini": [
-      "a7414b2e31aaebcdf7373b5217c283682827ab56",
+      "2faeab35f7932b2191cc0d963c0bc95d8cdfd868",
       []
      ],
      "performance-navigation-timing-same-origin-replace.tentative.window.js.ini": [
@@ -383548,7 +383606,7 @@
       []
      ],
      "about-blank-replacement.https.html.ini": [
-      "44673f0a5f7c3367517b39b82019fb80db5262b9",
+      "32a9d9b7b1341264da1d14fc4db01955d142c35f",
       []
      ],
      "client-navigate.https.html.ini": [
@@ -387325,7 +387383,7 @@
      ]
     },
     "storage-access-permission.sub.https.window.js.ini": [
-     "81f1ed29c5f5b4c32e42d20fa40dc0d261d5ce50",
+     "894cf180b382cbf632fd60f9fb33380aa8c6e531",
      []
     ],
     "storageAccess.testdriver.sub.html.ini": [
@@ -438329,7 +438387,7 @@
        ]
       ],
       "background-valid.html": [
-       "41a334598f21ed9ac70a73c0307d7607039e5fe8",
+       "cb086dd3ec87d902d47f209688f0cee21921ab97",
        [
         null,
         {}
@@ -449966,7 +450024,7 @@
        ]
       ],
       "mask-valid.sub.html": [
-       "c6e2c28af51dfafef5e337941497661a31e15890",
+       "4b2ebfb7c782469e4239ff3358d71c208badb04d",
        [
         null,
         {}
