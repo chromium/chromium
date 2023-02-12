@@ -293,7 +293,7 @@ To ensure that your in-product help triggers at the right time, you need to
 configure what the constraints are for showing. There are two ways of doing
 this: (1) Using a [client side configuration](#client-side-configuration), or
 (2) using a [field trial configuration](#field-trial-configuration). It is also
-possible to use a mix of both (1) and (2).
+possible to use a [mix of both (1) and (2)](#mixed-configuration).
 
 Please read both sections below to figure out what fits your use-case best.
 
@@ -402,6 +402,10 @@ When using a server side configuration, it is suggested to define the
 `base::Feature` as `base::FEATURE_DISABLED_BY_DEFAULT`, since there is no
 default configuration available.
 
+### Mixed configuration
+
+When having an active field trial configuration in the fieldtrial_testing_config.json, it will override any configuration declared on the client side (default configuration). However it is still possible to test out the default client configuration by enabling the flag `IPH Use Client Config` from `chrome://flags`.
+
 ## Demo mode
 
 The feature_engagement::Tracker supports a special demo mode, which enables a
@@ -461,6 +465,7 @@ Format:
   "event_used": "{EventConfig}",
   "event_trigger": "{EventConfig}",
   "event_???": "{EventConfig}",
+  "snooze_params": "{SnoozeParams}"
   "tracking_only": "{Boolean}"
   "x_???": "..."
  }
@@ -534,6 +539,10 @@ into the same field trial.
     *   Name must match `/^event_[a-zA-Z0-9-_]+$/` and not be `event_used` or
         `event_trigger`.
     *   See [EventConfig](#EventConfig) below for details.
+*   `snooze_params`
+    *   Enabled snooze capability for in-product help bubbles.
+    *   By default, an in-product help is not snoozable and is dismissed until triggered again.
+    *   See [SnoozeParams](#SnoozeParams) below for details.
 *   `tracking_only`
     *   Set to true if in-product help should never trigger.
     *   Tracker::ShouldTriggerHelpUI(...) will always return false, but if all
@@ -765,6 +774,36 @@ Format: `[all|none]`
 ```
 all
 none
+```
+
+### SnoozeParams
+
+Format: `max_limit:{uint32_t},snooze_interval:{uint32_t}`
+
+The SnoozeParams is a comma separated data structure with the following two key-value pairs described below:
+
+*   `max_limit`
+
+    * The maximum amount of times an IPH bubble is shown to the client before being force dismissed.
+    * The value must be given as a number of recurrence.
+        * If `N = 0`, the IPH bubble will be dismissed after the first occurrence.
+        * If `N = 1`, the IPH bubble will be dismissed after the 2nd occurrence.
+    * Value client side data type: uint32_t
+
+*   `snooze_interval`
+
+    * The interval between when the client snoozes the IPH bubble and when the IPH is elligible to be shown to the client again.
+    * The value must be given as a number of days.
+        * If `N=1`, the IPH bubble will not be shown again to the client in the next 1 day (24 hours).
+    * Value client side data type: uint32_t
+
+
+**Examples**
+
+The IPH bubble will be force dismissed after 2 snoozes, which means it will be shown to the client exactly 3 times. The IPH bubble will be shown no less then 4 days apart.
+
+```
+max_limit:2,snooze_interval:4
 ```
 
 ### Manual testing using field trial configurations
