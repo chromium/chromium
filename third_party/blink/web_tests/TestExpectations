@@ -2989,6 +2989,9 @@ crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Fai
 crbug.com/webrtc/10567 external/wpt/webrtc/simulcast/setParameters-encodings.https.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
+crbug.com/626703 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
+crbug.com/626703 virtual/css-highlight-overlay-painting/external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/image-set/image-set-type-unsupported-rendering-2.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/image-set/image-set-type-unsupported-rendering.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/descriptor-prefix.html [ Failure ]
