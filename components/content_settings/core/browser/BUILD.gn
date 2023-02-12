@@ -117,7 +117,11 @@ source_set("unit_tests") {
   ]
 
   if (use_blink) {
-    sources += [ "cookie_settings_policy_handler_unittest.cc" ]
+    # Policies haven't been updated for iOS yet since blink
+    # support is only a prototype.
+    if (!is_ios) {
+      sources += [ "cookie_settings_policy_handler_unittest.cc" ]
+    }
 
     deps += [
       "//components/policy:generated",
