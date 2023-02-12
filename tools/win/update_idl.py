@@ -6,7 +6,7 @@
 This tool must be run from a Windows machine at the source root directory.
 
 Example:
-    python3 chrome/updater/tools/update_idl.py
+    python3 tools/win/update_idl.py
 """
 
 import os

@@ -145,7 +145,7 @@ ninja: build stopped: subcommand failed.
 
 You can then run the following command to update IDL COM files for all flavors:
 ```
-python3 chrome/updater/tools/update_idl.py
+python3 tools/win/update_idl.py
 ```
 
 ## Debugging
