@@ -75807,6 +75807,19 @@
         {}
        ]
       ],
+      "clip-text-multi-line-002.html": [
+       "ff34ca0aaa681db5ef33cf0371194c6cc462f37c",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/background-clip/clip-text-multi-line-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-text-multi-line.html": [
        "cd51b2ea0779e2a3cf7807f7f0eee5cb6a938acc",
        [
@@ -263982,11 +263995,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "7c0e203b0b62eeda2a6092298c3dc6618cbf5f23",
+     "71da96b0eab3fb30d7f9d5d51c79fdc83aa76af4",
      []
     ],
     "mtime.json": [
-     "e75707c6d5fec003c41a393844137f6a9b486e51",
+     "13facdcfb57bb7fecff23bd015a2c3c2ddc38455",
      []
     ]
    },
@@ -280625,6 +280638,14 @@
        "65dfd1f0596c3c816b74d13c62f8309b40fb48a7",
        []
       ],
+      "clip-text-multi-line-002-ref.html": [
+       "5cb77d5296fbc10515fe2bb51f5c5c05bf7fb6a4",
+       []
+      ],
+      "clip-text-multi-line-002.html.ini": [
+       "96410eccd2d7bd246e1a371242511373720551f7",
+       []
+      ],
       "clip-text-multi-line-ref.html": [
        "3b45e919ad7295c0aef7d401325978cabb62298d",
        []
@@ -287936,7 +287957,7 @@
        []
       ],
       "system-extends.html.ini": [
-       "cce2bed8622a3a0a0dd36e8fdb474eec038580dc",
+       "19562ba7d01c458bcc7983c5c3d7013ae7091908",
        []
       ],
       "system-fixed-ref.html": [
@@ -292295,7 +292316,7 @@
       []
      ],
      "cjk-kerning.html.ini": [
-      "5f57054ae95563dfd924ace4a18776bd51a65c77",
+      "cf10f40714d0b64c83f8037bd93071a2b6b95c94",
       []
      ],
      "crash-large-grapheme-cluster.html.ini": [
@@ -305799,7 +305820,7 @@
       []
      ],
      "list-style-type-string-005b.html.ini": [
-      "d874721086e6ec3e02a9f7b8bd8a22b81cf38432",
+      "2b6f9672c76a8041faa15b0be595eebcedbcafd6",
       []
      ],
      "list-style-type-string-006-ref.html": [
@@ -330081,7 +330102,7 @@
       []
      ],
      "content-with-clip-max-texture-size.html.ini": [
-      "243c1b5ef4502506132f9ea05d027bb40cf3aa8d",
+      "9adefd74cdd6b0dfc74d5b6bd340137511be6705",
       []
      ],
      "content-with-clip-ref.html": [
@@ -330321,7 +330342,7 @@
       []
      ],
      "new-content-captures-opacity.html.ini": [
-      "d7050b65f96330547518a1c4d9f4550b7cf14912",
+      "bb2bfdd1762ce7a2b4b0782637bf6df588ef8e95",
       []
      ],
      "new-content-captures-positioned-spans-ref.html": [
@@ -330373,7 +330394,7 @@
       []
      ],
      "new-content-intrinsic-aspect-ratio.html.ini": [
-      "dd8121062b36f51c0fa600189adf4b6f97f99a35",
+      "fa18c60023d714471cc7816cca3c1a820af84951",
       []
      ],
      "new-content-is-empty-div-ref.html": [
@@ -330501,7 +330522,7 @@
       []
      ],
      "old-content-captures-clip-path.html.ini": [
-      "5e0c020943684fd36081e23fba848db166e87d69",
+      "45a8fde5ae257a7af4f71f40bb02c8295770e2ed",
       []
      ],
      "old-content-captures-different-size-ref.html": [
@@ -330699,7 +330720,7 @@
       []
      ],
      "root-to-shared-animation-incoming.html.ini": [
-      "af41c454f3be96f8d74b116fc11c54b40cac09e2",
+      "395fe994d6edbbad6fb9049cc2782692c3587040",
       []
      ],
      "root-to-shared-animation-start-ref.html": [
@@ -355725,7 +355746,7 @@
         []
        ],
        "popup-with-cross-origin.https.html.ini": [
-        "fca3b7c3e8f677f571d091f75a427352539790f5",
+        "063dd4cf940c4b92a77cb5db6cc6f7330112a2de",
         []
        ],
        "popup-with-same-origin.https-expected.txt": [
@@ -372811,6 +372832,10 @@
        "b46b307dbe3aea0fbab44de12278041e538ea3e5",
        []
       ],
+      "mo-form-minus-plus.html.ini": [
+       "0eebf7924f0e02551d8e30f6a2a969867957697d",
+       []
+      ],
       "mo-form-ref.html": [
        "b249fe43b591b70bed7e9f75962497db56ba119a",
        []
@@ -377105,7 +377130,7 @@
       []
      ],
      "performance-navigation-timing-same-origin-bfcache.tentative.window.js.ini": [
-      "a7414b2e31aaebcdf7373b5217c283682827ab56",
+      "2faeab35f7932b2191cc0d963c0bc95d8cdfd868",
       []
      ],
      "performance-navigation-timing-same-origin-replace.tentative.window.js.ini": [
@@ -387416,7 +387441,7 @@
      ]
     },
     "storage-access-permission.sub.https.window.js.ini": [
-     "7e03514dd89c36a7364af6a3f5a7d0463d7cf3d2",
+     "ef9b0d9bc1d007ade0896971d40bb943e7dc007d",
      []
     ],
     "storageAccess.testdriver.sub.html.ini": [
