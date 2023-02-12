@@ -61,8 +61,8 @@ struct GradientAttributes {
     gradient_transform_set_ = true;
   }
 
-  void SetStops(const Vector<Gradient::ColorStop>& value) {
-    stops_ = value;
+  void SetStops(Vector<Gradient::ColorStop>&& value) {
+    stops_ = std::move(value);
     stops_set_ = true;
   }
 
