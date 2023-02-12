@@ -498,7 +498,6 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
                         help='Number of emulator to run.')
     # Add arguments used by Skia Gold.
     FinchSkiaGoldProperties.AddCommandLineArguments(parser)
-    add_emulator_args(parser)
 
   def add_extra_arguments(self, parser):
     super(FinchTestCase, self).add_extra_arguments(parser)
@@ -1189,6 +1188,8 @@ def main(args):
         '--isolated-script-test-output', type=str,
         required=False,
         help='path to write test results JSON object to')
+
+  add_emulator_args(parser)
   script_common.AddDeviceArguments(parser)
   script_common.AddEnvironmentArguments(parser)
   logging_common.AddLoggingArguments(parser)
