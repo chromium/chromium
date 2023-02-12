@@ -1,7 +1,7 @@
 Name: FreeType
 URL: http://www.freetype.org/
-Version: VER-2-13-0-2-g23e60caee
-Revision: 23e60caeef4027fdc9d1d40efbb47318a0a7d6f3
+Version: VER-2-13-0-3-gdacbb5543
+Revision: dacbb55433079fb3539163862958a6b9466a0661
 CPEPrefix: cpe:/a:freetype:freetype:2.12.1
 License: Custom license "inspired by the BSD, Artistic, and IJG (Independent
          JPEG Group) licenses"
