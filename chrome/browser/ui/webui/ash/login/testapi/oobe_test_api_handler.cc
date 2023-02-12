@@ -27,7 +27,9 @@
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
+#include "components/login/localized_values_builder.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 
 namespace ash {
@@ -36,7 +38,9 @@ OobeTestAPIHandler::OobeTestAPIHandler() = default;
 OobeTestAPIHandler::~OobeTestAPIHandler() = default;
 
 void OobeTestAPIHandler::DeclareLocalizedValues(
-    ::login::LocalizedValuesBuilder* builder) {}
+    ::login::LocalizedValuesBuilder* builder) {
+  builder->Add("testapi_browseAsGuest", IDS_ASH_BROWSE_AS_GUEST_BUTTON);
+}
 
 void OobeTestAPIHandler::DeclareJSCallbacks() {
   AddCallback("OobeTestApi.loginWithPin", &OobeTestAPIHandler::LoginWithPin);

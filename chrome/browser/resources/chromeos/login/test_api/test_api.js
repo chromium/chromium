@@ -226,8 +226,9 @@ class GaiaScreenTester extends ScreenElementApi {
    * @return {boolean}
    */
   isReadyForTesting() {
-    return this.isVisible() && !this.gaiaLoading.isVisible() &&
-        this.signinFrame.isVisible() && this.gaiaDialog.isVisible();
+    return (
+        this.isVisible() && !this.gaiaLoading.isVisible() &&
+        this.signinFrame.isVisible() && this.gaiaDialog.isVisible());
   }
 }
 
@@ -275,8 +276,9 @@ class AssistantScreenTester extends ScreenElementApi {
    * @return {boolean}
    */
   isReadyForTesting() {
-    return this.isVisible() &&
-        (this.valueProp.isVisible() || this.relatedInfo.isVisible());
+    return (
+        this.isVisible() &&
+        (this.valueProp.isVisible() || this.relatedInfo.isVisible()));
   }
 
   getSkipButtonName() {
@@ -392,8 +394,9 @@ class ThemeSelectionScreenTester extends ScreenElementApi {
    * @return {boolean}
    */
   isReadyForTesting() {
-    return this.isVisible() && this.lightThemeButton.isVisible() &&
-        this.darkThemeButton.isVisible() && this.autoThemeButton.isVisible();
+    return (
+        this.isVisible() && this.lightThemeButton.isVisible() &&
+        this.darkThemeButton.isVisible() && this.autoThemeButton.isVisible());
   }
 
   /**
@@ -516,8 +519,9 @@ class EnrollmentSignInStep extends PolymerElementApi {
    * @return {boolean}
    */
   isReadyForTesting() {
-    return this.isVisible() && this.signInFrame.isVisible() &&
-        this.nextButton.isVisible();
+    return (
+        this.isVisible() && this.signInFrame.isVisible() &&
+        this.nextButton.isVisible());
   }
 }
 
@@ -683,12 +687,17 @@ class ArcTosScreenTester extends ScreenElementApi {
   }
 }
 
-
 class GuestTosScreenTester extends ScreenElementApi {
   constructor() {
     super('guest-tos');
     this.loadedStep = new PolymerElementApi(this, '#loaded');
     this.nextButton = new PolymerElementApi(this, '#acceptButton');
+
+    this.googleEulaDialog = new PolymerElementApi(this, '#googleEulaDialog');
+    this.crosEulaDialog = new PolymerElementApi(this, '#crosEulaDialog');
+
+    this.googleEulaDialogLink = new PolymerElementApi(this, '#googleEulaLink');
+    this.crosEulaDialogLink = new PolymerElementApi(this, '#crosEulaLink');
   }
 
   /** @override */
@@ -705,8 +714,32 @@ class GuestTosScreenTester extends ScreenElementApi {
   getNextButtonName() {
     return loadTimeData.getString('guestTosAccept');
   }
-}
 
+  /** @return {string} */
+  getEulaButtonName() {
+    return loadTimeData.getString('guestTosOk');
+  }
+
+  /** @return {boolean} */
+  isGoogleEulaDialogShown() {
+    return this.googleEulaDialog.isVisible();
+  }
+
+  /** @return {boolean} */
+  isCrosEulaDialogShown() {
+    return this.crosEulaDialog.isVisible();
+  }
+
+  /** @return {string} */
+  getGoogleEulaLinkName() {
+    return this.googleEulaDialogLink.element().text.trim();
+  }
+
+  /** @return {string} */
+  getCrosEulaLinkName() {
+    return this.crosEulaDialogLink.element().text.trim();
+  }
+}
 
 class GestureNavigationScreenTester extends ScreenElementApi {
   constructor() {
@@ -727,6 +760,17 @@ class ConsolidatedConsentScreenTester extends ScreenElementApi {
     this.readMoreButton =
         new PolymerElementApi(this.loadedStep, '#readMoreButton');
     this.recoveryToggle = new PolymerElementApi(this, '#recoveryOptIn');
+
+    this.googleEulaDialog = new PolymerElementApi(this, '#googleEulaDialog');
+    this.crosEulaDialog = new PolymerElementApi(this, '#crosEulaDialog');
+    this.arcTosDialog = new PolymerElementApi(this, '#arcTosDialog');
+    this.privacyPolicyDialog =
+        new PolymerElementApi(this, '#privacyPolicyDialog');
+
+    this.googleEulaLink = new PolymerElementApi(this, '#googleEulaLink');
+    this.crosEulaLink = new PolymerElementApi(this, '#crosEulaLink');
+    this.arcTosLink = new PolymerElementApi(this, '#arcTosLink');
+    this.privacyPolicyLink = new PolymerElementApi(this, '#privacyPolicyLink');
   }
 
   /** @override */
@@ -744,8 +788,9 @@ class ConsolidatedConsentScreenTester extends ScreenElementApi {
     // The read more button is inside a <dom-if> element, if it's hidden, the
     // element would be removed entirely from dom, so we need to check if the
     // element exists before checking if it's visible.
-    return this.readMoreButton.element() != null &&
-        this.readMoreButton.isVisible();
+    return (
+        this.readMoreButton.element() != null &&
+        this.readMoreButton.isVisible());
   }
 
   /** @return {string} */
@@ -759,6 +804,51 @@ class ConsolidatedConsentScreenTester extends ScreenElementApi {
    */
   enableRecoveryToggle() {
     this.recoveryToggle.element().checked = true;
+  }
+
+  /** @return {string} */
+  getEulaOkButtonName() {
+    return loadTimeData.getString('consolidatedConsentOK');
+  }
+
+  /** @return {boolean} */
+  isGoogleEulaDialogShown() {
+    return this.googleEulaDialog.isVisible();
+  }
+
+  /** @return {boolean} */
+  isCrosEulaDialogShown() {
+    return this.crosEulaDialog.isVisible();
+  }
+
+  /** @return {boolean} */
+  isArcTosDialogShown() {
+    return this.arcTosDialog.isVisible();
+  }
+
+  /** @return {boolean} */
+  isPrivacyPolicyDialogShown() {
+    return this.privacyPolicyDialog.isVisible();
+  }
+
+  /** @return {string} */
+  getGoogleEulaLinkName() {
+    return this.googleEulaLink.element().text.trim();
+  }
+
+  /** @return {string} */
+  getCrosEulaLinkName() {
+    return this.crosEulaLink.element().text.trim();
+  }
+
+  /** @return {string} */
+  getArcTosLinkName() {
+    return this.arcTosLink.element().text.trim();
+  }
+
+  /** @return {string} */
+  getPrivacyPolicyLinkName() {
+    return this.privacyPolicyLink.element().text.trim();
   }
 }
 
@@ -845,6 +935,10 @@ export class OobeApiProvider {
 
     this.isGaiaDialogVisible = function() {
       chrome.send('OobeTestApi.isGaiaDialogVisible');
+    };
+
+    this.getBrowseAsGuestButtonName = function() {
+      return loadTimeData.getString('testapi_browseAsGuest');
     };
   }
 }
