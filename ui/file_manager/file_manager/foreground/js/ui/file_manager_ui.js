@@ -595,6 +595,10 @@ export class FileManagerUI {
     if (targetElement) {
       targetElement.focus();
     }
+
+    if (util.isDriveFsBulkPinningEnabled()) {
+      document.getElementById('cloud-button').removeAttribute('hidden');
+    }
   }
 
   /**

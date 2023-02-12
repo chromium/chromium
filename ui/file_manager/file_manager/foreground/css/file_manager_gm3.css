@@ -524,6 +524,10 @@ body.check-select .dialog-header
   width: 48px;
 }
 
+.dialog-header cr-button.icon-button > xf-icon {
+  position: absolute;
+}
+
 .dialog-header #tasks {
   border-radius: 4px;
   height: 32px;

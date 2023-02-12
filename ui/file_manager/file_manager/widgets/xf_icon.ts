@@ -42,6 +42,11 @@ export class XfIcon extends XfBase {
       AUDIO: 'audio',
       BRUSCHETTA: 'bruschetta',
       CAMERA_FOLDER: 'camera-folder',
+      CLOUD_DONE: 'cloud_done',
+      CLOUD_ERROR: 'cloud_error',
+      CLOUD_OFFLINE: 'cloud_offline',
+      CLOUD_SYNC: 'cloud_sync',
+      CLOUD: 'cloud',
       COMPUTER: 'computer',
       COMPUTERS_GRAND_ROOT: 'computers_grand_root',
       CROSTINI: 'crostini',
@@ -66,6 +71,7 @@ export class XfIcon extends XfBase {
       IMAGE: 'image',
       MTP: 'mtp',
       MY_FILES: 'my_files',
+      OFFLINE: 'offline',
       OPTICAL: 'optical',
       PDF: 'pdf',
       PLUGIN_VM: 'plugin_vm',
@@ -90,7 +96,6 @@ export class XfIcon extends XfBase {
       USB: 'usb',
       VIDEO: 'video',
       WORD: 'word',
-      OFFLINE: 'offline',
     };
   }
 
@@ -98,6 +103,16 @@ export class XfIcon extends XfBase {
     return {
       [XfIcon.types.OFFLINE]:
           svg`<use xlink:href="foreground/images/files/ui/offline.svg#offline"></use>`,
+      [XfIcon.types.CLOUD_DONE]:
+          svg`<use xlink:href="foreground/images/files/ui/cloud_done.svg#cloud_done"></use>`,
+      [XfIcon.types.CLOUD_ERROR]:
+          svg`<use xlink:href="foreground/images/files/ui/cloud_error.svg#cloud_error"></use>`,
+      [XfIcon.types.CLOUD_OFFLINE]:
+          svg`<use xlink:href="foreground/images/files/ui/cloud_offline.svg#cloud_offline"></use>`,
+      [XfIcon.types.CLOUD_SYNC]:
+          svg`<use xlink:href="foreground/images/files/ui/cloud_sync.svg#cloud_sync"></use>`,
+      [XfIcon.types.CLOUD]:
+          svg`<use xlink:href="foreground/images/files/ui/cloud.svg#cloud"></use>`,
     };
   }
 

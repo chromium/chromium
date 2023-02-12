@@ -1194,7 +1194,7 @@ util.isDriveShortcutsEnabled = () => {
  * @returns {boolean}
  */
 util.isDriveFsBulkPinningEnabled = () => {
-  return loadTimeData.getBoolean('DRIVEFS_BULK_PINNING');
+  return loadTimeData.getBoolean('DRIVE_FS_BULK_PINNING');
 };
 
 /**
