@@ -26,6 +26,8 @@ source_set("gbm") {
     "common/display_types.h",
     "common/drm_util.cc",
     "common/drm_util.h",
+    "common/drm_wrapper.cc",
+    "common/drm_wrapper.h",
     "common/scoped_drm_types.cc",
     "common/scoped_drm_types.h",
     "gpu/crtc_commit_request.cc",

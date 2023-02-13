@@ -6,10 +6,10 @@
 
 #include <drm_fourcc.h>
 
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 #include "media/media_buildflags.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 

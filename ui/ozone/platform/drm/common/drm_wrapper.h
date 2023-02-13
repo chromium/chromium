@@ -1,0 +1,277 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef UI_OZONE_PLATFORM_DRM_COMMON_DRM_WRAPPER_H_
+#define UI_OZONE_PLATFORM_DRM_COMMON_DRM_WRAPPER_H_
+
+#include <stddef.h>
+#include <stdint.h>
+#include <memory>
+#include <vector>
+
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "ui/display/types/gamma_ramp_rgb_entry.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/ozone/platform/drm/common/scoped_drm_types.h"
+
+typedef struct _drmModeModeInfo drmModeModeInfo;
+
+struct SkImageInfo;
+
+namespace display {
+struct GammaRampRGBEntry;
+}  // namespace display
+
+namespace ui {
+
+class DrmWrapper;
+
+class DrmPropertyBlobMetadata {
+ public:
+  DrmPropertyBlobMetadata(DrmWrapper* drm, uint32_t id);
+
+  DrmPropertyBlobMetadata(const DrmPropertyBlobMetadata&) = delete;
+  DrmPropertyBlobMetadata& operator=(const DrmPropertyBlobMetadata&) = delete;
+
+  ~DrmPropertyBlobMetadata();
+
+  uint32_t id() const { return id_; }
+
+ private:
+  DrmWrapper* drm_;  // Not owned;
+  uint32_t id_;
+};
+
+using ScopedDrmPropertyBlob = std::unique_ptr<DrmPropertyBlobMetadata>;
+
+// Wraps DRM calls into a tight interface. Used to provide different
+// implementations of the DRM calls. For the actual implementation the DRM API
+// would be called. In unit tests this interface would be stubbed.
+class DrmWrapper : public base::RefCountedThreadSafe<DrmWrapper> {
+ public:
+  DrmWrapper(const base::FilePath& device_path,
+             base::File file,
+             bool is_primary_device);
+  DrmWrapper(const DrmWrapper&) = delete;
+  DrmWrapper& operator=(const DrmWrapper&) = delete;
+
+  // Open device.
+  virtual bool Initialize();
+
+  /*******
+   * CRTCs
+   *******/
+
+  // Get the CRTC state. This is generally used to save state before using the
+  // CRTC. When the user finishes using the CRTC, the user should restore the
+  // CRTC to it's initial state. Use |SetCrtc| to restore the state.
+  virtual ScopedDrmCrtcPtr GetCrtc(uint32_t crtc_id);
+
+  // Used to configure CRTC with ID |crtc_id| to use the connector in
+  // |connectors|. The CRTC will be configured with mode |mode| and will display
+  // the framebuffer with ID |framebuffer|. Before being able to display the
+  // framebuffer, it should be registered with the CRTC using |AddFramebuffer|.
+  virtual bool SetCrtc(uint32_t crtc_id,
+                       uint32_t framebuffer,
+                       std::vector<uint32_t> connectors,
+                       const drmModeModeInfo& mode);
+
+  virtual bool DisableCrtc(uint32_t crtc_id);
+
+  /**************
+   * Capabilities
+   **************/
+
+  // Queries whether a |capability| is available and stores its value in
+  // |value| if found.
+  virtual bool GetCapability(uint64_t capability, uint64_t* value);
+
+  // Can be used to query device/driver |capability|. Sets the value of
+  // |capability| to |value|. Returns true in case of a successful query.
+  virtual bool SetCapability(uint64_t capability, uint64_t value);
+
+  /************
+   * Connectors
+   ************/
+
+  // Returns the connector properties for |connector_id|.
+  virtual ScopedDrmConnectorPtr GetConnector(uint32_t connector_id);
+
+  /********
+   * Cursor
+   ********/
+
+  // Move the cursor on CRTC |crtc_id| to (x, y);
+  virtual bool MoveCursor(uint32_t crtc_id, const gfx::Point& point);
+
+  // Set the cursor to be displayed in CRTC |crtc_id|. (width, height) is the
+  // cursor size pointed by |handle|.
+  virtual bool SetCursor(uint32_t crtc_id,
+                         uint32_t handle,
+                         const gfx::Size& size);
+
+  /************
+   * DRM Master
+   ************/
+
+  virtual bool SetMaster();
+  virtual bool DropMaster();
+
+  /**************
+   * Dumb Buffers
+   **************/
+
+  virtual bool CreateDumbBuffer(const SkImageInfo& info,
+                                uint32_t* handle,
+                                uint32_t* stride);
+  virtual bool DestroyDumbBuffer(uint32_t handle);
+  virtual bool MapDumbBuffer(uint32_t handle, size_t size, void** pixels);
+  virtual bool UnmapDumbBuffer(void* pixels, size_t size);
+
+  virtual bool CloseBufferHandle(uint32_t handle);
+
+  /**************
+   * Framebuffers
+   **************/
+
+  // Get the DRM details associated with |framebuffer|.
+  virtual ScopedDrmFramebufferPtr GetFramebuffer(uint32_t framebuffer);
+
+  // Deregister the given |framebuffer|.
+  virtual bool RemoveFramebuffer(uint32_t framebuffer);
+
+  // Register any format buffer with the CRTC. On successful registration, the
+  // CRTC will assign a framebuffer ID to |framebuffer|.
+  virtual bool AddFramebuffer2(uint32_t width,
+                               uint32_t height,
+                               uint32_t format,
+                               uint32_t handles[4],
+                               uint32_t strides[4],
+                               uint32_t offsets[4],
+                               uint64_t modifiers[4],
+                               uint32_t* framebuffer,
+                               uint32_t flags);
+
+  /*******
+   * Gamma
+   *******/
+
+  virtual bool SetGammaRamp(uint32_t crtc_id,
+                            const std::vector<display::GammaRampRGBEntry>& lut);
+
+  /********
+   * Planes
+   ********/
+
+  // Returns the list of all planes available on this DRM device.
+  virtual ScopedDrmPlaneResPtr GetPlaneResources();
+
+  // Returns the properties associated with plane with id |plane_id|.
+  virtual ScopedDrmPlanePtr GetPlane(uint32_t plane_id);
+
+  /************
+   * Properties
+   ************/
+
+  // Returns the properties associated with object with id |object_id| and type
+  // |object_type|. |object_type| is one of DRM_MODE_OBJECT_*.
+  virtual ScopedDrmObjectPropertyPtr GetObjectProperties(uint32_t object_id,
+                                                         uint32_t object_type);
+
+  // Sets a property (defined by {|property_id|, |property_value|} on an object
+  // with ID |object_id| and type |object_type|.
+  // |object_id| and |property_id| are unique identifiers.
+  // |object_type| is one of DRM_MODE_OBJECT_*.
+  virtual bool SetObjectProperty(uint32_t object_id,
+                                 uint32_t object_type,
+                                 uint32_t property_id,
+                                 uint32_t property_value);
+
+  virtual ScopedDrmPropertyPtr GetProperty(uint32_t id);
+
+  // Returns the property with name |name| associated with |connector|. Returns
+  // NULL if property not found. If the returned value is valid, it must be
+  // released using FreeProperty().
+  virtual ScopedDrmPropertyPtr GetProperty(drmModeConnector* connector,
+                                           const char* name);
+
+  // Sets the value of property with ID |property_id| to |value|. The property
+  // is applied to the connector with ID |connector_id|.
+  virtual bool SetProperty(uint32_t connector_id,
+                           uint32_t property_id,
+                           uint64_t value);
+
+  /****************
+   * Property Blobs
+   ****************/
+
+  // Creates a property blob with data |blob| of size |size|.
+  virtual ScopedDrmPropertyBlob CreatePropertyBlob(const void* blob,
+                                                   size_t size);
+  virtual void DestroyPropertyBlob(uint32_t id);
+
+  // Returns a binary blob associated with |property_id|. May be nullptr if the
+  // property couldn't be found.
+  virtual ScopedDrmPropertyBlobPtr GetPropertyBlob(uint32_t property_id);
+
+  // Returns a binary blob associated with |connector|. The binary blob is
+  // associated with the property with name |name|. Return NULL if the property
+  // could not be found or if the property does not have a binary blob. If valid
+  // the returned object must be freed using FreePropertyBlob().
+  virtual ScopedDrmPropertyBlobPtr GetPropertyBlob(drmModeConnector* connector,
+                                                   const char* name);
+
+  /***********
+   * Resources
+   ***********/
+
+  // Returns all the DRM resources for this device. This includes CRTC,
+  // connectors, and encoders state.
+  virtual ScopedDrmResourcesPtr GetResources();
+
+  /*********
+   * Utility
+   *********/
+
+  // Adds trace records to |context|.
+  virtual void WriteIntoTrace(perfetto::TracedDictionary dict) const;
+
+  virtual absl::optional<std::string> GetDriverName() const;
+
+  base::FilePath device_path() const { return device_path_; }
+  int get_fd() const { return file_.GetPlatformFile(); }
+  bool allow_addfb2_modifiers() const { return allow_addfb2_modifiers_; }
+  int modeset_sequence_id() const { return modeset_sequence_id_; }
+  bool is_primary_device() const { return is_primary_device_; }
+
+ protected:
+  friend class base::RefCountedThreadSafe<DrmWrapper>;
+
+  virtual ~DrmWrapper();
+
+  // Path to the DRM device (in sysfs).
+  const base::FilePath device_path_;
+  // DRM device.
+  const base::File file_;
+
+  bool allow_addfb2_modifiers_ = false;
+
+  // Sequence ID incremented at each modeset.
+  // Currently used by DRM Framebuffer to indicate when was the fb initialized
+  // wrt the preceding modeset.
+  int modeset_sequence_id_ = 0;
+
+ private:
+  const bool is_primary_device_;
+};
+
+}  // namespace ui
+
+#endif  // UI_OZONE_PLATFORM_DRM_COMMON_DRM_WRAPPER_H_
