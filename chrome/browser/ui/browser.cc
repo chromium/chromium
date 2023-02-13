@@ -574,9 +574,8 @@ Browser::~Browser() {
 
   // The tab strip should not have any tabs at this point.
   //
-  // TODO(crbug.com/1393544): Switch to a DCHECK once we are confident that
-  // Browsers aren't deleted when they still contain tabs.
-  CHECK(tab_strip_model_->empty());
+  // TODO(crbug.com/1407055): This DCHECK doesn't always pass.
+  DCHECK(tab_strip_model_->empty());
 
   // Destroy the BrowserCommandController before removing the browser, so that
   // it doesn't act on any notifications that are sent as a result of removing
