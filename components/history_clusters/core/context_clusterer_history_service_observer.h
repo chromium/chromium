@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/history/core/browser/history_service_observer.h"
 
@@ -95,7 +96,8 @@ class ContextClustererHistoryServiceObserver
 
   // Callback invoked when the History Service returns the cluster ID
   // (`persisted_cluster_id`) to use for `cluster_id`.
-  void OnPersistedClusterIdReceived(int64_t cluster_id,
+  void OnPersistedClusterIdReceived(base::TimeTicks start_time,
+                                    int64_t cluster_id,
                                     int64_t persisted_cluster_id);
 
   // Creates a cluster visit from `normalized_url` and `visit_row`.
