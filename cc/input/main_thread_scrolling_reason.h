@@ -21,9 +21,6 @@ namespace cc {
 //   tools/metrics/histograms/enums.xml
 // When adding a new MainThreadScrollingReason, make sure the corresponding
 // [MainThread/Compositor]CanSetScrollReasons function is also updated.
-//
-// More info at: http://bit.ly/mtsr-details
-//
 struct CC_EXPORT MainThreadScrollingReason {
   enum : uint32_t {
     kNotScrollingOnMain = 0,
@@ -46,9 +43,9 @@ struct CC_EXPORT MainThreadScrollingReason {
 
     // Style-related scrolling on main reasons. Subpixel (LCD) text rendering
     // requires blending glyphs with the background at a specific screen
-    // position; transparency and transforms break this.
-    // These are only reported by the main-thread scroll gesture event codepath.
-    // After scroll unification, we report kNoScrollingLayer instead.
+    // position; transparency and transforms break this. In ScrollUnification,
+    // these are also non-transient scrolling reasons, and are set on the
+    // ScrollNode.
     kNotOpaqueForTextAndLCDText = 1 << 5,
     kCantPaintScrollingBackgroundAndLCDText = 1 << 6,
 
@@ -79,7 +76,7 @@ struct CC_EXPORT MainThreadScrollingReason {
   static bool MainThreadCanSetScrollReasons(uint32_t reasons) {
     constexpr uint32_t reasons_set_by_main_thread =
         kHasBackgroundAttachmentFixedObjects | kThreadedScrollingDisabled |
-        kPopupNoThreadedInput;
+        kPopupNoThreadedInput | kNonCompositedReasons;
     return (reasons & reasons_set_by_main_thread) == reasons;
   }
 

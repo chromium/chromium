@@ -663,11 +663,6 @@ class CORE_EXPORT LocalFrameView final
   std::unique_ptr<JSONObject> CompositedLayersAsJSON(LayerTreeFlags);
 
   String MainThreadScrollingReasonsAsText();
-  // Main thread scrolling reasons including reasons from ancestors.
-  MainThreadScrollingReasons GetMainThreadScrollingReasons() const;
-  // Main thread scrolling reasons for this object only. For all reasons,
-  // see: mainThreadScrollingReasons().
-  MainThreadScrollingReasons MainThreadScrollingReasonsPerFrame() const;
 
   bool MapToVisualRectInRemoteRootFrame(PhysicalRect& rect,
                                         bool apply_overflow_clip = true);

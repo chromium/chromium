@@ -3865,15 +3865,6 @@ void LayoutObject::SetDescendantNeedsPaintPropertyUpdate() {
   }
 }
 
-void LayoutObject::ForceAllAncestorsNeedPaintPropertyUpdate() {
-  NOT_DESTROYED();
-  LayoutObject* ancestor = Parent();
-  while (ancestor) {
-    ancestor->SetNeedsPaintPropertyUpdate();
-    ancestor = ancestor->Parent();
-  }
-}
-
 void LayoutObject::MaybeClearIsScrollAnchorObject() {
   NOT_DESTROYED();
   if (!bitfields_.IsScrollAnchorObject())

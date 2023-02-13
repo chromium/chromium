@@ -237,24 +237,35 @@ struct PaintPropertyTreeBuilderContext final {
   // True if a change has forced all properties in a subtree to be updated. This
   // can be set due to paint offset changes or when the structure of the
   // property tree changes (i.e., a node is added or removed).
-  unsigned force_subtree_update_reasons : 2;
+  unsigned force_subtree_update_reasons : 2 = 0u;
 
-  // Note that the next four bitfields are conceptually bool, but are declared
+  // Note that the following bitfields are conceptually bool, but are declared
   // as unsigned in order to be packed in the same word as the above bitfield.
 
   // When printing, fixed-position objects and their descendants need to repeat
   // in each page.
-  unsigned is_repeating_fixed_position : 1;
+  unsigned is_repeating_fixed_position : 1 = false;
 
   // True if the current subtree is underneath a LayoutSVGHiddenContainer
   // ancestor.
-  unsigned has_svg_hidden_container_ancestor : 1;
+  unsigned has_svg_hidden_container_ancestor : 1 = false;
 
   // Whether this object was a layout shift root during the previous render
   // (not this one).
-  unsigned was_layout_shift_root : 1;
+  unsigned was_layout_shift_root : 1 = false;
 
-  unsigned was_main_thread_scrolling : 1;
+  unsigned was_main_thread_scrolling : 1 = false;
+  unsigned scroll_unification_enabled : 1 = false;
+
+  // Main thread scrolling reasons that apply to all scrollers in the current
+  // LocalFrameView subtree.
+  unsigned global_main_thread_scrolling_reasons : 5 = 0;
+  static constexpr MainThreadScrollingReasons
+      kGlobalMainThreadScrollingReasons =
+          cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects |
+          cc::MainThreadScrollingReason::kThreadedScrollingDisabled |
+          cc::MainThreadScrollingReason::kPopupNoThreadedInput;
+  static_assert(kGlobalMainThreadScrollingReasons < (1 << 6));
 
   // This is always recalculated in PaintPropertyTreeBuilder::UpdateForSelf()
   // which overrides the inherited value.
@@ -409,6 +420,8 @@ class PaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdateRepeatingTableHeaderPaintOffsetAdjustment();
   ALWAYS_INLINE void UpdateRepeatingTableFooterPaintOffsetAdjustment();
   ALWAYS_INLINE bool IsAffectedByOuterViewportBoundsDelta() const;
+
+  ALWAYS_INLINE void UpdateGlobalMainThreadScrollingReasons();
 
   bool IsInNGFragmentTraversal() const { return pre_paint_info_; }
   static bool CanDoDeferredTransformNodeUpdate(const LayoutObject& object);

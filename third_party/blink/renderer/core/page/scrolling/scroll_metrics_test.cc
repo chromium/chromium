@@ -389,7 +389,8 @@ TEST_F(ScrollMetricsTest, NestedScrollersTest) {
 
     // The second scroll latches to the non-composited parent.
     EXPECT_WHEEL_BUCKET(
-        BucketIndex(cc::MainThreadScrollingReason::kNoScrollingLayer), 1);
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
     EXPECT_WHEEL_BUCKET(
         cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
     EXPECT_WHEEL_TOTAL(2);

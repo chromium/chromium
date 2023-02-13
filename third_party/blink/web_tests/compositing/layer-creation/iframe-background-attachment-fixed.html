@@ -11,8 +11,10 @@ function scrollingLocationAndReasons(reasons) {
   return reasons ? "scrolls on main: " + reasons : "scrolls on impl";
 }
 
-if (window.internals)
+if (window.internals) {
   internals.settings.setThreadedScrollingEnabled(true);
+  internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
 
 if (window.testRunner)
     testRunner.dumpAsText(true);

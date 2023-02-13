@@ -861,11 +861,6 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
     return;
   }
 
-  // The "NonCompositedScrollReasons" are only reported by the pre-unification
-  // main thread event handling path.
-  DCHECK(!cc::MainThreadScrollingReason::HasNonCompositedScrollReasons(
-      reasons_from_scroll_begin));
-
   // This records whether a scroll is handled on the main or compositor
   // threads. Note: scrolls handled on the compositor but blocked on main due
   // to event handlers are still considered compositor scrolls.

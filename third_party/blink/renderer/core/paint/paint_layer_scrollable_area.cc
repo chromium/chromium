@@ -2422,15 +2422,6 @@ bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
   if (HasBeenDisposed())
     return true;
 
-  // TODO(crbug.com/985127, crbug.com/1015833): We should just use the main
-  // thread scrolling reasons on the scroll node which should have all required
-  // reasons. If it was not, we would have inconsistent results here and
-  // ScrollNode::GetMainThreadScrollingReasons().
-  if (LocalFrame* frame = GetLayoutBox()->GetFrame()) {
-    if (frame->View()->GetMainThreadScrollingReasons())
-      return true;
-  }
-
   // Property tree state is not available until the PrePaint lifecycle stage.
   // PaintPropertyTreeBuilder needs to get the old status during PrePaint.
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),

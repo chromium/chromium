@@ -222,11 +222,6 @@ void PropertyTreeManager::EnsureCompositorScrollNodes(
     EnsureCompositorScrollNode(*node);
 }
 
-void PropertyTreeManager::SetCcScrollNodeIsComposited(int cc_node_id) {
-  DCHECK(base::FeatureList::IsEnabled(features::kScrollUnification));
-  scroll_tree_.Node(cc_node_id)->is_composited = true;
-}
-
 void PropertyTreeManager::SetupRootTransformNode() {
   // cc is hardcoded to use transform node index 1 for device scale and
   // transform.

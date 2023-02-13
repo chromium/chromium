@@ -3537,9 +3537,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return bitfields_.DescendantNeedsPaintPropertyUpdate();
   }
-  // Called when some change needs paint property update of all ancestors (not
-  // crossing frame boundaries).
-  void ForceAllAncestorsNeedPaintPropertyUpdate();
 
   void SetIsScrollAnchorObject() {
     NOT_DESTROYED();

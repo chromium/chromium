@@ -156,10 +156,6 @@ class PropertyTreeManager {
       const Vector<const TransformPaintPropertyNode*>&
           scroll_translation_nodes);
 
-  // Sets the cc::ScrollNode::is_composited bit to true for the node with ID
-  // |cc_node_id|.
-  void SetCcScrollNodeIsComposited(int cc_node_id);
-
   // Updates conditional render surface reasons for all effect nodes in
   // |GetEffectTree|. Every effect is supposed to have render surface enabled
   // for grouping, but we can omit a conditional render surface if it controls

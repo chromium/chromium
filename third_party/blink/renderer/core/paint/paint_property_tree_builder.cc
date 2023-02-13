@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -102,12 +104,7 @@ PaintPropertyTreeBuilderFragmentContext::
       &ScrollPaintPropertyNode::Root();
 }
 
-PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
-    : force_subtree_update_reasons(0u),
-      is_repeating_fixed_position(false),
-      has_svg_hidden_container_ancestor(false),
-      was_layout_shift_root(false),
-      was_main_thread_scrolling(false) {}
+PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext() = default;
 
 PaintPropertyTreeBuilderContext::~PaintPropertyTreeBuilderContext() {
   fragments.clear();
@@ -188,6 +185,9 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
   full_context.container_for_fixed_position = nullptr;
   context.fixed_position = context.current;
   context.fixed_position.fixed_position_children_fixed_to_root = true;
+
+  full_context.scroll_unification_enabled =
+      base::FeatureList::IsEnabled(::features::kScrollUnification);
 }
 
 namespace {
@@ -374,6 +374,8 @@ class FragmentPaintPropertyTreeBuilder {
     return CompositorElementIdFromUniqueObjectId(fragment_data_.UniqueId(),
                                                  namespace_id);
   }
+
+  MainThreadScrollingReasons GetMainThreadScrollingReasons() const;
 
   const LayoutObject& object_;
   NGPrePaintInfo* pre_paint_info_;
@@ -2326,35 +2328,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
   }
 }
 
-static MainThreadScrollingReasons GetMainThreadScrollingReasons(
-    const LayoutObject& object,
-    MainThreadScrollingReasons ancestor_reasons) {
-  auto reasons = ancestor_reasons;
-  if (!object.IsBox())
-    return reasons;
-
-  if (IsA<LayoutView>(object)) {
-    if (object.GetFrameView()
-            ->RequiresMainThreadScrollingForBackgroundAttachmentFixed()) {
-      reasons |=
-          cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
-    }
-
-    // TODO(pdr): This should apply to all scrollable areas, not just the
-    // viewport. This is not a user-visible bug because the threaded scrolling
-    // setting is only for testing.
-    if (!object.GetFrame()->GetSettings()->GetThreadedScrollingEnabled())
-      reasons |= cc::MainThreadScrollingReason::kThreadedScrollingDisabled;
+MainThreadScrollingReasons
+FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons() const {
+  DCHECK(IsA<LayoutBox>(object_));
+  auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea();
+  DCHECK(scrollable_area);
+  if (!full_context_.scroll_unification_enabled) {
+    return full_context_.global_main_thread_scrolling_reasons;
   }
-
-  if (!object.GetFrame()->Client()->GetWebFrame()) {
-    // If there's no WebFrame, then there's no WebFrameWidget, and we can't do
-    // threaded scrolling.  This currently only happens in a WebPagePopup.
-    // (However, we still allow needs_composited_scrolling to be true in this
-    // case, so that the scroller gets layerized.)
-    reasons |= cc::MainThreadScrollingReason::kPopupNoThreadedInput;
-  }
-  return reasons;
+  return full_context_.global_main_thread_scrolling_reasons |
+         scrollable_area->GetNonCompositedMainThreadScrollingReasons();
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
@@ -2379,31 +2362,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       state.user_scrollable_vertical =
           scrollable_area->UserInputScrollable(kVerticalScrollbar);
 
-      if (state.user_scrollable_horizontal || state.user_scrollable_vertical)
+      if (state.user_scrollable_horizontal || state.user_scrollable_vertical) {
         object_.GetFrameView()->AddUserScrollableArea(scrollable_area);
-      else
+      } else {
         object_.GetFrameView()->RemoveUserScrollableArea(scrollable_area);
-
-      // TODO(bokan): We probably don't need to pass ancestor reasons down the
-      // scroll tree. On the compositor, in
-      // LayerTreeHostImpl::FindScrollNodeForDeviceViewportPoint, we walk up
-      // the scroll tree looking at all the ancestor MainThreadScrollingReasons.
-      // https://crbug.com/985127.
-      auto ancestor_reasons =
-          context_.current.scroll->GetMainThreadScrollingReasons();
-      state.main_thread_scrolling_reasons =
-          GetMainThreadScrollingReasons(object_, ancestor_reasons);
-
-      // Main thread scrolling reasons depend on their ancestor's reasons
-      // so ensure the entire subtree is updated when reasons change.
-      if (auto* existing_scroll = properties_->Scroll()) {
-        if (existing_scroll->GetMainThreadScrollingReasons() !=
-            state.main_thread_scrolling_reasons) {
-          // Main thread scrolling reasons cross into isolation.
-          full_context_.force_subtree_update_reasons |=
-              PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
-        }
       }
+
+      state.main_thread_scrolling_reasons = GetMainThreadScrollingReasons();
 
       state.compositor_element_id = scrollable_area->GetScrollElementId();
 
@@ -4061,6 +4026,10 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   context_.was_layout_shift_root =
       IsLayoutShiftRoot(object_, object_.FirstFragment());
 
+  if (IsA<LayoutView>(object_)) {
+    UpdateGlobalMainThreadScrollingReasons();
+  }
+
   context_.old_scroll_offset = gfx::Vector2dF();
   if (const auto* properties = object_.FirstFragment().PaintProperties()) {
     if (const auto* old_scroll_translation = properties->ScrollTranslation()) {
@@ -4102,6 +4071,46 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
 
   object_.GetMutableForPainting()
       .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(false);
+}
+
+void PaintPropertyTreeBuilder::UpdateGlobalMainThreadScrollingReasons() {
+  DCHECK(IsA<LayoutView>(object_));
+
+  if (!object_.GetFrame()->GetSettings()->GetThreadedScrollingEnabled()) {
+    context_.global_main_thread_scrolling_reasons |=
+        cc::MainThreadScrollingReason::kThreadedScrollingDisabled;
+  }
+
+  if (object_.GetFrameView()
+          ->RequiresMainThreadScrollingForBackgroundAttachmentFixed()) {
+    context_.global_main_thread_scrolling_reasons |=
+        cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+  }
+
+  if (!object_.GetFrame()->Client()->GetWebFrame()) {
+    // If there's no WebFrame, then there's no WebFrameWidget, and we can't do
+    // threaded scrolling.  This currently only happens in a WebPagePopup.
+    // (However, we still allow needs_composited_scrolling to be true in this
+    // case, so that the scroller gets layerized.)
+    context_.global_main_thread_scrolling_reasons |=
+        cc::MainThreadScrollingReason::kPopupNoThreadedInput;
+  }
+
+  constexpr auto kGlobalReasons =
+      PaintPropertyTreeBuilderContext::kGlobalMainThreadScrollingReasons;
+  DCHECK_EQ(context_.global_main_thread_scrolling_reasons & ~kGlobalReasons,
+            0u);
+  if (auto* properties = object_.FirstFragment().PaintProperties()) {
+    if (auto* scroll = properties->Scroll()) {
+      if ((scroll->GetMainThreadScrollingReasons() & kGlobalReasons) !=
+          context_.global_main_thread_scrolling_reasons) {
+        // The changed global_main_thread_scrolling_reasons needs to propagate
+        // to all scroll nodes in this view.
+        context_.force_subtree_update_reasons |=
+            PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
+      }
+    }
+  }
 }
 
 void PaintPropertyTreeBuilder::UpdateForChildren() {

@@ -413,10 +413,7 @@ class NonCompositedMainThreadScrollingReasonsTest
     EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
         scrollable_area2->GetNonCompositedMainThreadScrollingReasons());
 
-    LocalFrameView* frame_view = GetFrame()->View();
-    ASSERT_TRUE(frame_view);
-    EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
-        frame_view->GetMainThreadScrollingReasons());
+    EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(GetViewMainThreadScrollingReasons());
 
     // Remove class from the scroller 1 would lead to scroll on impl.
 
@@ -425,8 +422,7 @@ class NonCompositedMainThreadScrollingReasonsTest
 
     EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
         scrollable_area->GetNonCompositedMainThreadScrollingReasons());
-    EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
-        frame_view->GetMainThreadScrollingReasons());
+    EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(GetViewMainThreadScrollingReasons());
 
     // Add target attribute would again lead to scroll on main thread
     container->classList().Add(style_class);
@@ -434,8 +430,7 @@ class NonCompositedMainThreadScrollingReasonsTest
 
     EXPECT_MAIN_THREAD_SCROLLING_REASON(
         reason, scrollable_area->GetNonCompositedMainThreadScrollingReasons());
-    EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
-        frame_view->GetMainThreadScrollingReasons());
+    EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(GetViewMainThreadScrollingReasons());
 
     if ((reason & kLCDTextRelatedReasons) &&
         !(reason & ~kLCDTextRelatedReasons)) {
@@ -444,7 +439,7 @@ class NonCompositedMainThreadScrollingReasonsTest
       EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
           scrollable_area->GetNonCompositedMainThreadScrollingReasons());
       EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
-          frame_view->GetMainThreadScrollingReasons());
+          GetViewMainThreadScrollingReasons());
     }
   }
 };

@@ -1433,8 +1433,9 @@ bool ScrollTree::CanRealizeScrollsOnCompositor(const ScrollNode& node) const {
 
 uint32_t ScrollTree::GetMainThreadRepaintReasons(const ScrollNode& node) const {
   uint32_t reasons = node.main_thread_scrolling_reasons;
-  if (!node.is_composited)
-    reasons |= MainThreadScrollingReason::kNoScrollingLayer;
+  if (!reasons && !node.is_composited) {
+    return MainThreadScrollingReason::kNoScrollingLayer;
+  }
   return reasons;
 }
 
