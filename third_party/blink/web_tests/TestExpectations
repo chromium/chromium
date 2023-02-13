@@ -2306,6 +2306,10 @@ crbug.com/876485 fast/performance/performance-measure-null-exception.html [ Fail
 # image-set() does not yet support gradient images
 crbug.com/1400902 external/wpt/css/css-images/image-set/image-set-linear-gradient-rendering.html [ Failure ]
 crbug.com/1400902 external/wpt/css/css-images/image-set/image-set-radial-gradient-rendering.html [ Failure ]
+crbug.com/1400902 external/wpt/css/css-images/image-set/image-set-conic-gradient-rendering.html [ Failure ]
+crbug.com/1400902 external/wpt/css/css-images/image-set/image-set-repeating-conic-gradient-rendering.html [ Failure ]
+crbug.com/1400902 external/wpt/css/css-images/image-set/image-set-repeating-linear-gradient-rendering.html [ Failure ]
+crbug.com/1400902 external/wpt/css/css-images/image-set/image-set-repeating-radial-gradient-rendering.html [ Failure ]
 
 # image-set() type function not yet supported
 crbug.com/1399341 external/wpt/css/css-images/image-set/image-set-type-rendering.html [ Failure ]
