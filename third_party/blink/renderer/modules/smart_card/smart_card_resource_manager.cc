@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/smart_card/smart_card_resource_manager.h"
 
-#include "services/device/public/mojom/smart_card.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
@@ -178,7 +177,7 @@ void SmartCardResourceManager::FinishGetReaders(
 }
 
 SmartCardReader* SmartCardResourceManager::GetOrCreateReader(
-    device::mojom::blink::SmartCardReaderInfoPtr info) {
+    mojom::blink::SmartCardReaderInfoPtr info) {
   auto it = reader_cache_.find(info->name);
   if (it != reader_cache_.end()) {
     return it->value;
@@ -208,11 +207,11 @@ void SmartCardResourceManager::EnsureServiceConnection() {
   DCHECK(!receiver_.is_bound());
   service_->RegisterClient(
       receiver_.BindNewEndpointAndPassRemote(),
-      WTF::BindOnce(&SmartCardResourceManager::OnManagerClientRegistered,
+      WTF::BindOnce(&SmartCardResourceManager::OnServiceClientRegistered,
                     WrapWeakPersistent(this)));
 }
 
-void SmartCardResourceManager::OnManagerClientRegistered(
+void SmartCardResourceManager::OnServiceClientRegistered(
     bool supports_reader_presence_observer) {
   if (supports_reader_presence_observer_.has_value()) {
     // We already got it from a previous RegisterClient() call and its value

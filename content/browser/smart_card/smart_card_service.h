@@ -32,16 +32,16 @@ class CONTENT_EXPORT SmartCardService : public blink::mojom::SmartCardService,
   // blink::mojom::SmartCardService overrides:
   void GetReaders(GetReadersCallback callback) override;
   void RegisterClient(mojo::PendingAssociatedRemote<
-                          device::mojom::SmartCardManagerClient> client,
+                          blink::mojom::SmartCardServiceClient> client,
                       RegisterClientCallback callback) override;
 
   // SmartCardDelegate::Observer overrides:
   void OnReaderAdded(
-      const device::mojom::SmartCardReaderInfo& reader_info) override;
+      const blink::mojom::SmartCardReaderInfo& reader_info) override;
   void OnReaderRemoved(
-      const device::mojom::SmartCardReaderInfo& reader_info) override;
+      const blink::mojom::SmartCardReaderInfo& reader_info) override;
   void OnReaderChanged(
-      const device::mojom::SmartCardReaderInfo& reader_info) override;
+      const blink::mojom::SmartCardReaderInfo& reader_info) override;
 
  private:
   const raw_ref<SmartCardDelegate> delegate_;
@@ -49,7 +49,7 @@ class CONTENT_EXPORT SmartCardService : public blink::mojom::SmartCardService,
       scoped_observation_{this};
 
   // Used to bind with Blink.
-  mojo::AssociatedRemoteSet<device::mojom::SmartCardManagerClient> clients_;
+  mojo::AssociatedRemoteSet<blink::mojom::SmartCardServiceClient> clients_;
 };
 
 }  // namespace content

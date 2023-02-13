@@ -8,7 +8,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
-#include "services/device/public/mojom/smart_card.mojom-forward.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-forward.h"
 
 namespace content {
@@ -32,18 +31,18 @@ class CONTENT_EXPORT SmartCardDelegate {
     // Depends on SupportsReaderAddedRemovedNotifications()
     // being true.
     virtual void OnReaderAdded(
-        const device::mojom::SmartCardReaderInfo& reader_info) = 0;
+        const blink::mojom::SmartCardReaderInfo& reader_info) = 0;
 
     // Called when a smart card reader is removed from the system.
     // Depends on SupportsReaderAddedRemovedNotifications()
     // being true.
     virtual void OnReaderRemoved(
-        const device::mojom::SmartCardReaderInfo& reader_info) = 0;
+        const blink::mojom::SmartCardReaderInfo& reader_info) = 0;
 
     // Called when the attributes (state and/or atr) of a smart card reader
     // changes.
     virtual void OnReaderChanged(
-        const device::mojom::SmartCardReaderInfo& reader_info) = 0;
+        const blink::mojom::SmartCardReaderInfo& reader_info) = 0;
   };
 
   SmartCardDelegate();

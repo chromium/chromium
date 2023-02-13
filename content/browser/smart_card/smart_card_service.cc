@@ -35,7 +35,7 @@ class DocumentHelper
   }
 
   void RegisterClient(mojo::PendingAssociatedRemote<
-                          device::mojom::SmartCardManagerClient> client,
+                          blink::mojom::SmartCardServiceClient> client,
                       RegisterClientCallback callback) override {
     service_->RegisterClient(std::move(client), std::move(callback));
   }
@@ -101,7 +101,7 @@ void SmartCardService::GetReaders(
 }
 
 void SmartCardService::RegisterClient(
-    mojo::PendingAssociatedRemote<device::mojom::SmartCardManagerClient> client,
+    mojo::PendingAssociatedRemote<blink::mojom::SmartCardServiceClient> client,
     RegisterClientCallback callback) {
   clients_.Add(std::move(client));
 
@@ -112,21 +112,21 @@ void SmartCardService::RegisterClient(
 }
 
 void SmartCardService::OnReaderAdded(
-    const device::mojom::SmartCardReaderInfo& reader_info) {
+    const blink::mojom::SmartCardReaderInfo& reader_info) {
   for (auto& client : clients_) {
     client->ReaderAdded(reader_info.Clone());
   }
 }
 
 void SmartCardService::OnReaderRemoved(
-    const device::mojom::SmartCardReaderInfo& reader_info) {
+    const blink::mojom::SmartCardReaderInfo& reader_info) {
   for (auto& client : clients_) {
     client->ReaderRemoved(reader_info.Clone());
   }
 }
 
 void SmartCardService::OnReaderChanged(
-    const device::mojom::SmartCardReaderInfo& reader_info) {
+    const blink::mojom::SmartCardReaderInfo& reader_info) {
   NOTIMPLEMENTED();
   // TODO(crbug.com/1386175): Implement and test.
 }

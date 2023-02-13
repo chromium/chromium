@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SMART_CARD_SMART_CARD_RESOURCE_MANAGER_H_
 
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "services/device/public/mojom/smart_card.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -28,11 +27,11 @@ class MODULES_EXPORT SmartCardResourceManager final
     : public ScriptWrappable,
       public Supplement<NavigatorBase>,
       public ExecutionContextLifecycleObserver,
-      public device::mojom::blink::SmartCardManagerClient {
+      public mojom::blink::SmartCardServiceClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using SmartCardReaderInfoPtr = device::mojom::blink::SmartCardReaderInfoPtr;
+  using SmartCardReaderInfoPtr = mojom::blink::SmartCardReaderInfoPtr;
 
   static const char kSupplementName[];
 
@@ -53,7 +52,7 @@ class MODULES_EXPORT SmartCardResourceManager final
   ScriptPromise watchForReaders(ScriptState* script_state,
                                 ExceptionState& exception_state);
 
-  // device::mojom::blink::SmartCardManagerClient overrides:
+  // mojom::blink::SmartCardServiceClient overrides:
   void ReaderAdded(SmartCardReaderInfoPtr reader_info) override;
   void ReaderRemoved(SmartCardReaderInfoPtr reader_info) override;
   void ReaderChanged(SmartCardReaderInfoPtr reader_info) override;
@@ -66,13 +65,13 @@ class MODULES_EXPORT SmartCardResourceManager final
   void FinishGetReaders(ScriptPromiseResolver*,
                         mojom::blink::SmartCardGetReadersResultPtr);
 
-  void OnManagerClientRegistered(bool supports_reader_presence_observer);
+  void OnServiceClientRegistered(bool supports_reader_presence_observer);
   void ResolveWatchForReadersPromise(ScriptPromiseResolver* resolver);
   SmartCardReaderPresenceObserver* GetOrCreatePresenceObserver();
 
   HeapMojoRemote<mojom::blink::SmartCardService> service_;
-  mojo::AssociatedReceiver<device::mojom::blink::SmartCardManagerClient>
-      receiver_{this};
+  mojo::AssociatedReceiver<mojom::blink::SmartCardServiceClient> receiver_{
+      this};
   HeapHashSet<Member<ScriptPromiseResolver>> get_readers_promises_;
   HeapHashSet<Member<ScriptPromiseResolver>> watch_for_readers_promises_;
 

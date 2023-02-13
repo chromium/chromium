@@ -19,15 +19,14 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/device/public/mojom/smart_card.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom.h"
 
-using device::mojom::SmartCardReaderInfo;
-using device::mojom::SmartCardReaderInfoPtr;
-using device::mojom::SmartCardReaderState;
+using blink::mojom::SmartCardReaderInfo;
+using blink::mojom::SmartCardReaderInfoPtr;
+using blink::mojom::SmartCardReaderState;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::Return;

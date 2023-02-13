@@ -4,8 +4,6 @@
 
 module blink.mojom;
 
-import "services/device/public/mojom/smart_card.mojom";
-
 // Maps to the namesake enum in
 // https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
 enum SmartCardResponseCode {
@@ -25,9 +23,50 @@ enum SmartCardResponseCode {
   kUnsupportedFeature
 };
 
+// Information about a smart card reader.
+// Usually corresponds to a physical USB smart card reader device or some
+// other USB device that implements the CCID interface.
+struct SmartCardReaderInfo {
+  // Name of the reader.
+  // It's human-readable and unique among the currently available readers.
+  string name;
+
+  // Current state of the reader.
+  SmartCardReaderState state;
+
+  // Answer to Reset of the currently inserted card.
+  // Empty if no card is inserted.
+  array<uint8> atr;
+};
+
 union SmartCardGetReadersResult {
   SmartCardResponseCode response_code;
-  array<device.mojom.SmartCardReaderInfo> readers;
+  array<SmartCardReaderInfo> readers;
+};
+
+enum SmartCardReaderState {
+  kUnavailable,
+  kEmpty,
+  kPresent,
+  kExclusive,
+  kInuse,
+  kMute,
+  kUnpowered
+};
+
+// A client interface for receiving a notification
+// when a smart card reader is added, removed or
+// has a change in its attributes.
+interface SmartCardServiceClient {
+  // Notifies that a smart card reader has been added.
+  ReaderAdded(SmartCardReaderInfo reader_info);
+
+  // Notifies that a smart card reader is being removed.
+  ReaderRemoved(SmartCardReaderInfo reader_info);
+
+  // Notifies that the smart card reader info has changed.
+  // The name is the only attribute that never changes.
+  ReaderChanged(SmartCardReaderInfo reader_info);
 };
 
 // Interface for accessing smart card readers from the render process.
@@ -37,7 +76,7 @@ interface SmartCardService {
   // removed or changed.
   // It returns whether it's able to notify about additions and removals.
   // If not, only changes will be notified.
-  RegisterClient(pending_associated_remote<device.mojom.SmartCardManagerClient> client)
+  RegisterClient(pending_associated_remote<SmartCardServiceClient> client)
       => (bool can_notify_added_removed);
 
   // Enumerates all smart card readers in the system.
