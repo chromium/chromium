@@ -216,7 +216,8 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 - (void)startDragWithDropData:(const DropData&)dropData
             dragOperationMask:(NSDragOperation)operationMask
                         image:(NSImage*)image
-                       offset:(NSPoint)offset {
+                       offset:(NSPoint)offset
+                 isPrivileged:(BOOL)isPrivileged {
   if (!_host)
     return;
 
@@ -232,7 +233,8 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
                                           pressure:1.0];
 
   _dragSource.reset([[WebDragSource alloc] initWithHost:_host
-                                               dropData:dropData]);
+                                               dropData:dropData
+                                           isPrivileged:isPrivileged]);
   NSDraggingItem* draggingItem = [[[NSDraggingItem alloc]
       initWithPasteboardWriter:_dragSource] autorelease];
 

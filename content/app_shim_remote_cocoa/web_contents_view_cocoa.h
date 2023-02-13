@@ -71,7 +71,8 @@ CONTENT_EXPORT
 - (void)startDragWithDropData:(const content::DropData&)dropData
             dragOperationMask:(NSDragOperation)operationMask
                         image:(NSImage*)image
-                       offset:(NSPoint)offset;
+                       offset:(NSPoint)offset
+                 isPrivileged:(BOOL)isPrivileged;
 - (void)clearViewsHostableView;
 - (void)viewDidBecomeFirstResponder:(NSNotification*)notification;
 

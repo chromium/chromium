@@ -61,7 +61,8 @@ class CONTENT_EXPORT WebContentsNSViewBridge : public mojom::WebContentsNSView {
   void StartDrag(const content::DropData& drop_data,
                  uint32_t operation_mask,
                  const gfx::ImageSkia& image,
-                 const gfx::Vector2d& image_offset) override;
+                 const gfx::Vector2d& image_offset,
+                 bool is_privileged) override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
   void Destroy() override;
 

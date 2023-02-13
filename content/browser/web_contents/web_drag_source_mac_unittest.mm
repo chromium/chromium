@@ -17,8 +17,10 @@ TEST_F(WebDragSourceMacTest, DragInvalidlyEscapedBookmarklet) {
   DropData drop_data;
   drop_data.url = GURL("javascript:%");
 
-  base::scoped_nsobject<WebDragSource> source(
-      [[WebDragSource alloc] initWithHost:nullptr dropData:drop_data]);
+  base::scoped_nsobject<WebDragSource> source([[WebDragSource alloc]
+      initWithHost:nullptr
+          dropData:drop_data
+      isPrivileged:NO]);
 
   // Test that asking for the data of an invalidly-escaped URL doesn't throw any
   // exceptions. http://crbug.com/128371

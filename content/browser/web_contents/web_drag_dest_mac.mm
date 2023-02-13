@@ -406,11 +406,12 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
   base::scoped_nsobject<NSArray> types([[pboard types] retain]);
 
   drop_data.did_originate_from_renderer =
-      [types containsObject:ui::kUTTypeChromiumInitiatedDrag];
+      [types containsObject:ui::kUTTypeChromiumRendererInitiatedDrag];
+  drop_data.is_from_privileged =
+      [types containsObject:ui::kUTTypeChromiumPrivilegedInitiatedDrag];
 
   // Get URL if possible. To avoid exposing file system paths to web content,
   // filenames in the drag are not converted to file URLs.
-
   NSArray<NSString*>* urls;
   NSArray<NSString*>* titles;
   if (ui::ClipboardUtil::URLsAndTitlesFromPasteboard(

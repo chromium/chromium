@@ -101,13 +101,15 @@ void WebContentsNSViewBridge::TakeFocus(bool reverse) {
 void WebContentsNSViewBridge::StartDrag(const content::DropData& drop_data,
                                         uint32_t operation_mask,
                                         const gfx::ImageSkia& image,
-                                        const gfx::Vector2d& image_offset) {
+                                        const gfx::Vector2d& image_offset,
+                                        bool is_privileged) {
   NSPoint offset = NSPointFromCGPoint(
       gfx::PointAtOffsetFromOrigin(image_offset).ToCGPoint());
   [ns_view_ startDragWithDropData:drop_data
                 dragOperationMask:operation_mask
                             image:gfx::NSImageFromImageSkia(image)
-                           offset:offset];
+                           offset:offset
+                     isPrivileged:is_privileged];
 }
 
 void WebContentsNSViewBridge::UpdateWindowControlsOverlay(

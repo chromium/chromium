@@ -35,13 +35,36 @@
 #include "ui/base/cocoa/cocoa_base_utils.h"
 #include "url/url_constants.h"
 
-@implementation WebDragSource
+@implementation WebDragSource {
+  // The host through which to communicate with the WebContents. Owns
+  // this object. This pointer gets reset when the WebContents goes away with
+  // `webContentsIsGone`.
+  raw_ptr<remote_cocoa::mojom::WebContentsNSViewHost> _host;
+
+  // The drop data.
+  content::DropData _dropData;
+
+  // Whether to mark the drag as having come from a privileged WebContents.
+  BOOL _privileged;
+
+  // The file name to be saved to for a drag-out download.
+  base::FilePath _downloadFileName;
+
+  // The URL to download from for a drag-out download.
+  GURL _downloadURL;
+
+  // The file type associated with the file drag, if any. TODO(macOS 11): Change
+  // to a UTType object.
+  base::scoped_nsobject<NSString> _fileUTType;
+}
 
 - (instancetype)initWithHost:(remote_cocoa::mojom::WebContentsNSViewHost*)host
-                    dropData:(const content::DropData&)dropData {
+                    dropData:(const content::DropData&)dropData
+                isPrivileged:(BOOL)privileged {
   if ((self = [super init])) {
     _host = host;
     _dropData = dropData;
+    _privileged = privileged;
   }
 
   return self;
@@ -58,6 +81,15 @@
   // Always add kUTTypeChromiumInitiatedDrag to mark this drag as something to
   // accept.
   [writableTypes addObject:ui::kUTTypeChromiumInitiatedDrag];
+
+  // Always add kUTTypeChromiumRendererInitiatedDrag as all drags initiated here
+  // are drags from the web.
+  [writableTypes addObject:ui::kUTTypeChromiumRendererInitiatedDrag];
+
+  // Tag the drag as coming from a privileged WebContents if needed.
+  if (_privileged) {
+    [writableTypes addObject:ui::kUTTypeChromiumPrivilegedInitiatedDrag];
+  }
 
   // URL (and title).
   if (_dropData.url.is_valid()) {
@@ -263,8 +295,10 @@
     return [NSData dataWithBytes:pickle.data() length:pickle.size()];
   }
 
-  // Other Chromium-initiated drag.
-  if ([type isEqualToString:ui::kUTTypeChromiumInitiatedDrag]) {
+  // Flavors used to tag.
+  if ([type isEqualToString:ui::kUTTypeChromiumInitiatedDrag] ||
+      [type isEqualToString:ui::kUTTypeChromiumRendererInitiatedDrag] ||
+      [type isEqualToString:ui::kUTTypeChromiumPrivilegedInitiatedDrag]) {
     // The type _was_ promised and someone decided to call the bluff.
     return [NSData data];
   }

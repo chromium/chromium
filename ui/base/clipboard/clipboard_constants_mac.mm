@@ -13,6 +13,12 @@ NSString* const kUTTypeChromiumImageAndHTML = @"org.chromium.image-html";
 NSString* const kUTTypeChromiumInitiatedDrag =
     @"org.chromium.chromium-initiated-drag";
 
+NSString* const kUTTypeChromiumPrivilegedInitiatedDrag =
+    @"org.chromium.chromium-privileged-initiated-drag";
+
+NSString* const kUTTypeChromiumRendererInitiatedDrag =
+    @"org.chromium.chromium-renderer-initiated-drag";
+
 NSString* const kUTTypeChromiumWebCustomData = @"org.chromium.web-custom-data";
 
 NSString* const kUTTypeConfidentialData = @"org.nspasteboard.ConcealedType";

@@ -35,10 +35,17 @@ interface WebContentsNSView {
   TakeFocus(bool reverse);
 
   // Initiate a drag from the web contents area.
+  //
+  // /!\ The last argument on this IPC does not use the term "privileged" in the
+  // sense of a privileged process. (This message is sent between two non-render
+  // processes.) Rather, the last argument uses the term "privileged" to refer
+  // to whether the WebContents initiating the drag is being used to implement
+  // a UI surface. See `WebContentsDelegate::IsPrivileged()` for more context.
   StartDrag(content.mojom.DropData drop_data,
             uint32 operation_mask,
             gfx.mojom.ImageSkia? image,
-            gfx.mojom.Vector2d image_offset);
+            gfx.mojom.Vector2d image_offset,
+            bool is_privileged);
 
   // Intended for desktop PWAs with manifest entry of window-controls-overlay,
   // this informs the view of which area at the top of the view is available for
@@ -146,4 +153,3 @@ interface WebContentsNSViewHost {
           gfx.mojom.PointF local_point,
           gfx.mojom.PointF screen_point);
 };
-

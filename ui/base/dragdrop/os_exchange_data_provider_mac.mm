@@ -136,23 +136,23 @@ OSExchangeDataProviderMac::CreateProviderWrappingPasteboard(
 }
 
 void OSExchangeDataProviderMac::MarkOriginatedFromRenderer() {
-  NOTIMPLEMENTED();
+  [GetPasteboard() setData:[NSData data]
+                   forType:kUTTypeChromiumRendererInitiatedDrag];
 }
 
 bool OSExchangeDataProviderMac::DidOriginateFromRenderer() const {
-  // TODO(crbug.com/1288599): Implement this method.
-  NOTIMPLEMENTED();
-  return false;
+  return [GetPasteboard().types
+      containsObject:kUTTypeChromiumRendererInitiatedDrag];
 }
 
 void OSExchangeDataProviderMac::MarkAsFromPrivileged() {
-  NOTIMPLEMENTED();
+  [GetPasteboard() setData:[NSData data]
+                   forType:kUTTypeChromiumPrivilegedInitiatedDrag];
 }
 
 bool OSExchangeDataProviderMac::IsFromPrivileged() const {
-  // TODO(crbug.com/1288601): Implement this method.
-  NOTIMPLEMENTED();
-  return false;
+  return [GetPasteboard().types
+      containsObject:kUTTypeChromiumPrivilegedInitiatedDrag];
 }
 
 void OSExchangeDataProviderMac::SetString(const std::u16string& string) {
@@ -169,7 +169,7 @@ void OSExchangeDataProviderMac::SetURL(const GURL& url,
 }
 
 void OSExchangeDataProviderMac::SetFilename(const base::FilePath& path) {
-  std::vector<FileInfo> filenames(1, ui::FileInfo(path, base::FilePath()));
+  std::vector<FileInfo> filenames(1, FileInfo(path, base::FilePath()));
   ClipboardUtil::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
@@ -212,7 +212,7 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
 
   NSArray<NSString*>* urls;
   NSArray<NSString*>* titles;
-  if (ui::ClipboardUtil::URLsAndTitlesFromPasteboard(
+  if (ClipboardUtil::URLsAndTitlesFromPasteboard(
           GetPasteboard(), /*include_files=*/false, &urls, &titles)) {
     *url = GURL(base::SysNSStringToUTF8(urls.firstObject));
     *title = base::SysNSStringToUTF16(titles.firstObject);
@@ -241,8 +241,8 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
 }
 
 bool OSExchangeDataProviderMac::GetFilename(base::FilePath* path) const {
-  std::vector<ui::FileInfo> files =
-      ui::ClipboardUtil::FilesFromPasteboard(GetPasteboard());
+  std::vector<FileInfo> files =
+      ClipboardUtil::FilesFromPasteboard(GetPasteboard());
   if (files.empty()) {
     return false;
   }
@@ -253,8 +253,8 @@ bool OSExchangeDataProviderMac::GetFilename(base::FilePath* path) const {
 
 bool OSExchangeDataProviderMac::GetFilenames(
     std::vector<FileInfo>* filenames) const {
-  std::vector<ui::FileInfo> files =
-      ui::ClipboardUtil::FilesFromPasteboard(GetPasteboard());
+  std::vector<FileInfo> files =
+      ClipboardUtil::FilesFromPasteboard(GetPasteboard());
   bool result = !files.empty();
   base::ranges::move(files, std::back_inserter(*filenames));
   return result;
@@ -355,7 +355,8 @@ NSArray<NSDraggingItem*>* OSExchangeDataProviderMac::GetDraggingItems() const {
 // static
 NSArray* OSExchangeDataProviderMac::SupportedPasteboardTypes() {
   return @[
-    kUTTypeChromiumInitiatedDrag, kUTTypeChromiumWebCustomData,
+    kUTTypeChromiumInitiatedDrag, kUTTypeChromiumPrivilegedInitiatedDrag,
+    kUTTypeChromiumRendererInitiatedDrag, kUTTypeChromiumWebCustomData,
     kUTTypeWebKitWebURLsWithTitles, NSPasteboardTypeFileURL,
     NSPasteboardTypeHTML, NSPasteboardTypeRTF, NSPasteboardTypeString,
     NSPasteboardTypeURL
