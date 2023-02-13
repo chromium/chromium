@@ -8,7 +8,7 @@
  * fetching mojom data and mocking out the implementation for testing.
  */
 
-import {KeyboardBacklightProvider, KeyboardBacklightProviderInterface} from '../personalization_app.mojom-webui.js';
+import {KeyboardBacklightProvider, KeyboardBacklightProviderInterface} from '../../personalization_app.mojom-webui.js';
 
 let keyboardBacklightProvider: KeyboardBacklightProviderInterface|null = null;
 

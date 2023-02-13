@@ -4,7 +4,7 @@
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {UserImage, UserImageObserverInterface, UserImageObserverReceiver, UserProviderInterface} from '../personalization_app.mojom-webui.js';
+import {UserImage, UserImageObserverInterface, UserImageObserverReceiver, UserProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setIsCameraPresentAction, setProfileImageAction, setUserImageAction, setUserImageIsEnterpriseManagedAction} from './user_actions.js';

@@ -32,7 +32,7 @@ static_library("personalization_app") {
     "//ash/public/cpp",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
-    "//ash/webui/resources:personalization_app_resources",
+    "//ash/webui/personalization_app/resources:resources",
     "//chromeos/ash/components/local_search_service",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",

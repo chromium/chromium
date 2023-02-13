@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BacklightColor, KeyboardBacklightProviderInterface} from '../personalization_app.mojom-webui.js';
+import {BacklightColor, KeyboardBacklightProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setBacklightColorAction, setShouldShowNudgeAction} from './keyboard_backlight_actions.js';

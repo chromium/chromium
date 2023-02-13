@@ -5,7 +5,7 @@
 import {Action} from 'chrome://resources/ash/common/store/store.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {ColorScheme, SampleColorScheme} from '../personalization_app.mojom-webui.js';
+import {ColorScheme, SampleColorScheme} from '../../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change theme state.

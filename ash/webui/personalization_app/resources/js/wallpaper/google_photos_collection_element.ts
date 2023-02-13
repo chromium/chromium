@@ -13,8 +13,8 @@ import '../../css/common.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
+import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
-import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';

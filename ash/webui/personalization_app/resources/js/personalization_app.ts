@@ -72,7 +72,7 @@ export {setKeyboardBacklightProviderForTesting} from './keyboard_backlight/keybo
 export {KeyboardBacklightObserver} from './keyboard_backlight/keyboard_backlight_observer.js';
 export {Actions, DismissErrorAction, dismissErrorAction, PersonalizationActionName, SetErrorAction} from './personalization_actions.js';
 
-export * from './personalization_app.mojom-webui.js';
+export * from './../personalization_app.mojom-webui.js';
 export {PersonalizationBreadcrumb} from './personalization_breadcrumb_element.js';
 export {PersonalizationMain} from './personalization_main_element.js';
 export {reduce} from './personalization_reducers.js';

@@ -13,7 +13,7 @@ import '../../common/icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {CurrentWallpaper, WallpaperLayout} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, WallpaperLayout} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {DisplayableImage} from './constants.js';

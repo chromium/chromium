@@ -4,7 +4,7 @@
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {DefaultUserImage, UserImage, UserInfo} from '../personalization_app.mojom-webui.js';
+import {DefaultUserImage, UserImage, UserInfo} from '../../personalization_app.mojom-webui.js';
 
 export interface UserState {
   defaultUserImages: DefaultUserImage[]|null;

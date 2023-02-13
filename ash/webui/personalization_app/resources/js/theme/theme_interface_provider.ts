@@ -11,7 +11,7 @@
 import 'chrome://resources/mojo/mojo/public/js/bindings.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {ThemeProvider, ThemeProviderInterface} from '../personalization_app.mojom-webui.js';
+import {ThemeProvider, ThemeProviderInterface} from '../../personalization_app.mojom-webui.js';
 
 let themeProvider: ThemeProviderInterface|null = null;
 

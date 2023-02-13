@@ -14,8 +14,8 @@ import '../../css/wallpaper.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
+import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isDarkLightModeEnabled} from '../load_time_booleans.js';
-import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';

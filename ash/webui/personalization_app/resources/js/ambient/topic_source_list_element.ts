@@ -11,7 +11,7 @@ import '../../css/common.css.js';
 import './topic_source_item_element.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {TopicSource} from '../personalization_app.mojom-webui.js';
+import {TopicSource} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './topic_source_list_element.html.js';

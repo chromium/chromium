@@ -4,7 +4,7 @@
 
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {BacklightColor, KeyboardBacklightObserverInterface, KeyboardBacklightObserverReceiver, KeyboardBacklightProviderInterface} from '../personalization_app.mojom-webui.js';
+import {BacklightColor, KeyboardBacklightObserverInterface, KeyboardBacklightObserverReceiver, KeyboardBacklightProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setBacklightColorAction, setWallpaperColorAction} from './keyboard_backlight_actions.js';

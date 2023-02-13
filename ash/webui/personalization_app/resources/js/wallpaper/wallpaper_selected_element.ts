@@ -15,8 +15,8 @@ import '../../css/wallpaper.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
+import {CurrentWallpaper, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosSharedAlbumsEnabled} from '../load_time_booleans.js';
-import {CurrentWallpaper, WallpaperLayout, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';

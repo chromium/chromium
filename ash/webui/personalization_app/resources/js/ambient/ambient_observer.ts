@@ -4,8 +4,8 @@
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
+import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, AmbientUiVisibility, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {isAmbientModeAllowed} from '../load_time_booleans.js';
-import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, AmbientUiVisibility, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {logGooglePhotosPreviewsLoadTime} from '../personalization_metrics_logger.js';
 import {Paths} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';

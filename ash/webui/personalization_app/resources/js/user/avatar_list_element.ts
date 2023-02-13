@@ -10,8 +10,8 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
+import {DefaultUserImage, UserImage} from '../../personalization_app.mojom-webui.js';
 import {setErrorAction} from '../personalization_actions.js';
-import {DefaultUserImage, UserImage} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {decodeString16, getSanitizedDefaultImageUrl, isNonEmptyArray, isSelectionEvent} from '../utils.js';
 

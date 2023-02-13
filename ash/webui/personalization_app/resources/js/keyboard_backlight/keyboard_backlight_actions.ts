@@ -5,7 +5,7 @@
 import {Action} from 'chrome://resources/ash/common/store/store.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {BacklightColor} from '../personalization_app.mojom-webui.js';
+import {BacklightColor} from '../../personalization_app.mojom-webui.js';
 
 
 /**

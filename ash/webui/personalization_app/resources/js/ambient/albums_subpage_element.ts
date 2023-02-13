@@ -16,7 +16,7 @@ import '../../css/common.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getNumberOfGridItemsPerRow, isNonEmptyArray} from '../utils.js';

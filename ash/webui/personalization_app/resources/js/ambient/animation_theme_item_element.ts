@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {AnimationTheme} from '../personalization_app.mojom-webui.js';
+import {AnimationTheme} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isSelectionEvent} from '../utils.js';
 

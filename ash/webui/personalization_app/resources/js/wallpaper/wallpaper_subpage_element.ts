@@ -7,8 +7,8 @@
  * personalization SWA.
  */
 
+import {CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosIntegrationEnabled} from '../load_time_booleans.js';
-import {CurrentWallpaper, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 

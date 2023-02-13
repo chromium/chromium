@@ -10,7 +10,7 @@ import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientModeAlbum, GooglePhotosAlbum} from './personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, GooglePhotosAlbum} from './../personalization_app.mojom-webui.js';
 
 export type PersonalizationAppSelectionEvent =
     MouseEvent&{type: 'click'}|KeyboardEvent&{key: 'Enter'};

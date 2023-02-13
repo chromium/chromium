@@ -17,8 +17,8 @@ import '../../css/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
+import {AmbientUiVisibility} from '../../personalization_app.mojom-webui.js';
 import {isAmbientModeAllowed, isScreenSaverPreviewEnabled} from '../load_time_booleans.js';
-import {AmbientUiVisibility} from '../personalization_app.mojom-webui.js';
 
 import {startScreenSaverPreview} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';

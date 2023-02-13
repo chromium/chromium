@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {BigBuffer, BigBufferSharedMemoryRegion} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 
-import {UserProviderInterface} from '../personalization_app.mojom-webui.js';
+import {UserProviderInterface} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setDefaultUserImagesAction, setUserInfoAction} from './user_actions.js';

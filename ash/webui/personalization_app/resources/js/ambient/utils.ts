@@ -8,7 +8,7 @@
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
-import {TopicSource} from '../personalization_app.mojom-webui.js';
+import {TopicSource} from '../../personalization_app.mojom-webui.js';
 
 /**
  * Returns photo count string.

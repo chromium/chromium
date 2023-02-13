@@ -18,7 +18,7 @@ import '../../css/cros_button_style.css.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {TopicSource} from '../personalization_app.mojom-webui.js';
+import {TopicSource} from '../../personalization_app.mojom-webui.js';
 import {logAmbientModeOptInUMA} from '../personalization_metrics_logger.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {isNonEmptyArray} from '../utils.js';

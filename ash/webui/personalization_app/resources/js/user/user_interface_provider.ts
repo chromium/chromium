@@ -10,7 +10,7 @@
 
 import 'chrome://resources/mojo/mojo/public/js/bindings.js';
 
-import {UserProvider, UserProviderInterface} from '../personalization_app.mojom-webui.js';
+import {UserProvider, UserProviderInterface} from '../../personalization_app.mojom-webui.js';
 
 let userProvider: UserProviderInterface|null = null;
 

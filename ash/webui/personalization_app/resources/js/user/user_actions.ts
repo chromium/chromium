@@ -5,7 +5,7 @@
 import {Action} from 'chrome://resources/ash/common/store/store.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {DefaultUserImage, UserImage, UserInfo} from '../personalization_app.mojom-webui.js';
+import {DefaultUserImage, UserImage, UserInfo} from '../../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change user state.

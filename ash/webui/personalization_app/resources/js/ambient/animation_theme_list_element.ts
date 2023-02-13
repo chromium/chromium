@@ -8,7 +8,7 @@
 import './animation_theme_item_element.js';
 import '../../css/common.css.js';
 
-import {AnimationTheme} from '../personalization_app.mojom-webui.js';
+import {AnimationTheme} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './animation_theme_list_element.html.js';

@@ -4,8 +4,8 @@
 
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
+import {BacklightColor} from '../../personalization_app.mojom-webui.js';
 import {Actions} from '../personalization_actions.js';
-import {BacklightColor} from '../personalization_app.mojom-webui.js';
 import {ReducerFunction} from '../personalization_reducers.js';
 import {PersonalizationState} from '../personalization_state.js';
 
