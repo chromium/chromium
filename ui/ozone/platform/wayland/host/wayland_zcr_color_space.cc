@@ -27,6 +27,8 @@ WaylandZcrColorSpace::WaylandZcrColorSpace(
       &WaylandZcrColorSpace::OnNames,
       &WaylandZcrColorSpace::OnParams,
       &WaylandZcrColorSpace::OnDone,
+      &WaylandZcrColorSpace::OnCompleteNames,
+      &WaylandZcrColorSpace::OnCompleteParams,
   };
 
   zcr_color_space_v1_add_listener(zcr_color_space_.get(), &listener, this);
@@ -46,18 +48,37 @@ void WaylandZcrColorSpace::OnIccFile(void* data,
   // TODO(b/192562912): construct a color space from an icc file.
 }
 
-// static
+// static deprecated
 void WaylandZcrColorSpace::OnNames(void* data,
                                    struct zcr_color_space_v1* cs,
                                    uint32_t eotf,
                                    uint32_t chromaticity,
                                    uint32_t whitepoint) {
+  OnCompleteNames(data, cs, eotf, chromaticity, whitepoint,
+                  ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_RGB,
+                  ZCR_COLOR_MANAGER_V1_RANGE_NAMES_FULL);
+}
+
+// static
+void WaylandZcrColorSpace::OnCompleteNames(void* data,
+                                           struct zcr_color_space_v1* cs,
+                                           uint32_t eotf,
+                                           uint32_t chromaticity,
+                                           uint32_t whitepoint,
+                                           uint32_t matrix,
+                                           uint32_t range) {
   WaylandZcrColorSpace* zcr_color_space =
       static_cast<WaylandZcrColorSpace*>(data);
   DCHECK(zcr_color_space);
   auto primaryID = ui::wayland::kChromaticityMap.contains(chromaticity)
                        ? ui::wayland::kChromaticityMap.at(chromaticity)
                        : gfx::ColorSpace::PrimaryID::INVALID;
+  auto matrixID = ui::wayland::kMatrixMap.contains(matrix)
+                      ? ui::wayland::kMatrixMap.at(matrix)
+                      : gfx::ColorSpace::MatrixID::INVALID;
+  auto rangeID = ui::wayland::kRangeMap.contains(range)
+                     ? ui::wayland::kRangeMap.at(range)
+                     : gfx::ColorSpace::RangeID::INVALID;
   auto transferID = ui::wayland::kEotfMap.contains(eotf)
                         ? ui::wayland::kEotfMap.at(eotf)
                         : gfx::ColorSpace::TransferID::INVALID;
@@ -67,18 +88,16 @@ void WaylandZcrColorSpace::OnNames(void* data,
     zcr_color_space
         ->gathered_information[static_cast<uint8_t>(InformationType::kNames)] =
         gfx::ColorSpace(primaryID, gfx::ColorSpace::TransferID::CUSTOM_HDR,
-                        gfx::ColorSpace::MatrixID::RGB,
-                        gfx::ColorSpace::RangeID::FULL, nullptr, &transfer_fn,
+                        matrixID, rangeID, nullptr, &transfer_fn,
                         /*is_hdr=*/true);
     return;
   }
   zcr_color_space
       ->gathered_information[static_cast<uint8_t>(InformationType::kNames)] =
-      gfx::ColorSpace(primaryID, transferID, gfx::ColorSpace::MatrixID::RGB,
-                      gfx::ColorSpace::RangeID::FULL);
+      gfx::ColorSpace(primaryID, transferID, matrixID, rangeID);
 }
 
-// static
+// static deprecated
 void WaylandZcrColorSpace::OnParams(void* data,
                                     struct zcr_color_space_v1* cs,
                                     uint32_t eotf,
@@ -90,6 +109,26 @@ void WaylandZcrColorSpace::OnParams(void* data,
                                     uint32_t primary_b_y,
                                     uint32_t whitepoint_x,
                                     uint32_t whitepoint_y) {
+  OnCompleteParams(data, cs, eotf, ZCR_COLOR_MANAGER_V1_MATRIX_NAMES_RGB,
+                   ZCR_COLOR_MANAGER_V1_RANGE_NAMES_FULL, primary_r_x,
+                   primary_r_y, primary_g_x, primary_g_y, primary_b_x,
+                   primary_b_y, whitepoint_x, whitepoint_y);
+}
+
+// static
+void WaylandZcrColorSpace::OnCompleteParams(void* data,
+                                            struct zcr_color_space_v1* cs,
+                                            uint32_t eotf,
+                                            uint32_t matrix,
+                                            uint32_t range,
+                                            uint32_t primary_r_x,
+                                            uint32_t primary_r_y,
+                                            uint32_t primary_g_x,
+                                            uint32_t primary_g_y,
+                                            uint32_t primary_b_x,
+                                            uint32_t primary_b_y,
+                                            uint32_t whitepoint_x,
+                                            uint32_t whitepoint_y) {
   WaylandZcrColorSpace* zcr_color_space =
       static_cast<WaylandZcrColorSpace*>(data);
   DCHECK(zcr_color_space);
@@ -109,6 +148,12 @@ void WaylandZcrColorSpace::OnParams(void* data,
     return;
   }
 
+  auto matrixID = ui::wayland::kMatrixMap.contains(matrix)
+                      ? ui::wayland::kMatrixMap.at(matrix)
+                      : gfx::ColorSpace::MatrixID::INVALID;
+  auto rangeID = ui::wayland::kRangeMap.contains(range)
+                     ? ui::wayland::kRangeMap.at(range)
+                     : gfx::ColorSpace::RangeID::INVALID;
   auto transferID = ui::wayland::kEotfMap.contains(eotf)
                         ? ui::wayland::kEotfMap.at(eotf)
                         : gfx::ColorSpace::TransferID::INVALID;
@@ -118,10 +163,8 @@ void WaylandZcrColorSpace::OnParams(void* data,
     zcr_color_space
         ->gathered_information[static_cast<uint8_t>(InformationType::kParams)] =
         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::CUSTOM,
-                        gfx::ColorSpace::TransferID::CUSTOM_HDR,
-                        gfx::ColorSpace::MatrixID::RGB,
-                        gfx::ColorSpace::RangeID::FULL, &xyzd50, &transfer_fn,
-                        true);
+                        gfx::ColorSpace::TransferID::CUSTOM_HDR, matrixID,
+                        rangeID, &xyzd50, &transfer_fn, true);
 
     return;
   }
