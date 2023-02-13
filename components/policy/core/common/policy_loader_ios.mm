@@ -2,33 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/common/policy_loader_ios.h"
+#import "components/policy/core/common/policy_loader_ios.h"
 
 #import <Foundation/Foundation.h>
-#include <stddef.h>
 #import <UIKit/UIKit.h>
+#import <stddef.h>
 
-#include "base/check.h"
-#include "base/functional/bind.h"
-#include "base/json/json_reader.h"
-#include "base/location.h"
+#import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/json/json_reader.h"
+#import "base/location.h"
 #import "base/mac/foundation_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
-#include "base/task/sequenced_task_runner.h"
-#include "components/policy/core/common/mac_util.h"
-#include "components/policy/core/common/policy_bundle.h"
+#import "base/time/time.h"
+#import "components/policy/core/common/mac_util.h"
+#import "components/policy/core/common/policy_bundle.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_namespace.h"
-#include "components/policy/core/common/schema.h"
-#include "components/policy/core/common/schema_registry.h"
-#include "components/policy/policy_constants.h"
+#import "components/policy/core/common/policy_map.h"
+#import "components/policy/core/common/policy_namespace.h"
+#import "components/policy/core/common/schema.h"
+#import "components/policy/core/common/schema_registry.h"
+#import "components/policy/policy_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Policy reload interval when the browser has platform policy key.
+constexpr base::TimeDelta kManagedByPlatformReloadInterval = base::Seconds(30);
+
+// Returns YES if the browser has platform policy key by looking at the
+// presence of the App Config key. Even if the value of the key is an empty
+// dictionary, the browser will be considered as managed.
+BOOL HasPlatformPolicyKey() {
+  return [[NSUserDefaults standardUserDefaults]
+             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] != nil;
+}
+
+}  // namespace
 
 namespace policy {
 
@@ -56,6 +71,12 @@ PolicyBundle PolicyLoaderIOS::Load() {
   const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
   size_t count = bundle.Get(chrome_ns).size();
   UMA_HISTOGRAM_COUNTS_100("Enterprise.IOSPolicies", count);
+
+  if (HasPlatformPolicyKey()) {
+    // Set a shorter reload interval when the browser is managed by the
+    // platform. This is to take the dynamic policy updates quickly.
+    set_reload_interval(kManagedByPlatformReloadInterval);
+  }
 
   return bundle;
 }

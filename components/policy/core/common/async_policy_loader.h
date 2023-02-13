@@ -91,6 +91,12 @@ class POLICY_EXPORT AsyncPolicyLoader {
 
   const scoped_refptr<SchemaMap>& schema_map() const { return schema_map_; }
 
+  base::TimeDelta get_reload_interval() const { return reload_interval_; }
+
+  void set_reload_interval(base::TimeDelta reload_interval) {
+    reload_interval_ = reload_interval;
+  }
+
  private:
   // Allow AsyncPolicyProvider to call Init().
   friend class AsyncPolicyProvider;
@@ -142,6 +148,10 @@ class POLICY_EXPORT AsyncPolicyLoader {
 
   // The current policy schemas that this provider should load.
   scoped_refptr<SchemaMap> schema_map_;
+
+  // The interval of time between periodic updates. Only relevant when
+  // `periodic_updates_` is true to enable periodic updates.
+  base::TimeDelta reload_interval_;
 
   // Used to get WeakPtrs for the periodic reload task.
   base::WeakPtrFactory<AsyncPolicyLoader> weak_factory_{this};
