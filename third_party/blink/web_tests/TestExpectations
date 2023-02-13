@@ -1540,8 +1540,6 @@ crbug.com/958381 [ Debug Mac12 ] fragmentation/single-line-cells-paginated-with-
 
 # ====== MathMLCore-only tests from here ======
 
-crbug.com/1227601 external/wpt/mathml/relations/css-styling/ignored-properties-001.html [ Timeout ]
-
 # These tests fail because we don't parse math display values according to the spec.
 crbug.com/1127222 external/wpt/mathml/presentation-markup/mrow/legacy-mrow-like-elements-001.html [ Failure ]
 
