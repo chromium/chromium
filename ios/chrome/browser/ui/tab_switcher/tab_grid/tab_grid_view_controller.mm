@@ -488,7 +488,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
   self.viewVisible = YES;
-  [self.topToolbar.pageControl setSelectedPage:self.currentPage animated:YES];
+  [self.topToolbar.pageControl setSelectedPage:self.currentPage animated:NO];
   [self configureViewControllerForCurrentSizeClassesAndPage];
   // The toolbars should be hidden (alpha 0.0) before the tab appears, so that
   // they can be animated in. They can't be set to 0.0 here, because if
