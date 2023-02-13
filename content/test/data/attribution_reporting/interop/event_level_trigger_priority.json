@@ -21,6 +21,7 @@
       }
     ],
     "triggers": [
+      // Will result in an event-level report.
       {
         "timestamp": "1643235574000",
         "registration_request": {
@@ -41,6 +42,7 @@
           }
         }]
       },
+      // Will result in an event-level report but be replaced later.
       {
         "timestamp": "1643235575000",
         "registration_request": {
@@ -61,6 +63,7 @@
           }
         }]
       },
+      // Will result in an event-level report but be replaced later.
       {
         "timestamp": "1643235576000",
         "registration_request": {
@@ -81,6 +84,7 @@
           }
         }]
       },
+      // Will not result in an event-level report as the priority is not higher.
       {
         "timestamp": "1643235577000",
         "registration_request": {
@@ -103,6 +107,7 @@
           }
         }]
       },
+      // Will replace the third event-level report as its trigger time is latest.
       {
         "timestamp": "1643235578000",
         "registration_request": {
@@ -123,6 +128,8 @@
           }
         }]
       },
+      // Will replace the second event-level report as its trigger time is latest
+      // among the lowest priority reports.
       {
         "timestamp": "1643404774000",
         "registration_request": {
@@ -143,6 +150,8 @@
           }
         }]
       },
+      // Will not result in an event-level report as it's in a different report
+      // window.
       {
         "timestamp": "1643408374000",
         "registration_request": {
@@ -152,8 +161,10 @@
         "responses": [
           {
             "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Trigger": {
+                "debug_reporting": true,
                 "event_trigger_data": [
                   {
                     "trigger_data": "7",
@@ -220,6 +231,21 @@
           "type": "trigger-event-low-priority"
        } ],
        "report_time": "1643235577000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "randomized_trigger_rate": 0.0024,
+             "scheduled_report_time": "1643843973",
+             "source_event_id": "123",
+             "source_type": "navigation",
+             "trigger_data": "7"
+          },
+          "type": "trigger-event-excessive-reports"
+       } ],
+       "report_time": "1643408374000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
