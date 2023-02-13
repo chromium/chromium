@@ -9,6 +9,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -28,7 +29,7 @@ bool AllowWorkerStorageAccess(
   // somehow determine real CookieSettingOverrides rather than default to none.
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
       url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-      cookie_settings->SettingOverridesForStorage());
+      net::CookieSettingOverrides());
 
   for (const auto& it : render_frames) {
     content_settings::PageSpecificContentSettings::StorageAccessed(

@@ -282,13 +282,11 @@ bool NetworkServiceNetworkDelegate::
 
 bool NetworkServiceNetworkDelegate::OnCanQueueReportingReport(
     const url::Origin& origin) const {
-  const CookieSettings& cookie_settings =
-      network_context_->cookie_manager()->cookie_settings();
-  return cookie_settings.IsFullCookieAccessAllowed(
-      origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
-      // Only storage access override is considered since other existing ones
-      // only pertain to 3P checks.
-      cookie_settings.SettingOverridesForStorage());
+  return network_context_->cookie_manager()
+      ->cookie_settings()
+      .IsFullCookieAccessAllowed(origin.GetURL(),
+                                 net::SiteForCookies::FromOrigin(origin),
+                                 origin, net::CookieSettingOverrides());
 }
 
 void NetworkServiceNetworkDelegate::OnCanSendReportingReports(
@@ -318,25 +316,21 @@ void NetworkServiceNetworkDelegate::OnCanSendReportingReports(
 bool NetworkServiceNetworkDelegate::OnCanSetReportingClient(
     const url::Origin& origin,
     const GURL& endpoint) const {
-  const CookieSettings& cookie_settings =
-      network_context_->cookie_manager()->cookie_settings();
-  return cookie_settings.IsFullCookieAccessAllowed(
-      origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
-      // Only storage access override is considered since other existing ones
-      // only pertain to 3P checks.
-      cookie_settings.SettingOverridesForStorage());
+  return network_context_->cookie_manager()
+      ->cookie_settings()
+      .IsFullCookieAccessAllowed(origin.GetURL(),
+                                 net::SiteForCookies::FromOrigin(origin),
+                                 origin, net::CookieSettingOverrides());
 }
 
 bool NetworkServiceNetworkDelegate::OnCanUseReportingClient(
     const url::Origin& origin,
     const GURL& endpoint) const {
-  const CookieSettings& cookie_settings =
-      network_context_->cookie_manager()->cookie_settings();
-  return cookie_settings.IsFullCookieAccessAllowed(
-      origin.GetURL(), net::SiteForCookies::FromOrigin(origin), origin,
-      // Only storage access override is considered since other existing ones
-      // only pertain to 3P checks.
-      cookie_settings.SettingOverridesForStorage());
+  return network_context_->cookie_manager()
+      ->cookie_settings()
+      .IsFullCookieAccessAllowed(origin.GetURL(),
+                                 net::SiteForCookies::FromOrigin(origin),
+                                 origin, net::CookieSettingOverrides());
 }
 
 absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>

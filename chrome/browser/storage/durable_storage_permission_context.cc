@@ -74,7 +74,7 @@ void DurableStoragePermissionContext::DecidePermission(
       !cookie_settings->IsFullCookieAccessAllowed(
           requesting_origin, net::SiteForCookies::FromUrl(requesting_origin),
           url::Origin::Create(requesting_origin),
-          cookie_settings->SettingOverridesForStorage())) {
+          net::CookieSettingOverrides())) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
                         std::move(callback), /*persist=*/false,
                         CONTENT_SETTING_DEFAULT, /*is_one_time=*/false,
