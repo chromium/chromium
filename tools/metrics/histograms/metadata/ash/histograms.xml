@@ -5753,7 +5753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wallpaper.Preview.Show" enum="BooleanHit"
-    expires_after="2023-02-19">
+    expires_after="2024-02-13">
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
