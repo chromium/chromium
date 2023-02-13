@@ -22,20 +22,12 @@
 using base::RunLoop;
 using Microsoft::WRL::ComPtr;
 
+// Stubs out methods of ClientSII that DCompTextureWrapperImpl invokes and for
+// which the production versions cannot run in the context of the unittest.
 class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
  public:
   StubClientSharedImageInterface() : gpu::ClientSharedImageInterface(nullptr) {}
   gpu::SyncToken GenVerifiedSyncToken() override { return gpu::SyncToken(); }
-
-  gpu::Mailbox CreateSharedImage(viz::ResourceFormat format,
-                                 const gfx::Size& size,
-                                 const gfx::ColorSpace& color_space,
-                                 GrSurfaceOrigin surface_origin,
-                                 SkAlphaType alpha_type,
-                                 uint32_t usage,
-                                 gpu::SurfaceHandle surface_handle) override {
-    return gpu::Mailbox();
-  }
 
   gpu::Mailbox CreateSharedImage(
       viz::ResourceFormat format,
