@@ -88,6 +88,8 @@ class ExternallyManagedAppManagerImpl : public ExternallyManagedAppManager {
   void MaybeEnqueueServiceWorkerRegistration(
       const ExternalInstallOptions& install_options);
 
+  bool IsShuttingDown();
+
   const raw_ptr<Profile> profile_;
 
   bool is_in_shutdown_ = false;

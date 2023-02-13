@@ -47,7 +47,13 @@ ExternallyManagedAppManagerImpl::ExternallyManagedAppManagerImpl(
     Profile* profile)
     : profile_(profile), url_loader_(std::make_unique<WebAppUrlLoader>()) {}
 
-ExternallyManagedAppManagerImpl::~ExternallyManagedAppManagerImpl() = default;
+ExternallyManagedAppManagerImpl::~ExternallyManagedAppManagerImpl() {
+  // Extra check to verify that web_contents is released even if
+  // shutdown somehow has not been invoked.
+  if (!IsShuttingDown()) {
+    Shutdown();
+  }
+}
 
 void ExternallyManagedAppManagerImpl::InstallNow(
     ExternalInstallOptions install_options,
@@ -132,6 +138,7 @@ ExternallyManagedAppManagerImpl::CreateInstallationTask(
 
 std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
 ExternallyManagedAppManagerImpl::StartRegistration(GURL install_url) {
+  DCHECK(!IsShuttingDown());
   ExternallyManagedAppRegistrationTask::RegistrationCallback callback =
       base::BindOnce(&ExternallyManagedAppManagerImpl::OnRegistrationFinished,
                      weak_ptr_factory_.GetWeakPtr(), install_url);
@@ -158,8 +165,9 @@ void ExternallyManagedAppManagerImpl::PostMaybeStartNext() {
 }
 
 void ExternallyManagedAppManagerImpl::MaybeStartNext() {
-  if (current_install_ || is_in_shutdown_)
+  if (current_install_ || IsShuttingDown()) {
     return;
+  }
   command_scheduler()->ScheduleCallbackWithLock<FullSystemLock>(
       "ExternallyManagedAppManagerImpl::MaybeStartNext",
       std::make_unique<FullSystemLockDescription>(),
@@ -170,7 +178,7 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
 
 void ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired(
     FullSystemLock& lock) {
-  if (current_install_ || is_in_shutdown_) {
+  if (current_install_ || IsShuttingDown()) {
     return;
   }
 
@@ -259,6 +267,9 @@ void ExternallyManagedAppManagerImpl::MaybeStartNextOnLockAcquired(
 
 void ExternallyManagedAppManagerImpl::StartInstallationTask(
     std::unique_ptr<TaskAndCallback> task) {
+  if (IsShuttingDown()) {
+    return;
+  }
   DCHECK(!current_install_);
   DCHECK(!is_in_shutdown_);
   if (current_registration_) {
@@ -276,7 +287,7 @@ void ExternallyManagedAppManagerImpl::StartInstallationTask(
 }
 
 bool ExternallyManagedAppManagerImpl::RunNextRegistration() {
-  if (pending_registrations_.empty()) {
+  if (pending_registrations_.empty() || IsShuttingDown()) {
     if (registrations_complete_callback_)
       std::move(registrations_complete_callback_).Run();
     return false;
@@ -289,9 +300,10 @@ bool ExternallyManagedAppManagerImpl::RunNextRegistration() {
 }
 
 void ExternallyManagedAppManagerImpl::CreateWebContentsIfNecessary() {
-  DCHECK(!is_in_shutdown_);
-  if (web_contents_)
+  DCHECK(!IsShuttingDown());
+  if (web_contents_) {
     return;
+  }
 
   web_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(profile_));
@@ -323,6 +335,10 @@ void ExternallyManagedAppManagerImpl::MaybeEnqueueServiceWorkerRegistration(
     return;
   }
 
+  if (IsShuttingDown()) {
+    return;
+  }
+
   if (install_options.only_use_app_info_factory)
     return;
 
@@ -348,6 +364,10 @@ void ExternallyManagedAppManagerImpl::MaybeEnqueueServiceWorkerRegistration(
     return;
 
   pending_registrations_.push_back(url);
+}
+
+bool ExternallyManagedAppManagerImpl::IsShuttingDown() {
+  return is_in_shutdown_ || profile()->ShutdownStarted();
 }
 
 }  // namespace web_app
