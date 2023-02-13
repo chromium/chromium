@@ -8,7 +8,7 @@
       {
         "timestamp": "1643235573000",
         "registration_request": {
-          "source_origin": "https://source1.test",
+          "source_origin": "https://example.source1.test",
           "attribution_src_url": "https://reporter1.test/register-source",
           "source_type": "navigation"
         },
@@ -16,12 +16,13 @@
           "url": "https://reporter1.test/register-source",
           "response": {
             "Attribution-Reporting-Register-Source": {
-              "destination": "https://destination1.test",
+              "destination": "https://example.destination1.test",
               "source_event_id": "111"
             }
           }
         }]
       },
+      // Should be registered as the source site is different.
       {
         "timestamp": "1643235574000",
         "registration_request": {
@@ -39,8 +40,27 @@
           }
         }]
       },
+       // Should be dropped due to the unattributed reporting origin limit.
       {
         "timestamp": "1643235575000",
+        "registration_request": {
+          "source_origin": "https://source1.test",
+          "attribution_src_url": "https://reporter2.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination1.test",
+              "source_event_id": "999"
+            }
+          }
+        }]
+      },
+      // Should be registered as the destination site is different.
+      {
+        "timestamp": "1643235576000",
         "registration_request": {
           "source_origin": "https://source1.test",
           "attribution_src_url": "https://reporter2.test/register-source",
@@ -56,8 +76,9 @@
           }
         }]
       },
+      // Should be dropped due to the unattributed reporting origin limit.
       {
-        "timestamp": "1643235576000",
+        "timestamp": "1643235577000",
         "registration_request": {
           "source_origin": "https://source1.test",
           "attribution_src_url": "https://reporter3.test/register-source",
@@ -73,6 +94,7 @@
           }
         }]
       },
+      // Should be registered as the first source is outside the rate limit window.
       {
         "timestamp": "1645827573000",
         "registration_request": {
@@ -92,6 +114,7 @@
       }
     ],
     "triggers": [
+      // Should result in an event-level report.
       {
         "timestamp": "1643235583000",
         "registration_request": {
@@ -111,6 +134,7 @@
           }
         }]
       },
+      // Should result in an event-level report.
       {
         "timestamp": "1643235584000",
         "registration_request": {
@@ -130,6 +154,7 @@
           }
         }]
       },
+      // Should result in an event-level report.
       {
         "timestamp": "1643235585000",
         "registration_request": {
@@ -149,6 +174,7 @@
           }
         }]
       },
+      // Should not result in an event-level report due to no matching source.
       {
         "timestamp": "1643235585000",
         "registration_request": {
@@ -168,6 +194,7 @@
           }
         }]
       },
+      // Should result in an event-level report.
       {
         "timestamp": "1645827574000",
         "registration_request": {
@@ -219,13 +246,13 @@
         "payload": {
           "attribution_destination": "https://destination2.test",
           "randomized_trigger_rate": 0.0024,
-          "scheduled_report_time": "1643411975",
+          "scheduled_report_time": "1643411976",
           "source_event_id": "333",
           "source_type": "navigation",
           "trigger_data": "5"
         },
         "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411975000"
+        "report_time": "1643411976000"
       },
       {
         "payload": {
