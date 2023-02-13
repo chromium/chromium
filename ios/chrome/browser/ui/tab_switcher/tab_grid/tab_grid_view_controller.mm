@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
@@ -2569,6 +2570,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (IsPinnedTabsEnabled()) {
     [self.pinnedTabsViewController dropAnimationDidEnd];
   }
+}
+
+- (void)didTapInactiveTabsButtonInGridViewController:
+    (GridViewController*)gridViewController {
+  DCHECK(IsInactiveTabsEnabled());
+  base::RecordAction(base::UserMetricsAction("MobileTabGridShowInactiveTabs"));
+  // TODO(crbug.com/1410515): show InactiveTabsViewController
 }
 
 #pragma mark - Control actions

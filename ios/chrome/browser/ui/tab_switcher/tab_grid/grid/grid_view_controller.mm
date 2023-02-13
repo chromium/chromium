@@ -35,6 +35,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/horizontal_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_header.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_view_controller.h"
@@ -67,6 +70,7 @@ NSString* const kPlusSignCellIdentifier = @"PlusSignCellIdentifier";
 NSString* const kSuggestedActionsCellIdentifier =
     @"SuggestedActionsCellIdentifier";
 NSString* const kGridHeaderIdentifier = @"GridHeaderIdentifier";
+NSString* const kInactiveTabsHeaderIdentifier = @"InactiveTabsHeaderIdentifier";
 
 // Creates an NSIndexPath with `index` in section 0.
 NSIndexPath* CreateIndexPath(NSInteger index) {
@@ -160,6 +164,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // YES if the dragged tab moved to a new index.
 @property(nonatomic, assign) BOOL dragEndAtNewIndex;
 
+// Whether there are inactive tabs to consider. If there are and the grid is in
+// TabGridModeNormal, a button is displayed at the top, advertizing them.
+@property(nonatomic, assign) NSUInteger inactiveTabsCount;
+
 @end
 
 @implementation GridViewController
@@ -205,6 +213,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [collectionView registerClass:[GridHeader class]
       forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
              withReuseIdentifier:kGridHeaderIdentifier];
+  [collectionView registerClass:[InactiveTabsButtonHeader class]
+      forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+             withReuseIdentifier:kInactiveTabsHeaderIdentifier];
 
   // During deletion (in horizontal layout) the backgroundView can resize,
   // revealing temporarily the collectionView background. This makes sure
@@ -512,7 +523,17 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
           viewForSupplementaryElementOfKind:(NSString*)kind
                                 atIndexPath:(NSIndexPath*)indexPath {
   switch (_mode) {
-    case TabGridModeNormal:
+    case TabGridModeNormal: {
+      InactiveTabsButtonHeader* header = [collectionView
+          dequeueReusableSupplementaryViewOfKind:kind
+                             withReuseIdentifier:kInactiveTabsHeaderIdentifier
+                                    forIndexPath:indexPath];
+      header.button.count = self.inactiveTabsCount;
+      [header.button addTarget:self
+                        action:@selector(didTapInactiveTabsButton)
+              forControlEvents:UIControlEventTouchUpInside];
+      return header;
+    }
     case TabGridModeSelection:
       NOTREACHED();
       return nil;
@@ -634,6 +655,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     referenceSizeForHeaderInSection:(NSInteger)section {
   switch (_mode) {
     case TabGridModeNormal:
+      if (!IsInactiveTabsEnabled() || self.inactiveTabsCount == 0) {
+        return CGSizeZero;
+      }
+      return CGSizeMake(collectionView.bounds.size.width, 100);
     case TabGridModeSelection:
       return CGSizeZero;
     case TabGridModeSearch:
@@ -1291,6 +1316,34 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self updateVisibleCellIdentifiers];
 }
 
+- (void)advertizeInactiveTabsWithCount:(NSUInteger)count {
+  DCHECK(IsInactiveTabsEnabled());
+  NSUInteger oldCount = self.inactiveTabsCount;
+  if (self.inactiveTabsCount == count) {
+    return;
+  }
+  self.inactiveTabsCount = count;
+
+  // Update the header.
+  if (oldCount == 0 || count == 0) {
+    // The header should appear or disappear. Reload the section.
+    NSIndexSet* openTabsSection =
+        [NSIndexSet indexSetWithIndex:kOpenTabsSectionIndex];
+    [self.collectionView reloadSections:openTabsSection];
+  } else {
+    // The header just needs to be updated with the new count.
+    NSIndexPath* indexPath =
+        [NSIndexPath indexPathForItem:0 inSection:kOpenTabsSectionIndex];
+    InactiveTabsButtonHeader* header =
+        base::mac::ObjCCast<InactiveTabsButtonHeader>([self.collectionView
+            supplementaryViewForElementKind:UICollectionElementKindSectionHeader
+                                atIndexPath:indexPath]);
+    // Note: At this point, `header` could be nil if not visible, or if the
+    // supplementary view is not an InactiveTabsButtonHeader.
+    header.button.count = count;
+  }
+}
+
 - (void)dismissModals {
   ios::provider::DismissModalsForCollectionView(self.collectionView);
 }
@@ -1367,6 +1420,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   } else {
     [self.collectionView cancelInteractiveTransition];
   }
+}
+
+#pragma mark - Actions
+
+// Called when the Inactive Tabs button is tapped.
+- (void)didTapInactiveTabsButton {
+  [self.delegate didTapInactiveTabsButtonInGridViewController:self];
 }
 
 #pragma mark - Private properties

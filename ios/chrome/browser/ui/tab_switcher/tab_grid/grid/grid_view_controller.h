@@ -28,6 +28,7 @@
 
 // Protocol used to relay relevant user interactions from a grid UI.
 @protocol GridViewControllerDelegate
+
 // Tells the delegate that the item with `itemID` was selected in
 // `gridViewController`.
 - (void)gridViewController:(GridViewController*)gridViewController
@@ -63,7 +64,6 @@
 // dragging.
 - (void)gridViewControllerWillBeginDragging:
     (GridViewController*)gridViewController;
-
 // Tells the delegate that the grid view controller cells will begin dragging.
 - (void)gridViewControllerDragSessionWillBegin:
     (GridViewController*)gridViewController;
@@ -79,6 +79,11 @@
     (GridViewController*)gridViewController;
 // Tells the delegate that a drop animation did end.
 - (void)gridViewControllerDropAnimationDidEnd:
+    (GridViewController*)gridViewController;
+
+// Tells the delegate that the inactive tabs button was tapped in
+// `gridViewController`, i.e., there was an intention to show inactive tabs.
+- (void)didTapInactiveTabsButtonInGridViewController:
     (GridViewController*)gridViewController;
 
 @end

@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -250,6 +251,12 @@ void RecordTabGridCloseTabsCount(int count) {
     if (self.webStateList->count() > 0) {
       [self populateConsumerItems];
     }
+  }
+
+  if (IsInactiveTabsEnabled() && !self.browserState->IsOffTheRecord()) {
+    // TODO(crbug.com/1408053): Use the count of tabs in the inactive browser
+    // instead.
+    [self.consumer advertizeInactiveTabsWithCount:10];
   }
 }
 

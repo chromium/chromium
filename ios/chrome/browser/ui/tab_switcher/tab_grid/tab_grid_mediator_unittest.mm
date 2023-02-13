@@ -147,6 +147,10 @@ std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
   [self.items insertObject:itemID atIndex:toIndex];
 }
 
+- (void)advertizeInactiveTabsWithCount:(NSUInteger)count {
+  // No-op.
+}
+
 - (void)dismissModals {
   // No-op.
 }

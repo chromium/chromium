@@ -21240,6 +21240,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridShowInactiveTabs">
+  <owner>lpromero@google.com</owner>
+  <owner>alionadangla@google.com</owner>
+  <description>
+    User tapped on the Inactive Tabs button of the iOS Regular Tab Grid.
+  </description>
+</action>
+
 <action name="MobileTabGridTabContextMenuSelectTabs">
   <owner>mrefaat@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>

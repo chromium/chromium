@@ -365,6 +365,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       }];
 }
 
+- (void)advertizeInactiveTabsWithCount:(NSUInteger)count {
+  // Should never be called for this class.
+  NOTREACHED();
+}
+
 - (void)dismissModals {
   // Should never be called for this class.
   NOTREACHED();

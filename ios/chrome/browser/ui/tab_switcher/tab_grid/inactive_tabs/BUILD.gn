@@ -2,6 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("inactive_tabs_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "inactive_tabs_button.h",
+    "inactive_tabs_button.mm",
+    "inactive_tabs_button_header.h",
+    "inactive_tabs_button_header.mm",
+  ]
+  deps = [
+    ":features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+}
 source_set("features") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

@@ -43,3 +43,17 @@ base::TimeDelta TabInactivityThreshold() {
   }
   return base::Days(15);
 }
+
+std::u16string TabInactivityThresholdDisplayString() {
+  DCHECK(IsInactiveTabsEnabled());
+  std::string featureParam = base::GetFieldTrialParamValueByFeature(
+      kTabInactivityThreshold, kTabInactivityThresholdParameterName);
+  if (featureParam == kTabInactivityThresholdOneWeekParam) {
+    return u"7";
+  } else if (featureParam == kTabInactivityThresholdTwoWeeksParam) {
+    return u"14";
+  } else if (featureParam == kTabInactivityThresholdThreeWeeksParam) {
+    return u"21";
+  }
+  return u"14";
+}

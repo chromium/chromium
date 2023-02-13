@@ -1165,6 +1165,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ICON_SEARCH" desc="Accessibility label for the search icon [iOS only].">
         Search
       </message>
+      <message name="IDS_IOS_INACTIVE_TABS_BUTTON_TITLE" desc="Title of the button in the Tab Grid that opens the grid of Inactive Tabs.">
+        Inactive Tabs
+      </message>
+      <message name="IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE" desc="Subtitle of the button in the Tab Grid that opens the grid of Inactive Tabs.">
+        Tabs not used for <ph name="THRESHOLD">$1<ex>14</ex></ph> days
+      </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT" desc="Accessibility hint for the 'Learn more' button in the incognito NTP [iOS only]">
         Learn more about Incognito mode
       </message>

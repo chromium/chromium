@@ -50,6 +50,10 @@
 // of that item might be.
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex;
 
+// Tells the consumer to display a call-to-action regarding the current inactive
+// tabs.
+- (void)advertizeInactiveTabsWithCount:(NSUInteger)count;
+
 // Dismisses any presented modal UI.
 - (void)dismissModals;
 
