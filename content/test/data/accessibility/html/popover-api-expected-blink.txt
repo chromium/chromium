@@ -50,27 +50,27 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='Showing/visible popovers below'
 ++++++++++inlineTextBox name='Showing/visible popovers below'
-++++++button name='Button pointing to showing popover' detailsIds=genericContainer
+++++++button name='Button pointing to showing popover' detailsIds=group
 ++++++++staticText name='Button pointing to showing popover'
 ++++++++++inlineTextBox name='Button pointing to showing popover'
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Tel input pointing to showing popover '
 ++++++++inlineTextBox name='Tel input pointing to showing popover '
-++++++button name='Show button pointing to nested popover' detailsIds=genericContainer
+++++++button name='Show button pointing to nested popover' detailsIds=group
 ++++++++staticText name='Show button pointing to nested popover'
 ++++++++++inlineTextBox name='Show button pointing to nested popover'
 ++++++textField
 ++++++++genericContainer
 ++++++staticText name='Url input pointing to nested popover '
 ++++++++inlineTextBox name='Url input pointing to nested popover '
-++++++genericContainer ispopup=auto
+++++++group ispopup=auto
 ++++++++staticText name='Popover (showing)'
 ++++++++++inlineTextBox name='Popover (showing)'
-++++++++genericContainer ispopup=auto
+++++++++group ispopup=auto
 ++++++++++staticText name='Nested popover (showing)'
 ++++++++++++inlineTextBox name='Nested popover (showing)'
-++++++button name='Hide button pointing to showing manual (should add aria-details)' detailsIds=genericContainer
+++++++button name='Hide button pointing to showing manual (should add aria-details)' detailsIds=group
 ++++++++staticText name='Hide button pointing to showing manual (should add aria-details)'
 ++++++++++inlineTextBox name='Hide button pointing to showing manual (should add aria-details)'
 ++++++textField
@@ -81,6 +81,6 @@ rootWebArea
 ++++++button name='Hide button pointing to showing manual (should NOT add aria-details)'
 ++++++++staticText name='Hide button pointing to showing manual (should NOT add aria-details)'
 ++++++++++inlineTextBox name='Hide button pointing to showing manual (should NOT add aria-details)'
-++++++genericContainer ispopup=manual
+++++++group ispopup=manual
 ++++++++staticText name='Manual (showing)'
 ++++++++++inlineTextBox name='Manual (showing)'

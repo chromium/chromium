@@ -21,13 +21,13 @@
 ++[push button] name='Show button pointing to nested popover' details
 ++[entry] selectable-text
 ++[static] name='Url input pointing to nested popover '
-++[section] details-for
+++[panel] details-for
 ++++[static] name='Popover (showing)'
-++++[section] details-for
+++++[panel] details-for
 ++++++[static] name='Nested popover (showing)'
 ++[push button] name='Hide button pointing to showing manual (should add aria-details)' details
 ++[entry] selectable-text
 ++[static] name='Url input pointing to showing manual '
 ++[push button] name='Hide button pointing to showing manual (should NOT add aria-details)'
-++[section] details-for
+++[panel] details-for
 ++++[static] name='Manual (showing)'

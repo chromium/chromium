@@ -1,0 +1,33 @@
+Document
+++Button Name='Button pointing to hidden popover' ExpandCollapse.ExpandCollapseState='Collapsed'
+++Edit
+++Text Name='Text input pointing to hidden popover '
+++Button Name='Hide button pointing to hidden manual'
+++Edit
+++Text Name='Email input pointing to hidden manual '
+++Button Name='Button pointing to non-popover'
+++Edit
+++Text Name='Text input pointing to non-popover'
+++Group IsControlElement=false
+++++Text Name='No popover attribute'
+++Button Name='Button pointing to invalid popover value'
+++Edit
+++Text Name='Text input pointing to invalid popover value'
+++Group IsControlElement=false
+++++Text Name='Showing/visible popovers below'
+++Button Name='Button pointing to showing popover' ExpandCollapse.ExpandCollapseState='Expanded'
+++Edit
+++Text Name='Tel input pointing to showing popover '
+++Button Name='Show button pointing to nested popover' ExpandCollapse.ExpandCollapseState='Expanded'
+++Edit
+++Text Name='Url input pointing to nested popover '
+++Group IsControlElement=false
+++++Text Name='Popover (showing)'
+++++Group IsControlElement=false
+++++++Text Name='Nested popover (showing)'
+++Button Name='Hide button pointing to showing manual (should add aria-details)'
+++Edit
+++Text Name='Url input pointing to showing manual '
+++Button Name='Hide button pointing to showing manual (should NOT add aria-details)'
+++Group IsControlElement=false
+++++Text Name='Manual (showing)'
