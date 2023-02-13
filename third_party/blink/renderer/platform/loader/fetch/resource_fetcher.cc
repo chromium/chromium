@@ -1132,7 +1132,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
         if (!recorded_has_resource)
           resource = nullptr;
 
-        recordreplay::Assert("ResourceFetcher::RequestResource has_cached_resource %d", !!resource);
+        recordreplay::Assert("[RUN-1333] ResourceFetcher::RequestResource has_cached_resource %d", !!resource);
       }
       if (resource) {
         policy = DetermineRevalidationPolicy(resource_type, params, *resource,

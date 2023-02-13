@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_events.h"
+
 namespace blink {
 
 #define QUEUEING_TIME_PER_PRIORITY_METRIC_NAME \
@@ -138,6 +140,8 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
   DCHECK(context);
   probe::AsyncTask async_task(context, &async_task_context_);
   probe::UserCallback probe(context, "postTask", AtomicString(), true);
+
+  recordreplay::UserEventProbe replayEvent("postTask", AtomicString());
 
   ScriptValue result;
   if (callback_->Invoke(nullptr).To(&result))

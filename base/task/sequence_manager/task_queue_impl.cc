@@ -153,9 +153,8 @@ TaskQueueImpl::TaskRunner::~TaskRunner() {}
 bool TaskQueueImpl::TaskRunner::PostDelayedTask(const Location& location,
                                                 OnceClosure callback,
                                                 TimeDelta delay) {
-  // https://linear.app/replay/issue/RUN-597
   if (!recordreplay::AreEventsDisallowed())
-    recordreplay::Assert("TaskQueueImpl::TaskRunner::PostDelayedTask %lu", recordreplay::PointerId(this));
+    recordreplay::Assert("[RUN-597] TaskQueueImpl::TaskRunner::PostDelayedTask %lu", recordreplay::PointerId(this));
 
   return task_poster_->PostTask(PostedTask(this, std::move(callback), location,
                                            delay, Nestable::kNestable,
@@ -1040,7 +1039,7 @@ void TaskQueueImpl::RemoveFence() {
   front_task_unblocked |= main_thread_only().delayed_work_queue->RemoveFence();
 
   {
-    base::internal::CheckedAutoLock lock(any_thread_lock_);
+    recordreplay::AutoLockMaybeEventsDisallowed lock(any_thread_lock_);
     if (!front_task_unblocked && previous_fence) {
       if (!any_thread_.immediate_incoming_queue.empty() &&
           any_thread_.immediate_incoming_queue.front().task_order() >

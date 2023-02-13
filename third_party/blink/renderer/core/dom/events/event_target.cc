@@ -67,6 +67,8 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_events.h"
+
 namespace blink {
 namespace {
 
@@ -413,8 +415,10 @@ bool EventTarget::AddEventListenerInternal(
     const AtomicString& event_type,
     EventListener* listener,
     const AddEventListenerOptionsResolved* options) {
-  // https://linear.app/replay/issue/RUN-885
-  recordreplay::Assert("EventTarget::AddEventListenerInternal");
+  recordreplay::Assert(
+      "[RUN-1260-1332] EventTarget::AddEventListenerInternal A %d %d %d %s",
+      !!listener, options->hasSignal() && options->signal()->aborted(),
+      !!GetExecutionContext(), event_type.GetString().Utf8().c_str());
 
   if (!listener) {
     return false;
@@ -437,6 +441,7 @@ bool EventTarget::AddEventListenerInternal(
       !execution_context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kUnload,
           ReportOptions::kReportOnFailure)) {
+    recordreplay::Assert("[RUN-1260-1332] EventTarget::AddEventListenerInternal B");
     return false;
   }
 
@@ -448,6 +453,8 @@ bool EventTarget::AddEventListenerInternal(
         if (frame->IsInFencedFrameTree()) {
           window->PrintErrorMessage(
               "unload/beforeunload handlers are prohibited in fenced frames.");
+          recordreplay::Assert(
+              "[RUN-1260-1332] EventTarget::AddEventListenerInternal C");
           return false;
         }
       }
@@ -480,6 +487,10 @@ bool EventTarget::AddEventListenerInternal(
   RegisteredEventListener registered_listener;
   bool added = EnsureEventTargetData().event_listener_map.Add(
       event_type, listener, options, &registered_listener);
+
+  recordreplay::Assert(
+      "[RUN-1260-1332] EventTarget::AddEventListenerInternal D %d", added);
+
   if (added) {
     if (options->hasSignal()) {
       // Instead of passing the entire |options| here, which could create a
@@ -606,6 +617,10 @@ bool EventTarget::RemoveEventListenerInternal(
 
   wtf_size_t index_of_removed_listener;
   RegisteredEventListener registered_listener;
+
+  recordreplay::Assert(
+      "[RUN-1260-1332] EventTarget::RemoveEventListenerInternal %s",
+      event_type.GetString().Utf8().c_str());
 
   if (!d->event_listener_map.Remove(event_type, listener, options,
                                     &index_of_removed_listener,
@@ -905,6 +920,8 @@ bool EventTarget::FireEventListeners(Event& event,
                                 "event",
                                 IsInstrumentedForAsyncStack(event.type()));
 
+    recordreplay::UserEventProbe replayEvent(nullptr, event.type(), this);
+
     // To match Mozilla, the AT_TARGET phase fires both capturing and bubbling
     // event listeners, even though that violates some versions of the DOM spec.
     listener->Invoke(context, &event);
@@ -959,6 +976,8 @@ void EventTarget::RemoveAllEventListeners() {
   EventTargetData* d = GetEventTargetData();
   if (!d)
     return;
+
+  recordreplay::Assert("[RUN-1260-1332] EventTarget::RemoveAllEventListeners");
   d->event_listener_map.Clear();
 
   // Notify firing events planning to invoke the listener at 'index' that

@@ -248,11 +248,14 @@ inline LayoutUnit ResolveMainBlockLength(
     LayoutUnit override_available_size = kIndefiniteSize,
     const Length::AnchorEvaluator* anchor_evaluator = nullptr) {
   DCHECK(!length.IsAuto());
+
   if (UNLIKELY((length.IsPercentOrCalc() || length.IsFillAvailable()) &&
                BlockLengthUnresolvable(constraint_space, length)))
     return intrinsic_block_size_func();
 
   LayoutUnit intrinsic_block_size = kIndefiniteSize;
+  recordreplay::Assert("[RUN-1239] ResolveMainBlockLength %d",
+                       length.IsContentOrIntrinsic());
   if (length.IsContentOrIntrinsic())
     intrinsic_block_size = intrinsic_block_size_func();
 

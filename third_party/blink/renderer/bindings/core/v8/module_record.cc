@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_events.h"
+
 namespace blink {
 
 ModuleRecordProduceCacheData::ModuleRecordProduceCacheData(
@@ -121,6 +123,9 @@ ScriptValue ModuleRecord::Instantiate(ScriptState* script_state,
                                      record->IsSourceTextModule()
                                  ? record->ScriptId()
                                  : v8::UnboundScript::kNoScriptId);
+
+  recordreplay::UserEventProbe replayEvent;
+
   bool success;
   if (!record->InstantiateModule(context, &ResolveModuleCallback)
            .To(&success) ||

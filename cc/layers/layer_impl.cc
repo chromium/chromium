@@ -126,6 +126,8 @@ void LayerImpl::UpdateDebugInfo(LayerDebugInfo* debug_info) {
 
 void LayerImpl::SetTransformTreeIndex(int index) {
   transform_tree_index_ = index;
+  recordreplay::Assert("[RUN-550-1329] LayerImpl::SetTransformTreeIndex %d %d",
+                       layer_id_, index);
 }
 
 void LayerImpl::SetClipTreeIndex(int index) {
@@ -380,6 +382,9 @@ bool LayerImpl::IsSnappedToPixelGridInTarget() {
 
 void LayerImpl::PushPropertiesTo(LayerImpl* layer) {
   DCHECK(layer->IsActive());
+
+  recordreplay::Assert("[RUN-550-1329] LayerImpl::PushPropertiesTo %d %d %llu",
+                       transform_tree_index_, layer_id_, element_id_.GetStableId());
 
   // The element id should be set first because other setters may
   // depend on it. Referencing element id on a layer is
@@ -789,8 +794,7 @@ gfx::Transform LayerImpl::ScreenSpaceTransform() const {
 int LayerImpl::GetSortingContextId() const {
   int rv = GetTransformTree().Node(transform_tree_index())->sorting_context_id;
 
-  // https://linear.app/replay/issue/RUN-596
-  recordreplay::Assert("LayerImpl::GetSortingContextId %d %d", transform_tree_index(), rv);
+  recordreplay::Assert("[RUN-550] LayerImpl::GetSortingContextId %d %d", transform_tree_index(), rv);
 
   return rv;
 }

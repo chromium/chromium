@@ -38,6 +38,8 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_events.h"
+
 namespace blink {
 
 namespace {
@@ -182,6 +184,8 @@ void DOMTimer::Fired() {
                             g_null_atom, true);
   probe::AsyncTask async_task(context, &async_task_context_,
                               is_interval ? "fired" : nullptr);
+
+  recordreplay::UserEventProbe replayEvent(is_interval ? "setInterval" : "setTimeout", g_null_atom);
 
   // Simple case for non-one-shot timers.
   if (IsActive()) {
