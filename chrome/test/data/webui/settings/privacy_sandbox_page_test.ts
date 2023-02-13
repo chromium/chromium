@@ -425,6 +425,10 @@ suite('PrivacySandboxTopicsSubpageTests', function() {
     const links =
         page.shadowRoot!.querySelectorAll<HTMLAnchorElement>('#footer a[href]');
     assertEquals(links.length, 2, 'footer should contains two links');
+    links.forEach(
+        link => assertEquals(
+            link.title, loadTimeData.getString('opensInNewTab'),
+            'the link should indicate that it will be opened in a new tab'));
     const hrefs = Array.from<HTMLAnchorElement>(links).map(link => link.href);
     const expectedLinks =
         ['chrome://settings/adPrivacy/sites', 'chrome://settings/cookies'];
@@ -801,6 +805,10 @@ suite('PrivacySandboxFledgeSubpageTests', function() {
     const links =
         page.shadowRoot!.querySelectorAll<HTMLAnchorElement>('#footer a[href]');
     assertEquals(links.length, 2, 'footer should contains two links');
+    links.forEach(
+        link => assertEquals(
+            link.title, loadTimeData.getString('opensInNewTab'),
+            'the link should indicate that it will be opened in a new tab'));
     const hrefs = Array.from<HTMLAnchorElement>(links).map(link => link.href);
     const expectedLinks =
         ['chrome://settings/adPrivacy/interests', 'chrome://settings/cookies'];
