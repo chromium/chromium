@@ -239,9 +239,33 @@ function addDataSeriesPoints(
   }
 }
 
-// Ensures a div container to hold all stats graphs for one track is created as
-// a child of |peerConnectionElement|.
-function ensureStatsGraphTopContainer(peerConnectionElement, report) {
+// Ensures a div container to the stats graph for a peerConnectionElement is
+// created as a child of the |peerConnectionElement|.
+function ensureStatsGraphTopContainer(peerConnectionElement) {
+  const containerId = peerConnectionElement.id + '-graph-container';
+  let container = document.getElementById(containerId);
+  if (!container) {
+    container = document.createElement('div');
+    container.id = containerId;
+    container.className = 'stats-graph-container';
+    const label = document.createElement('label');
+    label.innerText = 'Filter statistics graphs by type including ';
+    container.appendChild(label);
+    const input = document.createElement('input');
+    input.placeholder = 'separate multiple values by `,`';
+    input.size = 25;
+    input.oninput = (e) => filterStats(e, container);
+    container.appendChild(input);
+
+    peerConnectionElement.appendChild(container);
+  }
+  return container;
+}
+
+// Ensures a div container to the stats graph for a single set of data is
+// created as a child of the |peerConnectionElement|'s graph container.
+function ensureStatsGraphContainer(peerConnectionElement, report) {
+  const topContainer = ensureStatsGraphTopContainer(peerConnectionElement);
   const containerId = peerConnectionElement.id + '-' + report.type + '-' +
       report.id + '-graph-container';
   // Disable getElementById restriction here, since |containerId| is not always
@@ -252,6 +276,7 @@ function ensureStatsGraphTopContainer(peerConnectionElement, report) {
     container = document.createElement('details');
     container.id = containerId;
     container.className = 'stats-graph-container';
+    container.attributes['data-statsType'] = report.type;
 
     peerConnectionElement.appendChild(container);
     container.appendChild($('summary-span-template').content.cloneNode(true));
@@ -271,6 +296,7 @@ function ensureStatsGraphTopContainer(peerConnectionElement, report) {
           ssrcInfoElement, GetSsrcFromReport(report));
     }
   }
+  topContainer.appendChild(container);
   return container;
 }
 
@@ -278,7 +304,7 @@ function ensureStatsGraphTopContainer(peerConnectionElement, report) {
 // and the TimelineGraphView object.
 function createStatsGraphView(peerConnectionElement, report, statsName) {
   const topContainer =
-      ensureStatsGraphTopContainer(peerConnectionElement, report);
+      ensureStatsGraphContainer(peerConnectionElement, report);
 
   const graphViewId =
       peerConnectionElement.id + '-' + report.id + '-' + statsName;
@@ -302,4 +328,27 @@ function createStatsGraphView(peerConnectionElement, report, statsName) {
         createBweCompoundLegend(peerConnectionElement, report.id), div);
   }
   return new TimelineGraphView(divId, canvasId);
+}
+
+/**
+ * Apply a filter to the stats graphs
+ * @param event InputEvent from the filter input field.
+ * @param container stats table container element.
+ * @private
+ */
+function filterStats(event, container) {
+  const filter =  event.target.value;
+  const filters = filter.split(',');
+  container.childNodes.forEach(node => {
+    if (node.nodeName !== 'DETAILS') {
+      return;
+    }
+    const statsType = node.attributes['data-statsType'];
+    if (!filter || filters.includes(statsType) ||
+        filters.find(f => statsType.includes(f))) {
+      node.style.display = 'block';
+    } else {
+      node.style.display = 'none';
+    }
+  });
 }
