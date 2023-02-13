@@ -162,6 +162,13 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
   background_main_thread_load_tracker_.RecordTaskTime(task_timing.start_time(),
                                                       task_timing.end_time());
 
+  if (queue && base::TimeTicks::IsHighResolution()) {
+    base::TimeDelta elapsed =
+        task_timing.start_time() - task.GetDesiredExecutionTime();
+    queueing_delay_histograms_[queue->GetQueuePriority()].CountMicroseconds(
+        elapsed);
+  }
+
   // Don't log the metrics to evaluate impact of CPU reduction.
   // This code is deemed not useful anymore (crbug.com/1181870).
   // TODO(crbug.com/1295441: Fully remove the code once the experiment is over.
@@ -173,13 +180,6 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
 
   total_task_time_reporter_.RecordAdditionalDuration(
       task_timing.wall_duration());
-
-  if (queue && base::TimeTicks::IsHighResolution()) {
-    base::TimeDelta elapsed =
-        task_timing.start_time() - task.GetDesiredExecutionTime();
-    queueing_delay_histograms_[queue->GetQueuePriority()].CountMicroseconds(
-        elapsed);
-  }
 
   // WARNING: All code below must be compatible with down-sampling.
   constexpr double kSamplingProbability = .01;
