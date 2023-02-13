@@ -278,27 +278,27 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
 
 DefaultTexture2DWrapper::GpuResources::~GpuResources() {
   // Destroy shared images with a current context, otherwise mark context lost.
-  // Check that |helper_| hasn't been reset due to stub destruction in which
-  // case context loss would already have been propagated in OnWillDestroyStub.
-  if (helper_ && !helper_->MakeContextCurrent()) {
+  // Check that stub is not destroyed since MakeContextCurrent will fail after
+  // that and we should've already propagated context loss in OnWillDestroyStub.
+  if (!is_stub_destroyed_ && (!helper_ || !helper_->MakeContextCurrent())) {
     for (auto& shared_image_rep : shared_images_) {
       shared_image_rep->OnContextLost();
     }
   }
+  // Destroy helper after shared image since the shared image has a raw pointer
+  // to the helper's memory tracker.
   shared_images_.clear();
+  helper_.reset();
 }
 
 void DefaultTexture2DWrapper::GpuResources::OnWillDestroyStub(
     bool have_context) {
-  // Only mark context lost - do not clear shared image representations yet to
-  // ensure that GpuResources holds the last ref to the shared image.
   if (!have_context) {
     for (auto& shared_image_rep : shared_images_) {
       shared_image_rep->OnContextLost();
     }
   }
-  // Reset |helper_| so that we can detect that stub has been destroyed later.
-  helper_.reset();
+  is_stub_destroyed_ = true;
 }
 
 }  // namespace media
