@@ -1,0 +1,247 @@
+{
+  "description": "Source dropped due to storage limit",
+  "api_config": {
+    "max_sources_per_origin": "1"
+  },
+  "input": {
+    "sources": [
+      {
+        "timestamp": "1643235573000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "111"
+            }
+          }
+        }]
+      },
+      // Should be dropped due to storage limit regardless of the source type.
+      {
+        "timestamp": "1643235574000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "222",
+              "debug_reporting": true
+            }
+          }
+        }]
+      },
+      // Should be dropped due to storage limit regardless of the destination.
+      {
+        "timestamp": "1643235575000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://another-destination.test",
+              "source_event_id": "333",
+              "debug_reporting": true
+            }
+          }
+        }]
+      },
+      // Should be dropped due to storage limit regardless of the reporting origin.
+      {
+        "timestamp": "1643235576000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://another-reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://another-reporter.test/register-source",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "444",
+              "debug_reporting": true
+            }
+          }
+        }]
+      },
+      // Should be registered as the source origin is different.
+      {
+        "timestamp": "1643235673000",
+        "registration_request": {
+          "source_origin": "https://example.source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "555"
+            }
+          }
+        }]
+      }
+    ],
+    "triggers": [
+      // Should be dropped as there is no matching source.
+      {
+        "timestamp": "1643235577000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1"
+                }
+              ],
+              "filters": {
+                "source_type": ["event"]
+              }
+            }
+          }
+        }]
+      },
+      // Should be dropped as there is no matching source.
+      {
+        "timestamp": "1643235578000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://another-destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "2"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      // Should be dropped as there is no matching source.
+      {
+        "timestamp": "1643235579000",
+        "registration_request": {
+          "attribution_src_url": "https://another-reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://another-reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "3"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      // Should result in an event-level report.
+      {
+        "timestamp": "1643235674000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "4"
+                }
+              ]
+            }
+          }
+        }]
+      }
+    ]
+  },
+  "output": {
+    "event_level_results": [
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024,
+          "scheduled_report_time": "1643412073",
+          "source_event_id": "555",
+          "source_type": "navigation",
+          "trigger_data": "4"
+       },
+       "report_time": "1643412073000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "limit": "1",
+             "source_event_id": "222",
+             "source_site": "https://source.test"
+          },
+          "type": "source-storage-limit"
+        } ],
+        "report_time": "1643235574000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://another-destination.test",
+             "limit": "1",
+             "source_event_id": "333",
+             "source_site": "https://source.test"
+          },
+          "type": "source-storage-limit"
+        } ],
+        "report_time": "1643235575000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "limit": "1",
+             "source_event_id": "444",
+             "source_site": "https://source.test"
+          },
+          "type": "source-storage-limit"
+        } ],
+        "report_time": "1643235576000",
+        "report_url": "https://another-reporter.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}
