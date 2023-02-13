@@ -277,17 +277,6 @@ static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
          IsA<HTMLRTElement>(element);
 }
 
-// Certain elements (<a>, <font>) override text decoration colors.  "The font
-// element is expected to override the color of any text decoration that spans
-// the text of the element to the used value of the element's 'color' property."
-// (https://html.spec.whatwg.org/C/#phrasing-content-3)
-// The <a> behavior is non-standard.
-static bool OverridesTextDecorationColors(const Element* element) {
-  return !RuntimeEnabledFeatures::DisableTextDecorationColorOverrideEnabled() &&
-         element &&
-         (IsA<HTMLFontElement>(element) || IsA<HTMLAnchorElement>(element));
-}
-
 // FIXME: This helper is only needed because ResolveStyle passes a null
 // element to AdjustComputedStyle for pseudo-element styles, so we can't just
 // use element->isInTopLayer().
@@ -978,8 +967,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   if (builder.Display() != EDisplay::kContents) {
     builder.ApplyTextDecorations(parent_style.VisitedDependentColorFast(
-                                     GetCSSPropertyTextDecorationColor()),
-                                 OverridesTextDecorationColors(element));
+        GetCSSPropertyTextDecorationColor()));
   }
 
   // Cull out any useless layers and also repeat patterns into additional

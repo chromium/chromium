@@ -2654,23 +2654,8 @@ void ComputedStyleBuilder::AddAppliedTextDecoration(
   list->data.shrink_to_fit();
 }
 
-void ComputedStyleBuilder::OverrideTextDecorationColors(
-    blink::Color override_color) {
-  scoped_refptr<AppliedTextDecorationList>& list =
-      MutableAppliedTextDecorationsInternal();
-  DCHECK(list);
-  if (!list->HasOneRef()) {
-    list = base::MakeRefCounted<AppliedTextDecorationList>(list->data);
-  }
-
-  for (AppliedTextDecoration& decoration : list->data) {
-    decoration.SetColor(override_color);
-  }
-}
-
 void ComputedStyleBuilder::ApplyTextDecorations(
-    const blink::Color& parent_text_decoration_color,
-    bool override_existing_colors) {
+    const blink::Color& parent_text_decoration_color) {
   if (GetTextDecorationLine() == TextDecorationLine::kNone &&
       !HasSimpleUnderlineInternal() && !AppliedTextDecorationsInternal()) {
     return;
@@ -2689,9 +2674,6 @@ void ComputedStyleBuilder::ApplyTextDecorations(
         TextDecorationLine::kUnderline, ETextDecorationStyle::kSolid,
         parent_text_decoration_color, TextDecorationThickness(),
         Length::Auto()));
-  }
-  if (override_existing_colors && AppliedTextDecorationsInternal()) {
-    OverrideTextDecorationColors(current_text_decoration_color);
   }
   if (GetTextDecorationLine() == TextDecorationLine::kNone) {
     return;

@@ -1084,11 +1084,6 @@
       origin_trial_feature_name: "DisableHardwareNoiseSuppression",
       status: "experimental",
     },
-    {
-      name: "DisableTextDecorationColorOverride",
-      status: "stable",
-      base_feature: "DisableTextDecorationColorOverride",
-    },
     // This feature should only be enabled if
     // DisableThirdPartyStoragePartitioning is enabled, but as
     // DisableThirdPartyStoragePartitioning will be linked to a deprecation

@@ -3429,14 +3429,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
   // Text decoration
-  void ApplyTextDecorations(const blink::Color& parent_text_decoration_color,
-                            bool override_existing_colors);
+  void ApplyTextDecorations(const blink::Color& parent_text_decoration_color);
   void ClearAppliedTextDecorations();
   void RestoreParentTextDecorations(const ComputedStyle& parent_style);
 
  private:
   void AddAppliedTextDecoration(const AppliedTextDecoration&);
-  void OverrideTextDecorationColors(blink::Color propagated_color);
 
   scoped_refptr<ComputedStyle> style_;
 };
