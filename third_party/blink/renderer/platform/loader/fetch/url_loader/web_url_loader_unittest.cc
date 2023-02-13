@@ -168,10 +168,8 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
       : loader_(new WebURLLoader(
             /*cors_exempt_header_list=*/WebVector<WebString>(),
             /*terminate_sync_load_event=*/nullptr,
-            scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-                scheduler::GetSingleThreadTaskRunnerForTesting()),
-            scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-                scheduler::GetSingleThreadTaskRunnerForTesting()),
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &fake_url_loader_factory_),
             /*keep_alive_handle=*/mojo::NullRemote(),

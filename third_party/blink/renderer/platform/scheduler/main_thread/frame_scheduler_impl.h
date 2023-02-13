@@ -104,13 +104,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   FrameScheduler::FrameType GetFrameType() const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
 
-  // Returns a wrapper around an instance of MainThreadTaskQueue.
-  // TODO(crbug.com/860545): Decide whether this method should be removed.
-  std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-  CreateResourceLoadingTaskRunnerHandle() override;
-
-  std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-  CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() override;
   AgentGroupScheduler* GetAgentGroupScheduler() override;
   PageScheduler* GetPageScheduler() const override;
   void DidStartProvisionalLoad() override;
@@ -261,9 +254,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   void OnAddedAggressiveThrottlingOptOut();
   void OnRemovedAggressiveThrottlingOptOut();
-
-  std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl>
-  CreateResourceLoadingTaskRunnerHandleImpl();
 
   FrameTaskQueueController* FrameTaskQueueControllerForTest() {
     return frame_task_queue_controller_.get();

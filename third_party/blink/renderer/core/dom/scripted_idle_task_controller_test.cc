@@ -131,16 +131,6 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
   GetPauseSubresourceLoadingHandle() override {
     return nullptr;
   }
-  std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-  CreateResourceLoadingTaskRunnerHandle() override {
-    return scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-        scripted_idle_scheduler_->TaskRunner());
-  }
-  std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-  CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() override {
-    return scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-        scripted_idle_scheduler_->TaskRunner());
-  }
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingPriority) override {
     return nullptr;

@@ -157,7 +157,6 @@ source_set("blink_headers") {
     "platform/resource_load_info_notifier_wrapper.h",
     "platform/scheduler/web_agent_group_scheduler.h",
     "platform/scheduler/web_renderer_process_type.h",
-    "platform/scheduler/web_resource_loading_task_runner_handle.h",
     "platform/scheduler/web_scoped_virtual_time_pauser.h",
     "platform/scheduler/web_thread_scheduler.h",
     "platform/task_type.h",

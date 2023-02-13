@@ -42,10 +42,6 @@ class CORE_EXPORT LoaderFactoryForFrame final
       WebBackForwardCacheLoaderHelper) override;
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override;
 
-  std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-  CreateTaskRunnerHandle(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
  private:
   void IssueKeepAliveHandleIfRequested(
       const ResourceRequest& request,

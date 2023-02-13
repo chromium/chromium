@@ -74,33 +74,30 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
 
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest& request,
-      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          freezable_task_runner_handle,
-      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          unfreezable_task_runner_handle,
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
 
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override {
-    DCHECK(freezable_task_runner_handle);
-    DCHECK(unfreezable_task_runner_handle);
+    DCHECK(freezable_task_runner);
+    DCHECK(unfreezable_task_runner);
 
     if (CanCreateServiceWorkerURLLoader(request)) {
       // Create our own URLLoader to route the request to the controller service
       // worker.
       return std::make_unique<WebURLLoader>(
           cors_exempt_header_list_, terminate_sync_load_event_,
-          std::move(freezable_task_runner_handle),
-          std::move(unfreezable_task_runner_handle),
+          std::move(freezable_task_runner), std::move(unfreezable_task_runner),
           service_worker_loader_factory_, std::move(keep_alive_handle),
           back_forward_cache_loader_helper);
     }
 
     return std::make_unique<WebURLLoader>(
         cors_exempt_header_list_, terminate_sync_load_event_,
-        std::move(freezable_task_runner_handle),
-        std::move(unfreezable_task_runner_handle), loader_factory_,
-        std::move(keep_alive_handle), back_forward_cache_loader_helper);
+        std::move(freezable_task_runner), std::move(unfreezable_task_runner),
+        loader_factory_, std::move(keep_alive_handle),
+        back_forward_cache_loader_helper);
   }
 
   void SetServiceWorkerURLLoaderFactory(

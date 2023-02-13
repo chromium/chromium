@@ -110,16 +110,6 @@ class DummyFrameScheduler : public FrameScheduler {
   GetPauseSubresourceLoadingHandle() override {
     return nullptr;
   }
-  std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-  CreateResourceLoadingTaskRunnerHandle() override {
-    return WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-  }
-  std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-  CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() override {
-    return WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-  }
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingPriority) override {
     return nullptr;

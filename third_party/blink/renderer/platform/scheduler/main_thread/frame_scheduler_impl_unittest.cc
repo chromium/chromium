@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/resource_loading_task_runner_handle_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
@@ -474,11 +473,6 @@ class FrameSchedulerImplTest : public testing::Test {
 
   scoped_refptr<MainThreadTaskQueue> GetTaskQueue(TaskType type) {
     return frame_scheduler_->GetTaskQueue(type);
-  }
-
-  std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl>
-  GetResourceLoadingTaskRunnerHandleImpl() {
-    return frame_scheduler_->CreateResourceLoadingTaskRunnerHandleImpl();
   }
 
   bool IsThrottled() {

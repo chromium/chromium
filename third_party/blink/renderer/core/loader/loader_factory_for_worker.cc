@@ -62,10 +62,9 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
 
   if (url_loader_factory) {
     return web_context_->WrapURLLoaderFactory(std::move(url_loader_factory))
-        ->CreateURLLoader(
-            wrapped, CreateTaskRunnerHandle(freezable_task_runner),
-            CreateTaskRunnerHandle(unfreezable_task_runner),
-            std::move(keep_alive_handle), back_forward_cache_loader_helper);
+        ->CreateURLLoader(wrapped, freezable_task_runner,
+                          unfreezable_task_runner, std::move(keep_alive_handle),
+                          back_forward_cache_loader_helper);
   }
 
   // If |global_scope_| is a service worker, use |script_loader_factory_| for
@@ -85,8 +84,7 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
       // workers.
       if (web_context_->GetScriptLoaderFactory()) {
         return web_context_->GetScriptLoaderFactory()->CreateURLLoader(
-            wrapped, CreateTaskRunnerHandle(freezable_task_runner),
-            CreateTaskRunnerHandle(unfreezable_task_runner),
+            wrapped, freezable_task_runner, unfreezable_task_runner,
             std::move(keep_alive_handle), back_forward_cache_loader_helper);
       }
     }
@@ -95,25 +93,13 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
   }
 
   return web_context_->GetURLLoaderFactory()->CreateURLLoader(
-      wrapped, CreateTaskRunnerHandle(freezable_task_runner),
-      CreateTaskRunnerHandle(unfreezable_task_runner),
+      wrapped, freezable_task_runner, unfreezable_task_runner,
       std::move(keep_alive_handle), back_forward_cache_loader_helper);
 }
 
 std::unique_ptr<WebCodeCacheLoader>
 LoaderFactoryForWorker::CreateCodeCacheLoader() {
   return web_context_->CreateCodeCacheLoader(global_scope_->GetCodeCacheHost());
-}
-
-// TODO(altimin): This is used when creating a URLLoader, and
-// ResourceFetcher::GetTaskRunner is used whenever asynchronous tasks around
-// resource loading are posted. Modify the code so that all the tasks related to
-// loading a resource use the resource loader handle's task runner.
-std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-LoaderFactoryForWorker::CreateTaskRunnerHandle(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  return scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-      std::move(task_runner));
 }
 
 }  // namespace blink

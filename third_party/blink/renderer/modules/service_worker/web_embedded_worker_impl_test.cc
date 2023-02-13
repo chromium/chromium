@@ -107,8 +107,8 @@ class FakeWebURLLoaderFactory final : public WebURLLoaderFactory {
  public:
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest&,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
+      scoped_refptr<base::SingleThreadTaskRunner>,
+      scoped_refptr<base::SingleThreadTaskRunner>,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle>,
       WebBackForwardCacheLoaderHelper) override {
     return std::make_unique<FakeWebURLLoader>();

@@ -113,11 +113,6 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
   FrameScheduler* frame_scheduler = frame->GetFrameScheduler();
   DCHECK(frame_scheduler);
 
-  // TODO(altimin): frame_scheduler->CreateResourceLoadingTaskRunnerHandle is
-  // used when creating a URLLoader, and ResourceFetcher::GetTaskRunner is
-  // used whenever asynchronous tasks around resource loading are posted. Modify
-  // the code so that all the tasks related to loading a resource use the
-  // resource loader handle's task runner.
   if (url_loader_factory) {
     return std::make_unique<WebURLLoaderFactory>(
                base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
@@ -126,8 +121,8 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
                        std::move(url_loader_factory))),
                GetCorsExemptHeaderList(),
                /*terminate_sync_load_event=*/nullptr)
-        ->CreateURLLoader(webreq, CreateTaskRunnerHandle(freezable_task_runner),
-                          CreateTaskRunnerHandle(unfreezable_task_runner),
+        ->CreateURLLoader(webreq, freezable_task_runner,
+                          unfreezable_task_runner,
                           /*keep_alive_handle=*/mojo::NullRemote(),
                           back_forward_cache_loader_helper);
   }
@@ -144,10 +139,9 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
       return std::make_unique<WebURLLoaderFactory>(
                  std::move(loader_factory), GetCorsExemptHeaderList(),
                  /*terminate_sync_load_event=*/nullptr)
-          ->CreateURLLoader(
-              webreq, CreateTaskRunnerHandle(freezable_task_runner),
-              CreateTaskRunnerHandle(unfreezable_task_runner),
-              std::move(pending_remote), back_forward_cache_loader_helper);
+          ->CreateURLLoader(webreq, freezable_task_runner,
+                            unfreezable_task_runner, std::move(pending_remote),
+                            back_forward_cache_loader_helper);
     }
   }
 
@@ -171,8 +165,7 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
   return std::make_unique<WebURLLoaderFactory>(
              frame->GetURLLoaderFactory(), GetCorsExemptHeaderList(),
              /*terminate_sync_load_event=*/nullptr)
-      ->CreateURLLoader(webreq, CreateTaskRunnerHandle(freezable_task_runner),
-                        CreateTaskRunnerHandle(unfreezable_task_runner),
+      ->CreateURLLoader(webreq, freezable_task_runner, unfreezable_task_runner,
                         std::move(pending_remote),
                         back_forward_cache_loader_helper);
 }
@@ -184,13 +177,6 @@ LoaderFactoryForFrame::CreateCodeCacheLoader() {
   }
   return blink::WebCodeCacheLoader::Create(
       document_loader_->GetCodeCacheHost());
-}
-
-std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-LoaderFactoryForFrame::CreateTaskRunnerHandle(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  return scheduler::WebResourceLoadingTaskRunnerHandle::CreateUnprioritized(
-      std::move(task_runner));
 }
 
 void LoaderFactoryForFrame::IssueKeepAliveHandleIfRequested(

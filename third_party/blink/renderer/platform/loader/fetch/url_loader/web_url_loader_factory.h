@@ -14,10 +14,13 @@
 #include "base/synchronization/waitable_event.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -49,10 +52,8 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderFactory {
   // This currently takes two task runners: freezable and unfreezable one.
   virtual std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest& webreq,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-          freezable_task_runner,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-          unfreezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
 

@@ -9,7 +9,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
-#include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -23,21 +22,18 @@ namespace blink {
 std::unique_ptr<WebURLLoader>
 InternetDisconnectedWebURLLoaderFactory::CreateURLLoader(
     const WebURLRequest&,
-    std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-        freezable_task_runner_handle,
-    std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-        unfreezable_task_runner_handle,
+    scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
-  DCHECK(freezable_task_runner_handle);
+  DCHECK(freezable_task_runner);
   return std::make_unique<InternetDisconnectedWebURLLoader>(
-      std::move(freezable_task_runner_handle));
+      std::move(freezable_task_runner));
 }
 
 InternetDisconnectedWebURLLoader::InternetDisconnectedWebURLLoader(
-    std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-        freezable_task_runner_handle)
-    : task_runner_handle_(std::move(freezable_task_runner_handle)) {}
+    scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner)
+    : task_runner_(std::move(freezable_task_runner)) {}
 
 InternetDisconnectedWebURLLoader::~InternetDisconnectedWebURLLoader() = default;
 
@@ -66,8 +62,8 @@ void InternetDisconnectedWebURLLoader::LoadAsynchronously(
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
     WebURLLoaderClient* client) {
-  DCHECK(task_runner_handle_);
-  task_runner_handle_->GetTaskRunner()->PostTask(
+  DCHECK(task_runner_);
+  task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &InternetDisconnectedWebURLLoader::DidFail,
@@ -95,7 +91,7 @@ void InternetDisconnectedWebURLLoader::DidFail(WebURLLoaderClient* client,
 
 scoped_refptr<base::SingleThreadTaskRunner>
 InternetDisconnectedWebURLLoader::GetTaskRunnerForBodyLoader() {
-  return task_runner_handle_->GetTaskRunner();
+  return task_runner_;
 }
 
 }  // namespace blink

@@ -9,7 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
@@ -24,10 +23,8 @@ class BLINK_PLATFORM_EXPORT InternetDisconnectedWebURLLoaderFactory final
  public:
   std::unique_ptr<WebURLLoader> CreateURLLoader(
       const WebURLRequest&,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-          freezable_task_runner_handle,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-          unfreezable_task_runner_handle,
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override;
@@ -38,8 +35,7 @@ class BLINK_PLATFORM_EXPORT InternetDisconnectedWebURLLoaderFactory final
 class InternetDisconnectedWebURLLoader final : public WebURLLoader {
  public:
   explicit InternetDisconnectedWebURLLoader(
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-          task_runner_handle);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner_handle);
   ~InternetDisconnectedWebURLLoader() override;
 
   // WebURLLoader implementation:
@@ -73,8 +69,7 @@ class InternetDisconnectedWebURLLoader final : public WebURLLoader {
  private:
   void DidFail(WebURLLoaderClient* client, const WebURLError& error);
 
-  std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-      task_runner_handle_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtrFactory<InternetDisconnectedWebURLLoader> weak_factory_{this};
 };
 

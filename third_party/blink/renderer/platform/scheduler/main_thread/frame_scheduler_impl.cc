@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_web_scheduling_task_queue_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_visibility_state.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/resource_loading_task_runner_handle_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -533,23 +532,6 @@ scoped_refptr<MainThreadTaskQueue> FrameSchedulerImpl::GetTaskQueue(
     TaskType type) {
   QueueTraits queue_traits = CreateQueueTraitsForTaskType(type);
   return frame_task_queue_controller_->GetTaskQueue(queue_traits);
-}
-
-std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-FrameSchedulerImpl::CreateResourceLoadingTaskRunnerHandle() {
-  return CreateResourceLoadingTaskRunnerHandleImpl();
-}
-
-std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-FrameSchedulerImpl::CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() {
-  return ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(
-      GetTaskQueue(TaskType::kNetworkingUnfreezable));
-}
-
-std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl>
-FrameSchedulerImpl::CreateResourceLoadingTaskRunnerHandleImpl() {
-  return ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(
-      GetTaskQueue(TaskType::kNetworking));
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

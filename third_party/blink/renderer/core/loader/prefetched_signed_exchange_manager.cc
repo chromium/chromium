@@ -251,13 +251,10 @@ PrefetchedSignedExchangeManager::CreateDefaultURLLoader(
              frame_->GetURLLoaderFactory(),
              LoaderFactoryForFrame::GetCorsExemptHeaderList(),
              /*terminate_sync_load_event=*/nullptr)
-      ->CreateURLLoader(
-          request,
-          frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle(),
-          frame_->GetFrameScheduler()
-              ->CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle(),
-          /*keep_alive_handle=*/mojo::NullRemote(),
-          WebBackForwardCacheLoaderHelper());
+      ->CreateURLLoader(request, frame_->GetTaskRunner(TaskType::kNetworking),
+                        frame_->GetTaskRunner(TaskType::kNetworkingUnfreezable),
+                        /*keep_alive_handle=*/mojo::NullRemote(),
+                        WebBackForwardCacheLoaderHelper());
 }
 
 std::unique_ptr<WebURLLoader>
@@ -272,13 +269,10 @@ PrefetchedSignedExchangeManager::CreatePrefetchedSignedExchangeURLLoader(
                      std::move(loader_factory))),
              LoaderFactoryForFrame::GetCorsExemptHeaderList(),
              /*terminate_sync_load_event=*/nullptr)
-      ->CreateURLLoader(
-          request,
-          frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle(),
-          frame_->GetFrameScheduler()
-              ->CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle(),
-          /*keep_alive_handle=*/mojo::NullRemote(),
-          WebBackForwardCacheLoaderHelper());
+      ->CreateURLLoader(request, frame_->GetTaskRunner(TaskType::kNetworking),
+                        frame_->GetTaskRunner(TaskType::kNetworkingUnfreezable),
+                        /*keep_alive_handle=*/mojo::NullRemote(),
+                        WebBackForwardCacheLoaderHelper());
 }
 
 void PrefetchedSignedExchangeManager::TriggerLoad() {

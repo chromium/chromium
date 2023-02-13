@@ -42,7 +42,6 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-blink.h"
-#include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -78,10 +77,8 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
   WebURLLoader(
       const WebVector<WebString>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-          freezable_task_runner_handle,
-      std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
-          unfreezable_task_runner_handle,
+      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);

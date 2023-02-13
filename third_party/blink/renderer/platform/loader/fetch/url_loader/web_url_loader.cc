@@ -88,7 +88,6 @@
 
 using base::Time;
 using base::TimeTicks;
-using blink::scheduler::WebResourceLoadingTaskRunnerHandle;
 
 namespace blink {
 
@@ -102,10 +101,8 @@ class WebURLLoader::Context : public WebRequestPeer {
   Context(WebURLLoader* loader,
           const WebVector<WebString>& cors_exempt_header_list,
           base::WaitableEvent* terminate_sync_load_event,
-          std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-              freezable_task_runner_handle,
-          std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-              unfreezable_task_runner_handle,
+          scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+          scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
           scoped_refptr<network::SharedURLLoaderFactory> factory,
           mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
           WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
@@ -175,10 +172,6 @@ class WebURLLoader::Context : public WebRequestPeer {
   bool has_devtools_request_id_;
 
   WebURLLoaderClient* client_;
-  std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-      freezable_task_runner_handle_;
-  std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-      unfreezable_task_runner_handle_;
   // TODO(https://crbug.com/1137682): Remove |freezable_task_runner_|, migrating
   // the current usage to use |unfreezable_task_runner_| instead. Also, rename
   // |unfreezable_task_runner_| to |maybe_unfreezable_task_runner_| here and
@@ -212,22 +205,16 @@ WebURLLoader::Context::Context(
     WebURLLoader* loader,
     const WebVector<WebString>& cors_exempt_header_list,
     base::WaitableEvent* terminate_sync_load_event,
-    std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-        freezable_task_runner_handle,
-    std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-        unfreezable_task_runner_handle,
+    scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
     : loader_(loader),
       has_devtools_request_id_(false),
       client_(nullptr),
-      freezable_task_runner_handle_(std::move(freezable_task_runner_handle)),
-      unfreezable_task_runner_handle_(
-          std::move(unfreezable_task_runner_handle)),
-      freezable_task_runner_(freezable_task_runner_handle_->GetTaskRunner()),
-      unfreezable_task_runner_(
-          unfreezable_task_runner_handle_->GetTaskRunner()),
+      freezable_task_runner_(std::move(freezable_task_runner)),
+      unfreezable_task_runner_(std::move(unfreezable_task_runner)),
       keep_alive_handle_(std::move(keep_alive_handle)),
       cors_exempt_header_list_(cors_exempt_header_list),
       terminate_sync_load_event_(terminate_sync_load_event),
@@ -272,9 +259,6 @@ void WebURLLoader::Context::DidChangePriority(
         WebURLRequest::ConvertToNetPriority(new_priority);
     resource_request_sender_->DidChangePriority(net_priority,
                                                 intra_priority_value);
-    // TODO(https://crbug.com/1137682): Change this to
-    // call |unfreezable_task_runner_handle_|?
-    freezable_task_runner_handle_->DidChangeRequestPriority(net_priority);
   }
 }
 
@@ -288,11 +272,6 @@ void WebURLLoader::Context::Start(
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
   DCHECK_EQ(request_id_, -1);
-
-  // Notify Blink's scheduler with the initial resource fetch priority.
-  // TODO(https://crbug.com/1137682): Change this to
-  // call |unfreezable_task_runner_handle_|?
-  freezable_task_runner_handle_->DidChangeRequestPriority(request->priority);
 
   url_ = KURL(request->url);
   has_devtools_request_id_ = request->devtools_request_id.has_value();
@@ -503,18 +482,16 @@ void WebURLLoader::Context::CancelBodyStreaming() {
 WebURLLoader::WebURLLoader(
     const WebVector<WebString>& cors_exempt_header_list,
     base::WaitableEvent* terminate_sync_load_event,
-    std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-        freezable_task_runner_handle,
-    std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
-        unfreezable_task_runner_handle,
+    scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
     : context_(new Context(this,
                            cors_exempt_header_list,
                            terminate_sync_load_event,
-                           std::move(freezable_task_runner_handle),
-                           std::move(unfreezable_task_runner_handle),
+                           std::move(freezable_task_runner),
+                           std::move(unfreezable_task_runner),
                            std::move(url_loader_factory),
                            std::move(keep_alive_handle),
                            back_forward_cache_loader_helper)) {}

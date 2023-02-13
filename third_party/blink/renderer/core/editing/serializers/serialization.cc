@@ -95,8 +95,6 @@
 
 namespace blink {
 
-using TaskRunnerHandle = scheduler::WebResourceLoadingTaskRunnerHandle;
-
 class AttributeChange {
   DISALLOW_NEW();
 

@@ -15,10 +15,6 @@ namespace blink {
 class WorkerOrWorkletGlobalScope;
 class WebWorkerFetchContext;
 
-namespace scheduler {
-class WebResourceLoadingTaskRunnerHandle;
-}  // namespace scheduler
-
 // ResourceFetcher::LoaderFactory implementation for workers and worklets.
 class LoaderFactoryForWorker : public ResourceFetcher::LoaderFactory {
  public:
@@ -38,10 +34,6 @@ class LoaderFactoryForWorker : public ResourceFetcher::LoaderFactory {
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override;
 
  private:
-  std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-  CreateTaskRunnerHandle(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
   const Member<WorkerOrWorkletGlobalScope> global_scope_;
   const scoped_refptr<WebWorkerFetchContext> web_context_;
 };
