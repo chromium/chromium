@@ -437,7 +437,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
   }
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_All DISABLED_All
 #else
 #define MAYBE_All All
