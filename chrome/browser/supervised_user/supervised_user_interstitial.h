@@ -76,13 +76,13 @@ class SupervisedUserInterstitial {
   static std::unique_ptr<SupervisedUserInterstitial> Create(
       content::WebContents* web_contents,
       const GURL& url,
-      supervised_user_error_page::FilteringBehaviorReason reason,
+      supervised_user::FilteringBehaviorReason reason,
       int frame_id,
       int64_t interstitial_navigation_id);
 
   static std::string GetHTMLContents(
       Profile* profile,
-      supervised_user_error_page::FilteringBehaviorReason reason,
+      supervised_user::FilteringBehaviorReason reason,
       bool already_sent_request,
       bool is_main_frame);
 
@@ -100,12 +100,11 @@ class SupervisedUserInterstitial {
   const GURL& url() const { return url_; }
 
  private:
-  SupervisedUserInterstitial(
-      content::WebContents* web_contents,
-      const GURL& url,
-      supervised_user_error_page::FilteringBehaviorReason reason,
-      int frame_id,
-      int64_t interstitial_navigation_id);
+  SupervisedUserInterstitial(content::WebContents* web_contents,
+                             const GURL& url,
+                             supervised_user::FilteringBehaviorReason reason,
+                             int frame_id,
+                             int64_t interstitial_navigation_id);
 
   // Tries to go back.
   void AttemptMoveAwayFromCurrentFrameURL();
@@ -121,7 +120,7 @@ class SupervisedUserInterstitial {
 
   // The last committed url for this frame.
   GURL url_;
-  supervised_user_error_page::FilteringBehaviorReason reason_;
+  supervised_user::FilteringBehaviorReason reason_;
 
   // The uniquely identifying global id for the frame.
   int frame_id_;

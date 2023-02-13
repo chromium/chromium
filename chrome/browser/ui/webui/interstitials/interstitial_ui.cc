@@ -602,20 +602,20 @@ std::string InterstitialHTMLSource::GetSupervisedUserInterstitialHTML(
   std::string profile_image_url2;
   net::GetValueForKeyInQuery(url, "profile_image_url2", &profile_image_url2);
 
-  supervised_user_error_page::FilteringBehaviorReason reason =
-      supervised_user_error_page::DEFAULT;
+  supervised_user::FilteringBehaviorReason reason =
+      supervised_user::FilteringBehaviorReason::DEFAULT;
   std::string reason_string;
   if (net::GetValueForKeyInQuery(url, "reason", &reason_string)) {
     if (reason_string == "safe_sites") {
-      reason = supervised_user_error_page::ASYNC_CHECKER;
+      reason = supervised_user::FilteringBehaviorReason::ASYNC_CHECKER;
     } else if (reason_string == "manual") {
-      reason = supervised_user_error_page::MANUAL;
+      reason = supervised_user::FilteringBehaviorReason::MANUAL;
     } else if (reason_string == "not_signed_in") {
-      reason = supervised_user_error_page::NOT_SIGNED_IN;
+      reason = supervised_user::FilteringBehaviorReason::NOT_SIGNED_IN;
     }
   }
 
-  return supervised_user_error_page::BuildHtml(
+  return supervised_user::BuildErrorPageHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
       custodian_email, second_custodian, second_custodian_email, reason,
       g_browser_process->GetApplicationLocale(), /*already_sent_request=*/false,

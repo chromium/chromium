@@ -94,19 +94,19 @@ std::string FilteringBehaviorToString(
 }
 
 std::string FilteringBehaviorReasonToString(
-    supervised_user_error_page::FilteringBehaviorReason reason) {
+    supervised_user::FilteringBehaviorReason reason) {
   switch (reason) {
-    case supervised_user_error_page::DEFAULT:
+    case supervised_user::FilteringBehaviorReason::DEFAULT:
       return "Default";
-    case supervised_user_error_page::ASYNC_CHECKER:
+    case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
       return "AsyncChecker";
-    case supervised_user_error_page::DENYLIST:
+    case supervised_user::FilteringBehaviorReason::DENYLIST:
       return "Denylist";
-    case supervised_user_error_page::MANUAL:
+    case supervised_user::FilteringBehaviorReason::MANUAL:
       return "Manual";
-    case supervised_user_error_page::ALLOWLIST:
+    case supervised_user::FilteringBehaviorReason::ALLOWLIST:
       return "Allowlist";
-    case supervised_user_error_page::NOT_SIGNED_IN:
+    case supervised_user::FilteringBehaviorReason::NOT_SIGNED_IN:
       // Should never happen, only used for requests from WebView
       NOTREACHED();
   }
@@ -268,12 +268,13 @@ void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
     const std::string& callback_id,
     SupervisedUserURLFilter::FilteringBehavior behavior,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   base::Value::Dict result;
   result.Set("allowResult", FilteringBehaviorToString(behavior, uncertain));
-  result.Set("manual", reason == supervised_user_error_page::MANUAL &&
-                           behavior == SupervisedUserURLFilter::ALLOW);
+  result.Set("manual",
+             reason == supervised_user::FilteringBehaviorReason::MANUAL &&
+                 behavior == SupervisedUserURLFilter::ALLOW);
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
@@ -282,7 +283,7 @@ void FamilyLinkUserInternalsMessageHandler::OnSiteListUpdated() {}
 void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
     const GURL& url,
     SupervisedUserURLFilter::FilteringBehavior behavior,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Value::Dict result;

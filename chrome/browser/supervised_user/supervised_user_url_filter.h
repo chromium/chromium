@@ -96,10 +96,10 @@ class SupervisedUserURLFilter {
     kMaxValue = kBoth,
   };
 
-  using FilteringBehaviorCallback = base::OnceCallback<void(
-      FilteringBehavior,
-      supervised_user_error_page::FilteringBehaviorReason,
-      bool /* uncertain */)>;
+  using FilteringBehaviorCallback =
+      base::OnceCallback<void(FilteringBehavior,
+                              supervised_user::FilteringBehaviorReason,
+                              bool /* uncertain */)>;
 
   class Observer {
    public:
@@ -108,11 +108,10 @@ class SupervisedUserURLFilter {
     virtual void OnSiteListUpdated() = 0;
     // Called whenever a check started via
     // GetFilteringBehaviorForURLWithAsyncChecks completes.
-    virtual void OnURLChecked(
-        const GURL& url,
-        FilteringBehavior behavior,
-        supervised_user_error_page::FilteringBehaviorReason reason,
-        bool uncertain) {}
+    virtual void OnURLChecked(const GURL& url,
+                              FilteringBehavior behavior,
+                              supervised_user::FilteringBehaviorReason reason,
+                              bool uncertain) {}
   };
 
   SupervisedUserURLFilter();
@@ -136,7 +135,7 @@ class SupervisedUserURLFilter {
   static FilteringBehavior BehaviorFromInt(int behavior_value);
 
   static bool ReasonIsAutomatic(
-      supervised_user_error_page::FilteringBehaviorReason reason);
+      supervised_user::FilteringBehaviorReason reason);
 
   // Returns true if the |host| matches the pattern. A pattern is a hostname
   // with one or both of the following modifications:
@@ -255,7 +254,7 @@ class SupervisedUserURLFilter {
   FilteringBehavior GetFilteringBehaviorForURL(
       const GURL& url,
       bool manual_only,
-      supervised_user_error_page::FilteringBehaviorReason* reason) const;
+      supervised_user::FilteringBehaviorReason* reason) const;
   FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url) const;
 
   void CheckCallback(FilteringBehaviorCallback callback,

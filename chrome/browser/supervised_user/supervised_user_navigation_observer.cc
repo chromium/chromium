@@ -69,7 +69,7 @@ void SupervisedUserNavigationObserver::BindSupervisedUserCommands(
 void SupervisedUserNavigationObserver::OnRequestBlocked(
     content::WebContents* web_contents,
     const GURL& url,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     int64_t navigation_id,
     int frame_id,
     const OnInterstitialResultCallback& callback) {
@@ -90,7 +90,7 @@ void SupervisedUserNavigationObserver::OnRequestBlocked(
 
 void SupervisedUserNavigationObserver::UpdateMainFrameFilteringStatus(
     SupervisedUserURLFilter::FilteringBehavior behavior,
-    supervised_user_error_page::FilteringBehaviorReason reason) {
+    supervised_user::FilteringBehaviorReason reason) {
   main_frame_filtering_behavior_ = behavior;
   main_frame_filtering_behavior_reason_ = reason;
 }
@@ -184,7 +184,7 @@ void SupervisedUserNavigationObserver::OnInterstitialDone(int frame_id) {
 
 void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
     const GURL& url,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     int64_t navigation_id,
     int frame_id,
     const OnInterstitialResultCallback& callback) {
@@ -232,7 +232,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
     int render_frame_process_id,
     int render_frame_routing_id,
     SupervisedUserURLFilter::FilteringBehavior behavior,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   auto* render_frame_host = content::RenderFrameHost::FromID(
       render_frame_process_id, render_frame_routing_id);
@@ -266,7 +266,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
 
 void SupervisedUserNavigationObserver::MaybeShowInterstitial(
     const GURL& url,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     bool initial_page_load,
     int64_t navigation_id,
     int frame_id,

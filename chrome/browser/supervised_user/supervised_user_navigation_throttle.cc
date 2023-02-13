@@ -53,28 +53,29 @@ static_assert(FILTERING_BEHAVIOR_MAX * kHistogramFilteringBehaviorSpacing +
 
 int GetHistogramValueForFilteringBehavior(
     SupervisedUserURLFilter::FilteringBehavior behavior,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   switch (behavior) {
     case SupervisedUserURLFilter::ALLOW:
-      if (reason == supervised_user_error_page::ALLOWLIST)
+      if (reason == supervised_user::FilteringBehaviorReason::ALLOWLIST) {
         return FILTERING_BEHAVIOR_ALLOW_ALLOWLIST;
+      }
       return uncertain ? FILTERING_BEHAVIOR_ALLOW_UNCERTAIN
                        : FILTERING_BEHAVIOR_ALLOW;
     case SupervisedUserURLFilter::BLOCK:
       switch (reason) {
-        case supervised_user_error_page::DENYLIST:
+        case supervised_user::FilteringBehaviorReason::DENYLIST:
           return FILTERING_BEHAVIOR_BLOCK_DENYLIST;
-        case supervised_user_error_page::ASYNC_CHECKER:
+        case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
           return FILTERING_BEHAVIOR_BLOCK_SAFESITES;
-        case supervised_user_error_page::ALLOWLIST:
+        case supervised_user::FilteringBehaviorReason::ALLOWLIST:
           NOTREACHED();
           break;
-        case supervised_user_error_page::MANUAL:
+        case supervised_user::FilteringBehaviorReason::MANUAL:
           return FILTERING_BEHAVIOR_BLOCK_MANUAL;
-        case supervised_user_error_page::DEFAULT:
+        case supervised_user::FilteringBehaviorReason::DEFAULT:
           return FILTERING_BEHAVIOR_BLOCK_DEFAULT;
-        case supervised_user_error_page::NOT_SIGNED_IN:
+        case supervised_user::FilteringBehaviorReason::NOT_SIGNED_IN:
           // Should never happen, only used for requests from Webview
           NOTREACHED();
       }
@@ -97,7 +98,7 @@ int GetHistogramValueForTransitionType(ui::PageTransition transition_type) {
 void RecordFilterResultEvent(
     bool safesites_histogram,
     SupervisedUserURLFilter::FilteringBehavior behavior,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     bool uncertain,
     ui::PageTransition transition_type) {
   int value =
@@ -190,7 +191,7 @@ SupervisedUserNavigationThrottle::CheckURL() {
 
 void SupervisedUserNavigationThrottle::ShowInterstitial(
     const GURL& url,
-    supervised_user_error_page::FilteringBehaviorReason reason) {
+    supervised_user::FilteringBehaviorReason reason) {
   // Don't show interstitial synchronously - it doesn't seem like a good idea to
   // show an interstitial right in the middle of a call into a
   // NavigationThrottle. This also lets OnInterstitialResult to be invoked
@@ -203,7 +204,7 @@ void SupervisedUserNavigationThrottle::ShowInterstitial(
 }
 
 void SupervisedUserNavigationThrottle::ShowInterstitialAsync(
-    supervised_user_error_page::FilteringBehaviorReason reason) {
+    supervised_user::FilteringBehaviorReason reason) {
   // May not yet have been set when ShowInterstitial was called, but should have
   // been set by the time this is invoked.
   DCHECK(deferred_);
@@ -233,7 +234,7 @@ const char* SupervisedUserNavigationThrottle::GetNameForLogging() {
 void SupervisedUserNavigationThrottle::OnCheckDone(
     const GURL& url,
     SupervisedUserURLFilter::FilteringBehavior behavior,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   DCHECK_EQ(SupervisedUserURLFilter::INVALID, behavior_);
 
@@ -250,8 +251,8 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
   // If both the static denylist and the async checker are enabled, also record
   // SafeSites-only UMA events.
   if (url_filter_->HasDenylist() && url_filter_->HasAsyncURLChecker() &&
-      (reason == supervised_user_error_page::ASYNC_CHECKER ||
-       reason == supervised_user_error_page::DENYLIST)) {
+      (reason == supervised_user::FilteringBehaviorReason::ASYNC_CHECKER ||
+       reason == supervised_user::FilteringBehaviorReason::DENYLIST)) {
     RecordFilterResultEvent(true, behavior, reason, uncertain, transition);
   }
 

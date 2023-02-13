@@ -328,7 +328,7 @@ std::string SupervisedUserURLFilter::WebFilterTypeToDisplayString(
 
 SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::GetFilteringBehaviorForURL(const GURL& url) const {
-  supervised_user_error_page::FilteringBehaviorReason reason;
+  supervised_user::FilteringBehaviorReason reason;
   return GetFilteringBehaviorForURL(url, false, &reason);
 }
 
@@ -348,23 +348,23 @@ bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
 
 bool SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
     const GURL& url, FilteringBehavior* behavior) const {
-  supervised_user_error_page::FilteringBehaviorReason reason;
+  supervised_user::FilteringBehaviorReason reason;
   *behavior = GetFilteringBehaviorForURL(url, true, &reason);
-  return reason == supervised_user_error_page::MANUAL;
+  return reason == supervised_user::FilteringBehaviorReason::MANUAL;
 }
 
 SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::GetFilteringBehaviorForURL(
     const GURL& url,
     bool manual_only,
-    supervised_user_error_page::FilteringBehaviorReason* reason) const {
+    supervised_user::FilteringBehaviorReason* reason) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
   if (!effective_url.is_valid())
     effective_url = url;
 
-  *reason = supervised_user_error_page::MANUAL;
+  *reason = supervised_user::FilteringBehaviorReason::MANUAL;
 
   if (IsExemptedFromGuardianApproval(effective_url))
     return ALLOW;
@@ -378,12 +378,12 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
   // Check the static denylist, unless the default is to block anyway.
   if (!manual_only && default_behavior_ != BLOCK && denylist_ &&
       denylist_->HasURL(effective_url)) {
-    *reason = supervised_user_error_page::DENYLIST;
+    *reason = supervised_user::FilteringBehaviorReason::DENYLIST;
     return BLOCK;
   }
 
   // Fall back to the default behavior.
-  *reason = supervised_user_error_page::DEFAULT;
+  *reason = supervised_user::FilteringBehaviorReason::DEFAULT;
   return default_behavior_;
 }
 
@@ -432,11 +432,12 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
     const GURL& url,
     FilteringBehaviorCallback callback,
     bool skip_manual_parent_filter) const {
-  supervised_user_error_page::FilteringBehaviorReason reason =
-      supervised_user_error_page::DEFAULT;
+  supervised_user::FilteringBehaviorReason reason =
+      supervised_user::FilteringBehaviorReason::DEFAULT;
   FilteringBehavior behavior = GetFilteringBehaviorForURL(url, false, &reason);
 
-  if (behavior == ALLOW && reason != supervised_user_error_page::DEFAULT) {
+  if (behavior == ALLOW &&
+      reason != supervised_user::FilteringBehaviorReason::DEFAULT) {
     std::move(callback).Run(behavior, reason, false);
     for (Observer& observer : observers_)
       observer.OnURLChecked(url, behavior, reason, false);
@@ -446,8 +447,8 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForURLWithAsyncChecks(
   if (!skip_manual_parent_filter) {
     // Any non-default reason trumps the async checker.
     // Also, if we're blocking anyway, then there's no need to check it.
-    if (reason != supervised_user_error_page::DEFAULT || behavior == BLOCK ||
-        !async_url_checker_) {
+    if (reason != supervised_user::FilteringBehaviorReason::DEFAULT ||
+        behavior == BLOCK || !async_url_checker_) {
       std::move(callback).Run(behavior, reason, false);
       for (Observer& observer : observers_)
         observer.OnURLChecked(url, behavior, reason, false);
@@ -463,12 +464,12 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
     const GURL& url,
     const GURL& main_frame_url,
     FilteringBehaviorCallback callback) const {
-  supervised_user_error_page::FilteringBehaviorReason reason =
-      supervised_user_error_page::DEFAULT;
+  supervised_user::FilteringBehaviorReason reason =
+      supervised_user::FilteringBehaviorReason::DEFAULT;
   FilteringBehavior behavior = GetFilteringBehaviorForURL(url, false, &reason);
 
   // If the reason is not default, then it is manually allowed or blocked.
-  if (reason != supervised_user_error_page::DEFAULT) {
+  if (reason != supervised_user::FilteringBehaviorReason::DEFAULT) {
     std::move(callback).Run(behavior, reason, false);
     for (Observer& observer : observers_)
       observer.OnURLChecked(url, behavior, reason, false);
@@ -644,7 +645,8 @@ bool SupervisedUserURLFilter::RunAsyncChecker(
   // |async_url_checker_| will not be created.
   if (!async_url_checker_) {
     std::move(callback).Run(FilteringBehavior::ALLOW,
-                            supervised_user_error_page::DEFAULT, false);
+                            supervised_user::FilteringBehaviorReason::DEFAULT,
+                            false);
     return true;
   }
 
@@ -661,10 +663,12 @@ void SupervisedUserURLFilter::CheckCallback(
     bool uncertain) const {
   FilteringBehavior behavior =
       GetBehaviorFromSafeSearchClassification(classification);
-  std::move(callback).Run(behavior, supervised_user_error_page::ASYNC_CHECKER,
-                          uncertain);
+  std::move(callback).Run(
+      behavior, supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
+      uncertain);
   for (Observer& observer : observers_) {
-    observer.OnURLChecked(url, behavior,
-                          supervised_user_error_page::ASYNC_CHECKER, uncertain);
+    observer.OnURLChecked(
+        url, behavior, supervised_user::FilteringBehaviorReason::ASYNC_CHECKER,
+        uncertain);
   }
 }

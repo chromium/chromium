@@ -58,24 +58,23 @@ class SupervisedUserNavigationObserver
       content::RenderFrameHost* rfh);
 
   // Called when a network request to |url| is blocked.
-  static void OnRequestBlocked(
-      content::WebContents* web_contents,
-      const GURL& url,
-      supervised_user_error_page::FilteringBehaviorReason reason,
-      int64_t navigation_id,
-      int frame_id,
-      const OnInterstitialResultCallback& callback);
+  static void OnRequestBlocked(content::WebContents* web_contents,
+                               const GURL& url,
+                               supervised_user::FilteringBehaviorReason reason,
+                               int64_t navigation_id,
+                               int frame_id,
+                               const OnInterstitialResultCallback& callback);
 
   void UpdateMainFrameFilteringStatus(
       SupervisedUserURLFilter::FilteringBehavior behavior,
-      supervised_user_error_page::FilteringBehaviorReason reason);
+      supervised_user::FilteringBehaviorReason reason);
 
   SupervisedUserURLFilter::FilteringBehavior main_frame_filtering_behavior()
       const {
     return main_frame_filtering_behavior_;
   }
 
-  supervised_user_error_page::FilteringBehaviorReason
+  supervised_user::FilteringBehaviorReason
   main_frame_filtering_behavior_reason() const {
     return main_frame_filtering_behavior_reason_;
   }
@@ -108,28 +107,26 @@ class SupervisedUserNavigationObserver
 
   explicit SupervisedUserNavigationObserver(content::WebContents* web_contents);
 
-  void OnRequestBlockedInternal(
-      const GURL& url,
-      supervised_user_error_page::FilteringBehaviorReason reason,
-      int64_t navigation_id,
-      int frame_id,
-      const OnInterstitialResultCallback& callback);
+  void OnRequestBlockedInternal(const GURL& url,
+                                supervised_user::FilteringBehaviorReason reason,
+                                int64_t navigation_id,
+                                int frame_id,
+                                const OnInterstitialResultCallback& callback);
 
   void URLFilterCheckCallback(
       const GURL& url,
       int render_frame_process_id,
       int render_frame_routing_id,
       SupervisedUserURLFilter::FilteringBehavior behavior,
-      supervised_user_error_page::FilteringBehaviorReason reason,
+      supervised_user::FilteringBehaviorReason reason,
       bool uncertain);
 
-  void MaybeShowInterstitial(
-      const GURL& url,
-      supervised_user_error_page::FilteringBehaviorReason reason,
-      bool initial_page_load,
-      int64_t navigation_id,
-      int frame_id,
-      const OnInterstitialResultCallback& callback);
+  void MaybeShowInterstitial(const GURL& url,
+                             supervised_user::FilteringBehaviorReason reason,
+                             bool initial_page_load,
+                             int64_t navigation_id,
+                             int frame_id,
+                             const OnInterstitialResultCallback& callback);
 
   // Filters the RenderFrameHost if render frame is live.
   void FilterRenderFrame(content::RenderFrameHost* render_frame_host);
@@ -167,9 +164,9 @@ class SupervisedUserNavigationObserver
 
   SupervisedUserURLFilter::FilteringBehavior main_frame_filtering_behavior_ =
       SupervisedUserURLFilter::FilteringBehavior::ALLOW;
-  supervised_user_error_page::FilteringBehaviorReason
+  supervised_user::FilteringBehaviorReason
       main_frame_filtering_behavior_reason_ =
-          supervised_user_error_page::FilteringBehaviorReason::DEFAULT;
+          supervised_user::FilteringBehaviorReason::DEFAULT;
 
   std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>
       blocked_navigations_;

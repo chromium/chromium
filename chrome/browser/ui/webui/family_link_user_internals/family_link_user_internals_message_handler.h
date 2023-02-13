@@ -46,17 +46,16 @@ class FamilyLinkUserInternalsMessageHandler
   void SendBasicInfo();
   void SendFamilyLinkUserSettings(const base::Value::Dict& settings);
 
-  void OnTryURLResult(
-      const std::string& callback_id,
-      SupervisedUserURLFilter::FilteringBehavior behavior,
-      supervised_user_error_page::FilteringBehaviorReason reason,
-      bool uncertain);
+  void OnTryURLResult(const std::string& callback_id,
+                      SupervisedUserURLFilter::FilteringBehavior behavior,
+                      supervised_user::FilteringBehaviorReason reason,
+                      bool uncertain);
 
   // SupervisedUserURLFilter::Observer:
   void OnSiteListUpdated() override;
   void OnURLChecked(const GURL& url,
                     SupervisedUserURLFilter::FilteringBehavior behavior,
-                    supervised_user_error_page::FilteringBehaviorReason reason,
+                    supervised_user::FilteringBehaviorReason reason,
                     bool uncertain) override;
 
   base::CallbackListSubscription user_settings_subscription_;

@@ -159,7 +159,7 @@ std::u16string GetActiveUserFirstName() {
 std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
     WebContents* web_contents,
     const GURL& url,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     int frame_id,
     int64_t interstitial_navigation_id) {
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
@@ -176,7 +176,7 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
 SupervisedUserInterstitial::SupervisedUserInterstitial(
     WebContents* web_contents,
     const GURL& url,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     int frame_id,
     int64_t interstitial_navigation_id)
     : web_contents_(web_contents),
@@ -204,7 +204,7 @@ SupervisedUserInterstitial::~SupervisedUserInterstitial() {}
 // static
 std::string SupervisedUserInterstitial::GetHTMLContents(
     Profile* profile,
-    supervised_user_error_page::FilteringBehaviorReason reason,
+    supervised_user::FilteringBehaviorReason reason,
     bool already_sent_request,
     bool is_main_frame) {
   SupervisedUserService* supervised_user_service =
@@ -225,7 +225,7 @@ std::string SupervisedUserInterstitial::GetHTMLContents(
   bool allow_access_requests = supervised_user_service->web_approvals_manager()
                                    .AreRemoteApprovalRequestsEnabled();
 
-  return supervised_user_error_page::BuildHtml(
+  return supervised_user::BuildErrorPageHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
       custodian_email, second_custodian, second_custodian_email, reason,
       g_browser_process->GetApplicationLocale(), already_sent_request,
@@ -280,9 +280,8 @@ void SupervisedUserInterstitial::ShowFeedback() {
   std::string second_custodian =
       supervised_user_service->GetSecondCustodianName();
 
-  std::u16string reason =
-      l10n_util::GetStringUTF16(supervised_user_error_page::GetBlockMessageID(
-          reason_, second_custodian.empty()));
+  std::u16string reason = l10n_util::GetStringUTF16(
+      supervised_user::GetBlockMessageID(reason_, second_custodian.empty()));
   std::string message = l10n_util::GetStringFUTF8(
       IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
 #if BUILDFLAG(IS_ANDROID)

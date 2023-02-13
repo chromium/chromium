@@ -21,7 +21,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
-namespace supervised_user_error_page {
+namespace supervised_user {
 
 namespace {
 
@@ -29,7 +29,8 @@ static const int kAvatarSize1x = 36;
 static const int kAvatarSize2x = 72;
 
 bool ReasonIsAutomatic(FilteringBehaviorReason reason) {
-  return reason == ASYNC_CHECKER || reason == DENYLIST;
+  return reason == FilteringBehaviorReason::ASYNC_CHECKER ||
+         reason == FilteringBehaviorReason::DENYLIST;
 }
 
 std::string BuildAvatarImageUrl(const std::string& url, int size) {
@@ -46,36 +47,36 @@ std::string BuildAvatarImageUrl(const std::string& url, int size) {
 
 int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent) {
   switch (reason) {
-    case DEFAULT:
+    case FilteringBehaviorReason::DEFAULT:
       return single_parent ? IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT
                            : IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT;
-    case DENYLIST:
-    case ASYNC_CHECKER:
+    case FilteringBehaviorReason::DENYLIST:
+    case FilteringBehaviorReason::ASYNC_CHECKER:
       return IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES;
-    case ALLOWLIST:
+    case FilteringBehaviorReason::ALLOWLIST:
       NOTREACHED();
       break;
-    case MANUAL:
+    case FilteringBehaviorReason::MANUAL:
       return single_parent ? IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT
                            : IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT;
-    case NOT_SIGNED_IN:
+    case FilteringBehaviorReason::NOT_SIGNED_IN:
       return IDS_SUPERVISED_USER_NOT_SIGNED_IN;
   }
   NOTREACHED();
   return 0;
 }
 
-std::string BuildHtml(bool allow_access_requests,
-                      const std::string& profile_image_url,
-                      const std::string& profile_image_url2,
-                      const std::string& custodian,
-                      const std::string& custodian_email,
-                      const std::string& second_custodian,
-                      const std::string& second_custodian_email,
-                      FilteringBehaviorReason reason,
-                      const std::string& app_locale,
-                      bool already_sent_remote_request,
-                      bool is_main_frame) {
+std::string BuildErrorPageHtml(bool allow_access_requests,
+                               const std::string& profile_image_url,
+                               const std::string& profile_image_url2,
+                               const std::string& custodian,
+                               const std::string& custodian_email,
+                               const std::string& second_custodian,
+                               const std::string& second_custodian_email,
+                               FilteringBehaviorReason reason,
+                               const std::string& app_locale,
+                               bool already_sent_remote_request,
+                               bool is_main_frame) {
   base::Value::Dict strings;
   strings.Set("blockPageTitle",
               l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_TITLE));
@@ -194,4 +195,4 @@ std::string BuildHtml(bool allow_access_requests,
   return error_html;
 }
 
-}  //  namespace supervised_user_error_page
+}  //  namespace supervised_user

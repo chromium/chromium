@@ -32,7 +32,7 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   void OnSiteListUpdated() override { run_loop_.Quit(); }
   void OnURLChecked(const GURL& url,
                     SupervisedUserURLFilter::FilteringBehavior behavior,
-                    supervised_user_error_page::FilteringBehaviorReason reason,
+                    supervised_user::FilteringBehaviorReason reason,
                     bool uncertain) override {
     behavior_ = behavior;
     reason_ = reason;
@@ -46,35 +46,35 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
 
   void ExpectURLInDefaultAllowlist(const std::string& url) {
     ExpectURLCheckMatches(url, SupervisedUserURLFilter::ALLOW,
-                          supervised_user_error_page::DEFAULT);
+                          supervised_user::DEFAULT);
   }
 
   void ExpectURLInDefaultDenylist(const std::string& url) {
     ExpectURLCheckMatches(url, SupervisedUserURLFilter::BLOCK,
-                          supervised_user_error_page::DEFAULT);
+                          supervised_user::DEFAULT);
   }
 
   void ExpectURLInManualAllowlist(const std::string& url) {
     ExpectURLCheckMatches(url, SupervisedUserURLFilter::ALLOW,
-                          supervised_user_error_page::MANUAL);
+                          supervised_user::MANUAL);
   }
 
   void ExpectURLInManualDenylist(const std::string& url) {
     ExpectURLCheckMatches(url, SupervisedUserURLFilter::BLOCK,
-                          supervised_user_error_page::MANUAL);
+                          supervised_user::MANUAL);
   }
 
   base::test::TaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   SupervisedUserURLFilter filter_;
   SupervisedUserURLFilter::FilteringBehavior behavior_;
-  supervised_user_error_page::FilteringBehaviorReason reason_;
+  supervised_user::FilteringBehaviorReason reason_;
 
  private:
   void ExpectURLCheckMatches(
       const std::string& url,
       SupervisedUserURLFilter::FilteringBehavior expected_behavior,
-      supervised_user_error_page::FilteringBehaviorReason expected_reason,
+      supervised_user::FilteringBehaviorReason expected_reason,
       bool skip_manual_parent_filter = false) {
     bool called_synchronously =
         filter_.GetFilteringBehaviorForURLWithAsyncChecks(
