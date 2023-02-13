@@ -128,7 +128,6 @@ export class Background extends ChromeVoxState {
     DownloadHandler.init();
     EventSource.init();
     FindHandler.init();
-    FocusAutomationHandler.init();
     GestureCommandHandler.init();
     JaPhoneticData.init(JaPhoneticMap.MAP);
     LiveRegions.init();
@@ -142,9 +141,11 @@ export class Background extends ChromeVoxState {
     // Async initialization.
     // Allow all async initializers to run simultaneously, but wait for them to
     // complete before continuing.
+    // The order that these are run in is not guaranteed.
     await Promise.all([
       DesktopAutomationHandler.init(),
       EventStreamLogger.init(),
+      FocusAutomationHandler.init(),
       MediaAutomationHandler.init(),
       PageLoadSoundHandler.init(),
       PermissionChecker.init(),

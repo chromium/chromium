@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles automation events on the currently focused node.
  */
+import {AsyncUtil} from '../../common/async_util.js';
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
@@ -30,18 +31,21 @@ export class FocusAutomationHandler extends BaseAutomationHandler {
 
     /** @private {AutomationNode|undefined} */
     this.previousActiveDescendant_;
-
-    chrome.automation.getDesktop(desktop => {
-      desktop.addEventListener(
-          EventType.FOCUS, evt => this.onFocus(evt), false);
-    });
   }
 
-  static init() {
+  /** @private */
+  async initListener_() {
+    const desktop = await AsyncUtil.getDesktop();
+    desktop.addEventListener(
+        EventType.FOCUS, node => this.onFocus(node), false);
+  }
+
+  static async init() {
     if (FocusAutomationHandler.instance) {
       throw 'Error: Trying to create two instances of singleton FocusAutomationHandler';
     }
     FocusAutomationHandler.instance = new FocusAutomationHandler();
+    await FocusAutomationHandler.instance.initListener_();
   }
 
   /**
