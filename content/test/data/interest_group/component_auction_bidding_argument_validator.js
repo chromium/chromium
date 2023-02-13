@@ -154,7 +154,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.joinCount !== 1)
       throw 'Wrong joinCount ' + browserSignals.joinCount;
     if (browserSignals.bidCount !== 0)
-      throw 'Wrong bidCount ' + bidCount;
+      throw 'Wrong bidCount ' + browserSignals.bidCount;
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
   } else {

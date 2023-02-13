@@ -296,6 +296,7 @@ class BidderWorkletTest : public testing::Test {
 
     kanon_keys_.clear();
     kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
+    provide_direct_from_seller_signals_late_ = false;
 
     daily_update_url_.reset();
 
@@ -611,10 +612,14 @@ class BidderWorkletTest : public testing::Test {
     }
     bidder_worklet->BeginGenerateBid(
         CreateBidderWorkletNonSharedParams(), kanon_mode_, join_origin_,
-        direct_from_seller_per_buyer_signals_,
-        direct_from_seller_auction_signals_, browser_signal_seller_origin_,
-        browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
-        auction_start_time_,
+        provide_direct_from_seller_signals_late_
+            ? absl::nullopt
+            : direct_from_seller_per_buyer_signals_,
+        provide_direct_from_seller_signals_late_
+            ? absl::nullopt
+            : direct_from_seller_auction_signals_,
+        browser_signal_seller_origin_, browser_signal_top_level_seller_origin_,
+        CreateBiddingBrowserSignals(), auction_start_time_,
         /*trace_id=*/1, std::move(generate_bid_client), std::move(finalizer));
     bidder_worklet->SendPendingSignalsRequests();
   }
@@ -630,7 +635,13 @@ class BidderWorkletTest : public testing::Test {
                      bid_finalizer.BindNewEndpointAndPassReceiver(),
                      std::move(generate_bid_client));
     bid_finalizer->FinishGenerateBid(auction_signals_, per_buyer_signals_,
-                                     per_buyer_timeout_);
+                                     per_buyer_timeout_,
+                                     provide_direct_from_seller_signals_late_
+                                         ? direct_from_seller_per_buyer_signals_
+                                         : absl::nullopt,
+                                     provide_direct_from_seller_signals_late_
+                                         ? direct_from_seller_auction_signals_
+                                         : absl::nullopt);
   }
 
   // Calls BeginGenerateBid()/FinishGenerateBid(), expecting the
@@ -648,8 +659,10 @@ class BidderWorkletTest : public testing::Test {
         /*trace_id=*/1, GenerateBidClientWithCallbacks::CreateNeverCompletes(),
         bid_finalizer.BindNewEndpointAndPassReceiver());
     bidder_worklet->SendPendingSignalsRequests();
-    bid_finalizer->FinishGenerateBid(auction_signals_, per_buyer_signals_,
-                                     per_buyer_timeout_);
+    bid_finalizer->FinishGenerateBid(
+        auction_signals_, per_buyer_signals_, per_buyer_timeout_,
+        /*direct_from_seller_per_buyer_signals=*/absl::nullopt,
+        /*direct_from_seller_auction_signals=*/absl::nullopt);
   }
 
   // Create a BidderWorklet and invokes BeginGenerateBid()/FinishGenerateBid(),
@@ -790,6 +803,8 @@ class BidderWorkletTest : public testing::Test {
   absl::optional<uint16_t> experiment_group_id_;
   url::Origin browser_signal_seller_origin_;
   absl::optional<url::Origin> browser_signal_top_level_seller_origin_;
+
+  bool provide_direct_from_seller_signals_late_ = false;
 
   std::string seller_signals_;
   // Used for both the output GenerateBid(), and the input of ReportWin().
@@ -1942,7 +1957,9 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
           bid_finalizer.BindNewEndpointAndPassReceiver());
       bid_finalizer->FinishGenerateBid(
           /*auction_signals_json=*/base::NumberToString(bid_value),
-          per_buyer_signals_, per_buyer_timeout_);
+          per_buyer_signals_, per_buyer_timeout_,
+          /*direct_from_seller_per_buyer_signals=*/absl::nullopt,
+          /*direct_from_seller_auction_signals=*/absl::nullopt);
     }
 
     // If this is the first loop iteration, wait for all the Mojo calls to
@@ -2048,8 +2065,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
                 run_loop.Quit();
             })),
         bid_finalizer.BindNewEndpointAndPassReceiver());
-    bid_finalizer->FinishGenerateBid(auction_signals_, per_buyer_signals_,
-                                     per_buyer_timeout_);
+    bid_finalizer->FinishGenerateBid(
+        auction_signals_, per_buyer_signals_, per_buyer_timeout_,
+        /*direct_from_seller_per_buyer_signals=*/absl::nullopt,
+        /*direct_from_seller_auction_signals=*/absl::nullopt);
   }
   // This should trigger a single network request for all needed signals.
   bidder_worklet->SendPendingSignalsRequests();
@@ -2163,8 +2182,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
                 run_loop.Quit();
             })),
         bid_finalizer.BindNewEndpointAndPassReceiver());
-    bid_finalizer->FinishGenerateBid(auction_signals_, per_buyer_signals_,
-                                     per_buyer_timeout_);
+    bid_finalizer->FinishGenerateBid(
+        auction_signals_, per_buyer_signals_, per_buyer_timeout_,
+        /*direct_from_seller_per_buyer_signals=*/absl::nullopt,
+        /*direct_from_seller_auction_signals=*/absl::nullopt);
   }
   // This should trigger a single network request for all needed signals.
   bidder_worklet->SendPendingSignalsRequests();
@@ -2284,8 +2305,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
                 run_loop.Quit();
             })),
         bid_finalizer.BindNewEndpointAndPassReceiver());
-    bid_finalizer->FinishGenerateBid(auction_signals_, per_buyer_signals_,
-                                     per_buyer_timeout_);
+    bid_finalizer->FinishGenerateBid(
+        auction_signals_, per_buyer_signals_, per_buyer_timeout_,
+        /*direct_from_seller_per_buyer_signals=*/absl::nullopt,
+        /*direct_from_seller_auction_signals=*/absl::nullopt);
   }
   // This should trigger a single network request for all needed signals.
   bidder_worklet->SendPendingSignalsRequests();
@@ -2388,8 +2411,10 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
     // Send one request at a time.
     bidder_worklet->SendPendingSignalsRequests();
 
-    bid_finalizer->FinishGenerateBid(auction_signals_, per_buyer_signals_,
-                                     per_buyer_timeout_);
+    bid_finalizer->FinishGenerateBid(
+        auction_signals_, per_buyer_signals_, per_buyer_timeout_,
+        /*direct_from_seller_per_buyer_signals=*/absl::nullopt,
+        /*direct_from_seller_auction_signals=*/absl::nullopt);
   }
 
   // Calling FinishGenerateBid() shouldn't cause any callbacks to be invoked -
@@ -2529,52 +2554,58 @@ if (auctionSignalsJson !== '{"worklet":2}') {
   constexpr char kDirectFromSellerSignalsHeaders[] =
       "X-Allow-FLEDGE: true\nX-FLEDGE-Auction-Only: true";
 
-  direct_from_seller_per_buyer_signals_ =
-      GURL("https://url.test/perbuyersignals");
-  direct_from_seller_auction_signals_ = GURL("https://url.test/auctionsignals");
+  for (bool late_direct_from_seller_signals : {false, true}) {
+    SCOPED_TRACE(late_direct_from_seller_signals);
+    provide_direct_from_seller_signals_late_ = late_direct_from_seller_signals;
+    direct_from_seller_per_buyer_signals_ =
+        GURL("https://url.test/perbuyersignals");
+    direct_from_seller_auction_signals_ =
+        GURL("https://url.test/auctionsignals");
 
-  mojo::Remote<mojom::BidderWorklet> bidder_worklet1 = CreateWorklet();
-  AddResponse(&url_loader_factory_, *direct_from_seller_per_buyer_signals_,
-              kJsonMimeType, /*charset=*/absl::nullopt, kWorklet1JsonResponse,
-              kDirectFromSellerSignalsHeaders);
-  AddResponse(&url_loader_factory_, *direct_from_seller_auction_signals_,
-              kJsonMimeType, /*charset=*/absl::nullopt, kWorklet1JsonResponse,
-              kDirectFromSellerSignalsHeaders);
-  AddJavascriptResponse(
-      &url_loader_factory_, interest_group_bidding_url_,
-      CreateGenerateBidScript(/*raw_return_value=*/kRawReturnValue,
-                              /*extra_code=*/kWorklet1ExtraCode));
+    mojo::Remote<mojom::BidderWorklet> bidder_worklet1 = CreateWorklet();
+    AddResponse(&url_loader_factory_, *direct_from_seller_per_buyer_signals_,
+                kJsonMimeType, /*charset=*/absl::nullopt, kWorklet1JsonResponse,
+                kDirectFromSellerSignalsHeaders);
+    AddResponse(&url_loader_factory_, *direct_from_seller_auction_signals_,
+                kJsonMimeType, /*charset=*/absl::nullopt, kWorklet1JsonResponse,
+                kDirectFromSellerSignalsHeaders);
+    AddJavascriptResponse(
+        &url_loader_factory_, interest_group_bidding_url_,
+        CreateGenerateBidScript(/*raw_return_value=*/kRawReturnValue,
+                                /*extra_code=*/kWorklet1ExtraCode));
 
-  // For the second worklet, use a different `interest_group_bidding_url_` (to
-  // set up different expectations), but use the same DirectFromSellerSignals
-  // URLs.
-  interest_group_bidding_url_ = GURL("https://url2.test/");
-  mojo::Remote<mojom::BidderWorklet> bidder_worklet2 =
-      CreateWorklet(/*url=*/GURL(),
-                    /*pause_for_debugger_on_start=*/false,
-                    /*out_bidder_worklet_impl=*/nullptr,
-                    /*use_alternate_url_loader_factory=*/true);
-  AddResponse(&alternate_url_loader_factory_,
-              *direct_from_seller_per_buyer_signals_, kJsonMimeType,
-              /*charset=*/absl::nullopt, kWorklet2JsonResponse,
-              kDirectFromSellerSignalsHeaders);
-  AddResponse(&alternate_url_loader_factory_,
-              *direct_from_seller_auction_signals_, kJsonMimeType,
-              /*charset=*/absl::nullopt, kWorklet2JsonResponse,
-              kDirectFromSellerSignalsHeaders);
-  AddJavascriptResponse(
-      &alternate_url_loader_factory_, interest_group_bidding_url_,
-      CreateGenerateBidScript(/*raw_return_value=*/kRawReturnValue,
-                              /*extra_code=*/kWorklet2ExtraCode));
-  load_script_run_loop_ = std::make_unique<base::RunLoop>();
-  GenerateBid(bidder_worklet1.get());
-  load_script_run_loop_->Run();
-  EXPECT_THAT(bid_errors_, ::testing::UnorderedElementsAre());
+    // For the second worklet, use a different `interest_group_bidding_url_` (to
+    // set up different expectations), but use the same DirectFromSellerSignals
+    // URLs.
+    interest_group_bidding_url_ = GURL("https://url2.test/");
+    mojo::Remote<mojom::BidderWorklet> bidder_worklet2 =
+        CreateWorklet(/*url=*/GURL(),
+                      /*pause_for_debugger_on_start=*/false,
+                      /*out_bidder_worklet_impl=*/nullptr,
+                      /*use_alternate_url_loader_factory=*/true);
+    AddResponse(&alternate_url_loader_factory_,
+                *direct_from_seller_per_buyer_signals_, kJsonMimeType,
+                /*charset=*/absl::nullopt, kWorklet2JsonResponse,
+                kDirectFromSellerSignalsHeaders);
+    AddResponse(&alternate_url_loader_factory_,
+                *direct_from_seller_auction_signals_, kJsonMimeType,
+                /*charset=*/absl::nullopt, kWorklet2JsonResponse,
+                kDirectFromSellerSignalsHeaders);
+    AddJavascriptResponse(
+        &alternate_url_loader_factory_, interest_group_bidding_url_,
+        CreateGenerateBidScript(/*raw_return_value=*/kRawReturnValue,
+                                /*extra_code=*/kWorklet2ExtraCode));
+    load_script_run_loop_ = std::make_unique<base::RunLoop>();
+    GenerateBid(bidder_worklet1.get());
+    load_script_run_loop_->Run();
+    EXPECT_THAT(bid_errors_, ::testing::UnorderedElementsAre());
 
-  load_script_run_loop_ = std::make_unique<base::RunLoop>();
-  GenerateBid(bidder_worklet2.get());
-  load_script_run_loop_->Run();
-  EXPECT_THAT(bid_errors_, ::testing::UnorderedElementsAre());
+    load_script_run_loop_ = std::make_unique<base::RunLoop>();
+    GenerateBid(bidder_worklet2.get());
+    load_script_run_loop_->Run();
+    EXPECT_THAT(bid_errors_, ::testing::UnorderedElementsAre());
+    load_script_run_loop_.reset();
+  }
 }
 
 TEST_F(BidderWorkletTest, GenerateBidAuctionSignals) {
@@ -6576,8 +6607,10 @@ TEST_F(BidderWorkletTest, AsyncFinalizeGenerateBid) {
   EXPECT_FALSE(bid_);
 
   // Now feed in the rest of the arguments.
-  bid_finalizer->FinishGenerateBid(auction_signals_, per_buyer_signals_,
-                                   per_buyer_timeout_);
+  bid_finalizer->FinishGenerateBid(
+      auction_signals_, per_buyer_signals_, per_buyer_timeout_,
+      /*direct_from_seller_per_buyer_signals=*/absl::nullopt,
+      /*direct_from_seller_auction_signals=*/absl::nullopt);
   load_script_run_loop_ = std::make_unique<base::RunLoop>();
   load_script_run_loop_->Run();
   ASSERT_TRUE(bid_);
@@ -6612,8 +6645,10 @@ TEST_F(BidderWorkletTest, AsyncFinalizeGenerateBid2) {
   EXPECT_FALSE(bid_);
 
   // Feed in the rest of the arguments.
-  bid_finalizer->FinishGenerateBid(auction_signals_, per_buyer_signals_,
-                                   per_buyer_timeout_);
+  bid_finalizer->FinishGenerateBid(
+      auction_signals_, per_buyer_signals_, per_buyer_timeout_,
+      /*direct_from_seller_per_buyer_signals=*/absl::nullopt,
+      /*direct_from_seller_auction_signals=*/absl::nullopt);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(bid_);
 

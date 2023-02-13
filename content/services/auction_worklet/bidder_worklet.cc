@@ -240,39 +240,9 @@ void BidderWorklet::BeginGenerateBid(
       finalize_receiver_set_.Add(this, std::move(bid_finalizer),
                                  generate_bid_task);
 
-  if (direct_from_seller_per_buyer_signals) {
-    // Deleting `generate_bid_task` will destroy
-    // `direct_from_seller_request_per_buyer_signals` and thus abort this
-    // callback, so it's safe to use Unretained(this) and `generate_bid_task`
-    // here.
-    generate_bid_task->direct_from_seller_request_per_buyer_signals =
-        direct_from_seller_requester_per_buyer_signals_.LoadSignals(
-            *url_loader_factory_, *direct_from_seller_per_buyer_signals,
-            base::BindOnce(
-                &BidderWorklet::
-                    OnDirectFromSellerPerBuyerSignalsDownloadedGenerateBid,
-                base::Unretained(this), generate_bid_task));
-  } else {
-    generate_bid_task->direct_from_seller_result_per_buyer_signals =
-        DirectFromSellerSignalsRequester::Result();
-  }
-
-  if (direct_from_seller_auction_signals) {
-    // Deleting `generate_bid_task` will destroy
-    // `direct_from_seller_request_auction_signals` and thus abort this
-    // callback, so it's safe to use Unretained(this) and `generate_bid_task`
-    // here.
-    generate_bid_task->direct_from_seller_request_auction_signals =
-        direct_from_seller_requester_auction_signals_.LoadSignals(
-            *url_loader_factory_, *direct_from_seller_auction_signals,
-            base::BindOnce(
-                &BidderWorklet::
-                    OnDirectFromSellerAuctionSignalsDownloadedGenerateBid,
-                base::Unretained(this), generate_bid_task));
-  } else {
-    generate_bid_task->direct_from_seller_result_auction_signals =
-        DirectFromSellerSignalsRequester::Result();
-  }
+  HandleDirectFromSellerForGenerateBid(direct_from_seller_per_buyer_signals,
+                                       direct_from_seller_auction_signals,
+                                       generate_bid_task);
 
   const auto& trusted_bidding_signals_keys =
       generate_bid_task->bidder_worklet_non_shared_params
@@ -396,12 +366,18 @@ void BidderWorklet::ConnectDevToolsAgent(
 void BidderWorklet::FinishGenerateBid(
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
-    const absl::optional<base::TimeDelta> per_buyer_timeout) {
+    const absl::optional<base::TimeDelta> per_buyer_timeout,
+    const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+    const absl::optional<GURL>& direct_from_seller_auction_signals) {
   GenerateBidTaskList::iterator task = finalize_receiver_set_.current_context();
   task->auction_signals_json = auction_signals_json;
   task->per_buyer_signals_json = per_buyer_signals_json;
   task->per_buyer_timeout = per_buyer_timeout;
   task->finalize_generate_bid_called = true;
+  HandleDirectFromSellerForGenerateBid(direct_from_seller_per_buyer_signals,
+                                       direct_from_seller_auction_signals,
+                                       task);
+
   finalize_receiver_set_.Remove(*task->finalize_generate_bid_receiver_id);
   task->finalize_generate_bid_receiver_id = absl::nullopt;
   task->wait_promises = base::TimeTicks::Now() - task->trace_wait_deps_start;
@@ -1316,6 +1292,48 @@ void BidderWorklet::SignalsReceivedCallback(
   task->wait_trusted_signals =
       base::TimeTicks::Now() - task->trace_wait_deps_start;
   GenerateBidIfReady(task);
+}
+
+void BidderWorklet::HandleDirectFromSellerForGenerateBid(
+    const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+    const absl::optional<GURL>& direct_from_seller_auction_signals,
+    GenerateBidTaskList::iterator task) {
+  if (direct_from_seller_per_buyer_signals) {
+    // We expect each parameter to be provided at most once between
+    // BeginGenerateBid/FinishGenerateBid.  If we are already fetching this
+    // kind of signals this is clearly the second time it was specified.
+    DCHECK(!task->direct_from_seller_request_per_buyer_signals);
+
+    // Deleting `task` will destroy
+    // `direct_from_seller_request_per_buyer_signals` and thus abort this
+    // callback, so it's safe to use Unretained(this) and `task`
+    // here.
+    task->direct_from_seller_request_per_buyer_signals =
+        direct_from_seller_requester_per_buyer_signals_.LoadSignals(
+            *url_loader_factory_, *direct_from_seller_per_buyer_signals,
+            base::BindOnce(
+                &BidderWorklet::
+                    OnDirectFromSellerPerBuyerSignalsDownloadedGenerateBid,
+                base::Unretained(this), task));
+  }
+
+  if (direct_from_seller_auction_signals) {
+    // We expect each parameter to be provided at most once between
+    // BeginGenerateBid/FinishGenerateBid.  If we are already fetching this
+    // kind of signals this is clearly the second time it was specified.
+    DCHECK(!task->direct_from_seller_request_auction_signals);
+    // Deleting `task` will destroy
+    // `direct_from_seller_request_auction_signals` and thus abort this
+    // callback, so it's safe to use Unretained(this) and `task`
+    // here.
+    task->direct_from_seller_request_auction_signals =
+        direct_from_seller_requester_auction_signals_.LoadSignals(
+            *url_loader_factory_, *direct_from_seller_auction_signals,
+            base::BindOnce(
+                &BidderWorklet::
+                    OnDirectFromSellerAuctionSignalsDownloadedGenerateBid,
+                base::Unretained(this), task));
+  }
 }
 
 void BidderWorklet::OnDirectFromSellerPerBuyerSignalsDownloadedGenerateBid(

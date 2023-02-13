@@ -165,7 +165,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   void FinishGenerateBid(
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
-      const absl::optional<base::TimeDelta> per_buyer_timeout) override;
+      const absl::optional<base::TimeDelta> per_buyer_timeout,
+      const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+      const absl::optional<GURL>& direct_from_seller_auction_signals) override;
 
  private:
   struct GenerateBidTask {
@@ -496,6 +498,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // `task->signals_received_callback_invoked` to true, and invokes
   // GenerateBidIfReady().
   void SignalsReceivedCallback(GenerateBidTaskList::iterator task);
+
+  void HandleDirectFromSellerForGenerateBid(
+      const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+      const absl::optional<GURL>& direct_from_seller_auction_signals,
+      GenerateBidTaskList::iterator task);
 
   void OnDirectFromSellerPerBuyerSignalsDownloadedGenerateBid(
       GenerateBidTaskList::iterator task,

@@ -148,7 +148,9 @@ void MockBidderWorklet::ConnectDevToolsAgent(
 void MockBidderWorklet::FinishGenerateBid(
     const absl::optional<std::string>& auction_signals_json,
     const absl::optional<std::string>& per_buyer_signals_json,
-    const absl::optional<base::TimeDelta> per_buyer_timeout) {
+    const absl::optional<base::TimeDelta> per_buyer_timeout,
+    const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+    const absl::optional<GURL>& direct_from_seller_auction_signals) {
   // per_buyer_timeout passed to GenerateBid() should not be empty, because
   // auction_config's all_buyers_timeout (which is the key of '*' in
   // perBuyerTimeouts) is set in the AuctionRunnerTest.

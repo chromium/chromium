@@ -177,6 +177,40 @@ void AuctionRunner::ResolvedBuyerTimeoutsPromise(
   NotifyPromiseResolved(auction_id.get(), config);
 }
 
+void AuctionRunner::ResolvedDirectFromSellerSignalsPromise(
+    blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+    const absl::optional<blink::DirectFromSellerSignals>&
+        direct_from_seller_signals) {
+  if (state_ == State::kFailed) {
+    return;
+  }
+
+  blink::AuctionConfig* config =
+      LookupAuction(*owned_auction_config_, auction_id);
+  if (!config) {
+    mojo::ReportBadMessage(
+        "Invalid auction ID in ResolvedDirectFromSellerSignalsPromise");
+    return;
+  }
+
+  if (!config->direct_from_seller_signals.is_promise()) {
+    mojo::ReportBadMessage(
+        "ResolvedDirectFromSellerSignalsPromise updating non-promise");
+    return;
+  }
+
+  if (!config->IsDirectFromSellerSignalsValid(direct_from_seller_signals)) {
+    mojo::ReportBadMessage(
+        "ResolvedDirectFromSellerSignalsPromise with invalid signals");
+    return;
+  }
+
+  config->direct_from_seller_signals =
+      blink::AuctionConfig::MaybePromiseDirectFromSellerSignals::FromValue(
+          direct_from_seller_signals);
+  NotifyPromiseResolved(auction_id.get(), config);
+}
+
 void AuctionRunner::Abort() {
   // Don't abort if the auction already finished (either as success or failure;
   // this includes the case of multiple promise arguments rejecting).
@@ -248,8 +282,7 @@ AuctionRunner::AuctionRunner(
       owned_auction_config_(
           std::make_unique<blink::AuctionConfig>(auction_config)),
       callback_(std::move(callback)),
-      promise_fields_in_auction_config_(
-          owned_auction_config_->non_shared_params.NumPromises()),
+      promise_fields_in_auction_config_(owned_auction_config_->NumPromises()),
       auction_(kanon_mode_,
                owned_auction_config_.get(),
                /*parent=*/nullptr,
@@ -339,10 +372,9 @@ void AuctionRunner::NotifyPromiseResolved(
     blink::AuctionConfig* config) {
   --promise_fields_in_auction_config_;
   DCHECK_EQ(promise_fields_in_auction_config_,
-            owned_auction_config_->non_shared_params.NumPromises());
+            owned_auction_config_->NumPromises());
 
-  if (!auction_id->is_main_auction() &&
-      config->non_shared_params.NumPromises() == 0) {
+  if (!auction_id->is_main_auction() && config->NumPromises() == 0) {
     auction_.NotifyComponentConfigPromisesResolved(
         auction_id->get_component_auction());
   }

@@ -19,7 +19,10 @@ dictionary AuctionAdConfig {
   sequence<USVString> interestGroupBuyers;
   any auctionSignals;
   any sellerSignals;
-  USVString directFromSellerSignals;
+
+  // Really (USVString or Promise<USVString>) directFromSellerSignals;
+  any directFromSellerSignals;
+
   unsigned long long sellerTimeout;
   unsigned short sellerExperimentGroupId;
   // Really (record<USVString, any> or Promise<record<USVString, any>>)

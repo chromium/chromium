@@ -265,10 +265,15 @@ interface GenerateBidFinalizer {
   //  passing in as `per_buyer_timeout`. Null if not provided by the publisher
   //  page. Null will be passed to the worklet in that case.
   //
+  // See BeginGenerateBid for description of
+  //  `direct_from_seller_per_buyer_signals`, `
+  //  `direct_from_seller_auction_signals`
   FinishGenerateBid(
       string? auction_signals_json,
       string? per_buyer_signals_json,
-      mojo_base.mojom.TimeDelta? per_buyer_timeout);
+      mojo_base.mojom.TimeDelta? per_buyer_timeout,
+      url.mojom.Url? direct_from_seller_per_buyer_signals,
+      url.mojom.Url? direct_from_seller_auction_signals);
 };
 
 // Manages the auction workflow for one loaded FLEDGE bidder worklet.
@@ -318,6 +323,12 @@ interface BidderWorklet {
   // runAdAuction() with "?auctionSignals". Since this is fetched from a
   // subresource bundle, it may only be fetched using the URLLoaderFactory
   // passed in when creating the worklet.
+  //
+  // Both `direct_from_seller_auction_signals` and
+  // `direct_from_seller_per_buyer_signals` can alternatively be passed as
+  // parameters to FinishGenerateBid() if they are not available at time of
+  // BeginGenerateBid(); but each parameter can be passed in as non-nullopt at
+  // most once.
   //
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.

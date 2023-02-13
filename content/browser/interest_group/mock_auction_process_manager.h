@@ -99,7 +99,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   void FinishGenerateBid(
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
-      const absl::optional<base::TimeDelta> per_buyer_timeout) override;
+      const absl::optional<base::TimeDelta> per_buyer_timeout,
+      const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+      const absl::optional<GURL>& direct_from_seller_auction_signals) override;
 
   // Waits for GenerateBid() to be invoked.
   void WaitForGenerateBid();

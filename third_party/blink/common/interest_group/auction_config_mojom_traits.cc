@@ -22,14 +22,6 @@ namespace mojo {
 
 namespace {
 
-// Helper to check if `url` is HTTPS and has the specified origin. Used to
-// validate seller URLs can be used with the seller's origin.
-bool IsHttpsAndMatchesOrigin(const GURL& seller_url,
-                             const url::Origin& seller_origin) {
-  return seller_url.scheme() == url::kHttpsScheme &&
-         url::Origin::Create(seller_url) == seller_origin;
-}
-
 // Validates no key in `buyer_priority_signals` starts with "browserSignals.",
 // which are reserved for values set by the browser.
 bool AreBuyerPrioritySignalsValid(
@@ -100,6 +92,10 @@ template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
 template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
     blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView,
     blink::AuctionConfig::MaybePromiseBuyerTimeouts>;
+
+template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
+    blink::mojom::AuctionAdConfigMaybePromiseDirectFromSellerSignalsDataView,
+    blink::AuctionConfig::MaybePromiseDirectFromSellerSignals>;
 
 bool StructTraits<blink::mojom::AuctionAdConfigBuyerTimeoutsDataView,
                   blink::AuctionConfig::BuyerTimeouts>::
@@ -210,52 +206,17 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
   // share the seller's origin, and must be HTTPS. Need to explicitly check the
   // scheme because some non-HTTPS URLs may have HTTPS origins (e.g., blob
   // URLs).
-  if (!IsHttpsAndMatchesOrigin(out->decision_logic_url, out->seller) ||
+  if (!out->IsHttpsAndMatchesSellerOrigin(out->decision_logic_url) ||
       (out->trusted_scoring_signals_url &&
-       !IsHttpsAndMatchesOrigin(*out->trusted_scoring_signals_url,
-                                out->seller))) {
+       !out->IsHttpsAndMatchesSellerOrigin(
+           *out->trusted_scoring_signals_url))) {
     return false;
   }
 
-  absl::optional<blink::DirectFromSellerSignals> direct_from_seller_signals =
-      out->direct_from_seller_signals;
-  if (direct_from_seller_signals) {
-    const GURL& prefix = direct_from_seller_signals->prefix;
-    // The prefix can't have a query because the browser process appends its own
-    // query suffix.
-    if (prefix.has_query())
-      return false;
-    // NOTE: uuid-in-package isn't supported, since it doesn't support CORS.
-    if (!IsHttpsAndMatchesOrigin(prefix, out->seller))
-      return false;
-    base::flat_set<url::Origin> interest_group_buyers(
-        out->non_shared_params.interest_group_buyers
-            ? *out->non_shared_params.interest_group_buyers
-            : std::vector<url::Origin>());
-    for (const auto& [buyer_origin, bundle_url] :
-         direct_from_seller_signals->per_buyer_signals) {
-      // The renderer shouldn't provide bundles for origins that aren't buyers
-      // in this auction -- there would be no worklet to receive them.
-      if (interest_group_buyers.count(buyer_origin) < 1)
-        return false;
-      // All DirectFromSellerSignals must come from the seller.
-      if (!IsHttpsAndMatchesOrigin(bundle_url.bundle_url, out->seller))
-        return false;
-    }
-    if (direct_from_seller_signals->seller_signals &&
-        !IsHttpsAndMatchesOrigin(
-            direct_from_seller_signals->seller_signals->bundle_url,
-            out->seller)) {
-      // All DirectFromSellerSignals must come from the seller.
-      return false;
-    }
-    if (direct_from_seller_signals->auction_signals &&
-        !IsHttpsAndMatchesOrigin(
-            direct_from_seller_signals->auction_signals->bundle_url,
-            out->seller)) {
-      // All DirectFromSellerSignals must come from the seller.
-      return false;
-    }
+  if (!out->direct_from_seller_signals.is_promise() &&
+      !out->IsDirectFromSellerSignalsValid(
+          out->direct_from_seller_signals.value())) {
+    return false;
   }
 
   return true;

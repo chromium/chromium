@@ -713,8 +713,13 @@ class InterestGroupAuction::BuyerHelper
     auction_worklet::mojom::KAnonymityBidMode kanon_mode =
         auction_->kanon_mode();
     bid_state->kanon_keys = ComputeKAnon(*bid_state->bidder, kanon_mode);
-    bid_state->worklet_handle->AuthorizeSubresourceUrls(
-        *auction_->subresource_url_builder_);
+    SubresourceUrlBuilder* url_builder =
+        auction_->SubresourceUrlBuilderIfReady();
+    if (url_builder) {
+      bid_state->worklet_handle->AuthorizeSubresourceUrls(*url_builder);
+      bid_state->handled_direct_from_seller_signals_in_begin_generate_bid =
+          true;
+    }
     bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
             interest_group.name,
@@ -727,9 +732,8 @@ class InterestGroupAuction::BuyerHelper
             KAnonKeysToMojom(bid_state->kanon_keys)),
         kanon_mode, bid_state->bidder->joining_origin,
         GetDirectFromSellerPerBuyerSignals(
-            *auction_->subresource_url_builder_,
-            bid_state->bidder->interest_group.owner),
-        GetDirectFromSellerAuctionSignals(*auction_->subresource_url_builder_),
+            url_builder, bid_state->bidder->interest_group.owner),
+        GetDirectFromSellerAuctionSignals(url_builder),
         auction_->config_->seller,
         auction_->parent_ ? auction_->parent_->config_->seller
                           : absl::optional<url::Origin>(),
@@ -766,11 +770,25 @@ class InterestGroupAuction::BuyerHelper
       return;
     }
 
+    SubresourceUrlBuilder* url_builder =
+        auction_->SubresourceUrlBuilderIfReady();
+    if (url_builder) {
+      if (bid_state->handled_direct_from_seller_signals_in_begin_generate_bid) {
+        // Don't provide direct-from-seller info to FinishGenerateBid below
+        // since we already provided it to BeginGenerateBid.
+        url_builder = nullptr;
+      } else {
+        bid_state->worklet_handle->AuthorizeSubresourceUrls(*url_builder);
+      }
+    }
     bid_state->bid_finalizer->FinishGenerateBid(
         auction_->config_->non_shared_params.auction_signals.value(),
         GetPerBuyerSignals(*auction_->config_,
                            bid_state->bidder->interest_group.owner),
-        auction_->PerBuyerTimeout(bid_state));
+        auction_->PerBuyerTimeout(bid_state),
+        GetDirectFromSellerPerBuyerSignals(
+            url_builder, bid_state->bidder->interest_group.owner),
+        GetDirectFromSellerAuctionSignals(url_builder));
     bid_state->bid_finalizer.reset();
   }
 
@@ -1194,12 +1212,10 @@ InterestGroupAuction::InterestGroupAuction(
       auction_worklet_manager_(auction_worklet_manager),
       interest_group_manager_(interest_group_manager),
       config_(config),
-      config_promises_resolved_(config_->non_shared_params.NumPromises() == 0),
+      config_promises_resolved_(config_->NumPromises() == 0),
       parent_(parent),
       auction_start_time_(auction_start_time),
-      creation_time_(base::TimeTicks::Now()),
-      subresource_url_builder_(std::make_unique<SubresourceUrlBuilder>(
-          config->direct_from_seller_signals)) {
+      creation_time_(base::TimeTicks::Now()) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", "auction", *trace_id_,
                                     "decision_logic_url",
                                     config_->decision_logic_url);
@@ -1429,6 +1445,7 @@ InterestGroupAuction::CreateReporter(
   InterestGroupAuctionReporter::SellerWinningBidInfo
       top_level_seller_winning_bid_info;
   top_level_seller_winning_bid_info.auction_config = config_;
+  DCHECK(subresource_url_builder_);  // Must have been created by scoring.
   top_level_seller_winning_bid_info.subresource_url_builder =
       std::move(subresource_url_builder_);
   top_level_seller_winning_bid_info.bid = winner->bid->bid;
@@ -1458,6 +1475,7 @@ InterestGroupAuction::CreateReporter(
     component_seller_winning_bid_info.emplace();
     component_seller_winning_bid_info->auction_config =
         component_auction->config_;
+    DCHECK(component_auction->subresource_url_builder_);
     component_seller_winning_bid_info->subresource_url_builder =
         std::move(component_auction->subresource_url_builder_);
     const LeaderInfo& component_leader = component_auction->leader_info();
@@ -1494,7 +1512,7 @@ InterestGroupAuction::CreateReporter(
 
 void InterestGroupAuction::NotifyConfigPromisesResolved() {
   DCHECK(!config_promises_resolved_);
-  DCHECK_EQ(0, config_->non_shared_params.NumPromises());
+  DCHECK_EQ(0, config_->NumPromises());
   config_promises_resolved_ = true;
   for (const auto& buyer_helper : buyer_helpers_) {
     buyer_helper->NotifyConfigPromisesResolved();
@@ -1677,6 +1695,16 @@ bool InterestGroupAuction::NonKAnonWinnerIsKAnon() const {
          top_non_kanon_enforced_bid()
                  ->bid->auction->top_non_kanon_enforced_bid()
                  ->bid->bid_role == Bid::BidRole::kBothKAnonModes;
+}
+
+SubresourceUrlBuilder* InterestGroupAuction::SubresourceUrlBuilderIfReady() {
+  if (!subresource_url_builder_ &&
+      !config_->direct_from_seller_signals.is_promise()) {
+    subresource_url_builder_ = std::make_unique<SubresourceUrlBuilder>(
+        config_->direct_from_seller_signals.value());
+  }
+
+  return subresource_url_builder_.get();
 }
 
 void InterestGroupAuction::
@@ -1922,25 +1950,32 @@ absl::optional<std::string> InterestGroupAuction::GetPerBuyerSignals(
 }
 
 absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerAuctionSignals(
-    const SubresourceUrlBuilder& subresource_url_builder) {
-  if (subresource_url_builder.auction_signals())
-    return subresource_url_builder.auction_signals()->subresource_url;
+    const SubresourceUrlBuilder* subresource_url_builder) {
+  if (subresource_url_builder && subresource_url_builder->auction_signals()) {
+    return subresource_url_builder->auction_signals()->subresource_url;
+  }
   return absl::nullopt;
 }
 
 absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
-    const SubresourceUrlBuilder& subresource_url_builder,
+    const SubresourceUrlBuilder* subresource_url_builder,
     const url::Origin& owner) {
-  auto it = subresource_url_builder.per_buyer_signals().find(owner);
-  if (it == subresource_url_builder.per_buyer_signals().end())
+  if (!subresource_url_builder) {
     return absl::nullopt;
+  }
+
+  auto it = subresource_url_builder->per_buyer_signals().find(owner);
+  if (it == subresource_url_builder->per_buyer_signals().end()) {
+    return absl::nullopt;
+  }
   return it->second.subresource_url;
 }
 
 absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerSellerSignals(
-    const SubresourceUrlBuilder& subresource_url_builder) {
-  if (subresource_url_builder.seller_signals())
-    return subresource_url_builder.seller_signals()->subresource_url;
+    const SubresourceUrlBuilder* subresource_url_builder) {
+  if (subresource_url_builder && subresource_url_builder->seller_signals()) {
+    return subresource_url_builder->seller_signals()->subresource_url;
+  }
   return absl::nullopt;
 }
 
@@ -2286,12 +2321,14 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient> score_ad_remote;
   score_ad_receivers_.Add(
       this, score_ad_remote.InitWithNewPipeAndPassReceiver(), std::move(bid));
-  DCHECK_EQ(0, config_->non_shared_params.NumPromises());
-  seller_worklet_handle_->AuthorizeSubresourceUrls(*subresource_url_builder_);
+  DCHECK_EQ(0, config_->NumPromises());
+  SubresourceUrlBuilder* url_builder = SubresourceUrlBuilderIfReady();
+  DCHECK(url_builder);  // Should be ready by now.
+  seller_worklet_handle_->AuthorizeSubresourceUrls(*url_builder);
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid_raw->ad_metadata, bid_raw->bid, config_->non_shared_params,
-      GetDirectFromSellerSellerSignals(*subresource_url_builder_),
-      GetDirectFromSellerAuctionSignals(*subresource_url_builder_),
+      GetDirectFromSellerSellerSignals(url_builder),
+      GetDirectFromSellerAuctionSignals(url_builder),
       GetOtherSellerParam(*bid_raw), bid_raw->interest_group->owner,
       bid_raw->render_url, bid_raw->ad_components,
       bid_raw->bid_duration.InMilliseconds(), SellerTimeout(), bid_trace_id,

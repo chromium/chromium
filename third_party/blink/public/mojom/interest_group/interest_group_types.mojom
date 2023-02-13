@@ -245,6 +245,11 @@ union AuctionAdConfigMaybePromiseBuyerTimeouts {
   AuctionAdConfigBuyerTimeouts value;
 };
 
+union AuctionAdConfigMaybePromiseDirectFromSellerSignals {
+  uint32 promise;  // value unused
+  DirectFromSellerSignals? value;
+};
+
 // For each report type, provides the bucket offset and scalar multiplier for
 // that report.
 //
@@ -376,7 +381,7 @@ struct AuctionAdConfig {
   // bundle(s).  Like `seller_signals`,`per_buyer_signals`, and
   // `auction_signals`, but the signals' contents are not revealed to the
   // renderer process. See details in the DirectFromSellerSignals comment.
-  DirectFromSellerSignals? direct_from_seller_signals;
+  AuctionAdConfigMaybePromiseDirectFromSellerSignals direct_from_seller_signals;
 
   // Optional identifier for an experiment group, used when getting trusted
   // signals (and as part of AuctionConfig given to worklets).

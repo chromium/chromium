@@ -36,24 +36,15 @@ bool operator==(const DirectFromSellerSignals& a,
                                                  b.auction_signals);
 }
 
-bool operator==(const AuctionConfig::MaybePromiseJson& a,
-                const AuctionConfig::MaybePromiseJson& b) {
-  return a.tag() == b.tag() && a.value() == b.value();
-}
-
-bool operator==(const AuctionConfig::MaybePromisePerBuyerSignals& a,
-                const AuctionConfig::MaybePromisePerBuyerSignals& b) {
-  return a.tag() == b.tag() && a.value() == b.value();
-}
-
 bool operator==(const AuctionConfig::BuyerTimeouts& a,
                 const AuctionConfig::BuyerTimeouts& b) {
   return std::tie(a.all_buyers_timeout, a.per_buyer_timeouts) ==
          std::tie(b.all_buyers_timeout, b.per_buyer_timeouts);
 }
 
-bool operator==(const AuctionConfig::MaybePromiseBuyerTimeouts& a,
-                const AuctionConfig::MaybePromiseBuyerTimeouts& b) {
+template <class T>
+bool operator==(const AuctionConfig::MaybePromise<T>& a,
+                const AuctionConfig::MaybePromise<T>& b) {
   return a.tag() == b.tag() && a.value() == b.value();
 }
 
@@ -190,7 +181,8 @@ AuctionConfig CreateFullConfig() {
       std::move(direct_from_seller_auction_signals);
 
   auction_config.direct_from_seller_signals =
-      std::move(direct_from_seller_signals);
+      AuctionConfig::MaybePromiseDirectFromSellerSignals::FromValue(
+          std::move(direct_from_seller_signals));
 
   return auction_config;
 }
@@ -213,21 +205,11 @@ bool SerializeAndDeserialize(const AuctionConfig& auction_config) {
   return success;
 }
 
-bool SerializeAndDeserialize(const AuctionConfig::MaybePromiseJson& in) {
-  AuctionConfig::MaybePromiseJson out;
-  bool success = mojo::test::SerializeAndDeserialize<
-      blink::mojom::AuctionAdConfigMaybePromiseJson>(in, out);
-  if (success) {
-    EXPECT_EQ(in, out);
-  }
-  return success;
-}
-
+template <class MojoType, class PromiseValue>
 bool SerializeAndDeserialize(
-    const AuctionConfig::MaybePromisePerBuyerSignals& in) {
-  AuctionConfig::MaybePromisePerBuyerSignals out;
-  bool success = mojo::test::SerializeAndDeserialize<
-      blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignals>(in, out);
+    const AuctionConfig::MaybePromise<PromiseValue>& in) {
+  AuctionConfig::MaybePromise<PromiseValue> out;
+  bool success = mojo::test::SerializeAndDeserialize<MojoType>(in, out);
   if (success) {
     EXPECT_EQ(in, out);
   }
@@ -238,17 +220,6 @@ bool SerializeAndDeserialize(const AuctionConfig::BuyerTimeouts& in) {
   AuctionConfig::BuyerTimeouts out;
   bool success = mojo::test::SerializeAndDeserialize<
       blink::mojom::AuctionAdConfigBuyerTimeouts>(in, out);
-  if (success) {
-    EXPECT_EQ(in, out);
-  }
-  return success;
-}
-
-bool SerializeAndDeserialize(
-    const AuctionConfig::MaybePromiseBuyerTimeouts& in) {
-  AuctionConfig::MaybePromiseBuyerTimeouts out;
-  bool success = mojo::test::SerializeAndDeserialize<
-      blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeouts>(in, out);
   if (success) {
     EXPECT_EQ(in, out);
   }
@@ -385,7 +356,9 @@ TEST(AuctionConfigMojomTraitsTest, ComponentAuctionSuccessMultipleFull) {
   AuctionConfig auction_config = CreateFullConfig();
   // The top-level auction cannot have buyers in a component auction.
   auction_config.non_shared_params.interest_group_buyers = {};
-  auction_config.direct_from_seller_signals->per_buyer_signals.clear();
+  auction_config.direct_from_seller_signals.mutable_value_for_testing()
+      .value()
+      .per_buyer_signals.clear();
 
   auction_config.non_shared_params.component_auctions.emplace_back(
       CreateFullConfig());
@@ -398,15 +371,15 @@ TEST(AuctionConfigMojomTraitsTest, ComponentAuctionSuccessMultipleFull) {
 TEST(AuctionConfigMojomTraitsTest,
      DirectFromSellerSignalsPrefixWithQueryString) {
   AuctionConfig auction_config = CreateFullConfig();
-  auction_config.direct_from_seller_signals->prefix =
-      GURL("https://seller.test/json?queryPart");
+  auction_config.direct_from_seller_signals.mutable_value_for_testing()
+      ->prefix = GURL("https://seller.test/json?queryPart");
   EXPECT_FALSE(SerializeAndDeserialize(auction_config));
 }
 
 TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsBuyerNotPresent) {
   AuctionConfig auction_config = CreateFullConfig();
   DirectFromSellerSignalsSubresource& buyer2_subresource =
-      auction_config.direct_from_seller_signals
+      auction_config.direct_from_seller_signals.mutable_value_for_testing()
           ->per_buyer_signals[url::Origin::Create(GURL("https://buyer2.test"))];
   buyer2_subresource.bundle_url = GURL("https://seller.test/bundle");
   buyer2_subresource.token = base::UnguessableToken::Create();
@@ -416,25 +389,30 @@ TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsBuyerNotPresent) {
 TEST(AuctionConfigMojomTraitsTest,
      DirectFromSellerSignalsNoDirectFromSellerSignals) {
   AuctionConfig auction_config = CreateFullConfig();
-  auction_config.direct_from_seller_signals = absl::nullopt;
+  auction_config.direct_from_seller_signals =
+      AuctionConfig::MaybePromiseDirectFromSellerSignals::FromValue(
+          absl::nullopt);
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 }
 
 TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsNoPerBuyerSignals) {
   AuctionConfig auction_config = CreateFullConfig();
-  auction_config.direct_from_seller_signals->per_buyer_signals.clear();
+  auction_config.direct_from_seller_signals.mutable_value_for_testing()
+      ->per_buyer_signals.clear();
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 }
 
 TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsNoSellerSignals) {
   AuctionConfig auction_config = CreateFullConfig();
-  auction_config.direct_from_seller_signals->seller_signals = absl::nullopt;
+  auction_config.direct_from_seller_signals.mutable_value_for_testing()
+      ->seller_signals = absl::nullopt;
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 }
 
 TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsNoAuctionSignals) {
   AuctionConfig auction_config = CreateFullConfig();
-  auction_config.direct_from_seller_signals->auction_signals = absl::nullopt;
+  auction_config.direct_from_seller_signals.mutable_value_for_testing()
+      ->auction_signals = absl::nullopt;
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 }
 
@@ -442,19 +420,25 @@ TEST(AuctionConfigMojomTraitsTest, MaybePromiseJson) {
   {
     AuctionConfig::MaybePromiseJson json =
         AuctionConfig::MaybePromiseJson::FromValue("{A: 42}");
-    EXPECT_TRUE(SerializeAndDeserialize(json));
+    EXPECT_TRUE(
+        SerializeAndDeserialize<blink::mojom::AuctionAdConfigMaybePromiseJson>(
+            json));
   }
 
   {
     AuctionConfig::MaybePromiseJson nothing =
         AuctionConfig::MaybePromiseJson::FromValue(absl::nullopt);
-    EXPECT_TRUE(SerializeAndDeserialize(nothing));
+    EXPECT_TRUE(
+        SerializeAndDeserialize<blink::mojom::AuctionAdConfigMaybePromiseJson>(
+            nothing));
   }
 
   {
     AuctionConfig::MaybePromiseJson promise =
         AuctionConfig::MaybePromiseJson::FromPromise();
-    EXPECT_TRUE(SerializeAndDeserialize(promise));
+    EXPECT_TRUE(
+        SerializeAndDeserialize<blink::mojom::AuctionAdConfigMaybePromiseJson>(
+            promise));
   }
 }
 
@@ -465,13 +449,17 @@ TEST(AuctionConfigMojomTraitsTest, MaybePromisePerBuyerSignals) {
     value->emplace(url::Origin::Create(GURL("https://example.com")), "42");
     AuctionConfig::MaybePromisePerBuyerSignals signals =
         AuctionConfig::MaybePromisePerBuyerSignals::FromValue(std::move(value));
-    EXPECT_TRUE(SerializeAndDeserialize(signals));
+    EXPECT_TRUE(
+        SerializeAndDeserialize<
+            blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignals>(signals));
   }
 
   {
     AuctionConfig::MaybePromisePerBuyerSignals signals =
         AuctionConfig::MaybePromisePerBuyerSignals::FromPromise();
-    EXPECT_TRUE(SerializeAndDeserialize(signals));
+    EXPECT_TRUE(
+        SerializeAndDeserialize<
+            blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignals>(signals));
   }
 }
 
@@ -504,13 +492,37 @@ TEST(AuctionConfigMojomTraitsTest, MaybePromiseBuyerTimeouts) {
         base::Milliseconds(50));
     AuctionConfig::MaybePromiseBuyerTimeouts timeouts =
         AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(std::move(value));
-    EXPECT_TRUE(SerializeAndDeserialize(timeouts));
+    EXPECT_TRUE(
+        SerializeAndDeserialize<
+            blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeouts>(timeouts));
   }
 
   {
     AuctionConfig::MaybePromiseBuyerTimeouts timeouts =
         AuctionConfig::MaybePromiseBuyerTimeouts::FromPromise();
-    EXPECT_TRUE(SerializeAndDeserialize(timeouts));
+    EXPECT_TRUE(
+        SerializeAndDeserialize<
+            blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeouts>(timeouts));
+  }
+}
+
+TEST(AuctionConfigMojomTraitsTest, MaybePromiseDirectFromSellerSignals) {
+  {
+    AuctionConfig::MaybePromiseDirectFromSellerSignals signals =
+        CreateFullConfig().direct_from_seller_signals;
+    EXPECT_TRUE(
+        SerializeAndDeserialize<
+            blink::mojom::AuctionAdConfigMaybePromiseDirectFromSellerSignals>(
+            signals));
+  }
+
+  {
+    AuctionConfig::MaybePromiseDirectFromSellerSignals signals =
+        AuctionConfig::MaybePromiseDirectFromSellerSignals::FromPromise();
+    EXPECT_TRUE(
+        SerializeAndDeserialize<
+            blink::mojom::AuctionAdConfigMaybePromiseDirectFromSellerSignals>(
+            signals));
   }
 }
 
@@ -519,22 +531,29 @@ class AuctionConfigMojomTraitsDirectFromSellerSignalsTest
  public:
   GURL& GetMutableURL(AuctionConfig& auction_config) const {
     const std::string which_path = WhichPath();
+    DCHECK(!auction_config.direct_from_seller_signals.is_promise());
     if (which_path == kPrefix) {
-      return auction_config.direct_from_seller_signals->prefix;
+      return auction_config.direct_from_seller_signals
+          .mutable_value_for_testing()
+          ->prefix;
     } else {
       EXPECT_EQ(which_path, kBundleUrl);
       const std::string which_bundle = WhichBundle();
       if (which_bundle == kPerBuyerSignals) {
-        return auction_config.direct_from_seller_signals->per_buyer_signals
+        return auction_config.direct_from_seller_signals
+            .mutable_value_for_testing()
+            ->per_buyer_signals
             .at(url::Origin::Create(GURL("https://buyer.test")))
             .bundle_url;
       } else if (which_bundle == kSellerSignals) {
-        return auction_config.direct_from_seller_signals->seller_signals
-            ->bundle_url;
+        return auction_config.direct_from_seller_signals
+            .mutable_value_for_testing()
+            ->seller_signals->bundle_url;
       } else {
         EXPECT_EQ(which_bundle, kAuctionSignals);
-        return auction_config.direct_from_seller_signals->auction_signals
-            ->bundle_url;
+        return auction_config.direct_from_seller_signals
+            .mutable_value_for_testing()
+            ->auction_signals->bundle_url;
       }
     }
   }

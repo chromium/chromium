@@ -163,6 +163,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   void ResolvedBuyerTimeoutsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
       const blink::AuctionConfig::BuyerTimeouts& buyer_timeouts) override;
+  void ResolvedDirectFromSellerSignalsPromise(
+      blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
+      const absl::optional<blink::DirectFromSellerSignals>&
+          direct_from_seller_signals) override;
   void Abort() override;
 
   // Fails the auction, invoking `callback_` and prevents any future calls into

@@ -40,16 +40,24 @@ interface AbortableAdAuction {
   ResolvedPromiseParam(AuctionAdConfigAuctionId auction,
                        AuctionAdConfigField field,
                        string? json_value);
+
   // Used to provide result of resolving a promise specifying
   // `per_buyer_signals` field of an AuctionConfig.
   ResolvedPerBuyerSignalsPromise(
       AuctionAdConfigAuctionId auction,
       map<url.mojom.Origin, string>? per_buyer_signals);
+
   // Used to provide result of resolving a promise specifying
   // `per_buyer_timeouts` field of an AuctionConfig.
   ResolvedBuyerTimeoutsPromise(
       AuctionAdConfigAuctionId auction,
       AuctionAdConfigBuyerTimeouts buyer_timeouts);
+
+  // Used to provide result of resolving a promise specifying
+  // `direct_from_seller_signals` field of an AuctionConfig.
+  ResolvedDirectFromSellerSignalsPromise(
+      AuctionAdConfigAuctionId auction,
+      DirectFromSellerSignals? direct_from_seller_signals);
 
   // Aborts the auction for which the receiver for this pipe was passed to
   // RunAdAuction(), unless the auction has already finished (with at most
