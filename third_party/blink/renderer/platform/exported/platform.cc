@@ -42,7 +42,6 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/media_log.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_dedicated_worker_host_factory_client.h"
@@ -294,22 +293,6 @@ void Platform::UnsetMainThreadTaskRunnerForTesting() {
 
 Platform* Platform::Current() {
   return g_platform;
-}
-
-std::unique_ptr<WebURLLoaderFactory> Platform::WrapURLLoaderFactory(
-    CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
-        url_loader_factory) {
-  return WrapURLLoaderFactory(
-      base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-          mojo::PendingRemote<network::mojom::URLLoaderFactory>(
-              std::move(url_loader_factory))));
-}
-
-std::unique_ptr<WebURLLoaderFactory> Platform::WrapURLLoaderFactory(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return std::make_unique<blink::WebURLLoaderFactory>(
-      std::move(url_loader_factory), blink::WebVector<blink::WebString>(),
-      /*terminate_sync_load_event=*/nullptr);
 }
 
 std::unique_ptr<WebDedicatedWorkerHostFactoryClient>

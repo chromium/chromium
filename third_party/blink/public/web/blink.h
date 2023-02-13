@@ -33,6 +33,7 @@
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "v8/include/v8-isolate.h"
 
 namespace mojo {
@@ -128,6 +129,11 @@ BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
 //
 // TODO(mkwst): We need a specification for this restriction.
 BLINK_EXPORT void SetIsIsolatedContext(bool value);
+
+// Set a list of CORS exempt headers. This list is used for fetching resources
+// from frames.
+BLINK_EXPORT void SetCorsExemptHeaderList(
+    const WebVector<WebString>& web_cors_exempt_header_list);
 
 }  // namespace blink
 

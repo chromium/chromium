@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
+#include "third_party/blink/renderer/core/loader/loader_factory_for_frame.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/link_header.h"
@@ -245,8 +247,10 @@ PrefetchedSignedExchangeManager::MaybeCreateURLLoader(
 std::unique_ptr<WebURLLoader>
 PrefetchedSignedExchangeManager::CreateDefaultURLLoader(
     const WebURLRequest& request) {
-  return Platform::Current()
-      ->WrapURLLoaderFactory(frame_->GetURLLoaderFactory())
+  return std::make_unique<blink::WebURLLoaderFactory>(
+             frame_->GetURLLoaderFactory(),
+             LoaderFactoryForFrame::GetCorsExemptHeaderList(),
+             /*terminate_sync_load_event=*/nullptr)
       ->CreateURLLoader(
           request,
           frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle(),
@@ -261,8 +265,13 @@ PrefetchedSignedExchangeManager::CreatePrefetchedSignedExchangeURLLoader(
     const WebURLRequest& request,
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
         loader_factory) {
-  return Platform::Current()
-      ->WrapURLLoaderFactory(std::move(loader_factory))
+  return std::make_unique<WebURLLoaderFactory>(
+             base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+                 CrossVariantMojoRemote<
+                     network::mojom::URLLoaderFactoryInterfaceBase>(
+                     std::move(loader_factory))),
+             LoaderFactoryForFrame::GetCorsExemptHeaderList(),
+             /*terminate_sync_load_event=*/nullptr)
       ->CreateURLLoader(
           request,
           frame_->GetFrameScheduler()->CreateResourceLoadingTaskRunnerHandle(),

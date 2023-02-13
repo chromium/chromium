@@ -935,6 +935,14 @@ void RenderThreadImpl::InitializeRenderer(
   user_agent_metadata_ = user_agent_metadata;
   cors_exempt_header_list_ = cors_exempt_header_list;
   attribution_os_support_ = attribution_os_support;
+
+  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+      cors_exempt_header_list.size());
+  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
+                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
+                   return blink::WebString::FromLatin1(h);
+                 });
+  blink::SetCorsExemptHeaderList(web_cors_exempt_header_list);
 }
 
 void RenderThreadImpl::RegisterSchemes() {

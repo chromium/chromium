@@ -11,8 +11,11 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom-blink.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -20,8 +23,12 @@ class DocumentLoader;
 class LocalDOMWindow;
 class PrefetchedSignedExchangeManager;
 
-class LoaderFactoryForFrame final : public ResourceFetcher::LoaderFactory {
+class CORE_EXPORT LoaderFactoryForFrame final
+    : public ResourceFetcher::LoaderFactory {
  public:
+  static void SetCorsExemptHeaderList(Vector<String>);
+  static Vector<String> GetCorsExemptHeaderList();
+
   LoaderFactoryForFrame(DocumentLoader& loader, LocalDOMWindow& window);
 
   void Trace(Visitor*) const override;

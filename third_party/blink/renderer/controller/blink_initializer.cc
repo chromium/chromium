@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/display_cutout_client_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/loader/loader_factory_for_frame.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -187,6 +188,19 @@ void SetIsCrossOriginIsolated(bool value) {
 // Function defined in third_party/blink/public/web/blink.h.
 void SetIsIsolatedContext(bool value) {
   Agent::SetIsIsolatedContext(value);
+}
+
+// Function defined in third_party/blink/public/web/blink.h.
+void SetCorsExemptHeaderList(
+    const WebVector<WebString>& web_cors_exempt_header_list) {
+  Vector<String> cors_exempt_header_list(
+      base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
+  std::transform(web_cors_exempt_header_list.begin(),
+                 web_cors_exempt_header_list.end(),
+                 cors_exempt_header_list.begin(),
+                 [](const WebString& h) { return WTF::String(h); });
+  LoaderFactoryForFrame::SetCorsExemptHeaderList(
+      std::move(cors_exempt_header_list));
 }
 
 void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {

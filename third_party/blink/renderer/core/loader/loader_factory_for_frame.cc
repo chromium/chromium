@@ -7,6 +7,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -24,8 +25,29 @@
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
+
+namespace {
+
+Vector<String>& CorsExemptHeaderList() {
+  DEFINE_STATIC_LOCAL(ThreadSpecific<Vector<String>>, cors_exempt_header_list,
+                      ());
+  return *cors_exempt_header_list;
+}
+
+}  // namespace
+
+// static
+void LoaderFactoryForFrame::SetCorsExemptHeaderList(
+    Vector<String> cors_exempt_header_list) {
+  CorsExemptHeaderList() = std::move(cors_exempt_header_list);
+}
+// static
+Vector<String> LoaderFactoryForFrame::GetCorsExemptHeaderList() {
+  return CorsExemptHeaderList();
+}
 
 LoaderFactoryForFrame::LoaderFactoryForFrame(DocumentLoader& document_loader,
                                              LocalDOMWindow& window)
@@ -97,8 +119,13 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
   // the code so that all the tasks related to loading a resource use the
   // resource loader handle's task runner.
   if (url_loader_factory) {
-    return Platform::Current()
-        ->WrapURLLoaderFactory(std::move(url_loader_factory))
+    return std::make_unique<WebURLLoaderFactory>(
+               base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+                   CrossVariantMojoRemote<
+                       network::mojom::URLLoaderFactoryInterfaceBase>(
+                       std::move(url_loader_factory))),
+               GetCorsExemptHeaderList(),
+               /*terminate_sync_load_event=*/nullptr)
         ->CreateURLLoader(webreq, CreateTaskRunnerHandle(freezable_task_runner),
                           CreateTaskRunnerHandle(unfreezable_task_runner),
                           /*keep_alive_handle=*/mojo::NullRemote(),
@@ -114,8 +141,9 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
     if (loader_factory) {
       IssueKeepAliveHandleIfRequested(request, frame->GetLocalFrameHostRemote(),
                                       std::move(pending_receiver));
-      return Platform::Current()
-          ->WrapURLLoaderFactory(std::move(loader_factory))
+      return std::make_unique<WebURLLoaderFactory>(
+                 std::move(loader_factory), GetCorsExemptHeaderList(),
+                 /*terminate_sync_load_event=*/nullptr)
           ->CreateURLLoader(
               webreq, CreateTaskRunnerHandle(freezable_task_runner),
               CreateTaskRunnerHandle(unfreezable_task_runner),
@@ -140,8 +168,9 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
     return loader;
   }
 
-  return Platform::Current()
-      ->WrapURLLoaderFactory(frame->GetURLLoaderFactory())
+  return std::make_unique<WebURLLoaderFactory>(
+             frame->GetURLLoaderFactory(), GetCorsExemptHeaderList(),
+             /*terminate_sync_load_event=*/nullptr)
       ->CreateURLLoader(webreq, CreateTaskRunnerHandle(freezable_task_runner),
                         CreateTaskRunnerHandle(unfreezable_task_runner),
                         std::move(pending_remote),
