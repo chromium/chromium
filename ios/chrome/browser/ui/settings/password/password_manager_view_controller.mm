@@ -137,14 +137,80 @@ bool ShouldShowSettingsUI() {
       password_manager::features::kIOSPasswordUISplit);
 }
 
-// Returns true if the password checkup feature flag is enabled.
+// Returns true if the Password Checkup feature flag is enabled.
 bool IsPasswordCheckupEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kIOSPasswordCheckup);
 }
 
-// The size of trailing symbol icons for safe/unsafe state.
+// Helper method to determine whether the Password Check cell is tappable or
+// not.
+bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
+  switch (passwordCheckState) {
+    case PasswordCheckStateUnmutedCompromisedPasswords:
+      return true;
+    case PasswordCheckStateReusedPasswords:
+    case PasswordCheckStateWeakPasswords:
+    case PasswordCheckStateDismissedWarnings:
+    case PasswordCheckStateSafe:
+      return IsPasswordCheckupEnabled();
+    case PasswordCheckStateDefault:
+    case PasswordCheckStateRunning:
+    case PasswordCheckStateDisabled:
+    case PasswordCheckStateError:
+      return false;
+  }
+}
+
+// The size of trailing symbol icons for safe/insecure state.
 NSInteger kTrailingSymbolSize = 18;
+
+// Helper method to get the right trailing image for the Password Check cell
+// depending on the check state.
+UIImage* GetPasswordCheckStatusTrailingImage(
+    PasswordCheckUIState passwordCheckState) {
+  switch (passwordCheckState) {
+    case PasswordCheckStateUnmutedCompromisedPasswords:
+      return DefaultSymbolTemplateWithPointSize(IsPasswordCheckupEnabled()
+                                                    ? kErrorCircleFillSymbol
+                                                    : kWarningFillSymbol,
+                                                kTrailingSymbolSize);
+    case PasswordCheckStateReusedPasswords:
+    case PasswordCheckStateWeakPasswords:
+    case PasswordCheckStateDismissedWarnings:
+      return DefaultSymbolTemplateWithPointSize(kErrorCircleFillSymbol,
+                                                kTrailingSymbolSize);
+    case PasswordCheckStateSafe:
+      return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
+                                                kTrailingSymbolSize);
+    case PasswordCheckStateDefault:
+    case PasswordCheckStateRunning:
+    case PasswordCheckStateDisabled:
+    case PasswordCheckStateError:
+      return nil;
+  }
+}
+
+// Helper method to get the right tint color for the Password Check cell's
+// trailing image depending on the check state.
+UIColor* GetPasswordCheckStatusTrailingImageTintColor(
+    PasswordCheckUIState passwordCheckState) {
+  switch (passwordCheckState) {
+    case PasswordCheckStateUnmutedCompromisedPasswords:
+      return [UIColor colorNamed:kRedColor];
+    case PasswordCheckStateReusedPasswords:
+    case PasswordCheckStateWeakPasswords:
+    case PasswordCheckStateDismissedWarnings:
+      return [UIColor colorNamed:kYellow500Color];
+    case PasswordCheckStateSafe:
+      return [UIColor colorNamed:kGreenColor];
+    case PasswordCheckStateDefault:
+    case PasswordCheckStateRunning:
+    case PasswordCheckStateDisabled:
+    case PasswordCheckStateError:
+      return nil;
+  }
+}
 
 }  // namespace
 
@@ -488,9 +554,7 @@ NSInteger kTrailingSymbolSize = 18;
   if (_checkForProblemsItem) {
     [self reconfigureCellsForItems:@[ _checkForProblemsItem ]];
   }
-  if (_passwordProblemsItem) {
-    [self reconfigureCellsForItems:@[ _passwordProblemsItem ]];
-  }
+  [self updatePasswordProblemsItem];
   [self updateUIForEditState];
 }
 
@@ -568,9 +632,14 @@ NSInteger kTrailingSymbolSize = 18;
   [model addItem:_checkForProblemsItem
       toSectionWithIdentifier:SectionIdentifierPasswordCheck];
 
-  [self updateLastCheckTimestampWithState:_passwordCheckState
-                                fromState:_passwordCheckState
-                                   update:NO];
+  // When the Password Checkup feature is enabled, this timestamp only appears
+  // in the detail text of the Password Checkup status cell. It is therefore
+  // managed in `updatePasswordCheckStatusLabelWithState`.
+  if (!IsPasswordCheckupEnabled()) {
+    [self updateLastCheckTimestampWithState:_passwordCheckState
+                                  fromState:_passwordCheckState
+                                     update:NO];
+  }
 
   // On-device encryption.
   [self updateOnDeviceEncryptionSessionWithUpdateTableView:NO
@@ -913,9 +982,14 @@ NSInteger kTrailingSymbolSize = 18;
   SettingsCheckItem* passwordProblemsItem =
       [[SettingsCheckItem alloc] initWithType:ItemTypePasswordCheckStatus];
   passwordProblemsItem.enabled = NO;
-  passwordProblemsItem.text = l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS);
+  passwordProblemsItem.text =
+      IsPasswordCheckupEnabled()
+          ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP)
+          : l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS);
   passwordProblemsItem.detailText =
-      l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_DESCRIPTION);
+      IsPasswordCheckupEnabled()
+          ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_DESCRIPTION)
+          : l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_DESCRIPTION);
   passwordProblemsItem.accessibilityTraits = UIAccessibilityTraitHeader;
   return passwordProblemsItem;
 }
@@ -1161,8 +1235,8 @@ NSInteger kTrailingSymbolSize = 18;
 #pragma mark - PasswordsConsumer
 
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
-         insecurePasswordsCount:(NSInteger)count {
-  self.insecurePasswordsCount = count;
+         insecurePasswordsCount:(NSInteger)insecureCount {
+  self.insecurePasswordsCount = insecureCount;
   // Update password check status and check button with new state.
   [self updatePasswordCheckButtonWithState:state];
   [self updatePasswordCheckStatusLabelWithState:state];
@@ -1176,14 +1250,19 @@ NSInteger kTrailingSymbolSize = 18;
 
   if (_checkForProblemsItem)
     [self reconfigureCellsForItems:@[ _checkForProblemsItem ]];
-  if (_passwordProblemsItem) {
-    [self reconfigureCellsForItems:@[ _passwordProblemsItem ]];
+  [self updatePasswordProblemsItem];
+
+  // When the Password Checkup feature is enabled, this timestamp only appears
+  // in the detail text of the Password Checkup status cell. It is therefore
+  // managed in `updatePasswordCheckStatusLabelWithState`.
+  if (!IsPasswordCheckupEnabled()) {
+    // Before updating cached state value update timestamp as for proper
+    // animation it requires both new and old values.
+    [self updateLastCheckTimestampWithState:state
+                                  fromState:_passwordCheckState
+                                     update:YES];
   }
-  // Before updating cached state value update timestamp as for proper animation
-  // it requires both new and old values.
-  [self updateLastCheckTimestampWithState:state
-                                fromState:_passwordCheckState
-                                   update:YES];
+
   _passwordCheckState = state;
 }
 
@@ -1745,6 +1824,9 @@ NSInteger kTrailingSymbolSize = 18;
   switch (state) {
     case PasswordCheckStateSafe:
     case PasswordCheckStateUnmutedCompromisedPasswords:
+    case PasswordCheckStateReusedPasswords:
+    case PasswordCheckStateWeakPasswords:
+    case PasswordCheckStateDismissedWarnings:
     case PasswordCheckStateDefault:
     case PasswordCheckStateError:
       _checkForProblemsItem.textColor = [UIColor colorNamed:kBlueColor];
@@ -1759,11 +1841,6 @@ NSInteger kTrailingSymbolSize = 18;
       _checkForProblemsItem.accessibilityTraits |=
           UIAccessibilityTraitNotEnabled;
       break;
-    // TODO(crbug.com/1406540): Handle weak/reused/dismissed states
-    case PasswordCheckStateReusedPasswords:
-    case PasswordCheckStateWeakPasswords:
-    case PasswordCheckStateDismissedWarnings:
-      break;
   }
 }
 
@@ -1772,17 +1849,36 @@ NSInteger kTrailingSymbolSize = 18;
   if (!_passwordProblemsItem)
     return;
 
-  _passwordProblemsItem.trailingImage = nil;
+  _passwordProblemsItem.trailingImage =
+      GetPasswordCheckStatusTrailingImage(state);
+  _passwordProblemsItem.trailingImageTintColor =
+      GetPasswordCheckStatusTrailingImageTintColor(state);
   _passwordProblemsItem.enabled = !self.editing;
   _passwordProblemsItem.indicatorHidden = YES;
   _passwordProblemsItem.infoButtonHidden = YES;
-  _passwordProblemsItem.accessoryType = UITableViewCellAccessoryNone;
+  _passwordProblemsItem.accessoryType =
+      IsPasswordCheckTappable(state)
+          ? UITableViewCellAccessoryDisclosureIndicator
+          : UITableViewCellAccessoryNone;
+  _passwordProblemsItem.text =
+      IsPasswordCheckupEnabled()
+          ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP)
+          : l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS);
   _passwordProblemsItem.detailText =
-      l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_DESCRIPTION);
+      IsPasswordCheckupEnabled()
+          ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_DESCRIPTION)
+          : l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS_DESCRIPTION);
 
   switch (state) {
     case PasswordCheckStateRunning: {
-      _passwordProblemsItem.trailingImage = nil;
+      if (IsPasswordCheckupEnabled()) {
+        _passwordProblemsItem.text =
+            l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ONGOING);
+        _passwordProblemsItem.detailText =
+            base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+                IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT,
+                _affiliatedGroups.size()));
+      }
       _passwordProblemsItem.indicatorHidden = NO;
       break;
     }
@@ -1791,68 +1887,61 @@ NSInteger kTrailingSymbolSize = 18;
       break;
     }
     case PasswordCheckStateUnmutedCompromisedPasswords: {
+      int detailTextId = IsPasswordCheckupEnabled()
+                             ? IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT
+                             : IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT;
       _passwordProblemsItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-              IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
+              detailTextId, self.insecurePasswordsCount));
+      break;
+    }
+    case PasswordCheckStateReusedPasswords: {
+      _passwordProblemsItem.detailText = l10n_util::GetNSStringF(
+          IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT,
+          base::NumberToString16(self.insecurePasswordsCount));
+      break;
+    }
+    case PasswordCheckStateWeakPasswords: {
+      _passwordProblemsItem.detailText = base::SysUTF16ToNSString(
+          l10n_util::GetPluralStringFUTF16(IDS_IOS_PASSWORD_CHECKUP_WEAK_COUNT,
+                                           self.insecurePasswordsCount));
+      break;
+    }
+    case PasswordCheckStateDismissedWarnings: {
+      _passwordProblemsItem.detailText =
+          base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+              IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT,
               self.insecurePasswordsCount));
-      if (UseSymbols()) {
-        _passwordProblemsItem.trailingImage =
-            DefaultSymbolTemplateWithPointSize(IsPasswordGroupingEnabled()
-                                                   ? kErrorCircleFillSymbol
-                                                   : kWarningFillSymbol,
-                                               kTrailingSymbolSize);
-        _passwordProblemsItem.trailingImageTintColor = [UIColor
-            colorNamed:IsPasswordGroupingEnabled() ? kRed500Color : kRedColor];
-      } else {
-        _passwordProblemsItem.trailingImage =
-            [UIImage imageNamed:@"round_settings_unsafe_state"];
-      }
-
-      _passwordProblemsItem.accessoryType =
-          UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
     case PasswordCheckStateSafe: {
-      DCHECK(!self.insecurePasswordsCount);
-      UIImage* safeIconImage =
-          UseSymbols()
-              ? DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
-                                                   kTrailingSymbolSize)
-              : [[UIImage imageNamed:@"settings_safe_state"]
-                    imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       _passwordProblemsItem.detailText =
-          base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-              IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 0));
-      _passwordProblemsItem.trailingImage = safeIconImage;
-      _passwordProblemsItem.trailingImageTintColor =
-          [UIColor colorNamed:kGreenColor];
-      if (IsPasswordCheckupEnabled()) {
-        _passwordProblemsItem.accessoryType =
-            UITableViewCellAccessoryDisclosureIndicator;
-      }
+          IsPasswordCheckupEnabled()
+              ? [self.delegate formatElapsedTimeSinceLastCheck]
+              : base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+                    IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 0));
       break;
     }
     case PasswordCheckStateDefault:
       break;
     case PasswordCheckStateError: {
       _passwordProblemsItem.detailText =
-          l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR);
+          IsPasswordCheckupEnabled()
+              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR)
+              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR);
       _passwordProblemsItem.infoButtonHidden = NO;
       break;
     }
-    // TODO(crbug.com/1406540): Handle weak/reused/dismissed states
-    case PasswordCheckStateReusedPasswords:
-    case PasswordCheckStateWeakPasswords:
-    case PasswordCheckStateDismissedWarnings:
-      break;
   }
 
   // Notify the accessibility to focus on the password check status cell when
-  // the status changed to unsafe, safe or error. (Only do it after the user tap
-  // on the "Check Now" button.)
+  // the status changed to insecure (compromised, reused, weak or dismissed
+  // warnings), safe or error (i.e., any status other than default, running and
+  // disabled) . (Only do it after the user tap on the "Check Now" button.)
   if (self.shouldFocusAccessibilityOnPasswordCheckStatus &&
-      (state == PasswordCheckStateUnmutedCompromisedPasswords ||
-       state == PasswordCheckStateSafe || state == PasswordCheckStateError)) {
+      state != PasswordCheckStateDefault &&
+      state != PasswordCheckStateRunning &&
+      state != PasswordCheckStateDisabled) {
     [self focusAccessibilityOnPasswordCheckStatus];
     self.shouldFocusAccessibilityOnPasswordCheckStatus = NO;
   }
@@ -2069,7 +2158,7 @@ NSInteger kTrailingSymbolSize = 18;
 // Notifies the handler to show the Password Checkup homepage if the state of
 // the Password Check cell allows it.
 - (void)showPasswordCheckupPage {
-  if (![self IsPasswordCheckTappable]) {
+  if (!IsPasswordCheckTappable(self.passwordCheckState)) {
     return;
   }
   [self.handler showPasswordCheckup];
@@ -2080,7 +2169,7 @@ NSInteger kTrailingSymbolSize = 18;
 // TODO(crbug.com/1406871): Remove when kIOSPasswordCheckup is enabled by
 // default.
 - (void)showPasswordIssuesPage {
-  if (![self IsPasswordCheckTappable]) {
+  if (!IsPasswordCheckTappable(self.passwordCheckState)) {
     return;
   }
   [self.handler showPasswordIssues];
@@ -2232,21 +2321,21 @@ NSInteger kTrailingSymbolSize = 18;
          _blockedSites.empty();
 }
 
-// Helper method to determine whether the Password Check cell is tappable or
-// not.
-- (BOOL)IsPasswordCheckTappable {
-  if (IsPasswordCheckupEnabled()) {
-    return self.passwordCheckState ==
-               PasswordCheckStateUnmutedCompromisedPasswords ||
-           self.passwordCheckState == PasswordCheckStateSafe;
-  } else {
-    return self.passwordCheckState ==
-           PasswordCheckStateUnmutedCompromisedPasswords;
-  }
-}
-
 - (void)deleteItemAtIndexPathsForTesting:(NSArray<NSIndexPath*>*)indexPaths {
   [self deleteItemAtIndexPaths:indexPaths];
+}
+
+// Updates the UI of the password checkup status cell.
+- (void)updatePasswordProblemsItem {
+  NSIndexPath* indexPath =
+      [self.tableViewModel indexPathForItemType:ItemTypePasswordCheckStatus];
+  if (_passwordProblemsItem &&
+      [self.tableView cellForRowAtIndexPath:indexPath]) {
+    [self reconfigureCellsForItems:@[ _passwordProblemsItem ]];
+    // Refresh the cells' height.
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -2362,7 +2451,7 @@ NSInteger kTrailingSymbolSize = 18;
     case ItemTypeSavePasswordsSwitch:
       return NO;
     case ItemTypePasswordCheckStatus:
-      return [self IsPasswordCheckTappable];
+      return IsPasswordCheckTappable(self.passwordCheckState);
     case ItemTypeCheckForProblemsButton:
       return self.passwordCheckState != PasswordCheckStateRunning &&
              self.passwordCheckState != PasswordCheckStateDisabled;

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
@@ -196,12 +197,23 @@ bool IsPasswordCheckupEnabled() {
             ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
             elapsedTime, true)));
 
-  return l10n_util::GetNSStringF(IDS_IOS_LAST_COMPLETED_CHECK,
-                                 base::SysNSStringToUTF16(timestamp));
+  return IsPasswordCheckupEnabled()
+             ? l10n_util::GetNSStringF(
+                   IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK,
+                   base::SysNSStringToUTF16(timestamp))
+             : l10n_util::GetNSStringF(IDS_IOS_LAST_COMPLETED_CHECK,
+                                       base::SysNSStringToUTF16(timestamp));
 }
 
 - (NSAttributedString*)passwordCheckErrorInfo {
-  if (!_passwordCheckManager->GetInsecureCredentials().empty()) {
+  // When the Password Checkup feature is disabled and a password check error
+  // occured, we want to show the result of the last successful check instead of
+  // showing the error if there were any compromised passwords. With the
+  // Password Checkup feature enabled, we want to show the error message (and
+  // therefore the error info also) no matter the result of the last successful
+  // check.
+  if (!IsPasswordCheckupEnabled() &&
+      !_passwordCheckManager->GetInsecureCredentials().empty()) {
     return nil;
   }
 
@@ -340,18 +352,26 @@ bool IsPasswordCheckupEnabled() {
 - (void)updateConsumerPasswordCheckState:
     (PasswordCheckState)passwordCheckState {
   DCHECK(self.consumer);
-
+  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
+      _passwordCheckManager->GetInsecureCredentials();
   PasswordCheckUIState passwordCheckUIState =
-      [self computePasswordCheckUIStateWith:passwordCheckState];
+      [self computePasswordCheckUIStateWith:passwordCheckState
+                        insecureCredentials:insecureCredentials];
+  WarningType warningType = GetWarningOfHighestPriority(insecureCredentials);
   NSInteger insecurePasswordsCount =
-      _passwordCheckManager->GetInsecureCredentials().size();
+      IsPasswordCheckupEnabled()
+          ? GetPasswordCountForWarningType(warningType, insecureCredentials)
+          : insecureCredentials.size();
   [self.consumer setPasswordCheckUIState:passwordCheckUIState
                   insecurePasswordsCount:insecurePasswordsCount];
 }
 
 // Returns PasswordCheckUIState based on PasswordCheckState.
-- (PasswordCheckUIState)computePasswordCheckUIStateWith:
-    (PasswordCheckState)newState {
+- (PasswordCheckUIState)
+    computePasswordCheckUIStateWith:(PasswordCheckState)newState
+                insecureCredentials:
+                    (const std::vector<password_manager::CredentialUIEntry>&)
+                        insecureCredentials {
   BOOL wasRunning = _currentState == PasswordCheckState::kRunning;
   _currentState = newState;
 
@@ -363,25 +383,23 @@ bool IsPasswordCheckupEnabled() {
     case PasswordCheckState::kSignedOut:
     case PasswordCheckState::kOffline:
     case PasswordCheckState::kQuotaLimit:
-    case PasswordCheckState::kOther: {
-      PasswordCheckUIState warningState =
-          IsPasswordCheckupEnabled()
-              ? [self passwordCheckUIStateFromHighestPriorityWarningType]
-              : PasswordCheckStateUnmutedCompromisedPasswords;
-      return _passwordCheckManager->GetInsecureCredentials().empty()
-                 ? PasswordCheckStateError
-                 : warningState;
-    }
+    case PasswordCheckState::kOther:
+      if (!IsPasswordCheckupEnabled() && !insecureCredentials.empty()) {
+        return PasswordCheckStateUnmutedCompromisedPasswords;
+      }
+      return PasswordCheckStateError;
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle: {
-      if (!_passwordCheckManager->GetInsecureCredentials().empty()) {
-        return IsPasswordCheckupEnabled()
-                   ? [self passwordCheckUIStateFromHighestPriorityWarningType]
-                   : PasswordCheckStateUnmutedCompromisedPasswords;
-      } else if (_currentState == PasswordCheckState::kIdle) {
-        // Safe state is only possible after the state transitioned from
-        // kRunning to kIdle.
-        return wasRunning ? PasswordCheckStateSafe : PasswordCheckStateDefault;
+      if (!IsPasswordCheckupEnabled() && !insecureCredentials.empty()) {
+        return PasswordCheckStateUnmutedCompromisedPasswords;
+      } else if (_currentState == PasswordCheckState::kIdle && wasRunning) {
+        PasswordCheckUIState insecureState =
+            IsPasswordCheckupEnabled()
+                ? [self passwordCheckUIStateFromHighestPriorityWarningType:
+                            insecureCredentials]
+                : PasswordCheckStateUnmutedCompromisedPasswords;
+        return insecureCredentials.empty() ? PasswordCheckStateSafe
+                                           : insecureState;
       }
       return PasswordCheckStateDefault;
     }
@@ -390,8 +408,10 @@ bool IsPasswordCheckupEnabled() {
 
 // Returns the right PasswordCheckUIState depending on the highest priority
 // warning type.
-- (PasswordCheckUIState)passwordCheckUIStateFromHighestPriorityWarningType {
-  switch (_passwordCheckManager->GetWarningOfHighestPriority()) {
+- (PasswordCheckUIState)passwordCheckUIStateFromHighestPriorityWarningType:
+    (const std::vector<password_manager::CredentialUIEntry>&)
+        insecureCredentials {
+  switch (GetWarningOfHighestPriority(insecureCredentials)) {
     case WarningType::kCompromisedPasswordsWarning:
       return PasswordCheckStateUnmutedCompromisedPasswords;
     case WarningType::kReusedPasswordsWarning:

@@ -2560,17 +2560,49 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_ADD_PASSWORD" desc="Text on a button which allows the user to save a password for a website in their Password Manager.">
         Add Password...
       </message>
-      <message name="IDS_IOS_CHECK_PASSWORDS" desc="Title for the item in Settings for Password Check feature" meaning="Label tells the user about status of Password Check [CHAR_LIMIT=25] [iOS only]">
+      <message name="IDS_IOS_CHECK_PASSWORDS" desc="Title for the item in Settings for Password Check feature." meaning="Label tells the user about status of Password Check [CHAR_LIMIT=25] [iOS only]">
         Check Passwords
       </message>
-      <message name="IDS_IOS_CHECK_PASSWORDS_DESCRIPTION" desc="Description for the Password Check item in Settings" meaning="Label is shown to explain purpose of Password Check feature. This string is shown only if user didn't run Password Check before or check finished due to error without any results.  [iOS only]">
+      <message name="IDS_IOS_PASSWORD_CHECKUP" desc="Title for the item in Settings for Password Checkup feature." meaning="Label tells the user about status of Password Checkup [CHAR_LIMIT=25] [iOS only]">
+        Password Checkup
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_ONGOING" desc="Title for the item in Settings for Password Checkup feature while the checks are running." meaning="Label tells the user that their passwords are being checked [CHAR_LIMIT=25] [iOS only]">
+        Checking Passwords...
+      </message>
+      <message name="IDS_IOS_CHECK_PASSWORDS_DESCRIPTION" desc="Description for the Password Check item in Settings." meaning="Label is shown to explain purpose of Password Check feature. This string is shown only if user didn't run Password Check before or check finished due to error without any results.  [iOS only]">
         Keep your passwords safe from security issues
       </message>
-      <message name="IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT" desc="Displays the number of compromised passwords present in the database">
+      <message name="IDS_IOS_PASSWORD_CHECKUP_DESCRIPTION" desc="Description for the Password Check item in Settings" meaning="Label is shown to explain purpose of Password Checkup feature. This string is shown only if user didn't run the password checkup before or checkup finished due to error without any results.  [iOS only]">
+        Check your saved passwords to strengthen your security and stay safer online
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_SITES_AND_APPS_COUNT" desc="Displays the number of sites and apps for which passwords are being checked during/after Password Checkup.  [iOS only]">
+        {COUNT, plural,
+          =1 {for {COUNT} site or app}
+          other {for {COUNT} sites and apps}}
+      </message>
+      <message name="IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT" desc="Displays the number of compromised passwords present in the database.">
         {COUNT, plural,
           =0 {No compromised passwords}
           =1 {{COUNT} Compromised password}
           other {{COUNT} Compromised passwords}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT" desc="Displays the number of compromised passwords present in the database.">
+        {COUNT, plural,
+          =1 {{COUNT} Compromised Password}
+          other {{COUNT} Compromised Passwords}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT" desc="Displays the number of reused passwords present in the database. User can only have 2 or more reused passwords, so this string will always be plural.">
+        <ph name="COUNT">$1<ex>2</ex></ph> Reused Passwords
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_WEAK_COUNT" desc="Displays the number of weak passwords present in the database.">
+        {COUNT, plural,
+          =1 {{COUNT} Weak Password}
+          other {{COUNT} Weak Passwords}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT" desc="Displays the number of compromised password warnings that have been dismissed.">
+        {COUNT, plural,
+          =1 {You dismissed {COUNT} warning}
+          other {You dismissed {COUNT} warnings}}
       </message>
       <message name="IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON" desc="Label of a button which starts Password Check [Length: 22em] [iOS only]" meaning="By clicking this button user will start checking all passwords for security issues.">
         Check Now
@@ -2636,6 +2668,9 @@ Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_LAST_COMPLETED_CHECK" desc="Footer for Password Check section which shows the timestamp of the last check." meaning="Time when passwords were checked last time.">
         Last checked <ph name="TIME">$1<ex>10 minutes ago</ex></ph>.
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_LAST_COMPLETED_CHECK" desc="Subtitle for Password Checkup cell which shows the timestamp of the last check." meaning="Time when passwords were checked last time.">
+        Checked <ph name="TIME">$1<ex>10 minutes ago</ex></ph>
       </message>
       <message name="IDS_IOS_CHECK_FINISHED_JUST_NOW" desc="Used instead of timestamp when Password Check finished less than 1 minute ago." meaning="Check finished just now.">
         just now

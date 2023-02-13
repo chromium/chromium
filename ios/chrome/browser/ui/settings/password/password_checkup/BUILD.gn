@@ -9,9 +9,12 @@ source_set("password_checkup") {
     "password_checkup_coordinator.mm",
     "password_checkup_mediator.h",
     "password_checkup_mediator.mm",
+    "password_checkup_utils.h",
+    "password_checkup_utils.mm",
   ]
   deps = [
     ":password_checkup_ui",
+    "//components/password_manager/core/browser",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/table_view:utils",
   ]
@@ -36,11 +39,22 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "password_checkup_mediator_unittest.mm",
+    "password_checkup_utils_unittest.mm",
     "password_checkup_view_controller_unittest.mm",
   ]
   deps = [
     ":password_checkup",
     ":password_checkup_ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common:features",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/passwords:store_factory",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }

@@ -548,6 +548,9 @@ Things to consider:
       <message name="IDS_IOS_PASSWORD_CHECK_ERROR" desc="Description of the password check cell, explaining that Password Check failed. [iOS only]" meaning="Password Check failed due to some error.">
         Chrome can't check your passwords
       </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_ERROR" desc="Description of the password check cell, explaining that Password Check failed. [iOS only]" meaning="Password Check failed due to some error.">
+        Google Password Manager can't check your passwords.
+      </message>
       <message name="IDS_IOS_PASSWORD_CHECK_ERROR_NO_PASSWORDS" desc="Description text for when password check cannot be run because the user has no saved passwords">
         No saved passwords. Chrome can check your passwords when you save them.
       </message>

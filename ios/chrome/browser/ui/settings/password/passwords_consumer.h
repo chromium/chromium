@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
 
 // Displays current password check UI state on screen for insecure credentials.
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
-         insecurePasswordsCount:(NSInteger)count;
+         insecurePasswordsCount:(NSInteger)insecureCount;
 
 // Displays password and blocked forms.
 // TODO(crbug.com/1359392): Remove this.
