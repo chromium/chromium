@@ -55,7 +55,7 @@ suite('PasswordExporterTest', function() {
   // Test the export flow. Tapping "Export passwords" notifies the browser
   // on start and skips the in-progress view altogether, if the exporting
   // is fast.
-  test('exportFlow', async function() {
+  test('successfulExportFlow', async function() {
     clickExportPasswordsButton(passwordsExporter);
     await passwordManager.whenCalled('exportPasswords');
 
@@ -65,11 +65,24 @@ suite('PasswordExporterTest', function() {
     assertTrue(
         !!passwordsExporter.shadowRoot!.querySelector('#progressSpinner'));
 
-    updateExportStatus(
-        passwordManager, {status: ExportProgressStatus.SUCCEEDED});
+    const successToast = passwordsExporter.$.exportSuccessToast;
+    assertFalse(successToast.open);
+
+    updateExportStatus(passwordManager, {
+      status: ExportProgressStatus.SUCCEEDED,
+      filePath: 'usr/testfolder/testfile.csv',
+    });
     flush();
-    // On SUCCEEDED, the exporter UI is back to the initial state.
+    // On SUCCEEDED, the exporter UI is back to the initial state and the
+    // success toast is shown.
     verifyInitialUIState(passwordsExporter);
+    assertTrue(successToast.open);
+
+    const openInShellButton =
+        successToast.querySelector<CrButtonElement>('#openInShellButton');
+    assertTrue(!!openInShellButton);
+    openInShellButton.click();
+    await passwordManager.whenCalled('showExportedFileInShell');
   });
 
   // The error view is shown when an error occurs.

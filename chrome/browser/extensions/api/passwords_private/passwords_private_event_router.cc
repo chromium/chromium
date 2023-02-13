@@ -71,10 +71,12 @@ void PasswordsPrivateEventRouter::SendPasswordExceptionListToListeners() {
 
 void PasswordsPrivateEventRouter::OnPasswordsExportProgress(
     api::passwords_private::ExportProgressStatus status,
+    const std::string& file_path,
     const std::string& folder_name) {
   api::passwords_private::PasswordExportProgress params;
   params.status = status;
-  params.folder_name = std::move(folder_name);
+  params.file_path = file_path;
+  params.folder_name = folder_name;
 
   base::Value::List event_value;
   event_value.Append(params.ToValue());

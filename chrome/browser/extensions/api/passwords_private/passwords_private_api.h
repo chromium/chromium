@@ -433,6 +433,19 @@ class PasswordsPrivateShowAddShortcutDialogFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class PasswordsPrivateShowExportedFileInShellFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.showExportedFileInShell",
+                             PASSWORDSPRIVATE_SHOWEXPORTEDFILEINSHELL)
+
+ protected:
+  ~PasswordsPrivateShowExportedFileInShellFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_PASSWORDS_PRIVATE_API_H_

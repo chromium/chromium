@@ -174,8 +174,8 @@ class MockPasswordManagerExporter
   MockPasswordManagerExporter()
       : password_manager::PasswordManagerExporter(
             nullptr,
-            base::BindRepeating([](password_manager::ExportProgressStatus,
-                                   const std::string&) -> void {}),
+            base::BindRepeating(
+                [](const password_manager::PasswordExportInfo&) -> void {}),
             base::MockOnceClosure().Get()) {}
 
   MockPasswordManagerExporter(const MockPasswordManagerExporter&) = delete;

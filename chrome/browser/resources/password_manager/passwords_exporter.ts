@@ -4,8 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './shared_style.css.js';
 
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -14,6 +16,12 @@ import {PasswordManagerImpl, PasswordsFileExportProgressListener} from './passwo
 import {getTemplate} from './passwords_exporter.html.js';
 
 const ProgressStatus = chrome.passwordsPrivate.ExportProgressStatus;
+
+export interface PasswordsExporterElement {
+  $: {
+    exportSuccessToast: CrToastElement,
+  };
+}
 
 const PasswordsExporterElementBase = I18nMixin(PolymerElement);
 
@@ -41,7 +49,10 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
       },
 
       /** The error that occurred while exporting. */
-      exportErrorMessage_: String,
+      exportErrorMessage_: {
+        type: String,
+        value: null,
+      },
     };
   }
 
@@ -50,7 +61,8 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
 
   private showPasswordsExportErrorDialog_: boolean;
   private showExportInProgress_: boolean;
-  private exportErrorMessage_: string;
+  private exportErrorMessage_: string|null;
+  private exportedFilePath_: string|null;
 
 
   override connectedCallback() {
@@ -121,11 +133,26 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
 
     this.showExportInProgress_ = false;
 
-    if (progress.status === ProgressStatus.FAILED_WRITE_FAILED) {
-      this.exportErrorMessage_ =
-          this.i18n('exportPasswordsFailTitle', progress.folderName!);
-      this.showPasswordsExportErrorDialog_ = true;
+    switch (progress.status) {
+      case ProgressStatus.SUCCEEDED:
+        assert(progress.filePath);
+        this.exportedFilePath_ = progress.filePath;
+        this.$.exportSuccessToast.show();
+        break;
+      case ProgressStatus.FAILED_WRITE_FAILED:
+        assert(progress.folderName);
+        this.exportErrorMessage_ =
+            this.i18n('exportPasswordsFailTitle', progress.folderName);
+        this.showPasswordsExportErrorDialog_ = true;
+        break;
     }
+  }
+
+  private onOpenInShellButtonClick_() {
+    assert(this.exportedFilePath_);
+    PasswordManagerImpl.getInstance().showExportedFileInShell(
+        this.exportedFilePath_);
+    this.$.exportSuccessToast.hide();
   }
 }
 

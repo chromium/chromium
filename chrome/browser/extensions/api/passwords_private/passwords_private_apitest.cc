@@ -129,6 +129,10 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     return test_delegate_->get_add_shortcut_dialog_shown();
   }
 
+  bool get_exported_file_shown_in_shell() const {
+    return test_delegate_->get_exported_file_shown_in_shell();
+  }
+
  private:
   scoped_refptr<TestPasswordsPrivateDelegate> test_delegate_;
 };
@@ -367,6 +371,12 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
                        GetCredentialsWithReusedPassword) {
   EXPECT_TRUE(RunPasswordsSubtest("getCredentialsWithReusedPassword"))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ShowExportedFileInShell) {
+  EXPECT_FALSE(get_exported_file_shown_in_shell());
+  EXPECT_TRUE(RunPasswordsSubtest("showExportedFileInShell")) << message_;
+  EXPECT_TRUE(get_exported_file_shown_in_shell());
 }
 
 }  // namespace extensions

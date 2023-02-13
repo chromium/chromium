@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
@@ -106,7 +107,7 @@ void PasswordManagerExporter::SetDestination(
   if (IsReadyForExport())
     Export();
 
-  OnProgress(ExportProgressStatus::IN_PROGRESS, std::string());
+  OnProgress({.status = ExportProgressStatus::IN_PROGRESS});
 }
 
 void PasswordManagerExporter::SetSerialisedPasswordList(
@@ -124,7 +125,7 @@ void PasswordManagerExporter::Cancel() {
 
   // If we are currently still serialising, Export() will see the cancellation
   // status and won't schedule writing.
-  OnProgress(ExportProgressStatus::FAILED_CANCELLED, std::string());
+  OnProgress({.status = ExportProgressStatus::FAILED_CANCELLED});
 
   // If we are currently writing to the disk, we will have to cleanup the file
   // once writing stops.
@@ -175,10 +176,18 @@ void PasswordManagerExporter::Export() {
 
 void PasswordManagerExporter::OnPasswordsExported(bool success) {
   if (success) {
-    OnProgress(ExportProgressStatus::SUCCEEDED, std::string());
+#if !BUILDFLAG(IS_WIN)
+    std::string file_path = destination_.value();
+#else
+    std::string file_path = base::WideToUTF8(destination_.value());
+#endif
+    OnProgress(
+        {.status = ExportProgressStatus::SUCCEEDED, .file_path = file_path});
+
   } else {
-    OnProgress(ExportProgressStatus::FAILED_WRITE_FAILED,
-               destination_.DirName().BaseName().AsUTF8Unsafe());
+    OnProgress(
+        {.status = ExportProgressStatus::FAILED_WRITE_FAILED,
+         .folder_name = destination_.DirName().BaseName().AsUTF8Unsafe()});
     // Don't leave partial password files, if we tell the user we couldn't write
     Cleanup();
   }
@@ -187,10 +196,9 @@ void PasswordManagerExporter::OnPasswordsExported(bool success) {
   std::move(completion_callback_).Run();
 }
 
-void PasswordManagerExporter::OnProgress(ExportProgressStatus status,
-                                         const std::string& folder) {
-  last_progress_status_ = status;
-  on_progress_.Run(status, folder);
+void PasswordManagerExporter::OnProgress(const PasswordExportInfo& progress) {
+  last_progress_status_ = progress.status;
+  on_progress_.Run(progress);
 }
 
 void PasswordManagerExporter::Cleanup() {

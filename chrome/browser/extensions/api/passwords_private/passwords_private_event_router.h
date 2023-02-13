@@ -53,10 +53,13 @@ class PasswordsPrivateEventRouter : public KeyedService {
 
   // Notifies listeners after the passwords have been written to the export
   // destination.
+  // |file_path| In case of successful export, this will describe the path
+  // to the written file.
   // |folder_name| In case of failure to export, this will describe destination
   // we tried to write on.
   void OnPasswordsExportProgress(
       api::passwords_private::ExportProgressStatus status,
+      const std::string& file_path,
       const std::string& folder_name);
 
   // Notifies listeners about a (possible) change to the opt-in state for the

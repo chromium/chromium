@@ -396,4 +396,10 @@ void TestPasswordsPrivateDelegate::ShowAddShortcutDialog(
   add_shortcut_dialog_shown_ = true;
 }
 
+void TestPasswordsPrivateDelegate::ShowExportedFileInShell(
+    content::WebContents* web_contents,
+    std::string file_path) {
+  exported_file_shown_in_shell_ = true;
+}
+
 }  // namespace extensions

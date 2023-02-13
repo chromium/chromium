@@ -224,6 +224,11 @@ export interface PasswordManagerProxy {
    * successful authentication.
    */
   switchBiometricAuthBeforeFillingState(): void;
+
+  /**
+   * Shows the file with the exported passwords in the OS shell.
+   */
+  showExportedFileInShell(filePath: string): void;
 }
 
 /**
@@ -365,6 +370,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   switchBiometricAuthBeforeFillingState() {
     chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState();
+  }
+
+  showExportedFileInShell(filePath: string) {
+    chrome.passwordsPrivate.showExportedFileInShell(filePath);
   }
 
   static getInstance(): PasswordManagerProxy {

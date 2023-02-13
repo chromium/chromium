@@ -23,6 +23,7 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/device_reauth/biometric_authenticator.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/password_access_authenticator.h"
 #include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
@@ -113,6 +114,8 @@ class PasswordsPrivateDelegateImpl
   void SwitchBiometricAuthBeforeFillingState(
       content::WebContents* web_contents) override;
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
+  void ShowExportedFileInShell(content::WebContents* web_contents,
+                               std::string file_path) override;
 
 #if defined(UNIT_TEST)
   int GetIdForCredential(
@@ -158,8 +161,8 @@ class PasswordsPrivateDelegateImpl
   void UndoRemoveSavedPasswordOrExceptionInternal();
 
   // Callback for when the password list has been written to the destination.
-  void OnPasswordsExportProgress(password_manager::ExportProgressStatus status,
-                                 const std::string& folder_name);
+  void OnPasswordsExportProgress(
+      const password_manager::PasswordExportInfo& progress);
 
   // Callback for RequestPlaintextPassword() after authentication check.
   void OnRequestPlaintextPasswordAuthResult(

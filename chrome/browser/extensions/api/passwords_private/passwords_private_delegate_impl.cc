@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
@@ -22,9 +23,11 @@
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -754,6 +757,19 @@ void PasswordsPrivateDelegateImpl::ShowAddShortcutDialog(
       browser, web_app::WebAppInstallFlow::kCreateShortcut);
 }
 
+void PasswordsPrivateDelegateImpl::ShowExportedFileInShell(
+    content::WebContents* web_contents,
+    std::string file_path) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  DCHECK(browser);
+#if !BUILDFLAG(IS_WIN)
+  base::FilePath path(file_path);
+#else
+  base::FilePath path(base::UTF8ToWide(file_path));
+#endif
+  platform_util::ShowItemInFolder(browser->profile(), path);
+}
+
 password_manager::InsecureCredentialsManager*
 PasswordsPrivateDelegateImpl::GetInsecureCredentialsManager() {
   return password_check_delegate_.GetInsecureCredentialsManager();
@@ -764,12 +780,12 @@ void PasswordsPrivateDelegateImpl::ExtendAuthValidity() {
 }
 
 void PasswordsPrivateDelegateImpl::OnPasswordsExportProgress(
-    password_manager::ExportProgressStatus status,
-    const std::string& folder_name) {
+    const password_manager::PasswordExportInfo& progress) {
   PasswordsPrivateEventRouter* router =
       PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
   if (router) {
-    router->OnPasswordsExportProgress(ConvertStatus(status), folder_name);
+    router->OnPasswordsExportProgress(ConvertStatus(progress.status),
+                                      progress.file_path, progress.folder_name);
   }
 }
 

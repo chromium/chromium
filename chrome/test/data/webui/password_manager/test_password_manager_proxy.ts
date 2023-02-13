@@ -53,6 +53,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'requestExportProgressStatus',
       'requestPlaintextPassword',
       'showAddShortcutDialog',
+      'showExportedFileInShell',
       'startBulkPasswordCheck',
       'switchBiometricAuthBeforeFillingState',
       'undoRemoveSavedPasswordOrException',
@@ -231,5 +232,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   undoRemoveSavedPasswordOrException() {
     this.methodCalled('undoRemoveSavedPasswordOrException');
+  }
+
+  showExportedFileInShell() {
+    this.methodCalled('showExportedFileInShell');
   }
 }

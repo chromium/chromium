@@ -232,6 +232,10 @@ class PasswordsPrivateDelegate
   // Triggers a dialog for installing the shortcut for PasswordManager page.
   virtual void ShowAddShortcutDialog(content::WebContents* web_contents) = 0;
 
+  // Shows the file with the exported passwords in OS shell.
+  virtual void ShowExportedFileInShell(content::WebContents* web_contents,
+                                       std::string file_path) = 0;
+
  protected:
   virtual ~PasswordsPrivateDelegate() = default;
 

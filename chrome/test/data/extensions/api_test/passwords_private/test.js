@@ -663,6 +663,13 @@ var availableTests = [
         chrome.test.succeed();
       });
   },
+
+  function showExportedFileInShell() {
+    chrome.passwordsPrivate.showExportedFileInShell(
+        '/usr/testfolder/testfilename.csv');
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
 ];
 
 var testToRun = window.location.search.substring(1);

@@ -35965,6 +35965,7 @@ Called by update_extension_histograms.py.-->
   <int value="1763" label="FILEMANAGERPRIVATE_PROGRESSPAUSEDTASKS"/>
   <int value="1764" label="BOOKMARKMANAGERPRIVATE_IMPORT"/>
   <int value="1765" label="BOOKMARKMANAGERPRIVATE_EXPORT"/>
+  <int value="1766" label="PASSWORDSPRIVATE_SHOWEXPORTEDFILEINSHELL"/>
 </enum>
 
 <enum name="ExtensionIconState">

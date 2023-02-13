@@ -132,6 +132,7 @@ declare global {
 
       export interface PasswordExportProgress {
         status: ExportProgressStatus;
+        filePath?: string;
         folderName?: string;
       }
 
@@ -203,6 +204,7 @@ declare global {
       export function extendAuthValidity(): Promise<void>;
       export function switchBiometricAuthBeforeFillingState(): void;
       export function showAddShortcutDialog(): void;
+      export function showExportedFileInShell(filePath: string): void;
 
       export const onSavedPasswordsListChanged:
           ChromeEvent<(entries: PasswordUiEntry[]) => void>;

@@ -585,6 +585,21 @@ PasswordsPrivateSwitchBiometricAuthBeforeFillingStateFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// PasswordsPrivateShowExportedFileInShellFunction
+ResponseAction PasswordsPrivateShowExportedFileInShellFunction::Run() {
+  if (!GetDelegate(browser_context())) {
+    return RespondNow(Error(kNoDelegateError));
+  }
+
+  auto parameters =
+      api::passwords_private::ShowExportedFileInShell::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  GetDelegate(browser_context())
+      ->ShowExportedFileInShell(GetSenderWebContents(), parameters->file_path);
+  return RespondNow(NoArguments());
+}
+
 // PasswordsPrivateShowAddShortcutDialogFunction
 ResponseAction PasswordsPrivateShowAddShortcutDialogFunction::Run() {
   if (!GetDelegate(browser_context())) {
