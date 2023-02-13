@@ -549,6 +549,17 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
     min_height = min_height + caption_button_container_->size().height();
   }
 
+  if (browser_view()->IsBorderlessModeEnabled()) {
+    gfx::Size border_size =
+        highlight_border_overlay_->CalculateImageSourceSize();
+    // The minimum size of a borderless window is only limited by the window's
+    // `highlight_border_overlay_`s. The minimum size for the window is then
+    // twice as much as there are always two overlays vertically or
+    // horizontally.
+    min_width = 2 * border_size.width();
+    min_height = 2 * border_size.height();
+  }
+
   return gfx::Size(min_width, min_height);
 }
 

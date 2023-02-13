@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
@@ -726,6 +727,28 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupResize) {
             kExpectedWidth);
 #endif
 }
+
+// Test to ensure that the minimum size for a borderless app is as small as
+// possible. To test the fix for b/265935069.
+#if !BUILDFLAG(IS_LINUX)  // TODO(laurila): Not yet implemented for Linux.
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
+                       FrameMinimumSize) {
+  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+  GrantWindowManagementPermission();
+
+  ASSERT_TRUE(helper()->browser_view()->borderless_mode_enabled_for_testing());
+  ASSERT_TRUE(helper()
+                  ->browser_view()
+                  ->window_management_permission_granted_for_testing());
+  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+
+  // The minimum size of a window is smaller for a borderless mode app than for
+  // a normal app. The size of the borders is inconsistent (and we don't have
+  // access to the exact borders from here) and varies by OS.
+  EXPECT_LT(helper()->frame_view()->GetMinimumSize().width(),
+            BrowserViewLayout::kMainBrowserContentsMinimumWidth);
+}
+#endif
 
 // TODO(https://crbug.com/1277860): Flaky.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
