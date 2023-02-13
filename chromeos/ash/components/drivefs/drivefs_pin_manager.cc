@@ -776,6 +776,12 @@ void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
 
   for (const mojom::ItemEventPtr& event : status.item_events) {
     DCHECK(event);
+
+    if (!InProgress(progress_.stage)) {
+      VLOG(2) << "Ignored " << Quote(*event);
+      continue;
+    }
+
     if (OnSyncingEvent(*event)) {
       progress_.useful_events++;
     } else {
@@ -880,6 +886,12 @@ void PinManager::OnFilesChanged(const std::vector<mojom::FileChange>& changes) {
 
 void PinManager::OnFileCreated(const mojom::FileChange& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!InProgress(progress_.stage)) {
+    VLOG(2) << "Ignored " << Quote(event) << ": PinManager is currently "
+            << progress_.stage;
+    return;
+  }
 
   const Id id = Id(event.stable_id);
   const Path& path = event.path;
