@@ -156,6 +156,7 @@ MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
     bookmarks::BookmarkModel* bookmark_model,
     ChromeBrowserState* browser_state) {
   DCHECK(!node || node->is_url());
+  DCHECK(folder);
   std::u16string titleString = base::SysNSStringToUTF16(title);
 
   // If the bookmark has no changes supporting Undo, just bail out.
@@ -183,7 +184,6 @@ MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
     bookmark_model->SetURL(node, url,
                            bookmarks::metrics::BookmarkEditSource::kUser);
 
-    DCHECK(folder);
     DCHECK(!folder->HasAncestor(node));
     if (node->parent() != folder) {
       bookmark_model->Move(node, folder, folder->children().size());
@@ -236,10 +236,6 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
   DCHECK(node);
   DCHECK(folder);
   DCHECK(!folder->HasAncestor(node));
-  // Early return if node is not valid.
-  if (!node && !folder) {
-    return nil;
-  }
 
   size_t old_index = node->parent()->GetIndexOf(node).value();
   // Early return if no change in position.
@@ -395,6 +391,7 @@ class FolderNodeComparator {
 
 bool FolderHasAncestorInBookmarkNodes(const BookmarkNode* folder,
                                       const NodeSet& bookmarkNodes) {
+  DCHECK(folder);
   DCHECK(folder->is_folder());
   for (const BookmarkNode* node : bookmarkNodes) {
     if (folder->HasAncestor(node)) {
