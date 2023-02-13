@@ -820,7 +820,9 @@ bool PointerEventManager::HandleResizerDrag(
       break;
     }
     case WebInputEvent::Type::kPointerMove: {
-      if (resize_scrollable_area_ && resize_scrollable_area_->InResizeMode()) {
+      if (resize_scrollable_area_ && resize_scrollable_area_->Layer() &&
+          resize_scrollable_area_->Layer()->GetLayoutBox() &&
+          resize_scrollable_area_->InResizeMode()) {
         gfx::Point pos = gfx::ToRoundedPoint(event.PositionInWidget());
         resize_scrollable_area_->Resize(pos, offset_from_resize_corner_);
         return true;
