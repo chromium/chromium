@@ -287,12 +287,12 @@ class MidiManagerUsbTest : public ::testing::Test {
 
   MidiManagerUsb* manager() { return factory_->manager(); }
 
-  raw_ptr<MidiManagerFactoryForTesting> factory_;
   std::unique_ptr<FakeMidiManagerClient> client_;
   Logger logger_;
 
  private:
-  std::unique_ptr<MidiService> service_;
+  std::unique_ptr<MidiService> service_;  // Must outlive `factory_`.
+  raw_ptr<MidiManagerFactoryForTesting> factory_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
