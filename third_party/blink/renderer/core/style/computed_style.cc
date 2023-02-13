@@ -1833,7 +1833,7 @@ bool ComputedStyle::TextDecorationVisualOverflowEqual(
       return false;
     }
   }
-  if (TextUnderlinePosition() != o.TextUnderlinePosition()) {
+  if (GetTextUnderlinePosition() != o.GetTextUnderlinePosition()) {
     return false;
   }
 

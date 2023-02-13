@@ -7776,34 +7776,38 @@ const CSSValue* TextUnderlinePosition::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  auto text_underline_position = style.TextUnderlinePosition();
-  if (text_underline_position == kTextUnderlinePositionAuto) {
+  auto text_underline_position = style.GetTextUnderlinePosition();
+  if (text_underline_position == blink::TextUnderlinePosition::kAuto) {
     return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
-  if (text_underline_position == kTextUnderlinePositionFromFont) {
+  if (text_underline_position == blink::TextUnderlinePosition::kFromFont) {
     return CSSIdentifierValue::Create(CSSValueID::kFromFont);
   }
-  if (text_underline_position == kTextUnderlinePositionUnder) {
+  if (text_underline_position == blink::TextUnderlinePosition::kUnder) {
     return CSSIdentifierValue::Create(CSSValueID::kUnder);
   }
-  if (text_underline_position == kTextUnderlinePositionLeft) {
+  if (text_underline_position == blink::TextUnderlinePosition::kLeft) {
     return CSSIdentifierValue::Create(CSSValueID::kLeft);
   }
-  if (text_underline_position == kTextUnderlinePositionRight) {
+  if (text_underline_position == blink::TextUnderlinePosition::kRight) {
     return CSSIdentifierValue::Create(CSSValueID::kRight);
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (text_underline_position & kTextUnderlinePositionFromFont) {
+  if (EnumHasFlags(text_underline_position,
+                   blink::TextUnderlinePosition::kFromFont)) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kFromFont));
   } else {
-    DCHECK(text_underline_position & kTextUnderlinePositionUnder);
+    DCHECK(EnumHasFlags(text_underline_position,
+                        blink::TextUnderlinePosition::kUnder));
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnder));
   }
-  if (text_underline_position & kTextUnderlinePositionLeft) {
+  if (EnumHasFlags(text_underline_position,
+                   blink::TextUnderlinePosition::kLeft)) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kLeft));
   }
-  if (text_underline_position & kTextUnderlinePositionRight) {
+  if (EnumHasFlags(text_underline_position,
+                   blink::TextUnderlinePosition::kRight)) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kRight));
   }
   DCHECK_EQ(list->length(), 2U);

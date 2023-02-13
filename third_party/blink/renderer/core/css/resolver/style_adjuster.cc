@@ -135,7 +135,7 @@ void AdjustStyleForSvgElement(const SVGElement& element,
   builder.SetTextDecorationThickness(TextDecorationThickness(Length::Auto()));
   builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
   builder.SetTextUnderlineOffset(Length());  // crbug.com/1247912
-  builder.SetTextUnderlinePosition(kTextUnderlinePositionAuto);
+  builder.SetTextUnderlinePosition(TextUnderlinePosition::kAuto);
 }
 
 // Adjust style for anchor() and anchor-size() queries.

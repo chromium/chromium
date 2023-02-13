@@ -1601,19 +1601,19 @@ template <>
 inline CSSIdentifierValue::CSSIdentifierValue(TextUnderlinePosition position)
     : CSSValue(kIdentifierClass) {
   switch (position) {
-    case kTextUnderlinePositionAuto:
+    case TextUnderlinePosition::kAuto:
       value_id_ = CSSValueID::kAuto;
       break;
-    case kTextUnderlinePositionFromFont:
+    case TextUnderlinePosition::kFromFont:
       value_id_ = CSSValueID::kFromFont;
       break;
-    case kTextUnderlinePositionUnder:
+    case TextUnderlinePosition::kUnder:
       value_id_ = CSSValueID::kUnder;
       break;
-    case kTextUnderlinePositionLeft:
+    case TextUnderlinePosition::kLeft:
       value_id_ = CSSValueID::kLeft;
       break;
-    case kTextUnderlinePositionRight:
+    case TextUnderlinePosition::kRight:
       value_id_ = CSSValueID::kRight;
       break;
   }
@@ -1623,20 +1623,20 @@ template <>
 inline TextUnderlinePosition CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kAuto:
-      return kTextUnderlinePositionAuto;
+      return TextUnderlinePosition::kAuto;
     case CSSValueID::kFromFont:
-      return kTextUnderlinePositionFromFont;
+      return TextUnderlinePosition::kFromFont;
     case CSSValueID::kUnder:
-      return kTextUnderlinePositionUnder;
+      return TextUnderlinePosition::kUnder;
     case CSSValueID::kLeft:
-      return kTextUnderlinePositionLeft;
+      return TextUnderlinePosition::kLeft;
     case CSSValueID::kRight:
-      return kTextUnderlinePositionRight;
+      return TextUnderlinePosition::kRight;
     default:
       break;
   }
   NOTREACHED();
-  return kTextUnderlinePositionAuto;
+  return TextUnderlinePosition::kAuto;
 }
 
 template <>

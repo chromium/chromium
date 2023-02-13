@@ -265,12 +265,12 @@ inline EContainerType& operator|=(EContainerType& a, EContainerType b) {
 }
 
 static const size_t kTextUnderlinePositionBits = 4;
-enum TextUnderlinePosition {
-  kTextUnderlinePositionAuto = 0x0,
-  kTextUnderlinePositionFromFont = 0x1,
-  kTextUnderlinePositionUnder = 0x2,
-  kTextUnderlinePositionLeft = 0x4,
-  kTextUnderlinePositionRight = 0x8
+enum class TextUnderlinePosition : unsigned {
+  kAuto = 0x0,
+  kFromFont = 0x1,
+  kUnder = 0x2,
+  kLeft = 0x4,
+  kRight = 0x8
 };
 inline TextUnderlinePosition operator|(TextUnderlinePosition a,
                                        TextUnderlinePosition b) {
