@@ -63,7 +63,7 @@ void WorkspaceEventHandler::OnMouseEvent(ui::MouseEvent* event) {
     case ui::ET_MOUSE_EXITED:
       break;
     case ui::ET_MOUSE_PRESSED: {
-      WindowState* target_state = WindowState::Get(target);
+      WindowState* target_state = WindowState::Get(target->GetToplevelWindow());
       // No action for windows that aren't managed by WindowState.
       if (!target_state)
         return;

@@ -2149,6 +2149,39 @@ TEST_F(ShellSurfaceTest, ServerStartResize) {
             size.width() + kDragAmount);
 }
 
+TEST_F(ShellSurfaceTest, LacrosToggleAxisMaximize) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64})
+          .SetOrigin({10, 10})
+          .BuildShellSurface();
+  shell_surface->OnSetServerStartResize();
+  auto* widget = shell_surface->GetWidget();
+  gfx::Size size = widget->GetWindowBoundsInScreen().size();
+
+  gfx::Rect restored_bounds = shell_surface->GetBoundsInScreen();
+
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+
+  // Move mouse to top middle and double click to vertically maximize.
+  event_generator->MoveMouseTo(10 + size.width() / 2, 10);
+  event_generator->DoubleClickLeftButton();
+
+  gfx::Rect work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect bounds_in_screen = shell_surface->GetBoundsInScreen();
+
+  EXPECT_EQ(restored_bounds.x(), bounds_in_screen.x());
+  EXPECT_EQ(restored_bounds.width(), bounds_in_screen.width());
+  EXPECT_EQ(work_area.y(), bounds_in_screen.y());
+  EXPECT_EQ(work_area.height(), bounds_in_screen.height());
+
+  // Move mouse to top middle and double click to vertically Restore.
+  event_generator->MoveMouseTo(10 + size.width() / 2, 0);
+  event_generator->DoubleClickLeftButton();
+  bounds_in_screen = shell_surface->GetBoundsInScreen();
+  EXPECT_EQ(restored_bounds, bounds_in_screen);
+}
+
 TEST_F(ShellSurfaceTest, ServerStartResizeComponent) {
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({64, 64}).SetNoCommit().BuildShellSurface();
