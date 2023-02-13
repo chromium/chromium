@@ -694,7 +694,14 @@ bool WebStateImpl::RealizedWebState::IsWebPageInFullscreenMode() const {
 
 const FaviconStatus& WebStateImpl::RealizedWebState::GetFaviconStatus() const {
   NavigationItem* item = navigation_manager_->GetLastCommittedItem();
-  return item ? item->GetFaviconStatus() : favicon_status_;
+  if (item) {
+    const FaviconStatus& favicon_status = item->GetFaviconStatus();
+    if (favicon_status.valid) {
+      return favicon_status;
+    }
+  }
+
+  return favicon_status_;
 }
 
 void WebStateImpl::RealizedWebState::SetFaviconStatus(
