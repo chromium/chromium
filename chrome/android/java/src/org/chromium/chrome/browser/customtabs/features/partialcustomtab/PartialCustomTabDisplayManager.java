@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -200,13 +201,17 @@ public class PartialCustomTabDisplayManager
         }
 
         if (mUnclampedInitialWidth > 0 && mUnclampedInitialHeight > 0) {
-            return displayWidthDp < mBreakPointDp ? PartialCustomTabType.BOTTOM_SHEET
-                                                  : PartialCustomTabType.SIDE_SHEET;
+            return displayWidthDp < mBreakPointDp
+                            || !ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled()
+                    ? PartialCustomTabType.BOTTOM_SHEET
+                    : PartialCustomTabType.SIDE_SHEET;
         }
 
         if (mUnclampedInitialWidth > 0) {
-            return displayWidthDp < mBreakPointDp ? PartialCustomTabType.FULL_SIZE
-                                                  : PartialCustomTabType.SIDE_SHEET;
+            return displayWidthDp < mBreakPointDp
+                            || !ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled()
+                    ? PartialCustomTabType.FULL_SIZE
+                    : PartialCustomTabType.SIDE_SHEET;
         }
 
         if (mUnclampedInitialHeight > 0) {

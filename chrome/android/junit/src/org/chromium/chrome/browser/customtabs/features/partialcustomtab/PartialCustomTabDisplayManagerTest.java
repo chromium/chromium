@@ -28,8 +28,11 @@ import org.chromium.chrome.test.util.browser.Features;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(Mode.PAUSED)
-@Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+@Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
+        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
 public class PartialCustomTabDisplayManagerTest {
+    private static final int BOTTOM_SHEET_MAX_WIDTH_DP = 900;
+
     private boolean mFullscreen;
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -143,6 +146,47 @@ public class PartialCustomTabDisplayManagerTest {
 
         assertEquals("Side-Sheet should be the active strategy", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES})
+    public void
+    transitionFromBottomSheetTo900dpBottomSheetWhenOrientationChangedToLandscape_andDisable3P() {
+        mPCCTTestRule.configPortraitMode();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
+
+        assertEquals("Bottom-Sheet should be the active strategy",
+                PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        mPCCTTestRule.configLandscapeMode();
+        displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+
+        // the density in this case is 1.0
+        assertEquals("Should be 900dp width bottom sheet", BOTTOM_SHEET_MAX_WIDTH_DP,
+                (int) (mPCCTTestRule.getWindowAttributes().width));
+        assertEquals("Bottom-Sheet should be the active strategy",
+                PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+    }
+
+    @Test
+    public void
+    transitionFromBottomSheetTo900dpBottomSheetWhenOrientationChangedToLandscape_andHeightSetWidthNot() {
+        mPCCTTestRule.configPortraitMode();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(800, 0);
+
+        assertEquals("Bottom-Sheet should be the active strategy",
+                PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        mPCCTTestRule.configLandscapeMode();
+        displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+
+        // the density in this case is 1.0
+        assertEquals("Should be 900dp width bottom sheet", BOTTOM_SHEET_MAX_WIDTH_DP,
+                (int) (mPCCTTestRule.getWindowAttributes().width));
+        assertEquals("Bottom-Sheet should be the active strategy",
+                PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
     }
 
     @Test
