@@ -265,8 +265,6 @@ static_library("browser") {
     "browsing_data/navigation_entry_remover.h",
     "browsing_data/site_data_size_collector.cc",
     "browsing_data/site_data_size_collector.h",
-    "browsing_data/third_party_data_remover.cc",
-    "browsing_data/third_party_data_remover.h",
     "browsing_topics/browsing_topics_service_factory.cc",
     "browsing_topics/browsing_topics_service_factory.h",
     "cart/commerce_hint_service.cc",

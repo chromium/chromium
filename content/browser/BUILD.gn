@@ -636,8 +636,6 @@ source_set("browser") {
     "browsing_data/clear_site_data_utils.cc",
     "browsing_data/conditional_cache_deletion_helper.cc",
     "browsing_data/conditional_cache_deletion_helper.h",
-    "browsing_data/same_site_data_remover_impl.cc",
-    "browsing_data/same_site_data_remover_impl.h",
     "browsing_data/storage_partition_code_cache_data_remover.cc",
     "browsing_data/storage_partition_code_cache_data_remover.h",
     "browsing_instance.cc",

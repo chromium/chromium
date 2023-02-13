@@ -10,8 +10,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "components/browsing_data/core/features.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/cookie_util.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -368,58 +366,10 @@ void AccessContextAuditDatabase::RemoveAllRecords() {
   transaction.Commit();
 }
 
-namespace {
-
-bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2) {
-  return net::registry_controlled_domains::SameDomainOrHost(
-      origin1, origin2,
-      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
-std::vector<AccessContextAuditDatabase::AccessRecord>
-SelectCrossSiteStorageRecordsWithoutTopLevelOrigins(
-    const std::vector<AccessContextAuditDatabase::AccessRecord>&
-        storage_records) {
-  std::map<std::tuple<url::Origin, AccessContextAuditDatabase::StorageAPIType>,
-           base::Time>
-      storage_to_last_access_map;
-  for (const auto& record : storage_records) {
-    if (!IsSameSite(record.top_frame_origin, record.origin)) {
-      auto key = std::make_tuple(record.origin, record.type);
-      auto it = storage_to_last_access_map.find(key);
-      // We check the map to see if we have a cross-site storage access record
-      // for the storage origin and type. Since this may coalesce multiple
-      // cross-site storage records into one, we want to record the most recent
-      // cross-site storage access time.
-      if (it == storage_to_last_access_map.end() ||
-          it->second < record.last_access_time) {
-        storage_to_last_access_map[key] = record.last_access_time;
-      }
-    }
-  }
-  std::vector<AccessContextAuditDatabase::AccessRecord> result;
-  for (const auto& item : storage_to_last_access_map) {
-    result.emplace_back(url::Origin(),
-                        /* type= */ std::get<1>(item.first),
-                        /* storage_origin= */ std::get<0>(item.first),
-                        /* last_access_time= */ item.second);
-  }
-  return result;
-}
-
-}  // namespace
-
 void AccessContextAuditDatabase::RemoveAllRecordsHistory() {
   std::vector<AccessContextAuditDatabase::AccessRecord>
       cross_site_storage_records;
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kEnableRemovingAllThirdPartyCookies)) {
-    cross_site_storage_records =
-        SelectCrossSiteStorageRecordsWithoutTopLevelOrigins(
-            GetStorageRecords());
-  }
   RemoveAllRecords();
-  AddRecords(cross_site_storage_records);
 }
 
 void AccessContextAuditDatabase::RemoveAllRecordsForTimeRange(base::Time begin,
@@ -454,14 +404,7 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTimeRangeHistory(
     base::Time end) {
   std::vector<AccessContextAuditDatabase::AccessRecord>
       cross_site_storage_records;
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kEnableRemovingAllThirdPartyCookies)) {
-    cross_site_storage_records =
-        SelectCrossSiteStorageRecordsWithoutTopLevelOrigins(
-            GetStorageRecordsForTimeRange(begin, end));
-  }
   RemoveAllRecordsForTimeRange(begin, end);
-  AddRecords(cross_site_storage_records);
 }
 
 void AccessContextAuditDatabase::RemoveSessionOnlyRecords(
@@ -579,19 +522,6 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTopFrameOrigins(
   if (!transaction.Begin())
     return;
 
-  // If user controls to remove cross-site cookies are enabled, we need to keep
-  // track of cross-site storage access records. We need to clear storage for
-  // these origins so that they cannot be used to recover the cross-site cookies
-  // after they are removed.
-  std::vector<AccessContextAuditDatabase::AccessRecord>
-      cross_site_storage_records;
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kEnableRemovingAllThirdPartyCookies)) {
-    cross_site_storage_records =
-        SelectCrossSiteStorageRecordsWithoutTopLevelOrigins(
-            GetStorageRecordsForTopFrameOrigins(origins));
-  }
-
   // Remove all records with a top frame origin present in |origins| from both
   // the cookies and storage API tables.
   const char kRemoveTopFrameFromCookies[] =
@@ -618,8 +548,6 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTopFrameOrigins(
 
   if (!transaction.Commit())
     return;
-
-  AddRecords(cross_site_storage_records);
 }
 
 std::vector<AccessContextAuditDatabase::AccessRecord>

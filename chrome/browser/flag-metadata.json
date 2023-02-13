@@ -3012,11 +3012,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-removing-all-third-party-cookies",
-    "owners": [ "dullweber" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-resampling-input-events",
     "owners": [ "eirage", "nzolghadr", "input-dev" ],
     "expiry_milestone": 85

@@ -342,7 +342,6 @@ source_set("browser_sources") {
     "resource_context.h",
     "resource_coordinator_service.h",
     "restore_type.h",
-    "same_site_data_remover.h",
     "save_page_type.h",
     "screen_orientation_delegate.h",
     "screenlock_observer.h",

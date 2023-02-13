@@ -23,7 +23,6 @@
 #include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
-#include "chrome/browser/browsing_data/third_party_data_remover.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -167,18 +166,6 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
   browsing_data_important_sites_util::Remove(
       remove_mask, BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, period,
       std::move(filter_builder), browsing_data_remover, std::move(callback));
-}
-
-static void JNI_BrowsingDataBridge_ClearSameSiteNoneData(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jprofile,
-    const JavaParamRef<jobject>& jcallback) {
-  TRACE_EVENT0("browsing_data", "BrowsingDataBridge_ClearSameSiteNoneData");
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-  ClearThirdPartyData(base::BindOnce(&base::android::RunRunnableAndroid,
-                                     ScopedJavaGlobalRef<jobject>(jcallback)),
-                      profile);
 }
 
 static void EnableDialogAboutOtherFormsOfBrowsingHistory(
