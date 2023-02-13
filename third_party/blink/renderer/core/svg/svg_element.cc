@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_types_map.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -1078,8 +1079,11 @@ scoped_refptr<const ComputedStyle> SVGElement::CustomStyleForLayoutObject(
   StyleRequest style_request;
   style_request.parent_override = style;
   style_request.layout_parent_override = style;
+  StyleRecalcContext corresponding_recalc_context(style_recalc_context);
+  corresponding_recalc_context.old_style =
+      PostStyleUpdateScope::GetOldStyle(*corresponding_element);
   return GetDocument().GetStyleResolver().ResolveStyle(
-      corresponding_element, style_recalc_context, style_request);
+      corresponding_element, corresponding_recalc_context, style_request);
 }
 
 bool SVGElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {

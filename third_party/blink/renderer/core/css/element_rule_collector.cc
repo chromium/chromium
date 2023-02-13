@@ -387,6 +387,9 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   context.vtt_originating_element = match_request.VTTOriginatingElement();
   context.style_scope_frame =
       &style_scope_frame.GetParentFrameOrThis(context_.GetElement());
+  context.style_scope_frame = &style_scope_frame;
+  context.is_initial = !style_recalc_context_.is_ensuring_style &&
+                       !style_recalc_context_.old_style;
 
   CascadeLayerSeeker layer_seeker(
       context.scope, context.vtt_originating_element, style_sheet, rule_set);

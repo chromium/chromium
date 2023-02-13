@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/part_names.h"
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -1840,6 +1841,14 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       // Only kept around for parsing; can never match anything
       // (because we don't know what it's supposed to mean).
       return false;
+    case CSSSelector::kPseudoInitial: {
+      if (!context.is_initial || !context.in_rightmost_compound ||
+          context.in_nested_complex_selector) {
+        return false;
+      }
+      result.SetFlag(MatchFlag::kAffectedByInitial);
+      return true;
+    }
     case CSSSelector::kPseudoUnknown:
     default:
       NOTREACHED();

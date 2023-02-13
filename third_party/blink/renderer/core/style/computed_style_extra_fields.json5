@@ -1189,6 +1189,13 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
-    }
+    },
+    {
+      name: "IsPseudoInitialStyle",
+      field_template: "monotonic_flag",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
   ],
 }

@@ -1426,6 +1426,9 @@ void StyleResolver::ApplyBaseStyleNoCache(
   if (match_result.HasFlag(MatchFlag::kAffectedByActive)) {
     state.StyleBuilder().SetAffectedByActive();
   }
+  if (match_result.HasFlag(MatchFlag::kAffectedByInitial)) {
+    state.StyleBuilder().SetIsPseudoInitialStyle();
+  }
   if (match_result.DependsOnSizeContainerQueries()) {
     state.StyleBuilder().SetDependsOnSizeContainerQueries(true);
   }
@@ -1876,7 +1879,8 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
       state.AnimationUpdate(), *animating_element, state.GetElement(),
       state.StyleBuilder(), state.ParentStyle(), this);
   CSSAnimations::CalculateTransitionUpdate(
-      state.AnimationUpdate(), *animating_element, state.StyleBuilder());
+      state.AnimationUpdate(), *animating_element, state.StyleBuilder(),
+      state.OldStyle());
 
   bool apply = !state.AnimationUpdate().IsEmpty();
   if (apply) {

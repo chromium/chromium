@@ -228,6 +228,7 @@ class TestCascade {
   static StyleResolverState& InitState(StyleResolverState& state) {
     state.SetStyle(*InitialStyle(state.GetDocument()));
     state.SetParentStyle(InitialStyle(state.GetDocument()));
+    state.SetOldStyle(state.GetElement().GetComputedStyle());
     return state;
   }
 
@@ -270,7 +271,8 @@ class TestCascade {
 
   void CalculateInterpolationUpdate() {
     CSSAnimations::CalculateTransitionUpdate(
-        state_.AnimationUpdate(), state_.GetElement(), state_.StyleBuilder());
+        state_.AnimationUpdate(), state_.GetElement(), state_.StyleBuilder(),
+        state_.OldStyle());
     CSSAnimations::CalculateAnimationUpdate(
         state_.AnimationUpdate(), state_.GetElement(), state_.GetElement(),
         state_.StyleBuilder(), state_.ParentStyle(),

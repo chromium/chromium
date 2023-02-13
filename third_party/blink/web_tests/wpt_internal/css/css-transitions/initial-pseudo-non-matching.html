@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8174">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #t1:not(:initial) { color: green; }
+  :not(:initial) > #t1 { background-color: green; }
+
+  .none { display: none; }
+
+  .none:not(:initial) + #t2 { color: green; }
+  :not(:initial) + div + #t2 { background-color: green; }
+
+  #t3 { color: green; transition: color 100s step-end; }
+  #t3:is(:initial) { color: red; }
+  #t3:where(:initial) { color: red; }
+  #t3:not(:not(:initial)) { color: red; }
+
+  #t4 { color: green; transition: color 100s step-end; }
+  :initial #t4 { color: red; }
+
+  #t5 { color: green; transition: color 100s step-end; }
+  .none:initial + #t5 { color: red; }
+</style>
+<div id="t1"></div>
+<div>
+  <div></div>
+  <div class="none"></div>
+  <div id="t2"></div>
+</div>
+<div id="t3"></div>
+<div id="t4"></div>
+<div>
+  <div class="none"></div>
+  <div id="t5"></div>
+</div>
+<script>
+  const green = "rgb(0, 128, 0)";
+
+  test(() => {
+    const t1_style = getComputedStyle(t1);
+    assert_equals(t1_style.color, green);
+    assert_equals(t1_style.backgroundColor, green);
+  }, ":not(:initial) matching");
+
+  test(() => {
+    const t2_style = getComputedStyle(t2);
+    assert_equals(t2_style.color, green);
+    assert_equals(t2_style.backgroundColor, green);
+  }, ":initial not matching on previous siblings");
+
+  test(() => {
+    const t3_style = getComputedStyle(t3);
+    assert_equals(t3_style.color, green);
+  }, ":initial not matching inside :is/:where/:not");
+
+  test(() => {
+    const t4_style = getComputedStyle(t4);
+    assert_equals(t4_style.color, green);
+  }, ":initial not matching ancestor");
+
+  test(() => {
+    const t5_style = getComputedStyle(t5);
+    assert_equals(t5_style.color, green);
+  }, ":initial not matching sibling");
+</script>

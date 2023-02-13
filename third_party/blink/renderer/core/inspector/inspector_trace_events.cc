@@ -403,6 +403,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoViewTransitionOld);
     DEFINE_STRING_MAPPING(PseudoParent);
     DEFINE_STRING_MAPPING(PseudoParentUnparsed)
+    DEFINE_STRING_MAPPING(PseudoInitial)
 #undef DEFINE_STRING_MAPPING
   }
 

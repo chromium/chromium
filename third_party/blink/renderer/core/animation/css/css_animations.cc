@@ -2116,7 +2116,8 @@ void CSSAnimations::CalculateTransitionUpdateForStandardProperty(
 void CSSAnimations::CalculateTransitionUpdate(
     CSSAnimationUpdate& update,
     Element& animating_element,
-    const ComputedStyleBuilder& style_builder) {
+    const ComputedStyleBuilder& style_builder,
+    const ComputedStyle* old_style) {
   if (animating_element.GetDocument().FinishingOrIsPrinting())
     return;
 
@@ -2134,13 +2135,21 @@ void CSSAnimations::CalculateTransitionUpdate(
 
   HashSet<PropertyHandle> listed_properties;
   bool any_transition_had_transition_all = false;
-  const ComputedStyle* old_style = animating_element.GetComputedStyle();
 
-  if (auto* data = PostStyleUpdateScope::CurrentAnimationData())
-    old_style = data->GetOldStyle(animating_element);
+#if DCHECK_IS_ON()
+  DCHECK(!old_style || !old_style->IsEnsuredInDisplayNone())
+      << "Should always pass nullptr instead of ensured styles";
+  const ComputedStyle* scope_old_style =
+      PostStyleUpdateScope::GetOldStyle(animating_element);
+  bool is_initial_style = old_style && old_style->IsPseudoInitialStyle();
+  DCHECK(old_style == scope_old_style || !scope_old_style && is_initial_style)
+      << "The old_style passed in should be the style for the element at the "
+         "beginning of the lifecycle update, or a style based on the :initial "
+         "style";
+#endif
 
   if (!animation_style_recalc && style_builder.Display() != EDisplay::kNone &&
-      old_style && !old_style->IsEnsuredInDisplayNone()) {
+      old_style) {
     // Don't bother updating listed_properties unless we need it below.
     HashSet<PropertyHandle>* listed_properties_maybe =
         active_transitions ? &listed_properties : nullptr;

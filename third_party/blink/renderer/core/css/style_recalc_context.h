@@ -11,6 +11,7 @@
 namespace blink {
 
 class Element;
+class ComputedStyle;
 class HTMLSlotElement;
 class StyleScopeFrame;
 
@@ -58,6 +59,10 @@ class CORE_EXPORT StyleRecalcContext {
   Element* container = nullptr;
 
   StyleScopeFrame* style_scope_frame = nullptr;
+
+  // The style for the element at the start of the lifecycle update, or the
+  // :initial styles for the second pass when transitioning from display:none.
+  const ComputedStyle* old_style = nullptr;
 
   // If true, something about the parent's style (e.g., that it has
   // modifications to one or more non-independent inherited properties)

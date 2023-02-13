@@ -749,6 +749,10 @@
         base_feature: "CSSInitialLetter",
     },
     {
+      name: "CSSInitialPseudo",
+      status: "experimental",
+    },
+    {
       name: "CSSLastBaseline",
       status: "stable",
     },

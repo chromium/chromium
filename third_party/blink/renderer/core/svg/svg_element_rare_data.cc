@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_element_rare_data.h"
 
+#include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
@@ -33,6 +34,8 @@ const ComputedStyle* SVGElementRareData::OverrideComputedStyle(
   DCHECK(element);
   if (!override_computed_style_ || needs_override_computed_style_update_) {
     auto style_recalc_context = StyleRecalcContext::FromAncestors(*element);
+    style_recalc_context.old_style =
+        PostStyleUpdateScope::GetOldStyle(*element);
 
     StyleRequest style_request;
     style_request.parent_override = parent_style;

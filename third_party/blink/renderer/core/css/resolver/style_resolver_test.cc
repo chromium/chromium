@@ -50,8 +50,10 @@ class StyleResolverTest : public PageTestBase {
  protected:
   scoped_refptr<const ComputedStyle> StyleForId(AtomicString id) {
     Element* element = GetDocument().getElementById(id);
+    StyleRecalcContext recalc_context;
+    recalc_context.old_style = element->GetComputedStyle();
     auto style = GetStyleEngine().GetStyleResolver().ResolveStyle(
-        element, StyleRecalcContext());
+        element, recalc_context);
     DCHECK(style);
     return style;
   }
@@ -113,7 +115,9 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   animations.SetAnimationStyleChange(true);
 
   StyleResolver& resolver = GetStyleEngine().GetStyleResolver();
-  auto style1 = resolver.ResolveStyle(div, StyleRecalcContext());
+  StyleRecalcContext recalc_context;
+  recalc_context.old_style = div->GetComputedStyle();
+  auto style1 = resolver.ResolveStyle(div, recalc_context);
   ASSERT_TRUE(style1);
   EXPECT_EQ(20, style1->FontSize());
   ASSERT_TRUE(style1->GetBaseComputedStyle());
@@ -126,11 +130,12 @@ TEST_F(StyleResolverTest, AnimationBaseComputedStyle) {
   StyleRequest style_request;
   style_request.parent_override = parent_style;
   style_request.layout_parent_override = parent_style;
-  EXPECT_EQ(10, resolver.ResolveStyle(div, StyleRecalcContext(), style_request)
-                    ->FontSize());
+  EXPECT_EQ(
+      10,
+      resolver.ResolveStyle(div, recalc_context, style_request)->FontSize());
   ASSERT_TRUE(style1->GetBaseComputedStyle());
   EXPECT_EQ(20, style1->GetBaseComputedStyle()->FontSize());
-  EXPECT_EQ(20, resolver.ResolveStyle(div, StyleRecalcContext())->FontSize());
+  EXPECT_EQ(20, resolver.ResolveStyle(div, recalc_context)->FontSize());
 }
 
 TEST_F(StyleResolverTest, HasEmUnits) {

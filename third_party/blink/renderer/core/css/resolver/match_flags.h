@@ -22,6 +22,8 @@ enum class MatchFlag {
   kAffectedByHover = 1 << 2,
   // :active
   kAffectedByActive = 1 << 3,
+  // :initial
+  kAffectedByInitial = 1 << 4,
 };
 
 using MatchFlags = uint8_t;

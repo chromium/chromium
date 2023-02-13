@@ -56,16 +56,16 @@ class CORE_EXPORT PostStyleUpdateScope {
     void StoreOldStyleIfNeeded(Element&);
 
     // If an old-style was previously stored using StoreOldStyleIfNeeded,
-    // this function returns that ComputedStyle. Otherwise returns the
-    // current ComputedStyle on the Element.
-    const ComputedStyle* GetOldStyle(Element&) const;
+    // this function returns that ComputedStyle. Otherwise returns the current
+    // ComputedStyle on the Element.
+    const ComputedStyle* GetOldStyle(const Element&) const;
 
    private:
     friend class PostStyleUpdateScope;
     friend class ContainerQueryTest;
 
     HeapHashSet<Member<Element>> elements_with_pending_updates_;
-    HeapHashMap<Member<Element>, scoped_refptr<const ComputedStyle>>
+    HeapHashMap<Member<const Element>, scoped_refptr<const ComputedStyle>>
         old_styles_;
   };
 
@@ -91,6 +91,11 @@ class CORE_EXPORT PostStyleUpdateScope {
 
   static AnimationData* CurrentAnimationData();
   static PseudoData* CurrentPseudoData();
+
+  // If there is a CurrentAnimationData() and old-style was previously stored
+  // using StoreOldStyleIfNeeded, this function returns that ComputedStyle.
+  // Otherwise returns the current ComputedStyle on the Element.
+  static const ComputedStyle* GetOldStyle(const Element&);
 
   // Apply side-effects from the style update, e.g. starting and stopping
   // animations.

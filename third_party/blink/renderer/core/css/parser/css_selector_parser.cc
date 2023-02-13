@@ -978,6 +978,11 @@ bool IsPseudoClassValidAfterPseudoElement(
     CSSSelector::PseudoType pseudo_class,
     CSSSelector::PseudoType compound_pseudo_element) {
   switch (compound_pseudo_element) {
+    case CSSSelector::kPseudoBefore:
+    case CSSSelector::kPseudoAfter:
+    case CSSSelector::kPseudoMarker:
+    case CSSSelector::kPseudoPlaceholder:
+      return pseudo_class == CSSSelector::kPseudoInitial;
     case CSSSelector::kPseudoResizer:
     case CSSSelector::kPseudoScrollbar:
     case CSSSelector::kPseudoScrollbarCorner:
@@ -990,11 +995,13 @@ bool IsPseudoClassValidAfterPseudoElement(
       return pseudo_class == CSSSelector::kPseudoWindowInactive;
     case CSSSelector::kPseudoPart:
       return IsUserActionPseudoClass(pseudo_class) ||
-             pseudo_class == CSSSelector::kPseudoState;
+             pseudo_class == CSSSelector::kPseudoState ||
+             pseudo_class == CSSSelector::kPseudoInitial;
     case CSSSelector::kPseudoWebKitCustomElement:
     case CSSSelector::kPseudoBlinkInternalElement:
     case CSSSelector::kPseudoFileSelectorButton:
-      return IsUserActionPseudoClass(pseudo_class);
+      return IsUserActionPseudoClass(pseudo_class) ||
+             pseudo_class == CSSSelector::kPseudoInitial;
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionImagePair:
     case CSSSelector::kPseudoViewTransitionOld:

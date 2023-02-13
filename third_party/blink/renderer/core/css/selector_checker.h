@@ -143,6 +143,8 @@ class CORE_EXPORT SelectorChecker {
     bool is_inside_visited_link = false;
     bool pseudo_has_in_rightmost_compound = true;
     bool is_inside_has_pseudo_class = false;
+    // Set to true if :initial pseudo class should match.
+    bool is_initial = false;
   };
 
   struct MatchResult {

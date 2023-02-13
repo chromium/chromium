@@ -134,6 +134,11 @@ class CORE_EXPORT StyleResolverState {
     return layout_parent_style_.get();
   }
 
+  void SetOldStyle(scoped_refptr<const ComputedStyle> old_style) {
+    old_style_ = std::move(old_style);
+  }
+  const ComputedStyle* OldStyle() const { return old_style_.get(); }
+
   ElementStyleResources& GetElementStyleResources() {
     return element_style_resources_;
   }
@@ -228,6 +233,9 @@ class CORE_EXPORT StyleResolverState {
   // presence of display: contents. This is the style against which we have to
   // do adjustment.
   scoped_refptr<const ComputedStyle> layout_parent_style_;
+  // The ComputedStyle stored on the element before the current lifecycle update
+  // started.
+  scoped_refptr<const ComputedStyle> old_style_;
 
   CSSAnimationUpdate animation_update_;
   StyleRequest::RequestType pseudo_request_type_;

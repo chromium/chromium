@@ -107,7 +107,8 @@ class CORE_EXPORT CSSAnimations final {
 
   static void CalculateTransitionUpdate(CSSAnimationUpdate&,
                                         Element& animating_element,
-                                        const ComputedStyleBuilder&);
+                                        const ComputedStyleBuilder&,
+                                        const ComputedStyle* old_style);
 
   static void SnapshotCompositorKeyframes(Element&,
                                           CSSAnimationUpdate&,

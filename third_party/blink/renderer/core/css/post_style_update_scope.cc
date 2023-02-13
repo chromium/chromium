@@ -98,14 +98,15 @@ void PostStyleUpdateScope::AnimationData::SetPendingUpdate(
 void PostStyleUpdateScope::AnimationData::StoreOldStyleIfNeeded(
     Element& element) {
   old_styles_.insert(
-      &element, scoped_refptr<const ComputedStyle>(element.GetComputedStyle()));
+      &element, scoped_refptr<const ComputedStyle>(
+                    ComputedStyle::NullifyEnsured(element.GetComputedStyle())));
 }
 
 const ComputedStyle* PostStyleUpdateScope::AnimationData::GetOldStyle(
-    Element& element) const {
+    const Element& element) const {
   auto iter = old_styles_.find(&element);
   if (iter == old_styles_.end()) {
-    return element.GetComputedStyle();
+    return ComputedStyle::NullifyEnsured(element.GetComputedStyle());
   }
   return iter->value.get();
 }
@@ -113,6 +114,14 @@ const ComputedStyle* PostStyleUpdateScope::AnimationData::GetOldStyle(
 void PostStyleUpdateScope::PseudoData::AddPendingBackdrop(
     Element& originating_element) {
   pending_backdrops_.push_back(&originating_element);
+}
+
+const ComputedStyle* PostStyleUpdateScope::GetOldStyle(const Element& element) {
+  if (PostStyleUpdateScope::AnimationData* data =
+          PostStyleUpdateScope::CurrentAnimationData()) {
+    return data->GetOldStyle(element);
+  }
+  return ComputedStyle::NullifyEnsured(element.GetComputedStyle());
 }
 
 }  // namespace blink

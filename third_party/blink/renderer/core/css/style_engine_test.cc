@@ -5931,4 +5931,100 @@ TEST_F(StyleEngineTest, SubsequentSiblingRecalcFlatTree) {
   EXPECT_EQ(3u, after_count - before_count);
 }
 
+TEST_F(StyleEngineTest, InitialStyle_Recalc) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #target { background-color: green; }
+      #target:initial { background-color: red; }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  constexpr Color green = Color::FromRGB(0, 128, 0);
+  constexpr Color lime = Color::FromRGB(0, 255, 0);
+
+  Element* target = GetDocument().getElementById("target");
+  unsigned before_count = GetStyleEngine().StyleForElementCount();
+
+  target->SetInlineStyleProperty(CSSPropertyID::kColor, "lime");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetStyleEngine().StyleForElementCount() - before_count, 1u)
+      << "The style recalc should not do a separate :initial pass since the "
+         "element already has a style";
+  EXPECT_EQ(target->ComputedStyleRef().VisitedDependentColor(
+                GetCSSPropertyBackgroundColor()),
+            green)
+      << "Make sure :initial does not match for the second pass";
+  EXPECT_EQ(
+      target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
+      lime)
+      << "Check that the color changed to lime";
+}
+
+TEST_F(StyleEngineTest, InitialStyle_FromDisplayNone) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #target { background-color: green; }
+      #target:initial { background-color: red; }
+    </style>
+    <div id="target" style="display:none"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  constexpr Color green = Color::FromRGB(0, 128, 0);
+
+  Element* target = GetDocument().getElementById("target");
+  unsigned before_count = GetStyleEngine().StyleForElementCount();
+
+  target->SetInlineStyleProperty(CSSPropertyID::kDisplay, "block");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(GetStyleEngine().StyleForElementCount() - before_count, 2u)
+      << "The style recalc needs to do two passes because the element was "
+         "display:none and :initial styles are matching";
+  EXPECT_EQ(target->ComputedStyleRef().VisitedDependentColor(
+                GetCSSPropertyBackgroundColor()),
+            green)
+      << "Make sure :initial does not match for the second pass";
+}
+
+TEST_F(StyleEngineTest, InitialStyleCount_EnsureComputedStyle) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #target {
+        background-color: green;
+        transition: background-color 100s step-end;
+      }
+      #target:initial { background-color: red; }
+    </style>
+    <div id="target" style="display:none"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  constexpr Color green = Color::FromRGB(0, 128, 0);
+
+  Element* target = GetDocument().getElementById("target");
+  unsigned before_count = GetStyleEngine().StyleForElementCount();
+
+  ASSERT_FALSE(target->GetComputedStyle())
+      << "Initially no ComputedStyle on display:none element";
+
+  const ComputedStyle* none_style = target->EnsureComputedStyle();
+  ASSERT_TRUE(none_style);
+
+  EXPECT_EQ(GetStyleEngine().StyleForElementCount() - before_count, 1u)
+      << "No :initial pass for EnsureComputedStyle";
+
+  EXPECT_EQ(target->ComputedStyleRef().VisitedDependentColor(
+                GetCSSPropertyBackgroundColor()),
+            green)
+      << "Transitions are not started and :initial does not apply in "
+         "display:none";
+}
+
 }  // namespace blink

@@ -3068,6 +3068,8 @@ scoped_refptr<const ComputedStyle> Element::StyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().InStyleRecalc());
 
+  StyleRecalcContext new_style_recalc_context(style_recalc_context);
+
   if (ElementAnimations* element_animations = GetElementAnimations()) {
     // For multiple style recalc passes for the same element in the same
     // lifecycle, which can happen for container queries, we may end up having
@@ -3082,16 +3084,26 @@ scoped_refptr<const ComputedStyle> Element::StyleForLayoutObject(
     element_animations->CssAnimations().ClearPendingUpdate();
   }
 
+  new_style_recalc_context.old_style = PostStyleUpdateScope::GetOldStyle(*this);
   scoped_refptr<const ComputedStyle> style =
       HasCustomStyleCallbacks()
-          ? CustomStyleForLayoutObject(style_recalc_context)
-          : OriginalStyleForLayoutObject(style_recalc_context);
+          ? CustomStyleForLayoutObject(new_style_recalc_context)
+          : OriginalStyleForLayoutObject(new_style_recalc_context);
   if (!style) {
     DCHECK(IsPseudoElement());
     return nullptr;
   }
+  if (style->IsPseudoInitialStyle()) {
+    // :initial pseudo styles matched. We need to compute the style a second
+    // time to compute the actual style and trigger transitions using the
+    // starting from the :initial style.
+    new_style_recalc_context.old_style = style.get();
+    style = HasCustomStyleCallbacks()
+                ? CustomStyleForLayoutObject(new_style_recalc_context)
+                : OriginalStyleForLayoutObject(new_style_recalc_context);
+  }
 
-  auto* context = GetDisplayLockContext();
+  DisplayLockContext* context = GetDisplayLockContext();
   // The common case for most elements is that we don't have a context and have
   // the default (visible) content-visibility value.
   if (UNLIKELY(context || !style->IsContentVisibilityVisible())) {

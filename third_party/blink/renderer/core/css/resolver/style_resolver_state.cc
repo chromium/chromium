@@ -53,6 +53,8 @@ StyleResolverState::StyleResolverState(
       document_(&document),
       parent_style_(style_request.parent_override),
       layout_parent_style_(style_request.layout_parent_override),
+      old_style_(style_recalc_context ? style_recalc_context->old_style
+                                      : nullptr),
       pseudo_request_type_(style_request.type),
       font_builder_(&document),
       pseudo_element_(
