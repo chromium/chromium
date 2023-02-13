@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
-#include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -52,9 +51,6 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/effects/SkHighContrastFilter.h"
-#include "third_party/skia/include/effects/SkLumaColorFilter.h"
-#include "third_party/skia/include/effects/SkTableColorFilter.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "third_party/skia/include/utils/SkNullCanvas.h"
 #include "ui/base/ui_base_features.h"
@@ -245,21 +241,6 @@ void GraphicsContext::SetDrawLooper(sk_sp<SkDrawLooper> draw_looper) {
   MutableState()->SetDrawLooper(std::move(draw_looper));
 }
 
-SkColorFilter* GraphicsContext::GetColorFilter() const {
-  return ImmutableState()->GetColorFilter();
-}
-
-void GraphicsContext::SetColorFilter(ColorFilter color_filter) {
-  GraphicsContextState* state_to_set = MutableState();
-
-  // We only support one active color filter at the moment. If (when) this
-  // becomes a problem, we should switch to using color filter chains (Skia work
-  // in progress).
-  DCHECK(!state_to_set->GetColorFilter());
-  state_to_set->SetColorFilter(
-      WebCoreColorFilterToSkiaColorFilter(color_filter));
-}
-
 void GraphicsContext::Concat(const SkM44& matrix) {
   DCHECK(canvas_);
   canvas_->concat(matrix);
@@ -280,9 +261,9 @@ void GraphicsContext::BeginLayer(SkBlendMode xfermode) {
   BeginLayer(flags);
 }
 
-void GraphicsContext::BeginLayer(ColorFilter color_filter) {
+void GraphicsContext::BeginLayer(sk_sp<SkColorFilter> color_filter) {
   cc::PaintFlags flags;
-  flags.setColorFilter(WebCoreColorFilterToSkiaColorFilter(color_filter));
+  flags.setColorFilter(std::move(color_filter));
   BeginLayer(flags);
 }
 
@@ -1242,27 +1223,6 @@ bool GraphicsContext::ShouldUseStrokeForTextLine(StrokeStyle stroke_style) {
     default:
       return true;
   }
-}
-
-sk_sp<SkColorFilter> GraphicsContext::WebCoreColorFilterToSkiaColorFilter(
-    ColorFilter color_filter) {
-  switch (color_filter) {
-    case kColorFilterLuminanceToAlpha:
-      return SkLumaColorFilter::Make();
-    case kColorFilterLinearRGBToSRGB:
-      return interpolation_space_utilities::CreateInterpolationSpaceFilter(
-          kInterpolationSpaceLinear, kInterpolationSpaceSRGB);
-    case kColorFilterSRGBToLinearRGB:
-      return interpolation_space_utilities::CreateInterpolationSpaceFilter(
-          kInterpolationSpaceSRGB, kInterpolationSpaceLinear);
-    case kColorFilterNone:
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-
-  return nullptr;
 }
 
 }  // namespace blink

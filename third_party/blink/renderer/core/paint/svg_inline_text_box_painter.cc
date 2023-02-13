@@ -388,8 +388,7 @@ void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
         if (decoration_style.HasFill()) {
           cc::PaintFlags fill_flags;
           if (!SVGObjectPainter(*decoration_layout_object)
-                   .PreparePaint(paint_info.context,
-                                 paint_info.IsRenderingClipPathAsMaskImage(),
+                   .PreparePaint(paint_info.IsRenderingClipPathAsMaskImage(),
                                  decoration_style, kApplyToFillMode,
                                  fill_flags)) {
             break;
@@ -403,8 +402,7 @@ void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
         if (decoration_style.HasVisibleStroke()) {
           cc::PaintFlags stroke_flags;
           if (!SVGObjectPainter(*decoration_layout_object)
-                   .PreparePaint(paint_info.context,
-                                 paint_info.IsRenderingClipPathAsMaskImage(),
+                   .PreparePaint(paint_info.IsRenderingClipPathAsMaskImage(),
                                  decoration_style, kApplyToStrokeMode,
                                  stroke_flags)) {
             break;
@@ -458,8 +456,7 @@ bool SVGInlineTextBoxPainter::SetupTextPaint(
   }
 
   if (!SVGObjectPainter(ParentInlineLayoutObject())
-           .PreparePaint(paint_info.context,
-                         paint_info.IsRenderingClipPathAsMaskImage(), style,
+           .PreparePaint(paint_info.IsRenderingClipPathAsMaskImage(), style,
                          resource_mode, flags,
                          base::OptionalToPtr(paint_server_transform))) {
     return false;

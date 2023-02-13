@@ -122,7 +122,7 @@ bool SetupPaintForSvgText(const NGTextPainter::SvgTextPaintState& state,
                                           ? *state.InlineText().Parent()
                                           : state.TextDecorationObject();
   if (!SVGObjectPainter(layout_parent)
-           .PreparePaint(context, state.IsRenderingClipPathAsMaskImage(), style,
+           .PreparePaint(state.IsRenderingClipPathAsMaskImage(), style,
                          resource_mode, flags, state.GetShaderTransform())) {
     return false;
   }

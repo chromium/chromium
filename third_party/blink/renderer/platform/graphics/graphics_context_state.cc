@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state.h"
 
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-
 namespace blink {
 
 static inline cc::PaintFlags::FilterQuality FilterQualityForPaint(
@@ -102,13 +100,6 @@ void GraphicsContextState::SetDrawLooper(sk_sp<SkDrawLooper> draw_looper) {
 void GraphicsContextState::SetLineDash(const DashArray& dashes,
                                        float dash_offset) {
   stroke_data_.SetLineDash(dashes, dash_offset);
-}
-
-void GraphicsContextState::SetColorFilter(sk_sp<SkColorFilter> color_filter) {
-  // Grab a new ref for stroke.
-  stroke_flags_.setColorFilter(color_filter);
-  // Pass the existing ref to fill (to minimize refcount churn).
-  fill_flags_.setColorFilter(std::move(color_filter));
 }
 
 void GraphicsContextState::SetInterpolationQuality(

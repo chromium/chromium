@@ -33,7 +33,6 @@ class SVGObjectPainter {
   // object. Returns true if successful, and the caller can continue to paint
   // using |paint_flags|.
   bool PreparePaint(
-      const GraphicsContext& context,
       bool is_rendering_clip_path_as_mask_image,
       const ComputedStyle&,
       LayoutSVGResourceMode,

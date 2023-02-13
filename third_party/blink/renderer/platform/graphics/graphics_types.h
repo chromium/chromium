@@ -200,13 +200,6 @@ enum TextDrawingMode {
 };
 typedef unsigned TextDrawingModeFlags;
 
-enum ColorFilter {
-  kColorFilterNone,
-  kColorFilterLuminanceToAlpha,
-  kColorFilterSRGBToLinearRGB,
-  kColorFilterLinearRGBToSRGB
-};
-
 enum WindRule {
   RULE_NONZERO = static_cast<int>(SkPathFillType::kWinding),
   RULE_EVENODD = static_cast<int>(SkPathFillType::kEvenOdd)

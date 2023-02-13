@@ -56,12 +56,6 @@ PaintRecord LayoutSVGResourceMasker::CreatePaintRecord(
   SubtreeContentTransformScope content_transform_scope(content_transformation);
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
 
-  ColorFilter mask_content_filter =
-      StyleRef().ColorInterpolation() == EColorInterpolation::kLinearrgb
-          ? kColorFilterSRGBToLinearRGB
-          : kColorFilterNone;
-  builder->Context().SetColorFilter(mask_content_filter);
-
   for (const SVGElement& child_element :
        Traversal<SVGElement>::ChildrenOf(*GetElement())) {
     const LayoutObject* layout_object = child_element.GetLayoutObject();

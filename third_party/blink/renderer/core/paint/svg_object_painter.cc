@@ -9,25 +9,17 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
 
 namespace blink {
 
 namespace {
 
-void CopyStateFromGraphicsContext(const GraphicsContext& context,
-                                  cc::PaintFlags& flags) {
-  // TODO(fs): The color filter can be set when generating a picture for a mask
-  // due to color-interpolation. We could also just apply the
-  // color-interpolation property from the the shape itself (which could mean
-  // the paintserver if it has it specified), since that would be more in line
-  // with the spec for color-interpolation. For now, just steal it from the GC
-  // though.
-  // Additionally, it's not really safe/guaranteed to be correct, as something
-  // down the flags pipe may want to farther tweak the color filter, which could
-  // yield incorrect results. (Consider just using saveLayer() w/ this color
-  // filter explicitly instead.)
-  flags.setColorFilter(sk_ref_sp(context.GetColorFilter()));
+void ApplyColorInterpolation(const ComputedStyle& style,
+                             cc::PaintFlags& flags) {
+  if (style.ColorInterpolation() == EColorInterpolation::kLinearrgb) {
+    flags.setColorFilter(SkColorFilters::SRGBToLinearGamma());
+  }
 }
 
 }  // namespace
@@ -63,7 +55,6 @@ bool SVGObjectPainter::ApplyPaintResource(
 }
 
 bool SVGObjectPainter::PreparePaint(
-    const GraphicsContext& context,
     bool is_rendering_clip_path_as_mask_image,
     const ComputedStyle& style,
     LayoutSVGResourceMode resource_mode,
@@ -85,7 +76,7 @@ bool SVGObjectPainter::PreparePaint(
   if (paint.HasUrl()) {
     if (ApplyPaintResource(paint, additional_paint_server_transform, flags)) {
       flags.setColor(ScaleAlpha(SK_ColorBLACK, alpha));
-      CopyStateFromGraphicsContext(context, flags);
+      ApplyColorInterpolation(style, flags);
       return true;
     }
   }
@@ -96,7 +87,7 @@ bool SVGObjectPainter::PreparePaint(
     const Color color = style.VisitedDependentColor(property);
     flags.setColor(ScaleAlpha(color.Rgb(), alpha));
     flags.setShader(nullptr);
-    CopyStateFromGraphicsContext(context, flags);
+    ApplyColorInterpolation(style, flags);
     return true;
   }
   return false;

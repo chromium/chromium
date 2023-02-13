@@ -265,8 +265,6 @@ class PLATFORM_EXPORT GraphicsContext {
   // provided along with glyphs.
   void SetPrinting(bool printing) { printing_ = printing; }
 
-  SkColorFilter* GetColorFilter() const;
-  void SetColorFilter(ColorFilter);
   // ---------- End state management methods -----------------
 
   // DrawRect() fills and always strokes using a 1-pixel stroke inset from
@@ -459,7 +457,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // the backdrop (i.e. EndLayer()).
   void BeginLayer(float opacity = 1.0f);
   void BeginLayer(SkBlendMode);
-  void BeginLayer(ColorFilter);
+  void BeginLayer(sk_sp<SkColorFilter>);
   void BeginLayer(sk_sp<PaintFilter>);
   void EndLayer();
 
@@ -548,8 +546,6 @@ class PLATFORM_EXPORT GraphicsContext {
   void SetDOMNodeId(DOMNodeId);
   DOMNodeId GetDOMNodeId() const;
   bool NeedsDOMNodeId() const { return printing_; }
-
-  static sk_sp<SkColorFilter> WebCoreColorFilterToSkiaColorFilter(ColorFilter);
 
  private:
   const GraphicsContextState* ImmutableState() const { return paint_state_; }
