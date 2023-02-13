@@ -538,7 +538,8 @@ function extractPrice(item) {
       if (priceParts.length >= 2){
         candidate = priceParts[1];
       }
-    } else if (window.location.hostname.endsWith("thecompanystore.com")) {
+    } else if (window.location.hostname.endsWith("thecompanystore.com")
+        || window.location.hostname.endsWith("childrensplace.com")) {
       candidate = candidate.split("\n")[0];
     }
     if (!candidate.match(priceRegexFull))
