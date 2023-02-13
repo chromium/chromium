@@ -235,6 +235,14 @@ const char kReportDeviceLoginLogout[] = "cros.reporting.report_login_logout";
 // Determines whether CRD session events are reported.
 const char kReportCRDSessions[] = "cros.reporting.report_crd_sessions";
 
+// Determines the device activity heartbeat collection rate (in milliseconds).
+const char kDeviceActivityHeartbeatCollectionRateMs[] =
+    "cros.reporting.device_activity_heartbeat_collection_rate_ms";
+
+// Determines whether device activity state heartbeat should be reported.
+const char kDeviceActivityHeartbeatEnabled[] =
+    "cros.reporting.device_activity_heartbeat_enabled";
+
 // Determines whether heartbeats should be sent to the policy service via
 // the GCM channel.
 const char kHeartbeatEnabled[] = "cros.device_status.heartbeat_enabled";

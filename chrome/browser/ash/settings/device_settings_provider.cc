@@ -73,6 +73,8 @@ const char* const kKnownSettings[] = {
     kAllowRedeemChromeOsRegistrationOffers,
     kAttestationForContentProtectionEnabled,
     kCastReceiverName,
+    kDeviceActivityHeartbeatCollectionRateMs,
+    kDeviceActivityHeartbeatEnabled,
     kDeviceAllowedBluetoothServices,
     kDeviceAttestationEnabled,
     kDeviceAutoUpdateTimeRestrictions,
@@ -800,6 +802,16 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetValue(
           kReportDeviceSignalStrengthEventDrivenTelemetry,
           base::Value(std::move(signal_strength_telemetry_list)));
+    }
+    if (reporting_policy.has_device_activity_heartbeat_enabled()) {
+      new_values_cache->SetBoolean(
+          kDeviceActivityHeartbeatEnabled,
+          reporting_policy.device_activity_heartbeat_enabled());
+    }
+    if (reporting_policy.has_device_activity_heartbeat_collection_rate_ms()) {
+      new_values_cache->SetInteger(
+          kDeviceActivityHeartbeatCollectionRateMs,
+          reporting_policy.device_activity_heartbeat_collection_rate_ms());
     }
   }
 }

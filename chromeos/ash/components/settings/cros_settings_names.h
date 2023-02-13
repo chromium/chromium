@@ -165,6 +165,11 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kReportDeviceSignalStrengthEventDrivenTelemetry[];
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
+extern const char kDeviceActivityHeartbeatCollectionRateMs[];
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
+extern const char kDeviceActivityHeartbeatEnabled[];
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kHeartbeatEnabled[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kHeartbeatFrequency[];

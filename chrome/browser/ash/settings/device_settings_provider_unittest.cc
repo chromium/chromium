@@ -107,10 +107,12 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     proto->set_report_print_jobs(enable_reporting);
     proto->set_report_login_logout(enable_reporting);
     proto->set_report_crd_sessions(enable_reporting);
+    proto->set_device_activity_heartbeat_enabled(enable_reporting);
     proto->set_report_network_telemetry_collection_rate_ms(frequency);
     proto->set_report_network_telemetry_event_checking_rate_ms(frequency);
     proto->set_device_status_frequency(frequency);
     proto->set_report_device_audio_status_checking_rate_ms(frequency);
+    proto->set_device_activity_heartbeat_collection_rate_ms(frequency);
     BuildAndInstallDevicePolicy();
   }
 
@@ -171,29 +173,18 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   void VerifyReportingSettings(bool expected_enable_state,
                                int expected_frequency) {
     const char* reporting_settings[] = {
-        kReportDeviceVersionInfo,
-        kReportDeviceActivityTimes,
-        kReportDeviceAudioStatus,
-        kReportDeviceBoardStatus,
+        kReportDeviceVersionInfo, kReportDeviceActivityTimes,
+        kReportDeviceAudioStatus, kReportDeviceBoardStatus,
         kReportDeviceBootMode,
         // Device location reporting is not currently supported.
         // kReportDeviceLocation,
-        kReportDeviceNetworkConfiguration,
-        kReportDeviceNetworkStatus,
-        kReportDeviceUsers,
-        kReportDevicePeripherals,
-        kReportDevicePowerStatus,
-        kReportDeviceStorageStatus,
-        kReportDeviceSessionStatus,
-        kReportDeviceSecurityStatus,
-        kReportDeviceGraphicsStatus,
-        kReportDeviceCrashReportInfo,
-        kReportDeviceAppInfo,
-        kReportDevicePrintJobs,
-        kReportDeviceLoginLogout,
-        kReportOsUpdateStatus,
-        kReportRunningKioskApp,
-    };
+        kReportDeviceNetworkConfiguration, kReportDeviceNetworkStatus,
+        kReportDeviceUsers, kReportDevicePeripherals, kReportDevicePowerStatus,
+        kReportDeviceStorageStatus, kReportDeviceSessionStatus,
+        kReportDeviceSecurityStatus, kReportDeviceGraphicsStatus,
+        kReportDeviceCrashReportInfo, kReportDeviceAppInfo,
+        kReportDevicePrintJobs, kReportDeviceLoginLogout, kReportOsUpdateStatus,
+        kReportRunningKioskApp, kDeviceActivityHeartbeatEnabled};
 
     const base::Value expected_enable_value(expected_enable_state);
     for (auto* setting : reporting_settings) {
@@ -202,11 +193,10 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     }
 
     const char* const reporting_frequency_settings[] = {
-        kReportUploadFrequency,
-        kReportDeviceNetworkTelemetryCollectionRateMs,
+        kReportUploadFrequency, kReportDeviceNetworkTelemetryCollectionRateMs,
         kReportDeviceNetworkTelemetryEventCheckingRateMs,
         kReportDeviceAudioStatusCheckingRateMs,
-    };
+        kDeviceActivityHeartbeatCollectionRateMs};
     const base::Value expected_frequency_value(expected_frequency);
     for (auto* frequency_setting : reporting_frequency_settings) {
       EXPECT_EQ(expected_frequency_value, *provider_->Get(frequency_setting))
