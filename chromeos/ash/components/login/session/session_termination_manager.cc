@@ -15,7 +15,16 @@ namespace ash {
 
 namespace {
 
+const char kLockedToSingleUserRebootDescription[] = "Reboot forced by policy";
+const char kRemoteCommandSignoutRebootDescription[] =
+    "Reboot remote command (sign out)";
+
 SessionTerminationManager* g_instance = nullptr;
+
+void Reboot(power_manager::RequestRestartReason reason,
+            const std::string& description) {
+  chromeos::PowerManagerClient::Get()->RequestRestart(reason, description);
+}
 
 }  // namespace
 
@@ -49,9 +58,16 @@ void SessionTerminationManager::StopSession(
     observer.OnSessionWillBeTerminated();
   }
 
-  // If the device is locked to single user, it must reboot on sign out.
   if (is_locked_to_single_user_) {
-    Reboot();
+    // If the device is locked to single user, it must reboot on sign out.
+    Reboot(power_manager::REQUEST_RESTART_OTHER,
+           kLockedToSingleUserRebootDescription);
+  } else if (should_reboot_on_signout_) {
+    if (before_reboot_callback_) {
+      std::move(before_reboot_callback_).Run();
+    }
+    Reboot(power_manager::REQUEST_RESTART_REMOTE_ACTION_REBOOT,
+           kRemoteCommandSignoutRebootDescription);
   } else {
     SessionManagerClient::Get()->StopSession(reason);
   }
@@ -65,6 +81,12 @@ void SessionTerminationManager::RebootIfNecessary() {
 
 void SessionTerminationManager::SetDeviceLockedToSingleUser() {
   is_locked_to_single_user_ = true;
+}
+
+void SessionTerminationManager::SetDeviceRebootOnSignoutForRemoteCommand(
+    base::OnceClosure before_reboot_callback) {
+  should_reboot_on_signout_ = true;
+  before_reboot_callback_ = std::move(before_reboot_callback);
 }
 
 bool SessionTerminationManager::IsLockedToSingleUser() {
@@ -97,16 +119,13 @@ void SessionTerminationManager::ProcessCryptohomeLoginStatusReply(
   }
 }
 
-void SessionTerminationManager::Reboot() {
-  chromeos::PowerManagerClient::Get()->RequestRestart(
-      power_manager::REQUEST_RESTART_OTHER, "Reboot forced by policy");
-}
-
 void SessionTerminationManager::RebootIfNecessaryProcessReply(
     absl::optional<user_data_auth::GetLoginStatusReply> reply) {
   ProcessCryptohomeLoginStatusReply(reply);
-  if (is_locked_to_single_user_)
-    Reboot();
+  if (is_locked_to_single_user_) {
+    Reboot(power_manager::REQUEST_RESTART_OTHER,
+           kLockedToSingleUserRebootDescription);
+  }
 }
 
 }  // namespace ash

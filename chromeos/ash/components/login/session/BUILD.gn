@@ -29,6 +29,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     "//base",
+    "//base/test:test_support",
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/userdataauth",

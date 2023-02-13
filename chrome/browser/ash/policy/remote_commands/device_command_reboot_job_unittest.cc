@@ -13,7 +13,10 @@
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +31,8 @@ constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
 
 constexpr base::TimeDelta kCommandAge = base::Minutes(5);
 constexpr base::TimeDelta kAlmostExpiredCommandAge = base::Minutes(10);
+
+constexpr base::TimeDelta kUserSessionRebootDelay = base::Minutes(5);
 
 class ScopedLoginState {
  public:
@@ -85,9 +90,13 @@ class DeviceCommandRebootJobTest : public testing::Test {
  protected:
   DeviceCommandRebootJobTest() {
     chromeos::PowerManagerClient::InitializeFake();
+    ash::CryptohomeMiscClient::InitializeFake();
+    ash::SessionManagerClient::InitializeFake();
   }
 
   ~DeviceCommandRebootJobTest() override {
+    ash::SessionManagerClient::Shutdown();
+    ash::CryptohomeMiscClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -106,6 +115,7 @@ class DeviceCommandRebootJobTest : public testing::Test {
 
     auto job = std::make_unique<DeviceCommandRebootJobForTesting>(
         chromeos::FakePowerManagerClient::Get(), ash::LoginState::Get(),
+        &session_termination_manager_,
         /*get_boot_time_callback=*/base::BindLambdaForTesting([this]() {
           return start_ticks_;
         }));
@@ -122,6 +132,8 @@ class DeviceCommandRebootJobTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   const base::TimeTicks start_ticks_{NowTicks()};
+
+  ash::SessionTerminationManager session_termination_manager_;
 };
 
 // Test that the command expires after default expiration time.
@@ -202,18 +214,28 @@ TEST_F(DeviceCommandRebootJobTest, RebootsInstantlyOutsideOfSession) {
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
 }
 
-// Test that the command fails inside the user session with logged in user.
-TEST_F(DeviceCommandRebootJobTest, FailsInUserSession) {
+TEST_F(DeviceCommandRebootJobTest, RebootsOnUserLogout) {
   auto scoped_login_state = ScopedLoginState::CreateRegularUser();
 
   auto command = CreateAndInitializeCommand();
   base::test::TestFuture<void> future;
   command->Run(Now(), NowTicks(), future.GetCallback());
 
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(command->status(), RemoteCommandJob::FAILED);
+  // Fast forward time a little but before command timeout expires. Check that
+  // reboot has not happened yet.
+  task_environment_.FastForwardBy(kUserSessionRebootDelay / 2);
+
+  EXPECT_EQ(command->status(), RemoteCommandJob::RUNNING);
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+
+  session_termination_manager_.StopSession(
+      login_manager::SessionStopReason::USER_REQUESTS_SIGNOUT);
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(command->status(), RemoteCommandJob::SUCCEEDED);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
 }
 
 }  // namespace policy

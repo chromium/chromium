@@ -10,12 +10,14 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace ash {
 class LoginState;
-}
+class SessionTerminationManager;
+}  // namespace ash
 
 namespace chromeos {
 class PowerManagerClient;
@@ -31,7 +33,7 @@ namespace policy {
 //   immediately.
 // * If the device runs in a regular mode:
 //   * If there is no logged in user, reports success and reboots immediately.
-//   * If a user is logged in, reports failure and does not reboot.
+//   * If the user signs out, reports success and reboots.
 class DeviceCommandRebootJob : public RemoteCommandJob {
  public:
   DeviceCommandRebootJob();
@@ -48,9 +50,11 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
   using GetBootTimeCallback = base::RepeatingCallback<base::TimeTicks()>;
 
   // Extended constructor for testing puproses.
-  DeviceCommandRebootJob(chromeos::PowerManagerClient* power_manager_client,
-                         ash::LoginState* loging_state,
-                         GetBootTimeCallback get_boot_time_callback);
+  DeviceCommandRebootJob(
+      chromeos::PowerManagerClient* power_manager_client,
+      ash::LoginState* loging_state,
+      ash::SessionTerminationManager* session_termination_manager,
+      GetBootTimeCallback get_boot_time_callback);
 
  private:
   // Posts a task with a callback. Command's callbacks cannot be run
@@ -61,6 +65,12 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
   // RemoteCommandJob:
   void RunImpl(CallbackWithResult succeeded_callback,
                CallbackWithResult failed_callback) override;
+
+  // Reboots the device on user logout.
+  void RebootUserSession();
+
+  // Called when `session_termination_manager_` is about to reboot on signout.
+  void OnSignout();
 
   // Reports success and initiates a reboot request with given `reason`.
   // Shall be called once.
@@ -77,11 +87,16 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
   // determine how to proceed with the reboot.
   const base::raw_ptr<ash::LoginState> login_state_;
 
+  // Handles reboot on signout.
+  base::raw_ptr<ash::SessionTerminationManager> session_termination_manager_;
+
   // Returns device's boot timestamp. The boot time is not constant and may
   // change at runtime, e.g. because of time sync.
   const GetBootTimeCallback get_boot_time_callback_;
 
   CallbackWithResult succeeded_callback_;
+
+  base::WeakPtrFactory<DeviceCommandRebootJob> weak_factory_{this};
 };
 
 }  // namespace policy
