@@ -3922,8 +3922,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "AutocompleteStabilityUpdateResultDebounceDelay": "20",
-                        "AutocompleteStabilityUpdateResultDebounceFromLastRun": "true"
+                        "AutocompleteStabilityUpdateResultDebounceDelay": "200",
+                        "AutocompleteStabilityUpdateResultDebounceFromLastRun": "false"
                     },
                     "enable_features": [
                         "OmniboxUpdateResultDebounce"
@@ -6634,7 +6634,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {},
+                    "params": {
+                        "omnibox_history_cluster_provider_inherit_search_match_score": "false",
+                        "omnibox_history_cluster_provider_rank_above_searches": "false",
+                        "omnibox_history_cluster_provider_shortcuts": "true"
+                    },
                     "enable_features": [
                         "JourneysOmniboxHistoryClusterProvider"
                     ]
