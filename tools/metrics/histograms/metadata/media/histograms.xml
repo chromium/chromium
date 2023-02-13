@@ -186,6 +186,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Android.MediaCodecInfo.Has{CodecType}Info"
+    enum="BooleanAvailable" expires_after="M115">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Indicates if MediaCodecInfo for the given codec type was available and
+    non-empty. Reported once per GPU process instance if and only if encoder or
+    decoder info are requested respectively.
+  </summary>
+  <token key="CodecType">
+    <variant name="Decoder"/>
+    <variant name="Encoder"/>
+  </token>
+</histogram>
+
 <histogram name="Media.Android.MediaPlayerSuccess" enum="MediaPlayerExitStatus"
     expires_after="2023-07-02">
   <owner>tguilbert@chromium.org</owner>

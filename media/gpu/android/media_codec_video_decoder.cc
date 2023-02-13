@@ -34,6 +34,7 @@
 #include "media/base/video_frame.h"
 #include "media/gpu/android/android_video_surface_chooser.h"
 #include "media/gpu/android/codec_allocator.h"
+#include "media/gpu/android/video_accelerator_util.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -59,148 +60,54 @@ bool IsSurfaceControlEnabled(const gpu::GpuFeatureInfo& info) {
 }
 
 std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
-    DeviceInfo* device_info) {
+    DeviceInfo* device_info,
+    bool allow_software_codecs = false) {
   std::vector<SupportedVideoDecoderConfig> supported_configs;
-
-  if (device_info->IsVp8DecoderAvailable()) {
-    // For unencrypted content, require that the size is at least 360p and that
-    // the MediaCodec implementation is hardware; otherwise fall back to libvpx.
-    if (!device_info->IsDecoderKnownUnaccelerated(VideoCodec::kVP8)) {
-      supported_configs.emplace_back(VP8PROFILE_ANY, VP8PROFILE_ANY,
-                                     gfx::Size(480, 360), gfx::Size(3840, 2160),
-                                     false,   // allow_encrypted
-                                     false);  // require_encrypted
-    }
-
-    // Encrypted content must be decoded by MediaCodec.
-    supported_configs.emplace_back(VP8PROFILE_ANY, VP8PROFILE_ANY,
-                                   gfx::Size(0, 0), gfx::Size(3840, 2160),
-                                   true,   // allow_encrypted
-                                   true);  // require_encrypted
-  }
-
-  // TODO(dalecurtis): This needs to actually check the profiles available. This
-  // can be done by calling MediaCodecUtil::AddSupportedCodecProfileLevels.
-  if (device_info->IsVp9DecoderAvailable()) {
-    const bool is_sw =
-        device_info->IsDecoderKnownUnaccelerated(VideoCodec::kVP9);
-
-    std::vector<CodecProfileLevel> profiles;
-
-    // Support for VP9.2, VP9.3 was not added until Nougat.
-    if (device_info->SdkVersion() >= base::android::SDK_VERSION_NOUGAT)
-      device_info->AddSupportedCodecProfileLevels(&profiles);
-
-    // If we think a VP9 decoder is available, but we didn't get any profiles
-    // returned, just assume support for vp9.0 only.
-    if (profiles.empty())
-      profiles.push_back({VideoCodec::kVP9, VP9PROFILE_PROFILE0, 0});
-
-    for (const auto& p : profiles) {
-      if (p.codec != VideoCodec::kVP9)
-        continue;
-
+  for (const auto& info : GetDecoderInfoCache()) {
+    const auto codec = VideoCodecProfileToVideoCodec(info.profile);
+    if ((codec == VideoCodec::kVP8 && device_info->IsVp8DecoderAvailable()) ||
+        (codec == VideoCodec::kVP9 && device_info->IsVp9DecoderAvailable()) ||
+        (codec == VideoCodec::kAV1 && device_info->IsAv1DecoderAvailable())) {
       // We don't compile support into libvpx for these profiles, so allow them
-      // for all resolutions. See notes on H264 profiles below for more detail.
-      if (p.profile > VP9PROFILE_PROFILE1) {
-        supported_configs.emplace_back(p.profile, p.profile, gfx::Size(0, 0),
-                                       gfx::Size(3840, 2160),
-                                       true,    // allow_encrypted
-                                       false);  // require_encrypted
-        supported_configs.emplace_back(p.profile, p.profile, gfx::Size(0, 0),
-                                       gfx::Size(2160, 3840),
-                                       true,    // allow_encrypted
-                                       false);  // require_encrypted
-        continue;
+      // for all resolutions. Tests require availability of software codecs.
+      const bool require_encrypted = !allow_software_codecs &&
+                                     info.profile != VP9PROFILE_PROFILE2 &&
+                                     info.profile != VP9PROFILE_PROFILE3;
+      supported_configs.emplace_back(
+          info.profile, info.profile, info.coded_size_min, info.coded_size_max,
+          /*allow_encrypted=*/true, require_encrypted);
+
+      // Don't allow software decoding since we bundle VP8, VP9, AV1 decoders.
+      if (!info.is_software_codec && require_encrypted) {
+        // Require a minimum of 360p even for hardware decoding of VP8, VP9.
+        auto coded_size_min = info.coded_size_min;
+        if (codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9) {
+          coded_size_min.SetToMax(gfx::Size(360, 360));
+        }
+        supported_configs.emplace_back(info.profile, info.profile,
+                                       coded_size_min, info.coded_size_max,
+                                       /*allow_encrypted=*/false,
+                                       /*require_encrypted=*/false);
       }
-
-      // For unencrypted vp9.0 and vp9.1 content, require that the size is at
-      // least 360p and that the MediaCodec implementation is hardware;
-      // otherwise fall back to libvpx.
-      if (!is_sw) {
-        supported_configs.emplace_back(
-            p.profile, p.profile, gfx::Size(480, 360), gfx::Size(3840, 2160),
-            false,   // allow_encrypted
-            false);  // require_encrypted
-        supported_configs.emplace_back(
-            p.profile, p.profile, gfx::Size(360, 480), gfx::Size(2160, 3840),
-            false,   // allow_encrypted
-            false);  // require_encrypted
-      }
-
-      // Encrypted content must be decoded by MediaCodec.
-      supported_configs.emplace_back(p.profile, p.profile, gfx::Size(0, 0),
-                                     gfx::Size(3840, 2160),
-                                     true,   // allow_encrypted
-                                     true);  // require_encrypted
-      supported_configs.emplace_back(p.profile, p.profile, gfx::Size(0, 0),
-                                     gfx::Size(2160, 3840),
-                                     true,   // allow_encrypted
-                                     true);  // require_encrypted
+      continue;
     }
-  }
-
-  if (device_info->IsAv1DecoderAvailable()) {
-    if (device_info->IsDecoderKnownUnaccelerated(VideoCodec::kAV1)) {
-      supported_configs.emplace_back(AV1PROFILE_PROFILE_MAIN,
-                                     AV1PROFILE_PROFILE_MAIN, gfx::Size(0, 0),
-                                     gfx::Size(3840, 2160),
-                                     true,   // allow_encrypted
-                                     true);  // require_encrypted
-      supported_configs.emplace_back(AV1PROFILE_PROFILE_MAIN,
-                                     AV1PROFILE_PROFILE_MAIN, gfx::Size(0, 0),
-                                     gfx::Size(2160, 3840),
-                                     true,   // allow_encrypted
-                                     true);  // require_encrypted
-    } else {
-      supported_configs.emplace_back(AV1PROFILE_PROFILE_MAIN,
-                                     AV1PROFILE_PROFILE_MAIN, gfx::Size(0, 0),
-                                     gfx::Size(3840, 2160),
-                                     true,    // allow_encrypted
-                                     false);  // require_encrypted
-      supported_configs.emplace_back(AV1PROFILE_PROFILE_MAIN,
-                                     AV1PROFILE_PROFILE_MAIN, gfx::Size(0, 0),
-                                     gfx::Size(2160, 3840),
-                                     true,    // allow_encrypted
-                                     false);  // require_encrypted
-    }
-  }
-
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  // MediaCodec is only guaranteed to support baseline, but some devices may
-  // support others. Advertise support for all H.264 profiles and let the
-  // MediaCodec fail when decoding if it's not actually supported. It's assumed
-  // that there is not software fallback for H.264 on Android.
-  supported_configs.emplace_back(H264PROFILE_MIN, H264PROFILE_MAX,
-                                 gfx::Size(0, 0), gfx::Size(3840, 2160),
-                                 true,    // allow_encrypted
-                                 false);  // require_encrypted
-  supported_configs.emplace_back(H264PROFILE_MIN, H264PROFILE_MAX,
-                                 gfx::Size(0, 0), gfx::Size(2160, 3840),
-                                 true,    // allow_encrypted
-                                 false);  // require_encrypted
-
+    if (codec == VideoCodec::kH264
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  if (base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
-    supported_configs.emplace_back(HEVCPROFILE_MIN, HEVCPROFILE_MAX,
-                                   gfx::Size(0, 0), gfx::Size(3840, 2160),
-                                   true,    // allow_encrypted
-                                   false);  // require_encrypted
-  }
-#endif
+        || (codec == VideoCodec::kHEVC &&
+            base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport))
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-  // Technically we should check which profiles are supported, but we can
-  // allow them all like we do with H264 codec.
-  supported_configs.emplace_back(DOLBYVISION_PROFILE4, DOLBYVISION_PROFILE9,
-                                 gfx::Size(0, 0), gfx::Size(3840, 2160),
-                                 true,    // allow_encrypted
-                                 false);  // require_encrypted
-  supported_configs.emplace_back(DOLBYVISION_PROFILE4, DOLBYVISION_PROFILE9,
-                                 gfx::Size(0, 0), gfx::Size(2160, 3840),
-                                 true,    // allow_encrypted
-                                 false);  // require_encrypted
-#endif
-#endif  // #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+        || codec == VideoCodec::kDolbyVision
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+    ) {
+      supported_configs.emplace_back(info.profile, info.profile,
+                                     info.coded_size_min, info.coded_size_max,
+                                     /*allow_encrypted=*/true,
+                                     /*require_encrypted=*/false);
+    }
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+  }
 
   return supported_configs;
 }
@@ -358,9 +265,12 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Tests override the DeviceInfo, so if an override is provided query the
   // configs as they look under that DeviceInfo. If not, use the default method
   // which is statically cached for faster Initialize().
+  //
+  // The tests also require the presence of software codecs.
   const auto configs = device_info_ == DeviceInfo::GetInstance()
                            ? GetSupportedConfigs()
-                           : GetSupportedConfigsInternal(device_info_);
+                           : GetSupportedConfigsInternal(
+                                 device_info_, /*allow_software_codecs=*/true);
   if (!IsVideoDecoderConfigSupported(configs, config)) {
     DVLOG(1) << "Unsupported configuration.";
     MEDIA_LOG(INFO, media_log_) << "Video configuration is not valid: "

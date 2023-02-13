@@ -210,7 +210,6 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
       cdm_->ran_media_crypto_ready_cb_ = true;
       base::RunLoop().RunUntilIdle();
     }
-
     return result;
   }
 
@@ -218,7 +217,9 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   // a codec and have one decode pending.
   MockAndroidOverlay* InitializeWithOverlay_OneDecodePending(
       VideoDecoderConfig config) {
-    Initialize(config);
+    if (!Initialize(config)) {
+      return nullptr;
+    }
     mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
     OverlayInfo info;
     info.routing_token = base::UnguessableToken::CreateForTesting(1, 2);
@@ -239,18 +240,23 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
 
   // Call Initialize() and Decode() to start lazy init. MCVD will be waiting for
   // a codec and have one decode pending.
-  void InitializeWithTextureOwner_OneDecodePending(VideoDecoderConfig config) {
-    Initialize(config);
+  bool InitializeWithTextureOwner_OneDecodePending(VideoDecoderConfig config) {
+    if (!Initialize(config)) {
+      return false;
+    }
     mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
     provide_overlay_info_cb_.Run(OverlayInfo());
     surface_chooser_->ProvideTextureOwner();
+    return true;
   }
 
   // Fully initializes MCVD and returns the codec it's configured with. MCVD
   // will have one decode pending.
   MockMediaCodecBridge* InitializeFully_OneDecodePending(
       VideoDecoderConfig config) {
-    InitializeWithTextureOwner_OneDecodePending(config);
+    if (!InitializeWithTextureOwner_OneDecodePending(config)) {
+      return nullptr;
+    }
     return codec_allocator_->ProvideMockCodecAsync();
   }
 
@@ -347,14 +353,14 @@ TEST_P(MediaCodecVideoDecoderTest, InitializeDoesntInitSurfaceOrCodec) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, FirstDecodeTriggersFrameFactoryInit) {
-  Initialize(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
   EXPECT_CALL(*video_frame_factory_, Initialize(ExpectedOverlayMode(), _));
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
 }
 
 TEST_P(MediaCodecVideoDecoderTest,
        FirstDecodeTriggersOverlayInfoRequestIfSupported) {
-  Initialize(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
   // Requesting overlay info sets this cb.
   ASSERT_FALSE(provide_overlay_info_cb_);
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
@@ -363,7 +369,7 @@ TEST_P(MediaCodecVideoDecoderTest,
 
 TEST_P(MediaCodecVideoDecoderTest,
        OverlayInfoIsNotRequestedIfOverlaysNotSupported) {
-  Initialize(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
   ON_CALL(*device_info_, SupportsOverlaySurfaces())
       .WillByDefault(Return(false));
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
@@ -373,7 +379,7 @@ TEST_P(MediaCodecVideoDecoderTest,
 TEST_P(MediaCodecVideoDecoderTest, RestartForOverlayTransitionsFlagIsCorrect) {
   ON_CALL(*device_info_, IsSetOutputSurfaceSupported())
       .WillByDefault(Return(true));
-  Initialize(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
   ASSERT_FALSE(restart_for_transitions_);
 }
@@ -381,19 +387,20 @@ TEST_P(MediaCodecVideoDecoderTest, RestartForOverlayTransitionsFlagIsCorrect) {
 TEST_P(MediaCodecVideoDecoderTest,
        OverlayInfoIsNotRequestedIfThreadedTextureMailboxesEnabled) {
   gpu_preferences_.enable_threaded_texture_mailboxes = true;
-  Initialize(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
   ASSERT_FALSE(provide_overlay_info_cb_);
 }
 
 TEST_P(MediaCodecVideoDecoderTest, OverlayInfoDuringInitUpdatesSurfaceChooser) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
   EXPECT_CALL(*surface_chooser_, MockUpdateState());
   provide_overlay_info_cb_.Run(OverlayInfo());
 }
 
 TEST_P(MediaCodecVideoDecoderTest, CodecIsCreatedAfterSurfaceChosen) {
-  Initialize(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
   provide_overlay_info_cb_.Run(OverlayInfo());
   EXPECT_CALL(*codec_allocator_, MockCreateMediaCodecAsync());
@@ -401,7 +408,7 @@ TEST_P(MediaCodecVideoDecoderTest, CodecIsCreatedAfterSurfaceChosen) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, FrameFactoryInitFailureIsAnError) {
-  Initialize(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
   ON_CALL(*video_frame_factory_, Initialize(ExpectedOverlayMode(), _))
       .WillByDefault(RunCallback<1>(nullptr));
   EXPECT_CALL(decode_cb_, Run(IsDecodeErrorStatus())).Times(1);
@@ -410,7 +417,8 @@ TEST_P(MediaCodecVideoDecoderTest, FrameFactoryInitFailureIsAnError) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, CodecCreationFailureIsAnError) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
   EXPECT_CALL(decode_cb_, Run(IsDecodeErrorStatus())).Times(2);
   // Failing to create a codec should put MCVD into an error state.
@@ -420,6 +428,7 @@ TEST_P(MediaCodecVideoDecoderTest, CodecCreationFailureIsAnError) {
 TEST_P(MediaCodecVideoDecoderTest, CodecFailuresAreAnError) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   EXPECT_CALL(*codec, DequeueInputBuffer(_, _))
       .WillOnce(Return(MEDIA_CODEC_ERROR));
   EXPECT_CALL(decode_cb_, Run(IsDecodeErrorStatus()));
@@ -429,6 +438,7 @@ TEST_P(MediaCodecVideoDecoderTest, CodecFailuresAreAnError) {
 TEST_P(MediaCodecVideoDecoderTest, AfterInitCompletesTheCodecIsPolled) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   // Run a RunLoop until the first time the codec is polled for an available
   // input buffer.
   base::RunLoop loop;
@@ -443,11 +453,13 @@ TEST_P(MediaCodecVideoDecoderTest, AfterInitCompletesTheCodecIsPolled) {
 TEST_P(MediaCodecVideoDecoderTest, CodecIsReleasedOnDestruction) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(codec));
 }
 
 TEST_P(MediaCodecVideoDecoderTest, SurfaceChooserIsUpdatedOnOverlayChanges) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
 
   EXPECT_CALL(*surface_chooser_, MockReplaceOverlayFactory(_)).Times(2);
   OverlayInfo info;
@@ -460,7 +472,8 @@ TEST_P(MediaCodecVideoDecoderTest, SurfaceChooserIsUpdatedOnOverlayChanges) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, OverlayInfoUpdatesAreIgnoredInStateError) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
   // Enter the error state.
   codec_allocator_->ProvideNullCodecAsync();
 
@@ -471,7 +484,8 @@ TEST_P(MediaCodecVideoDecoderTest, OverlayInfoUpdatesAreIgnoredInStateError) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, DuplicateOverlayInfoUpdatesAreIgnored) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
 
   // The second overlay info update should be ignored.
   EXPECT_CALL(*surface_chooser_, MockReplaceOverlayFactory(_)).Times(1);
@@ -483,7 +497,8 @@ TEST_P(MediaCodecVideoDecoderTest, DuplicateOverlayInfoUpdatesAreIgnored) {
 
 TEST_P(MediaCodecVideoDecoderTest, CodecIsCreatedWithChosenOverlay) {
   EXPECT_CALL(*codec_allocator_, MockCreateMediaCodecAsync());
-  InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(
+      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_)));
   EXPECT_TRUE(base::android::AttachCurrentThread()->IsSameObject(
       java_surface_.obj(),
       codec_allocator_->most_recent_config->surface.obj()));
@@ -495,17 +510,19 @@ TEST_P(MediaCodecVideoDecoderTest,
       .WillByDefault(Return(false));
   auto* overlay =
       InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(overlay);
   overlay->OnSurfaceDestroyed();
 
   // MCVD handles release of the MediaCodec after WeakPtr invalidation.
   EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(NotNull()));
   auto* codec = codec_allocator_->ProvideMockCodecAsync();
-  ASSERT_TRUE(!!codec);
+  ASSERT_TRUE(codec);
 }
 
 TEST_P(MediaCodecVideoDecoderTest, SurfaceChangedWhileCodecCreationPending) {
   auto* overlay =
       InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(overlay);
   overlay->OnSurfaceDestroyed();
   auto codec = std::make_unique<NiceMock<MockMediaCodecBridge>>();
 
@@ -518,6 +535,7 @@ TEST_P(MediaCodecVideoDecoderTest, SurfaceChangedWhileCodecCreationPending) {
 TEST_P(MediaCodecVideoDecoderTest, SurfaceDestroyedDoesSyncSurfaceTransition) {
   auto* overlay =
       InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(overlay);
   auto* codec = codec_allocator_->ProvideMockCodecAsync();
 
   // MCVD must synchronously switch the codec's surface (to surface
@@ -534,6 +552,7 @@ TEST_P(MediaCodecVideoDecoderTest,
       .WillByDefault(Return(false));
   auto* overlay =
       InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(overlay);
   auto* codec = codec_allocator_->ProvideMockCodecAsync();
 
   // MCVD must synchronously release the codec.
@@ -545,7 +564,8 @@ TEST_P(MediaCodecVideoDecoderTest,
 }
 
 TEST_P(MediaCodecVideoDecoderTest, PumpCodecPerformsPendingSurfaceTransitions) {
-  InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(
+      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_)));
   auto* codec = codec_allocator_->ProvideMockCodecAsync();
 
   // Set a pending surface transition and then call PumpCodec().
@@ -556,7 +576,8 @@ TEST_P(MediaCodecVideoDecoderTest, PumpCodecPerformsPendingSurfaceTransitions) {
 
 TEST_P(MediaCodecVideoDecoderTest,
        SetSurfaceFailureReleasesTheCodecAndSignalsError) {
-  InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(
+      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_)));
   auto* codec = codec_allocator_->ProvideMockCodecAsync();
 
   surface_chooser_->ProvideTextureOwner();
@@ -569,7 +590,8 @@ TEST_P(MediaCodecVideoDecoderTest,
 }
 
 TEST_P(MediaCodecVideoDecoderTest, SurfaceTransitionsCanBeCanceled) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
   auto* codec = codec_allocator_->ProvideMockCodecAsync();
 
   // Set a pending transition to an overlay, and then back to a texture owner.
@@ -589,7 +611,8 @@ TEST_P(MediaCodecVideoDecoderTest, SurfaceTransitionsCanBeCanceled) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, TransitionToSameSurfaceIsIgnored) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
   auto* codec = codec_allocator_->ProvideMockCodecAsync();
   EXPECT_CALL(*codec, SetSurface(_)).Times(0);
   surface_chooser_->ProvideTextureOwner();
@@ -598,7 +621,8 @@ TEST_P(MediaCodecVideoDecoderTest, TransitionToSameSurfaceIsIgnored) {
 
 TEST_P(MediaCodecVideoDecoderTest,
        ResetBeforeCodecInitializedSucceedsImmediately) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
   base::MockCallback<base::OnceClosure> reset_cb;
   EXPECT_CALL(reset_cb, Run());
   mcvd_->Reset(reset_cb.Get());
@@ -606,7 +630,8 @@ TEST_P(MediaCodecVideoDecoderTest,
 }
 
 TEST_P(MediaCodecVideoDecoderTest, ResetAbortsPendingDecodes) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
   EXPECT_CALL(decode_cb_, Run(HasStatusCode(DecoderStatus::Codes::kAborted)));
   DoReset();
   testing::Mock::VerifyAndClearExpectations(&decode_cb_);
@@ -616,6 +641,7 @@ TEST_P(MediaCodecVideoDecoderTest, ResetAbortsPendingEosDecode) {
   // EOS is treated differently by MCVD. This verifies that it's also aborted.
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   base::MockCallback<VideoDecoder::DecodeCB> eos_decode_cb;
   mcvd_->Decode(DecoderBuffer::CreateEOSBuffer(), eos_decode_cb.Get());
 
@@ -635,6 +661,7 @@ TEST_P(MediaCodecVideoDecoderTest, ResetAbortsPendingEosDecode) {
 TEST_P(MediaCodecVideoDecoderTest, ResetDoesNotFlushAnAlreadyFlushedCodec) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
 
   // The codec is still in the flushed state so Reset() doesn't need to flush.
   EXPECT_CALL(*codec, Flush()).Times(0);
@@ -647,6 +674,7 @@ TEST_P(MediaCodecVideoDecoderTest, ResetDoesNotFlushAnAlreadyFlushedCodec) {
 TEST_P(MediaCodecVideoDecoderVp8Test, ResetDrainsVP8CodecsBeforeFlushing) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   // Accept the first decode to transition out of the flushed state.
   codec->AcceptOneInput();
   PumpCodec();
@@ -676,6 +704,7 @@ TEST_P(MediaCodecVideoDecoderVp8Test, ResetDoesNotDrainVp8WithAsyncApi) {
 
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   // Accept the first decode to transition out of the flushed state.
   codec->AcceptOneInput();
   PumpCodec();
@@ -695,6 +724,7 @@ TEST_P(MediaCodecVideoDecoderVp8Test, ResetDoesNotDrainVp8WithAsyncApi) {
 TEST_P(MediaCodecVideoDecoderH264Test, ResetDoesNotDrainNonVp8Codecs) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   // Accept the first decode to transition out of the flushed state.
   codec->AcceptOneInput();
   PumpCodec();
@@ -714,6 +744,7 @@ TEST_P(MediaCodecVideoDecoderH264Test, ResetDoesNotDrainNonVp8Codecs) {
 TEST_P(MediaCodecVideoDecoderVp8Test, TeardownCompletesPendingReset) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
 
   // Accept the first decode to transition out of the flushed state.
   codec->AcceptOneInput();
@@ -733,6 +764,7 @@ TEST_P(MediaCodecVideoDecoderVp8Test, TeardownCompletesPendingReset) {
 TEST_P(MediaCodecVideoDecoderTest, CodecFlushIsDeferredAfterDraining) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   mcvd_->Decode(DecoderBuffer::CreateEOSBuffer(), decode_cb_.Get());
 
   // Produce one output that VFF will hold onto.
@@ -760,6 +792,7 @@ TEST_P(MediaCodecVideoDecoderTest, CodecFlushIsDeferredAfterDraining) {
 TEST_P(MediaCodecVideoDecoderTest, EosDecodeCbIsRunAfterEosIsDequeued) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   codec->AcceptOneInput();
   PumpCodec();
 
@@ -780,7 +813,8 @@ TEST_P(MediaCodecVideoDecoderTest, EosDecodeCbIsRunAfterEosIsDequeued) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, TeardownInvalidatesCodecCreationWeakPtr) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
   mcvd_.reset();
   EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(NotNull()));
   ASSERT_TRUE(codec_allocator_->ProvideMockCodecAsync());
@@ -788,7 +822,8 @@ TEST_P(MediaCodecVideoDecoderTest, TeardownInvalidatesCodecCreationWeakPtr) {
 
 TEST_P(MediaCodecVideoDecoderTest,
        TeardownInvalidatesCodecCreationWeakPtrButDoesNotCallReleaseMediaCodec) {
-  InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeWithTextureOwner_OneDecodePending(
+      TestVideoConfig::Large(codec_)));
   mcvd_.reset();
 
   // A null codec should not be released via ReleaseMediaCodec().
@@ -797,7 +832,7 @@ TEST_P(MediaCodecVideoDecoderTest,
 }
 
 TEST_P(MediaCodecVideoDecoderTest, TeardownDoesNotDrainFlushedCodecs) {
-  InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_)));
   // Since we assert that MCVD is destructed by default, this test verifies that
   // MCVD is destructed without requiring the codec to output an EOS buffer.
 
@@ -811,6 +846,7 @@ TEST_P(MediaCodecVideoDecoderTest, TeardownDoesNotDrainFlushedCodecs) {
 TEST_P(MediaCodecVideoDecoderH264Test, TeardownDoesNotDrainNonVp8Codecs) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   // Accept the first decode to transition out of the flushed state.
   codec->AcceptOneInput();
   PumpCodec();
@@ -823,6 +859,7 @@ TEST_P(MediaCodecVideoDecoderVp8Test,
        TeardownDrainsVp8CodecsBeforeDestruction) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
   // Accept the first decode to transition out of the flushed state.
   codec->AcceptOneInput();
   PumpCodec();
@@ -842,8 +879,8 @@ TEST_P(MediaCodecVideoDecoderVp8Test,
 TEST_P(MediaCodecVideoDecoderTest, CdmInitializationWorksForL3) {
   // Make sure that MCVD uses the cdm, and sends it along to the codec.
   CreateCdm(true, false);
-  InitializeWithOverlay_OneDecodePending(
-      TestVideoConfig::NormalEncrypted(codec_));
+  ASSERT_TRUE(InitializeWithOverlay_OneDecodePending(
+      TestVideoConfig::NormalEncrypted(codec_)));
   ASSERT_TRUE(!!cdm_->ran_media_crypto_ready_cb_);
   ASSERT_EQ(surface_chooser_->current_state_.is_secure, true);
   ASSERT_EQ(surface_chooser_->current_state_.is_required, false);
@@ -855,8 +892,8 @@ TEST_P(MediaCodecVideoDecoderTest, CdmInitializationWorksForL3) {
 TEST_P(MediaCodecVideoDecoderTest, CdmInitializationWorksForL1) {
   // Make sure that MCVD uses the cdm, and sends it along to the codec.
   CreateCdm(true, true);
-  InitializeWithOverlay_OneDecodePending(
-      TestVideoConfig::NormalEncrypted(codec_));
+  ASSERT_TRUE(InitializeWithOverlay_OneDecodePending(
+      TestVideoConfig::NormalEncrypted(codec_)));
   ASSERT_TRUE(!!cdm_->ran_media_crypto_ready_cb_);
   ASSERT_EQ(surface_chooser_->current_state_.is_secure, true);
   ASSERT_EQ(surface_chooser_->current_state_.is_required, true);
@@ -870,7 +907,8 @@ TEST_P(MediaCodecVideoDecoderTest, CdmIsSetEvenForClearStream) {
   CreateCdm(true, false);
   // We use the Large config, since VPx can be rejected if it's too small, in
   // favor of software decode, since this is unencrypted.
-  InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(
+      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_)));
   ASSERT_TRUE(!!cdm_->ran_media_crypto_ready_cb_);
   ASSERT_EQ(surface_chooser_->current_state_.is_secure, true);
   ASSERT_EQ(surface_chooser_->current_state_.is_required, false);
@@ -884,7 +922,8 @@ TEST_P(MediaCodecVideoDecoderTest, NoMediaCryptoContext_ClearStream) {
   // Make sure that MCVD initializes for clear stream when MediaCryptoContext
   // is not available.
   CreateCdm(false, false);
-  InitializeWithOverlay_OneDecodePending(TestVideoConfig::Normal(codec_));
+  ASSERT_TRUE(
+      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Normal(codec_)));
   ASSERT_FALSE(!!cdm_->media_crypto_ready_cb_);
   ASSERT_FALSE(!!cdm_->ran_media_crypto_ready_cb_);
   ASSERT_EQ(surface_chooser_->current_state_.is_secure, false);
@@ -917,6 +956,7 @@ TEST_P(MediaCodecVideoDecoderTest, VideoFramesArePowerEfficient) {
   // MCVD should mark video frames as POWER_EFFICIENT.
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
+  ASSERT_TRUE(codec);
 
   // Produce one output.
   codec->AcceptOneInput();

@@ -158,6 +158,8 @@ component("gpu") {
       "android/shared_image_video_provider.h",
       "android/surface_chooser_helper.cc",
       "android/surface_chooser_helper.h",
+      "android/video_accelerator_util.cc",
+      "android/video_accelerator_util.h",
       "android/video_frame_factory.h",
       "android/video_frame_factory_impl.cc",
       "android/video_frame_factory_impl.h",

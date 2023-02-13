@@ -54,6 +54,7 @@ class MediaCodecUtil {
         public static final String VIDEO_VP8 = "video/x-vnd.on2.vp8";
         public static final String VIDEO_VP9 = "video/x-vnd.on2.vp9";
         public static final String VIDEO_AV1 = "video/av01";
+        public static final String VIDEO_DV = "video/dolby-vision";
         public static final String AUDIO_OPUS = "audio/opus";
     }
 
@@ -126,7 +127,7 @@ class MediaCodecUtil {
     /**
      * Return true if and only if info is a software codec.
      */
-    private static boolean isSoftwareCodec(MediaCodecInfo info) {
+    public static boolean isSoftwareCodec(MediaCodecInfo info) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) return !info.isHardwareAccelerated();
 
         String name = info.getName().toLowerCase(Locale.ROOT);

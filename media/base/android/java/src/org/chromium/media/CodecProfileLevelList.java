@@ -144,8 +144,11 @@ class CodecProfileLevelList {
                 switch (profile) {
                     case CodecProfileLevel.HEVCProfileMain:
                         return VideoCodecProfile.HEVCPROFILE_MAIN;
+                    case CodecProfileLevel.HEVCProfileMainStill:
+                        return VideoCodecProfile.HEVCPROFILE_MAIN_STILL_PICTURE;
                     case CodecProfileLevel.HEVCProfileMain10:
                     case CodecProfileLevel.HEVCProfileMain10HDR10:
+                    case CodecProfileLevel.HEVCProfileMain10HDR10Plus:
                         return VideoCodecProfile.HEVCPROFILE_MAIN10;
                     default:
                         throw new UnsupportedCodecProfileException();
