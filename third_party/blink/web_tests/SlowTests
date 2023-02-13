@@ -778,7 +778,9 @@ crbug.com/874695 [ Release ] virtual/threaded/synthetic_gestures/synthetic-pinch
 crbug.com/874695 [ Debug Linux ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow-desktop.html [ Slow ]
 crbug.com/874695 [ Debug Mac12 ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow-desktop.html [ Slow ]
 crbug.com/874695 [ Release ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow-desktop.html [ Slow ]
-crbug.com/874695 virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
+crbug.com/874695 [ Linux ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
+crbug.com/874695 [ Mac ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
+crbug.com/874695 [ Release Win ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Slow ]
 
 crbug.com/868956 virtual/gpu/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
 
