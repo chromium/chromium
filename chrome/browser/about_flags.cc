@@ -1267,7 +1267,7 @@ const FeatureEntry::FeatureVariation
 const FeatureEntry::FeatureParam
     kJourneysCosineSimilarityNoPairwiseMergeParams[] = {
         {"collections_blocklist",
-         "/collection/it_glosssary,/collection/software"},
+         "/collection/it_glosssary,/collection/software,/collection/websites"},
         {"exclude_entities_that_have_no_collections", "true"},
         {"use_content_clustering_cosine_similarity", "true"},
         {"use_pairwise_merge", "false"},
@@ -1275,7 +1275,7 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kJourneysCosineSimilarityWithPairwiseMergeParams[] = {
         {"collections_blocklist",
-         "/collection/it_glosssary,/collection/software"},
+         "/collection/it_glosssary,/collection/software,/collection/websites"},
         {"exclude_entities_that_have_no_collections", "true"},
         {"use_content_clustering_cosine_similarity", "true"},
         {"use_pairwise_merge", "true"},
