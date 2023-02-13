@@ -30,13 +30,13 @@ repos:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.32.0
+    rev: v8.34.0
     hooks:
       - id: eslint
         files: \.[jt]s$
         types: [file]
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.7.1
+    rev: v3.0.0-alpha.4
     hooks:
       - id: prettier
   - repo: https://github.com/google/yapf
@@ -45,7 +45,7 @@ repos:
       - id: yapf
         args: ['--in-place', '--parallel']
   - repo: https://github.com/PyCQA/isort
-    rev: 5.11.4
+    rev: 5.12.0
     hooks:
       - id: isort
   - repo: https://github.com/asottile/pyupgrade
