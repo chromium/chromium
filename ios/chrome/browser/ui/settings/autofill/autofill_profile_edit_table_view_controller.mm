@@ -8,13 +8,18 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/browser/geo/autofill_country.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_country_selection_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/autofill/cells/country_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -36,18 +41,26 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeField = kItemTypeEnumZero,
+  ItemTypeCountry,
   ItemTypeFooter
 };
 
 }  // namespace
 
-@interface AutofillProfileEditTableViewController ()
+@interface AutofillProfileEditTableViewController () <
+    AutofillCountrySelectionTableViewControllerDelegate>
 
 // Initializes a AutofillProfileEditTableViewController with `profile` and
 // `dataManager`.
 - (instancetype)initWithProfile:(const autofill::AutofillProfile&)profile
             personalDataManager:(autofill::PersonalDataManager*)dataManager
                       userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
+
+// Stores the value displayed in the country field.
+@property(nonatomic, strong) NSString* countryValue;
+
+// The fetched country list.
+@property(nonatomic, strong) NSArray<CountryItem*>* allCountries;
 
 @end
 
@@ -90,6 +103,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self.tableView.allowsSelectionDuringEditing = YES;
   self.tableView.accessibilityIdentifier = kAutofillProfileEditTableViewId;
+  self.countryValue = base::SysUTF16ToNSString(_autofillProfile.GetInfo(
+      autofill::ServerFieldType::ADDRESS_HOME_COUNTRY,
+      GetApplicationContext()->GetApplicationLocale()));
+
+  [self loadCountries];
   [self loadModel];
 }
 
@@ -111,6 +129,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
     for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
       NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
                                               inSection:section];
+      NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:path];
+      if (itemType == ItemTypeCountry) {
+        _autofillProfile.SetInfoWithVerificationStatus(
+            autofill::AutofillType(
+                autofill::ServerFieldType::ADDRESS_HOME_COUNTRY),
+            base::SysNSStringToUTF16(self.countryValue),
+            GetApplicationContext()->GetApplicationLocale(),
+            autofill::VerificationStatus::kUserVerified);
+        continue;
+      }
       AutofillEditItem* item = base::mac::ObjCCastStrict<AutofillEditItem>(
           [model itemAtIndexPath:path]);
       autofill::ServerFieldType serverFieldType =
@@ -149,7 +177,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super loadModel];
   TableViewModel* model = self.tableViewModel;
 
-  std::string locale = GetApplicationContext()->GetApplicationLocale();
   [model addSectionWithIdentifier:SectionIdentifierFields];
   for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
     const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
@@ -160,18 +187,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
       continue;
     }
 
-    AutofillEditItem* item =
-        [[AutofillEditItem alloc] initWithType:ItemTypeField];
-    item.fieldNameLabelText = l10n_util::GetNSString(field.displayStringID);
-    item.textFieldValue = base::SysUTF16ToNSString(_autofillProfile.GetInfo(
-        autofill::AutofillType(field.autofillType), locale));
-    item.autofillUIType = AutofillUITypeFromAutofillType(field.autofillType);
-    item.textFieldEnabled = self.tableView.editing;
-    item.hideIcon = !self.tableView.editing;
-    item.autoCapitalizationType = field.autoCapitalizationType;
-    item.returnKeyType = field.returnKeyType;
-    item.keyboardType = field.keyboardType;
-    [model addItem:item toSectionWithIdentifier:SectionIdentifierFields];
+    if (base::FeatureList::IsEnabled(
+            autofill::features::kAutofillAccountProfilesUnionView) &&
+        AutofillUITypeFromAutofillType(field.autofillType) ==
+            AutofillUITypeProfileHomeAddressCountry) {
+      [model addItem:[self countryItem]
+          toSectionWithIdentifier:SectionIdentifierFields];
+    } else {
+      [model addItem:[self autofillEditItemFromField:field]
+          toSectionWithIdentifier:SectionIdentifierFields];
+    }
   }
 
   if (base::FeatureList::IsEnabled(
@@ -190,8 +215,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  if (itemType == ItemTypeCountry) {
+    TableViewMultiDetailTextCell* multiDetailTextCell =
+        base::mac::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
+    multiDetailTextCell.accessibilityIdentifier =
+        multiDetailTextCell.textLabel.text;
+    return multiDetailTextCell;
+  }
 
   TableViewTextEditCell* textFieldCell =
       base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
@@ -202,11 +234,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   if (self.tableView.editing) {
-    UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    TableViewTextEditCell* textFieldCell =
-        base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
-    [textFieldCell.textField becomeFirstResponder];
+    if (itemType == ItemTypeField) {
+      UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+      TableViewTextEditCell* textFieldCell =
+          base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
+      [textFieldCell.textField becomeFirstResponder];
+    } else if (itemType == ItemTypeCountry) {
+      AutofillCountrySelectionTableViewController* viewController =
+          [[AutofillCountrySelectionTableViewController alloc]
+              initWithDelegate:self
+               selectedCountry:self.countryValue
+                  allCountries:self.allCountries];
+      [self.navigationController pushViewController:viewController
+                                           animated:YES];
+    }
   }
 }
 
@@ -229,7 +272,51 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return NO;
 }
 
+#pragma mark - AutofillCountrySelectionTableViewControllerDelegate
+
+- (void)didSelectCountry:(CountryItem*)selectedCountry {
+  [self.navigationController popViewControllerAnimated:YES];
+  self.countryValue = selectedCountry.text;
+  // Reload the model.
+  [self loadModel];
+  // Update the cells.
+  [self reconfigureCellsForItems:
+            [self.tableViewModel
+                itemsInSectionWithIdentifier:SectionIdentifierFields]];
+}
+
 #pragma mark - Private
+
+// Loads the country codes and names and sets the default selected country code.
+- (void)loadCountries {
+  autofill::CountryComboboxModel countryModel;
+  countryModel.SetCountries(*_personalDataManager,
+                            base::RepeatingCallback<bool(const std::string&)>(),
+                            GetApplicationContext()->GetApplicationLocale());
+  const autofill::CountryComboboxModel::CountryVector& countriesVector =
+      countryModel.countries();
+
+  NSMutableArray<CountryItem*>* countryItems = [[NSMutableArray alloc]
+      initWithCapacity:static_cast<NSUInteger>(countriesVector.size())];
+  // TODO(crbug.com/1407666): Skip the first country as it appears twice in the
+  // list.
+  for (size_t i = 0; i < countriesVector.size(); ++i) {
+    if (countriesVector[i].get()) {
+      CountryItem* countryItem =
+          [[CountryItem alloc] initWithType:ItemTypeCountry];
+      countryItem.text = base::SysUTF16ToNSString(countriesVector[i]->name());
+      countryItem.countryCode =
+          base::SysUTF8ToNSString(countriesVector[i]->country_code());
+      countryItem.accessibilityIdentifier = countryItem.text;
+      countryItem.accessibilityTraits |= UIAccessibilityTraitButton;
+      if (countryItem.text == self.countryValue) {
+        countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
+      }
+      [countryItems addObject:countryItem];
+    }
+  }
+  _allCountries = countryItems;
+}
 
 // Creates and returns the `TableViewLinkHeaderFooterItem` footer item.
 - (TableViewLinkHeaderFooterItem*)footerItem {
@@ -241,6 +328,33 @@ typedef NS_ENUM(NSInteger, ItemType) {
           @"Test The address is saved in your Google Account(%@). "
           @"You can use the address across Google products on any device",
           _userEmail];
+  return item;
+}
+
+- (AutofillEditItem*)autofillEditItemFromField:
+    (const AutofillProfileFieldDisplayInfo&)field {
+  AutofillEditItem* item =
+      [[AutofillEditItem alloc] initWithType:ItemTypeField];
+  item.fieldNameLabelText = l10n_util::GetNSString(field.displayStringID);
+  item.textFieldValue = base::SysUTF16ToNSString(_autofillProfile.GetInfo(
+      autofill::AutofillType(field.autofillType),
+      GetApplicationContext()->GetApplicationLocale()));
+  item.autofillUIType = AutofillUITypeFromAutofillType(field.autofillType);
+  item.textFieldEnabled = self.tableView.editing;
+  item.hideIcon = !self.tableView.editing;
+  item.autoCapitalizationType = field.autoCapitalizationType;
+  item.returnKeyType = field.returnKeyType;
+  item.keyboardType = field.keyboardType;
+  return item;
+}
+
+- (TableViewMultiDetailTextItem*)countryItem {
+  TableViewMultiDetailTextItem* item =
+      [[TableViewMultiDetailTextItem alloc] initWithType:ItemTypeCountry];
+  item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_COUNTRY);
+  item.trailingDetailText = self.countryValue;
+  // TODO(crbug.com/1407666): Show it as a button in the edit mode and fix the
+  // color.
   return item;
 }
 

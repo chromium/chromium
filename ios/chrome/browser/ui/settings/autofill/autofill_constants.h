@@ -20,4 +20,8 @@ extern NSString* const kAutofillCreditCardManagedViewId;
 // Accessibility identifier for the edit card table view.
 extern NSString* const kAutofillCreditCardEditTableViewId;
 
+// Accessibility identifier for the country selection view.
+extern NSString* const kAutofillCountrySelectionTableViewId;
+extern NSString* const kAutofillCountrySelectionSearchScrimId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_AUTOFILL_CONSTANTS_H_

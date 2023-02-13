@@ -13,6 +13,8 @@ source_set("autofill") {
     "autofill_add_credit_card_view_controller.h",
     "autofill_add_credit_card_view_controller.mm",
     "autofill_add_credit_card_view_controller_delegate.h",
+    "autofill_country_selection_table_view_controller.h",
+    "autofill_country_selection_table_view_controller.mm",
     "autofill_credit_card_edit_table_view_controller.h",
     "autofill_credit_card_edit_table_view_controller.mm",
     "autofill_credit_card_table_view_controller.h",
@@ -65,6 +67,7 @@ source_set("autofill") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
 }
@@ -139,6 +142,7 @@ source_set("eg2_tests") {
     "//ios/web/public/test:element_selector",
     "//net:test_support",
     "//ui/base",
+    "//ui/strings:ui_strings_grit",
   ]
   frameworks = [ "UIKit.framework" ]
 }

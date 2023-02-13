@@ -19,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,6 +40,9 @@ struct DisplayStringIDToExpectedResult {
   int display_string_id;
   NSString* expected_result;
 };
+
+// Will be used to test the country selection logic.
+NSString* const kCountryForSelection = @"Germany";
 
 const DisplayStringIDToExpectedResult kExpectedFields[] = {
     {IDS_IOS_AUTOFILL_FULLNAME, @"John H. Doe"},
@@ -93,6 +97,31 @@ id<GREYMatcher> NavigationBarEditButton() {
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
+// Matcher for a country entry with the given accessibility label.
+id<GREYMatcher> CountryEntry(NSString* label) {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(label),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the search bar.
+id<GREYMatcher> SearchBar() {
+  return grey_allOf(grey_accessibilityID(kAutofillCountrySelectionTableViewId),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the search bar's cancel button.
+id<GREYMatcher> SearchBarCancelButton() {
+  return grey_allOf(ButtonWithAccessibilityLabelId(IDS_APP_CANCEL),
+                    grey_kindOfClass([UIButton class]),
+                    grey_ancestor(grey_kindOfClass([UISearchBar class])),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the search bar's scrim.
+id<GREYMatcher> SearchBarScrim() {
+  return grey_accessibilityID(kAutofillCountrySelectionSearchScrimId);
+}
+
 }  // namespace
 
 // Various tests for the Autofill profiles section of the settings.
@@ -115,7 +144,8 @@ id<GREYMatcher> NavigationBarEditButton() {
   AppLaunchConfiguration config;
 
   if ([self isRunningTest:@selector(testConfirmationShownOnDeletion)] ||
-      [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)]) {
+      [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)] ||
+      [self isRunningTest:@selector(testCountrySelection)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAccountProfilesUnionView);
   }
@@ -387,6 +417,73 @@ id<GREYMatcher> NavigationBarEditButton() {
       selectElementWithMatcher:grey_accessibilityLabel(
                                    [AutofillAppInterface exampleProfileName])]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Checks that the country field is a selection field in the edit mode and the
+// newly selected country gets saved in the profile.
+- (void)testCountrySelection {
+  [AutofillAppInterface saveExampleProfile];
+  [self openEditProfile:kProfileLabel];
+
+  // Switch on edit mode.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_AUTOFILL_COUNTRY))]
+      performAction:grey_tap()];
+
+  // Focus the search bar.
+  [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
+
+  // Verify the scrim is visible when search bar is focused but not typed in.
+  [[EarlGrey selectElementWithMatcher:SearchBarScrim()]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify the cancel button is visible and unfocuses search bar when tapped.
+  [[EarlGrey selectElementWithMatcher:SearchBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Verify countries are searchable using their name in the current locale.
+  [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
+      performAction:grey_replaceText(kCountryForSelection)];
+
+  // Verify that scrim is not visible anymore.
+  [[EarlGrey selectElementWithMatcher:SearchBarScrim()]
+      assertWithMatcher:grey_nil()];
+
+  // Verify the `kCountryForSelection` country is visible.
+  [[EarlGrey selectElementWithMatcher:CountryEntry(kCountryForSelection)]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap on `kCountryForSelection`.
+  [[EarlGrey selectElementWithMatcher:CountryEntry(kCountryForSelection)]
+      performAction:grey_tap()];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  // Go back to the list view page.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+
+  // Open the profile again.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(kProfileLabel)]
+      performAction:grey_tap()];
+
+  // Check `kCountryForSelection` is saved.
+  [[EarlGrey selectElementWithMatcher:grey_text(kCountryForSelection)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Go back to the list view page.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+
+  [self exitSettingsMenu];
 }
 
 @end

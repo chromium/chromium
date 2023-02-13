@@ -26,3 +26,8 @@ NSString* const kAutofillPaymentMethodsToolbarId =
 
 NSString* const kAutofillCreditCardEditTableViewId =
     @"kAutofillCreditCardEditTableViewId";
+
+NSString* const kAutofillCountrySelectionTableViewId =
+    @"kAutofillCountrySelectionTableViewId";
+NSString* const kAutofillCountrySelectionSearchScrimId =
+    @"kAutofillCountrySelectionSearchScrimId";
