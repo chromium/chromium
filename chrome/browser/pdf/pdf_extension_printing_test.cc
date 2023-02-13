@@ -116,7 +116,8 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, BasicPrintCommand) {
+// Flaky. See http://crbug.com/1415194
+IN_PROC_BROWSER_TEST_F(PDFExtensionPrintingTest, DISABLED_BasicPrintCommand) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* frame = GetPluginFrame(guest);
