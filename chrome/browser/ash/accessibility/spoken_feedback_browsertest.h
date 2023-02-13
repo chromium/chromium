@@ -13,6 +13,10 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
+namespace ui::test {
+class EventGenerator;
+}
+
 namespace ash {
 
 using ::extensions::api::braille_display_private::StubBrailleController;
@@ -30,6 +34,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override;
+  void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
   // Simulate key press event.
@@ -63,6 +68,8 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   test::SpeechMonitor sm_;
 
  private:
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+
   StubBrailleController braille_controller_;
   ui::ScopedAnimationDurationScaleMode animation_mode_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
