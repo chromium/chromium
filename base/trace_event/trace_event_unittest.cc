@@ -661,20 +661,20 @@ void ValidateAllTraceMacrosCreatedData(const Value::List& trace_parsed) {
   EXPECT_FIND_("tracked object 1");
   {
     EXPECT_EQ(*item->FindString("ph"), "N");
-    EXPECT_FALSE(item->Find("scope"));
+    EXPECT_FALSE(item->contains("scope"));
     EXPECT_EQ(*item->FindString("id"), "0x42");
 
     item = FindTraceEntry(trace_parsed, "tracked object 1", item);
     EXPECT_TRUE(item);
     EXPECT_EQ(*item->FindString("ph"), "O");
-    EXPECT_FALSE(item->Find("scope"));
+    EXPECT_FALSE(item->contains("scope"));
     EXPECT_EQ(*item->FindString("id"), "0x42");
     EXPECT_EQ(*item->FindStringByDottedPath("args.snapshot"), "hello");
 
     item = FindTraceEntry(trace_parsed, "tracked object 1", item);
     EXPECT_TRUE(item);
     EXPECT_EQ(*item->FindString("ph"), "D");
-    EXPECT_FALSE(item->Find("scope"));
+    EXPECT_FALSE(item->contains("scope"));
     EXPECT_EQ(*item->FindString("id"), "0x42");
   }
 
