@@ -772,9 +772,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                                          ['one/flaky-fail.html'], self.tool)
         self.assertEqual(exit_code, 0)
         self.assertLog([
-            'INFO: All builds finished.\n',
-            'WARNING: Some builders have infrastructure failures:\n',
-            'WARNING:   MOCK Try Win\n',
+            'WARNING: Some builds have infrastructure failures:\n',
+            'WARNING:   "MOCK Try Win" build 5000\n',
             'WARNING: Examples of infrastructure failures include:\n',
             'WARNING:   * Shard terminated the harness after timing out.\n',
             'WARNING:   * Harness exited early due to excessive unexpected failures.\n',
@@ -782,8 +781,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'WARNING: Please consider retrying the failed builders or '
             'giving the builders more shards.\n',
             'WARNING: See https://chromium.googlesource.com/chromium/src/+/'
-            'HEAD/docs/testing/web_test_expectations.md'
-            '#rebaselining-using-try-jobs\n',
+            'HEAD/docs/testing/web_test_expectations.md#handle-bot-timeouts\n',
+            'INFO: All builds finished.\n',
             'INFO: Would you like to continue?\n',
             'INFO: Would you like to try to fill in missing results '
             'with available results?\n'

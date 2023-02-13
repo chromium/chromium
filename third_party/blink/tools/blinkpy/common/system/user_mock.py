@@ -55,7 +55,7 @@ class MockUser(object):
         self._canned_responses = responses
 
     def confirm(self, message=None, default='y'):
-        _log.info(message)
+        _log.info(message or 'Continue?')
         response = default
         if self._canned_responses:
             response = self._canned_responses.pop(0)

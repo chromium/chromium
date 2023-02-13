@@ -318,6 +318,35 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 '}\n',
             ])
 
+    def test_execute_with_infra_failure(self):
+        self.command.git_cl = MockGitCL(
+            self.tool, {
+                Build('test-linux-wpt-rel', 1000, '1000'):
+                TryJobStatus.from_bb_status('INFRA_FAILURE'),
+                Build('test-mac-wpt-rel', 2000, '2000'):
+                TryJobStatus.from_bb_status('SUCCESS'),
+            })
+        with self._patch_builtins():
+            exit_code = self.command.main([])
+        self.assertEqual(exit_code, 1)
+        self.assertLog([
+            'WARNING: Some builds have infrastructure failures:\n',
+            'WARNING:   "test-linux-wpt-rel" build 1000\n',
+            'WARNING: Examples of infrastructure failures include:\n',
+            'WARNING:   * Shard terminated the harness after timing out.\n',
+            'WARNING:   * Harness exited early due to excessive unexpected '
+            'failures.\n',
+            'WARNING:   * Build failed on a non-test step.\n',
+            'WARNING: Please consider retrying the failed builders or '
+            'giving the builders more shards.\n',
+            'WARNING: See https://chromium.googlesource.com/chromium/src/+/'
+            'HEAD/docs/testing/web_test_expectations.md#handle-bot-timeouts\n',
+            'INFO: All builds finished.\n',
+            'INFO: Continue?\n',
+            'ERROR: Aborting update due to build(s) with infrastructure '
+            'failures.\n',
+        ])
+
     def test_execute_no_trigger_jobs(self):
         self.command.git_cl = MockGitCL(self.tool, {})
         with self._patch_builtins():

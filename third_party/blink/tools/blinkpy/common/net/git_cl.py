@@ -10,7 +10,7 @@ manage changelists and try jobs associated with them.
 import collections
 import logging
 import re
-from typing import Literal, Mapping, NamedTuple
+from typing import Literal, Mapping, NamedTuple, Set
 
 from blinkpy.common.checkout.git import Git
 from blinkpy.common.net.results_fetcher import filter_latest_builds
@@ -259,6 +259,14 @@ class GitCL(object):
             return None
         latest_builds = filter_latest_builds(try_results.keys())
         return {b: s for b, s in try_results.items() if b in latest_builds}
+
+    @staticmethod
+    def filter_infra_failed(build_statuses: BuildStatuses) -> Set[Build]:
+        return {
+            build
+            for build, status in build_statuses.items()
+            if status == TryJobStatus.from_bb_status('INFRA_FAILURE')
+        }
 
     def try_job_results(self,
                         issue_number=None,

@@ -9,9 +9,8 @@ import json
 import logging
 import optparse
 import re
-from typing import FrozenSet
 
-from blinkpy.common.net.git_cl import BuildStatuses, GitCL, TryJobStatus
+from blinkpy.common.net.git_cl import GitCL, TryJobStatus
 from blinkpy.common.net.rpc import Build, RPCError
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.tool.commands.build_resolver import (
@@ -132,8 +131,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             _log.error('%s', error)
             return 1
 
-        builders_with_infra_failures = self._warn_about_infra_failures(
-            build_statuses)
+        builders_with_infra_failures = {
+            build.builder_name
+            for build in GitCL.filter_infra_failed(build_statuses)
+        }
         jobs_to_results = self._fetch_results(build_statuses)
         builders_with_results = {b.builder_name for b in jobs_to_results}
         builders_without_results = (set(self.selected_try_bots) -
@@ -177,32 +178,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
         self.rebaseline(options, test_baseline_set)
         return 0
-
-    def _warn_about_infra_failures(
-            self,
-            build_statuses: BuildStatuses,
-    ) -> FrozenSet[str]:
-        builders_with_infra_failures = {
-            build.builder_name
-            for build, status in build_statuses.items()
-            if status == TryJobStatus.from_bb_status('INFRA_FAILURE')
-        }
-        if builders_with_infra_failures:
-            _log.warning('Some builders have infrastructure failures:')
-            for builder in sorted(builders_with_infra_failures):
-                _log.warning('  %s', builder)
-            _log.warning('Examples of infrastructure failures include:')
-            _log.warning('  * Shard terminated the harness after timing out.')
-            _log.warning('  * Harness exited early due to '
-                         'excessive unexpected failures.')
-            _log.warning('  * Build failed on a non-test step.')
-            _log.warning('Please consider retrying the failed builders or '
-                         'giving the builders more shards.')
-            _log.warning(
-                'See https://chromium.googlesource.com/chromium/src/+/'
-                'HEAD/docs/testing/web_test_expectations.md'
-                '#rebaselining-using-try-jobs')
-        return builders_with_infra_failures
 
     def check_ok_to_run(self):
         unstaged_baselines = self.unstaged_baselines()

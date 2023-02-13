@@ -35,6 +35,7 @@ from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.common.net.git_cl import BuildStatuses, GitCL
 from blinkpy.common.net.rpc import Build, RPCError
+from blinkpy.common.system.user import User
 from blinkpy.tool import grammar
 from blinkpy.tool.commands.build_resolver import (
     BuildResolver,
@@ -395,7 +396,13 @@ class UpdateMetadata(Command):
 
         Raises:
             OSError: If a local wptreport is not readable.
+            UpdateAbortError: If one or more builds finished with
+                `INFRA_FAILURE` and the user chose not to continue.
         """
+        if GitCL.filter_infra_failed(build_statuses):
+            if not self._tool.user.confirm(default=User.DEFAULT_NO):
+                raise UpdateAbortError('Aborting update due to build(s) with '
+                                       'infrastructure failures.')
         # TODO(crbug.com/1299650): Filter by failed builds again after the FYI
         # builders are green and no longer experimental.
         build_ids = [

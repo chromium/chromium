@@ -196,6 +196,7 @@ class BuildResolver:
 
     def log_builds(self, build_statuses: BuildStatuses):
         """Log builds in a tabular format."""
+        self._warn_about_infra_failures(build_statuses)
         finished_builds = {
             build: result or '--'
             for build, (status, result) in build_statuses.items()
@@ -218,16 +219,36 @@ class BuildResolver:
             _log.info('Scheduled or started builds:')
             self._log_build_statuses(unfinished_builds)
 
-    def _build_sort_key(self, build: Build) -> Tuple[str, int]:
-        return (build.builder_name, build.build_number or 0)
+    def _warn_about_infra_failures(self, build_statuses: BuildStatuses):
+        builds_with_infra_failures = GitCL.filter_infra_failed(build_statuses)
+        if builds_with_infra_failures:
+            _log.warning('Some builds have infrastructure failures:')
+            for build in sorted(builds_with_infra_failures,
+                                key=_build_sort_key):
+                _log.warning('  "%s" build %s', build.builder_name,
+                             str(build.build_number or '--'))
+            _log.warning('Examples of infrastructure failures include:')
+            _log.warning('  * Shard terminated the harness after timing out.')
+            _log.warning('  * Harness exited early due to '
+                         'excessive unexpected failures.')
+            _log.warning('  * Build failed on a non-test step.')
+            _log.warning('Please consider retrying the failed builders or '
+                         'giving the builders more shards.')
+            _log.warning(
+                'See https://chromium.googlesource.com/chromium/src/+/HEAD/'
+                'docs/testing/web_test_expectations.md#handle-bot-timeouts')
 
     def _log_build_statuses(self, build_statuses: BuildStatuses):
         template = '  %-20s %-7s %-9s %-6s'
         _log.info(template, 'BUILDER', 'NUMBER', 'STATUS', 'BUCKET')
-        for build in sorted(build_statuses, key=self._build_sort_key):
+        for build in sorted(build_statuses, key=_build_sort_key):
             _log.info(template, build.builder_name,
                       str(build.build_number or '--'), build_statuses[build],
                       build.bucket)
+
+
+def _build_sort_key(build: Build) -> Tuple[str, int]:
+    return (build.builder_name, build.build_number or 0)
 
 
 def _shard_interrupted(shard) -> bool:
