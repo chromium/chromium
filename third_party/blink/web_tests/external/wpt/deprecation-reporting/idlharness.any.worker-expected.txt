@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+FAIL DeprecationReportBody interface: existence and properties of interface object assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface object length assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface object name assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface: existence and properties of interface prototype object assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface: operation toJSON() assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface: attribute id assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface: attribute anticipatedRemoval assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface: attribute message assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface: attribute sourceFile assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface: attribute lineNumber assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+FAIL DeprecationReportBody interface: attribute columnNumber assert_own_property: self does not have own property "DeprecationReportBody" expected property "DeprecationReportBody" missing
+Harness: the test ran to completion.
+
