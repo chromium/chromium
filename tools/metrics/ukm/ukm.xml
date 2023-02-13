@@ -6642,8 +6642,24 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DIPS.Deletion" singular="True">
+  <owner>rtarpine@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Recorded when DIPS judges a site to be an incidental party and deletes its
+    storage.
+  </summary>
+  <metric name="Detected" enum="BooleanDetected">
+    <summary>
+      Always set to true (only present because UKM events require at least one
+      metric).
+    </summary>
+  </metric>
+</event>
+
 <event name="DIPS.Redirect" singular="True">
   <owner>rtarpine@google.com</owner>
+  <owner>dc-komics@google.com</owner>
   <summary>
     Recorded on every HTTP redirect or client-side bounce, where a client-side
     bounce is a non-user-initiated navigation starting soon after the previous
@@ -6710,6 +6726,7 @@ be describing additional metrics about the same event.
 
 <event name="DIPS.TriggeringAction">
   <owner>kaklilu@google.com</owner>
+  <owner>dc-komics@google.com</owner>
   <summary>
     Recorded on a repeated interval when DIPS may want to clear site storage to
     improve user privacy. These metrics will be used to determine which
