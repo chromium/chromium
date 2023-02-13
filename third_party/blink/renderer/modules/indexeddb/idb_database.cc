@@ -117,7 +117,7 @@ IDBDatabase::~IDBDatabase() {
   if (!close_pending_ && backend_) {
     // Explicitly leak the database proxy, as we are likely in a GC, and
     // closing will issue IPC messages that need to be recorded.
-    if (!recordreplay::IsRecordingOrReplaying()) {
+    if (!recordreplay::IsRecordingOrReplaying("IDBDatabase::~IDBDatabase")) {
       backend_->Close();
     }
   }
