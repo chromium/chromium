@@ -532,13 +532,13 @@ function extractPrice(item) {
   for (const price of item.querySelectorAll(
     'span, b, p, div, h3, td, li, em, strong, ins')) {
     let candidate = price.innerText.trim();
-  if (window.location.hostname.endsWith("urbanoutfitters.com")) {
-    priceParts = candidate.split("\n");
-    if (priceParts.length >= 2){
-      candidate = priceParts[1];
-    }
-  }
-  if (window.location.hostname.endsWith("thecompanystore.com")) {
+    if (window.location.hostname.endsWith("urbanoutfitters.com")
+        || window.location.hostname.endsWith("freepeople.com")) {
+      priceParts = candidate.split("\n");
+      if (priceParts.length >= 2){
+        candidate = priceParts[1];
+      }
+    } else if (window.location.hostname.endsWith("thecompanystore.com")) {
       candidate = candidate.split("\n")[0];
     }
     if (!candidate.match(priceRegexFull))
@@ -716,7 +716,8 @@ function isCartItem(item) {
       && !document.URL.includes("orientaltrading.com")
       && matchPattern(item, addToCartTextRegex, true)) return false;
   if ((document.URL.includes("ashleyfurniture.com")
-      || document.URL.includes("gnc.com"))
+      || document.URL.includes("gnc.com")
+      || document.URL.includes("bathandbodyworks.com"))
       && matchPattern(item, minicartHTMLRegex, false)) return false;
   if (document.URL.includes("ashleyfurniture.com")
       && matchPattern(item, cartItemQtyRegex, true) === null)
