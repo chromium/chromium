@@ -7,6 +7,7 @@
 #include <sys/mman.h>
 
 #include "base/hash/hash.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/chromeos_buildflags.h"
@@ -112,9 +113,13 @@ bool IcuMergeableDataFile::Initialize(File lacros_file,
   DCHECK(!lacros_file_.IsValid()) << "ICUDataFile::Initialize called twice";
 
   lacros_file_ = std::move(lacros_file);
-  lacros_length_ = lacros_file_.GetLength();
-  if (lacros_length_ < 0)
+  int64_t lacros_length = lacros_file_.GetLength();
+  if (lacros_length < 0) {
     return false;
+  }
+  // Narrow to size_t, since it's used for pointer arithmetic, mmap and other
+  // APIs that accept size_t.
+  lacros_length_ = base::checked_cast<size_t>(lacros_length);
 
   // Map Lacros's version of `icudtl.dat`, then attempt merging with Ash.
   bool map_successful = MmapLacrosFile(/*remap=*/false);
@@ -154,7 +159,7 @@ bool IcuMergeableDataFile::MergeWithAshVersion(const FilePath& ash_file_path) {
   Hashes hashes = CalculateHashes(*ash_file, ash_file_path);
 
   // Find Lacros's ICU pages that are duplicated in Ash.
-  int64_t lacros_offset = 0;
+  size_t lacros_offset = 0;
   while (lacros_offset < lacros_length_) {
     Slice ash_overlap = FindOverlap(*ash_file, hashes, lacros_offset);
     // If there's no overlap, move to the next page and keep scanning.
@@ -284,7 +289,7 @@ IcuMergeableDataFile::Hashes IcuMergeableDataFile::CalculateHashes(
 
     // Calculate hashes for each page in Lacros's data file.
     hashes.lacros.reserve(NPages(lacros_length_));
-    for (int64_t offset = 0; offset < lacros_length_; offset += kPageSize) {
+    for (size_t offset = 0; offset < lacros_length_; offset += kPageSize) {
       HashType hash = HashPage(lacros_data_ + offset);
       hashes.lacros.emplace_back(hash);
     }
