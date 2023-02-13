@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 #include <fuchsia/component/cpp/fidl.h>
-#include <fuchsia/ui/policy/cpp/fidl.h>
+#include <fuchsia/element/cpp/fidl.h>
+#include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fdio/directory.h>
 #include <lib/fidl/cpp/interface_ptr.h>
 #include <lib/sys/component/cpp/testing/realm_builder.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
-#include <lib/ui/scenic/cpp/view_token_pair.h>
 
 #include <iostream>
 #include <utility>
@@ -31,8 +31,10 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/fuchsia_component_support/annotations_manager.h"
 #include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
+#include "fuchsia_web/shell/present_frame.h"
 #include "fuchsia_web/shell/remote_debugging_port.h"
 #include "fuchsia_web/webinstance_host/web_instance_host.h"
 #include "fuchsia_web/webinstance_host/web_instance_host_constants.h"
@@ -195,10 +197,11 @@ int main(int argc, char** argv) {
 #if BUILDFLAG(ENABLE_WIDEVINE)
   features |= fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM;
 #endif
-  if (is_headless)
+  if (is_headless) {
     features |= fuchsia::web::ContextFeatureFlags::HEADLESS;
-  else
+  } else {
     features |= fuchsia::web::ContextFeatureFlags::VULKAN;
+  }
 
   create_context_params.set_features(features);
   create_context_params.set_remote_debugging_port(*remote_debugging_port);
@@ -314,17 +317,20 @@ int main(int argc, char** argv) {
                               fuchsia::web::PermissionState::GRANTED);
   }
 
+  // The underlying PresentView call expects an AnnotationController and will
+  // return PresentViewError.INVALID_ARGS without one. The AnnotationController
+  // should serve WatchAnnotations, but it doesn't need to do anything.
+  // TODO(b/264899156): Remove this when AnnotationController becomes
+  // optional.
+  auto annotations_manager =
+      std::make_unique<fuchsia_component_support::AnnotationsManager>();
+  fuchsia::element::AnnotationControllerPtr annotation_controller;
+  annotations_manager->Connect(annotation_controller.NewRequest());
+
   if (is_headless) {
     frame->EnableHeadlessRendering();
   } else {
-    // Present a fullscreen view of |frame|.
-    auto view_tokens = scenic::ViewTokenPair::New();
-    frame->CreateView(std::move(view_tokens.view_token));
-    auto presenter = base::ComponentContextForProcess()
-                         ->svc()
-                         ->Connect<fuchsia::ui::policy::Presenter>();
-    presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
-                                    nullptr);
+    PresentFrame(frame.get(), std::move(annotation_controller));
   }
 
   LOG(INFO) << "Launched browser at URL " << url.spec();

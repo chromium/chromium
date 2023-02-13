@@ -57,12 +57,17 @@
         "fuchsia.sysmem.Allocator",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
-        "fuchsia.ui.policy.Presenter",
         "fuchsia.ui.scenic.Scenic",
       ],
     },
     {
-      protocol: "fuchsia.tracing.perfetto.ProducerConnector",
+      protocol: [
+        "fuchsia.element.GraphicalPresenter",
+        "fuchsia.tracing.perfetto.ProducerConnector",
+
+        // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
+        "fuchsia.ui.policy.Presenter",
+      ],
       availability: "optional",
     },
   ],
