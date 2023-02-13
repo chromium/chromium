@@ -285,11 +285,10 @@
       name: "AllowContentInitiatedDataUrlNavigations",
     },
     {
-      // TODO(crbug.com/1393662): Remove this flag once Android supports
-      // creating discoverable credentials with the 'payment' extension.
+      // TODO(crbug.com/1393662): Remove this flag after M113 branch.
       name: "AllowDiscoverableCredentialsForSecurePaymentConfirmation",
       base_feature: "AllowDiscoverableCredentialsForSecurePaymentConfirmation",
-      status: {"Android": "", "default": "stable"},
+      status: "stable",
     },
     {
       name: "AndroidDownloadableFontsMatching",
