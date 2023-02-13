@@ -32,9 +32,6 @@ class WebGPUDecoderTest : public ::testing::Test {
   WebGPUDecoderTest() {}
 
   void SetUp() override {
-    if (!WebGPUSupported()) {
-      GTEST_SKIP() << "Test skipped because WebGPU isn't supported";
-    }
     decoder_client_ = std::make_unique<FakeDecoderClient>();
     command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
 
@@ -48,11 +45,6 @@ class WebGPUDecoderTest : public ::testing::Test {
         &outputter_, preferences, nullptr, DawnCacheOptions(),
         &mock_isolation_key_provider_));
     ASSERT_EQ(decoder_->Initialize(GpuFeatureInfo()), ContextResult::kSuccess);
-  }
-
-  bool WebGPUSupported() const {
-    // WebGPU does not work on Win7 because there is no D3D12 on Win7
-    return !GPUTestBotConfig::CurrentConfigMatches("Win7");
   }
 
   template <typename T>

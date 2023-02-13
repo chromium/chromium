@@ -2371,23 +2371,6 @@
       ]
     },
     {
-      "id": 261,
-      "cr_bugs": [817286],
-      "description": "Fallback to D3D9 if basic info collection fails on Win7",
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "=",
-          "value": "6.1"
-        }
-      },
-      "vendor_id": "0xffff",
-      "device_id": ["0xfffe"],
-      "features": [
-        "disable_d3d11"
-      ]
-    },
-    {
       "id": 262,
       "description": "Program fails in PowerVR*GX6250 drivers if gl_Position is not set",
       "cr_bugs": [286468, 416670],

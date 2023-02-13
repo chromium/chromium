@@ -49,11 +49,6 @@ WebGPUTest::WebGPUTest() = default;
 WebGPUTest::~WebGPUTest() = default;
 
 bool WebGPUTest::WebGPUSupported() const {
-  // Win7 does not support WebGPU
-  if (GPUTestBotConfig::CurrentConfigMatches("Win7")) {
-    return false;
-  }
-
   // Nexus 5X does not support WebGPU
   if (GPUTestBotConfig::CurrentConfigMatches("Android Qualcomm 0x4010800")) {
     return false;

@@ -23,11 +23,6 @@ static const struct TestOsWithFamily {
   TestOSEntry version;
   TestOSEntry family;
 } kOSVersionsWithFamily[] = {
-    {{"XP", GPUTestConfig::kOsWinXP}, kOsFamilyWin},
-    {{"VISTA", GPUTestConfig::kOsWinVista}, kOsFamilyWin},
-    {{"WIN7", GPUTestConfig::kOsWin7}, kOsFamilyWin},
-    {{"WIN8", GPUTestConfig::kOsWin8}, kOsFamilyWin},
-    {{"WIN10", GPUTestConfig::kOsWin10}, kOsFamilyWin},
     {{"LEOPARD", GPUTestConfig::kOsMacLeopard}, kOsFamilyMac},
     {{"SNOWLEOPARD", GPUTestConfig::kOsMacSnowLeopard}, kOsFamilyMac},
     {{"LION", GPUTestConfig::kOsMacLion}, kOsFamilyMac},
@@ -74,7 +69,7 @@ class GPUTestExpectationsParserTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    bot_config_.set_os(GPUTestConfig::kOsWin7);
+    bot_config_.set_os(GPUTestConfig::kOsWin10);
     bot_config_.set_build_type(GPUTestConfig::kBuildTypeRelease);
     bot_config_.AddGPUVendor(0x10de);
     bot_config_.set_gpu_device_id(0x0640);
@@ -164,7 +159,7 @@ TEST_P(GPUTestExpectationsParserParamTest, ValidUnrelatedOsEntry) {
 
 TEST_F(GPUTestExpectationsParserTest, ValidUnrelatedTestEntry) {
   const std::string text =
-      "BUG12345 WIN7 RELEASE NVIDIA 0x0640 : AnotherTest = FAIL";
+      "BUG12345 WIN10 RELEASE NVIDIA 0x0640 : AnotherTest = FAIL";
 
   GPUTestExpectationsParser parser;
   EXPECT_TRUE(parser.LoadTestExpectations(text));
@@ -175,7 +170,7 @@ TEST_F(GPUTestExpectationsParserTest, ValidUnrelatedTestEntry) {
 
 TEST_F(GPUTestExpectationsParserTest, AllModifiers) {
   const std::string text =
-      "BUG12345 XP VISTA WIN7 WIN8 WIN10 LEOPARD SNOWLEOPARD LION MOUNTAINLION "
+      "BUG12345 WIN10 LEOPARD SNOWLEOPARD LION MOUNTAINLION "
       "MAVERICKS LINUX CHROMEOS ANDROID "
       "NVIDIA INTEL AMD VMWARE RELEASE DEBUG : MyTest = "
       "PASS FAIL FLAKY TIMEOUT SKIP";
@@ -204,7 +199,7 @@ TEST_P(GPUTestExpectationsParserParamTest, DuplicateModifiers) {
 
 TEST_F(GPUTestExpectationsParserTest, AllModifiersLowerCase) {
   const std::string text =
-      "BUG12345 xp vista win7 win8 win10 leopard snowleopard lion linux "
+      "BUG12345 win10 leopard snowleopard lion linux "
       "chromeos android nvidia intel amd vmware release debug : MyTest = "
       "pass fail flaky timeout skip";
 
@@ -297,7 +292,7 @@ TEST_P(GPUTestExpectationsParserParamTest, MultipleEntriesConflicts) {
 
 TEST_F(GPUTestExpectationsParserTest, MultipleTests) {
   const std::string text =
-      "BUG12345 WIN7 RELEASE NVIDIA 0x0640 : MyTest = FAIL\n"
+      "BUG12345 WIN10 RELEASE NVIDIA 0x0640 : MyTest = FAIL\n"
       "BUG12345 WIN : AnotherTest = FAIL";
 
   GPUTestExpectationsParser parser;
@@ -307,7 +302,7 @@ TEST_F(GPUTestExpectationsParserTest, MultipleTests) {
 
 TEST_F(GPUTestExpectationsParserTest, ValidMultipleEntries) {
   const std::string text =
-      "BUG12345 WIN7 RELEASE NVIDIA 0x0640 : MyTest = FAIL\n"
+      "BUG12345 WIN10 RELEASE NVIDIA 0x0640 : MyTest = FAIL\n"
       "BUG12345 LINUX : MyTest = TIMEOUT";
 
   GPUTestExpectationsParser parser;
@@ -319,7 +314,7 @@ TEST_F(GPUTestExpectationsParserTest, ValidMultipleEntries) {
 
 TEST_F(GPUTestExpectationsParserTest, StarMatching) {
   const std::string text =
-      "BUG12345 WIN7 RELEASE NVIDIA 0x0640 : MyTest* = FAIL";
+      "BUG12345 WIN10 RELEASE NVIDIA 0x0640 : MyTest* = FAIL";
 
   GPUTestExpectationsParser parser;
   EXPECT_TRUE(parser.LoadTestExpectations(text));
@@ -332,7 +327,7 @@ TEST_F(GPUTestExpectationsParserTest, StarMatching) {
 
 TEST_F(GPUTestExpectationsParserTest, ValidAPI) {
   const std::string text =
-      "BUG12345 WIN7 NVIDIA D3D9 D3D11 OPENGL GLES : MyTest = FAIL";
+      "BUG12345 WIN10 NVIDIA D3D9 D3D11 OPENGL GLES : MyTest = FAIL";
 
   GPUTestExpectationsParser parser;
   EXPECT_TRUE(parser.LoadTestExpectations(text));
@@ -342,7 +337,7 @@ TEST_F(GPUTestExpectationsParserTest, ValidAPI) {
 }
 
 TEST_F(GPUTestExpectationsParserTest, MultipleAPIsConflict) {
-  const std::string text = "BUG12345 WIN7 NVIDIA D3D9 D3D9 : MyTest = FAIL";
+  const std::string text = "BUG12345 WIN10 NVIDIA D3D9 D3D9 : MyTest = FAIL";
 
   GPUTestExpectationsParser parser;
   EXPECT_FALSE(parser.LoadTestExpectations(text));

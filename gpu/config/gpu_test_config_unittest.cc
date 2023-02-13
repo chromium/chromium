@@ -60,7 +60,7 @@ TEST_F(GPUTestConfigTest, IsValid) {
   {
     GPUTestBotConfig config;
     config.set_build_type(GPUTestConfig::kBuildTypeRelease);
-    config.set_os(GPUTestConfig::kOsWin7);
+    config.set_os(GPUTestConfig::kOsWin10);
     config.set_gpu_device_id(0x0640);
     EXPECT_FALSE(config.IsValid());
     config.AddGPUVendor(0x10de);
@@ -70,17 +70,13 @@ TEST_F(GPUTestConfigTest, IsValid) {
     config.set_gpu_device_id(0);
     config.set_os(GPUTestConfig::kOsMacBigSur);
     EXPECT_TRUE(config.IsValid());
-    config.set_os(GPUTestConfig::kOsWin7);
+    config.set_os(GPUTestConfig::kOsWin10);
     EXPECT_FALSE(config.IsValid());
 
     config.set_gpu_device_id(0x0640);
     EXPECT_TRUE(config.IsValid());
 
-    config.set_os(GPUTestConfig::kOsWin);
-    EXPECT_FALSE(config.IsValid());
-    config.set_os(GPUTestConfig::kOsWin7 | GPUTestConfig::kOsWinXP);
-    EXPECT_FALSE(config.IsValid());
-    config.set_os(GPUTestConfig::kOsWin7);
+    config.set_os(GPUTestConfig::kOsWin10);
     EXPECT_TRUE(config.IsValid());
 
     config.set_build_type(GPUTestConfig::kBuildTypeUnknown);
@@ -92,7 +88,7 @@ TEST_F(GPUTestConfigTest, IsValid) {
 
 TEST_F(GPUTestConfigTest, Matches) {
   GPUTestBotConfig config;
-  config.set_os(GPUTestConfig::kOsWin7);
+  config.set_os(GPUTestConfig::kOsWin10);
   config.set_build_type(GPUTestConfig::kBuildTypeRelease);
   config.AddGPUVendor(0x10de);
   config.set_gpu_device_id(0x0640);
@@ -105,11 +101,11 @@ TEST_F(GPUTestConfigTest, Matches) {
     EXPECT_TRUE(config.Matches(config2));
     config2.set_os(GPUTestConfig::kOsWin);
     EXPECT_TRUE(config.Matches(config2));
-    config2.set_os(GPUTestConfig::kOsWin7);
+    config2.set_os(GPUTestConfig::kOsWin10);
     EXPECT_TRUE(config.Matches(config2));
     config2.set_os(GPUTestConfig::kOsMac);
     EXPECT_FALSE(config.Matches(config2));
-    config2.set_os(GPUTestConfig::kOsWin7 | GPUTestConfig::kOsLinux);
+    config2.set_os(GPUTestConfig::kOsWin10 | GPUTestConfig::kOsLinux);
     EXPECT_TRUE(config.Matches(config2));
   }
 
@@ -141,7 +137,7 @@ TEST_F(GPUTestConfigTest, Matches) {
 
   {  // exact matching
     GPUTestConfig config2;
-    config2.set_os(GPUTestConfig::kOsWin7);
+    config2.set_os(GPUTestConfig::kOsWin10);
     config2.set_build_type(GPUTestConfig::kBuildTypeRelease);
     config2.AddGPUVendor(0x10de);
     config2.set_gpu_device_id(0x0640);
@@ -180,7 +176,7 @@ TEST_F(GPUTestConfigTest, Matches) {
 
 TEST_F(GPUTestConfigTest, StringMatches) {
   GPUTestBotConfig config;
-  config.set_os(GPUTestConfig::kOsWin7);
+  config.set_os(GPUTestConfig::kOsWin10);
   config.set_build_type(GPUTestConfig::kBuildTypeRelease);
   config.AddGPUVendor(0x10de);
   config.set_gpu_device_id(0x0640);
@@ -192,9 +188,9 @@ TEST_F(GPUTestConfigTest, StringMatches) {
 
   // os matching
   EXPECT_TRUE(config.Matches("WIN"));
-  EXPECT_TRUE(config.Matches("WIN7"));
+  EXPECT_TRUE(config.Matches("WIN10"));
   EXPECT_FALSE(config.Matches("MAC"));
-  EXPECT_TRUE(config.Matches("WIN7 LINUX"));
+  EXPECT_TRUE(config.Matches("WIN10 LINUX"));
 
   // gpu vendor matching
   EXPECT_TRUE(config.Matches("NVIDIA"));
@@ -207,8 +203,8 @@ TEST_F(GPUTestConfigTest, StringMatches) {
   EXPECT_FALSE(config.Matches("DEBUG"));
 
   // exact matching
-  EXPECT_TRUE(config.Matches("WIN7 RELEASE NVIDIA 0X0640"));
-  EXPECT_FALSE(config.Matches("WIN7 RELEASE NVIDIA 0X0641"));
+  EXPECT_TRUE(config.Matches("WIN10 RELEASE NVIDIA 0X0640"));
+  EXPECT_FALSE(config.Matches("WIN10 RELEASE NVIDIA 0X0641"));
 
   // api matching
   EXPECT_TRUE(config.Matches("D3D11"));
@@ -221,25 +217,25 @@ TEST_F(GPUTestConfigTest, StringMatches) {
 
 TEST_F(GPUTestConfigTest, OverlapsWith) {
   {  // os
-    // win vs win7
-    GPUTestConfig config;
-    config.set_os(GPUTestConfig::kOsWin);
-    GPUTestConfig config2;
-    config2.set_os(GPUTestConfig::kOsWin7);
-    EXPECT_TRUE(config.OverlapsWith(config2));
-    EXPECT_TRUE(config2.OverlapsWith(config));
-    // win vs win7+linux
-    config2.set_os(GPUTestConfig::kOsWin7 | GPUTestConfig::kOsLinux);
-    EXPECT_TRUE(config.OverlapsWith(config2));
-    EXPECT_TRUE(config2.OverlapsWith(config));
-    // win vs mac
-    config2.set_os(GPUTestConfig::kOsMac);
-    EXPECT_FALSE(config.OverlapsWith(config2));
-    EXPECT_FALSE(config2.OverlapsWith(config));
-    // win vs unknown
-    config2.set_os(GPUTestConfig::kOsUnknown);
-    EXPECT_TRUE(config.OverlapsWith(config2));
-    EXPECT_TRUE(config2.OverlapsWith(config));
+      // win vs win10
+      GPUTestConfig config;
+      config.set_os(GPUTestConfig::kOsWin);
+      GPUTestConfig config2;
+      config2.set_os(GPUTestConfig::kOsWin10);
+      EXPECT_TRUE(config.OverlapsWith(config2));
+      EXPECT_TRUE(config2.OverlapsWith(config));
+      // win vs win10+linux
+      config2.set_os(GPUTestConfig::kOsWin10 | GPUTestConfig::kOsLinux);
+      EXPECT_TRUE(config.OverlapsWith(config2));
+      EXPECT_TRUE(config2.OverlapsWith(config));
+      // win vs mac
+      config2.set_os(GPUTestConfig::kOsMac);
+      EXPECT_FALSE(config.OverlapsWith(config2));
+      EXPECT_FALSE(config2.OverlapsWith(config));
+      // win vs unknown
+      config2.set_os(GPUTestConfig::kOsUnknown);
+      EXPECT_TRUE(config.OverlapsWith(config2));
+      EXPECT_TRUE(config2.OverlapsWith(config));
   }
 
   {  // gpu vendor
@@ -278,9 +274,9 @@ TEST_F(GPUTestConfigTest, OverlapsWith) {
     EXPECT_TRUE(config2.OverlapsWith(config));
   }
 
-  {  // win7 vs nvidia
+  {  // win10 vs nvidia
     GPUTestConfig config;
-    config.set_os(GPUTestConfig::kOsWin7);
+    config.set_os(GPUTestConfig::kOsWin10);
     GPUTestConfig config2;
     config2.AddGPUVendor(0x10de);
     EXPECT_TRUE(config.OverlapsWith(config2));

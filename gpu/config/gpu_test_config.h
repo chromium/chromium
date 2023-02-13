@@ -21,12 +21,8 @@ class GPU_EXPORT GPUTestConfig {
  public:
   enum OS {
     kOsUnknown = 0,
-    kOsWinXP = 1 << 0,
-    kOsWinVista = 1 << 1,
-    kOsWin7 = 1 << 2,
-    kOsWin8 = 1 << 3,
-    kOsWin10 = 1 << 4,
-    kOsWin = kOsWinXP | kOsWinVista | kOsWin7 | kOsWin8 | kOsWin10,
+    kOsWin10 = 1 << 1,
+    kOsWin = kOsWin10,
     // Jump over a few bits for future Windows versions.
     kOsMacLeopard = 1 << 10,
     kOsMacSnowLeopard = 1 << 11,

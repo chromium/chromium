@@ -35,16 +35,8 @@ GPUTestConfig::OS GetCurrentOS() {
   int32_t major_version = 0;
   int32_t minor_version = 0;
   int32_t bugfix_version = 0;
-  base::SysInfo::OperatingSystemVersionNumbers(
-      &major_version, &minor_version, &bugfix_version);
-  if (major_version == 5)
-    return GPUTestConfig::kOsWinXP;
-  if (major_version == 6 && minor_version == 0)
-    return GPUTestConfig::kOsWinVista;
-  if (major_version == 6 && minor_version == 1)
-    return GPUTestConfig::kOsWin7;
-  if (major_version == 6 && (minor_version == 2 || minor_version == 3))
-    return GPUTestConfig::kOsWin8;
+  base::SysInfo::OperatingSystemVersionNumbers(&major_version, &minor_version,
+                                               &bugfix_version);
   if (major_version == 10)
     return GPUTestConfig::kOsWin10;
   return GPUTestConfig::kOsUnknown;
@@ -216,10 +208,6 @@ bool GPUTestBotConfig::SetGPUInfo(const GPUInfo& gpu_info) {
 
 bool GPUTestBotConfig::IsValid() const {
   switch (os()) {
-    case kOsWinXP:
-    case kOsWinVista:
-    case kOsWin7:
-    case kOsWin8:
     case kOsWin10:
     case kOsMacLeopard:
     case kOsMacSnowLeopard:

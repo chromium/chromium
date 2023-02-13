@@ -30,11 +30,7 @@ enum LineParserStage {
 
 enum Token {
   // os
-  kConfigWinXP = 0,
-  kConfigWinVista,
-  kConfigWin7,
-  kConfigWin8,
-  kConfigWin10,
+  kConfigWin10 = 0,
   kConfigWin,
   kConfigMacLeopard,
   kConfigMacSnowLeopard,
@@ -95,10 +91,6 @@ struct TokenInfo {
 };
 
 const TokenInfo kTokenData[] = {
-    {"xp", GPUTestConfig::kOsWinXP},
-    {"vista", GPUTestConfig::kOsWinVista},
-    {"win7", GPUTestConfig::kOsWin7},
-    {"win8", GPUTestConfig::kOsWin8},
     {"win10", GPUTestConfig::kOsWin10},
     {"win", GPUTestConfig::kOsWin},
     {"leopard", GPUTestConfig::kOsMacLeopard},
@@ -268,10 +260,6 @@ bool GPUTestExpectationsParser::ParseConfig(
   for (size_t i = 0; i < tokens.size(); ++i) {
     Token token = ParseToken(tokens[i]);
     switch (token) {
-      case kConfigWinXP:
-      case kConfigWinVista:
-      case kConfigWin7:
-      case kConfigWin8:
       case kConfigWin10:
       case kConfigWin:
       case kConfigMacLeopard:
@@ -337,10 +325,6 @@ bool GPUTestExpectationsParser::ParseLine(
       case kTokenComment:
         comments_encountered = true;
         break;
-      case kConfigWinXP:
-      case kConfigWinVista:
-      case kConfigWin7:
-      case kConfigWin8:
       case kConfigWin10:
       case kConfigWin:
       case kConfigMacLeopard:
@@ -469,10 +453,6 @@ bool GPUTestExpectationsParser::UpdateTestConfig(GPUTestConfig* config,
                                                  size_t line_number) {
   DCHECK(config);
   switch (token) {
-    case kConfigWinXP:
-    case kConfigWinVista:
-    case kConfigWin7:
-    case kConfigWin8:
     case kConfigWin10:
     case kConfigWin:
     case kConfigMacLeopard:
