@@ -225,6 +225,10 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
 
   tail_suggest_ellipse_view_->SetVisible(
       !match.tail_suggest_common_prefix.empty());
+  tail_suggest_ellipse_view_->ApplyTextColor(
+      result_view->GetThemeState() == OmniboxPartState::SELECTED
+          ? kColorOmniboxResultsTextSelected
+          : kColorOmniboxText);
 
   // Set up the separator.
   separator_view_->SetSize(layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION ||
