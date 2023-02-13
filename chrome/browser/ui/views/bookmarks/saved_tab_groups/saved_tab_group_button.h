@@ -47,6 +47,9 @@ class SavedTabGroupButton : public views::MenuButton {
       const override;
   void OnThemeChanged() override;
 
+  // Updates the buttons visuals (title and color) alongside its list of tabs
+  // displayed in the context menu.
+  void UpdateButtonData(const SavedTabGroup& group);
   void RemoveButtonOutline();
   bool HasButtonOutline() const;
 
@@ -73,7 +76,7 @@ class SavedTabGroupButton : public views::MenuButton {
 
   // The tabs to be displayed in the context menu. Currently supports tab title,
   // url, and favicon.
-  const std::vector<SavedTabGroupTab> tabs_;
+  std::vector<SavedTabGroupTab> tabs_;
 
   // A callback used to fetch the current PageNavigator used to open URLs.
   const base::RepeatingCallback<content::PageNavigator*()>

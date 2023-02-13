@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/views/view_utils.h"
@@ -24,6 +25,10 @@ SavedTabGroup kSavedTabGroup3(std::u16string(u"test_title_3"),
                               {});
 
 SavedTabGroup kSavedTabGroup4(std::u16string(u"test_title_4"),
+                              tab_groups::TabGroupColorId::kGrey,
+                              {});
+
+SavedTabGroup kSavedTabGroup5(std::u16string(u"test_title_5"),
                               tab_groups::TabGroupColorId::kGrey,
                               {});
 
@@ -73,8 +78,10 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
     // iterate through bubble getting size plus button padding
     // calculated button_sizes + extra_padding
     int size = 0;
-    for (const auto* button : saved_tab_group_bar_->children()) {
-      size += button->GetPreferredSize().width() + button_padding_;
+    for (const auto* const button : saved_tab_group_bar_->children()) {
+      size += button->GetVisible()
+                  ? button->GetPreferredSize().width() + button_padding_
+                  : 0;
     }
 
     return size;
@@ -89,14 +96,83 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
 };
 
 TEST_F(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
-  // Verify the initial count of saved tab group buttons.
-  EXPECT_EQ(0u, saved_tab_group_bar()->children().size());
-
-  saved_tab_group_model()->Add(kSavedTabGroup1);
+  // Verify the initial count of saved tab group buttons. Even when visibly
+  // empty, the SavedTabGroupBar still contains an invisible overflow menu
+  // that is invisible.
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
-  saved_tab_group_model()->AddedFromSync(kSavedTabGroup2);
+  saved_tab_group_model()->Add(kSavedTabGroup1);
   EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->AddedFromSync(kSavedTabGroup2);
+  EXPECT_EQ(3u, saved_tab_group_bar()->children().size());
+}
+
+TEST_F(SavedTabGroupBarUnitTest, OverflowMenuVisibleWhenFifthButtonAdded) {
+  // The first view should be an invisible overflow menu.
+  ASSERT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  const views::View* overflow_button = saved_tab_group_bar()->children()[0];
+  EXPECT_FALSE(overflow_button->GetVisible());
+
+  // Verify the overflow button is still hidden.
+  Add4Groups();
+  EXPECT_FALSE(overflow_button->GetVisible());
+  EXPECT_EQ(5u, saved_tab_group_bar()->children().size());
+
+  // Verify that the overflow button is visible when a 5th button is added and
+  // that the 5th button is not visible.
+  saved_tab_group_model()->Add(kSavedTabGroup5);
+  EXPECT_TRUE(overflow_button->GetVisible());
+  EXPECT_FALSE(saved_tab_group_bar()->children()[4]->GetVisible());
+  EXPECT_EQ(6u, saved_tab_group_bar()->children().size());
+}
+
+// Verifies that when a 5th saved group is removed, the overflow menu is not
+// visible.
+TEST_F(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFifthButtonRemoved) {
+  // The first view should be an invisible overflow menu.
+  ASSERT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  const views::View* overflow_button = saved_tab_group_bar()->children()[0];
+  EXPECT_FALSE(overflow_button->GetVisible());
+
+  // Verify that the overflow button is visible when a 5th button is added and
+  // that the 5th button is not visible.
+  Add4Groups();
+  saved_tab_group_model()->Add(kSavedTabGroup5);
+  EXPECT_TRUE(overflow_button->GetVisible());
+  EXPECT_FALSE(saved_tab_group_bar()->children()[4]->GetVisible());
+  EXPECT_EQ(6u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->Remove(kSavedTabGroup5.saved_guid());
+
+  EXPECT_FALSE(overflow_button->GetVisible());
+  EXPECT_EQ(5u, saved_tab_group_bar()->children().size());
+}
+
+// Verifies that when a 5th saved group is added and the first group is removed,
+// the overflow menu is not visible and the 5th button is visible.
+TEST_F(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFirstButtonRemoved) {
+  // The first view should be an invisible overflow menu.
+  ASSERT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  const views::View* overflow_button = saved_tab_group_bar()->children()[0];
+  EXPECT_FALSE(overflow_button->GetVisible());
+
+  // Verify that the overflow button is visible when a 5th button is added and
+  // that the 5th button is not visible.
+  Add4Groups();
+  saved_tab_group_model()->Add(kSavedTabGroup5);
+  EXPECT_TRUE(overflow_button->GetVisible());
+  EXPECT_FALSE(saved_tab_group_bar()->children()[4]->GetVisible());
+  EXPECT_EQ(6u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->Remove(kSavedTabGroup5.saved_guid());
+
+  EXPECT_FALSE(overflow_button->GetVisible());
+  EXPECT_TRUE(saved_tab_group_bar()->children()[3]->GetVisible());
+  EXPECT_EQ(5u, saved_tab_group_bar()->children().size());
 }
 
 TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
@@ -112,15 +188,19 @@ TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
 TEST_F(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
 
-  // Remove the group and expect no buttons.
+  // Remove the group and expect no buttons except the overflow menu.
   saved_tab_group_model()->Remove(kSavedTabGroup1.saved_guid());
-  EXPECT_EQ(0u, saved_tab_group_bar()->children().size());
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+  EXPECT_TRUE(views::IsViewClass<SavedTabGroupOverflowButton>(
+      saved_tab_group_bar()->children()[0]));
 
   saved_tab_group_model()->AddedFromSync(kSavedTabGroup1);
 
   // Remove the group and expect no buttons.
   saved_tab_group_model()->RemovedFromSync(kSavedTabGroup1.saved_guid());
-  EXPECT_EQ(0u, saved_tab_group_bar()->children().size());
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+  EXPECT_TRUE(views::IsViewClass<SavedTabGroupOverflowButton>(
+      saved_tab_group_bar()->children()[0]));
 }
 
 TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
@@ -161,18 +241,31 @@ TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
   // move the tab and expect the one that was moved to be in the expected
   // position.
   saved_tab_group_model()->Reorder(kSavedTabGroup1.saved_guid(), 1);
-  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
+  EXPECT_EQ(3u, saved_tab_group_bar()->children().size());
   EXPECT_EQ(button_1, saved_tab_group_bar()->children()[1]);
 }
 
 // If the restriction is exactly the expected size all should be visible
 TEST_F(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
   Add4Groups();
+
   int exact_width = GetWidthOfButtonsAndPadding();
 
   EXPECT_EQ(
       exact_width,
       saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(exact_width));
+
+  // After 4 buttons have been added (excluding the invisible overflow), all
+  // subsequent buttons will be hidden. Instead an overflow menu will appear
+  // which will house the hidden buttons.
+  saved_tab_group_model()->Add(kSavedTabGroup5);
+
+  int new_width = GetWidthOfButtonsAndPadding();
+
+  EXPECT_LT(exact_width, new_width);
+  EXPECT_EQ(
+      new_width,
+      saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(new_width));
 }
 
 // If the restriction is more than the expected size all should be visible
@@ -184,6 +277,18 @@ TEST_F(SavedTabGroupBarUnitTest,
   EXPECT_EQ(exact_width,
             saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(
                 exact_width + 1));
+
+  // After 4 buttons have been added (excluding the invisible overflow), all
+  // subsequent buttons will be hidden. Instead an overflow menu will appear
+  // which will house the hidden buttons.
+  saved_tab_group_model()->Add(kSavedTabGroup5);
+
+  int new_width = GetWidthOfButtonsAndPadding();
+
+  EXPECT_LT(exact_width, new_width);
+  EXPECT_EQ(new_width,
+            saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(
+                new_width + 1));
 }
 
 // If the restriction is 1 less than the size the last button should not be
@@ -196,4 +301,16 @@ TEST_F(SavedTabGroupBarUnitTest,
   EXPECT_GT(exact_width,
             saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(
                 exact_width - 1));
+
+  // After 4 buttons have been added (excluding the invisible overflow), all
+  // subsequent buttons will be hidden. Instead an overflow menu will appear
+  // which will house the hidden buttons.
+  saved_tab_group_model()->Add(kSavedTabGroup5);
+
+  int new_width = GetWidthOfButtonsAndPadding();
+
+  EXPECT_LT(exact_width, new_width);
+  EXPECT_GT(new_width,
+            saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(
+                new_width - 1));
 }

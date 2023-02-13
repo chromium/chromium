@@ -64,6 +64,7 @@ SavedTabGroupButton::SavedTabGroupButton(
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED) {
   SetText(group.title());
   SetAccessibleName(group.title());
+  SetTooltipText(group.title());
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
 
   // Since the theme provider is not currently available when instantiated the
@@ -98,6 +99,28 @@ SavedTabGroupButton::SavedTabGroupButton(
     // constant for the width of the button to create a square that will
     // comfortably fit in the bookmarks bar.
     SetPreferredSize(gfx::Size(button_height, button_height));
+  }
+}
+
+void SavedTabGroupButton::UpdateButtonData(const SavedTabGroup& group) {
+  SetText(group.title());
+  SetAccessibleName(group.title());
+  tab_group_color_id_ = group.color();
+  is_group_in_tabstrip_ = group.local_group_id().has_value();
+  guid_ = group.saved_guid();
+  tabs_.clear();
+  tabs_ = group.saved_tabs();
+
+  int button_height = GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT);
+  if (GetText().empty()) {
+    // When the text is empty force the button to have square dimensions.
+    // Likewise, we already have a constant that denotes the standard button
+    // height for all elements in the bookmarks bar. As such, we will use this
+    // constant for the width of the button to create a square that will
+    // comfortably fit in the bookmarks bar.
+    SetPreferredSize(gfx::Size(button_height, button_height));
+  } else {
+    SetPreferredSize(CalculatePreferredSize());
   }
 }
 
@@ -149,8 +172,7 @@ void SavedTabGroupButton::OnPaintBackground(gfx::Canvas* canvas) {
   if (GetText().empty()) {
     // When the title is empty, we draw a circle similar to the tab group header
     // when there is no title.
-    canvas->DrawCircle(gfx::PointF(width() / 2, width() / 2), kCircleRadius / 2,
-                       flags);
+    canvas->DrawCircle(center_point_f, kCircleRadius / 2, flags);
   }
 
   // Draw border.

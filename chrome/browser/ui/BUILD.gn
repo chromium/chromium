@@ -4426,6 +4426,8 @@ static_library("ui") {
       "views/bookmarks/saved_tab_groups/saved_tab_group_bar.h",
       "views/bookmarks/saved_tab_groups/saved_tab_group_button.cc",
       "views/bookmarks/saved_tab_groups/saved_tab_group_button.h",
+      "views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.cc",
+      "views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h",
       "views/browser_commands_views.cc",
       "views/browser_dialogs_views.cc",
       "views/bubble/bubble_contents_wrapper.cc",

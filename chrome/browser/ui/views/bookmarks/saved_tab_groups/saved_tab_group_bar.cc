@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
+
 #include <algorithm>
+#include <memory>
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
@@ -11,18 +13,34 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_utils.h"
 
 namespace {
+// The maximum number of buttons (excluding the overflow menu button) that can
+// appear in the SavedTabGroupBar.
+constexpr int kMaxVisibleButtons = 4;
+
+// The amount of padding between elements listed in the overflow menu.
+const int kOverflowMenuButtonPadding = 8;
+
 SavedTabGroupModel* GetSavedTabGroupModelFromBrowser(Browser* browser) {
   DCHECK(browser);
   SavedTabGroupKeyedService* keyed_service =
@@ -49,7 +67,15 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
     return;
 
   saved_tab_group_model_->AddObserver(this);
+
+  overflow_button_ = AddChildView(std::make_unique<SavedTabGroupOverflowButton>(
+      base::BindRepeating(&SavedTabGroupBar::OnOverflowButtonPressed,
+                          base::Unretained(this), this)));
+
   AddAllButtons();
+
+  ReorderChildView(overflow_button_, children().size());
+  HideOverflowButton();
 }
 
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
@@ -89,11 +115,17 @@ void SavedTabGroupBar::SavedTabGroupUpdatedLocally(
 
 void SavedTabGroupBar::SavedTabGroupReorderedLocally() {
   for (views::View* child : children()) {
+    if (child == overflow_button_) {
+      continue;
+    }
+
     const absl::optional<int> model_index = saved_tab_group_model_->GetIndexOf(
         views::AsViewClass<SavedTabGroupButton>(child)->guid());
     ReorderChildView(child, model_index.value());
   }
 
+  // Ensure the overflow button is the last button in the view hierarchy.
+  ReorderChildView(overflow_button_, children().size());
   PreferredSizeChanged();
 }
 
@@ -118,7 +150,9 @@ int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
   // iterate through the list of buttons in the child views
   for (auto* button : children()) {
     gfx::Size preferred_size = button->GetPreferredSize();
-    int next_x = current_x + preferred_size.width() + button_padding;
+    int next_x =
+        current_x +
+        (button->GetVisible() ? preferred_size.width() + button_padding : 0);
     if (next_x > max_x)
       return current_x;
     current_x = next_x;
@@ -143,6 +177,19 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
                               base::Unretained(this), group.saved_guid()),
           animations_enabled_),
       index);
+
+  if (children().size() > (kMaxVisibleButtons + 1)) {
+    // Only 4 buttons + the overflow button can be visible at a time. Hide any
+    // additional buttons.
+    if (!overflow_button_->GetVisible()) {
+      ShowOverflowButton();
+    }
+
+    auto* button = children()[index];
+    button->SetVisible(false);
+  } else if (overflow_button_->GetVisible()) {
+    HideOverflowButton();
+  }
 }
 
 void SavedTabGroupBar::SavedTabGroupAdded(const base::GUID& guid) {
@@ -163,9 +210,24 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::GUID& guid) {
   if (!index.has_value())
     return;
   const SavedTabGroup* group = saved_tab_group_model_->Get(guid);
-  RemoveTabGroupButton(guid);
-  AddTabGroupButton(*group, index.value());
-  PreferredSizeChanged();
+  SavedTabGroupButton* button =
+      views::AsViewClass<SavedTabGroupButton>(GetButton(group->saved_guid()));
+  DCHECK(button);
+
+  button->UpdateButtonData(*group);
+
+  // Hide the button if it should not be visible.
+  if (index.value() >= kMaxVisibleButtons &&
+      children().size() >= (kMaxVisibleButtons + 1)) {
+    button->SetVisible(false);
+  } else {
+    button->SetSize(button->GetPreferredSize());
+    button->SetVisible(true);
+  }
+
+  if (button->GetVisible()) {
+    PreferredSizeChanged();
+  }
 }
 
 void SavedTabGroupBar::AddAllButtons() {
@@ -179,9 +241,25 @@ void SavedTabGroupBar::AddAllButtons() {
 void SavedTabGroupBar::RemoveTabGroupButton(const base::GUID& guid) {
   // Make sure we have a valid button before trying to remove it.
   views::View* button = GetButton(guid);
-  DCHECK(button);
+  const bool visible_button_removed = button->GetVisible();
 
+  DCHECK(button);
   RemoveChildViewT(button);
+
+  // If a visible button was removed set the next button to be visible.
+  if (children().size() >= (kMaxVisibleButtons + 1)) {
+    if (visible_button_removed) {
+      auto* invisible_button = children()[3];
+      invisible_button->SetSize(invisible_button->GetPreferredSize());
+      invisible_button->SetVisible(true);
+      PreferredSizeChanged();
+    }
+
+    if (children().size() == (kMaxVisibleButtons + 1)) {
+      HideOverflowButton();
+      PreferredSizeChanged();
+    }
+  }
 }
 
 void SavedTabGroupBar::RemoveAllButtons() {
@@ -215,4 +293,60 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::GUID& id,
 
     keyed_service->OpenSavedTabGroupInBrowser(browser_, group->saved_guid());
   }
+}
+
+void SavedTabGroupBar::OnOverflowButtonPressed(views::View* view,
+                                               const ui::Event& event) {
+  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
+      view, views::BubbleBorder::TOP_RIGHT);
+
+  bubble_delegate_ = bubble_delegate.get();
+  bubble_delegate_->SetShowTitle(false);
+  bubble_delegate_->SetShowCloseButton(false);
+  bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
+  gfx::Insets insets = gfx::Insets::TLBR(16, 16, 16, 48);
+  bubble_delegate_->set_margins(insets);
+  bubble_delegate_->set_fixed_width(200);
+
+  auto* overflow_menu =
+      bubble_delegate_->SetContentsView(std::make_unique<views::View>());
+  auto box = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      kOverflowMenuButtonPadding);
+  box->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kStart);
+  overflow_menu->SetLayoutManager(std::move(box));
+
+  // Add all buttons that are not currently visible to the overflow menu
+  for (auto* child : view->children()) {
+    if (child->GetVisible() ||
+        !views::IsViewClass<SavedTabGroupButton>(child)) {
+      continue;
+    }
+
+    SavedTabGroupButton* button =
+        views::AsViewClass<SavedTabGroupButton>(child);
+    const SavedTabGroup* const group =
+        saved_tab_group_model_->Get(button->guid());
+
+    overflow_menu->AddChildView(std::make_unique<SavedTabGroupButton>(
+        *group,
+        base::BindRepeating(&SavedTabGroupBar::page_navigator,
+                            base::Unretained(this)),
+        base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
+                            base::Unretained(this), group->saved_guid()),
+        animations_enabled_));
+  }
+
+  auto* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+  widget->Show();
+  return;
+}
+
+void SavedTabGroupBar::HideOverflowButton() {
+  overflow_button_->SetVisible(false);
+}
+
+void SavedTabGroupBar::ShowOverflowButton() {
+  overflow_button_->SetVisible(true);
 }

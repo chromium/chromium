@@ -13,6 +13,7 @@
 #include "content/public/browser/page.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/accessible_pane_view.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class Browser;
 class SavedTabGroupButton;
@@ -96,8 +97,22 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // The callback that the button calls when clicked by a user.
   void OnTabGroupButtonPressed(const base::GUID& id, const ui::Event& event);
 
+  // When called, display a bubble which shows all the groups that are saved
+  // and not visible. Each entry in the bubble, when clicked, should open the
+  // group into the tabstrip.
+  void OnOverflowButtonPressed(views::View* bar, const ui::Event& event);
+
+  // TODO: Move implementation inside of STGOverflowButton.
+  void HideOverflowButton();
+  void ShowOverflowButton();
+
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
+
+  raw_ptr<views::MenuButton> overflow_button_;
+
+  // Used to show the overflow menu when clicked.
+  raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
 
   // The model this tab group bar listens to.
   raw_ptr<SavedTabGroupModel> saved_tab_group_model_;
