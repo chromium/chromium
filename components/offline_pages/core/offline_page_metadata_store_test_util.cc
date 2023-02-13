@@ -60,8 +60,8 @@ void OfflinePageMetadataStoreTestUtil::BuildStoreInMemory() {
 }
 
 void OfflinePageMetadataStoreTestUtil::DeleteStore() {
-  store_.reset();
   store_ptr_ = nullptr;
+  store_.reset();
 }
 
 std::unique_ptr<OfflinePageMetadataStore>
