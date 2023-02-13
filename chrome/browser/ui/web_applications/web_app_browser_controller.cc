@@ -373,6 +373,9 @@ gfx::ImageSkia WebAppBrowserController::GetHomeTabIcon() const {
     }
   }
   if (!home_tab_icon_) {
+    home_tab_icon_ = provider_->icon_manager().GetMonochromeFavicon(app_id());
+  }
+  if (home_tab_icon_->width() == 0 || home_tab_icon_->height() == 0) {
     home_tab_icon_ = *(GetWindowAppIcon().GetImage().ToImageSkia());
   }
   return *home_tab_icon_;
