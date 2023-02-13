@@ -310,7 +310,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
       {"?", "jelly=", ash::features::IsJellyEnabled() ? "true" : "false"});
   GURL url = extensions::Extension::GetResourceURL(
       extensions::Extension::GetBaseURLFromExtensionId(component_extension.id),
-      "inputview.html#id=default" + query_part);
+      "inputview.html" + query_part + "#id=default");
   if (!url.is_valid())
     return false;
   out->input_view_url = url;
