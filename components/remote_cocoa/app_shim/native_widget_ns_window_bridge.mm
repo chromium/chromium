@@ -772,9 +772,8 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     [NSApp activateIgnoringOtherApps:YES];
   } else if (new_state == WindowVisibilityState::kShowInactive && !parent_ &&
              ![window_ isMiniaturized]) {
-    NSWindow* mainWindow = [NSApp mainWindow];
-    if (mainWindow && ([mainWindow screen] == [window_ screen] ||
-                       ![mainWindow isKeyWindow])) {
+    if ([[NSApp mainWindow] screen] == [window_ screen] ||
+        ![[NSApp mainWindow] isKeyWindow]) {
       // When the new window is on the same display as the main window or the
       // main window is inactive, order the window relative to the main window.
       // Avoid making it the front window (with e.g. orderFront:), which can
