@@ -36,6 +36,12 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcVmDataMigratorClient {
   // Returns the global instance if initialized. May return null.
   static ArcVmDataMigratorClient* Get();
 
+  // Checks whether the host's /home/root/<hash>/android-data/data has data that
+  // needs to be migrated.
+  virtual void HasDataToMigrate(
+      const arc::data_migrator::HasDataToMigrateRequest& request,
+      chromeos::DBusMethodCallback<bool> callback) = 0;
+
   // Starts the migration.
   virtual void StartMigration(
       const arc::data_migrator::StartMigrationRequest& request,

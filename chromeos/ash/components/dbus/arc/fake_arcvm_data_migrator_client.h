@@ -18,6 +18,9 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcVmDataMigratorClient
   static FakeArcVmDataMigratorClient* Get();
 
   // ArcVmDataMigratorClient overrides:
+  void HasDataToMigrate(
+      const arc::data_migrator::HasDataToMigrateRequest& request,
+      chromeos::DBusMethodCallback<bool> callback) override;
   void StartMigration(const arc::data_migrator::StartMigrationRequest& request,
                       chromeos::VoidDBusMethodCallback callback) override;
   void AddObserver(Observer* observer) override;
