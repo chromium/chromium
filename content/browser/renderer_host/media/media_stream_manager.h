@@ -2,26 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// MediaStreamManager is used to open media capture devices (video supported
-// now). Call flow:
-// 1. GenerateStream is called when a render process wants to use a capture
-//    device.
-// 2. MediaStreamManager will ask MediaStreamUIController for permission to
-//    use devices and for which device to use.
-// 3. MediaStreamManager will request the corresponding media device manager(s)
-//    to enumerate available devices. The result will be given to
-//    MediaStreamUIController.
-// 4. MediaStreamUIController will, by posting the request to UI, let the
-//    users to select which devices to use and send callback to
-//    MediaStreamManager with the result.
-// 5. MediaStreamManager will call the proper media device manager to open the
-//    device and run the corresponding callback with result.
-
+// MediaStreamManager is used to open media capture devices.
+//
 // If either user or test harness selects --use-fake-device-for-media-stream,
 // a fake video device or devices are used instead of real ones.
-
-// When enumeration and open are done in separate operations,
-// MediaStreamUIController is not involved as in steps.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_STREAM_MANAGER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_STREAM_MANAGER_H_
