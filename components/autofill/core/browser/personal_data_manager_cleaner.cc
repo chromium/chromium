@@ -68,6 +68,7 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
   // Log address, credit card and offer startup metrics.
   personal_data_manager_->LogStoredProfileMetrics();
   personal_data_manager_->LogStoredCreditCardMetrics();
+  personal_data_manager_->LogStoredIbanMetrics();
   personal_data_manager_->LogStoredOfferMetrics();
 
   personal_data_manager_->NotifyPersonalDataObserver();

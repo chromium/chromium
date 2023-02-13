@@ -702,6 +702,10 @@ class PersonalDataManager : public KeyedService,
   // credit cards. On subsequent calls, does nothing.
   void LogStoredCreditCardMetrics() const;
 
+  // The first time this is called, logs an UMA metric about the user's autofill
+  // IBANs. On subsequent calls, does nothing.
+  void LogStoredIbanMetrics() const;
+
   // The first time this is called, logs UMA metrics about the users's autofill
   // offer data. On subsequent calls, does nothing.
   void LogStoredOfferMetrics() const;
@@ -963,6 +967,9 @@ class PersonalDataManager : public KeyedService,
 
   // Whether we have already logged the stored credit card metrics this session.
   mutable bool has_logged_stored_credit_card_metrics_ = false;
+
+  // Whether we have already logged the stored IBAN metrics this session.
+  mutable bool has_logged_stored_iban_metrics_ = false;
 
   // Whether we have already logged the stored offer metrics this session.
   mutable bool has_logged_stored_offer_metrics_ = false;

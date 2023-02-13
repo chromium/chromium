@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -2116,15 +2117,25 @@ void PersonalDataManager::LogStoredCreditCardMetrics() const {
         local_credit_cards_, server_credit_cards_,
         GetServerCardWithArtImageCount(), kDisusedDataModelTimeDelta);
 
-    // Only log this info once per chrome user profile load.
+    // Only log this info once per Chrome user profile load.
     has_logged_stored_credit_card_metrics_ = true;
+  }
+}
+
+void PersonalDataManager::LogStoredIbanMetrics() const {
+  if (!has_logged_stored_iban_metrics_) {
+    autofill_metrics::LogStoredIbanMetrics(local_ibans_,
+                                           kDisusedDataModelTimeDelta);
+
+    // Only log this info once per Chrome user profile load.
+    has_logged_stored_iban_metrics_ = true;
   }
 }
 
 void PersonalDataManager::LogStoredOfferMetrics() const {
   if (!has_logged_stored_offer_metrics_) {
     autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
-    // Only log this info once per chrome user profile load.
+    // Only log this info once per Chrome user profile load.
     has_logged_stored_offer_metrics_ = true;
   }
 }

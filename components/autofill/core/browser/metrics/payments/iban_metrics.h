@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_IBAN_METRICS_H_
 
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
@@ -39,6 +40,12 @@ enum class SaveIbanPromptOffer {
   kNotShownMaxStrikesReached = 1,
   kMaxValue = kNotShownMaxStrikesReached,
 };
+
+// Logs various metrics about the local IBANs associated with a profile. This
+// should be called each time a new Chrome profile is launched.
+// `disused_data_threshold` is the time threshold to mark an IBAN as disused.
+void LogStoredIbanMetrics(const std::vector<std::unique_ptr<IBAN>>& local_ibans,
+                          const base::TimeDelta& disused_data_threshold);
 
 // Logs the number of strikes that an IBAN had when save was accepted.
 void LogStrikesPresentWhenIBANSaved(const int num_strikes);

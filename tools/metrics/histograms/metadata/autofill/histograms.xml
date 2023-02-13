@@ -1366,6 +1366,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.DaysSinceLastUse.StoredIban{IbanTypeToBeSaved}"
+    units="days" expires_after="2023-06-18">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the number of days that have passed since each IBAN belonging to a
+    given Chrome Profile was last used. This is logged for each Autofill IBAN
+    once per Chrome User Profile load.
+  </summary>
+  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+</histogram>
+
 <histogram name="Autofill.DaysSinceLastUse.StoredProfile" units="days"
     expires_after="2023-06-18">
   <obsolete>
@@ -3834,6 +3847,43 @@ chromium-metrics-reviews@google.com.
     profile launch time. This is only reported for users who have at least one
     stored credit card.
   </summary>
+</histogram>
+
+<histogram name="Autofill.StoredIbanCount{IbanTypeToBeSaved}" units="ibans"
+    expires_after="2023-09-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of local IBANs a user has stored, measured at Chrome profile
+    launch time. It's logged once per profile loaded.
+  </summary>
+  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+</histogram>
+
+<histogram name="Autofill.StoredIbanCount{IbanTypeToBeSaved}.WithNickname"
+    units="ibans" expires_after="2023-09-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of local IBANs with nickname a user has stored, measured at
+    Chrome profile launch time. It's logged one per profile loaded.
+  </summary>
+  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
+</histogram>
+
+<histogram name="Autofill.StoredIbanDisusedCount{IbanTypeToBeSaved}"
+    units="ibans" expires_after="2023-09-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of disused IBANs a user has stored, measured at Chrome profile
+    launch time. This is only reported for users who have at least one stored
+    IBAN.
+  </summary>
+  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
 </histogram>
 
 <histogram name="Autofill.StoredProfileCount" units="units"
