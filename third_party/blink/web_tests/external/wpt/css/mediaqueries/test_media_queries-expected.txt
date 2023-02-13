@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1338 tests; 1317 PASS, 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1338 tests; 1323 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS query_should_be_parseable: (orientation)
 PASS query_should_be_parseable: not (orientation)
 PASS expression_should_be_known: (orientation)
@@ -1323,22 +1323,22 @@ PASS three-valued logic: should_not_apply: not (unknown)
 PASS three-valued logic: should_not_apply: ((unknown) and (width))
 PASS three-valued logic: should_not_apply: not ((unknown) and (width))
 PASS three-valued logic: should_not_apply: ((unknown) and (height))
-FAIL three-valued logic: should_apply: not ((unknown) and (height)) assert_true: expected true got false
+PASS three-valued logic: should_apply: not ((unknown) and (height))
 PASS three-valued logic: should_apply: ((unknown) or (width))
 PASS three-valued logic: should_not_apply: not ((unknown) or (width))
 PASS three-valued logic: should_not_apply: ((unknown) or (height))
-FAIL three-valued logic: should_not_apply: not ((unknown) or (height)) assert_true: expected true got false
+PASS three-valued logic: should_not_apply: not ((unknown) or (height))
 PASS three-valued logic: should_apply: (width) or (not ((unknown) and (width)))
 PASS three-valued logic: should_not_apply: (width) and (not ((unknown) and (width)))
 PASS three-valued logic: should_apply: (width) or (not ((unknown) or (width)))
 PASS three-valued logic: should_not_apply: (width) and (not ((unknown) or (width)))
 PASS three-valued logic: should_apply: (width) or (not ((unknown) and (height)))
-FAIL three-valued logic: should_apply: (width) and (not ((unknown) and (height))) assert_true: expected true got false
+PASS three-valued logic: should_apply: (width) and (not ((unknown) and (height)))
 PASS three-valued logic: should_apply: (width) or (not ((unknown) or (height)))
-FAIL three-valued logic: should_not_apply: (width) and (not ((unknown) or (height))) assert_true: expected true got false
+PASS three-valued logic: should_not_apply: (width) and (not ((unknown) or (height)))
 PASS three-valued logic: should_not_apply: unknown(width)
 PASS three-valued logic: should_not_apply: not unknown(width)
-FAIL three-valued logic: should_apply: not (unknown(width) and (height)) assert_true: expected true got false
-FAIL three-valued logic: should_not_apply: not (unknown(width) or (height)) assert_true: expected true got false
+PASS three-valued logic: should_apply: not (unknown(width) and (height))
+PASS three-valued logic: should_not_apply: not (unknown(width) or (height))
 Harness: the test ran to completion.
 

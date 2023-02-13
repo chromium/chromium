@@ -90,6 +90,30 @@ void MaybeRecordMediaFeatureValue(
   }
 }
 
+KleeneValue KleeneOr(KleeneValue a, KleeneValue b) {
+  switch (a) {
+    case KleeneValue::kTrue:
+      return KleeneValue::kTrue;
+    case KleeneValue::kFalse:
+      return b;
+    case KleeneValue::kUnknown:
+      return (b == KleeneValue::kTrue) ? KleeneValue::kTrue
+                                       : KleeneValue::kUnknown;
+  }
+}
+
+KleeneValue KleeneAnd(KleeneValue a, KleeneValue b) {
+  switch (a) {
+    case KleeneValue::kTrue:
+      return b;
+    case KleeneValue::kFalse:
+      return KleeneValue::kFalse;
+    case KleeneValue::kUnknown:
+      return (b == KleeneValue::kFalse) ? KleeneValue::kFalse
+                                        : KleeneValue::kUnknown;
+  }
+}
+
 }  // namespace
 
 using device::mojom::blink::DevicePostureType;
@@ -230,10 +254,10 @@ KleeneValue MediaQueryEvaluator::EvalAnd(
   KleeneValue left = Eval(left_node, result_flags);
   // Short-circuiting before calling Eval on |right_node| prevents
   // unnecessary entries in |results|.
-  if (left != KleeneValue::kTrue) {
+  if (left == KleeneValue::kFalse) {
     return left;
   }
-  return Eval(right_node, result_flags);
+  return KleeneAnd(left, Eval(right_node, result_flags));
 }
 
 KleeneValue MediaQueryEvaluator::EvalOr(
@@ -246,7 +270,7 @@ KleeneValue MediaQueryEvaluator::EvalOr(
   if (left == KleeneValue::kTrue) {
     return left;
   }
-  return Eval(right_node, result_flags);
+  return KleeneOr(left, Eval(right_node, result_flags));
 }
 
 bool MediaQueryEvaluator::DidResultsChange(
