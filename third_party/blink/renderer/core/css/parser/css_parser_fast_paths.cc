@@ -1345,8 +1345,13 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kReadWrite ||
              value_id == CSSValueID::kReadWritePlaintextOnly;
     case CSSPropertyID::kUserSelect:
+      if (!RuntimeEnabledFeatures::CSSUserSelectContainEnabled()) {
+        return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
+               value_id == CSSValueID::kText || value_id == CSSValueID::kAll;
+      }
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
-             value_id == CSSValueID::kText || value_id == CSSValueID::kAll;
+             value_id == CSSValueID::kText || value_id == CSSValueID::kAll ||
+             value_id == CSSValueID::kContain;
     case CSSPropertyID::kWebkitWritingMode:
       return value_id >= CSSValueID::kHorizontalTb &&
              value_id <= CSSValueID::kVerticalLr;

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS e.style['user-select'] = "auto" should set the property value
-PASS e.style['user-select'] = "text" should set the property value
-PASS e.style['user-select'] = "none" should set the property value
-FAIL e.style['user-select'] = "contain" should set the property value assert_not_equals: property should be set got disallowed value ""
-PASS e.style['user-select'] = "all" should set the property value
-Harness: the test ran to completion.
-

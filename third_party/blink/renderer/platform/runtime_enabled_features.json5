@@ -941,6 +941,11 @@
       name: "CSSTrigonometricFunctions",
       status: "stable",
     },
+    // Support for `user-select:contain`.
+    {
+      name: "CSSUserSelectContain",
+      status: "test",
+    },
     // Support for registered custom properties with <image> syntax.
     {
       name: "CSSVariables2ImageValues",

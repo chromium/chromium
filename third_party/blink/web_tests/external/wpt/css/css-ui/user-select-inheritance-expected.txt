@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL user-select:all should not be inherited. assert_equals: user-select:all should not be inherited. expected "auto" but got "all"
+PASS user-select:auto should not be inherited.
+PASS user-select:contain should not be inherited.
+FAIL user-select:none should not be inherited. assert_equals: user-select:none should not be inherited. expected "auto" but got "none"
+FAIL user-select:text should not be inherited. assert_equals: user-select:text should not be inherited. expected "auto" but got "text"
+Harness: the test ran to completion.
+

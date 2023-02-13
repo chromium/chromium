@@ -2763,6 +2763,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
       const ComputedStyle& inherit_parent,
       IsAtShadowBoundary is_at_shadow_boundary = kNotAtShadowBoundary) {
     EUserModify current_user_modify = UserModify();
+    EUserSelect current_user_select = UserSelect();
     ComputedStyleBuilderBase::InheritFrom(inherit_parent,
                                           is_at_shadow_boundary);
 
@@ -2770,6 +2771,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     // single unit, and not necessarily be editable
     if (is_at_shadow_boundary == kAtShadowBoundary) {
       SetUserModify(current_user_modify);
+    }
+
+    // TODO(crbug.com/1410068): Once `user-select` isn't inherited, we should
+    // get rid of following if-statement.
+    if (inherit_parent.UserSelect() == EUserSelect::kContain) {
+      SetUserSelect(current_user_select);
     }
   }
 
