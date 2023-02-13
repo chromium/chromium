@@ -198,6 +198,18 @@ scoped_refptr<DevToolsAgentHost> DevToolsAgentHostForTab(TabAndroid* tab,
   return result;
 }
 
+static const void* const kCreatedByDevTools = &kCreatedByDevTools;
+
+bool IsCreatedByDevTools(const WebContents& web_contents) {
+  return !!web_contents.GetUserData(kCreatedByDevTools);
+}
+
+void MarkCreatedByDevTools(WebContents& web_contents) {
+  DCHECK(!IsCreatedByDevTools(web_contents));
+  web_contents.SetUserData(kCreatedByDevTools,
+                           std::make_unique<base::SupportsUserData::Data>());
+}
+
 } //  namespace
 
 DevToolsManagerDelegateAndroid::DevToolsManagerDelegateAndroid() = default;
@@ -228,9 +240,16 @@ DevToolsManagerDelegateAndroid::RemoteDebuggingTargets() {
       if (!tab)
         continue;
 
-      if (tab->web_contents())
-        tab_web_contents.insert(tab->web_contents());
-      result.push_back(DevToolsAgentHostForTab(tab, false));
+      WebContents* wc = tab->web_contents();
+      // For web contents created programmatically by CDP clients, do not create
+      // tab proxies to avoid clients being confused by the fact they get more
+      // targets than they create and match the behavior of desktop chrome.
+      if (!wc || !IsCreatedByDevTools(*wc)) {
+        result.push_back(DevToolsAgentHostForTab(tab, false));
+        if (wc) {
+          tab_web_contents.insert(wc);
+        }
+      }
     }
   }
 
@@ -261,8 +280,9 @@ DevToolsManagerDelegateAndroid::CreateNewTarget(const GURL& url, bool for_tab) {
   if (!web_contents)
     return nullptr;
 
-  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-  return tab ? DevToolsAgentHostForTab(tab, for_tab) : nullptr;
+  MarkCreatedByDevTools(*web_contents);
+  return for_tab ? DevToolsAgentHost::GetOrCreateForTab(web_contents)
+                 : DevToolsAgentHost::GetOrCreateFor(web_contents);
 }
 
 bool DevToolsManagerDelegateAndroid::IsBrowserTargetDiscoverable() {
