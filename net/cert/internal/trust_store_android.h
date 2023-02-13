@@ -5,6 +5,8 @@
 #ifndef NET_CERT_INTERNAL_TRUST_STORE_ANDROID_H_
 #define NET_CERT_INTERNAL_TRUST_STORE_ANDROID_H_
 
+#include "base/memory/ptr_util.h"
+#include "base/synchronization/lock.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/trust_store.h"
 #include "net/cert/pki/trust_store_in_memory.h"
@@ -21,6 +23,9 @@ class NET_EXPORT TrustStoreAndroid : public TrustStore {
   TrustStoreAndroid(const TrustStoreAndroid& other) = delete;
   TrustStoreAndroid& operator=(const TrustStoreAndroid& other) = delete;
 
+  // Load user settings from Android.
+  void Initialize();
+
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
 
@@ -28,7 +33,15 @@ class NET_EXPORT TrustStoreAndroid : public TrustStore {
                             base::SupportsUserData* debug_data) override;
 
  private:
-  TrustStoreInMemory trust_store_;
+  // Inner Impl class for use in initializing stores.
+  class Impl;
+
+  // Loads user settings from Windows CertStores if not already done and
+  // returns pointer to the Impl.
+  Impl* MaybeInitializeAndGetImpl();
+
+  base::Lock init_lock_;
+  std::unique_ptr<Impl> impl_ GUARDED_BY(init_lock_);
 };
 
 }  // namespace net

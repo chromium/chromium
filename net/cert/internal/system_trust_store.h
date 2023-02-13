@@ -109,6 +109,12 @@ NET_EXPORT void InitializeTrustStoreMacCache();
 NET_EXPORT void InitializeTrustStoreWinSystem();
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// Initializes Android system trust store on a worker thread, if the builtin
+// verifier is enabled.
+NET_EXPORT void InitializeTrustStoreAndroid();
+#endif
+
 }  // namespace net
 
 #endif  // NET_CERT_INTERNAL_SYSTEM_TRUST_STORE_H_
