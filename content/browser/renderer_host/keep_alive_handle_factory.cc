@@ -18,7 +18,8 @@
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom.h"
+#include "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom.h"
 
 namespace content {
 

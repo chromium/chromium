@@ -9,6 +9,8 @@
 #include <utility>
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
@@ -47,9 +49,10 @@ class LoaderFactoryForFrame final : public ResourceFetcher::LoaderFactory {
   const Member<LocalDOMWindow> window_;
   const Member<PrefetchedSignedExchangeManager>
       prefetched_signed_exchange_manager_;
-  HeapMojoRemote<blink::mojom::blink::KeepAliveHandleFactory>
+  HeapMojoRemote<mojom::blink::KeepAliveHandleFactory>
       keep_alive_handle_factory_;
 };
 
 }  // namespace blink
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_LOADER_FACTORY_FOR_FRAME_H_

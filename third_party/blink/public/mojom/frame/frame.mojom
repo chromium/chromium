@@ -45,6 +45,7 @@ import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/input/focus_type.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom";
 import "third_party/blink/public/mojom/messaging/delegated_capability.mojom";
 import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
@@ -188,18 +189,6 @@ struct IframeAttributes {
   string? name;
   // 'src' attribute of the iframe. Optional because it might not be set.
   string? src;
-};
-
-// An opaque handle that keeps alive the associated render process even after
-// the frame is detached. Used by resource requests with "keepalive" specified.
-interface KeepAliveHandle {};
-
-// A factory interface for KeepAliveHandle. This is separate from LocalFrameHost
-// because LocalFrameHost may not be usable when the frame is about to be gone.
-interface KeepAliveHandleFactory {
-  // Creates and returns a KeepAliveHandle.
-  IssueKeepAliveHandle(
-      pending_receiver<blink.mojom.KeepAliveHandle> keep_alive_handle);
 };
 
 // Implemented in Browser, this interface defines frame-specific methods that

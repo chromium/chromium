@@ -108,6 +108,8 @@ mojom("mojom_platform") {
     "loader/code_cache.mojom",
     "loader/content_security_notifier.mojom",
     "loader/fetch_client_settings_object.mojom",
+    "loader/keep_alive_handle.mojom",
+    "loader/keep_alive_handle_factory.mojom",
     "loader/mixed_content.mojom",
     "loader/navigation_predictor.mojom",
     "loader/pause_subresource_loading_handle.mojom",

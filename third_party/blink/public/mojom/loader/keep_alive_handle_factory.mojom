@@ -1,0 +1,15 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/loader/keep_alive_handle.mojom";
+
+// A factory interface for KeepAliveHandle. This is separate from LocalFrameHost
+// because LocalFrameHost may not be usable when the frame is about to be gone.
+interface KeepAliveHandleFactory {
+  // Creates and returns a KeepAliveHandle.
+  IssueKeepAliveHandle(
+      pending_receiver<blink.mojom.KeepAliveHandle> keep_alive_handle);
+};
