@@ -7,22 +7,28 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller.h"
 
+@protocol AutofillProfileEditTableViewControllerDelegate;
+
 namespace autofill {
 class AutofillProfile;
-class PersonalDataManager;
 }  // namespace autofill
 
 // The table view for the Autofill profile edit settings.
 @interface AutofillProfileEditTableViewController
     : AutofillEditTableViewController
 
-// Creates a controller for `profile` and `dataManager` that cannot be null.
-+ (instancetype)controllerWithProfile:(const autofill::AutofillProfile&)profile
-                  personalDataManager:
-                      (autofill::PersonalDataManager*)dataManager
-                            userEmail:(NSString*)userEmail;
+// Initializes a AutofillProfileEditTableViewController with passed delegate,
+// `profile` and `userEmail`.
+- (instancetype)initWithDelegate:
+                    (id<AutofillProfileEditTableViewControllerDelegate>)delegate
+                         profile:(autofill::AutofillProfile*)profile
+                       userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+
+// Informs the view controller that user selected a country with the given
+// country code.
+- (void)didSelectCountry:(NSString*)selectedCountry;
 
 @end
 

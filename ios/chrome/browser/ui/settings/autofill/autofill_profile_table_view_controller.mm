@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_source.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
@@ -72,6 +72,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - AutofillProfileTableViewController
 
 @interface AutofillProfileTableViewController () <
+    AutofillProfileEditCoordinatorDelegate,
     PersonalDataManagerObserver,
     PopoverLabelViewControllerDelegate> {
   autofill::PersonalDataManager* _personalDataManager;
@@ -101,6 +102,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Coordinator that managers a UIAlertController to delete addresses.
 @property(nonatomic, strong) ActionSheetCoordinator* deletionSheetCoordinator;
+
+// Coordinator to view/edit profile details.
+@property(nonatomic, strong)
+    AutofillProfileEditCoordinator* autofillProfileEditCoordinator;
 
 @end
 
@@ -361,13 +366,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   const std::vector<autofill::AutofillProfile*> autofillProfiles =
       _personalDataManager->GetProfiles();
-  AutofillProfileEditTableViewController* controller =
-      [AutofillProfileEditTableViewController
-          controllerWithProfile:*autofillProfiles[indexPath.item]
-            personalDataManager:_personalDataManager
-                      userEmail:self.syncingUserEmail];
-  controller.dispatcher = self.dispatcher;
-  [self.navigationController pushViewController:controller animated:YES];
+  [self showAddressProfileDetailsPageForProfile:*autofillProfiles[indexPath
+                                                                      .item]];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -628,6 +628,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
 }
 
+#pragma mark - AutofillProfileEditCoordinatorDelegate
+
+- (void)autofillProfileEditCoordinatorTableViewControllerDidFinish:
+    (AutofillProfileEditCoordinator*)coordinator {
+  DCHECK_EQ(self.autofillProfileEditCoordinator, coordinator);
+  self.autofillProfileEditCoordinator.delegate = nil;
+  self.autofillProfileEditCoordinator = nil;
+}
+
 #pragma mark - Private
 
 // Shows the action sheet asking for the confirmation on delete from the user.
@@ -713,6 +722,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)isItemTypeForIndexPathAddress:(NSIndexPath*)indexPath {
   return
       [self.tableViewModel itemTypeForIndexPath:indexPath] == ItemTypeAddress;
+}
+
+- (void)showAddressProfileDetailsPageForProfile:
+    (const autofill::AutofillProfile&)profile {
+  self.autofillProfileEditCoordinator = [[AutofillProfileEditCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser
+                               profile:profile];
+  self.autofillProfileEditCoordinator.delegate = self;
+  [self.autofillProfileEditCoordinator start];
 }
 
 @end

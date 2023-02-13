@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
@@ -53,8 +54,9 @@ static NSArray* FindTextFieldDescendants(UIView* root) {
 
   while ([descendants count]) {
     UIView* view = [descendants objectAtIndex:0];
-    if ([view isKindOfClass:[UITextField class]])
+    if ([view isKindOfClass:[UITextField class]]) {
       [textFields addObject:view];
+    }
 
     [descendants addObjectsFromArray:[view subviews]];
     [descendants removeObjectAtIndex:0];
@@ -62,6 +64,30 @@ static NSArray* FindTextFieldDescendants(UIView* root) {
 
   return textFields;
 }
+}  // namespace
+
+@interface AutofillProfileEditTableViewControllerTestDelegate
+    : NSObject <AutofillProfileEditTableViewControllerDelegate>
+@end
+
+@implementation AutofillProfileEditTableViewControllerTestDelegate
+
+- (void)autofillProfileEditViewController:
+            (AutofillProfileEditTableViewController*)viewController
+    willSelectCountryWithCurrentlySelectedCountry:(NSString*)country {
+}
+
+- (void)autofillProfileEditViewController:
+            (AutofillProfileEditTableViewController*)viewController
+                   didEditAutofillProfile:(autofill::AutofillProfile*)profile {
+}
+
+- (void)viewDidDisappear {
+}
+
+@end
+
+namespace {
 
 class AutofillProfileEditTableViewControllerTest : public PlatformTest {
  protected:
@@ -81,6 +107,8 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
           ->set_local_state_for_testing(local_state_.Get());
     }
     personal_data_manager_->OnSyncServiceInitialized(nullptr);
+    delegate_ =
+        [[AutofillProfileEditTableViewControllerTestDelegate alloc] init];
   }
 
   void LoadController(bool is_account_profile = false) {
@@ -116,12 +144,13 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
     }
     waiter.Wait();  // Wait for the completion of the asynchronous operation.
 
-    autofill_profile_edit_controller_ = [AutofillProfileEditTableViewController
-        controllerWithProfile:autofill_profile
-          personalDataManager:personal_data_manager_
-                    userEmail:(is_account_profile
-                                   ? base::SysUTF16ToNSString(kTestEmail)
-                                   : nil)];
+    autofill_profile_edit_controller_ =
+        [[AutofillProfileEditTableViewController alloc]
+            initWithDelegate:delegate_
+                     profile:&autofill_profile
+                   userEmail:(is_account_profile
+                                  ? base::SysUTF16ToNSString(kTestEmail)
+                                  : nil)];
 
     // Load the view to force the loading of the model.
     [autofill_profile_edit_controller_ loadViewIfNeeded];
@@ -132,6 +161,7 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   autofill::PersonalDataManager* personal_data_manager_;
   AutofillProfileEditTableViewController* autofill_profile_edit_controller_;
+  AutofillProfileEditTableViewControllerTestDelegate* delegate_ = nil;
 };
 
 // Default test case of no addresses or credit cards.

@@ -8,16 +8,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/field_types.h"
-#import "components/autofill/core/browser/geo/autofill_country.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
-#import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_country_selection_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/country_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
@@ -47,39 +44,31 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface AutofillProfileEditTableViewController () <
-    AutofillCountrySelectionTableViewControllerDelegate>
+@interface AutofillProfileEditTableViewController ()
 
-// Initializes a AutofillProfileEditTableViewController with `profile` and
-// `dataManager`.
-- (instancetype)initWithProfile:(const autofill::AutofillProfile&)profile
-            personalDataManager:(autofill::PersonalDataManager*)dataManager
-                      userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
+// The AutofillProfileEditTableViewControllerDelegate for this ViewController.
+@property(nonatomic, weak) id<AutofillProfileEditTableViewControllerDelegate>
+    delegate;
 
 // Stores the value displayed in the country field.
 @property(nonatomic, strong) NSString* countryValue;
 
-// The fetched country list.
-@property(nonatomic, strong) NSArray<CountryItem*>* allCountries;
-
 @end
 
 @implementation AutofillProfileEditTableViewController {
-  autofill::PersonalDataManager* _personalDataManager;  // weak
-  autofill::AutofillProfile _autofillProfile;
+  autofill::AutofillProfile* _autofillProfile;
   NSString* _userEmail;
 }
 
 #pragma mark - Initialization
 
-- (instancetype)initWithProfile:(const autofill::AutofillProfile&)profile
-            personalDataManager:(autofill::PersonalDataManager*)dataManager
-                      userEmail:(NSString*)userEmail {
-  DCHECK(dataManager);
-
+- (instancetype)initWithDelegate:
+                    (id<AutofillProfileEditTableViewControllerDelegate>)delegate
+                         profile:(autofill::AutofillProfile*)profile
+                       userEmail:(NSString*)userEmail {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _personalDataManager = dataManager;
+    _delegate = delegate;
     _autofillProfile = profile;
     _userEmail = userEmail;
 
@@ -89,26 +78,33 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return self;
 }
 
-+ (instancetype)controllerWithProfile:(const autofill::AutofillProfile&)profile
-                  personalDataManager:
-                      (autofill::PersonalDataManager*)dataManager
-                            userEmail:(NSString*)userEmail {
-  return [[self alloc] initWithProfile:profile
-                   personalDataManager:dataManager
-                             userEmail:userEmail];
-}
-
 - (void)viewDidLoad {
   [super viewDidLoad];
 
   self.tableView.allowsSelectionDuringEditing = YES;
   self.tableView.accessibilityIdentifier = kAutofillProfileEditTableViewId;
-  self.countryValue = base::SysUTF16ToNSString(_autofillProfile.GetInfo(
+  self.countryValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
       autofill::ServerFieldType::ADDRESS_HOME_COUNTRY,
       GetApplicationContext()->GetApplicationLocale()));
 
-  [self loadCountries];
   [self loadModel];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [self.delegate viewDidDisappear];
+  [super viewDidDisappear:animated];
+}
+
+#pragma mark - Public
+
+- (void)didSelectCountry:(NSString*)selectedCountry {
+  self.countryValue = selectedCountry;
+  // Reload the model.
+  [self loadModel];
+  // Update the cells.
+  [self reconfigureCellsForItems:
+            [self.tableViewModel
+                itemsInSectionWithIdentifier:SectionIdentifierFields]];
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -131,7 +127,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                               inSection:section];
       NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:path];
       if (itemType == ItemTypeCountry) {
-        _autofillProfile.SetInfoWithVerificationStatus(
+        _autofillProfile->SetInfoWithVerificationStatus(
             autofill::AutofillType(
                 autofill::ServerFieldType::ADDRESS_HOME_COUNTRY),
             base::SysNSStringToUTF16(self.countryValue),
@@ -150,19 +146,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
       // name_middle and name_last subcomponents.
       if (item.autofillUIType == AutofillUITypeProfileHomeAddressCountry ||
           item.autofillUIType == AutofillUITypeProfileFullName) {
-        _autofillProfile.SetInfoWithVerificationStatus(
+        _autofillProfile->SetInfoWithVerificationStatus(
             autofill::AutofillType(serverFieldType),
             base::SysNSStringToUTF16(item.textFieldValue),
             GetApplicationContext()->GetApplicationLocale(),
             autofill::VerificationStatus::kUserVerified);
       } else {
-        _autofillProfile.SetRawInfoWithVerificationStatus(
+        _autofillProfile->SetRawInfoWithVerificationStatus(
             serverFieldType, base::SysNSStringToUTF16(item.textFieldValue),
             autofill::VerificationStatus::kUserVerified);
       }
     }
 
-    _personalDataManager->UpdateProfile(_autofillProfile);
+    [self.delegate autofillProfileEditViewController:self
+                              didEditAutofillProfile:_autofillProfile];
   }
 
   // Reload the model.
@@ -201,7 +198,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAccountProfilesUnionView) &&
-      _autofillProfile.source() ==
+      _autofillProfile->source() ==
           autofill::AutofillProfile::Source::kAccount &&
       _userEmail != nil) {
     [model setFooter:[self footerItem]
@@ -242,13 +239,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
           base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
       [textFieldCell.textField becomeFirstResponder];
     } else if (itemType == ItemTypeCountry) {
-      AutofillCountrySelectionTableViewController* viewController =
-          [[AutofillCountrySelectionTableViewController alloc]
-              initWithDelegate:self
-               selectedCountry:self.countryValue
-                  allCountries:self.allCountries];
-      [self.navigationController pushViewController:viewController
-                                           animated:YES];
+      [self.delegate autofillProfileEditViewController:self
+          willSelectCountryWithCurrentlySelectedCountry:self.countryValue];
     }
   }
 }
@@ -272,51 +264,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return NO;
 }
 
-#pragma mark - AutofillCountrySelectionTableViewControllerDelegate
-
-- (void)didSelectCountry:(CountryItem*)selectedCountry {
-  [self.navigationController popViewControllerAnimated:YES];
-  self.countryValue = selectedCountry.text;
-  // Reload the model.
-  [self loadModel];
-  // Update the cells.
-  [self reconfigureCellsForItems:
-            [self.tableViewModel
-                itemsInSectionWithIdentifier:SectionIdentifierFields]];
-}
-
 #pragma mark - Private
-
-// Loads the country codes and names and sets the default selected country code.
-- (void)loadCountries {
-  autofill::CountryComboboxModel countryModel;
-  countryModel.SetCountries(*_personalDataManager,
-                            base::RepeatingCallback<bool(const std::string&)>(),
-                            GetApplicationContext()->GetApplicationLocale());
-  const autofill::CountryComboboxModel::CountryVector& countriesVector =
-      countryModel.countries();
-
-  NSMutableArray<CountryItem*>* countryItems = [[NSMutableArray alloc]
-      initWithCapacity:static_cast<NSUInteger>(countriesVector.size())];
-  // TODO(crbug.com/1407666): Skip the first country as it appears twice in the
-  // list.
-  for (size_t i = 0; i < countriesVector.size(); ++i) {
-    if (countriesVector[i].get()) {
-      CountryItem* countryItem =
-          [[CountryItem alloc] initWithType:ItemTypeCountry];
-      countryItem.text = base::SysUTF16ToNSString(countriesVector[i]->name());
-      countryItem.countryCode =
-          base::SysUTF8ToNSString(countriesVector[i]->country_code());
-      countryItem.accessibilityIdentifier = countryItem.text;
-      countryItem.accessibilityTraits |= UIAccessibilityTraitButton;
-      if (countryItem.text == self.countryValue) {
-        countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
-      }
-      [countryItems addObject:countryItem];
-    }
-  }
-  _allCountries = countryItems;
-}
 
 // Creates and returns the `TableViewLinkHeaderFooterItem` footer item.
 - (TableViewLinkHeaderFooterItem*)footerItem {
@@ -336,7 +284,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   AutofillEditItem* item =
       [[AutofillEditItem alloc] initWithType:ItemTypeField];
   item.fieldNameLabelText = l10n_util::GetNSString(field.displayStringID);
-  item.textFieldValue = base::SysUTF16ToNSString(_autofillProfile.GetInfo(
+  item.textFieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
       autofill::AutofillType(field.autofillType),
       GetApplicationContext()->GetApplicationLocale()));
   item.autofillUIType = AutofillUITypeFromAutofillType(field.autofillType);

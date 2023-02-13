@@ -27,10 +27,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierCountries = kSectionIdentifierEnumZero,
 };
 
-typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeCountry = kItemTypeEnumZero,  // This is a repeating type.
-};
-
 }  // namespace
 
 @interface AutofillCountrySelectionTableViewController () <
