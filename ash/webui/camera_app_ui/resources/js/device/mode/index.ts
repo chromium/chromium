@@ -148,7 +148,7 @@ export class Modes {
               params.constraints, params.captureResolution,
               params.videoSnapshotResolution, assertExists(this.handler));
         },
-        isSupported: async () => true,
+        isSupported: () => Promise.resolve(true),
         isSupportPTZ: () => true,
         prepareDevice: async (constraints) => {
           const deviceOperator = DeviceOperator.getInstance();
@@ -200,7 +200,7 @@ export class Modes {
               params.constraints, params.captureResolution,
               assertExists(this.handler));
         },
-        isSupported: async () => true,
+        isSupported: () => Promise.resolve(true),
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, CaptureIntent.STILL_CAPTURE),
@@ -235,7 +235,7 @@ export class Modes {
               params.constraints, params.captureResolution,
               assertExists(this.handler));
         },
-        isSupported: async () => true,
+        isSupported: async () => Promise.resolve(true),
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
             constraints, resolution, CaptureIntent.STILL_CAPTURE),
