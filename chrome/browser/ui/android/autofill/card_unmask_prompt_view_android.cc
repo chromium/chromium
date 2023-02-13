@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -158,6 +159,8 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
   ScopedJavaLocalRef<jstring> card_expiration =
       base::android::ConvertUTF16ToJavaString(env,
                                               controller_->GetCardExpiration());
+  ScopedJavaLocalRef<jobject> card_art_url =
+      url::GURLAndroid::FromNativeGURL(env, controller_->GetCardArtUrl());
   ScopedJavaLocalRef<jstring> confirm = base::android::ConvertUTF16ToJavaString(
       env, controller_->GetOkButtonLabel());
 
@@ -165,7 +168,8 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
              env, reinterpret_cast<intptr_t>(this), dialog_title, instructions,
              ResourceMapper::MapToJavaDrawableId(
                  GetIconResourceID(controller_->GetCardIconString())),
-             card_name, card_last_four_digits, card_expiration, confirm,
+             card_name, card_last_four_digits, card_expiration, card_art_url,
+             confirm,
              ResourceMapper::MapToJavaDrawableId(controller_->GetCvcImageRid()),
              ResourceMapper::MapToJavaDrawableId(
                  controller_->GetGooglePayImageRid()),

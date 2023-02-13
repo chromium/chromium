@@ -37,6 +37,7 @@ class CardUnmaskPromptController {
   virtual std::u16string GetCardName() const = 0;
   virtual std::u16string GetCardLastFourDigits() const = 0;
   virtual std::u16string GetCardExpiration() const = 0;
+  virtual const GURL& GetCardArtUrl() const = 0;
   virtual int GetGooglePayImageRid() const = 0;
   virtual bool ShouldOfferWebauthn() const = 0;
   virtual bool GetWebauthnOfferStartState() const = 0;

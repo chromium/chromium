@@ -419,4 +419,8 @@ found in the LICENSE file.
     <dimen name="settings_page_card_icon_height">20dp</dimen>
     <dimen name="settings_page_card_icon_end_margin">20dp</dimen>
     <dimen name="settings_page_margin_between_card_name_and_last_four_digits">4dp</dimen>
+
+    <!-- Card Unmask dialog -->
+    <dimen name="card_unmask_dialog_credit_card_icon_width">32dp</dimen>
+    <dimen name="card_unmask_dialog_credit_card_icon_height">20dp</dimen>
 </resources>

@@ -316,6 +316,10 @@ std::u16string CardUnmaskPromptControllerImpl::GetCardExpiration() const {
   return card_.ExpirationDateForDisplay();
 }
 
+const GURL& CardUnmaskPromptControllerImpl::GetCardArtUrl() const {
+  return card_.card_art_url();
+}
+
 int CardUnmaskPromptControllerImpl::GetGooglePayImageRid() const {
   return IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER;
 }

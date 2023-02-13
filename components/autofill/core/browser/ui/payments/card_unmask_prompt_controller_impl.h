@@ -68,6 +68,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
   std::u16string GetCardName() const override;
   std::u16string GetCardLastFourDigits() const override;
   std::u16string GetCardExpiration() const override;
+  const GURL& GetCardArtUrl() const override;
   int GetGooglePayImageRid() const override;
   bool ShouldOfferWebauthn() const override;
   bool GetWebauthnOfferStartState() const override;
