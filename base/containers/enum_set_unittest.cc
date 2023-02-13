@@ -205,6 +205,25 @@ TEST_F(EnumSetTest, Clear) {
   EXPECT_TRUE(enums.Empty());
 }
 
+TEST_F(EnumSetTest, Set) {
+  TestEnumSet enums;
+  EXPECT_TRUE(enums.Empty());
+
+  enums.PutOrRemove(TestEnum::TEST_3, false);
+  EXPECT_TRUE(enums.Empty());
+
+  enums.PutOrRemove(TestEnum::TEST_4, true);
+  EXPECT_EQ(enums, TestEnumSet(TestEnum::TEST_4));
+
+  enums.PutOrRemove(TestEnum::TEST_5, true);
+  EXPECT_EQ(enums, TestEnumSet(TestEnum::TEST_4, TestEnum::TEST_5));
+  enums.PutOrRemove(TestEnum::TEST_5, true);
+  EXPECT_EQ(enums, TestEnumSet(TestEnum::TEST_4, TestEnum::TEST_5));
+
+  enums.PutOrRemove(TestEnum::TEST_4, false);
+  EXPECT_EQ(enums, TestEnumSet(TestEnum::TEST_5));
+}
+
 TEST_F(EnumSetTest, Has) {
   const TestEnumSet enums(TestEnum::TEST_4, TestEnum::TEST_5);
   EXPECT_FALSE(enums.Has(TestEnum::TEST_1));

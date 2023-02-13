@@ -253,6 +253,15 @@ class EnumSet {
   // Removes all values from our set.
   void Clear() { enums_.reset(); }
 
+  // Conditionally puts or removes `value`, based on `should_be_present`.
+  void PutOrRemove(E value, bool should_be_present) {
+    if (should_be_present) {
+      Put(value);
+    } else {
+      Remove(value);
+    }
+  }
+
   // Returns true iff the given value is in range and a member of our set.
   constexpr bool Has(E value) const {
     return InRange(value) && enums_[ToIndex(value)];
