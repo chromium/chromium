@@ -406,6 +406,11 @@
       status: "stable",
     },
     {
+      name: "BeforeunloadEventCancelByPreventDefault",
+      status: "stable",
+      base_feature: "BeforeunloadEventCancelByPreventDefault",
+    },
+    {
       name: "BidiCaretAffinity",
     },
     {

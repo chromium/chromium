@@ -3899,8 +3899,12 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   if (before_unload_event.returnValue().IsNull()) {
     RecordBeforeUnloadUse(BeforeUnloadUse::kNoDialogNoText);
   }
-  bool cancelled_by_script = !before_unload_event.returnValue().IsNull() ||
-                             before_unload_event.defaultPrevented();
+  bool cancelled_by_script =
+      !before_unload_event.returnValue().IsNull() ||
+      (RuntimeEnabledFeatures::
+           BeforeunloadEventCancelByPreventDefaultEnabled() &&
+       before_unload_event.defaultPrevented());
+
   if (!GetFrame() || !cancelled_by_script) {
     return true;
   }
