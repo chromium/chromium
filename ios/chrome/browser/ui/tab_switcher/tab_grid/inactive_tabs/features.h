@@ -41,4 +41,10 @@ base::TimeDelta TabInactivityThreshold();
 // The default is "14".
 std::u16string TabInactivityThresholdDisplayString();
 
+// Feature flag to enable the display of the count of Inactive Tabs in Tab Grid.
+BASE_DECLARE_FEATURE(kShowInactiveTabsCount);
+
+// Whether the count of Inactive Tabs should be shown.
+bool IsShowInactiveTabsCountEnabled();
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_INACTIVE_TABS_FEATURES_H_

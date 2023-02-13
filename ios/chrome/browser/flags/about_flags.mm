@@ -1338,6 +1338,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableBookmarkAccountStoragePromoOnIOSDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableBookmarkAccountStoragePromoOnIOS)},
+    {"show-inactive-tabs-count", flag_descriptions::kShowInactiveTabsCountName,
+     flag_descriptions::kShowInactiveTabsCountDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kShowInactiveTabsCount)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

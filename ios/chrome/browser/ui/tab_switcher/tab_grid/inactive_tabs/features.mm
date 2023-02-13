@@ -57,3 +57,12 @@ std::u16string TabInactivityThresholdDisplayString() {
   }
   return u"14";
 }
+
+BASE_FEATURE(kShowInactiveTabsCount,
+             "ShowInactiveTabsCount",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsShowInactiveTabsCountEnabled() {
+  DCHECK(IsInactiveTabsEnabled());
+  return base::FeatureList::IsEnabled(kShowInactiveTabsCount);
+}

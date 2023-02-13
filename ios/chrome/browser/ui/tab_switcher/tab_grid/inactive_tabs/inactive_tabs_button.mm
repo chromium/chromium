@@ -60,10 +60,6 @@ const NSUInteger kMaxCount = 99;
     disclosure.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:disclosure];
 
-    _countLabel = [[UILabel alloc] init];
-    _countLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_countLabel];
-
     // TODO(crbug.com/1413187): Handle different sets of constraints for the
     // count label based on the Dynamic Type setting.
     [NSLayoutConstraint activateConstraints:@[
@@ -86,17 +82,26 @@ const NSUInteger kMaxCount = 99;
       [disclosure.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.bottomAnchor
                                    constant:-kVerticalMargin],
-      [_countLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-      [_countLabel.trailingAnchor
-          constraintEqualToAnchor:disclosure.leadingAnchor
-                         constant:-kHorizontalMargin],
-      [_countLabel.topAnchor
-          constraintGreaterThanOrEqualToAnchor:self.topAnchor
-                                      constant:kVerticalMargin],
-      [_countLabel.bottomAnchor
-          constraintLessThanOrEqualToAnchor:self.bottomAnchor
-                                   constant:-kVerticalMargin],
     ]];
+
+    if (IsShowInactiveTabsCountEnabled()) {
+      _countLabel = [[UILabel alloc] init];
+      _countLabel.translatesAutoresizingMaskIntoConstraints = NO;
+      [self addSubview:_countLabel];
+
+      [NSLayoutConstraint activateConstraints:@[
+        [_countLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+        [_countLabel.trailingAnchor
+            constraintEqualToAnchor:disclosure.leadingAnchor
+                           constant:-kHorizontalMargin],
+        [_countLabel.topAnchor
+            constraintGreaterThanOrEqualToAnchor:self.topAnchor
+                                        constant:kVerticalMargin],
+        [_countLabel.bottomAnchor
+            constraintLessThanOrEqualToAnchor:self.bottomAnchor
+                                     constant:-kVerticalMargin],
+      ]];
+    }
   }
   return self;
 }

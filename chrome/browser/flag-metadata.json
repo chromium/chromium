@@ -6390,6 +6390,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "show-inactive-tabs-count",
+    "owners": [ "lpromero@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "show-metered-toggle",
     "owners": [ "stevenjb", "azeemarshad", "cros-connectivity@google.com" ],
     "expiry_milestone": 122
