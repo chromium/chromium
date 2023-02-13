@@ -95,6 +95,7 @@ source_set("common") {
     ":fourcc",
     "//gpu/ipc/service",
     "//media/mojo/mojom/stable:stable_video_decoder",
+    "//ui/ozone",
   ]
 
   deps = [
