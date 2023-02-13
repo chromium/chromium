@@ -764,11 +764,9 @@ bool X509Certificate::Initialize(UnsafeCreateOptions options) {
       options.printable_string_is_utf8
           ? CertPrincipal::PrintableStringHandling::kAsUTF8Hack
           : CertPrincipal::PrintableStringHandling::kDefault;
-  if (!subject_.ParseDistinguishedName(tbs.subject_tlv.UnsafeData(),
-                                       tbs.subject_tlv.Length(),
+  if (!subject_.ParseDistinguishedName(tbs.subject_tlv,
                                        printable_string_handling) ||
-      !issuer_.ParseDistinguishedName(tbs.issuer_tlv.UnsafeData(),
-                                      tbs.issuer_tlv.Length(),
+      !issuer_.ParseDistinguishedName(tbs.issuer_tlv,
                                       printable_string_handling)) {
     return false;
   }

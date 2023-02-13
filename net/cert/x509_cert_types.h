@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "net/base/net_export.h"
+#include "net/der/input.h"
 
 namespace net {
 
@@ -24,10 +25,8 @@ struct NET_EXPORT CertPrincipal {
   enum class PrintableStringHandling { kDefault, kAsUTF8Hack };
 
   // Parses a BER-format DistinguishedName.
-  // TODO(mattm): change this to take a der::Input.
   bool ParseDistinguishedName(
-      const void* ber_name_data,
-      size_t length,
+      der::Input ber_name_data,
       PrintableStringHandling printable_string_handling =
           PrintableStringHandling::kDefault);
 
