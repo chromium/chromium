@@ -32735,9 +32735,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1073" label="ChromeAppsWebViewPermissiveBehaviorAllowed"/>
   <int value="1074"
       label="ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls"/>
-  <int value="1075" label="AutomatedKeyRotationEnabled"/>
-  <int value="1076" label="DeviceActivityHeartbeatEnabled"/>
-  <int value="1077" label="DeviceActivityHeartbeatCollectionRateMs"/>
+  <int value="1075" label="DeviceActivityHeartbeatEnabled"/>
+  <int value="1076" label="DeviceActivityHeartbeatCollectionRateMs"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
