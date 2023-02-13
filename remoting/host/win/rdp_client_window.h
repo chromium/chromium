@@ -179,8 +179,14 @@ class RdpClientWindow
   // Invoked to report connect/disconnect events.
   raw_ptr<EventHandler> event_handler_;
 
-  // Contains the requested dimensions of the screen.
-  remoting::ScreenResolution screen_resolution_;
+  // Contains the requested dimensions of the screen. Used for both login and
+  // user sessions.
+  remoting::ScreenResolution display_settings_;
+
+  // Contains the last successful display update for the user session. This
+  // needs to be tracked as trying to re-apply the same values can cause DXGI
+  // capture to fail.
+  remoting::ScreenResolution session_display_settings_;
 
   // Used for applying resolution changes after a timeout.
   base::RepeatingTimer apply_resolution_timer_;

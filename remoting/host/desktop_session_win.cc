@@ -293,7 +293,7 @@ bool RdpSession::Initialize(const ScreenResolution& resolution) {
         webrtc::DesktopVector(kDefaultRdpDpi, kDefaultRdpDpi));
   }
 
-  // Get the screen dimensions assuming the default DPI.
+  // Get the screen dimensions using the default DPI for the RDP client window.
   webrtc::DesktopSize host_size = local_resolution.ScaleDimensionsToDpi(
       webrtc::DesktopVector(kDefaultRdpDpi, kDefaultRdpDpi));
 
@@ -343,12 +343,12 @@ void RdpSession::SetScreenResolution(const ScreenResolution& resolution) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
   DCHECK(!resolution.IsEmpty());
 
-  webrtc::DesktopSize new_size = resolution.ScaleDimensionsToDpi(
-      webrtc::DesktopVector(kDefaultRdpDpi, kDefaultRdpDpi));
-  new_size = GetBoundedRdpDesktopSize(new_size.width(), new_size.height());
+  webrtc::DesktopSize bounded_size = GetBoundedRdpDesktopSize(
+      resolution.dimensions().width(), resolution.dimensions().height());
 
-  rdp_desktop_session_->ChangeResolution(new_size.width(), new_size.height(),
-                                         kDefaultRdpDpi, kDefaultRdpDpi);
+  rdp_desktop_session_->ChangeResolution(
+      bounded_size.width(), bounded_size.height(), resolution.dpi().x(),
+      resolution.dpi().y());
 }
 
 void RdpSession::InjectSas() {

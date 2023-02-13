@@ -148,10 +148,17 @@ void ClientSession::NotifyClientResolution(
     client_size.set(client_size.width() & (~1), client_size.height() & (~1));
   }
 
+  // TODO(joedow): Determine if other platforms support desktop scaling.
+  webrtc::DesktopVector dpi_vector{kDefaultDpi, kDefaultDpi};
+#if BUILDFLAG(IS_WIN)
+  // Matching the client DPI is only supported on Windows when curtained.
+  if (desktop_environment_options_.enable_curtaining()) {
+    dpi_vector.set(resolution.x_dpi(), resolution.y_dpi());
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   // Try to match the client's resolution.
-  // TODO(sergeyu): Pass clients DPI to the resizer.
-  ScreenResolution screen_resolution(
-      client_size, webrtc::DesktopVector(kDefaultDpi, kDefaultDpi));
+  ScreenResolution screen_resolution(client_size, dpi_vector);
   absl::optional<webrtc::ScreenId> screen_id;
   if (resolution.has_screen_id()) {
     screen_id = resolution.screen_id();
