@@ -61,6 +61,9 @@ const policy::DlpContentRestrictionSet kScreenCaptureWarned{
     policy::DlpRulesManager::Level::kWarn};
 
 constexpr char kSrcPattern[] = "example.com";
+constexpr char kRuleName[] = "rule #1";
+constexpr char kRuleId[] = "testid1";
+const policy::DlpRulesManager::RuleMetadata kRuleMetadata(kRuleName, kRuleId);
 
 // Returns the native window of the given `browser`.
 aura::Window* GetBrowserWindow(Browser* browser) {
@@ -162,7 +165,8 @@ std::unique_ptr<KeyedService> SetDlpRulesManager(
   auto dlp_rules_manager =
       std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
   ON_CALL(*dlp_rules_manager, GetSourceUrlPattern)
-      .WillByDefault(testing::Return(kSrcPattern));
+      .WillByDefault(testing::DoAll(testing::SetArgPointee<3>(kRuleMetadata),
+                                    testing::Return(kSrcPattern)));
   return dlp_rules_manager;
 }
 

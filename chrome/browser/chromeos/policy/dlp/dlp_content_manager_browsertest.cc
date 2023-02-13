@@ -75,6 +75,10 @@ constexpr char kExampleUrl[] = "https://example.com";
 constexpr char kSrcPattern[] = "example.com";
 constexpr char kLabel[] = "label";
 const std::u16string kApplicationTitle = u"example.com";
+
+constexpr char kRuleName[] = "rule #1";
+constexpr char kRuleId[] = "testid1";
+const DlpRulesManager::RuleMetadata kRuleMetadata(kRuleName, kRuleId);
 }  // namespace
 
 class DlpContentManagerBrowserTest : public InProcessBrowserTest {
@@ -107,7 +111,8 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
 
     EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
-        .WillRepeatedly(testing::Return(kSrcPattern));
+        .WillRepeatedly(testing::DoAll(testing::SetArgPointee<3>(kRuleMetadata),
+                                       testing::Return(kSrcPattern)));
     EXPECT_CALL(*mock_rules_manager_, IsRestricted)
         .WillRepeatedly(testing::Return(DlpRulesManager::Level::kAllow));
   }

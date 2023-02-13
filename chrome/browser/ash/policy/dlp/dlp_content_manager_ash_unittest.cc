@@ -53,7 +53,10 @@ namespace {
 constexpr char kEmailId[] = "test@example.com";
 constexpr char kGaiaId[] = "12345";
 constexpr char kSrcPattern[] = "example";
+constexpr char kRuleName[] = "ruleName";
+constexpr char kRuleId[] = "obfuscatedId";
 const std::u16string kApplicationName = u"application";
+const DlpRulesManager::RuleMetadata kRuleMetadata(kRuleName, kRuleId);
 
 const DlpContentRestrictionSet kScreenshotRestricted(
     DlpContentRestriction::kScreenshot,
@@ -361,8 +364,9 @@ TEST_F(DlpContentManagerAshTest, PrivacyScreenEnforcement) {
   SetReportQueueForReportingManager();
   SetupDlpRulesManager();
   const std::string src_pattern("example.com");
-  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
-      .WillRepeatedly(::testing::Return(src_pattern));
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _, _))
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(src_pattern)));
   EXPECT_CALL(mock_privacy_screen_helper_, SetEnforced(testing::_)).Times(0);
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
 
@@ -427,8 +431,9 @@ TEST_F(DlpContentManagerAshTest, PrivacyScreenReported) {
   SetReportQueueForReportingManager();
   SetupDlpRulesManager();
   const std::string src_pattern("example.com");
-  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
-      .WillRepeatedly(::testing::Return(src_pattern));
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _, _))
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(src_pattern)));
 
   // Privacy screen should never be enforced.
   EXPECT_CALL(mock_privacy_screen_helper_, IsSupported())
@@ -470,7 +475,7 @@ TEST_F(DlpContentManagerAshTest,
   SetReportQueueForReportingManager();
   SetupDlpRulesManager();
   const std::string src_pattern("example.com");
-  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _, _))
       .WillRepeatedly(::testing::Return(src_pattern));
 
   EXPECT_CALL(mock_privacy_screen_helper_, IsSupported())
@@ -502,7 +507,8 @@ TEST_F(DlpContentManagerAshTest, VideoCaptureReportDuringRecording) {
   // Return |kSrcPattern| for reporting for both |kSrcUrl| and |kGoogleUrl|.
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(2)
-      .WillRepeatedly(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   // Setup two web contents with different urls.
   std::unique_ptr<content::WebContents> web_contents1 = CreateWebContents();
@@ -591,7 +597,8 @@ TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
   SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
-      .WillOnce(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   testing::InSequence s;
@@ -645,10 +652,10 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   // The warning should be shown only once.
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
-
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(3)
-      .WillRepeatedly(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   EXPECT_CALL(cb, Run(true)).Times(3);
@@ -717,7 +724,8 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedCancelled) {
 
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(2)
-      .WillRepeatedly(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   testing::InSequence s;
@@ -779,7 +787,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
   SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
-      .WillOnce(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   testing::InSequence s;
@@ -827,7 +836,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
 
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
-      .WillRepeatedly(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   testing::InSequence s;
@@ -876,7 +886,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
 
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(2)
-      .WillRepeatedly(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   testing::InSequence s;
@@ -923,7 +934,8 @@ TEST_F(DlpContentManagerAshTest, ScreenshotRestricted) {
   SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
-      .WillOnce(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   testing::InSequence s;
@@ -974,7 +986,8 @@ TEST_F(DlpContentManagerAshTest, ScreenshotWarnedContinued) {
 
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
-      .WillRepeatedly(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   EXPECT_CALL(cb, Run(true)).Times(2);
@@ -1017,7 +1030,8 @@ TEST_F(DlpContentManagerAshTest, ScreenshotWarnedCancelled) {
 
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(2)
-      .WillRepeatedly(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   EXPECT_CALL(cb, Run(false)).Times(2);
@@ -1065,7 +1079,8 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
   SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
-      .WillOnce(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   testing::InSequence s;
@@ -1124,7 +1139,8 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
 
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
-      .WillRepeatedly(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   EXPECT_CALL(cb, Run(true)).Times(2);
@@ -1174,7 +1190,8 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
 
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(2)
-      .WillRepeatedly(::testing::Return(kSrcPattern));
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
 
   MockOnDlpRestrictionCheckedCallback cb;
   EXPECT_CALL(cb, Run(false)).Times(2);

@@ -3294,7 +3294,8 @@ bool RenderViewContextMenu::IsOpenLinkAllowedByDlp(const GURL& link_url) const {
       dlp_rules_manager->IsRestrictedDestination(
           params_.page_url, link_url,
           policy::DlpRulesManager::Restriction::kClipboard,
-          /*out_source_pattern=*/nullptr, /*out_destination_pattern=*/nullptr);
+          /*out_source_pattern=*/nullptr, /*out_destination_pattern=*/nullptr,
+          /*out_rule_metadata=*/nullptr);
   // TODO(crbug.com/1222057): show a warning if the level is kWarn
   return level != policy::DlpRulesManager::Level::kBlock;
 #else

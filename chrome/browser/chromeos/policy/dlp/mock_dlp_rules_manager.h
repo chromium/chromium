@@ -21,23 +21,26 @@ class MockDlpRulesManager : public DlpRulesManager {
   MOCK_CONST_METHOD2(IsRestricted,
                      Level(const GURL& source, Restriction restriction));
 
-  MOCK_CONST_METHOD3(IsRestrictedByAnyRule,
+  MOCK_CONST_METHOD4(IsRestrictedByAnyRule,
                      Level(const GURL& source,
                            Restriction restriction,
-                           std::string* out_source_pattern));
+                           std::string* out_source_pattern,
+                           RuleMetadata* out_rule_metadata));
 
-  MOCK_CONST_METHOD5(IsRestrictedDestination,
+  MOCK_CONST_METHOD6(IsRestrictedDestination,
                      Level(const GURL& source,
                            const GURL& destination,
                            Restriction restriction,
                            std::string* out_source_pattern,
-                           std::string* out_destination_pattern));
+                           std::string* out_destination_pattern,
+                           RuleMetadata* out_rule_metadata));
 
-  MOCK_CONST_METHOD4(IsRestrictedComponent,
+  MOCK_CONST_METHOD5(IsRestrictedComponent,
                      Level(const GURL& source,
                            const Component& destination,
                            Restriction restriction,
-                           std::string* out_source_pattern));
+                           std::string* out_source_pattern,
+                           RuleMetadata* out_rule_metadata));
 
   MOCK_METHOD(AggregatedDestinations,
               GetAggregatedDestinations,
@@ -57,10 +60,11 @@ class MockDlpRulesManager : public DlpRulesManager {
   MOCK_CONST_METHOD0(GetDlpFilesController, DlpFilesController*());
 #endif
 
-  MOCK_CONST_METHOD3(GetSourceUrlPattern,
+  MOCK_CONST_METHOD4(GetSourceUrlPattern,
                      std::string(const GURL& source_url,
                                  Restriction restriction,
-                                 Level level));
+                                 Level level,
+                                 RuleMetadata* out_rule_metadata));
 
   MOCK_CONST_METHOD0(GetClipboardCheckSizeLimitInBytes, size_t());
 

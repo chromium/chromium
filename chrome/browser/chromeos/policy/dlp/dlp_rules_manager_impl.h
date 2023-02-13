@@ -43,17 +43,19 @@ class DlpRulesManagerImpl : public DlpRulesManager,
                      Restriction restriction) const override;
   Level IsRestrictedByAnyRule(const GURL& source,
                               Restriction restriction,
-                              std::string* out_source_pattern) const override;
-  Level IsRestrictedDestination(
-      const GURL& source,
-      const GURL& destination,
-      Restriction restriction,
-      std::string* out_source_pattern,
-      std::string* out_destination_pattern) const override;
+                              std::string* out_source_pattern,
+                              RuleMetadata* out_rule_metadata) const override;
+  Level IsRestrictedDestination(const GURL& source,
+                                const GURL& destination,
+                                Restriction restriction,
+                                std::string* out_source_pattern,
+                                std::string* out_destination_pattern,
+                                RuleMetadata* out_rule_metadata) const override;
   Level IsRestrictedComponent(const GURL& source,
                               const Component& destination,
                               Restriction restriction,
-                              std::string* out_source_pattern) const override;
+                              std::string* out_source_pattern,
+                              RuleMetadata* out_rule_metadata) const override;
   AggregatedDestinations GetAggregatedDestinations(
       const GURL& source,
       Restriction restriction) const override;
@@ -67,9 +69,11 @@ class DlpRulesManagerImpl : public DlpRulesManager,
   DlpFilesController* GetDlpFilesController() const override;
 #endif
 
-  std::string GetSourceUrlPattern(const GURL& source_url,
-                                  Restriction restriction,
-                                  Level level) const override;
+  std::string GetSourceUrlPattern(
+      const GURL& source_url,
+      Restriction restriction,
+      Level level,
+      RuleMetadata* out_rule_metadata) const override;
   size_t GetClipboardCheckSizeLimitInBytes() const override;
   bool IsFilesPolicyEnabled() const override;
 

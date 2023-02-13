@@ -58,8 +58,9 @@ void ReportEvent(GURL url,
   if (!rules_manager)
     return;
 
-  const std::string src_url =
-      rules_manager->GetSourceUrlPattern(url, restriction, level);
+  DlpRulesManager::RuleMetadata rule_metadata;
+  const std::string src_url = rules_manager->GetSourceUrlPattern(
+      url, restriction, level, &rule_metadata);
 
   reporting_manager->ReportEvent(src_url, restriction, level);
 }
@@ -493,8 +494,9 @@ void DlpContentManager::ReportWarningProceededEvent(
   DlpRulesManager* rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
   if (rules_manager) {
+    DlpRulesManager::RuleMetadata rule_metadata;
     const std::string src_url = rules_manager->GetSourceUrlPattern(
-        url, restriction, DlpRulesManager::Level::kWarn);
+        url, restriction, DlpRulesManager::Level::kWarn, &rule_metadata);
     reporting_manager->ReportWarningProceededEvent(src_url, restriction);
   }
 }

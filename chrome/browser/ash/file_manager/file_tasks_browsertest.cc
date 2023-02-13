@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {
       .WillRepeatedly(testing::Return(policy::DlpRulesManager::Level::kAllow));
   EXPECT_CALL(*rules_manager_,
               IsRestrictedDestination(GURL(blockedUrl), testing::_, testing::_,
-                                      testing::_, testing::_))
+                                      testing::_, testing::_, testing::_))
       .Times(testing::AtLeast(1))
       .WillRepeatedly(testing::Return(policy::DlpRulesManager::Level::kBlock));
 

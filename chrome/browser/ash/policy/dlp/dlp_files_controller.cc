@@ -835,7 +835,8 @@ bool DlpFilesController::ShouldPromptBeforeDownload(
 
   DlpRulesManager::Level level = rules_manager_.IsRestrictedComponent(
       GURL(download_src.url_or_path.value()), dst_component.value(),
-      DlpRulesManager::Restriction::kFiles, nullptr);
+      DlpRulesManager::Restriction::kFiles, /*out_source_pattern=*/nullptr,
+      /*out_rule_metadata=*/nullptr);
   return level == DlpRulesManager::Level::kBlock ||
          level == DlpRulesManager::Level::kWarn;
 }
@@ -889,14 +890,15 @@ bool DlpFilesController::IsLaunchBlocked(const apps::AppUpdate& app_update,
           GURL(file->dlp_source_url.value()),
           GURL(destination.url_or_path.value()),
           DlpRulesManager::Restriction::kFiles, /*out_source_pattern=*/nullptr,
-          /*out_destination_pattern=*/nullptr);
+          /*out_destination_pattern=*/nullptr, /*out_rule_metadata=*/nullptr);
       if (level == DlpRulesManager::Level::kBlock) {
         return true;
       }
     } else if (destination.component.has_value()) {
       DlpRulesManager::Level level = rules_manager_.IsRestrictedComponent(
           GURL(file->dlp_source_url.value()), destination.component.value(),
-          DlpRulesManager::Restriction::kFiles, /*out_source_pattern=*/nullptr);
+          DlpRulesManager::Restriction::kFiles, /*out_source_pattern=*/nullptr,
+          /*out_rule_metadata=*/nullptr);
       if (level == DlpRulesManager::Level::kBlock) {
         return true;
       }
@@ -926,10 +928,12 @@ void DlpFilesController::IsFilesTransferRestricted(
   for (const auto& file : transferred_files) {
     DlpRulesManager::Level level;
     std::string source_pattern;
+    DlpRulesManager::RuleMetadata rule_metadata;
     if (dst_component.has_value()) {
       level = rules_manager_.IsRestrictedComponent(
           GURL(file.source_url), dst_component.value(),
-          DlpRulesManager::Restriction::kFiles, &source_pattern);
+          DlpRulesManager::Restriction::kFiles, &source_pattern,
+          &rule_metadata);
       deduplication_dst = DlpFileDestination(dst_component.value());
       MaybeReportEvent(file.inode, file.path, source_pattern, deduplication_dst,
                        absl::nullopt, level);
@@ -941,7 +945,7 @@ void DlpFilesController::IsFilesTransferRestricted(
       level = rules_manager_.IsRestrictedDestination(
           GURL(file.source_url), GURL(*destination.url_or_path),
           DlpRulesManager::Restriction::kFiles, &source_pattern,
-          &destination_pattern.value());
+          &destination_pattern.value(), &rule_metadata);
       deduplication_dst = destination;
       MaybeReportEvent(file.inode, file.path, source_pattern, deduplication_dst,
                        destination_pattern, level);
@@ -1044,10 +1048,11 @@ bool DlpFilesController::IsDlpPolicyMatched(const FileDaemonInfo& file) {
   bool restricted = false;
 
   std::string src_pattern;
-
+  DlpRulesManager::RuleMetadata rule_metadata;
   policy::DlpRulesManager::Level level = rules_manager_.IsRestrictedByAnyRule(
       GURL(file.source_url.spec()),
-      policy::DlpRulesManager::Restriction::kFiles, &src_pattern);
+      policy::DlpRulesManager::Restriction::kFiles, &src_pattern,
+      &rule_metadata);
 
   switch (level) {
     case policy::DlpRulesManager::Level::kBlock:
@@ -1185,7 +1190,7 @@ void DlpFilesController::ReturnDlpMetadata(
   for (const auto& metadata : response.files_metadata()) {
     DlpRulesManager::Level level = rules_manager_.IsRestrictedByAnyRule(
         GURL(metadata.source_url()), DlpRulesManager::Restriction::kFiles,
-        nullptr);
+        nullptr, nullptr);
     bool is_dlp_restricted = level != DlpRulesManager::Level::kNotSet &&
                              level != DlpRulesManager::Level::kAllow;
     bool is_restricted_for_destination = false;
@@ -1199,7 +1204,7 @@ void DlpFilesController::ReturnDlpMetadata(
       if (dst_component.has_value()) {
         DlpRulesManager::Level dst_level = rules_manager_.IsRestrictedComponent(
             GURL(metadata.source_url()), dst_component.value(),
-            DlpRulesManager::Restriction::kFiles, nullptr);
+            DlpRulesManager::Restriction::kFiles, nullptr, nullptr);
         is_restricted_for_destination =
             dst_level == DlpRulesManager::Level::kBlock;
       } else {
@@ -1208,7 +1213,8 @@ void DlpFilesController::ReturnDlpMetadata(
             rules_manager_.IsRestrictedDestination(
                 GURL(metadata.source_url()),
                 GURL(destination->url_or_path.value()),
-                DlpRulesManager::Restriction::kFiles, nullptr, nullptr);
+                DlpRulesManager::Restriction::kFiles, nullptr, nullptr,
+                nullptr);
         is_restricted_for_destination =
             dst_level == DlpRulesManager::Level::kBlock;
       }

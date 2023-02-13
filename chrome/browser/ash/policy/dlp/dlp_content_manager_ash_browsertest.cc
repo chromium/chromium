@@ -97,7 +97,10 @@ constexpr char kExampleUrl[] = "https://example.com";
 constexpr char kGoogleUrl[] = "https://google.com";
 constexpr char kChromeUrl[] = "https://chromium.org";
 constexpr char kSrcPattern[] = "example.com";
+constexpr char kRuleName[] = "rule #1";
+constexpr char kRuleId[] = "testid1";
 constexpr char kLabel[] = "label";
+const DlpRulesManager::RuleMetadata kRuleMetadata(kRuleName, kRuleId);
 const std::u16string kApplicationTitle = u"example.com";
 
 const base::TimeDelta kScreenShareResumeDelayForTesting = base::Milliseconds(0);
@@ -168,8 +171,9 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
             base::Unretained(this)));
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
 
-    EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _))
-        .WillRepeatedly(testing::Return(kSrcPattern));
+    EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _, _))
+        .WillRepeatedly(testing::DoAll(testing::SetArgPointee<3>(kRuleMetadata),
+                                       testing::Return(kSrcPattern)));
     EXPECT_CALL(*mock_rules_manager_, IsRestricted(_, _))
         .WillRepeatedly(testing::Return(DlpRulesManager::Level::kAllow));
     EXPECT_CALL(*mock_rules_manager_, GetReportingManager())

@@ -126,11 +126,13 @@ class DlpRulesManager : public KeyedService {
   // 'restriction' given that data comes from 'source' and the destination might
   // be any. ALLOW level rules are ignored.
   // If there's a rule matching, `out_source_pattern` will be changed to any
-  // random matching rule URL pattern.
+  // random matching rule URL pattern  and `out_rule_metadata` will be changed
+  // to the matched rule metadata.
   virtual Level IsRestrictedByAnyRule(
       const GURL& source,
       Restriction restriction,
-      std::string* out_source_pattern) const = 0;
+      std::string* out_source_pattern,
+      RuleMetadata* out_rule_metadata) const = 0;
 
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destination`. ALLOW is
@@ -138,25 +140,29 @@ class DlpRulesManager : public KeyedService {
   // clipboard or files.
   // If there's a rule matching, `out_source_pattern` and
   // `out_destination_pattern` will be changed to the original rule URL
-  // patterns.
+  // patterns  and `out_rule_metadata` will be changed to the matched rule
+  // metadata.
   virtual Level IsRestrictedDestination(
       const GURL& source,
       const GURL& destination,
       Restriction restriction,
       std::string* out_source_pattern,
-      std::string* out_destination_pattern) const = 0;
+      std::string* out_destination_pattern,
+      RuleMetadata* out_rule_metadata) const = 0;
 
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destination`. ALLOW is
   // returned if there is no matching rule. Requires `restriction` to be
   // clipboard or files.
   // If there's a rule matching, `out_source_pattern` will be changed to the
-  // original rule URL patterns.
+  // original rule URL patterns and `out_rule_metadata` will be changed to the
+  // matched rule metadata.
   virtual Level IsRestrictedComponent(
       const GURL& source,
       const Component& destination,
       Restriction restriction,
-      std::string* out_source_pattern) const = 0;
+      std::string* out_source_pattern,
+      RuleMetadata* out_rule_metadata) const = 0;
 
   // Returns a mapping from the level to a set of destination URLs for which
   // that level is enforced for `source`. Each destination URL it is mapped to
@@ -193,9 +199,11 @@ class DlpRulesManager : public KeyedService {
   // Returns the URL pattern that `source_url` is matched against. The returned
   // URL pattern should be configured in a policy rule with the same
   // `restriction` and `level`.
-  virtual std::string GetSourceUrlPattern(const GURL& source_url,
-                                          Restriction restriction,
-                                          Level level) const = 0;
+  virtual std::string GetSourceUrlPattern(
+      const GURL& source_url,
+      Restriction restriction,
+      Level level,
+      RuleMetadata* out_rule_metadata) const = 0;
 
   // Returns the admin-configured limit for the minimal size of data in the
   // clipboard to be checked against DLP rules.

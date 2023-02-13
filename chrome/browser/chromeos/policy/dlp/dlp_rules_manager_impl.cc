@@ -43,6 +43,22 @@ using UrlConditionId = DlpRulesManagerImpl::UrlConditionId;
 
 using RulesConditionsMap = std::map<RuleId, UrlConditionId>;
 
+template <typename T>
+struct MatchedRuleInfo {
+  MatchedRuleInfo(DlpRulesManager::Level level,
+                  absl::optional<RuleId> rule_id,
+                  absl::optional<T> url_condition)
+      : level(level), rule_id(rule_id), url_condition(url_condition) {}
+  MatchedRuleInfo(const MatchedRuleInfo&) = default;
+  MatchedRuleInfo() = default;
+  MatchedRuleInfo& operator=(const MatchedRuleInfo&) = default;
+  ~MatchedRuleInfo() = default;
+
+  DlpRulesManager::Level level;
+  absl::optional<RuleId> rule_id;
+  absl::optional<T> url_condition;
+};
+
 constexpr char kWildCardMatching[] = "*";
 
 DlpRulesManager::Restriction GetClassMapping(const std::string& restriction) {
@@ -142,24 +158,28 @@ RulesConditionsMap MatchUrlAndGetRulesMapping(
   return rules_conditions_map;
 }
 
-// Returns the maximum level of the rules of given `restriction` joined with
-// the `selected_rules`.
+// Determines the maximum level of the rules of given
+// `restriction` joined with the `selected_rules`, and returns MatchedRuleInfo
+// of the matched rule.
 template <typename T>
-std::pair<DlpRulesManager::Level, absl::optional<T>> GetMaxJoinRestrictionLevel(
+MatchedRuleInfo<T> GetMaxJoinRestrictionLevelAndRuleId(
     const DlpRulesManager::Restriction restriction,
     const std::map<RuleId, T>& selected_rules,
     const std::map<DlpRulesManager::Restriction,
                    std::map<RuleId, DlpRulesManager::Level>>& restrictions_map,
     const bool ignore_allow = false) {
   auto restriction_it = restrictions_map.find(restriction);
-  if (restriction_it == restrictions_map.end())
-    return std::make_pair(DlpRulesManager::Level::kAllow, absl::nullopt);
+  if (restriction_it == restrictions_map.end()) {
+    return MatchedRuleInfo<T>(DlpRulesManager::Level::kAllow, absl::nullopt,
+                              absl::nullopt);
+  }
 
   const std::map<RuleId, DlpRulesManager::Level>& restriction_rules =
       restriction_it->second;
 
-  std::pair<DlpRulesManager::Level, absl::optional<T>> max_level =
-      std::make_pair(DlpRulesManager::Level::kNotSet, absl::nullopt);
+  DlpRulesManager::Level max_level = DlpRulesManager::Level::kNotSet;
+  absl::optional<T> url_condition = absl::nullopt;
+  absl::optional<RuleId> matched_rule_id = absl::nullopt;
 
   for (const auto& rule_pair : selected_rules) {
     const auto& restriction_rule_itr = restriction_rules.find(rule_pair.first);
@@ -170,16 +190,19 @@ std::pair<DlpRulesManager::Level, absl::optional<T>> GetMaxJoinRestrictionLevel(
         restriction_rule_itr->second == DlpRulesManager::Level::kAllow) {
       continue;
     }
-    if (restriction_rule_itr->second > max_level.first) {
-      max_level.first = restriction_rule_itr->second;
-      max_level.second = rule_pair.second;
+    if (restriction_rule_itr->second > max_level) {
+      max_level = restriction_rule_itr->second;
+      url_condition = rule_pair.second;
+      matched_rule_id = rule_pair.first;
     }
   }
 
-  if (max_level.first == DlpRulesManager::Level::kNotSet)
-    return std::make_pair(DlpRulesManager::Level::kAllow, absl::nullopt);
+  if (max_level == DlpRulesManager::Level::kNotSet) {
+    return MatchedRuleInfo<T>(DlpRulesManager::Level::kAllow, absl::nullopt,
+                              absl::nullopt);
+  }
 
-  return max_level;
+  return MatchedRuleInfo(max_level, matched_rule_id, url_condition);
 }
 
 void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
@@ -232,30 +255,38 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestricted(
   const RulesConditionsMap src_rules_map = MatchUrlAndGetRulesMapping(
       source, src_url_matcher_.get(), src_url_rules_mapping_);
 
-  return GetMaxJoinRestrictionLevel(restriction, src_rules_map,
-                                    restrictions_map_)
-      .first;
+  return GetMaxJoinRestrictionLevelAndRuleId(restriction, src_rules_map,
+                                             restrictions_map_)
+      .level;
 }
 
 DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedByAnyRule(
     const GURL& source,
     Restriction restriction,
-    std::string* out_source_pattern) const {
+    std::string* out_source_pattern,
+    RuleMetadata* out_rule_metadata) const {
   DCHECK(src_url_matcher_);
 
   const RulesConditionsMap src_rules_map = MatchUrlAndGetRulesMapping(
       source, src_url_matcher_.get(), src_url_rules_mapping_);
 
-  std::pair<Level, absl::optional<UrlConditionId>> level_url_pair =
-      GetMaxJoinRestrictionLevel(restriction, src_rules_map, restrictions_map_,
-                                 /*ignore_allow=*/true);
+  const MatchedRuleInfo rule_info = GetMaxJoinRestrictionLevelAndRuleId(
+      restriction, src_rules_map, restrictions_map_,
+      /*ignore_allow=*/true);
 
-  if (level_url_pair.second.has_value() && out_source_pattern) {
-    UrlConditionId src_condition_id = level_url_pair.second.value();
+  if (rule_info.url_condition.has_value() && out_source_pattern) {
+    UrlConditionId src_condition_id = rule_info.url_condition.value();
     *out_source_pattern = src_patterns_mapping_.at(src_condition_id);
   }
+  if (rule_info.rule_id.has_value() && out_rule_metadata) {
+    auto rule_metadata_itr =
+        rules_id_metadata_mapping_.find(rule_info.rule_id.value());
+    if (rule_metadata_itr != rules_id_metadata_mapping_.end()) {
+      *out_rule_metadata = rule_metadata_itr->second;
+    }
+  }
 
-  return level_url_pair.first;
+  return rule_info.level;
 }
 
 DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
@@ -263,7 +294,8 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
     const GURL& destination,
     Restriction restriction,
     std::string* out_source_pattern,
-    std::string* out_destination_pattern) const {
+    std::string* out_destination_pattern,
+    RuleMetadata* out_rule_metadata) const {
   DCHECK(src_url_matcher_);
   DCHECK(dst_url_matcher_);
   DCHECK(restriction == Restriction::kClipboard ||
@@ -300,26 +332,33 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
     }
   }
 
-  std::pair<Level, absl::optional<std::pair<UrlConditionId, UrlConditionId>>>
-      level_urls_pair = GetMaxJoinRestrictionLevel(
-          restriction, intersection_rules, restrictions_map_);
-  if (level_urls_pair.second.has_value() && out_source_pattern &&
+  const MatchedRuleInfo rule_info = GetMaxJoinRestrictionLevelAndRuleId(
+      restriction, intersection_rules, restrictions_map_);
+  if (rule_info.url_condition.has_value() && out_source_pattern &&
       out_destination_pattern) {
-    UrlConditionId src_condition_id = level_urls_pair.second.value().first;
-    UrlConditionId dst_condition_id = level_urls_pair.second.value().second;
+    UrlConditionId src_condition_id = rule_info.url_condition.value().first;
+    UrlConditionId dst_condition_id = rule_info.url_condition.value().second;
     if (out_source_pattern)
       *out_source_pattern = src_patterns_mapping_.at(src_condition_id);
     if (out_destination_pattern)
       *out_destination_pattern = dst_patterns_mapping_.at(dst_condition_id);
+    if (rule_info.rule_id.has_value() && out_rule_metadata) {
+      auto rule_metadata_itr =
+          rules_id_metadata_mapping_.find(rule_info.rule_id.value());
+      if (rule_metadata_itr != rules_id_metadata_mapping_.end()) {
+        *out_rule_metadata = rule_metadata_itr->second;
+      }
+    }
   }
-  return level_urls_pair.first;
+  return rule_info.level;
 }
 
 DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
     const GURL& source,
     const Component& destination,
     Restriction restriction,
-    std::string* out_source_pattern) const {
+    std::string* out_source_pattern,
+    RuleMetadata* out_rule_metadata) const {
   DCHECK(src_url_matcher_);
   DCHECK(restriction == Restriction::kClipboard ||
          restriction == Restriction::kFiles);
@@ -353,14 +392,20 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
     }
   }
 
-  std::pair<Level, absl::optional<UrlConditionId>> level_url_pair =
-      GetMaxJoinRestrictionLevel(restriction, intersection_rules,
-                                 restrictions_map_);
-  if (level_url_pair.second.has_value() && out_source_pattern) {
-    UrlConditionId src_condition_id = level_url_pair.second.value();
+  const MatchedRuleInfo rule_info = GetMaxJoinRestrictionLevelAndRuleId(
+      restriction, intersection_rules, restrictions_map_);
+  if (rule_info.url_condition.has_value() && out_source_pattern) {
+    UrlConditionId src_condition_id = rule_info.url_condition.value();
     *out_source_pattern = src_patterns_mapping_.at(src_condition_id);
   }
-  return level_url_pair.first;
+  if (rule_info.rule_id.has_value() && out_rule_metadata) {
+    auto rule_metadata_itr =
+        rules_id_metadata_mapping_.find(rule_info.rule_id.value());
+    if (rule_metadata_itr != rules_id_metadata_mapping_.end()) {
+      *out_rule_metadata = rule_metadata_itr->second;
+    }
+  }
+  return rule_info.level;
 }
 
 DlpRulesManager::AggregatedDestinations
@@ -435,7 +480,7 @@ DlpRulesManagerImpl::GetAggregatedComponents(const GURL& source,
   for (Component component : components) {
     std::string out_source_pattern;
     Level level = IsRestrictedComponent(source, component, restriction,
-                                        &out_source_pattern);
+                                        &out_source_pattern, nullptr);
     result[level].insert(component);
   }
 
@@ -475,9 +520,11 @@ DlpFilesController* DlpRulesManagerImpl::GetDlpFilesController() const {
 }
 #endif
 
-std::string DlpRulesManagerImpl::GetSourceUrlPattern(const GURL& source_url,
-                                                     Restriction restriction,
-                                                     Level level) const {
+std::string DlpRulesManagerImpl::GetSourceUrlPattern(
+    const GURL& source_url,
+    Restriction restriction,
+    Level level,
+    RuleMetadata* out_rule_metadata) const {
   const std::set<UrlConditionId> url_conditions_ids =
       src_url_matcher_->MatchURL(source_url);
 
@@ -499,6 +546,12 @@ std::string DlpRulesManagerImpl::GetSourceUrlPattern(const GURL& source_url,
       auto condition_id = rule_condition_itr->second;
       auto condition_pattern_itr = src_patterns_mapping_.find(condition_id);
       if (condition_pattern_itr != src_patterns_mapping_.end()) {
+        if (out_rule_metadata) {
+          auto rule_metadata_itr = rules_id_metadata_mapping_.find(rule_id);
+          if (rule_metadata_itr != rules_id_metadata_mapping_.end()) {
+            *out_rule_metadata = rule_metadata_itr->second;
+          }
+        }
         return condition_pattern_itr->second;
       }
     }

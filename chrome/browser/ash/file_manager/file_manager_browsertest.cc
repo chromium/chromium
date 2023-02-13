@@ -579,14 +579,14 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
           *mock_rules_manager_,
           IsRestrictedDestination(GURL(kBlockedSourceUrl), testing::_,
                                   policy::DlpRulesManager::Restriction::kFiles,
-                                  testing::_, testing::_))
+                                  testing::_, testing::_, testing::_))
           .WillRepeatedly(
               testing::Return(policy::DlpRulesManager::Level::kBlock));
       EXPECT_CALL(
           *mock_rules_manager_,
           IsRestrictedDestination(GURL(kNotBlockedSourceUrl), testing::_,
                                   policy::DlpRulesManager::Restriction::kFiles,
-                                  testing::_, testing::_))
+                                  testing::_, testing::_, testing::_))
           .WillRepeatedly(
               ::testing::Return(policy::DlpRulesManager::Level::kAllow));
       return true;
@@ -604,31 +604,35 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
       return true;
     }
     if (name == "setIsRestrictedByAnyRuleRestrictions") {
-      EXPECT_CALL(*mock_rules_manager_,
-                  IsRestrictedByAnyRule(
-                      GURL(kNotBlockedSourceUrl),
-                      policy::DlpRulesManager::Restriction::kFiles, testing::_))
+      EXPECT_CALL(
+          *mock_rules_manager_,
+          IsRestrictedByAnyRule(GURL(kNotBlockedSourceUrl),
+                                policy::DlpRulesManager::Restriction::kFiles,
+                                testing::_, testing::_))
           .WillRepeatedly(
               testing::Return(policy::DlpRulesManager::Level::kAllow));
 
-      EXPECT_CALL(*mock_rules_manager_,
-                  IsRestrictedByAnyRule(
-                      GURL(kBlockedSourceUrl),
-                      policy::DlpRulesManager::Restriction::kFiles, testing::_))
+      EXPECT_CALL(
+          *mock_rules_manager_,
+          IsRestrictedByAnyRule(GURL(kBlockedSourceUrl),
+                                policy::DlpRulesManager::Restriction::kFiles,
+                                testing::_, testing::_))
           .WillRepeatedly(
               testing::Return(policy::DlpRulesManager::Level::kBlock));
 
-      EXPECT_CALL(*mock_rules_manager_,
-                  IsRestrictedByAnyRule(
-                      GURL(kNotSetSourceUrl),
-                      policy::DlpRulesManager::Restriction::kFiles, testing::_))
+      EXPECT_CALL(
+          *mock_rules_manager_,
+          IsRestrictedByAnyRule(GURL(kNotSetSourceUrl),
+                                policy::DlpRulesManager::Restriction::kFiles,
+                                testing::_, testing::_))
           .WillRepeatedly(
               testing::Return(policy::DlpRulesManager::Level::kNotSet));
 
-      EXPECT_CALL(*mock_rules_manager_,
-                  IsRestrictedByAnyRule(
-                      GURL(kWarnSourceUrl),
-                      policy::DlpRulesManager::Restriction::kFiles, testing::_))
+      EXPECT_CALL(
+          *mock_rules_manager_,
+          IsRestrictedByAnyRule(GURL(kWarnSourceUrl),
+                                policy::DlpRulesManager::Restriction::kFiles,
+                                testing::_, testing::_))
           .WillRepeatedly(
               testing::Return(policy::DlpRulesManager::Level::kWarn));
       return true;
