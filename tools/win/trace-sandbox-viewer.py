@@ -131,82 +131,82 @@ import sys
 
 
 def guess_open_file(filename):
-  if filename.endswith('.gz'):
-    return gzip.open(filename, mode='rb')
-  else:
-    return open(filename, 'rb')
+    if filename.endswith('.gz'):
+        return gzip.open(filename, mode='rb')
+    else:
+        return open(filename, 'rb')
 
 
 def read_json_events(files, categories):
-  events = []
-  for filename in files:
-    with guess_open_file(filename) as fp:
-      objs = json.load(fp)
-      for event in objs['traceEvents']:
-        if event['cat'] in categories:
-          events.append(event)
-  return events
+    events = []
+    for filename in files:
+        with guess_open_file(filename) as fp:
+            objs = json.load(fp)
+            for event in objs['traceEvents']:
+                if event['cat'] in categories:
+                    events.append(event)
+    return events
 
 
 def assign_interfaces_to_sandboxes(events):
-  # Returns SandboxType:set(Interfaces).
-  intmap = {}
-  # Running map of PID:SandboxType
-  pidmap = {}
-  # running map of PID:ProcName
-  procmap = {}
-  # Assumes events are sorted by timestamp.
-  for event in events:
-    # Don't yet know how to remove processes when they finish
-    # (i.e. which event to match).
-    if event['cat'] == 'mojom':
-      pid = event['pid']
-      interface = event['name']
-      # If there is a sandbox, use that.
-      if pid in pidmap:
-        sbox = pidmap[pid]
-        if not sbox in intmap:
-          intmap[sbox] = set()
-        intmap[sbox].add(interface)
-      # Otherwise if we saw a process, use that.
-      elif pid in procmap:
-        sbox = "None(" + procmap[pid] + ")"
-        if not sbox in intmap:
-          intmap[sbox] = set()
-        intmap[sbox].add(interface)
-    elif event['cat'] == '__metadata' and event['name'] == 'process_name':
-      pid = event['pid']
-      proc = event['args']['name']
-      procmap[pid] = proc
-    elif event['cat'] == 'disabled-by-default-sandbox':
-      pid = int(event['args']['policy']['processIds'][0])
-      sbox = event['args']['sandboxType']
-      pidmap[pid] = sbox
-  return intmap
+    # Returns SandboxType:set(Interfaces).
+    intmap = {}
+    # Running map of PID:SandboxType
+    pidmap = {}
+    # running map of PID:ProcName
+    procmap = {}
+    # Assumes events are sorted by timestamp.
+    for event in events:
+        # Don't yet know how to remove processes when they finish
+        # (i.e. which event to match).
+        if event['cat'] == 'mojom':
+            pid = event['pid']
+            interface = event['name']
+            # If there is a sandbox, use that.
+            if pid in pidmap:
+                sbox = pidmap[pid]
+                if not sbox in intmap:
+                    intmap[sbox] = set()
+                intmap[sbox].add(interface)
+            # Otherwise if we saw a process, use that.
+            elif pid in procmap:
+                sbox = "None(" + procmap[pid] + ")"
+                if not sbox in intmap:
+                    intmap[sbox] = set()
+                intmap[sbox].add(interface)
+        elif event['cat'] == '__metadata' and event['name'] == 'process_name':
+            pid = event['pid']
+            proc = event['args']['name']
+            procmap[pid] = proc
+        elif event['cat'] == 'disabled-by-default-sandbox':
+            pid = int(event['args']['policy']['processIds'][0])
+            sbox = event['args']['sandboxType']
+            pidmap[pid] = sbox
+    return intmap
 
 
 def output_as_json(interfaces):
-  dumpable = {}
-  for host in interfaces:
-    dumpable[host] = sorted(interfaces[host])
-  return json.dumps(dumpable, indent=2)
+    dumpable = {}
+    for host in interfaces:
+        dumpable[host] = sorted(interfaces[host])
+    return json.dumps(dumpable, indent=2)
 
 
 def main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('files', nargs='*', help='file file...')
-  args = parser.parse_args()
-  if len(args.files) < 1:
-    print("Need at least one file")
-    return 1
+    parser = argparse.ArgumentParser()
+    parser.add_argument('files', nargs='*', help='file file...')
+    args = parser.parse_args()
+    if len(args.files) < 1:
+        print("Need at least one file")
+        return 1
 
-  events = read_json_events(
-      args.files,
-      categories=['mojom', 'disabled-by-default-sandbox', '__metadata'])
-  interfaces = assign_interfaces_to_sandboxes(events)
+    events = read_json_events(
+        args.files,
+        categories=['mojom', 'disabled-by-default-sandbox', '__metadata'])
+    interfaces = assign_interfaces_to_sandboxes(events)
 
-  print(output_as_json(interfaces))
+    print(output_as_json(interfaces))
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+    sys.exit(main())
