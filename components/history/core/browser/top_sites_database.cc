@@ -311,8 +311,7 @@ bool TopSitesDatabase::UpgradeToVersion5(sql::MetaTable& meta_table) {
   if (!db_->Execute(kRenameSql))
     return false;
 
-  meta_table.SetVersionNumber(5);
-  return true;
+  return meta_table.SetVersionNumber(5);
 }
 
 bool TopSitesDatabase::InitImpl(const base::FilePath& db_name) {

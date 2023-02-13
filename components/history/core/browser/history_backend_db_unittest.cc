@@ -1457,7 +1457,8 @@ TEST_F(HistoryBackendDBTest, CheckLastCompatibleVersion) {
       // than current version.
       sql::MetaTable meta;
       ASSERT_TRUE(meta.Init(&db, 1, 1));
-      meta.SetCompatibleVersionNumber(HistoryDatabase::GetCurrentVersion() + 1);
+      ASSERT_TRUE(meta.SetCompatibleVersionNumber(
+          HistoryDatabase::GetCurrentVersion() + 1));
     }
   }
   // Try to create and init backend for non compatible db.
