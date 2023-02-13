@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
@@ -24,9 +25,19 @@ public class MaterialCardViewNoShadow extends FrameLayout {
 
     public MaterialCardViewNoShadow(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        // TODO(https://crbug.com/1410537): Cleanup baseline color experiment references.
+        final TypedArray typedArray = context.obtainStyledAttributes(attrs,
+                R.styleable.MaterialCardViewNoShadow, defStyleAttr, R.style.MaterialCardStyle);
+        final float cornerSize = typedArray.getDimensionPixelSize(
+                R.styleable.MaterialCardViewNoShadow_cornerRadius, 0);
+        final float elevation = typedArray.getDimensionPixelSize(
+                R.styleable.MaterialCardViewNoShadow_cardElevation, 0);
+        typedArray.recycle();
+
         setBackgroundResource(R.drawable.card_with_corners_background);
         GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
-        gradientDrawable.setColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
+        gradientDrawable.setCornerRadius(cornerSize);
+        gradientDrawable.setColor(ChromeColors.getSurfaceColor(getContext(), elevation));
     }
 }

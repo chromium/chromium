@@ -37,13 +37,9 @@ found in the LICENSE file.
         <item name="android:background">@drawable/incognito_card_bg</item>
     </style>
 
-    <style name="MaterialCardStyle" parent="Widget.MaterialComponents.CardView">
-        <item name="shapeAppearance">@style/MaterialCardShape</item>
-        <item name="cardElevation">@dimen/card_elevation</item>
-    </style>
-
-    <style name="MaterialCardShape" parent="ShapeAppearance.MaterialComponents.MediumComponent">
-        <item name="cornerSize">@dimen/card_rounded_corner_radius</item>
+    <style name="MaterialCardStyle">
+        <item name="cornerRadius">@dimen/card_rounded_corner_radius</item>
+        <item name="cardElevation">?attr/cardElevation</item>
     </style>
 
     <style name="ListActionButton" parent="@style/TextButton">

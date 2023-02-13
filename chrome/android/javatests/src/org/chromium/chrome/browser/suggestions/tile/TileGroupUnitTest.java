@@ -22,9 +22,11 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites.createSiteSuggestion;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
+import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -44,6 +46,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
@@ -90,6 +93,7 @@ public class TileGroupUnitTest {
     @Mock
     private SuggestionsTileView mSuggestionsTileView2;
 
+    private Context mContext;
     private FakeMostVisitedSites mMostVisitedSites;
     private FakeImageFetcher mImageFetcher;
     private TileRenderer mTileRenderer;
@@ -98,9 +102,11 @@ public class TileGroupUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        mContext = new ContextThemeWrapper(
+                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mImageFetcher = new FakeImageFetcher();
-        mTileRenderer = new TileRenderer(ContextUtils.getApplicationContext(), TileStyle.MODERN,
-                TILE_TITLE_LINES, mImageFetcher);
+        mTileRenderer =
+                new TileRenderer(mContext, TileStyle.MODERN, TILE_TITLE_LINES, mImageFetcher);
         mMostVisitedSites = new FakeMostVisitedSites();
 
         doAnswer(invocation -> {
@@ -374,8 +380,7 @@ public class TileGroupUnitTest {
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
 
         // Initialise the layout with views whose URLs match the ones of the new tiles.
-        MostVisitedTilesGridLayout layout =
-                new MostVisitedTilesGridLayout(ContextUtils.getApplicationContext(), null);
+        MostVisitedTilesGridLayout layout = new MostVisitedTilesGridLayout(mContext, null);
         SuggestionsTileView view1 = mSuggestionsTileView1;
         when(view1.getData()).thenReturn(sites.get(0));
         layout.addView(view1);
@@ -418,7 +423,7 @@ public class TileGroupUnitTest {
         TileGroup tileGroup = initialiseTileGroup();
         Tile tile = new Tile(createSiteSuggestion("title", URLS[0]), 0);
 
-        ViewGroup layout = new FrameLayout(ContextUtils.getApplicationContext(), null);
+        ViewGroup layout = new FrameLayout(mContext, null);
         mTileRenderer.buildTileView(tile, layout, tileGroup.getTileSetupDelegate());
 
         // Ensure we run the callback for the new tile.
@@ -491,7 +496,7 @@ public class TileGroupUnitTest {
     }
 
     private MostVisitedTilesGridLayout setupView() {
-        return new MostVisitedTilesGridLayout(ContextUtils.getApplicationContext(), null);
+        return new MostVisitedTilesGridLayout(mContext, null);
     }
 
     private void refreshData(TileGroup tileGroup) {

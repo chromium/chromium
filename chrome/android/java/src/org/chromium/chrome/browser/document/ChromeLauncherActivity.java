@@ -10,7 +10,9 @@ import android.os.Bundle;
 import com.google.android.material.color.DynamicColors;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
  * Dispatches incoming intents to the appropriate activity based on the current configuration and
@@ -48,6 +50,9 @@ public class ChromeLauncherActivity extends Activity {
     private void applyThemeOverlays() {
         // The effect of this activity's theme is currently limited to CCTs, so we should only apply
         // dynamic colors when we enable them everywhere.
+        if (ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()) {
+            setTheme(R.style.SurfaceColorsThemeOverlay);
+        }
         DynamicColors.applyToActivityIfAvailable(this);
     }
 }

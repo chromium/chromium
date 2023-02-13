@@ -28,7 +28,7 @@ found in the LICENSE file.
         <!-- Circle background for when we have a favicon or monogram -->
         <View
             android:id="@+id/circle_background"
-            android:background="@drawable/tile_view_icon_background_modern"
+            android:background="?attr/tileViewIconBackgroundModern"
             android:layout_width="@dimen/context_menu_header_circle_bg_diameter"
             android:layout_height="@dimen/context_menu_header_circle_bg_diameter"
             android:layout_margin="@dimen/context_menu_header_circle_bg_margin"

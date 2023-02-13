@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -88,7 +89,10 @@ public class ThemeUtils {
         // Text box color on default toolbar background in standard mode is a pre-defined
         // color instead of a calculated color.
         if (ThemeUtils.isUsingDefaultToolbarColor(context, false, color)) {
-            return ChromeColors.getSurfaceColor(context, R.dimen.toolbar_text_box_elevation);
+            float tabElevation = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                    ? context.getResources().getDimension(R.dimen.default_elevation_4)
+                    : context.getResources().getDimension(R.dimen.toolbar_text_box_elevation);
+            return ChromeColors.getSurfaceColor(context, tabElevation);
         }
 
         // TODO(mdjones): Clean up shouldUseOpaqueTextboxBackground logic.

@@ -223,8 +223,10 @@ public class NewTabPageLayout extends LinearLayout {
      * Sets up the search box background tint.
      */
     private void initializeSearchBoxBackground() {
-        final int searchBoxColor =
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.toolbar_text_box_elevation);
+        final int elevationDimenId = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                ? R.dimen.default_elevation_4
+                : R.dimen.toolbar_text_box_elevation;
+        final int searchBoxColor = ChromeColors.getSurfaceColor(getContext(), elevationDimenId);
         final ColorStateList colorStateList = ColorStateList.valueOf(searchBoxColor);
         findViewById(R.id.search_box).setBackgroundTintList(colorStateList);
     }

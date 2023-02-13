@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.tab_ui.R;
@@ -269,9 +270,13 @@ class LargeMessageCardView extends FrameLayout {
      * @param isIncognito Whether the resource is used for incognito mode.
      */
     private void setBackground(boolean isIncognito) {
+        final int elevationDimenId = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                ? R.dimen.default_elevation_2
+                : R.dimen.card_elevation;
+
         ColorStateList backgroundTint = ColorStateList.valueOf((isIncognito)
                         ? mContext.getColor(R.color.incognito_card_bg_color)
-                        : ChromeColors.getSurfaceColor(mContext, R.dimen.card_elevation));
+                        : ChromeColors.getSurfaceColor(mContext, elevationDimenId));
         mMaterialCardViewNoShadow.setBackgroundTintList(backgroundTint);
     }
 }

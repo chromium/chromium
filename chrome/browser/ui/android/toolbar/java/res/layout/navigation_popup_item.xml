@@ -24,7 +24,7 @@ found in the LICENSE file.
           android:layout_width="@dimen/navigation_popup_favicon_bg_size"
           android:layout_height="@dimen/navigation_popup_favicon_bg_size"
           android:layout_gravity="center"
-          android:background="@drawable/tile_view_icon_background_modern" />
+          android:background="?attr/tileViewIconBackgroundModern" />
         <ImageView
           android:id="@+id/favicon_img"
           android:layout_width="@dimen/default_favicon_size"

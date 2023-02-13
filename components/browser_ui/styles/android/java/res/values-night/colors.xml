@@ -6,6 +6,9 @@ found in the LICENSE file.
 -->
 
 <resources>
+    <!-- Surface tint -->
+    <color name="gm3_baseline_surface_tint">@color/gm3_baseline_surface_tint_dark</color>
+
     <!-- Control colors for toggles, checkboxes, radio buttons, list item highlight, and accent.
          Note that these should NOT be used for icon tint. -->
     <color name="control_highlight_color">@color/default_control_color_highlight_dark</color>

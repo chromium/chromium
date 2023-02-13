@@ -347,9 +347,15 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                             ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
                 } else {
                     // Primary @ 15% for detached night mode bg color.
-                    defaultNTBBackgroundTint = androidx.core.graphics.ColorUtils.setAlphaComponent(
-                            SemanticColorUtils.getDefaultIconColorAccent1(context),
-                            (int) (NEW_TAB_BUTTON_DARK_DETACHED_OPACITY * 255));
+                    if (ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()) {
+                        defaultNTBBackgroundTint =
+                                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
+                    } else {
+                        defaultNTBBackgroundTint =
+                                androidx.core.graphics.ColorUtils.setAlphaComponent(
+                                        SemanticColorUtils.getDefaultIconColorAccent1(context),
+                                        (int) (NEW_TAB_BUTTON_DARK_DETACHED_OPACITY * 255));
+                    }
                 }
                 // Surface 5 for pressed night mode bg color.
                 pressedBackgroundTint =
