@@ -78,6 +78,7 @@ public class StripLayoutHelperManagerTest {
     @After
     public void tearDown() {
         TabStripSceneLayer.setTestFlag(false);
+        LocalizationUtils.setRtlForTesting(false);
     }
 
     private void initializeTest() {
@@ -131,5 +132,103 @@ public class StripLayoutHelperManagerTest {
         // Verify model selector button position.
         assertEquals("Model selector button position is not as expected", 5.f,
                 mStripLayoutHelperManager.getModelSelectorButton().getX(), 0.0);
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    public void testFadeDrawable_Left() {
+        // Verify fade drawable.
+        assertEquals("Fade drawable resource is not as expected", R.drawable.tab_strip_fade_short,
+                mStripLayoutHelperManager.getLeftFadeDrawable());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    public void testFadeDrawable_Right() {
+        // Verify fade drawable.
+        assertEquals("Fade drawable resource is not as expected", R.drawable.tab_strip_fade_short,
+                mStripLayoutHelperManager.getRightFadeDrawable());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
+    public void testFadeDrawable_Right_ModelSelectorButtonVisible() {
+        // setup
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
+
+        // Verify fade drawable.
+        assertEquals("Fade drawable resource is not as expected", R.drawable.tab_strip_fade_long,
+                mStripLayoutHelperManager.getRightFadeDrawable());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testFadeDrawable_Right_ModelSelectorVisible_TSR() {
+        // setup
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
+
+        // Verify fade drawable.
+        assertEquals("Fade drawable resource is not as expected",
+                R.drawable.tab_strip_fade_long_tsr,
+                mStripLayoutHelperManager.getRightFadeDrawable());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testFadeDrawable_Right_TSR() {
+        // Verify fade drawable.
+        assertEquals("Fade drawable resource is not as expected",
+                R.drawable.tab_strip_fade_medium_tsr,
+                mStripLayoutHelperManager.getRightFadeDrawable());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testFadeDrawable_Left_TSR() {
+        // setup
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
+
+        // Verify fade drawable.
+        assertEquals("Fade drawable resource is not as expected",
+                R.drawable.tab_strip_fade_short_tsr,
+                mStripLayoutHelperManager.getLeftFadeDrawable());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testFadeDrawable_Left_RTL_ModelSelectorButtonVisible_TSR() {
+        // setup
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
+        LocalizationUtils.setRtlForTesting(true);
+
+        // Verify fade drawable.
+        assertEquals("Fade drawable resource is not as expected",
+                R.drawable.tab_strip_fade_long_tsr,
+                mStripLayoutHelperManager.getLeftFadeDrawable());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testFadeDrawable_Left_RTL_TSR() {
+        // setup
+        LocalizationUtils.setRtlForTesting(true);
+
+        // Verify fade drawable.
+        assertEquals("Fade drawable resource is not as expected",
+                R.drawable.tab_strip_fade_medium_tsr,
+                mStripLayoutHelperManager.getLeftFadeDrawable());
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testFadeDrawable_Right_RTL_TSR() {
+        // setup
+        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
+        LocalizationUtils.setRtlForTesting(true);
+
+        // Verify fade drawable.
+        assertEquals("Fade drawable resource is not as expected",
+                R.drawable.tab_strip_fade_short_tsr,
+                mStripLayoutHelperManager.getRightFadeDrawable());
     }
 }

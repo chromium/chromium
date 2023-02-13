@@ -11,7 +11,6 @@ import androidx.annotation.ColorInt;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
@@ -161,31 +160,20 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     modelSelectorButton.getOpacity(), resourceManager);
         }
 
-        boolean tabStripImprovementsEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
-        boolean showLeftTabStripFade = ChromeFeatureList.sTabStripRedesign.isEnabled()
-                || !tabStripImprovementsEnabled || LocalizationUtils.isLayoutRtl();
-        boolean showRightTabStripFade = ChromeFeatureList.sTabStripRedesign.isEnabled()
-                || !tabStripImprovementsEnabled || !LocalizationUtils.isLayoutRtl();
-
-        int tab_strip_fade_short = tabStripImprovementsEnabled ? R.drawable.tab_strip_fade_short
-                                                               : R.drawable.tab_strip_fade;
-        int tab_strip_fade_long = tabStripImprovementsEnabled
-                ? R.drawable.tab_strip_fade_long
-                : R.drawable.tab_strip_fade_for_model_selector;
+        boolean tabStripRedesignEnabled = ChromeFeatureList.sTabStripRedesign.isEnabled();
+        boolean isLayoutRtl = LocalizationUtils.isLayoutRtl();
+        boolean showLeftTabStripFade = tabStripRedesignEnabled || isLayoutRtl;
+        boolean showRightTabStripFade = tabStripRedesignEnabled || !isLayoutRtl;
 
         if (showLeftTabStripFade) {
-            int leftFadeDrawable = modelSelectorButtonVisible && LocalizationUtils.isLayoutRtl()
-                    ? tab_strip_fade_long
-                    : tab_strip_fade_short;
+            int leftFadeDrawable = layoutHelper.getLeftFadeDrawable();
             TabStripSceneLayerJni.get().updateTabStripLeftFade(mNativePtr, TabStripSceneLayer.this,
                     leftFadeDrawable, layoutHelper.getLeftFadeOpacity(), resourceManager,
                     layoutHelper.getBackgroundColor());
         }
 
         if (showRightTabStripFade) {
-            int rightFadeDrawable = modelSelectorButtonVisible && !LocalizationUtils.isLayoutRtl()
-                    ? tab_strip_fade_long
-                    : tab_strip_fade_short;
+            int rightFadeDrawable = layoutHelper.getRightFadeDrawable();
             TabStripSceneLayerJni.get().updateTabStripRightFade(mNativePtr, TabStripSceneLayer.this,
                     rightFadeDrawable, layoutHelper.getRightFadeOpacity(), resourceManager,
                     layoutHelper.getBackgroundColor());
