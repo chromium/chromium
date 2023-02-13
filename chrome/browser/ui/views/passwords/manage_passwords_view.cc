@@ -307,16 +307,17 @@ bool ManagePasswordsView::Accept() {
   // selected.
   DCHECK(currently_selected_password_.has_value());
   DCHECK(note_textarea_);
+  password_manager::PasswordForm updated_form =
+      currently_selected_password_.value();
   // If the username isn't empty, the details view doesn't allow editing the
   // username, and the user textfield is never created.
   if (username_textfield_) {
-    currently_selected_password_->username_value =
-        username_textfield_->GetText();
+    updated_form.username_value = username_textfield_->GetText();
   }
-  currently_selected_password_->SetNoteWithEmptyUniqueDisplayName(
-      note_textarea_->GetText());
-  // TODO(crbug.com/1408790): invoke the controller to update the note in the
-  // storage.
+  updated_form.SetNoteWithEmptyUniqueDisplayName(note_textarea_->GetText());
+  controller_.UpdateStoredCredential(currently_selected_password_.value(),
+                                     updated_form);
+  currently_selected_password_ = std::move(updated_form);
   SwitchToDisplayMode();
   // Return false such that the bubble doesn't get closed upon clicking the
   // button.
