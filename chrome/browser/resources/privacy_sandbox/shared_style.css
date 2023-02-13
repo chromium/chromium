@@ -69,7 +69,13 @@ privacy-sandbox-dialog-learn-more {
   width: 100%;
 }
 
-.buttons-container cr-button+cr-button {
+<if expr="is_win">
+.buttons-container {
+  flex-flow: row-reverse;
+}
+</if>
+
+.buttons-container cr-button {
   margin-inline-start: 8px;
 }
 
