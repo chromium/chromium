@@ -163,7 +163,9 @@ bool AffiliationDatabase::Init(const base::FilePath& path) {
   }
 
   if (version < kVersion) {
-    metatable.SetVersionNumber(kVersion);
+    if (!metatable.SetVersionNumber(kVersion)) {
+      return false;
+    }
   }
 
   return true;
