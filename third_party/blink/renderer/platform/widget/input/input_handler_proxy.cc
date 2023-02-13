@@ -1426,13 +1426,23 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleTouchEnd(
       return DID_HANDLE;
     }
   }
+
+  EventDisposition result = DID_NOT_HANDLE;
+  // If all other touch events in this interaction sequence were dropped, we can
+  // safely drop the touchend too.
+  if (base::FeatureList::IsEnabled(
+          features::kDroppedTouchSequenceIncludesTouchEnd) &&
+      touch_result_.has_value() && touch_result_ == DROP_EVENT) {
+    result = DROP_EVENT;
+  }
+
   if (touch_event.touches_length == 1)
     touch_result_.reset();
 
   if (main_thread_touch_sequence_start_disposition_.has_value())
     main_thread_touch_sequence_start_disposition_.reset();
 
-  return DID_NOT_HANDLE;
+  return result;
 }
 
 void InputHandlerProxy::Animate(base::TimeTicks time) {

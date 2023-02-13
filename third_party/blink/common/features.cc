@@ -494,6 +494,12 @@ BASE_FEATURE(kDropInputEventsBeforeFirstPaint,
              "DropInputEventsBeforeFirstPaint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Drop touch-end dispatch from `InputHandlerProxy` when all other touch-events
+// in current interaction sequence are dropeed.
+BASE_FEATURE(kDroppedTouchSequenceIncludesTouchEnd,
+             "DroppedTouchSequenceIncludesTouchEnd",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // File handling icons. https://crbug.com/1218213
 BASE_FEATURE(kFileHandlingIcons,
              "FileHandlingIcons",
