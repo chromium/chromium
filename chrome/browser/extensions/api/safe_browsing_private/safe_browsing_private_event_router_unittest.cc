@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -348,9 +349,11 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Warned) {
   TriggerOnPolicySpecifiedPasswordReuseDetectedEvent(/*warning_shown*/ true);
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
-  EXPECT_EQ("https://phishing.com/", captured_args.FindKey("url")->GetString());
-  EXPECT_EQ("user_name_1", captured_args.FindKey("userName")->GetString());
+  base::Value::Dict captured_args =
+      event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
+  EXPECT_EQ("https://phishing.com/",
+            CHECK_DEREF(captured_args.FindString("url")));
+  EXPECT_EQ("user_name_1", CHECK_DEREF(captured_args.FindString("userName")));
 
   Mock::VerifyAndClearExpectations(client_.get());
   const base::Value::List* event_list =
@@ -384,9 +387,11 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Allowed) {
   TriggerOnPolicySpecifiedPasswordReuseDetectedEvent(/*warning_shown*/ false);
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
-  EXPECT_EQ("https://phishing.com/", captured_args.FindKey("url")->GetString());
-  EXPECT_EQ("user_name_1", captured_args.FindKey("userName")->GetString());
+  base::Value::Dict captured_args =
+      event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
+  EXPECT_EQ("https://phishing.com/",
+            CHECK_DEREF(captured_args.FindString("url")));
+  EXPECT_EQ("user_name_1", CHECK_DEREF(captured_args.FindString("userName")));
 
   Mock::VerifyAndClearExpectations(client_.get());
   const base::Value::List* event_list =
@@ -448,14 +453,15 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
   TriggerOnDangerousDownloadOpenedEvent();
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
+  base::Value::Dict captured_args =
+      event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("https://evil.com/malware.exe",
-            captured_args.FindKey("url")->GetString());
+            CHECK_DEREF(captured_args.FindString("url")));
   EXPECT_EQ("/path/to/malware.exe",
-            captured_args.FindKey("fileName")->GetString());
-  EXPECT_EQ("", captured_args.FindKey("userName")->GetString());
+            CHECK_DEREF(captured_args.FindString("fileName")));
+  EXPECT_EQ("", CHECK_DEREF(captured_args.FindString("userName")));
   EXPECT_EQ("sha256_of_malware_exe",
-            captured_args.FindKey("downloadDigestSha256")->GetString());
+            CHECK_DEREF(captured_args.FindString("downloadDigestSha256")));
 
   Mock::VerifyAndClearExpectations(client_.get());
   const base::Value::List* event_list =
@@ -495,11 +501,13 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   TriggerOnSecurityInterstitialProceededEvent();
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
-  EXPECT_EQ("https://phishing.com/", captured_args.FindKey("url")->GetString());
-  EXPECT_EQ("PHISHING", captured_args.FindKey("reason")->GetString());
-  EXPECT_EQ("-201", captured_args.FindKey("netErrorCode")->GetString());
-  EXPECT_EQ("", captured_args.FindKey("userName")->GetString());
+  base::Value::Dict captured_args =
+      event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
+  EXPECT_EQ("https://phishing.com/",
+            CHECK_DEREF(captured_args.FindString("url")));
+  EXPECT_EQ("PHISHING", CHECK_DEREF(captured_args.FindString("reason")));
+  EXPECT_EQ("-201", CHECK_DEREF(captured_args.FindString("netErrorCode")));
+  EXPECT_EQ("", CHECK_DEREF(captured_args.FindString("userName")));
 
   Mock::VerifyAndClearExpectations(client_.get());
   const base::Value::List* event_list =
@@ -531,11 +539,13 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSecurityInterstitialShown) {
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
 
-  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
-  EXPECT_EQ("https://phishing.com/", captured_args.FindKey("url")->GetString());
-  EXPECT_EQ("PHISHING", captured_args.FindKey("reason")->GetString());
-  EXPECT_FALSE(captured_args.FindKey("netErrorCode"));
-  EXPECT_EQ("", captured_args.FindKey("userName")->GetString());
+  base::Value::Dict captured_args =
+      event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
+  EXPECT_EQ("https://phishing.com/",
+            CHECK_DEREF(captured_args.FindString("url")));
+  EXPECT_EQ("PHISHING", CHECK_DEREF(captured_args.FindString("reason")));
+  EXPECT_FALSE(captured_args.contains("netErrorCode"));
+  EXPECT_EQ("", CHECK_DEREF(captured_args.FindString("userName")));
 
   Mock::VerifyAndClearExpectations(client_.get());
   const base::Value::List* event_list =
@@ -1293,31 +1303,34 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestProfileUsername) {
   // With no primary account, we should not set the username.
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
-  auto captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
-  EXPECT_EQ("", captured_args.FindKey("userName")->GetString());
+  base::Value::Dict captured_args =
+      event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
+  EXPECT_EQ("", CHECK_DEREF(captured_args.FindString("userName")));
 
   // With an unconsented primary account, we should set the username.
   identity_test_environment.MakePrimaryAccountAvailable(
       "profile@example.com", signin::ConsentLevel::kSignin);
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
-  captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
+  captured_args =
+      event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("profile@example.com",
-            captured_args.FindKey("userName")->GetString());
+            CHECK_DEREF(captured_args.FindString("userName")));
 
   // With a consented primary account, we should set the username.
   identity_test_environment.MakePrimaryAccountAvailable(
       "profile@example.com", signin::ConsentLevel::kSync);
   TriggerOnSecurityInterstitialShownEvent();
   base::RunLoop().RunUntilIdle();
-  captured_args = event_observer.PassEventArgs().GetList()[0].Clone();
+  captured_args =
+      event_observer.PassEventArgs().GetList()[0].Clone().TakeDict();
   EXPECT_EQ("profile@example.com",
-            captured_args.FindKey("userName")->GetString());
+            CHECK_DEREF(captured_args.FindString("userName")));
 }
 
 // This next series of tests validate that we get the expected number of events
 // reported when a given event name is enabled and we only trigger the related
-// events (some events like interstiaial and dangerous downloads have multiple
+// events (some events like interstitial and dangerous downloads have multiple
 // triggers for the same event name).
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestPasswordChangedEnabled) {
   std::set<std::string> enabled_event_names;
