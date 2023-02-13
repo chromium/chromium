@@ -329,6 +329,10 @@ class PageInfo : private content_settings::CookieControlsView {
   void SetIsolatedWebAppNameForTesting(
       const std::u16string& isolated_web_app_name);
 
+  void SetSubscribedToPermissionChangeForTesting() {
+    is_subscribed_to_permission_change_for_testing = true;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
                            NonFactoryDefaultAndRecentlyChangedPermissionsShown);
@@ -522,6 +526,8 @@ class PageInfo : private content_settings::CookieControlsView {
 
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
+
+  bool is_subscribed_to_permission_change_for_testing = false;
 
   base::WeakPtrFactory<PageInfo> weak_factory_{this};
 };

@@ -581,6 +581,26 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="Top2PermissionTypes"/>
 </histogram>
 
+<histogram name="Permissions.PageInfo.Changed.{PermissionType}.{ReloadInfoBar}"
+    enum="PermissionChangeAction" expires_after="2023-10-31">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    This metric measures how often and in what way users change permissions
+    state via PageInfo and if we show a &quot;Reload this page&quot; info bar.
+    Recorded when users changes permissions state or clicks the &quot;Reset
+    permission&quot; button in PageInfo.
+  </summary>
+  <token key="PermissionType">
+    <variant name="AudioCapture"/>
+    <variant name="VideoCapture"/>
+  </token>
+  <token key="ReloadInfoBar">
+    <variant name="ReloadInfobarNotShown"/>
+    <variant name="ReloadInfobarShown"/>
+  </token>
+</histogram>
+
 <histogram name="Permissions.PageInfo.ChangedWithin1m.{PermissionType}"
     enum="PermissionChangeAction" expires_after="2023-10-31">
   <owner>fjacky@chromium.org</owner>

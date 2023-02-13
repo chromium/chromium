@@ -459,6 +459,11 @@ class PermissionUmaUtil {
       PermissionAction previous_action,
       ContentSetting setting_after);
 
+  static void RecordPageInfoPermissionChange(ContentSettingsType type,
+                                             ContentSetting setting_before,
+                                             ContentSetting setting_after,
+                                             bool suppress_reload_page_bar);
+
   static std::string GetPermissionActionString(
       PermissionAction permission_action);
 

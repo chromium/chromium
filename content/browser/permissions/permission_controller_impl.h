@@ -169,6 +169,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       blink::PermissionType permission,
       RenderFrameHost* render_frame_host) override;
 
+  // Notifies that an onchange event listener was added.
   void NotifyEventListener();
 
   PermissionOverrides permission_overrides_;

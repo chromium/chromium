@@ -49,6 +49,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/page_info/core/features.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
@@ -63,6 +64,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "net/cert/cert_status_flags.h"
@@ -638,11 +640,11 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
   // This is technically redundant given the histogram above, but putting the
   // total count of permission changes in another histogram makes it easier to
   // compare it against other kinds of actions in Page Info.
+  HostContentSettingsMap* map = GetContentSettings();
   RecordPageInfoAction(PAGE_INFO_CHANGED_PERMISSION);
-  HostContentSettingsMap* content_settings = GetContentSettings();
   if (type == ContentSettingsType::SOUND) {
-    ContentSetting default_setting = content_settings->GetDefaultContentSetting(
-        ContentSettingsType::SOUND, nullptr);
+    ContentSetting default_setting =
+        map->GetDefaultContentSetting(ContentSettingsType::SOUND, nullptr);
     bool mute = (setting == CONTENT_SETTING_BLOCK) ||
                 (setting == CONTENT_SETTING_DEFAULT &&
                  default_setting == CONTENT_SETTING_BLOCK);
@@ -682,6 +684,9 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
     }
   }
 
+  ContentSetting setting_old =
+      map->GetContentSetting(site_url_, site_url_, type);
+
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(web_contents_->GetBrowserContext(), site_url_,
                                  site_url_, type,
@@ -694,15 +699,42 @@ void PageInfo::OnSitePermissionChanged(ContentSettingsType type,
         site_url_, type);
   }
   using Constraints = content_settings::ContentSettingConstraints;
-  content_settings->SetNarrowestContentSetting(
+  map->SetNarrowestContentSetting(
       site_url_, site_url_, type, setting,
       is_one_time
           ? Constraints{base::Time(), content_settings::SessionModel::OneTime}
           : Constraints{});
 
+  bool is_subscribed_to_permission_change_event = false;
+
+  // Suppress the infobar only if permission is allowed. Camera and
+  // Microphone support all permission status changes.
+  if (type == ContentSettingsType::MEDIASTREAM_MIC ||
+      type == ContentSettingsType::MEDIASTREAM_CAMERA) {
+    content::PermissionController* permission_controller =
+        web_contents_->GetBrowserContext()->GetPermissionController();
+
+    blink::PermissionType permission_type =
+        permissions::PermissionUtil::ContentSettingTypeToPermissionType(type);
+
+    // An origin should subscribe to a permission status change from the top
+    // frame. Hence we verify only the main frame.
+    is_subscribed_to_permission_change_event =
+        permission_controller->IsSubscribedToPermissionChangeEvent(
+            permission_type, web_contents_->GetPrimaryMainFrame()) ||
+        is_subscribed_to_permission_change_for_testing;
+
+    permissions::PermissionUmaUtil::RecordPageInfoPermissionChange(
+        type, setting_old, setting, is_subscribed_to_permission_change_event);
+  }
+
+  // Show the infobar only if permission's status is not handled by an
+  // origin.
   // When the sound setting is changed, no reload is necessary.
-  if (type != ContentSettingsType::SOUND)
+  if (!is_subscribed_to_permission_change_event &&
+      type != ContentSettingsType::SOUND) {
     show_info_bar_ = true;
+  }
 
   // Refresh the UI to reflect the new setting.
   PresentSitePermissions();
