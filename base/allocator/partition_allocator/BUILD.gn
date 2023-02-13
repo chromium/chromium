@@ -398,6 +398,12 @@ source_set("raw_ptr") {
 
   # See also: `partition_alloc_base/component_export.h`
   defines = [ "IS_RAW_PTR_IMPL" ]
+
+  # When built inside Chromium, although this cannot directly be made a
+  # component, we expect `//base` to provide the only GN-level access.
+  if (build_with_chromium) {
+    visibility = [ "//base" ]
+  }
 }
 
 buildflag_header("partition_alloc_buildflags") {
