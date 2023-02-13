@@ -53,7 +53,7 @@
 <translation id="2599796128805996109">الكاميرا الخلفية</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> ثانية</translation>
 <translation id="2761536921376153655">نوع المسح الضوئي</translation>
-<translation id="28682968802727151">معاينة المرآة</translation>
+<translation id="28682968802727151">المعاينة بوضع المرآة</translation>
 <translation id="2879583609344924966">تم توصيل <ph name="CAMERA" /> بالجهاز.</translation>
 <translation id="2904654629665923749">تتوفّر ميزة المسح الضوئي للمستندات.</translation>
 <translation id="2968794441791257519">سيتم نقل الصور والفيديوهات الملتقَطة بالكاميرا إلى مجلد "المحتوى الذي تم تنزيله". ويمكنك الوصول إليها من خلال "الملفات".
@@ -71,7 +71,7 @@
 <translation id="3411958449466169012">إيقاف الموقّت</translation>
 <translation id="3448774564454087943">لم يتم حفظ الفيديو لأنّه قصير جدًا.</translation>
 <translation id="346539236881580388">إعادة التقاط</translation>
-<translation id="3517926952904427380">تعذّر التقاط صور أشخاص</translation>
+<translation id="3517926952904427380">تعذّر التقاط صورة بورتريه</translation>
 <translation id="3566302376254083266">جارٍ نقل زاوية المستند في اتجاه أعلى اليسار</translation>
 <translation id="3569311554794739032">هل تريد فعلاً إزالة <ph name="FILE" />؟</translation>
 <translation id="3573890771273113519">التبديل إلى وضع المسح</translation>
@@ -95,7 +95,7 @@
 <translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> ميغابكسل</translation>
 <translation id="4570032796877367747">الكاميرا الأمامية</translation>
 <translation id="4598556348158889687">إدارة مساحة التخزين</translation>
-<translation id="4620818268515773682">زر إعادة صوت الميكروفون. تمت إعادة صوت الميكروفون.</translation>
+<translation id="4620818268515773682">زر كتم الميكروفون. تم إلغاء كتم الميكروفون.</translation>
 <translation id="4628948037717959914">صورة</translation>
 <translation id="4649291346448517080">تعذّر حفظ الملف</translation>
 <translation id="4695379108709712600">جارٍ نقل زاوية المستند في اتجاه الأعلى</translation>

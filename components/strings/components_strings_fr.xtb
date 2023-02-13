@@ -152,7 +152,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="132390688737681464">Enregistrer et renseigner les adresses</translation>
 <translation id="1330449323196174374">Pli du volet gauche</translation>
 <translation id="1333745675627230582">Jouer au jeu Chrome Dino</translation>
-<translation id="1333989956347591814">Votre activité <ph name="BEGIN_EMPHASIS" />peut rester visible<ph name="END_EMPHASIS" /> par :
+<translation id="1333989956347591814">Votre activité <ph name="BEGIN_EMPHASIS" />pourra rester visible<ph name="END_EMPHASIS" /> par :
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Les sites Web que vous consultez
           <ph name="LIST_ITEM" />Votre employeur ou votre établissement scolaire
