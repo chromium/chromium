@@ -534,9 +534,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
 
-    // Clear portal list (as it is by default in OOBE).
-    NetworkHandler::Get()->network_state_handler()->SetCheckPortalList("");
-
     // Set up the mocks for all screens.
     mock_welcome_screen_ =
         MockScreenExpectLifecycle(std::make_unique<MockWelcomeScreen>(
@@ -752,9 +749,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
     EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl()).Times(0);
 
     EXPECT_FALSE(ExistingUserController::current_controller() == nullptr);
-    EXPECT_EQ("ethernet,wifi,cellular", NetworkHandler::Get()
-                                            ->network_state_handler()
-                                            ->GetCheckPortalListForTest());
 
     WaitUntilTimezoneResolved();
     EXPECT_EQ(
@@ -908,10 +902,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowSkipUpdateEnroll) {
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl()).Times(0);
   EXPECT_CALL(*mock_enrollment_screen_, HideImpl()).Times(0);
   content::RunAllPendingInMessageLoop();
-
-  EXPECT_EQ("ethernet,wifi,cellular", NetworkHandler::Get()
-                                          ->network_state_handler()
-                                          ->GetCheckPortalListForTest());
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
@@ -2537,9 +2527,6 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
         WizardController::default_controller();
     wizard_controller->SetCurrentScreen(nullptr);
 
-    // Clear portal list (as it is by default in OOBE).
-    NetworkHandler::Get()->network_state_handler()->SetCheckPortalList("");
-
     // Set up the mocks for all screens.
     mock_welcome_view_ = std::make_unique<MockWelcomeView>();
     mock_welcome_screen_ =
@@ -2662,13 +2649,6 @@ class WizardControllerOobeConfigurationTest : public WizardControllerTest {
         &configuration_file));
     command_line->AppendSwitchPath(chromeos::switches::kFakeOobeConfiguration,
                                    configuration_file);
-  }
-
-  // WizardControllerTest:
-  void SetUpOnMainThread() override {
-    WizardControllerTest::SetUpOnMainThread();
-    // Clear portal list (as it is by default in OOBE).
-    NetworkHandler::Get()->network_state_handler()->SetCheckPortalList("");
   }
 };
 
