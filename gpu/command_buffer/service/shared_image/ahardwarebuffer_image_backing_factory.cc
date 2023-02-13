@@ -422,10 +422,16 @@ AHardwareBufferImageBacking::ProduceSkia(
   DCHECK(hardware_buffer_handle_.is_valid());
 
   std::unique_ptr<GLTextureImageRepresentationBase> gl_representation;
-  if (use_passthrough_)
+  if (use_passthrough_) {
     gl_representation = ProduceGLTexturePassthrough(manager, tracker);
-  else
+  } else {
     gl_representation = ProduceGLTexture(manager, tracker);
+  }
+
+  if (!gl_representation) {
+    LOG(ERROR) << "Unable produce gl texture!";
+    return nullptr;
+  }
 
   return SkiaGLImageRepresentation::Create(std::move(gl_representation),
                                            std::move(context_state), manager,
