@@ -414,6 +414,8 @@ source_set("ash") {
     "arc/input_overlay/ui/menu_entry_view.h",
     "arc/input_overlay/ui/message_view.cc",
     "arc/input_overlay/ui/message_view.h",
+    "arc/input_overlay/ui/nudge_view.cc",
+    "arc/input_overlay/ui/nudge_view.h",
     "arc/input_overlay/ui/touch_point.cc",
     "arc/input_overlay/ui/touch_point.h",
     "arc/input_overlay/util.cc",

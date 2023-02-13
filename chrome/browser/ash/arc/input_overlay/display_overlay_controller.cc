@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -135,9 +136,18 @@ void DisplayOverlayController::SetEventTarget(views::Widget* overlay_widget,
 }
 
 void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
-  if (nudge_view_)
-    return;
   DCHECK(overlay_widget);
+  auto* parent = overlay_widget->GetContentsView();
+  DCHECK(parent);
+  if (AllowReposition()) {
+    if (nudge_view_)
+      return;
+    nudge_view_ = NudgeView::Show(parent, menu_entry_);
+    return;
+  }
+
+  if (nudge_view_alpha_)
+    return;
   auto nudge_view = std::make_unique<ash::PillButton>(
       base::BindRepeating(&DisplayOverlayController::OnNudgeDismissed,
                           base::Unretained(this)),
@@ -155,16 +165,20 @@ void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
       cros_styles::ColorName::kNudgeIconColor, IsDarkModeEnabled()));
   nudge_view->SetPosition(CalculateNudgePosition(nudge_view->width()));
 
-  auto* parent = overlay_widget->GetContentsView();
-  DCHECK(parent);
-  nudge_view_ = parent->AddChildView(std::move(nudge_view));
+  nudge_view_alpha_ = parent->AddChildView(std::move(nudge_view));
 }
 
 void DisplayOverlayController::RemoveNudgeView() {
-  if (!nudge_view_)
+  if (!nudge_view_alpha_ && !nudge_view_)
     return;
-  nudge_view_->parent()->RemoveChildViewT(nudge_view_);
-  nudge_view_ = nullptr;
+
+  if (nudge_view_alpha_) {
+    nudge_view_alpha_->parent()->RemoveChildViewT(nudge_view_alpha_);
+    nudge_view_alpha_ = nullptr;
+  } else {
+    nudge_view_->parent()->RemoveChildViewT(nudge_view_);
+    nudge_view_ = nullptr;
+  }
 }
 
 void DisplayOverlayController::OnNudgeDismissed() {
