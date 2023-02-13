@@ -102,4 +102,11 @@ ManagementType StringToSubscriptionManagementType(const std::string& s) {
     return ManagementType::kTypeUnspecified;
 }
 
+std::string GetStorageKeyForSubscription(
+    const CommerceSubscription& subscription) {
+  return SubscriptionTypeToString(subscription.type) + "_" +
+         SubscriptionIdTypeToString(subscription.id_type) + "_" +
+         subscription.id;
+}
+
 }  // namespace commerce

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -724,6 +725,26 @@ void ShoppingService::RemoveSubscriptionsObserver(
   if (subscriptions_manager_) {
     subscriptions_manager_->RemoveObserver(observer);
   }
+}
+
+void ShoppingService::IsSubscribed(CommerceSubscription subscription,
+                                   base::OnceCallback<void(bool)> callback) {
+  if (subscriptions_manager_) {
+    subscriptions_manager_->IsSubscribed(std::move(subscription),
+                                         std::move(callback));
+  } else {
+    CHECK_IS_TEST();
+  }
+}
+
+bool ShoppingService::IsSubscriptedFromCache(
+    const CommerceSubscription& subscription) {
+  if (subscriptions_manager_) {
+    return subscriptions_manager_->IsSubscribedFromCache(subscription);
+  } else {
+    CHECK_IS_TEST();
+  }
+  return false;
 }
 
 void ShoppingService::FetchPriceEmailPref() {

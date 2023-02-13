@@ -153,6 +153,10 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
               LoadAllSubscriptionsForType,
               (SubscriptionType type, GetLocalSubscriptionsCallback callback),
               (override));
+  MOCK_METHOD(void,
+              LoadAllSubscriptions,
+              (GetLocalSubscriptionsCallback callback),
+              (override));
 
   // Mock the local fetch responses for Get* requests. |subscription_id| is used
   // to generate a CommerceSubscription to be returned.
@@ -219,6 +223,11 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
         .WillByDefault(
             [subscription_id](SubscriptionType type,
                               GetLocalSubscriptionsCallback callback) {
+              std::move(callback).Run(BuildSubscriptions(subscription_id));
+            });
+    ON_CALL(*this, LoadAllSubscriptions)
+        .WillByDefault(
+            [subscription_id](GetLocalSubscriptionsCallback callback) {
               std::move(callback).Run(BuildSubscriptions(subscription_id));
             });
   }
@@ -978,6 +987,68 @@ TEST_F(SubscriptionsManagerTest, TestSubscriptionsObserver) {
           &unsubscribe_run_loop));
   unsubscribe_run_loop.Run();
   on_unsubscribe_run_loop_.Run();
+}
+
+TEST_F(SubscriptionsManagerTest, TestSubscriptionsInMemoryCache) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_server_proxy_->MockManageResponses(true);
+  mock_storage_->MockGetResponses("222");
+  mock_storage_->MockUpdateResponses(true);
+
+  CreateManagerAndVerify(true);
+  AddObserver();
+
+  base::RunLoop subscribe_run_loop;
+  subscriptions_manager_->Subscribe(
+      BuildSubscriptions("333"),
+      base::BindOnce(
+          [](base::RunLoop* subscribe_run_loop, bool succeeded) {
+            ASSERT_EQ(true, succeeded);
+            subscribe_run_loop->Quit();
+          },
+          &subscribe_run_loop));
+  subscribe_run_loop.Run();
+  on_subscribe_run_loop_.Run();
+
+  ASSERT_TRUE(
+      subscriptions_manager_->IsSubscribedFromCache(BuildSubscription("333")));
+  ASSERT_FALSE(
+      subscriptions_manager_->IsSubscribedFromCache(BuildSubscription("555")));
+
+  base::RunLoop unsubscribe_run_loop;
+  subscriptions_manager_->Unsubscribe(
+      BuildSubscriptions("333"),
+      base::BindOnce(
+          [](base::RunLoop* unsubscribe_run_loop, bool succeeded) {
+            ASSERT_EQ(true, succeeded);
+            unsubscribe_run_loop->Quit();
+          },
+          &unsubscribe_run_loop));
+  unsubscribe_run_loop.Run();
+  on_unsubscribe_run_loop_.Run();
+
+  ASSERT_FALSE(
+      subscriptions_manager_->IsSubscribedFromCache(BuildSubscription("333")));
+  ASSERT_FALSE(
+      subscriptions_manager_->IsSubscribedFromCache(BuildSubscription("555")));
+}
+
+TEST_F(SubscriptionsManagerTest, TestSubscriptionsInMemoryCache_FailedFetch) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111", false);
+  mock_server_proxy_->MockManageResponses(false);
+  mock_storage_->MockGetResponses("222");
+  mock_storage_->MockUpdateResponses(true);
+
+  // Make sure 222 is in local storage.
+  mock_storage_->MockLoadAllSubscriptionsResponses("222");
+
+  CreateManagerAndVerify(false);
+
+  // The in-mem cache should have the last stored items.
+  ASSERT_TRUE(
+      subscriptions_manager_->IsSubscribedFromCache(BuildSubscription("222")));
 }
 
 }  // namespace commerce

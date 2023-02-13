@@ -79,9 +79,10 @@ class SubscriptionsStorage {
       SubscriptionType type,
       GetLocalSubscriptionsCallback callback);
 
- private:
-  std::string GetSubscriptionKey(const CommerceSubscription& subscription);
+  // Load all subscriptions regardless of type.
+  virtual void LoadAllSubscriptions(GetLocalSubscriptionsCallback callback);
 
+ private:
   void SaveSubscription(CommerceSubscription subscription,
                         base::OnceCallback<void(bool)> callback);
 
@@ -110,6 +111,10 @@ class SubscriptionsStorage {
       StorageOperationCallback callback,
       std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions,
       std::unique_ptr<std::vector<CommerceSubscription>> local_subscriptions);
+
+  void HandleLoadCompleted(GetLocalSubscriptionsCallback callback,
+                           bool succeeded,
+                           CommerceSubscriptions data);
 
   raw_ptr<SessionProtoStorage<CommerceSubscriptionProto>> proto_db_;
 

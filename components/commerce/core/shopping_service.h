@@ -221,6 +221,15 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   void AddSubscriptionsObserver(SubscriptionsObserver* observer);
   void RemoveSubscriptionsObserver(SubscriptionsObserver* observer);
 
+  // Check if the specified subscription exists.
+  virtual void IsSubscribed(CommerceSubscription subscription,
+                            base::OnceCallback<void(bool)> callback);
+
+  // Checks if a subscription exists from the in-memory cache. Use of the the
+  // callback-based version |IsSubscribed| is preferred. Information provided
+  // by this API is not guaranteed to be correct.
+  virtual bool IsSubscriptedFromCache(const CommerceSubscription& subscription);
+
   // Fetch users' pref from server on whether to receive price tracking emails.
   void FetchPriceEmailPref();
 

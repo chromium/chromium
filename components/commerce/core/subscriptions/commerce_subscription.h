@@ -107,6 +107,11 @@ IdentifierType StringToSubscriptionIdType(const std::string& s);
 std::string SubscriptionManagementTypeToString(ManagementType type);
 ManagementType StringToSubscriptionManagementType(const std::string& s);
 
+// Gets a key for the provided subscription that can be used for storage or
+// caching.
+std::string GetStorageKeyForSubscription(
+    const CommerceSubscription& subscription);
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_SUBSCRIPTIONS_COMMERCE_SUBSCRIPTION_H_
