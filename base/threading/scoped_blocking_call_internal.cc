@@ -360,9 +360,8 @@ UncheckedScopedBlockingCall::UncheckedScopedBlockingCall(
     const bool is_monitored_type =
         blocking_call_type == BlockingCallType::kRegular && !is_will_block_;
     if (is_monitored_type && !previous_scoped_blocking_call_) {
-      // https://linear.app/replay/issue/RUN-1039
       if (!RecordReplayAreEventsDisallowed())
-        RecordReplayAssert("UncheckedScopedBlockingCall #1");
+        RecordReplayAssert("[RUN-1039] UncheckedScopedBlockingCall #1");
       monitored_call_.emplace();
     } else if (!is_monitored_type && previous_scoped_blocking_call_ &&
                previous_scoped_blocking_call_->monitored_call_) {
