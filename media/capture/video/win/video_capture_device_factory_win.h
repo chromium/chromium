@@ -106,7 +106,10 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   std::vector<VideoCaptureDeviceInfo> GetDevicesInfoMediaFoundation();
   void AugmentDevicesListWithDirectShowOnlyDevices(
       std::vector<VideoCaptureDeviceInfo>* devices_info);
-  std::vector<VideoCaptureDeviceInfo> GetDevicesInfoDirectShow();
+  // Queries DirectShow devices, skips over devices listed in |known_devices|
+  // with non-empty supported formats.
+  std::vector<VideoCaptureDeviceInfo> GetDevicesInfoDirectShow(
+      const std::vector<VideoCaptureDeviceInfo>& known_devices);
 
   bool use_media_foundation_;
   bool use_d3d11_with_media_foundation_;
