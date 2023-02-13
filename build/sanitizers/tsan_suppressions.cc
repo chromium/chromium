@@ -126,6 +126,11 @@ char kTSanDefaultSuppressions[] =
     "race:perfetto::DataSource*::static_state_\n"
     "race:perfetto::Tracing::ResetForTesting\n"
 
+    // In V8 each global safepoint might lock isolate mutexes in a different
+    // order. This is allowed in this context as it is always guarded by a
+    // single global mutex.
+    "deadlock:GlobalSafepoint::EnterGlobalSafepointScope\n"
+
     // End of suppressions.
     ;  // Please keep this semicolon.
 
