@@ -30,8 +30,6 @@ const CGFloat kButtonTitleHorizontalContentInset = 40.0;
 const CGFloat kButtonTitleVerticalContentInset = 8.0;
 // Button corner radius.
 const CGFloat kButtonCornerRadius = 8;
-// Font Size for Button Title Label.
-const CGFloat kButtonTitleFontSize = 17.0;
 // Default Text alignment.
 const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
 // Default Text alignment.
@@ -114,7 +112,8 @@ const UIControlContentHorizontalAlignment kDefaultContentHorizontalAlignment =
   }
   if (!self.boldButtonText) {
     [cell.button.titleLabel
-        setFont:[UIFont systemFontOfSize:kButtonTitleFontSize]];
+        setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
+    cell.button.titleLabel.adjustsFontForContentSizeCategory = YES;
   }
 }
 
@@ -148,7 +147,8 @@ const UIControlContentHorizontalAlignment kDefaultContentHorizontalAlignment =
     self.button = [UIButton buttonWithType:UIButtonTypeSystem];
     self.button.translatesAutoresizingMaskIntoConstraints = NO;
     [self.button.titleLabel
-        setFont:[UIFont boldSystemFontOfSize:kButtonTitleFontSize]];
+        setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
+    self.button.titleLabel.adjustsFontForContentSizeCategory = YES;
     self.button.titleLabel.numberOfLines = 0;
     self.button.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
