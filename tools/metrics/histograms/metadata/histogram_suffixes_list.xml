@@ -4246,6 +4246,16 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="ProcessMemoryAllocator2" separator=".">
+  <suffix name="AndroidOtherPrivateDirty"
+      label="Other private dirty memory, including GPU memory, as reported by
+             Android platform APIs. Only reported on Android, if the value
+             hasn't been collected in the last 5 minutes (otherwise Android
+             produces a stale value, which is not emitted in Chrome)."/>
+  <suffix name="AndroidOtherPss"
+      label="Other PSS, including GPU memory, as reported by Android platform
+             APIs. Only reported on Android, if the value hasn't been
+             collected in the last 5 minutes (otherwise Android produces a
+             stale value, which is not emitted in Chrome)."/>
   <suffix name="BlinkGC" label="Only counting Blink GC memory."/>
   <suffix name="BlinkGC.AllocatedObjects"
       label="Only counting objects allocated using Blink GC."/>

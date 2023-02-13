@@ -74,6 +74,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/meminfo_dump_provider.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
 #endif
@@ -387,6 +388,8 @@ int GpuMain(MainFunctionParams parameters) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       tracing::GraphicsMemoryDumpProvider::GetInstance(), "AndroidGraphics",
       nullptr);
+
+  base::android::MeminfoDumpProvider::Initialize();
 #endif
 
   base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
