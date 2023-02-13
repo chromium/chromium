@@ -314,7 +314,7 @@ DOMHighResTimeStamp PerformanceResourceTiming::requestStart() const {
   if (!info_->allow_timing_details) {
     return 0.0;
   }
-  if (!info_->timing || !info_->timing->send_start.is_null()) {
+  if (!info_->timing || info_->timing->send_start.is_null()) {
     return connectEnd();
   }
 
