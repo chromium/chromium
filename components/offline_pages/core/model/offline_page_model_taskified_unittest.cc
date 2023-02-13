@@ -232,6 +232,8 @@ void OfflinePageModelTaskifiedTest::TearDown() {
     if (!public_archive_dir_.Delete())
       DLOG(ERROR) << "public_archive_dir not created";
   }
+  archive_manager_ = nullptr;
+  publisher_ = nullptr;
   model_->RemoveObserver(this);
   model_.reset();
   PumpLoop();
