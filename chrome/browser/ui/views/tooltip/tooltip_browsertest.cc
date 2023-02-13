@@ -158,7 +158,6 @@ class TooltipBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     helper()->AddObserver(tooltip_monitor_.get());
 #endif
-    ui_controls::EnableUIControls();
   }
 
   content::WebContents* web_contents() { return web_contents_; }
