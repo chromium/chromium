@@ -130,8 +130,8 @@ struct ProductInfo {
 // Information returned by the merchant info APIs.
 struct MerchantInfo {
   MerchantInfo();
-  MerchantInfo(const MerchantInfo&) = delete;
-  MerchantInfo& operator=(const MerchantInfo&) = delete;
+  MerchantInfo(const MerchantInfo&);
+  MerchantInfo& operator=(const MerchantInfo&);
   MerchantInfo(MerchantInfo&&);
   MerchantInfo& operator=(MerchantInfo&&) = default;
   ~MerchantInfo();

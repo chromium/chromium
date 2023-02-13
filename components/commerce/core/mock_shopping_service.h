@@ -11,6 +11,8 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace commerce {
 
@@ -23,26 +25,39 @@ class MockShoppingService : public commerce::ShoppingService {
   ~MockShoppingService() override;
 
   // commerce::ShoppingService overrides.
-  void GetProductInfoForUrl(const GURL& url,
-                            commerce::ProductInfoCallback callback) override;
-  void GetUpdatedProductInfoForBookmarks(
-      const std::vector<int64_t>& bookmark_ids,
-      BookmarkProductInfoUpdatedCallback info_updated_callback) override;
-  void GetMerchantInfoForUrl(const GURL& url,
-                             MerchantInfoCallback callback) override;
-  absl::optional<ProductInfo> GetAvailableProductInfoForUrl(
-      const GURL& url) override;
-  void Subscribe(
-      std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
-      base::OnceCallback<void(bool)> callback) override;
-  void Unsubscribe(
-      std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
-      base::OnceCallback<void(bool)> callback) override;
-  void ScheduleSavedProductUpdate() override;
-  bool IsShoppingListEligible() override;
-  void IsClusterIdTrackedByUser(
-      uint64_t cluster_id,
-      base::OnceCallback<void(bool)> callback) override;
+  MOCK_METHOD(void,
+              GetProductInfoForUrl,
+              (const GURL& url, commerce::ProductInfoCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              GetUpdatedProductInfoForBookmarks,
+              (const std::vector<int64_t>& bookmark_ids,
+               BookmarkProductInfoUpdatedCallback info_updated_callback),
+              (override));
+  MOCK_METHOD(void,
+              GetMerchantInfoForUrl,
+              (const GURL& url, MerchantInfoCallback callback),
+              (override));
+  MOCK_METHOD(absl::optional<ProductInfo>,
+              GetAvailableProductInfoForUrl,
+              (const GURL& url),
+              (override));
+  MOCK_METHOD(void,
+              Subscribe,
+              (std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+               base::OnceCallback<void(bool)> callback),
+              (override));
+  MOCK_METHOD(void,
+              Unsubscribe,
+              (std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+               base::OnceCallback<void(bool)> callback),
+              (override));
+  MOCK_METHOD(void, ScheduleSavedProductUpdate, (), (override));
+  MOCK_METHOD(bool, IsShoppingListEligible, (), (override));
+  MOCK_METHOD(void,
+              IsClusterIdTrackedByUser,
+              (uint64_t cluster_id, base::OnceCallback<void(bool)> callback),
+              (override));
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
@@ -54,15 +69,6 @@ class MockShoppingService : public commerce::ShoppingService {
   void SetUnsubscribeCallbackValue(bool unsubscribe_should_succeed);
   void SetIsShoppingListEligible(bool enabled);
   void SetIsClusterIdTrackedByUserResponse(bool is_tracked);
-
- private:
-  absl::optional<commerce::ProductInfo> product_info_;
-  std::map<int64_t, ProductInfo> bookmark_updates_map_;
-  absl::optional<commerce::MerchantInfo> merchant_info_;
-  bool subscribe_callback_value_{true};
-  bool unsubscribe_callback_value_{true};
-  bool is_shopping_list_eligible_{true};
-  bool is_cluster_id_tracked_{true};
 };
 
 }  // namespace commerce

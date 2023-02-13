@@ -62,6 +62,8 @@ ProductInfo::ProductInfo(const ProductInfo&) = default;
 ProductInfo& ProductInfo::operator=(const ProductInfo&) = default;
 ProductInfo::~ProductInfo() = default;
 MerchantInfo::MerchantInfo() = default;
+MerchantInfo::MerchantInfo(const MerchantInfo&) = default;
+MerchantInfo& MerchantInfo::operator=(const MerchantInfo&) = default;
 MerchantInfo::MerchantInfo(MerchantInfo&&) = default;
 MerchantInfo::~MerchantInfo() = default;
 
