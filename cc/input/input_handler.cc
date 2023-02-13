@@ -191,26 +191,6 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
           return scroll_status;
         }
 
-        // Touch dragging the scrollbar requires falling back to main-thread
-        // scrolling.
-        // TODO(bokan): This could be trivially handled in the compositor by
-        // the new ScrollbarController and should be removed.
-        {
-          LayerImpl* first_scrolling_layer_or_scrollbar =
-              ActiveTree().FindFirstScrollingLayerOrScrollbarThatIsHitByPoint(
-                  device_viewport_point);
-          if (IsTouchDraggingScrollbar(first_scrolling_layer_or_scrollbar,
-                                       type)) {
-            TRACE_EVENT_INSTANT0("cc", "Scrollbar Scrolling",
-                                 TRACE_EVENT_SCOPE_THREAD);
-            scroll_status.thread =
-                InputHandler::ScrollThread::SCROLL_ON_MAIN_THREAD;
-            scroll_status.main_thread_scrolling_reasons =
-                MainThreadScrollingReason::kScrollbarScrolling;
-            return scroll_status;
-          }
-        }
-
         ScrollHitTestResult scroll_hit_test =
             HitTestScrollNode(device_viewport_point);
 

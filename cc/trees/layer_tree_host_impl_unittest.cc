@@ -5761,6 +5761,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
   UpdateDrawProperties(host_impl_->active_tree());
   host_impl_->active_tree()->DidBecomeActive();
 
+  bool unification_enabled =
+      base::FeatureList::IsEnabled(features::kScrollUnification);
+
   // Wheel scroll on root scrollbar should process on impl thread.
   {
     InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
@@ -5772,15 +5775,20 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
     GetInputHandler().ScrollEnd();
   }
 
-  // Touch scroll on root scrollbar should process on main thread.
+  // Touch scroll on root scrollbar should process on impl thread
+  // (main thread pre-unification).
   {
     InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(1, 1), gfx::Vector2dF(),
                    ui::ScrollInputType::kTouchscreen)
             .get(),
         ui::ScrollInputType::kTouchscreen);
-    EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kScrollbarScrolling,
+    EXPECT_EQ(unification_enabled ? ScrollThread::SCROLL_ON_IMPL_THREAD
+                                  : ScrollThread::SCROLL_ON_MAIN_THREAD,
+              status.thread);
+    EXPECT_EQ(unification_enabled
+                  ? MainThreadScrollingReason::kNotScrollingOnMain
+                  : MainThreadScrollingReason::kScrollbarScrolling,
               status.main_thread_scrolling_reasons);
   }
 
@@ -5797,15 +5805,20 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
     GetInputHandler().ScrollEnd();
   }
 
-  // Touch scroll on scrollbar should process on main thread.
+  // Touch scroll on scrollbar should process on impl thread
+  // (main thread pre-unification).
   {
     InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(51, 51), gfx::Vector2dF(),
                    ui::ScrollInputType::kTouchscreen)
             .get(),
         ui::ScrollInputType::kTouchscreen);
-    EXPECT_EQ(ScrollThread::SCROLL_ON_MAIN_THREAD, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kScrollbarScrolling,
+    EXPECT_EQ(unification_enabled ? ScrollThread::SCROLL_ON_IMPL_THREAD
+                                  : ScrollThread::SCROLL_ON_MAIN_THREAD,
+              status.thread);
+    EXPECT_EQ(unification_enabled
+                  ? MainThreadScrollingReason::kNotScrollingOnMain
+                  : MainThreadScrollingReason::kScrollbarScrolling,
               status.main_thread_scrolling_reasons);
   }
 }
