@@ -114,8 +114,12 @@ void FontResource::StartLoadLimitTimersIfNecessary(
 
 scoped_refptr<FontCustomPlatformData> FontResource::GetCustomFontData() {
   if (!font_data_ && !ErrorOccurred() && !IsLoading()) {
-    if (Data())
+    if (Data()) {
+      auto decode_start_time = base::TimeTicks::Now();
       font_data_ = FontCustomPlatformData::Create(Data(), ots_parsing_message_);
+      base::UmaHistogramMicrosecondsTimes(
+          "Blink.Fonts.DecodeTime", base::TimeTicks::Now() - decode_start_time);
+    }
 
     if (!font_data_) {
       SetStatus(ResourceStatus::kDecodeError);

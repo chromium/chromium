@@ -1271,6 +1271,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Blink.Fonts.DecodeTime" units="microseconds"
+    expires_after="2023-07-01">
+  <owner>gjc@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    Time spent for decoding the fonts. Recorded when a font resource creates its
+    decoded data. This histogram is only logged in platforms with
+    high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Fonts.EmojiClusterBrokenness" units="%"
     expires_after="2022-01-10">
   <owner>drott@chromium.org</owner>
