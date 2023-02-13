@@ -78,6 +78,8 @@ public class PageZoomCoordinator {
             mView.startAnimation(getInAnimation());
         }
 
+        adjustPadding();
+
         // Consume hover events so screen readers do not select web contents behind slider.
         mView.setOnHoverListener((v, event) -> true);
 
@@ -193,6 +195,25 @@ public class PageZoomCoordinator {
                     mView.getContext().getResources().getDimensionPixelSize(
                             R.dimen.page_zoom_view_margins)
                             + bottomOffset);
+        }
+    }
+
+    private void adjustPadding() {
+        if (mView != null) {
+            int displayWidth = mView.getContext().getResources().getDisplayMetrics().widthPixels;
+            int maxMobileWidth = mView.getContext().getResources().getDimensionPixelSize(
+                    R.dimen.page_zoom_view_tablet_mode_min_width);
+            int defaultPadding = mView.getContext().getResources().getDimensionPixelSize(
+                    R.dimen.page_zoom_view_padding);
+
+            if (displayWidth > maxMobileWidth) {
+                int maxWidth = mView.getContext().getResources().getDimensionPixelSize(
+                        R.dimen.page_zoom_view_max_width);
+                int padding = (displayWidth - maxWidth) / 2;
+                mView.setPadding(padding, defaultPadding, padding, defaultPadding);
+            } else {
+                mView.setPadding(defaultPadding, defaultPadding, defaultPadding, defaultPadding);
+            }
         }
     }
 }
