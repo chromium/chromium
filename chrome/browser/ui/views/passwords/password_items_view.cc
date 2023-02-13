@@ -66,7 +66,8 @@ enum PasswordItemsViewColumnSetType {
 };
 
 PasswordItemsViewColumnSetType InferColumnSetTypeFromCredentials(
-    const std::vector<password_manager::PasswordForm>& credentials) {
+    const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+        credentials) {
   if (base::Contains(credentials,
                      password_manager::PasswordForm::Store::kAccountStore,
                      &password_manager::PasswordForm::in_store)) {
@@ -131,7 +132,7 @@ void BuildColumnSet(views::TableLayout* table_layout,
 class PasswordItemsView::PasswordRow {
  public:
   PasswordRow(PasswordItemsView* parent,
-              const password_manager::PasswordForm* password_form);
+              password_manager::PasswordForm password_form);
 
   PasswordRow(const PasswordRow&) = delete;
   PasswordRow& operator=(const PasswordRow&) = delete;
@@ -149,15 +150,14 @@ class PasswordItemsView::PasswordRow {
   void UndoButtonPressed();
 
   const raw_ptr<PasswordItemsView> parent_;
-  const raw_ptr<const password_manager::PasswordForm, DanglingUntriaged>
-      password_form_;
+  const password_manager::PasswordForm password_form_;
   bool deleted_ = false;
 };
 
 PasswordItemsView::PasswordRow::PasswordRow(
     PasswordItemsView* parent,
-    const password_manager::PasswordForm* password_form)
-    : parent_(parent), password_form_(password_form) {}
+    password_manager::PasswordForm password_form)
+    : parent_(parent), password_form_(std::move(password_form)) {}
 
 void PasswordItemsView::PasswordRow::AddToLayout(
     views::TableLayout* table_layout,
@@ -185,7 +185,7 @@ void PasswordItemsView::PasswordRow::AddUndoRow(
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_UNDO)));
   undo_button->SetTooltipText(l10n_util::GetStringFUTF16(
-      IDS_MANAGE_PASSWORDS_UNDO_TOOLTIP, GetDisplayUsername(*password_form_)));
+      IDS_MANAGE_PASSWORDS_UNDO_TOOLTIP, GetDisplayUsername(password_form_)));
 }
 
 void PasswordItemsView::PasswordRow::AddPasswordRow(
@@ -202,11 +202,11 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
         ->SetImage(parent_->favicon_.AsImageSkia());
   }
 
-  parent_->AddChildView(CreateUsernameLabel(*password_form_));
-  parent_->AddChildView(CreatePasswordLabel(*password_form_));
+  parent_->AddChildView(CreateUsernameLabel(password_form_));
+  parent_->AddChildView(CreatePasswordLabel(password_form_));
 
   if (type_id == MULTI_STORE_PASSWORD_COLUMN_SET) {
-    if (password_form_->in_store ==
+    if (password_form_.in_store ==
         password_manager::PasswordForm::Store::kAccountStore) {
       auto* image_view =
           parent_->AddChildView(std::make_unique<views::ImageView>());
@@ -238,20 +238,20 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
                               base::Unretained(this)),
           kTrashCanIcon))
       ->SetTooltipText(l10n_util::GetStringFUTF16(
-          IDS_MANAGE_PASSWORDS_DELETE, GetDisplayUsername(*password_form_)));
+          IDS_MANAGE_PASSWORDS_DELETE, GetDisplayUsername(password_form_)));
 }
 
 void PasswordItemsView::PasswordRow::DeleteButtonPressed() {
   deleted_ = true;
   parent_->NotifyPasswordFormAction(
-      *password_form_,
+      password_form_,
       PasswordBubbleControllerBase::PasswordAction::kRemovePassword);
 }
 
 void PasswordItemsView::PasswordRow::UndoButtonPressed() {
   deleted_ = false;
   parent_->NotifyPasswordFormAction(
-      *password_form_,
+      password_form_,
       PasswordBubbleControllerBase::PasswordAction::kAddPassword);
 }
 
@@ -275,7 +275,7 @@ PasswordItemsView::PasswordItemsView(content::WebContents* web_contents,
 
   SetFootnoteView(CreateFooterView());
 
-  auto& local_credentials = controller_.local_credentials();
+  auto& local_credentials = controller_.GetCredentials();
 
   if (local_credentials.empty()) {
     // A LayoutManager is required for GetHeightForWidth() even without
@@ -289,7 +289,7 @@ PasswordItemsView::PasswordItemsView(content::WebContents* web_contents,
         &PasswordItemsView::OnFaviconReady, base::Unretained(this)));
     for (auto& password_form : local_credentials) {
       password_rows_.push_back(
-          std::make_unique<PasswordRow>(this, &password_form));
+          std::make_unique<PasswordRow>(this, *password_form));
     }
     RecreateLayout();
   }
@@ -316,13 +316,13 @@ void PasswordItemsView::RecreateLayout() {
   // This method should only be used when we have password rows, otherwise the
   // dialog should only show the no-passwords title and doesn't need to be
   // recreated.
-  DCHECK(!controller_.local_credentials().empty());
+  DCHECK(!controller_.GetCredentials().empty());
 
   RemoveAllChildViews();
 
   auto* table_layout = SetLayoutManager(std::make_unique<views::TableLayout>());
   BuildColumnSet(table_layout, InferColumnSetTypeFromCredentials(
-                                   controller_.local_credentials()));
+                                   controller_.GetCredentials()));
 
   const int vertical_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTROL_LIST_VERTICAL);
@@ -333,7 +333,7 @@ void PasswordItemsView::RecreateLayout() {
                                   vertical_padding);
     }
     row->AddToLayout(table_layout, InferColumnSetTypeFromCredentials(
-                                       controller_.local_credentials()));
+                                       controller_.GetCredentials()));
     first = false;
   }
 

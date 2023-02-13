@@ -26,32 +26,11 @@
 
 namespace metrics_util = password_manager::metrics_util;
 
-namespace {
-
-std::vector<password_manager::PasswordForm> DeepCopyForms(
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms) {
-  std::vector<password_manager::PasswordForm> result;
-  result.reserve(forms.size());
-  std::transform(
-      forms.begin(), forms.end(), std::back_inserter(result),
-      [](const std::unique_ptr<password_manager::PasswordForm>& form) {
-        return *form;
-      });
-  return result;
-}
-
-}  // namespace
-
 ItemsBubbleController::ItemsBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
     : PasswordBubbleControllerBase(
           std::move(delegate),
-          /*display_disposition=*/metrics_util::MANUAL_MANAGE_PASSWORDS),
-      local_credentials_(DeepCopyForms(delegate_->GetCurrentForms())),
-      title_(
-          GetManagePasswordsDialogTitleText(GetWebContents()->GetVisibleURL(),
-                                            delegate_->GetOrigin(),
-                                            !local_credentials_.empty())) {}
+          /*display_disposition=*/metrics_util::MANUAL_MANAGE_PASSWORDS) {}
 
 ItemsBubbleController::~ItemsBubbleController() {
   OnBubbleClosing();
@@ -117,6 +96,10 @@ void ItemsBubbleController::OnGooglePasswordManagerLinkClicked() {
         password_manager::ManagePasswordsReferrer::kManagePasswordsBubble);
   }
 }
+const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+ItemsBubbleController::GetCredentials() const {
+  return delegate_->GetCurrentForms();
+}
 
 void ItemsBubbleController::UpdateStoredCredential(
     const password_manager::PasswordForm& original_form,
@@ -162,7 +145,9 @@ void ItemsBubbleController::ReportInteractions() {
 }
 
 std::u16string ItemsBubbleController::GetTitle() const {
-  return title_;
+  return GetManagePasswordsDialogTitleText(
+      GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
+      !delegate_->GetCurrentForms().empty());
 }
 
 scoped_refptr<password_manager::PasswordStoreInterface>

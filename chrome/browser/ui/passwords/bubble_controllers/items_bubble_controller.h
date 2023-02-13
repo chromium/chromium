@@ -55,6 +55,10 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
   // bubble footer in clicked by the user.
   void OnGooglePasswordManagerLinkClicked();
 
+  // Returns the available credentials which match the current site.
+  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  GetCredentials() const;
+
   // Called by the view code when the user updates a stored credentials. Since
   // the UI allows adding username to credentials without a username, both the
   // old and new forms are required to pick the suitable API to call in case the
@@ -62,11 +66,6 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
   void UpdateStoredCredential(
       const password_manager::PasswordForm& original_form,
       password_manager::PasswordForm updated_form);
-
-  // Returns the available credentials which match the current site.
-  const std::vector<password_manager::PasswordForm>& local_credentials() const {
-    return local_credentials_;
-  }
 
  private:
   // Called when the favicon was retrieved. It invokes |favicon_ready_callback|
@@ -82,13 +81,9 @@ class ItemsBubbleController : public PasswordBubbleControllerBase {
   // Returns the password store in which this password form is stored.
   scoped_refptr<password_manager::PasswordStoreInterface> PasswordStoreForForm(
       const password_manager::PasswordForm& password_form) const;
-
-  const std::vector<password_manager::PasswordForm> local_credentials_;
-
   // Used to track a requested favicon.
   base::CancelableTaskTracker favicon_tracker_;
 
-  const std::u16string title_;
   // Dismissal reason for a password bubble.
   password_manager::metrics_util::UIDismissalReason dismissal_reason_ =
       password_manager::metrics_util::NO_DIRECT_INTERACTION;

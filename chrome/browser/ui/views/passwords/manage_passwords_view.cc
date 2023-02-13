@@ -268,7 +268,7 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
   page_container_ = AddChildView(
       std::make_unique<PageSwitcherView>(CreatePasswordListView()));
 
-  if (!controller_.local_credentials().empty()) {
+  if (!controller_.GetCredentials().empty()) {
     // The request is cancelled when the |controller_| is destroyed.
     // |controller_| has the same lifetime as |this| and hence it's safe to use
     // base::Unretained(this).
@@ -387,8 +387,8 @@ ManagePasswordsView::CreatePasswordDetailsTitleView() {
 std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
   auto container_view = std::make_unique<views::BoxLayoutView>();
   container_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  for (const password_manager::PasswordForm& password_form :
-       controller_.local_credentials()) {
+  for (const std::unique_ptr<password_manager::PasswordForm>& password_form :
+       controller_.GetCredentials()) {
     // TODO(crbug.com/1382017): Make sure the alignment works for different use
     // cases. (e.g. long username, federated credentials)
     container_view->AddChildView(std::make_unique<RichHoverButton>(
@@ -398,9 +398,9 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
               view->currently_selected_password_ = password_form;
               view->RecreateLayout();
             },
-            base::Unretained(this), password_form),
+            base::Unretained(this), *password_form),
         /*main_image_icon=*/GetFaviconImageModel(),
-        /*title_text=*/GetDisplayUsername(password_form),
+        /*title_text=*/GetDisplayUsername(*password_form),
         /*secondary_text=*/std::u16string(),
         /*tooltip_text=*/std::u16string(),
         /*subtitle_text=*/std::u16string(),

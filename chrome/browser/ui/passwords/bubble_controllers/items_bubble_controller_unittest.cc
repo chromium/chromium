@@ -81,9 +81,6 @@ class ItemsBubbleControllerTest : public ::testing::Test {
 
   ~ItemsBubbleControllerTest() override = default;
 
-  static std::vector<std::unique_ptr<password_manager::PasswordForm>>
-  GetCurrentForms();
-
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
   ItemsBubbleController* controller() { return controller_.get(); }
   TestingProfile* profile() { return profile_.get(); }
@@ -97,6 +94,8 @@ class ItemsBubbleControllerTest : public ::testing::Test {
   }
 
   void Init();
+  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+  GetCurrentForms() const;
   void DestroyController();
 
  private:
@@ -105,17 +104,22 @@ class ItemsBubbleControllerTest : public ::testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<content::WebContents> test_web_contents_;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<ItemsBubbleController> controller_;
 };
 
 void ItemsBubbleControllerTest::Init() {
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms =
-      GetCurrentForms();
-  EXPECT_CALL(*delegate(), GetCurrentForms()).WillOnce(ReturnRef(forms));
+  current_forms_.push_back(
+      std::make_unique<password_manager::PasswordForm>(CreateTestForm(1)));
+  current_forms_.push_back(
+      std::make_unique<password_manager::PasswordForm>(CreateTestForm(2)));
+
+  ON_CALL(*delegate(), GetCurrentForms())
+      .WillByDefault(ReturnRef(current_forms_));
 
   url::Origin origin = url::Origin::Create(GURL(kSiteOrigin));
-  EXPECT_CALL(*delegate(), GetOrigin()).WillOnce(Return(origin));
+  ON_CALL(*delegate(), GetOrigin()).WillByDefault(Return(origin));
 
   EXPECT_CALL(*delegate(), GetWebContents())
       .WillRepeatedly(Return(test_web_contents_.get()));
@@ -129,19 +133,13 @@ void ItemsBubbleControllerTest::Init() {
       .WillRepeatedly(Return(test_web_contents_.get()));
 }
 
-void ItemsBubbleControllerTest::DestroyController() {
-  controller_.reset();
+const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+ItemsBubbleControllerTest::GetCurrentForms() const {
+  return current_forms_;
 }
 
-// static
-std::vector<std::unique_ptr<password_manager::PasswordForm>>
-ItemsBubbleControllerTest::GetCurrentForms() {
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> forms;
-  forms.push_back(
-      std::make_unique<password_manager::PasswordForm>(CreateTestForm(1)));
-  forms.push_back(
-      std::make_unique<password_manager::PasswordForm>(CreateTestForm(2)));
-  return forms;
+void ItemsBubbleControllerTest::DestroyController() {
+  controller_.reset();
 }
 
 TEST_F(ItemsBubbleControllerTest, OnManageClicked) {
@@ -188,13 +186,13 @@ TEST_F(ItemsBubbleControllerTest, OnPasswordActionRemovePassword) {
 
 TEST_F(ItemsBubbleControllerTest, ShouldReturnLocalCredentials) {
   Init();
-  std::vector<password_manager::PasswordForm> local_credentials =
-      controller()->local_credentials();
-  std::vector<std::unique_ptr<password_manager::PasswordForm>>
-      expected_local_credentials = ItemsBubbleControllerTest::GetCurrentForms();
-  EXPECT_EQ(local_credentials.size(), expected_local_credentials.size());
-  for (size_t i = 0; i < local_credentials.size(); i++) {
-    EXPECT_EQ(local_credentials[i], *expected_local_credentials[i]);
+  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+      credentials = controller()->GetCredentials();
+  const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
+      expected_credentials = ItemsBubbleControllerTest::GetCurrentForms();
+  EXPECT_EQ(credentials.size(), expected_credentials.size());
+  for (size_t i = 0; i < credentials.size(); i++) {
+    EXPECT_EQ(*credentials[i], *expected_credentials[i]);
   }
 }
 
