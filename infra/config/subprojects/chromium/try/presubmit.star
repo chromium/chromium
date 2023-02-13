@@ -137,6 +137,12 @@ presubmit_builder(
         "repo_name": "chromium",
     },
     tryjob = try_.job(),
+    # TODO(crbug.com/1366979) Changes to remove py2 dependencies from presubmit
+    # scripts haven't been cherry-picked back, so this prevents failures in
+    # presubmit
+    experiments = {
+        "luci.buildbucket.omit_python2": 0,
+    },
 )
 
 presubmit_builder(
