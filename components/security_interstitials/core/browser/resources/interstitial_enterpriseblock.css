@@ -3,19 +3,8 @@
  * found in the LICENSE file.
  */
 
-.enterprise-block #main-content a {
-  color: var(--google-blue-700);
-  text-decoration: none;
-}
-
 .enterprise-block .icon {
   background-image: -webkit-image-set(
     url(images/1x/triangle_red.png) 1x,
     url(images/2x/triangle_red.png) 2x);
-}
-
-@media (prefers-color-scheme: dark) {
-  .enterprise-block .icon {
-    filter: invert(1);
-  }
 }

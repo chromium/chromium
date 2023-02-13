@@ -3,11 +3,6 @@
  * found in the LICENSE file.
  */
 
-.enterprise-warn #main-content a {
-  color: var(--google-blue-700);
-  text-decoration: none;
-}
-
 .enterprise-warn .icon {
   background-image: -webkit-image-set(
       url(images/1x/info.png) 1x,
