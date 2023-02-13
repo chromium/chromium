@@ -102,6 +102,7 @@ export class CheckupDetailsSectionElement extends
       chrome.passwordsPrivate.PasswordUiEntry[];
   private activeListItem_: CheckupListItemElement|null;
   private clickedChangePasswordIds_: Set<number>;
+  private activeCredential_: chrome.passwordsPrivate.PasswordUiEntry|undefined;
   private insecureCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
 
@@ -229,6 +230,14 @@ export class CheckupDetailsSectionElement extends
     this.activeListItem_ = null;
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
         PasswordCheckInteraction.SHOW_PASSWORD);
+  }
+
+  private async onMenuEditPasswordClick_() {
+    this.activeListItem_?.showEditDialog();
+    this.$.moreActionsMenu.close();
+    this.activeListItem_ = null;
+    PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
+        PasswordCheckInteraction.EDIT_PASSWORD);
   }
 
   private getShowHideTitle_(): string {

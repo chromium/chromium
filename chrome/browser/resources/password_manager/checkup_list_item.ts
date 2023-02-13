@@ -49,6 +49,8 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
       showDetails: Boolean,
 
       showAlreadyChanged: Boolean,
+
+      showEditPasswordDialog_: Boolean,
     };
   }
 
@@ -57,6 +59,7 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
   first: boolean;
   showDetails: boolean;
   showAlreadyChanged: boolean;
+  private showEditPasswordDialog_: boolean;
 
   private getPasswordValue_(): string|undefined {
     return this.isPasswordVisible ? this.item.password : ' '.repeat(10);
@@ -113,6 +116,20 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
         .catch(() => {});
   }
 
+  public showEditDialog() {
+    PasswordManagerImpl.getInstance()
+        .requestCredentialsDetails([this.item.id])
+        .then(entries => {
+          const entry = entries[0];
+          assert(!!entry);
+          this.item.affiliatedDomains = entry.affiliatedDomains;
+          this.item.password = entry.password;
+          this.item.note = entry.note;
+          this.showEditPasswordDialog_ = true;
+        })
+        .catch(() => {});
+  }
+
   private onChangePasswordClick_() {
     assert(this.item.changePasswordUrl);
     OpenWindowProxyImpl.getInstance().openUrl(this.item.changePasswordUrl);
@@ -124,6 +141,12 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
   private onAlreadyChangedClick_(e: Event) {
     // TODO(crbug.com/1401001): Show edit disclaimer.
     e.preventDefault();
+  }
+
+  private onEditPasswordDialogClosed_() {
+    this.showEditPasswordDialog_ = false;
+    this.item.password = undefined;
+    this.item.note = undefined;
   }
 }
 

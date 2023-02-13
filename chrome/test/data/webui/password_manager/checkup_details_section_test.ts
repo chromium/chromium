@@ -615,4 +615,78 @@ suite('CheckupDetailsSectionTest', function() {
                 loadTimeData.getString('changePasswordInApp'),
                 changeInAppString.textContent?.trim());
           }));
+
+  test('Edit action button works', async function() {
+    Router.getInstance().navigateTo(
+        Page.CHECKUP_DETAILS, CheckupSubpage.COMPROMISED);
+    const credential = makeInsecureCredential({
+      id: 0,
+      url: 'test.com',
+      username: 'viking',
+      types: [
+        CompromiseType.LEAKED,
+      ],
+    });
+    credential.affiliatedDomains =
+        [{name: 'test.com', url: 'https://test.com/'}];
+    passwordManager.data.insecureCredentials = [credential];
+
+    const section = document.createElement('checkup-details-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getInsecureCredentials');
+    await flushTasks();
+
+    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    assertTrue(!!listItem);
+
+    // Click more actions button.
+    listItem.$.more.click();
+    // Set up response for requestCredentialsDetails() to simulate successful
+    // reauth.
+    passwordManager.setRequestCredentialsDetailsResponse([credential]);
+
+    section.$.menuEditPassword.click();
+    await passwordManager.whenCalled('requestCredentialsDetails');
+    await flushTasks();
+
+    const editDialog =
+        listItem.shadowRoot!.querySelector('edit-password-dialog');
+    assertTrue(!!editDialog);
+    assertTrue(editDialog.$.dialog.open);
+  });
+
+  test('No edit if auth failed', async function() {
+    Router.getInstance().navigateTo(
+        Page.CHECKUP_DETAILS, CheckupSubpage.COMPROMISED);
+    const credential = makeInsecureCredential({
+      id: 0,
+      url: 'test.com',
+      username: 'viking',
+      types: [
+        CompromiseType.LEAKED,
+      ],
+    });
+    credential.affiliatedDomains =
+        [{name: 'test.com', url: 'https://test.com/'}];
+    passwordManager.data.insecureCredentials = [credential];
+
+    const section = document.createElement('checkup-details-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getInsecureCredentials');
+    await flushTasks();
+
+    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    assertTrue(!!listItem);
+
+    // Click more actions button.
+    listItem.$.more.click();
+
+    section.$.menuEditPassword.click();
+    await passwordManager.whenCalled('requestCredentialsDetails');
+    await flushTasks();
+
+    const editDialog =
+        listItem.shadowRoot!.querySelector('edit-password-dialog');
+    assertFalse(!!editDialog);
+  });
 });
