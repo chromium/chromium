@@ -40,7 +40,6 @@ class MockTestResultsFetcher(TestResultsFetcher):
     def __init__(self, web, luci_auth, builders=None):
         super(MockTestResultsFetcher, self).__init__(web, luci_auth, builders)
         self._canned_results = {}
-        self._canned_artifacts_resultdb = {}
         self._canned_retry_summary_json = {}
         self._webdriver_results = {}
         self.fetched_builds = []
@@ -59,27 +58,16 @@ class MockTestResultsFetcher(TestResultsFetcher):
             **kwargs,
         )
 
-    def gather_results(self, build: Build, step_name: str) -> WebTestResults:
+    def gather_results(self,
+                       build: Build,
+                       step_name: str,
+                       exclude_exonerated: bool = True) -> WebTestResults:
         return self.fetch_results(build, step_name=step_name)
 
     def fetch_results(self, build, full=False, step_name=None):
         step = BuilderStep(build=build, step_name=step_name)
         self.fetched_builds.append(step)
         return self._canned_results.get(step)
-
-    def set_results_to_resultdb(self, build, results):
-        # The step name is not relevant for ResultDB, so just set it to None.
-        step = BuilderStep(build, step_name=None)
-        self._canned_results[step] = results
-
-    def fetch_results_from_resultdb(self, builds, predicate):
-        rv = []
-        for build in builds:
-            step = BuilderStep(build, step_name=None)
-            results = self._canned_results.get(step)
-            if results:
-                rv.extend(results)
-        return rv
 
     def set_webdriver_test_results(self, build, m, results):
         self._webdriver_results[(build, m)] = results

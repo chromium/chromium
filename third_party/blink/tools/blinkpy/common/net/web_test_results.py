@@ -87,6 +87,7 @@ class WebTestResult:
     def is_missing_audio(self):
         return self._result_dict.get('is_missing_audio', False)
 
+    @memoized
     def actual_results(self):
         return self._result_dict['actual'].split()
 
@@ -113,6 +114,10 @@ class WebTestResult:
     def is_missing_baseline(self):
         return (self.is_missing_image() or self.is_missing_text()
                 or self.is_missing_audio())
+
+    @property
+    def attempts(self) -> int:
+        return len(self.actual_results())
 
 
 def _flatten_test_results_trie(trie, sep: str = '/'):
@@ -155,10 +160,13 @@ class WebTestResults:
         return cls(results, **kwargs)
 
     @classmethod
-    def from_rdb_responses(cls, test_results_by_name, artifacts_by_name,
+    def from_rdb_responses(cls,
+                           test_results_by_name,
+                           artifacts_by_name=None,
                            **kwargs):
         """Creates a WebTestResults object from raw ResultDB RPC response data.
         """
+        artifacts_by_name = artifacts_by_name or collections.defaultdict(list)
         results = []
         for test_name, raw_results in test_results_by_name.items():
             actual = ' '.join(

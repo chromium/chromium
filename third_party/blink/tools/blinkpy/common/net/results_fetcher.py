@@ -85,7 +85,10 @@ class TestResultsFetcher:
         return self.accumulated_results_url_base(builder_name)
 
     @memoized
-    def gather_results(self, build: Build, step_name: str) -> WebTestResults:
+    def gather_results(self,
+                       build: Build,
+                       step_name: str,
+                       exclude_exonerated: bool = True) -> WebTestResults:
         """Gather all web test results on a given build step from ResultDB."""
         assert build.build_id, '%s must set a build ID' % build
         suite = step_name
@@ -94,7 +97,7 @@ class TestResultsFetcher:
 
         test_result_predicate = {
             'expectancy': 'VARIANTS_WITH_ONLY_UNEXPECTED_RESULTS',
-            'excludeExonerated': True,
+            'excludeExonerated': exclude_exonerated,
             'variant': {
                 'contains': {
                     'def': {
@@ -113,9 +116,6 @@ class TestResultsFetcher:
                 'artifactIdRegexp': 'actual_.*'
             })
         artifacts_by_name = self._group_artifacts_by_test_name(artifacts)
-        # TODO(crbug.com/1213998): Determine how to set `interrupted`. This
-        # information may be available in Buildbucket:
-        #   https://source.chromium.org/chromium/_/chromium/infra/luci/luci-go/+/408fe93a2f6fb252e789058c6083d2b678934b24:buildbucket/proto/common.proto;l=150-157
         return WebTestResults.from_rdb_responses(
             test_results_by_name,
             artifacts_by_name,
@@ -196,11 +196,6 @@ class TestResultsFetcher:
     def accumulated_results_url_base(self, builder_name):
         return self.builder_results_url_base(
             builder_name) + '/results/layout-test-results'
-
-    def fetch_results_from_resultdb(self, builds, predicate):
-        """Returns a list of test results from ResultDB."""
-        build_ids = [build.build_id for build in builds]
-        return self._resultdb_client.query_test_results(build_ids, predicate)
 
     @memoized
     def fetch_results(self, build, full=False, step_name=None):
