@@ -9,17 +9,17 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.rust",
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.rust",
+    pool = ci.DEFAULT_POOL,
     builderless = False,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     notifies = ["chrome-rust-experiments"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(

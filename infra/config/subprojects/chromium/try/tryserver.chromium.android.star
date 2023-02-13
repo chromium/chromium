@@ -11,18 +11,18 @@ load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.android",
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.android",
+    pool = try_.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     compilator_cores = 32,
     compilator_goma_jobs = goma.jobs.J300,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 4,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.list_view(
@@ -57,7 +57,6 @@ try_.builder(
 try_.orchestrator_builder(
     name = "android-12-x64-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    compilator = "android-12-x64-rel-compilator",
     mirrors = [
         "ci/android-12-x64-rel",
     ],
@@ -66,11 +65,12 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    main_list_view = "try",
-    tryjob = try_.job(),
+    compilator = "android-12-x64-rel-compilator",
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -101,9 +101,8 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-arm64-rel",
-    description_html = "This builder may trigger tests on multiple Android versions.",
     branch_selector = branches.STANDARD_MILESTONE,
-    compilator = "android-arm64-rel-compilator",
+    description_html = "This builder may trigger tests on multiple Android versions.",
     mirrors = [
         "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
         "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
@@ -113,22 +112,22 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    main_list_view = "try",
     check_for_flakiness = True,
-    tryjob = try_.job(),
+    compilator = "android-arm64-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
     use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
 )
 
 try_.orchestrator_builder(
     name = "android-arm64-rel-inverse-fyi",
-    compilator = "android-arm64-rel-compilator",
     mirrors = [
         "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
         "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
@@ -139,21 +138,22 @@ try_.orchestrator_builder(
         ),
     ),
     check_for_flakiness = True,
+    compilator = "android-arm64-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
         "chromium_rts.inverted_rts_bail_early": 100,
     },
-    use_orchestrator_pool = True,
     use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
+    use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
     name = "android-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
     check_for_flakiness = True,
     goma_backend = goma.backend.RBE_PROD,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -258,8 +258,8 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-10-tests",
     ],
-    main_list_view = "try",
     check_for_flakiness = True,
+    main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
@@ -341,7 +341,6 @@ try_.builder(
 try_.orchestrator_builder(
     name = "android-nougat-x86-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    compilator = "android-nougat-x86-rel-compilator",
     mirrors = [
         "ci/android-nougat-x86-rel",
     ],
@@ -350,22 +349,22 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    main_list_view = "try",
     check_for_flakiness = True,
-    tryjob = try_.job(),
+    compilator = "android-nougat-x86-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
     use_java_coverage = True,
-    coverage_test_types = ["unit", "overall"],
 )
 
 try_.orchestrator_builder(
     name = "android-nougat-x86-rel-inverse-fyi",
-    compilator = "android-nougat-x86-rel-compilator",
     mirrors = [
         "ci/android-nougat-x86-rel",
     ],
@@ -375,22 +374,23 @@ try_.orchestrator_builder(
         ),
     ),
     check_for_flakiness = True,
+    compilator = "android-nougat-x86-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
         "chromium_rts.inverted_rts_bail_early": 100,
     },
-    use_orchestrator_pool = True,
     use_java_coverage = True,
-    coverage_test_types = ["unit", "overall"],
+    use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
     name = "android-nougat-x86-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     cores = 64 if settings.is_main else 32,
-    main_list_view = "try",
     check_for_flakiness = True,
     goma_backend = goma.backend.RBE_PROD,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -420,8 +420,8 @@ try_.builder(
     ],
     builderless = False,
     cores = 16,
-    main_list_view = "try",
     check_for_flakiness = True,
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "chrome/android/features/vr/.+",
@@ -573,9 +573,9 @@ try_.builder(
         "ci/Cast Android (dbg)",
     ],
     builderless = not settings.is_main,
+    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
     tryjob = try_.job(),
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -707,9 +707,9 @@ try_.gpu.optional_tests_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    main_list_view = "try",
     check_for_flakiness = True,
     goma_jobs = goma.jobs.J150,
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             cq.location_filter(path_regexp = "cc/.+"),

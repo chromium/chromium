@@ -11,15 +11,15 @@ load("//lib/consoles.star", "consoles")
 load("//lib/structs.star", "structs")
 
 ci.defaults.set(
-    builder_group = "chromium.fyi",
     executable = ci.DEFAULT_EXECUTABLE,
-    cores = 8,
+    builder_group = "chromium.fyi",
     pool = ci.DEFAULT_POOL,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    cores = 8,
     execution_timeout = 10 * time.hour,
     priority = ci.DEFAULT_FYI_PRIORITY,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -470,6 +470,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "mac-fieldtrial-tester",
+    triggered_by = ["ci/mac-arm64-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -482,7 +483,6 @@ ci.thin_tester(
             target_bits = 64,
         ),
     ),
-    triggered_by = ["ci/mac-arm64-rel"],
     cores = None,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
@@ -567,6 +567,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "linux-lacros-tester-fyi-rel",
+    triggered_by = ["linux-lacros-builder-fyi-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(config = "chromium"),
@@ -578,7 +579,6 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = ["linux-lacros-builder-fyi-rel"],
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
@@ -608,6 +608,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "linux-lacros-dbg-tests-fyi",
+    triggered_by = ["linux-lacros-dbg-fyi"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(config = "chromium"),
@@ -619,7 +620,6 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = ["linux-lacros-dbg-fyi"],
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
@@ -649,6 +649,8 @@ ci.builder(
 
 ci.builder(
     name = "android-perfetto-rel",
+    schedule = "triggered",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -665,13 +667,11 @@ ci.builder(
             config = "x64_builder",
         ),
     ),
-    triggered_by = [],
     builderless = True,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "android",
     ),
-    schedule = "triggered",
 )
 
 ci.builder(
@@ -694,6 +694,8 @@ ci.builder(
 
 ci.builder(
     name = "mac-perfetto-rel",
+    schedule = "triggered",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -705,13 +707,11 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    triggered_by = [],
     builderless = True,
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
-    schedule = "triggered",
 )
 
 ci.builder(
@@ -834,6 +834,8 @@ ci.builder(
 
 fyi_ios_builder(
     name = "ios-wpt-fyi-rel",
+    schedule = "with 5h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -849,18 +851,17 @@ fyi_ios_builder(
             target_platform = "ios",
         ),
     ),
-    triggered_by = [],
     builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
-    schedule = "with 5h interval",
 )
 
 # This is launching & collecting entirely isolated tests.
 # OS shouldn't matter.
 ci.thin_tester(
     name = "mac-osxbeta-rel",
+    triggered_by = ["ci/Mac Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -878,7 +879,6 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = ["ci/Mac Builder (dbg)"],
     builderless = False,
     cores = 12,
     os = os.MAC_13,
@@ -999,6 +999,8 @@ ci.builder(
 
 ci.builder(
     name = "win-perfetto-rel",
+    schedule = "triggered",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1010,13 +1012,11 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    triggered_by = [],
     builderless = True,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "win",
     ),
-    schedule = "triggered",
 )
 
 # TODO(crbug.com/1320004): Remove this builder after experimentation.
@@ -1055,6 +1055,8 @@ ci.builder(
 
 ci.builder(
     name = "mac-upload-perfetto",
+    schedule = "with 3h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
         chromium_config = builder_config.chromium_config(
@@ -1065,7 +1067,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = [],
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
@@ -1073,11 +1074,12 @@ ci.builder(
         category = "perfetto",
         short_name = "mac",
     ),
-    schedule = "with 3h interval",
 )
 
 ci.builder(
     name = "win-upload-perfetto",
+    schedule = "with 3h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
         chromium_config = builder_config.chromium_config(
@@ -1088,7 +1090,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = [],
     builderless = True,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -1096,7 +1097,6 @@ ci.builder(
         short_name = "win",
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-    schedule = "with 3h interval",
 )
 
 ci.builder(
@@ -1310,7 +1310,6 @@ ci.builder(
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x14main,
     console_view_entry = consoles.console_view_entry(
         category = "ios",
         short_name = "cmp",
@@ -1325,6 +1324,7 @@ ci.builder(
     },
     reclient_cache_silo = "Comparison ios - cache siloed",
     reclient_instance = reclient.instance.TEST_TRUSTED,
+    xcode = xcode.x14main,
 )
 
 ci.builder(
@@ -1478,7 +1478,6 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     cores = None,
     os = os.MAC_DEFAULT,
     ssd = True,
-    xcode = xcode.x14main,
     console_view_entry = consoles.console_view_entry(
         category = "ios|cq",
         short_name = "cmp",
@@ -1494,6 +1493,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     reclient_cache_silo = "Comparison ios CQ - cache siloed",
     reclient_instance = reclient.instance.TEST_UNTRUSTED,
     reclient_jobs = 150,
+    xcode = xcode.x14main,
 )
 
 # Build Perf builders use CQ reclient instance and high reclient jobs/cores and
@@ -1536,11 +1536,11 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "and",
     ),
-    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     execution_timeout = 10 * time.hour,
     goma_backend = goma.backend.RBE_PROD,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
 ci.builder(
@@ -1573,11 +1573,11 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "lnx",
     ),
-    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     execution_timeout = 6 * time.hour,
     goma_backend = goma.backend.RBE_PROD,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     use_clang_coverage = True,
 )
 
@@ -1611,16 +1611,17 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "buildperf",
         short_name = "win",
     ),
-    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     execution_timeout = 6 * time.hour,
     goma_backend = goma.backend.RBE_PROD,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     use_clang_coverage = True,
 )
 
 ci.builder(
     name = "Linux Builder (j-500) (reclient)",
+    schedule = "triggered",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1643,7 +1644,6 @@ ci.builder(
     reclient_rewrapper_env = {
         "RBE_platform": "container-image=docker://gcr.io/cloud-marketplace/google/rbe-ubuntu16-04@sha256:b4dad0bfc4951d619229ab15343a311f2415a16ef83bcaa55b44f4e2bf1cf635,pool=linux-e2-custom_0",
     },
-    schedule = "triggered",
 )
 
 ci.builder(
@@ -1789,6 +1789,8 @@ fyi_mac_builder(
 
 fyi_mac_builder(
     name = "mac10.15-wpt-content-shell-fyi-rel",
+    schedule = "with 5h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1801,18 +1803,18 @@ fyi_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    triggered_by = [],
     builderless = False,
-    os = os.MAC_ANY,
     cores = None,
+    os = os.MAC_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
-    schedule = "with 5h interval",
 )
 
 fyi_mac_builder(
     name = "mac11-wpt-content-shell-fyi-rel",
+    schedule = "with 5h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1825,18 +1827,18 @@ fyi_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    triggered_by = [],
     builderless = False,
-    os = os.MAC_ANY,
     cores = None,
+    os = os.MAC_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
-    schedule = "with 5h interval",
 )
 
 fyi_mac_builder(
     name = "mac12-arm64-wpt-content-shell-fyi-rel",
+    schedule = "with 5h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1845,23 +1847,23 @@ fyi_mac_builder(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
-            target_arch = builder_config.target_arch.ARM,
         ),
     ),
-    triggered_by = [],
     builderless = False,
-    os = os.MAC_ANY,
     cores = None,
+    os = os.MAC_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
-    schedule = "with 5h interval",
 )
 
 fyi_mac_builder(
     name = "mac12-wpt-content-shell-fyi-rel",
+    schedule = "with 5h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1874,18 +1876,19 @@ fyi_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    triggered_by = [],
     builderless = False,
-    os = os.MAC_ANY,
     cores = None,
+    os = os.MAC_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
-    schedule = "with 5h interval",
 )
 
 fyi_mac_builder(
     name = "mac13-wpt-content-shell-fyi-rel",
+    # TODO(crbug.com/1385202): Enable scheduler when machine has been allocated.
+    schedule = "with 5h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1898,15 +1901,12 @@ fyi_mac_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    triggered_by = [],
     builderless = False,
-    os = os.MAC_ANY,
     cores = None,
+    os = os.MAC_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
-    # TODO(crbug.com/1385202): Enable scheduler when machine has been allocated.
-    schedule = "with 5h interval",
 )
 
 ci.builder(
@@ -2024,6 +2024,7 @@ ci.builder(
 ci.builder(
     name = "win-celab-builder-rel",
     executable = "recipe:celab",
+    schedule = "0 0,6,12,18 * * *",
     triggered_by = [],
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
@@ -2037,11 +2038,12 @@ ci.builder(
         "tests": "*",
     },
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-    schedule = "0 0,6,12,18 * * *",
 )
 
 fyi_ios_builder(
     name = "ios-m1-simulator",
+    schedule = "0 1,5,9,13,17,21 * * *",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -2054,14 +2056,12 @@ fyi_ios_builder(
             target_platform = builder_config.target_platform.IOS,
         ),
     ),
-    triggered_by = [],
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|iOSM1",
         short_name = "iosM1",
     ),
-    schedule = "0 1,5,9,13,17,21 * * *",
 )
 
 fyi_ios_builder(
@@ -2093,6 +2093,7 @@ fyi_ios_builder(
 
 fyi_ios_builder(
     name = "ios-m1-simulator-cronet",
+    schedule = "0 1,5,9,13,17,21 * * *",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -2111,7 +2112,6 @@ fyi_ios_builder(
         category = "cronet",
         short_name = "m1",
     ),
-    schedule = "0 1,5,9,13,17,21 * * *",
 )
 
 fyi_ios_builder(
@@ -2138,6 +2138,8 @@ fyi_ios_builder(
 
 fyi_ios_builder(
     name = "ios-webkit-tot",
+    schedule = "0 1-23/6 * * *",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -2155,13 +2157,11 @@ fyi_ios_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = [],
-    xcode = xcode.x13wk,
     console_view_entry = consoles.console_view_entry(
         category = "iOS",
         short_name = "wk",
     ),
-    schedule = "0 1-23/6 * * *",
+    xcode = xcode.x13wk,
 )
 
 fyi_ios_builder(
@@ -2216,6 +2216,8 @@ fyi_ios_builder(
 
 fyi_ios_builder(
     name = "ios16-beta-simulator",
+    schedule = "0 0,4,8,12,16,20 * * *",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -2232,13 +2234,11 @@ fyi_ios_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = [],
     os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|iOS16",
         short_name = "ios16",
     ),
-    schedule = "0 0,4,8,12,16,20 * * *",
 )
 
 fyi_ios_builder(
@@ -2270,6 +2270,8 @@ fyi_ios_builder(
 
 fyi_ios_builder(
     name = "ios16-sdk-simulator",
+    schedule = "0 2,6,10,14,18,22 * * *",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
@@ -2286,14 +2288,12 @@ fyi_ios_builder(
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
-    triggered_by = [],
     os = os.MAC_DEFAULT,
-    xcode = xcode.x14betabots,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|iOS16",
         short_name = "sdk16",
     ),
-    schedule = "0 2,6,10,14,18,22 * * *",
+    xcode = xcode.x14betabots,
 )
 
 fyi_mac_builder(
@@ -2382,6 +2382,8 @@ ci.builder(
 
 ci.builder(
     name = "win10-wpt-content-shell-fyi-rel",
+    schedule = "with 5h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2393,18 +2395,18 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    triggered_by = [],
     builderless = True,
     os = os.WINDOWS_10,
     console_view_entry = consoles.console_view_entry(
         category = "win10",
     ),
     experimental = True,
-    schedule = "with 5h interval",
 )
 
 ci.builder(
     name = "win11-wpt-content-shell-fyi-rel",
+    schedule = "with 5h interval",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2416,7 +2418,6 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    triggered_by = [],
     builderless = True,
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
@@ -2426,7 +2427,6 @@ ci.builder(
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
-    schedule = "with 5h interval",
 )
 
 ci.builder(

@@ -29,25 +29,25 @@ luci.bucket(
 
 ci.defaults.set(
     bucket = "reclient",
-    builder_group = "chromium.reclient.fyi",
     executable = "recipe:chromium",
     triggered_by = ["chromium-gitiles-trigger"],
+    builder_group = "chromium.reclient.fyi",
+    pool = "luci.chromium.ci",
     cores = 8,
     cpu = cpu.X86_64,
-    pool = "luci.chromium.ci",
     free_space = builders.free_space.standard,
-    service_account = (
-        "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
-    ),
     build_numbers = True,
     execution_timeout = 3 * time.hour,
     goma_backend = None,
+    service_account = (
+        "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
+    ),
 )
 
 consoles.console_view(
     name = "chromium.reclient.fyi",
-    header = HEADER,
     repo = "https://chromium.googlesource.com/chromium/src",
+    header = HEADER,
     include_experimental_builds = True,
 )
 
@@ -298,8 +298,8 @@ fyi_reclient_staging_builder(
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
-            cros_boards_with_qemu_images = "amd64-generic-vm",
             target_cros_boards = ["amd64-generic"],
+            cros_boards_with_qemu_images = "amd64-generic-vm",
         ),
     ),
     os = os.LINUX_DEFAULT,
@@ -320,8 +320,8 @@ fyi_reclient_test_builder(
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
-            cros_boards_with_qemu_images = "amd64-generic-vm",
             target_cros_boards = ["amd64-generic"],
+            cros_boards_with_qemu_images = "amd64-generic-vm",
         ),
     ),
     os = os.LINUX_DEFAULT,
@@ -346,12 +346,12 @@ fyi_reclient_test_builder(
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x14main,
     console_view_category = "ios",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
+    xcode = xcode.x14main,
 )
 
 fyi_reclient_test_builder(
@@ -372,13 +372,13 @@ fyi_reclient_test_builder(
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x14main,
     console_view_category = "ios",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
     reclient_scandeps_server = True,
+    xcode = xcode.x14main,
 )
 
 fyi_reclient_staging_builder(
@@ -399,12 +399,12 @@ fyi_reclient_staging_builder(
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x14main,
     console_view_category = "ios",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
+    xcode = xcode.x14main,
 )
 
 fyi_reclient_staging_builder(
@@ -529,16 +529,16 @@ ci.builder(
     name = "Windows Cross deterministic",
     description_html = "verify artifacts. should be removed after the migration. b/260228493",
     executable = "recipe:swarming/deterministic_build",
+    builderless = True,
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "win",
         short_name = "detcross",
     ),
-    builderless = True,
     execution_timeout = 12 * time.hour,
-    cores = 32,
-    os = os.WINDOWS_DEFAULT,
-    service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
 # TODO(b/260228493) Remove once CI backend is switched
@@ -558,17 +558,17 @@ ci.builder(
         ),
     ),
     builderless = True,
-    execution_timeout = 12 * time.hour,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "win",
         short_name = "compcross",
     ),
-    reclient_ensure_verified = True,
-    reclient_jobs = None,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_rewrapper_env = {"RBE_compare": "true"},
+    execution_timeout = 12 * time.hour,
     reclient_disable_bq_upload = True,
+    reclient_ensure_verified = True,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = None,
+    reclient_rewrapper_env = {"RBE_compare": "true"},
     service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
 )

@@ -14,11 +14,11 @@ consoles.list_view(
 )
 
 defaults.set(
-    executable = "recipe:perf/crossbench",
     bucket = "try",
+    executable = "recipe:perf/crossbench",
     pool = "luci.flex.try",
-    list_view = "crossbench.try",
     builderless = True,
+    list_view = "crossbench.try",
 )
 
 builders.builder(

@@ -9,13 +9,12 @@ load("//lib/try.star", "try_")
 
 try_.defaults.set(
     bucket = "try",
-    builder_group = "tryserver.chromium.swangle",
     executable = "recipe:angle_chromium_trybot",
+    builder_group = "tryserver.chromium.swangle",
+    pool = "luci.chromium.try",
     builderless = True,
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
-    pool = "luci.chromium.try",
-    service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     build_numbers = True,
     caches = [
         swarming.cache(
@@ -30,6 +29,7 @@ try_.defaults.set(
     expiration_timeout = 2 * time.hour,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     subproject_list_view = "luci.chromium.try",
     task_template_canary_percentage = 5,
 )
@@ -91,7 +91,6 @@ swangle_linux_builder(
 swangle_mac_builder(
     name = "mac-swangle-chromium-try-x64",
     executable = "recipe:chromium_trybot",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/mac-swangle-chromium-x64",
     ],
@@ -100,6 +99,7 @@ swangle_mac_builder(
     ),
     pool = "luci.chromium.swangle.chromium.mac.x64.try",
     execution_timeout = 6 * time.hour,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 swangle_windows_builder(

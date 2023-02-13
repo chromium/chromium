@@ -9,15 +9,15 @@ load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.dawn",
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.dawn",
+    pool = try_.DEFAULT_POOL,
     builderless = False,
     os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
-    service_account = try_.gpu.SERVICE_ACCOUNT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    service_account = try_.gpu.SERVICE_ACCOUNT,
 )
 
 consoles.list_view(
@@ -28,10 +28,10 @@ consoles.list_view(
 try_.builder(
     name = "dawn-android-arm-deps-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/Dawn Android arm DEPS Release (Pixel 4)",
     ],
+    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
@@ -175,10 +175,10 @@ try_.builder(
 
 try_.builder(
     name = "android-dawn-arm-rel",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/Dawn Android arm Release (Pixel 4)",
     ],
+    goma_backend = goma.backend.RBE_PROD,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -198,7 +198,6 @@ try_.builder(
 
 try_.builder(
     name = "mac-dawn-rel",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/Dawn Mac x64 Builder",
         # Not enough capacity on Mac AMD https://crbug.com/1380184.
@@ -206,6 +205,7 @@ try_.builder(
         "ci/Dawn Mac x64 Release (Intel)",
     ],
     os = os.MAC_ANY,
+    goma_backend = goma.backend.RBE_PROD,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -213,14 +213,14 @@ try_.builder(
 
 try_.builder(
     name = "dawn-try-mac-amd-exp",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/Dawn Mac x64 Builder",
         "ci/Dawn Mac x64 Experimental Release (AMD)",
     ],
+    pool = "luci.chromium.gpu.mac.retina.amd.try",
     builderless = True,
     os = os.MAC_ANY,
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
+    goma_backend = goma.backend.RBE_PROD,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -228,14 +228,14 @@ try_.builder(
 
 try_.builder(
     name = "dawn-try-mac-intel-exp",
-    goma_backend = goma.backend.RBE_PROD,
     mirrors = [
         "ci/Dawn Mac x64 Builder",
         "ci/Dawn Mac x64 Experimental Release (Intel)",
     ],
+    pool = "luci.chromium.gpu.mac.mini.intel.try",
     builderless = True,
     os = os.MAC_ANY,
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
+    goma_backend = goma.backend.RBE_PROD,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -247,9 +247,9 @@ try_.builder(
         "ci/Dawn Win10 x64 Builder",
         "ci/Dawn Win10 x64 Experimental Release (Intel)",
     ],
+    pool = "luci.chromium.gpu.win10.intel.try",
     builderless = True,
     os = os.WINDOWS_ANY,
-    pool = "luci.chromium.gpu.win10.intel.try",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -261,9 +261,9 @@ try_.builder(
         "ci/Dawn Win10 x86 Builder",
         "ci/Dawn Win10 x86 Experimental Release (Intel)",
     ],
+    pool = "luci.chromium.gpu.win10.intel.try",
     builderless = True,
     os = os.WINDOWS_ANY,
-    pool = "luci.chromium.gpu.win10.intel.try",
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),

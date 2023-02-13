@@ -11,18 +11,18 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.win",
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.win",
+    pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.WINDOWS_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
     main_console_view = "main",
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -40,6 +40,7 @@ consoles.console_view(
 
 ci.builder(
     name = "WebKit Win10",
+    triggered_by = ["Win Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -56,7 +57,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
-    triggered_by = ["Win Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "misc",
         short_name = "wbk",
@@ -116,6 +116,7 @@ ci.builder(
 
 ci.builder(
     name = "Win10 Tests x64 (dbg)",
+    triggered_by = ["Win x64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -131,7 +132,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
-    triggered_by = ["Win x64 Builder (dbg)"],
     # Too flaky. See crbug.com/876224 for more details.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
@@ -200,6 +200,7 @@ ci.builder(
 ci.builder(
     name = "Win10 Tests x64",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/Win x64 Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -219,7 +220,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
-    triggered_by = ["ci/Win x64 Builder"],
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
         short_name = "w10",
@@ -229,6 +229,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "Win11 Tests x64",
+    triggered_by = ["ci/Win x64 Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -248,7 +249,6 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
-    triggered_by = ["ci/Win x64 Builder"],
     # TODO(kuanhuang): Add back to sheriff rotation after verified green.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,

@@ -8,11 +8,10 @@ load("//lib/try.star", "try_")
 try_.defaults.set(
     bucket = "try",
     executable = "recipe:chromium_trybot",
+    pool = "luci.chromium.try",
     cores = 8,
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
-    pool = "luci.chromium.try",
-    service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     build_numbers = True,
     caches = [
         swarming.cache(
@@ -26,6 +25,7 @@ try_.defaults.set(
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
     expiration_timeout = 2 * time.hour,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     subproject_list_view = "luci.chromium.try",
     task_template_canary_percentage = 5,
 )
