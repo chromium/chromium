@@ -83,6 +83,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     @Test
     @MediumTest
     @Feature({"Downloads"})
+    @DisabledTest(message = "crbug.com/1415500")
     public void testDefaultDialogPositiveButtonClickThrough() {
         startDownload(/*hasSDCard=*/true);
 
