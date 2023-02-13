@@ -165,7 +165,7 @@ TEST_P(ScopeProximityTest, All) {
   ASSERT_TRUE(target);
 
   SelectorChecker checker(SelectorChecker::kResolvingStyle);
-  SelectorChecker::StyleScopeFrame style_scope_frame(*target);
+  StyleScopeFrame style_scope_frame(*target);
   SelectorChecker::SelectorCheckingContext context(target);
   context.selector = style_rule->FirstSelector();
   context.style_scope = scope;

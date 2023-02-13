@@ -675,6 +675,8 @@ blink_core_sources_css = [
   "style_rule_namespace.h",
   "style_scope.cc",
   "style_scope.h",
+  "style_scope_frame.cc",
+  "style_scope_frame.h",
   "style_sheet.cc",
   "style_sheet.h",
   "style_sheet_candidate.cc",

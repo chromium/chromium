@@ -2003,7 +2003,7 @@ bool SelectorChecker::CheckPseudoScope(const SelectorCheckingContext& context,
   Element& element = *context.element;
   if (RuntimeEnabledFeatures::CSSScopeEnabled() && context.style_scope) {
     DCHECK(context.style_scope_frame);
-    const Activations& activations =
+    const StyleScopeActivations& activations =
         EnsureActivations(context, *context.style_scope);
     // The same @scope may produce multiple activations, but only (at most)
     // one activation per element in the ancestor chain. Therefore we do not
@@ -2192,12 +2192,7 @@ bool SelectorChecker::MatchesSpatialNavigationInterestPseudoClass(
   return interested_element && *interested_element == element;
 }
 
-void SelectorChecker::StyleScopeActivation::Trace(
-    blink::Visitor* visitor) const {
-  visitor->Trace(root);
-}
-
-const SelectorChecker::Activations& SelectorChecker::EnsureActivations(
+const StyleScopeActivations& SelectorChecker::EnsureActivations(
     const SelectorCheckingContext& context,
     const StyleScope& style_scope) const {
   DCHECK(context.style_scope_frame);
@@ -2212,16 +2207,16 @@ const SelectorChecker::Activations& SelectorChecker::EnsureActivations(
   //
   // TODO(crbug.com/1280240): Pass context.scope instead of nullptr for the
   // default activation.
-  const Activations* outer_activations =
+  const StyleScopeActivations* outer_activations =
       style_scope.Parent()
           ? &EnsureActivations(context, *style_scope.Parent())
-          : MakeGarbageCollected<Activations>(
+          : MakeGarbageCollected<StyleScopeActivations>(
                 1, StyleScopeActivation{nullptr /* scope */,
                                         std::numeric_limits<unsigned>::max(),
                                         false});
 
   auto entry = context.style_scope_frame->data_.insert(&style_scope, nullptr);
-  Member<const Activations>& activations = entry.stored_value->value;
+  Member<const StyleScopeActivations>& activations = entry.stored_value->value;
   if (entry.is_new_entry) {
     activations = CalculateActivations(context.style_scope_frame->element_,
                                        style_scope, *outer_activations);
@@ -2230,17 +2225,17 @@ const SelectorChecker::Activations& SelectorChecker::EnsureActivations(
   return *activations;
 }
 
-const SelectorChecker::Activations* SelectorChecker::CalculateActivations(
+const StyleScopeActivations* SelectorChecker::CalculateActivations(
     Element& element,
     const StyleScope& style_scope,
-    const Activations& outer_activations) const {
-  auto* activations = MakeGarbageCollected<Activations>();
+    const StyleScopeActivations& outer_activations) const {
+  auto* activations = MakeGarbageCollected<StyleScopeActivations>();
 
   if (outer_activations.empty()) {
     return activations;
   }
 
-  const Activations* parent_activations = nullptr;
+  const StyleScopeActivations* parent_activations = nullptr;
 
   // Remain within the outer scope. I.e. don't look at elements above the
   // highest outer activation.
