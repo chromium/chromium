@@ -2716,26 +2716,31 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
         &configuration_file));
     command_line->AppendSwitchPath(chromeos::switches::kFakeOobeConfiguration,
                                    configuration_file);
+
+    // Pass command line so that auto enrollment check screen is shown also on
+    // non-official test builds. Rollback doesn't really care about this screen,
+    // but wizard controller tests do not allow for "not caring" if a screen is
+    // shown or not. The mocks are not nice.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableForcedReEnrollment,
+        policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
   }
 
   FakeRollbackNetworkConfig* network_config_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Disabled due to crbug.com/1414116.
-#define MAYBE_AdvanceToEnrollmentAfterRollback \
-  DISABLED_AdvanceToEnrollmentAfterRollback
-#else
-#define MAYBE_AdvanceToEnrollmentAfterRollback AdvanceToEnrollmentAfterRollback
-#endif
+// Ensure that enrollment screen is triggered after auto enrollment check
+// screen.
 IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
-                       MAYBE_AdvanceToEnrollmentAfterRollback) {
+                       AdvanceToEnrollmentAfterRollback) {
   CheckCurrentScreen(WelcomeView::kScreenId);
 
-  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
-
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(1);
   WizardController::default_controller()->AdvanceToScreen(
       AutoEnrollmentCheckScreenView::kScreenId);
+
+  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
+  mock_auto_enrollment_check_screen_->ExitScreen();
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
 }
 
