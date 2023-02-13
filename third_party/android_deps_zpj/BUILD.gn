@@ -130,3 +130,52 @@ android_aar_prebuilt("com_zpj_fragmentation_dialog_java") {
     "//third_party/androidx:androidx_cardview_cardview_java",
   ]
 }
+
+android_aar_prebuilt("com_zpj_fragmentation_dialog_imageviewer_java") {
+  aar_path = "libs/ZFragmentation-Dialog-ImageViewer.aar"
+  info_path = "libs/ZFragmentation-Dialog-ImageViewer.info"
+  deps = [
+    ":com_zpj_utils_java",
+    ":com_zpj_fragmentation_dialog_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_transition_transition_java",
+    "//third_party/androidx:androidx_exifinterface_exifinterface_java",
+  ]
+}
+
+android_aar_prebuilt("com_zpj_http_java") {
+  aar_path = "libs/ZHttp-1.0.0.aar"
+  info_path = "libs/ZHttp.info"
+  deps = []
+}
+
+android_aar_prebuilt("glide_java") {
+  aar_path = "libs/Glide-4.10.0.aar"
+  info_path = "libs/Glide.info"
+  deps = [
+    ":glide_gifdecoder_java",
+    ":glide_annotations_java",
+    ":glide_disklrucache_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+  ]
+}
+
+android_aar_prebuilt("glide_gifdecoder_java") {
+  aar_path = "libs/Glide-gifdecoder-4.10.0.aar"
+  info_path = "libs/Glide-gifdecoder.info"
+  deps = [
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+  ]
+}
+
+android_aar_prebuilt("glide_annotations_java") {
+  aar_path = "libs/Glide-annotations-4.10.0.aar"
+  info_path = "libs/Glide-annotations.info"
+  deps = []
+}
+
+android_aar_prebuilt("glide_disklrucache_java") {
+  aar_path = "libs/Glide-disklrucache-4.10.0.aar"
+  info_path = "libs/Glide-disklrucache.info"
+  deps = []
+}
