@@ -909,6 +909,61 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.AutoReauthn.BlockedByContentSettings"
+    enum="Boolean" expires_after="2023-08-09">
+  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether the FedCM auto re-authn call is blocked because the auto
+    re-auth content settings permission is disabled. Records at most one sample
+    per FedCM API with auto re-authn enabled: some failures could occur before
+    this metric is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.AutoReauthn.BlockedByEmbargo" enum="Boolean"
+    expires_after="2023-08-09">
+  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether the FedCM auto re-authn call is blocked because the auto
+    re-authn is under embargo, i.e. due to cooldown. Records at most one sample
+    per FedCM API with auto re-authn enabled: some failures could occur before
+    this metric is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.AutoReauthn.ReturningAccounts"
+    enum="FedCmReturningAccounts" expires_after="2023-08-09">
+  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether there was zero, one, or multiple returning accounts when a
+    site calls the FedCM API with autoReauthn: true. Records at most one sample
+    per failed API call: some failures could occur before this metric is
+    recorded.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.AutoReauthn.Succeeded" enum="Boolean"
+    expires_after="2023-08-09">
+  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether auto re-authn checks succeeded or not. The count would
+    provide roughly the number of FedCM re-authn attempts, the true count would
+    provide the number of times the re-authn UI is shown to the user, and the
+    false count would provide the number of attempts where auto re-authn was
+    blocked for some non-network related reason. Records at most one sample per
+    FedCM API with auto re-authn enabled: some failures could occur before this
+    metric is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.CancelReason" enum="FedCmCancelReason"
     expires_after="2023-07-23">
   <owner>pkotwicz@chromium.org</owner>
@@ -919,6 +974,17 @@ chromium-metrics-reviews@google.com.
     user selecting an account. This includes instances where the close action is
     less intentional such as the virtual keyboard showing trigerring the dialog
     close.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.ClosedSheetType.Desktop" enum="FedCmSheetType"
+    expires_after="2023-07-16">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the type of FedCM desktop UI sheet that is being displayed when the
+    user manually closes it. Records when the user closes this dialog, so at
+    most once per API call that results in UI being shown.
   </summary>
 </histogram>
 

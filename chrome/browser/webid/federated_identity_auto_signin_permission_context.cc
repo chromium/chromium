@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webid/federated_identity_auto_signin_permission_context.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,9 +30,13 @@ bool FederatedIdentityAutoSigninPermissionContext::HasAutoSigninPermission(
       host_content_settings_map_->GetDefaultContentSetting(
           ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION,
           /*provider_id=*/nullptr) != ContentSetting::CONTENT_SETTING_BLOCK;
+  UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.AutoReauthn.BlockedByContentSettings",
+                        !is_content_setting_allowed);
   bool is_embargoed = permission_autoblocker_->IsEmbargoed(
       relying_party_embedder.GetURL(),
       ContentSettingsType::FEDERATED_IDENTITY_AUTO_SIGNIN_PERMISSION);
+  UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.AutoReauthn.BlockedByEmbargo",
+                        is_embargoed);
   return is_content_setting_allowed && !is_embargoed;
 }
 

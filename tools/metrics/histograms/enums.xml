@@ -42420,6 +42420,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="34" label="WellKnownListEmpty"/>
 </enum>
 
+<enum name="FedCmReturningAccounts">
+  <int value="0" label="Zero returning accounts"/>
+  <int value="1" label="One returning account"/>
+  <int value="2" label="Multiple returning accounts"/>
+</enum>
+
 <enum name="FedCmRevokeStatus">
   <obsolete>
     Removed as of 06/2022. Revoke is deprecated.
@@ -42442,6 +42448,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="15" label="ManifestNotInManifestList"/>
   <int value="16" label="ManifestListTooBig"/>
   <int value="17" label="ThirdPartyCookiesBlocked"/>
+</enum>
+
+<enum name="FedCmSheetType">
+  <int value="0" label="Account selection"/>
+  <int value="1" label="Verifying"/>
+  <int value="2" label="Auto re-authn"/>
+  <int value="3" label="Sign in to IDP static"/>
 </enum>
 
 <enum name="FedCmSignInStateMatchStatus">

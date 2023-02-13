@@ -30,6 +30,16 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // https://www.w3.org/TR/appmanifest/#icon-masks
   static constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
 
+  // This enum is used for histograms. Do not remove or modify existing values,
+  // but you may add new values at the end and increase COUNT.
+  enum SheetType {
+    ACCOUNT_SELECTION = 0,
+    VERIFYING = 1,
+    AUTO_REAUTHN = 2,
+    SIGN_IN_TO_IDP_STATIC = 3,
+    COUNT = 4
+  };
+
   explicit FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate);
   ~FedCmAccountSelectionView() override;
 
@@ -85,7 +95,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
     // Shown after the user has granted permission while the id token is being
     // fetched.
-    VERIFYING
+    VERIFYING,
+
+    // Shown when the user is being shown a dialog that auto re-authn is
+    // happening.
+    AUTO_REAUTHN
   };
 
   // views::WidgetObserver:
@@ -102,8 +116,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void OnCloseButtonClicked(const ui::Event& event) override;
 
   void ShowVerifyingSheet(const Account& account,
-                          const IdentityProviderDisplayData& idp_display_data,
-                          bool auto_signin);
+                          const IdentityProviderDisplayData& idp_display_data);
+
+  // Returns the SheetType to be used for metrics reporting.
+  SheetType GetSheetType();
 
   // Closes the widget and notifies the delegate.
   void Close();

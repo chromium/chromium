@@ -1349,6 +1349,12 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninEmbargo) {
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
   EXPECT_TRUE(test_auto_signin_permission_delegate_->embargoed_origins_.count(
       OriginFromString(kRpUrl)));
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.AutoReauthn.ReturningAccounts",
+      static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ONE), 1);
 }
 
 // Test that auto sign-in with a single account where the account is a returning
@@ -1381,6 +1387,12 @@ TEST_F(FederatedAuthRequestImplTest,
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.AutoReauthn.ReturningAccounts",
+      static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ONE), 1);
 }
 
 // Test that auto sign-in with multiple accounts and a single returning user
@@ -1428,6 +1440,12 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_EQ(displayed_accounts()[0].id, kAccountIdPeter);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.AutoReauthn.ReturningAccounts",
+      static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ONE), 1);
 }
 
 // Test that auto sign-in with multiple accounts and multiple returning users
@@ -1477,6 +1495,14 @@ TEST_F(FederatedAuthRequestImplTest,
   ASSERT_EQ(displayed_accounts().size(), 3u);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 2);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
+                                       false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.AutoReauthn.ReturningAccounts",
+      static_cast<int>(
+          FederatedAuthRequestImpl::NumReturningAccounts::MULTIPLE),
+      1);
 }
 
 // Test that auto sign-in with single non-returning account sets the sign-in
@@ -1507,6 +1533,13 @@ TEST_F(FederatedAuthRequestImplTest, AutoSigninForZeroReturningUsers) {
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignUp);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
+                                       false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.AutoReauthn.ReturningAccounts",
+      static_cast<int>(FederatedAuthRequestImpl::NumReturningAccounts::ZERO),
+      1);
 }
 
 // Test that auto sign-in with multiple accounts and a single returning user
@@ -1598,7 +1631,7 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .WillOnce(Return(true));
+      .WillRepeatedly(Return(true));
 
   // Pretend the auto sign-in permission has been blocked for this account.
   EXPECT_CALL(*test_auto_signin_permission_delegate_,

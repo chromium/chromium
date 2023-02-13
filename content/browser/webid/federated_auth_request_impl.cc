@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
@@ -271,6 +272,18 @@ std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
     bool is_disabled) {
   return std::make_unique<FedCmMetrics>(provider_config_url, source_id,
                                         base::RandInt(1, 1 << 30), is_disabled);
+}
+
+FederatedAuthRequestImpl::NumReturningAccounts GetNumReturningAccounts(
+    bool has_single_returning_account,
+    const IdentityRequestAccount* auto_signin_account) {
+  if (has_single_returning_account) {
+    return FederatedAuthRequestImpl::NumReturningAccounts::ONE;
+  }
+  if (auto_signin_account) {
+    return FederatedAuthRequestImpl::MULTIPLE;
+  }
+  return FederatedAuthRequestImpl::ZERO;
 }
 
 }  // namespace
@@ -917,26 +930,37 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
   DCHECK(render_frame_host().GetPage().IsPrimary());
 
-  bool maybe_proceed_with_auto_signin =
-      prefer_auto_signin && IsFedCmAutoReauthnEnabled() &&
-      auto_signin_permission_delegate_->HasAutoSigninPermission(
-          GetEmbeddingOrigin());
+  bool auto_reauthn_enabled = prefer_auto_signin && IsFedCmAutoReauthnEnabled();
 
-  if (maybe_proceed_with_auto_signin) {
-    const IdentityProviderData* auto_signin_idp = nullptr;
-    const IdentityRequestAccount* auto_signin_account = nullptr;
+  bool auto_reauthn = auto_reauthn_enabled;
+  if (auto_reauthn_enabled &&
+      !auto_signin_permission_delegate_->HasAutoSigninPermission(
+          GetEmbeddingOrigin())) {
+    // `auto_signin_permission_delegate_` will log the failure reason, so no
+    // need to log it here.
+    auto_reauthn = false;
+  }
+
+  const IdentityProviderData* auto_signin_idp = nullptr;
+  const IdentityRequestAccount* auto_signin_account = nullptr;
+  if (auto_reauthn_enabled) {
     // Auto signs in returning users if they have a single returning account and
     // are signing in.
-    // TODO(crbug.com/1408520): add user's preference for auto sign-in.
-    maybe_proceed_with_auto_signin &=
+    bool has_single_returning_account =
         GetSingleReturningAccount(&auto_signin_idp, &auto_signin_account);
+    auto_reauthn &= has_single_returning_account;
+    UMA_HISTOGRAM_ENUMERATION(
+        "Blink.FedCm.AutoReauthn.ReturningAccounts",
+        GetNumReturningAccounts(has_single_returning_account,
+                                auto_signin_account),
+        NumReturningAccounts::COUNT);
+  }
 
-    if (maybe_proceed_with_auto_signin) {
-      IdentityRequestAccount account{*auto_signin_account};
-      IdentityProviderData idp{*auto_signin_idp};
-      idp.accounts = {account};
-      idp_data_for_display = {idp};
-    }
+  if (auto_reauthn) {
+    IdentityRequestAccount account{*auto_signin_account};
+    IdentityProviderData idp{*auto_signin_idp};
+    idp.accounts = {account};
+    idp_data_for_display = {idp};
 
     // Embargo auto sign-in to mitigate a deadloop where an auto signed-in user
     // gets re-auto signed-in soon after logging out of the active session.
@@ -953,13 +977,16 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   request_dialog_controller_->ShowAccountsDialog(
       WebContents::FromRenderFrameHost(&render_frame_host()),
       rp_url_for_display, idp_data_for_display,
-      maybe_proceed_with_auto_signin ? SignInMode::kAuto
-                                     : SignInMode::kExplicit,
+      auto_reauthn ? SignInMode::kAuto : SignInMode::kExplicit,
       show_auto_signin_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  if (auto_reauthn_enabled) {
+    UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.AutoReauthn.Succeeded", auto_reauthn);
+  }
 }
 
 void FederatedAuthRequestImpl::HandleAccountsFetchFailure(

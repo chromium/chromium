@@ -94,7 +94,7 @@ void FedCmAccountSelectionView::Show(
   }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
-    state_ = State::VERIFYING;
+    state_ = State::AUTO_REAUTHN;
 
     // When auto sign-in flow is triggered, the parameter
     // |identity_provider_data_list| would only include the single returning
@@ -102,8 +102,7 @@ void FedCmAccountSelectionView::Show(
     DCHECK_EQ(idp_display_data_list_.size(), 1u);
     DCHECK_EQ(idp_display_data_list_[0].accounts.size(), 1u);
     ShowVerifyingSheet(idp_display_data_list_[0].accounts[0],
-                       idp_display_data_list_[0],
-                       /*auto_signin=*/true);
+                       idp_display_data_list_[0]);
   } else if (accounts_size == 1u) {
     state_ = State::PERMISSION;
     GetBubbleView()->ShowSingleAccountConfirmDialog(
@@ -249,6 +248,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
     const IdentityProviderDisplayData& idp_display_data,
     const ui::Event& event) {
   DCHECK(state_ != State::IDP_SIGNIN_STATUS_MISMATCH);
+  DCHECK(state_ != State::AUTO_REAUTHN);
 
   if (input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
@@ -258,7 +258,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
                ? State::PERMISSION
                : State::VERIFYING;
   if (state_ == State::VERIFYING) {
-    ShowVerifyingSheet(account, idp_display_data, /*auto_signin=*/false);
+    ShowVerifyingSheet(account, idp_display_data);
     return;
   }
   GetBubbleView()->ShowSingleAccountConfirmDialog(
@@ -303,15 +303,19 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
 
   UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.CloseVerifySheet.Desktop",
                         state_ == State::VERIFYING);
+
+  // Record the sheet type that the user was closing.
+  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.ClosedSheetType.Desktop",
+                            GetSheetType(), SheetType::COUNT);
+
   bubble_widget_->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
 void FedCmAccountSelectionView::ShowVerifyingSheet(
     const Account& account,
-    const IdentityProviderDisplayData& idp_display_data,
-    bool auto_signin) {
-  DCHECK_EQ(state_, State::VERIFYING);
+    const IdentityProviderDisplayData& idp_display_data) {
+  DCHECK(state_ == State::VERIFYING || state_ == State::AUTO_REAUTHN);
   notify_delegate_of_dismiss_ = false;
 
   base::WeakPtr<FedCmAccountSelectionView> weak_ptr(
@@ -325,10 +329,32 @@ void FedCmAccountSelectionView::ShowVerifyingSheet(
   }
 
   const std::u16string title =
-      auto_signin
+      state_ == State::AUTO_REAUTHN
           ? l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_SIGNIN)
           : l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
   GetBubbleView()->ShowVerifyingSheet(account, idp_display_data, title);
+}
+
+FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
+  switch (state_) {
+    case State::IDP_SIGNIN_STATUS_MISMATCH: {
+      return SheetType::SIGN_IN_TO_IDP_STATIC;
+    }
+    case State::ACCOUNT_PICKER:
+    case State::PERMISSION: {
+      return SheetType::ACCOUNT_SELECTION;
+    }
+    case State::VERIFYING: {
+      return SheetType::VERIFYING;
+    }
+    case State::AUTO_REAUTHN: {
+      return SheetType::AUTO_REAUTHN;
+    }
+    default: {
+      NOTREACHED();
+      return SheetType::ACCOUNT_SELECTION;
+    }
+  }
 }
 
 void FedCmAccountSelectionView::Close() {
