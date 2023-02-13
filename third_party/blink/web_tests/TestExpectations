@@ -6966,9 +6966,6 @@ external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-
 # Sheriff 2023-01-27
 crbug.com/1289550 fast/block/float/4145535-crash.html [ Failure Pass ]
 
-# TODO(crbug.com/1411508) Investigate the flake and enable again.
-crbug.com/1411508 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-attributes.tentative.window.html [ Failure Pass ]
-
 # WPT for checking if the browser supports lazy loading of non matching media queries
 crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.html [ Failure ]
 
