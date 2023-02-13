@@ -52,6 +52,7 @@ AudioOutputDevice::AudioOutputDevice(
 
 void AudioOutputDevice::Initialize(const AudioParameters& params,
                                    RenderCallback* callback) {
+  CHECK(params.IsValid());
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AudioOutputDevice::InitializeOnIOThread, this, params,

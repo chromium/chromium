@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
+#include "media/audio/audio_device_stats_reporter.h"
 #include "media/audio/audio_device_thread.h"
 #include "media/base/audio_renderer_sink.h"
 
@@ -63,6 +64,8 @@ class MEDIA_EXPORT AudioOutputDeviceThreadCallback
 
   // If set, used to record the startup duration UMA stat.
   absl::optional<base::TimeTicks> first_play_start_time_;
+
+  AudioDeviceStatsReporter stats_reporter_;
 };
 
 }  // namespace media

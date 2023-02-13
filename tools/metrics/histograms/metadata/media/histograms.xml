@@ -22,6 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AudioAggregationDuration">
+  <variant name=".Intervals" summary="Whole intervals of 1000 callbacks"/>
+  <variant name=".Short" summary="Streams shorter than 1000 callbacks"/>
+</variants>
+
+<variants name="AudioLatencyTag">
+  <variant name="" summary="All latencies combined"/>
+  <variant name=".LatencyExactMs"/>
+  <variant name=".LatencyInteractive"/>
+  <variant name=".LatencyPlayback"/>
+  <variant name=".LatencyRtc"/>
+  <variant name=".LatencyUnknown"/>
+</variants>
+
 <variants name="CastStreamingSender">
   <variant name="Audio"/>
   <variant name="Remoting.Audio"/>
@@ -1359,6 +1373,75 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether playback started successfully after stream startup was requested.
   </summary>
+</histogram>
+
+<histogram
+    name="Media.AudioOutputDevice.AudioServiceDelayDifference{Duration}{LatencyTag}"
+    units="ms" expires_after="2023-08-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The difference between the largest and the lowest audio playout delay
+    observed during the sample interval. This stat considers the audio playout
+    delay in the Audio Service, including the IPC and the OS. Logged at the end
+    of each 1000-callback interval for Intervals. Logged at the end of the
+    stream for Short.
+  </summary>
+  <token key="Duration" variants="AudioAggregationDuration"/>
+  <token key="LatencyTag" variants="AudioLatencyTag"/>
+</histogram>
+
+<histogram name="Media.AudioOutputDevice.AudioServiceDelay{LatencyTag}"
+    units="ms" expires_after="2024-02-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The audio playout delay in the Audio Service, including the IPC and the OS.
+    Logged at every RenderCallback::Render() call at AudioPlayoutDevice level.
+  </summary>
+  <token key="LatencyTag" variants="AudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="Media.AudioOutputDevice.AudioServiceGlitchCount{Duration}{LatencyTag}"
+    units="glitches" expires_after="2024-02-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The number of events causing audio playout glitches in the Audio Service,
+    including the IPC and the OS. A glitch is an inserted silence due to an
+    underrun. Logged at the end of each 1000-callback interval for Intervals.
+    Logged at the end of the stream for Short.
+  </summary>
+  <token key="Duration" variants="AudioAggregationDuration"/>
+  <token key="LatencyTag" variants="AudioLatencyTag"/>
+</histogram>
+
+<histogram
+    name="Media.AudioOutputDevice.AudioServiceGlitchDuration{Duration}{LatencyTag}"
+    units="permille" expires_after="2024-02-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The proportion of the audio playout interval that was silent due to
+    underruns in the Audio Service, including the IPC and the OS. Logged at the
+    end of each 1000-callback interval for Intervals. Logged at the end of the
+    stream for Short.
+  </summary>
+  <token key="Duration" variants="AudioAggregationDuration"/>
+  <token key="LatencyTag" variants="AudioLatencyTag"/>
 </histogram>
 
 <histogram name="Media.AudioOutputResampler.OpenLowLatencyStream"

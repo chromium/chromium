@@ -1,0 +1,192 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "media/audio/audio_device_stats_reporter.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
+
+namespace media {
+namespace {
+
+const char* LatencyToString(AudioLatency::LatencyType latency) {
+  switch (latency) {
+    case AudioLatency::LATENCY_EXACT_MS:
+      return "LatencyExactMs";
+    case AudioLatency::LATENCY_INTERACTIVE:
+      return "LatencyInteractive";
+    case AudioLatency::LATENCY_RTC:
+      return "LatencyRtc";
+    case AudioLatency::LATENCY_PLAYBACK:
+      return "LatencyPlayback";
+    default:
+      return "LatencyUnknown";
+  }
+}
+
+}  // namespace
+
+AudioDeviceStatsReporter::AudioDeviceStatsReporter(
+    const AudioParameters& params)
+    : callback_duration_(params.GetBufferDuration()),
+      delay_log_callback_(CreateRealtimeCallback(
+          "Delay",
+          params.latency_tag(),
+          /*max_value = */ 1000,  // Measured in ms. Allows us to differentiate
+                                  // delays up to 1s.
+          /*bucket_count = */ 50)),
+      delay_difference_log_callback_(CreateAggregateCallback(
+          "DelayDifference",
+          params.latency_tag(),
+          /*max_value = */ 1000,  // Measured in ms. Allows us to differentiate
+                                  // delay differences up to 1s.
+          /*bucket_count = */ 50)),
+      glitch_count_log_callback_(CreateAggregateCallback(
+          "GlitchCount",
+          params.latency_tag(),
+          /*max_value = */ 1000,  // Measured in glitches per 1000 callbacks.
+                                  // Unlikely to be higher than 1000.
+          /*bucket_count = */ 50)),
+      glitch_duration_log_callback_(CreateAggregateCallback(
+          "GlitchDuration",
+          params.latency_tag(),
+          /*max_value = */ 1000,  // Measured in permille.
+          /*bucket_count = */ 50)) {
+  CHECK(params.IsValid());
+}
+
+void AudioDeviceStatsReporter::ReportCallback(
+    base::TimeDelta delay,
+    const media::AudioGlitchInfo& glitch_info) {
+  // When the stream is started, the first callback always contains a delay of 0
+  // and empty glitch info. This should not be included in the stats. See
+  // sync_reader.cc.
+  if (!discarded_first_callback_) {
+    discarded_first_callback_ = true;
+    return;
+  }
+
+  delay_log_callback_.Run(delay.InMilliseconds());
+
+  ++stats_.callback_count;
+  stats_.glitch_count += glitch_info.count;
+  stats_.glitch_duration += glitch_info.duration;
+  stats_.largest_delay = std::max(delay, stats_.largest_delay);
+  stats_.smallest_delay = std::min(delay, stats_.smallest_delay);
+
+  if (stats_.callback_count >= 1000) {
+    UploadStats(stats_, SamplingPeriod::kIntervals);
+    stats_ = {};
+    stream_is_short_ = false;
+  }
+}
+
+AudioDeviceStatsReporter::~AudioDeviceStatsReporter() {
+  if (stream_is_short_ && stats_.callback_count > 0) {
+    UploadStats(stats_, SamplingPeriod::kShort);
+  }
+}
+
+void AudioDeviceStatsReporter::UploadStats(const Stats& stats,
+                                           SamplingPeriod sampling_period) {
+  base::TimeDelta stats_duration = callback_duration_ * stats.callback_count;
+  DCHECK(stats_duration.is_positive());
+  int glitch_duration_permille =
+      std::round(1000 * stats.glitch_duration / stats_duration);
+
+  DCHECK_NE(stats.largest_delay, base::TimeDelta::Min());
+  DCHECK_NE(stats.smallest_delay, base::TimeDelta::Max());
+  int delay_difference_ms =
+      (stats.largest_delay - stats.smallest_delay).InMilliseconds();
+  DCHECK_GE(delay_difference_ms, 0);
+
+  glitch_count_log_callback_.Run(stats.glitch_count, sampling_period);
+  delay_difference_log_callback_.Run(delay_difference_ms, sampling_period);
+  glitch_duration_log_callback_.Run(glitch_duration_permille, sampling_period);
+}
+
+// Used to generate callbacks for:
+// Media.AudioOutputDevice.AudioServiceDelayDifference.*.*
+// Media.AudioOutputDevice.AudioServiceGlitchCount.*.*
+// Media.AudioOutputDevice.AudioServiceDroppedAudio.*.*
+AudioDeviceStatsReporter::AggregateLogCallback
+AudioDeviceStatsReporter::CreateAggregateCallback(
+    const std::string& stat_name,
+    media::AudioLatency::LatencyType latency,
+    int max_value,
+    size_t bucket_count) {
+  std::string base_name(
+      base::StrCat({"Media.AudioOutputDevice.AudioService", stat_name}));
+  std::string short_name(base::StrCat({base_name, ".Short"}));
+  std::string intervals_name(base::StrCat({base_name, ".Intervals"}));
+  std::string short_with_latency_name(
+      base::StrCat({short_name, ".", LatencyToString(latency)}));
+  std::string intervals_with_latency_name(
+      base::StrCat({intervals_name, ".", LatencyToString(latency)}));
+
+  return base::BindRepeating(
+      [](int max_value, size_t bucket_count, const std::string& short_name,
+         const std::string& intervals_name,
+         const std::string& short_with_latency_name,
+         const std::string& intervals_with_latency_name, int value,
+         SamplingPeriod sampling_period) {
+        if (sampling_period == SamplingPeriod::kShort) {
+          base::UmaHistogramCustomCounts(short_name, value, 1, max_value,
+                                         bucket_count);
+          base::UmaHistogramCustomCounts(short_with_latency_name, value, 1,
+                                         max_value, bucket_count);
+        } else {
+          base::UmaHistogramCustomCounts(intervals_name, value, 1, max_value,
+                                         bucket_count);
+          base::UmaHistogramCustomCounts(intervals_with_latency_name, value, 1,
+                                         max_value, bucket_count);
+        }
+      },
+      max_value, bucket_count, std::move(short_name), std::move(intervals_name),
+      std::move(short_with_latency_name),
+      std::move(intervals_with_latency_name));
+}
+
+// Used to generate callback for Media.AudioOutputDevice.AudioServiceDelay.*
+AudioDeviceStatsReporter::RealtimeLogCallback
+AudioDeviceStatsReporter::CreateRealtimeCallback(
+    const std::string& stat_name,
+    media::AudioLatency::LatencyType latency,
+    int max_value,
+    size_t bucket_count) {
+  std::string base_name(
+      base::StrCat({"Media.AudioOutputDevice.AudioService", stat_name}));
+  std::string base_with_latency_name(
+      base::StrCat({base_name, ".", LatencyToString(latency)}));
+
+  // Since this callback will be called on every call to ReportCallback(), we
+  // pre-fetch the histograms for efficiency, like the histogram macros do. Note
+  // that we cannot use the macros here because the histogram names are
+  // dynamically generated, which is not allowed by the macros.
+  base::HistogramBase* histogram = base::Histogram::FactoryGet(
+      std::move(base_name), 1, max_value, bucket_count,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  base::HistogramBase* histogram_with_latency = base::Histogram::FactoryGet(
+      std::move(base_with_latency_name), 1, max_value, bucket_count,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+
+  // Histogram pointers from FactoryGet are not owned by the caller. They are
+  // never deleted, see crbug.com/79322
+  return base::BindRepeating(
+      [](base::HistogramBase* histogram,
+         base::HistogramBase* histogram_with_latency, int value) {
+        histogram->Add(value);
+        histogram_with_latency->Add(value);
+      },
+      base::Unretained(histogram), base::Unretained(histogram_with_latency));
+}
+
+}  // namespace media

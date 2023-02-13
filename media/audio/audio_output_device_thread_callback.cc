@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/audio/audio_device_stats_reporter.h"
 #include "media/base/audio_glitch_info.h"
 
 namespace media {
@@ -24,7 +25,8 @@ AudioOutputDeviceThreadCallback::AudioOutputDeviceThreadCallback(
           /*segment count*/ 1),
       shared_memory_region_(std::move(shared_memory_region)),
       render_callback_(render_callback),
-      create_time_(base::TimeTicks::Now()) {
+      create_time_(base::TimeTicks::Now()),
+      stats_reporter_(audio_parameters) {
   // CHECK that the shared memory is large enough. The memory allocated must be
   // at least as large as expected.
   CHECK(memory_length_ <= shared_memory_region_.GetSize());
@@ -90,6 +92,7 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   // memory.
   render_callback_->Render(delay, delay_timestamp, glitch_info,
                            output_bus_.get());
+  stats_reporter_.ReportCallback(delay, glitch_info);
 
   if (audio_parameters_.IsBitstreamFormat()) {
     buffer->params.bitstream_data_size = output_bus_->GetBitstreamDataSize();
