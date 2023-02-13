@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <script>
+    function openWindow() {
+      var x = window.open("hello.html");
+      var interval = setInterval(function () {
+        if (!x.document.URL.includes("hello.html")) return;
+        if (x.document.readyState !== "complete") return;
+        x.location.href = "intent://test/#Intent;scheme=externalappscheme;end";
+        clearInterval(interval);
+      }, 10);
+    };
+  </script>
+</head>
+
+<body style='height:10000px;' onclick='openWindow();'>
+  Click page to open App!!
+</body>
+
+</html>

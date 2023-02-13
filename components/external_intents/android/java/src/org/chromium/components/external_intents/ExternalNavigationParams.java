@@ -91,6 +91,8 @@ public class ExternalNavigationParams {
     private final boolean mIsMainFrame;
     private final String mNativeClientPackageName;
     private final boolean mHasUserGesture;
+    private final boolean mIsInitialNavigationInFrame;
+    private final boolean mIsCrossFrameNavigation;
     private final Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
     private boolean mIsRendererInitiated;
     private Origin mInitiatorOrigin;
@@ -104,7 +106,8 @@ public class ExternalNavigationParams {
             boolean isBackgroundTabNavigation, boolean intentLaunchesAllowedInBackgroundTabs,
             boolean isMainFrame, String nativeClientPackageName, boolean hasUserGesture,
             Callback<AsyncActionTakenParams> asyncActionTakenCallback, boolean isRendererInitiated,
-            @Nullable Origin initiatorOrigin) {
+            @Nullable Origin initiatorOrigin, boolean isInitialNavigationInFrame,
+            boolean isCrossFrameNavigation) {
         mUrl = url;
         mIsIncognito = isIncognito;
         mPageTransition = pageTransition;
@@ -121,6 +124,8 @@ public class ExternalNavigationParams {
         mAsyncActionTakenCallback = asyncActionTakenCallback;
         mIsRendererInitiated = isRendererInitiated;
         mInitiatorOrigin = initiatorOrigin;
+        mIsInitialNavigationInFrame = isInitialNavigationInFrame;
+        mIsCrossFrameNavigation = isCrossFrameNavigation;
     }
 
     public void onAsyncActionStarted() {
@@ -229,6 +234,20 @@ public class ExternalNavigationParams {
         return (mPageTransition & PageTransition.FROM_API) != 0;
     }
 
+    /**
+     * @return Whether the navigation is the initial navigation in the frame.
+     */
+    public boolean isInitialNavigationInFrame() {
+        return mIsInitialNavigationInFrame;
+    }
+
+    /**
+     * @return Whether the navigation is a cross-frame (non-browser-initiated) navigation.
+     */
+    public boolean isCrossFrameNavigation() {
+        return mIsCrossFrameNavigation;
+    }
+
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
         private GURL mUrl;
@@ -247,6 +266,8 @@ public class ExternalNavigationParams {
         private Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
         private boolean mIsRendererInitiated;
         private Origin mInitiatorOrigin;
+        private boolean mIsInitialNavigationInFrame;
+        private boolean mIsCrossFrameNavigation;
 
         public Builder(GURL url, boolean isIncognito) {
             mUrl = url;
@@ -334,13 +355,30 @@ public class ExternalNavigationParams {
             return this;
         }
 
+        /**
+         * Sets whether the navigation is the initial navigation in the frame.
+         */
+        public Builder setIsInitialNavigationInFrame(boolean v) {
+            mIsInitialNavigationInFrame = v;
+            return this;
+        }
+
+        /**
+         * Sets whether the navigation is a cross-frame (non-browser-initiated) navigation.
+         */
+        public Builder setIsCrossFrameNavigation(boolean v) {
+            mIsCrossFrameNavigation = v;
+            return this;
+        }
+
         /** @return A fully constructed {@link ExternalNavigationParams} object. */
         public ExternalNavigationParams build() {
             return new ExternalNavigationParams(mUrl, mIsIncognito, mReferrerUrl, mPageTransition,
                     mIsRedirect, mApplicationMustBeInForeground, mRedirectHandler, mOpenInNewTab,
                     mIsBackgroundTabNavigation, mIntentLaunchesAllowedInBackgroundTabs,
                     mIsMainFrame, mNativeClientPackageName, mHasUserGesture,
-                    mAsyncActionTakenCallback, mIsRendererInitiated, mInitiatorOrigin);
+                    mAsyncActionTakenCallback, mIsRendererInitiated, mInitiatorOrigin,
+                    mIsInitialNavigationInFrame, mIsCrossFrameNavigation);
         }
     }
 }

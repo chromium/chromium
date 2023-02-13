@@ -986,7 +986,7 @@ public class ExternalNavigationHandler {
 
         // Ensure the navigation was started with a user gesture so that inactive pages can't launch
         // apps unexpectedly, unless we trust the calling app for a CCT/TWA.
-        if (initialState.isRendererInitiated && !initialState.hasUserGesture) {
+        if (initialState.isRendererInitiated && !initialState.hasUserGesture()) {
             if (isExternalProtocol) handler.maybeLogExternalRedirectBlockedWithMissingGesture();
             if (debug()) Log.i(TAG, "Navigation chain started without a gesture.");
             return true;
@@ -1224,6 +1224,17 @@ public class ExternalNavigationHandler {
             return true;
         }
         return false;
+    }
+
+    /**
+     * https://crbug.com/1066555. A re-navigation can make it look like the current tab is
+     * performing a navigation when it's actually a background tab doing the navigation.
+     */
+    private boolean isCrossFrameRenavigation(ExternalNavigationParams params) {
+        if (!ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS.isEnabled()) return false;
+        if (params.isInitialNavigationInFrame() || !params.isCrossFrameNavigation()) return false;
+        if (debug()) Log.i(TAG, "Cross-frame re-navigation.");
+        return true;
     }
 
     /**
@@ -1521,6 +1532,8 @@ public class ExternalNavigationHandler {
         if (preventDirectInstantAppsIntent(targetIntent)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
+
+        if (isCrossFrameRenavigation(params)) return OverrideUrlLoadingResult.forNoOverride();
 
         QueryIntentActivitiesSupplier resolvingInfos =
                 new QueryIntentActivitiesSupplier(targetIntent);

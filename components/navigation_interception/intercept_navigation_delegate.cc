@@ -188,9 +188,17 @@ bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
   if (jdelegate.is_null())
     return false;
 
+  // Only main frame navigations use this path, so we only need to check if the
+  // navigation is cross-frame to the main frame.
+  bool cross_frame = navigation_handle->GetInitiatorFrameToken() &&
+                     navigation_handle->GetInitiatorFrameToken() !=
+                         navigation_handle->GetWebContents()
+                             ->GetPrimaryMainFrame()
+                             ->GetFrameToken();
+
   return Java_InterceptNavigationDelegate_shouldIgnoreNavigation(
       env, jdelegate, navigation_handle->GetJavaNavigationHandle(),
-      url::GURLAndroid::FromNativeGURL(env, escaped_url));
+      url::GURLAndroid::FromNativeGURL(env, escaped_url), cross_frame);
 }
 
 void InterceptNavigationDelegate::HandleSubframeExternalProtocol(

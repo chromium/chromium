@@ -229,7 +229,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mCustomTabNavigationDelegate = new InterceptNavigationDelegate() {
             @Override
             public boolean shouldIgnoreNavigation(
-                    NavigationHandle navigationHandle, GURL escapedUrl) {
+                    NavigationHandle navigationHandle, GURL escapedUrl, boolean crossFrame) {
                 if (DomDistillerUrlUtils.isDistilledPage(navigationHandle.getUrl())
                         || navigationHandle.isExternalProtocol()) {
                     return false;

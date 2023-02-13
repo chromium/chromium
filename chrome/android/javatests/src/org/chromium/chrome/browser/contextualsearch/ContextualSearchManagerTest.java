@@ -339,15 +339,17 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                Assert.assertFalse(mPanel.getOverlayPanelContent()
-                                           .getInterceptNavigationDelegateForTesting()
-                                           .shouldIgnoreNavigation(navigationHandle, initialUrl));
+                Assert.assertFalse(
+                        mPanel.getOverlayPanelContent()
+                                .getInterceptNavigationDelegateForTesting()
+                                .shouldIgnoreNavigation(navigationHandle, initialUrl, false));
                 Assert.assertEquals(0, mActivityMonitor.getHits());
 
                 navigationHandle.didRedirect(redirectUrl, true);
-                Assert.assertTrue(mPanel.getOverlayPanelContent()
-                                          .getInterceptNavigationDelegateForTesting()
-                                          .shouldIgnoreNavigation(navigationHandle, redirectUrl));
+                Assert.assertTrue(
+                        mPanel.getOverlayPanelContent()
+                                .getInterceptNavigationDelegateForTesting()
+                                .shouldIgnoreNavigation(navigationHandle, redirectUrl, false));
                 Assert.assertEquals(1, mActivityMonitor.getHits());
             }
         });
@@ -386,7 +388,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
             public void run() {
                 Assert.assertTrue(mPanel.getOverlayPanelContent()
                                           .getInterceptNavigationDelegateForTesting()
-                                          .shouldIgnoreNavigation(navigationHandle, url));
+                                          .shouldIgnoreNavigation(navigationHandle, url, false));
             }
         });
         Assert.assertEquals(hasGesture ? 1 : 0, mActivityMonitor.getHits());

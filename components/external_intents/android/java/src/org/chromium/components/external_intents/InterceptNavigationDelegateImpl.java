@@ -128,20 +128,25 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     @Override
-    public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl) {
+    public boolean shouldIgnoreNavigation(
+            NavigationHandle navigationHandle, GURL escapedUrl, boolean crossFrame) {
         // We should never get here for non-main-frame navigations.
         if (!navigationHandle.isInPrimaryMainFrame()) throw new RuntimeException();
 
         mClient.onNavigationStarted(navigationHandle);
 
         RedirectHandler redirectHandler = mClient.getOrCreateRedirectHandler();
+        if (crossFrame && ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS.isEnabled()) {
+            redirectHandler.clearUserGesture();
+        }
+
         OverrideUrlLoadingResult result = shouldOverrideUrlLoading(redirectHandler, escapedUrl,
                 navigationHandle.pageTransition(), navigationHandle.isRedirect(),
                 navigationHandle.hasUserGesture(), navigationHandle.isRendererInitiated(),
                 navigationHandle.getReferrerUrl(), navigationHandle.isInPrimaryMainFrame(),
                 navigationHandle.getInitiatorOrigin(), navigationHandle.isExternalProtocol(),
                 mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle),
-                this::onDidAsyncActionInMainFrame);
+                this::onDidAsyncActionInMainFrame, crossFrame);
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
@@ -184,7 +189,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 GURL.emptyGURL() /* referrerUrl */, false /* isInPrimaryMainFrame */,
                 initiatorOrigin, true /* isExternalProtocol */,
                 false /* areIntentLaunchesAllowedInHiddenTabsForNavigation */,
-                this::onDidAsyncActionInSubFrame);
+                this::onDidAsyncActionInSubFrame, false /* crossframe */);
 
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
@@ -211,10 +216,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             boolean hasUserGesture, boolean isRendererInitiated, GURL referrerUrl,
             boolean isInPrimaryMainFrame, Origin initiatorOrigin, boolean isExternalProtocol,
             boolean areIntentLaunchesAllowedInHiddenTabsForNavigation,
-            Callback<AsyncActionTakenParams> asyncActionTakenCallback) {
+            Callback<AsyncActionTakenParams> asyncActionTakenCallback, boolean crossFrame) {
+        boolean initialNavigation = isInitialNavigation();
         redirectHandler.updateNewUrlLoading(pageTransition, isRedirect, hasUserGesture,
                 mClient.getLastUserInteractionTime(), getLastCommittedEntryIndex(),
-                isInitialNavigation(), isRendererInitiated);
+                initialNavigation, isRendererInitiated);
 
         // http://crbug.com/448977: If this is on the initial navigation chain we set the parameter
         // to open any outgoing intents that come back to Chrome in a new tab as the existing one
@@ -237,6 +243,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setIsRendererInitiated(isRendererInitiated)
                         .setInitiatorOrigin(initiatorOrigin)
                         .setAsyncActionTakenCallback(asyncActionTakenCallback)
+                        .setIsInitialNavigationInFrame(initialNavigation)
+                        .setIsCrossFrameNavigation(crossFrame)
                         .build();
 
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);

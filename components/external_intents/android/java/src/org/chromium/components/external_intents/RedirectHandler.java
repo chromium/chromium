@@ -66,21 +66,29 @@ public class RedirectHandler {
      */
     public class InitialNavigationState {
         public final boolean isRendererInitiated;
-        public final boolean hasUserGesture;
         public final boolean isFromReload;
         public final boolean isFromTyping;
         public final boolean isFromFormSubmit;
         public final boolean isFromIntent;
+        private boolean mHasUserGesture;
 
         public InitialNavigationState(boolean isRendererInitiated, boolean hasUserGesture,
                 boolean isFromReload, boolean isFromTyping, boolean isFromFormSubmit,
                 boolean isFromIntent) {
             this.isRendererInitiated = isRendererInitiated;
-            this.hasUserGesture = hasUserGesture;
+            mHasUserGesture = hasUserGesture;
             this.isFromReload = isFromReload;
             this.isFromTyping = isFromTyping;
             this.isFromFormSubmit = isFromFormSubmit;
             this.isFromIntent = isFromIntent;
+        }
+
+        public boolean hasUserGesture() {
+            return mHasUserGesture;
+        }
+
+        private void clearUserGesture() {
+            mHasUserGesture = false;
         }
     }
 
@@ -163,6 +171,14 @@ public class RedirectHandler {
         mIntentState = null;
         mNavigationChainState = null;
         mIsPrefetchLoadForIntent = false;
+    }
+
+    /**
+     * Clears the user gesture bit for the current Navigation Chain.
+     */
+    public void clearUserGesture() {
+        if (mNavigationChainState == null) return;
+        mNavigationChainState.mInitialNavigationState.clearUserGesture();
     }
 
     /**
@@ -381,7 +397,7 @@ public class RedirectHandler {
 
     public void maybeLogExternalRedirectBlockedWithMissingGesture() {
         if (!mNavigationChainState.mInitialNavigationState.isRendererInitiated
-                || mNavigationChainState.mInitialNavigationState.hasUserGesture) {
+                || mNavigationChainState.mInitialNavigationState.hasUserGesture()) {
             return;
         }
 
