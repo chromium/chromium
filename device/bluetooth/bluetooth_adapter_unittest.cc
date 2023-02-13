@@ -788,7 +788,7 @@ TEST_F(BluetoothTest, MAYBE_ConstructFakeAdapter) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothTestWinrtOnly, ConstructFakeAdapterWithoutRadio) {
+TEST_P(BluetoothTestWinrt, ConstructFakeAdapterWithoutRadio) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -804,7 +804,7 @@ TEST_P(BluetoothTestWinrtOnly, ConstructFakeAdapterWithoutRadio) {
   EXPECT_FALSE(adapter_->IsDiscovering());
 }
 
-TEST_P(BluetoothTestWinrtOnly, ConstructFakeAdapterWithoutPowerControl) {
+TEST_P(BluetoothTestWinrt, ConstructFakeAdapterWithoutPowerControl) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1060,7 +1060,7 @@ TEST_F(BluetoothTest, MAYBE_DiscoverMultipleLowEnergyDevices) {
 
 #if BUILDFLAG(IS_WIN)
 // Tests that the adapter responds to external changes to the power state.
-TEST_P(BluetoothTestWinrtOnly, SimulateAdapterPoweredOffAndOn) {
+TEST_P(BluetoothTestWinrt, SimulateAdapterPoweredOffAndOn) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1091,7 +1091,7 @@ TEST_P(BluetoothTestWinrtOnly, SimulateAdapterPoweredOffAndOn) {
 // Tests that power change notifications are deduplicated.
 // Multiple StateChanged events with the same state only cause a
 // single AdapterPoweredChanged() call.
-TEST_P(BluetoothTestWinrtOnly, SimulateDuplicateStateChanged) {
+TEST_P(BluetoothTestWinrt, SimulateDuplicateStateChanged) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1129,7 +1129,7 @@ TEST_P(BluetoothTestWinrtOnly, SimulateDuplicateStateChanged) {
 
 // Tests that the adapter responds to external changes to the power state, even
 // if it failed to obtain the underlying radio.
-TEST_P(BluetoothTestWinrtOnly, SimulateAdapterPoweredOnAndOffWithoutRadio) {
+TEST_P(BluetoothTestWinrt, SimulateAdapterPoweredOnAndOffWithoutRadio) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1161,7 +1161,7 @@ TEST_P(BluetoothTestWinrtOnly, SimulateAdapterPoweredOnAndOffWithoutRadio) {
 // fails.
 // TODO(https://crbug.com/878680): Implement SimulateAdapterPowerSuccess() and
 // enable on all platforms.
-TEST_P(BluetoothTestWinrtOnly, SimulateAdapterPowerFailure) {
+TEST_P(BluetoothTestWinrt, SimulateAdapterPowerFailure) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1182,7 +1182,7 @@ TEST_P(BluetoothTestWinrtOnly, SimulateAdapterPowerFailure) {
 // TODO(https://crbug.com/804356): Enable this test on old Windows versions as
 // well.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothTestWinrtOnly, TogglePowerFakeAdapter) {
+TEST_P(BluetoothTestWinrt, TogglePowerFakeAdapter) {
 #else
 TEST_F(BluetoothTest, TogglePowerFakeAdapter) {
 #endif
@@ -1223,7 +1223,7 @@ TEST_F(BluetoothTest, TogglePowerFakeAdapter) {
 // that it is not necessary to store pending callbacks and wait for the
 // appropriate events.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothTestWinrtOnly, TogglePowerFakeAdapter_Twice) {
+TEST_P(BluetoothTestWinrt, TogglePowerFakeAdapter_Twice) {
 #else
 TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_Twice) {
 #endif
@@ -1269,7 +1269,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_Twice) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothTestWinrtOnly, TogglePowerFakeAdapter_WithinCallback_On_Off) {
+TEST_P(BluetoothTestWinrt, TogglePowerFakeAdapter_WithinCallback_On_Off) {
 #else
 TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_WithinCallback_On_Off) {
 #endif
@@ -1306,7 +1306,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_WithinCallback_On_Off) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothTestWinrtOnly, TogglePowerFakeAdapter_WithinCallback_Off_On) {
+TEST_P(BluetoothTestWinrt, TogglePowerFakeAdapter_WithinCallback_Off_On) {
 #else
 TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_WithinCallback_Off_On) {
 #endif
@@ -1350,7 +1350,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_WithinCallback_Off_On) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothTestWinrtOnly, TogglePowerFakeAdapter_DestroyWithPending) {
+TEST_P(BluetoothTestWinrt, TogglePowerFakeAdapter_DestroyWithPending) {
 #else
 TEST_F(BluetoothTest, MAYBE_TogglePowerFakeAdapter_DestroyWithPending) {
 #endif
@@ -1434,7 +1434,7 @@ TEST_F(BluetoothTest, MAYBE_TogglePowerBeforeScan) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothTestWinrtOnly, DiscoverySessionFailure) {
+TEST_P(BluetoothTestWinrt, DiscoverySessionFailure) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1497,7 +1497,7 @@ TEST_F(BluetoothTest, MAYBE_TurnOffAdapterWithConnectedDevice) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothTestWinrtOnly, RegisterAdvertisement) {
+TEST_P(BluetoothTestWinrt, RegisterAdvertisement) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1520,7 +1520,7 @@ TEST_P(BluetoothTestWinrtOnly, RegisterAdvertisement) {
   EXPECT_TRUE(adapter_->GetPendingAdvertisementsForTesting().empty());
 }
 
-TEST_P(BluetoothTestWinrtOnly, FailRegisterAdvertisement) {
+TEST_P(BluetoothTestWinrt, FailRegisterAdvertisement) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1546,7 +1546,7 @@ TEST_P(BluetoothTestWinrtOnly, FailRegisterAdvertisement) {
   EXPECT_TRUE(adapter_->GetPendingAdvertisementsForTesting().empty());
 }
 
-TEST_P(BluetoothTestWinrtOnly, RegisterAndUnregisterAdvertisement) {
+TEST_P(BluetoothTestWinrt, RegisterAndUnregisterAdvertisement) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1578,7 +1578,7 @@ TEST_P(BluetoothTestWinrtOnly, RegisterAndUnregisterAdvertisement) {
   EXPECT_TRUE(adapter_->GetPendingAdvertisementsForTesting().empty());
 }
 
-TEST_P(BluetoothTestWinrtOnly, FailUnregisterAdvertisement) {
+TEST_P(BluetoothTestWinrt, FailUnregisterAdvertisement) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1615,7 +1615,7 @@ TEST_P(BluetoothTestWinrtOnly, FailUnregisterAdvertisement) {
   EXPECT_TRUE(adapter_->GetPendingAdvertisementsForTesting().empty());
 }
 
-TEST_P(BluetoothTestWinrtOnly, RegisterAdvertisementWithInvalidData) {
+TEST_P(BluetoothTestWinrt, RegisterAdvertisementWithInvalidData) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1639,7 +1639,7 @@ TEST_P(BluetoothTestWinrtOnly, RegisterAdvertisementWithInvalidData) {
   EXPECT_TRUE(adapter_->GetPendingAdvertisementsForTesting().empty());
 }
 
-TEST_P(BluetoothTestWinrtOnly, RegisterMultipleAdvertisements) {
+TEST_P(BluetoothTestWinrt, RegisterMultipleAdvertisements) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1670,7 +1670,7 @@ TEST_P(BluetoothTestWinrtOnly, RegisterMultipleAdvertisements) {
   EXPECT_TRUE(adapter_->GetPendingAdvertisementsForTesting().empty());
 }
 
-TEST_P(BluetoothTestWinrtOnly, UnregisterAdvertisementWhilePendingUnregister) {
+TEST_P(BluetoothTestWinrt, UnregisterAdvertisementWhilePendingUnregister) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1717,7 +1717,7 @@ TEST_P(BluetoothTestWinrtOnly, UnregisterAdvertisementWhilePendingUnregister) {
   EXPECT_TRUE(adapter_->GetPendingAdvertisementsForTesting().empty());
 }
 
-TEST_P(BluetoothTestWinrtOnly, DoubleUnregisterAdvertisement) {
+TEST_P(BluetoothTestWinrt, DoubleUnregisterAdvertisement) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -1761,7 +1761,7 @@ TEST_P(BluetoothTestWinrtOnly, DoubleUnregisterAdvertisement) {
   EXPECT_TRUE(adapter_->GetPendingAdvertisementsForTesting().empty());
 }
 
-TEST_P(BluetoothTestWinrtOnly, SimulateAdvertisementStoppedByOS) {
+TEST_P(BluetoothTestWinrt, SimulateAdvertisementStoppedByOS) {
   if (!PlatformSupportsLowEnergy()) {
     LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
     return;
@@ -2135,13 +2135,7 @@ TEST_F(BluetoothTest, DiscoverConnectedLowEnergyDeviceTwice) {
 #if BUILDFLAG(IS_WIN)
 INSTANTIATE_TEST_SUITE_P(All,
                          BluetoothTestWinrt,
-                         ::testing::ValuesIn(kBluetoothTestWinrtParamAll));
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BluetoothTestWinrtOnly,
-    ::testing::ValuesIn(kBluetoothTestWinrtParamWinrtOnly));
-
+                         ::testing::ValuesIn(kBluetoothTestWinrtParam));
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device

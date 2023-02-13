@@ -71,7 +71,7 @@ class BluetoothRemoteGattDescriptorTest :
 };
 
 #if BUILDFLAG(IS_WIN)
-using BluetoothRemoteGattDescriptorTestWinrtOnly =
+using BluetoothRemoteGattDescriptorTestWinrt =
     BluetoothRemoteGattDescriptorTest;
 #endif
 
@@ -81,7 +81,7 @@ using BluetoothRemoteGattDescriptorTestWinrtOnly =
 #define MAYBE_GetIdentifier DISABLED_GetIdentifier
 #endif
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, GetIdentifier) {
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt, GetIdentifier) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetIdentifier) {
 #endif
@@ -174,7 +174,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetIdentifier) {
 #define MAYBE_GetUUID DISABLED_GetUUID
 #endif
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, GetUUID) {
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt, GetUUID) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetUUID) {
 #endif
@@ -230,7 +230,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetUUID) {
 #endif
 // Tests ReadRemoteDescriptor and GetValue with empty value buffer.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, ReadRemoteDescriptor_Empty) {
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt, ReadRemoteDescriptor_Empty) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Empty) {
 #endif
@@ -262,8 +262,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Empty) {
 #endif
 // Tests WriteRemoteDescriptor with empty value buffer.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
-       WriteRemoteDescriptor_Empty) {
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt, WriteRemoteDescriptor_Empty) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor_Empty) {
 #endif
@@ -356,7 +355,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 #endif
 // Tests ReadRemoteDescriptor and GetValue with non-empty value buffer.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, ReadRemoteDescriptor) {
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt, ReadRemoteDescriptor) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor) {
 #endif
@@ -391,7 +390,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor) {
 #endif
 // Tests WriteRemoteDescriptor with non-empty value buffer.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, WriteRemoteDescriptor) {
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt, WriteRemoteDescriptor) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor) {
 #endif
@@ -420,7 +419,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor) {
 #endif
 // Tests ReadRemoteDescriptor and GetValue multiple times.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, ReadRemoteDescriptor_Twice) {
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt, ReadRemoteDescriptor_Twice) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Twice) {
 #endif
@@ -464,8 +463,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadRemoteDescriptor_Twice) {
 #endif
 // Tests WriteRemoteDescriptor multiple times.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
-       WriteRemoteDescriptor_Twice) {
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt, WriteRemoteDescriptor_Twice) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor_Twice) {
 #endif
@@ -509,7 +507,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteRemoteDescriptor_Twice) {
 #endif
 // Tests ReadRemoteDescriptor on two descriptors.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
        ReadRemoteDescriptor_MultipleDescriptors) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest,
@@ -556,7 +554,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 #endif
 // Tests WriteRemoteDescriptor on two descriptors.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
        WriteRemoteDescriptor_MultipleDescriptors) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest,
@@ -599,7 +597,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 #endif
 // Tests ReadRemoteDescriptor asynchronous error.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, ReadError) {
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt, ReadError) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadError) {
 #endif
@@ -627,7 +625,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_ReadError) {
 #endif
 // Tests WriteRemoteDescriptor asynchronous error.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly, WriteError) {
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt, WriteError) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteError) {
 #endif
@@ -734,7 +732,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_WriteSynchronousError) {
 #endif
 // Tests ReadRemoteDescriptor error with a pending read operation.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
        ReadRemoteDescriptor_ReadPending) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest,
@@ -776,7 +774,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 #endif
 // Tests WriteRemoteDescriptor error with a pending write operation.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
        WriteRemoteDescriptor_WritePending) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest,
@@ -819,7 +817,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 #endif
 // Tests ReadRemoteDescriptor error with a pending write operation.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
        ReadRemoteDescriptor_WritePending) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest,
@@ -861,7 +859,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest,
 #endif
 // Tests WriteRemoteDescriptor error with a pending Read operation.
 #if BUILDFLAG(IS_WIN)
-TEST_P(BluetoothRemoteGattDescriptorTestWinrtOnly,
+TEST_P(BluetoothRemoteGattDescriptorTestWinrt,
        WriteRemoteDescriptor_ReadPending) {
 #else
 TEST_F(BluetoothRemoteGattDescriptorTest,
@@ -997,10 +995,9 @@ TEST_F(BluetoothRemoteGattDescriptorTest, ReadRemoteDescriptor_NSNumber) {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BluetoothRemoteGattDescriptorTestWinrtOnly,
-    ::testing::ValuesIn(kBluetoothTestWinrtParamWinrtOnly));
+INSTANTIATE_TEST_SUITE_P(All,
+                         BluetoothRemoteGattDescriptorTestWinrt,
+                         ::testing::ValuesIn(kBluetoothTestWinrtParam));
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device

@@ -37,20 +37,12 @@ scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
 
 // static
 scoped_refptr<BluetoothAdapter> BluetoothAdapterWin::CreateAdapter() {
-  if (UseNewBLEWinImplementation())
-    return base::WrapRefCounted(new BluetoothAdapterWinrt());
-
-  return BluetoothAdapterWin::CreateClassicAdapter();
+  return base::WrapRefCounted(new BluetoothAdapterWinrt());
 }
 
 // static
 scoped_refptr<BluetoothAdapter> BluetoothAdapterWin::CreateClassicAdapter() {
   return base::WrapRefCounted(new BluetoothAdapterWin());
-}
-
-// static
-bool BluetoothAdapterWin::UseNewBLEWinImplementation() {
-  return base::FeatureList::IsEnabled(kNewBLEWinImplementation);
 }
 
 BluetoothAdapterWin::BluetoothAdapterWin() = default;

@@ -40,8 +40,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWin
   BluetoothAdapterWin(const BluetoothAdapterWin&) = delete;
   BluetoothAdapterWin& operator=(const BluetoothAdapterWin&) = delete;
 
-  static bool UseNewBLEWinImplementation();
-
   // BluetoothAdapter:
   std::string GetAddress() const override;
   std::string GetName() const override;

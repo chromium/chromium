@@ -717,14 +717,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   FRIEND_TEST_ALL_PREFIXES(BluetoothTest, RemoveOutdatedDeviceGattConnect);
 
   FRIEND_TEST_ALL_PREFIXES(
-      BluetoothTestWinrtOnly,
+      BluetoothTestWinrt,
       BluetoothGattConnection_DisconnectGatt_SimulateConnect);
   FRIEND_TEST_ALL_PREFIXES(
-      BluetoothTestWinrtOnly,
+      BluetoothTestWinrt,
       BluetoothGattConnection_DisconnectGatt_SimulateDisconnect);
-  FRIEND_TEST_ALL_PREFIXES(BluetoothTestWinrtOnly,
+  FRIEND_TEST_ALL_PREFIXES(BluetoothTestWinrt,
                            BluetoothGattConnection_ErrorAfterConnection);
-  FRIEND_TEST_ALL_PREFIXES(BluetoothTestWinrtOnly,
+  FRIEND_TEST_ALL_PREFIXES(BluetoothTestWinrt,
                            BluetoothGattConnection_DisconnectGatt_Cleanup);
 
   // Helper class to easily update the sets of UUIDs and keep them in sync with

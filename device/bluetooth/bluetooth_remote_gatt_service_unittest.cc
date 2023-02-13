@@ -415,12 +415,7 @@ TEST_F(BluetoothRemoteGattServiceTest, MAYBE_SimulateGattServiceRemove) {
   std::string removed_service = service1->GetIdentifier();
   SimulateGattServiceRemoved(device->GetGattService(removed_service));
   base::RunLoop().RunUntilIdle();
-#if BUILDFLAG(IS_WIN)
-  if (!UsesNewBleImplementation()) {
-    // The GattServicesRemoved event is not implemented for WinRT.
-    EXPECT_EQ(1, observer.gatt_service_removed_count());
-  }
-#endif  // BUILDFLAG(IS_WIN)
+
   EXPECT_EQ(1u, device->GetGattServices().size());
   EXPECT_FALSE(device->GetGattService(removed_service));
   EXPECT_EQ(device->GetGattServices()[0], service2);
@@ -600,7 +595,7 @@ TEST_F(BluetoothRemoteGattServiceTest, ExtraDidDiscoverCharacteristicsCall) {
 #if BUILDFLAG(IS_WIN)
 INSTANTIATE_TEST_SUITE_P(All,
                          BluetoothRemoteGattServiceTestWinrt,
-                         ::testing::ValuesIn(kBluetoothTestWinrtParamAll));
+                         ::testing::ValuesIn(kBluetoothTestWinrtParam));
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device

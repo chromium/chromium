@@ -114,52 +114,31 @@ class BluetoothTestWin : public BluetoothTestBase,
 typedef BluetoothTestWin BluetoothTest;
 
 struct BluetoothTestWinrtParam {
-  // The feature state of |kNewBLEWinImplementation|.
-  bool new_ble_implementation_enabled;
   // The feature state of |kNewBLEGattSessionHandling|.
   bool new_gatt_session_handling_enabled;
 
   friend std::ostream& operator<<(std::ostream& os,
                                   const BluetoothTestWinrtParam& p) {
-    return os << "{new_ble_implementation_enabled="
-              << p.new_ble_implementation_enabled
-              << ", new_gatt_session_handling_enabled="
+    return os << "{new_gatt_session_handling_enabled="
               << p.new_gatt_session_handling_enabled << "}";
   }
 };
 
-constexpr BluetoothTestWinrtParam kBluetoothTestWinrtParamAll[] = {
-    {false, false},
-    {false, true},
-    {true, false},
-    {true, true},
+constexpr BluetoothTestWinrtParam kBluetoothTestWinrtParam[] = {
+    {true},
+    {false},
 };
 
-constexpr BluetoothTestWinrtParam kBluetoothTestWinrtParamWinrtOnly[] = {
-    {true, false},
-    {true, true},
-};
-
-constexpr BluetoothTestWinrtParam kBluetoothTestWinrtParamWin32Only[] = {
-    {false, false},
-    {false, true},
-};
-
-// This test suite represents tests that should run with the new BLE
-// implementation both enabled and disabled. This requires declaring tests
-// in the following way: TEST_P(BluetoothTestWinrt, YourTestName).
+// This test suite represents tests that are parameterized on Windows. This
+// requires declaring tests in the following way:
+//
+// TEST_P(BluetoothTestWinrt, YourTestName).
 //
 // Test suites inheriting from this class should be instantiated as
 //
 // INSTANTIATE_TEST_SUITE_P(
 //     All, FooTestSuiteWinrt,
-//     ::testing::ValuesIn(
-//         <kBluetoothTestWinrtParamWin32Only |
-//          kBluetoothTestWinrtParamWinrtOnly |
-//          kBluetoothTestWinrtParamAll>));
-//
-// depending on whether they should run only the old or new implementation or
-// both.
+//     ::testing::ValuesIn(kBluetoothTestWinrtParam>));
 class BluetoothTestWinrt
     : public BluetoothTestWin,
       public ::testing::WithParamInterface<BluetoothTestWinrtParam> {
@@ -171,7 +150,6 @@ class BluetoothTestWinrt
 
   ~BluetoothTestWinrt() override;
 
-  bool UsesNewBleImplementation() const;
   bool UsesNewGattSessionHandling() const;
 
   // Simulate a fake adapter whose power status cannot be
@@ -273,10 +251,8 @@ class BluetoothTestWinrt
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  absl::optional<base::win::ScopedWinrtInitializer> scoped_winrt_initializer_;
+  base::win::ScopedWinrtInitializer scoped_winrt_initializer_;
 };
-
-using BluetoothTestWinrtOnly = BluetoothTestWinrt;
 
 }  // namespace device
 

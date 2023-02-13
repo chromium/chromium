@@ -15,10 +15,6 @@ BASE_FEATURE(kNewUsbBackend,
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kNewBLEWinImplementation,
-             "NewBLEWinImplementation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether a more reliable GATT session handling
 // implementation is used on Windows 10 1709 (RS3) and beyond.
 //
