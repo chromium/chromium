@@ -41,11 +41,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                 mInterceptNavigationDelegate.onNavigationFinishedInPrimaryMainFrame(
                         navigationHandle);
             }
-
-            @Override
-            public void didFinishNavigationNoop(NavigationHandle navigation) {
-                mInterceptNavigationDelegate.onNavigationFinishedNoop(navigation);
-            }
         };
     }
 

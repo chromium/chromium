@@ -413,11 +413,6 @@ public class OverlayPanelContent {
                     }
 
                     @Override
-                    public void didFinishNavigationNoop(NavigationHandle navigation) {
-                        if (!navigation.isInPrimaryMainFrame()) return;
-                    }
-
-                    @Override
                     public void didFirstVisuallyNonEmptyPaint() {
                         mContentDelegate.onFirstNonEmptyPaint();
                     }

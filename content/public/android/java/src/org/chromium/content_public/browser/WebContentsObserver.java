@@ -76,13 +76,6 @@ public abstract class WebContentsObserver {
     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {}
 
     /**
-     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
-     * No-op, for measuring performance of calling didFinishNavigation in only the primary main
-     * frame vs calling it in all frames.
-     */
-    public void didFinishNavigationNoop(NavigationHandle navigationHandle) {}
-
-    /**
      * Called when the a page starts loading.
      * @param url The validated url for the loading page.
      */

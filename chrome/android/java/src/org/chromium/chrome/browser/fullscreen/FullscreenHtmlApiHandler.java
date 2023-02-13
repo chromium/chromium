@@ -314,11 +314,6 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
             }
 
             @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void onInteractabilityChanged(Tab tab, boolean interactable) {
                 // Compare |tab| with |TabModelSelector#getCurrentTab()| which is a safer
                 // indicator for the active tab than |mTab|, since the invocation order of

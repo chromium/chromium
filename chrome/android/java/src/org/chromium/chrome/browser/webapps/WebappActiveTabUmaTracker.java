@@ -51,9 +51,4 @@ public class WebappActiveTabUmaTracker extends ActivityTabTabObserver {
             }
         }
     }
-
-    @Override
-    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-        if (!navigation.isInPrimaryMainFrame()) return;
-    }
 }

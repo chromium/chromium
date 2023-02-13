@@ -106,13 +106,6 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
     }
 
     @Override
-    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-        // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
-        // didFinishNavigation has the same behavior as before.
-        onDidFinishNavigationInPrimaryMainFrame(tab, navigation);
-    }
-
-    @Override
     public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
         // Intentionally do nothing to prevent automatic observer removal on detachment.
     }

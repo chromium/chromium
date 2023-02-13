@@ -111,11 +111,6 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         }
 
         @Override
-        public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-            if (!navigation.isInPrimaryMainFrame()) return;
-        }
-
-        @Override
         public void onContentChanged(Tab tab) {
             updateWebContents();
         }

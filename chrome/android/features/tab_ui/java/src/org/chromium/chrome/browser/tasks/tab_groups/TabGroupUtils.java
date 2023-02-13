@@ -142,11 +142,6 @@ public class TabGroupUtils {
                     sTabModelSelectorTabObserver.destroy();
                 }
             }
-
-            @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame()) return;
-            }
         };
     }
 

@@ -99,11 +99,6 @@ public class InfoBarContainer implements KeyboardVisibilityListener, InfoBar.Con
                 setHidden(false);
             }
         }
-
-        @Override
-        public void didFinishNavigationNoop(NavigationHandle navigation) {
-            if (!navigation.isInPrimaryMainFrame()) return;
-        }
     };
 
     public void onTabAttachedToViewController() {

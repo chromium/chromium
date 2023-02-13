@@ -139,11 +139,6 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
             }
 
             @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
                 updateTaskDescription();
             }

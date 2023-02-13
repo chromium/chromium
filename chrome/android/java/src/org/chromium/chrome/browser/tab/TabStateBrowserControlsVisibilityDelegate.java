@@ -105,11 +105,6 @@ public class TabStateBrowserControlsVisibilityDelegate
             }
 
             @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void onPageLoadStarted(Tab tab, GURL url) {
                 mHandler.removeMessages(MSG_ID_ENABLE_FULLSCREEN_AFTER_LOAD);
                 updateWaitingForLoad(!DomDistillerUrlUtils.isDistilledPage(url));

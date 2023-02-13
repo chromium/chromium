@@ -30,14 +30,6 @@ using base::android::ScopedJavaLocalRef;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ConvertUTF16ToJavaString;
 
-namespace features {
-
-BASE_FEATURE(kNotifyJavaSpuriouslyToMeasurePerf,
-             "NotifyJavaSpuriouslyToMeasurePerf",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-}  // namespace features
-
 namespace content {
 
 // TODO(dcheng): File a bug. This class incorrectly passes just a frame ID,
@@ -170,11 +162,6 @@ void WebContentsObserverProxy::DidFinishNavigation(
 
   if (navigation_handle->IsInPrimaryMainFrame()) {
     Java_WebContentsObserverProxy_didFinishNavigationInPrimaryMainFrame(
-        AttachCurrentThread(), java_observer_,
-        navigation_handle->GetJavaNavigationHandle());
-  } else if (base::FeatureList::IsEnabled(
-                 features::kNotifyJavaSpuriouslyToMeasurePerf)) {
-    Java_WebContentsObserverProxy_didFinishNavigationNoop(
         AttachCurrentThread(), java_observer_,
         navigation_handle->GetJavaNavigationHandle());
   }

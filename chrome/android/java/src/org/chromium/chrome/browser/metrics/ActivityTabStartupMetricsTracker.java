@@ -139,11 +139,6 @@ public class ActivityTabStartupMetricsTracker {
                                 && UrlUtilities.isHttpOrHttps(navigation.getUrl());
                         registerFinishNavigation(isTrackedPage);
                     }
-
-                    @Override
-                    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-                        registerFinishNavigation(false);
-                    }
                 };
         mPageLoadMetricsObserver = new PageLoadMetricsObserverImpl();
         PageLoadMetrics.addObserver(mPageLoadMetricsObserver, false);

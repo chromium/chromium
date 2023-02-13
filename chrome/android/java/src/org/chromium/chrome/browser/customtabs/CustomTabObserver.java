@@ -192,11 +192,6 @@ public class CustomTabObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-        if (!navigation.isInPrimaryMainFrame()) return;
-    }
-
-    @Override
     public void onDestroyed(Tab tab) {
         TabInteractionRecorder observer = TabInteractionRecorder.getFromTab(tab);
         if (observer != null) observer.onTabClosing();

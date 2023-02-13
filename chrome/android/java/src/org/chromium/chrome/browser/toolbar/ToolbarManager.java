@@ -843,11 +843,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             }
 
             @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void onNavigationEntriesDeleted(Tab tab) {
                 if (tab == mLocationBarModel.getTab()) {
                     updateButtonStatus();

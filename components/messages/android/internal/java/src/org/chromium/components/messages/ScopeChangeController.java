@@ -126,11 +126,6 @@ class ScopeChangeController {
         }
 
         @Override
-        public void didFinishNavigationNoop(NavigationHandle navigationHandle) {
-            if (!navigationHandle.isInPrimaryMainFrame()) return;
-        }
-
-        @Override
         public void destroy() {
             super.destroy();
             // #destroy will remove the observers.

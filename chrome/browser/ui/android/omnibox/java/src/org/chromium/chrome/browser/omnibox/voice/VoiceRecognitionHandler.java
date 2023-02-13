@@ -427,11 +427,6 @@ public class VoiceRecognitionHandler {
             }
             destroy();
         }
-
-        @Override
-        public void didFinishNavigationNoop(NavigationHandle navigation) {
-            if (!navigation.isInPrimaryMainFrame()) return;
-        }
     }
 
     /**

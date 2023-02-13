@@ -114,11 +114,6 @@ public class MerchantTrustBottomSheetMediator {
                             BottomSheetToolbarProperties.URL, mWebContents.get().getVisibleUrl());
                 }
             }
-
-            @Override
-            public void didFinishNavigationNoop(NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
         };
 
         mWebContentsDelegate = new WebContentsDelegateAndroid() {

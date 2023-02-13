@@ -421,13 +421,6 @@ public class CouponPersistedTabData extends PersistedTabData {
                 resetCoupon();
                 prefetchOnNewNavigation(tab);
             }
-
-            @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
-                // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
-                // didFinishNavigation has the same behavior as before.
-                onDidFinishNavigationInPrimaryMainFrame(tab, navigationHandle);
-            }
         };
         tab.addObserver(mUrlUpdatedObserver);
     }

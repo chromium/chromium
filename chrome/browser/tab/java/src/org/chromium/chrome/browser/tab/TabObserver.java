@@ -235,13 +235,6 @@ public interface TabObserver {
     void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation);
 
     /**
-     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
-     * No-op, for measuring performance of calling didFinishNavigation in only the primary main
-     * frame vs calling it in all frames.
-     */
-    void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle);
-
-    /**
      * Called when the page has painted something non-empty.
      * @param tab The notifying {@link Tab}.
      */

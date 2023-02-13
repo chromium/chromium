@@ -159,17 +159,6 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void didFinishNavigationNoop(NavigationHandle navigation) {
-        handleObserverCall();
-        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
-        for (; observersIterator.hasNext();) {
-            observersIterator.next().didFinishNavigationNoop(navigation);
-        }
-        finishObserverCall();
-    }
-
-    @Override
-    @CalledByNative
     public void didStartLoading(GURL url) {
         handleObserverCall();
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();

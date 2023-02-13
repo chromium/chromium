@@ -64,11 +64,6 @@ public class WebApkSplashNetworkErrorObserver extends EmptyTabObserver {
         WebApkUmaRecorder.recordNetworkErrorWhenLaunch(-navigation.errorCode());
     }
 
-    @Override
-    public void onDidFinishNavigationNoop(final Tab tab, NavigationHandle navigation) {
-        if (!navigation.isInPrimaryMainFrame()) return;
-    }
-
     private void onNetworkChanged(Tab tab) {
         if (!mAllowReloads) return;
 

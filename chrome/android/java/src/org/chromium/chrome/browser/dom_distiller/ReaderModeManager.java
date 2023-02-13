@@ -459,11 +459,6 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             }
 
             @Override
-            public void didFinishNavigationNoop(NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void navigationEntryCommitted(LoadCommittedDetails details) {
                 if (mIsDestroyed) return;
                 // Reset closed state of reader mode in this tab once we know a navigation is

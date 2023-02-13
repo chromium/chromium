@@ -104,11 +104,6 @@ public class QualityEnforcer {
         }
 
         @Override
-        public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-            if (!navigation.isInPrimaryMainFrame()) return;
-        }
-
-        @Override
         public void onObservingDifferentTab(@NonNull Tab tab) {
             // On tab switches, update the stored verification state.
             isNavigationInScope(tab.getOriginalUrl());

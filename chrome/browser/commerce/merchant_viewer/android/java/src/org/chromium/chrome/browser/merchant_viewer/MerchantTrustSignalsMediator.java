@@ -48,11 +48,6 @@ class MerchantTrustSignalsMediator {
             }
 
             @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void onHidden(Tab tab, @TabHidingType int type) {
                 metrics.finishRecordingMessageImpact();
             }

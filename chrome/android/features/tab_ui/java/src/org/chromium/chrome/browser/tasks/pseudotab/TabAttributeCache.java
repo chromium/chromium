@@ -98,12 +98,6 @@ public class TabAttributeCache {
                 //  isValidSearchFormUrl() and PageTransition.GENERATED for optimization.
                 cacheLastSearchTerm(tab);
             }
-
-            @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
-                if (tab.isIncognito()) return;
-                if (!navigationHandle.isInPrimaryMainFrame()) return;
-            }
         };
 
         mTabModelObserver = new TabModelObserver() {

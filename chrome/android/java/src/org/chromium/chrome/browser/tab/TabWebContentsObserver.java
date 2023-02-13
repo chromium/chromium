@@ -274,18 +274,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void didFinishNavigationNoop(NavigationHandle navigation) {
-            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-            while (observers.hasNext()) {
-                observers.next().onDidFinishNavigationNoop(mTab, navigation);
-            }
-
-            // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
-            // didFinishNavigation has the same behavior as before.
-            mLastUrl = navigation.getUrl();
-        }
-
-        @Override
         public void loadProgressChanged(float progress) {
             if (!mTab.isLoading()) return;
             mTab.notifyLoadProgress(progress);

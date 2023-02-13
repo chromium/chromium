@@ -73,12 +73,6 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
             NewDownloadTab.from(tab, coordinator, mActivity).show();
         }
     }
-    @Override
-    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-        // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
-        // didFinishNavigation has the same behavior as before.
-        onDidFinishNavigationInPrimaryMainFrame(tab, navigation);
-    }
 
     private void unregister() {
         mTabObserverRegistrar.unregisterTabObserver(this);

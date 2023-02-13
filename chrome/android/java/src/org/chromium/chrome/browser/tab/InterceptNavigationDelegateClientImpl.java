@@ -55,11 +55,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
             }
 
             @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-                mInterceptNavigationDelegate.onNavigationFinishedNoop(navigation);
-            }
-
-            @Override
             public void onDestroyed(Tab tab) {
                 mInterceptNavigationDelegate.associateWithWebContents(null);
             }

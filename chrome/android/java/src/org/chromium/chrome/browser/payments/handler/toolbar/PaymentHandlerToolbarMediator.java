@@ -100,11 +100,6 @@ import org.chromium.url.GURL;
     }
 
     @Override
-    public void didFinishNavigationNoop(NavigationHandle navigation) {
-        if (!navigation.isInPrimaryMainFrame()) return;
-    }
-
-    @Override
     public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
         if (navigation.isSameDocument()) return;
         setSecurityState(ConnectionSecurityLevel.NONE);

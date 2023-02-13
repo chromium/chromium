@@ -135,11 +135,6 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
             }
 
             @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
                 updateAfterRendererProcessSwitch(tab, true);
             }

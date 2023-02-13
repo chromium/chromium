@@ -108,9 +108,6 @@ public class EmptyTabObserver implements TabObserver {
             Tab tab, NavigationHandle navigationHandle) {}
 
     @Override
-    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {}
-
-    @Override
     public void didFirstVisuallyNonEmptyPaint(Tab tab) {}
 
     @Override

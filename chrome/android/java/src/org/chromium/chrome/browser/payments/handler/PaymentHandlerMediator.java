@@ -249,11 +249,6 @@ import java.lang.annotation.RetentionPolicy;
         closeIfInsecure();
     }
 
-    @Override
-    public void didFinishNavigationNoop(NavigationHandle navigationHandle) {
-        if (!navigationHandle.isInPrimaryMainFrame()) return;
-    }
-
     // Implement WebContentsObserver:
     @Override
     public void didChangeVisibleSecurityState() {

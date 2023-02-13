@@ -384,11 +384,6 @@ public class CompositorViewHolder extends FrameLayout
                     updateVirtualKeyboardMode(getWebContents().getVirtualKeyboardMode());
                 }
             }
-
-            @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
         };
 
         addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight,

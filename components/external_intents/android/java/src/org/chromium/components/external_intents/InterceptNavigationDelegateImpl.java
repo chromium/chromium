@@ -107,10 +107,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         maybeUpdateNavigationHistory();
     }
 
-    public void onNavigationFinishedNoop(NavigationHandle navigation) {
-        if (!navigation.isInPrimaryMainFrame()) return;
-    }
-
     public void setExternalNavigationHandler(ExternalNavigationHandler handler) {
         mExternalNavHandler = handler;
     }

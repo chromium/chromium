@@ -384,11 +384,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     prefetchOnNewNavigation(tab, navigationHandle);
                 }
             }
-
-            @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame()) return;
-            }
         };
         tab.addObserver(mUrlUpdatedObserver);
     }

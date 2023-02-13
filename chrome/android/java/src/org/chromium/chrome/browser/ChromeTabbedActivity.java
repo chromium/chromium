@@ -1945,11 +1945,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     SendTabToSelfAndroidBridge.updateActiveWebContents(tab.getWebContents());
                 }
             }
-
-            @Override
-            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
         };
         mAppIndexingUtil = new AppIndexingUtil(mTabModelSelector);
 

@@ -88,12 +88,6 @@ public class PostMessageHandler implements OriginVerificationListener {
             }
 
             @Override
-            public void didFinishNavigationNoop(NavigationHandle navigationHandle) {
-                mNavigatedOnce = true;
-                if (!mNavigatedOnce || !navigationHandle.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void renderProcessGone() {
                 disconnectChannel();
             }

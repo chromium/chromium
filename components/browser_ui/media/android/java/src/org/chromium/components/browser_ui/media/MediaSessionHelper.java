@@ -331,11 +331,6 @@ public class MediaSessionHelper implements MediaImageCallback {
             }
 
             @Override
-            public void didFinishNavigationNoop(NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
-
-            @Override
             public void titleWasSet(String title) {
                 String newFallbackTitle = sanitizeMediaTitle(title);
                 if (!TextUtils.equals(mFallbackTitle, newFallbackTitle)) {

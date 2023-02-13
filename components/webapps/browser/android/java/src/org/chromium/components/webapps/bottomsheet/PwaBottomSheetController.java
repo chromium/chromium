@@ -190,11 +190,6 @@ public class PwaBottomSheetController
                     mBottomSheetController.hideContent(mPwaBottomSheetContent, /* animate= */ true);
                 }
             }
-
-            @Override
-            public void didFinishNavigationNoop(NavigationHandle navigation) {
-                if (!navigation.isInPrimaryMainFrame()) return;
-            }
         };
     }
 

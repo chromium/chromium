@@ -72,11 +72,6 @@ public class CurrentPageVerifier implements NativeInitObserver {
         }
 
         @Override
-        public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
-            if (!navigation.isInPrimaryMainFrame()) return;
-        }
-
-        @Override
         public void onObservingDifferentTab(@NonNull Tab tab) {
             // When a link with target="_blank" is followed and the user navigates back, we
             // don't get the onDidFinishNavigation event (because the original page wasn't
