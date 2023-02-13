@@ -44,9 +44,9 @@ export class BarcodeScanner {
     if (this.intervalId !== null) {
       return;
     }
-    this.intervalId = setAsyncInterval(async () => {
+    this.intervalId = setAsyncInterval(async (stopped) => {
       const code = await this.scan();
-      if (code !== null) {
+      if (!stopped.isSignaled() && code !== null) {
         this.callback(code);
       }
     }, SCAN_INTERVAL);
@@ -67,7 +67,7 @@ export class BarcodeScanner {
    * Grabs the current video frame for scanning. If the video resolution is too
    * high, the image would be scaled and/or cropped from the center.
    */
-  private async grabFrameForScan(): Promise<ImageBitmap> {
+  private grabFrameForScan(): Promise<ImageBitmap> {
     const {videoWidth: vw, videoHeight: vh} = this.video;
     if (vw <= MAX_SCAN_SIZE && vh <= MAX_SCAN_SIZE) {
       return createImageBitmap(this.video);
@@ -89,7 +89,7 @@ export class BarcodeScanner {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(this.video, sx, sy, sw, sh, 0, 0, scanSize, scanSize);
-    return canvas.transferToImageBitmap();
+    return Promise.resolve(canvas.transferToImageBitmap());
   }
 
   /**

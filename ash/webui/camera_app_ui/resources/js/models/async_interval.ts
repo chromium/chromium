@@ -21,20 +21,17 @@ function sleep(delay: number): Promise<void> {
 class AsyncIntervalRunner {
   private readonly stopped = new WaitableEvent();
 
-  private readonly runningPromise: Promise<void>;
-
   constructor(
-      private readonly handler: () => Promise<void>,
+      private readonly handler: (stopped: WaitableEvent) => Promise<void>,
       private readonly delay: number) {
-    this.runningPromise = this.loop();
+    void this.loop();
   }
 
   /**
-   * Stops the loop and wait for the |handler| if it's running.
+   * Stops the loop.
    */
-  async stop(): Promise<void> {
+  stop(): void {
     this.stopped.signal();
-    await this.runningPromise;
   }
 
   /**
@@ -47,7 +44,7 @@ class AsyncIntervalRunner {
       if (this.stopped.isSignaled()) {
         break;
       }
-      await this.handler();
+      await this.handler(this.stopped);
     }
   }
 }
@@ -67,11 +64,15 @@ const runnerMap = new Map<number, AsyncIntervalRunner>();
  * Repeatedly calls the async function |handler| and waits until it's resolved,
  * with a fixed delay between the next call and the previous completion time.
  *
+ * @param handler Handler to be called, a |stopped| WaitableEvent is passed in
+ *     and the handler should act as it's cancelled after |stopped| is signaled.
+ * @param delayMs Delay between calls to |handler| in milliseconds.
  * @return A numeric, non-zero value which identifies the timer.
  */
 export function setAsyncInterval(
-    handler: () => Promise<void>, delay: number): number {
-  const runner = new AsyncIntervalRunner(handler, delay);
+    handler: (stopped: WaitableEvent) => Promise<void>,
+    delayMs: number): number {
+  const runner = new AsyncIntervalRunner(handler, delayMs);
   const id = ++runnerCount;
   runnerMap.set(id, runner);
   return id;
@@ -80,13 +81,12 @@ export function setAsyncInterval(
 /**
  * Cancels a timed, repeating async action by |id|, which was returned by the
  * corresponding call of setAsyncInterval().
- *
- * @return Resolved when the last action is finished.
  */
-export async function clearAsyncInterval(id: number): Promise<void> {
+export function clearAsyncInterval(id: number): void {
   const runner = runnerMap.get(id);
   if (runner === undefined) {
     return;
   }
-  await runner.stop();
+  runnerMap.delete(id);
+  runner.stop();
 }
