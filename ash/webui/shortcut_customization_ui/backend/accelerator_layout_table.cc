@@ -208,6 +208,47 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
                 TextAcceleratorPart(ui::EF_ALT_DOWN),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_I),
                 TextAcceleratorPart(ui::KeyboardCode::VKEY_ESCAPE)})},
+          {NonConfigurableActions::kAmbientSwitchFocus,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_SWITCH_FOCUS,
+               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_BROWSER_BACK),
+                TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_BROWSER_BACK)})},
+          {NonConfigurableActions::kAmbientMoveAppsInGrid,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_MOVE_APPS_IN_GRID,
+               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_LEFT),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_RIGHT),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_UP),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_DOWN)})},
+          {NonConfigurableActions::kAmbientMoveAppsInOutFolder,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_MOVE_APPS_IN_OUT_FOLDER,
+               {TextAcceleratorPart(ui::EF_CONTROL_DOWN),
+                TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_LEFT),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_RIGHT),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_UP),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_DOWN)})},
+          {NonConfigurableActions::kAmbientOpenLinkInTabBackground,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_OPEN_LINK_IN_TAB_BACKGROUND,
+               {TextAcceleratorPart(ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserStopDragTab,
+           NonConfigurableAcceleratorDetails(
+               IDS_BROWSER_ACCELERATOR_STOP_DRAG_TAB,
+               {TextAcceleratorPart(ui::KeyboardCode::VKEY_ESCAPE)})},
+          {NonConfigurableActions::kAmbientActivateIndexedDesk,
+           NonConfigurableAcceleratorDetails(
+               IDS_AMBIENT_ACCELERATOR_ACTIVATE_INDEXED_DESK,
+               {TextAcceleratorPart(ui::EF_SHIFT_DOWN),
+                TextAcceleratorPart(ui::EF_COMMAND_DOWN),
+                TextAcceleratorPart(TextAcceleratorDelimiter::kPlusSign),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_1),
+                TextAcceleratorPart(ui::KeyboardCode::VKEY_8)})},
           // Ambient accelerators that only contain plain text (no
           // replacements).
           {NonConfigurableActions::kAmbientDragLinkInNewTab,
@@ -330,6 +371,21 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           //   {NonConfigurableActions::kBrowserTopPage,
           //    NonConfigurableAcceleratorDetails(
           //        {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
+          //   {NonConfigurableActions::kAmbientDeleteNextWord,
+          //    NonConfigurableAcceleratorDetails(
+          //        {ui::Accelerator(ui::VKEY_BACK, ui::EF_COMMAND_DOWN)})},
+          //   {NonConfigurableActions::kBrowserPageUp,
+          //    NonConfigurableAcceleratorDetails(
+          //        {ui::Accelerator(ui::VKEY_UP, ui::EF_COMMAND_DOWN)})},
+          //   {NonConfigurableActions::kBrowserPageDown,
+          //    NonConfigurableAcceleratorDetails(
+          //        {ui::Accelerator(ui::VKEY_DOWN, ui::EF_COMMAND_DOWN)})},
+          //   {NonConfigurableActions::kAmbientGoToBeginningOfLine,
+          //    NonConfigurableAcceleratorDetails(
+          //        {ui::Accelerator(ui::VKEY_LEFT, ui::EF_COMMAND_DOWN)})},
+          //   {NonConfigurableActions::kAmbientGoToBeginningOfLine,
+          //    NonConfigurableAcceleratorDetails(
+          //        {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN)})},
           {NonConfigurableActions::kBrowserNextPane,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_BROWSER_BACK,
@@ -343,6 +399,66 @@ const NonConfigurableActionsMap& GetNonConfigurableActionsMap() {
           {NonConfigurableActions::kAmbientCaretBrowsing,
            NonConfigurableAcceleratorDetails({ui::Accelerator(
                ui::VKEY_7, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kBrowserAutoComplete,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_RETURN, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserHome,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_HOME, ui::EF_ALT_DOWN)})},
+          {NonConfigurableActions::kBrowserSelectNextTab,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_TAB, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kBrowserSelectPreviousTab,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_TAB, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kAmbientCopy,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientCut,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_X, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientPaste,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_V, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientPastePlainText,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_V, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kAmbientDeletePreviousWord,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_BACK, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientUndo,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_Z, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientRedo,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_Z, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kAmbientContentContextSelectAll,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_A, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientSelectTextToBeginning,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kAmbientSelectTextToEndOfLine,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kAmbientSelectPreviousWord,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_LEFT, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kAMbientSelectNextWord,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN)})},
+          {NonConfigurableActions::kAmbientGoToBeginningOfDocument,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_LEFT, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kAmbientGoToEndOfDocument,
+           NonConfigurableAcceleratorDetails({ui::Accelerator(
+               ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)})},
+          {NonConfigurableActions::kAmbientMoveStartOfPreviousWord,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN)})},
+          {NonConfigurableActions::kAmbientMoveToEndOfWord,
+           NonConfigurableAcceleratorDetails(
+               {ui::Accelerator(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN)})},
           {NonConfigurableActions::kSixPackDelete,
            NonConfigurableAcceleratorDetails(
                {ui::Accelerator(ui::VKEY_BACK, ui::EF_COMMAND_DOWN)})},

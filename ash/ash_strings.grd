@@ -3714,6 +3714,18 @@ Connect your device to power.
       <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_RIGHT_CLICK" translateable="false" desc="Label for accelerator action - Right click a link.">
         Right-click a link
       </message>
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_AUTO_COMPLETE" translateable="false" desc="Label for accelerator action - Add www. and .com to the address bar, then open website.">
+        Add www. and .com to the address bar, then open website
+      </message>
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_STOP_DRAG_TAB" translateable="false" desc="Label for accelerator action - Return the tab to its original position.">
+        Return the tab to its original position
+      </message>
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_NEXT_TAB" translateable="false" desc="Label for accelerator action - Go to next tab.">
+        Go to next tab
+      </message>
+      <message name="IDS_BROWSER_ACCELERATOR_DESCRIPTION_SELECT_PREVIOU_TAB" translateable="false" desc="Label for accelerator action - Go to previous tab.">
+        Go to previous tab
+      </message>
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE" translateable="false" desc="Label for accelerator action - Go to tabs 1 through 8.">
         Go to tabs 1 through 8
       </message>
@@ -3783,6 +3795,66 @@ Connect your device to power.
       <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CARET_BROWSING" translateable="false" desc="Label for accelerator description - Turn caret browsing on or off.">
         Turn caret browsing on or off
       </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SWITCH_FOCUS" translateable="false" desc="Label for accelerator description - Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
+        Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_COPY" translateable="false" desc="Label for accelerator description - Copy selected content to clipboard.">
+        Copy selected content to clipboard
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CUT" translateable="false" desc="Label for accelerator description - Cut.">
+        Cut
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_PASTE" translateable="false" desc="Label for accelerator description - Paste content from clipboard.">
+        Paste content from clipboard
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_PASTE_PLAIN_TEXT" translateable="false" desc="Label for accelerator description - Paste content from clipboard as plain text.">
+        Paste content from clipboard as plain text
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DELETE_PREVIOUS_WORD" translateable="false" desc="Label for accelerator description - Delete previous word.">
+        Delete previous word
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_UNDO" translateable="false" desc="Label for accelerator description - Undo last action.">
+        Undo last action
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_REDO" translateable="false" desc="Label for accelerator description - Redo last action.">
+        Redo last action
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CONTENT_CONTEXT_SELECTALL" translateable="false" desc="Label for accelerator description - Select everything on page.">
+        Select everything on page
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_TEXT_TO_BEGINNING" translateable="false" desc="Label for accelerator description - Select text from cursor to beginning of line.">
+        Select text from cursor to beginning of line
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_TEXT_TO_END_OF_LINE" translateable="false" desc="Label for accelerator description - Select text from cursor to end of line.">
+        Select text from cursor to end of line
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_PREVIOUS_WORD" translateable="false" desc="Label for accelerator description - Select previous word or letter.">
+        Select previous word or letter
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_SELECT_NEXT_WORD" translateable="false" desc="Label for accelerator description - Select next word or letter.">
+        Select next word or letter
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_DELETE_NEXT_WORD" translateable="false" desc="Label for accelerator description - Delete next letter.">
+        Delete next letter
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_BEGINNING_OF_DOCUMENT" translateable="false" desc="Label for accelerator description - Go to beginning of document.">
+        Go to beginning of document
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_END_OF_DOCUMENT" translateable="false" desc="Label for accelerator description - Go to end of document.">
+        Go to end of document
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_BEGINNING_OF_LINE" translateable="false" desc="Label for accelerator description - Move cursor to beginning of line.">
+        Move cursor to beginning of line
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_END_OF_LINE" translateable="false" desc="Label for accelerator description - Move cursor to end of line.">
+        Move cursor to end of line
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_TO_START_OF_PREVIOUS_WORD" translateable="false" desc="Label for accelerator description - Move to start of previous word.">
+        Move to start of previous word
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_DESCRIPTION_MOVE_TO_END_OF_WORD" translateable="false" desc="Label for accelerator description - Move to end of next word.">
+        Move to end of next word
+      </message>
       <!-- Ambient Accelerator Action -->
       <message name="IDS_AMBIENT_ACCELERATOR_GO_TO_TAB_IN_RANGE" translateable="false" desc="Action for accelerator action - Go to tabs 1 through 8.">
         <ph name="MODIFIER">$1<ex>ctrl</ex></ph> <ph name="DELIMITER">$2<ex>+</ex></ph> <ph name="KEY_ONE">$3<ex>1</ex></ph> through <ph name="KEY_TWO">$4<ex>8</ex></ph>
@@ -3846,6 +3918,21 @@ Connect your device to power.
       </message>
       <message name="IDS_AMBIENT_ACCELERATOR_REMOVE_HIGHLIGHT_ON_SHELF" translateable="false" desc="Action for accelerator action - Remove the highlight from an item on your shelf.">
         <ph name="MODIFIER_ONE">$1<ex>shift</ex></ph> <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> <ph name="KEY_ONE">$3<ex>i</ex></ph> then <ph name="KEY_TWO">$4<ex>esc</ex></ph>
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_SWITCH_FOCUS" translateable="false" desc="Action for accelerator action - Move between bottom right corner, Launcher, address bar, bookmarks bar, webpage that's open, and downloads.">
+        <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> <ph name="KEY_ONE">$2<ex>browser_back</ex></ph> or <ph name="MODIFIER_TWO">$3<ex>ctrl</ex></ph> <ph name="MODIFIER_THREE">$4<ex>shift</ex></ph> <ph name="KEY_TWO">$5<ex>browser_back</ex></ph>
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_MOVE_APPS_IN_GRID" translateable="false" desc="Action for accelerator action - Move an app icon within app grid.">
+        <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph>, then <ph name="KEY_ONE">$2<ex>left</ex></ph> or <ph name="KEY_TWO">$3<ex>right</ex></ph> or <ph name="KEY_THREE">$4<ex>up</ex></ph> or <ph name="KEY_FOUR">$5<ex>down</ex></ph>
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_MOVE_APPS_IN_OUT_FOLDER" translateable="false" desc="Action for accelerator action - Move an app icon in/out of a folder in the app grid.">
+        <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> <ph name="MODIFIER_TWO">$2<ex>shift</ex></ph>, then <ph name="KEY_ONE">$3<ex>left</ex></ph> or <ph name="KEY_TWO">$4<ex>right</ex></ph> or <ph name="KEY_THREE">$5<ex>up</ex></ph> or <ph name="KEY_FOUR">$6<ex>down</ex></ph>
+      </message>
+      <message name="IDS_AMBIENT_ACCELERATOR_ACTIVATE_INDEXED_DESK" translateable="false" desc="Action for accelerator action - Go to desk 1 to 8.">
+        <ph name="MODIFIER_ONE">$1<ex>shift</ex></ph> <ph name="MODIFIER_TWO">$2<ex>search</ex></ph> <ph name="DELIMITER">$3<ex>+</ex></ph> <ph name="KEY_ONE">$4<ex>1</ex></ph> through <ph name="KEY_TWO">$5<ex>8</ex></ph>
+      </message>
+      <message name="IDS_BROWSER_ACCELERATOR_STOP_DRAG_TAB" translateable="false" desc="Action for accelerator action - Return the tab to its original position.">
+        While dragging the tab, press <ph name="KEY_ONE">$1<ex>esc</ex></ph>
       </message>
 
       <!-- Six-Pack Keys -->
