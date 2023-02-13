@@ -158,7 +158,6 @@ RdpClientWindow::~RdpClientWindow() {
   }
 
   DCHECK(!client_.Get());
-  DCHECK(!client_9_.Get());
   DCHECK(!client_settings_.Get());
 }
 
@@ -333,12 +332,6 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
     return LogOnCreateError(result);
   }
 
-  // Check to see if the platform exposes the interface used for resizing.
-  result = client_.As(&client_9_);
-  if (FAILED(result) && result != E_NOINTERFACE) {
-    return LogOnCreateError(result);
-  }
-
   // Set the server name to connect to.
   result = client_->put_Server(server_name.Get());
   if (FAILED(result)) {
@@ -446,7 +439,6 @@ LRESULT RdpClientWindow::OnCreate(CREATESTRUCT* create_struct) {
 
 void RdpClientWindow::OnDestroy() {
   client_.Reset();
-  client_9_.Reset();
   client_settings_.Reset();
   apply_resolution_timer_.Stop();
 }
@@ -485,13 +477,11 @@ STDMETHODIMP RdpClientWindow::OnLoginComplete() {
   // Set up a timer to periodically apply pending screen size changes to the
   // desktop.  Attempting to set the resolution now seems to fail consistently,
   // but succeeds after a brief timeout.
-  if (client_9_) {
-    apply_resolution_attempts_ = 0;
-    apply_resolution_timer_.Start(
-        FROM_HERE, kReapplyResolutionPeriod,
-        base::BindRepeating(&RdpClientWindow::ReapplyDesktopResolution,
-                            Microsoft::WRL::ComPtr<RdpClientWindow>(this)));
-  }
+  apply_resolution_attempts_ = 0;
+  apply_resolution_timer_.Start(
+      FROM_HERE, kReapplyResolutionPeriod,
+      base::BindRepeating(&RdpClientWindow::ReapplyDesktopResolution,
+                          Microsoft::WRL::ComPtr<RdpClientWindow>(this)));
 
   return S_OK;
 }
@@ -552,7 +542,6 @@ int RdpClientWindow::LogOnCreateError(HRESULT error) {
   LOG(ERROR) << "RDP: failed to initiate a connection to "
              << server_endpoint_.ToString() << ": error=" << std::hex << error;
   client_.Reset();
-  client_9_.Reset();
   client_settings_.Reset();
   return -1;
 }
@@ -572,7 +561,7 @@ void RdpClientWindow::NotifyDisconnected() {
 }
 
 HRESULT RdpClientWindow::UpdateDesktopResolution() {
-  if (!client_9_ || !user_logged_in_) {
+  if (!user_logged_in_) {
     return S_FALSE;
   }
 
@@ -611,7 +600,7 @@ HRESULT RdpClientWindow::UpdateDesktopResolution() {
   //     The WebRTC desktop capturer looks for resolution and DPI changes but if
   //     the method is called with the same params then the video stream can
   //     stall.
-  HRESULT hr = client_9_->UpdateSessionDisplaySettings(
+  HRESULT hr = client_->UpdateSessionDisplaySettings(
       /*ulDesktopWidth=*/width,
       /*ulDesktopHeight*/ height,
       /*ulPhysicalWidth=*/width,

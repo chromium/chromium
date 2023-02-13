@@ -207,8 +207,7 @@ class RdpClientWindow
   bool user_logged_in_ = false;
 
   // Interfaces exposed by the RDP ActiveX control.
-  Microsoft::WRL::ComPtr<mstsc::IMsRdpClient> client_;
-  Microsoft::WRL::ComPtr<mstsc::IMsRdpClient9> client_9_;
+  Microsoft::WRL::ComPtr<mstsc::IMsRdpClient9> client_;
   Microsoft::WRL::ComPtr<mstsc::IMsRdpClientAdvancedSettings> client_settings_;
 
   // Used to cancel modal dialog boxes shown by the RDP control.
