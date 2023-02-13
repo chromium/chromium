@@ -34,7 +34,6 @@
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/templates/saved_desk_test_helper.h"
-#include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
@@ -45,6 +44,7 @@
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -328,7 +328,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // the nudge first before dismissing the launcher.
   shell->dark_light_mode_controller()->SetShowNudgeForTesting(false);
 
-  MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
+  chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
 
   // Set up a test wallpaper controller client before signing in any users. At
   // the time a user logs in, Wallpaper controller relies on

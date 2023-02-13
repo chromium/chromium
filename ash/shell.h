@@ -40,6 +40,7 @@ class Window;
 
 namespace chromeos {
 class ImmersiveContext;
+class MultitaskMenuNudgeController;
 class SnapController;
 }  // namespace chromeos
 
@@ -171,7 +172,6 @@ class MouseCursorEventFilter;
 class MruWindowTracker;
 class MultiDeviceNotificationPresenter;
 class MultiDisplayMetricsController;
-class MultitaskMenuNudgeController;
 class NearbyShareControllerImpl;
 class NearbyShareDelegate;
 class NightLightControllerImpl;
@@ -577,7 +577,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   MultiDisplayMetricsController* multi_display_metrics_controller() {
     return multi_display_metrics_controller_.get();
   }
-  MultitaskMenuNudgeController* multitask_menu_nudge_controller() {
+  chromeos::MultitaskMenuNudgeController* multitask_menu_nudge_controller() {
     return multitask_menu_nudge_controller_.get();
   }
   NearbyShareControllerImpl* nearby_share_controller() {
@@ -944,7 +944,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       multi_display_metrics_controller_;
   std::unique_ptr<MultiDeviceNotificationPresenter>
       multidevice_notification_presenter_;
-  std::unique_ptr<MultitaskMenuNudgeController>
+  std::unique_ptr<chromeos::MultitaskMenuNudgeController>
       multitask_menu_nudge_controller_;
   std::unique_ptr<NearbyShareControllerImpl> nearby_share_controller_;
   std::unique_ptr<NearbyShareDelegate> nearby_share_delegate_;

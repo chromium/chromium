@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_MULTITASK_MENU_NUDGE_CONTROLLER_H_
-#define ASH_WM_MULTITASK_MENU_NUDGE_CONTROLLER_H_
+#ifndef CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_NUDGE_CONTROLLER_H_
+#define CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_NUDGE_CONTROLLER_H_
 
-#include "ash/ash_export.h"
-#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
@@ -18,22 +16,52 @@
 
 class PrefRegistrySimple;
 
+namespace ash {
+class MultitaskMenuNudgeControllerTest;
+}
+
 namespace ui {
 class Layer;
 }
 
-namespace ash {
+namespace chromeos {
 
 // Controller for showing the user education nudge for the multitask menu.
-class MultitaskMenuNudgeController : public aura::WindowObserver,
-                                     public wm::ActivationChangeObserver,
-                                     public display::DisplayObserver {
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
+    : public aura::WindowObserver,
+      public ::wm::ActivationChangeObserver,
+      public display::DisplayObserver {
  public:
-  static constexpr int kTabletNudgeYOffset =
-      6 + TabletModeMultitaskCue::kCueHeight +
-      TabletModeMultitaskCue::kCueYOffset;
+  // TODO(sammiequon): Get this from `::ash::TabletModeMultitaskCue`.
+  static constexpr int kTabletNudgeYOffset = 16;
 
-  MultitaskMenuNudgeController();
+  // The name of an integer pref that counts the number of times we have shown
+  // the multitask menu education nudge.
+  static constexpr char kClamshellShownCountPrefName[] =
+      "ash.wm_nudge.multitask_menu_nudge_count";
+  static constexpr char kTabletShownCountPrefName[] =
+      "cros.wm_nudge.tablet_multitask_nudge_count";
+
+  // The name of a time pref that stores the time we last showed the multitask
+  // menu education nudge.
+  static constexpr char kClamshellLastShownPrefName[] =
+      "ash.wm_nudge.multitask_menu_nudge_last_shown";
+  static constexpr char kTabletLastShownPrefName[] =
+      "cros.wm_nudge.tablet_multitask_nudge_last_shown";
+
+  // A delegate to provide platform specific implementation (ash, lacros).
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual bool IsRegularUser() const = 0;
+    virtual int GetShowCount(bool tablet_mode) const = 0;
+    virtual void SetShowCount(int count, bool tablet_mode) = 0;
+    virtual base::Time GetLastShownTime(bool tablet_mode) const = 0;
+    virtual void SetLastShownTime(base::Time time, bool tablet_mode) = 0;
+  };
+
+  MultitaskMenuNudgeController(aura::Window* root_window,
+                               std::unique_ptr<Delegate> delegate);
   MultitaskMenuNudgeController(const MultitaskMenuNudgeController&) = delete;
   MultitaskMenuNudgeController& operator=(const MultitaskMenuNudgeController&) =
       delete;
@@ -69,13 +97,13 @@ class MultitaskMenuNudgeController : public aura::WindowObserver,
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  ASH_EXPORT static void SetSuppressNudgeForTesting(bool val);
+  static void SetSuppressNudgeForTesting(bool val);
 
  private:
-  friend class MultitaskMenuNudgeControllerTest;
+  friend class ::ash::MultitaskMenuNudgeControllerTest;
 
   // Used to control the clock in a test setting.
-  ASH_EXPORT static void SetOverrideClockForTesting(base::Clock* test_clock);
+  static void SetOverrideClockForTesting(base::Clock* test_clock);
 
   // Runs when the nudge dismiss timer expires. Dismisses the nudge if it is
   // being shown.
@@ -104,10 +132,16 @@ class MultitaskMenuNudgeController : public aura::WindowObserver,
   // button on `window_`'s frame.
   views::View* anchor_view_ = nullptr;
 
+  aura::Window* root_window_ = nullptr;
+
+  std::unique_ptr<Delegate> delegate_;
+
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      root_window_observation_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_WM_MULTITASK_MENU_NUDGE_CONTROLLER_H_
+#endif  // CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_NUDGE_CONTROLLER_H_

@@ -183,7 +183,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/multi_display/multi_display_metrics_controller.h"
 #include "ash/wm/multi_display/persistent_window_controller.h"
-#include "ash/wm/multitask_menu_nudge_controller.h"
+#include "ash/wm/multitask_menu_nudge_delegate_ash.h"
 #include "ash/wm/native_cursor_manager_ash.h"
 #include "ash/wm/overlay_event_filter.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -221,6 +221,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -1260,11 +1261,6 @@ void Shell::Init(
   focus_controller_ = std::make_unique<::wm::FocusController>(focus_rules_);
   focus_controller_->AddObserver(this);
 
-  // Needs to be constructed after `focus_controller_` as it adds itself as an
-  // observer on construction.
-  multitask_menu_nudge_controller_ =
-      std::make_unique<MultitaskMenuNudgeController>();
-
   overview_controller_ = std::make_unique<OverviewController>();
 
   screen_position_controller_ = std::make_unique<ScreenPositionController>();
@@ -1534,9 +1530,18 @@ void Shell::Init(
   // WindowTreeHostManager to host the keyboard window.
   keyboard_controller_->CreateVirtualKeyboard(std::move(keyboard_ui_factory));
 
-  // Create window restore controller after WindowTreeHostManager::InitHosts()
+  // Create window restore controller after `WindowTreeHostManager::InitHosts()`
   // since it may need to add observers to root windows.
   window_restore_controller_ = std::make_unique<WindowRestoreController>();
+
+  // Needs to be constructed after `WindowTreeHostManager::InitHosts()` as it
+  // needs to get the activation client from chromeos/.
+  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
+    multitask_menu_nudge_controller_ =
+        std::make_unique<chromeos::MultitaskMenuNudgeController>(
+            GetPrimaryRootWindow(),
+            std::make_unique<MultitaskMenuNudgeDelegateAsh>());
+  }
 
   static_cast<CursorManager*>(cursor_manager_.get())->Init();
 

@@ -836,6 +836,8 @@ component("ash") {
     "wm/multi_display/persistent_window_controller.h",
     "wm/multi_display/persistent_window_info.cc",
     "wm/multi_display/persistent_window_info.h",
+    "wm/multitask_menu_nudge_delegate_ash.cc",
+    "wm/multitask_menu_nudge_delegate_ash.h",
 
     # These headers declare functions that are implemented inside of //ash, so
     # they cannot live in //ash/public/cpp/BUILD.gn. The "test api" files are
@@ -2224,8 +2226,6 @@ component("ash") {
     "wm/mru_window_tracker.h",
     "wm/multi_display/multi_display_metrics_controller.cc",
     "wm/multi_display/multi_display_metrics_controller.h",
-    "wm/multitask_menu_nudge_controller.cc",
-    "wm/multitask_menu_nudge_controller.h",
     "wm/native_cursor_manager_ash.cc",
     "wm/native_cursor_manager_ash.h",
     "wm/overlay_event_filter.cc",

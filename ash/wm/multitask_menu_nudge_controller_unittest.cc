@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/multitask_menu_nudge_controller.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_move_window_util.h"
@@ -50,7 +50,7 @@ class MultitaskMenuNudgeControllerTest : public AshTestBase {
 
     AshTestBase::SetUp();
 
-    MultitaskMenuNudgeController::SetSuppressNudgeForTesting(false);
+    chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(false);
     controller_ = Shell::Get()->multitask_menu_nudge_controller();
     controller_->SetOverrideClockForTesting(&test_clock_);
 
@@ -74,14 +74,15 @@ class MultitaskMenuNudgeControllerTest : public AshTestBase {
     const gfx::Rect expected_bounds(
         (window_screen_bounds.width() - size.width()) / 2 +
             window_screen_bounds.x(),
-        MultitaskMenuNudgeController::kTabletNudgeYOffset +
+        chromeos::MultitaskMenuNudgeController::kTabletNudgeYOffset +
             window_screen_bounds.y(),
         size.width(), size.height());
     EXPECT_EQ(expected_bounds, GetWidget()->GetWindowBoundsInScreen());
   }
 
  private:
-  MultitaskMenuNudgeController* controller_;
+  chromeos::MultitaskMenuNudgeController* controller_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

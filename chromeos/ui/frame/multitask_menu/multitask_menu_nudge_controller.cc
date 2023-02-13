@@ -2,47 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/multitask_menu_nudge_controller.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
-#include "ash/strings/grit/ash_strings.h"
-#include "ash/style/system_toast_style.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_is_test.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_header.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/user_manager/user_type.h"
+#include "ui/aura/client/screen_position_client.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_caption_button.h"
-#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
-namespace ash {
+namespace chromeos {
+
+namespace {
 
 constexpr base::TimeDelta kNudgeDismissTimeout = base::Seconds(6);
-
-// The name of an integer pref that counts the number of times we have shown the
-// multitask menu educational nudge.
-constexpr char kClamshellShownCountPrefName[] =
-    "ash.wm_nudge.multitask_menu_nudge_count";
-constexpr char kTabletShownCountPrefName[] =
-    "cros.wm_nudge.tablet_multitask_nudge_count";
-
-// The name of a time pref that stores the time we last showed the multitask
-// menu education nudge.
-constexpr char kClamshellLastShownPrefName[] =
-    "ash.wm_nudge.multitask_menu_nudge_last_shown";
-constexpr char kTabletLastShownPrefName[] =
-    "cros.wm_nudge.tablet_multitask_nudge_last_shown";
 
 // The nudge will not be shown if it already been shown 3 times, or if 24 hours
 // have not yet passed since it was last shown.
@@ -50,6 +36,10 @@ constexpr int kNudgeMaxShownCount = 3;
 constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
 
 constexpr base::TimeDelta kFadeDuration = base::Milliseconds(50);
+
+constexpr gfx::Insets kLabelInsets(10);
+constexpr int kLabelRoundingDp = 16;
+constexpr int kLabelMaxWidth = 512;
 
 constexpr int kNudgeDistanceFromAnchor = 8;
 
@@ -68,8 +58,6 @@ base::Time GetTime() {
   return g_clock_override ? g_clock_override->Now() : base::Time::Now();
 }
 
-namespace {
-
 std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -78,29 +66,55 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   params.parent = window->parent();
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
-
-  const int message_id = Shell::Get()->tablet_mode_controller()->InTabletMode()
+  const int message_id = TabletState::Get()->InTabletMode()
                              ? IDS_TABLET_MULTITASK_MENU_NUDGE_TEXT
                              : IDS_MULTITASK_MENU_NUDGE_TEXT;
 
-  widget->SetContentsView(std::make_unique<SystemToastStyle>(
-      base::DoNothing(), l10n_util::GetStringUTF16(message_id),
-      /*dismiss_text=*/u"", /*is_managed=*/false));
-
+  // The contents are a label with a background that has padding, background
+  // color and highlight border.
+  auto contents_view =
+      views::Builder<views::BoxLayoutView>()
+          .SetInsideBorderInsets(kLabelInsets)
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              ui::kColorSysSurface3, kLabelRoundingDp))
+          .SetBorder(std::make_unique<views::HighlightBorder>(
+              kLabelRoundingDp, views::HighlightBorder::Type::kHighlightBorder1,
+              /*use_light_colors=*/false))
+          .AddChildren(
+              views::Builder<views::Label>()
+                  .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+                  .SetAutoColorReadabilityEnabled(false)
+                  .SetMultiLine(true)
+                  .SetMaximumWidth(kLabelMaxWidth)
+                  .SetMaxLines(2)
+                  .SetSubpixelRenderingEnabled(false)
+                  .SetFontList(views::Label::GetDefaultFontList().Derive(
+                      2, gfx::Font::FontStyle::NORMAL,
+                      gfx::Font::Weight::NORMAL))
+                  .SetText(l10n_util::GetStringUTF16(message_id)))
+          .Build();
+  widget->SetContentsView(std::move(contents_view));
   return widget;
 }
 
 }  // namespace
 
-MultitaskMenuNudgeController::MultitaskMenuNudgeController() {
+MultitaskMenuNudgeController::MultitaskMenuNudgeController(
+    aura::Window* root_window,
+    std::unique_ptr<Delegate> delegate)
+    : root_window_(root_window), delegate_(std::move(delegate)) {
   display::Screen::GetScreen()->AddObserver(this);
-  Shell::Get()->activation_client()->AddObserver(this);
+
+  ::wm::GetActivationClient(root_window_)->AddObserver(this);
+  root_window_observation_.Observe(root_window_);
 }
 
 MultitaskMenuNudgeController::~MultitaskMenuNudgeController() {
   DismissNudge();
   display::Screen::GetScreen()->RemoveObserver(this);
-  Shell::Get()->activation_client()->RemoveObserver(this);
+  if (root_window_) {
+    ::wm::GetActivationClient(root_window_)->RemoveObserver(this);
+  }
 }
 
 // static
@@ -123,21 +137,13 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
     return;
   }
 
-  // Only regular users can see the nudge.
-  auto* session_controller = Shell::Get()->session_controller();
-  const absl::optional<user_manager::UserType> user_type =
-      session_controller->GetUserType();
-  if (!user_type || *user_type != user_manager::USER_TYPE_REGULAR) {
+  if (!delegate_->IsRegularUser()) {
     return;
   }
 
-  const bool in_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
-
-  const std::string shown_count_pref_name =
-      in_tablet_mode ? kTabletShownCountPrefName : kClamshellShownCountPrefName;
-  const std::string last_shown_pref_name =
-      in_tablet_mode ? kTabletLastShownPrefName : kClamshellLastShownPrefName;
+  const bool tablet_mode = TabletState::Get()->InTabletMode();
+  const int shown_count = delegate_->GetShowCount(tablet_mode);
+  const base::Time last_shown_time = delegate_->GetLastShownTime(tablet_mode);
 
   // TODO(b/267787811): When the multitask menu has been opened in tablet
   // mode, don't show the tablet nudge anymore.
@@ -145,15 +151,12 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
   // clamshell mode, don't show the clamshell nudge anymore.
 
   // Nudge has already been shown three times. No need to educate anymore.
-  auto* pref_service = session_controller->GetActivePrefService();
-  DCHECK(pref_service);
-  if (pref_service->GetInteger(shown_count_pref_name) >= kNudgeMaxShownCount) {
+  if (shown_count >= kNudgeMaxShownCount) {
     return;
   }
 
   // Nudge has been shown within the last 24 hours already.
-  if (GetTime() - pref_service->GetTime(last_shown_pref_name) <
-      kNudgeTimeBetweenShown) {
+  if ((GetTime() - last_shown_time) < kNudgeTimeBetweenShown) {
     return;
   }
 
@@ -162,7 +165,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
   // mode.
   views::FrameCaptionButton* anchor_view = nullptr;
 
-  if (!in_tablet_mode) {
+  if (!tablet_mode) {
     // Some tests create windows without a backing widget
     // (`CreateTestWindow()`), and some widgets may not have a header, test or
     // custom header.
@@ -194,7 +197,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
 
   anchor_view_ = anchor_view;
 
-  if (!in_tablet_mode) {
+  if (!tablet_mode) {
     // Create the layer which pulses on the maximize/restore button.
     pulse_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
     // TODO(b/267646118): Update the color to match the theme.
@@ -205,7 +208,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
   UpdateWidgetAndPulse();
   DCHECK(nudge_widget_);
 
-  // Fade the educational nudge in.
+  // Fade the education nudge in.
   ui::Layer* layer = nudge_widget_->GetLayer();
   layer->SetOpacity(0.0f);
   views::AnimationBuilder()
@@ -216,12 +219,11 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
       .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR);
 
   // Update the preferences.
-  pref_service->SetInteger(shown_count_pref_name,
-                           pref_service->GetInteger(shown_count_pref_name) + 1);
-  pref_service->SetTime(last_shown_pref_name, GetTime());
+  delegate_->SetShowCount(shown_count + 1, tablet_mode);
+  delegate_->SetLastShownTime(GetTime(), tablet_mode);
 
   // No need to update pulse or start timer in tablet mode.
-  if (in_tablet_mode) {
+  if (tablet_mode) {
     return;
   }
 
@@ -258,25 +260,28 @@ void MultitaskMenuNudgeController::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  DCHECK_EQ(window_, window);
-  UpdateWidgetAndPulse();
+  if (window == window_) {
+    UpdateWidgetAndPulse();
+  }
 }
 
 void MultitaskMenuNudgeController::OnWindowTargetTransformChanging(
     aura::Window* window,
     const gfx::Transform& new_transform) {
-  DCHECK_EQ(window_, window);
-
-  // Prevent unintended behaviour in situations that use transforms such as
-  // overview mode.
-  // TODO(hewer): Decide how the cue behaves when adjusting the split view
-  // bounds in tablet mode.
-  DismissNudge();
+  if (window == window_) {
+    // Prevent unintended behaviour in situations that use transforms such as
+    // overview mode.
+    // TODO(hewer): Decide how the cue behaves when adjusting the split view
+    // bounds in tablet mode.
+    DismissNudge();
+  }
 }
 
 void MultitaskMenuNudgeController::OnWindowStackingChanged(
     aura::Window* window) {
-  DCHECK_EQ(window_, window);
+  if (window != window_) {
+    return;
+  }
 
   // Stacking may change during the construction of the widget, at which
   // `nudge_widget_` would still be null.
@@ -291,6 +296,12 @@ void MultitaskMenuNudgeController::OnWindowStackingChanged(
 }
 
 void MultitaskMenuNudgeController::OnWindowDestroying(aura::Window* window) {
+  if (root_window_ == window) {
+    ::wm::GetActivationClient(root_window_)->RemoveObserver(this);
+    root_window_ = nullptr;
+    root_window_observation_.Reset();
+    return;
+  }
   DCHECK_EQ(window_, window);
   DismissNudge();
 }
@@ -300,8 +311,7 @@ void MultitaskMenuNudgeController::OnWindowActivated(
     aura::Window* gained_active,
     aura::Window* lost_active) {
   // Tablet mode window activation is handled by `TabletModeMultitaskCue`.
-  if (gained_active &&
-      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (gained_active && !TabletState::Get()->InTabletMode()) {
     MaybeShowNudge(gained_active);
   }
 }
@@ -339,8 +349,9 @@ void MultitaskMenuNudgeController::SetOverrideClockForTesting(
 }
 
 void MultitaskMenuNudgeController::OnDismissTimerEnded() {
-  if (!nudge_widget_)
+  if (!nudge_widget_) {
     return;
+  }
 
   ui::Layer* layer = nudge_widget_->GetLayer();
   layer->SetOpacity(1.0f);
@@ -358,16 +369,15 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
   DCHECK(window_);
   DCHECK(nudge_widget_);
 
-  const bool in_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
-  if (!in_tablet_mode) {
+  const bool tablet_mode = TabletState::Get()->InTabletMode();
+  if (!tablet_mode) {
     DCHECK(pulse_layer_);
     DCHECK(anchor_view_);
   }
 
   // Dismiss the nudge if the window (or anchor in clamshell mode) is not
   // visible, otherwise it will be floating.
-  if (!window_->IsVisible() || (!in_tablet_mode && !anchor_view_->IsDrawn())) {
+  if (!window_->IsVisible() || (!tablet_mode && !anchor_view_->IsDrawn())) {
     DismissNudge();
     return;
   }
@@ -385,7 +395,7 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
 
   const gfx::Size size = nudge_widget_->GetContentsView()->GetPreferredSize();
 
-  if (in_tablet_mode) {
+  if (tablet_mode) {
     // The nudge is placed in the top center of the window, just below the cue.
     nudge_widget_->SetBounds(gfx::Rect(
         (window_->bounds().width() - size.width()) / 2 + window_->bounds().x(),
@@ -406,7 +416,10 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
   // The circular pulse should be a square that matches the smaller dimension of
   // `anchor_view_`. We use rounded corners to make it look like a circle.
   gfx::Rect pulse_layer_bounds = anchor_bounds_in_screen;
-  wm::ConvertRectFromScreen(nudge_window->parent(), &pulse_layer_bounds);
+  gfx::Point pulse_layer_origin = pulse_layer_bounds.origin();
+  aura::client::GetScreenPositionClient(nudge_window->GetRootWindow())
+      ->ConvertPointFromScreen(nudge_window->parent(), &pulse_layer_origin);
+  pulse_layer_bounds.set_origin(pulse_layer_origin);
   const int length =
       std::min(pulse_layer_bounds.width(), pulse_layer_bounds.height());
   pulse_layer_bounds.ClampToCenteredSize(gfx::Size(length, length));
@@ -415,8 +428,9 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
 }
 
 void MultitaskMenuNudgeController::PerformPulseAnimation(int pulse_count) {
-  if (pulse_count >= kPulses)
+  if (pulse_count >= kPulses) {
     return;
+  }
 
   DCHECK(pulse_layer_);
 
@@ -446,4 +460,4 @@ void MultitaskMenuNudgeController::PerformPulseAnimation(int pulse_count) {
                     gfx::Tween::ACCEL_0_40_DECEL_100);
 }
 
-}  // namespace ash
+}  // namespace chromeos

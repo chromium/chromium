@@ -62,10 +62,10 @@
 #include "ash/wm/desks/persistent_desks_bar/persistent_desks_bar_controller.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/lock_state_controller.h"
-#include "ash/wm/multitask_menu_nudge_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "chromeos/ui/wm/fullscreen/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
@@ -127,7 +127,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   VPNListView::RegisterProfilePrefs(registry);
   WallpaperPrefManager::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
-  MultitaskMenuNudgeController::RegisterProfilePrefs(registry);
+  chromeos::MultitaskMenuNudgeController::RegisterProfilePrefs(registry);
 
   // Provide prefs registered in the browser for ash_unittests.
   if (for_test) {

@@ -320,6 +320,12 @@
       <message name="IDS_MULTITASK_MENU_EXIT_FLOAT_BUTTON_NAME" desc="Title and and accessible name of the float button on the multitask menu, when the window is in float state.">
         Exit float
       </message>
+      <message name="IDS_MULTITASK_MENU_NUDGE_TEXT" desc="Text that is shown when the clamshell multitask menu nudge is displayed.">
+        Keep hovering for more layout options
+      </message>
+      <message name="IDS_TABLET_MULTITASK_MENU_NUDGE_TEXT" desc="Text that is shown when the tablet multitask menu nudge is displayed.">
+        Swipe down for more layout options
+      </message>
 
       <if expr="chromeos_ash">
         <!-- The following strings are located here for accessibility from both //ash and //chrome -->
