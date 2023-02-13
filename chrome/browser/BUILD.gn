@@ -7396,11 +7396,10 @@ static_library("browser") {
     sources += [
       "content_settings/content_settings_supervised_provider.cc",
       "content_settings/content_settings_supervised_provider.h",
+      "supervised_user/child_accounts/child_account_service.cc",
       "supervised_user/child_accounts/child_account_service.h",
       "supervised_user/child_accounts/child_account_service_factory.cc",
       "supervised_user/child_accounts/child_account_service_factory.h",
-      "supervised_user/child_accounts/child_account_service_impl.cc",
-      "supervised_user/child_accounts/child_account_service_impl.h",
       "supervised_user/child_accounts/family_info_fetcher.cc",
       "supervised_user/child_accounts/family_info_fetcher.h",
       "supervised_user/child_accounts/permission_request_creator_apiary.cc",
