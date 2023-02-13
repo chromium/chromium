@@ -26,7 +26,6 @@ source_set("app_service") {
   deps = [
     "//base",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications",
@@ -53,6 +52,7 @@ source_set("app_service") {
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/chromeos",
       "//components/app_restore",
       "//components/services/app_service/public/cpp:instance_update",

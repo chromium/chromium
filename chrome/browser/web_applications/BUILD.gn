@@ -242,8 +242,6 @@ source_set("web_applications") {
     "web_app_sources.h",
     "web_app_sync_bridge.cc",
     "web_app_sync_bridge.h",
-    "web_app_system_web_app_delegate_map_utils.cc",
-    "web_app_system_web_app_delegate_map_utils.h",
     "web_app_tab_helper.cc",
     "web_app_tab_helper.h",
     "web_app_translation_manager.cc",
@@ -271,6 +269,13 @@ source_set("web_applications") {
       "isolated_web_apps/policy/isolated_web_app_policy_manager.h",
       "os_integration/web_app_run_on_os_login_chromeos.cc",
       "os_integration/web_app_shortcut_chromeos.cc",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "web_app_system_web_app_delegate_map_utils.cc",
+      "web_app_system_web_app_delegate_map_utils.h",
     ]
   }
 
@@ -356,26 +361,21 @@ source_set("web_applications") {
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:constants",
-    "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:non_code_constants",
     "//components/content_settings/core/browser",
     "//components/custom_handlers",
-    "//components/policy/core/browser:browser",
-    "//components/resources:components_resources_grit",
-    "//components/services/storage:lock_manager",
-
-    # TODO(crbug.com/1225132): Clean up this legacy crx dependency.
-    "//components/crx_file",
     "//components/device_event_log",
     "//components/keep_alive_registry:keep_alive_registry",
     "//components/keyed_service/content",
     "//components/password_manager/content/common",
     "//components/performance_manager",
     "//components/permissions:permissions",
+    "//components/policy/core/browser",
     "//components/pref_registry",
+    "//components/resources:components_resources_grit",
     "//components/services/app_service/public/cpp:app_file_handling",
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:app_update",
@@ -383,6 +383,7 @@ source_set("web_applications") {
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/app_service/public/cpp:run_on_os_login",
     "//components/services/app_service/public/cpp:types",
+    "//components/services/storage:lock_manager",
     "//components/site_engagement/content",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/sync",
@@ -410,6 +411,9 @@ source_set("web_applications") {
     "//ui/events/devices:devices",
     "//url",
   ]
+
+  # TODO(crbug.com/1225132): Clean up this legacy crx dependency.
+  deps += [ "//components/crx_file" ]
 
   if (is_chrome_branded) {
     sources += [
@@ -457,6 +461,7 @@ source_set("web_applications") {
       "//ash/components/arc:arc_base",
       "//ash/constants",
       "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/browser/ash/system_web_apps/types",
     ]
   }
 
@@ -547,7 +552,6 @@ source_set("web_applications_test_support") {
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//components/crx_file:crx_file",
@@ -572,6 +576,7 @@ source_set("web_applications_test_support") {
     deps += [
       "//ash/constants",
       "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/system_web_apps/types",
     ]
   }
 }
@@ -703,7 +708,6 @@ source_set("web_applications_unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications/extensions:extensions",
@@ -736,6 +740,7 @@ source_set("web_applications_unit_tests") {
       "//ash/constants",
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/system_web_apps/types",
       "//components/arc:arc_test_support",
     ]
   }

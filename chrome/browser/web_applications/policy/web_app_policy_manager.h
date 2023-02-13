@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
@@ -24,6 +23,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -62,8 +62,10 @@ class WebAppPolicyManager {
       WebAppRegistrar* app_registrar,
       WebAppSyncBridge* sync_bridge,
       OsIntegrationManager* os_integration_manager);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetSystemWebAppDelegateMap(
       const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
+#endif
 
   // `initialization_complete` waits for the first `SynchronizeInstalledApps` to
   // finish if it's triggered on `Start`.
@@ -178,8 +180,10 @@ class WebAppPolicyManager {
       nullptr;
   raw_ptr<WebAppRegistrar> app_registrar_ = nullptr;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
       system_web_apps_delegate_map_ = nullptr;
+#endif
   raw_ptr<OsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
       nullptr;
 

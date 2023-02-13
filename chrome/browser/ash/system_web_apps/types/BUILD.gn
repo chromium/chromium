@@ -2,17 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/buildflags.gni")
-import("//third_party/protobuf/proto_library.gni")
+import("//build/config/chromeos/ui_mode.gni")
 
-# TODO(crbug.com/1321984): Make SystemWebAppManager an ash-only object and
-# move all the GN dependencies under `if (is_chromeos_ash)` section.
-# assert(is_chromeos_ash)
-
-proto_library("proto") {
-  proto_in_dir = "//"
-  sources = [ "system_web_app_data.proto" ]
-}
+assert(is_chromeos_ash)
 
 source_set("types") {
   sources = [

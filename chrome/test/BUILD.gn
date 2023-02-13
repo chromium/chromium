@@ -1279,7 +1279,6 @@ if (!is_android) {
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/apps/app_service:test_support",
-      "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
       "//chrome/browser/bitmap_fetcher:browser_tests",
@@ -2492,6 +2491,7 @@ if (!is_android) {
         "//chrome/browser/ash/system_web_apps:browser_tests",
         "//chrome/browser/ash/system_web_apps/test_support",
         "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+        "//chrome/browser/ash/system_web_apps/types",
         "//chrome/browser/ui/ash/system_web_apps",
         "//chromeos/ash/components/standalone_browser",
       ]

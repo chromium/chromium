@@ -60,7 +60,6 @@ source_set("app_service") {
   deps = [
     "//base",
     "//chrome/app/theme:chrome_unscaled_resources",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/extensions",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles",
@@ -223,6 +222,7 @@ source_set("app_service") {
       "//chrome/browser:browser_process",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/image_decoder",
       "//chrome/browser/resources",
       "//chromeos/ash/components/login/login_state",

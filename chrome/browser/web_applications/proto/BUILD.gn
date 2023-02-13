@@ -15,8 +15,8 @@ proto_library("proto") {
     "web_app_translations.proto",
   ]
   link_deps = [
-    "//chrome/browser/ash/system_web_apps/types:proto",
-    "//content/browser/background_fetch:background_fetch_proto",
+    "//chrome/browser/ash/system_web_apps/types/proto",
     "//components/sync/protocol",
+    "//content/browser/background_fetch:background_fetch_proto",
   ]
 }

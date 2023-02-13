@@ -1772,7 +1772,6 @@ static_library("ui") {
       "//chrome/browser:browser_themes",
       "//chrome/browser:theme_properties",
       "//chrome/browser/apps/app_service",
-      "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/headless:command_processor",
@@ -3196,6 +3195,7 @@ static_library("ui") {
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/ash/login/oobe_quick_start",
       "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/ash/video_conference",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
@@ -5634,7 +5634,6 @@ static_library("ui") {
       "//apps",
       "//chrome/browser/apps/platform_apps",  # TODO(loyso): Remove this dep.
       "//chrome/browser/apps/platform_apps/api",
-      "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/extensions",
       "//chrome/browser/web_share_target",
       "//chrome/common/extensions/api",
@@ -5772,7 +5771,10 @@ static_library("ui") {
     ]
 
     if (is_chromeos_ash) {
-      deps += [ "//chrome/browser/ui/ash/system_web_apps" ]
+      deps += [
+        "//chrome/browser/ash/system_web_apps/types",
+        "//chrome/browser/ui/ash/system_web_apps",
+      ]
       allow_circular_includes_from +=
           [ "//chrome/browser/ui/ash/system_web_apps" ]
     }

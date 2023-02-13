@@ -40,7 +40,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -62,6 +61,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -132,10 +132,12 @@ void WebAppPolicyManager::SetSubsystems(
   os_integration_manager_ = os_integration_manager;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void WebAppPolicyManager::SetSystemWebAppDelegateMap(
     const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map) {
   system_web_apps_delegate_map_ = system_web_apps_delegate_map;
 }
+#endif
 
 void WebAppPolicyManager::Start(base::OnceClosure initialization_complete) {
   DCHECK(initialization_complete_.is_null());
