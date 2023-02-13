@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -233,6 +234,10 @@ void ContextualSearchDelegateImpl::OnUrlLoadComplete(
     std::unique_ptr<std::string> response_body) {
   if (!context)
     return;
+
+  // Network error codes are negative. See: src/net/base/net_error_list.h.
+  base::UmaHistogramSparse("Search.ContextualSearch.NetError",
+                           std::abs(url_loader_->NetError()));
 
   int response_code = ResolvedSearchTerm::kResponseCodeUninitialized;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {

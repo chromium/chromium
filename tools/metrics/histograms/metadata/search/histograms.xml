@@ -120,6 +120,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.ContextualSearch.NetError" enum="NetErrorCodes"
+    expires_after="M117">
+  <owner>donnd@chromium.org</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Network status codes recorded for each Contextual Search request after the
+    url loader calls the completion callback. Recorded value is the absolute
+    value of the received net::Error value.
+  </summary>
+</histogram>
+
 <histogram name="Search.ContextualSearch.OutcomesDuration" units="days"
     expires_after="M104">
   <obsolete>
