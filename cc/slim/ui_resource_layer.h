@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(CC_SLIM) UIResourceLayer : public Layer {
 
   cc::UIResourceId resource_id_ = 0;
   SkBitmap bitmap_;
-  gfx::RectF uv_;
+  gfx::RectF uv_{1.0f, 1.0f};
   float vertex_opacity_[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 };
 
