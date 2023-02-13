@@ -103,8 +103,8 @@ bool BaseTextInputType::PatternMismatchPerValue(const String& value) const {
     return false;
   if (!regexp_ || pattern_for_regexp_ != raw_pattern) {
     ScriptRegexp* raw_regexp = MakeGarbageCollected<ScriptRegexp>(
-        raw_pattern, kTextCaseSensitive, kMultilineDisabled,
-        ScriptRegexp::UTF16);
+        raw_pattern, kTextCaseSensitive, MultilineMode::kMultilineDisabled,
+        UnicodeMode::kUnicode);
     if (!raw_regexp->IsValid()) {
       GetElement().GetDocument().AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
@@ -119,7 +119,8 @@ bool BaseTextInputType::PatternMismatchPerValue(const String& value) const {
     }
     String pattern = "^(?:" + raw_pattern + ")$";
     regexp_ = MakeGarbageCollected<ScriptRegexp>(
-        pattern, kTextCaseSensitive, kMultilineDisabled, ScriptRegexp::UTF16);
+        pattern, kTextCaseSensitive, MultilineMode::kMultilineDisabled,
+        UnicodeMode::kUnicode);
     pattern_for_regexp_ = raw_pattern;
   } else if (!regexp_->IsValid()) {
     return false;

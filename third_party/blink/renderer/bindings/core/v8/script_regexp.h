@@ -35,21 +35,18 @@
 
 namespace blink {
 
-enum MultilineMode { kMultilineDisabled, kMultilineEnabled };
+enum class MultilineMode { kMultilineDisabled, kMultilineEnabled };
+// Map to, respectively: neither u nor v flags, u flag, v flag.
+enum class UnicodeMode { kBmpOnly, kUnicode, kUnicodeSets };
 
 class CORE_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
  public:
-  enum CharacterMode {
-    BMP,    // NOLINT
-    UTF16,  // NOLINT
-  };
-
   // For TextCaseSensitivity argument, TextCaseASCIIInsensitive and
   // TextCaseUnicodeInsensitive has identical behavior. They just add "i" flag.
   ScriptRegexp(const String&,
                TextCaseSensitivity,
-               MultilineMode = kMultilineDisabled,
-               CharacterMode = BMP);
+               MultilineMode = MultilineMode::kMultilineDisabled,
+               UnicodeMode = UnicodeMode::kBmpOnly);
 
   ScriptRegexp(const ScriptRegexp&) = delete;
   ScriptRegexp& operator=(const ScriptRegexp&) = delete;

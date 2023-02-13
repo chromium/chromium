@@ -238,7 +238,7 @@ Component* Component::Compile(StringView pattern,
     DCHECK(base::IsStringASCII(regexp_string));
     regexp = MakeGarbageCollected<ScriptRegexp>(
         String(regexp_string.data(), regexp_string.size()), case_sensitive,
-        kMultilineDisabled, ScriptRegexp::UTF16);
+        MultilineMode::kMultilineDisabled, UnicodeMode::kUnicode);
     if (!regexp->IsValid()) {
       // The regular expression failed to compile.  This means that some
       // custom regexp group within the pattern is illegal.  Attempt to
@@ -249,9 +249,9 @@ Component* Component::Compile(StringView pattern,
           continue;
         DCHECK(base::IsStringASCII(part.value));
         String group_value(part.value.data(), part.value.size());
-        regexp = MakeGarbageCollected<ScriptRegexp>(group_value, case_sensitive,
-                                                    kMultilineDisabled,
-                                                    ScriptRegexp::UTF16);
+        regexp = MakeGarbageCollected<ScriptRegexp>(
+            group_value, case_sensitive, MultilineMode::kMultilineDisabled,
+            UnicodeMode::kUnicode);
         if (regexp->IsValid())
           continue;
         exception_state.ThrowTypeError("Invalid " + TypeToString(type) +

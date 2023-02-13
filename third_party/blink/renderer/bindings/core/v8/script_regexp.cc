@@ -43,7 +43,7 @@ const uint32_t kBacktrackLimit = 1'000'000;
 ScriptRegexp::ScriptRegexp(const String& pattern,
                            TextCaseSensitivity case_sensitivity,
                            MultilineMode multiline_mode,
-                           CharacterMode char_mode) {
+                           UnicodeMode unicode_mode) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
@@ -52,22 +52,29 @@ ScriptRegexp::ScriptRegexp(const String& pattern,
   v8::TryCatch try_catch(isolate);
 
   unsigned flags = v8::RegExp::kNone;
-  if (case_sensitivity != kTextCaseSensitive)
+  if (case_sensitivity != kTextCaseSensitive) {
     flags |= v8::RegExp::kIgnoreCase;
-  if (multiline_mode == kMultilineEnabled)
+  }
+  if (multiline_mode == MultilineMode::kMultilineEnabled) {
     flags |= v8::RegExp::kMultiline;
-  if (char_mode == UTF16)
+  }
+  if (unicode_mode == UnicodeMode::kUnicode) {
     flags |= v8::RegExp::kUnicode;
+  } else if (unicode_mode == UnicodeMode::kUnicodeSets) {
+    flags |= v8::RegExp::kUnicodeSets;
+  }
 
   v8::Local<v8::RegExp> regex;
   if (v8::RegExp::NewWithBacktrackLimit(context, V8String(isolate, pattern),
                                         static_cast<v8::RegExp::Flags>(flags),
                                         kBacktrackLimit)
-          .ToLocal(&regex))
+          .ToLocal(&regex)) {
     regex_.Reset(isolate, regex);
-  if (try_catch.HasCaught() && !try_catch.Message().IsEmpty())
+  }
+  if (try_catch.HasCaught() && !try_catch.Message().IsEmpty()) {
     exception_message_ =
         ToCoreStringWithUndefinedOrNullCheck(try_catch.Message()->Get());
+  }
 }
 
 int ScriptRegexp::Match(StringView string,
