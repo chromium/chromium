@@ -17,12 +17,17 @@ absl::base_internal::FastTypeId (see https://crbug.com/1096380).
 
 How to update Abseil:
 
-1. Download the code from the Abseil git repository (see URL).
+1. From your source root run third_party/abseil-cpp/roll_abseil.py to download the code from the Abseil git repository and apply chromium specific patches.
 
-2. Copy the content of the Abseil git repo to //third_party/abseil-cpp.
+2. Update BUILD.gn files to match changes in BUILD.bazel
+
+If there is a new test, add dependcy on it from absl_tests in the
+third_party/abseil-cpp/BUILD.gn target
 
 3. From your source root run third_party/abseil-cpp/generate_def_files.py to
    regenerate Windows symbol definition files.
+
+4. If abseil adds new features, update styleguide/c++/c++-features.md and add headers for that feature into exclude list in root DEPS
 
 Local Modifications:
 
