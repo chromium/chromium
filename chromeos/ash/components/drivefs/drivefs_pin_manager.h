@@ -260,16 +260,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Check if the given item can be pinned.
   static bool CanPin(const mojom::FileMetadata& md, const Path& path);
 
-  // Adds an item to the files to track.  Does nothing if an item with the same
-  // ID already exists in the map. Updates the total number of bytes to transfer
-  // and the required space. Returns whether an item was actually added.
-  bool Add(Id id,
-           const Path& path,
-           int64_t size,
-           bool pinned,
-           bool available_offline = false);
-
-  // Adds an item to the files to track if it is of interest.
+  // Adds an item to the files to track if it is of interest. Does nothing if an
+  // item with the same ID already exists in the map. Updates the total number
+  // of bytes to transfer and the required space. Returns whether an item was
+  // actually added.
   bool Add(const mojom::FileMetadata& md, const Path& path);
 
   // Removes an item from the files to track. Does nothing if the item is not in

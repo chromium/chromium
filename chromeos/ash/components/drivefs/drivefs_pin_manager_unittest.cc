@@ -326,26 +326,54 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(progress.skipped_files, 0);
   }
 
-  const Id id1 = Id(549);
-  const Path path1 = Path("Path 1");
+  const Id id1 = Id(101);
+  const Path path1 = Path("/root/Path 1");
   const int64_t size1 = 698248964;
 
-  const Id id2 = Id(17);
-  const Path path2 = Path("Path 2");
+  const Id id2 = Id(102);
+  const Path path2 = Path("/root/Path 2");
   const int64_t size2 = 78964533;
+
+  const Id id3 = Id(103);
+  const Path path3 = Path("/root/Path 3");
+  const int64_t size3 = 896545;
+
+  const Id id4 = Id(104);
+  const Path path4 = Path("/root/Path 4");
+  const int64_t size4 = 8645;
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   EXPECT_THAT(manager.files_to_pin_, IsEmpty());
   EXPECT_THAT(manager.files_to_track_, IsEmpty());
 
   // Add an item.
-  EXPECT_TRUE(manager.Add(id1, path1, size1, false));
+  {
+    FileMetadata md;
+    md.stable_id = static_cast<int64_t>(id1);
+    md.type = FileMetadata::Type::kFile;
+    md.size = size1;
+    md.can_pin = FileMetadata::CanPinStatus::kOk;
+    md.pinned = false;
+    md.available_offline = false;
+    EXPECT_TRUE(manager.Add(md, path1));
+  }
+
   EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id1));
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
 
   // Try to add a conflicting item with the same ID, but different path and
   // size.
-  EXPECT_FALSE(manager.Add(id1, path2, size2, true));
+  {
+    FileMetadata md;
+    md.stable_id = static_cast<int64_t>(id1);
+    md.type = FileMetadata::Type::kFile;
+    md.size = size2;
+    md.can_pin = FileMetadata::CanPinStatus::kOk;
+    md.pinned = false;
+    md.available_offline = false;
+    EXPECT_FALSE(manager.Add(md, path2));
+  }
+
   EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id1));
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
 
@@ -373,7 +401,17 @@ TEST_F(DriveFsPinManagerTest, Add) {
   }
 
   // Add a second item, but which is already pinned this time.
-  EXPECT_TRUE(manager.Add(id2, path2, size2, true));
+  {
+    FileMetadata md;
+    md.stable_id = static_cast<int64_t>(id2);
+    md.type = FileMetadata::Type::kFile;
+    md.size = size2;
+    md.can_pin = FileMetadata::CanPinStatus::kOk;
+    md.pinned = true;
+    md.available_offline = false;
+    EXPECT_TRUE(manager.Add(md, path2));
+  }
+
   EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id1));
   EXPECT_THAT(manager.files_to_track_, SizeIs(2));
 
@@ -398,6 +436,84 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(progress.syncing_files, 1);
     EXPECT_EQ(progress.files_to_pin, 2);
     EXPECT_EQ(progress.skipped_files, 0);
+  }
+
+  // Add a third item, but which is not pinned yet, although already available
+  // offline.
+  {
+    FileMetadata md;
+    md.stable_id = static_cast<int64_t>(id3);
+    md.type = FileMetadata::Type::kFile;
+    md.size = size3;
+    md.can_pin = FileMetadata::CanPinStatus::kOk;
+    md.pinned = false;
+    md.available_offline = true;
+    EXPECT_TRUE(manager.Add(md, path3));
+  }
+
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id1, id3));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(3));
+
+  {
+    const auto it = manager.files_to_track_.find(id3);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [id, file] = *it;
+    EXPECT_EQ(id, id3);
+    EXPECT_EQ(file.path, path3);
+    EXPECT_EQ(file.total, size3);
+    EXPECT_EQ(file.transferred, size3);
+    EXPECT_TRUE(file.in_progress);
+    EXPECT_FALSE(file.pinned);
+  }
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, size3);
+    EXPECT_EQ(progress.bytes_to_pin, size1 + size2 + size3);
+    EXPECT_EQ(progress.required_space, 777216000);
+    EXPECT_EQ(progress.syncing_files, 1);
+    EXPECT_EQ(progress.files_to_pin, 3);
+    EXPECT_EQ(progress.skipped_files, 0);
+  }
+
+  // Try to add a forth item, but which is both pinned and already available
+  // offline. This should be skipped.
+  {
+    FileMetadata md;
+    md.stable_id = static_cast<int64_t>(id4);
+    md.type = FileMetadata::Type::kFile;
+    md.size = size4;
+    md.can_pin = FileMetadata::CanPinStatus::kOk;
+    md.pinned = true;
+    md.available_offline = true;
+    EXPECT_FALSE(manager.Add(md, path4));
+  }
+
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id1, id3));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(3));
+
+  {
+    const auto it = manager.files_to_track_.find(id3);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [id, file] = *it;
+    EXPECT_EQ(id, id3);
+    EXPECT_EQ(file.path, path3);
+    EXPECT_EQ(file.total, size3);
+    EXPECT_EQ(file.transferred, size3);
+    EXPECT_TRUE(file.in_progress);
+    EXPECT_FALSE(file.pinned);
+  }
+
+  {
+    const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.pinned_files, 0);
+    EXPECT_EQ(progress.pinned_bytes, size3);
+    EXPECT_EQ(progress.bytes_to_pin, size1 + size2 + size3);
+    EXPECT_EQ(progress.required_space, 777216000);
+    EXPECT_EQ(progress.syncing_files, 1);
+    EXPECT_EQ(progress.files_to_pin, 3);
+    EXPECT_EQ(progress.skipped_files, 1);
   }
 }
 
