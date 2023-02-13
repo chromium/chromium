@@ -26,20 +26,6 @@ std::string GetRequiredString(const base::Value::Dict& onc_apn,
   return *v;
 }
 
-absl::optional<std::vector<std::string>> GetStringList(
-    const base::Value::Dict& dict,
-    const char* key) {
-  const base::Value::List* v = dict.FindList(key);
-  if (!v) {
-    return absl::nullopt;
-  }
-  std::vector<std::string> result;
-  for (const base::Value& e : *v) {
-    result.push_back(e.GetString());
-  }
-  return result;
-}
-
 std::vector<std::string> GetRequiredStringList(const base::Value::Dict& dict,
                                                const char* key) {
   const base::Value::List* v = dict.FindList(key);
@@ -218,22 +204,10 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn,
 
   if (is_apn_revamp_enabled) {
     apn->id = GetString(onc_apn, ::onc::cellular_apn::kId);
-    // TODO(b/162365553) Remove missing value checking after Shill implements
-    // the interface.
-    if (!GetString(onc_apn, ::onc::cellular_apn::kIpType)) {
-      apn->ip_type = mojom::ApnIpType::kAutomatic;
-    } else {
-      apn->ip_type = OncApnIpTypeToMojo(
-          GetRequiredString(onc_apn, ::onc::cellular_apn::kIpType));
-    }
-    // TODO(b/162365553) Remove missing value checking after Shill implements
-    // the interface.
-    if (!GetStringList(onc_apn, ::onc::cellular_apn::kApnTypes)) {
-      apn->apn_types = {mojom::ApnType::kDefault};
-    } else {
-      apn->apn_types = OncApnTypesToMojo(
-          GetRequiredStringList(onc_apn, ::onc::cellular_apn::kApnTypes));
-    }
+    apn->ip_type = OncApnIpTypeToMojo(
+        GetRequiredString(onc_apn, ::onc::cellular_apn::kIpType));
+    apn->apn_types = OncApnTypesToMojo(
+        GetRequiredStringList(onc_apn, ::onc::cellular_apn::kApnTypes));
   }
 
   return apn;

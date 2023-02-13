@@ -37,9 +37,6 @@ namespace ash::onc {
 
 namespace {
 
-// TODO(b/162365553) Remove when shill constants are added.
-constexpr char kShillCellularUserApnList[] = "Cellular.UserAPNList";
-
 // Converts values to JSON strings. This will turn booleans into "true" or
 // "false" which is what Shill expects for VPN values (including L2TP).
 base::Value ConvertVpnValueToString(const base::Value& value) {
@@ -512,7 +509,7 @@ void LocalTranslator::TranslateCellular() {
       translator.TranslateFields();
       enabled_apns.Append(std::move(shill_apn));
     }
-    shill_dictionary_->Set(kShillCellularUserApnList,
+    shill_dictionary_->Set(shill::kCellularUserApnListProperty,
                            base::Value(std::move(enabled_apns)));
   }
 

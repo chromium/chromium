@@ -21,9 +21,6 @@ namespace ash::onc {
 
 namespace {
 
-// TODO(b/162365553) Remove when shill constants are added.
-constexpr char kShillApnId[] = "id";
-
 const FieldTranslationEntry eap_fields[] = {
     {::onc::eap::kAnonymousIdentity, shill::kEapAnonymousIdentityProperty},
     // This field is converted during translation, see onc_translator_*.
@@ -192,7 +189,7 @@ const FieldTranslationEntry cellular_apn_fields[] = {
     {::onc::cellular_apn::kAttach, shill::kApnAttachProperty},
     // This field is converted during translation, see onc_translator_*.
     // {::onc::cellular_apn::kIpType, shill::kApnIpTypeProperty},
-    {::onc::cellular_apn::kId, kShillApnId},
+    {::onc::cellular_apn::kId, shill::kApnIdProperty},
     // This field is converted during translation, see onc_translator_*.
     // {::onc::cellular_apn::kApnTypes, shill::kApnTypesProperty},
     {nullptr}};

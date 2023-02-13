@@ -75,7 +75,6 @@ constexpr char kCellularTestApnPassword1[] = "Test Pass";
 constexpr char kCellularTestApnAttach1[] = "";
 constexpr char kCellularTestApnId1[] = "1";
 constexpr char kCellularTestApnAuthenticationType1[] = "";
-constexpr char kCellularTestApnIpType1[] = "";
 constexpr char kCellularTestApnTypes1[] = "Default";
 
 constexpr char kCellularTestApn2[] = "TEST.APN2";
@@ -199,7 +198,7 @@ std::string CreateApnShillDict() {
   test_apn_data.attach = kCellularTestApnAttach1;
   test_apn_data.id = kCellularTestApnId1;
   test_apn_data.onc_authentication = kCellularTestApnAuthenticationType1;
-  test_apn_data.onc_ip_type = kCellularTestApnIpType1;
+  test_apn_data.onc_ip_type = ::onc::cellular_apn::kIpTypeIpv4;
   test_apn_data.onc_apn_types.emplace_back(kCellularTestApnTypes1);
   return test_apn_data.AsApnShillDict();
 }

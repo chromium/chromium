@@ -118,7 +118,18 @@ base::Value::Dict TestApnData::AsShillApn() const {
   apn.Set(kShillApnAuthenticationType, onc_authentication);
   if (features::IsApnRevampEnabled()) {
     apn.Set(kShillApnId, id);
-    apn.Set(shill::kApnIpTypeProperty, onc_ip_type);
+
+    std::string shill_ip_type;
+    if (onc_ip_type == ::onc::cellular_apn::kIpTypeIpv4) {
+      shill_ip_type = shill::kApnIpTypeV4;
+    } else if (onc_ip_type == ::onc::cellular_apn::kIpTypeIpv6) {
+      shill_ip_type = shill::kApnIpTypeV6;
+    } else if (onc_ip_type == shill::kApnIpTypeV4V6) {
+      shill_ip_type = shill::kApnIpTypeV4V6;
+    } else {
+      NOTREACHED() << "An IP type is required";
+    }
+    apn.Set(shill::kApnIpTypeProperty, shill_ip_type);
 
     std::string apn_types;
     for (const std::string& apn_type : onc_apn_types) {
