@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -143,6 +144,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         ->SetSessionID([[NSUUID UUID] UUIDString]);
 
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
+    WebStateUpdateBrowserAgent::CreateForBrowser(browser_.get());
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
 

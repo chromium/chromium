@@ -83,6 +83,8 @@ source_set("delegate") {
   sources = [
     "web_state_delegate_browser_agent.h",
     "web_state_delegate_browser_agent.mm",
+    "web_state_update_browser_agent.h",
+    "web_state_update_browser_agent.mm",
   ]
   deps = [
     ":tab_helper_delegates",

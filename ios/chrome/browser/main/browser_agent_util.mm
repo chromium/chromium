@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
+#import "ios/chrome/browser/web/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
@@ -112,4 +113,6 @@ void AttachBrowserAgents(Browser* browser) {
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.
   ios::provider::AttachBrowserAgents(browser);
+
+  WebStateUpdateBrowserAgent::CreateForBrowser(browser);
 }

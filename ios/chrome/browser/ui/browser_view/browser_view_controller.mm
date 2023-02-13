@@ -3124,11 +3124,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   if (oldWebState) {
-    // TODO(crbug.com/1272514): Move webstate lifecycle updates to a browser
-    // agent.
-    oldWebState->WasHidden();
-    oldWebState->SetKeepRenderProcessAlive(false);
-
     [self dismissPopups];
   }
   // NOTE: webStateSelected expects to always be called with a
@@ -3136,23 +3131,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (!newWebState)
     return;
 
-  // TODO(crbug.com/1272514): Move webstate lifecycle updates to a browser
-  // agent.
-  self.currentWebState->GetWebViewProxy().scrollViewProxy.clipsToBounds = NO;
-
   [self webStateSelected:newWebState notifyToolbar:YES];
-}
-
-// A WebState has been removed, remove its views from display if necessary.
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)atIndex {
-  // TODO(crbug.com/1272514): Move webstate lifecycle updates to a browser
-  // agent.
-  if (webState->IsRealized()) {
-    webState->WasHidden();
-    webState->SetKeepRenderProcessAlive(false);
-  }
 }
 
 - (void)webStateList:(WebStateList*)webStateList
