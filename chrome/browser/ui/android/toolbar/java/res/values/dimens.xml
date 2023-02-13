@@ -38,10 +38,9 @@ found in the LICENSE file.
     <dimen name="toolbar_icon_height">24dp</dimen>
 
     <!-- Start surface toolbar dimensions -->
-    <dimen name="start_surface_toolbar_button_padding_to_button">8dp</dimen>
     <dimen name="start_surface_toolbar_button_padding_to_edge">16dp</dimen>
     <dimen name="start_surface_fake_search_box_top_margin">24dp</dimen>
-    <dimen name="identity_disc_button_margin_start">16dp</dimen>
+    <dimen name="identity_disc_button_margin_start">8dp</dimen>
     <!-- The total height of the logo shown in Start surface content. This is
     calculated by |ntp_logo_height + ntp_logo_margin_top + ntp_logo_margin_bottom|. -->
     <dimen name="start_surface_content_logo_height">149dp</dimen>

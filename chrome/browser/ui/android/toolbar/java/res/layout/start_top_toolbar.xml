@@ -71,8 +71,6 @@ found in the LICENSE file.
         android:id="@+id/identity_disc_button"
         android:layout_toStartOf="@+id/menu_anchor"
         android:layout_marginStart="@dimen/identity_disc_button_margin_start"
-        android:paddingStart="@dimen/start_surface_toolbar_button_padding_to_button"
-        android:paddingEnd="@dimen/start_surface_toolbar_button_padding_to_button"
         style="@style/ToolbarButton"
         android:visibility="gone"
         tools:ignore="ContentDescription"/>

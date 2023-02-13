@@ -93,15 +93,11 @@ class StartSurfaceToolbarView extends RelativeLayout {
      * @param isVisible Whether the menu button is visible.
      */
     void setMenuButtonVisibility(boolean isVisible) {
-        // TODO(crbug.com/1258204): Update the paddings of mIdentityDiscButton when it's moved to
-        // start and remove final values here.
-        final int buttonPaddingLeft = getContext().getResources().getDimensionPixelOffset(
-                R.dimen.start_surface_toolbar_button_padding_to_button);
         final int buttonPaddingRight =
-                (isVisible ? buttonPaddingLeft
+                (isVisible ? 0
                            : getContext().getResources().getDimensionPixelOffset(
                                    R.dimen.start_surface_toolbar_button_padding_to_edge));
-        mIdentityDiscButton.setPadding(buttonPaddingLeft, 0, buttonPaddingRight, 0);
+        mIdentityDiscButton.setPadding(0, 0, buttonPaddingRight, 0);
     }
 
     /**
