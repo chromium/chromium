@@ -77,7 +77,9 @@ bool ExternalInstallOptions::operator==(
         options.uninstall_and_replace,
         options.additional_search_terms,
         options.only_use_app_info_factory,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         options.system_app_type,
+#endif
         options.oem_installed,
         options.disable_if_touchscreen_with_stylus_not_supported,
         options.handles_file_open_intents,
@@ -147,9 +149,11 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
            service_worker_registration_url
                ? base::Value(service_worker_registration_url->spec())
                : base::Value());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   root.Set("system_app_type",
            system_app_type ? base::Value(static_cast<int>(*system_app_type))
                            : base::Value());
+#endif
   root.Set("uninstall_and_replace", ConvertStringList(uninstall_and_replace));
   root.Set("user_display_mode",
            user_display_mode.has_value()
@@ -193,7 +197,9 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
 
   params.launch_query_params = install_options.launch_query_params;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   params.system_app_type = install_options.system_app_type;
+#endif
 
   params.oem_installed = install_options.oem_installed;
 

@@ -34,7 +34,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -71,6 +70,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
+#endif
 
 namespace web_app {
 

@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -17,6 +17,10 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/system_apps/public/system_web_app_type.h"
+#endif
 
 namespace web_app {
 
@@ -197,8 +201,10 @@ struct ExternalInstallOptions {
   // as the app's installation metadata.
   WebAppInstallInfoFactory app_info_factory;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The type of SystemWebApp, if this app is a System Web App.
   absl::optional<ash::SystemWebAppType> system_app_type = absl::nullopt;
+#endif
 
   // Whether the app was installed by an OEM and should be placed in a special
   // OEM folder in the app launcher. Only used on Chrome OS.

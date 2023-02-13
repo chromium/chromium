@@ -5,6 +5,12 @@
 #ifndef ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_TYPE_H_
 #define ASH_WEBUI_SYSTEM_APPS_PUBLIC_SYSTEM_WEB_APP_TYPE_H_
 
+#include "build/chromeos_buildflags.h"
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#error "Ash-only"
+#endif
+
 namespace ash {
 
 // An enum that lists the different System Apps that exist. Can be used to

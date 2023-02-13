@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
@@ -48,6 +47,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

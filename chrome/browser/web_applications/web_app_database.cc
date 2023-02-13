@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -47,6 +46,10 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/system_apps/public/system_web_app_type.h"
+#endif
 
 namespace web_app {
 
