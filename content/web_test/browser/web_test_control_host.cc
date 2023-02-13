@@ -1362,6 +1362,8 @@ void WebTestControlHost::OnImageDump(const std::string& actual_pixel_hash,
     }
 
     std::vector<gfx::PNGCodec::Comment> comments;
+    // Used by
+    // //third_party/blink/tools/blinkpy/common/read_checksum_from_png.py
     comments.push_back(gfx::PNGCodec::Comment("checksum", actual_pixel_hash));
     bool success = gfx::PNGCodec::Encode(
         static_cast<const unsigned char*>(image.getPixels()), pixel_format,
