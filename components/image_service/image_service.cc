@@ -10,6 +10,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/search_engines/search_engine_type.h"
@@ -51,10 +52,12 @@ class FetchJobManager {
           continue;
         }
 
-        // Only tag search visits for now.
+        // Only tag Google search visits for now.
         const auto& search_terms =
             visit.annotated_visit.content_annotations.search_terms;
-        if (!search_terms.empty()) {
+        if (google_util::IsGoogleSearchUrl(
+                visit.annotated_visit.url_row.url()) &&
+            !search_terms.empty()) {
           // TODO(tommycli): Add entity_id once implemented.
           requests.push_back({search_terms, "", &visit});
         }
