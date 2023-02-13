@@ -82,8 +82,9 @@ class ResizeLoopWindowObserver : public aura::WindowObserver {
   ResizeLoopWindowObserver& operator=(const ResizeLoopWindowObserver&) = delete;
 
   ~ResizeLoopWindowObserver() override {
-    if (window_)
+    if (window_) {
       window_->RemoveObserver(this);
+    }
   }
 
   bool in_resize_loop() const { return in_resize_loop_; }
@@ -1184,6 +1185,35 @@ TEST_F(ToplevelWindowEventHandlerTest, ExplicitDragWithChildWindow) {
   EXPECT_EQ(gfx::Rect(21, 11, 100, 100), w1->bounds());
   generator.MoveMouseBy(20, 10);
   EXPECT_EQ(gfx::Rect(41, 21, 100, 100), w1->bounds());
+}
+
+// Test that if a display is detached during dragging, the drag will be ended.
+TEST_F(ToplevelWindowEventHandlerTest, DetachDisplayDuringDragging) {
+  UpdateDisplay("800x600,1200x800");
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(2U, root_windows.size());
+  const display::Display display1 =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
+
+  // Move the window to the second display and start drag the window.
+  std::unique_ptr<aura::Window> dragged_window(CreateWindow(HTCAPTION));
+  dragged_window->SetBoundsInScreen(gfx::Rect(900, 0, 50, 60), display1);
+  EXPECT_EQ(dragged_window->GetRootWindow(), root_windows[1]);
+
+  ui::test::EventGenerator generator(root_windows[1], dragged_window.get());
+  generator.PressLeftButton();
+  generator.MoveMouseBy(20, 10);
+
+  EXPECT_TRUE(WindowState::Get(dragged_window.get())->is_dragged());
+  ToplevelWindowEventHandler* event_handler =
+      Shell::Get()->toplevel_window_event_handler();
+  EXPECT_TRUE(event_handler->is_drag_in_progress());
+  EXPECT_EQ(dragged_window->GetRootWindow(), root_windows[1]);
+
+  // Detach the display.
+  UpdateDisplay("800x600");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(WindowState::Get(dragged_window.get())->is_dragged());
 }
 
 namespace {
