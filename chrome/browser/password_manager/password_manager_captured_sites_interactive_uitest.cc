@@ -47,7 +47,8 @@ base::FilePath GetReplayFilesRootDirectory() {
         .AppendASCII("test")
         .AppendASCII("data")
         .AppendASCII("password")
-        .AppendASCII("captured_sites");
+        .AppendASCII("captured_sites")
+        .AppendASCII("artifacts");
   }
 
   ADD_FAILURE() << "Unable to obtain the Chromium src directory!";

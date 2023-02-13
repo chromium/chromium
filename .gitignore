@@ -169,7 +169,7 @@ vs-chromium-project.txt
 /chrome/test/chromeos/autotest/files/client/deps/perf_data_dep/test_src/
 /chrome/test/chromeos/autotest/files/client/deps/pyauto_dep/test_src/
 /chrome/test/chromeos/autotest/files/client/deps/telemetry_dep/test_src/
-/chrome/test/data/autofill/captured_sites
+/chrome/test/data/autofill/captured_sites/artifacts
 /chrome/test/data/extensions/api_test/permissions/nacl_enabled/bin
 /chrome/test/data/firefox2_profile/searchplugins
 /chrome/test/data/firefox2_searchplugins
@@ -178,7 +178,7 @@ vs-chromium-project.txt
 /chrome/test/data/gpu/vectortown_endurance/
 /chrome/test/data/gpu/vt/
 /chrome/test/data/layout_tests
-/chrome/test/data/password/captured_sites
+/chrome/test/data/password/captured_sites/artifacts
 /chrome/test/data/pdf_private
 /chrome/test/data/perf/canvas_bench
 /chrome/test/data/perf/frame_rate/content

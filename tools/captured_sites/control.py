@@ -89,8 +89,10 @@ _RUN_BACKGROUND = 'testing/xvfb.py'
 _RUN_DISABLED_TESTS = '--gtest_also_run_disabled_tests'
 _RUN_DEBUGGING_TESTS = '--gtest_break_on_failure'
 
+_AUTOFILL_ARTIFACTS_PATH = 'chrome/test/data/autofill/captured_sites/artifacts'
 _AUTOFILL_TEST = '*/AutofillCapturedSitesInteractiveTest'
 _AUTOFILL_REFRESH = '*/AutofillCapturedSitesRefresh'
+_PASSWORD_ARTIFACTS_PATH = 'chrome/test/data/password/captured_sites/artifacts'
 _PASSWORD_MANAGER_TEST = '*/CapturedSitesPasswordManagerBrowserTest'
 _PASSWORD_MANAGER_REFRESH = '*/CapturedSitesPasswordManagerRefresh'
 _VMODULE_AUTOFILL_FILE = 'autofill_captured_sites_interactive_uitest'
@@ -263,16 +265,16 @@ def _make_process_call(command_args, print_only):
 
 
 def _print_starting_url(url):
-  password_path = 'chrome/test/data/password/captured_sites/%s.test'
-  autofill_path = 'chrome/test/data/autofill/captured_sites/%s.test'
+  base_path = _AUTOFILL_ARTIFACTS_PATH
   if '-' in url:
-    path = password_path % url.replace('-', '/')
-  else:
-    path = autofill_path % url
-  if not os.path.exists(path):
+    base_path = _PASSWORD_ARTIFACTS_PATH
+    url = url.replace('-', '/')
+  archive_path = f'{base_path}/{url}.test'
+
+  if not os.path.exists(archive_path):
     print('No file found for "%s"' % url, file=sys.stderr)
     return
-  with open(path, 'r') as read_file:
+  with open(archive_path, 'r') as read_file:
     data = json.load(read_file)
   if not 'startingURL' in data:
     print('No startingURL found in file for "%s"' % url, file=sys.stderr)
@@ -319,11 +321,12 @@ def _launch_wpr(options, forward_args):
     command_args.append('--serve_response_in_chronological_sequence')
 
   if options.scenario_dir == '':
-    command_args.append('chrome/test/data/autofill/captured_sites/%s.wpr' %
-                        options.site_name)
+    wpr_path = f'{_AUTOFILL_ARTIFACTS_PATH}/{options.site_name}.wpr'
   else:
-    command_args.append('chrome/test/data/password/captured_sites/%s/%s.wpr' %
-                        (options.scenario_dir, options.site_name))
+    wpr_path = f'{_PASSWORD_ARTIFACTS_PATH}/'\
+             + f'{options.scenario_dir}/{options.site_name}.wpr'
+
+  command_args.append(wpr_path)
 
   _make_process_call(command_args + forward_args, options.print_only)
 

@@ -78,7 +78,8 @@ base::FilePath GetReplayFilesRootDirectory() {
         .AppendASCII("test")
         .AppendASCII("data")
         .AppendASCII("autofill")
-        .AppendASCII("captured_sites");
+        .AppendASCII("captured_sites")
+        .AppendASCII("artifacts");
   } else {
     src_dir.clear();
     return src_dir;
