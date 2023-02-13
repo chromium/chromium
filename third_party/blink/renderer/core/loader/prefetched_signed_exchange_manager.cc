@@ -21,7 +21,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -254,7 +253,7 @@ PrefetchedSignedExchangeManager::CreateDefaultURLLoader(
       ->CreateURLLoader(request, frame_->GetTaskRunner(TaskType::kNetworking),
                         frame_->GetTaskRunner(TaskType::kNetworkingUnfreezable),
                         /*keep_alive_handle=*/mojo::NullRemote(),
-                        WebBackForwardCacheLoaderHelper());
+                        /*back_forward_cache_loader_helper=*/nullptr);
 }
 
 std::unique_ptr<WebURLLoader>
@@ -272,7 +271,7 @@ PrefetchedSignedExchangeManager::CreatePrefetchedSignedExchangeURLLoader(
       ->CreateURLLoader(request, frame_->GetTaskRunner(TaskType::kNetworking),
                         frame_->GetTaskRunner(TaskType::kNetworkingUnfreezable),
                         /*keep_alive_handle=*/mojo::NullRemote(),
-                        WebBackForwardCacheLoaderHelper());
+                        /*back_forward_cache_loader_helper=*/nullptr);
 }
 
 void PrefetchedSignedExchangeManager::TriggerLoad() {

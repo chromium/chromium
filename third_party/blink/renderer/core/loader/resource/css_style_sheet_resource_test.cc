@@ -10,7 +10,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
@@ -56,8 +55,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
-      override {
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) override {
     return std::make_unique<NoopWebURLLoader>(std::move(freezable_task_runner));
   }
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {

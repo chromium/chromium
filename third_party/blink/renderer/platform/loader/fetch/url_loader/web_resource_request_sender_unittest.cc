@@ -33,7 +33,6 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
@@ -265,7 +264,7 @@ class WebResourceRequestSenderTest : public testing::Test,
         std::vector<std::unique_ptr<URLLoaderThrottle>>(),
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
-        WebBackForwardCacheLoaderHelper());
+        /*back_forward_cache_loader_helper=*/nullptr);
   }
 
   static MojoCreateDataPipeOptions DataPipeOptions() {

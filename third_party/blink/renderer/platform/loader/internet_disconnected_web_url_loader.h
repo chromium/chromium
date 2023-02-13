@@ -26,8 +26,7 @@ class BLINK_PLATFORM_EXPORT InternetDisconnectedWebURLLoaderFactory final
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
-      override;
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) override;
 };
 
 // WebURLLoader which always returns an internet disconnected error. At present,

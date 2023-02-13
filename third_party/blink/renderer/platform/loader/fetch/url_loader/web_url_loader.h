@@ -61,7 +61,7 @@ struct ResourceRequest;
 namespace blink {
 
 class ResourceLoadInfoNotifierWrapper;
-class WebBackForwardCacheLoaderHelper;
+class BackForwardCacheLoaderHelper;
 class WebBlobInfo;
 class WebData;
 class WebResourceRequestSender;
@@ -81,7 +81,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
   WebURLLoader(const WebURLLoader&) = delete;
   WebURLLoader& operator=(const WebURLLoader&) = delete;
   WebURLLoader();

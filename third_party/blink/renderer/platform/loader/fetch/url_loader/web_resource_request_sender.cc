@@ -42,7 +42,6 @@
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -242,7 +241,7 @@ int WebResourceRequestSender::SendAsync(
     WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
-    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) {
   CheckSchemeForReferrerPolicy(*request);
 
 #if BUILDFLAG(IS_ANDROID)

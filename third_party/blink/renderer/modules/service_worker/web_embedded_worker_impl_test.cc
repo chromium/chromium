@@ -28,7 +28,6 @@
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
@@ -110,7 +109,7 @@ class FakeWebURLLoaderFactory final : public WebURLLoaderFactory {
       scoped_refptr<base::SingleThreadTaskRunner>,
       scoped_refptr<base::SingleThreadTaskRunner>,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle>,
-      WebBackForwardCacheLoaderHelper) override {
+      BackForwardCacheLoaderHelper*) override {
     return std::make_unique<FakeWebURLLoader>();
   }
 };

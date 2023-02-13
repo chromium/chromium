@@ -13,7 +13,6 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
@@ -85,7 +84,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-      WebBackForwardCacheLoaderHelper) override {
+      BackForwardCacheLoaderHelper*) override {
     return std::make_unique<NoopWebURLLoader>(std::move(freezable_task_runner));
   }
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {

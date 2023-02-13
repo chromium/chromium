@@ -74,7 +74,6 @@ class ResourceError;
 class ResourceLoadObserver;
 class SubresourceWebBundle;
 class SubresourceWebBundleList;
-class WebBackForwardCacheLoaderHelper;
 class WebCodeCacheLoader;
 struct ResourceFetcherInit;
 struct ResourceLoaderOptions;
@@ -111,7 +110,7 @@ class PLATFORM_EXPORT ResourceFetcher
         const ResourceLoaderOptions&,
         scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-        WebBackForwardCacheLoaderHelper) = 0;
+        BackForwardCacheLoaderHelper*) = 0;
 
     // Create a code cache loader to fetch data from code caches.
     virtual std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() = 0;

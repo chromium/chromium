@@ -52,10 +52,10 @@ class URLLoaderFactory;
 }  // namespace network
 
 namespace blink {
+class BackForwardCacheLoaderHelper;
 class ResourceLoadInfoNotifierWrapper;
 class ThrottlingURLLoader;
 class MojoURLLoaderClient;
-class WebBackForwardCacheLoaderHelper;
 class WebRequestPeer;
 class WebResourceRequestSenderDelegate;
 struct SyncLoadResponse;
@@ -123,7 +123,7 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
       WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
 
   // Cancels the current request and `request_info_` will be released.
   virtual void Cancel(scoped_refptr<base::SingleThreadTaskRunner> task_runner);

@@ -16,7 +16,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
@@ -85,7 +84,7 @@ class ResourceLoaderTest : public testing::Test {
         const ResourceLoaderOptions& options,
         scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-        WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+        BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
         override {
       return std::make_unique<NoopWebURLLoader>(
           std::move(freezable_task_runner));

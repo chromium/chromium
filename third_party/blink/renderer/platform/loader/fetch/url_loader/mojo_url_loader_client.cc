@@ -21,7 +21,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_resource_request_sender.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
@@ -281,7 +280,7 @@ MojoURLLoaderClient::MojoURLLoaderClient(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     bool bypass_redirect_checks,
     const GURL& request_url,
-    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
     : back_forward_cache_timeout_(
           base::Seconds(GetLoadingTasksUnfreezableParamAsInt(
               "grace_period_to_finish_loading_in_seconds",
@@ -402,27 +401,22 @@ void MojoURLLoaderClient::OnReceiveResponse(
       std::move(new_body_consumer)));
 }
 
-BackForwardCacheLoaderHelper*
-MojoURLLoaderClient::GetBackForwardCacheLoaderHelper() {
-  return back_forward_cache_loader_helper_.GetBackForwardCacheLoaderHelper();
-}
-
 void MojoURLLoaderClient::EvictFromBackForwardCache(
     blink::mojom::RendererEvictionReason reason) {
   DCHECK_EQ(freeze_mode_, WebLoaderFreezeMode::kBufferIncoming);
   StopBackForwardCacheEvictionTimer();
-  auto* back_forward_cache_loader_helper = GetBackForwardCacheLoaderHelper();
-  if (!back_forward_cache_loader_helper)
+  if (!back_forward_cache_loader_helper_) {
     return;
-  back_forward_cache_loader_helper->EvictFromBackForwardCache(reason);
+  }
+  back_forward_cache_loader_helper_->EvictFromBackForwardCache(reason);
 }
 
 void MojoURLLoaderClient::DidBufferLoadWhileInBackForwardCache(
     size_t num_bytes) {
-  auto* back_forward_cache_loader_helper = GetBackForwardCacheLoaderHelper();
-  if (!back_forward_cache_loader_helper)
+  if (!back_forward_cache_loader_helper_) {
     return;
-  back_forward_cache_loader_helper->DidBufferLoadWhileInBackForwardCache(
+  }
+  back_forward_cache_loader_helper_->DidBufferLoadWhileInBackForwardCache(
       num_bytes);
 }
 

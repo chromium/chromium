@@ -22,7 +22,6 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_frame_request_blocker.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -78,8 +77,7 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
 
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
-      override {
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) override {
     DCHECK(freezable_task_runner);
     DCHECK(unfreezable_task_runner);
 

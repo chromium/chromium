@@ -53,7 +53,6 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -1386,9 +1385,9 @@ std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
     }
   }
 
-  return loader_factory_->CreateURLLoader(
-      ResourceRequest(request), options, freezable_task_runner_, task_runner,
-      WebBackForwardCacheLoaderHelper(back_forward_cache_loader_helper_));
+  return loader_factory_->CreateURLLoader(ResourceRequest(request), options,
+                                          freezable_task_runner_, task_runner,
+                                          back_forward_cache_loader_helper_);
 }
 
 std::unique_ptr<WebCodeCacheLoader> ResourceFetcher::CreateCodeCacheLoader() {

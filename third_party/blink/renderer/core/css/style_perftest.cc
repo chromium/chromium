@@ -15,7 +15,6 @@
 #include "base/json/json_reader.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "testing/perf/perf_test.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"

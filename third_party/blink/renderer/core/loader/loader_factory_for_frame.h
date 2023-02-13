@@ -39,7 +39,7 @@ class CORE_EXPORT LoaderFactoryForFrame final
       const ResourceLoaderOptions&,
       scoped_refptr<base::SingleThreadTaskRunner>,
       scoped_refptr<base::SingleThreadTaskRunner>,
-      WebBackForwardCacheLoaderHelper) override;
+      BackForwardCacheLoaderHelper*) override;
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override;
 
  private:

@@ -115,8 +115,7 @@ class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
-      override {
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) override {
     return std::make_unique<TestWebURLLoader>(freeze_mode_ptr_);
   }
 

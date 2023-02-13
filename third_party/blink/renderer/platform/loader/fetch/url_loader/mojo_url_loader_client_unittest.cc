@@ -23,7 +23,6 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_resource_request_sender.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
@@ -206,8 +205,8 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
     client_ = std::make_unique<MojoURLLoaderClient>(
         resource_request_sender_.get(), loading_task_runner,
         url_loader_factory->BypassRedirectChecks(), request->url,
-        WebBackForwardCacheLoaderHelper(
-            MakeGarbageCollected<TestBackForwardCacheLoaderHelper>()));
+        /*back*/
+        MakeGarbageCollected<TestBackForwardCacheLoaderHelper>());
     context_ = resource_request_sender_->context();
     context_->url_laoder_client = client_.get();
     url_loader_ = ThrottlingURLLoader::CreateLoaderAndStart(

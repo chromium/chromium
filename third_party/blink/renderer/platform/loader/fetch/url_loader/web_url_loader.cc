@@ -68,7 +68,6 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/url_conversion.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender.h"
@@ -80,6 +79,7 @@
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_security_policy.h"
+#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -105,7 +105,7 @@ class WebURLLoader::Context : public WebRequestPeer {
           scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
           scoped_refptr<network::SharedURLLoaderFactory> factory,
           mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-          WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
+          BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
 
   int request_id() const { return request_id_; }
   WebURLLoaderClient* client() const { return client_; }
@@ -196,7 +196,8 @@ class WebURLLoader::Context : public WebRequestPeer {
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper_;
+  WeakPersistent<BackForwardCacheLoaderHelper>
+      back_forward_cache_loader_helper_;
 };
 
 // WebURLLoader::Context -------------------------------------------------------
@@ -209,7 +210,7 @@ WebURLLoader::Context::Context(
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
     : loader_(loader),
       has_devtools_request_id_(false),
       client_(nullptr),
@@ -486,7 +487,7 @@ WebURLLoader::WebURLLoader(
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-    WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
     : context_(new Context(this,
                            cors_exempt_header_list,
                            terminate_sync_load_event,

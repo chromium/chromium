@@ -28,7 +28,7 @@ class SharedURLLoaderFactory;
 
 namespace blink {
 
-class WebBackForwardCacheLoaderHelper;
+class BackForwardCacheLoaderHelper;
 class WebURLLoader;
 class WebURLRequest;
 
@@ -55,7 +55,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderFactory {
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-      WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
 
  protected:
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;

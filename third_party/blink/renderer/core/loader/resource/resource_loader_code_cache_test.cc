@@ -4,7 +4,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -50,7 +49,7 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
         const ResourceLoaderOptions& options,
         scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-        WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
+        BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
         override {
       return std::make_unique<NoopWebURLLoader>(
           std::move(freezable_task_runner));

@@ -21,7 +21,6 @@
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
-#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -118,7 +117,7 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
       loader_options, cors_exempt_header_list, context,
       context->url_loader_factory_, std::move(throttles),
       std::move(resource_load_info_notifier_wrapper),
-      WebBackForwardCacheLoaderHelper());
+      /*back_forward_cache_loader_helper=*/nullptr);
 }
 
 SyncLoadContext::SyncLoadContext(
