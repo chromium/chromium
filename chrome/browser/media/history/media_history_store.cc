@@ -73,7 +73,8 @@ int MigrateFrom1To2(sql::Database* db, sql::MetaTable* meta_table) {
   // the mediaFeed table, so just bump the version number and return 2 to
   // indicate success.
   const int kTargetVersion = 2;
-  meta_table->SetVersionNumber(kTargetVersion);
+  // TODO(crbug.com/1414092): Handle failure instead of ignoring it.
+  std::ignore = meta_table->SetVersionNumber(kTargetVersion);
   return kTargetVersion;
 }
 
@@ -85,7 +86,8 @@ int MigrateFrom2To3(sql::Database* db, sql::MetaTable* meta_table) {
       "DROP TABLE IF EXISTS mediaFeedAssociatedOrigin;";
   sql::Transaction transaction(db);
   if (transaction.Begin() && db->Execute(k2To3Sql) && transaction.Commit()) {
-    meta_table->SetVersionNumber(kTargetVersion);
+    // TODO(crbug.com/1414092): Handle failure instead of ignoring it.
+    std::ignore = meta_table->SetVersionNumber(kTargetVersion);
     return kTargetVersion;
   }
   return 2;
@@ -96,7 +98,8 @@ int MigrateFrom3To4(sql::Database* db, sql::MetaTable* meta_table) {
   // the mediaFeed table, so just bump the version number and return 4 to
   // indicate success.
   const int kTargetVersion = 4;
-  meta_table->SetVersionNumber(kTargetVersion);
+  // TODO(crbug.com/1414092): Handle failure instead of ignoring it.
+  std::ignore = meta_table->SetVersionNumber(kTargetVersion);
   return kTargetVersion;
 }
 
@@ -105,7 +108,8 @@ int MigrateFrom4To5(sql::Database* db, sql::MetaTable* meta_table) {
   // the mediaFeed table, so just bump the version number and return 5 to
   // indicate success.
   const int kTargetVersion = 5;
-  meta_table->SetVersionNumber(kTargetVersion);
+  // TODO(crbug.com/1414092): Handle failure instead of ignoring it.
+  std::ignore = meta_table->SetVersionNumber(kTargetVersion);
   return kTargetVersion;
 }
 
@@ -120,7 +124,8 @@ int MigrateFrom5To6(sql::Database* db, sql::MetaTable* meta_table) {
     return 5;
   }
 
-  meta_table->SetVersionNumber(kTargetVersion);
+  // TODO(crbug.com/1414092): Handle failure instead of ignoring it.
+  std::ignore = meta_table->SetVersionNumber(kTargetVersion);
   return kTargetVersion;
 }
 
