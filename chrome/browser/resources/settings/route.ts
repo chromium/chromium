@@ -255,7 +255,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
     if (visibility.performance !== false &&
         ((loadTimeData.getBoolean('highEfficiencyModeAvailable')) ||
          (loadTimeData.getBoolean('batterySaverModeAvailable')))) {
-      r.PERFORMANCE = r.ADVANCED!.createSection(
+      r.PERFORMANCE = r.BASIC.createSection(
           '/performance', 'performance',
           loadTimeData.getString('performancePageTitle'));
     }

@@ -4,12 +4,10 @@
 
 import 'chrome://settings/settings.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
-import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, OpenWindowProxyImpl, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
+import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
@@ -21,7 +19,6 @@ suite('PerformancePage', function() {
   let performancePage: SettingsPerformancePageElement;
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
   let performanceMetricsProxy: TestPerformanceMetricsProxy;
-  let openWindowProxy: TestOpenWindowProxy;
   let tabDiscardExceptionsList: TabDiscardExceptionListElement;
 
   suiteSetup(function() {
@@ -36,9 +33,6 @@ suite('PerformancePage', function() {
 
     performanceMetricsProxy = new TestPerformanceMetricsProxy();
     PerformanceMetricsProxyImpl.setInstance(performanceMetricsProxy);
-
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     performancePage = document.createElement('settings-performance-page');
@@ -97,33 +91,6 @@ suite('PerformancePage', function() {
     enabled = await performanceMetricsProxy.whenCalled(
         'recordHighEfficiencyModeChanged');
     assertFalse(enabled);
-  });
-
-  test('testLearnMoreLink', async function() {
-    const learnMoreLink =
-        performancePage.$.toggleButton.shadowRoot!.querySelector<HTMLElement>(
-            '#highEfficiencyLearnMore');
-    assertTrue(!!learnMoreLink);
-    learnMoreLink.click();
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals(loadTimeData.getString('highEfficiencyLearnMoreUrl'), url);
-  });
-
-  test('testSendFeedbackLink', async function() {
-    const sendFeedbackLink =
-        performancePage.$.toggleButton.shadowRoot!.querySelector<HTMLElement>(
-            '#highEfficiencySendFeedback');
-
-    // <if expr="_google_chrome">
-    assertTrue(!!sendFeedbackLink);
-    sendFeedbackLink.click();
-    await performanceBrowserProxy.whenCalled(
-        'openHighEfficiencyFeedbackDialog');
-    // </if>
-
-    // <if expr="not _google_chrome">
-    assertFalse(!!sendFeedbackLink);
-    // </if>
   });
 
   function assertExceptionListEquals(rules: string[], message?: string) {

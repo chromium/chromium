@@ -6,8 +6,8 @@
 <settings-toggle-button id="toggleButton" on-change="onChange_"
     pref="{{prefs.performance_tuning.battery_saver_mode.state}}"
     label="$i18n{batterySaverModeLabel}"
-    sub-label-with-link="$i18n{batterySaverModeDescription}"
-    on-sub-label-link-clicked="onLearnMoreOrSendFeedbackClick_"
+    sub-label="$i18n{batterySaverModeDescription}"
+    learn-more-url="$i18n{batterySaverLearnMoreUrl}"
     numeric-unchecked-value="[[batterySaverModeStatePrefValues.disabled]]"
     numeric-checked-value="[[batterySaverModeStatePrefValues.enabledBelowThreshold]]"
     >

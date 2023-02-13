@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                                                 "settings-basic-page",
                                                 "settings-performance-page",
                                                 "settings-toggle-button",
-                                                "a#highEfficiencyLearnMore"};
+                                                "a#learn-more"};
 
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
@@ -157,12 +157,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                        BatterySaverLearnMoreLink) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLearnMorePage);
-  const DeepQuery battery_saver_learn_more = {"settings-ui",
-                                              "settings-main",
-                                              "settings-basic-page",
-                                              "settings-battery-page",
-                                              "settings-toggle-button",
-                                              "a#batterySaverLearnMore"};
+  const DeepQuery battery_saver_learn_more = {
+      "settings-ui",           "settings-main",          "settings-basic-page",
+      "settings-battery-page", "settings-toggle-button", "a#learn-more"};
 
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
@@ -282,12 +279,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                        HighEfficiencySendFeedbackDialogOpens) {
-  const DeepQuery high_efficiency_feedback = {"settings-ui",
-                                              "settings-main",
-                                              "settings-basic-page",
-                                              "settings-performance-page",
-                                              "settings-toggle-button",
-                                              "a#highEfficiencySendFeedback"};
+  const DeepQuery high_efficiency_feedback = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-section#performanceSettingsSection", "cr-icon-button#feedback"};
 
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),
@@ -299,12 +293,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                        BatterySaverSendFeedbackDialogOpens) {
-  const DeepQuery battery_saver_feedback = {"settings-ui",
-                                            "settings-main",
-                                            "settings-basic-page",
-                                            "settings-battery-page",
-                                            "settings-toggle-button",
-                                            "a#batterySaverSendFeedback"};
+  const DeepQuery battery_saver_feedback = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-section#batterySettingsSection", "cr-icon-button#feedback"};
 
   RunTestSequence(
       InstrumentTab(kPerformanceSettingsPage),

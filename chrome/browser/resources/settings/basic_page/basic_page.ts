@@ -427,6 +427,18 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     return visibility !== false &&
         loadTimeData.getBoolean('batterySaverModeAvailable');
   }
+
+  // <if expr="_google_chrome">
+  private onSendHighEfficiencyFeedbackClick_(e: Event) {
+    e.stopPropagation();
+    this.performanceBrowserProxy_.openHighEfficiencyFeedbackDialog();
+  }
+
+  private onSendBatterySaverFeedbackClick_(e: Event) {
+    e.stopPropagation();
+    this.performanceBrowserProxy_.openBatterySaverFeedbackDialog();
+  }
+  // </if>
 }
 
 declare global {

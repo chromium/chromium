@@ -9,18 +9,15 @@ import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
-import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ControlledRadioButtonElement} from '../controls/controlled_radio_button.js';
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {getTemplate} from './battery_page.html.js';
-import {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_browser_proxy.js';
 import {BatterySaverModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
 
 export const BATTERY_SAVER_MODE_PREF =
@@ -75,25 +72,11 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
     enabled: number,
   };
 
-  private browserProxy_: PerformanceBrowserProxy =
-      PerformanceBrowserProxyImpl.getInstance();
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 
   private isBatterySaverModeEnabled_(value: number): boolean {
     return value !== this.batterySaverModeStatePrefValues.disabled;
-  }
-
-  private onLearnMoreOrSendFeedbackClick_(e: CustomEvent<string>) {
-    switch (e.detail) {
-      case 'batterySaverLearnMore':
-        OpenWindowProxyImpl.getInstance().openUrl(
-            loadTimeData.getString('batterySaverLearnMoreUrl'));
-        break;
-      case 'batterySaverSendFeedback':
-        this.browserProxy_.openBatterySaverFeedbackDialog();
-        break;
-    }
   }
 
   private onChange_() {

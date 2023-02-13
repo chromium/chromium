@@ -712,9 +712,13 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       {"performancePageTitle", IDS_SETTINGS_PERFORMANCE_PAGE_TITLE},
       {"highEfficiencyModeLabel",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING},
+      {"highEfficiencyModeDescription",
+       IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION},
       {"batteryPageTitle", IDS_SETTINGS_BATTERY_PAGE_TITLE},
       {"batterySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING},
+      {"batterySaverModeDescription",
+       IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION},
       {"batterySaverModeEnabledOnBatteryLabel",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_ON_BATTERY_LABEL},
       {"batterySaverModeRadioGroupAriaLabel",
@@ -735,33 +739,6 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
           base::NumberToString16(
               performance_manager::user_tuning::UserPerformanceTuningManager::
                   kLowBatteryThresholdPercent)));
-  html_source->AddString(
-      "highEfficiencyModeDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING_DESCRIPTION,
-          base::UTF8ToUTF16(chrome::kHighEfficiencyModeLearnMoreUrl),
-          base::EscapeForHTML(l10n_util::GetStringUTF16(
-              IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_LEARN_MORE_ARIA_LABEL))
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-              ,
-          base::EscapeForHTML(l10n_util::GetStringUTF16(
-              IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_SEND_FEEDBACK_ARIA_LABEL))
-#endif
-              ));
-
-  html_source->AddString(
-      "batterySaverModeDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION,
-          base::UTF8ToUTF16(chrome::kBatterySaverModeLearnMoreUrl),
-          base::EscapeForHTML(l10n_util::GetStringUTF16(
-              IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_LEARN_MORE_ARIA_LABEL))
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-              ,
-          base::EscapeForHTML(l10n_util::GetStringUTF16(
-              IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_SEND_FEEDBACK_ARIA_LABEL))
-#endif
-              ));
 
   html_source->AddString("highEfficiencyLearnMoreUrl",
                          chrome::kHighEfficiencyModeLearnMoreUrl);
