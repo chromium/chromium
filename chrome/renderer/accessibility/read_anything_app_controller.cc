@@ -836,6 +836,8 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
                                    anchor_offset, focus_node_id, focus_offset);
 }
 
+// TODO(crbug.com/1266555): Change line_spacing and letter_spacing types from
+// int to their corresponding enums.
 void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
                                                    float font_size,
                                                    SkColor foreground_color,
@@ -843,9 +845,9 @@ void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
                                                    int line_spacing,
                                                    int letter_spacing) {
   auto line_spacing_enum =
-      static_cast<read_anything::mojom::Spacing>(line_spacing);
+      static_cast<read_anything::mojom::LineSpacing>(line_spacing);
   auto letter_spacing_enum =
-      static_cast<read_anything::mojom::Spacing>(letter_spacing);
+      static_cast<read_anything::mojom::LetterSpacing>(letter_spacing);
   OnThemeChanged(ReadAnythingTheme::New(font_name, font_size, foreground_color,
                                         background_color, line_spacing_enum,
                                         letter_spacing_enum));
@@ -875,32 +877,29 @@ void ReadAnythingAppController::SetPageHandlerForTesting(
 }
 
 double ReadAnythingAppController::GetLetterSpacingValue(
-    read_anything::mojom::Spacing letter_spacing) const {
-  // auto ls = static_cast<read_anything::mojom::Spacing>(letter_spacing);
+    read_anything::mojom::LetterSpacing letter_spacing) const {
   switch (letter_spacing) {
-    case read_anything::mojom::Spacing::kTight:
+    case read_anything::mojom::LetterSpacing::kTightDeprecated:
       return -0.05;
-    case read_anything::mojom::Spacing::kDefault:
+    case read_anything::mojom::LetterSpacing::kStandard:
       return 0;
-    case read_anything::mojom::Spacing::kLoose:
+    case read_anything::mojom::LetterSpacing::kWide:
       return 0.05;
-    case read_anything::mojom::Spacing::kVeryLoose:
+    case read_anything::mojom::LetterSpacing::kVeryWide:
       return 0.1;
   }
 }
 
 double ReadAnythingAppController::GetLineSpacingValue(
-    read_anything::mojom::Spacing line_spacing) const {
-  // auto ls = static_cast<read_anything::mojom::Spacing>(line_spacing);
+    read_anything::mojom::LineSpacing line_spacing) const {
   switch (line_spacing) {
-    case read_anything::mojom::Spacing::kTight:
+    case read_anything::mojom::LineSpacing::kTightDeprecated:
       return 1.0;
-    case read_anything::mojom::Spacing::kDefault:
-    default:
+    case read_anything::mojom::LineSpacing::kStandard:
       return 1.15;
-    case read_anything::mojom::Spacing::kLoose:
+    case read_anything::mojom::LineSpacing::kLoose:
       return 1.5;
-    case read_anything::mojom::Spacing::kVeryLoose:
+    case read_anything::mojom::LineSpacing::kVeryLoose:
       return 2.0;
   }
 }

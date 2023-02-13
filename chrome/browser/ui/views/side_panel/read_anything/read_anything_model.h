@@ -19,7 +19,8 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/models/combobox_model.h"
 
-using read_anything::mojom::Spacing;
+using read_anything::mojom::LetterSpacing;
+using read_anything::mojom::LineSpacing;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingFontModel
@@ -111,15 +112,16 @@ class ReadAnythingLineSpacingModel : public ReadAnythingMenuModel {
   ~ReadAnythingLineSpacingModel() override;
 
   bool IsValidIndex(size_t index) override;
-  read_anything::mojom::Spacing GetLineSpacingAt(size_t index);
+  size_t GetIndexForLineSpacing(read_anything::mojom::LineSpacing line_spacing);
+  read_anything::mojom::LineSpacing GetLineSpacingAt(size_t index);
 
  private:
   // Names for the drop down options in front-end.
-  std::vector<read_anything::mojom::Spacing> lines_choices_;
+  std::vector<read_anything::mojom::LineSpacing> lines_choices_;
 
   // Display names for line spacing choices
   std::u16string GetLineSpacingName(
-      read_anything::mojom::Spacing line_spacing) const;
+      read_anything::mojom::LineSpacing line_spacing) const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -140,15 +142,17 @@ class ReadAnythingLetterSpacingModel : public ReadAnythingMenuModel {
   ~ReadAnythingLetterSpacingModel() override;
 
   bool IsValidIndex(size_t index) override;
-  read_anything::mojom::Spacing GetLetterSpacingAt(size_t index);
+  size_t GetIndexForLetterSpacing(
+      read_anything::mojom::LetterSpacing letter_spacing);
+  read_anything::mojom::LetterSpacing GetLetterSpacingAt(size_t index);
 
  private:
   // Letter spacing choices for the drop down options in front-end.
-  std::vector<read_anything::mojom::Spacing> choices_;
+  std::vector<read_anything::mojom::LetterSpacing> choices_;
 
   // Display names for each letter spacing choice
   std::u16string GetLetterSpacingName(
-      read_anything::mojom::Spacing letter_spacing) const;
+      read_anything::mojom::LetterSpacing letter_spacing) const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -172,8 +176,8 @@ class ReadAnythingModel {
         double font_scale,
         ui::ColorId foreground_color_id,
         ui::ColorId background_color_id,
-        read_anything::mojom::Spacing line_spacing,
-        read_anything::mojom::Spacing letter_spacing) = 0;
+        read_anything::mojom::LineSpacing line_spacing,
+        read_anything::mojom::LetterSpacing letter_spacing) = 0;
   };
 
   ReadAnythingModel();
@@ -184,8 +188,8 @@ class ReadAnythingModel {
   void Init(const std::string& font_name,
             double font_scale,
             read_anything::mojom::Colors colors,
-            read_anything::mojom::Spacing line_spacing,
-            read_anything::mojom::Spacing letter_spacing);
+            read_anything::mojom::LineSpacing line_spacing,
+            read_anything::mojom::LetterSpacing letter_spacing);
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
@@ -227,8 +231,9 @@ class ReadAnythingModel {
   // A scale multiplier for font size (internal use only, not shown to user).
   float font_scale_ = kReadAnythingDefaultFontScale;
 
-  read_anything::mojom::Spacing line_spacing_ = Spacing::kDefault;
-  read_anything::mojom::Spacing letter_spacing_ = Spacing::kDefault;
+  read_anything::mojom::LineSpacing line_spacing_ = LineSpacing::kStandard;
+  read_anything::mojom::LetterSpacing letter_spacing_ =
+      LetterSpacing::kStandard;
 
   // Currently selected index for colors combobox
   int colors_combobox_index_ = 0;

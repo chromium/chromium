@@ -135,7 +135,7 @@ void ReadAnythingToolbarView::ChangeLineSpacingCallback() {
 void ReadAnythingToolbarView::ChangeLetterSpacingCallback() {
   if (delegate_)
     delegate_->OnLetterSpacingChanged(
-        letter_spacing_button_->GetSelectedIndex().value_or(1));
+        letter_spacing_button_->GetSelectedIndex().value_or(0));
 }
 
 void ReadAnythingToolbarView::OnCoordinatorDestroyed() {
@@ -153,8 +153,8 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
     double font_scale,
     ui::ColorId foreground_color_id,
     ui::ColorId background_color_id,
-    read_anything::mojom::Spacing line_spacing,
-    read_anything::mojom::Spacing letter_spacing) {
+    read_anything::mojom::LineSpacing line_spacing,
+    read_anything::mojom::LetterSpacing letter_spacing) {
   if (!GetColorProvider())
     return;
 

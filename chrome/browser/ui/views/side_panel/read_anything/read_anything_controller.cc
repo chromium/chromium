@@ -146,8 +146,13 @@ void ReadAnythingController::OnLineSpacingChanged(int new_index) {
 
   model_->SetSelectedLineSpacingByIndex(new_index);
 
+  // Saved preferences correspond to LineSpacing. However, since it contains a
+  // deprecated value, the drop-down indices don't correspond exactly.
+  LineSpacing line_spacing =
+      model_->GetLineSpacingModel()->GetLineSpacingAt(new_index);
   browser_->profile()->GetPrefs()->SetInteger(
-      prefs::kAccessibilityReadAnythingLineSpacing, new_index);
+      prefs::kAccessibilityReadAnythingLineSpacing,
+      static_cast<size_t>(line_spacing));
 }
 
 ReadAnythingMenuModel* ReadAnythingController::GetLineSpacingModel() {
@@ -160,8 +165,13 @@ void ReadAnythingController::OnLetterSpacingChanged(int new_index) {
 
   model_->SetSelectedLetterSpacingByIndex(new_index);
 
+  // Saved preferences correspond to LetterSpacing. However, since it contains a
+  // deprecated value, the drop-down indices don't correspond exactly.
+  LetterSpacing letter_spacing =
+      model_->GetLetterSpacingModel()->GetLetterSpacingAt(new_index);
   browser_->profile()->GetPrefs()->SetInteger(
-      prefs::kAccessibilityReadAnythingLetterSpacing, new_index);
+      prefs::kAccessibilityReadAnythingLetterSpacing,
+      static_cast<size_t>(letter_spacing));
 }
 
 ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {

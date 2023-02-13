@@ -43,15 +43,15 @@ void RegisterReadAnythingProfilePrefs(
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kAccessibilityReadAnythingColorInfo,
-      (int)read_anything::mojom::Colors::kDefaultValue,
+      static_cast<int>(read_anything::mojom::Colors::kDefaultValue),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kAccessibilityReadAnythingLineSpacing,
-      (int)read_anything::mojom::Spacing::kDefault,
+      static_cast<int>(read_anything::mojom::LineSpacing::kDefaultValue),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kAccessibilityReadAnythingLetterSpacing,
-      (int)read_anything::mojom::Spacing::kDefault,
+      static_cast<int>(read_anything::mojom::LetterSpacing::kDefaultValue),
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 

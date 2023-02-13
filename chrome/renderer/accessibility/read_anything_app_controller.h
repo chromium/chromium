@@ -170,8 +170,9 @@ class ReadAnythingAppController
       mojo::PendingRemote<read_anything::mojom::PageHandler> page_handler);
 
   double GetLetterSpacingValue(
-      read_anything::mojom::Spacing letter_spacing) const;
-  double GetLineSpacingValue(read_anything::mojom::Spacing line_spacing) const;
+      read_anything::mojom::LetterSpacing letter_spacing) const;
+  double GetLineSpacingValue(
+      read_anything::mojom::LineSpacing line_spacing) const;
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
   bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) const;

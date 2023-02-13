@@ -21,7 +21,8 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-using read_anything::mojom::Spacing;
+using read_anything::mojom::LetterSpacing;
+using read_anything::mojom::LineSpacing;
 
 ReadAnythingModel::ReadAnythingModel()
     : font_name_(kReadAnythingDefaultFontName),
@@ -37,8 +38,8 @@ ReadAnythingModel::~ReadAnythingModel() = default;
 void ReadAnythingModel::Init(const std::string& font_name,
                              double font_scale,
                              read_anything::mojom::Colors colors,
-                             Spacing line_spacing,
-                             Spacing letter_spacing) {
+                             LineSpacing line_spacing,
+                             LetterSpacing letter_spacing) {
   // If this profile has previously selected choices that were saved to
   // prefs, check they are still a valid, and then assign if so.
   if (font_model_->IsValidFontName(font_name)) {
@@ -52,12 +53,18 @@ void ReadAnythingModel::Init(const std::string& font_name,
     colors_model_->SetSelectedIndex(colors_index);
   }
 
-  size_t line_spacing_index = static_cast<size_t>(line_spacing);
+  // LineSpacing contains a deprecated value, so it doesn't correspond exactly
+  // to drop-down indices.
+  size_t line_spacing_index =
+      line_spacing_model_->GetIndexForLineSpacing(line_spacing);
   if (line_spacing_model_->IsValidIndex(line_spacing_index)) {
     line_spacing_model_->SetSelectedIndex(line_spacing_index);
   }
 
-  size_t letter_spacing_index = static_cast<size_t>(letter_spacing);
+  // LetterSpacing contains a deprecated value, so it doesn't correspond exactly
+  // to drop-down indices.
+  size_t letter_spacing_index =
+      letter_spacing_model_->GetIndexForLetterSpacing(letter_spacing);
   if (letter_spacing_model_->IsValidIndex(letter_spacing_index)) {
     letter_spacing_model_->SetSelectedIndex(letter_spacing_index);
   }
@@ -309,14 +316,13 @@ ReadAnythingColorsModel::~ReadAnythingColorsModel() = default;
 
 ReadAnythingLineSpacingModel::ReadAnythingLineSpacingModel() {
   // Define the line spacing options available to the user.
-  lines_choices_.emplace_back(Spacing::kTight);
-  lines_choices_.emplace_back(Spacing::kDefault);
-  lines_choices_.emplace_back(Spacing::kLoose);
-  lines_choices_.emplace_back(Spacing::kVeryLoose);
+  lines_choices_.emplace_back(LineSpacing::kStandard);
+  lines_choices_.emplace_back(LineSpacing::kLoose);
+  lines_choices_.emplace_back(LineSpacing::kVeryLoose);
   lines_choices_.shrink_to_fit();
 
   for (auto& line_spacing : lines_choices_) {
-    AddCheckItem(static_cast<int>(line_spacing),
+    AddCheckItem(GetIndexForLineSpacing(line_spacing),
                  GetLineSpacingName(line_spacing));
   }
 }
@@ -325,22 +331,40 @@ bool ReadAnythingLineSpacingModel::IsValidIndex(size_t index) {
   return index < lines_choices_.size();
 }
 
-Spacing ReadAnythingLineSpacingModel::GetLineSpacingAt(size_t index) {
+size_t ReadAnythingLineSpacingModel::GetIndexForLineSpacing(
+    LineSpacing line_spacing) {
+  switch (line_spacing) {
+    // If we read the deprecated value, choose the closest option.
+    case LineSpacing::kTightDeprecated:
+    case LineSpacing::kStandard:
+      return 0;
+    case LineSpacing::kLoose:
+      return 1;
+    case LineSpacing::kVeryLoose:
+      return 2;
+  }
+}
+
+LineSpacing ReadAnythingLineSpacingModel::GetLineSpacingAt(size_t index) {
   return lines_choices_[index];
 }
 
 std::u16string ReadAnythingLineSpacingModel::GetLineSpacingName(
-    Spacing line_spacing) const {
+    LineSpacing line_spacing) const {
+  int label;
   switch (line_spacing) {
-    case Spacing::kTight:
-      return u"Tight";
-    case Spacing::kDefault:
-      return u"Default";
-    case Spacing::kLoose:
-      return u"Loose";
-    case Spacing::kVeryLoose:
-      return u"Very Loose";
+    // If we read the deprecated value, choose the closest option.
+    case LineSpacing::kTightDeprecated:
+    case LineSpacing::kStandard:
+      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD;
+      break;
+    case LineSpacing::kLoose:
+      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_LOOSE;
+      break;
+    case LineSpacing::kVeryLoose:
+      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_LOOSE;
   }
+  return l10n_util::GetStringUTF16(label);
 }
 
 ReadAnythingLineSpacingModel::~ReadAnythingLineSpacingModel() = default;
@@ -349,14 +373,13 @@ ReadAnythingLineSpacingModel::~ReadAnythingLineSpacingModel() = default;
 // ReadAnythingLetterSpacingModel
 ///////////////////////////////////////////////////////////////////////////////
 ReadAnythingLetterSpacingModel::ReadAnythingLetterSpacingModel() {
-  choices_.emplace_back(Spacing::kTight);
-  choices_.emplace_back(Spacing::kDefault);
-  choices_.emplace_back(Spacing::kLoose);
-  choices_.emplace_back(Spacing::kVeryLoose);
+  choices_.emplace_back(LetterSpacing::kStandard);
+  choices_.emplace_back(LetterSpacing::kWide);
+  choices_.emplace_back(LetterSpacing::kVeryWide);
   choices_.shrink_to_fit();
 
   for (auto& letter_spacing : choices_) {
-    AddCheckItem(static_cast<int>(letter_spacing),
+    AddCheckItem(GetIndexForLetterSpacing(letter_spacing),
                  GetLetterSpacingName(letter_spacing));
   }
 }
@@ -365,26 +388,37 @@ bool ReadAnythingLetterSpacingModel::IsValidIndex(size_t index) {
   return index < choices_.size();
 }
 
-Spacing ReadAnythingLetterSpacingModel::GetLetterSpacingAt(size_t index) {
+size_t ReadAnythingLetterSpacingModel::GetIndexForLetterSpacing(
+    LetterSpacing letter_spacing) {
+  switch (letter_spacing) {
+    // If we read the deprecated value, choose the closest option.
+    case LetterSpacing::kTightDeprecated:
+    case LetterSpacing::kStandard:
+      return 0;
+    case LetterSpacing::kWide:
+      return 1;
+    case LetterSpacing::kVeryWide:
+      return 2;
+  }
+}
+
+LetterSpacing ReadAnythingLetterSpacingModel::GetLetterSpacingAt(size_t index) {
   return choices_[index];
 }
 
-// TODO (crbug.com/1266555): Change to translatable messages
 std::u16string ReadAnythingLetterSpacingModel::GetLetterSpacingName(
-    Spacing letter_spacing) const {
+    LetterSpacing letter_spacing) const {
   int label;
   switch (letter_spacing) {
-    case Spacing::kTight:
-      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_TIGHT;
+    case LetterSpacing::kStandard:
+    default:
+      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD;
       break;
-    case Spacing::kDefault:
-      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_DEFAULT;
+    case LetterSpacing::kWide:
+      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_WIDE;
       break;
-    case Spacing::kLoose:
-      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_LOOSE;
-      break;
-    case Spacing::kVeryLoose:
-      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_LOOSE;
+    case LetterSpacing::kVeryWide:
+      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_WIDE;
   }
   return l10n_util::GetStringUTF16(label);
 }

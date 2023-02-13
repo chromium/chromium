@@ -222,10 +222,12 @@ TEST_F(ReadAnythingAppControllerTest, Theme) {
   float font_size = 18.0;
   SkColor foreground = SkColorSetRGB(0x33, 0x36, 0x39);
   SkColor background = SkColorSetRGB(0xFD, 0xE2, 0x93);
-  int letter_spacing = 0;  // enum value, kTight
-  float letter_spacing_value = -0.05;
-  int line_spacing = 1;  // enum value, kDefault
-  float line_spacing_value = 1.15;
+  int letter_spacing =
+      static_cast<int>(read_anything::mojom::LetterSpacing::kDefaultValue);
+  float letter_spacing_value = 0.0;
+  int line_spacing =
+      static_cast<int>(read_anything::mojom::LineSpacing::kDefaultValue);
+  float line_spacing_value = 1.5;
   SetThemeForTesting(font_name, font_size, foreground, background, line_spacing,
                      letter_spacing);
   EXPECT_EQ(font_name, FontName());

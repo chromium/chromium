@@ -52,13 +52,13 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
       browser->profile()->GetPrefs()->GetInteger(
           prefs::kAccessibilityReadAnythingColorInfo));
 
-  read_anything::mojom::Spacing prefs_line_spacing;
-  prefs_line_spacing = static_cast<read_anything::mojom::Spacing>(
+  read_anything::mojom::LineSpacing prefs_line_spacing;
+  prefs_line_spacing = static_cast<read_anything::mojom::LineSpacing>(
       browser->profile()->GetPrefs()->GetInteger(
           prefs::kAccessibilityReadAnythingLineSpacing));
 
-  read_anything::mojom::Spacing prefs_letter_spacing;
-  prefs_letter_spacing = static_cast<read_anything::mojom::Spacing>(
+  read_anything::mojom::LetterSpacing prefs_letter_spacing;
+  prefs_letter_spacing = static_cast<read_anything::mojom::LetterSpacing>(
       browser->profile()->GetPrefs()->GetInteger(
           prefs::kAccessibilityReadAnythingLetterSpacing));
 

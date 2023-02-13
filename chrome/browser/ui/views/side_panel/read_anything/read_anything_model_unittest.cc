@@ -38,8 +38,8 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
                double font_scale,
                ui::ColorId foreground_color_id,
                ui::ColorId background_color_id,
-               read_anything::mojom::Spacing line_spacing,
-               read_anything::mojom::Spacing letter_spacing),
+               read_anything::mojom::LineSpacing line_spacing,
+               read_anything::mojom::LetterSpacing letter_spacing),
               (override));
 };
 
@@ -197,8 +197,8 @@ TEST_F(ReadAnythingModelTest, NotificationsOnSetSelectedLetterSpacingIndex) {
 TEST_F(ReadAnythingModelTest, MinimumFontScaleIsEnforced) {
   std::string font_name;
   model_->Init(font_name, 0.5, read_anything::mojom::Colors::kDefaultValue,
-               read_anything::mojom::Spacing::kDefault,
-               read_anything::mojom::Spacing::kDefault);
+               read_anything::mojom::LineSpacing::kLoose,
+               read_anything::mojom::LetterSpacing::kStandard);
   model_->DecreaseTextSize();
   EXPECT_NEAR(model_->GetFontScale(), 0.5, 0.01);
 }
@@ -206,8 +206,8 @@ TEST_F(ReadAnythingModelTest, MinimumFontScaleIsEnforced) {
 TEST_F(ReadAnythingModelTest, MaximumFontScaleIsEnforced) {
   std::string font_name;
   model_->Init(font_name, 4.5, read_anything::mojom::Colors::kDefaultValue,
-               read_anything::mojom::Spacing::kDefault,
-               read_anything::mojom::Spacing::kDefault);
+               read_anything::mojom::LineSpacing::kLoose,
+               read_anything::mojom::LetterSpacing::kStandard);
   model_->IncreaseTextSize();
   EXPECT_NEAR(model_->GetFontScale(), 4.5, 0.01);
 }
