@@ -25,11 +25,13 @@ export class EmojiCategoryButton extends PolymerElement {
       icon: {type: String, readonly: true},
       active: {type: Boolean, value: false},
       searchActive: {type: Boolean, value: false},
+      gifSupport: {type: Boolean, value: false},
     };
   }
   name: string;
   icon: string;
   active: boolean;
+  private gifSupport: boolean;
 
 
   private handleClick(): void {

@@ -71,7 +71,7 @@ export const CATEGORY_METADATA:
     Array<{name: CategoryEnum, icon: string, active: boolean}> = [
       {
         name: CategoryEnum.EMOJI,
-        icon: 'emoji_picker_v2:emoji_emojis',
+        icon: 'emoji_picker_v2:emoji_emojis_outlined',
         active: true,
       },
       {
@@ -100,7 +100,7 @@ export const CATEGORY_TABS = {
   'emoji': [
     {
       name: 'Smileys & Emotions',
-      icon: 'emoji_picker_v2:emoji_emojis',
+      icon: 'emoji_picker_v2:emoji_emojis_filled',
       pagination: 1,
     },
     {

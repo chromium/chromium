@@ -2,12 +2,19 @@
   :host {
     --emoji-picker-search-margins: 14px;
     --emoji-picker-search-height: 40px;
-    --emoji-picker-top-bar-bottom-padding: 12px;
+    --emoji-picker-top-bar-bottom-padding: 16px;
     --search-content-width:
       calc(var(--emoji-picker-width) - 2*var(--emoji-picker-side-padding));
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
+  }
+
+  :host([gif-support]) {
+    --emoji-picker-search-height: 36px;
+    --emoji-picker-top-bar-bottom-padding: 20px;
+    --search-content-width:
+      calc(var(--emoji-picker-width) - 2*var(--emoji-picker-search-side-padding));
   }
 
   cr-search-field {
@@ -98,6 +105,13 @@
     width: var(--search-content-width);
   }
 
+  :host([gif-support]) #searchShadow {
+    margin-inline-end: calc(0px - var(--emoji-picker-search-side-padding));
+    margin-inline-start: calc(0px - var(--emoji-picker-search-side-padding));
+    padding-inline-end: var(--emoji-picker-search-side-padding);
+    padding-inline-start: var(--emoji-picker-search-side-padding);
+  }
+
   #results {
     flex-grow: 1;
     margin-inline-end: var(--emoji-picker-side-padding);
@@ -112,17 +126,23 @@
   #category-button-group {
     align-items: center;
     display: flex;
-    /*
-     * TODO(b/213141035): Change to space-between when symbol category is
-     * re-introduced.
-     */
-    justify-content: space-evenly;
+    justify-content: space-between;
     margin-inline-start: 20px;
     width: 120px;
   }
 
+  :host([gif-support]) #category-button-group {
+    margin-inline-start: var(--emoji-picker-search-side-padding);
+    width: 168px;
+  }
+
   #search {
     width: 240px;
+  }
+
+  :host([gif-support]) #search {
+    /* Set to 200px so the search bar is 204px when displayed */
+    width: 200px;
   }
 
   /* TODO(b/233133645): emoji-groups margins need to match the design. */
@@ -140,7 +160,8 @@
           active="[[item.active]]"
           name="[[item.name]]"
           icon="[[item.icon]]"
-          search-active="[[searchNotEmpty(searchResults)]]">
+          search-active="[[searchNotEmpty(searchResults)]]"
+          gif-support$="[[gifSupport]]">
         </emoji-category-button>
     </template>
   </div>

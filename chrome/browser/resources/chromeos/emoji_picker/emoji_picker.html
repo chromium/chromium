@@ -35,11 +35,20 @@
     width: var(--emoji-picker-width);
   }
 
+  .search-side-padding,
   .side-padding {
     flex-grow: 0;
     flex-shrink: 0;
     max-height: 100%;
     overflow-y: scroll;
+  }
+
+  .search-side-padding {
+    padding-inline-end: var(--emoji-picker-search-side-padding);
+    padding-inline-start: var(--emoji-picker-search-side-padding);
+  }
+
+  .side-padding {
     padding-inline-end: var(--emoji-picker-side-padding);
     padding-inline-start: var(--emoji-picker-side-padding);
   }
@@ -237,13 +246,13 @@
 
 <div id="message" class="sr-only" aria-live="polite"></div>
   <emoji-search
-    class="side-padding"
+    class="search-side-padding"
     id="search-container"
     categories-data="[[categoriesData]]"
     lazy-indexing="[[searchLazyIndexing]]"
     on-scroll="onSearchScroll"
     category-metadata="[[getCategoryMetadata(gifSupport, category)]]"
-    gif-support="[[gifSupport]]">
+    gif-support$="[[gifSupport]]">
   </emoji-search>
 
 <div id="list-container">

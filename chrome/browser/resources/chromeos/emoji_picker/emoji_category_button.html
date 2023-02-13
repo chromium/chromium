@@ -4,6 +4,11 @@
     width: var(--emoji-size);
   }
 
+  :host([gif-support]) {
+    height: var(--emoji-category-size);
+    width: var(--emoji-category-size);
+  }
+
   #category-button {
     --cr-icon-button-fill-color: var(--cros-icon-color-secondary);
     border-radius: 50%;
@@ -12,6 +17,10 @@
     /* cancel internal margin-inline-start of cr-icon-button */
     margin: 0;
     width: 100%;
+  }
+
+  :host([gif-support]) #category-button {
+    --cr-icon-button-icon-size: 24px;
   }
 
   #category-button.category-button-active {

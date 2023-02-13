@@ -207,6 +207,8 @@ export class EmojiPicker extends PolymerElement {
       '--emoji-picker-height': constants.EMOJI_PICKER_HEIGHT_PX,
       '--emoji-size': constants.EMOJI_SIZE_PX,
       '--emoji-per-row': constants.EMOJI_PER_ROW,
+      '--emoji-picker-search-side-padding':
+          constants.EMOJI_PICKER_SIDE_PADDING_PX,
       '--emoji-picker-side-padding': constants.EMOJI_PICKER_SIDE_PADDING_PX,
       '--emoji-picker-top-padding': constants.EMOJI_PICKER_TOP_PADDING_PX,
       '--emoji-spacing': constants.EMOJI_SPACING_PX,
@@ -266,9 +268,12 @@ export class EmojiPicker extends PolymerElement {
 
     if (this.gifSupport) {
       this.updateStyles({
+        '--emoji-category-size': constants.V2_5_EMOJI_CATEGORY_SIZE_PX,
         '--emoji-group-button-size': constants.V2_5_EMOJI_GROUP_SIZE_PX,
         '--emoji-picker-side-padding':
             constants.V2_5_EMOJI_PICKER_SIDE_PADDING_PX,
+        '--emoji-picker-search-side-padding':
+            constants.V2_5_EMOJI_PICKER_SEARCH_SIDE_PADDING_PX,
         '--emoji-spacing': constants.V2_5_EMOJI_SPACING_PX,
         '--emoji-group-spacing': constants.V2_5_EMOJI_GROUP_SPACING_PX,
         '--visual-content-width': constants.V2_5_VISUAL_CONTENT_WIDTH_PX,
