@@ -11,4 +11,18 @@ void StyleScopeActivation::Trace(blink::Visitor* visitor) const {
   visitor->Trace(root);
 }
 
+StyleScopeFrame* StyleScopeFrame::GetParentFrameOrNull(
+    Element& parent_element) {
+  if (parent_ && (&parent_->element_ == &parent_element)) {
+    return parent_;
+  }
+  return nullptr;
+}
+
+StyleScopeFrame& StyleScopeFrame::GetParentFrameOrThis(
+    Element& parent_element) {
+  StyleScopeFrame* parent_frame = GetParentFrameOrNull(parent_element);
+  return parent_frame ? *parent_frame : *this;
+}
+
 }  // namespace blink

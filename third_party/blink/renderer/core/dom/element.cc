@@ -3257,9 +3257,14 @@ StyleRecalcChange Element::RecalcStyle(
     WillRecalcStyle(change);
   }
 
+  StyleScopeFrame style_scope_frame(
+      *this, /* parent */ style_recalc_context.style_scope_frame);
+  StyleRecalcContext local_style_recalc_context = style_recalc_context;
+  local_style_recalc_context.style_scope_frame = &style_scope_frame;
+
   StyleRecalcChange child_change = change.ForChildren(*this);
   if (change.ShouldRecalcStyleFor(*this)) {
-    child_change = RecalcOwnStyle(change, style_recalc_context);
+    child_change = RecalcOwnStyle(change, local_style_recalc_context);
     if (GetStyleChangeType() == kSubtreeStyleChange) {
       child_change =
           child_change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
@@ -3319,7 +3324,7 @@ StyleRecalcChange Element::RecalcStyle(
     }
   }
 
-  StyleRecalcContext child_recalc_context = style_recalc_context;
+  StyleRecalcContext child_recalc_context = local_style_recalc_context;
 
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (style->CanMatchSizeContainerQueries(*this)) {

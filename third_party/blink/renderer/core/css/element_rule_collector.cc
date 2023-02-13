@@ -372,14 +372,20 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     int style_sheet_index,
     const SelectorChecker& checker,
     PartRequest* part_request) {
-  StyleScopeFrame style_scope_frame(context_.GetElement());
+  // This StyleScopeFrame is effectively ignored if the StyleRecalcContext
+  // provides StyleScopeFrame already (see call to GetParentFrameOrThis below).
+  // This happens e.g. when we need to collect matching rules for inspector
+  // purposes.
+  StyleScopeFrame style_scope_frame(context_.GetElement(),
+                                    style_recalc_context_.style_scope_frame);
 
   SelectorChecker::SelectorCheckingContext context(&context_.GetElement());
   context.scope = match_request.Scope();
   context.pseudo_id = pseudo_style_request_.pseudo_id;
   context.pseudo_argument = &pseudo_style_request_.pseudo_argument;
   context.vtt_originating_element = match_request.VTTOriginatingElement();
-  context.style_scope_frame = &style_scope_frame;
+  context.style_scope_frame =
+      &style_scope_frame.GetParentFrameOrThis(context_.GetElement());
 
   CascadeLayerSeeker layer_seeker(
       context.scope, context.vtt_originating_element, style_sheet, rule_set);

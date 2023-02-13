@@ -2227,71 +2227,96 @@ const StyleScopeActivations& SelectorChecker::EnsureActivations(
                 1, StyleScopeActivation{nullptr /* scope */,
                                         std::numeric_limits<unsigned>::max(),
                                         false});
-
-  auto entry = context.style_scope_frame->data_.insert(&style_scope, nullptr);
-  Member<const StyleScopeActivations>& activations = entry.stored_value->value;
-  if (entry.is_new_entry) {
-    activations = CalculateActivations(context.style_scope_frame->element_,
-                                       style_scope, *outer_activations);
-  }
-  DCHECK(activations.Get());
+  const StyleScopeActivations* activations =
+      CalculateActivations(context.style_scope_frame->element_, style_scope,
+                           *outer_activations, context.style_scope_frame);
+  DCHECK(activations);
   return *activations;
 }
 
+// Calculates all activations (i.e. active scopes) for `element`.
+//
+// This function will traverse the whole ancestor chain in the worst case,
+// however, if a StyleScopeFrame is provided, it will reuse cached results
+// found on that StyleScopeFrame.
 const StyleScopeActivations* SelectorChecker::CalculateActivations(
     Element& element,
     const StyleScope& style_scope,
-    const StyleScopeActivations& outer_activations) const {
+    const StyleScopeActivations& outer_activations,
+    StyleScopeFrame* style_scope_frame) const {
+  Member<const StyleScopeActivations>* cached_activations_entry = nullptr;
+  if (style_scope_frame) {
+    auto entry = style_scope_frame->data_.insert(&style_scope, nullptr);
+    // We must not modify `style_scope_frame->data_` for the remainder
+    // of this function, since `cached_activations_entry` now points into
+    // the hash table.
+    cached_activations_entry = &entry.stored_value->value;
+    if (!entry.is_new_entry) {
+      DCHECK(cached_activations_entry->Get());
+      return cached_activations_entry->Get();
+    }
+  }
+
   auto* activations = MakeGarbageCollected<StyleScopeActivations>();
 
-  if (outer_activations.empty()) {
-    return activations;
-  }
+  if (!outer_activations.empty()) {
+    const StyleScopeActivations* parent_activations = nullptr;
 
-  const StyleScopeActivations* parent_activations = nullptr;
-
-  // Remain within the outer scope. I.e. don't look at elements above the
-  // highest outer activation.
-  if (outer_activations.front().root != &element) {
-    // TODO(crbug.com/1280240): Consider :host (etc).
-    if (Element* parent = element.parentElement()) {
-      parent_activations =
-          CalculateActivations(*parent, style_scope, outer_activations);
+    // Remain within the outer scope. I.e. don't look at elements above the
+    // highest outer activation.
+    if (outer_activations.front().root != &element) {
+      // TODO(crbug.com/1280240): Consider :host (etc).
+      if (Element* parent = element.parentElement()) {
+        // When calculating the activations on the parent element, we pass
+        // the parent StyleScopeFrame (if we have it) to be able to use the
+        // cached results, and avoid traversing the ancestor chain.
+        StyleScopeFrame* parent_frame =
+            style_scope_frame ? style_scope_frame->GetParentFrameOrNull(*parent)
+                              : nullptr;
+        parent_activations = CalculateActivations(
+            *parent, style_scope, outer_activations, parent_frame);
+      }
     }
-  }
 
-  // The activations of the parent element are still active for this element,
-  // unless the activation was limited.
-  if (parent_activations) {
-    for (const StyleScopeActivation& activation : *parent_activations) {
-      if (!activation.limit) {
-        activations->push_back(StyleScopeActivation{
-            activation.root, activation.proximity + 1, false});
+    // The activations of the parent element are still active for this element,
+    // unless the activation was limited.
+    if (parent_activations) {
+      for (const StyleScopeActivation& activation : *parent_activations) {
+        if (!activation.limit) {
+          activations->push_back(StyleScopeActivation{
+              activation.root, activation.proximity + 1, false});
+        }
+      }
+    }
+
+    // Check if we need to add a new activation for this element.
+    for (const StyleScopeActivation& activation : outer_activations) {
+      if (style_scope.From()
+              ? MatchesWithScope(element, *style_scope.From(), activation.root)
+              : style_scope.HasImplicitRoot(&element)) {
+        activations->push_back(StyleScopeActivation{&element, 0, false});
+        break;
+      }
+      // TODO(crbug.com/1280240): Break if we don't depend on :scope.
+    }
+
+    if (style_scope.To()) {
+      DCHECK(style_scope.From());
+      for (StyleScopeActivation& activation : *activations) {
+        DCHECK(!activation.limit);
+        if (MatchesWithScope(element, *style_scope.To(),
+                             activation.root.Get())) {
+          // TODO(crbug.com/1280240): If we don't depend on :scope, just set all
+          // to limit=true.
+          activation.limit = true;
+        }
       }
     }
   }
 
-  // Check if we need to add a new activation for this element.
-  for (const StyleScopeActivation& activation : outer_activations) {
-    if (style_scope.From()
-            ? MatchesWithScope(element, *style_scope.From(), activation.root)
-            : style_scope.HasImplicitRoot(&element)) {
-      activations->push_back(StyleScopeActivation{&element, 0, false});
-      break;
-    }
-    // TODO(crbug.com/1280240): Break if we don't depend on :scope.
-  }
-
-  if (style_scope.To()) {
-    DCHECK(style_scope.From());
-    for (StyleScopeActivation& activation : *activations) {
-      DCHECK(!activation.limit);
-      if (MatchesWithScope(element, *style_scope.To(), activation.root.Get())) {
-        // TODO(crbug.com/1280240): If we don't depend on :scope, just set all
-        // to limit=true.
-        activation.limit = true;
-      }
-    }
+  // Cache the result if possible.
+  if (cached_activations_entry) {
+    *cached_activations_entry = activations;
   }
 
   return activations;

@@ -297,7 +297,8 @@ class CORE_EXPORT SelectorChecker {
   const StyleScopeActivations* CalculateActivations(
       Element&,
       const StyleScope&,
-      const StyleScopeActivations& outer_activations) const;
+      const StyleScopeActivations& outer_activations,
+      StyleScopeFrame*) const;
   bool MatchesWithScope(Element&, const CSSSelectorList&, Element* scope) const;
 
   CustomScrollbar* scrollbar_;

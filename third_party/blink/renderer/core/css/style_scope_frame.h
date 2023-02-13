@@ -51,16 +51,32 @@ using StyleScopeActivations = HeapVector<StyleScopeActivation>;
 // Stores the current @scope activations for a given subject element.
 //
 // See `StyleScopeActivation` for more information about activations.
+//
+// StyleScopeFrames are placed on the stack in `Element::RecalcStyle`, and
+// serve as a cache of all @scope activations until that point in the tree.
+// The actual contents of a StyleScopeFrame is populated lazily during
+// `SelectorChecker::CheckPseudoScope`.
+//
+// StyleScopeFrames may contain a pointer to a parent frame, in which case
+// `SelectorChecker::CheckPseudoScope` will store data applicable to the parent
+// element in that frame.
 class CORE_EXPORT StyleScopeFrame {
   STACK_ALLOCATED();
 
  public:
   explicit StyleScopeFrame(Element& element) : element_(element) {}
 
+  explicit StyleScopeFrame(Element& element, StyleScopeFrame* parent)
+      : element_(element), parent_(parent) {}
+
+  StyleScopeFrame* GetParentFrameOrNull(Element& parent_element);
+  StyleScopeFrame& GetParentFrameOrThis(Element& parent_element);
+
  private:
   friend class SelectorChecker;
 
   Element& element_;
+  StyleScopeFrame* parent_;
   HeapHashMap<Member<const StyleScope>, Member<const StyleScopeActivations>>
       data_;
 };
