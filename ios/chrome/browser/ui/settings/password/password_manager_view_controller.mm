@@ -2440,7 +2440,7 @@ NSInteger kTrailingSymbolSize = 18;
     case ItemTypeBlocked: {
       TableViewURLCell* urlCell =
           base::mac::ObjCCastStrict<TableViewURLCell>(cell);
-      urlCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+      urlCell.titleLabel.lineBreakMode = NSLineBreakByTruncatingHead;
       // Load the favicon from cache.
       [self loadFaviconAtIndexPath:indexPath forCell:cell];
       break;
