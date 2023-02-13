@@ -523,9 +523,8 @@ bool UserNoteDatabase::InitSchema() {
     return CreateSchema();
   }
 
-  meta_table.SetVersionNumber(kCurrentVersionNumber);
-  meta_table.SetCompatibleVersionNumber(kCompatibleVersionNumber);
-  return true;
+  return meta_table.SetVersionNumber(kCurrentVersionNumber) &&
+         meta_table.SetCompatibleVersionNumber(kCompatibleVersionNumber);
 }
 
 bool UserNoteDatabase::CreateSchema() {
