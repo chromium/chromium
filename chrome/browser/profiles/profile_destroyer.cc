@@ -167,9 +167,9 @@ void ProfileDestroyer::DestroyOTRProfileImmediately(Profile* profile) {
                 proto->set_is_off_the_record(profile->IsOffTheRecord());
               });
 
-  ProfileDestroyer* pending_destroger = GetPendingDestroyerForProfile(profile);
-  if (pending_destroger) {
-    pending_destroger->Timeout();
+  ProfileDestroyer* pending_destroyer = GetPendingDestroyerForProfile(profile);
+  if (pending_destroyer) {
+    pending_destroyer->Timeout();
     return;
   }
 
