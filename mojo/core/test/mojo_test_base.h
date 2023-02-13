@@ -237,8 +237,22 @@ class MojoTestBase : public testing::Test {
   }                                                                          \
   void client_name##_MainFixture::Main(MojoHandle pipe_name)
 #else  // !BUILDFLAG(IS_IOS)
-#define DEFINE_TEST_CLIENT_WITH_PIPE(client_name, test_base, pipe_name)
-#define DEFINE_TEST_CLIENT_TEST_WITH_PIPE(client_name, test_base, pipe_name)
+#define DEFINE_TEST_CLIENT_WITH_PIPE(client_name, test_base, pipe_name) \
+  class client_name##_MainFixture : public test_base {                  \
+    void TestBody() override {}                                         \
+                                                                        \
+   public:                                                              \
+    int Main(MojoHandle);                                               \
+  };                                                                    \
+  int client_name##_MainFixture::Main(MojoHandle pipe_name)
+#define DEFINE_TEST_CLIENT_TEST_WITH_PIPE(client_name, test_base, pipe_name) \
+  class client_name##_MainFixture : public test_base {                       \
+    void TestBody() override {}                                              \
+                                                                             \
+   public:                                                                   \
+    void Main(MojoHandle);                                                   \
+  };                                                                         \
+  void client_name##_MainFixture::Main(MojoHandle pipe_name)
 #endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace test
