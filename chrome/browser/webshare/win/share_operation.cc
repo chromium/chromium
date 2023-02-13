@@ -15,7 +15,6 @@
 #include "chrome/browser/webshare/win/show_share_ui_for_window_operation.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -23,8 +22,7 @@
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_writer_delegate.h"
 #include "storage/common/file_system/file_system_mount_option.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
-#include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/base/win/internal_constants.h"
 #include "ui/views/win/hwnd_util.h"
 #include "url/gurl.h"
 
@@ -427,31 +425,28 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
     }
   }
 
-  // Attempt to fetch the accessibility HWND for these WebContents. For the
-  // sake of better communication with screen readers this HWND is (virtually)
-  // scoped to just the WebContents (rather than the entire actual window), so
-  // allows the resulting Share dialog to also better position/associate itself
-  // with the WebContents.
-  HWND hwnd = nullptr;
-  content::RenderWidgetHostView* host_view =
-      web_contents_->GetTopLevelRenderWidgetHostView();
-  if (host_view) {
-    ui::AXPlatformNode* platform_node =
-        ui::AXPlatformNode::FromNativeViewAccessible(
-            host_view->GetNativeViewAccessible());
-    if (platform_node) {
-      ui::AXPlatformNodeDelegate* delegate = platform_node->GetDelegate();
-      if (delegate) {
-        hwnd = delegate->GetTargetForNativeAccessibilityEvent();
-      }
+  HWND hwnd =
+      views::HWNDForNativeWindow(web_contents_->GetTopLevelNativeWindow());
+
+  // Attempt to fetch the special HWND maintained for the primary WebContents of
+  // this window. For the sake of better communication with screen readers this
+  // HWND is (virtually) scoped to the same space as the WebContents (rather
+  // than the entire actual window), so allows the resulting Share dialog to
+  // better position/associate itself with the WebContents.
+  //
+  // Note: Though this is exposed to accessibility tools via standardized routes
+  // we could expect to leverage here, the browser may choose to not set up all
+  // these routes until an accessibility tool has been detected. Instead we look
+  // for this specific class directly so we can find it even if accessibility
+  // has not been configured yet.
+  if (hwnd) {
+    HWND accessible_hwnd =
+        ::FindWindowExW(/*hWndParent*/ hwnd, /*hWndChildAfter*/ NULL,
+                        /*lpszClass*/ ui::kLegacyRenderWidgetHostHwnd,
+                        /*lpszWindow*/ NULL);
+    if (accessible_hwnd) {
+      hwnd = accessible_hwnd;
     }
-  }
-  // If we were unable to fetch the accessibility HWND, fall-back to the
-  // top-level HWND, which will still function appropriately, it just may not
-  // position as nicely. This is unexpected in most cases, but can happen if,
-  // for example, Windows has explicitly destroyed said HWND.
-  if (!hwnd) {
-    hwnd = views::HWNDForNativeWindow(web_contents_->GetTopLevelNativeWindow());
   }
 
   show_share_ui_for_window_operation_ =
