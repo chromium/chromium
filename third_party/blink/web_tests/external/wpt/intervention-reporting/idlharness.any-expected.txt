@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+FAIL InterventionReportBody interface: existence and properties of interface object assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface object length assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface object name assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface: existence and properties of interface prototype object assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface: operation toJSON() assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface: attribute id assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface: attribute message assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface: attribute sourceFile assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface: attribute lineNumber assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+FAIL InterventionReportBody interface: attribute columnNumber assert_own_property: self does not have own property "InterventionReportBody" expected property "InterventionReportBody" missing
+Harness: the test ran to completion.
+

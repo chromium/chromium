@@ -109,21 +109,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter highWaterMark
 [Worker]     getter size
 [Worker]     method constructor
-[Worker] interface CSPViolationReportBody : ReportBody
-[Worker]     attribute @@toStringTag
-[Worker]     getter blockedURL
-[Worker]     getter columnNumber
-[Worker]     getter disposition
-[Worker]     getter documentURL
-[Worker]     getter effectiveDirective
-[Worker]     getter lineNumber
-[Worker]     getter originalPolicy
-[Worker]     getter referrer
-[Worker]     getter sample
-[Worker]     getter sourceFile
-[Worker]     getter statusCode
-[Worker]     method constructor
-[Worker]     method toJSON
 [Worker] interface CSSSkewX : CSSTransformComponent
 [Worker]     attribute @@toStringTag
 [Worker]     getter ax
@@ -174,18 +159,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter readable
 [Worker]     getter writable
 [Worker]     method constructor
-[Worker] interface CoopAccessViolationReportBody : ReportBody
-[Worker]     attribute @@toStringTag
-[Worker]     getter columnNumber
-[Worker]     getter lineNumber
-[Worker]     getter openeeURL
-[Worker]     getter openerURL
-[Worker]     getter otherDocumentURL
-[Worker]     getter property
-[Worker]     getter sourceFile
-[Worker]     getter type
-[Worker]     method constructor
-[Worker]     method toJSON
 [Worker] interface CountQueuingStrategy
 [Worker]     attribute @@toStringTag
 [Worker]     getter highWaterMark
@@ -421,26 +394,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute PERSISTENT
 [Worker]     attribute TEMPORARY
 [Worker]     method constructor
-[Worker] interface DeprecationReportBody : ReportBody
-[Worker]     attribute @@toStringTag
-[Worker]     getter anticipatedRemoval
-[Worker]     getter columnNumber
-[Worker]     getter id
-[Worker]     getter lineNumber
-[Worker]     getter message
-[Worker]     getter sourceFile
-[Worker]     method constructor
-[Worker]     method toJSON
-[Worker] interface DocumentPolicyViolationReportBody : ReportBody
-[Worker]     attribute @@toStringTag
-[Worker]     getter columnNumber
-[Worker]     getter disposition
-[Worker]     getter featureId
-[Worker]     getter lineNumber
-[Worker]     getter message
-[Worker]     getter sourceFile
-[Worker]     method constructor
-[Worker]     method toJSON
 [Worker] interface EncodedAudioChunk
 [Worker]     attribute @@toStringTag
 [Worker]     getter byteLength
@@ -847,15 +800,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter selectedTrack
 [Worker]     method @@iterator
 [Worker]     method constructor
-[Worker] interface InterventionReportBody : ReportBody
-[Worker]     attribute @@toStringTag
-[Worker]     getter columnNumber
-[Worker]     getter id
-[Worker]     getter lineNumber
-[Worker]     getter message
-[Worker]     getter sourceFile
-[Worker]     method constructor
-[Worker]     method toJSON
 [Worker] interface Lock
 [Worker]     attribute @@toStringTag
 [Worker]     getter mode
@@ -1287,17 +1231,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method read
 [Worker]     method releaseLock
-[Worker] interface Report
-[Worker]     attribute @@toStringTag
-[Worker]     getter body
-[Worker]     getter type
-[Worker]     getter url
-[Worker]     method constructor
-[Worker]     method toJSON
-[Worker] interface ReportBody
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method toJSON
 [Worker] interface ReportingObserver
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
