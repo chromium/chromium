@@ -9,6 +9,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
@@ -864,6 +865,22 @@ suite('SettingsDevicePage', function() {
       return flushTasks();
     }
 
+    /**
+     * Simulates pressing left arrow key while focused on cr-slider element.
+     * @param {!CrSliderElement} crSlider
+     */
+    function pressArrowRight(crSlider) {
+      pressAndReleaseKeyOn(crSlider, 39, [], 'ArrowRight');
+    }
+
+    /**
+     * Simulates pressing right arrow key while focused on cr-slider element.
+     * @param {!CrSliderElement} crSlider
+     */
+    function pressArrowLeft(crSlider) {
+      pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
+    }
+
     setup(async function() {
       loadTimeData.overrideValues({
         enableAudioSettingsPage: true,
@@ -1338,6 +1355,39 @@ suite('SettingsDevicePage', function() {
       assertEquals(
           /* expected_call_count */ 1,
           setNoiseCancellationEnabled.calls_.length);
+    });
+
+    test('slider keypress correct increments', async function() {
+      // The audio sliders are expected to increment in intervals of 10.
+      const outputVolumeSlider =
+          audioPage.shadowRoot.querySelector('#outputVolumeSlider');
+      assertEquals(75, outputVolumeSlider.value);
+      pressArrowRight(outputVolumeSlider);
+      assertEquals(85, outputVolumeSlider.value);
+      pressArrowRight(outputVolumeSlider);
+      assertEquals(95, outputVolumeSlider.value);
+      pressArrowRight(outputVolumeSlider);
+      assertEquals(100, outputVolumeSlider.value);
+      pressArrowRight(outputVolumeSlider);
+      assertEquals(100, outputVolumeSlider.value);
+      pressArrowLeft(outputVolumeSlider);
+      assertEquals(90, outputVolumeSlider.value);
+      pressArrowLeft(outputVolumeSlider);
+      assertEquals(80, outputVolumeSlider.value);
+
+      const inputVolumeSlider =
+          audioPage.shadowRoot.querySelector('#audioInputGainVolumeSlider');
+      assertEquals(87, inputVolumeSlider.value);
+      pressArrowRight(inputVolumeSlider);
+      assertEquals(97, inputVolumeSlider.value);
+      pressArrowRight(inputVolumeSlider);
+      assertEquals(100, inputVolumeSlider.value);
+      pressArrowRight(inputVolumeSlider);
+      assertEquals(100, inputVolumeSlider.value);
+      pressArrowLeft(inputVolumeSlider);
+      assertEquals(90, inputVolumeSlider.value);
+      pressArrowLeft(inputVolumeSlider);
+      assertEquals(80, inputVolumeSlider.value);
     });
   });
 

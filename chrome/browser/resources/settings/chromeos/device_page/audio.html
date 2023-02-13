@@ -107,6 +107,7 @@
               id ="outputVolumeSlider"
               min="0"
               max="100"
+              key-press-slider-increment="10"
               disabled="[[isOutputMutedByPolicy_(
                   audioSystemProperties_.outputMuteState
                 )]]"
@@ -151,6 +152,7 @@
               disabled="[[shouldDisableInputGainControls(isInputMuted_)]]">
           </cr-icon-button>
           <cr-slider id="audioInputGainVolumeSlider" min="0" max="100"
+              key-press-slider-increment="10"
               iron-icon="[[getInputIcon_(isInputMuted_)]]"
               value="[[audioSystemProperties_.inputGainPercent]]"
               on-cr-slider-value-changed="onInputVolumeSliderChanged"
