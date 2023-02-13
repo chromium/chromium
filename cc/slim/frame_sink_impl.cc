@@ -18,6 +18,7 @@
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -131,8 +132,9 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   constexpr gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   uploaded_resource.mailbox = sii->CreateSharedImage(
-      format, resource_bitmap.GetSize(), color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, shared_image_usage,
+      viz::SharedImageFormat::SinglePlane(format), resource_bitmap.GetSize(),
+      color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      shared_image_usage,
       base::span<const uint8_t>(resource_bitmap.GetPixels(),
                                 resource_bitmap.SizeInBytes()));
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();

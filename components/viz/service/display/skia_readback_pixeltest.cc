@@ -22,6 +22,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/buildflags.h"
@@ -331,10 +332,10 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
       const SkBitmap& bitmap) {
     const gfx::Size source_size = gfx::Size(bitmap.width(), bitmap.height());
 
-    ResourceFormat format =
+    SharedImageFormat format =
         (bitmap.info().colorType() == kBGRA_8888_SkColorType)
-            ? ResourceFormat::BGRA_8888
-            : ResourceFormat::RGBA_8888;
+            ? SinglePlaneFormat::kBGRA_8888
+            : SinglePlaneFormat::kRGBA_8888;
     ResourceId resource_id =
         CreateGpuResource(source_size, format, MakePixelSpan(bitmap));
 
@@ -361,7 +362,7 @@ class SkiaReadbackPixelTest : public cc::PixelTest {
 
   // TODO(kylechar): Create an OOP-R style GPU resource with no GL dependencies.
   ResourceId CreateGpuResource(const gfx::Size& size,
-                               ResourceFormat format,
+                               SharedImageFormat format,
                                base::span<const uint8_t> pixels) {
     gpu::SharedImageInterface* sii =
         child_context_provider_->SharedImageInterface();
@@ -644,14 +645,13 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
   std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailboxes;
   for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
-    const auto resource_format =
-        i == 0 ? ResourceFormat::RED_8 : ResourceFormat::RG_88;
+    const auto format =
+        i == 0 ? SinglePlaneFormat::kR_8 : SinglePlaneFormat::kRG_88;
     const gfx::Size plane_size =
         i == 0 ? source_size
                : gfx::Size(source_size.width() / 2, source_size.height() / 2);
     const size_t plane_size_in_bytes =
-        plane_size.GetArea() *
-        (resource_format == ResourceFormat::RED_8 ? 1 : 2);
+        plane_size.GetArea() * (format == SinglePlaneFormat::kR_8 ? 1 : 2);
 
     std::vector<uint8_t> pixels =
         (i == 0) ? GeneratePixels(plane_size_in_bytes, luma_pattern)
@@ -659,7 +659,7 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
     mailboxes[i].mailbox =
         child_context_provider_->SharedImageInterface()->CreateSharedImage(
-            resource_format, plane_size, gfx::ColorSpace::CreateREC709(),
+            format, plane_size, gfx::ColorSpace::CreateREC709(),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, pixels);
     DCHECK(!mailboxes[i].mailbox.IsZero());

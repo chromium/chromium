@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -92,7 +93,7 @@ scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
 
   auto* sii = context_provider->SharedImageInterface();
   gpu::Mailbox mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, coded_size, gfx::ColorSpace(),
+      viz::SinglePlaneFormat::kRGBA_8888, coded_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2, pixels);
 
@@ -137,15 +138,15 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
 
   auto* sii = context_provider->SharedImageInterface();
   gpu::Mailbox y_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::LUMINANCE_8, coded_size, gfx::ColorSpace(),
+      viz::SinglePlaneFormat::kLUMINANCE_8, coded_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2, y_pixels);
   gpu::Mailbox u_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::LUMINANCE_8, uv_size, gfx::ColorSpace(),
+      viz::SinglePlaneFormat::kLUMINANCE_8, uv_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2, u_pixels);
   gpu::Mailbox v_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::LUMINANCE_8, uv_size, gfx::ColorSpace(),
+      viz::SinglePlaneFormat::kLUMINANCE_8, uv_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2, v_pixels);
 
@@ -194,11 +195,11 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
 
   auto* sii = context_provider->SharedImageInterface();
   gpu::Mailbox y_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::LUMINANCE_8, coded_size, gfx::ColorSpace(),
+      viz::SinglePlaneFormat::kLUMINANCE_8, coded_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2, y_pixels);
   gpu::Mailbox uv_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::RG_88, uv_size, gfx::ColorSpace(),
+      viz::SinglePlaneFormat::kRG_88, uv_size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2, uv_pixels);
   return CreateSharedImageFrame(
