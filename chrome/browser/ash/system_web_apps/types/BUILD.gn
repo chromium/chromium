@@ -16,7 +16,6 @@ source_set("types") {
     "system_web_app_delegate.h",
     "system_web_app_delegate_map.cc",
     "system_web_app_delegate_map.h",
-    "system_web_app_type.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -28,9 +27,5 @@ source_set("types") {
     "//url",
   ]
 
-  public_deps = [
-    # TODO(crbug.com/1321984): Move to deps when users of system_web_app_type.
-    # are migrated to include the new location.
-    "//ash/webui/system_apps/public:system_web_app_type",
-  ]
+  public_deps = [ "//ash/webui/system_apps/public:system_web_app_type" ]
 }

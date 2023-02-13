@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "ash/webui/firmware_update_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/webapps/browser/install_result_code.h"

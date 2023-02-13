@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"

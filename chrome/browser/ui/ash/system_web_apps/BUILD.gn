@@ -18,11 +18,9 @@ source_set("system_web_apps") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/browser/apps/app_service",
-
-    # TODO(crbug.com/1402148): Remove crosapi dep. Needed only to allow circular includes.
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/profiles:profile",
@@ -32,6 +30,9 @@ source_set("system_web_apps") {
     "//ui/base",
     "//ui/display",
   ]
+
+  # TODO(crbug.com/1402148): Remove crosapi dep. Needed only to allow circular includes.
+  deps += [ "//chrome/browser/ash/crosapi" ]
 
   # TODO(crbug.com/1402148): Remove circular includes.
   allow_circular_includes_from = [ "//chrome/browser/ash/crosapi" ]

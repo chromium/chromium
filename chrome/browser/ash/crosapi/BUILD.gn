@@ -259,6 +259,7 @@ source_set("crosapi") {
     "//ash/webui/help_app_ui",
     "//ash/webui/print_management",
     "//ash/webui/scanning",
+    "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//build/config/chromebox_for_meetings:buildflags",
     "//chrome/browser:browser_process",

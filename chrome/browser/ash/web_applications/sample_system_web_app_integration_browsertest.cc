@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

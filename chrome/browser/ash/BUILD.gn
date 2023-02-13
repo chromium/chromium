@@ -3735,6 +3735,7 @@ source_set("ash") {
     "//ash/webui/resources:scanning_app_resources",
     "//ash/webui/resources:shimless_rma_resources",
     "//ash/webui/resources:shortcut_customization_app_resources",
+    "//ash/webui/system_apps/public:system_web_app_type",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//cc/base",

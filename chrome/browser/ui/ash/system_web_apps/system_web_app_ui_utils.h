@@ -7,9 +7,9 @@
 
 #include <vector>
 
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"

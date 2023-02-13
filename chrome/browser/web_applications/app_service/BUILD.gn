@@ -49,6 +49,7 @@ source_set("app_service") {
       "//ash/components/arc:arc_base",
       "//ash/public/cpp",
       "//ash/webui/projector_app/public/cpp",
+      "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/system_web_apps",

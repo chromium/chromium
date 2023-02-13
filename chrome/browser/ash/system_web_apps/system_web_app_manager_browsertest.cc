@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"

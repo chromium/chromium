@@ -6,9 +6,9 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"

@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"

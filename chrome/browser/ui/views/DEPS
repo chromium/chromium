@@ -41,5 +41,6 @@ specific_include_rules = {
    "+ash/components/arc/test",
    "+ash/constants",
    "+ash/public",
+   "+ash/webui/system_apps/public/system_web_app_type.h",
   ],
 }

@@ -1881,13 +1881,6 @@ static_library("browser") {
     "webid/federated_identity_permission_context_factory.h",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "policy/os_color_mode_policy_handler.cc",
-      "policy/os_color_mode_policy_handler.h",
-    ]
-  }
-
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config:precompiled_headers",
@@ -4888,6 +4881,8 @@ static_library("browser") {
       "platform_util_ash.cc",
       "policy/default_geolocation_policy_handler.cc",
       "policy/default_geolocation_policy_handler.h",
+      "policy/os_color_mode_policy_handler.cc",
+      "policy/os_color_mode_policy_handler.h",
       "policy/status_provider/device_active_directory_policy_status_provider.cc",
       "policy/status_provider/device_active_directory_policy_status_provider.h",
       "policy/status_provider/device_cloud_policy_status_provider_chromeos.cc",
@@ -4992,7 +4987,6 @@ static_library("browser") {
       "//ash/components/arc:arc_base_utils",
       "//ash/components/arc/enterprise",
       "//ash/components/arc/mojom",
-      "//ash/components/arc/mojom",
       "//ash/constants",
       "//ash/public/cpp",
       "//ash/public/cpp/external_arc",
@@ -5037,6 +5031,7 @@ static_library("browser") {
       "//ash/webui/shimless_rma/mojom",
       "//ash/webui/shortcut_customization_ui",
       "//ash/webui/shortcut_customization_ui/mojom",
+      "//ash/webui/system_apps/public:system_web_app_type",
       "//ash/webui/system_extensions_internals_ui",
       "//ash/webui/system_extensions_internals_ui/mojom",
       "//build:chromeos_buildflags",
@@ -5128,7 +5123,6 @@ static_library("browser") {
       "//chromeos/ash/services/cellular_setup",
       "//chromeos/ash/services/cros_healthd/public/cpp",
       "//chromeos/ash/services/cros_healthd/public/mojom",
-      "//chromeos/ash/services/device_sync/public/cpp:prefs",
       "//chromeos/ash/services/device_sync/public/cpp:prefs",
       "//chromeos/ash/services/device_sync/public/mojom",
       "//chromeos/ash/services/hotspot_config",

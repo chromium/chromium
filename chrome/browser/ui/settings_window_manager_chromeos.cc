@@ -6,9 +6,9 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/ash/window_properties.h"

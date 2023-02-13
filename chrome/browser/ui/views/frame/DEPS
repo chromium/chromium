@@ -14,7 +14,7 @@ specific_include_rules = {
   "picture_in_picture_browser_frame_view\.*": [
     "+ash",
   ],
-  "top_controls_slide_controller_chromeos_browsertest.cc": [
+  "top_controls_slide_controller_chromeos_browsertest\.cc": [
     "+cc/base/math_util.h",
   ],
 }
