@@ -1,7 +1,7 @@
 # This workflow will check out wpt and run the WebDriver BiDi tests against our
 # implementation.
 
-name: Web platform tests
+name: Web platform tests with Mapper
 
 on:
   pull_request:
@@ -44,18 +44,30 @@ jobs:
           sudo apt-get install -y google-chrome-unstable
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: ./wpt run --webdriver-binary ../runBiDiServer.sh --binary /usr/bin/google-chrome-unstable --manifest MANIFEST.json --metadata ../wpt-metadata --log-wptreport wptreport.json chromium webdriver/tests/bidi/
+        run: >
+          ./wpt run
+          --webdriver-binary ../runBiDiServer.sh
+          --binary /usr/bin/google-chrome-unstable
+          --manifest MANIFEST.json
+          --metadata ../wpt-metadata/mapper
+          --log-wptreport wptreport.json
+          chromium
+          webdriver/tests/bidi/
         working-directory: wpt
       - name: Update expectations
         if: ${{ always() }}
-        run: ./wpt update-expectations --product chromium --manifest MANIFEST.json --metadata ../wpt-metadata wptreport.json
+        run: >
+          ./wpt update-expectations
+          --product chromium
+          --manifest MANIFEST.json
+          --metadata ../wpt-metadata/mapper wptreport.json
         working-directory: wpt
       - name: Upload expectations
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: wpt-metadata
-          path: wpt-metadata
+          name: wpt-metadata-mapper
+          path: wpt-metadata/mapper
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
