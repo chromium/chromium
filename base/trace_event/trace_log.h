@@ -115,9 +115,9 @@ class BASE_EXPORT TraceLog :
     // In SDK build we return true as soon as the datasource has been set up and
     // we know the config. This doesn't necessarily mean that the tracing has
     // already started.
-    // Note that perfetto::TrackEvent::IsEnabled() can be true even earlier,
-    // before the OnSetup call, so we can't guarantee that we know the config
-    // by the time perfetto::TrackEvent::IsEnabled() is true.
+    // Note that TrackEvent::IsEnabled() can be true even earlier, before the
+    // OnSetup call, so we can't guarantee that we know the config by the time
+    // TrackEvent::IsEnabled() is true.
     AutoLock lock(track_event_lock_);
     return track_event_enabled_;
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

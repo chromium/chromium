@@ -76,8 +76,8 @@ void SetProcessTrackDescriptor(int64_t process_start_timestamp) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  perfetto::TrackEvent::SetTrackDescriptor(process_track,
-                                           std::move(process_track_desc));
+  base::TrackEvent::SetTrackDescriptor(process_track,
+                                       std::move(process_track_desc));
 }
 
 namespace {
@@ -96,7 +96,7 @@ void FillThreadTrack(const perfetto::ThreadTrack& track, const char* name) {
     desc.mutable_chrome_thread()->set_thread_type(thread_type);
   }
 
-  perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
+  base::TrackEvent::SetTrackDescriptor(track, std::move(desc));
 }
 
 // Set track descriptors for all threads that exist in the current process
@@ -138,7 +138,7 @@ TrackNameRecorder::TrackNameRecorder()
     : process_start_timestamp_(
           TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds()) {
   base::ThreadIdNameManager::GetInstance()->AddObserver(this);
-  perfetto::TrackEvent::AddSessionObserver(this);
+  base::TrackEvent::AddSessionObserver(this);
   SetThreadTrackDescriptors();
 }
 

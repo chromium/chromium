@@ -175,7 +175,7 @@ class TracingSampleProfilerTest
     if (!g_tracing_session)
       return;
 
-    perfetto::TrackEvent::Flush();
+    base::TrackEvent::Flush();
 
     base::RunLoop wait_for_stop;
     g_tracing_session->SetOnStopCallback(

@@ -102,7 +102,7 @@ bool TracingObserverProto::AddChromeDumpToTraceIfEnabled(
   };
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  perfetto::TrackEvent::Trace([&](perfetto::TrackEvent::TraceContext ctx) {
+  base::TrackEvent::Trace([&](base::TrackEvent::TraceContext ctx) {
     write_packet(ctx.NewTracePacket());
   });
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -156,7 +156,7 @@ bool TracingObserverProto::AddOsDumpToTraceIfEnabled(
       };
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  perfetto::TrackEvent::Trace([&](perfetto::TrackEvent::TraceContext ctx) {
+  base::TrackEvent::Trace([&](base::TrackEvent::TraceContext ctx) {
     write_process_stats_packet(ctx.NewTracePacket());
     if (memory_maps.size())
       write_memory_maps_packet(ctx.NewTracePacket());

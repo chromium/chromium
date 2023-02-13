@@ -672,7 +672,7 @@ TraceLog::TraceLog(int generation)
   MemoryDumpManager::GetInstance()->RegisterDumpProvider(this, "TraceLog",
                                                          nullptr);
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  perfetto::TrackEvent::AddSessionObserver(this);
+  TrackEvent::AddSessionObserver(this);
   // When using the Perfetto client library, TRACE_EVENT macros will bypass
   // TraceLog entirely. However, trace event embedders which haven't been ported
   // to Perfetto yet will still be using TRACE_EVENT_API_ADD_TRACE_EVENT, so we
@@ -686,7 +686,7 @@ TraceLog::TraceLog(int generation)
 
 TraceLog::~TraceLog() {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  perfetto::TrackEvent::RemoveSessionObserver(this);
+  TrackEvent::RemoveSessionObserver(this);
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
@@ -985,7 +985,7 @@ void TraceLog::InitializePerfettoIfNeeded() {
   init_args.backends = perfetto::BackendType::kInProcessBackend;
   init_args.platform = perfetto_platform;
   perfetto::Tracing::Initialize(init_args);
-  perfetto::TrackEvent::Register();
+  TrackEvent::Register();
 }
 
 void TraceLog::SetEnabled(const TraceConfig& trace_config,
@@ -996,7 +996,7 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
 
 void TraceLog::SetEnabledImpl(const TraceConfig& trace_config,
                               const perfetto::TraceConfig& perfetto_config) {
-  DCHECK(!perfetto::TrackEvent::IsEnabled());
+  DCHECK(!TrackEvent::IsEnabled());
   lock_.AssertAcquired();
   InitializePerfettoIfNeeded();
   trace_config_ = trace_config;
@@ -1093,7 +1093,7 @@ void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
   // Remove metadata events so they will not get added to a subsequent trace.
   metadata_events_.clear();
 
-  perfetto::TrackEvent::Flush();
+  TrackEvent::Flush();
   // If the current thread has an active task runner, allow nested tasks to run
   // while stopping the session. This is needed by some tests, e.g., to allow
   // data sources to properly flush themselves.
@@ -1285,7 +1285,7 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
   use_worker_thread_ = use_worker_thread;
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY) && !BUILDFLAG(IS_NACL)
-  perfetto::TrackEvent::Flush();
+  TrackEvent::Flush();
 
   if (!tracing_session_ || discard_events) {
     tracing_session_.reset();
@@ -2101,7 +2101,7 @@ void TraceLog::OnSetProcessName(const std::string& process_name) {
     auto desc = track.Serialize();
     desc.mutable_process()->set_process_name(process_name);
     desc.mutable_process()->set_pid(static_cast<int>(process_id_));
-    perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
+    TrackEvent::SetTrackDescriptor(track, std::move(desc));
   }
 #endif
 }
@@ -2116,7 +2116,7 @@ void TraceLog::UpdateProcessLabel(int label_id,
     auto track = perfetto::ProcessTrack::Current();
     auto desc = track.Serialize();
     desc.mutable_process()->add_process_labels(current_label);
-    perfetto::TrackEvent::SetTrackDescriptor(track, std::move(desc));
+    TrackEvent::SetTrackDescriptor(track, std::move(desc));
   }
 #endif
 

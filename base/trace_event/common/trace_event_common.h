@@ -208,9 +208,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-// Export Perfetto symbols in the same way as //base symbols.
-#define PERFETTO_COMPONENT_EXPORT BASE_EXPORT
-
 // Enable legacy trace event macros (e.g., TRACE_EVENT{0,1,2}).
 #define PERFETTO_ENABLE_LEGACY_TRACE_EVENTS 1
 

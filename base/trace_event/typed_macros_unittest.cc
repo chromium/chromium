@@ -167,7 +167,7 @@ class TypedTraceEventTest : public testing::Test {
 
   void FlushTrace() {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    perfetto::TrackEvent::Flush();
+    TrackEvent::Flush();
     g_tracing_session->StopBlocking();
     std::vector<char> serialized_data = g_tracing_session->ReadTraceBlocking();
     perfetto::protos::Trace trace;

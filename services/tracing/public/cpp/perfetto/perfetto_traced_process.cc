@@ -127,7 +127,7 @@ void PerfettoTracedProcess::DataSourceBase::StopTracingImpl(
 void PerfettoTracedProcess::DataSourceBase::Flush(
     base::RepeatingClosure flush_complete_callback) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  perfetto::TrackEvent::Flush();
+  base::TrackEvent::Flush();
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   if (flush_complete_callback)
     std::move(flush_complete_callback).Run();
@@ -331,7 +331,7 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   perfetto::Tracing::Initialize(init_args);
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  perfetto::TrackEvent::Register();
+  base::TrackEvent::Register();
   tracing::TracingSamplerProfiler::RegisterDataSource();
   TrackNameRecorder::GetInstance();
   CustomEventRecorder::GetInstance();

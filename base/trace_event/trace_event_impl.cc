@@ -26,7 +26,7 @@
 
 // Define static storage for trace event categories (see
 // PERFETTO_DEFINE_CATEGORIES).
-PERFETTO_TRACK_EVENT_STATIC_STORAGE();
+PERFETTO_TRACK_EVENT_STATIC_STORAGE_IN_NAMESPACE_WITH_ATTRS(base, BASE_EXPORT);
 
 namespace perfetto {
 namespace legacy {
@@ -41,7 +41,7 @@ perfetto::ThreadTrack ConvertThreadId(const ::base::PlatformThreadId& thread) {
 TraceTimestamp
 TraceTimestampTraits<::base::TimeTicks>::ConvertTimestampToTraceTimeNs(
     const ::base::TimeTicks& ticks) {
-  return {static_cast<uint32_t>(TrackEvent::GetTraceClockId()),
+  return {static_cast<uint32_t>(::base::TrackEvent::GetTraceClockId()),
           static_cast<uint64_t>(ticks.since_origin().InNanoseconds())};
 }
 

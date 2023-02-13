@@ -215,8 +215,8 @@ void TraceEventMetadataSource::GenerateMetadataFromGenerator(
   }
   DataSourceProxy::Trace([&](DataSourceProxy::TraceContext ctx) {
     auto packet = ctx.NewTracePacket();
-    packet->set_timestamp(perfetto::TrackEvent::GetTraceTimeNs());
-    packet->set_timestamp_clock_id(perfetto::TrackEvent::GetTraceClockId());
+    packet->set_timestamp(base::TrackEvent::GetTraceTimeNs());
+    packet->set_timestamp_clock_id(base::TrackEvent::GetTraceClockId());
     auto* chrome_metadata = packet->set_chrome_metadata();
     generator.Run(chrome_metadata, privacy_filtering_enabled_);
   });
@@ -248,8 +248,8 @@ void TraceEventMetadataSource::GenerateMetadataPacket(
   }
   DataSourceProxy::Trace([&](DataSourceProxy::TraceContext ctx) {
     auto packet = ctx.NewTracePacket();
-    packet->set_timestamp(perfetto::TrackEvent::GetTraceTimeNs());
-    packet->set_timestamp_clock_id(perfetto::TrackEvent::GetTraceClockId());
+    packet->set_timestamp(base::TrackEvent::GetTraceTimeNs());
+    packet->set_timestamp_clock_id(base::TrackEvent::GetTraceClockId());
     generator.Run(packet.get(), privacy_filtering_enabled_);
   });
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -306,8 +306,8 @@ void TraceEventMetadataSource::GenerateJsonMetadataFromGenerator(
   }
   DataSourceProxy::Trace([&](DataSourceProxy::TraceContext ctx) {
     auto packet = ctx.NewTracePacket();
-    packet->set_timestamp(perfetto::TrackEvent::GetTraceTimeNs());
-    packet->set_timestamp_clock_id(perfetto::TrackEvent::GetTraceClockId());
+    packet->set_timestamp(base::TrackEvent::GetTraceTimeNs());
+    packet->set_timestamp_clock_id(base::TrackEvent::GetTraceClockId());
     write_to_bundle(packet->set_chrome_events());
   });
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -359,16 +359,15 @@ void TraceEventMetadataSource::GenerateMetadata(
   DataSourceProxy::Trace([&](DataSourceProxy::TraceContext ctx) {
     for (auto& generator : *packet_generators) {
       auto packet = ctx.NewTracePacket();
-      packet->set_timestamp(perfetto::TrackEvent::GetTraceTimeNs());
-      packet->set_timestamp_clock_id(perfetto::TrackEvent::GetTraceClockId());
+      packet->set_timestamp(base::TrackEvent::GetTraceTimeNs());
+      packet->set_timestamp_clock_id(base::TrackEvent::GetTraceClockId());
       generator.Run(packet.get(), privacy_filtering_enabled);
     }
 
     {
       auto trace_packet = ctx.NewTracePacket();
-      trace_packet->set_timestamp(perfetto::TrackEvent::GetTraceTimeNs());
-      trace_packet->set_timestamp_clock_id(
-          perfetto::TrackEvent::GetTraceClockId());
+      trace_packet->set_timestamp(base::TrackEvent::GetTraceTimeNs());
+      trace_packet->set_timestamp_clock_id(base::TrackEvent::GetTraceClockId());
       auto* chrome_metadata = trace_packet->set_chrome_metadata();
       for (auto& generator : *proto_generators) {
         generator.Run(chrome_metadata, privacy_filtering_enabled);
@@ -377,9 +376,8 @@ void TraceEventMetadataSource::GenerateMetadata(
 
     if (!privacy_filtering_enabled) {
       auto trace_packet = ctx.NewTracePacket();
-      trace_packet->set_timestamp(perfetto::TrackEvent::GetTraceTimeNs());
-      trace_packet->set_timestamp_clock_id(
-          perfetto::TrackEvent::GetTraceClockId());
+      trace_packet->set_timestamp(base::TrackEvent::GetTraceTimeNs());
+      trace_packet->set_timestamp_clock_id(base::TrackEvent::GetTraceClockId());
       ChromeEventBundle* event_bundle = trace_packet->set_chrome_events();
       for (auto& generator : *json_generators) {
         GenerateJsonMetadataFromGenerator(generator, event_bundle);
