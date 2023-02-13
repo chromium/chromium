@@ -45,8 +45,6 @@ class WebTestStorageAccessManager
   raw_ptr<BrowserContext> browser_context_;
 
   mojo::ReceiverSet<blink::test::mojom::StorageAccessAutomation> receivers_;
-
-  ContentSettingsForOneType content_settings_for_automation_;
 };
 
 }  // namespace content

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Set up storage access rules
-PASS [same-site] Cookie access is allowed: true
-PASS [third-party-allowed-on-first-party-site] Cookie access is allowed: true
-FAIL [third-party-blocked-all] Cookie access is allowed: false assert_equals: expected "" but got "hello2=world2"
-PASS [third-party-blocked-on-first-party-site] Cookie access is allowed: false
-Harness: the test ran to completion.
-
