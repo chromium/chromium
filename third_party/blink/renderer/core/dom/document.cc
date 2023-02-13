@@ -6074,6 +6074,15 @@ bool Document::HasStorageAccess() const {
 // TODO(crbug.com/1401089): Update the method to return the result from
 // `HasStorageAccess()`;
 ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
+  if (!GetFrame()) {
+    // Note that in detached frames, resolvers are not able to return a promise.
+    return ScriptPromise::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "hasStorageAccess: Cannot be used unless the "
+                          "document is fully active."));
+  }
+
   const bool has_access =
       TopFrameOrigin() && GetExecutionContext() &&
       !GetExecutionContext()->GetSecurityOrigin()->IsOpaque() &&
