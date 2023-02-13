@@ -163,6 +163,8 @@ class ReadingListEntry : public base::RefCounted<ReadingListEntry> {
   //     new_this.AsReadingListSpecifics()).
   void MergeWithEntry(const ReadingListEntry& other);
 
+  scoped_refptr<ReadingListEntry> Clone() const;
+
   bool operator==(const ReadingListEntry& other) const;
 
   // Sets |title_| to |title|. Sets |update_title_time_us_| to |now|.

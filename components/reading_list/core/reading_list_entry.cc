@@ -161,6 +161,27 @@ int ReadingListEntry::FailedDownloadCounter() const {
   return failed_download_counter_;
 }
 
+scoped_refptr<ReadingListEntry> ReadingListEntry::Clone() const {
+  const base::Time now = base::Time::Now();
+  scoped_refptr<ReadingListEntry> entry_copy =
+      FromReadingListLocal(*AsReadingListLocal(now), now);
+  DCHECK(entry_copy->url_ == url_);
+  DCHECK(entry_copy->title_ == title_);
+  DCHECK(entry_copy->estimated_read_time_ == estimated_read_time_);
+  DCHECK(entry_copy->state_ == state_);
+  DCHECK(entry_copy->creation_time_us_ == creation_time_us_);
+  DCHECK(entry_copy->first_read_time_us_ == first_read_time_us_);
+  DCHECK(entry_copy->update_time_us_ == update_time_us_);
+  DCHECK(entry_copy->update_title_time_us_ == update_title_time_us_);
+  DCHECK(entry_copy->distilled_state_ == distilled_state_);
+  DCHECK(entry_copy->distilled_path_ == distilled_path_);
+  DCHECK(entry_copy->distilled_url_ == distilled_url_);
+  DCHECK(entry_copy->distillation_time_us_ == distillation_time_us_);
+  DCHECK(entry_copy->distillation_size_ == distillation_size_);
+  DCHECK(entry_copy->failed_download_counter_ == failed_download_counter_);
+  return entry_copy;
+}
+
 bool ReadingListEntry::operator==(const ReadingListEntry& other) const {
   return url_ == other.url_;
 }

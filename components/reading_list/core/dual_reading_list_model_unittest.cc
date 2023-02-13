@@ -6,16 +6,29 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/storage_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
 using testing::_;
+
+MATCHER_P2(MatchesEntry, url_matcher, title_matcher, "") {
+  if (!arg) {
+    *result_listener << "which is null";
+    return false;
+  }
+  return testing::SafeMatcherCast<GURL>(url_matcher)
+             .MatchAndExplain(arg->URL(), result_listener) &&
+         testing::SafeMatcherCast<std::string>(title_matcher)
+             .MatchAndExplain(arg->Title(), result_listener);
+}
 
 class DualReadingListModelTest : public testing::Test {
  public:
@@ -48,10 +61,18 @@ class DualReadingListModelTest : public testing::Test {
   }
 
   bool ResetStorageAndTriggerLoadCompletion(
+      std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries,
+      std::vector<scoped_refptr<ReadingListEntry>> initial_account_entries) {
+    ResetStorage();
+    return local_or_syncable_model_storage_ptr_->TriggerLoadCompletion(
+               std::move(initial_local_entries)) &&
+           account_model_storage_ptr_->TriggerLoadCompletion(
+               std::move(initial_account_entries));
+  }
+
+  bool ResetStorageAndTriggerLoadCompletion(
       const std::vector<GURL>& initial_local_urls = {},
       const std::vector<GURL>& initial_account_urls = {}) {
-    ResetStorage();
-
     std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries;
     for (const auto& url : initial_local_urls) {
       initial_local_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
@@ -64,10 +85,8 @@ class DualReadingListModelTest : public testing::Test {
           url, "Title for " + url.spec(), clock_.Now()));
     }
 
-    return local_or_syncable_model_storage_ptr_->TriggerLoadCompletion(
-               std::move(initial_local_entries)) &&
-           account_model_storage_ptr_->TriggerLoadCompletion(
-               std::move(initial_account_entries));
+    return ResetStorageAndTriggerLoadCompletion(
+        std::move(initial_local_entries), std::move(initial_account_entries));
   }
 
   size_t UnreadSize() {
@@ -154,6 +173,62 @@ TEST_F(DualReadingListModelTest, ReturnKeysSize) {
   ASSERT_EQ(1ul, local_or_syncable_model_ptr_->size());
   ASSERT_EQ(1ul, account_model_ptr_->size());
   EXPECT_EQ(2ul, dual_model_->size());
+}
+
+TEST_F(DualReadingListModelTest, GetEntryByURL) {
+  std::vector<scoped_refptr<ReadingListEntry>> local_entries;
+  local_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://local_url.com/"), "local_entry", clock_.Now()));
+
+  auto local_common_entry1 = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://common_url1.com/"), "merged_entry_title_from_local_entry",
+      clock_.Now() + base::Seconds(1));
+  local_common_entry1->SetDistilledState(ReadingListEntry::DISTILLATION_ERROR);
+  local_entries.push_back(local_common_entry1);
+
+  auto local_common_entry2 = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://common_url2.com/"), "merged_entry_title_from_local_entry",
+      clock_.Now());
+  local_common_entry2->SetDistilledState(ReadingListEntry::DISTILLATION_ERROR);
+  local_entries.push_back(local_common_entry2);
+
+  std::vector<scoped_refptr<ReadingListEntry>> account_entries;
+  account_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://account_url.com/"), "account_entry", clock_.Now()));
+  account_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://common_url1.com/"), "merged_entry_title_from_account_entry",
+      clock_.Now()));
+  account_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://common_url2.com/"), "merged_entry_title_from_account_entry",
+      clock_.Now() + base::Seconds(1)));
+
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(std::move(local_entries),
+                                                   std::move(account_entries)));
+  ASSERT_TRUE(dual_model_->loaded());
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(GURL("http://local_url.com/")),
+              MatchesEntry("http://local_url.com/", "local_entry"));
+  EXPECT_THAT(dual_model_->GetEntryByURL(GURL("http://account_url.com/")),
+              MatchesEntry("http://account_url.com/", "account_entry"));
+
+  scoped_refptr<const ReadingListEntry> merged_entry1 =
+      dual_model_->GetEntryByURL(GURL("http://common_url1.com/"));
+  scoped_refptr<const ReadingListEntry> merged_entry2 =
+      dual_model_->GetEntryByURL(GURL("http://common_url2.com/"));
+  // The expected title of the merged entry is the title that was most recently
+  // updated, and initially the update time of the title is equal to the
+  // creation time.
+  EXPECT_THAT(merged_entry1,
+              MatchesEntry("http://common_url1.com/",
+                           "merged_entry_title_from_local_entry"));
+  EXPECT_THAT(merged_entry2,
+              MatchesEntry("http://common_url2.com/",
+                           "merged_entry_title_from_account_entry"));
+  // The DistilledState() should be equal to the local one.
+  EXPECT_EQ(merged_entry1->DistilledState(),
+            ReadingListEntry::DISTILLATION_ERROR);
+  EXPECT_EQ(merged_entry2->DistilledState(),
+            ReadingListEntry::DISTILLATION_ERROR);
 }
 
 }  // namespace

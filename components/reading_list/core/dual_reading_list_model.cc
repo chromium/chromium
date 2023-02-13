@@ -7,7 +7,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/features/reading_list_switches.h"
+#include "url/gurl.h"
 
 namespace reading_list {
 
@@ -124,9 +126,24 @@ bool DualReadingListModel::DeleteAllEntries() {
 scoped_refptr<const ReadingListEntry> DualReadingListModel::GetEntryByURL(
     const GURL& gurl) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
-  return nullptr;
+  scoped_refptr<const ReadingListEntry> local_or_syncable_entry =
+      local_or_syncable_model_->GetEntryByURL(gurl);
+  scoped_refptr<const ReadingListEntry> account_entry =
+      account_model_->GetEntryByURL(gurl);
+  if (!local_or_syncable_entry) {
+    return account_entry;
+  }
+  if (!account_entry) {
+    return local_or_syncable_entry;
+  }
+  scoped_refptr<ReadingListEntry> merged_entry =
+      local_or_syncable_entry->Clone();
+  // Merging the account entry into the local one should result in the merged
+  // view's distilled state being equal to the local entry's. This is because
+  // the local entry must be older than the account entry, as local entries can
+  // only be created while the user is signed out.
+  merged_entry->MergeWithEntry(*account_entry);
+  return merged_entry;
 }
 
 bool DualReadingListModel::IsUrlSupported(const GURL& url) {
