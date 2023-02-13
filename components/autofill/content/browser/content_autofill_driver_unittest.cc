@@ -272,10 +272,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
   MockBrowserAutofillManager(AutofillDriver* driver, AutofillClient* client)
-      : BrowserAutofillManager(driver,
-                               client,
-                               kAppLocale,
-                               EnableDownloadManager(false)) {}
+      : BrowserAutofillManager(driver, client, kAppLocale) {}
   ~MockBrowserAutofillManager() override = default;
 
   MOCK_METHOD(void, Reset, (), (override));

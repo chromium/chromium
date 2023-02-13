@@ -131,8 +131,7 @@ TEST_F(AutofillAgentTests,
        OnFormDataFilledTestWithFrameMessagingUsingRendererIDs) {
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
-      &fake_web_state_, &client_, nil, locale,
-      autofill::AutofillManager::EnableDownloadManager(false));
+      &fake_web_state_, &client_, nil, locale);
 
   autofill::FormData form;
   form.url = GURL("https://myform.com");
@@ -412,8 +411,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
 TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
-      &fake_web_state_, &client_, nil, locale,
-      autofill::AutofillManager::EnableDownloadManager(false));
+      &fake_web_state_, &client_, nil, locale);
 
   // Remove the current main frame.
   RemoveWebFrame(fake_main_frame_->GetFrameId());

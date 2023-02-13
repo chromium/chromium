@@ -173,11 +173,11 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillQueryFailedForTesting(
   AutofillManager* autofill_manager = ToMainFrameAutofillManager(jweb_contents);
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>&
       form_structures = autofill_manager->form_structures();
-  // Always use first form.
-  CHECK(form_structures.size());
-  autofill_manager->OnServerRequestErrorForTest(
-      *(autofill::test::GetEncodedSignatures(*(form_structures.begin()->second))
-            .begin()),
+  CHECK(!form_structures.empty());
+  const FormStructure& arbitary_form = *form_structures.begin()->second;
+  AutofillDownloadManager::Observer* observer = autofill_manager;
+  observer->OnServerRequestError(
+      arbitary_form.form_signature(),
       AutofillDownloadManager::RequestType::REQUEST_QUERY, 400);
 }
 

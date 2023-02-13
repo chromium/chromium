@@ -558,7 +558,7 @@ TEST_F(FastCheckoutClientImplTest,
       std::make_unique<autofill::BrowserAutofillManager>(
           autofill_driver.get(),
           autofill::ChromeAutofillClient::FromWebContents(web_contents()),
-          "en-US", autofill::AutofillManager::EnableDownloadManager(false));
+          "en-US");
   autofill::BrowserAutofillManager* autofill_manager =
       browser_autofill_manager.get();
   autofill_driver->set_autofill_manager(std::move(browser_autofill_manager));

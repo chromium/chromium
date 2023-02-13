@@ -26,8 +26,7 @@ namespace autofill {
 //    public:
 //     MockAutofillManager(AutofillDriverIOS* driver,
 //                         AutofillClient* client)
-//         : BrowserAutofillManager(driver, client, "en-US",
-//                                  EnableDownloadManager(true)) {}
+//         : BrowserAutofillManager(driver, client, "en-US") {}
 //     MOCK_METHOD(...);
 //     ...
 //   };

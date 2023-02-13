@@ -95,10 +95,7 @@ class MockAutofillDriver : public ContentAutofillDriver {
 class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
   MockBrowserAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
-      : BrowserAutofillManager(driver,
-                               client,
-                               "en-US",
-                               EnableDownloadManager(false)) {}
+      : BrowserAutofillManager(driver, client, "en-US") {}
   MockBrowserAutofillManager(MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(MockBrowserAutofillManager&) = delete;
   ~MockBrowserAutofillManager() override = default;

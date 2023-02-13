@@ -120,10 +120,7 @@ class AutofillTest : public InProcessBrowserTest {
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
-        : BrowserAutofillManager(driver,
-                                 client,
-                                 "en-US",
-                                 EnableDownloadManager(false)) {}
+        : BrowserAutofillManager(driver, client, "en-US") {}
 
     [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
         int min_num_awaited_calls) {
@@ -759,10 +756,7 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
   class MockAutofillManager : public BrowserAutofillManager {
    public:
     MockAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
-        : BrowserAutofillManager(driver,
-                                 client,
-                                 "en-US",
-                                 EnableDownloadManager(false)) {
+        : BrowserAutofillManager(driver, client, "en-US") {
       // We need to set these expectations immediately to catch any premature
       // calls while prerendering.
       if (driver->render_frame_host()->GetLifecycleState() ==
@@ -870,10 +864,7 @@ class AutofillTestFormSubmission
   class MockAutofillManager : public BrowserAutofillManager {
    public:
     MockAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
-        : BrowserAutofillManager(driver,
-                                 client,
-                                 "en-US",
-                                 EnableDownloadManager(false)) {}
+        : BrowserAutofillManager(driver, client, "en-US") {}
     MOCK_METHOD(void,
                 OnFormSubmittedImpl,
                 (const FormData&, bool, mojom::SubmissionSource),

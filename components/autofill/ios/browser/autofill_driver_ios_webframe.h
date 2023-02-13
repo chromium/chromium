@@ -37,18 +37,15 @@ class AutofillDriverIOSWebFrameFactory
 
   // Creates a AutofillDriverIOSWebFrameFactory that will store all the
   // needed to create a AutofillDriverIOS.
-  AutofillDriverIOSWebFrameFactory(
-      web::WebState* web_state,
-      AutofillClient* client,
-      id<AutofillDriverIOSBridge> bridge,
-      const std::string& app_locale,
-      AutofillManager::EnableDownloadManager enable_download_manager);
+  AutofillDriverIOSWebFrameFactory(web::WebState* web_state,
+                                   AutofillClient* client,
+                                   id<AutofillDriverIOSBridge> bridge,
+                                   const std::string& app_locale);
 
   web::WebState* web_state_ = nullptr;
   AutofillClient* client_ = nullptr;
   id<AutofillDriverIOSBridge> bridge_ = nil;
   std::string app_locale_;
-  AutofillManager::EnableDownloadManager enable_download_manager_;
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
@@ -58,13 +55,11 @@ class AutofillDriverIOSRefCountable
     : public AutofillDriverIOS,
       public base::RefCountedThreadSafe<AutofillDriverIOSRefCountable> {
  public:
-  AutofillDriverIOSRefCountable(
-      web::WebState* web_state,
-      web::WebFrame* web_frame,
-      AutofillClient* client,
-      id<AutofillDriverIOSBridge> bridge,
-      const std::string& app_locale,
-      AutofillManager::EnableDownloadManager enable_download_manager);
+  AutofillDriverIOSRefCountable(web::WebState* web_state,
+                                web::WebFrame* web_frame,
+                                AutofillClient* client,
+                                id<AutofillDriverIOSBridge> bridge,
+                                const std::string& app_locale);
 
  private:
   friend class base::RefCountedThreadSafe<AutofillDriverIOSRefCountable>;
@@ -84,13 +79,11 @@ class AutofillDriverIOSRefCountable
 class AutofillDriverIOSWebFrame
     : public web::WebFrameUserData<AutofillDriverIOSWebFrame> {
  public:
-  static void CreateForWebFrame(
-      web::WebState* web_state,
-      web::WebFrame* web_frame,
-      AutofillClient* client,
-      id<AutofillDriverIOSBridge> bridge,
-      const std::string& app_locale,
-      AutofillManager::EnableDownloadManager enable_download_manager);
+  static void CreateForWebFrame(web::WebState* web_state,
+                                web::WebFrame* web_frame,
+                                AutofillClient* client,
+                                id<AutofillDriverIOSBridge> bridge,
+                                const std::string& app_locale);
 
   ~AutofillDriverIOSWebFrame() override;
 
@@ -107,13 +100,11 @@ class AutofillDriverIOSWebFrame
   }
 
  private:
-  AutofillDriverIOSWebFrame(
-      web::WebState* web_state,
-      web::WebFrame* web_frame,
-      AutofillClient* client,
-      id<AutofillDriverIOSBridge> bridge,
-      const std::string& app_locale,
-      AutofillManager::EnableDownloadManager enable_download_manager);
+  AutofillDriverIOSWebFrame(web::WebState* web_state,
+                            web::WebFrame* web_frame,
+                            AutofillClient* client,
+                            id<AutofillDriverIOSBridge> bridge,
+                            const std::string& app_locale);
 
   scoped_refptr<AutofillDriverIOSRefCountable> driver_;
 };

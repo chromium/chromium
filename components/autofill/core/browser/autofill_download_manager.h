@@ -89,11 +89,6 @@ class AutofillDownloadManager {
                           version_info::Channel channel,
                           LogManager* log_manager);
 
-  AutofillDownloadManager(AutofillClient* client,
-                          const std::string& api_key,
-                          bool is_raw_metadata_uploading_enabled,
-                          LogManager* log_manager);
-
   virtual ~AutofillDownloadManager();
 
   // Starts a query request to Autofill servers. The observer is called with the
@@ -132,6 +127,11 @@ class AutofillDownloadManager {
   static void ClearUploadHistory(PrefService* pref_service);
 
  protected:
+  AutofillDownloadManager(AutofillClient* client,
+                          const std::string& api_key,
+                          bool is_raw_metadata_uploading_enabled,
+                          LogManager* log_manager);
+
   // Gets the length of the payload from request data. Used to simulate
   // different payload sizes when testing without the need for data. Do not use
   // this when the length is needed to read/write a buffer.

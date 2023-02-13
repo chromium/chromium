@@ -45,8 +45,7 @@ class AutofillDriverIOS : public AutofillDriver {
       web::WebState* web_state,
       AutofillClient* client,
       id<AutofillDriverIOSBridge> bridge,
-      const std::string& app_locale,
-      AutofillManager::EnableDownloadManager enable_download_manager);
+      const std::string& app_locale);
 
   static AutofillDriverIOS* FromWebStateAndWebFrame(web::WebState* web_state,
                                                     web::WebFrame* web_frame);
@@ -106,13 +105,11 @@ class AutofillDriverIOS : public AutofillDriver {
   web::WebFrame* web_frame();
 
  protected:
-  AutofillDriverIOS(
-      web::WebState* web_state,
-      web::WebFrame* web_frame,
-      AutofillClient* client,
-      id<AutofillDriverIOSBridge> bridge,
-      const std::string& app_locale,
-      AutofillManager::EnableDownloadManager enable_download_manager);
+  AutofillDriverIOS(web::WebState* web_state,
+                    web::WebFrame* web_frame,
+                    AutofillClient* client,
+                    id<AutofillDriverIOSBridge> bridge,
+                    const std::string& app_locale);
 
  private:
   // The WebState with which this object is associated.

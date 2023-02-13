@@ -516,11 +516,9 @@ BrowserAutofillManager::FillingContext::FillingContext(
 
 BrowserAutofillManager::FillingContext::~FillingContext() = default;
 
-BrowserAutofillManager::BrowserAutofillManager(
-    AutofillDriver* driver,
-    AutofillClient* client,
-    const std::string& app_locale,
-    EnableDownloadManager enable_download_manager)
+BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
+                                               AutofillClient* client,
+                                               const std::string& app_locale)
     : AutofillManager(driver, client),
       external_delegate_(
           std::make_unique<AutofillExternalDelegate>(this, driver)),

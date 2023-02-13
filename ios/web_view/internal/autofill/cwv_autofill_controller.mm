@@ -130,8 +130,7 @@ using UserDecision =
     _autofillClient->set_bridge(self);
 
     autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
-        _webState, _autofillClient.get(), self, applicationLocale,
-        autofill::AutofillManager::EnableDownloadManager(true));
+        _webState, _autofillClient.get(), self, applicationLocale);
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);

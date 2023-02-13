@@ -103,8 +103,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
 
     std::string locale("en");
     autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
-        web_state(), autofill_client_.get(), nil, locale,
-        autofill::AutofillManager::EnableDownloadManager(false));
+        web_state(), autofill_client_.get(), nil, locale);
   }
 
   void TearDown() override {

@@ -26,13 +26,12 @@ void AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
     web::WebState* web_state,
     AutofillClient* client,
     id<AutofillDriverIOSBridge> bridge,
-    const std::string& app_locale,
-    AutofillManager::EnableDownloadManager enable_download_manager) {
+    const std::string& app_locale) {
   // By the time this method is called, no web_frame is available. This method
   // only prepares the factory and the AutofillDriverIOS will be created in the
   // first call to FromWebStateAndWebFrame.
-  AutofillDriverIOSWebFrameFactory::CreateForWebState(
-      web_state, client, bridge, app_locale, enable_download_manager);
+  AutofillDriverIOSWebFrameFactory::CreateForWebState(web_state, client, bridge,
+                                                      app_locale);
 }
 
 // static
@@ -44,22 +43,17 @@ AutofillDriverIOS* AutofillDriverIOS::FromWebStateAndWebFrame(
         ->driver();
 }
 
-AutofillDriverIOS::AutofillDriverIOS(
-    web::WebState* web_state,
-    web::WebFrame* web_frame,
-    AutofillClient* client,
-    id<AutofillDriverIOSBridge> bridge,
-    const std::string& app_locale,
-    AutofillManager::EnableDownloadManager enable_download_manager)
+AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
+                                     web::WebFrame* web_frame,
+                                     AutofillClient* client,
+                                     id<AutofillDriverIOSBridge> bridge,
+                                     const std::string& app_locale)
     : web_state_(web_state),
       bridge_(bridge),
       client_(client),
       browser_autofill_manager_(
-          std::make_unique<BrowserAutofillManager>(this,
-                                                   client,
-                                                   app_locale,
-                                                   enable_download_manager)) {
-  web_frame_id_ = web::GetWebFrameId(web_frame);
+          std::make_unique<BrowserAutofillManager>(this, client, app_locale)) {
+    web_frame_id_ = web::GetWebFrameId(web_frame);
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() = default;

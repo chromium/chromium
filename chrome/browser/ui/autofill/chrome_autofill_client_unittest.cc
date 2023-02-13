@@ -195,9 +195,8 @@ TEST_F(ChromeAutofillClientTest, TryToShowFastCheckout) {
   auto router = std::make_unique<autofill::ContentAutofillRouter>();
   auto driver = std::make_unique<autofill::ContentAutofillDriver>(
       web_contents()->GetPrimaryMainFrame(), router.get());
-  auto manager = std::make_unique<BrowserAutofillManager>(
-      driver.get(), client(), "en-US",
-      AutofillManager::EnableDownloadManager(false));
+  auto manager =
+      std::make_unique<BrowserAutofillManager>(driver.get(), client(), "en-US");
   BrowserAutofillManager* manager_ptr = manager.get();
   driver->set_autofill_manager(std::move(manager));
 

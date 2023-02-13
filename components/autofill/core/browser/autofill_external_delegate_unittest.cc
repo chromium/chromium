@@ -113,10 +113,7 @@ class MockAutofillClient : public TestAutofillClient {
 class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
   MockBrowserAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
-      : BrowserAutofillManager(driver,
-                               client,
-                               "en-US",
-                               EnableDownloadManager(false)) {}
+      : BrowserAutofillManager(driver, client, "en-US") {}
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;

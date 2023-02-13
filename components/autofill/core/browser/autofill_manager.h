@@ -107,9 +107,6 @@ class AutofillManager
     virtual void OnFormSubmitted() {}
   };
 
-  using EnableDownloadManager =
-      base::StrongAlias<struct EnableDownloadManagerTag, bool>;
-
   // TODO(crbug.com/1151542): Move to anonymous namespace once
   // BrowserAutofillManager::OnLoadedServerPredictions() moves to
   // AutofillManager.
@@ -334,12 +331,6 @@ class AutofillManager
       std::string response,
       const std::vector<FormSignature>& queried_form_signatures) {
     OnLoadedServerPredictions(response, queried_form_signatures);
-  }
-  void OnServerRequestErrorForTest(
-      FormSignature form_signature,
-      AutofillDownloadManager::RequestType request_type,
-      int http_error) {
-    OnServerRequestError(form_signature, request_type, http_error);
   }
 
   std::map<FormGlobalId, std::unique_ptr<FormStructure>>*

@@ -34,10 +34,7 @@ FormStructureTestApi test_api(FormStructure* form_structure) {
 TestBrowserAutofillManager::TestBrowserAutofillManager(
     TestAutofillDriver* driver,
     TestAutofillClient* client)
-    : BrowserAutofillManager(driver,
-                             client,
-                             "en-US",
-                             EnableDownloadManager(false)),
+    : BrowserAutofillManager(driver, client, "en-US"),
       client_(client),
       driver_(driver) {}
 

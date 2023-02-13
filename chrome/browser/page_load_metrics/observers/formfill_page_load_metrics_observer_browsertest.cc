@@ -40,10 +40,7 @@ class FormfillPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
    public:
     TestAutofillManager(autofill::ContentAutofillDriver* driver,
                         autofill::AutofillClient* client)
-        : BrowserAutofillManager(driver,
-                                 client,
-                                 "en-US",
-                                 EnableDownloadManager(false)) {}
+        : BrowserAutofillManager(driver, client, "en-US") {}
 
     autofill::TestAutofillManagerWaiter& waiter() { return waiter_; }
 
