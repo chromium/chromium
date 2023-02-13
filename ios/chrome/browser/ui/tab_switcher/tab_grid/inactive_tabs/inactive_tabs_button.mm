@@ -22,6 +22,8 @@ const CGFloat kCornerRadius = 10;
 const CGFloat kVerticalMargin = 8;
 // The margin for leading and trailing placements.
 const CGFloat kHorizontalMargin = 16;
+// The max count to show. Afterwards, it shows "`kMaxCount`+".
+const NSUInteger kMaxCount = 99;
 }  // namespace
 
 @interface InactiveTabsButton ()
@@ -101,8 +103,9 @@ const CGFloat kHorizontalMargin = 16;
 
 - (void)setCount:(NSUInteger)count {
   _count = count;
-  self.countLabel.text =
-      count > 100 ? @"100+" : [NSString stringWithFormat:@"%@", @(count)];
+  self.countLabel.text = count > kMaxCount
+                             ? [NSString stringWithFormat:@"%@+", @(kMaxCount)]
+                             : [NSString stringWithFormat:@"%@", @(count)];
 }
 
 @end

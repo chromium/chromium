@@ -12,7 +12,7 @@
 @interface InactiveTabsButton : UIButton
 
 // The number of Inactive Tabs to advertize. If set to something above 100, the
-// label will display "100+".
+// label will display "99+".
 @property(nonatomic, assign) NSUInteger count;
 
 @end
