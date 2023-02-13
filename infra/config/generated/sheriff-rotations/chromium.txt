@@ -79,6 +79,7 @@ ci/linux-chromeos-dbg
 ci/linux-chromeos-rel
 ci/linux-extended-tracing-rel
 ci/linux-gcc-rel
+ci/linux-lacros-asan-lsan-rel
 ci/linux-lacros-builder-rel
 ci/linux-lacros-dbg
 ci/linux-lacros-tester-rel

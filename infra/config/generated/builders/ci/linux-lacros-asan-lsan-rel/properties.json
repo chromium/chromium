@@ -60,5 +60,8 @@
     ]
   },
   "builder_group": "chromium.memory",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }
