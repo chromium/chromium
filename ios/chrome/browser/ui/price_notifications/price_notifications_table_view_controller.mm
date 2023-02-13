@@ -245,7 +245,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
       }
                completion:nil];
   NSString* messageText = l10n_util::GetNSString(
-      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING);
+      IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING_SNACKBAR);
   MDCSnackbarMessage* message =
       [MDCSnackbarMessage messageWithText:messageText];
   [self.snackbarCommandsHandler

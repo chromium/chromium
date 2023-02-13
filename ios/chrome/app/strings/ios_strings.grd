@@ -1784,13 +1784,16 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Get an alert if the price drops on any site.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_FOR_TRACKED_ITEM" desc="A table header element that describes that this price-tracked item can be managed in bookmarks.">
-        You'll get an alert if the price drops on any site. This page is saved in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Bookmarks<ph name="END_LINK">END_LINK</ph>.
+        You'll get an alert if the price drops on any site. This page is saved in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Mobile Bookmarks<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON" desc="The title for a button that adds the price-trackable item to the user's stored price tracking list.">
         Track
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING" desc="Title for action menu item that stops the price-tracking process for the given item.">
-        Stop price tracking
+        Untrack
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_MENU_ITEM_STOP_TRACKING_SNACKBAR" desc="Snackbar message that displays when the price-tracking process is stopped for the given item.">
+        Price tracking stopped
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_TITLE" desc="Title for Price Notifications settings menu.">
         Notifications
