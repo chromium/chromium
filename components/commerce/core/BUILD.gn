@@ -336,6 +336,7 @@ source_set("account_checker_test_support") {
     ":account_checker",
     "//base",
     "//services/network/public/cpp:cpp",
+    "//testing/gmock",
   ]
 }
 

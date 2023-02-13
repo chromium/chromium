@@ -6,6 +6,7 @@
 #define COMPONENTS_COMMERCE_CORE_MOCK_ACCOUNT_CHECKER_H_
 
 #include "components/commerce/core/account_checker.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace commerce {
 
@@ -17,13 +18,13 @@ class MockAccountChecker : public AccountChecker {
   MockAccountChecker(const MockAccountChecker&) = delete;
   ~MockAccountChecker() override;
 
-  bool IsSignedIn() override;
+  MOCK_METHOD(bool, IsSignedIn, (), (override));
 
-  bool IsAnonymizedUrlDataCollectionEnabled() override;
+  MOCK_METHOD(bool, IsAnonymizedUrlDataCollectionEnabled, (), (override));
 
-  bool IsWebAndAppActivityEnabled() override;
+  MOCK_METHOD(bool, IsWebAndAppActivityEnabled, (), (override));
 
-  bool IsSubjectToParentalControls() override;
+  MOCK_METHOD(bool, IsSubjectToParentalControls, (), (override));
 
   void SetSignedIn(bool signed_in);
 
@@ -32,12 +33,6 @@ class MockAccountChecker : public AccountChecker {
   void SetWebAndAppActivityEnabled(bool enabled);
 
   void SetIsSubjectToParentalControls(bool subject_to_parental_controls);
-
- private:
-  bool signed_in_{true};
-  bool anonymized_url_data_collection_enabled_{true};
-  bool web_and_app_activity_enabled_{true};
-  bool is_subject_to_parental_controls_{false};
 };
 
 }  // namespace commerce
