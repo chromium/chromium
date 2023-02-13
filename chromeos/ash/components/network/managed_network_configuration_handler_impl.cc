@@ -751,11 +751,13 @@ void ManagedNetworkConfigurationHandlerImpl::TriggerCellularPolicyApplication(
           << "Found ONC configuration with SMDP: " << *smdp_address
           << ". Start installing policy eSim profile with ONC config: "
           << *network_policy;
-      if (cellular_policy_handler_)
-        cellular_policy_handler_->InstallESim(*smdp_address, *network_policy);
-      else
+      if (cellular_policy_handler_) {
+        cellular_policy_handler_->InstallESim(*smdp_address,
+                                              network_policy->GetDict());
+      } else {
         NET_LOG(ERROR) << "Unable to install eSIM. CellularPolicyHandler not "
                           "initialized.";
+      }
     } else {
       NET_LOG(EVENT) << "Skip installing policy eSIM either because "
                         "the eSIM policy feature is not enabled or the SMDP "
