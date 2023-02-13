@@ -652,23 +652,6 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
     if (it != end)
       ++it;
   }
-
-  // For metrics on name/value truncation.
-  //
-  // If we stopped before the (real) end of the string and the leftovers
-  // include something other than terminating characters or whitespace then
-  // this cookie was truncated due to a terminating CTL.
-  //
-  // We only care about the name or value being truncated which means we
-  // only care about the first pair. If the pairs_.size() > 1 then that
-  // means the truncation happened after name/value parsing which we're not
-  // concerned about for metrics.
-  using std::string_literals::operator""s;
-  if (pairs_.size() == 1 &&
-      cookie_line.find_first_not_of("\n\r\0 \t"s, end - start) !=
-          std::string::npos) {
-    truncated_name_or_value_ = true;
-  }
 }
 
 void ParsedCookie::SetupAttributes() {

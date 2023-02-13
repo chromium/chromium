@@ -84,7 +84,6 @@ class NET_EXPORT ParsedCookie {
   CookiePriority Priority() const;
   bool IsSameParty() const { return same_party_index_ != 0; }
   bool IsPartitioned() const { return partitioned_index_ != 0; }
-  bool HasTruncatedNameOrValue() const { return truncated_name_or_value_; }
   bool HasInternalHtab() const { return internal_htab_; }
   TruncatingCharacterInCookieStringType
   GetTruncatingCharacterInCookieStringType() const {
@@ -212,9 +211,6 @@ class NET_EXPORT ParsedCookie {
   size_t priority_index_ = 0;
   size_t same_party_index_ = 0;
   size_t partitioned_index_ = 0;
-  // For metrics on cookie name/value truncation. See usage at the bottom of
-  // `ParseTokenValuePairs()` for more details.
-  bool truncated_name_or_value_ = false;
   TruncatingCharacterInCookieStringType truncating_char_in_cookie_string_type_ =
       TruncatingCharacterInCookieStringType::kTruncatingCharNone;
   // For metrics on cookie name/value internal HTABS

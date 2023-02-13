@@ -80,18 +80,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.ControlCharacterTruncation" enum="Boolean"
-    expires_after="2023-02-12">
-  <owner>bingler@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Whether or not a cookie's name or value was truncated due to a terminating
-    control chracter (0x00 NUL, 0x0A LF, or 0x0D CR). E.x.
-    &quot;foo=ba\nr&quot;. This metric is recorded whenever a canonical cookie
-    is created via CanonicalCookie::Create().
-  </summary>
-</histogram>
-
 <histogram name="Cookie.CookiePrefix" enum="CookiePrefix"
     expires_after="2023-07-30">
   <owner>estark@chromium.org</owner>

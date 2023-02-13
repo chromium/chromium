@@ -1234,53 +1234,6 @@ TEST(ParsedCookieTest, ValidNonAlphanumericChars) {
   EXPECT_TRUE(pc9.IsValid());
 }
 
-TEST(ParsedCookieTest, TruncatedNameOrValue) {
-  using std::string_literals::operator""s;
-
-  const char kCtlChars[] = {'\x0', '\xA', '\xD'};
-
-  for (char ctl_char : kCtlChars) {
-    std::string ctl_string(1, ctl_char);
-
-    std::string truncated_name_string = "fo"s + ctl_string + "o=bar"s;
-    ParsedCookie truncated_name(truncated_name_string);
-    EXPECT_TRUE(truncated_name.IsValid());
-    EXPECT_TRUE(truncated_name.HasTruncatedNameOrValue());
-
-    std::string truncated_value_string = "foo=b"s + ctl_string + "ar"s;
-    ParsedCookie truncated_value(truncated_value_string);
-    EXPECT_TRUE(truncated_value.IsValid());
-    EXPECT_TRUE(truncated_value.HasTruncatedNameOrValue());
-
-    std::string not_truncated_string = "foo=bar"s + ctl_string;
-    ParsedCookie not_truncated(not_truncated_string);
-    EXPECT_TRUE(not_truncated.IsValid());
-    EXPECT_FALSE(not_truncated.HasTruncatedNameOrValue());
-
-    std::string not_truncated_string_extra_ctl_chars =
-        "foo=bar"s + ctl_string + "\n\r\0"s;
-    ParsedCookie not_truncated_extra_ctl_chars(
-        not_truncated_string_extra_ctl_chars);
-    EXPECT_TRUE(not_truncated_extra_ctl_chars.IsValid());
-    EXPECT_FALSE(not_truncated_extra_ctl_chars.HasTruncatedNameOrValue());
-
-    std::string not_truncated_string_whitespace =
-        "foo=bar"s + ctl_string + " \t "s;
-    ParsedCookie not_truncated_whitespace(not_truncated_string_whitespace);
-    EXPECT_TRUE(not_truncated_whitespace.IsValid());
-    EXPECT_FALSE(not_truncated_whitespace.HasTruncatedNameOrValue());
-
-    std::string not_truncated_string_attribute_parsing =
-        "foo=bar; Secure; Http"s + ctl_string + "Only"s;
-    ParsedCookie not_truncated_attribute_parsing(
-        not_truncated_string_attribute_parsing);
-    EXPECT_TRUE(not_truncated_attribute_parsing.IsValid());
-    EXPECT_TRUE(not_truncated_attribute_parsing.IsSecure());
-    EXPECT_FALSE(not_truncated_attribute_parsing.IsHttpOnly());
-    EXPECT_FALSE(not_truncated_attribute_parsing.HasTruncatedNameOrValue());
-  }
-}
-
 TEST(ParsedCookieTest, TruncatingCharInCookieLine) {
   using std::string_literals::operator""s;
 
