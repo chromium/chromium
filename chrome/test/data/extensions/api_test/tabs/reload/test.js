@@ -2,76 +2,79 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertEq = chrome.test.assertEq;
-var callbackPass = chrome.test.callbackPass;
-
 var myTabId;
-
-// window.onload in a.html calls this function.
-var onTabLoad;
 
 function pageUrl(letter) {
   return chrome.extension.getURL(letter + ".html");
 }
 
 function withTabOnReload(fn) {
-  var done = callbackPass();
-  onTabLoad = function(url) {
-    assertEq(pageUrl("a"), url);
-    done();
-  };
-  fn();
+  let onMessagePromise = new Promise((resolve) => {
+    chrome.runtime.onMessage.addListener(function local(message) {
+      chrome.runtime.onMessage.removeListener(local);
+      chrome.test.assertEq(pageUrl("a"), message);
+      resolve();
+    });
+  });
+  let functionPromise = new Promise((resolve) => {
+    fn(resolve);
+  });
+  Promise.all([onMessagePromise, functionPromise]).then(chrome.test.succeed);
 }
 
-var allTests = [
+chrome.test.runTests([
+  function createTab() {
+    withTabOnReload(function(resolve) {
+      chrome.tabs.create({url: pageUrl("a"), selected: true}, function(tab) {
+        myTabId = tab.id;
+        resolve();
+      });
+    });
+  },
+
   function testReload1() {
-    withTabOnReload(function () {
+    withTabOnReload(function(resolve) {
       chrome.tabs.reload();
+      resolve();
     });
   },
 
   function testReload2() {
-    withTabOnReload(function () {
+    withTabOnReload(function(resolve) {
       chrome.tabs.reload(null);
+      resolve();
     });
   },
 
-  function testReload2() {
-    withTabOnReload(function () {
+  function testReload3() {
+    withTabOnReload(function(resolve) {
       chrome.tabs.reload(myTabId);
+      resolve();
     });
   },
 
   function testReload4() {
-    withTabOnReload(function () {
+    withTabOnReload(function(resolve) {
       chrome.tabs.reload(myTabId, {});
+      resolve();
     });
   },
 
   function testReload5() {
-    withTabOnReload(function () {
-      chrome.tabs.reload(myTabId, {}, callbackPass());
+    withTabOnReload(function(resolve) {
+      chrome.tabs.reload(myTabId, {}, resolve);
     });
   },
 
   function testReload6() {
-    withTabOnReload(function () {
-      chrome.tabs.reload(myTabId, { bypassCache: false }, callbackPass());
+    withTabOnReload(function(resolve) {
+      chrome.tabs.reload(myTabId, { bypassCache: false }, resolve);
     });
   },
 
   function testReload7() {
-    withTabOnReload(function () {
-      chrome.tabs.reload(myTabId, { bypassCache: true }, callbackPass());
+    withTabOnReload(function(resolve) {
+      chrome.tabs.reload(myTabId, { bypassCache: true }, resolve);
     });
   },
-];
-
-onTabLoad = function(url) {
-  chrome.test.runTests(allTests);
-};
-
-chrome.tabs.create({url: pageUrl("a")}, function(tab) {
-  myTabId = tab.id;
-  chrome.tabs.update(myTabId, { selected: true });
-});
+]);

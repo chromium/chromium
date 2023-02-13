@@ -3,6 +3,5 @@
 // found in the LICENSE file.
 
 window.onload = function() {
-  var href = window.location.href;
-  chrome.extension.getBackgroundPage().onTabLoad(href);
+  chrome.runtime.sendMessage(window.location.href);
 };
