@@ -38,6 +38,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/consolidated_consent_field_trial.h"
+#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/login/auth/recovery/recovery_utils.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 #endif
 
@@ -83,6 +85,12 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
       entropy_providers.default_entropy(), feature_list);
   metrics::CreateFallbackUkmSamplingTrialIfNeeded(
       entropy_providers.default_entropy(), feature_list);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // For this feature we will use the client-side trial for rollout. The
+  // server-side/Finch config will be used only as a kill-switch. If it's
+  // configured - it will override the local trial.
+  ash::CreateFallbackFieldTrialForRecovery(chrome::GetChannel() == version_info::Channel::STABLE, feature_list);
+#endif
   if (!has_seed) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);

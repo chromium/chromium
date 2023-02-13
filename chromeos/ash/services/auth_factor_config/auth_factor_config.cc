@@ -20,7 +20,7 @@ AuthFactorConfig::~AuthFactorConfig() = default;
 
 // static
 void AuthFactorConfig::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(ash::prefs::kRecoveryFactorBehavior, true);
+  registry->RegisterBooleanPref(ash::prefs::kRecoveryFactorBehavior, false);
 }
 
 void AuthFactorConfig::BindReceiver(
