@@ -5302,34 +5302,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Renderer4.ScrollingThread"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ScrollUpdateHandledThread" separator="_">
-  <suffix name="Impl" label="ScrollUpdate handled on impl thread"/>
-  <suffix name="Main" label="ScrollUpdate handled on main thread"/>
-  <affected-histogram
-      name="Event.Latency.ScrollBegin.Scrollbar.HandledToRendererSwap2"/>
-  <affected-histogram
-      name="Event.Latency.ScrollBegin.Scrollbar.TimeToHandled2"/>
-  <affected-histogram
-      name="Event.Latency.ScrollBegin.Touch.HandledToRendererSwap2"/>
-  <affected-histogram name="Event.Latency.ScrollBegin.Touch.TimeToHandled2"/>
-  <affected-histogram
-      name="Event.Latency.ScrollBegin.Wheel.HandledToRendererSwap2"/>
-  <affected-histogram name="Event.Latency.ScrollBegin.Wheel.TimeToHandled2"/>
-  <affected-histogram
-      name="Event.Latency.ScrollInertial.Touch.HandledToRendererSwap2"/>
-  <affected-histogram name="Event.Latency.ScrollInertial.Touch.TimeToHandled2"/>
-  <affected-histogram
-      name="Event.Latency.ScrollUpdate.Scrollbar.HandledToRendererSwap2"/>
-  <affected-histogram
-      name="Event.Latency.ScrollUpdate.Scrollbar.TimeToHandled2"/>
-  <affected-histogram
-      name="Event.Latency.ScrollUpdate.Touch.HandledToRendererSwap2"/>
-  <affected-histogram name="Event.Latency.ScrollUpdate.Touch.TimeToHandled2"/>
-  <affected-histogram
-      name="Event.Latency.ScrollUpdate.Wheel.HandledToRendererSwap2"/>
-  <affected-histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToHandled2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SearchEnginePromoDeviceType" separator=".">
   <suffix name="ExistingDevice" label=""/>
   <suffix name="NewDevice" label=""/>

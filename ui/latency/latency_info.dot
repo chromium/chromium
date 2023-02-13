@@ -14,12 +14,7 @@ Event.Latency.EndToEnd.Mouse\n\
 Event.Latency.EndToEnd.TouchpadPinch2\n"];
     scroll_to_schedule_metrics
       [label="\
-Event.Latency.<scroll_name>.<input_modality>.TimeToHandled2_<thread_name>\n\
 UKM: Event.<scroll_name>.<input_modality>.TimeToHandled\n"];
-    "Event.Latency.<scroll_name>.<input_modality>.HandledToRendererSwap2_<thread_name>";
-    "Event.Latency.<scroll_name>.<input_modality>.RendererSwapToBrowserNotified2";
-    "Event.Latency.<scroll_name>.<input_modality>.BrowserNotifiedToBeforeGpuSwap2";
-    "Event.Latency.<scroll_name>.<input_modality>.GpuSwap2";
     scroll_to_gpu_swap_metrics
       [label="\
 Event.Latency.<scroll_name>.TimeToScrollUpdateSwapBegin2\n\
@@ -53,13 +48,7 @@ INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT"];
   scroll_original->
   scroll_to_schedule_metrics->
   rendering_scheduled->
-  "Event.Latency.<scroll_name>.<input_modality>.HandledToRendererSwap2_<thread_name>"->
-  INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT->
-  "Event.Latency.<scroll_name>.<input_modality>.RendererSwapToBrowserNotified2"->
-  DISPLAY_COMPOSITOR_RECEIVED_FRAME_COMPONENT->
-  "Event.Latency.<scroll_name>.<input_modality>.BrowserNotifiedToBeforeGpuSwap2"->
   INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT->
-  "Event.Latency.<scroll_name>.<input_modality>.GpuSwap2"->
   INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT
     [weight=4];
 
