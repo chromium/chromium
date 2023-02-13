@@ -77,7 +77,7 @@ def _GetANGLEGpuDeviceId(device_string: str) -> Optional[str]:
   return None
 
 
-def GetGpuVendorString(gpu_info: tgi.GPUInfo, index: int) -> str:
+def GetGpuVendorString(gpu_info: Optional[tgi.GPUInfo], index: int) -> str:
   if gpu_info:
     primary_gpu = gpu_info.devices[index]
     if primary_gpu:
@@ -98,7 +98,8 @@ def GetGpuVendorString(gpu_info: tgi.GPUInfo, index: int) -> str:
   return 'unknown_gpu'
 
 
-def GetGpuDeviceId(gpu_info: tgi.GPUInfo, index: int) -> Union[int, str]:
+def GetGpuDeviceId(gpu_info: Optional[tgi.GPUInfo],
+                   index: int) -> Union[int, str]:
   if gpu_info:
     primary_gpu = gpu_info.devices[index]
     if primary_gpu:
@@ -121,7 +122,7 @@ def IsIntelGen12(gpu_device_id: int) -> bool:
   return gpu_device_id & INTEL_DEVICE_ID_MASK in INTEL_GEN_12
 
 
-def GetGpuDriverVendor(gpu_info: tgi.GPUInfo) -> Optional[str]:
+def GetGpuDriverVendor(gpu_info: Optional[tgi.GPUInfo]) -> Optional[str]:
   if gpu_info:
     primary_gpu = gpu_info.devices[0]
     if primary_gpu:
@@ -129,7 +130,7 @@ def GetGpuDriverVendor(gpu_info: tgi.GPUInfo) -> Optional[str]:
   return None
 
 
-def GetGpuDriverVersion(gpu_info: tgi.GPUInfo) -> Optional[str]:
+def GetGpuDriverVersion(gpu_info: Optional[tgi.GPUInfo]) -> Optional[str]:
   if gpu_info:
     primary_gpu = gpu_info.devices[0]
     if primary_gpu:
@@ -137,7 +138,7 @@ def GetGpuDriverVersion(gpu_info: tgi.GPUInfo) -> Optional[str]:
   return None
 
 
-def GetANGLERenderer(gpu_info: tgi.GPUInfo) -> str:
+def GetANGLERenderer(gpu_info: Optional[tgi.GPUInfo]) -> str:
   retval = 'angle-disabled'
   if gpu_info and gpu_info.aux_attributes:
     gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
@@ -160,28 +161,30 @@ def GetANGLERenderer(gpu_info: tgi.GPUInfo) -> str:
   return retval
 
 
-def GetCommandDecoder(gpu_info: tgi.GPUInfo) -> str:
+def GetCommandDecoder(gpu_info: Optional[tgi.GPUInfo]) -> str:
   if gpu_info and gpu_info.aux_attributes and \
       gpu_info.aux_attributes.get('passthrough_cmd_decoder', False):
     return 'passthrough'
   return 'no_passthrough'
 
 
-def GetSkiaRenderer(gpu_feature_status: Dict[str, str],
+def GetSkiaRenderer(gpu_info: Optional[tgi.GPUInfo],
                     extra_browser_args: List[str]) -> str:
   retval = 'renderer-software'
-  skia_renderer_enabled = (
-      gpu_feature_status
-      and gpu_feature_status.get('gpu_compositing') == 'enabled')
-  if skia_renderer_enabled:
-    if HasDawnSkiaRenderer(extra_browser_args):
-      retval = 'renderer-skia-dawn'
-    elif HasVulkanSkiaRenderer(gpu_feature_status):
-      retval = 'renderer-skia-vulkan'
-    # The check for GL must come after Vulkan since the 'opengl' feature can be
-    # enabled for WebGL and interop even if SkiaRenderer is using Vulkan.
-    elif HasGlSkiaRenderer(gpu_feature_status):
-      retval = 'renderer-skia-gl'
+  if gpu_info:
+    gpu_feature_status = gpu_info.feature_status
+    skia_renderer_enabled = (
+        gpu_feature_status
+        and gpu_feature_status.get('gpu_compositing') == 'enabled')
+    if skia_renderer_enabled:
+      if HasDawnSkiaRenderer(extra_browser_args):
+        retval = 'renderer-skia-dawn'
+      elif HasVulkanSkiaRenderer(gpu_feature_status):
+        retval = 'renderer-skia-vulkan'
+      # The check for GL must come after Vulkan since the 'opengl' feature can
+      # be enabled for WebGL and interop even if SkiaRenderer is using Vulkan.
+      elif HasGlSkiaRenderer(gpu_feature_status):
+        retval = 'renderer-skia-gl'
   return retval
 
 
@@ -198,26 +201,28 @@ def GetDisplayServer(browser_type: str) -> Optional[str]:
   return None
 
 
-def GetOOPCanvasStatus(gpu_feature_status: Dict[str, str]) -> str:
-  if gpu_feature_status and gpu_feature_status.get(
+def GetOOPCanvasStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
+  if gpu_info and gpu_info.feature_status and gpu_info.feature_status.get(
       'canvas_oop_rasterization') == 'enabled_on':
     return 'oop-c'
   return 'no-oop-c'
 
 
-def GetAsanStatus(gpu_info: tgi.GPUInfo) -> str:
-  if gpu_info.aux_attributes.get('is_asan', False):
+def GetAsanStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
+  if gpu_info and gpu_info.aux_attributes.get('is_asan', False):
     return 'asan'
   return 'no-asan'
 
 
-def GetTargetCpuStatus(gpu_info: tgi.GPUInfo) -> str:
-  return 'target-cpu-%s' % (gpu_info.aux_attributes.get('target_cpu_bits',
-                                                        'unknown'), )
+def GetTargetCpuStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
+  suffix = 'unknown'
+  if gpu_info:
+    suffix = gpu_info.aux_attributes.get('target_cpu_bits', 'unknown')
+  return 'target-cpu-%s' % suffix
 
 
-def GetClangCoverage(gpu_info: tgi.GPUInfo) -> str:
-  if gpu_info.aux_attributes.get('is_clang_coverage', False):
+def GetClangCoverage(gpu_info: Optional[tgi.GPUInfo]) -> str:
+  if gpu_info and gpu_info.aux_attributes.get('is_clang_coverage', False):
     return 'clang-coverage'
   return 'no-clang-coverage'
 
