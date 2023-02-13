@@ -11,6 +11,7 @@
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "ios/web/web_view/wk_security_origin_util.h"
 

@@ -12,6 +12,7 @@
 #import "base/feature_list.h"
 #import "base/time/time.h"
 #import "ios/web/common/features.h"
+#import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/session/crw_session_storage.h"

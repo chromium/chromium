@@ -10,7 +10,7 @@ source_set("fakes") {
     "//base",
     "//ios/web/common",
     "//ios/web/common:uikit",
-    "//ios/web/js_messaging:web_frames_manager_impl_header",
+    "//ios/web/js_messaging",
     "//ios/web/navigation:core",
     "//ios/web/public/deprecated",
     "//ios/web/public/download",

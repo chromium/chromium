@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/web/common/features.h"
+#import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/navigation/navigation_context_impl.h"
@@ -24,6 +25,7 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/favicon/favicon_url.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -150,11 +152,13 @@ NavigationManagerImpl& WebStateImpl::RealizedWebState::GetNavigationManager() {
 
 const WebFramesManagerImpl&
 WebStateImpl::RealizedWebState::GetWebFramesManager() const {
-  return web_frames_manager_;
+  return WebFramesManagerImpl::FromWebState(owner_,
+                                            ContentWorld::kPageContentWorld);
 }
 
 WebFramesManagerImpl& WebStateImpl::RealizedWebState::GetWebFramesManager() {
-  return web_frames_manager_;
+  return WebFramesManagerImpl::FromWebState(owner_,
+                                            ContentWorld::kPageContentWorld);
 }
 
 const SessionCertificatePolicyCacheImpl&
@@ -1028,4 +1032,5 @@ WebStateImpl::RealizedWebState::WrapCallbackForJavaScriptDialog(
       },
       owner_->weak_factory_.GetWeakPtr(), std::move(callback));
 }
-}
+
+}  // namespace web

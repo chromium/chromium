@@ -255,9 +255,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // The NavigationManagerImpl that stores session info for this WebStateImpl.
   std::unique_ptr<NavigationManagerImpl> navigation_manager_;
 
-  // The associated WebFramesManagerImpl.
-  WebFramesManagerImpl web_frames_manager_;
-
   // The SessionCertificatePolicyCacheImpl that stores the certificate policy
   // information for this WebStateImpl.
   std::unique_ptr<SessionCertificatePolicyCacheImpl> certificate_policy_cache_;

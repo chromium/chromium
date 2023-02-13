@@ -59,7 +59,6 @@ source_set("web_state") {
 source_set("web_state_impl_header") {
   deps = [
     "//base",
-    "//ios/web/js_messaging:web_frames_manager_impl_header",
     "//ios/web/navigation:core",
     "//ios/web/public",
   ]

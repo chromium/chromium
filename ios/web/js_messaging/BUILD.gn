@@ -13,7 +13,6 @@ source_set("js_messaging") {
     ":java_script_feature_manager_header",
     ":scoped_wk_script_message_handler",
     ":setup_frame_js",
-    ":web_frames_manager_impl_header",
     "//base",
     "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",
@@ -33,6 +32,7 @@ source_set("js_messaging") {
     "web_frame_impl.mm",
     "web_frame_internal.h",
     "web_frame_util.mm",
+    "web_frames_manager_impl.h",
     "web_frames_manager_impl.mm",
     "web_frames_manager_java_script_feature.h",
     "web_frames_manager_java_script_feature.mm",
@@ -41,15 +41,6 @@ source_set("js_messaging") {
     "web_view_web_state_map.h",
     "web_view_web_state_map.mm",
   ]
-}
-
-source_set("web_frames_manager_impl_header") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [
-    "//base",
-    "//ios/web/public/js_messaging",
-  ]
-  sources = [ "web_frames_manager_impl.h" ]
 }
 
 source_set("java_script_feature") {
@@ -161,7 +152,6 @@ source_set("unittests") {
     ":java_script_feature_util",
     ":js_messaging",
     ":scoped_wk_script_message_handler",
-    ":web_frames_manager_impl_header",
     "//base",
     "//base/test:test_support",
     "//ios/web/common:web_view_creation_util",

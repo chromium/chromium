@@ -29,7 +29,6 @@ source_set("ui") {
     "//ios/web/js_features/scroll_helper",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature_util",
-    "//ios/web/js_messaging:web_frames_manager_impl_header",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
     "//ios/web/navigation:navigation_manager_util",
