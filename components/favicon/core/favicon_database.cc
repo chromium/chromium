@@ -1217,9 +1217,9 @@ bool FaviconDatabase::UpgradeToVersion7() {
   if (!success)
     return false;
 
-  meta_table_.SetVersionNumber(7);
-  meta_table_.SetCompatibleVersionNumber(std::min(7, kCompatibleVersionNumber));
-  return true;
+  return meta_table_.SetVersionNumber(7) &&
+         meta_table_.SetCompatibleVersionNumber(
+             std::min(7, kCompatibleVersionNumber));
 }
 
 bool FaviconDatabase::UpgradeToVersion8() {
@@ -1229,9 +1229,9 @@ bool FaviconDatabase::UpgradeToVersion8() {
   if (!db_.Execute(kFaviconBitmapsAddLastRequestedSql))
     return false;
 
-  meta_table_.SetVersionNumber(8);
-  meta_table_.SetCompatibleVersionNumber(std::min(8, kCompatibleVersionNumber));
-  return true;
+  return meta_table_.SetVersionNumber(8) &&
+         meta_table_.SetCompatibleVersionNumber(
+             std::min(8, kCompatibleVersionNumber));
 }
 
 bool FaviconDatabase::IsFaviconDBStructureIncorrect() {
