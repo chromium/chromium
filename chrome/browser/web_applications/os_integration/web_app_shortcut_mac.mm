@@ -401,7 +401,52 @@ base::CommandLine BuildCommandLineForShimLaunch() {
       app_mode::kLaunchedByChromeFrameworkDylibPath,
       framework_bundle_path.Append(chrome::kFrameworkExecutableName));
 
+  // The shim must use the same Mojo implementation as this browser. Since
+  // feature parameters and field trials are otherwise not passed to shim
+  // processes, we use feature override switches to ensure Mojo parity.
+  if (mojo::core::IsMojoIpczEnabled()) {
+    command_line.AppendSwitchASCII(switches::kEnableFeatures,
+                                   mojo::core::kMojoIpcz.name);
+  } else {
+    command_line.AppendSwitchASCII(switches::kDisableFeatures,
+                                   mojo::core::kMojoIpcz.name);
+  }
+
   return command_line;
+}
+
+// Wrapper around base::mac::LaunchApplication that attempts to retry the launch
+// once, if the initial launch fails.
+void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
+                                const base::CommandLine& command_line,
+                                const std::vector<std::string>& url_specs,
+                                base::mac::LaunchApplicationOptions options,
+                                base::mac::LaunchApplicationCallback callback) {
+  base::mac::LaunchApplication(
+      app_bundle_path, command_line, url_specs, options,
+      base::BindOnce(
+          [](const base::FilePath& app_bundle_path,
+             const base::CommandLine& command_line,
+             const std::vector<std::string>& url_specs,
+             base::mac::LaunchApplicationOptions options,
+             base::mac::LaunchApplicationCallback callback,
+             base::expected<NSRunningApplication*, NSError*> result) {
+            if (result.has_value()) {
+              std::move(callback).Run(std::move(result));
+              return;
+            }
+
+            LOG(ERROR) << "Failed to open application with path: "
+                       << app_bundle_path << ", retrying in 100ms";
+            internals::GetShortcutIOTaskRunner()->PostDelayedTask(
+                FROM_HERE,
+                base::BindOnce(&base::mac::LaunchApplication, app_bundle_path,
+                               command_line, url_specs, options,
+                               std::move(callback)),
+                base::Milliseconds(100));
+          },
+          app_bundle_path, command_line, url_specs, options,
+          std::move(callback)));
 }
 
 void LaunchTheFirstShimThatWorksOnFileThread(
@@ -433,18 +478,7 @@ void LaunchTheFirstShimThatWorksOnFileThread(
     command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
   }
 
-  // The shim must use the same Mojo implementation as this browser. Since
-  // feature parameters and field trials are otherwise not passed to shim
-  // processes, we use feature override switches to ensure Mojo parity.
-  if (mojo::core::IsMojoIpczEnabled()) {
-    command_line.AppendSwitchASCII(switches::kEnableFeatures,
-                                   mojo::core::kMojoIpcz.name);
-  } else {
-    command_line.AppendSwitchASCII(switches::kDisableFeatures,
-                                   mojo::core::kMojoIpcz.name);
-  }
-
-  base::mac::LaunchApplication(
+  LaunchApplicationWithRetry(
       shim_path, command_line, /*url_specs=*/{}, {.activate = false},
       base::BindOnce(
           [](base::FilePath shim_path,
@@ -1475,7 +1509,7 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
     url_specs.push_back(url.spec());
   }
 
-  base::mac::LaunchApplication(
+  LaunchApplicationWithRetry(
       shim_path, command_line, url_specs, {.activate = false},
       base::BindOnce(
           [](const base::FilePath& shim_path,
