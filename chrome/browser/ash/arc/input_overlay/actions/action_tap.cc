@@ -132,7 +132,10 @@ class ActionTap::ActionTapView : public ActionView {
     menu_entry_->RequestFocus();
   }
 
-  void AddTouchPoint() override { ActionView::AddTouchPoint(ActionType::TAP); }
+  void AddTouchPoint() override {
+    ActionView::AddTouchPoint(ActionType::TAP);
+    SetSize(GetBoundingBoxOfChildren(this));
+  }
 
   void MayUpdateLabelPosition(bool moving) override {
     DCHECK_EQ(labels_.size(), 1u);

@@ -444,6 +444,7 @@ class CrossTouchPoint : public TouchPoint {
       : TouchPoint(center_pos) {}
   ~CrossTouchPoint() override = default;
 
+  // TouchPoint:
   void Init() override {
     touch_outside_stroke_ =
         AddChildView(std::make_unique<CrossOutsideStroke>());
@@ -453,6 +454,13 @@ class CrossTouchPoint : public TouchPoint {
     touch_inside_stroke_ = AddChildView(std::make_unique<CrossInsideStroke>());
     TouchPoint::Init();
   }
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override {
+    int size = kCrossCenterLength + 2 * kCrossInsideStrokeThickness +
+               2 * kCrossOutsideStrokeThickness;
+    return gfx::Size(size, size);
+  }
 };
 
 class DotTouchPoint : public TouchPoint {
@@ -461,6 +469,7 @@ class DotTouchPoint : public TouchPoint {
       : TouchPoint(center_pos) {}
   ~DotTouchPoint() override = default;
 
+  // TouchPoint:
   void Init() override {
     touch_outside_stroke_ = AddChildView(std::make_unique<DotOutsideStroke>());
     touch_center_ = AddChildView(std::make_unique<DotCenter>());
@@ -468,6 +477,13 @@ class DotTouchPoint : public TouchPoint {
     // and it doesn't show up obviously probably due to the round issue.
     touch_inside_stroke_ = AddChildView(std::make_unique<DotInsideStroke>());
     TouchPoint::Init();
+  }
+
+  // views::View:
+  gfx::Size CalculatePreferredSize() const override {
+    int size = kDotCenterDiameter + 2 * kDotInsideStrokeThickness +
+               2 * kDotOutsideStrokeThickness;
+    return gfx::Size(size, size);
   }
 };
 
@@ -521,6 +537,9 @@ TouchPoint::TouchPoint(const gfx::Point& center_pos)
 TouchPoint::~TouchPoint() = default;
 
 void TouchPoint::Init() {
+  SizeToPreferredSize();
+  SetPosition(gfx::Point(std::max(0, center_pos_.x() - size().width() / 2),
+                         std::max(0, center_pos_.y() - size().height() / 2)));
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
   // TODO(b/260868602): Update the name.
   GetViewAccessibility().OverrideName(u"touch point");
@@ -531,18 +550,12 @@ void TouchPoint::Init() {
   focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
   focus_ring->SetHaloInset(kHaloInset);
   focus_ring->SetHaloThickness(kHaloThickness);
-
-  auto size = touch_outside_stroke_->size();
-  SetSize(size);
-  SetPosition(gfx::Point(std::max(0, center_pos_.x() - size.width() / 2),
-                         std::max(0, center_pos_.y() - size.height() / 2)));
 }
 
 void TouchPoint::OnCenterPositionChanged(const gfx::Point& point) {
   center_pos_ = point;
-  auto size = touch_outside_stroke_->size();
-  SetPosition(gfx::Point(std::max(0, center_pos_.x() - size.width() / 2),
-                         std::max(0, center_pos_.y() - size.height() / 2)));
+  SetPosition(gfx::Point(std::max(0, center_pos_.x() - size().width() / 2),
+                         std::max(0, center_pos_.y() - size().height() / 2)));
 }
 
 void TouchPoint::SetToDefault() {

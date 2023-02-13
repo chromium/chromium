@@ -89,12 +89,12 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
   }
   if (mode == DisplayMode::kEdit) {
     display_mode_ = DisplayMode::kEdit;
-    AddEditButton();
-    AddTrashButton();
-    if (!IsInputBound(*action_->current_input()))
-      SetVisible(true);
     if (allow_reposition_)
       AddTouchPoint();
+    if (!IsInputBound(*action_->current_input()))
+      SetVisible(true);
+    AddTrashButton();
+    AddEditButton();
   }
 }
 
@@ -332,7 +332,6 @@ void ActionView::AddTouchPoint(ActionType action_type) {
 
   DCHECK(touch_point_center_);
   touch_point_ = TouchPoint::Show(this, action_type, *touch_point_center_);
-  ChildPreferredSizeChanged(touch_point_);
 }
 
 void ActionView::RemoveTouchPoint() {
@@ -341,7 +340,6 @@ void ActionView::RemoveTouchPoint() {
 
   RemoveChildViewT(touch_point_);
   touch_point_ = nullptr;
-  ChildPreferredSizeChanged(nullptr);
 }
 
 void ActionView::UpdateTrashButtonPosition() {
