@@ -127,11 +127,6 @@ config("skia_library_config") {
     "SKIA_IMPLEMENTATION=1",
   ]
 
-  # Skia uses C++17 language features in its internal code. Previously Skia was built with
-  # "-std=c++17". See http://crbug.com/1257145 for why this was a bad idea.
-  cflags_cc = [ "-Wno-c++17-extensions" ]
-  cflags_objcc = [ "-Wno-c++17-extensions" ]
-
   if (use_blink && !use_system_freetype) {
     defines += [ "SK_FREETYPE_MINIMUM_RUNTIME_VERSION=(((FREETYPE_MAJOR) * 0x01000000) | ((FREETYPE_MINOR) * 0x00010000) | ((FREETYPE_PATCH) * 0x00000100))" ]
   }
@@ -622,12 +617,9 @@ template("skia_source_set") {
     }
     if (is_win) {
       cflags_cc = [
-        "/std:c++17",
         "/wd5041",  # out-of-line definition for constexpr static data member is
                     # not needed and is deprecated in C++17
       ]
-    } else {
-      cflags_cc = [ "-std=c++17" ]
     }
   }
 }
