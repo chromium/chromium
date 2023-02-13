@@ -1903,8 +1903,6 @@ TransportClientSocketPool::Group::RemoveUnboundRequest(
     const RequestQueue::Pointer& pointer) {
   SanityCheck();
 
-  // TODO(eroman): Temporary for debugging http://crbug.com/467797.
-  CHECK(!pointer.is_null());
   std::unique_ptr<Request> request = unbound_requests_.Erase(pointer);
   if (request->job()) {
     TryToAssignUnassignedJob(request->ReleaseJob());
