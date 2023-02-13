@@ -272,9 +272,8 @@ bool UpgradeFromLegacyVersion(sql::Database* db) {
 
 bool UpgradeFromVersion1ToVersion2(sql::Database* db,
                                    sql::MetaTable* meta_table) {
-  meta_table->SetVersionNumber(2);
+  return meta_table->SetVersionNumber(2);
   // No actual changes necessary, because upgrade_attempt was deprecated.
-  return true;
 }
 
 bool UpgradeFromVersion2ToVersion3(sql::Database* db,
@@ -292,8 +291,7 @@ bool UpgradeFromVersion2ToVersion3(sql::Database* db,
   if (!db->Execute(kCreatePageThumbnailsSql))
     return false;
 
-  meta_table->SetVersionNumber(3);
-  return transaction.Commit();
+  return meta_table->SetVersionNumber(3) && transaction.Commit();
 }
 
 bool UpgradeFromVersion3ToVersion4(sql::Database* db,
@@ -315,8 +313,7 @@ bool UpgradeFromVersion3ToVersion4(sql::Database* db,
   if (!db->Execute(kUpgradeThumbnailsTableSql))
     return false;
 
-  meta_table->SetVersionNumber(4);
-  return transaction.Commit();
+  return meta_table->SetVersionNumber(4) && transaction.Commit();
 }
 
 bool CreateSchema(sql::Database* db) {
