@@ -107,16 +107,16 @@ mojom::PowerRoutineResultPtr ConstructPowerRoutineResult(
 // the discharge field will be used.
 std::string ConstructPowerRoutineResultJson(double charge_percent,
                                             bool charge) {
-  base::Value result_dict(base::Value::Type::DICT);
+  base::Value::Dict result_dict;
   if (charge) {
-    result_dict.SetKey(kChargePercentKey, base::Value(charge_percent));
+    result_dict.Set(kChargePercentKey, charge_percent);
 
   } else {
-    result_dict.SetKey(kDischargePercentKey, base::Value(charge_percent));
+    result_dict.Set(kDischargePercentKey, charge_percent);
   }
 
-  base::Value output_dict(base::Value::Type::DICT);
-  output_dict.SetKey(kResultDetailsKey, std::move(result_dict));
+  base::Value::Dict output_dict;
+  output_dict.Set(kResultDetailsKey, std::move(result_dict));
 
   std::string json;
   const bool serialize_success = base::JSONWriter::Write(output_dict, &json);

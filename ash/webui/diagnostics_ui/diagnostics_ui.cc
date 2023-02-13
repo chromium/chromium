@@ -94,13 +94,13 @@ std::u16string GetLinkLabel(int string_id, const char* url) {
 base::Value::Dict GetDataSourceUpdate() {
   base::Value::Dict update;
   update.Set("settingsLinkText",
-             base::Value(GetLinkLabel(IDS_DIAGNOSTICS_SETTINGS_LINK_TEXT,
-                                      "chrome://os-settings/")));
+             GetLinkLabel(IDS_DIAGNOSTICS_SETTINGS_LINK_TEXT,
+                          "chrome://os-settings/"));
   update.Set(
       "keyboardTesterHelpLink",
-      base::Value(GetLinkLabel(
+      GetLinkLabel(
           IDS_INPUT_DIAGNOSTICS_KEYBOARD_TESTER_HELP_LINK,
-          "https://support.google.com/chromebook?p=keyboard_troubleshoot")));
+          "https://support.google.com/chromebook?p=keyboard_troubleshoot"));
   return update;
 }
 

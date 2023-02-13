@@ -39,8 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
 
 namespace {
 
@@ -357,66 +356,61 @@ class NetworkHealthProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetCellularProperty(std::string property, base::Value value) {
+  void SetCellularProperty(std::string property, base::ValueView value) {
     network_handler_test_helper_->SetServiceProperty(kCellular0DevicePath,
-                                                     property, value);
+                                                     property, value.ToValue());
     base::RunLoop().RunUntilIdle();
   }
 
   void SetCellularIccid(std::string iccid) {
-    SetCellularProperty(shill::kIccidProperty, base::Value(iccid));
+    SetCellularProperty(shill::kIccidProperty, iccid);
   }
 
   void SetCellularNetworkTechnology(std::string technology) {
-    SetCellularProperty(shill::kNetworkTechnologyProperty,
-                        base::Value(technology));
+    SetCellularProperty(shill::kNetworkTechnologyProperty, technology);
   }
 
   void SetCellularEid(std::string eid) {
-    SetCellularProperty(shill::kEidProperty, base::Value(eid));
+    SetCellularProperty(shill::kEidProperty, eid);
   }
 
   void SetCellularSignalStrength(int signal_strength) {
-    SetCellularProperty(shill::kSignalStrengthProperty,
-                        base::Value(signal_strength));
+    SetCellularProperty(shill::kSignalStrengthProperty, signal_strength);
   }
 
   void SetCellularSimLockStatus(std::string lock_type, bool sim_locked) {
-    base::Value sim_lock_status(base::Value::Type::DICT);
-    sim_lock_status.SetKey(shill::kSIMLockEnabledProperty,
-                           base::Value(sim_locked));
-    sim_lock_status.SetKey(shill::kSIMLockTypeProperty, base::Value(lock_type));
-    sim_lock_status.SetKey(shill::kSIMLockRetriesLeftProperty, base::Value(3));
+    base::Value::Dict sim_lock_status;
+    sim_lock_status.Set(shill::kSIMLockEnabledProperty, sim_locked);
+    sim_lock_status.Set(shill::kSIMLockTypeProperty, lock_type);
+    sim_lock_status.Set(shill::kSIMLockRetriesLeftProperty, 3);
     network_handler_test_helper_->device_test()->SetDeviceProperty(
         kCellular0DevicePath, shill::kSIMLockStatusProperty,
-        std::move(sim_lock_status),
+        base::Value(std::move(sim_lock_status)),
         /*notify_changed=*/true);
 
     base::RunLoop().RunUntilIdle();
   }
 
   void SetCellularRoamingState(std::string roaming_state) {
-    SetCellularProperty(shill::kRoamingStateProperty,
-                        base::Value(roaming_state));
+    SetCellularProperty(shill::kRoamingStateProperty, roaming_state);
   }
 
-  void SetWifiProperty(std::string property, base::Value value) {
+  void SetWifiProperty(std::string property, base::ValueView value) {
     network_handler_test_helper_->SetServiceProperty(kWlan0DevicePath, property,
-                                                     value);
+                                                     value.ToValue());
     base::RunLoop().RunUntilIdle();
   }
 
   void SetWifiSignalStrength(int signal_strength) {
-    SetWifiProperty(shill::kSignalStrengthProperty,
-                    base::Value(signal_strength));
+    SetWifiProperty(shill::kSignalStrengthProperty, signal_strength);
   }
 
   void SetWifiFrequency(int frequency) {
-    SetWifiProperty(shill::kWifiFrequency, base::Value(frequency));
+    SetWifiProperty(shill::kWifiFrequency, frequency);
   }
 
   void SetWifiBssid(std::string bssid) {
-    SetWifiProperty(shill::kWifiBSsid, base::Value(bssid));
+    SetWifiProperty(shill::kWifiBSsid, bssid);
   }
 
   void SetEthernetMacAddress(const std::string& mac_address) {
@@ -464,11 +458,11 @@ class NetworkHealthProviderTest : public testing::Test {
   void SetWifiSecurity(const std::string& securityClass,
                        const std::string& eapKeyMgmt) {
     SetWifiSecurity(securityClass);
-    SetWifiProperty(shill::kEapKeyMgmtProperty, base::Value(eapKeyMgmt));
+    SetWifiProperty(shill::kEapKeyMgmtProperty, eapKeyMgmt);
   }
 
   void SetWifiSecurity(const std::string& securityClass) {
-    SetWifiProperty(shill::kSecurityClassProperty, base::Value(securityClass));
+    SetWifiProperty(shill::kSecurityClassProperty, securityClass);
   }
 
   void SetupObserver(FakeNetworkListObserver* observer) {
@@ -1483,5 +1477,4 @@ TEST_F(NetworkHealthProviderTest, ResetReceiverOnBindInterface) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics

@@ -124,8 +124,7 @@ void SessionLogHandler::OnSessionLogCreated(const base::FilePath& file_path,
     holding_space_client_->AddDiagnosticsLog(file_path);
   }
 
-  ResolveJavascriptCallback(base::Value(save_session_log_callback_id_),
-                            base::Value(success));
+  ResolveJavascriptCallback(save_session_log_callback_id_, success);
   save_session_log_callback_id_ = "";
 
   if (log_created_closure_)
@@ -133,8 +132,8 @@ void SessionLogHandler::OnSessionLogCreated(const base::FilePath& file_path,
 }
 
 void SessionLogHandler::FileSelectionCanceled(void* params) {
-  RejectJavascriptCallback(base::Value(save_session_log_callback_id_),
-                           /*success=*/base::Value(false));
+  RejectJavascriptCallback(save_session_log_callback_id_,
+                           /*response=*/false);
   save_session_log_callback_id_ = "";
   select_file_dialog_.reset();
 }
