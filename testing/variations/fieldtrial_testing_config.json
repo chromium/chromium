@@ -3560,6 +3560,33 @@
             ]
         }
     ],
+    "DefaultBrowserBlueDotPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroupOnlyBlueDotPromoEnabled2023_02_09",
+                    "params": {
+                        "user-group": "only-blue-dot-promo-enabled"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserBlueDotPromo"
+                    ]
+                },
+                {
+                    "name": "ControlGroupAllDBPromosDisabled2023_02_09",
+                    "params": {
+                        "user-group": "all-db-promos-disabled"
+                    },
+                    "enable_features": [
+                        "DefaultBrowserBlueDotPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultOfflineExperience": [
         {
             "platforms": [

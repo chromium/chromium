@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -70,6 +71,14 @@ id<GREYMatcher> FakeOmniboxMatcher() {
   [super tearDown];
   [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
   [ChromeEarlGreyAppInterface disableDefaultBrowserPromo];
+}
+
+// Disable the default browser blue dot feature flag (which blocks this promo).
+// TODO(crbug.com/1410229) remove when fully launched and no longer behing flag.
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(kDefaultBrowserBlueDotPromo);
+  return config;
 }
 
 // Test that a non modal default modal promo appears when it is triggered by
