@@ -314,6 +314,65 @@ class CORE_EXPORT SelectorChecker {
   friend class NthIndexCache;
 };
 
+// An accelerated selector checker that matches only selectors with a
+// certain set of restrictions, informally called “easy” selectors.
+// (Not to be confused with simple selectors, which is a standards-defined
+// term.) Easy selectors support only a very small subset of the full
+// CSS selector machinery, but does so much faster than SelectorChecker
+// (typically a bit over twice as fast), and that subset tends to be enough
+// for ~80% of actual selectors checks on a typical web page. (It is also
+// ree from the complexities of Shadow DOM and does not check whether
+// the query exceeds the scope, so it cannot be used for querySelector().)
+//
+// The set of supported selectors is formally given as “anything IsEasy()
+// returns true for”, but roughly encompasses the following:
+//
+//  - Tag matches (e.g. div).
+//  - ID matches (e.g. #id).
+//  - Class matches (e.g. .c).
+//  - Case-sensitive attribute is-set and exact matches ([foo] and [foo="bar"]).
+//  - Subselector and descendant combinators.
+//  - Anything that does not need further checking
+//    (CSSSelector::IsCoveredByBucketing()).
+//
+// Given this, it does not need to set up any context, do recursion,
+// backtracking, have large switch/cases for pseudos, or the similar.
+//
+// You must include selector_checker-inl.h to use this class;
+// its functions are declared ALWAYS_INLINE because the call overhead
+// is so large compared to what the functions are actually doing.
+class CORE_EXPORT EasySelectorChecker {
+ public:
+  // Returns true iff the given selector is easy and can be given to Match().
+  // Should be precomputed for the given selector.
+  //
+  // If IsEasy() is true, this selector can never return any match flags,
+  // or match (dynamic) pseudos.
+  static ALWAYS_INLINE bool IsEasy(const CSSSelector* selector);
+
+  // Returns whether the given selector matches the given element.
+  // The following preconditions apply:
+  //
+  //  - The selector must be easy (see IsEasy()).
+  //  - Tag matching must be case-sensitive in the current context,
+  //    i.e., that the element is _not_ a non-HTML element in an
+  //    HTML document.
+  //
+  // Unlike SelectorChecker, does not check style_scope; the caller
+  // will need to do that if desired.
+  static ALWAYS_INLINE bool Match(const CSSSelector* selector,
+                                  const Element* element);
+
+ private:
+  static ALWAYS_INLINE bool MatchOne(const CSSSelector* selector,
+                                     const Element* element);
+  static ALWAYS_INLINE bool AttributeIsSet(const Element& element,
+                                           const QualifiedName& attr);
+  static ALWAYS_INLINE bool AttributeMatches(const Element& element,
+                                             const QualifiedName& attr,
+                                             const AtomicString& value);
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_

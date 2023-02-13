@@ -7,6 +7,7 @@
 #include <bitset>
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -325,6 +326,91 @@ TEST_P(MatchFlagsShadowTest, Host) {
 
   SCOPED_TRACE(param.selector);
   EXPECT_EQ(Bits(param.expected), Bits(result.flags));
+}
+
+class EasySelectorCheckerTest : public PageTestBase {
+ protected:
+  bool Matches(const String& selector_text, const AtomicString& id);
+  static bool IsEasy(const String& selector_text);
+};
+
+bool EasySelectorCheckerTest::Matches(const String& selector_text,
+                                      const AtomicString& id) {
+  StyleRule* rule = To<StyleRule>(
+      css_test_helpers::ParseRule(GetDocument(), selector_text + " {}"));
+  CHECK(EasySelectorChecker::IsEasy(rule->FirstSelector()));
+  return EasySelectorChecker::Match(rule->FirstSelector(),
+                                    GetDocument().getElementById(id));
+}
+
+#ifndef NDEBUG  // Requires all_rules_, to find back the rules we add.
+
+// Parse the given selector, buckets it and returns whether it was counted
+// as easy or not.
+bool EasySelectorCheckerTest::IsEasy(const String& selector_text) {
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(selector_text + " { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const HeapVector<RuleData>& rules = rule_set.AllRulesForTest();
+  EXPECT_EQ(1u, rules.size());
+  if (rules.size() != 1) {
+    return false;  // Test will fail anyway.
+  } else {
+    return EasySelectorChecker::IsEasy(&rules.front().Selector());
+  }
+}
+
+TEST_F(EasySelectorCheckerTest, IsEasy) {
+  EXPECT_TRUE(IsEasy(".a"));
+  EXPECT_TRUE(IsEasy(".a.b"));
+  EXPECT_TRUE(IsEasy("#id"));
+  EXPECT_TRUE(IsEasy("div"));
+  EXPECT_FALSE(IsEasy(":visited"));
+  EXPECT_FALSE(IsEasy("a:visited"));
+  EXPECT_FALSE(IsEasy("a:link"));
+  EXPECT_FALSE(IsEasy("::before"));
+  EXPECT_FALSE(IsEasy("div::before"));
+  EXPECT_FALSE(IsEasy("* .a"));  // Due to the universal selector.
+  EXPECT_TRUE(IsEasy("[attr]"));
+  EXPECT_TRUE(IsEasy("[attr=\"foo\"]"));
+  EXPECT_FALSE(IsEasy("[attr=\"foo\" i]"));
+  EXPECT_TRUE(IsEasy(":root"));       // Due to bucketing.
+  EXPECT_TRUE(IsEasy(":any-link"));   // Due to bucketing.
+  EXPECT_TRUE(IsEasy("a:any-link"));  // Due to bucketing.
+  EXPECT_TRUE(IsEasy(".a .b"));
+  EXPECT_TRUE(IsEasy(".a .b.c.d"));
+  EXPECT_FALSE(IsEasy(".a > .b"));
+  EXPECT_FALSE(IsEasy(".a ~ .b"));
+  EXPECT_FALSE(IsEasy("&"));
+  EXPECT_FALSE(IsEasy(":not(.a)"));
+}
+
+#endif
+
+TEST_F(EasySelectorCheckerTest, SmokeTest) {
+  SetHtmlInnerHTML(
+      R"HTML(
+        <div id="a"><div id="b"><div id="c" class="cls1" attr="foo"><span id="d"></span></div></div></div>
+      )HTML");
+  EXPECT_TRUE(Matches("div", "c"));
+  EXPECT_FALSE(Matches("div", "d"));
+  EXPECT_TRUE(Matches(".cls1", "c"));
+  EXPECT_FALSE(Matches(".cls1", "b"));
+  EXPECT_TRUE(Matches("div.cls1", "c"));
+  EXPECT_TRUE(Matches("*|div.cls1", "c"));
+  EXPECT_TRUE(Matches("#b .cls1", "c"));
+  EXPECT_TRUE(Matches("#a .cls1", "c"));
+  EXPECT_FALSE(Matches("#b .cls1", "a"));
+  EXPECT_FALSE(Matches("#a .cls1", "b"));
+  EXPECT_TRUE(Matches("[attr]", "c"));
+  EXPECT_TRUE(Matches("[attr=\"foo\"]", "c"));
+  EXPECT_FALSE(Matches("[attr=\"bar\"]", "c"));
+  EXPECT_FALSE(Matches("[attr]", "b"));
+  EXPECT_TRUE(Matches("div#a #c.cls1", "c"));
+  EXPECT_FALSE(Matches("div#a #c.cls1", "b"));
+  EXPECT_FALSE(Matches("#c .cls1", "c"));
+  EXPECT_FALSE(Matches("div #a .cls1", "c"));
 }
 
 }  // namespace blink

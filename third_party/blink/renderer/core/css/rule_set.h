@@ -125,6 +125,7 @@ class CORE_EXPORT RuleData {
   }
   void ComputeEntirelyCoveredByBucketing();
   void ResetEntirelyCoveredByBucketing();
+  bool SelectorIsEasy() const { return is_easy_; }
 
   bool ContainsUncommonAttributeSelector() const {
     return contains_uncommon_attribute_selector_;
@@ -191,7 +192,8 @@ class CORE_EXPORT RuleData {
   unsigned has_document_security_origin_ : 1;
   unsigned valid_property_filter_ : 3;
   unsigned is_entirely_covered_by_bucketing_ : 1;
-  // 31 bits above
+  unsigned is_easy_ : 1;  // See EasySelectorChecker.
+  // 32 bits above
   union {
     // Used by RuleMap before compaction, to hold what bucket this RuleData
     // is to be sorted into. (If the RuleData lives in a RuleMap, the hashes

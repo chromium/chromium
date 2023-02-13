@@ -39,6 +39,8 @@
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/selector_checker-inl.h"
+#include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -122,9 +124,11 @@ RuleData::RuleData(StyleRule* rule,
               DetermineValidPropertyFilter(add_rule_flags, Selector()))),
       is_entirely_covered_by_bucketing_(
           false),  // Will be computed in ComputeEntirelyCoveredByBucketing().
+      is_easy_(false),  // Ditto.
       descendant_selector_identifier_hashes_() {}
 
 void RuleData::ComputeEntirelyCoveredByBucketing() {
+  is_easy_ = EasySelectorChecker::IsEasy(&Selector());
   is_entirely_covered_by_bucketing_ = true;
   for (const CSSSelector* selector = &Selector(); selector;
        selector = selector->TagHistory()) {

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
+#include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/selector_statistics.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -401,6 +402,10 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
         static_cast<wtf_size_t>(rules.size()));
   }
 
+  const bool case_sensitive_tag_matching =
+      context.element->IsHTMLElement() ||
+      !IsA<HTMLDocument>(context.element->GetDocument());
+
   for (const RuleData& rule_data : rules) {
     if (perf_trace_enabled) {
       selector_statistics_collector.EndCollectionForCurrentRule();
@@ -451,6 +456,25 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       }
       DCHECK(SlowMatchWithNoResultFlags(checker, context, selector, rule_data,
                                         result.proximity));
+    } else if (case_sensitive_tag_matching && rule_data.SelectorIsEasy()) {
+      if (pseudo_style_request_.pseudo_id != kPseudoIdNone) {
+        continue;
+      }
+      bool easy_match = EasySelectorChecker::Match(&selector, context.element);
+
+      if (context.style_scope != nullptr &&
+          RuntimeEnabledFeatures::CSSScopeEnabled() &&
+          !checker.CheckInStyleScope(context, result)) {
+        easy_match = false;
+      }
+      DCHECK_EQ(easy_match,
+                SlowMatchWithNoResultFlags(checker, context, selector,
+                                           rule_data, result.proximity))
+          << "Mismatch for selector " << selector.SelectorText()
+          << " on element " << context.element;
+      if (!easy_match) {
+        continue;
+      }
     } else {
       context.selector = &selector;
       context.is_inside_visited_link =

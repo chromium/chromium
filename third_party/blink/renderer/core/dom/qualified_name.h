@@ -46,6 +46,7 @@ struct QualifiedNameData {
   bool is_static_;
 };
 
+CORE_EXPORT extern const class QualifiedName& g_any_name;
 CORE_EXPORT extern const class QualifiedName& g_null_name;
 
 class CORE_EXPORT QualifiedName {
@@ -179,7 +180,6 @@ class CORE_EXPORT QualifiedName {
   scoped_refptr<QualifiedNameImpl> impl_;
 };
 
-extern const QualifiedName& g_any_name;
 inline const QualifiedName& AnyQName() {
   return g_any_name;
 }
