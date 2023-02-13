@@ -119,6 +119,18 @@ class RemoteSetImpl {
 
   // Removes a remote from the set given |id|, if present.
   void Remove(RemoteSetElementId id) { storage_.erase(id); }
+  // Similar to the method above, but also specifies a disconnect reason.
+  void RemoveWithReason(RemoteSetElementId id,
+                        uint32_t custom_reason_code,
+                        const std::string& description) {
+    auto it = storage_.find(id);
+    if (it == storage_.end()) {
+      return;
+    }
+
+    it->second.ResetWithReason(custom_reason_code, description);
+    storage_.erase(it);
+  }
 
   // Indicates whether a remote with the given ID is present in the set.
   bool Contains(RemoteSetElementId id) { return base::Contains(storage_, id); }
@@ -141,6 +153,14 @@ class RemoteSetImpl {
   }
 
   void Clear() { storage_.clear(); }
+  void ClearWithReason(uint32_t custom_reason_code,
+                       const std::string& description) {
+    for (auto& [_, remote] : storage_) {
+      remote.ResetWithReason(custom_reason_code, description);
+    }
+
+    Clear();
+  }
 
   bool empty() const { return storage_.empty(); }
   size_t size() const { return storage_.size(); }
