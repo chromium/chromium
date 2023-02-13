@@ -782,8 +782,7 @@ void DesksBarView::SetDragDetails(const gfx::Point& screen_location,
   for (auto* mini_view : mini_views_)
     mini_view->UpdateFocusColor();
 
-  if (features::IsDragWindowToNewDeskEnabled() &&
-      DesksController::Get()->CanCreateDesks()) {
+  if (DesksController::Get()->CanCreateDesks()) {
     if (chromeos::features::IsJellyrollEnabled()) {
       new_desk_button_->UpdateFocusState();
     } else {

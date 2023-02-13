@@ -325,11 +325,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "ash-drag-window-to-new-desk",
-    "owners": [ "conniekxu",  "janetmac" ],
-    "expiry_milestone": 102
-  },
-  {
     "name": "ash-enable-unified-desktop",
     "owners": [ "//ash/OWNERS" ],
     // Unified desktop can be enabled by enterprise policy. The switch exists in

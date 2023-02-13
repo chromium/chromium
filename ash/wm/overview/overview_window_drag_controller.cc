@@ -635,33 +635,30 @@ void OverviewWindowDragController::ContinueNormalDrag(
   bounds.set_y(centerpoint.y() - bounds.height() / 2.f);
   item_->SetBounds(bounds, OVERVIEW_ANIMATION_NONE);
 
-  if (features::IsDragWindowToNewDeskEnabled()) {
-    if (chromeos::features::IsJellyrollEnabled()) {
-      auto* new_desk_button =
-          overview_grid->desks_bar_view()->new_desk_button();
+  if (chromeos::features::IsJellyrollEnabled()) {
+    auto* new_desk_button = overview_grid->desks_bar_view()->new_desk_button();
 
-      // Since the header of window is not shown during dragging, we need to use
-      // the window's content bounds to check if the window is hovered on the
-      // new desk button.
-      const bool is_hovered_on_new_desk_button =
-          new_desk_button->GetBoundsInScreen().Intersects(
-              gfx::ToRoundedRect(item_->GetWindowTargetBoundsWithInsets()));
-      if (!is_hovered_on_new_desk_button) {
-        new_desk_button_scale_up_timer_.Stop();
-      } else if (!new_desk_button_scale_up_timer_.IsRunning() &&
-                 new_desk_button->state() ==
-                     CrOSNextDeskIconButton::State::kExpanded) {
-        new_desk_button_scale_up_timer_.Start(
-            FROM_HERE, kScaleUpNewDeskButtonGracePeriod, this,
-            &OverviewWindowDragController::MaybeScaleUpNewDeskButton);
-      }
-    } else {
-      // We may need to transform desks bar from zero state to expanded state if
-      // `kDragWindowToNewDesk` is enabled while dragging continues and the
-      // square length between the window being dragged and new desk button
-      // reaches `kExpandDesksBarThreshold`.
-      overview_grid->MaybeExpandDesksBarView(location_in_screen);
+    // Since the header of window is not shown during dragging, we need to use
+    // the window's content bounds to check if the window is hovered on the
+    // new desk button.
+    const bool is_hovered_on_new_desk_button =
+        new_desk_button->GetBoundsInScreen().Intersects(
+            gfx::ToRoundedRect(item_->GetWindowTargetBoundsWithInsets()));
+    if (!is_hovered_on_new_desk_button) {
+      new_desk_button_scale_up_timer_.Stop();
+    } else if (!new_desk_button_scale_up_timer_.IsRunning() &&
+               new_desk_button->state() ==
+                   CrOSNextDeskIconButton::State::kExpanded) {
+      new_desk_button_scale_up_timer_.Start(
+          FROM_HERE, kScaleUpNewDeskButtonGracePeriod, this,
+          &OverviewWindowDragController::MaybeScaleUpNewDeskButton);
     }
+  } else {
+    // We may need to transform desks bar from zero state to expanded state if
+    // `kDragWindowToNewDesk` is enabled while dragging continues and the
+    // square length between the window being dragged and new desk button
+    // reaches `kExpandDesksBarThreshold`.
+    overview_grid->MaybeExpandDesksBarView(location_in_screen);
   }
 
   if (display_count_ > 1u)

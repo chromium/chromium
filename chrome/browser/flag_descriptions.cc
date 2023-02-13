@@ -596,11 +596,6 @@ const char kBentoBarDescription[] =
     "Showing a persistent desks bar at the top of the screen in clamshell mode "
     "when there are more than one desk.";
 
-const char kDragWindowToNewDeskName[] = "Drag window to new desk";
-const char kDragWindowToNewDeskDescription[] =
-    "Enable dragging and dropping a window to the new desk button in overview "
-    "when there are less than the maximum number of desks.";
-
 const char kBiometricReauthForPasswordFillingName[] =
     "Biometric reauth for password filling";
 const char kBiometricReauthForPasswordFillingDescription[] =

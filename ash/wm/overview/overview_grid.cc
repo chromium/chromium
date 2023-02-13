@@ -1567,9 +1567,6 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
         DesksMoveWindowFromActiveDeskSource::kDragAndDrop);
   }
 
-  if (!features::IsDragWindowToNewDeskEnabled())
-    return false;
-
   if (!desks_controller->CanCreateDesks())
     return false;
 

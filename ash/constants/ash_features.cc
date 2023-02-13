@@ -581,11 +581,6 @@ BASE_FEATURE(kDragUnpinnedAppToPin,
              "DragUnpinnedAppToPin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables dragging and dropping an existing window to new desk in overview.
-BASE_FEATURE(kDragWindowToNewDesk,
-             "DragWindowToNewDesk",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, DriveFS will be used for Drive sync.
 BASE_FEATURE(kDriveFs, "DriveFS", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2440,10 +2435,6 @@ bool IsDisplayAlignmentAssistanceEnabled() {
 
 bool IsDragUnpinnedAppToPinEnabled() {
   return base::FeatureList::IsEnabled(kDragUnpinnedAppToPin);
-}
-
-bool IsDragWindowToNewDeskEnabled() {
-  return base::FeatureList::IsEnabled(kDragWindowToNewDesk);
 }
 
 bool IsDriveFsMirroringEnabled() {

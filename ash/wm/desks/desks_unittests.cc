@@ -1884,6 +1884,337 @@ TEST_P(DesksTest, DragWindowToNonMiniViewPoints) {
   EXPECT_TRUE(DoesActiveDeskContainWindow(window.get()));
 }
 
+// Tests that dragging and dropping window to new desk while desks bar view is
+// at zero state.
+TEST_P(DesksTest, DragWindowAtZeroState) {
+  auto* controller = DesksController::Get();
+  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+
+  ASSERT_EQ(1u, controller->desks().size());
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+
+  // Since we only have one desk, there should be 0 desk mini view and the zero
+  // state default desk button and new desk button should be visible.
+  ASSERT_EQ(0u, desks_bar_view->mini_views().size());
+  auto* zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
+  auto* zero_state_new_desk_button = GetZeroStateNewDeskButton(desks_bar_view);
+  EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
+
+  auto* overview_item1 = overview_grid->GetOverviewItemContaining(win1.get());
+  auto* event_generator = GetEventGenerator();
+
+  // Start dragging `overview_item1` without dropping it. Make sure the square
+  // length between `overview_item1` and `zero_state_new_desk_button` is longer
+  // than `kExpandDesksBarThreshold`. Verify that the desks bar is still at zero
+  // state in this use case.
+  DragItemToPoint(
+      overview_item1,
+      gfx::ToRoundedPoint(overview_item1->target_bounds().CenterPoint() +
+                          gfx::Vector2d(100, -100)),
+      event_generator,
+      /*by_touch_gestures=*/false, /*drop=*/false);
+  if (GetParam().enable_jellyroll) {
+    // When feature `Jellyroll` is enabled, desks bar will expand immediately at
+    // the beginning of the drag.
+    EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
+    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
+    VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
+  } else {
+    EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
+    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
+    VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
+  }
+
+  const gfx::Point new_desk_button_center_point =
+      zero_state_new_desk_button->GetBoundsInScreen().CenterPoint();
+  if (GetParam().enable_jellyroll) {
+    // The new desk button will be scaled up as a drop target for
+    // `overview_item1` when `overview_item1` it's being hovered on top it over
+    // 500 milliseconds.
+    // Drag `overview_item1` to hover on the new desk button, and wait for 200
+    // milliseconds, verify that new desk button is still at the expanded state
+    // and the new desk label is not shown.
+    const CrOSNextDeskIconButton* new_desk_button =
+        desks_bar_view->new_desk_button();
+    const gfx::Point new_desk_button_bottom_left =
+        zero_state_new_desk_button->GetBoundsInScreen().bottom_left();
+    DragItemToPoint(overview_item1,
+                    new_desk_button_bottom_left + gfx::Vector2d(10, -10),
+                    event_generator, /*by_touch_gestures=*/false,
+                    /*drop=*/false);
+    WaitForMilliseconds(200);
+    EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
+              new_desk_button->state());
+    EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
+    // Now fire the timer directly to skip the wait time. Verify that the new
+    // desk button is scaled up and at the active state and the new desk label
+    // is shown now.
+    overview_controller->overview_session()
+        ->window_drag_controller()
+        ->new_desk_button_scale_up_timer_for_test()
+        ->FireNow();
+    EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, new_desk_button->state());
+    EXPECT_TRUE(desks_bar_view->new_desk_button_label()->GetVisible());
+
+    // Keep dragging `overview_item1` to the center of the new desk button to
+    // make it a drop target.
+    DragItemToPoint(overview_item1,
+                    new_desk_button_center_point + gfx::Vector2d(10, 10),
+                    event_generator, /*by_touch_gestures=*/false,
+                    /*drop=*/false);
+
+  } else {
+    // Now keep dragging `overview_item1` and make it close enough to the center
+    // point of `zero_state_new_desk_button`. Verify that desks bar is
+    // transformed to the expanded state in this use case.
+    DragItemToPoint(overview_item1,
+                    new_desk_button_center_point + gfx::Vector2d(10, 10),
+                    event_generator, /*by_touch_gestures=*/false,
+                    /*drop=*/false);
+    EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
+    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
+    VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
+  }
+
+  // Now drop |overview_item1|, a new desk which contains |win1| will be
+  // created.
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_EQ(2u, desks_bar_view->mini_views().size());
+  EXPECT_EQ(2u, controller->desks().size());
+  EXPECT_TRUE(base::Contains(controller->desks()[1]->windows(), win1.get()));
+  // The active desk should still be the first desk, even though a new desk
+  // is created.
+  EXPECT_EQ(DesksController::Get()->active_desk(),
+            controller->desks()[0].get());
+  // |overview_grid| should have size equals to 0 now, since |overview_item1|
+  // havs been moved to a new desk.
+  EXPECT_EQ(0u, overview_grid->size());
+}
+
+// Tests that dragging a window at zero state but without dropping it on the new
+// desk button, the window being dragged will fall back to the existing desk and
+// no new desk should be created.
+TEST_P(DesksTest, DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
+  auto* controller = DesksController::Get();
+  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+
+  ASSERT_EQ(1u, controller->desks().size());
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+
+  // Make sure the desks bar is at zero state in the beginning.
+  auto* zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
+  auto* zero_state_new_desk_button = GetZeroStateNewDeskButton(desks_bar_view);
+  auto* expanded_state_new_desk_button =
+      GetExpandedStateNewDeskButton(desks_bar_view);
+  EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
+  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
+
+  auto* overview_item1 = overview_grid->GetOverviewItemContaining(win1.get());
+  auto* event_generator = GetEventGenerator();
+
+  if (GetParam().enable_jellyroll) {
+    const CrOSNextDeskIconButton* new_desk_button =
+        desks_bar_view->new_desk_button();
+    // Start dragging `overview_item1`, verify desks bar expands immediately and
+    // the new desk button is transformed to the expanded state;
+    DragItemToPoint(
+        overview_item1,
+        gfx::ToRoundedPoint(overview_item1->target_bounds().CenterPoint() +
+                            gfx::Vector2d(100, -100)),
+        event_generator,
+        /*by_touch_gestures=*/false, /*drop=*/false);
+    EXPECT_FALSE(desks_bar_view->IsZeroState());
+    EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
+              new_desk_button->state());
+    EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
+
+    // Keep dragging `overview_item1` to hover on the new desk button,
+    // immediately fire the time to skip to wait time. Verify that new desk
+    // button is transformed to the active state and the new desk label is shown
+    // now.
+    const gfx::Point new_desk_button_center_point =
+        zero_state_new_desk_button->GetBoundsInScreen().CenterPoint();
+    DragItemToPoint(overview_item1,
+                    gfx::Point(new_desk_button_center_point.x() + 10,
+                               new_desk_button_center_point.y() + 10),
+                    event_generator, /*by_touch_gestures=*/false,
+                    /*drop=*/false);
+    overview_controller->overview_session()
+        ->window_drag_controller()
+        ->new_desk_button_scale_up_timer_for_test()
+        ->FireNow();
+    EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, new_desk_button->state());
+    EXPECT_TRUE(desks_bar_view->new_desk_button_label()->GetVisible());
+  } else {
+    // Drag `overview_item1` and make it close enough to the center point of
+    // `zero_state_new_desk_button`. Verify that desks bar is transformed to the
+    // expanded state in this use case.
+    const gfx::Point new_desk_button_center_point =
+        zero_state_new_desk_button->GetBoundsInScreen().CenterPoint();
+    DragItemToPoint(overview_item1,
+                    gfx::Point(new_desk_button_center_point.x() + 10,
+                               new_desk_button_center_point.y() + 10),
+                    event_generator, /*by_touch_gestures=*/false,
+                    /*drop=*/false);
+    EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
+    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
+    VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
+  }
+
+  // Now keep dragging `overview_item1` and make it not able to be dropped on
+  // the new desk, then drop it. Check that `overview_item1` is dropped back to
+  // the existing desk, there's no new desk created, and desks bar is
+  // transformed back to the zero state.
+  const gfx::Point expanded_new_desk_button_center_point =
+      expanded_state_new_desk_button->GetBoundsInScreen().CenterPoint();
+  DragItemToPoint(overview_item1,
+                  gfx::Point(expanded_new_desk_button_center_point.x() + 200,
+                             expanded_new_desk_button_center_point.y() + 200),
+                  event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
+  if (GetParam().enable_jellyroll) {
+    // If the Jellyroll is enabled, the desks bar never goes back to the zero
+    // state from the expanded state even these's only one desk. Veriry that the
+    // new desk label is invisible now.
+    EXPECT_FALSE(desks_bar_view->IsZeroState());
+    EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
+  } else {
+    EXPECT_TRUE(desks_bar_view->IsZeroState());
+  }
+  EXPECT_EQ(1u, controller->desks().size());
+  EXPECT_TRUE(base::Contains(controller->desks()[0]->windows(), win1.get()));
+}
+
+// Tests that dragging and dropping window to new desk while desks bar view is
+// at expanded state.
+TEST_P(DesksTest, DragWindowAtExpandedState) {
+  auto* controller = DesksController::Get();
+  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  NewDesk();
+
+  ASSERT_EQ(2u, controller->desks().size());
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+
+  ASSERT_EQ(2u, desks_bar_view->mini_views().size());
+  auto* expanded_state_new_desk_button =
+      GetExpandedStateNewDeskButton(desks_bar_view);
+  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
+
+  if (GetParam().enable_jellyroll) {
+    auto* event_generator = GetEventGenerator();
+    // Drag `overview_item1` on that new desk button, and fire the timer
+    // immediately and then drops it. A new desk which contains `win1` will be
+    // created.
+    DragItemToPoint(
+        overview_controller->overview_session()->GetOverviewItemForWindow(
+            win1.get()),
+        expanded_state_new_desk_button->GetBoundsInScreen().CenterPoint(),
+        GetEventGenerator(), /*by_touch_gestures=*/false,
+        /*drop=*/false);
+    overview_controller->overview_session()
+        ->window_drag_controller()
+        ->new_desk_button_scale_up_timer_for_test()
+        ->FireNow();
+    event_generator->ReleaseLeftButton();
+  } else {
+    // Drag and drop `overview_item1` on `expanded_state_new_desk_button`. A new
+    // desk which contains `win1` will be created.
+    DragItemToPoint(
+        overview_controller->overview_session()->GetOverviewItemForWindow(
+            win1.get()),
+        expanded_state_new_desk_button->GetBoundsInScreen().CenterPoint(),
+        GetEventGenerator());
+  }
+
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_EQ(3u, desks_bar_view->mini_views().size());
+  EXPECT_EQ(3u, controller->desks().size());
+  EXPECT_TRUE(base::Contains(controller->desks()[2]->windows(), win1.get()));
+}
+
+// Tests that dragging and dropping a window on the new desk button does not
+// create a new desk if we are already at the maximum number of desks.
+TEST_P(DesksTest, DragWindowAtMaximumDesksState) {
+  // Set a display mode that forces vertical layout of split view drag
+  // indicators. This is so that we are able to drop an overview item on the
+  // "new desk" button even if it's right up to the edge.
+  UpdateDisplay("800x801");
+
+  auto* controller = DesksController::Get();
+  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  while (controller->desks().size() < desks_util::GetMaxNumberOfDesks()) {
+    NewDesk();
+  }
+
+  ASSERT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+
+  auto* event_generator = GetEventGenerator();
+  auto* scroll_right_button = DesksTestApi::GetDesksBarRightScrollButton();
+  for (int i = 0; i != 3; ++i) {
+    ClickOnView(scroll_right_button, event_generator);
+  }
+
+  // Drag and drop the overview to the new desk button. Since we already have
+  // maximum number of desks, this won't create a new desk, and the dragged
+  // window will fall back to the desk where it's from. Dragging here is not
+  // done using `DragItemToPoint`. This is because once a drag has been
+  // initiated, the split view drag indicators will show and shift the position
+  // of the desks bar, which includes the new desk button. In other words, we
+  // have to initiate the drag before we can know where to drop.
+  const gfx::Point overview_item_center =
+      gfx::ToRoundedPoint(overview_controller->overview_session()
+                              ->GetOverviewItemForWindow(win1.get())
+                              ->target_bounds()
+                              .CenterPoint());
+
+  // Pick up the item and move it a little bit to initiate a drag.
+  event_generator->set_current_screen_location(overview_item_center);
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(20, 0);
+
+  // Move the item to the new desk button and drop it.
+  event_generator->MoveMouseTo(GetExpandedStateNewDeskButton(desks_bar_view)
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
+  event_generator->ReleaseLeftButton();
+
+  // We should still be in overview mode. We should still have the max number of
+  // desks. And `win1` should still belong to the first desk.
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(),
+            desks_bar_view->mini_views().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
+  EXPECT_TRUE(base::Contains(controller->desks()[0]->windows(), win1.get()));
+}
+
 TEST_P(DesksTest, MruWindowTracker) {
   // Create two desks with two windows in each.
   auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
@@ -7674,356 +8005,6 @@ TEST_P(PersistentDesksBarTest, SnappingWindowsInOverview) {
   EXPECT_EQ(window2->GetBoundsInScreen().y(), bar_height);
 }
 
-// Test fixture for feature flag |kDragWindowToNewDesk|.
-class DragWindowToNewDeskTest : public DesksTest {
- public:
-  DragWindowToNewDeskTest() = default;
-
-  DragWindowToNewDeskTest(const DragWindowToNewDeskTest&) = delete;
-  DragWindowToNewDeskTest& operator=(const DragWindowToNewDeskTest&) = delete;
-
-  ~DragWindowToNewDeskTest() override = default;
-
-  // DesksTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kDragWindowToNewDesk);
-    DesksTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that dragging and dropping window to new desk while desks bar view is
-// at zero state.
-TEST_P(DragWindowToNewDeskTest, DragWindowAtZeroState) {
-  auto* controller = DesksController::Get();
-  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-
-  ASSERT_EQ(1u, controller->desks().size());
-  auto* overview_controller = Shell::Get()->overview_controller();
-  EnterOverview();
-
-  ASSERT_TRUE(overview_controller->InOverviewSession());
-  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  const auto* desks_bar_view = overview_grid->desks_bar_view();
-  ASSERT_TRUE(desks_bar_view);
-
-  // Since we only have one desk, there should be 0 desk mini view and the zero
-  // state default desk button and new desk button should be visible.
-  ASSERT_EQ(0u, desks_bar_view->mini_views().size());
-  auto* zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
-  auto* zero_state_new_desk_button = GetZeroStateNewDeskButton(desks_bar_view);
-  EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
-  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
-  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
-
-  auto* overview_item1 = overview_grid->GetOverviewItemContaining(win1.get());
-  auto* event_generator = GetEventGenerator();
-
-  // Start dragging `overview_item1` without dropping it. Make sure the square
-  // length between `overview_item1` and `zero_state_new_desk_button` is longer
-  // than `kExpandDesksBarThreshold`. Verify that the desks bar is still at zero
-  // state in this use case.
-  DragItemToPoint(
-      overview_item1,
-      gfx::ToRoundedPoint(overview_item1->target_bounds().CenterPoint() +
-                          gfx::Vector2d(100, -100)),
-      event_generator,
-      /*by_touch_gestures=*/false, /*drop=*/false);
-  if (GetParam().enable_jellyroll) {
-    // When feature `Jellyroll` is enabled, desks bar will expand immediately at
-    // the beginning of the drag.
-    EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
-    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
-    VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
-  } else {
-    EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
-    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
-    VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
-  }
-
-  const gfx::Point new_desk_button_center_point =
-      zero_state_new_desk_button->GetBoundsInScreen().CenterPoint();
-  if (GetParam().enable_jellyroll) {
-    // The new desk button will be scaled up as a drop target for
-    // `overview_item1` when `overview_item1` it's being hovered on top it over
-    // 500 milliseconds.
-    // Drag `overview_item1` to hover on the new desk button, and wait for 200
-    // milliseconds, verify that new desk button is still at the expanded state
-    // and the new desk label is not shown.
-    const CrOSNextDeskIconButton* new_desk_button =
-        desks_bar_view->new_desk_button();
-    const gfx::Point new_desk_button_bottom_left =
-        zero_state_new_desk_button->GetBoundsInScreen().bottom_left();
-    DragItemToPoint(overview_item1,
-                    new_desk_button_bottom_left + gfx::Vector2d(10, -10),
-                    event_generator, /*by_touch_gestures=*/false,
-                    /*drop=*/false);
-    WaitForMilliseconds(200);
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
-              new_desk_button->state());
-    EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
-    // Now fire the timer directly to skip the wait time. Verify that the new
-    // desk button is scaled up and at the active state and the new desk label
-    // is shown now.
-    overview_controller->overview_session()
-        ->window_drag_controller()
-        ->new_desk_button_scale_up_timer_for_test()
-        ->FireNow();
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, new_desk_button->state());
-    EXPECT_TRUE(desks_bar_view->new_desk_button_label()->GetVisible());
-
-    // Keep dragging `overview_item1` to the center of the new desk button to
-    // make it a drop target.
-    DragItemToPoint(overview_item1,
-                    new_desk_button_center_point + gfx::Vector2d(10, 10),
-                    event_generator, /*by_touch_gestures=*/false,
-                    /*drop=*/false);
-
-  } else {
-    // Now keep dragging `overview_item1` and make it close enough to the center
-    // point of `zero_state_new_desk_button`. Verify that desks bar is
-    // transformed to the expanded state in this use case.
-    DragItemToPoint(overview_item1,
-                    new_desk_button_center_point + gfx::Vector2d(10, 10),
-                    event_generator, /*by_touch_gestures=*/false,
-                    /*drop=*/false);
-    EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
-    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
-    VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
-  }
-
-  // Now drop |overview_item1|, a new desk which contains |win1| will be
-  // created.
-  event_generator->ReleaseLeftButton();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(2u, desks_bar_view->mini_views().size());
-  EXPECT_EQ(2u, controller->desks().size());
-  EXPECT_TRUE(base::Contains(controller->desks()[1]->windows(), win1.get()));
-  // The active desk should still be the first desk, even though a new desk
-  // is created.
-  EXPECT_EQ(DesksController::Get()->active_desk(),
-            controller->desks()[0].get());
-  // |overview_grid| should have size equals to 0 now, since |overview_item1|
-  // havs been moved to a new desk.
-  EXPECT_EQ(0u, overview_grid->size());
-}
-
-// Tests that dragging a window at zero state but without dropping it on the new
-// desk button, the window being dragged will fall back to the existing desk and
-// no new desk should be created.
-TEST_P(DragWindowToNewDeskTest,
-       DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
-  auto* controller = DesksController::Get();
-  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-
-  ASSERT_EQ(1u, controller->desks().size());
-  auto* overview_controller = Shell::Get()->overview_controller();
-  EnterOverview();
-
-  ASSERT_TRUE(overview_controller->InOverviewSession());
-  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-  const auto* desks_bar_view = overview_grid->desks_bar_view();
-  ASSERT_TRUE(desks_bar_view);
-
-  // Make sure the desks bar is at zero state in the beginning.
-  auto* zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
-  auto* zero_state_new_desk_button = GetZeroStateNewDeskButton(desks_bar_view);
-  auto* expanded_state_new_desk_button =
-      GetExpandedStateNewDeskButton(desks_bar_view);
-  EXPECT_TRUE(zero_state_default_desk_button->GetVisible());
-  VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, true);
-  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, false);
-
-  auto* overview_item1 = overview_grid->GetOverviewItemContaining(win1.get());
-  auto* event_generator = GetEventGenerator();
-
-  if (GetParam().enable_jellyroll) {
-    const CrOSNextDeskIconButton* new_desk_button =
-        desks_bar_view->new_desk_button();
-    // Start dragging `overview_item1`, verify desks bar expands immediately and
-    // the new desk button is transformed to the expanded state;
-    DragItemToPoint(
-        overview_item1,
-        gfx::ToRoundedPoint(overview_item1->target_bounds().CenterPoint() +
-                            gfx::Vector2d(100, -100)),
-        event_generator,
-        /*by_touch_gestures=*/false, /*drop=*/false);
-    EXPECT_FALSE(desks_bar_view->IsZeroState());
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kExpanded,
-              new_desk_button->state());
-    EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
-
-    // Keep dragging `overview_item1` to hover on the new desk button,
-    // immediately fire the time to skip to wait time. Verify that new desk
-    // button is transformed to the active state and the new desk label is shown
-    // now.
-    const gfx::Point new_desk_button_center_point =
-        zero_state_new_desk_button->GetBoundsInScreen().CenterPoint();
-    DragItemToPoint(overview_item1,
-                    gfx::Point(new_desk_button_center_point.x() + 10,
-                               new_desk_button_center_point.y() + 10),
-                    event_generator, /*by_touch_gestures=*/false,
-                    /*drop=*/false);
-    overview_controller->overview_session()
-        ->window_drag_controller()
-        ->new_desk_button_scale_up_timer_for_test()
-        ->FireNow();
-    EXPECT_EQ(CrOSNextDeskIconButton::State::kActive, new_desk_button->state());
-    EXPECT_TRUE(desks_bar_view->new_desk_button_label()->GetVisible());
-  } else {
-    // Drag `overview_item1` and make it close enough to the center point of
-    // `zero_state_new_desk_button`. Verify that desks bar is transformed to the
-    // expanded state in this use case.
-    const gfx::Point new_desk_button_center_point =
-        zero_state_new_desk_button->GetBoundsInScreen().CenterPoint();
-    DragItemToPoint(overview_item1,
-                    gfx::Point(new_desk_button_center_point.x() + 10,
-                               new_desk_button_center_point.y() + 10),
-                    event_generator, /*by_touch_gestures=*/false,
-                    /*drop=*/false);
-    EXPECT_FALSE(zero_state_default_desk_button->GetVisible());
-    VerifyZeroStateNewDeskButtonVisibility(desks_bar_view, false);
-    VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
-  }
-
-  // Now keep dragging `overview_item1` and make it not able to be dropped on
-  // the new desk, then drop it. Check that `overview_item1` is dropped back to
-  // the existing desk, there's no new desk created, and desks bar is
-  // transformed back to the zero state.
-  const gfx::Point expanded_new_desk_button_center_point =
-      expanded_state_new_desk_button->GetBoundsInScreen().CenterPoint();
-  DragItemToPoint(overview_item1,
-                  gfx::Point(expanded_new_desk_button_center_point.x() + 200,
-                             expanded_new_desk_button_center_point.y() + 200),
-                  event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
-  if (GetParam().enable_jellyroll) {
-    // If the Jellyroll is enabled, the desks bar never goes back to the zero
-    // state from the expanded state even these's only one desk. Veriry that the
-    // new desk label is invisible now.
-    EXPECT_FALSE(desks_bar_view->IsZeroState());
-    EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
-  } else {
-    EXPECT_TRUE(desks_bar_view->IsZeroState());
-  }
-  EXPECT_EQ(1u, controller->desks().size());
-  EXPECT_TRUE(base::Contains(controller->desks()[0]->windows(), win1.get()));
-}
-
-// Tests that dragging and dropping window to new desk while desks bar view is
-// at expanded state.
-TEST_P(DragWindowToNewDeskTest, DragWindowAtExpandedState) {
-  auto* controller = DesksController::Get();
-  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  NewDesk();
-
-  ASSERT_EQ(2u, controller->desks().size());
-  auto* overview_controller = Shell::Get()->overview_controller();
-  EnterOverview();
-
-  ASSERT_TRUE(overview_controller->InOverviewSession());
-  const auto* desks_bar_view =
-      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
-  ASSERT_TRUE(desks_bar_view);
-
-  ASSERT_EQ(2u, desks_bar_view->mini_views().size());
-  auto* expanded_state_new_desk_button =
-      GetExpandedStateNewDeskButton(desks_bar_view);
-  VerifyExpandedStateNewDeskButtonVisibility(desks_bar_view, true);
-
-  if (GetParam().enable_jellyroll) {
-    auto* event_generator = GetEventGenerator();
-    // Drag `overview_item1` on that new desk button, and fire the timer
-    // immediately and then drops it. A new desk which contains `win1` will be
-    // created.
-    DragItemToPoint(
-        overview_controller->overview_session()->GetOverviewItemForWindow(
-            win1.get()),
-        expanded_state_new_desk_button->GetBoundsInScreen().CenterPoint(),
-        GetEventGenerator(), /*by_touch_gestures=*/false,
-        /*drop=*/false);
-    overview_controller->overview_session()
-        ->window_drag_controller()
-        ->new_desk_button_scale_up_timer_for_test()
-        ->FireNow();
-    event_generator->ReleaseLeftButton();
-  } else {
-    // Drag and drop `overview_item1` on `expanded_state_new_desk_button`. A new
-    // desk which contains `win1` will be created.
-    DragItemToPoint(
-        overview_controller->overview_session()->GetOverviewItemForWindow(
-            win1.get()),
-        expanded_state_new_desk_button->GetBoundsInScreen().CenterPoint(),
-        GetEventGenerator());
-  }
-
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(3u, desks_bar_view->mini_views().size());
-  EXPECT_EQ(3u, controller->desks().size());
-  EXPECT_TRUE(base::Contains(controller->desks()[2]->windows(), win1.get()));
-}
-
-// Tests that dragging and dropping a window on the new desk button does not
-// create a new desk if we are already at the maximum number of desks.
-TEST_P(DragWindowToNewDeskTest, DragWindowAtMaximumDesksState) {
-  // Set a display mode that forces vertical layout of split view drag
-  // indicators. This is so that we are able to drop an overview item on the
-  // "new desk" button even if it's right up to the edge.
-  UpdateDisplay("800x801");
-
-  auto* controller = DesksController::Get();
-  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  while (controller->desks().size() < desks_util::GetMaxNumberOfDesks())
-    NewDesk();
-
-  ASSERT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
-  auto* overview_controller = Shell::Get()->overview_controller();
-  EnterOverview();
-
-  ASSERT_TRUE(overview_controller->InOverviewSession());
-  const auto* desks_bar_view =
-      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
-  ASSERT_TRUE(desks_bar_view);
-
-  auto* event_generator = GetEventGenerator();
-  auto* scroll_right_button = DesksTestApi::GetDesksBarRightScrollButton();
-  for (int i = 0; i != 3; ++i)
-    ClickOnView(scroll_right_button, event_generator);
-
-  // Drag and drop the overview to the new desk button. Since we already have
-  // maximum number of desks, this won't create a new desk, and the dragged
-  // window will fall back to the desk where it's from. Dragging here is not
-  // done using `DragItemToPoint`. This is because once a drag has been
-  // initiated, the split view drag indicators will show and shift the position
-  // of the desks bar, which includes the new desk button. In other words, we
-  // have to initiate the drag before we can know where to drop.
-  const gfx::Point overview_item_center =
-      gfx::ToRoundedPoint(overview_controller->overview_session()
-                              ->GetOverviewItemForWindow(win1.get())
-                              ->target_bounds()
-                              .CenterPoint());
-
-  // Pick up the item and move it a little bit to initiate a drag.
-  event_generator->set_current_screen_location(overview_item_center);
-  event_generator->PressLeftButton();
-  event_generator->MoveMouseBy(20, 0);
-
-  // Move the item to the new desk button and drop it.
-  event_generator->MoveMouseTo(GetExpandedStateNewDeskButton(desks_bar_view)
-                                   ->GetBoundsInScreen()
-                                   .CenterPoint());
-  event_generator->ReleaseLeftButton();
-
-  // We should still be in overview mode. We should still have the max number of
-  // desks. And `win1` should still belong to the first desk.
-  ASSERT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(),
-            desks_bar_view->mini_views().size());
-  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(), controller->desks().size());
-  EXPECT_TRUE(base::Contains(controller->desks()[0]->windows(), win1.get()));
-}
-
 // A class that maintains a window created inside of a test. If the window is
 // destroyed from outside of the class, it releases the window's unique pointer
 // to prevent use-after-free issues.
@@ -9114,11 +9095,7 @@ INSTANTIATE_TEST_SUITE_P(All, DesksAcceleratorsTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, DesksBentoBarTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, DesksMockTimeTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, PersistentDesksBarTest, ValuesIn(kDeskCountOnly));
-INSTANTIATE_TEST_SUITE_P(All,
-                         DragWindowToNewDeskTest,
-                         ValuesIn(kAllCombinations));
 INSTANTIATE_TEST_SUITE_P(All, DesksCloseAllTest, ValuesIn(kDeskCountOnly));
-
 INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfTest, ::testing::Bool());
 
 }  // namespace
