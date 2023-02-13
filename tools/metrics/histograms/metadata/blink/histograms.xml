@@ -742,6 +742,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.CSSStyleSheetResource.ParseTime" units="microseconds"
+    expires_after="2023-07-01">
+  <owner>gjc@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    Time spent for parsing the stylesheet. Recorded when the stylesheet finishes
+    loading and does not have cached stylesheet contents.
+
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.CSSStyleSheetResource.TokenizeTime" units="microseconds"
+    expires_after="2023-07-01">
+  <owner>gjc@chromium.org</owner>
+  <owner>loading-dev@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    Time spent for tokenizing the stylesheet. Recorded when the response body of
+    the stylesheet is received.
+
+    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.CullRect.UpdateTime" units="microseconds"
     expires_after="2023-06-18">
   <owner>pdr@chromium.org</owner>

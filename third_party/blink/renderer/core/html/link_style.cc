@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/link_style.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -107,6 +108,7 @@ void LinkStyle::NotifyFinished(Resource* resource) {
     return;
   }
 
+  auto parser_start_time = base::TimeTicks::Now();
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
       parser_context, cached_style_sheet->Url());
 
@@ -130,6 +132,9 @@ void LinkStyle::NotifyFinished(Resource* resource) {
     const_cast<CSSStyleSheetResource*>(cached_style_sheet)
         ->SaveParsedStyleSheet(style_sheet);
   }
+  base::UmaHistogramMicrosecondsTimes(
+      "Blink.CSSStyleSheetResource.ParseTime",
+      base::TimeTicks::Now() - parser_start_time);
   ClearResource();
 }
 

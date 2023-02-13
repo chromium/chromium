@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/features.h"
@@ -292,6 +293,7 @@ void CSSStyleSheetResource::ResponseBodyReceived(
     return;
 
   AdvanceLoadingState(LoadingState::kTokenizing);
+  tokenize_start_time_ = base::TimeTicks::Now();
   worker_ = WTF::SequenceBound<CSSTokenizerWorker>(
       worker_pool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING}),
@@ -305,6 +307,9 @@ void CSSStyleSheetResource::DidReceiveDecodedData(
     std::unique_ptr<DecodedDataInfo> info) {
   CHECK_EQ(loading_state_, LoadingState::kTokenizing);
   SetDecodedSheetText(data);
+  base::UmaHistogramMicrosecondsTimes(
+      "Blink.CSSStyleSheetResource.TokenizeTime",
+      base::TimeTicks::Now() - tokenize_start_time_);
   if (!info)
     return;
 

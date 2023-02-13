@@ -130,6 +130,7 @@ class CORE_EXPORT CSSStyleSheetResource final : public TextResource {
   WTF::SequenceBound<CSSTokenizerWorker> worker_;
   std::unique_ptr<TextResourceDecoder> tokenizer_text_decoder_;
   mutable std::unique_ptr<CachedCSSTokenizer> tokenizer_;
+  base::TimeTicks tokenize_start_time_;
 };
 
 template <>
