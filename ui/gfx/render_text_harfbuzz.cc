@@ -810,6 +810,14 @@ internal::TextRunHarfBuzz::FontParams CreateFontParams(
   return font_params;
 }
 
+BASE_FEATURE(kRemoveFontLinkFallbacks,
+             "RemoveFontLinkFallbacks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsRemoveFontLinkFallbacks() {
+  return base::FeatureList::IsEnabled(kRemoveFontLinkFallbacks);
+}
+
 }  // namespace
 
 namespace internal {
@@ -2073,38 +2081,40 @@ void RenderTextHarfBuzz::ShapeRuns(
     return;
   }
 
-  std::vector<Font> fallback_font_list;
-  {
-    SCOPED_UMA_HISTOGRAM_LONG_TIMER("RenderTextHarfBuzz.GetFallbackFontsTime");
-    TRACE_EVENT1("ui", "RenderTextHarfBuzz::GetFallbackFonts", "script",
-                 TRACE_STR_COPY(uscript_getShortName(font_params.script)));
-    fallback_font_list = GetFallbackFonts(primary_font);
+  if (!IsRemoveFontLinkFallbacks()) {
+    std::vector<Font> fallback_font_list;
+    {
+      SCOPED_UMA_HISTOGRAM_LONG_TIMER(
+          "RenderTextHarfBuzz.GetFallbackFontsTime");
+      TRACE_EVENT1("ui", "RenderTextHarfBuzz::GetFallbackFonts", "script",
+                   TRACE_STR_COPY(uscript_getShortName(font_params.script)));
+      fallback_font_list = GetFallbackFonts(primary_font);
 
 #if BUILDFLAG(IS_WIN)
-    // Append fonts in the fallback list of the fallback fonts.
-    // TODO(tapted): Investigate whether there's a case that benefits from this
-    // on Mac.
-    for (const auto& fallback_font : fallback_font_candidates) {
-      std::vector<Font> fallback_fonts = GetFallbackFonts(fallback_font);
-      fallback_font_list.insert(fallback_font_list.end(),
-                                fallback_fonts.begin(), fallback_fonts.end());
-    }
+      // Append fonts in the fallback list of the fallback fonts.
+      // TODO(tapted): Investigate whether there's a case that benefits from
+      // this on Mac.
+      for (const auto& fallback_font : fallback_font_candidates) {
+        std::vector<Font> fallback_fonts = GetFallbackFonts(fallback_font);
+        fallback_font_list.insert(fallback_font_list.end(),
+                                  fallback_fonts.begin(), fallback_fonts.end());
+      }
 
-    // Add Segoe UI and its associated linked fonts to the fallback font list to
-    // ensure that the fallback list covers the basic cases.
-    // http://crbug.com/467459. On some Windows configurations the default font
-    // could be a raster font like System, which would not give us a reasonable
-    // fallback font list.
-    Font segoe("Segoe UI", 13);
-    if (!FontWasAlreadyTried(segoe.platform_font()->GetNativeSkTypeface(),
-                             &fallback_fonts_already_tried)) {
-      std::vector<Font> default_fallback_families = GetFallbackFonts(segoe);
-      fallback_font_list.insert(fallback_font_list.end(),
-                                default_fallback_families.begin(),
-                                default_fallback_families.end());
-    }
+      // Add Segoe UI and its associated linked fonts to the fallback font list
+      // to ensure that the fallback list covers the basic cases.
+      // http://crbug.com/467459. On some Windows configurations the default
+      // font could be a raster font like System, which would not give us a
+      // reasonable fallback font list.
+      Font segoe("Segoe UI", 13);
+      if (!FontWasAlreadyTried(segoe.platform_font()->GetNativeSkTypeface(),
+                               &fallback_fonts_already_tried)) {
+        std::vector<Font> default_fallback_families = GetFallbackFonts(segoe);
+        fallback_font_list.insert(fallback_font_list.end(),
+                                  default_fallback_families.begin(),
+                                  default_fallback_families.end());
+      }
 #endif
-  }
+    }
 
   // Use a set to track the fallback fonts and avoid duplicate entries.
   SCOPED_UMA_HISTOGRAM_LONG_TIMER(
@@ -2114,30 +2124,32 @@ void RenderTextHarfBuzz::ShapeRuns(
 
   // Try shaping with the fallback fonts.
   for (const auto& font : fallback_font_list) {
-    std::string font_name = font.GetFontName();
+      std::string font_name = font.GetFontName();
 
-    FontRenderParamsQuery query;
-    query.families.push_back(font_name);
-    query.pixel_size = font_params.font_size;
-    query.style = font_params.italic ? Font::ITALIC : 0;
-    FontRenderParams fallback_render_params = GetFontRenderParams(query, NULL);
-    internal::TextRunHarfBuzz::FontParams test_font_params = font_params;
-    if (test_font_params.SetRenderParamsOverrideSkiaFaceFromFont(
-            font, fallback_render_params) &&
-        !FontWasAlreadyTried(test_font_params.skia_face,
-                             &fallback_fonts_already_tried)) {
-      ShapeRunsWithFont(text, test_font_params, &runs);
-      MarkFontAsTried(test_font_params.skia_face,
-                      &fallback_fonts_already_tried);
-    }
-    if (runs.empty()) {
-      TRACE_EVENT_INSTANT2("ui", "RenderTextHarfBuzz::FallbackFont",
-                           TRACE_EVENT_SCOPE_THREAD, "font_name",
-                           TRACE_STR_COPY(font_name.c_str()),
-                           "primary_font_name", primary_font.GetFontName());
-      RecordShapeRunsFallback(ShapeRunFallback::FALLBACKS);
-      return;
-    }
+      FontRenderParamsQuery query;
+      query.families.push_back(font_name);
+      query.pixel_size = font_params.font_size;
+      query.style = font_params.italic ? Font::ITALIC : 0;
+      FontRenderParams fallback_render_params =
+          GetFontRenderParams(query, nullptr);
+      internal::TextRunHarfBuzz::FontParams test_font_params = font_params;
+      if (test_font_params.SetRenderParamsOverrideSkiaFaceFromFont(
+              font, fallback_render_params) &&
+          !FontWasAlreadyTried(test_font_params.skia_face,
+                               &fallback_fonts_already_tried)) {
+        ShapeRunsWithFont(text, test_font_params, &runs);
+        MarkFontAsTried(test_font_params.skia_face,
+                        &fallback_fonts_already_tried);
+      }
+      if (runs.empty()) {
+        TRACE_EVENT_INSTANT2("ui", "RenderTextHarfBuzz::FallbackFont",
+                             TRACE_EVENT_SCOPE_THREAD, "font_name",
+                             TRACE_STR_COPY(font_name.c_str()),
+                             "primary_font_name", primary_font.GetFontName());
+        RecordShapeRunsFallback(ShapeRunFallback::FALLBACKS);
+        return;
+      }
+  }
   }
 
   for (internal::TextRunHarfBuzz*& run : runs) {

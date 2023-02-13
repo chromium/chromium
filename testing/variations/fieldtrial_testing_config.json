@@ -9853,6 +9853,21 @@
             ]
         }
     ],
+    "RemoveFontLinkFallbacks": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230210",
+                    "enable_features": [
+                        "RemoveFontLinkFallbacks"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemoveIOSPowerEventNotifications": [
         {
             "platforms": [
