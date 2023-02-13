@@ -67,6 +67,8 @@ class BuildConfigGenerator extends DefaultTask {
         // to our AndroidManfest.xml, which we don't allow. http://crbug.com/1302987
         androidx_window_window: EXCLUDE_THIS_LIB,
         org_robolectric_shadows_multidex:EXCLUDE_THIS_LIB,
+        // We do not currently support startup profiles in chrome, as such this does nothing.
+        androidx_profileinstaller_profileinstaller: EXCLUDE_THIS_LIB,
     ]
 
     // Some libraries have such long names they'll create a path that exceeds the 200 char path limit, which is
