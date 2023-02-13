@@ -453,6 +453,9 @@ crbug.com/1196414 compositing/gestures/gesture-tapHighlight-imagemap.html [ Fail
 
 crbug.com/1310040 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-layer.html [ Failure Pass ]
 
+crbug.com/1405163 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-child-with-transparent-background.html [ Failure ]
+crbug.com/1405163 virtual/view-transition/external/wpt/css/css-view-transitions/content-with-transparent-background.html [ Failure ]
+
 crbug.com/1324618 external/wpt/css/css-images/object-view-box-fit-fill* [ Pass ]
 
 # crbug.com/1339051: some ref tests generate output with minor differences.
