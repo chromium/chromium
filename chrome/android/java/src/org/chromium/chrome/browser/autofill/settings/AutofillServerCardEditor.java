@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,6 +22,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -143,6 +145,11 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             getActivity().finish();
             return v;
         }
+
+        // Set card icon. It can be either a custom card art or the network icon.
+        ImageView cardIconContainer = v.findViewById(R.id.card_icon);
+        cardIconContainer.setImageDrawable(AutofillUiUtils.getCardIcon(getContext(), mCard,
+                R.dimen.settings_page_card_icon_width, R.dimen.settings_page_card_icon_height));
 
         ((TextView) v.findViewById(R.id.title)).setText(mCard.getNetworkAndLastFourDigits());
         ((TextView) v.findViewById(R.id.summary))

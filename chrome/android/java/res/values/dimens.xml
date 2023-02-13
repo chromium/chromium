@@ -417,4 +417,5 @@ found in the LICENSE file.
     <!-- Settings page -->
     <dimen name="settings_page_card_icon_width">32dp</dimen>
     <dimen name="settings_page_card_icon_height">20dp</dimen>
+    <dimen name="settings_page_card_icon_end_margin">20dp</dimen>
 </resources>
