@@ -15,7 +15,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
+import {Annotation, URLVisit} from './history_cluster_types.mojom-webui.js';
 import {getTemplate} from './url_visit.html.js';
 import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
 

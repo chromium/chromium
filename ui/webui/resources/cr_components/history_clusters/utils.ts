@@ -4,7 +4,7 @@
 
 import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
 
-import {MatchPosition} from './history_clusters.mojom-webui.js';
+import {MatchPosition} from './history_cluster_types.mojom-webui.js';
 
 /**
  * Populates `container` with the highlighted `text` based on the mojom provided

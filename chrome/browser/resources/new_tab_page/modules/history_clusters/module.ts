@@ -4,7 +4,8 @@
 
 import '../module_header.js';
 
-import {Cluster, QueryResult} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
+import {Cluster} from 'chrome://resources/cr_components/history_clusters/history_cluster_types.mojom-webui.js';
+import {QueryResult} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin} from '../../i18n_setup.js';

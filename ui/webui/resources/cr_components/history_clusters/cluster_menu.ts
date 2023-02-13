@@ -14,7 +14,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cluster_menu.html.js';
-import {URLVisit} from './history_clusters.mojom-webui.js';
+import {URLVisit} from './history_cluster_types.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a custom element displaying an action menu.
