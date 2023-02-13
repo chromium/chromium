@@ -47,7 +47,9 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     kOnIsAutoDiscardableChanged,
     kOnWasDiscardedChanged,
     kOnIsActiveTabChanged,
+    kOnIsPinnedTabChanged,
     kOnContentSettingsChanged,
+    kOnIsDevToolsOpenChanged,
   };
 
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {
@@ -93,8 +95,16 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     latest_function_called_ = ObserverFunction::kOnIsActiveTabChanged;
     page_node_passed_ = page_node;
   }
+  void OnIsPinnedTabChanged(const PageNode* page_node) override {
+    latest_function_called_ = ObserverFunction::kOnIsPinnedTabChanged;
+    page_node_passed_ = page_node;
+  }
   void OnContentSettingsChanged(const PageNode* page_node) override {
     latest_function_called_ = ObserverFunction::kOnContentSettingsChanged;
+    page_node_passed_ = page_node;
+  }
+  void OnIsDevToolsOpenChanged(const PageNode* page_node) override {
+    latest_function_called_ = ObserverFunction::kOnIsDevToolsOpenChanged;
     page_node_passed_ = page_node;
   }
 
@@ -310,6 +320,16 @@ TEST_F(PageLiveStateDecoratorTest, OnIsActiveTabChanged) {
       TestPageLiveStateObserver::ObserverFunction::kOnIsActiveTabChanged);
 }
 
+TEST_F(PageLiveStateDecoratorTest, OnIsPinnedTabChanged) {
+  testing::EndToEndBooleanPropertyTest(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsPinnedTab,
+      &PageLiveStateDecorator::SetIsPinnedTab,
+      /*default_state=*/false);
+  VerifyObserverExpectationOnPMSequence(
+      TestPageLiveStateObserver::ObserverFunction::kOnIsPinnedTabChanged);
+}
+
 TEST_F(PageLiveStateDecoratorTest, OnContentSettingsChanged) {
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
@@ -437,6 +457,16 @@ TEST_F(PageLiveStateDecoratorTest, GetContentSettingsOnNavigation) {
 
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::kOnContentSettingsChanged);
+}
+
+TEST_F(PageLiveStateDecoratorTest, OnIsDevToolsOpenChanged) {
+  testing::EndToEndBooleanPropertyTest(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsDevToolsOpen,
+      &PageLiveStateDecorator::SetIsDevToolsOpen,
+      /*default_state=*/false);
+  VerifyObserverExpectationOnPMSequence(
+      TestPageLiveStateObserver::ObserverFunction::kOnIsDevToolsOpenChanged);
 }
 #endif
 

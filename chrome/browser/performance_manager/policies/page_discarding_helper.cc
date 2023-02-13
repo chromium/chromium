@@ -357,8 +357,14 @@ PageDiscardingHelper::CanUrgentlyDiscard(
       return CanUrgentlyDiscardResult::kProtected;
     if (live_state_data->IsActiveTab())
       return CanUrgentlyDiscardResult::kProtected;
+    if (live_state_data->IsPinnedTab()) {
+      return CanUrgentlyDiscardResult::kProtected;
+    }
     if (live_state_data->IsContentSettingTypeAllowed(
             ContentSettingsType::NOTIFICATIONS)) {
+      return CanUrgentlyDiscardResult::kProtected;
+    }
+    if (live_state_data->IsDevToolsOpen()) {
       return CanUrgentlyDiscardResult::kProtected;
     }
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -373,8 +379,6 @@ PageDiscardingHelper::CanUrgentlyDiscard(
 
   if (page_node->HadFormInteraction())
     return CanUrgentlyDiscardResult::kProtected;
-
-  // TODO(sebmarchand): Do not discard pages if they're connected to DevTools.
 
   // TODO(sebmarchand): Do not discard crashed tabs.
 

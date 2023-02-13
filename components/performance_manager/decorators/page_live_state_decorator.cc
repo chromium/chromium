@@ -75,10 +75,18 @@ class PageLiveStateDataImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_active_tab_;
   }
+  bool IsPinnedTab() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_pinned_tab_;
+  }
   bool IsContentSettingTypeAllowed(ContentSettingsType type) const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     auto it = content_settings_.find(type);
     return it != content_settings_.end() && it->second == CONTENT_SETTING_ALLOW;
+  }
+  bool IsDevToolsOpen() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_dev_tools_open_;
   }
 
   void SetIsConnectedToUSBDeviceForTesting(bool value) override {
@@ -111,9 +119,15 @@ class PageLiveStateDataImpl
   void SetIsActiveTabForTesting(bool value) override {
     set_is_active_tab(value);
   }
+  void SetIsPinnedTabForTesting(bool value) override {
+    set_is_pinned_tab(value);
+  }
   void SetContentSettingsForTesting(
       const std::map<ContentSettingsType, ContentSetting>& settings) override {
     set_content_settings(settings);
+  }
+  void SetIsDevToolsOpenForTesting(bool value) override {
+    set_is_dev_tools_open(value);
   }
 
   void set_is_connected_to_usb_device(bool is_connected_to_usb_device) {
@@ -197,6 +211,16 @@ class PageLiveStateDataImpl
     for (auto& obs : observers_)
       obs.OnIsActiveTabChanged(page_node_);
   }
+  void set_is_pinned_tab(bool is_pinned_tab) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (is_pinned_tab_ == is_pinned_tab) {
+      return;
+    }
+    is_pinned_tab_ = is_pinned_tab;
+    for (auto& obs : observers_) {
+      obs.OnIsPinnedTabChanged(page_node_);
+    }
+  }
   void set_content_settings(
       std::map<ContentSettingsType, ContentSetting> settings) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -207,6 +231,16 @@ class PageLiveStateDataImpl
     content_settings_ = std::move(settings);
     for (auto& obs : observers_)
       obs.OnContentSettingsChanged(page_node_);
+  }
+  void set_is_dev_tools_open(bool is_dev_tools_open) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (is_dev_tools_open_ == is_dev_tools_open) {
+      return;
+    }
+    is_dev_tools_open_ = is_dev_tools_open;
+    for (auto& obs : observers_) {
+      obs.OnIsDevToolsOpenChanged(page_node_);
+    }
   }
 
  private:
@@ -230,8 +264,10 @@ class PageLiveStateDataImpl
   bool is_auto_discardable_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
   bool was_discarded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_active_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_pinned_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   std::map<ContentSettingsType, ContentSetting> content_settings_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  bool is_dev_tools_open_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   const raw_ptr<const PageNode> page_node_;
 };
@@ -347,11 +383,26 @@ void PageLiveStateDecorator::SetIsActiveTab(content::WebContents* contents,
 }
 
 // static
+void PageLiveStateDecorator::SetIsPinnedTab(content::WebContents* contents,
+                                            bool is_pinned_tab) {
+  SetPropertyForWebContentsPageNode(
+      contents, &PageLiveStateDataImpl::set_is_pinned_tab, is_pinned_tab);
+}
+
+// static
 void PageLiveStateDecorator::SetContentSettings(
     content::WebContents* contents,
     std::map<ContentSettingsType, ContentSetting> settings) {
   SetPropertyForWebContentsPageNode(
       contents, &PageLiveStateDataImpl::set_content_settings, settings);
+}
+
+// static
+void PageLiveStateDecorator::SetIsDevToolsOpen(content::WebContents* contents,
+                                               bool is_dev_tools_open) {
+  SetPropertyForWebContentsPageNode(
+      contents, &PageLiveStateDataImpl::set_is_dev_tools_open,
+      is_dev_tools_open);
 }
 
 void PageLiveStateDecorator::OnPassedToGraph(Graph* graph) {

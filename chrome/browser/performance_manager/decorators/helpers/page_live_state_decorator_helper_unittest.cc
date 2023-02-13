@@ -343,6 +343,26 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTab) {
       other_contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, true);
 }
+
+TEST_F(PageLiveStateDecoratorHelperTabsTest, IsPinnedTab) {
+  // Create a tab, it's associated PageNode should be the active one.
+  AddTab(browser(), GURL("http://foo/1"));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  testing::TestPageNodePropertyOnPMSequence(
+      contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsPinnedTab, false);
+
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+  testing::TestPageNodePropertyOnPMSequence(
+      contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsPinnedTab, true);
+
+  browser()->tab_strip_model()->SetTabPinned(0, false);
+  testing::TestPageNodePropertyOnPMSequence(
+      contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsPinnedTab, false);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace performance_manager

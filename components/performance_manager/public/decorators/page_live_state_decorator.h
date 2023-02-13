@@ -95,9 +95,15 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   static void SetIsActiveTab(content::WebContents* contents,
                              bool is_active_tab);
 
+  static void SetIsPinnedTab(content::WebContents* contents,
+                             bool is_pinned_tab);
+
   static void SetContentSettings(
       content::WebContents* contents,
       std::map<ContentSettingsType, ContentSetting> settings);
+
+  static void SetIsDevToolsOpen(content::WebContents* contents,
+                                bool is_dev_tools_open);
 
  private:
   friend class PageLiveStateDecoratorTest;
@@ -142,7 +148,9 @@ class PageLiveStateDecorator::Data {
   virtual bool IsAutoDiscardable() const = 0;
   virtual bool WasDiscarded() const = 0;
   virtual bool IsActiveTab() const = 0;
+  virtual bool IsPinnedTab() const = 0;
   virtual bool IsContentSettingTypeAllowed(ContentSettingsType type) const = 0;
+  virtual bool IsDevToolsOpen() const = 0;
 
   static const Data* FromPageNode(const PageNode* page_node);
   static Data* GetOrCreateForPageNode(const PageNode* page_node);
@@ -157,8 +165,10 @@ class PageLiveStateDecorator::Data {
   virtual void SetIsAutoDiscardableForTesting(bool value) = 0;
   virtual void SetWasDiscardedForTesting(bool value) = 0;
   virtual void SetIsActiveTabForTesting(bool value) = 0;
+  virtual void SetIsPinnedTabForTesting(bool value) = 0;
   virtual void SetContentSettingsForTesting(
       const std::map<ContentSettingsType, ContentSetting>& settings) = 0;
+  virtual void SetIsDevToolsOpenForTesting(bool value) = 0;
 
  protected:
   base::ObserverList<PageLiveStateObserver> observers_
@@ -185,7 +195,9 @@ class PageLiveStateObserver : public base::CheckedObserver {
   virtual void OnIsAutoDiscardableChanged(const PageNode* page_node) = 0;
   virtual void OnWasDiscardedChanged(const PageNode* page_node) = 0;
   virtual void OnIsActiveTabChanged(const PageNode* page_node) = 0;
+  virtual void OnIsPinnedTabChanged(const PageNode* page_node) = 0;
   virtual void OnContentSettingsChanged(const PageNode* page_node) = 0;
+  virtual void OnIsDevToolsOpenChanged(const PageNode* page_node) = 0;
 };
 
 }  // namespace performance_manager

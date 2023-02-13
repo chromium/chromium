@@ -64,6 +64,24 @@ class ActiveTabObserver : public TabStripModelObserver,
         PageLiveStateDecorator::SetIsActiveTab(selection.new_contents, true);
       }
     }
+
+    if (change.type() == TabStripModelChange::kInserted) {
+      for (const TabStripModelChange::ContentsWithIndex& tab :
+           change.GetInsert()->contents) {
+        // Pinned tabs can be restored from previous session in pinned state
+        // and hence won't trigger a pinned state changed event
+        PageLiveStateDecorator::SetIsPinnedTab(
+            tab.contents, tab_strip_model->IsTabPinned(tab.index));
+      }
+    }
+  }
+
+  void TabPinnedStateChanged(TabStripModel* tab_strip_model,
+                             content::WebContents* contents,
+                             int index) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    PageLiveStateDecorator::SetIsPinnedTab(contents,
+                                           tab_strip_model->IsTabPinned(index));
   }
 
   // BrowserListObserver:
@@ -197,10 +215,14 @@ PageLiveStateDecoratorHelper::PageLiveStateDecoratorHelper() {
 #if !BUILDFLAG(IS_ANDROID)
   active_tab_observer_ = std::make_unique<ActiveTabObserver>();
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  content::DevToolsAgentHost::AddObserver(this);
 }
 
 PageLiveStateDecoratorHelper::~PageLiveStateDecoratorHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  content::DevToolsAgentHost::RemoveObserver(this);
 
   MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
@@ -251,6 +273,26 @@ void PageLiveStateDecoratorHelper::OnIsCapturingDisplayChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PageLiveStateDecorator::OnIsCapturingDisplayChanged(contents,
                                                       is_capturing_display);
+}
+
+void PageLiveStateDecoratorHelper::DevToolsAgentHostAttached(
+    content::DevToolsAgentHost* agent_host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (agent_host->GetType() == content::DevToolsAgentHost::kTypePage &&
+      agent_host->GetWebContents() != nullptr) {
+    PageLiveStateDecorator::SetIsDevToolsOpen(agent_host->GetWebContents(),
+                                              true);
+  }
+}
+
+void PageLiveStateDecoratorHelper::DevToolsAgentHostDetached(
+    content::DevToolsAgentHost* agent_host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (agent_host->GetType() == content::DevToolsAgentHost::kTypePage &&
+      agent_host->GetWebContents() != nullptr) {
+    PageLiveStateDecorator::SetIsDevToolsOpen(agent_host->GetWebContents(),
+                                              false);
+  }
 }
 
 void PageLiveStateDecoratorHelper::OnPageNodeCreatedForWebContents(

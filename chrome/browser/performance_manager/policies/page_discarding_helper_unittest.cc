@@ -286,6 +286,22 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageOnNoDiscardList) {
           page_node()));
 }
 
+TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsPinnedTab) {
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsPinnedTabForTesting(true);
+  EXPECT_FALSE(
+      PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
+          page_node()));
+}
+
+TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsDevToolsOpen) {
+  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
+      ->SetIsDevToolsOpenForTesting(true);
+  EXPECT_FALSE(
+      PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
+          page_node()));
+}
+
 // Tests UrgentlyDiscardMultiplePages.
 
 TEST_F(PageDiscardingHelperTest, UrgentlyDiscardMultiplePagesNoCandidate) {

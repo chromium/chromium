@@ -9,6 +9,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "components/performance_manager/public/performance_manager_main_thread_observer.h"
+#include "content/public/browser/devtools_agent_host.h"
 
 namespace performance_manager {
 
@@ -18,7 +19,8 @@ class ActiveTabObserver;
 
 class PageLiveStateDecoratorHelper
     : public MediaStreamCaptureIndicator::Observer,
-      public PerformanceManagerMainThreadObserverDefaultImpl {
+      public PerformanceManagerMainThreadObserverDefaultImpl,
+      public content::DevToolsAgentHostObserver {
  public:
   PageLiveStateDecoratorHelper();
   ~PageLiveStateDecoratorHelper() override;
@@ -38,6 +40,12 @@ class PageLiveStateDecoratorHelper
                                   bool is_capturing_window) override;
   void OnIsCapturingDisplayChanged(content::WebContents* contents,
                                    bool is_capturing_display) override;
+
+  // content::DevToolsAgentHostObserver:
+  void DevToolsAgentHostAttached(
+      content::DevToolsAgentHost* agent_host) override;
+  void DevToolsAgentHostDetached(
+      content::DevToolsAgentHost* agent_host) override;
 
   // PerformanceManagerMainThreadObserver:
   void OnPageNodeCreatedForWebContents(
