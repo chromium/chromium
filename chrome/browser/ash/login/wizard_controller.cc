@@ -2308,6 +2308,13 @@ void WizardController::UpdateOobeConfiguration() {
 bool WizardController::CanNavigateTo(OobeScreenId screen_id) {
   if (!current_screen_)
     return true;
+
+  if (wizard_context_->skip_to_login_for_tests) {
+    VLOG(1) << "CanNavigateTo to screen " << screen_id
+            << " returns true because skip_to_login_for_tests is set to true";
+    return true;
+  }
+
   BaseScreen* next_screen = GetScreen(screen_id);
   return next_screen->screen_priority() <= current_screen_->screen_priority();
 }
