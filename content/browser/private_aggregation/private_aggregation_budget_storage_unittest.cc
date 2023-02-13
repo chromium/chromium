@@ -280,8 +280,8 @@ TEST_F(PrivateAggregationBudgetStorageTest,
     // The values here are irrelevant, as the meta table already exists.
     ASSERT_TRUE(meta.Init(&raw_db, /*version=*/1, /*compatible_version=*/1));
 
-    meta.SetVersionNumber(meta.GetVersionNumber() + 1);
-    meta.SetCompatibleVersionNumber(meta.GetVersionNumber() + 1);
+    ASSERT_TRUE(meta.SetVersionNumber(meta.GetVersionNumber() + 1));
+    ASSERT_TRUE(meta.SetCompatibleVersionNumber(meta.GetVersionNumber() + 1));
   }
 
   OpenDatabaseAndWait();
