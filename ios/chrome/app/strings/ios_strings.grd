@@ -1168,6 +1168,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INACTIVE_TABS_BUTTON_TITLE" desc="Title of the button in the Tab Grid that opens the grid of Inactive Tabs.">
         Inactive Tabs
       </message>
+      <message name="IDS_IOS_INACTIVE_TABS_TITLE" desc="Title of the grid of Inactive Tabs.">
+        Inactive Tabs
+      </message>
       <message name="IDS_IOS_INACTIVE_TABS_BUTTON_SUBTITLE" desc="Subtitle of the button in the Tab Grid that opens the grid of Inactive Tabs.">
         Tabs not used for <ph name="THRESHOLD">$1<ex>14</ex></ph> days
       </message>

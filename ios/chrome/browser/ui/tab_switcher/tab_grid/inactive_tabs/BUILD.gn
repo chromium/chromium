@@ -2,6 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("inactive_tabs") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "inactive_tabs_coordinator.h",
+    "inactive_tabs_coordinator.mm",
+  ]
+  deps = [
+    ":inactive_tabs_ui",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+  ]
+}
+
 source_set("inactive_tabs_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -9,6 +21,8 @@ source_set("inactive_tabs_ui") {
     "inactive_tabs_button.mm",
     "inactive_tabs_button_header.h",
     "inactive_tabs_button_header.mm",
+    "inactive_tabs_view_controller.h",
+    "inactive_tabs_view_controller.mm",
   ]
   deps = [
     ":features",
@@ -18,6 +32,7 @@ source_set("inactive_tabs_ui") {
     "//ui/base",
   ]
 }
+
 source_set("features") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

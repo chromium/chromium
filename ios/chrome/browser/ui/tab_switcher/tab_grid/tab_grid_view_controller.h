@@ -86,6 +86,9 @@ enum class TabGridPageConfiguration {
 // Sets BVC accessibilityViewIsModal to `modal` (for thumbstrip mode).
 - (void)setBVCAccessibilityViewModal:(BOOL)modal;
 
+// Asks the delegate to show the inactive tabs.
+- (void)showInactiveTabs;
+
 @end
 
 // View controller representing a tab switcher. The tab switcher has an

@@ -70,6 +70,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/snackbar",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions",
