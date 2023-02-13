@@ -906,7 +906,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3249151924975132674">Prestiti per studenti e finanziamenti per lo studio</translation>
 <translation id="3249845759089040423">Alla moda</translation>
 <translation id="3250640885957938546">Pubblicità e marketing</translation>
-<translation id="3251133337102041130">Government Legal</translation>
 <translation id="3252266817569339921">Francese</translation>
 <translation id="3254301855501243548">18 x 22 in</translation>
 <translation id="3256863843508922226">Pensionamento e pensione</translation>
@@ -2770,7 +2769,7 @@ Ulteriori dettagli:
 <translation id="7800304661137206267">La connessione è stata criptata utilizzando <ph name="CIPHER" />, con <ph name="MAC" /> per l'autenticazione dei messaggi e <ph name="KX" /> come meccanismo principale di scambio delle chiavi.</translation>
 <translation id="7800977246388195491">Chrome rileva argomenti di interesse in base alla tua cronologia di navigazione recente. Inoltre, i siti che visiti possono individuare i tuoi interessi. In seguito, i siti possono chiedere queste informazioni per mostrarti annunci personalizzati. Puoi scegliere gli argomenti e i siti da usare per mostrarti annunci.</translation>
 <translation id="7802523362929240268">Il sito è legittimo</translation>
-<translation id="7802989406998618639">Inserisci il codice di sicurezza di <ph name="NUMBER_OF_DIGITS" /> cifre indicato sulla <ph name="SIDE_OF_CARD" /> per consentire alla tua banca di verificare la tua identità</translation>
+<translation id="7802989406998618639">Inserisci il codice di sicurezza a <ph name="NUMBER_OF_DIGITS" /> cifre che trovi sul <ph name="SIDE_OF_CARD" /> per consentire alla banca di verificare la tua identità</translation>
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7805571567667010077">Gestita dalla tua organizzazione</translation>
 <translation id="7805768142964895445">Stato</translation>
@@ -2908,7 +2907,6 @@ Ulteriori dettagli:
 <translation id="8150722005171944719">Il file all'indirizzo <ph name="URL" /> non è leggibile. Potrebbe essere stato rimosso, spostato oppure delle autorizzazioni del file potrebbero impedire l'accesso.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Il criterio dell'amministratore sconsiglia di scaricare questo file su <ph name="DESTINATION_NAME" />}other{Il criterio dell'amministratore sconsiglia di scaricare questi file su <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8163866351304776260">Perforatura quadrupla a sinistra</translation>
-<translation id="8175330382720204696">Government letter</translation>
 <translation id="8175796834047840627">Chrome chiede se vuoi salvare le tue carte nel tuo Account Google perché hai eseguito l'accesso. Puoi modificare questo comportamento nelle impostazioni.</translation>
 <translation id="8176440868214972690">L'amministratore di questo dispositivo ha inviato alcune informazioni, quali impostazioni o criteri, ai siti web indicati di seguito.</translation>
 <translation id="8184538546369750125">Usa predefinita globale (Consenti)</translation>
@@ -3000,7 +2998,7 @@ Ulteriori dettagli:
 <translation id="8380941800586852976">Pericolosa</translation>
 <translation id="8381674639488873545">L'addebito potrebbe essere singolo oppure ricorrente e potrebbe non essere evidente. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">La possibilità di condivisione da <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /> è stata bloccata da un criterio dell'amministratore</translation>
-<translation id="8396522675989118466">Si tratta del codice di <ph name="NUMBER_OF_DIGITS" /> cifre indicato su: <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8396522675989118466">È il codice a <ph name="NUMBER_OF_DIGITS" /> cifre indicato sul <ph name="SIDE_OF_CARD" /></translation>
 <translation id="8398335999901363925">Metodi di pagamento che è possibile compilare tramite tocco aperti a schermo intero.</translation>
 <translation id="8398790343843005537">Trova il tuo telefono</translation>
 <translation id="8405579342203358118">Gestisci le informazioni da sincronizzare nelle impostazioni di Chrome</translation>

@@ -812,6 +812,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6869389390665537774">Du kan se de sider, du har besøgt, eller rydde dem fra din historik</translation>
 <translation id="687135068089457384">Vis indstillingerne</translation>
 <translation id="6873263987691478642">Opdelt visning</translation>
+<translation id="6873366418270195926">Du får en underretning, hvis prisen falder på et website. Denne side er gemt i <ph name="BEGIN_LINK" />Bogmærker<ph name="END_LINK" /></translation>
 <translation id="6882836635272038266">Standardbeskyttelse mod websites, downloads og udvidelser, som er registreret som skadelige.</translation>
 <translation id="6888009575607455378">Er du sikker på, at du vil kassere dine ændringer?</translation>
 <translation id="6896758677409633944">Kopiér</translation>
@@ -1114,6 +1115,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="952704832371081537">Annuller</translation>
 <translation id="953008885340860025">Chrome er logget ud</translation>
 <translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Din organisation tillader kun login med bestemte konti. Konti, der ikke tillades, skjules.</translation>
 <translation id="984509647832111802">Synkronisering fungerer ikke.</translation>
 <translation id="988141524645182168">Andre enheder</translation>

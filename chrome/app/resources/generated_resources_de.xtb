@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux neu starten?</translation>
 <translation id="1047431265488717055">Linkte&amp;xt kopieren</translation>
 <translation id="1048286738600630630">Displays</translation>
+<translation id="1048770690598418849">Du kannst diesen Schritt vorerst überspringen – ein weiterer Versuch erfolgt automatisch nach Abschluss der Einrichtung</translation>
 <translation id="1048986595386481879">Dynamisch zugeordnet</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> wird von <ph name="DEVICE_NAME" /> empfangen}other{<ph name="ATTACHMENTS" /> werden von <ph name="DEVICE_NAME" /> empfangen}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -1620,6 +1621,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2410754283952462441">Konto auswählen</translation>
 <translation id="241082044617551207">Unbekanntes Plug-in</translation>
 <translation id="2410940059315936967">Auf einer Website, die du besuchst, können Inhalte von anderen Websites eingebettet sein, z. B. Bilder, Werbung und Text. Cookies, die von diesen anderen Websites gesetzt werden, werden als Drittanbieter-Cookies bezeichnet.</translation>
+<translation id="2411666601450687801">Auf diesem Gerät sind keine virtuellen Maschinen zulässig</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Funktionstasten der Tastatur</translation>
 <translation id="2418307627282545839">Hell und freundlich</translation>
@@ -1881,6 +1883,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2653659639078652383">Senden</translation>
 <translation id="265390580714150011">Feldwert</translation>
 <translation id="2654553774144920065">Druckanfrage</translation>
+<translation id="265748523151262387">Smartphoneverbindung nicht trennen</translation>
 <translation id="2657612187216250073">Einstellungen für Bedienungshilfen (Mauszeiger)</translation>
 <translation id="2658941648214598230">Originalinhalte anzeigen?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> Die Funktionen variieren je nach Gerät</translation>
@@ -5294,6 +5297,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5801051031414037185">Smartphone einrichten</translation>
 <translation id="5801568494490449797">Einstellungen</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
+<translation id="5804259315582798390">Fehler beim Aktivieren der lokalen Datenwiederherstellung</translation>
 <translation id="5805268472388605531">Drücke und halte die Tasten gedrückt, um Akzentzeichen und Sonderzeichen zu sehen</translation>
 <translation id="5805697420284793859">Fenstermanager</translation>
 <translation id="5806447147478173900">Von angezeigten Websites belegter Speicherplatz insgesamt: <ph name="TOTAL_USAGE" /></translation>
@@ -6676,6 +6680,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7047059339731138197">Hintergrund auswählen</translation>
 <translation id="7049293980323620022">Datei beibehalten?</translation>
 <translation id="7050037487872780845">Ungültige Hotspot-Konfiguration</translation>
+<translation id="7051551856857948729">IBAN-Wert ausblenden</translation>
 <translation id="7052237160939977163">Daten der Leistungsnachverfolgung senden</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7055152154916055070">Weiterleitung blockiert:</translation>
@@ -8383,6 +8388,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8634348081024879304">Du kannst deine virtuelle Karte dann nicht mehr mit Google Pay verwenden. <ph name="BEGIN_LINK" />Informationen zu virtuellen Karten<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Wird neu geladen…</translation>
 <translation id="8636284842992792762">Erweiterungen werden initialisiert…</translation>
+<translation id="8636323803535540285">Du kannst eine Verknüpfung zu <ph name="BRAND" /> hinzufügen, um schneller hierher zurückzukehren</translation>
 <translation id="8636500887554457830">Websites dürfen keine Pop-up-Fenster senden oder Weiterleitungen verwenden</translation>
 <translation id="8637688295594795546">Systemupdate verfügbar. Download wird vorbereitet...</translation>
 <translation id="8639047128869322042">Nach schädlicher Software wird gesucht...</translation>
@@ -8542,6 +8548,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8767621466733104912">Chrome automatisch für alle Nutzer aktualisieren</translation>
 <translation id="8770406935328356739">Stammverzeichnis der Erweiterung</translation>
 <translation id="8771300903067484968">Der Hintergrund der Startseite wurde auf den standardmäßigen Hintergrund zurückgesetzt.</translation>
+<translation id="8773280816776735812">IBAN-Wert einblenden</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> speichern</translation>
 <translation id="8774379074441005279">Wiederherstellung bestätigen</translation>
 <translation id="8774934320277480003">Oberer Rand</translation>

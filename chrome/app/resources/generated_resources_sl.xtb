@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Želite znova zagnati Linux?</translation>
 <translation id="1047431265488717055">&amp;Kopiraj besedilo povezave</translation>
 <translation id="1048286738600630630">Zasloni</translation>
+<translation id="1048770690598418849">Zaenkrat lahko preskočite. Po končani nastavitvi bomo samodejno znova poskusili.</translation>
 <translation id="1048986595386481879">Dinamično dodeljeno</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" />}one{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" />}two{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" />}few{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" />}other{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Anonimni način</translation>
@@ -1641,6 +1642,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2410754283952462441">Izbira računa</translation>
 <translation id="241082044617551207">Neznani vtičnik</translation>
 <translation id="2410940059315936967">Spletno mesto, ki ga obiščete, lahko vdela vsebino z drugih spletnih mest, na primer slike, oglase in besedilo. Piškotki, ki jih nastavijo ta druga spletna mesta, se imenujejo piškotki tretjih oseb.</translation>
+<translation id="2411666601450687801">V tej napravi ni dovoljen noben navidezni računalnik.</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Funkcijske tipke tipkovnice</translation>
 <translation id="2418307627282545839">Naj bo svetlo in zračno.</translation>
@@ -1902,6 +1904,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="265390580714150011">Vrednost polja</translation>
 <translation id="2654553774144920065">Zahteva za tiskanje</translation>
+<translation id="265748523151262387">Ostanite povezani s telefonom</translation>
 <translation id="2657612187216250073">Nastavitve funkcij za ljudi s posebnimi potrebami za kazalec</translation>
 <translation id="2658941648214598230">Želite prikazati izvirno vsebino?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funkcije se razlikujejo glede na napravo</translation>
@@ -5320,6 +5323,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5801051031414037185">Nastavitev telefona</translation>
 <translation id="5801568494490449797">Nastavitve</translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
+<translation id="5804259315582798390">Obnovitev lokalnih podatkov ni uspela</translation>
 <translation id="5805268472388605531">Pridržite tipke na tipkovnici, če si želite ogledati naglasna znamenja in posebne znake.</translation>
 <translation id="5805697420284793859">Upravitelj oken</translation>
 <translation id="5806447147478173900">Skupna shramba, ki jo uporabljajo prikazana spletna mesta: <ph name="TOTAL_USAGE" /></translation>
@@ -6709,6 +6713,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7047059339731138197">Izbira ozadja</translation>
 <translation id="7049293980323620022">Želite obdržati datoteko?</translation>
 <translation id="7050037487872780845">Neveljavna konfiguracija dostopne točke.</translation>
+<translation id="7051551856857948729">Skrij vrednost številke IBAN</translation>
 <translation id="7052237160939977163">Pošlji podatke za sledenje učinkovitosti delovanja</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7055152154916055070">Preusmeritev je preprečena:</translation>
@@ -8576,6 +8581,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8767621466733104912">Samodejno posodobi Chrome za vse uporabnike</translation>
 <translation id="8770406935328356739">Korenski imenik razširitve</translation>
 <translation id="8771300903067484968">Ozadje začetne strani je ponastavljeno na privzeto ozadje.</translation>
+<translation id="8773280816776735812">Pokaži vrednost številke IBAN</translation>
 <translation id="8773302562181397928">Shranjevanje tiskalnika <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Potrdite obnovitev</translation>
 <translation id="8774934320277480003">Zgornji rob</translation>

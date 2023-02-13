@@ -735,6 +735,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4895488851634969361">Batareya to‘ldi.</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240">Batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">Qurilma sozlangandan keyin <ph name="NETWORK_NAME" /> faollashtiriladi</translation>
 <translation id="4917385247580444890">Kuchli</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> hozir kameradan foydalanmoqda</translation>
@@ -1331,6 +1332,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
 <translation id="8131994907636310308">Tartiblash bildirgisini yopish</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> tarmog‘iga ulanilgan</translation>
+<translation id="8138705869659070104">Qurilma sozlangandan keyin faollashtiriladi</translation>
 <translation id="813913629614996137">Ishga tushirilmoqda...</translation>
 <translation id="8142441511840089262">Ikki marta bosish</translation>
 <translation id="8142699993796781067">Xususiy tarmoq</translation>

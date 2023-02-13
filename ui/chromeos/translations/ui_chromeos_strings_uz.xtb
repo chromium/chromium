@@ -192,6 +192,7 @@
 <translation id="2574327434504608656">1 ta jild Bruschettaga ulashildi</translation>
 <translation id="2578394532502990878">Tamil (fonetik)</translation>
 <translation id="2579959351793446050">Oriya</translation>
+<translation id="2587195714949534472"><ph name="FILE_NAME" /> sinxronlashga tayyorlanmoqda...</translation>
 <translation id="2602810353103180630">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator tomonidan bloklangan, Batafsil</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> video</translation>
 <translation id="2620090360073999360">Ayni paytda Google Disk ish faoliyatida emas.</translation>
@@ -293,6 +294,7 @@
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ta xatolik.</translation>
 <translation id="3509680540198371098">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Batafsil</translation>
+<translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ta element sinxronlashga tayyorlanmoqda...</translation>
 <translation id="3522708245912499433">Portugal tili</translation>
 <translation id="3524311639100184459">Diqqat! Bu vaqtinchalik fayllar diskda joy boʻshatish uchun avtomatik oʻchirib yuborilishi mumkin.  <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Jild</translation>

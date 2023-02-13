@@ -134,6 +134,7 @@
 <translation id="163517899691012366">يتم كتم صوت الإشعارات عندما تكون ميزة "عدم الإزعاج" مفعَّلة.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> جهاز</translation>
 <translation id="1639239467298939599">جارٍ التحميل</translation>
+<translation id="1647986356840967552">الصفحة السابقة</translation>
 <translation id="1654477262762802994">بدء طلب بحث صوتي</translation>
 <translation id="1668469839109562275">الشبكة الافتراضية الخاصة المُدمجة</translation>
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
@@ -557,6 +558,7 @@
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="397726367135689299">قد لا يكون شحن البطارية مفيدًا.</translation>
 <translation id="3977512764614765090">مستوى البطارية عند <ph name="PERCENTAGE" />% ويجري شحنها.</translation>
+<translation id="3984536049089846927">الصفحة التالية</translation>
 <translation id="3986082989454912832">ردّ</translation>
 <translation id="3995138139523574647">‏جهاز USB-C (المنفذ الخلفي الأيمن)</translation>
 <translation id="40062176907008878">الكتابة بخط اليد</translation>

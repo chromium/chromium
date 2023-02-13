@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">Nút tiếp tục hành trình của bạn, nhấn phím Enter để tiếp tục hành trình và xem hoạt động liên quan trong nhật ký duyệt web trên Chrome</translation>
 <translation id="1101672080107056897">Thao tác bị lỗi</translation>
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
+<translation id="1104409666019087579">Một số trường bắt buộc vẫn đang trống. Hãy điền vào các trường này trước khi lưu.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Chọn quyền cho <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Đồ cổ &amp; bộ sưu tập</translation>
@@ -909,7 +910,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3249151924975132674">Khoản vay cho sinh viên và cấp vốn học đại học</translation>
 <translation id="3249845759089040423">Sành điệu</translation>
 <translation id="3250640885957938546">Quảng cáo và tiếp thị</translation>
-<translation id="3251133337102041130">Government Legal</translation>
 <translation id="3252266817569339921">Tiếng Pháp</translation>
 <translation id="3254301855501243548">18 x 22 inch</translation>
 <translation id="3256863843508922226">Nghỉ hưu và lương hưu</translation>
@@ -2022,6 +2022,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5992691462791905444">Gấp kiểu chữ Z kỹ thuật</translation>
 <translation id="5992805036496113940">Xem thông tin được dùng để hiển thị quảng cáo cho bạn</translation>
 <translation id="5995727681868049093">Quản lý thông tin, quyền riêng tư và chế độ bảo mật cho Tài khoản Google của bạn</translation>
+<translation id="5996887213716993070">Không được để trống <ph name="FIELD" /></translation>
 <translation id="5997247540087773573">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Để bảo mật tài khoản, Trình quản lý mật khẩu khuyên bạn nên thay đổi mật khẩu này ngay và kiểm tra các mật khẩu bạn đã lưu.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6005765687956866568">Thông tin tự động điền đã bị xoá khỏi biểu mẫu</translation>
@@ -2766,6 +2767,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7766518757692125295">Viền</translation>
 <translation id="7773005668374414287">Cùng thứ tự hướng lên</translation>
 <translation id="7785790577395078482">máy tính bảng này</translation>
+<translation id="7786368602962652765">Trường bắt buộc đang trống. Hãy điền vào trường này trước khi lưu.</translation>
 <translation id="7790488044432570133">Các trang web bạn truy cập có thể yêu cầu Chrome cung cấp thông tin giúp đo lường hiệu suất quảng cáo của những trang web đó. Chrome cho phép các trang web thu thập một số loại dữ liệu có giới hạn, chẳng hạn như thời gian trong ngày bạn thấy quảng cáo.</translation>
 <translation id="7791011319128895129">Chưa phát hành</translation>
 <translation id="7791196057686275387">Đóng kiện</translation>
@@ -2912,7 +2914,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8150722005171944719">Không thể đọc được tệp tại <ph name="URL" />.  Tệp này có thể đã bị xóa, di chuyển hoặc quyền tệp có thể đang chặn truy cập.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên tải tệp này xuống <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên tải các tệp này xuống <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8163866351304776260">Đục 4 lỗ bên trái</translation>
-<translation id="8175330382720204696">Government Letter</translation>
 <translation id="8175796834047840627">Chrome đang đề xuất lưu thẻ của bạn vào Tài khoản Google vì bạn đã đăng nhập. Bạn có thể thay đổi hành động này trong phần cài đặt.</translation>
 <translation id="8176440868214972690">Quản trị viên của thiết bị này đã gửi một số thông tin (chẳng hạn như chế độ cài đặt hoặc chính sách) đến các trang web sau đây.</translation>
 <translation id="8184538546369750125">Sử dụng giá trị mặc định chung (Cho phép)</translation>

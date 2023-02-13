@@ -52,6 +52,7 @@
 <translation id="104710386808485638">重启 Linux？</translation>
 <translation id="1047431265488717055">复制链接文字(&amp;X)</translation>
 <translation id="1048286738600630630">显示</translation>
+<translation id="1048770690598418849">您可以暂时跳过此步骤，系统会在您完成设置后自动重试</translation>
 <translation id="1048986595386481879">动态分配</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{正在接收“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{正在接收“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="1049743911850919806">无痕</translation>
@@ -1616,6 +1617,7 @@
 <translation id="2410754283952462441">选择帐号</translation>
 <translation id="241082044617551207">未知插件</translation>
 <translation id="2410940059315936967">您访问的网站可以嵌入其他网站的内容，例如图片、广告和文字。由这类其他网站设置的 Cookie 称为第三方 Cookie。</translation>
+<translation id="2411666601450687801">不允许在此设备上安装虚拟机</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">键盘功能键</translation>
 <translation id="2418307627282545839">让屏幕保持明快轻盈的色调</translation>
@@ -1876,6 +1878,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="265390580714150011">字段值</translation>
 <translation id="2654553774144920065">打印请求</translation>
+<translation id="265748523151262387">保持与手机的连接</translation>
 <translation id="2657612187216250073">指针无障碍设置</translation>
 <translation id="2658941648214598230">显示原始内容？</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />功能因设备而异</translation>
@@ -5286,6 +5289,7 @@
 <translation id="5801051031414037185">设置手机</translation>
 <translation id="5801568494490449797">偏好设置</translation>
 <translation id="5804241973901381774">权限</translation>
+<translation id="5804259315582798390">未能启用本地数据恢复功能</translation>
 <translation id="5805268472388605531">按住键盘按键即可查看重音符号和特殊字符</translation>
 <translation id="5805697420284793859">窗口管理器</translation>
 <translation id="5806447147478173900">显示的网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
@@ -6668,6 +6672,7 @@
 <translation id="7047059339731138197">选择背景</translation>
 <translation id="7049293980323620022">要保留文件吗？</translation>
 <translation id="7050037487872780845">热点配置无效</translation>
+<translation id="7051551856857948729">隐藏 IBAN 值</translation>
 <translation id="7052237160939977163">发送性能跟踪数据</translation>
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
@@ -8535,6 +8540,7 @@
 <translation id="8767621466733104912">自动为所有用户更新 Chrome</translation>
 <translation id="8770406935328356739">扩展程序根目录</translation>
 <translation id="8771300903067484968">已将初始页背景重置为默认背景。</translation>
+<translation id="8773280816776735812">显示 IBAN 值</translation>
 <translation id="8773302562181397928">保存<ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>

@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">ค้นหาใหม่</translation>
 <translation id="1209206284964581585">ซ่อนไปก่อน</translation>
 <translation id="1219674500290482172">ไม่สามารถเชื่อมต่อกับอินเทอร์เน็ต</translation>
+<translation id="1226238226094914652">รหัสผ่านในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="122699739164161391">ปิดแท็บทั้งหมด</translation>
 <translation id="1229222343402087523">ค้นหา ${searchPhrase} ใน Chrome</translation>
 <translation id="1242044645101871359">ลงชื่อเข้าใช้อีกครั้ง</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">เปิดทั้งหมด</translation>
 <translation id="2556092377360758201">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
 <translation id="2562041823070056534">กำลังส่งไปยัง <ph name="DEVICE_NAME" />...</translation>
+<translation id="2576499762020411840">ใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
 <translation id="2578571896248130439">ส่งหน้าเว็บ</translation>
 <translation id="2584132361465095047">เพิ่มบัญชี…</translation>
 <translation id="2600682495497606169">ล้างคุกกี้ของเว็บไซต์</translation>
@@ -409,6 +411,7 @@
 <translation id="4063300985191096908">ไปที่ฟีด</translation>
 <translation id="408404951701638773">เข้าถึงแถบค้นหาได้ง่ายขึ้นแล้ว</translation>
 <translation id="4092655288299341041">แสดงความช่วยเหลือ</translation>
+<translation id="4101942614374785540">ระบบบันทึกรหัสผ่านในบัญชี Google (<ph name="ACCOUNT" />) ของคุณแล้ว คุณใช้รหัสผ่านดังกล่าวได้ทุกที่ที่ลงชื่อเข้าใช้ หากต้องการปิดการตั้งค่านี้ ให้ไปที่<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="4108998448622696017">ตรวจหาและเตือนคุณเมื่อเกิดเหตุการณ์อันตราย</translation>
 <translation id="411254640334432676">การดาวน์โหลดล้มเหลว</translation>
 <translation id="4112644173421521737">ค้นหา</translation>
@@ -692,6 +695,7 @@
 <translation id="6184086493125982861">แสดงแท็บ</translation>
 <translation id="6187302354554850004">ซิงค์ครั้งล่าสุด: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">ยังไม่ได้อ่าน</translation>
+<translation id="6193424046394092997">{count,plural, =1{เพิ่มบุ๊กมาร์กไปยัง {title} แล้ว}other{เพิ่มบุ๊กมาร์กไปยัง {title} แล้ว}}</translation>
 <translation id="6196207969502475924">การค้นหาด้วยเสียง</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{ปิด {COUNT} แท็บ}other{ปิด {COUNT} แท็บ}}</translation>
 <translation id="6219550825416862075">ยินดีต้อนรับกลับมา</translation>
@@ -838,6 +842,7 @@
 <translation id="7053983685419859001">บล็อก</translation>
 <translation id="7062545763355031412">ยอมรับและเปลี่ยนบัญชี</translation>
 <translation id="7080806333218412752">ส่ง URL ให้ Google Safe Browsing ตรวจสอบ รวมถึงส่งตัวอย่างส่วนเล็กๆ ของหน้าเว็บ การดาวน์โหลด กิจกรรมของส่วนขยาย และข้อมูลระบบ เพื่อเราช่วยค้นหาภัยคุกคามใหม่ๆ ลิงก์ข้อมูลนี้กับบัญชี Google เป็นการชั่วคราวเมื่อคุณลงชื่อเข้าใช้ เพื่อปกป้องคุณในแอปต่างๆ ของ Google</translation>
+<translation id="7083860864742905105">เมื่อเปิด ระบบจะบันทึกรหัสผ่านใน <ph name="ACCOUNT" /> เมื่อปิด ระบบจะบันทึกรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="7095110968493193530">ที่เครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">แท็บล่าสุด</translation>
 <translation id="7102005569666697658">กำลังดาวน์โหลด… <ph name="FILE_SIZE" /></translation>
@@ -914,6 +919,7 @@
 <translation id="7756478488453921771">เมนู → การตั้งค่า → วิธีการชำระเงิน</translation>
 <translation id="7765158879357617694">ย้าย</translation>
 <translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
+<translation id="777572173400717978">{count,plural, =1{บุ๊กมาร์กแล้ว}other{บุ๊กมาร์กแล้ว}}</translation>
 <translation id="7781011649027948662">แปลหน้าเว็บไหม</translation>
 <translation id="7781069478569868053">หน้าแท็บใหม่</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>

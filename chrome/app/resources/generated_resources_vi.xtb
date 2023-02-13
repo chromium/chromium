@@ -38,6 +38,7 @@
 <translation id="103279545524624934">Giải phóng dung lượng ổ đĩa để khởi chạy ứng dụng Android.</translation>
 <translation id="1033780634303702874">Truy cập thiết bị tuần tự của bạn</translation>
 <translation id="1034484273907870301">Dải thẻ hình thu nhỏ cho chế độ máy tính bảng</translation>
+<translation id="1035875743511577452">Nhấp vào "Thay đổi giao diện" để khám phá các giao diện lấy cảm hứng từ nghệ sĩ, thiên nhiên và nhiều nội dung khác</translation>
 <translation id="1036348656032585052">Tắt</translation>
 <translation id="1036511912703768636">Truy cập bất kỳ trong số các thiết bị USB này</translation>
 <translation id="1038168778161626396">Chỉ Mã hóa</translation>
@@ -1389,6 +1390,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2203088913459920044">Tên có thể bao gồm chữ cái, chữ số và các ký tự đặc biệt</translation>
 <translation id="220321590587754225">Không thể kết nối. Hãy thử lại.</translation>
 <translation id="2203903197029773650"><ph name="BRAND" /> có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình</translation>
+<translation id="2204020417499639567">Đã điền email.</translation>
 <translation id="2204034823255629767">Đọc và thay đổi mọi nội dung bạn nhập</translation>
 <translation id="2204387456724731099">Không thể dịch nội dung được chọn này</translation>
 <translation id="2210462644007531147">Không thể hoàn tất quá trình cài đặt</translation>
@@ -1846,6 +1848,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2603355571917519942">Voice Match đã sẵn sàng</translation>
 <translation id="2604129989323098489">Các trang web thường yêu cầu thông tin về màn hình của bạn để có thể mở và sắp xếp các cửa sổ một cách thông minh, chẳng hạn như hiển thị các tài liệu hoặc nội dung toàn màn hình cạnh nhau</translation>
 <translation id="2604255671529671813">Lỗi kết nối mạng</translation>
+<translation id="2604805099836652105">Đã điền biểu mẫu địa chỉ <ph name="ADDRESS_LABEL" />.</translation>
 <translation id="2605668923777146443">Chuyển tới phần <ph name="LINK_BEGIN" />Cài đặt<ph name="LINK_END" /> để xem các tùy chọn cho tính năng Better Together.</translation>
 <translation id="2606246518223360146">Liên kết dữ liệu</translation>
 <translation id="2606454609872547359">Không, tiếp tục mà không dùng ChromeVox</translation>
@@ -2437,6 +2440,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Lỗi tạo Thư mục Dữ liệu</translation>
 <translation id="3124111068741548686">Quản lý NGƯỜI DÙNG</translation>
+<translation id="3124332159330678621">Tuỳ chỉnh Chrome để mang lại giao diện mới cho trình duyệt</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Để tránh gặp phải các vấn đề về hiệu suất và sạc pin, hãy dùng bộ chuyển đổi điện USB Type-C hoặc bộ chuyển đổi điện Dell tương thích.</translation>
 <translation id="3127862849166875294">Đổi kích thước ổ đĩa Linux</translation>
@@ -3062,6 +3066,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3713091615825314967">Tính năng tự động cập nhật đã được bật.</translation>
 <translation id="371370241367527062">Micrô mặt trước</translation>
 <translation id="3714195043138862580">Thiết bị giới thiệu này đã được đặt sang trạng thái hủy cấp phép.</translation>
+<translation id="3719310907809321183">Đã điền <ph name="CARD_IDENTIFIER" />.</translation>
 <translation id="3719826155360621982">Trang chủ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Bạn và Google</translation>
@@ -3669,6 +3674,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="426652736638196239">Số IBAN này sẽ chỉ được lưu vào thiết bị này</translation>
 <translation id="4266679478228765574">Việc xóa thư mục sẽ dừng chia sẻ chứ không xóa tệp.</translation>
 <translation id="4267455501101322486">Nếu bạn muốn thêm tài khoản để truy cập vào các tài nguyên giáo dục, hãy xin phép cha mẹ của bạn</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{Không tìm thấy mật khẩu nào}=1{Đã tìm thấy 1 kết quả}other{Đã tìm thấy {COUNT} kết quả}}</translation>
 <translation id="4267924571297947682">Đề nghị cha mẹ cấp quyền</translation>
 <translation id="4267953847983678297">Tự động kết nối với mạng di động</translation>
 <translation id="4268025649754414643">Mã hóa Khóa</translation>
@@ -3950,6 +3956,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4522890784888918985">Tài khoản con không được hỗ trợ</translation>
 <translation id="4523876148417776526">Chưa tìm nạp được danh sách trang web XML.</translation>
 <translation id="4524832533047962394">Chế độ đăng ký đã cung cấp không được phiên bản hệ điều hành này hỗ trợ. Vui lòng đảm bảo bạn đang chạy phiên bản mới nhất.</translation>
+<translation id="4526853756266614740">Chọn một hình ảnh để áp dụng ngay giao diện</translation>
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4527929807707405172">Bật chế độ cuộn ngược. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Bản dịch đề xuất</translation>
@@ -4249,6 +4256,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4800839971935185386">Xem lại các lần cập nhật tên và biểu tượng</translation>
 <translation id="4801448226354548035">Ẩn tài khoản</translation>
 <translation id="4801512016965057443">Cho phép chuyển vùng dữ liệu di động</translation>
+<translation id="4804311503028830356">Nhấp vào mũi tên quay lại để khám phá các tuỳ chọn khác</translation>
 <translation id="4804818685124855865">Ngắt kết nối</translation>
 <translation id="4804827417948292437">Quả bơ</translation>
 <translation id="4806457879608775995">Xem xét các điều khoản này và kiểm soát dữ liệu của bạn</translation>
@@ -8280,6 +8288,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8498214519255567734">Giúp bạn nhìn màn hình hoặc đọc dưới ánh sáng mờ dễ dàng hơn</translation>
 <translation id="8498395510292172881">Tiếp tục đọc trong Chrome</translation>
 <translation id="8499083585497694743">Bật micrô</translation>
+<translation id="8499526927826495298">Gửi <ph name="BEGIN_LINK1" />siêu dữ liệu tự động điền<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Để dùng ứng dụng từ Google Play, trước tiên bạn phải khôi phục ứng dụng của mình. Một số dữ liệu có thể đã bị mất.</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="850382998924680137">Đã xem hôm nay</translation>

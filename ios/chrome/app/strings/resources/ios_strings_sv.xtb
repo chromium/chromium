@@ -812,6 +812,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6869389390665537774">Du kan se sidor som du har besökt eller ta bort dem från historiken</translation>
 <translation id="687135068089457384">Visa inställningar</translation>
 <translation id="6873263987691478642">Delad vy</translation>
+<translation id="6873366418270195926">Du får en avisering om priset sänks på en webbplats. Den här sidan har sparats i <ph name="BEGIN_LINK" />Bokmärken<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardskydd mot kända skadliga webbplatser, nedladdningar och tillägg.</translation>
 <translation id="6888009575607455378">Vill du ignorera ändringarna?</translation>
 <translation id="6896758677409633944">Kopiera</translation>
@@ -1114,6 +1115,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="952704832371081537">Avbryt</translation>
 <translation id="953008885340860025">Utloggad från Chrome</translation>
 <translation id="959066944189734975">Du följer <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Organisationen tillåter inloggning med endast vissa konton. Konton som inte tillåts är dolda.</translation>
 <translation id="984509647832111802">Synkroniseringen fungerar inte.</translation>
 <translation id="988141524645182168">Övriga enheter</translation>

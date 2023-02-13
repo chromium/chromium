@@ -812,6 +812,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6869389390665537774">Vezi paginile pe care le-ai accesat sau șterge-le din istoric</translation>
 <translation id="687135068089457384">Afișează Setările</translation>
 <translation id="6873263987691478642">Vizualizare împărțită</translation>
+<translation id="6873366418270195926">Vei primi o alertă dacă prețul scade pe orice site. Pagina se salvează în <ph name="BEGIN_LINK" />Marcaje<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Protecție standard împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase.</translation>
 <translation id="6888009575607455378">Sigur vrei să renunți la modificări?</translation>
 <translation id="6896758677409633944">Copiază</translation>
@@ -1114,6 +1115,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="952704832371081537">Anulează</translation>
 <translation id="953008885340860025">Te-ai deconectat de la Chrome</translation>
 <translation id="959066944189734975">Urmărești <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Organizația îți permite să te conectezi doar cu anumite conturi. Conturile nepermise sunt ascunse.</translation>
 <translation id="984509647832111802">Sincronizarea nu funcționează.</translation>
 <translation id="988141524645182168">Alte dispozitive</translation>

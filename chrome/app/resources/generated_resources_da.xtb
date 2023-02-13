@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Vil du genstarte Linux?</translation>
 <translation id="1047431265488717055">Kopiér linkte&amp;kst</translation>
 <translation id="1048286738600630630">Skærme</translation>
+<translation id="1048770690598418849">Du kan springe dette over indtil videre, så forsøger vi automatisk igen, når konfigurationen er gennemført</translation>
 <translation id="1048986595386481879">Dynamisk fordelt</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Modtager <ph name="ATTACHMENTS" /> fra <ph name="DEVICE_NAME" />}one{Receiving <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Modtager <ph name="ATTACHMENTS" /> fra <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -1639,6 +1640,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2410754283952462441">Vælg en konto</translation>
 <translation id="241082044617551207">Ukendt plugin</translation>
 <translation id="2410940059315936967">Et website, du besøger, kan indlejre indhold fra andre websites, f.eks. billeder, annoncer og tekst. Cookies, der gemmes af disse andre websites, kaldes tredjepartscookies.</translation>
+<translation id="2411666601450687801">Virtuelle maskiner er ikke tilladt på denne enhed</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Funktionstaster på tastaturet</translation>
 <translation id="2418307627282545839">Et lyst og luftigt udseende</translation>
@@ -1900,6 +1902,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2653659639078652383">Send</translation>
 <translation id="265390580714150011">Feltværdi</translation>
 <translation id="2654553774144920065">Udskriftsanmodning</translation>
+<translation id="265748523151262387">Bevar tilknytningen til din telefon</translation>
 <translation id="2657612187216250073">Indstillinger for hjælpefunktioner til markør</translation>
 <translation id="2658941648214598230">Vil du se det oprindelige indhold?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funktionerne varierer afhængigt af enheden</translation>
@@ -5316,6 +5319,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5801051031414037185">Konfigurer telefon</translation>
 <translation id="5801568494490449797">Præferencer</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
+<translation id="5804259315582798390">Gendannelse af lokale data kunne ikke aktiveres</translation>
 <translation id="5805268472388605531">Hold tastaturtasterne nede for at se accenttegn og specialtegn</translation>
 <translation id="5805697420284793859">Vinduesadministrator</translation>
 <translation id="5806447147478173900">Samlet lagerplads, der bruges af de viste websites: <ph name="TOTAL_USAGE" /></translation>
@@ -6701,6 +6705,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7047059339731138197">Vælg en baggrund</translation>
 <translation id="7049293980323620022">Vil du beholde filen?</translation>
 <translation id="7050037487872780845">Ugyldig konfiguration af hotspot</translation>
+<translation id="7051551856857948729">Skjul IBAN-værdi</translation>
 <translation id="7052237160939977163">Send data om ydeevne</translation>
 <translation id="7053983685419859001">Bloker</translation>
 <translation id="7055152154916055070">Omdirigeringen blev blokeret:</translation>
@@ -8407,6 +8412,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8634348081024879304">Du vil ikke længere kunne bruge dit virtuelle kort med Google Pay. <ph name="BEGIN_LINK" />Få flere oplysninger om virtuelle kort<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Genindlæser…</translation>
 <translation id="8636284842992792762">Installerer udvidelser...</translation>
+<translation id="8636323803535540285">Føj en genvej til <ph name="BRAND" /> for hurtigere at komme hertil</translation>
 <translation id="8636500887554457830">Tillad ikke, at websites sender pop op-vinduer eller anvender omdirigeringer</translation>
 <translation id="8637688295594795546">Der findes en tilgængelig opdatering til systemet. Forbereder download...</translation>
 <translation id="8639047128869322042">Søger efter skadelig software...</translation>
@@ -8567,6 +8573,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8767621466733104912">Opdater Chrome automatisk for alle brugere</translation>
 <translation id="8770406935328356739">Udvidelsens rodmappe</translation>
 <translation id="8771300903067484968">Baggrunden for startsiden er nulstillet til standardbaggrunden.</translation>
+<translation id="8773280816776735812">Vis IBAN-værdi</translation>
 <translation id="8773302562181397928">Gem <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Bekræft gendannelse</translation>
 <translation id="8774934320277480003">Topmargen</translation>

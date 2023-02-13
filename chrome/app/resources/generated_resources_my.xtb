@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux ပြန်စမလား။</translation>
 <translation id="1047431265488717055">လင့် စာ&amp;သားကို ကူးယူပါ</translation>
 <translation id="1048286738600630630">မျက်နှာပြင်</translation>
+<translation id="1048770690598418849">၎င်းကိုယခုကျော်နိုင်ပြီး စနစ်ထည့်သွင်းပြီးနောက် အလိုအလျောက် ထပ်စမ်းပါမည်</translation>
 <translation id="1048986595386481879">ပြောင်းလဲ သတ်မှတ်ထားသည်−</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ထံမှ <ph name="ATTACHMENTS" /> ခုကို ရရှိသည်}other{<ph name="DEVICE_NAME" /> ထံမှ <ph name="ATTACHMENTS" /> ခုကို ရရှိသည်}}</translation>
 <translation id="1049743911850919806">ရုပ်ဖျက်</translation>
@@ -1636,6 +1637,7 @@
 <translation id="2410754283952462441">အကောင့်တစ်ခု ရွေးပါ</translation>
 <translation id="241082044617551207">အမည်မသိ ပလတ်အင်</translation>
 <translation id="2410940059315936967">သင်ဝင်ကြည့်သောဝဘ်ဆိုက်သည် ပုံ၊ ကြော်ငြာနှင့် စာတိုတို့ကဲ့သို့ အခြားဝဘ်ဆိုက်များမှ အကြောင်းအရာကို မြှုပ်သွင်းနိုင်သည်။ ဤကဲ့သို့ အခြားဝဘ်ဆိုက်များက သတ်မှတ်သည့် ကွတ်ကီးများကို ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးဟု ခေါ်သည်။</translation>
+<translation id="2411666601450687801">ဤစက်တွင် ‘ပကတိအသွင် စက်များ’ ခွင့်မပြုပါ</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">လက်ကွက်လုပ်ဆောင်ချက် ကီးများ</translation>
 <translation id="2418307627282545839">အကြောင်းအရာများကို ကြည်လင်ပေါ့ပါးစွာ ထားပါ</translation>
@@ -1897,6 +1899,7 @@
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
 <translation id="265390580714150011">အကွက် တန်ဖိုး</translation>
 <translation id="2654553774144920065">ပုံနှိပ်ထုတ်ယူရန် တောင်းဆိုချက်</translation>
+<translation id="265748523151262387">သင့်ဖုန်းနှင့် ချိတ်ဆက်ထားပါ</translation>
 <translation id="2657612187216250073">ညွှန်မြား သုံးနိုင်မှု ဆက်တင်များ</translation>
 <translation id="2658941648214598230">မူရင်းအကြောင်းအရာကို ပြရမလား။</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />စက်ပစ္စည်းအလိုက် ဝန်ဆောင်မှုများ ကွဲပြားနိုင်သည်</translation>
@@ -5313,6 +5316,7 @@
 <translation id="5801051031414037185">ဖုန်းစနစ်ထည့်သွင်းရန်</translation>
 <translation id="5801568494490449797">ဦးစားပေးမှုများ</translation>
 <translation id="5804241973901381774">ခွင့်ပြုချက်များ</translation>
+<translation id="5804259315582798390">စက်တွင်းဒေတာ ပြန်လည်မရယူနိုင်ပါ</translation>
 <translation id="5805268472388605531">ဖိရွတ်သံစာလုံးနှင့် အထူးစာလုံးများကို ကြည့်ရန် လက်ကွက်ခလုတ်များကို ဖိနှိပ်ထားပါ</translation>
 <translation id="5805697420284793859">ဝင်းဒိုး မန်နေဂျာ</translation>
 <translation id="5806447147478173900">ပြထားသည့် ဝဘ်ဆိုက်များက အသုံးပြုထားသည့် စုစုပေါင်းသိုလှောင်ခန်း- <ph name="TOTAL_USAGE" /></translation>
@@ -6693,6 +6697,7 @@
 <translation id="7047059339731138197">နောက်ခံပုံ ရွေးမည်</translation>
 <translation id="7049293980323620022">ဖိုင်ကို သိမ်းလိုသလား။</translation>
 <translation id="7050037487872780845">ဟော့စပေါ့ စီစဉ်သတ်မှတ်ချက် မမှန်ကန်ပါ</translation>
+<translation id="7051551856857948729">IBAN တန်ဖိုးဖျောက်ရန်</translation>
 <translation id="7052237160939977163">စွမ်းဆောင်ရည် လမ်းကြောင်းလိုက်ခြင်း အချက်လက် ပို့</translation>
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7055152154916055070">တစ်ဆင့်ပြန်ညွှန်ခြင်းကို ပိတ်ထားသည်−</translation>
@@ -8558,6 +8563,7 @@
 <translation id="8767621466733104912">အသုံးပြုသူများ အားလုံးအတွက် Chrome ကို အလိုအလျောက် အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="8770406935328356739">နောက်ဆက်တွဲ ပင်မလမ်းကြောင်း</translation>
 <translation id="8771300903067484968">စတင်သည့် စာမျက်နှာနောက်ခံကို မူလနောက်ခံသို့ ပြင်ဆင်သတ်မှတ်ထားပါသည်။</translation>
+<translation id="8773280816776735812">IBAN တန်ဖိုးပြပါ</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ကို သိမ်းရန်</translation>
 <translation id="8774379074441005279">ပြန်ယူခြင်းကို အတည်ပြုခြင်း</translation>
 <translation id="8774934320277480003">ထိပ်ဆုံး မာဂျင်</translation>

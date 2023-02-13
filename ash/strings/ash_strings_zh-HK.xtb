@@ -735,6 +735,7 @@
 <translation id="4895488851634969361">電池電量已滿。</translation>
 <translation id="490375751687810070">垂直</translation>
 <translation id="490788395437447240">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">在裝置完成「<ph name="NETWORK_NAME" />」設定後啟用</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4919841137949306064">「<ph name="APP_NAME" />」目前正在使用您的相機</translation>
@@ -1329,6 +1330,7 @@
 <translation id="8131740175452115882">確定</translation>
 <translation id="8131994907636310308">閂排序資訊框</translation>
 <translation id="8132793192354020517">已連線至 <ph name="NAME" /></translation>
+<translation id="8138705869659070104">在裝置完成設定後啟用</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8142441511840089262">連按兩下</translation>
 <translation id="8142699993796781067">私人網絡</translation>

@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Queres reiniciar Linux?</translation>
 <translation id="1047431265488717055">Copiar te&amp;xto da ligazón</translation>
 <translation id="1048286738600630630">Pantallas</translation>
+<translation id="1048770690598418849">Podes omitir este paso por agora. Tentarémolo automaticamente cando remates a configuración</translation>
 <translation id="1048986595386481879">Asignado dinamicamente</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Recibindo <ph name="ATTACHMENTS" /> do dispositivo (<ph name="DEVICE_NAME" />)}other{Recibindo <ph name="ATTACHMENTS" /> do dispositivo (<ph name="DEVICE_NAME" />)}}</translation>
 <translation id="1049743911850919806">Modo de incógnito</translation>
@@ -1622,6 +1623,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2410754283952462441">Escolle unha conta</translation>
 <translation id="241082044617551207">Plugin descoñecido</translation>
 <translation id="2410940059315936967">Os sitios que visitas poden inserir contido doutros sitios web (por exemplo, imaxes, anuncios ou texto). As cookies definidas por estes outros sitios denomínanse cookies de terceiros.</translation>
+<translation id="2411666601450687801">Non se permiten máquinas virtuais neste dispositivo</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Teclas de función do teclado</translation>
 <translation id="2418307627282545839">Goza de imaxes brillantes e claras</translation>
@@ -1883,6 +1885,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="265390580714150011">Valor do campo</translation>
 <translation id="2654553774144920065">Imprimir solicitude</translation>
+<translation id="265748523151262387">Mantén a conexión co teu teléfono</translation>
 <translation id="2657612187216250073">Configuración de accesibilidade do punteiro</translation>
 <translation id="2658941648214598230">Queres mostrar o contido orixinal?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />As funcións varían segundo o dispositivo</translation>
@@ -5296,6 +5299,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5801051031414037185">Configurar teléfono</translation>
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5804259315582798390">Non se puido activar a recuperación de datos locais</translation>
 <translation id="5805268472388605531">Mantén premidas as teclas para ver os acentos gráficos e outros caracteres especiais</translation>
 <translation id="5805697420284793859">Xestor de ventás</translation>
 <translation id="5806447147478173900">Almacenamento total usado polos sitios mostrados: <ph name="TOTAL_USAGE" /></translation>
@@ -6678,6 +6682,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7047059339731138197">Escolle un fondo</translation>
 <translation id="7049293980323620022">Queres conservar o ficheiro?</translation>
 <translation id="7050037487872780845">A configuración da zona wifi non é válida</translation>
+<translation id="7051551856857948729">Ocultar o valor do IBAN</translation>
 <translation id="7052237160939977163">Enviar datos de seguimento de rendemento</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7055152154916055070">Bloqueouse unha redirección:</translation>
@@ -8384,6 +8389,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8634348081024879304">Deixarás de poder utilizar a tarxeta virtual con Google Pay. <ph name="BEGIN_LINK" />Máis información sobre as tarxetas virtuais<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Volvendo cargar a extensión…</translation>
 <translation id="8636284842992792762">Iniciando extensións…</translation>
+<translation id="8636323803535540285">Para chegar aquí máis axiña, engade un atallo a <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Non permitir que os sitios mostren ventás emerxentes nin usen redireccións</translation>
 <translation id="8637688295594795546">Actualización do sistema dispoñible. Preparando para descargar...</translation>
 <translation id="8639047128869322042">Buscando software daniño...</translation>
@@ -8543,6 +8549,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8767621466733104912">Actualizar Chrome para todos os usuarios automaticamente</translation>
 <translation id="8770406935328356739">Directorio raíz da extensión</translation>
 <translation id="8771300903067484968">Restableceuse o fondo predeterminado da pantalla de inicio.</translation>
+<translation id="8773280816776735812">Mostrar o valor do IBAN</translation>
 <translation id="8773302562181397928">Gardar <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirmar restauración</translation>
 <translation id="8774934320277480003">Marxe superior</translation>

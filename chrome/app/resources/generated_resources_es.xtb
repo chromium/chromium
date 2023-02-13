@@ -52,6 +52,7 @@
 <translation id="104710386808485638">¿Quieres reiniciar Linux?</translation>
 <translation id="1047431265488717055">Copiar te&amp;xto de enlace</translation>
 <translation id="1048286738600630630">Pantallas</translation>
+<translation id="1048770690598418849">Puedes saltarte este paso de momento y se volverá a intentar automáticamente al terminar el proceso de configuración</translation>
 <translation id="1048986595386481879">Asignado dinámicamente</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incógnito</translation>
@@ -1624,6 +1625,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2410754283952462441">Elige una cuenta</translation>
 <translation id="241082044617551207">Complemento desconocido</translation>
 <translation id="2410940059315936967">Un sitio que visites puede insertar contenido de otros sitios, como imágenes, anuncios y texto. Las cookies creadas por estos sitios se denominan cookies de terceros.</translation>
+<translation id="2411666601450687801">No se permiten máquinas virtuales en este dispositivo</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Teclas de funciones del teclado</translation>
 <translation id="2418307627282545839">Diseño luminoso y ligero</translation>
@@ -1885,6 +1887,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="265390580714150011">Valor de campo</translation>
 <translation id="2654553774144920065">Solicitud de impresión</translation>
+<translation id="265748523151262387">Mantén la conexión con tu teléfono</translation>
 <translation id="2657612187216250073">Ajustes de accesibilidad del puntero</translation>
 <translation id="2658941648214598230">¿Mostrar contenido original?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Las funciones varían según el dispositivo</translation>
@@ -5299,6 +5302,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5801051031414037185">Configurar teléfono</translation>
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5804259315582798390">No se ha podido habilitar la recuperación de datos locales</translation>
 <translation id="5805268472388605531">Mantén pulsadas las teclas del teclado para ver las tildes y los caracteres especiales</translation>
 <translation id="5805697420284793859">Administrador de ventanas</translation>
 <translation id="5806447147478173900">Almacenamiento total usado por sitios mostrados: <ph name="TOTAL_USAGE" /></translation>
@@ -6682,6 +6686,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7047059339731138197">Selecciona un fondo de pantalla</translation>
 <translation id="7049293980323620022">¿Quieres conservar el archivo?</translation>
 <translation id="7050037487872780845">Configuración de punto de acceso no válida</translation>
+<translation id="7051551856857948729">Ocultar valor de IBAN</translation>
 <translation id="7052237160939977163">Enviar datos de seguimiento de rendimiento</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7055152154916055070">Redirección bloqueada:</translation>
@@ -8548,6 +8553,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8767621466733104912">Actualizar Chrome automáticamente para todos los usuarios</translation>
 <translation id="8770406935328356739">Directorio raíz de la extensión</translation>
 <translation id="8771300903067484968">El fondo de pantalla de la página de inicio se ha restablecido al fondo de pantalla predeterminado.</translation>
+<translation id="8773280816776735812">Mostrar valor de IBAN</translation>
 <translation id="8773302562181397928">Guardar <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirmar restauración</translation>
 <translation id="8774934320277480003">Margen superior</translation>

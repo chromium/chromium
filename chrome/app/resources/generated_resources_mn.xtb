@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux-г дахин эхлүүлэх үү?</translation>
 <translation id="1047431265488717055">Текстийн холбоосыг хуулах</translation>
 <translation id="1048286738600630630">Дэлгэц</translation>
+<translation id="1048770690598418849">Та одоогоор алгасаж болох бөгөөд бид таныг тохируулгыг дуусгасны дараа автоматаар дахин оролдоно</translation>
 <translation id="1048986595386481879">Динамикаар хуваарилсан</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-с <ph name="ATTACHMENTS" />-г хүлээн авч байна}other{<ph name="DEVICE_NAME" />-с <ph name="ATTACHMENTS" />-г хүлээн авч байна}}</translation>
 <translation id="1049743911850919806">Нууцлал</translation>
@@ -1634,6 +1635,7 @@
 <translation id="2410754283952462441">Бүртгэл сонгох</translation>
 <translation id="241082044617551207">Үл мэдэх нэмэлт өргөтгөл</translation>
 <translation id="2410940059315936967">Таны зочилсон сайт бусад сайтаас зураг, зар болон текст зэрэг контентыг оруулах боломжтой. Эдгээр бусад сайтын тохируулсан күүкиг гуравдагч талын күүки гэж нэрлэдэг.</translation>
+<translation id="2411666601450687801">Энэ төхөөрөмжид ямар ч виртуал машиныг зөвшөөрөөгүй</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Гарын функцийн түлхүүр</translation>
 <translation id="2418307627282545839">Зүйлсийг гэрэлтэй бөгөөд зөөлөн байлгаарай</translation>
@@ -1895,6 +1897,7 @@
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="265390580714150011">Талбарын утга</translation>
 <translation id="2654553774144920065">Хэвлэх хүсэлт</translation>
+<translation id="265748523151262387">Утастайгаа холбогдсон хэвээр байгаарай</translation>
 <translation id="2657612187216250073">Заагчийн хандалтын тохиргоо</translation>
 <translation id="2658941648214598230">Эх контентыг харуулах уу?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Төхөөрөмжөөс хамаарч онцлогууд өөр байна</translation>
@@ -5311,6 +5314,7 @@
 <translation id="5801051031414037185">Утас тохируулах</translation>
 <translation id="5801568494490449797">Миний сонголт</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
+<translation id="5804259315582798390">Дотоод өгөгдөл сэргээлтийг идэвхжүүлж чадсангүй</translation>
 <translation id="5805268472388605531">Өргөлтийн тэмдгүүд болон тусгай тэмдэгтүүдийг харахын тулд гарын товч дээр удаана дарна уу</translation>
 <translation id="5805697420284793859">Цонхны менежер</translation>
 <translation id="5806447147478173900">Үзүүлсэн сайтуудын хадгалах сангийн ашиглалтын нийт хэмжээ: <ph name="TOTAL_USAGE" /></translation>
@@ -6693,6 +6697,7 @@
 <translation id="7047059339731138197">Арын дэвсгэр сонгох</translation>
 <translation id="7049293980323620022">Файлыг хадгалах уу?</translation>
 <translation id="7050037487872780845">Буруу сүлжээний цэгийн тохируулга</translation>
+<translation id="7051551856857948729">Олон улсын банк акаунтны дугаарын утгыг нуух</translation>
 <translation id="7052237160939977163">Үйлдлийн явцын өгөгдлийг илгээх</translation>
 <translation id="7053983685419859001">Блоклох</translation>
 <translation id="7055152154916055070">Дахин чиглүүлэлтийг блоклосон:</translation>
@@ -8397,6 +8402,7 @@
 <translation id="8634348081024879304">Та цаашид виртуал картаа Google Pay-тэй ашиглах боломжгүй болно. <ph name="BEGIN_LINK" />Виртуал картын талаар мэдэж авах<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Дахин ачаалж байна...</translation>
 <translation id="8636284842992792762">Өргөтгөлийг эхлүүлж байна...</translation>
+<translation id="8636323803535540285">Энд илүү шуурхай очихын тулд <ph name="BRAND" />-д товчлол нэмнэ үү</translation>
 <translation id="8636500887554457830">Сайтуудад попап илгээх эсвэл дахин чиглүүлэхийг ашиглахыг бүү зөвшөөр</translation>
 <translation id="8637688295594795546">Системийг шинэчлэх боломжтой. Татаж авахаар бэлдэж байна...</translation>
 <translation id="8639047128869322042">Хортой программ хангамжийг шалгаж байна...</translation>
@@ -8554,6 +8560,7 @@
 <translation id="8767621466733104912">Бүх хэрэглэгчид Chrome-г автоматаар шинэчилнэ үү</translation>
 <translation id="8770406935328356739">Өргөтгөлийн үндсэн лавлалт</translation>
 <translation id="8771300903067484968">Эхлэх хуудасны арын дэвсгэрийг өгөгдмөл арын дэвсгэрээр шинэчиллээ.</translation>
+<translation id="8773280816776735812">Олон улсын банк акаунтны дугаарын утгыг харуулах</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" />-г хадгалах</translation>
 <translation id="8774379074441005279">Сэргээхийг баталгаажуулах</translation>
 <translation id="8774934320277480003">Дээд хүрээ</translation>

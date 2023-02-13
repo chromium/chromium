@@ -38,6 +38,7 @@
 <translation id="103279545524624934">เพิ่มพื้นที่ว่างในดิสก์เพื่อเปิดแอป Android</translation>
 <translation id="1033780634303702874">เข้าถึงอุปกรณ์ซีเรียล</translation>
 <translation id="1034484273907870301">แนวแท็บภาพขนาดย่อสำหรับโหมดแท็บเล็ต</translation>
+<translation id="1035875743511577452">คลิก "เปลี่ยนธีม" เพื่อสำรวจธีมที่ได้รับแรงบันดาลใจจากศิลปิน ธรรมชาติ และอื่นๆ</translation>
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1036511912703768636">เข้าถึงอุปกรณ์ USB ใดๆ ก็ได้เหล่านี้</translation>
 <translation id="1038168778161626396">เข้ารหัสเท่านั้น</translation>
@@ -1377,6 +1378,7 @@
 <translation id="2203088913459920044">ชื่อมีตัวอักษร ตัวเลข และสัญลักษณ์พิเศษได้</translation>
 <translation id="220321590587754225">เชื่อมต่อไม่ได้ ลองอีกครั้ง</translation>
 <translation id="2203903197029773650"><ph name="BRAND" />จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
+<translation id="2204020417499639567">ป้อนอีเมลแล้ว</translation>
 <translation id="2204034823255629767">อ่านและเปลี่ยนแปลงสิ่งที่คุณพิมพ์</translation>
 <translation id="2204387456724731099">แปลตัวเลือกนี้ไม่ได้</translation>
 <translation id="2210462644007531147">ติดตั้งไม่สำเร็จ</translation>
@@ -1831,6 +1833,7 @@
 <translation id="2603355571917519942">Voice Match พร้อมใช้งานแล้ว</translation>
 <translation id="2604129989323098489">โดยปกติแล้ว เว็บไซต์จะขอข้อมูลเกี่ยวกับจอแสดงผลเพื่อเปิดและวางเนื้อหาในหน้าต่างได้อย่างชาญฉลาด เช่น แสดงเอกสารหรือเนื้อหาแบบเต็มหน้าจอพร้อมกัน</translation>
 <translation id="2604255671529671813">ข้อผิดพลาดในการเชื่อมต่อเครือข่าย</translation>
+<translation id="2604805099836652105">กรอกแบบฟอร์มที่อยู่ <ph name="ADDRESS_LABEL" /> แล้ว</translation>
 <translation id="2605668923777146443">ไปที่<ph name="LINK_BEGIN" />การตั้งค่า<ph name="LINK_END" />เพื่อดูตัวเลือกสำหรับ Better Together</translation>
 <translation id="2606246518223360146">ลิงก์ข้อมูล</translation>
 <translation id="2606454609872547359">ไม่ ดำเนินการต่อโดยไม่ใช้ ChromeVox</translation>
@@ -2422,6 +2425,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">การสร้างไดเรกทอรีข้อมูลล้มเหลว</translation>
 <translation id="3124111068741548686">ผู้ใช้จัดการ</translation>
+<translation id="3124332159330678621">ปรับแต่ง Chrome เพื่อสร้างรูปลักษณ์ใหม่ๆ ให้เบราว์เซอร์</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">โปรดใช้อะแดปเตอร์ Dell หรือ USB Type-C เพื่อหลีกเลี่ยงปัญหาด้านการชาร์จและประสิทธิภาพ</translation>
 <translation id="3127862849166875294">ปรับขนาดดิสก์ใน Linux</translation>
@@ -3047,6 +3051,7 @@
 <translation id="3713091615825314967">การอัปเดตอัตโนมัติเปิดอยู่</translation>
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
 <translation id="3714195043138862580">อุปกรณ์สาธิตนี้ได้รับการกำหนดไว้ให้อยู่ในสถานะยกเลิกการจัดสรร</translation>
+<translation id="3719310907809321183">กรอกข้อมูล <ph name="CARD_IDENTIFIER" /> แล้ว</translation>
 <translation id="3719826155360621982">หน้าแรก</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">คุณและ Google</translation>
@@ -3654,6 +3659,7 @@
 <translation id="426652736638196239">IBAN นี้จะบันทึกอยู่ในอุปกรณ์เครื่องนี้เท่านั้น</translation>
 <translation id="4266679478228765574">การนำโฟลเดอร์ออกจะหยุดการแชร์ แต่จะไม่ลบไฟล์</translation>
 <translation id="4267455501101322486">หากต้องการเพิ่มบัญชีเพื่อเข้าถึงทรัพยากรทางการศึกษา ให้ขออนุญาตจากผู้ปกครอง</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{ไม่พบรหัสผ่าน}=1{พบผลลัพธ์ 1 รายการ}other{พบผลลัพธ์ {COUNT} รายการ}}</translation>
 <translation id="4267924571297947682">ขออนุญาตจากผู้ปกครอง</translation>
 <translation id="4267953847983678297">เชื่อมต่อกับเครือข่ายมือถือโดยอัตโนมัติ</translation>
 <translation id="4268025649754414643">การเข้ารหัสคีย์</translation>
@@ -3934,6 +3940,7 @@
 <translation id="4522890784888918985">ไม่รองรับบัญชีย่อย</translation>
 <translation id="4523876148417776526">ยังไม่ได้ดึงข้อมูลรายการเว็บไซต์ XML</translation>
 <translation id="4524832533047962394">ระบบปฏิบัติการเวอร์ชันนี้ไม่รองรับโหมดการลงทะเบียนที่กำหนด โปรดตรวจสอบว่าคุณใช้เวอร์ชันล่าสุดอยู่</translation>
+<translation id="4526853756266614740">เลือกรูปภาพเพื่อใช้ธีมในทันที</translation>
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4527929807707405172">เปิดใช้การเลื่อนแบบ "กลับด้าน" <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">เสนอการแปลภาษา</translation>
@@ -4233,6 +4240,7 @@
 <translation id="4800839971935185386">ตรวจสอบการอัปเดตชื่อและไอคอน</translation>
 <translation id="4801448226354548035">ซ่อนบัญชี</translation>
 <translation id="4801512016965057443">อนุญาตการโรมมิ่งข้อมูลมือถือ</translation>
+<translation id="4804311503028830356">คลิกลูกศรย้อนกลับเพื่อสำรวจตัวเลือกอื่นๆ</translation>
 <translation id="4804818685124855865">ตัดการเชื่อมต่อ</translation>
 <translation id="4804827417948292437">อะโวคาโด</translation>
 <translation id="4806457879608775995">ตรวจสอบข้อกำหนดเหล่านี้และควบคุมข้อมูลของคุณ</translation>
@@ -8260,6 +8268,7 @@
 <translation id="8498214519255567734">ช่วยให้มองหรืออ่านหน้าจอในแสงสลัวได้ดีขึ้น</translation>
 <translation id="8498395510292172881">อ่านต่อใน Chrome</translation>
 <translation id="8499083585497694743">เปิดเสียงไมโครโฟน</translation>
+<translation id="8499526927826495298">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลเมตาที่ป้อนอัตโนมัติ<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">หากต้องการใช้แอปจาก Google Play คุณต้องคืนค่าแอปก่อน ข้อมูลบางอย่างอาจสูญหาย</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="850382998924680137">ดูวันนี้</translation>

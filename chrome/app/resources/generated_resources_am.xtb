@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux ዳግም ይነሳ?</translation>
 <translation id="1047431265488717055">የአገናኝ ጽሁፍ &amp;ቅዳ</translation>
 <translation id="1048286738600630630">ማሳያዎች</translation>
+<translation id="1048770690598418849">ለአሁን ማሳለፍ ይችላሉ እና ውቅረቱን ከጨረሱ በኋላ በራስ ሰር በድጋሚ እንሞክራለን</translation>
 <translation id="1048986595386481879">በተለዋዋጭነት የሚመደብ</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="ATTACHMENTS" />ን ከ<ph name="DEVICE_NAME" /> በመቀበል ላይ}one{<ph name="ATTACHMENTS" />ን ከ<ph name="DEVICE_NAME" /> በመቀበል ላይ}other{<ph name="ATTACHMENTS" />ን ከ<ph name="DEVICE_NAME" /> በመቀበል ላይ}}</translation>
 <translation id="1049743911850919806">ማንነት የማያሳውቅ</translation>
@@ -1632,6 +1633,7 @@
 <translation id="2410754283952462441">አንድ መለያ ይምረጡ</translation>
 <translation id="241082044617551207">ያልታወቀ ተሰኪ</translation>
 <translation id="2410940059315936967">እርስዎ የሚጎበኙት ጣቢያ ከሌሎች ጣቢያዎች ይዘት መክተት ይችላል ለምሳሌ፣ ምስሎች፣ ማስታወቂያዎች እና ጽሑፍ። በእነዚህ ሌሎች ጣቢያዎች የተቀናበሩ ኩኪዎች የሦስተኛ ወገን ኩኪዎች ይባላሉ።</translation>
+<translation id="2411666601450687801">በዚህ መሣሪያ ላይ ምንም ምናባዊ ማሽኖች የሉም</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">የቁልፍ ሰሌዳ ተግባር ቁልፎች</translation>
 <translation id="2418307627282545839">ነገሮችን ደማቅ እና ቀላል አድርገው ያቆዩ</translation>
@@ -1893,6 +1895,7 @@
 <translation id="2653659639078652383">አስገባ</translation>
 <translation id="265390580714150011">የመስክ እሴት</translation>
 <translation id="2654553774144920065">የህትመት ጥያቄ</translation>
+<translation id="265748523151262387">ከስልክዎ ጋር እንደተገናኙ ይቀዩ</translation>
 <translation id="2657612187216250073">የጠቋሚ ተደራሽነት ቅንብሮች</translation>
 <translation id="2658941648214598230">የመጀመሪያው ይዘት ይታይ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ባህሪዎች እንደየመሣሪያው ይለያያሉ</translation>
@@ -5306,6 +5309,7 @@
 <translation id="5801051031414037185">ስልክን አዋቅር</translation>
 <translation id="5801568494490449797">አማራጮች</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
+<translation id="5804259315582798390">የአካባቢያዊ ውሂብ መልሶ ማግኘትን ማንቃት አልተሳካም</translation>
 <translation id="5805268472388605531">የአጽንዖት ምልክቶች እና ልዩ ቁምፊዎችን ለማየት የቁልፍ ሰሌዳ ቁልፎችን ተጭነው ይያዙ</translation>
 <translation id="5805697420284793859">የWindow አስተዳዳሪ</translation>
 <translation id="5806447147478173900">በሚታዩት ጣቢያዎች ስራ ላይ የዋለው ጠቅላላ ማከማቻ፦ <ph name="TOTAL_USAGE" /></translation>
@@ -6691,6 +6695,7 @@
 <translation id="7047059339731138197">በስተጀርባን ይምረጡ</translation>
 <translation id="7049293980323620022">ፋይል ይቀመጥ?</translation>
 <translation id="7050037487872780845">ልክ ያልኾነ የመገናኛ ነጥብ ውቅረት</translation>
+<translation id="7051551856857948729">የአይቢኤኤን እሴትን ደብቅ</translation>
 <translation id="7052237160939977163">አፈጻጸም መከታተያ ውሂብ ይላኩ</translation>
 <translation id="7053983685419859001">አግድ</translation>
 <translation id="7055152154916055070">አቅጣጫ ማዞር ታግዷል፦</translation>
@@ -8403,6 +8408,7 @@ nil</translation>
 <translation id="8634348081024879304">ከእንግዲህ የእርስዎን ምናባዊ ካርድ በGoogle Pay ላይ መጠቀም አይችሉም። <ph name="BEGIN_LINK" />ስለምናባዊ ካርዶች ይወቁ<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">ዳግም በመጫን ላይ...</translation>
 <translation id="8636284842992792762">ቅጥያዎችን በማስጀመር ላይ...</translation>
+<translation id="8636323803535540285">ይበልጥ በፍጥነት እዚህ ለመድረስ ወደ <ph name="BRAND" /> አቋራጭ ያክሉ</translation>
 <translation id="8636500887554457830">ጣቢያዎች ብቅ-ባዮችን እንዲልኩ ወይም አቅጣጫዎችን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="8637688295594795546">የስርዓት ዝማኔ አለ። ለማውረድ በመዘጋጀት ላይ…</translation>
 <translation id="8639047128869322042">ጎጂ ሶፍትዌር ካለ በመፈተሽ ላይ...</translation>
@@ -8562,6 +8568,7 @@ nil</translation>
 <translation id="8767621466733104912">Chromeን ለሁሉም ተጠቃሚዎች በራስ-ሰር አዘምን</translation>
 <translation id="8770406935328356739">የቅጥያ ስርወ ማውጫ</translation>
 <translation id="8771300903067484968">የጅምር ገጽ ጀርባው ወደ ነባሪው ጀርባ ዳግም ተጀምሯል።</translation>
+<translation id="8773280816776735812">የአይቢኤኤን እሴትን አሳይ</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" />ን አስቀምጥ</translation>
 <translation id="8774379074441005279">ወደነበረበት መመለስን ያረጋግጡ</translation>
 <translation id="8774934320277480003">የላይኛው ህዳግ</translation>

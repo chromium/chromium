@@ -38,6 +38,7 @@
 <translation id="103279545524624934">Android ilovalarni ishga tushirish uchun diskda joy bo‘shating.</translation>
 <translation id="1033780634303702874">Keyingi seriyali qurilmalaringizga ruxsat</translation>
 <translation id="1034484273907870301">Planshet rejimida varaqlar qatorida eskizlar chiqishi</translation>
+<translation id="1035875743511577452">“Mavzuni oʻzgartirish” ustiga bosib, rassomlar, tabiat va boshqa turkumlardagi mavzular bilan tanishing</translation>
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1036511912703768636">Ushbu USB qurilmalardan biriga kirish</translation>
 <translation id="1038168778161626396">Faqat shifrdan chiqarish</translation>
@@ -1376,6 +1377,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2203088913459920044">Nomi harf, raqam va maxsus belgilardan iborat boʻlsin</translation>
 <translation id="220321590587754225">Ulanmadi. Qayta urining.</translation>
 <translation id="2203903197029773650">Google hisobingizga kirsangiz, <ph name="BRAND" /> parollaringizni tekshira oladi.</translation>
+<translation id="2204020417499639567">Email kiritildi.</translation>
 <translation id="2204034823255629767">Kiritilayotgan matnni ko‘rish va o‘zagartirish</translation>
 <translation id="2204387456724731099">Bu tanlov tarjima qilinmaydi</translation>
 <translation id="2210462644007531147">Oʻrnatish yakunlanmadi</translation>
@@ -1833,6 +1835,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2603355571917519942">Voice Match tayyor</translation>
 <translation id="2604129989323098489">Saytlar odatda hujjatlar yoki butun ekranli kontentni yonma-yon chiqarish kabi oynalarni oqilona ochishi va joylashtirishi uchun displeylaringiz haqida axborot soʻraydi</translation>
 <translation id="2604255671529671813">Tarmoqqa ulanishda xato</translation>
+<translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> manzili shaklga kiritildi.</translation>
 <translation id="2605668923777146443">Better Together rejimi parametrlarini koʻrish uchun <ph name="LINK_BEGIN" />Sozlamalar<ph name="LINK_END" /> sahifasini oching.</translation>
 <translation id="2606246518223360146">Hisoblarni ulash</translation>
 <translation id="2606454609872547359">Yoʻq, nofaol ChromeVox bilan davom ettirish</translation>
@@ -2424,6 +2427,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Ma’lumotlar katalogini yaratishda xatolik yuz berdi</translation>
 <translation id="3124111068741548686">USER-deskriptorlari</translation>
+<translation id="3124332159330678621">Chromeni moaslash orqali uni yangicha bezating</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Quvvatlash va unumdorlik bilan muammo yuz bermasligi uchun sinalgan Dell yoki USB Type-C quvvat adapteridan foydalaning.</translation>
 <translation id="3127862849166875294">Linux diski hajmini oʻzgartirish</translation>
@@ -3049,6 +3053,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3713091615825314967">Avtomatik yangilash funksiyasi yoniq.</translation>
 <translation id="371370241367527062">Old mikrofon</translation>
 <translation id="3714195043138862580">Bu demo qurilma qaydnomadan olib tashlandi.</translation>
+<translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> kiritildi.</translation>
 <translation id="3719826155360621982">Bosh sahifa</translation>
 <translation id="372062398998492895">CUPS printerlar</translation>
 <translation id="3721119614952978349">Siz va Google</translation>
@@ -3656,6 +3661,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="426652736638196239">Bu IBAN faqat shu qurilmada saqlanadi</translation>
 <translation id="4266679478228765574">Jildlar oʻchirib tashlanganda faqat ulashuv toʻxtatiladi, lekin fayllar oʻchirib tashlanmaydi.</translation>
 <translation id="4267455501101322486">Taʼlim manbalaridan foydalanadigan hisob kiritish uchun ota-onangizdan ruxsat oling</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{Hech qanday parol topilmadi}=1{1 natija topildi}other{{COUNT} ta natija topildi}}</translation>
 <translation id="4267924571297947682">Ota-onangizdan ruxsat oling</translation>
 <translation id="4267953847983678297">Mobil internetga avtomatik ravishda ulanish</translation>
 <translation id="4268025649754414643">Kalitlar shifrlanishi</translation>
@@ -3937,6 +3943,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4522890784888918985">Farzand hisoblari ishlamaydi</translation>
 <translation id="4523876148417776526">XML saytlar roʻyxati hali olinmadi.</translation>
 <translation id="4524832533047962394">Ushbu OT versiyasida qaydlash rejimi ishlamaydi. Tizimni oxirgi versiyagacha yangilang.</translation>
+<translation id="4526853756266614740">Mavzuni darhol tatbiq qilish uchun rasm tanlang</translation>
 <translation id="452750746583162491">Sinxronlangan maʼlumotlaringizni tekshiring</translation>
 <translation id="4527929807707405172">Teskari varaqlashni yoqish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Tarjima taklifi</translation>
@@ -4236,6 +4243,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4800839971935185386">Nom va belgi oʻzgarishlari tekshiruvi</translation>
 <translation id="4801448226354548035">Hisoblarni yashirish</translation>
 <translation id="4801512016965057443">Mobil internet roumingdan foydalanishga ruxsat berish</translation>
+<translation id="4804311503028830356">Boshqa variantlarni koʻrish uchun orqaga qayting</translation>
 <translation id="4804818685124855865">Uzilish</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4806457879608775995">Bu maʼlumotlar bilan tanishib chiqing va maʼlumotlaringizni nazorat qiling</translation>
@@ -8265,6 +8273,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8498214519255567734">Ekranga xira nur ostida qarashni osonlashtiradi</translation>
 <translation id="8498395510292172881">Mutolaani Chromeda davom ettirish</translation>
 <translation id="8499083585497694743">Mikrofon ovozini yoqish</translation>
+<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />Avtomatik kiritish meta-axborotini<ph name="END_LINK1" /> yuborish</translation>
 <translation id="8502536196501630039">Google Play ilovalaridan foydalanish uchun, avvalo, ilovalaringizni tiklashingiz lozim. Ba’zi ma’lumotlar yo‘qolishi mumkin.</translation>
 <translation id="8503813439785031346">Foydalanuvchi nomi</translation>
 <translation id="850382998924680137">Bugun koʻrilgan</translation>

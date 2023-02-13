@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux өчүрүлүп күйгүзүлсүнбү?</translation>
 <translation id="1047431265488717055">Шилтеме тек&amp;стин көчүрүү</translation>
 <translation id="1048286738600630630">Дисплейлер</translation>
+<translation id="1048770690598418849">Азырынча өткөрүп жиберсеңиз болот. Тууралап бүткөнүңүздөн кийин автоматтык түрдө кайра аракет кылабыз</translation>
 <translation id="1048986595386481879">Динамикалык түрдө бөлүнгөн</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> түзмөгүнөн <ph name="ATTACHMENTS" /> тиркеме алынууда}other{<ph name="DEVICE_NAME" /> түзмөгүнөн <ph name="ATTACHMENTS" /> тиркеме алынууда}}</translation>
 <translation id="1049743911850919806">Жашыруун</translation>
@@ -1638,6 +1639,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2410754283952462441">Аккаунт тандоо</translation>
 <translation id="241082044617551207">Белгисиз плагин</translation>
 <translation id="2410940059315936967">Сиз кирген сайт башка сайттардан алынган материалдарды, мисалы, сүрөттөрдү, жарнамаларды жана текстти жалгаштыра алат. Мындай сайттар орноткон cookie файлдары үчүнчү тараптын cookie файлдары деп аталат.</translation>
+<translation id="2411666601450687801">Бул түзмөктө виртуалдуу шаймандарды иштетүүгө болбойт</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Баскычтоптун функционалдык баскычтары</translation>
 <translation id="2418307627282545839">Баары жарык болуп, жаркырап турсун</translation>
@@ -1899,6 +1901,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="265390580714150011">Талаа мааниси</translation>
 <translation id="2654553774144920065">Басып чыгаруу сурамы</translation>
+<translation id="265748523151262387">Телефонуңуз менен байланышта болуңуз</translation>
 <translation id="2657612187216250073">Курсордун атайын мүмкүнчүлүктөрүн тууралоо</translation>
 <translation id="2658941648214598230">Түпнуска мазмун көрсөтүлсүнбү?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Функциялар түзмөккө жараша ар кандай болушу мүмкүн</translation>
@@ -5315,6 +5318,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5801051031414037185">Телефонду тууралоо</translation>
 <translation id="5801568494490449797">Жеке жөндөөлөр</translation>
 <translation id="5804241973901381774">Уруксаттар</translation>
+<translation id="5804259315582798390">Түзмөктөгү маалыматты калыбына келтирүү параметри иштетилген жок</translation>
 <translation id="5805268472388605531">Басым белгилерин жана атайын символдорду көрүү үчүн баскычтоптогу баскычтарды коё бербей басып туруңуз</translation>
 <translation id="5805697420284793859">Терезе башкаргычы</translation>
 <translation id="5806447147478173900">Көрсөтүлгөн сайттар ээлеген жалпы орун: <ph name="TOTAL_USAGE" /></translation>
@@ -6698,6 +6702,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7047059339731138197">Фон тандаңыз</translation>
 <translation id="7049293980323620022">Файл сакталсынбы?</translation>
 <translation id="7050037487872780845">Байланыш түйүнүнүн конфигурациясы туура эмес</translation>
+<translation id="7051551856857948729">IBAN кодун жашыруу</translation>
 <translation id="7052237160939977163">Иштин майнаптуулугун жогорулатуу дайындарын жөнөтүү</translation>
 <translation id="7053983685419859001">Бөгөттөө</translation>
 <translation id="7055152154916055070">Багыттоо бөгөттөлгөн:</translation>
@@ -8563,6 +8568,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8767621466733104912">Chrome'ду бардык колдонуучулар үчүн автоматтык түрдө жаңыртуу</translation>
 <translation id="8770406935328356739">Кеңейтүүнүн өзөктүк каталогу</translation>
 <translation id="8771300903067484968">Башкы беттин фону демейки фонго коюлду.</translation>
+<translation id="8773280816776735812">IBAN кодун көрсөтүү</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> сактоо</translation>
 <translation id="8774379074441005279">Калыбына келтирүүнү ырастоо</translation>
 <translation id="8774934320277480003">Жогорку чети</translation>

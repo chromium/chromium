@@ -133,6 +133,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="163517899691012366">"Narahat Etməyin" rejimi aktiv olduqda bildirişlər susdurulur</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> cihaz</translation>
 <translation id="1639239467298939599">Yüklənir</translation>
+<translation id="1647986356840967552">Əvvəlki səhifə</translation>
 <translation id="1654477262762802994">Səsli sorğuya başlayın</translation>
 <translation id="1668469839109562275">Daxili VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qaldı</translation>
@@ -555,6 +556,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
 <translation id="397726367135689299">Batareya şarjı etibarsız ola bilər.</translation>
 <translation id="3977512764614765090">Batareya <ph name="PERCENTAGE" /> faizdir və enerji yığır.</translation>
+<translation id="3984536049089846927">Növbəti səhifə</translation>
 <translation id="3986082989454912832">Cavab</translation>
 <translation id="3995138139523574647">USB-C cihazı (arxa sağ port)</translation>
 <translation id="40062176907008878">Əlyazma</translation>
@@ -718,6 +720,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="481455355267255546">Növbəti</translation>
 <translation id="4831034276697007977">Avtomatik klikləri deaktiv etmək istədiyinizə əminsiniz?</translation>
 <translation id="4849058404725798627">Obyekti klaviatura fokusu ilə vurğulayın</translation>
+<translation id="4855250849489639581">Daha çox düzən seçimi üçün aşağı sürüşdürün</translation>
 <translation id="485592688953820832">Əməliyyat yoxdur (fasilə)</translation>
 <translation id="485634149294284819">Klaviatura menyusuna daxil olun</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> faylını endirmək üçün şəbəkə bağlantısını yoxlayın</translation>

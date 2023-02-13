@@ -5772,7 +5772,6 @@
 <translation id="6208725777148613371">無法儲存至「<ph name="WEB_DRIVE" />」- <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">正在更新組件</translation>
 <translation id="6209908325007204267">您的裝置包含一項 Chrome Enterprise 升級，但您的使用者名稱尚未連結企業賬戶。請透過另一部裝置前往 g.co/ChromeEnterpriseAccount 建立企業帳戶。</translation>
-<translation id="6210005727706242461">大功告成！您現在可以隨時為瀏覽器套用新風格。</translation>
 <translation id="6210282067670792090">請在網址列中輸入相關的鍵盤快速鍵和快捷字詞，以使用搜尋引擎和網站搜尋</translation>
 <translation id="621172521139737651">{COUNT,plural, =0{在新分頁群組中開啟所有網址(&amp;N)}=1{在新分頁群組中開啟所有網址(&amp;N)}other{在新分頁群組中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="6212039847102026977">顯示進階網絡屬性</translation>

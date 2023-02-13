@@ -40,6 +40,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1207113853726624428">Lượt tìm kiếm mới</translation>
 <translation id="1209206284964581585">Ẩn ngay bây giờ</translation>
 <translation id="1219674500290482172">Không thể kết nối Internet.</translation>
+<translation id="1226238226094914652">Mật khẩu trên tất cả thiết bị của bạn</translation>
 <translation id="122699739164161391">Đóng tất cả các thẻ</translation>
 <translation id="1229222343402087523">Tìm kiếm ${searchPhrase} trên Chrome</translation>
 <translation id="1242044645101871359">Đăng nhập lại</translation>
@@ -205,6 +206,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2529021024822217800">Mở tất cả</translation>
 <translation id="2556092377360758201">Không được bảo vệ (không khuyến nghị)</translation>
 <translation id="2562041823070056534">Đang gửi đến <ph name="DEVICE_NAME" />...</translation>
+<translation id="2576499762020411840">Sử dụng và lưu mật khẩu trong Tài khoản Google của bạn</translation>
 <translation id="2578571896248130439">Gửi trang web</translation>
 <translation id="2584132361465095047">Thêm tài khoản...</translation>
 <translation id="2600682495497606169">Xóa cookie của trang web</translation>
@@ -409,6 +411,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="4063300985191096908">Chuyển đến nguồn cấp dữ liệu</translation>
 <translation id="408404951701638773">Thanh tìm kiếm giờ đây dễ truy cập hơn</translation>
 <translation id="4092655288299341041">Hiện thông tin trợ giúp</translation>
+<translation id="4101942614374785540">Mật khẩu hiện được lưu vào Tài khoản Google của bạn (<ph name="ACCOUNT" />). Bạn có thể sử dụng các mật khẩu này trên mọi thiết bị bạn đăng nhập. Để tắt tính năng này, hãy vào phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">Phát hiện và cảnh báo bạn các sự kiện nguy hiểm khi các sự kiện đó diễn ra.</translation>
 <translation id="411254640334432676">Tải xuống không thành công.</translation>
 <translation id="4112644173421521737">Tìm kiếm</translation>
@@ -692,6 +695,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6184086493125982861">Hiển thị thẻ</translation>
 <translation id="6187302354554850004">Đồng bộ hóa lần gần đây nhất: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Chưa đọc</translation>
+<translation id="6193424046394092997">{count,plural, =1{Đã đánh dấu trang vào {title}}other{Đã đánh dấu trang vào {title}}}</translation>
 <translation id="6196207969502475924">Tìm kiếm bằng giọng nói</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Đóng {COUNT} thẻ}other{Đóng {COUNT} thẻ}}</translation>
 <translation id="6219550825416862075">Chào mừng bạn quay lại</translation>
@@ -838,6 +842,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7053983685419859001">Chặn</translation>
 <translation id="7062545763355031412">Chấp nhận và chuyển đổi tài khoản</translation>
 <translation id="7080806333218412752">Gửi URL để tính năng Duyệt web an toàn kiểm tra. Đồng thời gửi một mẫu nhỏ dữ liệu hoạt động trên các trang, tệp đã tải xuống, tiện ích và thông tin hệ thống để giúp phát hiện các mối đe dọa mới. Tạm thời liên kết dữ liệu này với Tài khoản Google của bạn sau khi bạn đăng nhập để bảo vệ bạn trên các ứng dụng Google.</translation>
+<translation id="7083860864742905105">Khi chế độ này tắt, mật khẩu sẽ được lưu trong <ph name="ACCOUNT" />. Khi chế độ này tắt, mật khẩu chỉ được lưu trên thiết bị này.</translation>
 <translation id="7095110968493193530">Vào Trình quản lý mật khẩu của Google cho <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Các thẻ gần đây</translation>
 <translation id="7102005569666697658">Đang tải xuống… <ph name="FILE_SIZE" /></translation>
@@ -914,6 +919,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="7756478488453921771">Trình đơn → Cài đặt → Phương thức thanh toán</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>
+<translation id="777572173400717978">{count,plural, =1{Đã đánh dấu trang}other{Đã đánh dấu trang}}</translation>
 <translation id="7781011649027948662">Dịch trang?</translation>
 <translation id="7781069478569868053">Trang thẻ mới</translation>
 <translation id="7781829728241885113">Hôm qua</translation>

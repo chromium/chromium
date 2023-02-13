@@ -735,6 +735,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4895488851634969361">Pin đầy.</translation>
 <translation id="490375751687810070">Dọc</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% pin</translation>
+<translation id="491504982845934899">Kích hoạt sau khi thiết lập thiết bị <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Mạnh</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> hiện đang sử dụng máy ảnh của bạn</translation>
@@ -1331,6 +1332,7 @@ Mới cài đặt</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8131994907636310308">Đóng thông báo sắp xếp</translation>
 <translation id="8132793192354020517">Đã kết nối với <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Kích hoạt sau khi thiết lập thiết bị</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8142441511840089262">Nhấp đúp</translation>
 <translation id="8142699993796781067">Mạng riêng</translation>

@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux를 다시 시작하시겠습니까?</translation>
 <translation id="1047431265488717055">링크 텍스트 복사(&amp;X)</translation>
 <translation id="1048286738600630630">디스플레이</translation>
+<translation id="1048770690598418849">지금은 이 단계를 건너뛸 수 있으며 설정을 완료한 후 자동으로 다시 시도합니다</translation>
 <translation id="1048986595386481879">동적으로 할당됨</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 중}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 중}}</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
@@ -1639,6 +1640,7 @@
 <translation id="2410754283952462441">계정 선택</translation>
 <translation id="241082044617551207">알 수 없는 플러그인</translation>
 <translation id="2410940059315936967">내가 방문한 사이트에서 다른 사이트의 콘텐츠(예: 이미지, 광고, 텍스트)를 삽입할 수 있습니다. 다른 사이트에서 설정한 쿠키를 서드 파티 쿠키라고 합니다.</translation>
+<translation id="2411666601450687801">이 기기에서는 가상 머신이 허용되지 않습니다.</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">키보드 기능 키</translation>
 <translation id="2418307627282545839">밝고 가벼운 느낌을 줍니다.</translation>
@@ -1900,6 +1902,7 @@
 <translation id="2653659639078652383">제출</translation>
 <translation id="265390580714150011">필드 값</translation>
 <translation id="2654553774144920065">인쇄 요청</translation>
+<translation id="265748523151262387">휴대전화 연결 상태 유지</translation>
 <translation id="2657612187216250073">포인팅 장치 접근성 설정</translation>
 <translation id="2658941648214598230">원본 콘텐츠를 표시하시겠습니까?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />기기에 따라 기능이 다를 수 있습니다.</translation>
@@ -5314,6 +5317,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5801051031414037185">휴대전화 설정</translation>
 <translation id="5801568494490449797">환경설정</translation>
 <translation id="5804241973901381774">권한</translation>
+<translation id="5804259315582798390">로컬 데이터 복구를 사용 설정할 수 없음</translation>
 <translation id="5805268472388605531">키보드 키를 길게 누르면 악센트 기호와 특수문자가 표시됩니다</translation>
 <translation id="5805697420284793859">창 관리자</translation>
 <translation id="5806447147478173900">표시된 사이트에서 사용 중인 총 저장용량: <ph name="TOTAL_USAGE" /></translation>
@@ -6697,6 +6701,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7047059339731138197">백그라운드를 선택합니다.</translation>
 <translation id="7049293980323620022">파일을 보관하시겠습니까?</translation>
 <translation id="7050037487872780845">핫스팟 구성이 잘못됨</translation>
+<translation id="7051551856857948729">IBAN 값 숨기기</translation>
 <translation id="7052237160939977163">성능 추적 데이터 전송</translation>
 <translation id="7053983685419859001">차단</translation>
 <translation id="7055152154916055070">다음 주소로의 리디렉션이 차단됨:</translation>
@@ -8405,6 +8410,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8634348081024879304">더 이상 Google Pay에서 가상 카드를 사용할 수 없습니다. <ph name="BEGIN_LINK" />가상 카드에 관해 알아보기<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">새로 고치는 중...</translation>
 <translation id="8636284842992792762">확장 프로그램 초기화 중...</translation>
+<translation id="8636323803535540285">여기로 더 빨리 이동하려면 <ph name="BRAND" />에 바로가기를 추가하세요.</translation>
 <translation id="8636500887554457830">사이트에서 팝업을 전송하거나 리디렉션을 사용할 수 없음</translation>
 <translation id="8637688295594795546">시스템 업데이트 사용가능. 다운로드 준비 중…</translation>
 <translation id="8639047128869322042">유해한 소프트웨어 확인 중...</translation>
@@ -8564,6 +8570,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8767621466733104912">모든 사용자의 Chrome 자동 업데이트</translation>
 <translation id="8770406935328356739">확장 프로그램 루트 디렉터리</translation>
 <translation id="8771300903067484968">시작 페이지 배경화면이 기본 배경화면으로 재설정되었습니다.</translation>
+<translation id="8773280816776735812">IBAN 값 표시</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> 저장</translation>
 <translation id="8774379074441005279">복원 확인</translation>
 <translation id="8774934320277480003">상단 여백</translation>

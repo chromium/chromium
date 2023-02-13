@@ -133,6 +133,7 @@
 <translation id="163517899691012366">შეტყობინებები დადუმებულია, როცა ჩართულია რეჟიმი „არ შემაწუხოთ“</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> მოწყობილობა</translation>
 <translation id="1639239467298939599">იტვირთება</translation>
+<translation id="1647986356840967552">წინა გვერდი</translation>
 <translation id="1654477262762802994">ხმოვანი მოთხოვნის დაწყება</translation>
 <translation id="1668469839109562275">ჩაშენებული VPN</translation>
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">ანგარიშობს…</translation>
 <translation id="397726367135689299">ბატარეა შეიძლება არასწორად იტენებოდეს.</translation>
 <translation id="3977512764614765090">ბატარეის დონეა <ph name="PERCENTAGE" />% და იტენება.</translation>
+<translation id="3984536049089846927">მომდევნო გვერდი</translation>
 <translation id="3986082989454912832">პასუხი</translation>
 <translation id="3995138139523574647">USB-C მოწყობილობა (მარჯვენა უკანა პორტი)</translation>
 <translation id="40062176907008878">ხელნაწერი</translation>

@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux রিস্টার্ট করবেন?</translation>
 <translation id="1047431265488717055">লিঙ্ক ও টেক্সট কপি করুন</translation>
 <translation id="1048286738600630630">প্রদর্শনগুলি</translation>
+<translation id="1048770690598418849">এখন এড়িয়ে যেতে পারেন এবং আপনি সেট-আপ সম্পূর্ণ করার পর আমরা অটোমেটিক আবার চেষ্টা করব</translation>
 <translation id="1048986595386481879">ডায়নামিকভাবে সাইজ বরাদ্দ করা হয়েছে</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> গ্রহণ করা হচ্ছে}one{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> গ্রহণ করা হচ্ছে}other{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> গ্রহণ করা হচ্ছে}}</translation>
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
@@ -1639,6 +1640,7 @@
 <translation id="2410754283952462441">একটি অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="241082044617551207">অজানা প্লাগ-ইন</translation>
 <translation id="2410940059315936967">আপনি যে সাইটটি দেখছেন সেটি অন্য সাইট থেকে কন্টেন্ট এম্বেড করতে পারে, যেমন ছবি, বিজ্ঞাপন এবং টেক্সট। এই অন্যান্য সাইট দ্বারা সেট করা কুকিগুলিকে থার্ড-পার্টি কুকি বলা হয়।</translation>
+<translation id="2411666601450687801">এই ডিভাইসে কোনও ভার্চুয়াল মেশিন ব্যবহার করা যাবে না</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">কীবোর্ডের ফাংশন কী</translation>
 <translation id="2418307627282545839">যথেষ্ট আলোকময় ও খোলামেলা রাখুন</translation>
@@ -1900,6 +1902,7 @@
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="265390580714150011">ক্ষেত্রের মান</translation>
 <translation id="2654553774144920065">প্রিন্ট করার অনুরোধ</translation>
+<translation id="265748523151262387">আপনার ফোনে কানেক্ট থাকুন</translation>
 <translation id="2657612187216250073">পয়েন্টার অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="2658941648214598230">আসল কন্টেন্ট দেখবেন?</translation>
 <translation id="2659381484350128933">ডিভাইসের উপর নির্ভর করে <ph name="FOOTNOTE_POINTER" /> বৈশিষ্ট্যের পরিবর্তন হবে</translation>
@@ -5318,6 +5321,7 @@
 <translation id="5801051031414037185">ফোন সেট-আপ করুন</translation>
 <translation id="5801568494490449797">অভিরুচিসমূহ</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
+<translation id="5804259315582798390">স্থানীয় ডেটা রিকভারি চালু করা যায়নি</translation>
 <translation id="5805268472388605531">অ্যাকসেন্ট চিহ্ন এবং বিশেষ অক্ষর দেখতে কীবোর্ড কী প্রেস করে ধরে থাকুন</translation>
 <translation id="5805697420284793859">উইন্ডো ম্যানেজার</translation>
 <translation id="5806447147478173900">দেখানো সাইটগুলি মোট যতটা স্টোরেজ ব্যবহার করেছে: <ph name="TOTAL_USAGE" /></translation>
@@ -6704,6 +6708,7 @@
 <translation id="7047059339731138197">একটি ব্যাকগ্রাউন্ড বেছে নিন</translation>
 <translation id="7049293980323620022">ফাইল রাখবেন?</translation>
 <translation id="7050037487872780845">হটস্পট কনফিগারেশনটি সঠিক নয়</translation>
+<translation id="7051551856857948729">IBAN ভ্যালু লুকান</translation>
 <translation id="7052237160939977163">কার্য-সম্পাদনা ট্রেস ডেটা পাঠান</translation>
 <translation id="7053983685419859001">ব্লক করুন</translation>
 <translation id="7055152154916055070">রিডাইরেক্ট ব্লক করা হয়েছে:</translation>
@@ -8410,6 +8415,7 @@
 <translation id="8634348081024879304">Google Pay অ্যাপে আপনার ভার্চুয়াল কার্ড আর ব্যবহার করতে পারবেন না। <ph name="BEGIN_LINK" />ভার্চুয়াল কার্ডের বিষয়ে জানুন<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">আবার লোড করা হচ্ছে...</translation>
 <translation id="8636284842992792762">এক্সটেনশন চালু করা হচ্ছে...</translation>
+<translation id="8636323803535540285">তাড়াতাড়ি আসতে, <ph name="BRAND" />-এ শর্টকার্ট যোগ করুন</translation>
 <translation id="8636500887554457830">সাইটকে পপ-আপ পাঠানো বা রিডাইরেক্ট ব্যবহার করার অনুমতি দেবেন না</translation>
 <translation id="8637688295594795546">সিস্টেম আপডেট উপলভ্য৷ ডাউনলোড করতে প্রস্তুত হচ্ছে...</translation>
 <translation id="8639047128869322042">ক্ষতিকর সফ্টওয়্যার খোঁজা হচ্ছে...</translation>
@@ -8569,6 +8575,7 @@
 <translation id="8767621466733104912">সকল ব্যবহারকারীর জন্য স্বয়ংক্রিয়ভাবে Chrome আপডেট করুন</translation>
 <translation id="8770406935328356739">এক্সটেনশান রুট ডিরেক্টরি</translation>
 <translation id="8771300903067484968">স্টার্ট পেজের ব্যাকগ্রাউন্ড ডিফল্ট ব্যাকগ্রাউন্ডে রিসেট করা হয়েছে।</translation>
+<translation id="8773280816776735812">IBAN ভ্যালু দেখান</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> সেভ করুন</translation>
 <translation id="8774379074441005279">ফিরিয়ে আনতে কনফার্ম করুন</translation>
 <translation id="8774934320277480003">শীর্ষ মার্জিন</translation>

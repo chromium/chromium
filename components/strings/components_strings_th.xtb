@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">ปุ่มสำรวจต่อ กด Enter เพื่อสำรวจต่อและดูกิจกรรมที่เกี่ยวข้องในประวัติการเข้าชมใน Chrome</translation>
 <translation id="1101672080107056897">การดำเนินการผิดพลาด</translation>
 <translation id="1103523840287552314">แปลภาษา<ph name="LANGUAGE" />ทุกครั้ง</translation>
+<translation id="1104409666019087579">ไม่มีข้อมูลในช่องที่ต้องกรอกบางช่อง โปรดป้อนข้อมูลเหล่านี้ก่อนบันทึก</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">เลือกสิทธิ์สำหรับ<ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">โบราณวัตถุและของสะสม</translation>
@@ -909,7 +910,6 @@
 <translation id="3249151924975132674">สินเชื่อเพื่อการศึกษา</translation>
 <translation id="3249845759089040423">ดึงดูด</translation>
 <translation id="3250640885957938546">การโฆษณาและการตลาด</translation>
-<translation id="3251133337102041130">Government Legal</translation>
 <translation id="3252266817569339921">ฝรั่งเศส</translation>
 <translation id="3254301855501243548">18 x 22 นิ้ว</translation>
 <translation id="3256863843508922226">การเกษียณอายุและบำนาญ</translation>
@@ -2021,6 +2021,7 @@
 <translation id="5992691462791905444">พับทบแบบ Engineering รูปตัว Z</translation>
 <translation id="5992805036496113940">ดูข้อมูลที่ใช้เพื่อแสดงโฆษณาแก่คุณ</translation>
 <translation id="5995727681868049093">จัดการข้อมูล ความเป็นส่วนตัว และการรักษาความปลอดภัยในบัญชี Google ของคุณ</translation>
+<translation id="5996887213716993070">ต้องระบุ <ph name="FIELD" /></translation>
 <translation id="5997247540087773573">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เพื่อรักษาความปลอดภัยของบัญชี เครื่องมือจัดการรหัสผ่านบน Google แนะนำให้เปลี่ยนรหัสผ่านทันทีและตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
 <translation id="6000758707621254961">มีผลการค้นหา "<ph name="SEARCH_TEXT" />" <ph name="RESULT_COUNT" /> รายการ</translation>
 <translation id="6005765687956866568">ล้างข้อมูลที่ป้อนอัตโนมัติออกจากแบบฟอร์มแล้ว</translation>
@@ -2764,6 +2765,7 @@
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">ลำดับเดียวกันหงายหน้าขึ้น</translation>
 <translation id="7785790577395078482">แท็บเล็ตเครื่องนี้</translation>
+<translation id="7786368602962652765">ไม่มีข้อมูลในช่องที่ต้องกรอก โปรดป้อนข้อมูลก่อนบันทึก</translation>
 <translation id="7790488044432570133">เว็บไซต์ที่คุณเข้าชมสามารถขอข้อมูลจาก Chrome เพื่อช่วยในการวัดประสิทธิภาพของโฆษณาได้ Chrome อนุญาตให้เว็บไซต์รวบรวมข้อมูลเพียงบางประเภทเท่านั้น เช่น ช่วงเวลาของวันที่มีการแสดงโฆษณาแก่คุณ</translation>
 <translation id="7791011319128895129">ยังไม่ได้เผยแพร่</translation>
 <translation id="7791196057686275387">บรรจุภัณฑ์</translation>
@@ -2910,7 +2912,6 @@
 <translation id="8150722005171944719">ไฟล์ที่ <ph name="URL" /> ไม่สามารถอ่านได้ เนื่องจากอาจถูกลบ ย้ายไปแล้ว หรือการอนุญาตของไฟล์อาจป้องกันการเข้าถึง</translation>
 <translation id="8153865548451212769">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้ดาวน์โหลดไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้ดาวน์โหลดไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8163866351304776260">เจาะรูด้านซ้าย 4 รู</translation>
-<translation id="8175330382720204696">Government Letter</translation>
 <translation id="8175796834047840627">Chrome เสนอที่จะบันทึกบัตรลงในบัญชี Google ของคุณเพราะคุณลงชื่อเข้าใช้อยู่ คุณปรับเปลี่ยนลักษณะการทำงานนี้ได้ในการตั้งค่า</translation>
 <translation id="8176440868214972690">ผู้ดูแลระบบของอุปกรณ์นี้ได้ส่งข้อมูลบางอย่าง เช่น การตั้งค่าหรือนโยบายไปยังเว็บไซต์ต่อไปนี้</translation>
 <translation id="8184538546369750125">ใช้ค่าเริ่มต้นสากล (อนุญาต)</translation>

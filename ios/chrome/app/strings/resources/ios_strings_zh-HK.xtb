@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">新搜尋</translation>
 <translation id="1209206284964581585">暫時隱藏</translation>
 <translation id="1219674500290482172">無法連線至互聯網。</translation>
+<translation id="1226238226094914652">在所有裝置上都能使用自己的密碼</translation>
 <translation id="122699739164161391">關閉所有分頁</translation>
 <translation id="1229222343402087523">在 Chrome 中搜尋「${searchPhrase}」</translation>
 <translation id="1242044645101871359">再次登入</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">全部開啟</translation>
 <translation id="2556092377360758201">無保護功能 (不建議)</translation>
 <translation id="2562041823070056534">正在傳送至 <ph name="DEVICE_NAME" />…</translation>
+<translation id="2576499762020411840">將密碼儲存到 Google 帳戶並自動填入</translation>
 <translation id="2578571896248130439">傳送網頁</translation>
 <translation id="2584132361465095047">新增帳戶…</translation>
 <translation id="2600682495497606169">清除網站 Cookie</translation>
@@ -409,6 +411,7 @@
 <translation id="4063300985191096908">前往「動態消息」</translation>
 <translation id="408404951701638773">簡易存取搜尋列</translation>
 <translation id="4092655288299341041">顯示說明</translation>
+<translation id="4101942614374785540">密碼目前已儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />)，只要登入帳戶即可使用。如要關閉這項功能，請前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />。</translation>
 <translation id="4108998448622696017">偵測並在危險事件發生時發出警告。</translation>
 <translation id="411254640334432676">下載失敗。</translation>
 <translation id="4112644173421521737">搜尋</translation>
@@ -692,6 +695,7 @@
 <translation id="6184086493125982861">顯示分頁</translation>
 <translation id="6187302354554850004">上次同步時間：<ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">未讀</translation>
+<translation id="6193424046394092997">{count,plural, =1{已將書籤加入「{title}」}other{已將書籤加入「{title}」}}</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
 <translation id="6219550825416862075">歡迎回來</translation>
@@ -836,6 +840,7 @@
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>
 <translation id="7080806333218412752">將網址傳送至「安全瀏覽」功能檢查。同時傳送少量網頁、下載檔案、擴充程式活動及系統資料，以協助探索新威脅。當您登入 Google 帳戶時，這些資料會暫時連結至您的帳戶，保護各個 Google 應用程式的使用安全。</translation>
+<translation id="7083860864742905105">如果開啟，系統會將密碼儲存在 <ph name="ACCOUNT" /> 中。如果關閉，密碼只會儲存在這部裝置上。</translation>
 <translation id="7095110968493193530">儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」</translation>
 <translation id="7099761977003084116">最近開啟的分頁</translation>
 <translation id="7102005569666697658">正在下載…<ph name="FILE_SIZE" /></translation>
@@ -912,6 +917,7 @@
 <translation id="7756478488453921771">「選單」→「設定」→「付款方法」</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7772032839648071052">確認複雜密碼</translation>
+<translation id="777572173400717978">{count,plural, =1{已加入書籤}other{已加入書籤}}</translation>
 <translation id="7781011649027948662">要翻譯網頁嗎？</translation>
 <translation id="7781069478569868053">新分頁</translation>
 <translation id="7781829728241885113">昨天</translation>

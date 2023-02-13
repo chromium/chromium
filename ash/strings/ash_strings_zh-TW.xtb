@@ -133,6 +133,7 @@
 <translation id="163517899691012366">「零打擾」模式開啟時，系統會忽略通知</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="1639239467298939599">載入中</translation>
+<translation id="1647986356840967552">上一頁</translation>
 <translation id="1654477262762802994">啟動語音查詢</translation>
 <translation id="1668469839109562275">內建 VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
@@ -554,6 +555,7 @@
 <translation id="397105322502079400">計算中…</translation>
 <translation id="397726367135689299">電池充電過程可能不穩定。</translation>
 <translation id="3977512764614765090">電池電量：<ph name="PERCENTAGE" />% (充電中)。</translation>
+<translation id="3984536049089846927">下一頁</translation>
 <translation id="3986082989454912832">接聽</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右後方連接埠)</translation>
 <translation id="40062176907008878">手寫</translation>
@@ -732,6 +734,7 @@
 <translation id="4895488851634969361">電池電量已滿。</translation>
 <translation id="490375751687810070">縱向</translation>
 <translation id="490788395437447240">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">在裝置完成「<ph name="NETWORK_NAME" />」設定後啟用</translation>
 <translation id="4917385247580444890">強</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4919841137949306064">「<ph name="APP_NAME" />」正在使用你的攝影機</translation>
@@ -1327,6 +1330,7 @@
 <translation id="8131740175452115882">確認</translation>
 <translation id="8131994907636310308">關閉排序浮動式訊息</translation>
 <translation id="8132793192354020517">已連線至 <ph name="NAME" /></translation>
+<translation id="8138705869659070104">在裝置完成設定後啟用</translation>
 <translation id="813913629614996137">正在初始化...</translation>
 <translation id="8142441511840089262">按兩下</translation>
 <translation id="8142699993796781067">私人網路</translation>

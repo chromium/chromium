@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Mulai ulang Linux?</translation>
 <translation id="1047431265488717055">Salin Te&amp;ks Tautan</translation>
 <translation id="1048286738600630630">Tampilan</translation>
+<translation id="1048770690598418849">Anda dapat melewatinya untuk saat ini dan kami akan mencobanya lagi secara otomatis setelah Anda menyelesaikan penyiapan</translation>
 <translation id="1048986595386481879">Dialokasikan secara dinamis</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Menerima <ph name="ATTACHMENTS" /> dari <ph name="DEVICE_NAME" />}other{Menerima <ph name="ATTACHMENTS" /> dari <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Samaran</translation>
@@ -1638,6 +1639,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2410754283952462441">Pilih akun</translation>
 <translation id="241082044617551207">Plugin tidak dikenal</translation>
 <translation id="2410940059315936967">Situs yang Anda buka dapat menyematkan konten dari situs lain, misalnya gambar, iklan, dan teks. Cookie yang disetel oleh situs lain ini disebut cookie pihak ketiga.</translation>
+<translation id="2411666601450687801">Tidak ada Mesin Virtual yang diizinkan di perangkat ini</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Tombol fungsi keyboard</translation>
 <translation id="2418307627282545839">Membuat semuanya tetap terang dan nyaman dilihat</translation>
@@ -1899,6 +1901,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="265390580714150011">Nilai Bidang</translation>
 <translation id="2654553774144920065">Permintaan cetak</translation>
+<translation id="265748523151262387">Tetap terhubung dengan ponsel Anda</translation>
 <translation id="2657612187216250073">Setelan aksesibilitas pointer</translation>
 <translation id="2658941648214598230">Tampilkan konten asli?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Fitur berbeda menurut perangkat</translation>
@@ -5315,6 +5318,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5801051031414037185">Siapkan ponsel</translation>
 <translation id="5801568494490449797">Preferensi</translation>
 <translation id="5804241973901381774">Izin</translation>
+<translation id="5804259315582798390">Gagal mengaktifkan pemulihan data lokal</translation>
 <translation id="5805268472388605531">Tekan &amp; tahan tombol keyboard untuk melihat tanda aksen dan karakter khusus</translation>
 <translation id="5805697420284793859">Window manager</translation>
 <translation id="5806447147478173900">Total penyimpanan yang digunakan oleh situs yang ditampilkan: <ph name="TOTAL_USAGE" /></translation>
@@ -6698,6 +6702,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7047059339731138197">Pilih latar belakang</translation>
 <translation id="7049293980323620022">Simpan file?</translation>
 <translation id="7050037487872780845">Konfigurasi hotspot tidak valid</translation>
+<translation id="7051551856857948729">Sembunyikan nilai IBAN</translation>
 <translation id="7052237160939977163">Mengirim data pelacakan kinerja</translation>
 <translation id="7053983685419859001">Blokir</translation>
 <translation id="7055152154916055070">Pengalihan diblokir:</translation>
@@ -8405,6 +8410,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8634348081024879304">Anda tidak akan dapat menggunakan kartu virtual dengan Google Pay lagi. <ph name="BEGIN_LINK" />Pelajari kartu virtual<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Memuat ulang...</translation>
 <translation id="8636284842992792762">Melakukan inisialisasi ekstensi...</translation>
+<translation id="8636323803535540285">Untuk membukanya lebih cepat, tambahkan pintasan ke <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Jangan izinkan situs mengirim pop-up atau menggunakan pengalihan</translation>
 <translation id="8637688295594795546">Pembaruan sistem tersedia. Bersiap mendownload...</translation>
 <translation id="8639047128869322042">Memeriksa software berbahaya...</translation>
@@ -8564,6 +8570,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8767621466733104912">Update Chrome secara otomatis untuk semua pengguna</translation>
 <translation id="8770406935328356739">Direktori akar ekstensi</translation>
 <translation id="8771300903067484968">Latar belakang halaman awal telah direset ke latar belakang default.</translation>
+<translation id="8773280816776735812">Tampilkan nilai IBAN</translation>
 <translation id="8773302562181397928">Simpan <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Konfirmasikan Pemulihan</translation>
 <translation id="8774934320277480003">Batas atas</translation>

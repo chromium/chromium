@@ -812,6 +812,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6869389390665537774">Můžete si zobrazit stránky, které jste navštívili, a případně je z historie smazat</translation>
 <translation id="687135068089457384">Zobrazit nastavení</translation>
 <translation id="6873263987691478642">Režim Split View</translation>
+<translation id="6873366418270195926">Pokud cena na některém webu klesne, dostanete upozornění. Tato stránka je uložena v <ph name="BEGIN_LINK" />Záložkách<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardní ochrana před weby, soubory ke stažení a rozšířeními, o nichž je známo, že jsou nebezpečné.</translation>
 <translation id="6888009575607455378">Opravdu chcete změny zahodit?</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
@@ -1114,6 +1115,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="952704832371081537">Zrušit</translation>
 <translation id="953008885340860025">Chrome je odhlášen</translation>
 <translation id="959066944189734975">Sledujete web <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Vaše organizace umožňuje pouze přihlášení pomocí určitých účtů. Nepovolené účty jsou skryty.</translation>
 <translation id="984509647832111802">Synchronizace nefunguje.</translation>
 <translation id="988141524645182168">Jiná zařízení</translation>

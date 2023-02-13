@@ -52,6 +52,7 @@
 <translation id="104710386808485638">‏Linux ری اسٹارٹ کریں؟</translation>
 <translation id="1047431265488717055">لنک کا مت&amp;ن کاپی کریں</translation>
 <translation id="1048286738600630630">ڈسپلیز</translation>
+<translation id="1048770690598418849">آپ ابھی کے لیے نظر انداز کر سکتے ہیں اور آپ کے سیٹ اپ مکمل کرنے کے بعد ہم خودکار طور پر دوبارہ کوشش کریں گے</translation>
 <translation id="1048986595386481879">ڈائنیمک طور پر مختص</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> سے <ph name="ATTACHMENTS" /> موصول ہو رہی ہیں}other{<ph name="DEVICE_NAME" /> سے <ph name="ATTACHMENTS" /> موصول ہو رہی ہیں}}</translation>
 <translation id="1049743911850919806">پوشیدگی</translation>
@@ -1625,6 +1626,7 @@
 <translation id="2410754283952462441">اکاؤنٹ منتخب کریں</translation>
 <translation id="241082044617551207">نامعلوم پلگ ان</translation>
 <translation id="2410940059315936967">آپ کی ملاحظہ کی جانے والی سائٹ دوسری سائٹس سے مواد کو سرایت کر سکتی ہے، مثال کے طور پر تصاویر، اشتہارات اور ٹیکسٹ۔ ان دیگر سائٹس کے ذریعے سیٹ کردہ کوکیز کو فریق ثالث کوکیز کہا جاتا ہے۔</translation>
+<translation id="2411666601450687801">اس آلے پر کسی بھی ورچوئل مشین کی اجازت نہیں ہے</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">کی بورڈ کی فنکشن کلیدیں</translation>
 <translation id="2418307627282545839">چیزوں کو روشن اور ہوا دار رکھیں</translation>
@@ -1886,6 +1888,7 @@
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="265390580714150011">فیلڈ قدر</translation>
 <translation id="2654553774144920065">پرنٹ کی درخواست</translation>
+<translation id="265748523151262387">اپنے فون کے ساتھ منسلک رہیں</translation>
 <translation id="2657612187216250073">پوائنٹر کی ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="2658941648214598230">اصل مواد دکھائیں؟</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />خصوصیات آلہ کے لحاظ سے مختلف ہوتی ہیں</translation>
@@ -5300,6 +5303,7 @@
 <translation id="5801051031414037185">فون سیٹ اپ کریں</translation>
 <translation id="5801568494490449797">ترجیحات</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
+<translation id="5804259315582798390">مقامی ڈیٹا کی بازیابی کو فعال کرنے میں ناکام</translation>
 <translation id="5805268472388605531">لہجے کے نشانات اور مخصوص حروف دیکھنے کے لیے کی بورڈ کی کلیدوں کو چھوئیں اور دبائے رکھیں</translation>
 <translation id="5805697420284793859">ونڈو مینیجر</translation>
 <translation id="5806447147478173900">ڈسپلے کردہ سائٹس کے ذریعہ استعمال کی گئی کل اسٹوریج: <ph name="TOTAL_USAGE" /></translation>
@@ -6683,6 +6687,7 @@
 <translation id="7047059339731138197">ایک پس منظر منتخب کریں</translation>
 <translation id="7049293980323620022">فائل رکھیں؟</translation>
 <translation id="7050037487872780845">ہاٹ اسپاٹ کا غلط کنفیگریشن</translation>
+<translation id="7051551856857948729">‏IBAN قدر کو چھپائیں</translation>
 <translation id="7052237160939977163">کارکردگی کا پتا لگانے کا ڈیٹا بھیجیں</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7055152154916055070">ری ڈائریکٹ مسدود کیا گیا:</translation>
@@ -8548,6 +8553,7 @@
 <translation id="8767621466733104912">‏سبھی صارفین کیلئے Chrome کو خودکار طور پر اپ ڈیٹ کریں</translation>
 <translation id="8770406935328356739">ایکسٹینشن روٹ ڈائرکٹری</translation>
 <translation id="8771300903067484968">ابتدائی صفحہ کے پس منظر کو ڈیفالٹ پس منظر پر دوبارہ ترتیب دے دیا گیا ہے۔</translation>
+<translation id="8773280816776735812">‏IBAN قدر کو دکھائیں</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> محفوظ کریں</translation>
 <translation id="8774379074441005279">بحالی کی تصدیق کریں</translation>
 <translation id="8774934320277480003">اوپری مارجن</translation>

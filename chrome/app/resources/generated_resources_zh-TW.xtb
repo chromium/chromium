@@ -38,6 +38,7 @@
 <translation id="103279545524624934">請釋出磁碟空間以啟動 Android 應用程式。</translation>
 <translation id="1033780634303702874">存取你的序列裝置</translation>
 <translation id="1034484273907870301">平板電腦模式的縮圖分頁列</translation>
+<translation id="1035875743511577452">點選「變更主題」即可查看取材自藝術家作品、大自然等內容的主題</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1036511912703768636">存取下列任一 USB 裝置</translation>
 <translation id="1038168778161626396">只有 Encipher</translation>
@@ -1377,6 +1378,7 @@
 <translation id="2203088913459920044">名稱可以包含字母、數字和特殊字元</translation>
 <translation id="220321590587754225">無法連線，請再試一次。</translation>
 <translation id="2203903197029773650">你必須登入 Google 帳戶，<ph name="BRAND" />才能檢查你的密碼</translation>
+<translation id="2204020417499639567">已填寫電子郵件地址。</translation>
 <translation id="2204034823255629767">讀取及變更你輸入的任何設定</translation>
 <translation id="2204387456724731099">無法翻譯這個選取的項目</translation>
 <translation id="2210462644007531147">無法完成安裝</translation>
@@ -1831,6 +1833,7 @@
 <translation id="2603355571917519942">現在可以使用 Voice Match 了</translation>
 <translation id="2604129989323098489">網站通常會要求你提供螢幕的相關資訊，以便視情況開啟視窗並調整視窗位置，例如並排顯示文件或全螢幕內容</translation>
 <translation id="2604255671529671813">網路連線錯誤</translation>
+<translation id="2604805099836652105">已填寫<ph name="ADDRESS_LABEL" />地址表單。</translation>
 <translation id="2605668923777146443">如要查看 Better Together 選項，請前往<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />。</translation>
 <translation id="2606246518223360146">連結資料</translation>
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
@@ -2422,6 +2425,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">無法建立資料目錄</translation>
 <translation id="3124111068741548686">USER 控制代碼</translation>
+<translation id="3124332159330678621">根據自己的需求更新 Chrome 瀏覽器外觀</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">為避免發生充電和效能問題，請使用相容的 Dell 或 USB Type-C 電源變壓器。</translation>
 <translation id="3127862849166875294">調整 Linux 磁碟大小</translation>
@@ -3047,6 +3051,7 @@
 <translation id="3713091615825314967">自動更新功能已開啟。</translation>
 <translation id="371370241367527062">前置麥克風</translation>
 <translation id="3714195043138862580">這個示範裝置已設為取消佈建狀態。</translation>
+<translation id="3719310907809321183">已填寫 <ph name="CARD_IDENTIFIER" />。</translation>
 <translation id="3719826155360621982">首頁</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">你與 Google</translation>
@@ -3653,6 +3658,7 @@
 <translation id="426652736638196239">這個 IBAN 只會儲存在這部裝置上</translation>
 <translation id="4266679478228765574">移除資料夾會停止與他人共用檔案，但不會刪除檔案。</translation>
 <translation id="4267455501101322486">你必須要求家長授予權限，才能新增可存取教育資源的帳戶</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{找不到密碼}=1{找到 1 筆結果}other{找到 {COUNT} 筆結果}}</translation>
 <translation id="4267924571297947682">請要求家長授予權限</translation>
 <translation id="4267953847983678297">自動連線至行動數據網路</translation>
 <translation id="4268025649754414643">金鑰編密</translation>
@@ -3933,6 +3939,7 @@
 <translation id="4522890784888918985">不支援子帳戶</translation>
 <translation id="4523876148417776526">尚未擷取的 XML 網站清單。</translation>
 <translation id="4524832533047962394">這個版本的作業系統不支援目前提供的註冊模式。請確認你使用的是最新版本。</translation>
+<translation id="4526853756266614740">選擇圖片即可立即套用主題</translation>
 <translation id="452750746583162491">查看已同步處理的資料</translation>
 <translation id="4527929807707405172">啟用反向捲動功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">翻譯建議</translation>
@@ -4232,6 +4239,7 @@
 <translation id="4800839971935185386">查看名稱和圖示的異動</translation>
 <translation id="4801448226354548035">隱藏帳戶</translation>
 <translation id="4801512016965057443">允許行動數據漫遊</translation>
+<translation id="4804311503028830356">點選向後箭頭即可查看其他選項</translation>
 <translation id="4804818685124855865">中斷連線</translation>
 <translation id="4804827417948292437">酪梨</translation>
 <translation id="4806457879608775995">請詳閱以下條款，並控管您的資料</translation>
@@ -8113,6 +8121,7 @@
 <translation id="8358912028636606457">這個裝置不支援分頁音訊投放功能。</translation>
 <translation id="835951711479681002">儲存在 Google 帳戶中</translation>
 <translation id="8360140320636871023">打造個人化的螢幕主題</translation>
+<translation id="8360267485906769442">提供意見按鈕</translation>
 <translation id="8363095875018065315">穩定版</translation>
 <translation id="8363142353806532503">無法使用麥克風</translation>
 <translation id="8366396658833131068">你的網路連線已恢復。請選取其他網路，或按底下的 [繼續] 按鈕啟動 Kiosk 應用程式。</translation>
@@ -8259,6 +8268,7 @@
 <translation id="8498214519255567734">讓你在光線昏暗的環境下更容易看清畫面內容或閱讀文字</translation>
 <translation id="8498395510292172881">在 Chrome 中繼續閱讀</translation>
 <translation id="8499083585497694743">將麥克風取消靜音</translation>
+<translation id="8499526927826495298">傳送<ph name="BEGIN_LINK1" />自動填入中繼資料<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">如要使用透過 Google Play 安裝的應用程式，請先還原你的應用程式。這可能導致部分資料遺失。</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="850382998924680137">今天看過</translation>

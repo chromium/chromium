@@ -5760,7 +5760,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6208725777148613371">Falha ao guardar no <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="6209838773933913227">Atualização de componentes</translation>
 <translation id="6209908325007204267">O seu dispositivo inclui uma Chrome Enterprise Upgrade, mas o seu nome de utilizador não está associado a uma conta de empresa. Crie uma conta de empresa ao visitar g.co/ChromeEnterpriseAccount num dispositivo secundário.</translation>
-<translation id="6210005727706242461">E é tudo! Agora pode dar ao seu navegador um novo aspeto em qualquer altura.</translation>
 <translation id="6210282067670792090">Na barra de endereço, utilize este atalho de teclado com atalhos para motores de pesquisa e pesquisa no site</translation>
 <translation id="621172521139737651">{COUNT,plural, =0{Abrir todos num &amp;novo grupo de separadores}=1{Abrir num &amp;novo grupo de separadores}other{Abrir todos ({COUNT}) num &amp;novo grupo de separadores}}</translation>
 <translation id="6212039847102026977">Mostrar propriedades de rede avançadas</translation>
