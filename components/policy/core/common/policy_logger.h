@@ -11,6 +11,7 @@
 
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
@@ -129,7 +130,7 @@ class POLICY_EXPORT PolicyLogger {
     }
 
     // Calls the appropriate base/logging macro.
-    void StreamLog();
+    void StreamLog() const;
 
    private:
     LogType log_type_;
@@ -151,10 +152,10 @@ class POLICY_EXPORT PolicyLogger {
   base::Value::List GetAsList() const;
 
   // Checks if browser is running on Android.
-  bool IsPolicyLoggingEnabled();
+  bool IsPolicyLoggingEnabled() const;
 
   // Returns the logs size for testing purposes.
-  int GetPolicyLogsSizeForTesting();
+  int GetPolicyLogsSizeForTesting() const;
 
   // TODO(b/251799119): delete logs after an expiry period of ~30 minutes.
 
@@ -162,7 +163,9 @@ class POLICY_EXPORT PolicyLogger {
   // Adds a new log to the logs_ list.
   void AddLog(Log&& new_log);
 
-  std::vector<Log> logs_;
+  std::vector<Log> logs_ GUARDED_BY_CONTEXT(logs_list_sequence_checker_);
+
+  SEQUENCE_CHECKER(logs_list_sequence_checker_);
 };
 
 }  // namespace policy

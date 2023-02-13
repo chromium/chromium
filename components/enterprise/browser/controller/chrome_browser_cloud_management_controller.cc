@@ -162,11 +162,10 @@ void ChromeBrowserCloudManagementController::Init(
     LOG_POLICY(ERROR, CBCM_ENROLLMENT)
         << "Cloud management controller initialization aborted as CBCM is not "
            "enabled.";
-
-    LOG_POLICY(INFO, CBCM_ENROLLMENT)
-        << "Starting CBCM Controller Initialization";
     return;
   }
+  LOG_POLICY(INFO, CBCM_ENROLLMENT)
+      << "Starting CBCM Controller Initialization";
 
   delegate_->InitializeOAuthTokenFactory(url_loader_factory, local_state);
 

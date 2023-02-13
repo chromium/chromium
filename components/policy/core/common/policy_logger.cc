@@ -105,7 +105,7 @@ PolicyLogger::LogHelper::~LogHelper() {
   StreamLog();
 }
 
-void PolicyLogger::LogHelper::StreamLog() {
+void PolicyLogger::LogHelper::StreamLog() const {
   base::StringPiece filename(location_.file_name());
   std::ostringstream message;
 
@@ -164,15 +164,20 @@ base::Value::Dict PolicyLogger::Log::GetAsDict() const {
 }
 
 PolicyLogger::PolicyLogger() = default;
-PolicyLogger::~PolicyLogger() = default;
+
+PolicyLogger::~PolicyLogger() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
+}
 
 void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
   if (IsPolicyLoggingEnabled()) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
     logs_.emplace_back(std::move(new_log));
   }
 }
 
 base::Value::List PolicyLogger::GetAsList() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
   base::Value::List all_logs_list;
   for (const Log& log : logs_) {
     all_logs_list.Append(log.GetAsDict());
@@ -180,7 +185,7 @@ base::Value::List PolicyLogger::GetAsList() const {
   return all_logs_list;
 }
 
-bool PolicyLogger::IsPolicyLoggingEnabled() {
+bool PolicyLogger::IsPolicyLoggingEnabled() const {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(policy::features::kPolicyLogsPageAndroid);
 #else
@@ -188,7 +193,8 @@ bool PolicyLogger::IsPolicyLoggingEnabled() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-int PolicyLogger::GetPolicyLogsSizeForTesting() {
+int PolicyLogger::GetPolicyLogsSizeForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
   return logs_.size();
 }
 
