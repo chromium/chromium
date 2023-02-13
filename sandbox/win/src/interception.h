@@ -190,13 +190,6 @@ class InterceptionManager {
   // as opposed to from the parent.
   bool IsInterceptionPerformedByChild(const InterceptionData& data) const;
 
-  // Allocates a buffer on the child's address space (returned on
-  // remote_buffer), and fills it with the contents of a local buffer.
-  // Returns SBOX_ALL_OK on success.
-  ResultCode CopyDataToChild(const void* local_buffer,
-                             size_t buffer_bytes,
-                             void** remote_buffer) const;
-
   // Performs the cold patch (from the parent) of ntdll.
   // Returns SBOX_ALL_OK on success.
   //
