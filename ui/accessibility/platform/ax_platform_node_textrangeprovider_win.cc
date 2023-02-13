@@ -1655,16 +1655,16 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetStart(
   // TODO(bebeaudr): We can't use IsNullPosition() here because of
   // https://crbug.com/1152939. Once this is fixed, we can go back to
   // IsNullPosition().
-  if (did_tree_change && start_->GetTree() &&
+  if (did_tree_change && start_->kind() != AXPositionKind::NULL_POSITION &&
       start_->tree_id() != end_->tree_id()) {
-    start_->GetTree()->RemoveObserver(this);
+    RemoveObserver(start_->tree_id());
   }
 
   start_ = std::move(new_start);
 
   if (did_tree_change && !start_->IsNullPosition() &&
       start_->tree_id() != end_->tree_id()) {
-    start_->GetTree()->AddObserver(this);
+    AddObserver(start_->tree_id());
   }
 }
 
@@ -1674,17 +1674,31 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::SetEnd(
   // TODO(bebeaudr): We can't use IsNullPosition() here because of
   // https://crbug.com/1152939. Once this is fixed, we can go back to
   // IsNullPosition().
-  if (did_tree_change && end_->GetTree() &&
+  if (did_tree_change && end_->kind() != AXPositionKind::NULL_POSITION &&
       end_->tree_id() != start_->tree_id()) {
-    end_->GetTree()->RemoveObserver(this);
+    RemoveObserver(end_->tree_id());
   }
 
   end_ = std::move(new_end);
 
   if (did_tree_change && !end_->IsNullPosition() &&
       start_->tree_id() != end_->tree_id()) {
-    end_->GetTree()->AddObserver(this);
+    AddObserver(end_->tree_id());
   }
+}
+
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::AddObserver(
+    const AXTreeID tree_id) {
+  AXTreeManager* ax_tree_manager = AXTreeManager::FromID(tree_id);
+  DCHECK(ax_tree_manager);
+  ax_tree_manager->ax_tree()->AddObserver(this);
+}
+
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::RemoveObserver(
+    const AXTreeID tree_id) {
+  AXTreeManager* ax_tree_manager = AXTreeManager::FromID(tree_id);
+  if (ax_tree_manager)
+    ax_tree_manager->ax_tree()->RemoveObserver(this);
 }
 
 // Ensures that our endpoints are located on non-deleted nodes (step 1, case A
@@ -1820,11 +1834,7 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
     OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {
   if (start_->tree_id() == previous_tree_id ||
       end_->tree_id() == previous_tree_id) {
-    AXTreeManager* ax_tree_manager = AXTreeManager::FromID(previous_tree_id);
-    if (ax_tree_manager) {
-      DCHECK(ax_tree_manager->ax_tree());
-      ax_tree_manager->ax_tree()->RemoveObserver(this);
-    }
+    RemoveObserver(previous_tree_id);
   }
 }
 
