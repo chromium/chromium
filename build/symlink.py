@@ -83,6 +83,7 @@ def Main(argv):
 
 
   if options.touch:
+    os.makedirs(os.path.dirname(options.touch), exist_ok=True)
     with open(options.touch, 'w'):
       pass
 
