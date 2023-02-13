@@ -263993,16 +263993,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "c1e36092bf39c530ca8ff4ab12302a919cf29780",
-     []
-    ],
-    "mtime.json": [
-     "0d34fcd45efd8d771d6dce5e275395f4e0cf2032",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -270399,6 +270389,10 @@
      ],
      "blockeduri-ws-wss-scheme.html.ini": [
       "14fa5353a94d6e817867131b3d39e97aacdb670f",
+      []
+     ],
+     "idlharness.window-expected.txt": [
+      "a997488813c197db7ef450a03c2827554a6d5575",
       []
      ],
      "img-src-redirect-upgrade-reporting.https.html.headers": [
@@ -337867,6 +337861,14 @@
     "META.yml": [
      "57ba808a2e4b1f787988967817391d9ecc397418",
      []
+    ],
+    "idlharness.any-expected.txt": [
+     "3dbd47f9045602410f957505b875fe2d5f215ee2",
+     []
+    ],
+    "idlharness.any.worker-expected.txt": [
+     "3dbd47f9045602410f957505b875fe2d5f215ee2",
+     []
     ]
    },
    "device-memory": {
@@ -348109,7 +348111,7 @@
      []
     ],
     "FileSystemDirectoryHandle-getFileHandle.https.any-expected.txt": [
-     "5f74d8ebc6ef94e16b7e2dbe24ee4d2345293d4d",
+     "8b258500c2d6e9834ccb712dba9a70a99a987570",
      []
     ],
     "FileSystemDirectoryHandle-getFileHandle.https.any.js.ini": [
@@ -348117,7 +348119,7 @@
      []
     ],
     "FileSystemDirectoryHandle-getFileHandle.https.any.worker-expected.txt": [
-     "5f74d8ebc6ef94e16b7e2dbe24ee4d2345293d4d",
+     "8b258500c2d6e9834ccb712dba9a70a99a987570",
      []
     ],
     "FileSystemDirectoryHandle-removeEntry.https.any-expected.txt": [
@@ -371656,8 +371658,16 @@
      "b738239a16f9110ac148b4d3c0bcfecb7eca25bd",
      []
     ],
+    "idlharness.any-expected.txt": [
+     "2d65b553a346f7dcddc870151210bcb7b90142cf",
+     []
+    ],
     "idlharness.any.js.ini": [
      "a807bac881dd72c20da610b6e38121c92fa16f20",
+     []
+    ],
+    "idlharness.any.worker-expected.txt": [
+     "2d65b553a346f7dcddc870151210bcb7b90142cf",
      []
     ]
    },
@@ -377383,7 +377393,7 @@
      ]
     },
     "idlharness.window-expected.txt": [
-     "435f4af3f87e63b0c120d541c1a3ae9d49a18912",
+     "08809e9e5f3b6bfe36511b076941423865e51a46",
      []
     ],
     "idlharness.window.js.ini": [
@@ -380682,6 +380692,14 @@
     ],
     "generateTestReport-honors-endpoint.https.sub.html.sub.headers": [
      "7167d54d8388fc3aa5bd57ee598e4ab48f88b396",
+     []
+    ],
+    "idlharness.any-expected.txt": [
+     "55ab8a9bd30bc2473b9faa72c0baf27e7dfdf298",
+     []
+    ],
+    "idlharness.any.worker-expected.txt": [
+     "55ab8a9bd30bc2473b9faa72c0baf27e7dfdf298",
      []
     ],
     "idlharness.window-expected.txt": [
@@ -549388,7 +549406,7 @@
         ]
        ],
        "inserted-or-removed.html": [
-        "ee12316421ef6c84135a0716edb6669c51522851",
+        "0db2bf0e77a4a8a76ebcef1b0879cac9bb8c3fea",
         [
          null,
          {}
@@ -604952,7 +604970,7 @@
    },
    "storage-access-api": {
     "hasStorageAccess-insecure.sub.window.js": [
-     "35bb73a80a7c71498fd05ad4a14c198d17049485",
+     "74996800df9c27241a7b1750a30880832a256b3e",
      [
       "storage-access-api/hasStorageAccess-insecure.sub.window.html",
       {
@@ -604966,7 +604984,7 @@
      ]
     ],
     "hasStorageAccess.sub.https.window.js": [
-     "ede7dd62b5e1f174ed1724ce08f974a9b7dc5659",
+     "3faf492d13fcf93bbf5ba868c63a0f8a26c921c9",
      [
       "storage-access-api/hasStorageAccess.sub.https.window.html",
       {
