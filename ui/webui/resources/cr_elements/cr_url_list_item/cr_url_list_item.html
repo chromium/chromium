@@ -28,16 +28,13 @@
     padding: 6px 16px;
   }
 
-  :host(.hovered),
-  :host-context(.focus-outline-visible):host(:focus-within) {
-    background: var(--google-grey-200);
+  :host(.hovered) {
+    background: var(--cr-hover-background-color);
   }
 
-  @media (prefers-color-scheme: dark) {
-    :host(.hovered),
-    :host-context(.focus-outline-visible):host(:focus-within) {
-      background: var(--google-grey-800);
-    }
+  :host(.active),
+  :host-context(.focus-outline-visible):host(:focus-within) {
+    background: var(--cr-active-background-color);
   }
 
   ::slotted([slot=prefix]) {

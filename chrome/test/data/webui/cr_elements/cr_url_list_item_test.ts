@@ -42,4 +42,17 @@ suite('CrUrlListItemTest', () => {
     element.count = 2983;
     assertEquals('99+', count.textContent);
   });
+
+  test('SetsActiveClass', () => {
+    assertFalse(element.classList.contains('active'));
+    element.dispatchEvent(new PointerEvent('pointerdown'));
+    assertTrue(element.classList.contains('active'));
+    element.dispatchEvent(new PointerEvent('pointerup'));
+    assertFalse(element.classList.contains('active'));
+
+    element.dispatchEvent(new PointerEvent('pointerdown'));
+    assertTrue(element.classList.contains('active'));
+    element.dispatchEvent(new PointerEvent('pointerleave'));
+    assertFalse(element.classList.contains('active'));
+  });
 });

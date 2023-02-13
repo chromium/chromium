@@ -57,6 +57,9 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   override ready() {
     super.ready();
     FocusOutlineManager.forDocument(document);
+    this.addEventListener('pointerdown', () => this.setActiveState_(true));
+    this.addEventListener('pointerup', () => this.setActiveState_(false));
+    this.addEventListener('pointerleave', () => this.setActiveState_(false));
   }
 
   private getDisplayedCount_() {
@@ -74,6 +77,10 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
 
   private onSizeChanged_() {
     assert(Object.values(CrUrlListItemSize).includes(this.size));
+  }
+
+  private setActiveState_(active: boolean) {
+    this.classList.toggle('active', active);
   }
 
   private shouldShowFavicon_(): boolean {
