@@ -7,7 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
-#include "components/autofill/ios/browser/autofill_driver_ios_webframe.h"
+#include "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
@@ -22,25 +22,11 @@
 namespace autofill {
 
 // static
-void AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
-    web::WebState* web_state,
-    AutofillClient* client,
-    id<AutofillDriverIOSBridge> bridge,
-    const std::string& app_locale) {
-  // By the time this method is called, no web_frame is available. This method
-  // only prepares the factory and the AutofillDriverIOS will be created in the
-  // first call to FromWebStateAndWebFrame.
-  AutofillDriverIOSWebFrameFactory::CreateForWebState(web_state, client, bridge,
-                                                      app_locale);
-}
-
-// static
 AutofillDriverIOS* AutofillDriverIOS::FromWebStateAndWebFrame(
     web::WebState* web_state,
     web::WebFrame* web_frame) {
-    return AutofillDriverIOSWebFrameFactory::FromWebState(web_state)
-        ->AutofillDriverIOSFromWebFrame(web_frame)
-        ->driver();
+  return AutofillDriverIOSFactory::FromWebState(web_state)->DriverForFrame(
+      web_frame);
 }
 
 AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,

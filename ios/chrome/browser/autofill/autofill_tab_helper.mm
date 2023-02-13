@@ -8,6 +8,7 @@
 #import "base/memory/ptr_util.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -45,7 +46,7 @@ AutofillTabHelper::AutofillTabHelper(
       browser_state_, web_state, infobar_manager, autofill_agent_,
       password_manager);
 
-  autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
+  autofill::AutofillDriverIOSFactory::CreateForWebState(
       web_state, autofill_client_.get(), autofill_agent_,
       GetApplicationContext()->GetApplicationLocale());
 }

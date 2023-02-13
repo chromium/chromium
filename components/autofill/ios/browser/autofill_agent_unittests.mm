@@ -18,6 +18,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
+#include "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -130,8 +131,8 @@ class AutofillAgentTests : public web::WebTest {
 TEST_F(AutofillAgentTests,
        OnFormDataFilledTestWithFrameMessagingUsingRendererIDs) {
   std::string locale("en");
-  autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
-      &fake_web_state_, &client_, nil, locale);
+  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
+                                                        &client_, nil, locale);
 
   autofill::FormData form;
   form.url = GURL("https://myform.com");
@@ -410,8 +411,8 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
 // callbacks. The main frame should always be processed first.
 TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   std::string locale("en");
-  autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
-      &fake_web_state_, &client_, nil, locale);
+  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
+                                                        &client_, nil, locale);
 
   // Remove the current main frame.
   RemoveWebFrame(fake_main_frame_->GetFrameId());

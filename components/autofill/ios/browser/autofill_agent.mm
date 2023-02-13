@@ -41,7 +41,6 @@
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
-#include "components/autofill/ios/browser/autofill_driver_ios_webframe.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #include "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -170,16 +169,6 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   // Bridge to observe form activity in |webState_|.
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
-
-  // AutofillDriverIOSWebFrame will keep a refcountable AutofillDriverIOS.
-  // This is a workaround crbug.com/892612. On submission,
-  // AutofillDownloadManager and CreditCardSaveManager expect
-  // BrowserAutofillManager and AutofillDriver to live after web frame deletion
-  // so AutofillAgent will keep the latest submitted AutofillDriver alive.
-  // TODO(crbug.com/892612): remove this workaround once life cycle of
-  // BrowserAutofillManager is fixed.
-  scoped_refptr<autofill::AutofillDriverIOSRefCountable>
-      _last_submitted_autofill_driver;
 
   scoped_refptr<FieldDataManager> _fieldDataManager;
 
@@ -732,7 +721,6 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
 - (void)webStateDestroyed:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
-  _last_submitted_autofill_driver = nullptr;
   if (_webState) {
     _formActivityObserverBridge.reset();
     _webState->RemoveObserver(_webStateObserverBridge.get());
@@ -906,19 +894,6 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       [self autofillManagerFromWebState:webState webFrame:frame];
   if (!autofillManager || !success || forms.empty())
     return;
-  // AutofillDriverIOSWebFrame keeps a refcountable AutofillDriverIOS. This is a
-  // workaround crbug.com/892612. On submission, AutofillDownloadManager starts
-  // asynchronous tasks, which would be cancelled immediately if the
-  // BrowserAutofillManager (which owns AutofillDownloadManager) was destroyed
-  // immediately. For that reason, AutofillAgent keeps the latest submitted
-  // AutofillDriver alive.
-  // TODO(crbug.com/892612): remove this workaround once life cycle of
-  // AutofillDownloadManager is fixed.
-  DCHECK(frame);
-  _last_submitted_autofill_driver =
-      autofill::AutofillDriverIOSWebFrame::FromWebFrame(frame)
-          ->GetRetainableDriver();
-  DCHECK(_last_submitted_autofill_driver);
   DCHECK(forms.size() <= 1) << "Only one form should be extracted.";
   [self notifyBrowserAutofillManager:autofillManager
                     ofFormsSubmitted:forms

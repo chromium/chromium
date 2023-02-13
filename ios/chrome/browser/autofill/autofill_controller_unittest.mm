@@ -25,6 +25,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -347,7 +348,7 @@ void AutofillControllerTest::SetUp() {
   }
 
   std::string locale("en");
-  autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
+  autofill::AutofillDriverIOSFactory::CreateForWebState(
       web_state(), autofill_client_.get(), /*autofill_agent=*/nil, locale);
 
   autofill_manager_injector_ =

@@ -16,6 +16,7 @@
 #import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -102,7 +103,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
         /*password_generation_manager=*/nullptr));
 
     std::string locale("en");
-    autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
+    autofill::AutofillDriverIOSFactory::CreateForWebState(
         web_state(), autofill_client_.get(), nil, locale);
   }
 

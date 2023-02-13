@@ -9,9 +9,8 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "ios/web/public/js_messaging/web_frame_user_data.h"
 #include "url/origin.h"
 
 namespace web {
@@ -23,32 +22,25 @@ class WebState;
 
 namespace autofill {
 
+class AutofillDriverIOSFactory;
+
 // AutofillDriverIOS drives the Autofill flow in the browser process based
 // on communication from JavaScript and from the external world.
 //
 // AutofillDriverIOS communicates with an AutofillDriverIOSBridge, which in
 // Chrome is implemented by AutofillAgent, and a BrowserAutofillManager.
 //
-// AutofillDriverIOS is associated with exactly one WebFrame, but its lifecycle
-// does *not* follow the life of that WebFrame precisely: an AutofillDriverIOS
-// survives the associated WebFrame and is destroyed only on destruction of the
-// associated WebState. This lifetime extension is done via a ref-counted
-// pointer in AutofillAgent.
-//
-// TODO(crbug.com/892612, crbug.com/1394786): Remove this workaround once life
-// cycle of AutofillDownloadManager is fixed.
-class AutofillDriverIOS : public AutofillDriver {
+// AutofillDriverIOS is associated with exactly one WebFrame and its lifecycle
+// is bound to that WebFrame.
+class AutofillDriverIOS : public AutofillDriver,
+                          public web::WebFrameUserData<AutofillDriverIOS> {
  public:
-  ~AutofillDriverIOS() override;
-
-  static void PrepareForWebStateWebFrameAndDelegate(
-      web::WebState* web_state,
-      AutofillClient* client,
-      id<AutofillDriverIOSBridge> bridge,
-      const std::string& app_locale);
-
+  // Returns the AutofillDriverIOS for `web_state` and `web_frame`. Creates the
+  // driver if necessary.
   static AutofillDriverIOS* FromWebStateAndWebFrame(web::WebState* web_state,
                                                     web::WebFrame* web_frame);
+
+  ~AutofillDriverIOS() override;
 
   // AutofillDriver:
   bool IsInActiveFrame() const override;
@@ -104,14 +96,19 @@ class AutofillDriverIOS : public AutofillDriver {
   void set_processed(bool processed) { processed_ = processed; }
   web::WebFrame* web_frame();
 
- protected:
+ private:
+  friend AutofillDriverIOSFactory;
+
   AutofillDriverIOS(web::WebState* web_state,
                     web::WebFrame* web_frame,
                     AutofillClient* client,
                     id<AutofillDriverIOSBridge> bridge,
                     const std::string& app_locale);
 
- private:
+  // Only used by the AutofillDriverIOSFactory.
+  // Other callers should use FromWebStateAndWebFrame() instead.
+  using web::WebFrameUserData<AutofillDriverIOS>::FromWebFrame;
+
   // The WebState with which this object is associated.
   web::WebState* web_state_ = nullptr;
 

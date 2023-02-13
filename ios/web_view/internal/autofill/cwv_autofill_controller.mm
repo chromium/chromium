@@ -19,6 +19,7 @@
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
@@ -129,7 +130,7 @@ using UserDecision =
     _autofillClient = std::move(autofillClient);
     _autofillClient->set_bridge(self);
 
-    autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
+    autofill::AutofillDriverIOSFactory::CreateForWebState(
         _webState, _autofillClient.get(), self, applicationLocale);
 
     _passwordManagerClient = std::move(passwordManagerClient);

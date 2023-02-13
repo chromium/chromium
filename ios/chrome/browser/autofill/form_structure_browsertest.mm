@@ -26,6 +26,7 @@
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -254,7 +255,7 @@ void FormStructureBrowserTest::SetUp() {
       /*password_generation_manager=*/nullptr);
 
   std::string locale("en");
-  autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
+  autofill::AutofillDriverIOSFactory::CreateForWebState(
       web_state(), autofill_client_.get(), /*autofill_agent=*/nil, locale);
 
   autofill_manager_injector_ =

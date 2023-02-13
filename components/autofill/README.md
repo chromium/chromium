@@ -172,6 +172,7 @@ may sacrifice a little bit of correctness in favor of simplicity.
     * Responsibilities:
       * Manages life-cycle of `ContentAutofillDriver` and ensures that there is
         one Driver instance per renderer frame.
+    * Has sibling `AutofillDriverIOSFactory` for iOS
   * `AutofillManager` and `BrowserAutofillManager`
     * One instance per `RenderFrameHost` (frame), owned by
       `AutofillDriver`.
