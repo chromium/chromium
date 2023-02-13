@@ -86,6 +86,27 @@
             }
           }
         }]
+      },
+      // Deduplicated as well after the report was sent.
+      {
+        "timestamp": "1643411974000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "4",
+                  "deduplication_key": "1"
+                }
+              ]
+            }
+          }
+        }]
       }
     ]
   },

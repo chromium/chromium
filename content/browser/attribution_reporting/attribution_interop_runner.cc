@@ -434,9 +434,10 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
 
   task_environment.FastForwardBy(last_event_time - base::Time::Now());
 
-  if (base::Time max_report_time = handler.max_report_time();
-      !max_report_time.is_null()) {
-    task_environment.FastForwardBy(max_report_time - base::Time::Now());
+  if (base::Time max_report_time = handler.max_report_time(),
+      now = base::Time::Now();
+      max_report_time >= now) {
+    task_environment.FastForwardBy(max_report_time - now);
   }
 
   return handler.TakeOutput();
