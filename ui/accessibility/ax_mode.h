@@ -72,11 +72,15 @@ class AX_BASE_EXPORT AXMode {
   // an accessible PDF.
   static constexpr uint32_t kPDF = 1 << 7;
 
+  // The PDF renderer process will run OCR to extract text from an inaccessible
+  // PDF and add it to the accessibility tree.
+  static constexpr uint32_t kPDFOcr = 1 << 8;
+
   // Update this to include the last supported mode flag. If you add
   // another, be sure to update the stream insertion operator for
   // logging and debugging, as well as AccessibilityModeFlagEnum (and
   // related metrics callsites, see: |ModeFlagHistogramValue|).
-  static constexpr uint32_t kLastModeFlag = 1 << 7;
+  static constexpr uint32_t kLastModeFlag = 1 << 8;
 
   constexpr AXMode() : flags_(kNone), experimental_flags_(kNone) {}
   constexpr AXMode(uint32_t flags)
@@ -126,6 +130,7 @@ class AX_BASE_EXPORT AXMode {
     UMA_AX_MODE_HTML_METADATA = 5,
     UMA_AX_MODE_LABEL_IMAGES = 6,
     UMA_AX_MODE_PDF = 7,
+    UMA_AX_MODE_PDF_OCR = 8,
 
     // This must always be the last enum. It's okay for its value to
     // increase, but none of the other enum values may change.

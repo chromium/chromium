@@ -29,6 +29,7 @@
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/null_ax_action_target.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1241,6 +1242,8 @@ PdfAccessibilityTree::PdfAccessibilityTree(
         GetRenderAccessibilityIfEnabled();
     // PdfAccessibilityTree is created even when accessibility services are not
     // enabled and we rely on them to use PdfOcr service.
+    // TODO(crbug.com/1278249): Need to create a PdfOcr service only when PDF
+    // OCR is turned on.
     if (render_accessibility) {
       ocr_service_ = std::make_unique<PdfOcrService>(
           render_accessibility->GetTreeIDForPluginHost(), *render_frame);
@@ -1769,8 +1772,16 @@ std::unique_ptr<ui::AXActionTarget> PdfAccessibilityTree::CreateActionTarget(
   return std::make_unique<PdfAXActionTarget>(target_node, this);
 }
 
-void PdfAccessibilityTree::AccessibilityModeChanged(
-    const ui::AXMode& /*mode*/) {
+void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (mode.has_mode(ui::AXMode::kPDFOcr)) {
+    // TODO(crbug.com/1278249): Need to start OCR. Note that this function will
+    // be called when the user chooses to run PDF OCR once from the context
+    // menu; this function will not be called when the user chooses to set PDF
+    // OCR to be always active.
+    VLOG(2) << "Received a request of running PDF OCR.";
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   MaybeHandleAccessibilityChange();
 }
 

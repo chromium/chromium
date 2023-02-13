@@ -117,7 +117,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
       const ui::AXNode& target_node) override;
 
   // content::RenderFrameObserver:
-  void AccessibilityModeChanged(const ui::AXMode& /*mode*/) override;
+  void AccessibilityModeChanged(const ui::AXMode& mode) override;
   void OnDestruct() override;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

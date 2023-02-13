@@ -19,6 +19,7 @@ enum AxMode {
   HTML_METADATA = 1 << 5,
   LABEL_IMAGES = 1 << 6,
   PDF = 1 << 7,
+  PDF_OCR = 1 << 8,
 }
 
 interface Data {
@@ -453,6 +454,8 @@ function getNameForAccessibilityMode(mode: AxMode) {
       return 'Label images';
     case AxMode.PDF:
       return 'PDF';
+    case AxMode.PDF_OCR:
+      return 'PDF OCR';
   }
   return 'unknown';
 }
