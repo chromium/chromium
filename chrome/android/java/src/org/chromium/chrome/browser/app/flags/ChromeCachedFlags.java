@@ -113,6 +113,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sStartSurfaceDisabledFeedImprovement,
                 ChromeFeatureList.sStartSurfaceReturnTime,
                 ChromeFeatureList.sStartSurfaceRefactor,
+                ChromeFeatureList.sStartSurfaceOnTablet,
                 ChromeFeatureList.sStoreHoursAndroid,
                 ChromeFeatureList.sSwapPixelFormatToFixConvertFromTranslucent,
                 ChromeFeatureList.sTabGridLayoutAndroid,
