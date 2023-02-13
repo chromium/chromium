@@ -154,7 +154,10 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
   SetFocusBehavior(FocusBehavior::ALWAYS);
 #endif
 
-  SetBackgroundColorId(ui::kColorTextfieldBackground);
+  SetBackgroundColorId(features::IsChromeRefresh2023()
+                           ? ui::kColorComboboxBackground
+                           : ui::kColorTextfieldBackground);
+
   UpdateBorder();
 
   arrow_button_ =
@@ -165,6 +168,16 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
     // TODO(crbug.com/1400024): This setter should be removed and the behavior
     // made default when ChromeRefresh2023 is finalized.
     SetEventHighlighting(true);
+    enabled_changed_subscription_ =
+        AddEnabledChangedCallback(base::BindRepeating(
+            [](Combobox* combobox) {
+              combobox->SetBackgroundColorId(
+                  combobox->GetEnabled()
+                      ? ui::kColorComboboxBackground
+                      : ui::kColorComboboxBackgroundDisabled);
+              combobox->UpdateBorder();
+            },
+            base::Unretained(this)));
   }
 
   // A layer is applied to make sure that canvas bounds are snapped to pixel
@@ -542,6 +555,10 @@ const std::unique_ptr<ui::ComboboxModel>& Combobox::GetOwnedModel() const {
 
 void Combobox::UpdateBorder() {
   if (features::IsChromeRefresh2023()) {
+    if (!GetEnabled()) {
+      SetBorder(nullptr);
+      return;
+    }
     SetBorder(CreateThemedRoundedRectBorder(
         kBorderThickness, GetCornerRadius(),
         invalid_

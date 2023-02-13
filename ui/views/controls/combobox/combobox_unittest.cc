@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -348,6 +349,22 @@ TEST_F(ComboboxTest, DisabilityTest) {
   View* container = widget_->SetContentsView(std::make_unique<View>());
   combobox_ = container->AddChildView(std::move(combobox));
   EXPECT_FALSE(combobox_->GetEnabled());
+}
+
+// Ensure the border on the combobox is set correctly when Enabled state
+// changes.
+TEST_F(ComboboxTest, DisabledBorderTest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kChromeRefresh2023);
+  InitCombobox(nullptr);
+  ASSERT_TRUE(combobox_->GetEnabled());
+  ASSERT_NE(combobox_->GetBorder(), nullptr);
+  combobox_->SetEnabled(false);
+  ASSERT_FALSE(combobox_->GetEnabled());
+  ASSERT_EQ(combobox_->GetBorder(), nullptr);
+  combobox_->SetEnabled(true);
+  ASSERT_TRUE(combobox_->GetEnabled());
+  ASSERT_NE(combobox_->GetBorder(), nullptr);
 }
 
 // On Mac, key events can't change the currently selected index directly for a

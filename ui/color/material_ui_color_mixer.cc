@@ -38,6 +38,9 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonForegroundDisabled] = {kColorSysStateDisabled};
   mixer[kColorButtonForegroundProminent] = {kColorSysOnPrimary};
   mixer[kColorButtonForegroundUnchecked] = {kColorSysOnSurfaceVariant};
+  mixer[kColorComboboxBackground] = {kColorSysSurface};
+  mixer[kColorComboboxBackgroundDisabled] = {GetResultingPaintColor(
+      {kColorSysStateDisabledContainer}, {kColorComboboxBackground})};
   mixer[kColorFocusableBorderFocused] = {kColorSysStateFocusRing};
   mixer[kColorFocusableBorderUnfocused] = {kColorSysOutline};
   mixer[kColorFrameActive] = {kColorSysHeader};

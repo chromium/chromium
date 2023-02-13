@@ -266,6 +266,10 @@ class VIEWS_EXPORT Combobox : public View,
   // destroyed.
   std::unique_ptr<MenuRunner> menu_runner_;
 
+  // Called to update background color and border when the combobox is
+  // enabled/disabled.
+  base::CallbackListSubscription enabled_changed_subscription_;
+
   // When true, the size of contents is defined by the widest label in the menu.
   // If this is set to true, the parent view must relayout in
   // ChildPreferredSizeChanged(). When false, the size of contents is defined by

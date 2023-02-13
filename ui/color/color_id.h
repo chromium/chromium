@@ -219,6 +219,8 @@
   E_CPONLY(kColorButtonForegroundProminent) \
   E_CPONLY(kColorButtonForegroundTonal) \
   E_CPONLY(kColorButtonForegroundUnchecked) \
+  E_CPONLY(kColorComboboxBackground) \
+  E_CPONLY(kColorComboboxBackgroundDisabled) \
   E_CPONLY(kColorCustomFrameCaptionForeground) \
   E_CPONLY(kColorDebugBoundsOutline) \
   E_CPONLY(kColorDebugContentOutline) \
