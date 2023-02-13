@@ -642,13 +642,22 @@ testcase.fileTasksDlpRestricted = async () => {
   ];
   await remoteCall.callRemoteTestUtil('overrideTasks', appId, [fakeTasks]);
 
-  // Select file.
+  // Open the context menu.
+  await remoteCall.showContextMenuFor(appId, entry.nameText);
+
+  // Verify that the default task item is visible but disabled.
+  await remoteCall.waitForElement(
+      appId,
+      ['#file-context-menu:not([hidden]) ' +
+       '[command="#default-task"][disabled]:not([hidden])']);
+
+  // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
 
-  // Check that multiple tasks are available and then click on "Open ▼" button.
-  await remoteCall.waitAndClickElement(appId, '#tasks[multiple]');
+  // Display the tasks menu.
+  await remoteCall.expandOpenDropdown(appId);
 
-  // Wait for dropdown menu to show.
+  // Wait for the dropdown menu to show.
   await remoteCall.waitForElement(
       appId, '#tasks-menu:not([hidden]) cr-menu-item');
 

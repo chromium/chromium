@@ -45,6 +45,7 @@ export class TaskController {
   private fileTransferController_: FileTransferController|null = null;
   private taskHistory_: TaskHistory;
   private canExecuteDefaultTask_: boolean = false;
+  private shouldHideDefaultTask_: boolean = true;
   private canExecuteOpenActions_: boolean = false;
   private defaultTaskCommand_: Command;
   /**
@@ -549,6 +550,11 @@ export class TaskController {
     return this.canExecuteDefaultTask_;
   }
 
+  /** Returns whether default task command should be hidden or not. */
+  shouldHideDefaultTask(): boolean {
+    return this.shouldHideDefaultTask_;
+  }
+
   /** Returns whether open with command can be executed or not. */
   canExecuteOpenActions(): boolean {
     return this.canExecuteOpenActions_;
@@ -604,7 +610,9 @@ export class TaskController {
       }
     }
 
-    this.canExecuteDefaultTask_ = defaultTask != null;
+    this.canExecuteDefaultTask_ =
+        defaultTask != null && !defaultTask.isDlpBlocked;
+    this.shouldHideDefaultTask_ = defaultTask == null;
     this.defaultTaskCommand_.canExecuteChange(this.ui_.listContainer.element);
     this.canExecuteOpenActions_ = taskCount > 1;
     this.openWithCommand_.canExecuteChange(this.ui_.listContainer.element);

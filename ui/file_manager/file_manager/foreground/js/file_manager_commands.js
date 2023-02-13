@@ -1865,9 +1865,8 @@ CommandHandler.COMMANDS_['default-task'] = new (class extends FilesCommand {
 
   /** @override */
   canExecute(event, fileManager) {
-    const canExecute = fileManager.taskController.canExecuteDefaultTask();
-    event.canExecute = canExecute;
-    event.command.setHidden(!canExecute);
+    event.canExecute = fileManager.taskController.canExecuteDefaultTask();
+    event.command.setHidden(fileManager.taskController.shouldHideDefaultTask());
   }
 })();
 
