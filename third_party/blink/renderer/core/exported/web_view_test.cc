@@ -2628,6 +2628,39 @@ TEST_F(WebViewTest, FullscreenBackgroundColor) {
   EXPECT_EQ(SK_ColorYELLOW, web_view_impl->BackgroundColor());
 }
 
+static void ExitFullscreen(Document& document) {
+  Fullscreen::FullyExitFullscreen(document);
+  Fullscreen::DidExitFullscreen(document);
+  EXPECT_EQ(Fullscreen::FullscreenElementFrom(document), nullptr);
+}
+
+// Tests that the removal from the top layer is scheduled.
+TEST_F(WebViewTest, FullscreenRemovalTiming) {
+  RegisterMockedHttpURLLoad("fullscreen_style.html");
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad(base_url_ + "fullscreen_style.html");
+  web_view_impl->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  UpdateAllLifecyclePhases();
+
+  // Enter fullscreen.
+  LocalFrame* frame = web_view_impl->MainFrameImpl()->GetFrame();
+  Document* document = frame->GetDocument();
+  ASSERT_TRUE(document);
+  Element* element = document->getElementById("fullscreenElement");
+  ASSERT_TRUE(element);
+  LocalFrame::NotifyUserActivation(
+      frame, mojom::UserActivationNotificationType::kTest);
+  Fullscreen::RequestFullscreen(*element);
+  web_view_impl->DidEnterFullscreen();
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(element->IsInTopLayer());
+
+  ExitFullscreen(*document);
+  EXPECT_TRUE(element->IsInTopLayer());
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(element->IsInTopLayer());
+}
+
 class PrintWebFrameClient : public frame_test_helpers::TestWebFrameClient {
  public:
   PrintWebFrameClient() = default;

@@ -227,7 +227,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
                            HidePopoverForcingLevel forcing_level,
                            ExceptionState* exception_state);
-  void PopoverHideFinishIfNeeded();
+  void PopoverHideFinishIfNeeded(bool immediate);
   static const HTMLElement* FindTopmostPopoverAncestor(HTMLElement&);
 
   // Retrieves the element pointed to by this element's 'anchor' content

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -329,6 +330,56 @@ TEST_F(HTMLElementTest, AnchoredPopoverIdChange) {
   EXPECT_EQ(target->anchorElement(), anchor2);
   EXPECT_FALSE(anchor1->HasAnchoredPopover());
   EXPECT_TRUE(anchor2->HasAnchoredPopover());
+}
+
+TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {
+  ScopedHTMLPopoverAttributeForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" popover></div>
+  )HTML");
+
+  HTMLElement* target = To<HTMLElement>(GetDocument().getElementById("target"));
+
+  EXPECT_FALSE(target->popoverOpen());
+  EXPECT_FALSE(target->IsInTopLayer());
+  target->ShowPopoverInternal(nullptr);
+  EXPECT_TRUE(target->popoverOpen());
+  EXPECT_TRUE(target->IsInTopLayer());
+
+  // HidePopoverInternal causes :closed to match immediately, but schedules
+  // the removal from the top layer.
+  target->HidePopoverInternal(HidePopoverFocusBehavior::kFocusPreviousElement,
+                              HidePopoverForcingLevel::kHideAfterAnimations,
+                              nullptr);
+  EXPECT_FALSE(target->popoverOpen());
+  EXPECT_TRUE(target->IsInTopLayer());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->IsInTopLayer());
+
+  // Document removal should cause immediate top layer removal.
+  target->ShowPopoverInternal(nullptr);
+  EXPECT_TRUE(target->popoverOpen());
+  EXPECT_TRUE(target->IsInTopLayer());
+  target->remove();
+  EXPECT_FALSE(target->popoverOpen());
+  EXPECT_FALSE(target->IsInTopLayer());
+}
+
+TEST_F(HTMLElementTest, DialogTopLayerRemovalTiming) {
+  SetBodyInnerHTML(R"HTML(
+    <dialog id="target"></dialog>
+  )HTML");
+
+  auto* target = To<HTMLDialogElement>(GetDocument().getElementById("target"));
+
+  EXPECT_FALSE(target->IsInTopLayer());
+  target->showModal(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(target->IsInTopLayer());
+  target->close();
+  EXPECT_TRUE(target->IsInTopLayer());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->IsInTopLayer());
 }
 
 }  // namespace blink

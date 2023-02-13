@@ -1490,7 +1490,7 @@ void HTMLElement::HideAllPopoversUntil(const HTMLElement* endpoint,
   if (forcing_level == HidePopoverForcingLevel::kHideImmediately) {
     auto popovers_to_hide = document.PopoversWaitingToHide();
     for (auto popover : popovers_to_hide)
-      popover->PopoverHideFinishIfNeeded();
+      popover->PopoverHideFinishIfNeeded(/*immediate*/ true);
     DCHECK(document.PopoversWaitingToHide().empty());
   }
 
@@ -1609,7 +1609,7 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
     // popover is being hidden because it has been removed from the document.
 
     // Immediately finish the hide process.
-    return PopoverHideFinishIfNeeded();
+    return PopoverHideFinishIfNeeded(/*immediate*/ true);
   }
 
   // Fire the "closing" beforetoggle event.
@@ -1646,8 +1646,8 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   }
   animations.RemoveAll(previous_animations);
   if (animations.empty()) {
-    // No animations to wait for: just finish immediately.
-    PopoverHideFinishIfNeeded();
+    // No animations to wait for, so hide when possible.
+    PopoverHideFinishIfNeeded(/*immediate*/ false);
   } else {
     GetPopoverData()->setAnimationFinishedListener(
         MakeGarbageCollected<PopoverAnimationFinishedEventListener>(
@@ -1699,11 +1699,15 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   }
 }
 
-void HTMLElement::PopoverHideFinishIfNeeded() {
+void HTMLElement::PopoverHideFinishIfNeeded(bool immediate) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
   GetDocument().PopoversWaitingToHide().erase(this);
-  GetDocument().ScheduleForTopLayerRemoval(this);
+  if (immediate) {
+    GetDocument().RemoveFromTopLayerImmediately(this);
+  } else {
+    GetDocument().ScheduleForTopLayerRemoval(this);
+  }
   // Re-apply display:none, and start matching `:closed`.
   if (GetPopoverData()) {
     GetPopoverData()->setVisibilityState(PopoverVisibilityState::kHidden);

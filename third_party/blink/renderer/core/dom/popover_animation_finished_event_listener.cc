@@ -64,7 +64,7 @@ void PopoverAnimationFinishedEventListener::Invoke(ExecutionContext*,
 
   // Finish hiding the popover once all animations complete.
   if (animations_.empty()) {
-    popover_element_->PopoverHideFinishIfNeeded();
+    popover_element_->PopoverHideFinishIfNeeded(/*immediate*/ false);
   }
 }
 
