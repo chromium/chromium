@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <link rel=author href="mailto:masonf@chromium.org">
 <link rel=help href="https://open-ui.org/components/popup.research.explainer">
-<link rel=match href="popover-animated-display-ref.tentative.html">
+<link rel=match href="popover-animated-hide-finishes-ref.html">
 
 <div popover>This is a popover</div>
 <div class=topmost></div>
@@ -14,10 +14,14 @@
     height: 100px;
     margin: 1em;
     left: 0;
-    transition: left 20s steps(2, jump-end) -10s;
+    /* Immediate transition: */
+    transition: left 1s -1s;
   }
   [popover]:open {
     left: 200px;
+  }
+  [popover]::backdrop {
+    background-color: red;
   }
   .topmost {
     position:fixed;
@@ -36,19 +40,14 @@
 window.onload = () => {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      // This will show the popover, hide the popover, and start the transition.
-      const popover = document.querySelector('[popover]');
-      popover.showPopover();
-      popover.getAnimations()[0].finish();
-      if (getComputedStyle(popover).left != "200px")
-        popover.remove();
-      popover.hidePopover();
-      document.getAnimations()[0].ready.then(() => {
+      // This will show the popover, hide the popover, and start the hide transition,
+      // which should immediately finish.
+      document.querySelector('[popover]').showPopover();
+      document.querySelector('[popover]').hidePopover();
+      requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            // Take a screenshot now.
-            document.documentElement.classList.remove('reftest-wait');
-          });
+          // Take a screenshot now.
+          document.documentElement.classList.remove('reftest-wait');
         });
       });
     });
