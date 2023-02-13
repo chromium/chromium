@@ -14,6 +14,7 @@ BASE_DECLARE_FEATURE(kExternalNavigationDebugLogs);
 BASE_DECLARE_FEATURE(kExternalNavigationSubframeRedirects);
 BASE_DECLARE_FEATURE(kBlockSubframeIntentToSelf);
 BASE_DECLARE_FEATURE(kBlockFrameRenavigations);
+BASE_DECLARE_FEATURE(kDoNotRequireSpecializedCCTHandler);
 }  // namespace external_intents
 
 #endif  // COMPONENTS_EXTERNAL_INTENTS_ANDROID_EXTERNAL_INTENTS_FEATURES_H_

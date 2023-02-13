@@ -315,6 +315,21 @@ public class ExternalNavigationHandler {
     }
 
     /**
+     * Types of async action that can be taken for a navigation.
+     */
+    @IntDef({NavigationChainResult.ALLOWED, NavigationChainResult.REQUIRES_PROMPT,
+            NavigationChainResult.FOR_TRUSTED_CALLER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NavigationChainResult {
+        /* The user has been presented with a consent dialog gating a browser navigation. */
+        int ALLOWED = 0;
+        /* The user has been presented with a consent dialog gating an intent launch. */
+        int REQUIRES_PROMPT = 1;
+        /* No async action has been taken. */
+        int FOR_TRUSTED_CALLER = 2;
+    }
+
+    /**
      * Packages information about the result of a check of whether we should override URL loading.
      */
     public static class OverrideUrlLoadingResult {
@@ -922,9 +937,9 @@ public class ExternalNavigationHandler {
      * @return whether something along the navigation chain prevents the current navigation from
      * leaving Chrome.
      */
-    private boolean navigationChainBlocksExternalNavigation(ExternalNavigationParams params,
-            Intent targetIntent, QueryIntentActivitiesSupplier resolvingInfos,
-            boolean isExternalProtocol) {
+    private @NavigationChainResult int navigationChainBlocksExternalNavigation(
+            ExternalNavigationParams params, Intent targetIntent,
+            QueryIntentActivitiesSupplier resolvingInfos, boolean isExternalProtocol) {
         RedirectHandler handler = params.getRedirectHandler();
         RedirectHandler.InitialNavigationState initialState = handler.getInitialNavigationState();
 
@@ -932,20 +947,20 @@ public class ExternalNavigationHandler {
         // probably not expected or desirable.
         if (handler.navigationChainUsedBackOrForward()) {
             if (debug()) Log.i(TAG, "Navigation chain used back or forward.");
-            return true;
+            return NavigationChainResult.REQUIRES_PROMPT;
         }
 
         // Used to prevent things like chaining fallback URLs.
         if (handler.shouldNotOverrideUrlLoading()) {
             if (debug()) Log.i(TAG, "Navigation chain has blocked app launching.");
-            return true;
+            return NavigationChainResult.REQUIRES_PROMPT;
         }
 
         // Tab Restores should definitely not launch apps, and refreshes launching apps would
         // probably not be expected or desirable.
         if (initialState.isFromReload) {
             if (debug()) Log.i(TAG, "Navigation chain is from a tab restore or refresh.");
-            return true;
+            return NavigationChainResult.REQUIRES_PROMPT;
         }
 
         // TODO(https://crbug.com/1346731): We only need to check isFromTyping because WebLayer's
@@ -958,12 +973,14 @@ public class ExternalNavigationHandler {
                 && (mDelegate.shouldEmbedderInitiatedNavigationsStayInBrowser()
                         || initialState.isFromTyping)) {
             if (debug()) Log.i(TAG, "Browser initiated navigation chain.");
-            return true;
+            return NavigationChainResult.REQUIRES_PROMPT;
         }
 
         // If the intent targets the calling app, we can bypass the gesture requirements and any
         // signals from the initial intent that suggested the intent wanted to stay in Chrome.
-        if (mDelegate.isIntentForTrustedCallingApp(targetIntent, resolvingInfos)) return false;
+        if (mDelegate.isForTrustedCallingApp(resolvingInfos)) {
+            return NavigationChainResult.FOR_TRUSTED_CALLER;
+        }
 
         // See RedirectHandler#NAVIGATION_CHAIN_TIMEOUT_MILLIS for details. We don't want an
         // unattended page to redirect to an app.
@@ -974,14 +991,14 @@ public class ExternalNavigationHandler {
                                 + "(a page waited more than %d seconds to redirect).",
                         RedirectHandler.NAVIGATION_CHAIN_TIMEOUT_MILLIS);
             }
-            return true;
+            return NavigationChainResult.REQUIRES_PROMPT;
         }
 
         // If an intent targeted Chrome explicitly, we assume the app wanted to launch Chrome and
         // not another app.
         if (handler.intentPrefersToStayInChrome() && !isExternalProtocol) {
             if (debug()) Log.i(TAG, "Launching intent explicitly targeted the browser.");
-            return true;
+            return NavigationChainResult.REQUIRES_PROMPT;
         }
 
         // Ensure the navigation was started with a user gesture so that inactive pages can't launch
@@ -989,9 +1006,9 @@ public class ExternalNavigationHandler {
         if (initialState.isRendererInitiated && !initialState.hasUserGesture()) {
             if (isExternalProtocol) handler.maybeLogExternalRedirectBlockedWithMissingGesture();
             if (debug()) Log.i(TAG, "Navigation chain started without a gesture.");
-            return true;
+            return NavigationChainResult.REQUIRES_PROMPT;
         }
-        return false;
+        return NavigationChainResult.ALLOWED;
     }
 
     /**
@@ -1038,8 +1055,11 @@ public class ExternalNavigationHandler {
      * find the app on the market if no fallback is provided.
      */
     private OverrideUrlLoadingResult handleUnresolvableIntent(ExternalNavigationParams params,
-            Intent targetIntent, GURL browserFallbackUrl, boolean requiresPromptForExternalIntent) {
-        if (requiresPromptForExternalIntent) return OverrideUrlLoadingResult.forNoOverride();
+            Intent targetIntent, GURL browserFallbackUrl,
+            @NavigationChainResult int navigationChainResult) {
+        if (navigationChainResult != NavigationChainResult.ALLOWED) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
         // Fallback URL will be handled by the caller of shouldOverrideUrlLoadingInternal.
         if (!browserFallbackUrl.isEmpty()) return OverrideUrlLoadingResult.forNoOverride();
         if (targetIntent.getPackage() != null) {
@@ -1545,22 +1565,25 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        boolean requiresPromptForExternalIntent = navigationChainBlocksExternalNavigation(
+        @NavigationChainResult
+        int navigationChainResult = navigationChainBlocksExternalNavigation(
                 params, targetIntent, resolvingInfos, isExternalProtocol);
 
         // Short-circuit expensive quertyIntentActivities calls below since we won't prompt anyways
         // for protocols the browser can handle.
-        if (requiresPromptForExternalIntent && !isExternalProtocol) {
+        if (navigationChainResult == NavigationChainResult.REQUIRES_PROMPT && !isExternalProtocol) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
         // From this point on, we have determined it is safe to launch an External App from a
         // fallback URL (unless we have to prompt).
-        if (!requiresPromptForExternalIntent) canLaunchExternalFallbackResult.set(true);
+        if (navigationChainResult == NavigationChainResult.ALLOWED) {
+            canLaunchExternalFallbackResult.set(true);
+        }
 
         if (resolvingInfos.get().isEmpty()) {
             return handleUnresolvableIntent(
-                    params, targetIntent, browserFallbackUrl, requiresPromptForExternalIntent);
+                    params, targetIntent, browserFallbackUrl, navigationChainResult);
         }
 
         if (resolvesToNonExportedActivity(resolvingInfos.get())) {
@@ -1604,7 +1627,9 @@ public class ExternalNavigationHandler {
         }
 
         boolean requiresIntentChooser = false;
-        if (!mDelegate.maybeSetTargetPackage(targetIntent, resolvingInfos)) {
+        if (navigationChainResult == NavigationChainResult.FOR_TRUSTED_CALLER) {
+            mDelegate.setPackageForTrustedCallingApp(targetIntent);
+        } else {
             requiresIntentChooser = isInsecureIntentToOtherBrowser(targetIntent, resolvingInfos,
                     isIntentWithSupportedProtocol, resolveActivity, intentHasExtras);
 
@@ -1612,11 +1637,10 @@ public class ExternalNavigationHandler {
                         isExternalProtocol, intentDataUrl, resolvingInfos, resolveActivity)) {
                 return OverrideUrlLoadingResult.forNoOverride();
             }
-        }
-
-        if (requiresPromptForExternalIntent) {
-            return maybeAskToLaunchApp(isExternalProtocol, targetIntent, resolvingInfos,
-                    resolveActivity, browserFallbackUrl, params);
+            if (navigationChainResult == NavigationChainResult.REQUIRES_PROMPT) {
+                return maybeAskToLaunchApp(isExternalProtocol, targetIntent, resolvingInfos,
+                        resolveActivity, browserFallbackUrl, params);
+            }
         }
 
         return startActivity(targetIntent, requiresIntentChooser, resolvingInfos, resolveActivity,
@@ -2292,7 +2316,11 @@ public class ExternalNavigationHandler {
     }
 
     protected boolean resolveInfoContainsSelf(List<ResolveInfo> resolveInfos) {
-        String packageName = mDelegate.getContext().getPackageName();
+        return resolveInfoContainsPackage(resolveInfos, mDelegate.getContext().getPackageName());
+    }
+
+    public static boolean resolveInfoContainsPackage(
+            List<ResolveInfo> resolveInfos, String packageName) {
         for (ResolveInfo resolveInfo : resolveInfos) {
             ActivityInfo info = resolveInfo.activityInfo;
             if (info != null && packageName.equals(info.packageName)) {

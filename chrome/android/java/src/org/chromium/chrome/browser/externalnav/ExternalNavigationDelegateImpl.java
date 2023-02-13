@@ -199,8 +199,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean isIntentForTrustedCallingApp(
-            Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
+    public boolean isForTrustedCallingApp(Supplier<List<ResolveInfo>> resolveInfoSupplier) {
         return false;
     }
 
@@ -211,9 +210,8 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean maybeSetTargetPackage(
-            Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
-        return false;
+    public void setPackageForTrustedCallingApp(Intent intent) {
+        assert false;
     }
 
     @Override

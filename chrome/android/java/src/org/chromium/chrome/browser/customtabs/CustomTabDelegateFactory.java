@@ -54,6 +54,7 @@ import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibility
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.external_intents.ExternalIntentsFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -99,17 +100,9 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        public boolean maybeSetTargetPackage(
-                Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
-            // If the client app can handle the intent, set it as the receiver.
-            if (!TextUtils.isEmpty(mClientPackageName)
-                    && ExternalNavigationHandler.isPackageSpecializedHandler(
-                            mClientPackageName, resolveInfoSupplier.get())) {
-                intent.setSelector(null);
-                intent.setPackage(mClientPackageName);
-                return true;
-            }
-            return false;
+        public void setPackageForTrustedCallingApp(Intent intent) {
+            assert !TextUtils.isEmpty(mClientPackageName);
+            intent.setPackage(mClientPackageName);
         }
 
         @Override
@@ -119,13 +112,17 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         }
 
         @Override
-        public boolean isIntentForTrustedCallingApp(
-                Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
+        public boolean isForTrustedCallingApp(Supplier<List<ResolveInfo>> resolveInfoSupplier) {
             if (TextUtils.isEmpty(mClientPackageName)) return false;
             if (!mExternalAuthUtils.isGoogleSigned(mClientPackageName)) return false;
 
-            return ExternalNavigationHandler.isPackageSpecializedHandler(
-                    mClientPackageName, resolveInfoSupplier.get());
+            if (ExternalIntentsFeatures.DO_NOT_REQUIRE_SPECIALIZED_CCT_HANDLER.isEnabled()) {
+                return ExternalNavigationHandler.resolveInfoContainsPackage(
+                        resolveInfoSupplier.get(), mClientPackageName);
+            } else {
+                return ExternalNavigationHandler.isPackageSpecializedHandler(
+                        mClientPackageName, resolveInfoSupplier.get());
+            }
         }
 
         @Override

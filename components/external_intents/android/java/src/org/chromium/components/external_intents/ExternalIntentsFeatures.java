@@ -22,6 +22,8 @@ public class ExternalIntentsFeatures extends Features {
             "ExternalNavigationSubframeRedirects";
     public static final String BLOCK_SUBFRAME_INTENT_TO_SELF_NAME = "BlockSubframeIntentToSelf";
     public static final String BLOCK_FRAME_RENAVIGATIONS_NAME = "BlockFrameRenavigations";
+    public static final String DO_NOT_REQUIRE_SPECIALIZED_CCT_HANDLER_NAME =
+            "DoNotRequireSpecializedCCTHandler";
 
     public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_DEBUG_LOGS =
             new ExternalIntentsFeatures(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
@@ -34,6 +36,9 @@ public class ExternalIntentsFeatures extends Features {
 
     public static final ExternalIntentsFeatures BLOCK_FRAME_RENAVIGATIONS =
             new ExternalIntentsFeatures(3, BLOCK_FRAME_RENAVIGATIONS_NAME);
+
+    public static final ExternalIntentsFeatures DO_NOT_REQUIRE_SPECIALIZED_CCT_HANDLER =
+            new ExternalIntentsFeatures(4, DO_NOT_REQUIRE_SPECIALIZED_CCT_HANDLER_NAME);
 
     private final int mOrdinal;
 

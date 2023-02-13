@@ -115,11 +115,10 @@ public interface ExternalNavigationDelegate {
     void presentLeavingIncognitoModalDialog(Callback<Boolean> onUserDecision);
 
     /**
-     * @param intent The intent to launch.
+     * @param resolveInfoSupplier The resolveInfos to check.
      * @return Whether the Intent points to an app that we trust and that launched this app.
      */
-    boolean isIntentForTrustedCallingApp(
-            Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier);
+    boolean isForTrustedCallingApp(Supplier<List<ResolveInfo>> resolveInfoSupplier);
 
     /**
      * Whether WebAPKs should be launched even on the initial Intent.
@@ -127,9 +126,9 @@ public interface ExternalNavigationDelegate {
     boolean shouldLaunchWebApksOnInitialIntent();
 
     /**
-     * Potentially adds a target package to the Intent. Returns whether the package was set.
+     * Adds a target package to the Intent. Only called if isForTrustedCallingApp is true.
      */
-    boolean maybeSetTargetPackage(Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier);
+    void setPackageForTrustedCallingApp(Intent intent);
 
     /**
      * Whether the Activity launch should be aborted if the disambiguation prompt is going to be
