@@ -791,8 +791,10 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::RecordUnnecessaryWakeup() {
 void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingStarted(
     BlockingType blocking_type) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  DCHECK(read_worker().current_task_priority);
   DCHECK(worker_only().worker_thread_);
+  if (!read_worker().current_task_priority) {
+    return;
+  }
 
   worker_only().worker_thread_->MaybeUpdateThreadType();
 
