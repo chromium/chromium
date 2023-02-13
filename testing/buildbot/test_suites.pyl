@@ -2351,7 +2351,7 @@
             {
               "cipd_package": 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
+              'revision': 'APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC',
             }
           ]
         },
@@ -5279,7 +5279,7 @@
             {
               "cipd_package": 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
+              'revision': 'APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC',
             }
           ]
         },
@@ -5316,7 +5316,7 @@
             {
               "cipd_package": 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
+              'revision': 'APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC',
             }
           ]
         },
@@ -5334,7 +5334,7 @@
             {
               "cipd_package": 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
+              'revision': 'APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC',
             }
           ]
         },
@@ -5350,7 +5350,7 @@
             {
               'cipd_package': 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
+              'revision': 'APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC',
             }
           ]
         },
@@ -5368,7 +5368,7 @@
             {
               "cipd_package": 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
+              'revision': 'APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC',
             }
           ]
         },
@@ -5383,7 +5383,7 @@
             {
               'cipd_package': 'chromium/android_webview/tools/cts_archive',
               'location': 'android_webview/tools/cts_archive',
-              'revision': 'C4m9-gZKvvtS0-KQ9cMRi6wEfZH_TeWSiXEgsgtGtsMC',
+              'revision': 'APYMYksv9eNAkU6osFvNXN38pMO1Q1kScjeecePr7NgC',
             }
           ]
         },
