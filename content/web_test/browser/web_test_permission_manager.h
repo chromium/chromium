@@ -13,6 +13,7 @@
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_automation.mojom.h"
 #include "url/gurl.h"
@@ -127,6 +128,8 @@ class WebTestPermissionManager
   using PermissionsMap = std::unordered_map<PermissionDescription,
                                             blink::mojom::PermissionStatus,
                                             PermissionDescription::Hash>;
+  using DefaultPermissionStatusMap =
+      std::unordered_map<blink::PermissionType, blink::mojom::PermissionStatus>;
 
   void OnPermissionChanged(const PermissionDescription& permission,
                            blink::mojom::PermissionStatus status);
@@ -138,6 +141,13 @@ class WebTestPermissionManager
   // List of permissions currently known by the WebTestPermissionManager and
   // their associated |PermissionStatus|.
   PermissionsMap permissions_;
+
+  // A map of permission types to their default statuses, for those that require
+  // specific statuses to be returned in the absence of another value.
+  DefaultPermissionStatusMap default_permission_status_ = {
+      {blink::PermissionType::STORAGE_ACCESS_GRANT,
+       blink::mojom::PermissionStatus::ASK},
+  };
 
   // List of subscribers currently listening to permission changes.
   SubscriptionsMap subscriptions_;

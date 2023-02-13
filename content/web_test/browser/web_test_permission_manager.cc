@@ -152,8 +152,13 @@ blink::mojom::PermissionStatus WebTestPermissionManager::GetPermissionStatus(
 
   auto it = permissions_.find(
       PermissionDescription(permission, requesting_origin, embedding_origin));
-  if (it == permissions_.end())
+  if (it == permissions_.end()) {
+    auto default_state = default_permission_status_.find(permission);
+    if (default_state != default_permission_status_.end()) {
+      return default_state->second;
+    }
     return blink::mojom::PermissionStatus::DENIED;
+  }
 
   // Immitates the behaviour of the NotificationPermissionContext in that
   // permission cannot be requested from cross-origin iframes, which the current
