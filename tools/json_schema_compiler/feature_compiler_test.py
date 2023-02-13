@@ -58,6 +58,7 @@ class FeatureCompilerTest(unittest.TestCase):
       'internal': True,
       'matches': ['*://*/*'],
       'max_manifest_version': 1,
+      'requires_delegated_availability_check': True,
       'noparent': True,
       'platforms': ['mac', 'win'],
       'session_types': ['kiosk', 'regular'],

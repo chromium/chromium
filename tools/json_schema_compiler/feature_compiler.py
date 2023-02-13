@@ -252,6 +252,11 @@ FEATURE_GRAMMAR = ({
             'values': [2, 3]
         }
     },
+    'requires_delegated_availability_check': {
+      bool: {
+            'values': [True]
+      }
+    },
     'noparent': {
         bool: {
             'values': [True]
