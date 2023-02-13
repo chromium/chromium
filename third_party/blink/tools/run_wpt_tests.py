@@ -745,7 +745,7 @@ class WPTAdapter(common.BaseIsolatedScriptArgsAdapter):
     def add_android_arguments(self, parser):
         group = parser.add_argument_group(
             'Android', 'Options for configuring Android devices and tooling.')
-        add_emulator_args(group)
+        common.add_emulator_args(group)
         group.add_argument(
             '--browser-apk',
             # Aliases for backwards compatibility.
@@ -1117,20 +1117,6 @@ class ChromeAndroid(ChromeAndroidBase):
             raise ValueError(
                 "Must provide either '--package-name' or '--browser-apk' "
                 'for %r.' % self.name)
-
-
-def add_emulator_args(parser):
-    parser.add_argument(
-        '--avd-config',
-        type=os.path.realpath,
-        help=('Path to the avd config. Required for Android products. '
-              '(See //tools/android/avd/proto for message definition '
-              'and existing *.textpb files.)'))
-    parser.add_argument(
-        '--emulator-window',
-        action='store_true',
-        default=False,
-        help='Enable graphical window display on the emulator.')
 
 
 def _make_product_registry():

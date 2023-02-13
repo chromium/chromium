@@ -310,6 +310,20 @@ def extract_filter_list(filter_list):
   return filter_list.split('::')
 
 
+def add_emulator_args(parser):
+    parser.add_argument(
+        '--avd-config',
+        type=os.path.realpath,
+        help=('Path to the avd config. Required for Android products. '
+              '(See //tools/android/avd/proto for message definition '
+              'and existing *.textpb files.)'))
+    parser.add_argument(
+        '--emulator-window',
+        action='store_true',
+        default=False,
+        help='Enable graphical window display on the emulator.')
+
+
 class BaseIsolatedScriptArgsAdapter:
   """The base class for all script adapters that need to translate flags
   set by isolated script test contract into the specific test script's flags.
@@ -352,7 +366,7 @@ class BaseIsolatedScriptArgsAdapter:
 
     # Arguments that are ignored, but added here because it's easier to ignore
     # them to to update bot configs to not pass them.
-    self._parser.add_argument('--avd-config')
+    add_emulator_args(self._parser)
     self._parser.add_argument('--isolated-script-test-chartjson-output')
     self._parser.add_argument('--isolated-script-test-perf-output')
 

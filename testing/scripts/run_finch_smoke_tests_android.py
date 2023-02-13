@@ -79,7 +79,7 @@ from scripts import common
 from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
 from skia_gold_infra import finch_skia_gold_session_manager
 from skia_gold_infra import finch_skia_gold_utils
-from run_wpt_tests import add_emulator_args, get_device
+from run_wpt_tests import get_device
 
 LOGCAT_TAG = 'finch_test_runner_py'
 LOGCAT_FILTERS = [
@@ -1189,7 +1189,7 @@ def main(args):
         required=False,
         help='path to write test results JSON object to')
 
-  add_emulator_args(parser)
+  common.add_emulator_args(parser)
   script_common.AddDeviceArguments(parser)
   script_common.AddEnvironmentArguments(parser)
   logging_common.AddLoggingArguments(parser)
