@@ -73,20 +73,6 @@ typedef NS_ENUM(NSUInteger, TabGridConfiguration) {
   TabGridConfigurationFloatingButton,
 };
 
-// User interaction that triggered a page change, if any.
-typedef NS_ENUM(NSUInteger, PageChangeInteraction) {
-  // There has been no interaction since the last page change.
-  PageChangeInteractionNone = 0,
-  // The user dragged in the scroll view to change pages.
-  PageChangeInteractionScrollDrag,
-  // The user tapped a segment of the page control to change pages.
-  PageChangeInteractionPageControlTap,
-  // The user dragged the page control slider to change pages.
-  PageChangeInteractionPageControlDrag,
-  // The user dragged an item in another scroll view to change pages.
-  PageChangeInteractionItemDrag,
-};
-
 // Key of the UMA IOS.TabSwitcher.PageChangeInteraction histogram.
 const char kUMATabSwitcherPageChangeInteractionHistogram[] =
     "IOS.TabSwitcher.PageChangeInteraction";
@@ -100,12 +86,6 @@ enum class TabSwitcherPageChangeInteraction {
   kItemDrag = 4,
   kMaxValue = kItemDrag,
 };
-
-// Convenience function to record a page change interaction.
-void RecordPageChangeInteraction(TabSwitcherPageChangeInteraction interaction) {
-  UMA_HISTOGRAM_ENUMERATION(kUMATabSwitcherPageChangeInteractionHistogram,
-                            interaction);
-}
 
 // Computes the page from the offset and width of `scrollView`.
 TabGridPage GetPageFromScrollView(UIScrollView* scrollView) {
@@ -181,7 +161,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, assign, getter=isScrollViewAnimatingContentOffset)
     BOOL scrollViewAnimatingContentOffset;
 
-@property(nonatomic, assign) PageChangeInteraction pageChangeInteraction;
 // UIView whose background color changes to create a fade-in / fade-out effect
 // when revealing / hiding the Thumb Strip.
 @property(nonatomic, weak) UIView* foregroundView;
@@ -381,7 +360,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self broadcastIncognitoContentVisibility];
       [self configureButtonsForActiveAndCurrentPage];
       // Records when the user drags the scrollView to switch pages.
-      [self recordActionSwitchingToPage:_currentPage];
+      [self recordActionSwitchingToPage:_currentPage
+                         withInteration:TabSwitcherPageChangeInteraction::
+                                            kScrollDrag];
     }
   }
 }
@@ -391,7 +372,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // tapping on the page control during scrolling can result in erratic
   // scrolling.
   self.topToolbar.pageControl.userInteractionEnabled = NO;
-  self.pageChangeInteraction = PageChangeInteractionScrollDrag;
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView*)scrollView
@@ -401,10 +381,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView*)scrollView {
-  // Mark the interaction as ended, so that scrolls that don't change page don't
-  // cause other interactions to be mislabeled.
-  self.pageChangeInteraction = PageChangeInteractionNone;
-
   // Update currentPage if scroll view has moved to a new page. Especially
   // important here for 3-finger accessibility swipes since it's not registered
   // as dragging in scrollViewDidScroll:
@@ -421,8 +397,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (currentPage != self.currentPage && self.isDragSeesionInProgress) {
     // This happens when the user drags an item from one scroll view into
     // another.
-    self.pageChangeInteraction = PageChangeInteractionItemDrag;
-    [self recordActionSwitchingToPage:currentPage];
+    [self recordActionSwitchingToPage:currentPage
+                       withInteration:TabSwitcherPageChangeInteraction::
+                                          kItemDrag];
     [self.topToolbar.pageControl setSelectedPage:currentPage animated:YES];
   }
   self.currentPage = currentPage;
@@ -1563,8 +1540,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                              action:@selector(pageControlChangedValue:)
                    forControlEvents:UIControlEventValueChanged];
   [topToolbar.pageControl addTarget:self
-                             action:@selector(pageControlChangedPage:)
-                   forControlEvents:UIControlEventTouchUpInside];
+                             action:@selector(pageControlChangedPageByDrag:)
+                   forControlEvents:TabGridPageChangeByDragEvent];
+  [topToolbar.pageControl addTarget:self
+                             action:@selector(pageControlChangedPageByTap:)
+                   forControlEvents:TabGridPageChangeByTapEvent];
 
   [NSLayoutConstraint activateConstraints:@[
     [topToolbar.topAnchor
@@ -1961,7 +1941,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Records when the user switches between incognito and regular pages in the tab
 // grid. Switching to a different TabGridPage can either be driven by dragging
 // the scrollView or tapping on the pageControl.
-- (void)recordActionSwitchingToPage:(TabGridPage)page {
+- (void)recordActionSwitchingToPage:(TabGridPage)page
+                     withInteration:
+                         (TabSwitcherPageChangeInteraction)interaction {
   switch (page) {
     case TabGridPageIncognitoTabs:
       // There are duplicate metrics below that correspond to the previous
@@ -1983,30 +1965,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
       break;
   }
-  switch (self.pageChangeInteraction) {
-    case PageChangeInteractionNone:
-      // This shouldn't happen, but in case it does happen in release, track it.
-      NOTREACHED() << "Recorded a page change with no interaction.";
-      RecordPageChangeInteraction(TabSwitcherPageChangeInteraction::kNone);
-      break;
-    case PageChangeInteractionScrollDrag:
-      RecordPageChangeInteraction(
-          TabSwitcherPageChangeInteraction::kScrollDrag);
-      break;
-    case PageChangeInteractionPageControlTap:
-      RecordPageChangeInteraction(
-          TabSwitcherPageChangeInteraction::kControlTap);
-      break;
-    case PageChangeInteractionPageControlDrag:
-      RecordPageChangeInteraction(
-          TabSwitcherPageChangeInteraction::kControlDrag);
-      break;
-    case PageChangeInteractionItemDrag:
-      RecordPageChangeInteraction(TabSwitcherPageChangeInteraction::kItemDrag);
-      break;
-  }
-  // Don't reset `self.pageChangeInteraction` here, because a drag may still be
-  // in process.
+  UMA_HISTOGRAM_ENUMERATION(kUMATabSwitcherPageChangeInteractionHistogram,
+                            interaction);
 }
 
 // Tells the appropriate delegate to create a new item, and then tells the
@@ -2821,8 +2781,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (UseRTLLayout())
     offset = 1.0 - offset;
 
-  self.pageChangeInteraction = PageChangeInteractionPageControlDrag;
-
   // Total space available for the scroll view to scroll (horizontally).
   CGFloat offsetWidth =
       self.scrollView.contentSize.width - self.scrollView.frame.size.width;
@@ -2833,21 +2791,28 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.scrollView.contentOffset = contentOffset;
 }
 
-- (void)pageControlChangedPage:(id)sender {
+- (void)pageControlChangedPageByDrag:(id)sender {
   TabGridPage newPage = self.topToolbar.pageControl.selectedPage;
-  // If the user has dragged the page control, -pageControlChangedPage: will be
-  // called after the calls to -pageControlChangedValue:, so only set the
-  // interaction here if one hasn't already been set.
-  if (self.pageChangeInteraction == PageChangeInteractionNone)
-    self.pageChangeInteraction = PageChangeInteractionPageControlTap;
 
-  TabGridPage currentPage = self.currentPage;
   [self scrollToPage:newPage animated:YES];
   // Records when the user uses the pageControl to switch pages.
-  if (currentPage != newPage)
-    [self recordActionSwitchingToPage:newPage];
-  // Regardless of whether the page changed, mark the interaction as done.
-  self.pageChangeInteraction = PageChangeInteractionNone;
+  if (self.currentPage != newPage) {
+    [self recordActionSwitchingToPage:newPage
+                       withInteration:TabSwitcherPageChangeInteraction::
+                                          kControlDrag];
+  }
+}
+
+- (void)pageControlChangedPageByTap:(id)sender {
+  TabGridPage newPage = self.topToolbar.pageControl.selectedPage;
+
+  [self scrollToPage:newPage animated:YES];
+  // Records when the user uses the pageControl to switch pages.
+  if (self.currentPage != newPage) {
+    [self recordActionSwitchingToPage:newPage
+                       withInteration:TabSwitcherPageChangeInteraction::
+                                          kControlTap];
+  }
 }
 
 #pragma mark - DisabledTabViewControllerDelegate

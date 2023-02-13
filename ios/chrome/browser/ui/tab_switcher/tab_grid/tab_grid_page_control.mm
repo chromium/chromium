@@ -20,6 +20,9 @@
 #error "This file requires ARC support."
 #endif
 
+UIControlEvents TabGridPageChangeByTapEvent = 1 << 24;
+UIControlEvents TabGridPageChangeByDragEvent = 1 << 25;
+
 // Structure of this control:
 //
 // The page control is similar to a UISegmentedControl in appearance, but not in
@@ -400,7 +403,9 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   [super touchesBegan:touches withEvent:event];
   DCHECK(!self.multipleTouchEnabled);
   DCHECK_EQ(1U, touches.count);
-  DCHECK(!self.draggingSlider);
+  if (self.draggingSlider) {
+    return;
+  }
   UITouch* touch = [touches anyObject];
   CGPoint locationInSlider = [touch locationInView:self.sliderView];
   if ([self.sliderView pointInside:locationInSlider withEvent:event]) {
@@ -432,7 +437,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   DCHECK_EQ(1U, touches.count);
   self.draggingSlider = NO;
   [self setSelectedPage:self.selectedPage animated:YES];
-  [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+  [self sendActionsForControlEvents:TabGridPageChangeByDragEvent];
 }
 
 - (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
@@ -445,7 +450,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   // sent and don't need to be sent again here.
   if (self.tapRecognizer.state != UIGestureRecognizerStateEnded) {
     [self setSelectedPage:self.selectedPage animated:YES];
-    [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+    [self sendActionsForControlEvents:TabGridPageChangeByDragEvent];
   }
 }
 
@@ -851,7 +856,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   }
   if (page != self.selectedPage) {
     [self setSelectedPage:page animated:YES];
-    [self sendActionsForControlEvents:UIControlEventTouchUpInside];
+    [self sendActionsForControlEvents:TabGridPageChangeByTapEvent];
   }
 }
 

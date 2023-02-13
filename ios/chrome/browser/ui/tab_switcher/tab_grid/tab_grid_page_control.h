@@ -10,6 +10,10 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
+// Custom control events for the actions on the TabGridPageControl.
+extern UIControlEvents TabGridPageChangeByTapEvent;
+extern UIControlEvents TabGridPageChangeByDragEvent;
+
 // A three-sectioned control for selecting a page in the tab grid.
 // A "slider" is positioned over the section for the selected page.
 // This is a fixed-size control; it's an error to set  or change its size.
