@@ -1,2 +1,21 @@
+<style>
+  :host {
+    width: 100%;
+  }
+
+  ntp-module-header::part(module-icon) {
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
+</style>
 <div id="content">
+  <ntp-module-header
+    disable-text="[[i18n('modulesDisableButtonText', cluster.label)]]"
+    show-dismiss-button
+    dismiss-text="[[i18n('modulesDismissButtonText', cluster.label)]]"
+    on-disable-button-click="onDisableButtonClick_"
+    show-info-button on-info-button-click="onInfoButtonClick_"
+    icon-src="chrome://resources/images/icon_journeys.svg">
+    [[i18n('modulesJourneysResumeJourney', cluster.label)]]
+  </ntp-module-header>
 </div>
