@@ -286,20 +286,14 @@ Value::Dict SystemPerformanceInfo::ToDict() const {
 // Retrieves performance counters from the operating system.
 // Fills in the provided |info| structure. Returns true on success.
 BASE_EXPORT bool GetSystemPerformanceInfo(SystemPerformanceInfo* info) {
-  static const auto query_system_information_ptr =
-      reinterpret_cast<decltype(&::NtQuerySystemInformation)>(GetProcAddress(
-          GetModuleHandle(L"ntdll.dll"), "NtQuerySystemInformation"));
-  if (!query_system_information_ptr)
-    return false;
-
   SYSTEM_PERFORMANCE_INFORMATION counters = {};
   {
     // The call to NtQuerySystemInformation might block on a lock.
     base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                   BlockingType::MAY_BLOCK);
-    if (query_system_information_ptr(::SystemPerformanceInformation, &counters,
-                                     sizeof(SYSTEM_PERFORMANCE_INFORMATION),
-                                     nullptr) != STATUS_SUCCESS) {
+    if (::NtQuerySystemInformation(::SystemPerformanceInformation, &counters,
+                                   sizeof(SYSTEM_PERFORMANCE_INFORMATION),
+                                   nullptr) != STATUS_SUCCESS) {
       return false;
     }
   }

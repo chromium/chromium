@@ -72,15 +72,11 @@ TEST_F(ScopedHandleTest, ScopedHandle) {
 TEST_F(ScopedHandleDeathTest, HandleVerifierTrackedHasBeenClosed) {
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   ASSERT_NE(HANDLE(nullptr), handle);
-  using NtCloseFunc = decltype(&::NtClose);
-  NtCloseFunc ntclose = reinterpret_cast<NtCloseFunc>(
-      GetProcAddress(GetModuleHandle(L"ntdll.dll"), "NtClose"));
-  ASSERT_NE(nullptr, ntclose);
 
   ASSERT_DEATH(
       {
         base::win::ScopedHandle handle_holder(handle);
-        ntclose(handle);
+        ::NtClose(handle);
         // Destructing a ScopedHandle with an illegally closed handle should
         // fail.
       },

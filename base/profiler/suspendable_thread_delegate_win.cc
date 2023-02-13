@@ -11,7 +11,7 @@
 
 #include "base/check.h"
 #include "base/debug/alias.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/profiler/native_unwinder_win.h"
 #include "build/build_config.h"
 
@@ -75,34 +75,19 @@ const TEB* GetThreadEnvironmentBlock(PlatformThreadId thread_id,
   if (thread_id == ::GetCurrentThreadId())
     return reinterpret_cast<TEB*>(NtCurrentTeb());
 
-  // Define the internal types we need to invoke NtQueryInformationThread.
-  enum THREAD_INFORMATION_CLASS { ThreadBasicInformation };
-
-  struct CLIENT_ID {
-    HANDLE UniqueProcess;
-    HANDLE UniqueThread;
-  };
-
+  // Define types not in winternl.h needed to invoke NtQueryInformationThread().
+  constexpr auto ThreadBasicInformation = static_cast<THREADINFOCLASS>(0);
   struct THREAD_BASIC_INFORMATION {
     NTSTATUS ExitStatus;
-    raw_ptr<TEB> Teb;
+    RAW_PTR_EXCLUSION TEB* Teb;  // Filled in by the OS so cannot use raw_ptr<>.
     CLIENT_ID ClientId;
     KAFFINITY AffinityMask;
     LONG Priority;
     LONG BasePriority;
   };
 
-  using NtQueryInformationThreadFunction =
-      NTSTATUS(WINAPI*)(HANDLE, THREAD_INFORMATION_CLASS, PVOID, ULONG, PULONG);
-
-  static const auto nt_query_information_thread =
-      reinterpret_cast<NtQueryInformationThreadFunction>(::GetProcAddress(
-          ::GetModuleHandle(L"ntdll.dll"), "NtQueryInformationThread"));
-  if (!nt_query_information_thread)
-    return nullptr;
-
   THREAD_BASIC_INFORMATION basic_info = {0};
-  NTSTATUS status = nt_query_information_thread(
+  NTSTATUS status = ::NtQueryInformationThread(
       thread_handle, ThreadBasicInformation, &basic_info,
       sizeof(THREAD_BASIC_INFORMATION), nullptr);
   if (status != 0)

@@ -1913,6 +1913,7 @@ component("base") {
 
     libs += [
       "cfgmgr32.lib",
+      "ntdll.lib",
       "powrprof.lib",
       "propsys.lib",
       "setupapi.lib",
@@ -3458,6 +3459,8 @@ test("base_unittests") {
     if (enable_cet_shadow_stack) {
       sources += [ "win/cet_shadow_stack_unittest.cc" ]
     }
+
+    libs = [ "ntdll.lib" ]
   }
 
   if (is_linux || is_chromeos) {
