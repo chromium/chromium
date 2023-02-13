@@ -1308,7 +1308,7 @@ IN_PROC_BROWSER_TEST_F(
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and gets evicted if HTTPOnly cookie changes.
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
+    BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange,
     PagesWithCacheControlNoStoreEvictedIfHTTPOnlyCookieChange) {
   CreateHttpsServer();
   net::test_server::ControllableHttpResponse response(https_server(),
@@ -1370,7 +1370,7 @@ IN_PROC_BROWSER_TEST_F(
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and gets evicted if HTTPOnly cookie changes.
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
+    BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange,
     PagesWithCacheControlNoStoreEvictedIfJSAndHTTPOnlyCookieChange) {
   CreateHttpsServer();
   net::test_server::ControllableHttpResponse response(https_server(),
