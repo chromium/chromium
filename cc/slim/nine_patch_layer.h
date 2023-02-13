@@ -46,6 +46,12 @@ class COMPONENT_EXPORT(CC_SLIM) NinePatchLayer : public UIResourceLayer {
   ~NinePatchLayer() override;
 
   cc::NinePatchLayer* cc_layer() const;
+
+  gfx::Rect border_;
+  gfx::Rect aperture_;
+  bool fill_center_ = false;
+  bool nearest_neighbor_ = false;
+  cc::NinePatchGenerator quad_generator_;
 };
 
 }  // namespace cc::slim

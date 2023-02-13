@@ -15,6 +15,7 @@
 #include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
+#include "cc/slim/nine_patch_layer.h"
 #include "cc/slim/surface_layer.h"
 #include "cc/slim/test_layer_tree_client.h"
 #include "cc/slim/ui_resource_layer.h"
@@ -198,6 +199,35 @@ TEST_P(SlimLayerTest, UIResourceLayerProperties) {
   layer_tree->SetRoot(layer);
 
   EXPECT_NE(layer->resource_id(), 0);
+  EXPECT_EQ(layer_tree->GetUIResourceManager()
+                ->owned_shared_resources_size_for_test(),
+            1u);
+}
+
+TEST_P(SlimLayerTest, NinePatchLayerProperties) {
+  scoped_refptr<NinePatchLayer> layer = NinePatchLayer::Create();
+
+  auto image_info =
+      SkImageInfo::Make(10, 10, kN32_SkColorType, kPremul_SkAlphaType);
+  SkBitmap bitmap;
+  bitmap.allocPixels(image_info);
+  bitmap.setImmutable();
+  layer->SetBitmap(bitmap);
+
+  layer->SetBorder(gfx::Rect(1, 1, 8, 8));
+  layer->SetAperture(gfx::Rect(4, 4, 2, 2));
+  layer->SetFillCenter(true);
+  layer->SetNearestNeighbor(true);
+
+  if (!base::FeatureList::IsEnabled(features::kSlimCompositor)) {
+    return;
+  }
+  TestLayerTreeClient client;
+  LayerTree::InitParams params;
+  params.client = &client;
+  auto layer_tree = LayerTree::Create(std::move(params));
+  layer_tree->SetRoot(layer);
+
   EXPECT_EQ(layer_tree->GetUIResourceManager()
                 ->owned_shared_resources_size_for_test(),
             1u);
