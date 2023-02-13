@@ -87,6 +87,7 @@ mojom("device_service") {
   # non-Blink variant as a dependency. Blink can never use the DeviceService
   # interface directly anyway, so don't generate bindings for it.
   disable_variants = true
+  cpp_only = true
 
   enabled_features = []
   if ((is_linux || is_chromeos) && use_udev) {
@@ -191,6 +192,11 @@ mojom("usb") {
   ]
 
   webui_module_path = "/"
+  use_typescript_sources = true
+
+  # Generate legacy JS bindings in addition to WebUI TS bindings for Blink Web
+  # Tests.
+  generate_legacy_js_bindings = true
 }
 
 mojom("usb_test") {
@@ -198,4 +204,9 @@ mojom("usb_test") {
   sources = [ "usb_manager_test.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
+  use_typescript_sources = true
+
+  # Generate legacy JS bindings in addition to WebUI bindings for fuzzers,
+  # since fuzzers still use the 3 legacy bindings types.
+  generate_legacy_js_bindings = enable_mojom_fuzzer
 }

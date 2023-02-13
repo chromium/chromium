@@ -19,7 +19,7 @@ component("tab_groups") {
   deps = [
     "//base",
     "//components/strings",
-    "//components/tab_groups/public/mojom:mojo_bindings_js__generator",
+    "//components/tab_groups/public/mojom:mojo_bindings_ts__generator",
     "//skia",
     "//ui/base",
     "//ui/gfx",

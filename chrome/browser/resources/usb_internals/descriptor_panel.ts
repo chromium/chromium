@@ -2342,19 +2342,18 @@ export class DescriptorPanel {
         const index = getRequestIndex(row, i);
         const dataLength = getRequestLength(row, i);
 
-        if (this.checkEnumParamValid_(
-                type, 'Transfer Type', UsbControlTransferType) &&
-            this.checkEnumParamValid_(
-                recipient, 'Transfer Recipient', UsbControlTransferRecipient) &&
+        const transferType = this.convertStringToTransferType_(type);
+        const transferRecipient =
+            this.convertStringToTransferRecipient_(recipient);
+
+        if (transferType !== null && transferRecipient !== null &&
             this.checkParamValid_(request, 'Transfer Request', 0, 255) &&
             this.checkParamValid_(value, 'wValue', 0, 65535) &&
             this.checkParamValid_(index, 'wIndex', 0, 65535) &&
             this.checkParamValid_(dataLength, 'Length', 0, 65535)) {
           const usbControlTransferParams: UsbControlTransferParams = {
-            type: (UsbControlTransferType as {[key: string]: number})[type]!,
-            recipient:
-                (UsbControlTransferRecipient as
-                 {[key: string]: number})[recipient]!,
+            type: transferType,
+            recipient: transferRecipient,
             request,
             value,
             index,
@@ -2379,17 +2378,40 @@ export class DescriptorPanel {
     return true;
   }
 
-  /**
-   * Checks if the user input for a enum field is valid.
-   */
-  private checkEnumParamValid_(
-      enumString: string|number, paramName: string,
-      enumObject: {[key: string]: number|string}): boolean {
-    if (enumObject[enumString] !== undefined) {
-      return true;
+  private convertStringToTransferType_(enumString: string):
+      UsbControlTransferType|null {
+    if (enumString === 'STANDARD') {
+      return UsbControlTransferType.STANDARD;
     }
-    showError(`Invalid ${paramName}`, this.rootElement_);
-    return false;
+    if (enumString === 'CLASS') {
+      return UsbControlTransferType.CLASS;
+    }
+    if (enumString === 'VENDOR') {
+      return UsbControlTransferType.VENDOR;
+    }
+    if (enumString === 'RESERVED') {
+      return UsbControlTransferType.RESERVED;
+    }
+    showError('Invalid Transfer Type', this.rootElement_);
+    return null;
+  }
+
+  private convertStringToTransferRecipient_(enumString: string):
+      UsbControlTransferRecipient|null {
+    if (enumString === 'DEVICE') {
+      return UsbControlTransferRecipient.DEVICE;
+    }
+    if (enumString === 'INTERFACE') {
+      return UsbControlTransferRecipient.INTERFACE;
+    }
+    if (enumString === 'ENDPOINT') {
+      return UsbControlTransferRecipient.ENDPOINT;
+    }
+    if (enumString === 'OTHER') {
+      return UsbControlTransferRecipient.OTHER;
+    }
+    showError('Invalid Transfer Recipient', this.rootElement_);
+    return null;
   }
 }
 

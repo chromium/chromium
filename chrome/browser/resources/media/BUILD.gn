@@ -22,12 +22,12 @@ build_webui("build") {
 
   mojo_files_deps = [
     "//chrome/browser/media:mojo_bindings_ts__generator",
-    "//services/media_session/public/mojom:mojom_js",
+    "//services/media_session/public/mojom:mojom_ts__generator",
   ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/media/history/media_history_store.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/media/media_engagement_score_details.mojom-webui.ts",
-    "$root_gen_dir/mojom-webui/services/media_session/public/mojom/media_session.mojom-webui.js",
+    "$root_gen_dir/services/media_session/public/mojom/media_session.mojom-webui.ts",
   ]
 
   ts_deps = [
