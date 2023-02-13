@@ -144,6 +144,9 @@ class CONTENT_EXPORT BrowserTaskQueues {
     void ScheduleRunAllPendingTasksForTesting(
         base::OnceClosure on_pending_task_ran);
 
+    // Drop back-pointer to resource about to be freed.
+    void OnTaskQueuesDestroyed() { outer_ = nullptr; }
+
    private:
     friend base::RefCountedThreadSafe<Handle>;
 

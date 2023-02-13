@@ -212,6 +212,7 @@ BrowserTaskQueues::~BrowserTaskQueues() {
   control_queue_->ShutdownTaskQueue();
   default_task_queue_->ShutdownTaskQueue();
   run_all_pending_tasks_queue_->ShutdownTaskQueue();
+  handle_->OnTaskQueuesDestroyed();
 }
 
 std::array<scoped_refptr<base::SingleThreadTaskRunner>,
