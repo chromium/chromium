@@ -264,6 +264,13 @@ void DIPSService::InitializeStorage(base::Time time,
 void DIPSService::HandleRedirectChain(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain) {
+  if (redirects.empty()) {
+    for (auto& observer : observers_) {
+      observer.OnChainHandled(chain);
+    }
+    return;
+  }
+
   chain->cookie_mode = GetCookieMode();
   // Copy the URL out before |redirects| is moved, to avoid use-after-move.
   GURL url = redirects[0]->url;
@@ -288,6 +295,9 @@ void DIPSService::GotState(std::vector<DIPSRedirectInfoPtr> redirects,
 
   if (index + 1 >= redirects.size()) {
     // All redirects handled.
+    for (auto& observer : observers_) {
+      observer.OnChainHandled(chain);
+    }
     return;
   }
 
@@ -423,4 +433,12 @@ void DIPSService::RunDeletionTaskOnUIThread(
 
   StateClearer::DeleteState(browser_context_->GetBrowsingDataRemover(),
                             std::move(filter), std::move(callback));
+}
+
+void DIPSService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DIPSService::RemoveObserver(const Observer* observer) {
+  observers_.RemoveObserver(observer);
 }

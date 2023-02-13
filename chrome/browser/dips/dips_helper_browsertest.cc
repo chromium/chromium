@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/dips/dips_bounce_detector.h"
-
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,14 +15,17 @@
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_storage.h"
+#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -37,6 +41,8 @@ using content::CookieAccessDetails;
 using content::NavigationHandle;
 using content::RenderFrameHost;
 using content::WebContents;
+using testing::Optional;
+using testing::Pair;
 
 namespace {
 
@@ -151,6 +157,7 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("a.test", "127.0.0.1");
     host_resolver()->AddRule("b.test", "127.0.0.1");
+    host_resolver()->AddRule("c.test", "127.0.0.1");
     DIPSWebContentsObserver::FromWebContents(GetActiveWebContents())
         ->SetClockForTesting(&test_clock_);
   }
@@ -213,6 +220,21 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
   // Helpful for tests that use other WebContents (e.g. in incognito windows).
   void OverrideActiveWebContents(WebContents* web_contents) {
     web_contents_ = web_contents;
+  }
+
+  void EndRedirectChain() {
+    WebContents* web_contents = GetActiveWebContents();
+    DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
+        web_contents->GetBrowserContext());
+    GURL expected_url = web_contents->GetLastCommittedURL();
+
+    RedirectChainObserver chain_observer(dips_service, expected_url);
+    // Performing a browser-based navigation terminates the current redirect
+    // chain.
+    ASSERT_TRUE(content::NavigateToURL(
+        web_contents,
+        embedded_test_server()->GetURL("a.test", "/title1.html")));
+    chain_observer.Wait();
   }
 
  private:
@@ -673,4 +695,72 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // Verify that the user interaction has been cleared from the DIPS DB.
   absl::optional<StateValue> state_final = GetDIPSState(GURL("http://a.test"));
   EXPECT_FALSE(state_final.has_value());
+}
+
+// Makes a long URL involving several stateful stateful bounces on b.test,
+// ultimately landing on c.test. Returns both the full redirect URL and the URL
+// for the landing page. The landing page URL has a param appended to it to
+// ensure it's unique to URLs from previous calls (to prevent caching).
+std::pair<GURL, GURL> MakeRedirectAndFinalUrl(net::EmbeddedTestServer* server) {
+  uint64_t unique_value = base::RandUint64();
+  std::string final_dest =
+      base::StrCat({"/title1.html?i=", base::NumberToString(unique_value)});
+  std::string redirect_path =
+      "/cross-site-with-cookie/b.test/cross-site-with-cookie/"
+      "b.test/cross-site-with-cookie/b.test/cross-site-with-cookie/"
+      "b.test/cross-site-with-cookie/b.test/cross-site-with-cookie/"
+      "b.test/cross-site-with-cookie/b.test/cross-site-with-cookie/"
+      "b.test/cross-site-with-cookie/b.test/cross-site-with-cookie/c.test";
+  redirect_path += final_dest;
+  return std::make_pair(server->GetURL("b.test", redirect_path),
+                        server->GetURL("c.test", final_dest));
+}
+
+// Attempt to detect flakiness in waiting for DIPS storage by repeatedly
+// visiting long redirect chains, deleting the relevant rows, and verifying the
+// rows don't come back.
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
+                       DetectRedirectHandlingFlakiness) {
+  WebContents* web_contents = GetActiveWebContents();
+
+  auto* dips_storage = DIPSServiceFactory::GetForBrowserContext(
+                           web_contents->GetBrowserContext())
+                           ->storage();
+
+  for (int i = 0; i < 10; i++) {
+    const base::Time bounce_time = base::Time::FromDoubleT(i + 1);
+    SetDIPSTime(bounce_time);
+    LOG(INFO) << "*** i=" << i << " ***";
+    // Make b.test statefully bounce.
+    ASSERT_TRUE(content::NavigateToURL(
+        web_contents,
+        embedded_test_server()->GetURL("a.test", "/title1.html")));
+    auto [redirect_url, final_url] =
+        MakeRedirectAndFinalUrl(embedded_test_server());
+    ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents, redirect_url,
+                                                   final_url));
+    // End the chain so the bounce is recorded.
+    EndRedirectChain();
+
+    // Verify the bounces were recorded.
+    absl::optional<StateValue> b_state = GetDIPSState(GURL("http://b.test"));
+    ASSERT_TRUE(b_state.has_value());
+    ASSERT_THAT(b_state->site_storage_times,
+                Optional(Pair(bounce_time, bounce_time)));
+    ASSERT_THAT(b_state->bounce_times,
+                Optional(Pair(bounce_time, bounce_time)));
+    ASSERT_THAT(b_state->stateful_bounce_times,
+                Optional(Pair(bounce_time, bounce_time)));
+
+    dips_storage->AsyncCall(&DIPSStorage::RemoveRows)
+        .WithArgs(std::vector<std::string>{"b.test"});
+
+    // Verify the row was removed before repeating the test. If we did not
+    // correctly wait for the whole chain to be handled before removing the row
+    // for b.test, it will likely be written again and this check will fail.
+    // (And if a write happens after this check, it will include a stale
+    // timestamp and will cause one the of the checks above to fail on the next
+    // loop iteration.)
+    ASSERT_FALSE(GetDIPSState(GURL("http://b.test")).has_value());
+  }
 }
