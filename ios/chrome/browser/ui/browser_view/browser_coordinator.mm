@@ -482,7 +482,6 @@ enum class ToolbarKind {
   [self uninstallDelegatesForBrowser];
   [self.tabEventsMediator disconnect];
   [self.tabLifecycleMediator disconnect];
-  self.viewController.commandDispatcher = nil;
   [self.dispatcher stopDispatchingToTarget:self];
   [self stopChildCoordinators];
   [self destroyViewController];
@@ -621,7 +620,6 @@ enum class ToolbarKind {
                      initWithBrowser:self.browser
       browserContainerViewController:self.browserContainerCoordinator
                                          .viewController
-                          dispatcher:self.dispatcher
                  keyCommandsProvider:_keyCommandsProvider
                         dependencies:_viewControllerDependencies];
   self.tabLifecycleMediator.baseViewController = self.viewController;
@@ -638,6 +636,8 @@ enum class ToolbarKind {
 - (void)destroyViewController {
   // TODO(crbug.com/1272516): Set the WebUsageEnablerBrowserAgent to disabled.
   self.viewController.active = NO;
+  // TODO(crbug.com/1415244): Remove when BVC will no longer handle commands.
+  [self.dispatcher stopDispatchingToTarget:self.viewController];
   [self.viewController shutdown];
   _viewController = nil;
 }

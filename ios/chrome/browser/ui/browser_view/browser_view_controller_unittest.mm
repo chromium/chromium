@@ -259,7 +259,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_
-                                               dispatcher:dispatcher
                                       keyCommandsProvider:key_commands_provider_
                                              dependencies:dependencies];
 

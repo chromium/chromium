@@ -52,7 +52,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/help_commands.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
@@ -481,7 +480,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (instancetype)initWithBrowser:(Browser*)browser
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
-                        dispatcher:(CommandDispatcher*)dispatcher
                keyCommandsProvider:(KeyCommandsProvider*)keyCommandsProvider
                       dependencies:
                           (BrowserViewControllerDependencies)dependencies {
@@ -491,7 +489,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
     self.browser = browser;
     _browserContainerViewController = browserContainerViewController;
-    _commandDispatcher = dispatcher;
     _keyCommandsProvider = keyCommandsProvider;
     // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
     _prerenderService = dependencies.prerenderService;
@@ -1014,7 +1011,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   _bubblePresenter = nil;
 
-  [self.commandDispatcher stopDispatchingToTarget:self];
   self.browser->GetWebStateList()->RemoveObserver(_webStateListObserver.get());
   self.browser = nullptr;
 

@@ -29,7 +29,6 @@ class Browser;
 @class BrowserContainerViewController;
 @protocol BrowserCoordinatorCommands;
 @class BubblePresenter;
-@class CommandDispatcher;
 @protocol CRWResponderInputView;
 @class DefaultBrowserPromoNonModalScheduler;
 @protocol DefaultPromoNonModalPresentationDelegate;
@@ -100,13 +99,11 @@ typedef struct {
 // `browser` is the browser whose tabs this BVC will display.
 // `browserContainerViewController` is the container object this BVC will exist
 // inside.
-// `dispatcher` is the dispatcher instance this BVC will use.
 // TODO(crbug.com/992582): Remove references to model objects -- including
-//   `browser` and `dispatcher` -- from this class.
+//   `browser` -- from this class.
 - (instancetype)initWithBrowser:(Browser*)browser
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
-                        dispatcher:(CommandDispatcher*)dispatcher
                keyCommandsProvider:(KeyCommandsProvider*)keyCommandsProvider
                       dependencies:
                           (BrowserViewControllerDependencies)dependencies
@@ -116,9 +113,6 @@ typedef struct {
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
-
-// Command dispatcher.
-@property(nonatomic, weak) CommandDispatcher* commandDispatcher;
 
 // Handler for reauth commands.
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
