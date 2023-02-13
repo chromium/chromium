@@ -26,14 +26,13 @@ const int kCompatibleVersionNumber = 106;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.
-void ChangeVersion(sql::MetaTable* meta_table,
-                   int version_num,
-                   bool update_compatible_version_num) {
-  meta_table->SetVersionNumber(version_num);
-  if (update_compatible_version_num) {
-    meta_table->SetCompatibleVersionNumber(
-        std::min(version_num, kCompatibleVersionNumber));
-  }
+[[nodiscard]] bool ChangeVersion(sql::MetaTable* meta_table,
+                                 int version_num,
+                                 bool update_compatible_version_num) {
+  return meta_table->SetVersionNumber(version_num) &&
+         (!update_compatible_version_num ||
+          meta_table->SetCompatibleVersionNumber(
+              std::min(version_num, kCompatibleVersionNumber)));
 }
 
 // Outputs the failed version number as a warning and always returns
@@ -148,8 +147,10 @@ sql::InitStatus WebDatabase::MigrateOldVersionsAsNeeded() {
   // version number.
   int current_version = std::max(meta_table_.GetVersionNumber(),
                                  meta_table_.GetCompatibleVersionNumber());
-  if (current_version > meta_table_.GetVersionNumber())
-    ChangeVersion(&meta_table_, current_version, false);
+  if (current_version > meta_table_.GetVersionNumber() &&
+      !ChangeVersion(&meta_table_, current_version, false)) {
+    return FailedMigrationTo(current_version);
+  }
 
   DCHECK_GT(current_version, kDeprecatedVersionNumber);
 
@@ -157,21 +158,21 @@ sql::InitStatus WebDatabase::MigrateOldVersionsAsNeeded() {
        next_version <= kCurrentVersionNumber; ++next_version) {
     // Do any database-wide migrations.
     bool update_compatible_version = false;
-    if (!MigrateToVersion(next_version, &update_compatible_version))
+    if (!MigrateToVersion(next_version, &update_compatible_version) ||
+        !ChangeVersion(&meta_table_, next_version, update_compatible_version)) {
       return FailedMigrationTo(next_version);
-
-    ChangeVersion(&meta_table_, next_version, update_compatible_version);
+    }
 
     // Give each table a chance to migrate to this version.
     for (const auto& table : tables_) {
       // Any of the tables may set this to true, but by default it is false.
       update_compatible_version = false;
       if (!table.second->MigrateToVersion(next_version,
-                                          &update_compatible_version)) {
+                                          &update_compatible_version) ||
+          !ChangeVersion(&meta_table_, next_version,
+                         update_compatible_version)) {
         return FailedMigrationTo(next_version);
       }
-
-      ChangeVersion(&meta_table_, next_version, update_compatible_version);
     }
   }
   return sql::INIT_OK;
