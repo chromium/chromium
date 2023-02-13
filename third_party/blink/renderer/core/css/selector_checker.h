@@ -236,6 +236,7 @@ class CORE_EXPORT SelectorChecker {
   static bool MatchesFocusVisiblePseudoClass(const Element&);
   static bool MatchesSpatialNavigationInterestPseudoClass(const Element&);
   static bool MatchesSelectorFragmentAnchorPseudoClass(const Element&);
+  bool CheckInStyleScope(const SelectorCheckingContext&, MatchResult&) const;
 
  private:
   // Does the work of checking whether the simple selector and element pointed
@@ -297,7 +298,6 @@ class CORE_EXPORT SelectorChecker {
       Element&,
       const StyleScope&,
       const StyleScopeActivations& outer_activations) const;
-  bool CheckInStyleScope(const SelectorCheckingContext&, MatchResult&) const;
   bool MatchesWithScope(Element&, const CSSSelectorList&, Element* scope) const;
 
   CustomScrollbar* scrollbar_;

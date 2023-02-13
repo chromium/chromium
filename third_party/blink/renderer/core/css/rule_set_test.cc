@@ -44,6 +44,8 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+using ::testing::ElementsAreArray;
+
 namespace blink {
 
 namespace {
@@ -147,6 +149,18 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttr) {
   RuleSet& rule_set = sheet.GetRuleSet();
   ASSERT_EQ(1u, rule_set.AttrRules("attr").size());
   ASSERT_TRUE(rule_set.TagRules("div").empty());
+}
+
+// It's arbitrary which of these we choose, but it needs to match
+// the behavior in IsCoveredByBucketing().
+TEST(RuleSetTest, findBestRuleSetAndAdd_ThreeClasses) {
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(".a.b.c { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  EXPECT_EQ(0u, rule_set.ClassRules("a").size());
+  EXPECT_EQ(0u, rule_set.ClassRules("b").size());
+  EXPECT_EQ(1u, rule_set.ClassRules("c").size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenClass) {
@@ -408,6 +422,79 @@ TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll2) {
   EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
   EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", ""));
 }
+
+#ifndef NDEBUG  // Requires all_rules_, to find back the rules we add.
+
+// Parse the given selector, buckets it and returns which of the constituent
+// simple selectors were marked as covered by that bucketing. Note the the
+// result value is stored in the order the selector is stored, which means
+// that the order of the compound selectors are reversed (see comment in
+// CSSSelectorParser::ConsumeComplexSelector()).
+std::deque<bool> CoveredByBucketing(const String& selector_text) {
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules(selector_text + " { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const HeapVector<RuleData>& rules = rule_set.AllRulesForTest();
+  EXPECT_EQ(1u, rules.size());
+  if (rules.size() != 1) {
+    return {};
+  } else {
+    const CSSSelector* selector = &rules.front().Selector();
+
+    std::deque<bool> covered;
+    while (selector) {
+      covered.push_back(selector->IsCoveredByBucketing());
+      selector = selector->TagHistory();
+    }
+    return covered;
+  }
+}
+
+TEST(RuleSetTest, IsCoveredByBucketing) {
+  // Base cases.
+  EXPECT_THAT(CoveredByBucketing(".c"), ElementsAreArray({true}));
+  EXPECT_THAT(CoveredByBucketing("#id.c"), ElementsAreArray({true, false}));
+  EXPECT_THAT(CoveredByBucketing(".c .c.c"),
+              ElementsAreArray({true, true, false}));
+  EXPECT_THAT(
+      CoveredByBucketing(".a.b.c"),
+      ElementsAreArray(
+          {false, false, true}));  // See findBestRuleSetAndAdd_ThreeClasses.
+  EXPECT_THAT(CoveredByBucketing(".c > [attr]"),
+              ElementsAreArray({false, false}));
+  EXPECT_THAT(CoveredByBucketing("*"), ElementsAreArray({false}));
+
+  // Tag namespacing.
+  EXPECT_THAT(CoveredByBucketing("div"), ElementsAreArray({true}));
+  EXPECT_THAT(CoveredByBucketing("*|div"), ElementsAreArray({true}));
+  EXPECT_THAT(
+      CoveredByBucketing("@namespace ns \"http://example.org\";\nns|div"),
+      ElementsAreArray({false}));
+  EXPECT_THAT(CoveredByBucketing("@namespace \"http://example.org\";\ndiv"),
+              ElementsAreArray({false}));
+
+  // Attribute selectors.
+  EXPECT_THAT(CoveredByBucketing("[attr]"), ElementsAreArray({false}));
+  EXPECT_THAT(CoveredByBucketing("div[attr]"),
+              ElementsAreArray({false, false}));
+
+  // Link pseudo-class behavior due to visited multi-bucketing.
+  EXPECT_THAT(CoveredByBucketing(":any-link"), ElementsAreArray({true}));
+  EXPECT_THAT(CoveredByBucketing(":visited:link"),
+              ElementsAreArray({false, false}));
+  EXPECT_THAT(CoveredByBucketing(":visited:any-link"),
+              ElementsAreArray({false, false}));
+  EXPECT_THAT(CoveredByBucketing(":any-link:visited"),
+              ElementsAreArray({false, false}));
+
+  // Some more pseudos.
+  EXPECT_THAT(CoveredByBucketing(":focus"), ElementsAreArray({true}));
+  EXPECT_THAT(CoveredByBucketing(":focus-visible"), ElementsAreArray({true}));
+  EXPECT_THAT(CoveredByBucketing(":host"), ElementsAreArray({false}));
+}
+
+#endif  // NDEBUG
 
 TEST(RuleSetTest, SelectorIndexLimit) {
   // It's not feasible to run this test for a large number of bits. If the

@@ -344,6 +344,25 @@ static bool RulesApplicableInCurrentTreeScope(
          element->ContainingTreeScope() == scoping_node->ContainingTreeScope();
 }
 
+bool SlowMatchWithNoResultFlags(
+    const SelectorChecker& checker,
+    SelectorChecker::SelectorCheckingContext& context,
+    const CSSSelector& selector,
+    const RuleData& rule_data,
+    unsigned expected_proximity = std::numeric_limits<unsigned>::max()) {
+  SelectorChecker::MatchResult result;
+  context.selector = &selector;
+  context.is_inside_visited_link =
+      rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
+  bool match = checker.Match(context, result);
+  DCHECK_EQ(0, result.flags);
+  DCHECK_EQ(kPseudoIdNone, result.dynamic_pseudo);
+  if (match) {
+    DCHECK_EQ(expected_proximity, result.proximity);
+  }
+  return match;
+}
+
 template <bool perf_trace_enabled>
 void ElementRuleCollector::CollectMatchingRulesForListInternal(
     base::span<const RuleData> rules,
@@ -408,20 +427,39 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     }
 
     SelectorChecker::MatchResult result;
-    context.selector = &selector;
     context.style_scope = scope_seeker.Seek(rule_data.GetPosition());
-    context.is_inside_visited_link =
-        rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
-    DCHECK(!context.is_inside_visited_link ||
-           inside_link_ != EInsideLink::kNotInsideLink);
-    bool match = checker.Match(context, result);
-    result_.AddFlags(result.flags);
-    if (!match) {
-      continue;
-    }
-    if (pseudo_style_request_.pseudo_id != kPseudoIdNone &&
-        pseudo_style_request_.pseudo_id != result.dynamic_pseudo) {
-      continue;
+    if (context.vtt_originating_element == nullptr &&
+        rule_data.IsEntirelyCoveredByBucketing()) {
+      // Just by seeing this rule, we know that its selector
+      // matched, and that we don't get any flags or a match
+      // against a pseudo-element. So we can skip the entire test.
+      if (pseudo_style_request_.pseudo_id != kPseudoIdNone) {
+        continue;
+      }
+      if (context.style_scope != nullptr &&
+          RuntimeEnabledFeatures::CSSScopeEnabled() &&
+          !checker.CheckInStyleScope(context, result)) {
+        DCHECK(
+            !SlowMatchWithNoResultFlags(checker, context, selector, rule_data));
+        continue;
+      }
+      DCHECK(SlowMatchWithNoResultFlags(checker, context, selector, rule_data,
+                                        result.proximity));
+    } else {
+      context.selector = &selector;
+      context.is_inside_visited_link =
+          rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
+      DCHECK(!context.is_inside_visited_link ||
+             inside_link_ != EInsideLink::kNotInsideLink);
+      bool match = checker.Match(context, result);
+      result_.AddFlags(result.flags);
+      if (!match) {
+        continue;
+      }
+      if (pseudo_style_request_.pseudo_id != kPseudoIdNone &&
+          pseudo_style_request_.pseudo_id != result.dynamic_pseudo) {
+        continue;
+      }
     }
     const ContainerQuery* container_query =
         container_query_seeker.Seek(rule_data.GetPosition());

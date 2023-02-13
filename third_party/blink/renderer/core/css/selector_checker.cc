@@ -256,7 +256,20 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
     const SelectorCheckingContext& context,
     MatchResult& result) const {
   SubResult sub_result(result);
-  if (!CheckOne(context, sub_result)) {
+  bool is_covered_by_bucketing =
+      context.selector->IsCoveredByBucketing() &&
+      !context.is_sub_selector;  // Don't trust bucketing in sub-selectors; we
+                                 // may be in a child selector (a nested rule).
+#if DCHECK_IS_ON()
+  SubResult dummy_result(result);
+  if (is_covered_by_bucketing) {
+    DCHECK(CheckOne(context, dummy_result))
+        << context.selector->SimpleSelectorTextForDebug()
+        << " unexpectedly didn't match element " << context.element;
+    DCHECK_EQ(0, dummy_result.flags);
+  }
+#endif
+  if (!is_covered_by_bucketing && !CheckOne(context, sub_result)) {
     return kSelectorFailsLocally;
   }
 

@@ -223,6 +223,9 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   const CSSSelector& SelectorAt(wtf_size_t index) const {
     return SelectorArray()[index];
   }
+  CSSSelector& MutableSelectorAt(wtf_size_t index) {
+    return SelectorArray()[index];
+  }
   wtf_size_t SelectorIndex(const CSSSelector& selector) const {
     return static_cast<wtf_size_t>(&selector - FirstSelector());
   }

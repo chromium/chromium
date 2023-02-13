@@ -363,6 +363,9 @@ class CORE_EXPORT CSSSelector {
   const CSSSelector* TagHistory() const {
     return is_last_in_tag_history_ ? nullptr : this + 1;
   }
+  CSSSelector* TagHistory() {
+    return is_last_in_tag_history_ ? nullptr : this + 1;
+  }
 
   static const AtomicString& UniversalSelectorAtom() { return g_null_atom; }
   const QualifiedName& TagQName() const;
@@ -478,6 +481,9 @@ class CORE_EXPORT CSSSelector {
   bool IsForPage() const { return is_for_page_; }
   void SetForPage() { is_for_page_ = true; }
 
+  bool IsCoveredByBucketing() const { return is_covered_by_bucketing_; }
+  void SetCoveredByBucketing(bool value) { is_covered_by_bucketing_ = value; }
+
   bool MatchesPseudoElement() const;
   bool IsTreeAbidingPseudoElement() const;
   bool IsAllowedAfterPart() const;
@@ -500,6 +506,25 @@ class CORE_EXPORT CSSSelector {
   unsigned has_rare_data_ : 1;
   unsigned is_for_page_ : 1;
   unsigned is_implicitly_added_ : 1;
+
+  // If set, we don't need to check this simple selector when matching;
+  // it will always match, since we can only see the selector if we
+  // checked a given bucket. For instance, if we have a rule like
+  // #foo.bar, it will be put in the rule set bucket for #foo
+  // (ID selectors are prioritized over nearly everything), and we can
+  // mark #foo as covered by bucketing (but still need to check .bar).
+  // Of course, this doesn't cover ancestors or siblings; if we have
+  // something like .c .c.c, only the two rightmost selectors will get
+  // this bit set. Also, we often get into things like namespaces which
+  // makes this more conservative than we'd like (bucketing on e.g.
+  // tag names do not generally care about it).
+  //
+  // Furthermore, as a convention, matching such a rule would never set
+  // flags in MatchResult.
+  //
+  // This always starts out false, and is set when we bucket a given
+  // RuleData (by calling ComputeEntirelyCoveredByBucketing()).
+  unsigned is_covered_by_bucketing_ : 1;
 
   void SetPseudoType(PseudoType pseudo_type) {
     pseudo_type_ = pseudo_type;
@@ -648,6 +673,7 @@ inline CSSSelector::CSSSelector()
       has_rare_data_(false),
       is_for_page_(false),
       is_implicitly_added_(false),
+      is_covered_by_bucketing_(false),
       data_(DataUnion::kConstructEmptyValue) {}
 
 inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
@@ -660,6 +686,7 @@ inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
       has_rare_data_(false),
       is_for_page_(false),
       is_implicitly_added_(tag_is_implicit),
+      is_covered_by_bucketing_(false),
       data_(tag_q_name) {}
 
 inline CSSSelector::CSSSelector(const StyleRule* parent_rule, bool is_implicit)
@@ -671,6 +698,7 @@ inline CSSSelector::CSSSelector(const StyleRule* parent_rule, bool is_implicit)
       has_rare_data_(false),
       is_for_page_(false),
       is_implicitly_added_(is_implicit),
+      is_covered_by_bucketing_(false),
       data_(parent_rule) {}
 
 inline CSSSelector::CSSSelector(const CSSSelector& o)
@@ -682,6 +710,7 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
       has_rare_data_(o.has_rare_data_),
       is_for_page_(o.is_for_page_),
       is_implicitly_added_(o.is_implicitly_added_),
+      is_covered_by_bucketing_(o.is_covered_by_bucketing_),
       data_(DataUnion::kConstructUninitialized) {
   if (o.match_ == kTag) {
     new (&data_.tag_q_name_) QualifiedName(o.data_.tag_q_name_);
