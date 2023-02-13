@@ -593,8 +593,10 @@ bool DatabaseTracker::UpgradeToCurrentVersion() {
       !databases_table_->Init())
     return false;
 
-  if (meta_table_->GetVersionNumber() < kDatabaseTrackerCurrentSchemaVersion)
-    meta_table_->SetVersionNumber(kDatabaseTrackerCurrentSchemaVersion);
+  if (meta_table_->GetVersionNumber() < kDatabaseTrackerCurrentSchemaVersion &&
+      !meta_table_->SetVersionNumber(kDatabaseTrackerCurrentSchemaVersion)) {
+    return false;
+  }
 
   return transaction.Commit();
 }
