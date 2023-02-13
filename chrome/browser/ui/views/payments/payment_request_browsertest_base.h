@@ -265,6 +265,13 @@ class PaymentRequestBrowserTestBase
   void WaitForAnimation();
   void WaitForAnimation(PaymentRequestDialogView* dialog_view);
 
+  // Returns child of dialog_view() with passed-in `id`.
+  views::View* GetByDialogViewID(DialogViewID id) const;
+
+  // Returns child of `parent` with passed-in `id`.
+  views::View* GetChildByDialogViewID(views::View* parent,
+                                      DialogViewID id) const;
+
   // Returns the text of the Label or StyledLabel with the specific |view_id|
   // that is a child of the Payment Request dialog view.
   const std::u16string& GetLabelText(DialogViewID view_id);
