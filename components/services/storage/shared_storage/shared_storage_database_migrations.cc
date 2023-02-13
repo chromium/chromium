@@ -73,8 +73,7 @@ bool MigrateToVersion2(sql::Database& db,
   if (!db.Execute(kDropLastUsedTimeIndexSql))
     return false;
 
-  meta_table.SetVersionNumber(2);
-  return transaction.Commit();
+  return meta_table.SetVersionNumber(2) && transaction.Commit();
 }
 
 }  // namespace
