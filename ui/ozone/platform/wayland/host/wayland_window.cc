@@ -989,6 +989,9 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   if (pending_configure_state_.size_px.has_value()) {
     state.size_px = pending_configure_state_.size_px.value();
   }
+  if (pending_configure_state_.raster_scale.has_value()) {
+    state.raster_scale = pending_configure_state_.raster_scale.value();
+  }
 
   if (state.bounds_dip.IsEmpty() &&
       GetPlatformWindowState() == PlatformWindowState::kMinimized &&

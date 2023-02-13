@@ -309,6 +309,10 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
     OnBoundsChanged({origin_changed});
   }
 
+  if (old.raster_scale != latest.raster_scale) {
+    compositor()->SetExternalPageScaleFactor(latest.raster_scale);
+  }
+
   // Only set the sequence ID if this change will produce a frame.
   // If it won't, we may wait indefinitely for a frame that will never come.
   bool produces_frame = old.bounds_dip.size() != latest.bounds_dip.size() ||
