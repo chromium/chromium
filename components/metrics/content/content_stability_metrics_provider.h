@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
@@ -34,6 +35,7 @@ class ContentStabilityMetricsProvider
 #if BUILDFLAG(IS_ANDROID)
       public crash_reporter::CrashMetricsReporter::Observer,
 #endif
+      public content::RenderProcessHostCreationObserver,
       public content::NotificationObserver {
  public:
   // |extensions_helper| is used to determine if a process corresponds to an
@@ -69,6 +71,9 @@ class ContentStabilityMetricsProvider
                            NotificationObserver);
   FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            ExtensionsNotificationObserver);
+
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
   // content::NotificationObserver:
   void Observe(int type,

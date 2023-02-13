@@ -36,8 +36,6 @@ ContentStabilityMetricsProvider::ContentStabilityMetricsProvider(
                  content::NotificationService::AllSources());
   registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_HOST_HANG,
                  content::NotificationService::AllSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllSources());
 
 #if BUILDFLAG(IS_ANDROID)
   auto* crash_manager = crash_reporter::CrashMetricsReporter::GetInstance();
@@ -66,6 +64,13 @@ void ContentStabilityMetricsProvider::ClearSavedStabilityMetrics() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+void ContentStabilityMetricsProvider::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  bool was_extension_process =
+      extensions_helper_ && extensions_helper_->IsExtensionProcess(host);
+  helper_.LogRendererLaunched(was_extension_process);
+}
+
 void ContentStabilityMetricsProvider::Observe(
     int type,
     const content::NotificationSource& source,
@@ -91,16 +96,8 @@ void ContentStabilityMetricsProvider::Observe(
       break;
     }
 
-    case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG:
+    case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG: {
       helper_.LogRendererHang();
-      break;
-
-    case content::NOTIFICATION_RENDERER_PROCESS_CREATED: {
-      bool was_extension_process =
-          extensions_helper_ &&
-          extensions_helper_->IsExtensionProcess(
-              content::Source<content::RenderProcessHost>(source).ptr());
-      helper_.LogRendererLaunched(was_extension_process);
       break;
     }
 
