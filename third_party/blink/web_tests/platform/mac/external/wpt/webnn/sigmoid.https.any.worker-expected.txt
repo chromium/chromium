@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+FAIL sigmoid float32 1D tensor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL sigmoid float32 2D tensor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL sigmoid float32 3D tensor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL sigmoid float32 4D tensor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL sigmoid float32 5D tensor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL sigmoid float32 1D tensor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL sigmoid float32 2D tensor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL sigmoid float32 3D tensor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL sigmoid float32 4D tensor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL sigmoid float32 5D tensor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL sigmoid float32 1D tensor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL sigmoid float32 2D tensor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL sigmoid float32 3D tensor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL sigmoid float32 4D tensor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL sigmoid float32 5D tensor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL sigmoid float32 1D tensor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL sigmoid float32 2D tensor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL sigmoid float32 3D tensor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL sigmoid float32 4D tensor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL sigmoid float32 5D tensor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+Harness: the test ran to completion.
+
