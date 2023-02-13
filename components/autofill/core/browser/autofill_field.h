@@ -261,6 +261,14 @@ class AutofillField : public FormFieldData {
   // Clear all the log events for this field.
   void ClearLogEvents() { field_log_events_.clear(); }
 
+  void set_autofill_source_profile_guid(
+      const std::string& autofill_profile_guid) {
+    autofill_source_profile_guid_ = autofill_profile_guid;
+  }
+  absl::optional<std::string> autofill_source_profile_guid() const {
+    return autofill_source_profile_guid_;
+  }
+
  private:
   explicit AutofillField(FieldSignature field_signature);
 
@@ -367,6 +375,12 @@ class AutofillField : public FormFieldData {
   // suggestion list is shown for the field, user accepts one suggestion to
   // fill the form and user edits the field.
   std::vector<FieldLogEventType> field_log_events_;
+
+  // The autofill profile's GUID that was used for field filling. It corresponds
+  // to the autofill profile's GUID for the current value if `is_autofilled` is
+  // set or for the previously autofilled value if the field was changed after
+  // filling. nullopt means the field wasn't autofilled.
+  absl::optional<std::string> autofill_source_profile_guid_;
 };
 
 }  // namespace autofill

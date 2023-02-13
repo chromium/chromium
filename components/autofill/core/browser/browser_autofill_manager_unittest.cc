@@ -9979,6 +9979,133 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
+// Test that fields will be assigned with the source profile that was used for
+// autofill.
+TEST_F(BrowserAutofillManagerTest, TrackFillingOrigin) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestPersonalInformationFormData(&form);
+
+  FormsSeen({form});
+
+  AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
+  FillAutofillFormData(form, form.fields[0],
+                       MakeFrontendId({.profile_id = profile.guid()}));
+
+  FormStructure* form_structure =
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  for (const auto& autofill_field_ptr : form_structure->fields()) {
+    EXPECT_THAT(autofill_field_ptr->autofill_source_profile_guid(),
+                testing::Optional(profile.guid()));
+  }
+}
+
+// Test that filling with multiple autofill profiles will set different source
+// profiles for fields.
+TEST_F(BrowserAutofillManagerTest,
+       TrackFillingOriginWithUsingMultipleProfiles) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestPersonalInformationFormData(&form);
+
+  FormsSeen({form});
+
+  // Fill the form with a profile without email
+  AutofillProfile profile1 = test::GetFullProfile();
+  profile1.ClearFields({EMAIL_ADDRESS});
+  personal_data().AddProfile(profile1);
+  FormData response_data;
+  FillAutofillFormDataAndSaveResults(
+      form, form.fields[0], MakeFrontendId({.profile_id = profile1.guid()}),
+      &response_data);
+
+  // Check that the email field has no filling source.
+  FormStructure* form_structure =
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
+  ASSERT_EQ(form.fields[3].label, u"Email");
+  EXPECT_EQ(form_structure->field(3)->autofill_source_profile_guid(),
+            absl::nullopt);
+
+  // Then fill the email field using the second profile
+  AutofillProfile profile2 = test::GetFullProfile();
+  personal_data().AddProfile(profile2);
+  FormData later_response_data;
+  FillAutofillFormDataAndSaveResults(
+      response_data, form.fields[3],
+      MakeFrontendId({.profile_id = profile2.guid()}), &later_response_data);
+
+  // Check that the first three fields have the first profile as filling source
+  // and the last field has the second profile.
+  form_structure =
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  EXPECT_THAT(form_structure->field(0)->autofill_source_profile_guid(),
+              testing::Optional(profile1.guid()));
+  EXPECT_THAT(form_structure->field(1)->autofill_source_profile_guid(),
+              testing::Optional(profile1.guid()));
+  EXPECT_THAT(form_structure->field(2)->autofill_source_profile_guid(),
+              testing::Optional(profile1.guid()));
+  EXPECT_THAT(form_structure->field(3)->autofill_source_profile_guid(),
+              testing::Optional(profile2.guid()));
+}
+
+// Test that an autofilled and edited field will be assigned with the autofill
+// profile.
+TEST_F(BrowserAutofillManagerTest, TrackFillingOriginOnEditedField) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestPersonalInformationFormData(&form);
+
+  FormsSeen({form});
+
+  AutofillProfile profile = test::GetFullProfile();
+  personal_data().AddProfile(profile);
+  FormData response_data;
+  FillAutofillFormDataAndSaveResults(
+      form, form.fields[0], MakeFrontendId({.profile_id = profile.guid()}),
+      &response_data);
+
+  // Simulate editing the first field.
+  response_data.fields[0].value = u"Michael";
+  browser_autofill_manager_->OnTextFieldDidChange(
+      response_data, response_data.fields[0], gfx::RectF(),
+      AutofillTickClock::NowTicks());
+
+  FormStructure* form_structure =
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  AutofillField* edited_field = form_structure->field(0);
+  ASSERT_FALSE(edited_field->is_autofilled);
+  ASSERT_TRUE(edited_field->previously_autofilled());
+  EXPECT_THAT(edited_field->autofill_source_profile_guid(),
+              testing::Optional(profile.guid()));
+}
+
+// Test that only autofilled fields will be assigned with the autofill profile.
+TEST_F(BrowserAutofillManagerTest, TrackFillingOriginWorksOnlyOnFilledField) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestPersonalInformationFormData(&form);
+
+  FormsSeen({form});
+
+  // Fill the form with a profile without email field.
+  AutofillProfile profile = test::GetFullProfile();
+  profile.ClearFields({EMAIL_ADDRESS});
+  personal_data().AddProfile(profile);
+  FillAutofillFormData(form, form.fields[0],
+                       MakeFrontendId({.profile_id = profile.guid()}));
+
+  FormStructure* form_structure =
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+  // Check that the email field has no filling source.
+  EXPECT_EQ(form_structure->field(3)->autofill_source_profile_guid(),
+            absl::nullopt);
+}
+
 // Desktop only tests.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 class BrowserAutofillManagerTestForVirtualCardOption
