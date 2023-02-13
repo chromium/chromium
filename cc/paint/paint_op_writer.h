@@ -93,16 +93,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
  private:
   template <typename T>
-  static constexpr size_t SerializedSizeSimple() {
-    static_assert(!std::is_pointer_v<T>);
-    return base::bits::AlignUp(sizeof(T), kDefaultAlignment);
-  }
-  // size_t is always serialized as uint64_t to make the serialized result
-  // portable between 32bit and 64bit processes.
-  template <>
-  constexpr size_t SerializedSizeSimple<size_t>() {
-    return base::bits::AlignUp(sizeof(uint64_t), kDefaultAlignment);
-  }
+  static constexpr size_t SerializedSizeSimple();
 
  public:
   // SerializedSize() returns the maximum serialized size of the given type or
@@ -113,14 +104,9 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // deserialization, and make it possible to allow dynamic sizing for some
   // data types (see the specialized/overloaded functions).
   template <typename T>
-  static constexpr size_t SerializedSize() {
-    static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
-    return SerializedSizeSimple<T>();
-  }
+  static constexpr size_t SerializedSize();
   template <typename T>
-  static constexpr size_t SerializedSize(const T& data) {
-    return SerializedSizeSimple<T>();
-  }
+  static constexpr size_t SerializedSize(const T& data);
   static size_t SerializedSize(const PaintImage& image);
   static size_t SerializedSize(const PaintRecord& record);
 
@@ -352,6 +338,29 @@ class CC_PAINT_EXPORT PaintOpWriter {
   // serialized.
   const bool enable_security_constraints_;
 };
+
+template <typename T>
+constexpr size_t PaintOpWriter::SerializedSizeSimple() {
+  static_assert(!std::is_pointer_v<T>);
+  return base::bits::AlignUp(sizeof(T), kDefaultAlignment);
+}
+
+// size_t is always serialized as uint64_t to make the serialized result
+// portable between 32bit and 64bit processes.
+template <>
+constexpr size_t PaintOpWriter::SerializedSizeSimple<size_t>() {
+  return base::bits::AlignUp(sizeof(uint64_t), kDefaultAlignment);
+}
+
+template <typename T>
+constexpr size_t PaintOpWriter::SerializedSize() {
+  static_assert(std::is_arithmetic_v<T> || std::is_enum_v<T>);
+  return SerializedSizeSimple<T>();
+}
+template <typename T>
+constexpr size_t PaintOpWriter::SerializedSize(const T& data) {
+  return SerializedSizeSimple<T>();
+}
 
 }  // namespace cc
 
