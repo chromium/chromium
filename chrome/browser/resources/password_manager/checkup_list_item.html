@@ -98,6 +98,13 @@
       on-click="onMoreClick_">
   </cr-icon-button>
 </div>
+<template is="dom-if" if="[[showEditPasswordDisclaimer_]]" restamp>
+  <edit-password-disclaimer-dialog
+      on-edit-password-click="onEditPasswordClick_"
+      origin="[[group.name]]"
+      on-close="onEditDisclaimerClosed_">
+  </edit-password-disclaimer-dialog>
+</template>
 <template is="dom-if" if="[[showEditPasswordDialog_]]" restamp>
   <edit-password-dialog on-close="onEditPasswordDialogClosed_"
       id="editPasswordDialog" password="[[item]]">

@@ -689,4 +689,60 @@ suite('CheckupDetailsSectionTest', function() {
         listItem.shadowRoot!.querySelector('edit-password-dialog');
     assertFalse(!!editDialog);
   });
+
+  test('Edit dialog shown during already change flow', async function() {
+    Router.getInstance().navigateTo(
+        Page.CHECKUP_DETAILS, CheckupSubpage.COMPROMISED);
+    const credential = makeInsecureCredential({
+      id: 0,
+      url: 'test.com',
+      username: 'viking',
+      types: [
+        CompromiseType.LEAKED,
+      ],
+    });
+    credential.affiliatedDomains =
+        [{name: 'test.com', url: 'https://test.com/'}];
+    passwordManager.data.insecureCredentials = [credential];
+
+    const section = document.createElement('checkup-details-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getInsecureCredentials');
+    await flushTasks();
+
+    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    assertTrue(!!listItem);
+
+    // Click 'Change password'
+    const changePassword = listItem.shadowRoot!.querySelector<HTMLElement>(
+        '#changePasswordButton');
+    assertTrue(!!changePassword);
+    changePassword.click();
+
+    // Click 'Already change password?'
+    const alreadyChange =
+        listItem.shadowRoot!.querySelector<HTMLElement>('#alreadyChanged');
+    assertTrue(!!alreadyChange);
+    alreadyChange.click();
+    await flushTasks();
+
+    // Verify edit disclaimer dialog is shown.
+    const editDisclaimer =
+        listItem.shadowRoot!.querySelector('edit-password-disclaimer-dialog');
+    assertTrue(!!editDisclaimer);
+    assertTrue(editDisclaimer.$.dialog.open);
+
+    // Set up response for requestCredentialsDetails() to simulate successful
+    // reauth and click 'Edit'.
+    passwordManager.setRequestCredentialsDetailsResponse([credential]);
+    editDisclaimer.$.edit.click();
+
+    await passwordManager.whenCalled('requestCredentialsDetails');
+    await flushTasks();
+
+    const editDialog =
+        listItem.shadowRoot!.querySelector('edit-password-dialog');
+    assertTrue(!!editDialog);
+    assertTrue(editDialog.$.dialog.open);
+  });
 });
