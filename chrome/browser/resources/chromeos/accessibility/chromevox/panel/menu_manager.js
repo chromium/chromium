@@ -6,9 +6,10 @@
  * @fileoverview Class to manage the ChromeVox menus.
  */
 import {Command, CommandStore} from '../common/command_store.js';
+import {PanelNodeMenuId} from '../common/panel_menu_data.js';
 
 import {PanelInterface} from './panel_interface.js';
-import {PanelMenu, PanelSearchMenu} from './panel_menu.js';
+import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -28,6 +29,9 @@ export class MenuManager {
      * @private {!Array<!PanelMenu>}
      */
     this.menus_ = [];
+
+    /** @private {!Object<!PanelNodeMenuId, !PanelNodeMenu>} */
+    this.nodeMenuDictionary_ = {};
 
     /** @private {?PanelSearchMenu} */
     this.searchMenu_ = null;
@@ -149,6 +153,11 @@ export class MenuManager {
   /** @return {!Array<!PanelMenu>} */
   get menus() {
     return this.menus_;
+  }
+
+  /** @return {!Object<!PanelNodeMenuId, !PanelNodeMenu>} */
+  get nodeMenuDictionary() {
+    return this.nodeMenuDictionary_;
   }
 
   /** @return {?PanelSearchMenu} */

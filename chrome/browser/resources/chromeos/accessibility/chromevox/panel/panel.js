@@ -45,9 +45,6 @@ export class Panel extends PanelInterface {
     /** @private {!MenuManager} */
     this.menuManager_ = new MenuManager();
 
-    /** @private {!Object<!PanelNodeMenuId, !PanelNodeMenu>} */
-    this.nodeMenuDictionary_ = {};
-
     /** @private {boolean} */
     this.originalStickyState_ = false;
 
@@ -701,7 +698,7 @@ export class Panel extends PanelInterface {
         event => this.menuManager_.onMouseUpOnMenuTitle(menu, event));
     $('menus_background').appendChild(menu.menuContainerElement);
     this.menuManager_.menus.push(menu);
-    this.nodeMenuDictionary_[menuData.menuId] = menu;
+    this.menuManager_.nodeMenuDictionary[menuData.menuId] = menu;
   }
 
   /**
@@ -709,7 +706,8 @@ export class Panel extends PanelInterface {
    * @private
    */
   addNodeMenuItem_(itemData) {
-    this.nodeMenuDictionary_[itemData.menuId].addItemFromData(itemData);
+    this.menuManager_.nodeMenuDictionary[itemData.menuId].addItemFromData(
+        itemData);
   }
 
   /**
