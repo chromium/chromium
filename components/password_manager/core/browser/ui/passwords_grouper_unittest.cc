@@ -11,7 +11,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
-#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -169,6 +168,48 @@ TEST(PasswordsGrouperTest, FederatedCredentialsGroupedWithRegular) {
               ElementsAre(AffiliatedGroup(
                   {credential, CredentialUIEntry(federated_form)},
                   {GetShownOrigin(credential)})));
+}
+
+TEST(PasswordsGrouperTest, GroupsWithMatchingMainDomainsMerged) {
+  std::vector<PasswordForm> forms = {CreateForm("https://m.a.com/", u"test1"),
+                                     CreateForm("https://a.com/", u"test2"),
+                                     CreateForm("https://c.com/", u"test3"),
+                                     CreateForm("https://d.com/", u"test4")};
+
+  GroupedFacets group1;
+  group1.facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec("https://a.com")),
+      Facet(FacetURI::FromPotentiallyInvalidSpec("https://c.com")),
+  };
+  group1.facets[0].main_domain = "a.com";
+  group1.facets[1].main_domain = "c.com";
+
+  GroupedFacets group2;
+  group2.facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec("https://m.a.com"))};
+
+  GroupedFacets group3;
+  group3.facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec("https://d.com"))};
+
+  PasswordsGrouper grouper;
+  grouper.GroupPasswords({group1, group2, group3},
+                         {
+                             std::make_pair("key1", forms[0]),
+                             std::make_pair("key2", forms[1]),
+                             std::make_pair("key3", forms[2]),
+                             std::make_pair("key4", forms[3]),
+                         });
+
+  CredentialUIEntry credential1(forms[0]), credential2(forms[1]),
+      credential3(forms[2]), credential4(forms[3]);
+
+  EXPECT_THAT(
+      grouper.GetAffiliatedGroupsWithGroupingInfo(),
+      UnorderedElementsAre(
+          AffiliatedGroup({credential1, credential2, credential3},
+                          {GetShownOrigin(credential1)}),
+          AffiliatedGroup({credential4}, {GetShownOrigin(credential4)})));
 }
 
 }  // namespace password_manager

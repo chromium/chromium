@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/ui/passwords_grouper.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -11,6 +12,7 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/url_formatter/elide_url.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace password_manager {
 
@@ -24,6 +26,136 @@ std::string GetSignonRealm(const PasswordForm& form) {
            '/';
   }
   return form.signon_realm;
+}
+
+// An implementation of the disjoint-set data structure
+// (https://en.wikipedia.org/wiki/Disjoint-set_data_structure). This
+// implementation uses the path compression and union by rank optimizations,
+// achieving near-constant runtime on all operations.
+//
+// This data structure allows to keep track of disjoin sets. Constructor accepts
+// number of elements and initially each element represent an individual set.
+// Later by calling MergeSets corresponding sets are merged together.
+// Example usage:
+//   DisjointSet disjoint_set(5);
+//   disjoint_set.GetDisjointSets(); // Returns {{0}, {1}, {2}, {3}, {4}}
+//   disjoint_set.MergeSets(0, 2);
+//   disjoint_set.GetDisjointSets(); // Returns {{0, 2}, {1}, {3}, {4}}
+//   disjoint_set.MergeSets(2, 4);
+//   disjoint_set.GetDisjointSets(); // Returns {{0, 2, 4}, {1}, {3}}
+class DisjointSet {
+ public:
+  explicit DisjointSet(size_t size) : parent_id_(size), ranks_(size, 0) {
+    for (size_t i = 0; i < size; i++) {
+      parent_id_[i] = i;
+    }
+  }
+
+  // Merges two sets based on their rank. Set with higher rank becomes a parent
+  // for another set.
+  void MergeSets(int set1, int set2) {
+    set1 = GetRoot(set1);
+    set2 = GetRoot(set2);
+    if (set1 == set2) {
+      return;
+    }
+
+    // Update parent based on rank.
+    if (ranks_[set1] > ranks_[set2]) {
+      parent_id_[set2] = set1;
+    } else {
+      parent_id_[set1] = set2;
+      // if ranks were equal increment by one new root's rank.
+      if (ranks_[set1] == ranks_[set2]) {
+        ranks_[set2]++;
+      }
+    }
+  }
+
+  // Returns disjoin sets after merging. It's guarantee that the result will
+  // hold all elements.
+  std::vector<std::vector<int>> GetDisjointSets() {
+    std::vector<std::vector<int>> disjoint_sets(parent_id_.size());
+    for (size_t i = 0; i < parent_id_.size(); i++) {
+      // Append all elements to the root.
+      int root = GetRoot(i);
+      disjoint_sets[root].push_back(i);
+    }
+    // Clear empty sets.
+    base::EraseIf(disjoint_sets, [](const auto& set) { return set.empty(); });
+    return disjoint_sets;
+  }
+
+ private:
+  // Returns root for a given element.
+  int GetRoot(int index) {
+    if (index == parent_id_[index]) {
+      return index;
+    }
+    // To speed up future lookups flatten the tree along the way.
+    return parent_id_[index] = GetRoot(parent_id_[index]);
+  }
+
+  // Vector where element at i'th position holds a parent for i.
+  std::vector<int> parent_id_;
+
+  // Upper bound depth of a tree for i'th element.
+  std::vector<size_t> ranks_;
+};
+
+// TODO(crbug.com/1354196): Use extended PSL list to get main domain.
+std::string eTLDPlusOne(std::string url) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      GURL(url), net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+// This functions merges groups together if:
+// * the same facet is present in both groups
+// * main domain of the facets matches
+std::vector<GroupedFacets> MergeRelatedGroups(
+    const std::vector<GroupedFacets>& groups) {
+  DisjointSet unions(groups.size());
+  std::map<std::string, int> main_domain_to_group;
+
+  for (size_t i = 0; i < groups.size(); i++) {
+    for (auto& facet : groups[i].facets) {
+      if (facet.uri.IsValidAndroidFacetURI()) {
+        continue;
+      }
+
+      std::string main_domain =
+          facet.main_domain.empty()
+              ? eTLDPlusOne(facet.uri.potentially_invalid_spec())
+              : facet.main_domain;
+      if (main_domain.empty()) {
+        continue;
+      }
+
+      auto it = main_domain_to_group.find(main_domain);
+      if (it == main_domain_to_group.end()) {
+        main_domain_to_group[main_domain] = i;
+        continue;
+      }
+      unions.MergeSets(i, it->second);
+    }
+  }
+
+  std::vector<GroupedFacets> result;
+  for (const auto& merged_groups : unions.GetDisjointSets()) {
+    GroupedFacets group;
+    for (int group_id : merged_groups) {
+      // Move all the elements into a new vector.
+      group.facets.insert(group.facets.end(), groups[group_id].facets.begin(),
+                          groups[group_id].facets.end());
+      // Use non-empty name for a combined group.
+      if (!groups[group_id].branding_info.icon_url.is_empty()) {
+        group.branding_info = groups[group_id].branding_info;
+      }
+    }
+
+    result.push_back(std::move(group));
+  }
+  return result;
 }
 
 }  // namespace
@@ -127,8 +259,8 @@ void PasswordsGrouper::GroupPasswords(
   }
 
   // Construct map to keep track of facet URI to group id mapping.
-  std::map<std::string, GroupId> map_facet_to_group_id =
-      MapFacetsToGroupId(groups, signon_realms, password_grouping_info_);
+  std::map<std::string, GroupId> map_facet_to_group_id = MapFacetsToGroupId(
+      MergeRelatedGroups(groups), signon_realms, password_grouping_info_);
 
   // Construct a map to keep track of group id to a map of credential groups
   // to password form.
