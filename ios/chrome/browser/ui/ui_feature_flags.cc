@@ -141,11 +141,3 @@ BASE_FEATURE(kMultilineFadeTruncatingLabel,
 BASE_FEATURE(kTabStripContextMenu,
              "TabStripContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCloseAllTabsConfirmation,
-             "CloseAllTabsConfirmation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsCloseAllTabsConfirmationEnabled() {
-  return base::FeatureList::IsEnabled(kCloseAllTabsConfirmation);
-}

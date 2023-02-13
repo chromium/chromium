@@ -127,11 +127,4 @@ BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 // Flag to enable tab strip context menu.
 BASE_DECLARE_FEATURE(kTabStripContextMenu);
 
-// Feature flag to enable the Close All Tabs confirmation dialog instead of the
-// Undo button.
-BASE_DECLARE_FEATURE(kCloseAllTabsConfirmation);
-
-// Whether the Close All tabs button should show a confirmation dialog.
-bool IsCloseAllTabsConfirmationEnabled();
-
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_
