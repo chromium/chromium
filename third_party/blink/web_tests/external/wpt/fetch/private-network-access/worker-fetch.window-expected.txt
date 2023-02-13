@@ -6,7 +6,7 @@ PASS public to local: failure.
 PASS public to private: failure.
 PASS public to public: success.
 FAIL treat-as-public to local: failure. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
-PASS treat-as-public to private: failure.
+FAIL treat-as-public to private: failure. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
 PASS treat-as-public to public: success.
 PASS private https to local: failure.
 PASS public https to private: failure.
