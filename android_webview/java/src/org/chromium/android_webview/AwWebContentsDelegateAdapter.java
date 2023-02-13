@@ -80,6 +80,7 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
                     break;
             }
             if (direction != 0 && tryToMoveFocus(direction)) return;
+            if (AwKeyboardShortcuts.onKeyDown(event, mAwContents)) return;
         }
         handleMediaKey(event);
         mContentsClient.onUnhandledKeyEvent(event);

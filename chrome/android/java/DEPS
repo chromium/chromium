@@ -64,6 +64,7 @@ include_rules = [
   "+components/ukm/android/java",
   "+components/webauthn/android/java",
   "+components/webxr/android/java",
+  "+components/zoom/android/java",
 
   "-content/public/android",
   "+content/public/android/java/src/org/chromium/content_public",

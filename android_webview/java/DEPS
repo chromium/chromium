@@ -8,6 +8,7 @@ include_rules = [
   "+components/safe_browsing/android/java",
   "+components/stylus_handwriting/android/java",
   "+components/component_updater/android/java",
+  "+components/zoom/android/java",
 
   "-content/public/android/java",
   "+content/public/android/java/src/org/chromium/content_public",

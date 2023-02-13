@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import android.os.SystemClock;
 
+import org.chromium.components.zoom.ZoomConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.GestureEventType;
@@ -24,7 +25,7 @@ public class ZoomController {
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomIn(WebContents webContents) {
-        return pinchByDelta(webContents, 1.25f);
+        return pinchByDelta(webContents, ZoomConstants.ZOOM_IN_DELTA);
     }
 
     /**
@@ -35,7 +36,7 @@ public class ZoomController {
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomOut(WebContents webContents) {
-        return pinchByDelta(webContents, 0.8f);
+        return pinchByDelta(webContents, ZoomConstants.ZOOM_OUT_DELTA);
     }
 
     /**
@@ -46,7 +47,7 @@ public class ZoomController {
      */
     public static boolean zoomReset(WebContents webContents) {
         // Negative value to reset zoom level.
-        return pinchByDelta(webContents, -1.f);
+        return pinchByDelta(webContents, ZoomConstants.ZOOM_RESET_DELTA);
     }
 
     private static boolean pinchByDelta(WebContents webContents, float delta) {

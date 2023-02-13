@@ -166,5 +166,10 @@ BASE_FEATURE(kWebViewUmaUploadQualityOfServiceSetToDefault,
              "WebViewUmaUploadQualityOfServiceSetToDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This enables zoom keyboard shortcuts for zoom-in, zoom-out and zoom reset.
+BASE_FEATURE(kWebViewZoomKeyboardShortcuts,
+             "WebViewZoomKeyboardShortcuts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace android_webview

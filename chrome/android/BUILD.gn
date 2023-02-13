@@ -517,6 +517,7 @@ if (current_toolchain == default_toolchain) {
       "//components/webauthn/android:java",
       "//components/webrtc/android:java",
       "//components/webxr/android:ar_java_interfaces",
+      "//components/zoom/android:java",
       "//content/public/android:content_java",
       "//content/public/common:common_java",
       "//device/gamepad:java",

@@ -36,6 +36,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewRestrictSensitiveContent,
     &features::kWebViewUmaUploadQualityOfServiceSetToDefault,
     &metrics::kAndroidMetricsAsyncMetricLogging,
+    &features::kWebViewZoomKeyboardShortcuts,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {

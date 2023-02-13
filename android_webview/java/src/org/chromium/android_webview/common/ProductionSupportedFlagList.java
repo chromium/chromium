@@ -381,6 +381,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.STYLUS_RICH_GESTURES,
                     "When enabled, stylus input can be used to draw rich gestures which "
                             + "affect text in editable web content."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_ZOOM_KEYBOARD_SHORTCUTS,
+                    "Enables WebView to use zoom keyboard shortcuts on hardware keyboards."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
