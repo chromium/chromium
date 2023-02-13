@@ -14,6 +14,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -166,6 +167,13 @@ class FastCheckoutClientImpl
   // Makes accessibility announcements for when a form was filled.
   void A11yAnnounce(autofill::FormSignature form_signature,
                     bool is_credit_card_form);
+  // Returns a pointer to the autofill profile corresponding to
+  // `selected_autofill_profile_guid_`. Stops the run if it's a `nullptr`.
+  autofill::AutofillProfile* GetSelectedAutofillProfile();
+
+  // Returns a pointer to the credit card corresponding to
+  // `selected_credit_card_guid_`. Stops the run if it's a `nullptr`.
+  autofill::CreditCard* GetSelectedCreditCard();
 
   // Triggers reparse with a delay of `kSleepBetweenTriggerReparseCalls`.
   // Reparsing updates the forms cache `autofill_manager_->form_structures()`
@@ -206,10 +214,10 @@ class FastCheckoutClientImpl
   bool is_running_ = false;
 
   // Autofill profile selected by the user in the bottomsheet.
-  std::unique_ptr<autofill::AutofillProfile> selected_autofill_profile_;
+  absl::optional<std::string> selected_autofill_profile_guid_;
 
   // Credit card selected by the user in the bottomsheet.
-  std::unique_ptr<autofill::CreditCard> selected_credit_card_;
+  absl::optional<std::string> selected_credit_card_guid_;
 
   // The origin for which `TryToStart()` was triggered.
   url::Origin origin_;

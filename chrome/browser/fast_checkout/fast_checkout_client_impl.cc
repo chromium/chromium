@@ -180,8 +180,8 @@ void FastCheckoutClientImpl::Stop(bool allow_further_runs) {
   is_running_ = false;
   form_filling_states_.clear();
   form_signatures_to_fill_.clear();
-  selected_autofill_profile_.reset();
-  selected_credit_card_.reset();
+  selected_autofill_profile_guid_ = absl::nullopt;
+  selected_credit_card_guid_ = absl::nullopt;
   timeout_timer_.AbandonAndStop();
   credit_card_form_global_id_ = absl::nullopt;
   // Reset UI related state.
@@ -222,8 +222,8 @@ void FastCheckoutClientImpl::OnOptionsSelected(
     std::unique_ptr<autofill::AutofillProfile> selected_profile,
     std::unique_ptr<autofill::CreditCard> selected_credit_card) {
   OnHidden();
-  selected_autofill_profile_ = std::move(selected_profile);
-  selected_credit_card_ = std::move(selected_credit_card);
+  selected_autofill_profile_guid_ = selected_profile->guid();
+  selected_credit_card_guid_ = selected_credit_card->guid();
   timeout_timer_.Start(FROM_HERE, kTimeout,
                        base::BindOnce(&FastCheckoutClientImpl::OnRunComplete,
                                       weak_ptr_factory_.GetWeakPtr(),
@@ -279,7 +279,8 @@ bool FastCheckoutClientImpl::AllFormsAreFilled() const {
 }
 
 bool FastCheckoutClientImpl::IsFilling() const {
-  return IsRunning() && selected_autofill_profile_ && selected_credit_card_;
+  return IsRunning() && selected_autofill_profile_guid_ &&
+         selected_credit_card_guid_;
 }
 
 void FastCheckoutClientImpl::OnAfterLoadedServerPredictions() {
@@ -313,11 +314,13 @@ void FastCheckoutClientImpl::TryToFillForms() {
     if (ShouldFillForm(*form, autofill::FormType::kAddressForm)) {
       autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/false);
-      if (field) {
+      autofill::AutofillProfile* autofill_profile =
+          GetSelectedAutofillProfile();
+      if (field && autofill_profile) {
         form_filling_states_[std::make_pair(form->form_signature(),
                                             autofill::FormType::kAddressForm)] =
             FillingState::kFilling;
-        autofill_manager_->FillProfileForm(*selected_autofill_profile_,
+        autofill_manager_->FillProfileForm(*autofill_profile,
                                            form->ToFormData(), *field);
       }
     }
@@ -325,19 +328,40 @@ void FastCheckoutClientImpl::TryToFillForms() {
     if (ShouldFillForm(*form, autofill::FormType::kCreditCardForm)) {
       autofill::AutofillField* field =
           GetFieldToFill(form->fields(), /*is_credit_card_form=*/true);
-      if (field && !credit_card_form_global_id_.has_value()) {
+      autofill::CreditCard* credit_card = GetSelectedCreditCard();
+      if (field && !credit_card_form_global_id_ && credit_card) {
         autofill::CreditCardCvcAuthenticator* cvc_authenticator =
             autofill_client_->GetCvcAuthenticator();
         DCHECK(cvc_authenticator);
         credit_card_form_global_id_ = form_global_id;
         cvc_authenticator->GetFullCardRequest()->GetFullCard(
-            *selected_credit_card_,
-            autofill::AutofillClient::UnmaskCardReason::kAutofill,
+            *credit_card, autofill::AutofillClient::UnmaskCardReason::kAutofill,
             weak_ptr_factory_.GetWeakPtr(),
             cvc_authenticator->GetAsFullCardRequestUIDelegate());
       }
     }
   }
+}
+
+autofill::AutofillProfile*
+FastCheckoutClientImpl::GetSelectedAutofillProfile() {
+  autofill::AutofillProfile* autofill_profile =
+      personal_data_helper_->GetPersonalDataManager()->GetProfileByGUID(
+          selected_autofill_profile_guid_.value());
+  if (!autofill_profile) {
+    OnRunComplete(FastCheckoutRunOutcome::kAutofillProfileDeleted);
+  }
+  return autofill_profile;
+}
+
+autofill::CreditCard* FastCheckoutClientImpl::GetSelectedCreditCard() {
+  autofill::CreditCard* credit_card =
+      personal_data_helper_->GetPersonalDataManager()->GetCreditCardByGUID(
+          selected_credit_card_guid_.value());
+  if (!credit_card) {
+    OnRunComplete(FastCheckoutRunOutcome::kCreditCardDeleted);
+  }
+  return credit_card;
 }
 
 void FastCheckoutClientImpl::SetFormFillingStates() {
@@ -365,7 +389,7 @@ void FastCheckoutClientImpl::OnFullCardRequestSucceeded(
     const autofill::payments::FullCardRequest& full_card_request,
     const autofill::CreditCard& card,
     const std::u16string& cvc) {
-  if (!IsFilling() || !credit_card_form_global_id_.has_value()) {
+  if (!IsFilling() || !credit_card_form_global_id_) {
     return;
   }
   if (!autofill_manager_->form_structures().contains(
@@ -390,7 +414,7 @@ void FastCheckoutClientImpl::OnFullCardRequestSucceeded(
 void FastCheckoutClientImpl::OnFullCardRequestFailed(
     autofill::CreditCard::RecordType card_type,
     autofill::payments::FullCardRequest::FailureType failure_type) {
-  if (!IsFilling() || !credit_card_form_global_id_.has_value()) {
+  if (!IsFilling() || !credit_card_form_global_id_) {
     return;
   }
   if (failure_type ==
@@ -447,11 +471,13 @@ void FastCheckoutClientImpl::A11yAnnounce(
     autofill::FormSignature form_signature,
     bool is_credit_card_form) {
   if (is_credit_card_form) {
-    accessibility_service_->Announce(l10n_util::GetStringFUTF16(
-        IDS_FAST_CHECKOUT_A11Y_CREDIT_CARD_FORM_FILLED,
-        selected_credit_card_->HasNonEmptyValidNickname()
-            ? selected_credit_card_->nickname()
-            : selected_credit_card_->NetworkAndLastFourDigits()));
+    if (autofill::CreditCard* credit_card = GetSelectedCreditCard()) {
+      accessibility_service_->Announce(l10n_util::GetStringFUTF16(
+          IDS_FAST_CHECKOUT_A11Y_CREDIT_CARD_FORM_FILLED,
+          credit_card->HasNonEmptyValidNickname()
+              ? credit_card->nickname()
+              : credit_card->NetworkAndLastFourDigits()));
+    }
     return;
   }
 
@@ -459,10 +485,11 @@ void FastCheckoutClientImpl::A11yAnnounce(
                                      form_signature)) {
     accessibility_service_->Announce(
         l10n_util::GetStringUTF16(IDS_FAST_CHECKOUT_A11Y_EMAIL_FILLED));
-  } else {
+  } else if (autofill::AutofillProfile* autofill_profile =
+                 GetSelectedAutofillProfile()) {
     accessibility_service_->Announce(l10n_util::GetStringFUTF16(
         IDS_FAST_CHECKOUT_A11Y_ADDRESS_FORM_FILLED,
-        base::UTF8ToUTF16(selected_autofill_profile_->profile_label())));
+        base::UTF8ToUTF16(autofill_profile->profile_label())));
   }
 }
 

@@ -56,7 +56,11 @@ enum class FastCheckoutRunOutcome {
   // An error occurred while requesting the full card before all forms were
   // filled.
   kCvcPopupError = 10,
-  kMaxValue = kCvcPopupError
+  // Autofill profile was deleted since its selection in the UI.
+  kAutofillProfileDeleted = 11,
+  // Credit card was deleted since its selection in the UI.
+  kCreditCardDeleted = 12,
+  kMaxValue = kCreditCardDeleted
 };
 
 // Represents the state of the bottomsheet.
