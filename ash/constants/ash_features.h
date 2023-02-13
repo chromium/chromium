@@ -152,6 +152,10 @@ BASE_DECLARE_FEATURE(kDeviceActiveClientChurnCohortCheckIn);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeviceActiveClientChurnCohortCheckMembership);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kDeviceActiveClientChurnObservationCheckIn);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kDeviceActiveClientChurnObservationCheckMembership);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeviceForceScheduledReboot);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay;

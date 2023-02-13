@@ -32,6 +32,11 @@ ChurnCohortUseCaseImpl::ChurnCohortUseCaseImpl(
 
 ChurnCohortUseCaseImpl::~ChurnCohortUseCaseImpl() = default;
 
+// The Churn Cohort window identifier is the year-month when the device
+// report its cohort active request to Fresnel.
+//
+// For example, if the device has reported its active on `20221202`,
+// then the Churn Cohort window identifier is `202212`
 std::string ChurnCohortUseCaseImpl::GenerateWindowIdentifier(
     base::Time ts) const {
   base::Time::Exploded exploded;

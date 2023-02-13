@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_CHURN_COHORT_USE_CASE_IMPL_H_
-#define CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_CHURN_COHORT_USE_CASE_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_CHURN_OBSERVATION_USE_CASE_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_CHURN_OBSERVATION_USE_CASE_IMPL_H_
 
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
+#include "fresnel_service.pb.h"
 
 class PrefService;
 
@@ -20,18 +21,19 @@ namespace ash::device_activity {
 // Forward declaration from fresnel_service.proto.
 class FresnelImportDataRequest;
 
-// Contains the methods required to report the churn cohort device active.
+// Contains the methods required to report the churn observation device active.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
-    ChurnCohortUseCaseImpl : public DeviceActiveUseCase {
+    ChurnObservationUseCaseImpl : public DeviceActiveUseCase {
  public:
-  ChurnCohortUseCaseImpl(
+  ChurnObservationUseCaseImpl(
       const std::string& psm_device_active_secret,
       const ChromeDeviceMetadataParameters& chrome_passed_device_params,
       PrefService* local_state,
       std::unique_ptr<PsmDelegateInterface> psm_delegate);
-  ChurnCohortUseCaseImpl(const ChurnCohortUseCaseImpl&) = delete;
-  ChurnCohortUseCaseImpl& operator=(const ChurnCohortUseCaseImpl&) = delete;
-  ~ChurnCohortUseCaseImpl() override;
+  ChurnObservationUseCaseImpl(const ChurnObservationUseCaseImpl&) = delete;
+  ChurnObservationUseCaseImpl& operator=(const ChurnObservationUseCaseImpl&) =
+      delete;
+  ~ChurnObservationUseCaseImpl() override;
 
   // DeviceActiveUseCase:
   std::string GenerateWindowIdentifier(base::Time ts) const override;
@@ -39,8 +41,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   bool IsEnabledCheckIn() override;
   bool IsEnabledCheckMembership() override;
   private_computing::ActiveStatus GenerateActiveStatus() override;
+
+ private:
+  // TODO(hirthanan): Implement following three methods in new CL.
+  bool IsPreviousMonthlyActive() const;
+
+  bool IsPreviousYearlyActive() const;
+
+  ChurnObservationMetadata::FirstActiveDuringCohort GetFirstActiveDuringCohort()
+      const;
 };
 
 }  // namespace ash::device_activity
 
-#endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_CHURN_COHORT_USE_CASE_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_CHURN_OBSERVATION_USE_CASE_IMPL_H_

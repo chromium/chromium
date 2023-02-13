@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/device_activity/churn_cohort_use_case_impl.h"
+#include "chromeos/ash/components/device_activity/churn_observation_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/daily_use_case_impl.h"
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/device_activity/device_activity_client.h"
@@ -110,6 +111,8 @@ void DeviceActivityController::RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kDeviceActiveLastKnown28DayActivePingTimestamp, unix_epoch);
   registry->RegisterTimePref(
       prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp, unix_epoch);
+  registry->RegisterTimePref(
+      prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp, unix_epoch);
   registry->RegisterIntegerPref(prefs::kDeviceActiveLastKnownChurnActiveStatus,
                                 0);
 }
@@ -268,6 +271,9 @@ void DeviceActivityController::OnMachineStatisticsLoaded(
       psm_device_active_secret, chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
   use_cases.push_back(std::make_unique<ChurnCohortUseCaseImpl>(
+      psm_device_active_secret, chrome_passed_device_params_, local_state,
+      std::make_unique<PsmDelegateImpl>()));
+  use_cases.push_back(std::make_unique<ChurnObservationUseCaseImpl>(
       psm_device_active_secret, chrome_passed_device_params_, local_state,
       std::make_unique<PsmDelegateImpl>()));
 

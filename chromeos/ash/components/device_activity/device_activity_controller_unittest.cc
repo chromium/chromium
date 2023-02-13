@@ -84,6 +84,10 @@ TEST_F(DeviceActivityControllerTest,
   base::Time cohort_monthly_ts = local_state()->GetTime(
       prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp);
   EXPECT_EQ(cohort_monthly_ts, base::Time::UnixEpoch());
+
+  base::Time observation_monthly_ts = local_state()->GetTime(
+      prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp);
+  EXPECT_EQ(observation_monthly_ts, base::Time::UnixEpoch());
 }
 
 }  // namespace ash::device_activity
