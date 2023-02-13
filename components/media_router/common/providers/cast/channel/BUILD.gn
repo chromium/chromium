@@ -13,6 +13,8 @@ static_library("channel") {
     "cast_auth_util.h",
     "cast_channel_enum.cc",
     "cast_channel_enum.h",
+    "cast_channel_metrics.cc",
+    "cast_channel_metrics.h",
     "cast_framer.cc",
     "cast_framer.h",
     "cast_message_handler.cc",

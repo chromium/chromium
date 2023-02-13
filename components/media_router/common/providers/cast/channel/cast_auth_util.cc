@@ -173,6 +173,9 @@ enum SignatureStatus {
   SIGNATURE_COUNT,
 };
 
+// TODO(crbug.com/1413760): Move Record* functions and related enums to
+// cast_channel_metrics.h to simplify this file.
+
 // Record certificate verification histogram events.
 void RecordCertificateEvent(CertVerificationStatus event) {
   UMA_HISTOGRAM_ENUMERATION("Cast.Channel.Certificate", event,
@@ -219,16 +222,21 @@ AuthResult MapToAuthResult(cast_certificate::CastCertError error,
       // This error is only encountered if |crl_required| is true.
       DCHECK(crl_required);
       return AuthResult("Failed to provide a valid CRL.",
-                        AuthResult::ERROR_CRL_INVALID);
+                        AuthResult::ERROR_CRL_INVALID,
+                        CastChannelFlag::kCRLInvalid);
     case cast_certificate::CastCertError::ERR_CERTS_REVOKED:
       RecordCertificateEvent(CERT_STATUS_REVOKED);
       // Revocation check is the last step of Cast certificate verification.
       // If this error is encountered, the rest of certificate verification has
       // succeeded.
-      if (!crl_required)
-        return AuthResult();
+      if (!crl_required) {
+        AuthResult success;
+        success.set_flag(CastChannelFlag::kCertificateRevoked);
+        return success;
+      }
       return AuthResult("Failed certificate revocation check.",
-                        AuthResult::ERROR_CERT_REVOKED);
+                        AuthResult::ERROR_CERT_REVOKED,
+                        CastChannelFlag::kCertificateRevoked);
     case cast_certificate::CastCertError::ERR_UNEXPECTED:
       RecordCertificateEvent(CERT_STATUS_UNEXPECTED_FAILED);
       return AuthResult("Failed verifying cast device certificate.",
@@ -241,13 +249,16 @@ AuthResult MapToAuthResult(cast_certificate::CastCertError error,
 
 }  // namespace
 
-AuthResult::AuthResult()
-    : error_type(ERROR_NONE), channel_policies(POLICY_NONE) {}
+AuthResult::AuthResult() = default;
 
-AuthResult::AuthResult(const std::string& error_message, ErrorType error_type)
-    : error_message(error_message), error_type(error_type) {}
+AuthResult::AuthResult(const std::string& error_message,
+                       ErrorType error_type,
+                       CastChannelFlag flag)
+    : error_message(error_message),
+      error_type(error_type),
+      flags(static_cast<CastChannelFlags>(flag)) {}
 
-AuthResult::~AuthResult() {}
+AuthResult::~AuthResult() = default;
 
 // static
 AuthResult AuthResult::CreateWithParseError(const std::string& error_message,
@@ -283,39 +294,47 @@ AuthContext::~AuthContext() = default;
 
 AuthResult AuthContext::VerifySenderNonce(
     const std::string& nonce_response) const {
+  AuthResult success;
   if (nonce_ != nonce_response) {
     if (nonce_response.empty()) {
       RecordNonceEvent(NONCE_MISSING);
+      success.set_flag(CastChannelFlag::kSenderNonceMissing);
     } else {
       RecordNonceEvent(NONCE_MISMATCH);
+      success.set_flag(CastChannelFlag::kSenderNonceMismatch);
     }
     if (base::FeatureList::IsEnabled(kEnforceNonceChecking)) {
       return AuthResult("Sender nonce mismatched.",
-                        AuthResult::ERROR_SENDER_NONCE_MISMATCH);
+                        AuthResult::ERROR_SENDER_NONCE_MISMATCH,
+                        CastChannelFlag::kSenderNonceMismatch);
     }
   } else {
     RecordNonceEvent(NONCE_MATCH);
   }
-  return AuthResult();
+  return success;
 }
 
 AuthResult VerifyAndMapDigestAlgorithm(
     cast::channel::HashAlgorithm response_digest_algorithm,
     cast_certificate::CastDigestAlgorithm* digest_algorithm) {
+  AuthResult success;
   switch (response_digest_algorithm) {
     case cast::channel::SHA1:
       RecordSignatureEvent(SIGNATURE_ALGORITHM_UNSUPPORTED);
       *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA1;
       if (base::FeatureList::IsEnabled(kEnforceSHA256Checking)) {
         return AuthResult("Unsupported digest algorithm.",
-                          AuthResult::ERROR_DIGEST_UNSUPPORTED);
+                          AuthResult::ERROR_DIGEST_UNSUPPORTED,
+                          CastChannelFlag::kSha1DigestAlgorithm);
+      } else {
+        success.set_flag(CastChannelFlag::kSha1DigestAlgorithm);
       }
       break;
     case cast::channel::SHA256:
       *digest_algorithm = cast_certificate::CastDigestAlgorithm::SHA256;
       break;
   }
-  return AuthResult();
+  return success;
 }
 
 // Verifies the peer certificate and populates |peer_cert_der| with the DER

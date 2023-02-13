@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket.h"
@@ -145,6 +146,10 @@ class MockCastSocket : public CastSocket {
   ChannelError error_state() const override { return error_state_; }
   void SetErrorState(ChannelError error_state) override {
     error_state_ = error_state;
+  }
+
+  CastChannelFlags flags() const override {
+    return static_cast<CastChannelFlags>(CastChannelFlag::kFlagsNone);
   }
 
   bool keep_alive() const override { return keep_alive_; }
