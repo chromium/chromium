@@ -25,6 +25,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/url_pattern_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user.h"
@@ -45,13 +46,14 @@ namespace chromeos {
 
 namespace {
 
-std::string OnGetManufacturer(
+absl::optional<std::string> OnGetManufacturer(
     base::flat_set<std::string> expected_manufacturers,
     std::string actual_manufacturer) {
   return expected_manufacturers.contains(actual_manufacturer)
-             ? ""
-             : "This extension is not allowed to access the API on this "
-               "device";
+             ? absl::nullopt
+             : absl::optional<std::string>(
+                   "This extension is not allowed to access the API on this "
+                   "device");
 }
 
 class ApiGuardDelegateImpl : public ApiGuardDelegate {

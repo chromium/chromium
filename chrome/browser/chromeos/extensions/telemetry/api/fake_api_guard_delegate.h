@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -24,7 +25,7 @@ class FakeApiGuardDelegate : public ApiGuardDelegate {
  public:
   class Factory : public ApiGuardDelegate::Factory {
    public:
-    explicit Factory(std::string error_message);
+    explicit Factory(absl::optional<std::string> error_message);
     ~Factory() override;
 
    protected:
@@ -32,7 +33,7 @@ class FakeApiGuardDelegate : public ApiGuardDelegate {
     std::unique_ptr<ApiGuardDelegate> CreateInstance() override;
 
    private:
-    std::string error_message_;
+    absl::optional<std::string> error_message_;
   };
 
   FakeApiGuardDelegate(const FakeApiGuardDelegate&) = delete;
@@ -45,11 +46,11 @@ class FakeApiGuardDelegate : public ApiGuardDelegate {
                     CanAccessApiCallback callback) override;
 
  protected:
-  explicit FakeApiGuardDelegate(std::string error_message);
+  explicit FakeApiGuardDelegate(absl::optional<std::string> error_message);
 
  private:
   // Error message returned when calling CanAccessApi().
-  std::string error_message_;
+  absl::optional<std::string> error_message_;
 };
 
 }  // namespace chromeos

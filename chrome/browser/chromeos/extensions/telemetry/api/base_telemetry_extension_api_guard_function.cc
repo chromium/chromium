@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/api_guard_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -32,18 +33,19 @@ BaseTelemetryExtensionApiGuardFunction::Run() {
   return RespondLater();
 }
 
-void BaseTelemetryExtensionApiGuardFunction::OnCanAccessApi(std::string error) {
-  if (!error.empty()) {
+void BaseTelemetryExtensionApiGuardFunction::OnCanAccessApi(
+    absl::optional<std::string> error) {
+  if (error.has_value()) {
     Respond(Error(base::StringPrintf("Unauthorized access to chrome.%s. %s",
-                                     name(), error.c_str())));
+                                     name(), error.value().c_str())));
     return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!IsCrosApiAvailable()) {
-    error = "Not implemented.";
-    Respond(Error(
-        base::StringPrintf("API chrome.%s failed. %s", name(), error.c_str())));
+    const std::string not_implemented_error = "Not implemented.";
+    Respond(Error(base::StringPrintf("API chrome.%s failed. %s", name(),
+                                     not_implemented_error.c_str())));
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

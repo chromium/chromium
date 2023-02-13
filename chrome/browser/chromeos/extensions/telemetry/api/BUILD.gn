@@ -49,6 +49,7 @@ source_set("api") {
     "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",
+    "//third_party/abseil-cpp:absl",
     "//url",
   ]
 
@@ -177,6 +178,7 @@ source_set("unit_tests") {
     "//net",
     "//net:test_support",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
   ]
 
   if (is_chromeos_ash) {

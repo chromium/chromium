@@ -25,6 +25,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -235,12 +236,14 @@ TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("This extension is not run by the device owner", future.Get());
+  absl::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ("This extension is not run by the device owner", error.value());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -250,23 +253,27 @@ TEST_P(ApiGuardDelegateTest, CurrentUserOwnerButNotMainLacrosProfile) {
   ASSERT_FALSE(profile()->IsMainProfile());
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("This extension is not run by the device owner", future.Get());
+  absl::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ("This extension is not run by the device owner", error.value());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_P(ApiGuardDelegateTest, PwaNotOpen) {
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("Companion PWA UI is not open or not secure", future.Get());
+  absl::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ("Companion PWA UI is not open or not secure", error.value());
 }
 
 TEST_P(ApiGuardDelegateTest, PwaIsOpenButNotSecure) {
@@ -274,12 +281,14 @@ TEST_P(ApiGuardDelegateTest, PwaIsOpenButNotSecure) {
       /*cert_status=*/net::CERT_STATUS_INVALID);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("Companion PWA UI is not open or not secure", future.Get());
+  absl::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ("Companion PWA UI is not open or not secure", error.value());
 }
 
 TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
@@ -289,25 +298,28 @@ TEST_P(ApiGuardDelegateTest, ManufacturerNotAllowed) {
   SetDeviceManufacturer("NOT_ALLOWED");
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
+  absl::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
   EXPECT_EQ("This extension is not allowed to access the API on this device",
-            future.Get());
+            error.value());
 }
 
 TEST_P(ApiGuardDelegateTest, NoError) {
   OpenPwaUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_TRUE(future.Get().empty()) << future.Get();
+  absl::optional<std::string> error = future.Get();
+  EXPECT_FALSE(error.has_value()) << error.value();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -346,12 +358,14 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
 
 TEST_P(ApiGuardDelegateAffiliatedUserTest, ExtensionNotForceInstalled) {
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("This extension is not installed by the admin", future.Get());
+  absl::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ("This extension is not installed by the admin", error.value());
 }
 
 TEST_P(ApiGuardDelegateAffiliatedUserTest, PwaNotOpen) {
@@ -366,12 +380,14 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, PwaNotOpen) {
   }
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("Companion PWA UI is not open or not secure", future.Get());
+  absl::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ("Companion PWA UI is not open or not secure", error.value());
 }
 
 TEST_P(ApiGuardDelegateAffiliatedUserTest, PwaIsOpenButNotSecure) {
@@ -389,12 +405,14 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, PwaIsOpenButNotSecure) {
       /*cert_status=*/net::CERT_STATUS_INVALID);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("Companion PWA UI is not open or not secure", future.Get());
+  absl::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
+  EXPECT_EQ("Companion PWA UI is not open or not secure", error.value());
 }
 
 TEST_P(ApiGuardDelegateAffiliatedUserTest, ManufacturerNotAllowed) {
@@ -414,13 +432,15 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, ManufacturerNotAllowed) {
   SetDeviceManufacturer("NOT_ALLOWED");
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
+  absl::optional<std::string> error = future.Get();
+  ASSERT_TRUE(error.has_value());
   EXPECT_EQ("This extension is not allowed to access the API on this device",
-            future.Get());
+            error.value());
 }
 
 TEST_P(ApiGuardDelegateAffiliatedUserTest, NoError) {
@@ -437,12 +457,12 @@ TEST_P(ApiGuardDelegateAffiliatedUserTest, NoError) {
   OpenPwaUrlAndSetCertificateWithStatus(/*cert_status=*/net::OK);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
-  base::test::TestFuture<std::string> future;
+  base::test::TestFuture<absl::optional<std::string>> future;
   api_guard_delegate->CanAccessApi(profile(), extension(),
                                    future.GetCallback());
-
   ASSERT_TRUE(future.Wait());
-  EXPECT_TRUE(future.Get().empty()) << future.Get();
+  absl::optional<std::string> error = future.Get();
+  EXPECT_FALSE(error.has_value()) << error.value();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

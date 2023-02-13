@@ -14,6 +14,7 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -25,9 +26,10 @@ BaseTelemetryExtensionBrowserTest::~BaseTelemetryExtensionBrowserTest() =
 void BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() {
   extensions::ExtensionBrowserTest::SetUpOnMainThread();
 
-  // Make sure ApiGuardDelegate::CanAccessApi() returns an empty error message.
+  // Make sure ApiGuardDelegate::CanAccessApi() returns optional error message
+  // without a value.
   api_guard_delegate_factory_ = std::make_unique<FakeApiGuardDelegate::Factory>(
-      /*error_message=*/"");
+      /*error_message=*/absl::nullopt);
   ApiGuardDelegate::Factory::SetForTesting(api_guard_delegate_factory_.get());
 }
 
