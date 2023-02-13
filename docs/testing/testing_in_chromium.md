@@ -178,6 +178,10 @@ If you cannot fix a flaky test in a short timeframe, disable it first to reduce
 development pain for other and then fix it later. "[How do I disable a flaky
 test]" has instructions on how to disable a flaky test.
 
+## Other
+
+Tests are not configured to upload metrics, such as UMA, UKM or crash reports.
+
 [gtest]: https://github.com/google/googletest
 [Simple gtests]: https://github.com/google/googletest/blob/main/docs/primer.md#simple-tests
 [Junit]: https://developer.android.com/training/testing/junit-rules

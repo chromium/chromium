@@ -522,6 +522,9 @@ for details.
 See also `chrome://metrics-internals` ([docs](https://chromium.googlesource.com/chromium/src/+/master/components/metrics/debug/README.md))
 for more thorough manual testing if needed.
 
+By default, histograms in unit or browser tests will not be actually uploaded.
+In general, you can rely on the UMA infrastructure to upload the metrics correctly.
+
 ## Interpreting the Resulting Data
 
 The top of [go/uma-guide](http://go/uma-guide) has good advice on how to go
