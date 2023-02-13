@@ -33,47 +33,6 @@
   <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_DREAMY" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
     Dreamy
   </message>
-
-  <!-- Lightweight Reactions names, currently only used on Android. -->
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_TEARS_OF_JOY" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the tears of joy reaction is selected.">
-    Tears of Joy
-  </message>
-
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_BEATING_HEART" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the beating heart reaction is selected.">
-    Beating Heart
-  </message>
-
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_CLAPPING" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the clapping reaction is selected.">
-    Clapping
-  </message>
-
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_GRINNING" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the grinning reaction is selected.">
-    Grinning
-  </message>
-
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_FIRE" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the fire reaction is selected.">
-    Fire
-  </message>
-
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_EYES" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the eyes reaction is selected.">
-    Eyes
-  </message>
-
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_LOUDLY_CRYING" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the loudly crying reaction is selected.">
-    Loudly Crying
-  </message>
-
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_FLUSHED" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the flushed reaction is selected.">
-    Flushed
-  </message>
-
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_FOLDED_HANDS" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the folded hands reaction is selected.">
-    Folded Hands
-  </message>
-
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_THINKING" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the thinking reaction is selected.">
-    Thinking
-  </message>
 </if>
 
 </grit-part>
