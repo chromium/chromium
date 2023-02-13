@@ -141,8 +141,9 @@ base::Value OsStatesDebugValue(
                 syncer::ProtoTimeToTime(icon_data_monochrome.timestamp())));
       }
       base::Value::Dict shortcut_menu_dict;
-      shortcut_menu_dict.Set("app_title", shortcut_menu.app_title());
-      shortcut_menu_dict.Set("app_launch_url", shortcut_menu.app_launch_url());
+      shortcut_menu_dict.Set("shortcut_name", shortcut_menu.shortcut_name());
+      shortcut_menu_dict.Set("shortcut_launch_url",
+                             shortcut_menu.shortcut_launch_url());
       shortcut_menu_dict.Set("icon_data_any",
                              base::Value(std::move(icon_data_any_dict)));
       shortcut_menu_dict.Set("icon_data_maskable",

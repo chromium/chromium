@@ -7,6 +7,9 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,6 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using ::testing::Eq;
 namespace web_app {
 
 namespace {
@@ -108,6 +112,48 @@ class ShortcutMenuHandlingSubManagerTest
     return shortcuts_menu_icons;
   }
 
+  std::vector<WebAppShortcutsMenuItemInfo>
+  CreateShortcutMenuItemInfoFromBitmaps(
+      const ShortcutsMenuIconBitmaps& menu_bitmaps) {
+    std::vector<WebAppShortcutsMenuItemInfo> item_infos;
+    int index = 0;
+    for (const auto& icon_bitmap : menu_bitmaps) {
+      WebAppShortcutsMenuItemInfo shortcut_info;
+      shortcut_info.name = base::UTF8ToUTF16(
+          base::StrCat({"shortcut_name", base::NumberToString(index)}));
+      shortcut_info.url =
+          GURL(base::StrCat({kWebAppUrl.spec(), base::NumberToString(index)}));
+
+      // The URLs used do not matter because Execute() does not take the urls
+      // into account, but we still need those to initialize the mock data
+      // structure so that the GURL checks in WebAppDatabase can pass.
+      for (const auto& [size, data] : icon_bitmap.any) {
+        WebAppShortcutsMenuItemInfo::Icon icon_data;
+        icon_data.square_size_px = size;
+        icon_data.url = GURL("https://icon.any/");
+        shortcut_info.any.push_back(std::move(icon_data));
+      }
+
+      for (const auto& [size, data] : icon_bitmap.maskable) {
+        WebAppShortcutsMenuItemInfo::Icon icon_data;
+        icon_data.square_size_px = size;
+        icon_data.url = GURL("https://icon.maskable/");
+        shortcut_info.maskable.push_back(std::move(icon_data));
+      }
+
+      for (const auto& [size, data] : icon_bitmap.monochrome) {
+        WebAppShortcutsMenuItemInfo::Icon icon_data;
+        icon_data.square_size_px = size;
+        icon_data.url = GURL("https://icon.monochrome/");
+        shortcut_info.monochrome.push_back(std::move(icon_data));
+      }
+
+      item_infos.push_back(std::move(shortcut_info));
+      index++;
+    }
+    return item_infos;
+  }
+
   web_app::AppId InstallWebAppWithShortcutMenuIcons(
       ShortcutsMenuIconBitmaps shortcuts_menu_icons) {
     std::unique_ptr<WebAppInstallInfo> info =
@@ -116,6 +162,8 @@ class ShortcutMenuHandlingSubManagerTest
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->shortcuts_menu_icon_bitmaps = shortcuts_menu_icons;
+    info->shortcuts_menu_item_infos =
+        CreateShortcutMenuItemInfoFromBitmaps(shortcuts_menu_icons);
     base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
@@ -163,16 +211,21 @@ TEST_P(ShortcutMenuHandlingSubManagerTest, TestConfigure) {
         os_integration_state.shortcut_menus().shortcut_menu_info_size() ==
         num_menu_items);
 
-    EXPECT_TRUE(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(0)
-                    .app_title() == "Test App");
-    EXPECT_TRUE(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(0)
-                    .app_launch_url() == "https://example.com/path/index.html");
-
     int num_sizes = static_cast<int>(sizes.size());
 
     for (int menu_index = 0; menu_index < num_menu_items; menu_index++) {
+      EXPECT_THAT(os_integration_state.shortcut_menus()
+                      .shortcut_menu_info(menu_index)
+                      .shortcut_name(),
+                  testing::Eq(base::StrCat(
+                      {"shortcut_name", base::NumberToString(menu_index)})));
+
+      EXPECT_THAT(os_integration_state.shortcut_menus()
+                      .shortcut_menu_info(menu_index)
+                      .shortcut_launch_url(),
+                  testing::Eq(base::StrCat(
+                      {kWebAppUrl.spec(), base::NumberToString(menu_index)})));
+
       EXPECT_TRUE(os_integration_state.shortcut_menus()
                       .shortcut_menu_info(menu_index)
                       .icon_data_any_size() == num_sizes);

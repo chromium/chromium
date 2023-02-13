@@ -44,8 +44,8 @@ message RunOnOsLogin {
 }
 
 message ShortcutMenuInfo {
-  optional string app_title = 1;
-  optional string app_launch_url = 2;
+  optional string shortcut_name = 1;
+  optional string shortcut_launch_url = 2;
   repeated ShortcutIconData icon_data_any = 3;
   repeated ShortcutIconData icon_data_maskable = 4;
   repeated ShortcutIconData icon_data_monochrome = 5;
