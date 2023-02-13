@@ -216,6 +216,10 @@ extern const char kEnableCompromisedPasswordsMutingDescription[];
 extern const char kEnableDiscoverFeedTopSyncPromoName[];
 extern const char kEnableDiscoverFeedTopSyncPromoDescription[];
 
+// Title and description for the flag to modify the feed header settings.
+extern const char kEnableFeedHeaderSettingsName[];
+extern const char kEnableFeedHeaderSettingsDescription[];
+
 // Title and description for the flag to enable the sign-in promotion at the
 // bottom of the discover feed.
 extern const char kEnableFeedBottomSignInPromoName[];

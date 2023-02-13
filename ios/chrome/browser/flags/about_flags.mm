@@ -255,6 +255,22 @@ const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
     {"Compact", kDiscoverFeedTopSyncPromoCompact,
      std::size(kDiscoverFeedTopSyncPromoCompact), nullptr}};
 
+const FeatureEntry::FeatureParam kFeedHeaderSettingDisabledStickyHeader[] = {
+    {kDisableStickyHeaderForFollowingFeed, "true"}};
+const FeatureEntry::FeatureParam kFeedHeaderSettingReducedHeight[] = {
+    {kOverrideFeedHeaderHeight, "43"}};
+const FeatureEntry::FeatureParam kFeedHeaderSettingAllImprovements[] = {
+    {kDisableStickyHeaderForFollowingFeed, "true"},
+    {kOverrideFeedHeaderHeight, "43"}};
+
+const FeatureEntry::FeatureVariation kFeedHeaderSettingsVariations[] = {
+    {"Disable sticky header", kFeedHeaderSettingDisabledStickyHeader,
+     std::size(kFeedHeaderSettingDisabledStickyHeader), nullptr},
+    {"Reduced header height", kFeedHeaderSettingReducedHeight,
+     std::size(kFeedHeaderSettingReducedHeight), nullptr},
+    {"All improvements", kFeedHeaderSettingAllImprovements,
+     std::size(kFeedHeaderSettingAllImprovements), nullptr}};
+
 const FeatureEntry::FeatureParam kStartSurfaceTenSecondsShrinkLogo[] = {
     {kStartSurfaceShrinkLogoParam, "true"},
     {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
@@ -843,6 +859,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableDiscoverFeedTopSyncPromo,
                                     kDiscoverFeedTopSyncPromoVariations,
                                     "EnableDiscoverFeedTopSyncPromo")},
+    {"feed-header-settings", flag_descriptions::kEnableFeedHeaderSettingsName,
+     flag_descriptions::kEnableFeedHeaderSettingsDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kFeedHeaderSettings,
+                                    kFeedHeaderSettingsVariations,
+                                    "FeedHeaderSettings")},
     {"enable-hiding-mvt-shortcuts",
      flag_descriptions::kHideMVTAndShortcutsForNewUsersName,
      flag_descriptions::kHideMVTAndShortcutsForNewUsersDescription,

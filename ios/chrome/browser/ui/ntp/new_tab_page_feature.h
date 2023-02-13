@@ -71,6 +71,10 @@ extern const char kDiscoverFeedTopSyncPromoStyleFullWithTitle[];
 // A parameter value used for displaying the compact promo style.
 extern const char kDiscoverFeedTopSyncPromoStyleCompact[];
 
+// Feature parameters for the feed header settings.
+extern const char kDisableStickyHeaderForFollowingFeed[];
+extern const char kOverrideFeedHeaderHeight[];
+
 // A parameter value for the default Following sort type to be Sort by Latest.
 extern const char kFollowingFeedDefaultSortTypeSortByLatest[];
 

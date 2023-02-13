@@ -236,6 +236,11 @@ const char kEnableDiscoverFeedTopSyncPromoDescription[] =
     "When enabled, a sync promotion will be presented to eligible users on top "
     "of the feed cards.";
 
+const char kEnableFeedHeaderSettingsName[] =
+    "Enables the feed header settings.";
+const char kEnableFeedHeaderSettingsDescription[] =
+    "When enabled, some UI elements of the feed header can be modified.";
+
 const char kDmTokenDeletionName[] = "DMToken deletion";
 const char kDmTokenDeletionDescription[] =
     "Delete the corresponding DMToken when a managed browser is deleted in "
