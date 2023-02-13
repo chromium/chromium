@@ -48,6 +48,7 @@ web_component_files = [
   "chromeos/device_page/display_overscan_dialog.ts",
   "chromeos/device_page/keyboard.ts",
   "chromeos/device_page/per_device_keyboard.ts",
+  "chromeos/device_page/per_device_keyboard_remap_keys.ts",
   "chromeos/device_page/per_device_keyboard_subsection.ts",
   "chromeos/device_page/per_device_mouse.ts",
   "chromeos/device_page/per_device_mouse_subsection.ts",

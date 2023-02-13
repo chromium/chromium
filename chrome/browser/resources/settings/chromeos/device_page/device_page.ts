@@ -11,6 +11,7 @@ import './audio.js';
 import './display.js';
 import './keyboard.js';
 import './per_device_keyboard.js';
+import './per_device_keyboard_remap_keys.js';
 import './per_device_mouse.js';
 import './per_device_pointing_stick.js';
 import './per_device_touchpad.js';
@@ -146,6 +147,11 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
           }
           if (routes.PER_DEVICE_KEYBOARD) {
             map.set(routes.PER_DEVICE_KEYBOARD.path, '#perDeviceKeyboardRow');
+          }
+          if (routes.PER_DEVICE_KEYBOARD_REMAP_KEYS) {
+            map.set(
+                routes.PER_DEVICE_KEYBOARD_REMAP_KEYS.path,
+                '#perDeviceKeyboardRemapKeys');
           }
           if (routes.KEYBOARD) {
             map.set(routes.KEYBOARD.path, '#keyboardRow');

@@ -84,6 +84,7 @@ enum Subpage {
   kPerDeviceMouse = 410,
   kPerDeviceTouchpad = 411,
   kPerDevicePointingStick = 412,
+  kPerDeviceKeyboardRemapKeys = 413,
 
   // Personalization section.
   // 500 was used for kChangePicture. Do not reuse.
@@ -209,6 +210,8 @@ const string kSyncDeprecatedAdvancedSubpagePath = "syncSetup/advanced";
 const string kDeviceSectionPath = "device";
 const string kPointersSubpagePath = "pointer-overlay";
 const string kPerDeviceKeyboardSubpagePath = "per-device-keyboard";
+const string kPerDeviceKeyboardRemapKeysSubpagePath =
+    "per-device-keyboard/remap-keys";
 const string kPerDeviceMouseSubpagePath = "per-device-mouse";
 const string kPerDevicePointingStickSubpagePath = "per-device-pointing-stick";
 const string kPerDeviceTouchpadSubpagePath = "per-device-touchpad";

@@ -507,8 +507,15 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['ParentalControlsPage', 'parental_controls_page_test.js'],
  ['PeoplePage', 'os_people_page_test.js'],
  ['PeoplePageQuickUnlock', 'quick_unlock_authenticate_browsertest_chromeos.js'],
- ['PerDeviceKeyboard', 'per_device_keyboard_test.js'],
- ['PerDeviceKeyboardSubsection', 'per_device_keyboard_subsection_test.js'],
+ [
+   'PerDeviceKeyboard', 'per_device_keyboard_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+ ],
+ [
+   'PerDeviceKeyboardSubsection',
+   'per_device_keyboard_subsection_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']},
+ ],
  ['PerDeviceMouseSubsection', 'per_device_mouse_subsection_test.js'],
  [
    'PerDevicePointingStickSubsection',

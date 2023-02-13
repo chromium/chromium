@@ -21,6 +21,7 @@ import './device_page/input_device_mojo_interface_provider.js';
 import './device_page/input_device_settings_types.js';
 import './device_page/keyboard.js';
 import './device_page/per_device_keyboard.js';
+import './device_page/per_device_keyboard_remap_keys.js';
 import './device_page/per_device_keyboard_subsection.js';
 import './device_page/per_device_mouse.js';
 import './device_page/per_device_mouse_subsection.js';
@@ -160,6 +161,7 @@ export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_s
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
 export {MetaKey} from './device_page/input_device_settings_types.js';
 export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';
+export {SettingsPerDeviceKeyboardRemapKeysElement} from './device_page/per_device_keyboard_remap_keys.js';
 export {SettingsPerDeviceKeyboardSubsectionElement} from './device_page/per_device_keyboard_subsection.js';
 export {SettingsPerDeviceMouseSubsectionElement} from './device_page/per_device_mouse_subsection.js';
 export {SettingsPerDevicePointingStickSubsectionElement} from './device_page/per_device_pointing_stick_subsection.js';

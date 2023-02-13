@@ -91,6 +91,7 @@ import {Route} from './router.js';
  *   OS_SYNC: !Route,
  *   OS_PEOPLE: !Route,
  *   PER_DEVICE_KEYBOARD: !Route,
+ *   PER_DEVICE_KEYBOARD_REMAP_KEYS: !Route,
  *   PER_DEVICE_MOUSE: !Route,
  *   PER_DEVICE_POINTING_STICK: !Route,
  *   PER_DEVICE_TOUCHPAD: !Route,

@@ -17,16 +17,27 @@ import '../../controls/settings_radio_group.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
+import '../os_settings_page/os_settings_animated_pages.js';
+import '../os_settings_page/os_settings_subpage.js';
+import './per_device_keyboard_remap_keys.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {routes} from '../os_route.js';
+import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {Route, Router} from '../router.js';
+
 import {Keyboard} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
-export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
+const SettingsPerDeviceKeyboardSubsectionElementBase =
+    RouteOriginMixin(PolymerElement);
+
+export class SettingsPerDeviceKeyboardSubsectionElement extends
+    SettingsPerDeviceKeyboardSubsectionElementBase {
   static get is(): string {
     return 'settings-per-device-keyboard-subsection';
   }
@@ -140,6 +151,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
   protected keyboard: Keyboard;
   private autoRepeatDelays: number[];
   private autoRepeatIntervals: number[];
+  private route_: Route = routes.PER_DEVICE_KEYBOARD;
   private topRowAreFunctionKeysPref: chrome.settingsPrivate.PrefObject;
   private blockMetaFunctionKeyRewritesPref: chrome.settingsPrivate.PrefObject;
   private enableAutoRepeatPref: chrome.settingsPrivate.PrefObject;
@@ -199,7 +211,12 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends PolymerElement {
   }
 
   private onRemapKeyboardKeysTap(): void {
-    // TODO(yyhyyh@): Create keyboard remapping page and its route.
+    const url = new URLSearchParams(
+        'keyboardId=' + encodeURIComponent(this.keyboard.id));
+
+    Router.getInstance().navigateTo(
+        routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
+        /* dynamicParams= */ url, /* removeSearch= */ true);
   }
 }
 

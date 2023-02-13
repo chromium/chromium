@@ -77005,6 +77005,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="410" label="Per-device Mouse"/>
   <int value="411" label="Per-device Touchpad"/>
   <int value="412" label="Per-device Pointing Stick"/>
+  <int value="413" label="Per-device Keyboard Remap Keys"/>
   <int value="500" label="Change Picture"/>
   <int value="501" label="Ambient Mode"/>
   <int value="502" label="Ambient Mode Photos (Deprecated)"/>

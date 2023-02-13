@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeKeyboards, SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {fakeKeyboards, Router, routes, SettingsPerDeviceKeyboardSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -20,6 +20,7 @@ suite('PerDeviceKeyboardSubsection', function() {
 
   teardown(() => {
     subsection = null;
+    Router.getInstance().resetRouteForTesting();
   });
 
   /**
@@ -213,5 +214,30 @@ suite('PerDeviceKeyboardSubsection', function() {
     await changeKeyboardState(fakeKeyboards[1]);
     assertEquals(0, subsection.keyboard.settings.modifierRemappings.size);
     assertEquals('', remapKeysSubLabel.textContent.trim());
+  });
+
+  /**
+   * Verify clicking the Keyboard remap keys button will be redirecting to the
+   * remapped keys subpage.
+   */
+  test('click remap keys button redirect to new subpage', async () => {
+    await initializePerDeviceKeyboardSubsection();
+    const remapKeysRow =
+        subsection.shadowRoot.querySelector('#remapKeyboardKeys');
+    assertTrue(!!remapKeysRow);
+    remapKeysRow.click();
+
+    await flushTasks();
+    assertEquals(
+        routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
+        Router.getInstance().getCurrentRoute());
+
+    const urlSearchQuery =
+        Router.getInstance().getQueryParameters().get('keyboardId');
+    assertTrue(!!urlSearchQuery);
+    assertFalse(isNaN(urlSearchQuery));
+    const keyboardId = Number(urlSearchQuery);
+    const expectedKeyboardId = subsection.keyboard.id;
+    assertEquals(expectedKeyboardId, keyboardId);
   });
 });
