@@ -765,11 +765,12 @@ class CORE_EXPORT LocalFrameView final
 
   void AddPendingTransformUpdate(LayoutObject& object);
   bool RemovePendingTransformUpdate(const LayoutObject& object);
-  bool UpdateAllPendingTransforms();
 
   void AddPendingOpacityUpdate(LayoutObject& object);
   bool RemovePendingOpacityUpdate(const LayoutObject& object);
-  bool UpdateAllPendingOpacityUpdates();
+
+  void RemoveAllPendingUpdates();
+  bool ExecuteAllPendingUpdates();
 
   void ForAllChildLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
 
