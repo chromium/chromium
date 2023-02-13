@@ -8,6 +8,7 @@
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/common/search_result_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -43,6 +44,7 @@ SystemInfoAnswerResult::SystemInfoAnswerResult(
   SetTitle(title);
   SetCategory(Category::kSettings);
   SetResultType(ResultType::kSystemInfo);
+  UpdateTitleAndDetails(title, description);
   SetMetricsType(ash::SYSTEM_INFO);
   std::string id =
       system_info_category_ == SystemInfoCategory::kSettings
@@ -52,6 +54,18 @@ SystemInfoAnswerResult::SystemInfoAnswerResult(
 }
 
 SystemInfoAnswerResult::~SystemInfoAnswerResult() = default;
+
+void SystemInfoAnswerResult::UpdateTitleAndDetails(
+    const std::u16string& title,
+    const std::u16string& description) {
+  std::vector<TextItem> title_vector;
+  title_vector.push_back(CreateStringTextItem(title));
+  SetTitleTextVector(title_vector);
+
+  std::vector<TextItem> details_vector;
+  details_vector.push_back(CreateStringTextItem(description));
+  SetDetailsTextVector(details_vector);
+}
 
 void SystemInfoAnswerResult::Open(int event_flags) {
   if (system_info_category_ == SystemInfoCategory::kSettings) {

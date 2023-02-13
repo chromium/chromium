@@ -59,6 +59,19 @@ TEST_F(SystemInfoAnswerResultTest, Settings) {
   EXPECT_EQ(result.icon().shape, ash::SearchResultIconShape::kDefault);
   EXPECT_TRUE(gfx::BitmapsAreEqual(*result.icon().icon.bitmap(),
                                    *GetTestIcon().bitmap()));
+
+  ASSERT_EQ(result.title_text_vector().size(), 1u);
+  const auto& title = result.title_text_vector()[0];
+  ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(title.GetText(),
+            u"Version 108.0.5359.37 (Official Build) beta (64-bit)");
+  EXPECT_TRUE(title.GetTextTags().empty());
+
+  ASSERT_EQ(result.details_text_vector().size(), 1u);
+  const auto& details = result.details_text_vector()[0];
+  ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(details.GetText(), u"Click here to check for updates");
+  EXPECT_TRUE(details.GetTextTags().empty());
 }
 
 }  // namespace app_list::test

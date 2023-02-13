@@ -38,11 +38,11 @@ class SystemInfoCardProvider : public SearchProvider,
 
   SystemInfoCardProvider(const SystemInfoCardProvider&) = delete;
   SystemInfoCardProvider& operator=(const SystemInfoCardProvider&) = delete;
-  ash::AppListSearchResultType ResultType() const override;
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
   void StopQuery() override;
+  ash::AppListSearchResultType ResultType() const override;
 
   // SizeCalculator::Observer:
   void OnSizeCalculated(
@@ -102,6 +102,7 @@ class SystemInfoCardProvider : public SearchProvider,
   std::u16string last_query_;
 
   Profile* const profile_;
+  double relevance_;
   mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService>
       probe_service_;
   std::string chromeOS_version_{""};

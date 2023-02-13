@@ -43,10 +43,14 @@ class SystemInfoAnswerResult : public ChromeSearchResult {
 
   void Open(int event_flags) override;
 
+  void UpdateTitleAndDetails(const std::u16string& title,
+                             const std::u16string& description);
+
  private:
   SystemInfoCategory const system_info_category_;
   Profile* const profile_;
   const std::u16string query_;
+
   const std::string url_path_;
 };
 

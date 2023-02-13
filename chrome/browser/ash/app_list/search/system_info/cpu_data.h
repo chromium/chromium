@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_CPU_DATA_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_CPU_DATA_H_
 
+#include <string>
+
+#include "base/strings/string_number_conversions.h"
+
 namespace app_list {
 
 /* This class is used to store the final CPU usage and health data for the
@@ -34,8 +38,8 @@ class CpuData {
   int GetPercentUsageUser() const { return percent_usage_user_; }
   int GetPercentUsageSystem() const { return percent_usage_system_; }
   int GetPercentUsageFree() const { return percent_usage_free_; }
-  int GetPercentUsageTotal() const {
-    return percent_usage_user_ + percent_usage_system_;
+  std::u16string GetPercentUsageTotalString() const {
+    return base::NumberToString16(percent_usage_user_ + percent_usage_system_);
   }
   int GetAverageCpuTempCelsius() const { return average_cpu_temp_celsius_; }
   int GetScalingAverageCurrentFrequencyKhz() const {

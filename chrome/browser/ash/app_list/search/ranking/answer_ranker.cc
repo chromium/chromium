@@ -7,17 +7,21 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 
 namespace app_list {
 namespace {
 
 // Returns the provider type's priority. A higher value indicates higher
 // priority. Providers that are never used for answers will have 0 priority.
-bool GetPriority(ProviderType type) {
+int GetPriority(ProviderType type) {
   switch (type) {
     case ProviderType::kOmnibox:
-      return 2;
+      return 3;
     case ProviderType::kKeyboardShortcut:
+      return 2;
+      // TODO(b/263994165): Check if this is the correct priority.
+    case ProviderType::kSystemInfo:
       return 1;
     default:
       return 0;
@@ -32,6 +36,26 @@ ChromeSearchResult* GetOmniboxCandidate(Results& results) {
   for (const auto& result : results) {
     if (result->display_type() != DisplayType::kAnswerCard)
       continue;
+
+    const double score = result->relevance();
+    if (!top_answer || score > top_score) {
+      top_answer = result.get();
+      top_score = score;
+    }
+  }
+  return top_answer;
+}
+
+// If there are any best match SystemInfo answers, returns the highest scoring
+// one. If not, returns nullptr.
+ChromeSearchResult* GetSystemInfoCandidate(Results& results) {
+  ChromeSearchResult* top_answer = nullptr;
+  double top_score = 0.0;
+  for (const auto& result : results) {
+    if (result->display_type() != DisplayType::kAnswerCard ||
+        !result->best_match()) {
+      continue;
+    }
 
     const double score = result->relevance();
     if (!top_answer || score > top_score) {
@@ -117,6 +141,9 @@ void AnswerRanker::UpdateResultRanks(ResultsMap& results,
       break;
     case ProviderType::kKeyboardShortcut:
       new_answer = GetShortcutCandidate(new_results);
+      break;
+    case ProviderType::kSystemInfo:
+      new_answer = GetSystemInfoCandidate(new_results);
       break;
     default:
       return;
