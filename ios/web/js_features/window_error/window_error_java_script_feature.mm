@@ -32,7 +32,7 @@ WindowErrorJavaScriptFeature::ErrorDetails::~ErrorDetails() = default;
 WindowErrorJavaScriptFeature::WindowErrorJavaScriptFeature(
     base::RepeatingCallback<void(ErrorDetails)> callback)
     : JavaScriptFeature(
-          ContentWorld::kAnyContentWorld,
+          ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,

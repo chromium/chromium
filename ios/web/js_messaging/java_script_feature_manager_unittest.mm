@@ -118,7 +118,7 @@ TEST_F(JavaScriptFeatureManagerTest, MainFrameEndFeatureIsolatedWorld) {
 
   std::unique_ptr<web::JavaScriptFeature> feature =
       std::make_unique<web::JavaScriptFeature>(
-          web::ContentWorld::kIsolatedWorldOnly, feature_scripts);
+          web::ContentWorld::kIsolatedWorld, feature_scripts);
 
   GetJavaScriptFeatureManager()->ConfigureFeatures({feature.get()});
 

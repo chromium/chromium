@@ -34,7 +34,7 @@ class JavaScriptContentWorld {
   JavaScriptContentWorld(const JavaScriptContentWorld&) = delete;
 
   // Creates a content world for features which will interact with the given
-  // `content_world`.
+  // `content_world`. `browser_state` and `content_world` must not be null.
   JavaScriptContentWorld(BrowserState* browser_state,
                          WKContentWorld* content_world);
 
@@ -69,10 +69,8 @@ class JavaScriptContentWorld {
            std::unique_ptr<ScopedWKScriptMessageHandler>>
       script_message_handlers_;
 
-  // The associated WKContentWorld. May be null which represents the main world
-  // which the page content itself uses. (The same content world can also be
-  // represented by [WKContentWorld pageWorld] on iOS 14 and later.)
-  WKContentWorld* content_world_ = nullptr;
+  // The associated underlying WKContentWorld.
+  WKContentWorld* content_world_;
 
   base::WeakPtrFactory<JavaScriptContentWorld> weak_factory_;
 };

@@ -19,8 +19,10 @@ namespace web {
 
 typedef WebTest JavaScriptContentWorldTest;
 
-// Tests adding a JavaScriptFeature to a JavaScriptContentWorld adds the
-// expected user scripts and script message handlers.
+// Tests that adding a JavaScriptFeature to a JavaScriptContentWorld adds the
+// expected user scripts and script message handlers. Also verifies that
+// features created with kAnyContentWorld can be added to the page content
+// world.
 TEST_F(JavaScriptContentWorldTest, AddFeature) {
   WKWebViewConfigurationProvider& configuration_provider =
       WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
@@ -43,7 +45,9 @@ TEST_F(JavaScriptContentWorldTest, AddFeature) {
   ASSERT_GT(scripts_count, initial_scripts_count);
 }
 
-// Tests adding a JavaScriptFeature to a specific JavaScriptContentWorld.
+// Tests adding a JavaScriptFeature to a specific JavaScriptContentWorld. Also
+// verifies that features created with kAnyContentWorld can be added to an
+// isolated world.
 TEST_F(JavaScriptContentWorldTest, AddFeatureToSpecificWKContentWorld) {
   WKWebViewConfigurationProvider& configuration_provider =
       WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
@@ -67,8 +71,8 @@ TEST_F(JavaScriptContentWorldTest, AddFeatureToSpecificWKContentWorld) {
   ASSERT_GT(scripts_count, initial_scripts_count);
 }
 
-// Tests adding a JavaScriptFeature to an isolated world only.
-TEST_F(JavaScriptContentWorldTest, AddFeatureToIsolatedWorldOnly) {
+// Tests adding a JavaScriptFeature which only supports isolated worlds.
+TEST_F(JavaScriptContentWorldTest, AddIsolatedWorldFeature) {
   WKWebViewConfigurationProvider& configuration_provider =
       WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
   WKUserContentController* user_content_controller =
@@ -81,7 +85,7 @@ TEST_F(JavaScriptContentWorldTest, AddFeatureToIsolatedWorldOnly) {
   web::JavaScriptContentWorld world(GetBrowserState(),
                                     WKContentWorld.defaultClientWorld);
 
-  FakeJavaScriptFeature feature(ContentWorld::kIsolatedWorldOnly);
+  FakeJavaScriptFeature feature(ContentWorld::kIsolatedWorld);
   world.AddFeature(&feature);
   EXPECT_TRUE(world.HasFeature(&feature));
 
@@ -91,12 +95,48 @@ TEST_F(JavaScriptContentWorldTest, AddFeatureToIsolatedWorldOnly) {
   ASSERT_GT(scripts_count, initial_scripts_count);
 }
 
-// Tests that adding an isolated-world-only JavaScriptFeature to the page
-// content world triggers a DCHECK.
-TEST_F(JavaScriptContentWorldTest, AddIsolatedWorldFeatureToPageWorld) {
+// Tests that attempting to add a JavaScriptFeature which only supports an
+// isolated world to the page content world triggers a DCHECK.
+TEST_F(JavaScriptContentWorldTest,
+       AttemptAddingIsolatedWorldFeatureToPageWorld) {
   web::JavaScriptContentWorld world(GetBrowserState(),
                                     WKContentWorld.pageWorld);
-  FakeJavaScriptFeature feature(ContentWorld::kIsolatedWorldOnly);
+  FakeJavaScriptFeature feature(ContentWorld::kIsolatedWorld);
+
+  EXPECT_DCHECK_DEATH(world.AddFeature(&feature));
+}
+
+// Tests adding a JavaScriptFeature which only supports the page content world.
+TEST_F(JavaScriptContentWorldTest, AddPageContentWorldFeature) {
+  WKWebViewConfigurationProvider& configuration_provider =
+      WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
+  WKUserContentController* user_content_controller =
+      configuration_provider.GetWebViewConfiguration().userContentController;
+
+  unsigned long initial_scripts_count =
+      [[user_content_controller userScripts] count];
+  ASSERT_GT(initial_scripts_count, 0ul);
+
+  web::JavaScriptContentWorld world(GetBrowserState(),
+                                    WKContentWorld.pageWorld);
+
+  FakeJavaScriptFeature feature(ContentWorld::kPageContentWorld);
+  world.AddFeature(&feature);
+  EXPECT_TRUE(world.HasFeature(&feature));
+
+  EXPECT_NSEQ(WKContentWorld.pageWorld, world.GetWKContentWorld());
+
+  unsigned long scripts_count = [[user_content_controller userScripts] count];
+  ASSERT_GT(scripts_count, initial_scripts_count);
+}
+
+// Tests that attempting to add a JavaScriptFeature which only supports the
+// page content world to an isolated world triggers a DCHECK.
+TEST_F(JavaScriptContentWorldTest,
+       AttemptAddingPageContentWorldFeatureToIsolatedWorld) {
+  web::JavaScriptContentWorld world(GetBrowserState(),
+                                    WKContentWorld.defaultClientWorld);
+  FakeJavaScriptFeature feature(ContentWorld::kPageContentWorld);
 
   EXPECT_DCHECK_DEATH(world.AddFeature(&feature));
 }

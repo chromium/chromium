@@ -83,7 +83,7 @@ void JavaScriptFeatureManager::ConfigureFeatures(
       isolated_world_->AddFeature(feature);
     } else {
       DCHECK_NE(feature->GetSupportedContentWorld(),
-                ContentWorld::kIsolatedWorldOnly);
+                ContentWorld::kIsolatedWorld);
       page_content_world_->AddFeature(feature);
     }
   }

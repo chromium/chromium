@@ -35,7 +35,7 @@ SearchEngineJavaScriptFeature* SearchEngineJavaScriptFeature::GetInstance() {
 
 SearchEngineJavaScriptFeature::SearchEngineJavaScriptFeature()
     : JavaScriptFeature(
-          web::ContentWorld::kAnyContentWorld,
+          web::ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,

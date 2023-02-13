@@ -32,7 +32,7 @@ FollowJavaScriptFeature* FollowJavaScriptFeature::GetInstance() {
 
 FollowJavaScriptFeature::FollowJavaScriptFeature()
     : JavaScriptFeature(
-          web::ContentWorld::kAnyContentWorld,
+          web::ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
               kRSSLinkScript,
               FeatureScript::InjectionTime::kDocumentStart,

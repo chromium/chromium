@@ -43,7 +43,7 @@ class AnnotationsTestJavaScriptFeature : public JavaScriptFeature {
  public:
   AnnotationsTestJavaScriptFeature()
       : JavaScriptFeature(
-            ContentWorld::kAnyContentWorld,
+            ContentWorld::kIsolatedWorld,
             {FeatureScript::CreateWithFilename(
                 kScriptName,
                 FeatureScript::InjectionTime::kDocumentStart,

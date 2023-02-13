@@ -43,7 +43,7 @@ FindInPageJavaScriptFeature* FindInPageJavaScriptFeature::GetInstance() {
 
 FindInPageJavaScriptFeature::FindInPageJavaScriptFeature()
     : JavaScriptFeature(
-          ContentWorld::kAnyContentWorld,
+          ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
                kScriptName,
                FeatureScript::InjectionTime::kDocumentStart,

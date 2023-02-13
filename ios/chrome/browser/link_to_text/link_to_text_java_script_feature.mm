@@ -44,7 +44,7 @@ LinkToTextResponse* ParseResponse(web::WebState* web_state,
 
 LinkToTextJavaScriptFeature::LinkToTextJavaScriptFeature()
     : JavaScriptFeature(
-          web::ContentWorld::kAnyContentWorld,
+          web::ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,

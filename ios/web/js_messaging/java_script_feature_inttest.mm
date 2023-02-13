@@ -223,7 +223,7 @@ class JavaScriptFeatureAnyContentWorldTest : public WebTestWithWebState {
  protected:
   JavaScriptFeatureAnyContentWorldTest()
       : WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
-        feature_(ContentWorld::kAnyContentWorld) {}
+        feature_(ContentWorld::kIsolatedWorld) {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
@@ -342,12 +342,12 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, ReinjectionBehaviorIsolatedWorld) {
 }
 
 // Sets up a FakeJavaScriptFeature in an isolated world using
-// `ContentWorld::kIsolatedWorldOnly`.
+// `ContentWorld::kIsolatedWorld`.
 class JavaScriptFeatureIsolatedWorldTest : public WebTestWithWebState {
  protected:
   JavaScriptFeatureIsolatedWorldTest()
       : WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
-        feature_(ContentWorld::kIsolatedWorldOnly) {}
+        feature_(ContentWorld::kIsolatedWorld) {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();

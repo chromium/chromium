@@ -40,7 +40,7 @@ void FontSizeJavaScriptFeature::AdjustFontSize(web::WebFrame* web_frame,
 }
 
 FontSizeJavaScriptFeature::FontSizeJavaScriptFeature()
-    : web::JavaScriptFeature(web::ContentWorld::kAnyContentWorld,
+    : web::JavaScriptFeature(web::ContentWorld::kIsolatedWorld,
                              {FeatureScript::CreateWithFilename(
                                  kFontSizeScript,
                                  FeatureScript::InjectionTime::kDocumentStart,

@@ -39,7 +39,7 @@ AutofillJavaScriptFeature* AutofillJavaScriptFeature::GetInstance() {
 
 AutofillJavaScriptFeature::AutofillJavaScriptFeature()
     : web::JavaScriptFeature(
-          // TODO(crbug.com/1175793): Move autofill code to kAnyContentWorld
+          // TODO(crbug.com/1175793): Move autofill code to kIsolatedWorld
           // once all scripts are converted to JavaScriptFeatures.
           web::ContentWorld::kPageContentWorld,
           {FeatureScript::CreateWithFilename(

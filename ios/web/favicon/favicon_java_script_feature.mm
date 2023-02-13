@@ -28,7 +28,7 @@ namespace web {
 
 FaviconJavaScriptFeature::FaviconJavaScriptFeature()
     : JavaScriptFeature(
-          ContentWorld::kAnyContentWorld,
+          ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
                kScriptName,
                FeatureScript::InjectionTime::kDocumentEnd,

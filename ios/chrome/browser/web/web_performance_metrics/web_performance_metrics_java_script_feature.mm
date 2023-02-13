@@ -33,7 +33,7 @@ constexpr int kTimeRangeHistogramBucketCount = 100;
 }  // namespace
 
 WebPerformanceMetricsJavaScriptFeature::WebPerformanceMetricsJavaScriptFeature()
-    : JavaScriptFeature(web::ContentWorld::kAnyContentWorld,
+    : JavaScriptFeature(web::ContentWorld::kIsolatedWorld,
                         {FeatureScript::CreateWithFilename(
                             kPerformanceMetricsScript,
                             FeatureScript::InjectionTime::kDocumentStart,

@@ -127,7 +127,7 @@ class JavaScriptFeature {
   // Constructs a new feature instance inside the world described by
   // `supported_world`. Each FeatureScript within `feature_scripts` will be
   // configured within that same world.
-  // NOTE: Features should use `kAnyContentWorld` whenever possible to allow for
+  // NOTE: Features should use `kIsolatedWorld` whenever possible to allow for
   // isolation between the feature and the loaded webpage JavaScript.
   JavaScriptFeature(ContentWorld supported_world,
                     std::vector<const FeatureScript> feature_scripts);

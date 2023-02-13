@@ -32,7 +32,7 @@ namespace web {
 
 ContextMenuJavaScriptFeature::ContextMenuJavaScriptFeature()
     : JavaScriptFeature(
-          ContentWorld::kAnyContentWorld,
+          ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
                kAllFramesContextMenuScript,
                FeatureScript::InjectionTime::kDocumentStart,

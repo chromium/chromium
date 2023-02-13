@@ -59,7 +59,9 @@ JavaScriptContentWorld::JavaScriptContentWorld(BrowserState* browser_state,
     : browser_state_(browser_state),
       user_content_controller_(GetUserContentController(browser_state)),
       content_world_(content_world),
-      weak_factory_(this) {}
+      weak_factory_(this) {
+  DCHECK(content_world_);
+}
 
 WKContentWorld* JavaScriptContentWorld::GetWKContentWorld() {
   return content_world_;
@@ -77,19 +79,17 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
     return;
   }
 
-  // Ensure `feature` supports this content world.
-  if (content_world_) {
-    ContentWorld incompatible_world_value;
-    if (content_world_ == WKContentWorld.pageWorld) {
-      // A feature specifying kIsolatedWorldOnly must not be added to the page
-      // content world.
-      incompatible_world_value = ContentWorld::kIsolatedWorldOnly;
-    } else {
-      // A feature specifying kPageContentWorld must not be added to an
-      // isolated world.
-      incompatible_world_value = ContentWorld::kPageContentWorld;
-    }
-    DCHECK_NE(feature->GetSupportedContentWorld(), incompatible_world_value);
+  // Ensure `feature` supports this `content_world_`.
+  if (content_world_ == WKContentWorld.pageWorld) {
+    // A feature specifying kIsolatedWorld can not be added to the page
+    // content world.
+    DCHECK_NE(feature->GetSupportedContentWorld(),
+              ContentWorld::kIsolatedWorld);
+  } else {
+    // A feature specifying kPageContentWorld can not be added to an isolated
+    // world.
+    DCHECK_NE(feature->GetSupportedContentWorld(),
+              ContentWorld::kPageContentWorld);
   }
 
   features_.insert(feature);

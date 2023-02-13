@@ -94,7 +94,7 @@ WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
 JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
   // Static storage is ok for `plugin_placeholder_feature` as it holds no state.
   static base::NoDestructor<JavaScriptFeature> plugin_placeholder_feature(
-      ContentWorld::kAnyContentWorld,
+      ContentWorld::kIsolatedWorld,
       std::vector<const JavaScriptFeature::FeatureScript>(
           {JavaScriptFeature::FeatureScript::CreateWithFilename(
               kPluginPlaceholderScriptName,

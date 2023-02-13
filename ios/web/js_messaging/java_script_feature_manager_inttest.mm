@@ -121,7 +121,7 @@ class JavaScriptFeatureManagerAnyContentWorldIntTest
  protected:
   JavaScriptFeatureManagerAnyContentWorldIntTest()
       : WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
-        feature_(ContentWorld::kAnyContentWorld) {}
+        feature_(ContentWorld::kIsolatedWorld) {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();

@@ -32,7 +32,7 @@ namespace web {
 
 TextFragmentsJavaScriptFeature::TextFragmentsJavaScriptFeature()
     : JavaScriptFeature(
-          ContentWorld::kAnyContentWorld,
+          ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,

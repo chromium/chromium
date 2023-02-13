@@ -27,7 +27,7 @@ const char kKeyPressedEventType[] = "KeyPressed";
 }  // namespace
 
 PasswordProtectionJavaScriptFeature::PasswordProtectionJavaScriptFeature()
-    : JavaScriptFeature(web::ContentWorld::kIsolatedWorldOnly,
+    : JavaScriptFeature(web::ContentWorld::kIsolatedWorld,
                         {FeatureScript::CreateWithFilename(
                             kScriptFilename,
                             FeatureScript::InjectionTime::kDocumentStart,
