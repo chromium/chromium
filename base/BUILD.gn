@@ -596,10 +596,6 @@ component("base") {
     "run_loop.h",
     "sampling_heap_profiler/lock_free_address_hash_set.cc",
     "sampling_heap_profiler/lock_free_address_hash_set.h",
-    "sampling_heap_profiler/poisson_allocation_sampler.cc",
-    "sampling_heap_profiler/poisson_allocation_sampler.h",
-    "sampling_heap_profiler/sampling_heap_profiler.cc",
-    "sampling_heap_profiler/sampling_heap_profiler.h",
     "scoped_add_feature_flags.cc",
     "scoped_add_feature_flags.h",
     "scoped_clear_last_error.h",
@@ -1120,8 +1116,12 @@ component("base") {
     if (is_apple) {
       sources += [
         "allocator/early_zone_registration_mac.h",
+        "allocator/partition_allocator/shim/allocator_interception_mac.h",
+        "allocator/partition_allocator/shim/allocator_interception_mac.mm",
         "allocator/partition_allocator/shim/allocator_shim_override_mac_default_zone.h",
         "allocator/partition_allocator/shim/allocator_shim_override_mac_symbols.h",
+        "allocator/partition_allocator/shim/malloc_zone_functions_mac.cc",
+        "allocator/partition_allocator/shim/malloc_zone_functions_mac.h",
       ]
       configs += [ "//base/allocator:mac_no_default_new_delete_symbols" ]
     }
@@ -1230,7 +1230,6 @@ component("base") {
       "android/radio_utils.h",
       "android/reached_addresses_bitset.cc",
       "android/reached_addresses_bitset.h",
-      "android/reached_code_profiler.cc",
       "android/reached_code_profiler.h",
       "android/remove_stale_data.cc",
       "android/remove_stale_data.h",
@@ -1311,9 +1310,10 @@ component("base") {
       ]
     }
 
-    if (current_cpu != "arm" && current_cpu != "arm64") {
+    if (current_cpu == "arm" || current_cpu == "arm64") {
       # The reached code profiler is only supported on Android arm arch.
-      sources -= [ "android/reached_code_profiler.cc" ]
+      sources += [ "android/reached_code_profiler.cc" ]
+    } else {
       sources += [ "android/reached_code_profiler_stub.cc" ]
     }
 
@@ -1944,10 +1944,6 @@ component("base") {
   # Desktop Mac.
   if (is_mac) {
     sources += [
-      "allocator/partition_allocator/shim/allocator_interception_mac.h",
-      "allocator/partition_allocator/shim/allocator_interception_mac.mm",
-      "allocator/partition_allocator/shim/malloc_zone_functions_mac.cc",
-      "allocator/partition_allocator/shim/malloc_zone_functions_mac.h",
       "enterprise_util.cc",
       "enterprise_util.h",
       "enterprise_util_mac.mm",
@@ -2165,21 +2161,6 @@ component("base") {
         "profiler/suspendable_thread_delegate_mac.h",
       ]
     }
-    if (use_allocator_shim) {
-      sources += [
-        "allocator/partition_allocator/shim/allocator_interception_mac.h",
-        "allocator/partition_allocator/shim/allocator_interception_mac.mm",
-        "allocator/partition_allocator/shim/malloc_zone_functions_mac.cc",
-        "allocator/partition_allocator/shim/malloc_zone_functions_mac.h",
-      ]
-    } else {
-      sources -= [
-        "sampling_heap_profiler/poisson_allocation_sampler.cc",
-        "sampling_heap_profiler/poisson_allocation_sampler.h",
-        "sampling_heap_profiler/sampling_heap_profiler.cc",
-        "sampling_heap_profiler/sampling_heap_profiler.h",
-      ]
-    }
 
     if (current_cpu == "x64" || current_cpu == "arm64") {
       sources += [ "time/time_exploded_posix.cc" ]
@@ -2188,6 +2169,15 @@ component("base") {
     }
 
     frameworks += [ "UIKit.framework" ]
+  }
+
+  if (!is_ios || use_allocator_shim) {
+    sources += [
+      "sampling_heap_profiler/poisson_allocation_sampler.cc",
+      "sampling_heap_profiler/poisson_allocation_sampler.h",
+      "sampling_heap_profiler/sampling_heap_profiler.cc",
+      "sampling_heap_profiler/sampling_heap_profiler.h",
+    ]
   }
 
   if (use_blink) {
@@ -3476,8 +3466,6 @@ test("base_unittests") {
 
   if (is_mac) {
     sources += [
-      "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
-      "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
       "enterprise_util_mac_unittest.mm",
       "mac/backup_util_unittest.mm",
       "mac/bind_objc_block_unittest.mm",
@@ -3650,13 +3638,6 @@ test("base_unittests") {
       # support loading on iOS.
       "immediate_crash_unittest.cc",
     ]
-
-    if (use_allocator_shim) {
-      sources += [
-        "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
-        "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
-      ]
-    }
   }
 
   if (use_partition_alloc) {
@@ -3854,6 +3835,8 @@ test("base_unittests") {
 
   if (use_allocator_shim) {
     sources += [
+      "allocator/partition_alloc_support_unittest.cc",
+      "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc",
       "allocator/partition_allocator/shim/allocator_shim_unittest.cc",
       "sampling_heap_profiler/poisson_allocation_sampler_unittest.cc",
       "sampling_heap_profiler/sampling_heap_profiler_unittest.cc",
@@ -3864,10 +3847,12 @@ test("base_unittests") {
           [ "allocator/partition_allocator/shim/winheap_stubs_win_unittest.cc" ]
     }
 
-    sources += [
-      "allocator/partition_alloc_support_unittest.cc",
-      "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc",
-    ]
+    if (is_apple) {
+      sources += [
+        "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
+        "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
+      ]
+    }
   }
 
   if (enable_base_tracing) {
