@@ -147,6 +147,7 @@ enum JavaScriptExecutionResultType {
 enum TraverseCancelledReason {
   kNotFound,
   kSandboxViolation,
+  kAbortedBeforeCommit,
 };
 
 // The ViewTransitionOnNavigation opt-in state for a Document. This indicates

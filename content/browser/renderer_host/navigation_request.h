@@ -1085,6 +1085,16 @@ class CONTENT_EXPORT NavigationRequest
     return browsing_context_group_swap_;
   }
 
+  // If the navigation fails before commit and |pending_navigation_api_key_| has
+  // been set, then the renderer will be notified of the pre-commit failure and
+  // provide |pending_navigation_api_key_| so that the Navigation API can fire
+  // events and reject promises.
+  // This should only be set if this request's frame initiated the navigation,
+  // because only the initiating frame has outstanding promises to reject.
+  void set_pending_navigation_api_key(absl::optional<std::string> key) {
+    pending_navigation_api_key_ = key;
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -2339,6 +2349,9 @@ class CONTENT_EXPORT NavigationRequest
   // same-document navigation.
   BrowsingContextGroupSwap browsing_context_group_swap_ =
       BrowsingContextGroupSwap::CreateDefault();
+
+  // See `set_pending_navigation_api_key()` for context.
+  absl::optional<std::string> pending_navigation_api_key_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

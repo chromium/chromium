@@ -965,6 +965,10 @@ void NavigationApi::TraverseCancelled(
         "Navigating to key " + key +
             " would require a navigation that "
             "violates this frame's sandbox policy");
+  } else if (reason ==
+             mojom::blink::TraverseCancelledReason::kAbortedBeforeCommit) {
+    exception = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, "Navigation was aborted");
   }
   DCHECK(exception);
 

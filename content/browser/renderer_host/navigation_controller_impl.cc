@@ -3159,6 +3159,22 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
     }
   }
 
+  // If it is possible that this traverse may involve a same-document navigation
+  // in the initiator and there is a Navigation API key involved, then we may
+  // need to notify the initiator if it fails. (The early returns above either
+  // do not involve these cases or already notify the initiator.)
+  // The event only needs to fire for the initiator, and only if the initiator
+  // itself is performing a same-document navigation (because the event will not
+  // fire if it navigates cross-document).
+  if (navigation_api_key) {
+    for (auto& item : same_document_loads) {
+      if (item->frame_tree_node() == initiator_rfh->frame_tree_node()) {
+        item->set_pending_navigation_api_key(*navigation_api_key);
+        break;
+      }
+    }
+  }
+
   // BackForwardCache:
   // Navigate immediately if the document is in the BackForwardCache.
   if (back_forward_cache_.GetEntry(nav_entry_id)) {

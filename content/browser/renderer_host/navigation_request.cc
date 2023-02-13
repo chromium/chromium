@@ -1959,9 +1959,21 @@ NavigationRequest::~NavigationRequest() {
   if (loading_mem_tracker_)
     loading_mem_tracker_->Cancel();
   ResetExpectedProcess();
-  if (state_ >= WILL_START_NAVIGATION && !HasCommitted()) {
-    devtools_instrumentation::OnNavigationRequestFailed(
-        *this, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+  if (!HasCommitted()) {
+    if (state_ >= WILL_START_NAVIGATION) {
+      devtools_instrumentation::OnNavigationRequestFailed(
+          *this, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+    }
+
+    // NavigationRequests with pending Navigation API keys must notify the
+    // renderer when they fail.
+    if (pending_navigation_api_key_) {
+      frame_tree_node_->current_frame_host()
+          ->GetAssociatedLocalFrame()
+          ->TraverseCancelled(
+              *pending_navigation_api_key_,
+              blink::mojom::TraverseCancelledReason::kAbortedBeforeCommit);
+    }
   }
 
   // If this NavigationRequest is the last one referencing the pending
