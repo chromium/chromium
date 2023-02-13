@@ -39,34 +39,46 @@ class IDLUpdater:
             os.makedirs(self.output_dir)
 
     def _gen_gn_args(self) -> None:
+        # If the gn_args file already exists and has the desired values then
+        # don't touch it - this avoids unnecessary and expensive gn gen
+        # invocations.
+        gn_args_path = os.path.join(self.output_dir, 'args.gn')
+        contents = (f'target_cpu="{self.target_cpu}"\n'
+                    f'is_chrome_branded={self.is_chrome_branded}\n'
+                    f'is_debug=true\n'
+                    f'enable_nacl=false\n'
+                    f'blink_symbol_level=0\n'
+                    f'v8_symbol_level=0\n').format()
+        if os.path.exists(gn_args_path):
+            with open(gn_args_path, 'rt', newline='') as f:
+                new_contents = f.read()
+                if new_contents == contents:
+                    return
+
         # `subprocess` may interpret the complex config values passed via
         # `--args` differently than intended. Generate the default gn.args first
         # and then update it by writing directly.
 
         # gen args with default values.
-        gn_args_path = os.path.join(self.output_dir, 'args.gn')
         print('Generating', gn_args_path, 'with default values.')
         subprocess.run(['gn.bat', 'gen', self.output_dir], check=True)
 
         # Manually update args.gn
         print('Write', gn_args_path, 'with desired config.')
-        with open(gn_args_path, 'wt') as f:
-            f.write((f'target_cpu="{self.target_cpu}"\n'
-                     f'use_goma=true\n'
-                     f'is_chrome_branded={self.is_chrome_branded}\n'
-                     f'is_debug=true\n'
-                     f'enable_nacl=false\n'
-                     f'blink_symbol_level=0\n'
-                     f'v8_symbol_level=0\n').format())
+        with open(gn_args_path, 'wt', newline='') as f:
+            f.write(contents)
         print('Done.')
 
     def _autoninja_and_update(self) -> None:
         print('Check if update is needed by building the target...')
-        proc = subprocess.run(
-            ['autoninja.bat', '-C', self.output_dir, self.idl_gn_target],
-            capture_output=True,
-            check=False,
-            universal_newlines=True)
+        # Use -j 1 since otherwise the exact build output is not deterministic.
+        proc = subprocess.run([
+            'autoninja.bat', '-j', '1', '-C', self.output_dir,
+            self.idl_gn_target
+        ],
+                              capture_output=True,
+                              check=False,
+                              universal_newlines=True)
         if proc.returncode == 0:
             print('No update is needed.\n')
             return
@@ -124,14 +136,20 @@ def check_running_environment() -> None:
 def main():
     check_running_environment()
 
-    for idl_target in [
-            'updater_idl_idl', 'updater_internal_idl_idl',
-            'updater_legacy_idl_idl'
-    ]:
-        for target_cpu in ['arm64', 'x64', 'x86']:
-            IDLUpdater(
-                'chrome/updater/app/server/win:' + idl_target + '_idl_action',
-                target_cpu, False).update()
+    for target_cpu in ['arm64', 'x64', 'x86']:
+        for idl_target in [
+                'updater_idl_idl',
+                'updater_internal_idl_idl',
+                'updater_legacy_idl_idl',
+                'google_update',
+                'elevation_service_idl',
+                'gaia_credential_provider_idl',
+                'iaccessible2',
+                'ichromeaccessible',
+                'isimpledom',
+                'remoting_lib_idl',
+        ]:
+            IDLUpdater(idl_target + '_idl_action', target_cpu, False).update()
 
 
 if __name__ == '__main__':
