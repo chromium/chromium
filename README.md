@@ -1,3 +1,41 @@
+# 编译说明
+
+```shell
+
+# 安装depot_tools
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+export PATH="/path/to/depot_tools:$PATH"
+
+
+# 获得代码
+mkdir ~/chromium && cd ~/chromium
+fetch --nohooks android
+git tags ##选一个版本，不要用master编译
+
+
+# 安装编译
+build/install-build-deps.sh --android
+
+# 指定编译目标
+echo "target_os = [ 'android' ]" >> ../.gclient
+gclient sync
+
+
+# 指定编译参数
+gn args out/Default
+
+target_os = "android"
+target_cpu = "arm64"
+# 指定android包名
+chrome_public_manifest_package = com.baidu.duer.chromium
+
+
+# 编译apk
+autoninja -C out/Default chrome_public_apk
+
+```
+
+
 # ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
 
 Chromium is an open-source browser project that aims to build a safer, faster,
