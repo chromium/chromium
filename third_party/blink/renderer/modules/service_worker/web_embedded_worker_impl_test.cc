@@ -31,20 +31,20 @@
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
-#include "third_party/blink/public/platform/web_url_loader_client.h"
-#include "third_party/blink/public/platform/web_url_loader_factory.h"
-#include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_client.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 #include "third_party/blink/public/web/web_embedded_worker_start_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
 
 namespace blink {
 namespace {
@@ -109,7 +109,7 @@ class FakeWebURLLoaderFactory final : public WebURLLoaderFactory {
       const WebURLRequest&,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>,
-      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>,
+      mojo::PendingRemote<mojom::blink::KeepAliveHandle>,
       WebBackForwardCacheLoaderHelper) override {
     return std::make_unique<FakeWebURLLoader>();
   }

@@ -34,8 +34,8 @@
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {

@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_FETCHER_PROPERTIES_H_
 
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"

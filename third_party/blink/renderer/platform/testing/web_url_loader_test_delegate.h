@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_TEST_DELEGATE_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_TEST_DELEGATE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_TEST_DELEGATE_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_TEST_DELEGATE_H_
 
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -19,7 +19,7 @@ struct WebURLError;
 // WebURLLoaderClient for controlling network responses in a test. Default
 // implementations of all methods just call the original method on the
 // WebURLLoaderClient.
-class BLINK_PLATFORM_EXPORT WebURLLoaderTestDelegate {
+class WebURLLoaderTestDelegate {
  public:
   WebURLLoaderTestDelegate();
   virtual ~WebURLLoaderTestDelegate();
@@ -51,4 +51,4 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderTestDelegate {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_TEST_DELEGATE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_TEST_DELEGATE_H_

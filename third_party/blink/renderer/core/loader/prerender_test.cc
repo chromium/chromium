@@ -39,7 +39,6 @@
 #include "third_party/blink/public/mojom/prerender/prerender.mojom-blink.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_no_state_prefetch_client.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -52,6 +51,7 @@
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
 
 namespace blink {
 

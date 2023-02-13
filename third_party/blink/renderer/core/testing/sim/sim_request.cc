@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 
-#include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_network.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"

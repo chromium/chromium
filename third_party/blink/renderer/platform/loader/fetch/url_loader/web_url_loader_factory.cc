@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/web_url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
 
 #include "base/check.h"
 #include "base/synchronization/waitable_event.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
 
 using blink::scheduler::WebResourceLoadingTaskRunnerHandle;
 
@@ -34,8 +34,7 @@ std::unique_ptr<WebURLLoader> WebURLLoaderFactory::CreateURLLoader(
         freezable_task_runner_handle,
     std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
-    CrossVariantMojoRemote<mojom::KeepAliveHandleInterfaceBase>
-        keep_alive_handle,
+    mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   DCHECK(freezable_task_runner_handle);
   DCHECK(unfreezable_task_runner_handle);

@@ -10,11 +10,11 @@
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/platform/internet_disconnected_web_url_loader.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
-#include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/internet_disconnected_web_url_loader.h"
 
 namespace blink {
 

@@ -28,8 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_H_
 
 #include <stdint.h>
 
@@ -41,7 +41,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-forward.h"
+#include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
@@ -83,7 +83,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner_handle,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle,
+      mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
   WebURLLoader(const WebURLLoader&) = delete;
   WebURLLoader& operator=(const WebURLLoader&) = delete;
@@ -154,4 +154,4 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_H_

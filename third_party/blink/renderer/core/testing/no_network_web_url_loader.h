@@ -7,8 +7,8 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 
 namespace blink {

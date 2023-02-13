@@ -32,8 +32,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PING_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PING_LOADER_H_
 
-#include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"

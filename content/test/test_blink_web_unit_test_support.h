@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "content/child/blink_platform_impl.h"
-#include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 
 namespace blink {
 namespace scheduler {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/web_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
 
 #include <stdint.h>
 
@@ -75,13 +75,13 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
-#include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/origin.h"
@@ -107,7 +107,7 @@ class WebURLLoader::Context : public WebRequestPeer {
           std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
               unfreezable_task_runner_handle,
           scoped_refptr<network::SharedURLLoaderFactory> factory,
-          mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle,
+          mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
           WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
 
   int request_id() const { return request_id_; }
@@ -188,7 +188,7 @@ class WebURLLoader::Context : public WebRequestPeer {
   // the task runner might or might not be unfreezable, depending on flags).
   scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
-  mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle_;
+  mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle_;
   WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
   const WebVector<WebString> cors_exempt_header_list_;
   base::WaitableEvent* terminate_sync_load_event_;
@@ -217,7 +217,7 @@ WebURLLoader::Context::Context(
     std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle,
+    mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
     : loader_(loader),
       has_devtools_request_id_(false),
@@ -508,7 +508,7 @@ WebURLLoader::WebURLLoader(
     std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle,
+    mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
     : context_(new Context(this,
                            cors_exempt_header_list,

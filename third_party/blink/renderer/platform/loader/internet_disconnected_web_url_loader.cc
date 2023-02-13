@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/internet_disconnected_web_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/internet_disconnected_web_url_loader.h"
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
@@ -13,9 +13,9 @@
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
-#include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -27,8 +27,7 @@ InternetDisconnectedWebURLLoaderFactory::CreateURLLoader(
         freezable_task_runner_handle,
     std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
         unfreezable_task_runner_handle,
-    CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-        keep_alive_handle,
+    mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
     WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   DCHECK(freezable_task_runner_handle);
   return std::make_unique<InternetDisconnectedWebURLLoader>(

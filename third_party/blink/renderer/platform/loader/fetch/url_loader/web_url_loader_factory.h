@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_FACTORY_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_FACTORY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_FACTORY_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_FACTORY_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
-#include "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom-shared.h"
+#include "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -53,14 +53,13 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderFactory {
           freezable_task_runner,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner,
-      CrossVariantMojoRemote<mojom::KeepAliveHandleInterfaceBase>
-          keep_alive_handle,
+      mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper);
 
  protected:
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
   WebVector<WebString> cors_exempt_header_list_;
-  raw_ptr<base::WaitableEvent> terminate_sync_load_event_ = nullptr;
+  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
 };
 
 // A test version of the above factory interface, which supports cloning the
@@ -73,4 +72,4 @@ class WebURLLoaderFactoryForTest : public WebURLLoaderFactory {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_FACTORY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_FACTORY_H_

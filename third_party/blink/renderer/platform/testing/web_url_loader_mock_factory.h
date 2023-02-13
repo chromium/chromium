@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_MOCK_FACTORY_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_MOCK_FACTORY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_MOCK_FACTORY_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_MOCK_FACTORY_H_
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_url_loader_test_delegate.h"
+#include "third_party/blink/renderer/platform/testing/web_url_loader_test_delegate.h"
 
 #include <memory>
 
@@ -80,4 +80,4 @@ class WebURLLoaderMockFactory {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_MOCK_FACTORY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_MOCK_FACTORY_H_

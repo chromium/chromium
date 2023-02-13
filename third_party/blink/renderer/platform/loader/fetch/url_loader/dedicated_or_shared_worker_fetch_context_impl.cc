@@ -26,10 +26,10 @@
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_frame_request_blocker.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
-#include "third_party/blink/public/platform/web_url_loader_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
 #include "url/url_constants.h"
 
 namespace blink {
@@ -78,8 +78,8 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
           freezable_task_runner_handle,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner_handle,
-      CrossVariantMojoRemote<mojom::KeepAliveHandleInterfaceBase>
-          keep_alive_handle,
+      mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
+
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override {
     DCHECK(freezable_task_runner_handle);

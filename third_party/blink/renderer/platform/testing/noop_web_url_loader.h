@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_NOOP_WEB_URL_LOADER_H_
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
 
 namespace blink {
 

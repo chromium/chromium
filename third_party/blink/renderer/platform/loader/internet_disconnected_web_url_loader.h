@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INTERNET_DISCONNECTED_WEB_URL_LOADER_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INTERNET_DISCONNECTED_WEB_URL_LOADER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_INTERNET_DISCONNECTED_WEB_URL_LOADER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_INTERNET_DISCONNECTED_WEB_URL_LOADER_H_
 
 #include <memory>
 
@@ -11,8 +11,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_url_loader.h"
-#include "third_party/blink/public/platform/web_url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
 
 namespace blink {
 
@@ -28,8 +28,7 @@ class BLINK_PLATFORM_EXPORT InternetDisconnectedWebURLLoaderFactory final
           freezable_task_runner_handle,
       std::unique_ptr<scheduler::WebResourceLoadingTaskRunnerHandle>
           unfreezable_task_runner_handle,
-      CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
-          keep_alive_handle,
+      mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
       WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper)
       override;
 };
@@ -81,4 +80,4 @@ class InternetDisconnectedWebURLLoader final : public WebURLLoader {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INTERNET_DISCONNECTED_WEB_URL_LOADER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_INTERNET_DISCONNECTED_WEB_URL_LOADER_H_
