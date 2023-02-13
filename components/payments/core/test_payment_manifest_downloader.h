@@ -94,6 +94,11 @@ class TestDownloader : public PaymentManifestDownloader {
   // AddTestServerURL("x");AddTestServerURL("xy"); is not.
   void AddTestServerURL(const std::string& prefix, const GURL& test_server_url);
 
+  // Resets test state set by TestDownloader.
+  void ResetTestState();
+
+  bool DidCompleteDownload() const { return did_complete_download_; }
+
  private:
   // PaymentManifestDownloader:
   //
@@ -118,6 +123,11 @@ class TestDownloader : public PaymentManifestDownloader {
                         int allowed_number_of_redirects,
                         PaymentManifestDownloadCallback callback) override;
 
+  void OnDownloadCompleted(PaymentManifestDownloadCallback callback,
+                           const GURL& url,
+                           const std::string& contents,
+                           const std::string& error_message);
+
   // The mapping from the URL prefix to the URL of the test server to be used.
   // Example 1:
   //
@@ -130,6 +140,10 @@ class TestDownloader : public PaymentManifestDownloader {
   //   "https://bobpay.test": "https://127.0.0.1:9090"
   // }
   std::map<std::string, GURL> test_server_url_;
+
+  bool did_complete_download_{false};
+
+  base::WeakPtrFactory<TestDownloader> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

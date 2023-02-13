@@ -28,6 +28,10 @@ void TestDownloader::AddTestServerURL(const std::string& prefix,
   test_server_url_[prefix] = test_server_url;
 }
 
+void TestDownloader::ResetTestState() {
+  did_complete_download_ = false;
+}
+
 GURL TestDownloader::FindTestServerURL(const GURL& url) const {
   // Find the first key in |test_server_url_| that is a prefix of |url|. If
   // found, then replace this prefix in the |url| with the URL of the test
@@ -61,7 +65,18 @@ void TestDownloader::InitiateDownload(
   PaymentManifestDownloader::InitiateDownload(
       request_initiator, FindTestServerURL(url),
       FindTestServerURL(url_before_redirects), did_follow_redirect,
-      download_type, allowed_number_of_redirects, std::move(callback));
+      download_type, allowed_number_of_redirects,
+      base::BindOnce(&TestDownloader::OnDownloadCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void TestDownloader::OnDownloadCompleted(
+    PaymentManifestDownloadCallback callback,
+    const GURL& url,
+    const std::string& contents,
+    const std::string& error_message) {
+  did_complete_download_ = true;
+  std::move(callback).Run(url, contents, error_message);
 }
 
 }  // namespace payments
