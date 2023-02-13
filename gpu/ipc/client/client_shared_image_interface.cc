@@ -83,11 +83,23 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     gpu::SurfaceHandle surface_handle) {
+  return CreateSharedImage(viz::SharedImageFormat::SinglePlane(format), size,
+                           color_space, surface_origin, alpha_type, usage,
+                           surface_handle);
+}
+
+Mailbox ClientSharedImageInterface::CreateSharedImage(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gpu::SurfaceHandle surface_handle) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
   DCHECK(gpu::IsValidClientUsage(usage));
-  auto si_format = viz::SharedImageFormat::SinglePlane(format);
   return AddMailbox(proxy_->CreateSharedImage(
-      si_format, size, color_space, surface_origin, alpha_type, usage));
+      format, size, color_space, surface_origin, alpha_type, usage));
 }
 
 Mailbox ClientSharedImageInterface::CreateSharedImage(
@@ -98,9 +110,21 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
+  return CreateSharedImage(viz::SharedImageFormat::SinglePlane(format), size,
+                           color_space, surface_origin, alpha_type, usage,
+                           pixel_data);
+}
+
+Mailbox ClientSharedImageInterface::CreateSharedImage(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    base::span<const uint8_t> pixel_data) {
   DCHECK(gpu::IsValidClientUsage(usage));
-  auto si_format = viz::SharedImageFormat::SinglePlane(format);
-  return AddMailbox(proxy_->CreateSharedImage(si_format, size, color_space,
+  return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                               surface_origin, alpha_type, usage,
                                               pixel_data));
 }

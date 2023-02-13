@@ -67,7 +67,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // The |SharedImageInterface| keeps ownership of the image until
   // |DestroySharedImage| is called or the interface itself is destroyed (e.g.
   // the GPU channel is lost).
-  Mailbox CreateSharedImage(viz::ResourceFormat format,
+  Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
                             GrSurfaceOrigin surface_origin,
@@ -79,6 +79,22 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // which is used to populate the SharedImage.  |pixel_data| should have the
   // same format which would be passed to glTexImage2D to populate a similarly
   // specified texture.
+  Mailbox CreateSharedImage(viz::SharedImageFormat format,
+                            const gfx::Size& size,
+                            const gfx::ColorSpace& color_space,
+                            GrSurfaceOrigin surface_origin,
+                            SkAlphaType alpha_type,
+                            uint32_t usage,
+                            base::span<const uint8_t> pixel_data) override;
+
+  // Deprecated versions of the above that take in ResourceFormat.
+  Mailbox CreateSharedImage(viz::ResourceFormat format,
+                            const gfx::Size& size,
+                            const gfx::ColorSpace& color_space,
+                            GrSurfaceOrigin surface_origin,
+                            SkAlphaType alpha_type,
+                            uint32_t usage,
+                            gpu::SurfaceHandle surface_handle) override;
   Mailbox CreateSharedImage(viz::ResourceFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,

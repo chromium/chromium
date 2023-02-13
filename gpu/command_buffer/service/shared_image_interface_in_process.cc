@@ -177,6 +177,19 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     gpu::SurfaceHandle surface_handle) {
+  return CreateSharedImage(viz::SharedImageFormat::SinglePlane(format), size,
+                           color_space, surface_origin, alpha_type, usage,
+                           surface_handle);
+}
+
+Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gpu::SurfaceHandle surface_handle) {
   DCHECK(gpu::IsValidClientUsage(usage));
   auto mailbox = Mailbox::GenerateForSharedImage();
   {
@@ -188,8 +201,7 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     ScheduleGpuTask(
         base::BindOnce(
             &SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread,
-            base::Unretained(this), mailbox,
-            viz::SharedImageFormat::SinglePlane(format), surface_handle, size,
+            base::Unretained(this), mailbox, format, surface_handle, size,
             color_space, surface_origin, alpha_type, usage,
             MakeSyncToken(next_fence_sync_release_++)),
         {});
@@ -232,6 +244,19 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
+  return CreateSharedImage(viz::SharedImageFormat::SinglePlane(format), size,
+                           color_space, surface_origin, alpha_type, usage,
+                           pixel_data);
+}
+
+Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    base::span<const uint8_t> pixel_data) {
   DCHECK(gpu::IsValidClientUsage(usage));
   auto mailbox = Mailbox::GenerateForSharedImage();
   std::vector<uint8_t> pixel_data_copy(pixel_data.begin(), pixel_data.end());
@@ -244,8 +269,7 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     ScheduleGpuTask(
         base::BindOnce(&SharedImageInterfaceInProcess::
                            CreateSharedImageWithDataOnGpuThread,
-                       base::Unretained(this), mailbox,
-                       viz::SharedImageFormat::SinglePlane(format), size,
+                       base::Unretained(this), mailbox, format, size,
                        color_space, surface_origin, alpha_type, usage,
                        MakeSyncToken(next_fence_sync_release_++),
                        std::move(pixel_data_copy)),

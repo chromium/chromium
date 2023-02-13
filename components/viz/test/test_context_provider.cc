@@ -136,6 +136,19 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     gpu::SurfaceHandle surface_handle) {
+  return CreateSharedImage(SharedImageFormat::SinglePlane(format), size,
+                           color_space, surface_origin, alpha_type, usage,
+                           surface_handle);
+}
+
+gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
+    SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gpu::SurfaceHandle surface_handle) {
   base::AutoLock locked(lock_);
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(mailbox);
@@ -145,6 +158,19 @@ gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
 
 gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
     ResourceFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    base::span<const uint8_t> pixel_data) {
+  return CreateSharedImage(SharedImageFormat::SinglePlane(format), size,
+                           color_space, surface_origin, alpha_type, usage,
+                           pixel_data);
+}
+
+gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
+    SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
