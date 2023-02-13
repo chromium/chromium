@@ -79,6 +79,7 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     // Sets physical_size for high DPI display.
     Builder& SetHighDPI();
     Builder& SetPrivacyScreen(PrivacyScreenState state);
+    Builder& SetHasContentProtectionKey(bool has_content_protection_key);
     Builder& SetColorSpace(const gfx::ColorSpace& color_space);
     Builder& SetBitsPerChannel(uint32_t bits_per_channel);
     Builder& SetHDRStaticMetadata(

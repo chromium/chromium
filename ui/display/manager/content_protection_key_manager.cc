@@ -12,6 +12,10 @@ namespace display {
 
 namespace {
 
+// Length of the key as expected to come from the server.
+// This is the same length that the kernel also expects.
+constexpr size_t kHdcpKeySize = 285;
+
 display::DisplaySnapshot* GetDisplayWithIdIfHdcpCapableAndKeyNeeded(
     const std::vector<display::DisplaySnapshot*>& displays_states,
     int64_t display_id) {
@@ -44,12 +48,12 @@ void ContentProtectionKeyManager::SetKeyIfRequired(
 
   // TODO(markyacoub): Remove this flag once the feature is fully launched.
   if (!features::IsHdcpKeyProvisioningRequired()) {
-    std::move(on_key_set).Run();
+    std::move(on_key_set).Run(false);
     return;
   }
 
   if (!GetDisplayWithIdIfHdcpCapableAndKeyNeeded(displays_states, display_id)) {
-    std::move(on_key_set).Run();
+    std::move(on_key_set).Run(false);
     return;
   }
 
@@ -58,21 +62,66 @@ void ContentProtectionKeyManager::SetKeyIfRequired(
   // If we already learnt that we need a key and already fetched the key, go
   // ahead and inject it into the kernel.
   if (!cached_provisioned_key_.empty()) {
-    // TODO(markyacoub): Replace and inject key to kernel.
-    TriggerPendingCallbacks(display_id);
+    InjectKeyToKernel(display_id);
     return;
   }
 
-  // TODO(markyacoub): fetch the key from the server. For now, just end the
-  // process and call the callback when all displays have responded.
-  TriggerPendingCallbacks(display_id);
+  // If there are no pending displays nor we have the key, it means we haven't
+  // fetched the key from the server yet.
+  if (displays_pending_set_key_.empty()) {
+    displays_pending_set_key_.insert(display_id);
+    FetchKeyFromServer();
+    // If the list isn't empty, it means we're in the process of fetching the
+    // key from the server already. Just add the pending display to the list and
+    // we'll set it later when the key is fetched.
+  } else {
+    displays_pending_set_key_.insert(display_id);
+  }
 }
 
-void ContentProtectionKeyManager::TriggerPendingCallbacks(int64_t display_id) {
+void ContentProtectionKeyManager::FetchKeyFromServer() {
+  DCHECK(!provisioned_key_request_.is_null());
+  provisioned_key_request_.Run(
+      base::BindOnce(&ContentProtectionKeyManager::OnKeyFetchedFromServer,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ContentProtectionKeyManager::OnKeyFetchedFromServer(
+    const std::string& key) {
+  if (key.size()) {
+    // This is the size of the key that we expect from the server as of now.
+    DCHECK_EQ(key.size(), kHdcpKeySize);
+    cached_provisioned_key_ = key;
+    for (int64_t display_id : displays_pending_set_key_) {
+      InjectKeyToKernel(display_id);
+    }
+  } else {
+    LOG(ERROR) << "Fetched an empty HDCP key from widevine server";
+    for (int64_t display_id : displays_pending_set_key_) {
+      TriggerPendingCallbacks(display_id, false);
+    }
+  }
+  displays_pending_set_key_.clear();
+}
+
+void ContentProtectionKeyManager::InjectKeyToKernel(int64_t display_id) {
+  // TODO(markyacoub): Replace and truly inject key to kernel.
+  OnKeyInjectedToKernel(display_id, true);
+}
+
+void ContentProtectionKeyManager::OnKeyInjectedToKernel(int64_t display_id,
+                                                        bool success) {
+  LOG_IF(ERROR, !success) << "Failed to Inject the HDCP Key to Display #"
+                          << display_id;
+  TriggerPendingCallbacks(display_id, success);
+}
+
+void ContentProtectionKeyManager::TriggerPendingCallbacks(int64_t display_id,
+                                                          bool is_key_set) {
   CHECK(base::Contains(pending_display_callbacks_, display_id));
   KeySetCallback callback = std::move(pending_display_callbacks_[display_id]);
   DCHECK(!callback.is_null());
-  std::move(callback).Run();
+  std::move(callback).Run(is_key_set);
 
   pending_display_callbacks_.erase(display_id);
 }

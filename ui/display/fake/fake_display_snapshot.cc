@@ -300,6 +300,11 @@ Builder& Builder::SetPrivacyScreen(PrivacyScreenState state) {
   return *this;
 }
 
+Builder& Builder::SetHasContentProtectionKey(bool has_content_protection_key) {
+  has_content_protection_key_ = has_content_protection_key;
+  return *this;
+}
+
 Builder& Builder::SetColorSpace(const gfx::ColorSpace& color_space) {
   color_space_ = color_space;
   return *this;

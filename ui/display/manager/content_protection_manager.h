@@ -171,7 +171,8 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
                                 uint32_t protection_mask);
 
   void QueueContentProtectionTask(ApplyContentProtectionCallback callback,
-                                  ClientId client_id);
+                                  ClientId client_id,
+                                  bool is_key_set);
 
   const raw_ptr<DisplayLayoutManager> layout_manager_;  // Not owned.
   raw_ptr<NativeDisplayDelegate> native_display_delegate_ =
