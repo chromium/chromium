@@ -29,6 +29,7 @@ build_webui("build") {
     "checkup_details_section.ts",
     "checkup_list_item.ts",
     "dialogs/add_password_dialog.ts",
+    "dialogs/delete_password_disclaimer_dialog.ts",
     "dialogs/edit_password_dialog.ts",
     "dialogs/edit_password_disclaimer_dialog.ts",
     "password_details_card.ts",

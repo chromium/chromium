@@ -40,7 +40,7 @@ export interface CheckupDetailsSectionElement {
     moreActionsMenu: CrActionMenuElement,
     menuShowPassword: HTMLButtonElement,
     menuEditPassword: HTMLButtonElement,
-    menuRemovePassword: HTMLButtonElement,
+    menuDeletePassword: HTMLButtonElement,
     subtitle: HTMLElement,
   };
 }
@@ -238,6 +238,12 @@ export class CheckupDetailsSectionElement extends
     this.activeListItem_ = null;
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
         PasswordCheckInteraction.EDIT_PASSWORD);
+  }
+
+  private async onMenuDeletePasswordClick_() {
+    this.activeListItem_?.showDeleteDialog();
+    this.$.moreActionsMenu.close();
+    this.activeListItem_ = null;
   }
 
   private getShowHideTitle_(): string {

@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {CheckupSubpage, CrExpandButtonElement, OpenWindowProxyImpl, Page, PasswordManagerImpl, PrefsBrowserProxyImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {CheckupSubpage, CrExpandButtonElement, OpenWindowProxyImpl, Page, PasswordCheckInteraction, PasswordManagerImpl, PrefsBrowserProxyImpl, Router} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -744,5 +744,53 @@ suite('CheckupDetailsSectionTest', function() {
         listItem.shadowRoot!.querySelector('edit-password-dialog');
     assertTrue(!!editDialog);
     assertTrue(editDialog.$.dialog.open);
+  });
+
+  test('Delete insecure password', async function() {
+    Router.getInstance().navigateTo(
+        Page.CHECKUP_DETAILS, CheckupSubpage.COMPROMISED);
+    const credential = makeInsecureCredential({
+      id: 0,
+      url: 'test.com',
+      username: 'viking',
+      types: [
+        CompromiseType.LEAKED,
+      ],
+    });
+    credential.affiliatedDomains =
+        [{name: 'test.com', url: 'https://test.com/'}];
+    passwordManager.data.insecureCredentials = [credential];
+
+    const section = document.createElement('checkup-details-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getInsecureCredentials');
+    await flushTasks();
+
+    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    assertTrue(!!listItem);
+
+    // Click more actions button.
+    listItem.$.more.click();
+
+    section.$.menuDeletePassword.click();
+    await flushTasks();
+
+    const deleteDialog =
+        listItem.shadowRoot!.querySelector('delete-password-disclaimer-dialog');
+    assertTrue(!!deleteDialog);
+    assertTrue(deleteDialog.$.dialog.open);
+
+    // Change password URL gets linkified.
+    assertTrue(isVisible(deleteDialog.$.link));
+    assertFalse(isVisible(deleteDialog.$.text));
+
+    // Click 'Delete password'.
+    deleteDialog.$.delete.click();
+    const interaction =
+        await passwordManager.whenCalled('recordPasswordCheckInteraction');
+    const params = await passwordManager.whenCalled('removeSavedPassword');
+    assertEquals(params.id, credential.id);
+    assertEquals(params.fromStores, credential.storedIn);
+    assertEquals(PasswordCheckInteraction.REMOVE_PASSWORD, interaction);
   });
 });

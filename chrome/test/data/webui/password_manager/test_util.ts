@@ -169,11 +169,11 @@ export function makeInsecureCredential(params: InsecureCredentialsParams):
   return {
     id: id || 0,
     storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
-    changePasswordUrl: `http://${url}/`,
+    changePasswordUrl: `https://${url}/`,
     urls: {
-      signonRealm: `http://${url}/`,
+      signonRealm: `https://${url}/`,
       shown: url,
-      link: `http://${url}/`,
+      link: `https://${url}/`,
     },
     username: username,
     note: '',

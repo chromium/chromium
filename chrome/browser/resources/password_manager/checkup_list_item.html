@@ -110,3 +110,10 @@
       id="editPasswordDialog" password="[[item]]">
   </edit-password-dialog>
 </template>
+<template is="dom-if" if="[[showDeletePasswordDialog_]]" restamp>
+  <delete-password-disclaimer-dialog id="deletePasswordDialog"
+      on-delete-password-click="onDeletePasswordClick_"
+      on-close="onDeletePasswordDialogClosed_" origin="[[group.name]]"
+      action-url="[[item.changePasswordUrl]]">
+  </delete-password-disclaimer-dialog>
+</template>
