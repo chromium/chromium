@@ -286,7 +286,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             // resulting in a click on the tab grid card. The unwanted click behaviour will be
             // blocked by the logic below if the conditions are met.
             if (mOnLongPressTabItemEventListener != null
-                    && (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX && !mActionAttempted
+                    && (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX
+                            && mSelectedTabIndex < mModel.size() && !mActionAttempted
                             && mModel.get(mSelectedTabIndex).model.get(CARD_TYPE) == TAB
                             && TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY
                                        .getValue())) {
