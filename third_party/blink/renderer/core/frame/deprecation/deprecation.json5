@@ -265,6 +265,16 @@
       chrome_status_feature: 6107495151960064,
     },
     {
+      name: "NonStandardDeclarativeShadowDOM",
+      message: "The older, non-standardized `shadowroot` attribute is deprecated. Please use the new, standardized `shadowrootmode` attribute instead.",
+      translation_note: "This warning is displayed when a site contains a `<template>` element with the `shadowroot` attribute.",
+      web_features: [
+        "kDeclarativeShadowRoot",
+      ],
+      chrome_status_feature: 6239658726391808,
+      milestone: 112,
+    },
+    {
       name: "NoSysexWebMIDIWithoutPermission",
       message: "Web MIDI will ask a permission to use even if the sysex is not specified in the `MIDIOptions`.",
       translation_note: "This warning occurs when the browser requests Web MIDI access as sysex (system exclusive messages) can be allowed via prompt even if the browser did not specifically request it.",
