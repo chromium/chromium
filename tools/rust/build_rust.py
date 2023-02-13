@@ -279,7 +279,6 @@ def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
         'CFLAGS',
         'CXXFLAGS',
         'LDFLAGS',
-        'RUSTFLAGS',
         'RUSTFLAGS_BOOTSTRAP',
         'RUSTFLAGS_NOT_BOOTSTRAP',
         'RUSTDOCFLAGS',
@@ -316,10 +315,10 @@ def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
             f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
         RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
             f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
-        # This flag needs to be in RUSTFLAGS for running compiletests as well,
-        # for building things _with_ rustc, not just for building rustc.
-        RUSTENV['RUSTFLAGS'] += (
-            f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
+        # Rust compiletests don't get any of the RUSTFLAGS that we set here and
+        # then the clang linker can't find `-lSystem`, unless we set the
+        # `SDKROOT`.
+        RUSTENV['SDKROOT'] = sdk_path
 
     if zlib_path:
         RUSTENV['CFLAGS'] += f' -I{zlib_path}'
