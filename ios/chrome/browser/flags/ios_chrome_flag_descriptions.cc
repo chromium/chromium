@@ -255,6 +255,12 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
+const char kEnableBookmarkAccountStoragePromoOnIOSName[] =
+    "Enable iOS Bookmark Sign-in Promo View";
+const char kEnableBookmarkAccountStoragePromoOnIOSDescription[] =
+    "Enable the Sign-in promo view in the bookmark screen on iOS, related to "
+    "account storage";
+
 const char kEnableCBDSignOutName[] = "Enable Clear Browsing Data Sign-out";
 const char kEnableCBDSignOutDescription[] =
     "Offer signed-in user to sign-out from Clear Browsing Data settings.";

@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 
+#include "components/bookmarks/common/bookmark_features.h"
+
 BASE_FEATURE(kDefaultBrowserBlueDotPromo,
              "DefaultBrowserBlueDotPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -141,3 +143,14 @@ BASE_FEATURE(kMultilineFadeTruncatingLabel,
 BASE_FEATURE(kTabStripContextMenu,
              "TabStripContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableBookmarkAccountStoragePromoOnIOS,
+             "EnableBookmarkAccountStoragePromoOnIOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool AreBookmarkAccountStorageAndPromoOn() {
+  return base::FeatureList::IsEnabled(
+             kEnableBookmarkAccountStoragePromoOnIOS) &&
+         base::FeatureList::IsEnabled(
+             bookmarks::kEnableBookmarksAccountStorage);
+}

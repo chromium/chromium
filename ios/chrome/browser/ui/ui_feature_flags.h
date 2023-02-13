@@ -127,4 +127,13 @@ BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 // Flag to enable tab strip context menu.
 BASE_DECLARE_FEATURE(kTabStripContextMenu);
 
+// Whether the signin promo view, related to account storage, should show in
+// the bookmark screen on iOS.
+BASE_DECLARE_FEATURE(kEnableBookmarkAccountStoragePromoOnIOS);
+
+// Returns whether bookmark storage promo can be on, by testing
+// `kEnableBookmarkAccountStoragePromoOnIOS` and
+// `kEnableBookmarksAccountStorage`.
+bool AreBookmarkAccountStorageAndPromoOn();
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

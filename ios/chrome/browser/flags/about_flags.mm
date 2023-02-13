@@ -1312,6 +1312,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kIOSShowPasswordStorageInSaveInfobar)},
+    {"enable-bookmark-account-storage-on-ios",
+     flag_descriptions::kEnableBookmarkAccountStoragePromoOnIOSName,
+     flag_descriptions::kEnableBookmarkAccountStoragePromoOnIOSDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableBookmarkAccountStoragePromoOnIOS)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
