@@ -46,6 +46,11 @@ export class OmniboxPopupAppElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      hasSecondaryMatches: {
+        reflectToAttribute: true,
+        type: Boolean,
+      },
+
       result_: Object,
     };
   }

@@ -15,6 +15,7 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
 #include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-forward.h"
 
+class Profile;
 class RealboxHandler;
 
 namespace ui {
@@ -48,6 +49,7 @@ class OmniboxPopupUI : public ui::MojoWebUIController {
  private:
   std::unique_ptr<RealboxHandler> webui_handler_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+  raw_ptr<Profile> profile_;
   MetricsReporter metrics_reporter_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
