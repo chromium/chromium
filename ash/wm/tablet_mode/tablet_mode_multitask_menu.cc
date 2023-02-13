@@ -158,8 +158,11 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.parent =
-      window->GetRootWindow()->GetChildById(kShellWindowId_FloatContainer);
+  // Use an activatable container that's guaranteed to be on top of the desk
+  // containers, otherwise the menu may get stacked under the window on
+  // deactivation.
+  params.parent = window->GetRootWindow()->GetChildById(
+      kShellWindowId_AlwaysOnTopContainer);
   params.name = "TabletModeMultitaskMenuWidget";
 
   widget_->Init(std::move(params));

@@ -12,8 +12,6 @@
 
 namespace ash {
 
-class OverviewWindowDragController;
-
 // Helps with handling the workflow when you drag an overview item and there is
 // a floated window. Floated windows are in a higher z-order container, so
 // dragging the item would normally go under the floated window. This helper
@@ -22,16 +20,20 @@ class OverviewWindowDragController;
 // complete, or overview ends.
 class ScopedFloatContainerStacker : public aura::WindowObserver {
  public:
-  explicit ScopedFloatContainerStacker(OverviewWindowDragController* owner);
+  ScopedFloatContainerStacker();
   ScopedFloatContainerStacker(const ScopedFloatContainerStacker&) = delete;
   ScopedFloatContainerStacker& operator=(const ScopedFloatContainerStacker&) =
       delete;
   ~ScopedFloatContainerStacker() override;
 
-  // Called when a gesture is completed or canceled. Preferred over directly
-  // destroying this object as this handles the case where the window is
-  // animating.
-  void Shutdown(aura::Window* dragged_window);
+  // Stacks the float container above the desk container if we are dragging a
+  // floated window.
+  void OnDragStarted(aura::Window* dragged_window);
+
+  // If `dragged_window` is animating, creates the animation observer to restack
+  // the float container on animation end, otherwise restacks the float
+  // container immediately.
+  void OnDragFinished(aura::Window* dragged_window);
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
@@ -41,7 +43,12 @@ class ScopedFloatContainerStacker : public aura::WindowObserver {
   bool OnAnimationsCompleted(
       const ui::CallbackLayerAnimationObserver& observer);
 
-  OverviewWindowDragController* const owner_;
+  // Cleanups the stored members needed for observing an animation.
+  void Cleanup();
+
+  // Set to true during shutdown. This is to prevent the animation callback from
+  // doing work if it is called by deleting the observer.
+  bool is_destroying_ = false;
 
   // Not null when a dragged window has been released and is animating to its
   // final position.

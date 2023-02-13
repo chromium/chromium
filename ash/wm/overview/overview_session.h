@@ -51,6 +51,7 @@ class OverviewItem;
 class OverviewWindowDragController;
 class SavedDeskDialogController;
 class SavedDeskPresenter;
+class ScopedFloatContainerStacker;
 
 // The Overview shows a grid of all of your windows, allowing to select
 // one by clicking or tapping on it.
@@ -393,6 +394,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
     return saved_desk_dialog_controller_.get();
   }
 
+  ScopedFloatContainerStacker* float_container_stacker() {
+    return float_container_stacker_.get();
+  }
+
   void set_auto_add_windows_enabled(bool enabled) {
     auto_add_windows_enabled_ = enabled;
   }
@@ -504,6 +509,11 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // Controls showing and hiding dialogs associated with the saved desks
   // feature.
   std::unique_ptr<SavedDeskDialogController> saved_desk_dialog_controller_;
+
+  // Scoped object which handles stacking the float container while inside
+  // overview so it can appear under regular windows during several operations,
+  // such as scrolling and dragging.
+  std::unique_ptr<ScopedFloatContainerStacker> float_container_stacker_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 

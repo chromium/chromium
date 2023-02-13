@@ -21,7 +21,6 @@ namespace ash {
 class OverviewGrid;
 class OverviewItem;
 class OverviewSession;
-class ScopedFloatContainerStacker;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -267,12 +266,6 @@ class ASH_EXPORT OverviewWindowDragController {
   // the window being dragged if the window is hovered on the button over a
   // period of time.
   base::OneShotTimer new_desk_button_scale_up_timer_;
-
-  // Helper class that encapsulates the logic needed to alter the floated
-  // windows' container during a drag. May stay alive shortly after a drag is
-  // completed to keep the float container stacked below for the drag end
-  // animation.
-  std::unique_ptr<ScopedFloatContainerStacker> float_drag_helper_;
 };
 
 }  // namespace ash

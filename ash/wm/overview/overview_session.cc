@@ -44,6 +44,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
+#include "ash/wm/overview/scoped_float_container_stacker.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
@@ -298,6 +299,8 @@ void OverviewSession::Shutdown() {
 
   Shell::Get()->RemovePreTargetHandler(this);
   Shell::Get()->RemoveShellObserver(this);
+
+  float_container_stacker_.reset();
 
   tablet_mode_observation_.Reset();
 
@@ -788,6 +791,12 @@ void OverviewSession::OnStartingAnimationComplete(bool canceled,
 
   UpdateAccessibilityFocus();
   Shell::Get()->overview_controller()->DelayedUpdateRoundedCornersAndShadow();
+
+  // TODO(sammiequon): This function shouldn't be called more than once but in
+  // tests with zero duration, it does. Investigate and convert to DCHECK.
+  if (!float_container_stacker_) {
+    float_container_stacker_ = std::make_unique<ScopedFloatContainerStacker>();
+  }
 }
 
 void OverviewSession::OnWindowActivating(

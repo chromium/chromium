@@ -3459,9 +3459,74 @@ class FloatOverviewSessionTest : public OverviewTestBase {
   FloatOverviewSessionTest& operator=(const FloatOverviewSessionTest&) = delete;
   ~FloatOverviewSessionTest() override = default;
 
+  // Checks if the float container is in its regular position above the
+  // always on top container and below the app list container. Returns false if
+  // this is not true on any of the root windows.
+  bool IsFloatContainerNormalStacked() const {
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      if (!IsStackedBelow(
+              root->GetChildById(kShellWindowId_AlwaysOnTopContainer),
+              root->GetChildById(kShellWindowId_FloatContainer))) {
+        return false;
+      }
+      if (!IsStackedBelow(
+              root->GetChildById(kShellWindowId_FloatContainer),
+              root->GetChildById(kShellWindowId_AppListContainer))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  bool IsFloatContainerBelowActiveDesk() const {
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      if (!IsStackedBelow(root->GetChildById(kShellWindowId_FloatContainer),
+                          root->GetChildById(kShellWindowId_DeskContainerA))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Tests that the float container is stacked properly when entering and exiting
+// overview mode.
+TEST_F(FloatOverviewSessionTest, FloatContainerStacking) {
+  UpdateDisplay("800x600,800x600");
+
+  // We need at least one window for an overview enter animation.
+  auto window = CreateAppWindow();
+
+  ui::ScopedAnimationDurationScaleMode duration_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  EXPECT_TRUE(IsFloatContainerNormalStacked());
+
+  // Enter overview. The float container remains above the active desk until
+  // after the overview enter animation is over.
+  ToggleOverview();
+  EXPECT_FALSE(IsFloatContainerBelowActiveDesk());
+  WaitForOverviewEnterAnimation();
+  EXPECT_TRUE(IsFloatContainerBelowActiveDesk());
+
+  // Exit overview. The float container is stacked in its normal position prior
+  // to the exit animation starting.
+  ToggleOverview();
+  EXPECT_FALSE(IsFloatContainerBelowActiveDesk());
+  WaitForOverviewExitAnimation();
+  EXPECT_TRUE(IsFloatContainerNormalStacked());
+
+  // Start overview but exit before the animation is complete. Verify the float
+  // container is stacked in its normal position.
+  ToggleOverview();
+  ToggleOverview();
+  EXPECT_TRUE(IsFloatContainerNormalStacked());
+}
 
 // Tests that when we drag in overview, and there is a floated window, the
 // float container gets restacked so it will appear under the dragged window.
@@ -3475,53 +3540,35 @@ TEST_F(FloatOverviewSessionTest, DraggingWithFloatedWindow) {
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 
-  // Checks if the float container is in its regular position above the
-  // always on top container and below the app list container. This should
-  // always be the case unless we are dragging a non-floated window in overview,
-  // and there is a floated window.
-  auto check_float_container_normal_stacked = []() {
-    for (aura::Window* root : Shell::GetAllRootWindows()) {
-      EXPECT_TRUE(IsStackedBelow(
-          root->GetChildById(kShellWindowId_AlwaysOnTopContainer),
-          root->GetChildById(kShellWindowId_FloatContainer)));
-      EXPECT_TRUE(
-          IsStackedBelow(root->GetChildById(kShellWindowId_FloatContainer),
-                         root->GetChildById(kShellWindowId_AppListContainer)));
-    }
-  };
-
-  check_float_container_normal_stacked();
   ToggleOverview();
+  ASSERT_TRUE(IsFloatContainerBelowActiveDesk());
+
   OverviewItem* normal_item = GetOverviewItemForWindow(normal_window.get());
   OverviewItem* floated_item = GetOverviewItemForWindow(floated_window.get());
 
-  // Dragging the floated window does not cause restacking as it is already on
-  // top of other windows like it should be.
+  // Start dragging the floated window. Check that the float container gets
+  // stacked above the desk container after dragging starts.
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->set_current_screen_location(
       gfx::ToRoundedPoint(floated_item->target_bounds().CenterPoint()));
   generator->PressLeftButton();
-  check_float_container_normal_stacked();
-
-  // Move the mouse a bit before releasing so that we stay in overview.
   generator->MoveMouseBy(10, 10);
+  EXPECT_TRUE(IsFloatContainerNormalStacked());
+
   generator->ReleaseLeftButton();
 
-  // Start dragging the regular window. Check that the float container gets
-  // stacked under the desk container after dragging starts.
+  // Dragging the normal window does not cause restacking as it is already on
+  // top of other windows like it should be.
+  ASSERT_TRUE(IsFloatContainerBelowActiveDesk());
   generator->set_current_screen_location(
       gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
   generator->PressLeftButton();
   generator->MoveMouseBy(10, 10);
-  for (aura::Window* root : Shell::GetAllRootWindows()) {
-    EXPECT_TRUE(
-        IsStackedBelow(root->GetChildById(kShellWindowId_FloatContainer),
-                       root->GetChildById(kShellWindowId_DeskContainerA)));
-  }
+  EXPECT_TRUE(IsFloatContainerBelowActiveDesk());
 
   generator->ReleaseLeftButton();
   ASSERT_TRUE(InOverviewSession());
-  check_float_container_normal_stacked();
+  EXPECT_TRUE(IsFloatContainerBelowActiveDesk());
 
   // Tests that the stacking order is correct if we start dragging a normal
   // overview item, and then exit overview.
@@ -3531,7 +3578,7 @@ TEST_F(FloatOverviewSessionTest, DraggingWithFloatedWindow) {
   ToggleOverview();
   // `OverviewWindowDragController` gets deleted using `DeleteSoon()`.
   base::RunLoop().RunUntilIdle();
-  check_float_container_normal_stacked();
+  EXPECT_TRUE(IsFloatContainerNormalStacked());
 }
 
 // Tests that clicking the normal window to activate it does not result in a
@@ -3606,35 +3653,28 @@ TEST_F(FloatOverviewSessionTest, LongPressingWithFloatedWindow) {
   ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 
   ToggleOverview();
+  ASSERT_TRUE(IsFloatContainerBelowActiveDesk());
 
-  // Simulate a long press on the overview item of the normal window.
-  OverviewItem* normal_item = GetOverviewItemForWindow(normal_window.get());
+  // Simulate a long press on the overview item of the floated window.
+  OverviewItem* float_item = GetOverviewItemForWindow(floated_window.get());
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->set_current_screen_location(
-      gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
+      gfx::ToRoundedPoint(float_item->target_bounds().CenterPoint()));
   generator->PressTouch();
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
   run_loop.Run();
 
-  // After long pressing, the float container should be stacked under the desk
-  // container so that the overview item of the float window appears underneath
+  // After long pressing, the float container should be stacked above the desk
+  // container so that the overview item of the float window appears above
   // during the drag.
-  for (aura::Window* root : Shell::GetAllRootWindows()) {
-    EXPECT_TRUE(
-        IsStackedBelow(root->GetChildById(kShellWindowId_FloatContainer),
-                       root->GetChildById(kShellWindowId_DeskContainerA)));
-  }
+  EXPECT_TRUE(IsFloatContainerNormalStacked());
 
-  // Test that on release, the float container is stacked above the desk
+  // Test that on release, the float container is stacked below the desk
   // container again.
   generator->ReleaseTouch();
-  for (aura::Window* root : Shell::GetAllRootWindows()) {
-    EXPECT_TRUE(
-        IsStackedBelow(root->GetChildById(kShellWindowId_DeskContainerA),
-                       root->GetChildById(kShellWindowId_FloatContainer)));
-  }
+  EXPECT_TRUE(IsFloatContainerBelowActiveDesk());
 }
 
 class TabletModeOverviewSessionTest : public OverviewTestBase {

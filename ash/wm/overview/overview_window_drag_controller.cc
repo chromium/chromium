@@ -283,16 +283,14 @@ OverviewWindowDragController::CompleteDrag(
   }
 
   did_move_ = false;
-  if (float_drag_helper_) {
-    // `item_` may be null if `CompleteNormalDrag()` resulted in moving the
-    // window into another desk. At this point, we can just reset
-    // `float_drag_helper_` to return the containers into the correct stacking
-    // order, since the animation will not animate over the floated window if it
-    // is already above the desk bar.
-    if (item_)
-      float_drag_helper_->Shutdown(item_->GetWindow());
-    else
-      float_drag_helper_.reset();
+  // `item_` may be null if `CompleteNormalDrag()` resulted in moving the
+  // window into another desk. At this point, we can just pass in a nullptr and
+  // the `FloatContainerStacker` will reset the stacking. Also,
+  // `ActivateDraggedWindow()` above may have started the session shutdown, so
+  // the `FloatContainerStacker` may be null.
+  if (overview_session_->float_container_stacker()) {
+    overview_session_->float_container_stacker()->OnDragFinished(
+        item_ ? item_->GetWindow() : nullptr);
   }
   item_ = nullptr;
   current_drag_behavior_ = DragBehavior::kNoDrag;
@@ -381,7 +379,8 @@ void OverviewWindowDragController::StartNormalDragMode(
     }
   }
 
-  MaybeCreateFloatDragHelper();
+  overview_session_->float_container_stacker()->OnDragStarted(
+      item_->GetWindow());
 }
 
 OverviewWindowDragController::DragResult OverviewWindowDragController::Fling(
@@ -449,8 +448,8 @@ void OverviewWindowDragController::ResetGesture() {
     }
   }
   overview_session_->PositionWindows(/*animate=*/true);
-  if (float_drag_helper_)
-    float_drag_helper_->Shutdown(item_->GetWindow());
+  overview_session_->float_container_stacker()->OnDragFinished(
+      item_->GetWindow());
   // This function gets called after a long press release, which bypasses
   // CompleteDrag but stops dragging as well, so reset |item_|.
   item_ = nullptr;
@@ -463,10 +462,6 @@ void OverviewWindowDragController::ResetOverviewSession() {
   new_desk_button_scale_up_timer_.Stop();
 }
 
-void OverviewWindowDragController::DestroyFloatDragHelper() {
-  float_drag_helper_.reset();
-}
-
 void OverviewWindowDragController::StartDragToCloseMode() {
   DCHECK(is_touch_dragging_);
 
@@ -476,7 +471,8 @@ void OverviewWindowDragController::StartDragToCloseMode() {
       ->StartNudge(item_);
 
   item_->UpdateShadowTypeForDrag(/*is_dragging=*/true);
-  MaybeCreateFloatDragHelper();
+  overview_session_->float_container_stacker()->OnDragStarted(
+      item_->GetWindow());
 }
 
 void OverviewWindowDragController::ContinueDragToClose(
@@ -941,18 +937,6 @@ void OverviewWindowDragController::RecordDragToClose(
   RecordDrag(Shell::Get()->tablet_mode_controller()->InTabletMode()
                  ? kTabletDrag[action]
                  : kClamshellDrag[action]);
-}
-
-void OverviewWindowDragController::MaybeCreateFloatDragHelper() {
-  auto* float_window = window_util::GetFloatedWindowForActiveDesk();
-  DCHECK(item_);
-  // If the float window is dragged, it will be on top of everything as
-  // expected.
-  if (!float_window || item_->GetWindow() == float_window) {
-    return;
-  }
-
-  float_drag_helper_ = std::make_unique<ScopedFloatContainerStacker>(this);
 }
 
 void OverviewWindowDragController::MaybeScaleUpNewDeskButton() {
