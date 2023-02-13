@@ -100,6 +100,7 @@ const uint32_t kInputAudioEffect = 1;
 const uint32_t kOutputAudioEffect = 0;
 
 const int kStepPercentage = 4;
+const int kDefaultUnmuteVolumePercent = 4;
 
 const AudioNodeInfo kInternalSpeaker[] = {{false, kInternalSpeakerId,
                                            "Fake Speaker", "INTERNAL_SPEAKER",
@@ -2345,6 +2346,51 @@ TEST_P(CrasAudioHandlerTest, DecreaseOutputVolumeByOneStepUSB) {
     cras_audio_handler_->DecreaseOutputVolumeByOneStep(kStepPercentage);
   }
   EXPECT_EQ(0, cras_audio_handler_->GetOutputVolumePercent());
+}
+
+TEST_P(CrasAudioHandlerTest, AdjustOutputVolumeToAudibleLevelUSB) {
+  AudioNodeList audio_nodes =
+      GenerateAudioNodeList({kUSBHeadphone1, kUSBHeadphone2});
+  SetUpCrasAudioHandler(audio_nodes);
+  cras_audio_handler_->ChangeActiveNodes({kUSBHeadphone1->id});
+  cras_audio_handler_->SetOutputVolumePercent(0);
+  cras_audio_handler_->AdjustOutputVolumeToAudibleLevel();
+  EXPECT_EQ(4, cras_audio_handler_->GetOutputVolumePercent());
+
+  cras_audio_handler_->ChangeActiveNodes({kUSBHeadphone2->id});
+  cras_audio_handler_->SetOutputVolumePercent(0);
+  cras_audio_handler_->AdjustOutputVolumeToAudibleLevel();
+  EXPECT_EQ(6, cras_audio_handler_->GetOutputVolumePercent());
+  // If volume is not under audible level, don't change the volume.
+  cras_audio_handler_->ChangeActiveNodes({kUSBHeadphone1->id});
+  cras_audio_handler_->SetOutputVolumePercent(50);
+  cras_audio_handler_->AdjustOutputVolumeToAudibleLevel();
+  EXPECT_EQ(50, cras_audio_handler_->GetOutputVolumePercent());
+
+  cras_audio_handler_->ChangeActiveNodes({kUSBHeadphone2->id});
+  cras_audio_handler_->SetOutputVolumePercent(50);
+  cras_audio_handler_->AdjustOutputVolumeToAudibleLevel();
+  EXPECT_EQ(50, cras_audio_handler_->GetOutputVolumePercent());
+}
+
+TEST_P(CrasAudioHandlerTest, AdjustOutputVolumeToAudibleLevelOther) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList(
+      {kInternalSpeaker, kHeadphone, kOther, kBluetoothHeadset, kHDMIOutput});
+  SetUpCrasAudioHandler(audio_nodes);
+  for (const auto& audio_node : audio_nodes) {
+    cras_audio_handler_->ChangeActiveNodes({audio_node.id});
+    cras_audio_handler_->SetOutputVolumePercent(0);
+    cras_audio_handler_->AdjustOutputVolumeToAudibleLevel();
+    EXPECT_EQ(kDefaultUnmuteVolumePercent,
+              cras_audio_handler_->GetOutputVolumePercent());
+  }
+  // If volume is not under audible level, don't change the volume.
+  for (const auto& audio_node : audio_nodes) {
+    cras_audio_handler_->ChangeActiveNodes({audio_node.id});
+    cras_audio_handler_->SetOutputVolumePercent(50);
+    cras_audio_handler_->AdjustOutputVolumeToAudibleLevel();
+    EXPECT_EQ(50, cras_audio_handler_->GetOutputVolumePercent());
+  }
 }
 
 TEST_P(CrasAudioHandlerTest, RestartAudioClientWithCrasReady) {
