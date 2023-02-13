@@ -2070,6 +2070,25 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.FastCheckoutRunOutcome">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    Recorded at the end of a Fast Checkout run.
+  </summary>
+  <metric name="RunId">
+    <summary>
+      Unique run ID for linking to other UKM events.
+    </summary>
+  </metric>
+  <metric name="RunOutcome" enum="FastCheckoutRunOutcome">
+    <summary>
+      States if the run was successful or why it was not.
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill.FieldFillStatus">
   <owner>rogerm@chromium.org</owner>
   <summary>

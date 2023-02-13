@@ -6,6 +6,8 @@
 #include <cmath>
 
 #include "base/containers/flat_set.h"
+#include "base/guid.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/fast_checkout/fast_checkout_accessibility_service_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
@@ -18,6 +20,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -138,6 +141,8 @@ bool FastCheckoutClientImpl::TryToStart(
   personal_data_manager_observation_.Observe(
       personal_data_helper_->GetPersonalDataManager());
   autofill_manager_observation_.Observe(autofill_manager_.get());
+  run_id_ =
+      base::HashMetricName(base::GUID::GenerateRandomV4().AsLowercaseString());
 
   SetFormsToFill();
   SetShouldSuppressKeyboard(true);
@@ -166,7 +171,11 @@ void FastCheckoutClientImpl::SetShouldSuppressKeyboard(bool suppress) {
 
 void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
                                            bool allow_further_runs) {
-  // TODO(crbug.com/1334642): Report `run_outcome`.
+  ukm::builders::Autofill_FastCheckoutRunOutcome builder(
+      GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId());
+  builder.SetRunOutcome(static_cast<int64_t>(run_outcome));
+  builder.SetRunId(run_id_);
+  builder.Record(ukm::UkmRecorder::Get());
   Stop(allow_further_runs);
 }
 
@@ -184,6 +193,7 @@ void FastCheckoutClientImpl::Stop(bool allow_further_runs) {
   selected_credit_card_guid_ = absl::nullopt;
   timeout_timer_.AbandonAndStop();
   credit_card_form_global_id_ = absl::nullopt;
+  run_id_ = 0;
   // Reset UI related state.
   fast_checkout_controller_.reset();
   // Reset personal data manager observation.

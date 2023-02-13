@@ -239,6 +239,9 @@ class FastCheckoutClientImpl
   // fulfilled.
   absl::optional<autofill::FormGlobalId> credit_card_form_global_id_;
 
+  // Hash of the unique run ID used for metrics.
+  int64_t run_id_ = 0;
+
   base::ScopedObservation<autofill::PersonalDataManager,
                           autofill::PersonalDataManagerObserver>
       personal_data_manager_observation_{this};

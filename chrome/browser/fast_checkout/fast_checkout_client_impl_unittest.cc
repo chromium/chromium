@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/gfx/native_widget_types.h"
 
 using ::autofill::AutofillDriver;
@@ -44,6 +45,7 @@ using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
+using ::ukm::builders::Autofill_FastCheckoutRunOutcome;
 
 namespace {
 
@@ -285,6 +287,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
 
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
 
   // Sets up test data, calls `TryToStart(..)` and `OnOptionsSelected(..)`.
   std::tuple<autofill::AutofillProfile*, autofill::CreditCard*>
@@ -349,6 +352,17 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     autofill::FormStructure* form_ptr = form.get();
     autofill_manager()->AddSeenFormStructure(std::move(form));
     return form_ptr;
+  }
+
+  void ExpectRunOutcomeUkm(FastCheckoutRunOutcome run_outcome) {
+    auto ukm_entries = ukm_recorder_.GetEntries(
+        Autofill_FastCheckoutRunOutcome::kEntryName,
+        {Autofill_FastCheckoutRunOutcome::kRunOutcomeName,
+         Autofill_FastCheckoutRunOutcome::kRunIdName});
+    EXPECT_EQ(ukm_entries.size(), 1UL);
+    EXPECT_EQ(ukm_entries[0].metrics.at("RunOutcome"),
+              static_cast<long>(run_outcome));
+    EXPECT_NE(ukm_entries[0].metrics.at("RunId"), 0L);
   }
 
  private:
@@ -471,6 +485,7 @@ TEST_F(FastCheckoutClientImplTest,
 
   // `FastCheckoutClient` is not running anymore.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kInvalidPersonalData);
 }
 
 TEST_F(FastCheckoutClientImplTest,
@@ -543,6 +558,8 @@ TEST_F(FastCheckoutClientImplTest, OnDismiss_WhenIsRunning_CancelsTheRun) {
 
   // `FastCheckoutClient` is not running anymore.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kBottomsheetDismissed);
 }
 
 TEST_F(FastCheckoutClientImplTest,
@@ -583,6 +600,7 @@ TEST_F(FastCheckoutClientImplTest,
 
   // Expect this `Stop(..)` call to not crash the test.
   fast_checkout_client()->Stop(/*allow_further_runs=*/true);
+  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kAutofillManagerDestroyed);
 }
 
 TEST_F(FastCheckoutClientImplTest,
@@ -683,6 +701,7 @@ TEST_F(FastCheckoutClientImplTest,
   fast_checkout_client()->OnAfterDidFillAutofillFormData();
 
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kSuccess);
 }
 
 TEST_F(FastCheckoutClientImplTest, OnAutofillManagerReset_ResetsState) {
@@ -693,6 +712,8 @@ TEST_F(FastCheckoutClientImplTest, OnAutofillManagerReset_ResetsState) {
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   fast_checkout_client()->OnAutofillManagerReset();
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  ExpectRunOutcomeUkm(
+      FastCheckoutRunOutcome::kNavigationWhileBottomsheetWasShown);
 }
 
 TEST_F(FastCheckoutClientImplTest, OnAutofillManagerDestroyed_ResetsState) {
@@ -703,6 +724,7 @@ TEST_F(FastCheckoutClientImplTest, OnAutofillManagerDestroyed_ResetsState) {
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   fast_checkout_client()->OnAutofillManagerDestroyed();
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kAutofillManagerDestroyed);
 }
 
 TEST_F(FastCheckoutClientImplTest, TimeoutTimer_ThirtyMinutesPassed_StopsRun) {
@@ -717,6 +739,7 @@ TEST_F(FastCheckoutClientImplTest, TimeoutTimer_ThirtyMinutesPassed_StopsRun) {
   task_environment()->FastForwardBy(base::Minutes(30));
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kTimeout);
 }
 
 TEST_F(FastCheckoutClientImplTest, OnNavigation_OtherUrl_StopsRun) {
@@ -727,6 +750,7 @@ TEST_F(FastCheckoutClientImplTest, OnNavigation_OtherUrl_StopsRun) {
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   fast_checkout_client()->OnNavigation(GURL(kOtherUrl), false);
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kOriginChange);
 }
 
 TEST_F(FastCheckoutClientImplTest,
@@ -738,6 +762,7 @@ TEST_F(FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   fast_checkout_client()->OnNavigation(GURL(kUrl), false);
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kNonCheckoutPage);
 }
 
 TEST_F(FastCheckoutClientImplTest,
@@ -779,6 +804,7 @@ TEST_F(FastCheckoutClientImplTest, OnFullCardRequestFailed_StopsRun) {
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   fast_checkout_client()->OnFullCardRequestFailed(card_type, failure_type);
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+  ExpectRunOutcomeUkm(FastCheckoutRunOutcome::kCvcPopupError);
 }
 
 TEST_F(
