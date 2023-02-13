@@ -113,6 +113,12 @@ class ShillClientHelper {
       base::OnceCallback<void(base::Value result)> callback,
       ErrorCallback error_callback);
 
+  // Calls a method with a dictionary value result with error callback.
+  void CallDictValueMethodWithErrorCallback(
+      dbus::MethodCall* method_call,
+      base::OnceCallback<void(base::Value::Dict result)> callback,
+      ErrorCallback error_callback);
+
   // Calls a method with a boolean array result with error callback.
   void CallListValueMethodWithErrorCallback(dbus::MethodCall* method_call,
                                             ListValueCallback callback,

@@ -696,30 +696,29 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfigurationFromPolicy(
 
 void ManagedNetworkConfigurationHandlerImpl::
     UpdateExistingConfigurationWithPropertiesFromPolicy(
-        const base::Value& existing_properties,
+        const base::Value::Dict& existing_properties,
         const base::Value::Dict& new_properties,
         base::OnceClosure callback) {
   base::Value::Dict shill_properties;
 
   const std::string* profile =
-      existing_properties.FindStringKey(shill::kProfileProperty);
+      existing_properties.FindString(shill::kProfileProperty);
   if (!profile || profile->empty()) {
     // TODO(b/258782165): Figure out how to deal with entries that don't have a
     // Profile property properly.
     NET_LOG(ERROR) << "Missing profile property: "
                    << shill_property_util::GetNetworkIdFromProperties(
-                          existing_properties.GetDict());
+                          existing_properties);
     std::move(callback).Run();
     return;
   }
   shill_properties.Set(shill::kProfileProperty, *profile);
 
   if (!shill_property_util::CopyIdentifyingProperties(
-          existing_properties.GetDict(),
+          existing_properties,
           /*properties_read_from_shill=*/true, &shill_properties)) {
     NET_LOG(ERROR) << "Missing identifying properties",
-        shill_property_util::GetNetworkIdFromProperties(
-            existing_properties.GetDict());
+        shill_property_util::GetNetworkIdFromProperties(existing_properties);
   }
 
   shill_properties.Merge(new_properties.Clone());
@@ -1281,7 +1280,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
   }
 
   std::unique_ptr<NetworkUIData> ui_data =
-      shill_property_util::GetUIDataFromProperties(*shill_properties);
+      shill_property_util::GetUIDataFromProperties(shill_properties->GetDict());
 
   const base::Value* user_settings = nullptr;
 

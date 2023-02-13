@@ -51,7 +51,7 @@ class PolicyApplicator {
     // completion - it will be called after the configuration update has been
     // reflected in NetworkStateHandler or when an error has occurred.
     virtual void UpdateExistingConfigurationWithPropertiesFromPolicy(
-        const base::Value& existing_properties,
+        const base::Value::Dict& existing_properties,
         const base::Value::Dict& new_properties,
         base::OnceClosure callback) = 0;
 
@@ -84,7 +84,7 @@ class PolicyApplicator {
  private:
   // Called with the properties of the profile |profile_|. Requests the
   // properties of each entry, which are processed by GetEntryCallback.
-  void GetProfilePropertiesCallback(base::Value profile_properties);
+  void GetProfilePropertiesCallback(base::Value::Dict profile_properties);
   void GetProfilePropertiesError(const std::string& error_name,
                                  const std::string& error_message);
 
@@ -92,7 +92,7 @@ class PolicyApplicator {
   // whether the entry was previously managed, whether a current policy applies
   // and then either updates, deletes or not touches the entry.
   void GetEntryCallback(const std::string& entry_identifier,
-                        base::Value entry_properties);
+                        base::Value::Dict entry_properties);
   void GetEntryError(const std::string& entry_identifier,
                      const std::string& error_name,
                      const std::string& error_message);
@@ -116,9 +116,10 @@ class PolicyApplicator {
   // |entry_properties|}  are the current properties for the entry.
   // |callback| will be called when policy application for |entry_identifier|
   // has finished or immediately if no global network policy is present.
-  void ApplyGlobalPolicyOnUnmanagedEntry(const std::string& entry_identifier,
-                                         const base::Value& entry_properties,
-                                         base::OnceClosure callback);
+  void ApplyGlobalPolicyOnUnmanagedEntry(
+      const std::string& entry_identifier,
+      const base::Value::Dict& entry_properties,
+      base::OnceClosure callback);
 
   // Sends Shill the command to delete profile entry |entry_identifier| from
   // |profile_|. |callback| will be called when the profile entry has been

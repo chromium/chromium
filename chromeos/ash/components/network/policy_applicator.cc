@@ -131,11 +131,11 @@ void PolicyApplicator::Run() {
 }
 
 void PolicyApplicator::GetProfilePropertiesCallback(
-    base::Value profile_properties) {
+    base::Value::Dict profile_properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(2) << "Received properties for profile " << profile_.ToDebugString();
-  const base::Value* entries =
-      profile_properties.FindListKey(shill::kEntriesProperty);
+  const base::Value::List* entries =
+      profile_properties.FindList(shill::kEntriesProperty);
   if (!entries) {
     LOG(ERROR) << "Profile " << profile_.ToDebugString()
                << " doesn't contain the property " << shill::kEntriesProperty;
@@ -143,9 +143,10 @@ void PolicyApplicator::GetProfilePropertiesCallback(
     return;
   }
 
-  for (const auto& it : entries->GetList()) {
-    if (!it.is_string())
+  for (const auto& it : *entries) {
+    if (!it.is_string()) {
       continue;
+    }
 
     std::string entry_identifier = it.GetString();
 
@@ -157,8 +158,9 @@ void PolicyApplicator::GetProfilePropertiesCallback(
         base::BindOnce(&PolicyApplicator::GetEntryError,
                        weak_ptr_factory_.GetWeakPtr(), entry_identifier));
   }
-  if (pending_get_entry_calls_.empty())
+  if (pending_get_entry_calls_.empty()) {
     ApplyRemainingPolicies();
+  }
 }
 
 void PolicyApplicator::GetProfilePropertiesError(
@@ -171,13 +173,13 @@ void PolicyApplicator::GetProfilePropertiesError(
 }
 
 void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
-                                        base::Value entry_properties) {
+                                        base::Value::Dict entry_properties) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(2) << "Received properties for entry " << entry_identifier
           << " of profile " << profile_.ToDebugString();
 
   base::Value::Dict onc_part = onc::TranslateShillServiceToONCPart(
-      entry_properties.GetDict(), ::onc::ONC_SOURCE_UNKNOWN,
+      entry_properties, ::onc::ONC_SOURCE_UNKNOWN,
       &chromeos::onc::kNetworkWithStateSignature, nullptr /* network_state */);
 
   std::string old_guid = GetGUIDFromONCPart(onc_part);
@@ -222,8 +224,8 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
         << "Applying policy " << new_guid << " to previously unmanaged "
         << "configuration.";
 
-    ApplyNewPolicy(entry_identifier, entry_properties.GetDict(),
-                   std::move(ui_data), old_guid, new_guid, *new_policy,
+    ApplyNewPolicy(entry_identifier, entry_properties, std::move(ui_data),
+                   old_guid, new_guid, *new_policy,
                    std::move(profile_entry_finished_callback));
 
     const std::string* iccid = policy_util::GetIccidFromONC(*new_policy);
@@ -332,14 +334,14 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry_identifier,
 
 void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
     const std::string& entry_identifier,
-    const base::Value& entry_properties,
+    const base::Value::Dict& entry_properties,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The entry wasn't managed and doesn't match any current policy. Global
   // network settings have to be applied.
   base::Value::Dict shill_properties_to_update;
   policy_util::SetShillPropertiesForGlobalPolicy(
-      entry_properties.GetDict(), global_network_config_.GetDict(),
+      entry_properties, global_network_config_.GetDict(),
       &shill_properties_to_update);
   if (shill_properties_to_update.empty()) {
     VLOG(2) << "Ignore unmanaged entry.";

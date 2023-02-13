@@ -152,7 +152,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
                                      base::OnceClosure callback) override;
 
   void UpdateExistingConfigurationWithPropertiesFromPolicy(
-      const base::Value& existing_properties,
+      const base::Value::Dict& existing_properties,
       const base::Value::Dict& new_properties,
       base::OnceClosure callback) override;
 

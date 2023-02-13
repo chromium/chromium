@@ -205,6 +205,23 @@ void OnValueMethodWithErrorCallback(
   std::move(callback).Run(std::move(value));
 }
 
+// Handles responses for methods with base::Value::Dict results.
+// Used by CallDictValueMethodWithErrorCallback().
+void OnDictValueMethodWithErrorCallback(
+    ShillClientHelper::RefHolder* ref_holder,
+    base::OnceCallback<void(base::Value::Dict result)> callback,
+    ShillClientHelper::ErrorCallback error_callback,
+    dbus::Response* response) {
+  dbus::MessageReader reader(response);
+  base::Value value(dbus::PopDataAsValue(&reader));
+  if (!value.is_dict()) {
+    std::move(error_callback)
+        .Run(kInvalidResponseErrorName, kInvalidResponseErrorMessage);
+    return;
+  }
+  std::move(callback).Run(std::move(value).TakeDict());
+}
+
 // Handles responses for methods with ListValue results.
 void OnListValueMethodWithErrorCallback(
     ShillClientHelper::RefHolder* ref_holder,
@@ -397,6 +414,21 @@ void ShillClientHelper::CallValueMethodWithErrorCallback(
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnValueMethodWithErrorCallback,
+                     base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
+}
+
+void ShillClientHelper::CallDictValueMethodWithErrorCallback(
+    dbus::MethodCall* method_call,
+    base::OnceCallback<void(base::Value::Dict result)> callback,
+    ErrorCallback error_callback) {
+  DCHECK(!callback.is_null());
+  DCHECK(!error_callback.is_null());
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
+  proxy_->CallMethodWithErrorCallback(
+      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&OnDictValueMethodWithErrorCallback,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
                      std::move(callback), std::move(split_callback.first)),
       base::BindOnce(&OnError, std::move(split_callback.second)));

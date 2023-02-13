@@ -50,7 +50,7 @@ std::unique_ptr<NetworkUIData> GetUIDataFromValue(const base::Value& value);
 // |shill_dictionary|. If parsing fails or the field doesn't exist, returns
 // NULL.
 std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
-    const base::Value& shill_dictionary);
+    const base::Value::Dict& shill_dictionary);
 
 // Sets the UIData property in |shill_dictionary| to the serialization of
 // |ui_data|. Sets the ONCSource property in |shill_dictionary|,

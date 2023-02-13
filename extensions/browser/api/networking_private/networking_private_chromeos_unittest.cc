@@ -272,9 +272,9 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     return priority.value();
   }
 
-  bool GetServiceProfile(const std::string& service_path,
+  bool HasServiceProfile(const std::string& service_path,
                          std::string* profile_path) {
-    return profile_test()->GetService(service_path, profile_path).is_dict();
+    return profile_test()->GetService(service_path, profile_path).has_value();
   }
 
   base::Value GetNetworkProperties(const std::string& service_path) {
@@ -1173,7 +1173,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetSharedNetwork) {
 
   base::RunLoop().RunUntilIdle();
   std::string profile_path;
-  EXPECT_TRUE(GetServiceProfile(kSharedWifiServicePath, &profile_path));
+  EXPECT_TRUE(HasServiceProfile(kSharedWifiServicePath, &profile_path));
   EXPECT_EQ(ash::ShillProfileClient::GetSharedProfilePath(), profile_path);
 }
 
@@ -1182,7 +1182,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetPrivateNetwork) {
               base::StringPrintf(R"(["%s"])", kPrivateWifiGuid));
 
   std::string profile_path;
-  EXPECT_FALSE(GetServiceProfile(kPrivateWifiServicePath, &profile_path));
+  EXPECT_FALSE(HasServiceProfile(kPrivateWifiServicePath, &profile_path));
 }
 
 TEST_F(NetworkingPrivateApiTest, ForgetPrivateNetworkWebUI) {
@@ -1194,7 +1194,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetPrivateNetworkWebUI) {
               base::StringPrintf(R"(["%s"])", kPrivateWifiGuid));
 
   std::string profile_path;
-  EXPECT_FALSE(GetServiceProfile(kPrivateWifiServicePath, &profile_path));
+  EXPECT_FALSE(HasServiceProfile(kPrivateWifiServicePath, &profile_path));
 }
 
 TEST_F(NetworkingPrivateApiTest, ForgetUserPolicyNetwork) {
@@ -1210,7 +1210,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetUserPolicyNetwork) {
 
   base::RunLoop().RunUntilIdle();
   std::string profile_path;
-  EXPECT_TRUE(GetServiceProfile(network->path(), &profile_path));
+  EXPECT_TRUE(HasServiceProfile(network->path(), &profile_path));
   EXPECT_EQ(kUserProfilePath, profile_path);
 }
 
@@ -1231,7 +1231,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetUserPolicyNetworkWebUI) {
 
   base::RunLoop().RunUntilIdle();
   std::string profile_path;
-  EXPECT_TRUE(GetServiceProfile(network->path(), &profile_path));
+  EXPECT_TRUE(HasServiceProfile(network->path(), &profile_path));
   EXPECT_EQ(kUserProfilePath, profile_path);
 }
 
@@ -1244,7 +1244,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetDevicePolicyNetworkWebUI) {
   AddSharedNetworkToUserProfile(network->path());
 
   std::string profile_path;
-  EXPECT_TRUE(GetServiceProfile(network->path(), &profile_path));
+  EXPECT_TRUE(HasServiceProfile(network->path(), &profile_path));
   ASSERT_EQ(kUserProfilePath, profile_path);
 
   scoped_refptr<NetworkingPrivateForgetNetworkFunction> forget_network =
@@ -1253,7 +1253,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetDevicePolicyNetworkWebUI) {
   RunFunction(forget_network.get(),
               base::StringPrintf(R"(["%s"])", kManagedDeviceWifiGuid));
 
-  EXPECT_TRUE(GetServiceProfile(network->path(), &profile_path));
+  EXPECT_TRUE(HasServiceProfile(network->path(), &profile_path));
   EXPECT_EQ(ash::ShillProfileClient::GetSharedProfilePath(), profile_path);
 }
 
@@ -1263,13 +1263,13 @@ TEST_F(NetworkingPrivateApiTest, ForgetNetworkInMultipleProfiles) {
   AddSharedNetworkToUserProfile(kSharedWifiServicePath);
 
   std::string profile_path;
-  EXPECT_TRUE(GetServiceProfile(kSharedWifiServicePath, &profile_path));
+  EXPECT_TRUE(HasServiceProfile(kSharedWifiServicePath, &profile_path));
   ASSERT_EQ(kUserProfilePath, profile_path);
 
   RunFunction(new NetworkingPrivateForgetNetworkFunction(),
               base::StringPrintf(R"(["%s"])", kSharedWifiGuid));
 
-  EXPECT_TRUE(GetServiceProfile(kSharedWifiServicePath, &profile_path));
+  EXPECT_TRUE(HasServiceProfile(kSharedWifiServicePath, &profile_path));
   EXPECT_EQ(ash::ShillProfileClient::GetSharedProfilePath(), profile_path);
 }
 
@@ -1277,7 +1277,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetNetworkInMultipleProfilesWebUI) {
   AddSharedNetworkToUserProfile(kSharedWifiServicePath);
 
   std::string profile_path;
-  EXPECT_TRUE(GetServiceProfile(kSharedWifiServicePath, &profile_path));
+  EXPECT_TRUE(HasServiceProfile(kSharedWifiServicePath, &profile_path));
   ASSERT_EQ(kUserProfilePath, profile_path);
 
   scoped_refptr<NetworkingPrivateForgetNetworkFunction> forget_network =
@@ -1287,7 +1287,7 @@ TEST_F(NetworkingPrivateApiTest, ForgetNetworkInMultipleProfilesWebUI) {
   RunFunction(forget_network.get(),
               base::StringPrintf(R"(["%s"])", kSharedWifiGuid));
 
-  EXPECT_FALSE(GetServiceProfile(kSharedWifiServicePath, &profile_path));
+  EXPECT_FALSE(HasServiceProfile(kSharedWifiServicePath, &profile_path));
 }
 
 }  // namespace extensions

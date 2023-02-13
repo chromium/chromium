@@ -311,10 +311,10 @@ class VpnProviderApiTestAsh : public VpnProviderApiTestBase {
 
   bool HasService(const std::string& service_path) const {
     std::string profile_path;
-    base::Value properties =
+    absl::optional<base::Value::Dict> properties =
         ash::ShillProfileClient::Get()->GetTestInterface()->GetService(
             service_path, &profile_path);
-    return properties.is_dict();
+    return properties.has_value();
   }
 
   void SendPlatformError(const std::string& extension_id,

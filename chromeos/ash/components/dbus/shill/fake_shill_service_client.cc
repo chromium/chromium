@@ -490,14 +490,15 @@ base::Value::Dict* FakeShillServiceClient::SetServiceProperties(
   std::string guid_to_set = guid;
   if (guid_to_set.empty()) {
     std::string profile_path;
-    base::Value profile_properties =
+    absl::optional<base::Value::Dict> profile_properties =
         ShillProfileClient::Get()->GetTestInterface()->GetService(
             service_path, &profile_path);
-    if (profile_properties.is_dict()) {
+    if (profile_properties) {
       const std::string* profile_guid =
-          profile_properties.FindStringKey(shill::kGuidProperty);
-      if (profile_guid)
+          profile_properties->FindString(shill::kGuidProperty);
+      if (profile_guid) {
         guid_to_set = *profile_guid;
+      }
     }
   }
   if (!guid_to_set.empty()) {

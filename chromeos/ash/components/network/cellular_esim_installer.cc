@@ -72,7 +72,8 @@ void AppendRequiredCellularProperties(
 
 bool IsManagedNetwork(const base::Value& new_shill_properties) {
   std::unique_ptr<NetworkUIData> ui_data =
-      shill_property_util::GetUIDataFromProperties(new_shill_properties);
+      shill_property_util::GetUIDataFromProperties(
+          new_shill_properties.GetDict());
   return ui_data && (ui_data->onc_source() == ::onc::ONC_SOURCE_DEVICE_POLICY ||
                      ui_data->onc_source() == ::onc::ONC_SOURCE_USER_POLICY);
 }

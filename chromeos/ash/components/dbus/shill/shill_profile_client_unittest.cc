@@ -118,13 +118,13 @@ TEST_F(ShillProfileClientTest, GetProperties) {
   PrepareForMethodCall(shill::kGetPropertiesFunction,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
-  base::test::TestFuture<base::Value> get_properties_result;
+  base::test::TestFuture<base::Value::Dict> get_properties_result;
   base::test::TestFuture<std::string, std::string> error_result;
   client_->GetProperties(
       dbus::ObjectPath(kDefaultProfilePath),
       get_properties_result.GetCallback(),
       error_result.GetCallback<const std::string&, const std::string&>());
-  const base::Value::Dict& result_value = get_properties_result.Get().GetDict();
+  const base::Value::Dict& result_value = get_properties_result.Get();
   EXPECT_EQ(expected_value, result_value);
   // The GetProperties() error callback should not be invoked after properties
   // result has been received successfully.
@@ -153,13 +153,13 @@ TEST_F(ShillProfileClientTest, GetEntry) {
       base::BindRepeating(&ExpectStringArgument, kExampleEntryPath),
       response.get());
   // Call method.
-  base::test::TestFuture<base::Value> get_entry_result;
+  base::test::TestFuture<base::Value::Dict> get_entry_result;
   base::test::TestFuture<std::string, std::string> error_result;
   client_->GetEntry(
       dbus::ObjectPath(kDefaultProfilePath), kExampleEntryPath,
       get_entry_result.GetCallback(),
       error_result.GetCallback<const std::string&, const std::string&>());
-  const base::Value::Dict& result_value = get_entry_result.Get().GetDict();
+  const base::Value::Dict& result_value = get_entry_result.Get();
   EXPECT_EQ(expected_value, result_value);
   // The GetEntry() error callback should not be invoked after the entry result
   // has been received successfully.

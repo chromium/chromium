@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
                          const base::Value& value) override;
 
   void GetProfilePropertiesCallback(const std::string& profile_path,
-                                    base::Value properties);
+                                    base::Value::Dict properties);
 
   const NetworkProfile* GetProfileForPath(
       const std::string& profile_path) const;
@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
   // settings and transmit them to the original caller through |callback|.
   void GetAlwaysOnVpnConfigurationCallback(
       base::OnceCallback<void(std::string, std::string)> callback,
-      base::Value properties);
+      base::Value::Dict properties);
 
   ProfileList profiles_;
 

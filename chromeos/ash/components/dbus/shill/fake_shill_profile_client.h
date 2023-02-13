@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -34,9 +35,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
   void RemovePropertyChangedObserver(
       const dbus::ObjectPath& profile_path,
       ShillPropertyChangedObserver* observer) override;
-  void GetProperties(const dbus::ObjectPath& profile_path,
-                     base::OnceCallback<void(base::Value result)> callback,
-                     ErrorCallback error_callback) override;
+  void GetProperties(
+      const dbus::ObjectPath& profile_path,
+      base::OnceCallback<void(base::Value::Dict result)> callback,
+      ErrorCallback error_callback) override;
   void SetProperty(const dbus::ObjectPath& profile_path,
                    const std::string& name,
                    const base::Value& property,
@@ -49,7 +51,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
                              ErrorCallback error_callback) override;
   void GetEntry(const dbus::ObjectPath& profile_path,
                 const std::string& entry_path,
-                base::OnceCallback<void(base::Value result)> callback,
+                base::OnceCallback<void(base::Value::Dict result)> callback,
                 ErrorCallback error_callback) override;
   void DeleteEntry(const dbus::ObjectPath& profile_path,
                    const std::string& entry_path,
@@ -71,9 +73,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillProfileClient
   void GetProfilePathsContainingService(
       const std::string& service_path,
       std::vector<std::string>* profiles) override;
-  base::Value GetProfileProperties(const std::string& profile_path) override;
-  base::Value GetService(const std::string& service_path,
-                         std::string* profile_path) override;
+  base::Value::Dict GetProfileProperties(
+      const std::string& profile_path) override;
+  absl::optional<base::Value::Dict> GetService(
+      const std::string& service_path,
+      std::string* profile_path) override;
   bool HasService(const std::string& service_path) override;
   void ClearProfiles() override;
   void SetSimulateDeleteResult(FakeShillSimulatedResult delete_result) override;

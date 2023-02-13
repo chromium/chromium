@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
@@ -70,15 +71,16 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
         std::vector<std::string>* profiles) = 0;
 
     // Returns the properties contained in the profile matching |profile_path|.
-    virtual base::Value GetProfileProperties(
+    virtual base::Value::Dict GetProfileProperties(
         const std::string& profile_path) = 0;
 
     // Returns the entry for |service_path| if it exists in any profile and sets
     // |profile_path| to the path of the profile the service was found in.
     // Profiles are searched starting with the most recently added profile.
-    // If the service does not exist in any profile, an empty Value is returned.
-    virtual base::Value GetService(const std::string& service_path,
-                                   std::string* profile_path) = 0;
+    // If the service does not exist in any profile, nullopt is returned.
+    virtual absl::optional<base::Value::Dict> GetService(
+        const std::string& service_path,
+        std::string* profile_path) = 0;
 
     // Returns true iff an entry specified via |service_path| exists in
     // any profile.
@@ -92,7 +94,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
         FakeShillSimulatedResult delete_result) = 0;
 
    protected:
-    virtual ~TestInterface() {}
+    virtual ~TestInterface() = default;
   };
 
   // Creates and initializes the global instance. |bus| must not be null.
@@ -128,7 +130,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
   // Value containing the Profile properties.
   virtual void GetProperties(
       const dbus::ObjectPath& profile_path,
-      base::OnceCallback<void(base::Value result)> callback,
+      base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) = 0;
 
   // Calls the SetProperty DBus method to set a property on |profile_path|
@@ -150,10 +152,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
 
   // Calls GetEntry method.
   // |callback| is called after the method call succeeds.
-  virtual void GetEntry(const dbus::ObjectPath& profile_path,
-                        const std::string& entry_path,
-                        base::OnceCallback<void(base::Value result)> callback,
-                        ErrorCallback error_callback) = 0;
+  virtual void GetEntry(
+      const dbus::ObjectPath& profile_path,
+      const std::string& entry_path,
+      base::OnceCallback<void(base::Value::Dict result)> callback,
+      ErrorCallback error_callback) = 0;
 
   // Calls DeleteEntry method.
   // |callback| is called after the method call succeeds.

@@ -46,7 +46,7 @@ void FakeShillProfileClient::RemovePropertyChangedObserver(
 
 void FakeShillProfileClient::GetProperties(
     const dbus::ObjectPath& profile_path,
-    base::OnceCallback<void(base::Value result)> callback,
+    base::OnceCallback<void(base::Value::Dict result)> callback,
     ErrorCallback error_callback) {
   ProfileProperties* profile = GetProfile(profile_path);
   if (!profile) {
@@ -63,8 +63,7 @@ void FakeShillProfileClient::GetProperties(
   properties.Set(shill::kEntriesProperty, std::move(entry_paths));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), base::Value(std::move(properties))));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(properties)));
 }
 
 void FakeShillProfileClient::SetProperty(const dbus::ObjectPath& profile_path,
@@ -101,7 +100,7 @@ void FakeShillProfileClient::SetObjectPathProperty(
 void FakeShillProfileClient::GetEntry(
     const dbus::ObjectPath& profile_path,
     const std::string& entry_path,
-    base::OnceCallback<void(base::Value result)> callback,
+    base::OnceCallback<void(base::Value::Dict result)> callback,
     ErrorCallback error_callback) {
   ProfileProperties* profile = GetProfile(profile_path);
   if (!profile) {
@@ -117,8 +116,7 @@ void FakeShillProfileClient::GetEntry(
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), base::Value(entry->Clone())));
+      FROM_HERE, base::BindOnce(std::move(callback), entry->Clone()));
 }
 
 void FakeShillProfileClient::DeleteEntry(const dbus::ObjectPath& profile_path,
@@ -268,26 +266,28 @@ void FakeShillProfileClient::GetProfilePathsContainingService(
   }
 }
 
-base::Value FakeShillProfileClient::GetProfileProperties(
+base::Value::Dict FakeShillProfileClient::GetProfileProperties(
     const std::string& profile_path) {
   ProfileProperties* profile = GetProfile(dbus::ObjectPath(profile_path));
   DCHECK(profile);
-  return base::Value(profile->properties.Clone());
+  return profile->properties.Clone();
 }
 
-base::Value FakeShillProfileClient::GetService(const std::string& service_path,
-                                               std::string* profile_path) {
+absl::optional<base::Value::Dict> FakeShillProfileClient::GetService(
+    const std::string& service_path,
+    std::string* profile_path) {
   DCHECK(profile_path);
 
   // Returns the entry added latest.
   for (const auto& profile : base::Reversed(profiles_)) {
     const base::Value::Dict* entry = profile.entries.FindDict(service_path);
-    if (!entry)
+    if (!entry) {
       continue;
+    }
     *profile_path = profile.profile_path;
-    return base::Value(entry->Clone());
+    return entry->Clone();
   }
-  return base::Value();
+  return absl::nullopt;
 }
 
 bool FakeShillProfileClient::HasService(const std::string& service_path) {

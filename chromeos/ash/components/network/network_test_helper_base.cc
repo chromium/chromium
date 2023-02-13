@@ -174,10 +174,12 @@ void NetworkTestHelperBase::SetServiceProperty(const std::string& service_path,
 std::string NetworkTestHelperBase::GetProfileStringProperty(
     const std::string& profile_path,
     const std::string& key) {
-  base::Value properties = profile_test_->GetProfileProperties(profile_path);
-  std::string* result = properties.FindStringKey(key);
-  if (result)
+  base::Value::Dict properties =
+      profile_test_->GetProfileProperties(profile_path);
+  std::string* result = properties.FindString(key);
+  if (result) {
     return *result;
+  }
   return std::string();
 }
 
