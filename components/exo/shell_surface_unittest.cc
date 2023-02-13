@@ -2241,6 +2241,48 @@ TEST_F(ShellSurfaceTest, UpdateBoundsWhenDraggedToAnotherDisplay) {
   EXPECT_EQ(last_origin, gfx::Point(800, 0));
 }
 
+// Make sure that commit during window drag should not move the
+// window to another display.
+TEST_F(ShellSurfaceTest, CommitShouldNotMoveDisplay) {
+  UpdateDisplay("800x600, 800x600");
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({64, 64})
+          .SetOrigin({750, 0})
+          .BuildShellSurface();
+  auto* screen = display::Screen::GetScreen();
+  auto* root_surface = shell_surface->root_surface();
+
+  EXPECT_EQ(screen->GetPrimaryDisplay().id(),
+            screen
+                ->GetDisplayNearestWindow(
+                    shell_surface->GetWidget()->GetNativeWindow())
+                .id());
+
+  shell_surface->StartMove();
+
+  gfx::Size buffer_size(256, 256);
+  auto new_buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size));
+  root_surface->Attach(new_buffer.get());
+  root_surface->Commit();
+
+  EXPECT_EQ(screen->GetPrimaryDisplay().id(),
+            screen
+                ->GetDisplayNearestWindow(
+                    shell_surface->GetWidget()->GetNativeWindow())
+                .id());
+
+  shell_surface->EndDrag();
+
+  // Ending drag will not move the window unless the mouse cursor enters
+  // another display.
+  EXPECT_EQ(screen->GetPrimaryDisplay().id(),
+            screen
+                ->GetDisplayNearestWindow(
+                    shell_surface->GetWidget()->GetNativeWindow())
+                .id());
+}
+
 // Make sure that resize shadow does not update until commit when the window
 // property |aura::client::kUseWindowBoundsForShadow| is false.
 TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
