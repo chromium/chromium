@@ -11,8 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/command_buffer/service/feature_info.h"
-#include "gpu/command_buffer/service/mock_abstract_texture.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
@@ -67,8 +67,7 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
     // Create a texture.
     glGenTextures(1, &texture_id_);
 
-    std::unique_ptr<MockAbstractTexture> texture =
-        std::make_unique<MockAbstractTexture>(texture_id_);
+    auto texture = AbstractTextureAndroid::CreateForTesting(texture_id_);
     abstract_texture_ = texture->AsWeakPtr();
     surface_texture_ =
         new SurfaceTextureGLOwner(std::move(texture), std::move(context_state));
@@ -89,7 +88,7 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
   scoped_refptr<TextureOwner> surface_texture_;
   GLuint texture_id_ = 0;
 
-  base::WeakPtr<MockAbstractTexture> abstract_texture_;
+  base::WeakPtr<AbstractTextureAndroid> abstract_texture_;
 
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<gl::GLShareGroup> share_group_;

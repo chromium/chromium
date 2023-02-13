@@ -10,7 +10,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"
-#include "gpu/command_buffer/service/abstract_texture_impl_android.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/video_image_reader_image_backing.h"
@@ -96,13 +95,11 @@ absl::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
 
 std::unique_ptr<AbstractTextureAndroid>
 AndroidVideoImageBacking::GenAbstractTexture(const bool passthrough) {
-  std::unique_ptr<AbstractTextureAndroid> texture;
   if (passthrough) {
-    texture = std::make_unique<AbstractTextureImplPassthrough>(size());
+    return AbstractTextureAndroid::CreateForPassthrough(size());
   } else {
-    texture = std::make_unique<AbstractTextureImpl>(size());
+    return AbstractTextureAndroid::CreateForValidating(size());
   }
-  return texture;
 }
 
 SharedImageBackingType AndroidVideoImageBacking::GetType() const {

@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"
-#include "gpu/command_buffer/service/abstract_texture_impl_android.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/image_reader_gl_owner.h"
@@ -28,10 +27,10 @@ std::unique_ptr<AbstractTextureAndroid> CreateTexture(
 
   gles2::FeatureInfo* feature_info = context_state->feature_info();
   if (feature_info && feature_info->is_passthrough_cmd_decoder()) {
-    return std::make_unique<AbstractTextureImplPassthrough>(gfx::Size());
+    return AbstractTextureAndroid::CreateForPassthrough(gfx::Size());
   }
 
-  return std::make_unique<AbstractTextureImpl>(gfx::Size());
+  return AbstractTextureAndroid::CreateForValidating(gfx::Size());
 }
 
 }  // namespace

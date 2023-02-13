@@ -10,7 +10,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "gpu/command_buffer/service/mock_abstract_texture.h"
 #include "gpu/command_buffer/service/mock_texture_owner.h"
 #include "gpu/command_buffer/service/ref_counted_lock_for_test.h"
 #include "gpu/command_buffer/service/texture_manager.h"

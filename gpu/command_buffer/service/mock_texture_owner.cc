@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/mock_texture_owner.h"
 
-#include "gpu/command_buffer/service/mock_abstract_texture.h"
+#include "gpu/command_buffer/service/abstract_texture_android.h"
 
 namespace gpu {
 
@@ -17,7 +17,7 @@ MockTextureOwner::MockTextureOwner(GLuint fake_texture_id,
                                    gl::GLSurface* fake_surface,
                                    bool binds_texture_on_update)
     : TextureOwner(binds_texture_on_update,
-                   std::make_unique<MockAbstractTexture>(fake_texture_id)),
+                   AbstractTextureAndroid::CreateForTesting(fake_texture_id)),
       fake_context(fake_context),
       fake_surface(fake_surface) {
   ON_CALL(*this, GetTextureId()).WillByDefault(Return(fake_texture_id));

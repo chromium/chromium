@@ -304,9 +304,8 @@ target(link_target_type, "gles2_sources") {
     ]
   } else {
     sources += [
+      "abstract_texture_android.cc",
       "abstract_texture_android.h",
-      "abstract_texture_impl_android.cc",
-      "abstract_texture_impl_android.h",
     ]
   }
 
@@ -604,8 +603,6 @@ if (is_android) {
   static_library("android_texture_owner_test_support") {
     testonly = true
     sources = [
-      "mock_abstract_texture.cc",
-      "mock_abstract_texture.h",
       "mock_texture_owner.cc",
       "mock_texture_owner.h",
       "ref_counted_lock_for_test.cc",
