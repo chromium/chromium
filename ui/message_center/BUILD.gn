@@ -93,6 +93,8 @@ component("message_center") {
       sources += [
         "views/desktop_message_popup_collection.cc",
         "views/desktop_message_popup_collection.h",
+        "views/large_image_view.cc",
+        "views/large_image_view.h",
         "views/message_popup_collection.cc",
         "views/message_popup_collection.h",
         "views/message_popup_view.cc",
@@ -216,6 +218,7 @@ if (enable_message_center) {
 
     if (toolkit_views) {
       sources += [
+        "views/large_image_view_unittest.cc",
         "views/message_popup_collection_unittest.cc",
         "views/notification_control_buttons_unittest.cc",
         "views/notification_header_view_unittest.cc",

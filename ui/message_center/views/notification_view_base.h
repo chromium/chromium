@@ -61,27 +61,6 @@ class CompactTitleMessageView : public views::View {
   raw_ptr<views::Label> message_ = nullptr;
 };
 
-class LargeImageView : public views::View {
- public:
-  explicit LargeImageView(const gfx::Size& max_size);
-  LargeImageView(const LargeImageView&) = delete;
-  LargeImageView& operator=(const LargeImageView&) = delete;
-  ~LargeImageView() override;
-
-  void SetImage(const gfx::ImageSkia& image);
-
-  void OnPaint(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
-  void OnThemeChanged() override;
-
- private:
-  gfx::Size GetResizedImageSize();
-
-  gfx::Size max_size_;
-  gfx::Size min_size_;
-  gfx::ImageSkia image_;
-};
-
 // View that displays all current types of notification (web, basic, image, and
 // list) except the custom notification. Future notification types may be
 // handled by other classes, in which case instances of those classes would be
