@@ -1115,8 +1115,17 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
       1 /* expected_script_fetch_count */);
 }
 
-IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
-                       MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument) {
+// Flaky. See https://crbug.com/1415204.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument \
+  DISABLED_MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument
+#else
+#define MAYBE_MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument \
+  MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SignedExchangeSubresourcePrefetchBrowserTest,
+    MAYBE_MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument) {
   // This test is almost same as MainResourceSXGAndScriptSXG_CrossOrigin. The
   // only difference is that the <link rel=prefetch> element has "as=document"
   // attribute which was introduced to support cross origin prefetch with
