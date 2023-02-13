@@ -342,6 +342,9 @@ void CheckXrwOriginTrialOnUiThread(GURL request_url,
   } else {
     content::WebContents* wc =
         content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+    base::UmaHistogramBoolean(
+        "Android.WebView.RequestedWithHeader.HadWebContentsForPartitionOrigin",
+        wc);
     if (wc) {
       partition_origin = wc->GetPrimaryMainFrame()
                              ->GetOutermostMainFrame()
