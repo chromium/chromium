@@ -3535,7 +3535,7 @@ void AXObjectCacheImpl::PostPlatformNotification(
 }
 
 void AXObjectCacheImpl::EnsureMarkDirtyWithCleanLayout(Node* node) {
-  MarkAXObjectDirty(GetOrCreate(node));
+  MarkAXObjectDirtyWithCleanLayout(GetOrCreate(node));
 }
 
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
