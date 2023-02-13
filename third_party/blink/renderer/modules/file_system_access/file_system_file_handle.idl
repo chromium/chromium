@@ -10,7 +10,8 @@
     RuntimeEnabled=FileSystemAccess
 ] interface FileSystemFileHandle : FileSystemHandle {
     [CallWith=ScriptState, RaisesException]
-    Promise<FileSystemWritableFileStream> createWritable(optional FileSystemCreateWritableOptions options = {});
+    Promise<FileSystemWritableFileStream> createWritable(
+        optional FileSystemCreateWritableOptions options = {});
 
     [CallWith=ScriptState, RaisesException] Promise<File> getFile();
 
@@ -24,14 +25,17 @@
 
     [
         CallWith=ScriptState,
+        RaisesException,
         RuntimeEnabled=FileSystemAccessAccessHandle
     ]  Promise<void> move(USVString new_entry_name);
     [
         CallWith=ScriptState,
+        RaisesException,
         RuntimeEnabled=FileSystemAccessAccessHandle
     ]  Promise<void> move(FileSystemDirectoryHandle destination_directory);
     [
         CallWith=ScriptState,
+        RaisesException,
         RuntimeEnabled=FileSystemAccessAccessHandle
     ]  Promise<void> move(FileSystemDirectoryHandle destination_directory,
                           USVString new_entry_name);

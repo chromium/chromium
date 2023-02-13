@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+class ExceptionState;
 class ExecutionContext;
 class FileSystemHandlePermissionDescriptor;
 class FileSystemRemoveOptions;
@@ -40,17 +41,26 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   ScriptPromise queryPermission(ScriptState*,
                                 const FileSystemHandlePermissionDescriptor*);
   ScriptPromise requestPermission(ScriptState*,
-                                  const FileSystemHandlePermissionDescriptor*);
+                                  const FileSystemHandlePermissionDescriptor*,
+                                  ExceptionState&);
 
-  ScriptPromise move(ScriptState*, const String& new_entry_name);
   ScriptPromise move(ScriptState*,
-                     FileSystemDirectoryHandle* destination_directory);
+                     const String& new_entry_name,
+                     ExceptionState&);
   ScriptPromise move(ScriptState*,
                      FileSystemDirectoryHandle* destination_directory,
-                     const String& new_entry_name);
-  ScriptPromise remove(ScriptState*, const FileSystemRemoveOptions* options);
+                     ExceptionState&);
+  ScriptPromise move(ScriptState*,
+                     FileSystemDirectoryHandle* destination_directory,
+                     const String& new_entry_name,
+                     ExceptionState&);
+  ScriptPromise remove(ScriptState*,
+                       const FileSystemRemoveOptions* options,
+                       ExceptionState&);
 
-  ScriptPromise isSameEntry(ScriptState*, FileSystemHandle* other);
+  ScriptPromise isSameEntry(ScriptState*,
+                            FileSystemHandle* other,
+                            ExceptionState&);
   ScriptPromise getUniqueId(ScriptState*);
 
   // Grab a handle to a transfer token. This may return an invalid PendingRemote

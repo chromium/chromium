@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_DIRECTORY_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_DIRECTORY_ITERATOR_H_
 
-#include "base/files/file.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -13,9 +12,10 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
+class ExceptionContext;
+class ExceptionState;
 class FileSystemDirectoryHandle;
 class FileSystemHandle;
 class ScriptPromise;
@@ -37,7 +37,7 @@ class FileSystemDirectoryIterator final
                               Mode mode,
                               ExecutionContext* execution_context);
 
-  ScriptPromise next(ScriptState*);
+  ScriptPromise next(ScriptState*, ExceptionState&);
 
   // ScriptWrappable:
   bool HasPendingActivity() const final;
@@ -45,6 +45,8 @@ class FileSystemDirectoryIterator final
   void Trace(Visitor*) const override;
 
  private:
+  ScriptPromise nextImpl(ScriptState*, const ExceptionContext&);
+
   void DidReadDirectory(mojom::blink::FileSystemAccessErrorPtr result,
                         Vector<mojom::blink::FileSystemAccessEntryPtr> entries,
                         bool has_more_entries) override;

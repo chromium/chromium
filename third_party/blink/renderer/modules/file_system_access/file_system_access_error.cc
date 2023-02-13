@@ -4,16 +4,13 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 
+#include "base/files/file.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
-#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
-namespace blink {
-namespace file_system_access_error {
+namespace blink::file_system_access_error {
 
 void Reject(ScriptPromiseResolver* resolver,
             const mojom::blink::FileSystemAccessError& error) {
@@ -26,7 +23,6 @@ void ResolveOrReject(ScriptPromiseResolver* resolver,
   // Early exit if the resolver's context has been destroyed already.
   if (!resolver->GetScriptState()->ContextIsValid())
     return;
-  auto* const isolate = resolver->GetScriptState()->GetIsolate();
   ScriptState::Scope scope(resolver->GetScriptState());
 
   // Convert empty message to a null string, to make sure we get the default
@@ -38,37 +34,34 @@ void ResolveOrReject(ScriptPromiseResolver* resolver,
       resolver->Resolve();
       break;
     case mojom::blink::FileSystemAccessStatus::kPermissionDenied:
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          isolate, DOMExceptionCode::kNotAllowedError, message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
+                                       message);
       break;
     case mojom::blink::FileSystemAccessStatus::kNoModificationAllowedError:
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          isolate, DOMExceptionCode::kNoModificationAllowedError, message));
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kNoModificationAllowedError, message);
       break;
     case mojom::blink::FileSystemAccessStatus::kInvalidModificationError:
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          isolate, DOMExceptionCode::kInvalidModificationError, message));
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kInvalidModificationError, message);
       break;
     case mojom::blink::FileSystemAccessStatus::kSecurityError:
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          isolate, DOMExceptionCode::kSecurityError, message));
+      resolver->RejectWithSecurityError(message, message);
       break;
     case mojom::blink::FileSystemAccessStatus::kNotSupportedError:
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          isolate, DOMExceptionCode::kNotSupportedError, message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                       message);
       break;
     case mojom::blink::FileSystemAccessStatus::kInvalidState:
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          isolate, DOMExceptionCode::kInvalidStateError, message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                       message);
       break;
     case mojom::blink::FileSystemAccessStatus::kInvalidArgument:
-      resolver->Reject(V8ThrowException::CreateTypeError(
-          resolver->GetScriptState()->GetIsolate(), message));
+      resolver->RejectWithTypeError(message);
       break;
     case mojom::blink::FileSystemAccessStatus::kOperationFailed:
     case mojom::blink::FileSystemAccessStatus::kOperationAborted:
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          isolate, DOMExceptionCode::kAbortError, message));
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, message);
       break;
     case mojom::blink::FileSystemAccessStatus::kFileError:
       // TODO(mek): We might want to support custom messages for these cases.
@@ -77,5 +70,4 @@ void ResolveOrReject(ScriptPromiseResolver* resolver,
   }
 }
 
-}  // namespace file_system_access_error
-}  // namespace blink
+}  // namespace blink::file_system_access_error

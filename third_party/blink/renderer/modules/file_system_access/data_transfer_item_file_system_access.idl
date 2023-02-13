@@ -7,6 +7,9 @@
     ImplementedAs=DataTransferItemFileSystemAccess,
     RuntimeEnabled=FileSystemAccessLocal
 ] partial interface DataTransferItem {
-    [CallWith=ScriptState, MeasureAs=FileSystemAccessDragAndDrop]
-    Promise<FileSystemHandle?> getAsFileSystemHandle();
+    [
+        CallWith=ScriptState,
+        RaisesException,
+        MeasureAs=FileSystemAccessDragAndDrop
+    ] Promise<FileSystemHandle?> getAsFileSystemHandle();
 };

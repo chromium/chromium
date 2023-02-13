@@ -10,5 +10,5 @@
     ActiveScriptWrappable,
     RuntimeEnabled=FileSystemAccess
 ] interface FileSystemDirectoryIterator {
-  [CallWith=ScriptState] Promise<any> next();
+  [CallWith=ScriptState, RaisesException] Promise<any> next();
 };

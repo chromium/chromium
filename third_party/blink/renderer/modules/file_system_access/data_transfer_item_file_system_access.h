@@ -10,14 +10,16 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 
 namespace blink {
-
+class ExceptionState;
 class ScriptState;
 
 class DataTransferItemFileSystemAccess {
   STATIC_ONLY(DataTransferItemFileSystemAccess);
 
  public:
-  static ScriptPromise getAsFileSystemHandle(ScriptState*, DataTransferItem&);
+  static ScriptPromise getAsFileSystemHandle(ScriptState*,
+                                             DataTransferItem&,
+                                             ExceptionState&);
 };
 
 }  // namespace blink

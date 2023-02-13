@@ -6,14 +6,12 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
-#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_handle_permission_descriptor.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -74,8 +72,10 @@ ScriptPromise FileSystemHandle::queryPermission(
 
 ScriptPromise FileSystemHandle::requestPermission(
     ScriptState* script_state,
-    const FileSystemHandlePermissionDescriptor* descriptor) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    const FileSystemHandlePermissionDescriptor* descriptor,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   RequestPermissionImpl(
@@ -98,8 +98,10 @@ ScriptPromise FileSystemHandle::requestPermission(
 }
 
 ScriptPromise FileSystemHandle::move(ScriptState* script_state,
-                                     const String& new_entry_name) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+                                     const String& new_entry_name,
+                                     ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   MoveImpl(
@@ -119,8 +121,10 @@ ScriptPromise FileSystemHandle::move(ScriptState* script_state,
 
 ScriptPromise FileSystemHandle::move(
     ScriptState* script_state,
-    FileSystemDirectoryHandle* destination_directory) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    FileSystemDirectoryHandle* destination_directory,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   MoveImpl(destination_directory->Transfer(), name_,
@@ -139,8 +143,10 @@ ScriptPromise FileSystemHandle::move(
 ScriptPromise FileSystemHandle::move(
     ScriptState* script_state,
     FileSystemDirectoryHandle* destination_directory,
-    const String& new_entry_name) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    const String& new_entry_name,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   MoveImpl(
@@ -159,8 +165,10 @@ ScriptPromise FileSystemHandle::move(
 }
 
 ScriptPromise FileSystemHandle::remove(ScriptState* script_state,
-                                       const FileSystemRemoveOptions* options) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+                                       const FileSystemRemoveOptions* options,
+                                       ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   RemoveImpl(options, WTF::BindOnce(
@@ -177,8 +185,10 @@ ScriptPromise FileSystemHandle::remove(ScriptState* script_state,
 }
 
 ScriptPromise FileSystemHandle::isSameEntry(ScriptState* script_state,
-                                            FileSystemHandle* other) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+                                            FileSystemHandle* other,
+                                            ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   IsSameEntryImpl(

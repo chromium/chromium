@@ -9,18 +9,16 @@
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_write_params.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
-#include "third_party/blink/renderer/modules/file_system_access/file_system_writable_file_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
@@ -73,8 +71,8 @@ ScriptPromise FileSystemUnderlyingSink::close(ScriptState* script_state,
                                        "Object reached an invalid state");
     return ScriptPromise();
   }
-  pending_operation_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = pending_operation_->Promise();
   writer_remote_->Close(WTF::BindOnce(&FileSystemUnderlyingSink::CloseComplete,
                                       WrapPersistent(this)));
@@ -430,8 +428,8 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
       position, std::move(consumer_handle),
       WTF::BindOnce(&WriterHelper::WriteComplete, helper->AsWeakPtr()));
 
-  pending_operation_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   return pending_operation_->Promise();
 }
 
@@ -445,8 +443,8 @@ ScriptPromise FileSystemUnderlyingSink::Truncate(
                                        "Object reached an invalid state");
     return ScriptPromise();
   }
-  pending_operation_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_operation_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = pending_operation_->Promise();
   writer_remote_->Truncate(
       size, WTF::BindOnce(&FileSystemUnderlyingSink::TruncateComplete,

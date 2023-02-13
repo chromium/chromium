@@ -10,9 +10,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_create_writable_options.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
-#include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_file_delegate.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_sync_access_handle.h"
@@ -46,7 +44,8 @@ ScriptPromise FileSystemFileHandle::createWritable(
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   mojo_ptr_->CreateFileWriter(
@@ -81,7 +80,8 @@ ScriptPromise FileSystemFileHandle::getFile(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   mojo_ptr_->AsBlob(WTF::BindOnce(
@@ -112,7 +112,8 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   mojo_ptr_->OpenAccessHandle(WTF::BindOnce(
@@ -251,6 +252,8 @@ void FileSystemFileHandle::IsSameEntryImpl(
 void FileSystemFileHandle::GetUniqueIdImpl(
     base::OnceCallback<void(const WTF::String&)> callback) {
   if (!mojo_ptr_.is_bound()) {
+    // TODO(crbug.com/1413551): Consider throwing a kInvalidState exception here
+    // rather than returning an empty string.
     std::move(callback).Run("");
     return;
   }

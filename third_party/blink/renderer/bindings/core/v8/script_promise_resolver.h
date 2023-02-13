@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -116,6 +117,10 @@ class CORE_EXPORT ScriptPromiseResolver
   void RejectWithWasmCompileError(const String& message);
 
   ScriptState* GetScriptState() const { return script_state_; }
+
+  const ExceptionContext& GetExceptionContext() const {
+    return exception_context_;
+  }
 
   // Note that an empty ScriptPromise will be returned after resolve or
   // reject is called.

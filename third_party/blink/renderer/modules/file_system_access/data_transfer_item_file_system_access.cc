@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_transfer_item.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -26,7 +27,8 @@ namespace blink {
 // static
 ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
     ScriptState* script_state,
-    DataTransferItem& data_transfer_item) {
+    DataTransferItem& data_transfer_item,
+    ExceptionState& exception_state) {
   if (!data_transfer_item.GetDataTransfer()->CanReadData()) {
     return ScriptPromise::CastUndefined(script_state);
   }
@@ -50,7 +52,8 @@ ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
   mojo::PendingRemote<mojom::blink::FileSystemAccessDataTransferToken>
       token_remote = data_object_item.CloneFileSystemAccessEntryToken();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise result = resolver->Promise();
 
   // We need to move `fsa_manager` into GetEntryFromDataTransferToken in order

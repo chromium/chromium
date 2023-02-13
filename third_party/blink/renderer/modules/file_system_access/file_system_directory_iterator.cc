@@ -7,12 +7,9 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
-#include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
@@ -28,15 +25,23 @@ FileSystemDirectoryIterator::FileSystemDirectoryIterator(
       execution_context->GetTaskRunner(TaskType::kStorage)));
 }
 
-ScriptPromise FileSystemDirectoryIterator::next(ScriptState* script_state) {
+ScriptPromise FileSystemDirectoryIterator::next(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  return nextImpl(script_state, exception_state.GetContext());
+}
+
+ScriptPromise FileSystemDirectoryIterator::nextImpl(
+    ScriptState* script_state,
+    const ExceptionContext& exception_context) {
   // TODO(crbug.com/1087157): The bindings layer should implement async
   // iterable. Until it gets implemented, this class (and especially this
   // member function) implements the behavior of async iterable in its own way.
   // Use of bindings internal code (use of bindings:: internal namespace) should
   // be gone once https://crbug.com/1087157 gets resolved.
-
   if (error_) {
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+        script_state, exception_context);
     auto result = resolver->Promise();
     file_system_access_error::Reject(resolver, *error_);
     return result;
@@ -72,7 +77,8 @@ ScriptPromise FileSystemDirectoryIterator::next(ScriptState* script_state) {
 
   if (waiting_for_more_entries_) {
     DCHECK(!pending_next_);
-    pending_next_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    pending_next_ = MakeGarbageCollected<ScriptPromiseResolver>(
+        script_state, exception_context);
     return pending_next_->Promise();
   }
 
@@ -116,8 +122,9 @@ void FileSystemDirectoryIterator::DidReadDirectory(
   waiting_for_more_entries_ = has_more_entries;
   if (pending_next_) {
     ScriptState::Scope scope(pending_next_->GetScriptState());
-    pending_next_->Resolve(
-        next(pending_next_->GetScriptState()).AsScriptValue());
+    pending_next_->Resolve(nextImpl(pending_next_->GetScriptState(),
+                                    pending_next_->GetExceptionContext())
+                               .AsScriptValue());
     pending_next_ = nullptr;
   }
 }

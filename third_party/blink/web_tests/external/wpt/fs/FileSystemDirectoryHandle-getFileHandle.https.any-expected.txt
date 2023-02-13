@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 PASS getFileHandle(create=false) rejects for non-existing files
 PASS getFileHandle(create=true) creates an empty file for non-existing files
-FAIL getFileHandle(create=true) creates an empty file with all valid ASCII characters in the name promise_test: Unhandled rejection with value: object "TypeError: Name is not allowed."
+FAIL getFileHandle(create=true) creates an empty file with all valid ASCII characters in the name promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getFileHandle' on 'FileSystemDirectoryHandle': Name is not allowed."
 PASS getFileHandle(create=true) creates an empty file with non-ASCII characters in the name
 PASS getFileHandle(create=false) returns existing files
 PASS getFileHandle(create=true) returns existing files without erasing

@@ -954,7 +954,10 @@ async function getFileHandleFromCurrentDirectory(
       // Some filenames (e.g. "thumbs.db") can't be opened (or deleted) by
       // filename. TypeError doesn't give a good error message in the app, so
       // convert to a new Error.
-      if (e.name === 'TypeError' && e.message === 'Name is not allowed.') {
+      if (e.name === 'TypeError' &&
+          e.message ===
+              'Failed to execute \'getFileHandle\' on ' +
+                  '\'FileSystemDirectoryHandle\': Name is not allowed.') {
         console.warn(e);  // Warn so a crash report is not generated.
         throw new DOMException(
             'File has a reserved name and can not be opened',
