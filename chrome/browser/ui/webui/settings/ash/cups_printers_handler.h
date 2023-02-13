@@ -84,9 +84,9 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void HandleRemoveCupsPrinter(const base::Value::List& args);
   void HandleRetrieveCupsPrinterPpd(const base::Value::List& args);
   void OnSetUpPrinter(
-      const std::string& callback_id,
       const std::string& printer_id,
       const std::string& printer_name,
+      const std::string& eula,
       const absl::optional<printing::PrinterSemanticCapsAndDefaults>& caps);
 
   // For a CupsPrinterInfo in |args|, retrieves the relevant PrinterInfo object
@@ -193,9 +193,14 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   // Called when we get a response from
   // DebugDaemonClient::CupsRetrievePrinterPpd.
-  void OnRetrieveCupsPrinterPpd(const std::string& callback_id,
-                                const std::string& printer_name,
+  void OnRetrieveCupsPrinterPpd(const std::string& printer_name,
+                                const std::string& eula,
                                 const std::vector<uint8_t>& data);
+
+  void OnRetrievePpdError(const std::string& printer_name);
+  void WriteAndDisplayPpdFile(const std::string& printer_name,
+                              const std::string& ppd);
+  void DisplayPpdFile(const base::FilePath& ppd_file_path);
 
   // Post printer setup callback.
   void OnAddedDiscoveredPrinter(const std::string& callback_id,

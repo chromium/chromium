@@ -39,14 +39,6 @@ export interface CupsPrintersList {
   printerList: CupsPrinterInfo[];
 }
 
-/**
- * Note: |ppd| is undefined in the case of a failed response.
- */
-export interface CupsPrinterPpdInfo {
-  printerName: string;
-  ppd: string;
-}
-
 export interface ManufacturersInfo {
   success: boolean;
   manufacturers: string[];
@@ -123,8 +115,8 @@ export interface CupsPrintersBrowserProxy {
 
   removeCupsPrinter(printerId: string, printerName: string): void;
 
-  retrieveCupsPrinterPpd(printerId: string, printerName: string):
-      Promise<CupsPrinterPpdInfo>;
+  retrieveCupsPrinterPpd(printerId: string, printerName: string, eula: string):
+      void;
 
   getCupsPrinterPpdPath(): Promise<string>;
 
@@ -201,9 +193,8 @@ export class CupsPrintersBrowserProxyImpl implements CupsPrintersBrowserProxy {
     chrome.send('removeCupsPrinter', [printerId, printerName]);
   }
 
-  retrieveCupsPrinterPpd(printerId: string, printerName: string):
-      Promise<CupsPrinterPpdInfo> {
-    return sendWithPromise('retrieveCupsPrinterPpd', printerId, printerName);
+  retrieveCupsPrinterPpd(printerId: string, printerName: string, eula: string) {
+    chrome.send('retrieveCupsPrinterPpd', [printerId, printerName, eula]);
   }
 
   addCupsPrinter(newPrinter: CupsPrinterInfo): Promise<PrinterSetupResult> {

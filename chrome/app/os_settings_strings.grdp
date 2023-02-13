@@ -2759,7 +2759,7 @@ Press an assigned switch or key to remove assignment.
     View printer PPD
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_VIEW_PPD_ERROR_MESSAGE" desc="The message shown when the request to view a PPD is unsuccessful.">
-    Unable to retrieve PPD.
+    Unable to retrieve PPD for <ph name="PRINTER_NAME">$1<ex>Acme Printer</ex></ph>.
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_PPD_INTRO" desc="Text used to introduce the PPD for an active printer.">
     PPD for <ph name="PRINTER_NAME">$1<ex>Acme Printer</ex></ph>
@@ -2844,6 +2844,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_EULA_NOTICE" desc="The message shown to users if a printer has a EULA agreement attached to it.">
     End User License Agreement
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_EULA_NOTICE_HEADER" desc="The message shown to users if a printer has a EULA agreement attached to it.">
+    End User License Agreement: <ph name="EULA_LINK">$1<ex>chrome://os-credits/#license</ex></ph>
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_IPP_URI_UNREACHABLE" desc="The message shown on the uri field of the add/edit printer dialogs when attempting to connect to an IPP printer that is not found on the network.">
     Couldn't detect a printer. Please enter printer address again.

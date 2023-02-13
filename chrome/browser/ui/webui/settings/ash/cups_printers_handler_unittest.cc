@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -25,6 +29,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "printing/backend/test_print_backend.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -185,9 +190,16 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   ui::SelectFileDialog::FileTypeInfo* expected_file_type_info_;
 };
 
-class CupsPrintersHandlerTest
-    : public testing::Test,
-      public content::TestWebUI::JavascriptCallObserver {
+class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
+};
+
+class CupsPrintersHandlerTest : public testing::Test {
  public:
   CupsPrintersHandlerTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
@@ -203,30 +215,51 @@ class CupsPrintersHandlerTest
     printers_handler_->SetWebUIForTest(&web_ui_);
     printers_handler_->RegisterMessages();
     printers_handler_->AllowJavascriptForTesting();
-    web_ui_.AddJavascriptCallObserver(this);
     printing::PrintBackend::SetPrintBackendForTesting(print_backend_.get());
     DebugDaemonClient::InitializeFake();
+    // Initialize NewWindowDelegate things.
+    auto instance = std::make_unique<MockNewWindowDelegate>();
+    auto primary = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_primary_ = primary.get();
+    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
+        std::move(instance), std::move(primary));
+
+    DownloadCoreServiceFactory::GetForBrowserContext(profile_.get())
+        ->SetDownloadManagerDelegateForTesting(
+            std::make_unique<ChromeDownloadManagerDelegate>(profile_.get()));
+    // Use a temporary directory for downloads.
+    ASSERT_TRUE(download_dir_.CreateUniqueTempDir());
+    DownloadPrefs* prefs =
+        DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager());
+    prefs->SetDownloadPath(download_dir_.GetPath());
+    prefs->SkipSanitizeDownloadTargetPathForTesting();
   }
 
   void TearDown() override {
+    new_window_provider_.reset();
     DebugDaemonClient::Shutdown();
     printing::PrintBackend::SetPrintBackendForTesting(nullptr);
-    web_ui_.RemoveJavascriptCallObserver(this);
   }
 
-  void OnJavascriptFunctionCalled(
-      const content::TestWebUI::CallData& call_data) override {
-    run_loop_.Quit();
-  }
-
-  void CallRetrieveCupsPpd() {
+  void CallRetrieveCupsPpd(std::string license_url = "") {
     base::Value::List args;
-    args.Append(kRetrievePpdCallbackName);
     args.Append("printer_id");
     args.Append(kPpdPrinterName);
+    args.Append(license_url);
 
     web_ui_.HandleReceivedMessage("retrieveCupsPrinterPpd", args);
     run_loop_.Run();
+  }
+
+  // Get the contents of the file that was downloaded.  Return true on success,
+  // false on error.
+  bool GetDownloadedPpdContents(std::string& contents) const {
+    const base::FilePath downloads_path =
+        DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
+            ->DownloadPath();
+    const base::FilePath filepath =
+        downloads_path.Append(kPpdPrinterName).AddExtension("ppd");
+    return base::ReadFileToString(filepath, &contents);
   }
 
  protected:
@@ -239,13 +272,20 @@ class CupsPrintersHandlerTest
   base::RunLoop run_loop_;
   scoped_refptr<printing::TestPrintBackend> print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
+  MockNewWindowDelegate* new_window_delegate_primary_;
+  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
+  base::ScopedTempDir download_dir_;
 
-  const std::string kRetrievePpdCallbackName = "retrievedPpdCallbackName";
   const std::string kPpdPrinterName = "printer_name";
   const std::string kDefaultPpdData = "PPD data used for testing";
   const std::vector<uint8_t> kPpdData{kDefaultPpdData.begin(),
                                       kDefaultPpdData.end()};
-  const std::string kJsCallbackName = "cr.webUIResponse";
+  const std::string kPpdDataStrWithHeader = R"(*PPD-Adobe: "4.3")";
+  const std::vector<uint8_t> kPpdDataWithHeader{kPpdDataStrWithHeader.begin(),
+                                                kPpdDataStrWithHeader.end()};
+  const std::string kPpdErrorString =
+      base::StringPrintf("Unable to retrieve PPD for %s.",
+                         kPpdPrinterName.c_str());
 };
 
 TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
@@ -281,10 +321,6 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
 }
 
 TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
-  DownloadCoreServiceFactory::GetForBrowserContext(profile_.get())
-      ->SetDownloadManagerDelegateForTesting(
-          std::make_unique<ChromeDownloadManagerDelegate>(profile_.get()));
-
   ui::SelectFileDialog::FileTypeInfo expected_file_type_info;
   // We only allow .ppd and .ppd.gz file extensions for our file select dialog.
   expected_file_type_info.extensions.push_back({"ppd"});
@@ -298,7 +334,7 @@ TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
 }
 
 TEST_F(CupsPrintersHandlerTest, ViewPPD) {
-  // Test the nominal case where everything works and the PPD gets returned.
+  // Test the nominal case where everything works and the PPD gets downloaded.
 
   static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
       ->SetPpdDataForTesting(kPpdData);
@@ -309,17 +345,79 @@ TEST_F(CupsPrintersHandlerTest, ViewPPD) {
       printer->id(),
       std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
 
+  EXPECT_CALL(*new_window_delegate_primary_,
+              OpenUrl(testing::Property(&GURL::ExtractFileName,
+                                        testing::StartsWith(kPpdPrinterName)),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
+
   CallRetrieveCupsPpd();
 
-  base::Value::Dict expectedResults;
-  expectedResults.Set("ppd", kDefaultPpdData);
-  expectedResults.Set("printerName", kPpdPrinterName);
+  // Check for the downloaded PPD file.
+  std::string contents;
+  EXPECT_TRUE(GetDownloadedPpdContents(contents));
+  EXPECT_EQ(contents, kDefaultPpdData);
+}
 
-  EXPECT_EQ(kJsCallbackName, web_ui_.call_data().back()->function_name());
-  EXPECT_EQ(base::Value(kRetrievePpdCallbackName),
-            *web_ui_.call_data().back()->arg1());
-  EXPECT_EQ(base::Value(true), *web_ui_.call_data().back()->arg2());
-  EXPECT_EQ(expectedResults, *web_ui_.call_data().back()->arg3());
+TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicense) {
+  // Test the nominal case where everything works and the PPD (with a license)
+  // gets returned.
+
+  static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
+      ->SetPpdDataForTesting(kPpdDataWithHeader);
+
+  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
+  ASSERT_TRUE(printer);
+  print_backend_->AddValidPrinter(
+      printer->id(),
+      std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
+
+  EXPECT_CALL(*new_window_delegate_primary_,
+              OpenUrl(testing::Property(&GURL::ExtractFileName,
+                                        testing::StartsWith(kPpdPrinterName)),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
+
+  const std::string license_url("chrome://os-credits/xerox-printing-license");
+  CallRetrieveCupsPpd(license_url);
+
+  // Check that the downloaded PPD file contains the license URL.
+  std::string contents;
+  EXPECT_TRUE(GetDownloadedPpdContents(contents));
+  EXPECT_THAT(contents, testing::HasSubstr(license_url));
+  EXPECT_THAT(contents, testing::HasSubstr(kPpdDataStrWithHeader));
+}
+
+TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicenseBadPpd) {
+  // Try to view a PPD that contains a license, but the PPD doesn't start with
+  // the expected PPD string, so the license can't be inserted, and the PPD
+  // can't be downloaded.
+
+  static_cast<FakeDebugDaemonClient*>(DebugDaemonClient::Get())
+      ->SetPpdDataForTesting(kPpdData);
+
+  absl::optional<Printer> printer = printers_manager_.GetPrinter("");
+  ASSERT_TRUE(printer);
+  print_backend_->AddValidPrinter(
+      printer->id(),
+      std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
+
+  EXPECT_CALL(*new_window_delegate_primary_,
+              OpenUrl(testing::Property(&GURL::ExtractFileName,
+                                        testing::StartsWith(kPpdPrinterName)),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
+
+  const std::string license_url("chrome://os-credits/xerox-printing-license");
+  CallRetrieveCupsPpd(license_url);
+
+  // Check that the downloaded PPD file contains the error message.
+  std::string contents;
+  EXPECT_TRUE(GetDownloadedPpdContents(contents));
+  EXPECT_THAT(contents, testing::HasSubstr(kPpdErrorString));
 }
 
 TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotFound) {
@@ -328,16 +426,19 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotFound) {
   // Set an empty printer to simluate not being able to find the printer.
   printers_manager_.SetPrinter(absl::optional<Printer>());
 
+  EXPECT_CALL(*new_window_delegate_primary_,
+              OpenUrl(testing::Property(&GURL::ExtractFileName,
+                                        testing::StartsWith(kPpdPrinterName)),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
+
   CallRetrieveCupsPpd();
 
-  base::Value::Dict expectedResults;
-  expectedResults.Set("printerName", kPpdPrinterName);
-
-  EXPECT_EQ(kJsCallbackName, web_ui_.call_data().back()->function_name());
-  EXPECT_EQ(base::Value(kRetrievePpdCallbackName),
-            *web_ui_.call_data().back()->arg1());
-  EXPECT_EQ(base::Value(false), *web_ui_.call_data().back()->arg2());
-  EXPECT_EQ(expectedResults, *web_ui_.call_data().back()->arg3());
+  // Check that the downloaded PPD file contains the error message.
+  std::string contents;
+  EXPECT_TRUE(GetDownloadedPpdContents(contents));
+  EXPECT_THAT(contents, testing::HasSubstr(kPpdErrorString));
 }
 
 TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotSetup) {
@@ -355,17 +456,19 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotSetup) {
   // This will cause our printer to get set up.
   printers_manager_.SetPrinterInstalled(false);
 
+  EXPECT_CALL(*new_window_delegate_primary_,
+              OpenUrl(testing::Property(&GURL::ExtractFileName,
+                                        testing::StartsWith(kPpdPrinterName)),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
+
   CallRetrieveCupsPpd();
 
-  base::Value::Dict expectedResults;
-  expectedResults.Set("ppd", kDefaultPpdData);
-  expectedResults.Set("printerName", kPpdPrinterName);
-
-  EXPECT_EQ(kJsCallbackName, web_ui_.call_data().back()->function_name());
-  EXPECT_EQ(base::Value(kRetrievePpdCallbackName),
-            *web_ui_.call_data().back()->arg1());
-  EXPECT_EQ(base::Value(true), *web_ui_.call_data().back()->arg2());
-  EXPECT_EQ(expectedResults, *web_ui_.call_data().back()->arg3());
+  // Check for the downloaded PPD file.
+  std::string contents;
+  EXPECT_TRUE(GetDownloadedPpdContents(contents));
+  EXPECT_EQ(contents, kDefaultPpdData);
 }
 
 TEST_F(CupsPrintersHandlerTest, ViewPPDEmptyPPD) {
@@ -380,16 +483,19 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDEmptyPPD) {
       printer->id(),
       std::make_unique<printing::PrinterSemanticCapsAndDefaults>(), nullptr);
 
+  EXPECT_CALL(*new_window_delegate_primary_,
+              OpenUrl(testing::Property(&GURL::ExtractFileName,
+                                        testing::StartsWith(kPpdPrinterName)),
+                      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      ash::NewWindowDelegate::Disposition::kSwitchToTab))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop_, &base::RunLoop::Quit));
+
   CallRetrieveCupsPpd();
 
-  base::Value::Dict expectedResults;
-  expectedResults.Set("printerName", kPpdPrinterName);
-
-  EXPECT_EQ(kJsCallbackName, web_ui_.call_data().back()->function_name());
-  EXPECT_EQ(base::Value(kRetrievePpdCallbackName),
-            *web_ui_.call_data().back()->arg1());
-  EXPECT_EQ(base::Value(false), *web_ui_.call_data().back()->arg2());
-  EXPECT_EQ(expectedResults, *web_ui_.call_data().back()->arg3());
+  // Check that the downloaded PPD file contains the error message.
+  std::string contents;
+  EXPECT_TRUE(GetDownloadedPpdContents(contents));
+  EXPECT_THAT(contents, testing::HasSubstr(kPpdErrorString));
 }
 
 }  // namespace ash::settings

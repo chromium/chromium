@@ -7,6 +7,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -19,6 +20,7 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
@@ -40,6 +42,7 @@
 #include "chrome/browser/ui/webui/settings/ash/server_printer_url_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/ppd_line_reader.h"
@@ -58,6 +61,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/printer_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace ash::settings {
@@ -438,11 +442,11 @@ void CupsPrintersHandler::HandleRetrieveCupsPrinterPpd(
     const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
 
-  const std::string& callback_id = args[0].GetString();
-  const std::string& printer_id = args[1].GetString();
-  const std::string& printer_name = args[2].GetString();
+  const std::string& printer_id = args[0].GetString();
+  const std::string& printer_name = args[1].GetString();
+  const std::string& eula = args[2].GetString();
 
-  PRINTER_LOG(DEBUG) << "Retrieving printer PPD for " << printer_id << "("
+  PRINTER_LOG(DEBUG) << "Retrieving printer PPD for " << printer_id << " ("
                      << printer_name << ")";
 
   // We first make sure the printer is setup in CUPS backend (when the user logs
@@ -451,23 +455,22 @@ void CupsPrintersHandler::HandleRetrieveCupsPrinterPpd(
   absl::optional<chromeos::Printer> printer =
       printers_manager_->GetPrinter(printer_id);
   if (!printer) {
-    base::Value::Dict info;
-    info.Set("printerName", printer_name);
-    RejectJavascriptCallback(base::Value(callback_id), info);
+    PRINTER_LOG(ERROR) << "Unable to retrieve printer " << printer_id;
+    OnRetrievePpdError(printer_name);
     return;
   }
 
   ash::printing::SetUpPrinter(
       printers_manager_, printer_configurer_.get(), *printer,
       base::BindOnce(&CupsPrintersHandler::OnSetUpPrinter,
-                     weak_factory_.GetWeakPtr(), callback_id, printer_id,
-                     printer_name));
+                     weak_factory_.GetWeakPtr(), printer_id, printer_name,
+                     eula));
 }
 
 void CupsPrintersHandler::OnSetUpPrinter(
-    const std::string& callback_id,
     const std::string& printer_id,
     const std::string& printer_name,
+    const std::string& eula,
     const absl::optional<::printing::PrinterSemanticCapsAndDefaults>& caps) {
   // Once the printer has been setup we can request the PPD.
   const std::vector<uint8_t> empty_ppd;
@@ -475,28 +478,106 @@ void CupsPrintersHandler::OnSetUpPrinter(
   DebugDaemonClient::Get()->CupsRetrievePrinterPpd(
       printer_id,
       base::BindOnce(&CupsPrintersHandler::OnRetrieveCupsPrinterPpd,
-                     weak_factory_.GetWeakPtr(), callback_id, printer_name),
+                     weak_factory_.GetWeakPtr(), printer_name, eula),
       base::BindOnce(&CupsPrintersHandler::OnRetrieveCupsPrinterPpd,
-                     weak_factory_.GetWeakPtr(), callback_id, printer_name,
+                     weak_factory_.GetWeakPtr(), printer_name, eula,
                      empty_ppd));
 }
 
 void CupsPrintersHandler::OnRetrieveCupsPrinterPpd(
-    const std::string& callback_id,
     const std::string& printer_name,
+    const std::string& eula,
     const std::vector<uint8_t>& data) {
-  // Bundle printer metadata
-  base::Value::Dict info;
-  info.Set("printerName", printer_name);
-
   if (data.empty()) {
-    RejectJavascriptCallback(base::Value(callback_id), info);
-  } else {
-    // Convert our ppd (array of bytes) into a string
-    const std::string ppd(data.begin(), data.end());
-    info.Set("ppd", ppd);
-    ResolveJavascriptCallback(base::Value(callback_id), info);
+    PRINTER_LOG(ERROR) << "Retrieved an empty ppd";
+    OnRetrievePpdError(printer_name);
+    return;
   }
+
+  // Convert our ppd (array of bytes) into a string.
+  std::string ppd(data.begin(), data.end());
+
+  // If we have a eula link, insert that into our PPD as a comment.
+  if (!eula.empty()) {
+    const std::string ppd_start(R"(*PPD-Adobe: "4.3")");
+    std::string::size_type index = ppd.find(ppd_start);
+    if (index == std::string::npos) {
+      PRINTER_LOG(ERROR)
+          << "Unable to find start of PPD while inserting license";
+      OnRetrievePpdError(printer_name);
+      return;
+    }
+    index += ppd_start.length();
+    const std::string eulaText =
+        l10n_util::GetStringFUTF8(IDS_SETTINGS_PRINTING_CUPS_EULA_NOTICE_HEADER,
+                                  std::u16string(eula.begin(), eula.end()));
+    ppd.insert(index, base::StringPrintf(R"(
+*%%
+*%%  %s
+*%%)",
+                                         eulaText.data()));
+  }
+
+  WriteAndDisplayPpdFile(printer_name, ppd);
+}
+
+void CupsPrintersHandler::OnRetrievePpdError(const std::string& printer_name) {
+  // When there is an error retrieving the PPD, instead of saving the PPD file
+  // to the Downloads dir, we write a file containing an error message and
+  // display that.
+  const std::string message = l10n_util::GetStringFUTF8(
+      IDS_SETTINGS_PRINTING_CUPS_VIEW_PPD_ERROR_MESSAGE,
+      std::u16string(printer_name.begin(), printer_name.end()));
+  WriteAndDisplayPpdFile(printer_name, message);
+}
+
+base::FilePath DownloadPpdFile(const base::FilePath& ppd_file_path_base,
+                               const std::string& ppd) {
+  // Make sure we don't overwrite any of the user's current files.
+  const base::FilePath ppd_file_path = base::GetUniquePath(ppd_file_path_base);
+  if (ppd_file_path.empty()) {
+    PRINTER_LOG(ERROR) << "Unable to save PPD file ("
+                       << ppd_file_path_base.value() << ") - file exists";
+    return base::FilePath();
+  }
+
+  if (!base::WriteFile(ppd_file_path, ppd)) {
+    PRINTER_LOG(ERROR) << "Unable to save PPD file to specified path: "
+                       << ppd_file_path.value();
+    return base::FilePath();
+  }
+
+  return ppd_file_path;
+}
+
+void CupsPrintersHandler::WriteAndDisplayPpdFile(
+    const std::string& printer_name,
+    const std::string& ppd) {
+  const base::FilePath downloads_path =
+      DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
+          ->DownloadPath();
+  const base::FilePath ppd_file_path_base =
+      downloads_path.Append(printer_name).AddExtension("ppd");
+
+  // Use USER_BLOCKING here since the user is expecting a new web page to load
+  // after clicking the View PPD link.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(DownloadPpdFile, ppd_file_path_base, ppd),
+      base::BindOnce(&CupsPrintersHandler::DisplayPpdFile,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void CupsPrintersHandler::DisplayPpdFile(const base::FilePath& ppd_file_path) {
+  if (ppd_file_path.empty()) {
+    return;
+  }
+
+  PRINTER_LOG(DEBUG) << "PPD saved to " << ppd_file_path;
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(base::StringPrintf("file://%s", ppd_file_path.value().c_str())),
+      ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void CupsPrintersHandler::HandleRemoveCupsPrinter(
