@@ -631,7 +631,7 @@ LogLikelihoodRatioVideoFrameValidator::Validate(
   DVLOGF(4) << "frame_index: " << frame_index
             << ", log likelihood ratio: " << ratio;
   log_likelihood_ratios_[frame_index] = ratio;
-  if (ratio < tolerance_) {
+  if (ratio >= tolerance_) {
     return std::make_unique<LogLikelihoodRatioMismatchedFrameInfo>(frame_index,
                                                                    ratio);
   }
