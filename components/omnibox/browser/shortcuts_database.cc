@@ -306,7 +306,9 @@ bool ShortcutsDatabase::EnsureTable() {
   for (int i = current_version + 1; i <= kCurrentVersionNumber; ++i) {
     if (!DoMigration(i))
       return false;
-    meta_table_.SetVersionNumber(i);
+    if (!meta_table_.SetVersionNumber(i)) {
+      return false;
+    }
   }
 
   return true;
