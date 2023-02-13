@@ -24,6 +24,7 @@ class SavedPasswordsPresenter;
 class PasswordImporter {
  public:
   static constexpr size_t MAX_PASSWORDS_PER_IMPORT = 3000;
+  static constexpr size_t MAX_NOTE_LENGTH = 1000;
 
   // CompletionCallback is the type of the processing function for parsed
   // passwords.

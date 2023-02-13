@@ -15,9 +15,11 @@
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
 #include "components/sync/base/bind_to_task_runner.h"
+#include "components/sync/base/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using password_manager::ImportEntry;
@@ -78,15 +80,20 @@ bool IsSuccessOrExactMatch(const SavedPasswordsPresenter::AddResult& status) {
          status == SavedPasswordsPresenter::AddResult::kExactMatch;
 }
 
+ImportEntry CreateFailedImportEntry(const CredentialUIEntry& credential,
+                                    const ImportEntry::Status status) {
+  ImportEntry result;
+  result.url = credential.GetURL().possibly_invalid_spec();
+  result.username = base::UTF16ToUTF8(credential.username);
+  result.status = status;
+  return result;
+}
+
 ImportEntry CreateFailedImportEntry(
     SavedPasswordsPresenter::AddResult add_result,
     const CredentialUIEntry& credential) {
   DCHECK(!IsSuccessOrExactMatch(add_result));
-  ImportEntry result;
-  result.url = credential.GetURL().possibly_invalid_spec();
-  result.username = base::UTF16ToUTF8(credential.username);
-  result.status = ToImportEntryStatus(add_result);
-  return result;
+  return CreateFailedImportEntry(credential, ToImportEntryStatus(add_result));
 }
 
 base::expected<password_manager::CredentialUIEntry, ImportEntry>
@@ -133,6 +140,11 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
   if (csv_password.GetUsername().length() > 1000)
     return MakeError(ImportEntry::Status::LONG_USERNAME);
 
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup) &&
+      csv_password.GetNote().length() > 1000) {
+    return MakeError(ImportEntry::Status::LONG_NOTE);
+  }
+
   DCHECK(url.has_value());
   return password_manager::CredentialUIEntry(csv_password, store);
 }
@@ -146,7 +158,6 @@ void AddCredentialsCallback(
     password_manager::PasswordImporter::ImportResultsCallback
         import_results_callback,
     const std::vector<SavedPasswordsPresenter::AddResult>& add_results) {
-  import_results.number_imported = 0;
   for (size_t i = 0; i < add_results.size(); i++) {
     if (IsSuccessOrExactMatch(add_results[i])) {
       import_results.number_imported++;
@@ -223,6 +234,8 @@ void PasswordImporter::ConsumePasswords(
   results.file_name = std::move(file_name);
   results.status = status_;
 
+  DCHECK_EQ(results.number_imported, 0u);
+
   if (!seq) {
     // A nullptr returned by the parser means a bad format.
     if (results.status == ImportResults::Status::NONE) {
@@ -244,6 +257,76 @@ void PasswordImporter::ConsumePasswords(
   std::vector<password_manager::CredentialUIEntry> credentials;
   credentials.reserve(seq->csv_passwords.size());
 
+  auto ResolveConflictingNotes = [&](const CredentialUIEntry& credential) {
+    // Returns `true` if the credential has been resolved (i.e.: conflicting
+    // local credential(s) will be edited to include imported note or error will
+    // be reported to the user) and doesn't need to be further processed.
+    // Returns `false` if note doesn't require special treatment (i.e.: the note
+    // data will not get lost due to conflicts).
+    DCHECK(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+
+    const auto& imported_note = credential.note;
+    DCHECK(imported_note.size() <= MAX_NOTE_LENGTH);
+
+    if (imported_note.empty()) {
+      // Nothing to resolve.
+      return false;
+    }
+
+    // TODO(crbug.com/1383938): Add metric for total number of credential with a
+    // note found in the file. Increment a variable here, emit to the histogram
+    // after the loop.
+    auto forms = presenter_->GetCorrespondingPasswordForms(credential);
+    if (forms.empty()) {
+      // No matching local credentials.
+      return false;
+    }
+
+    auto local_credential = CredentialUIEntry(forms);
+    if (local_credential.note == imported_note) {
+      // Duplicate is not considered to be a conflict.
+      // TODO(crbug.com/1383938): Add metric – note resolved – duplicate.
+      return false;
+    }
+
+    if (local_credential.note.find(imported_note) != std::u16string::npos) {
+      // Don't proceed with the concatenation if the local note contains the
+      // imported note as a substring.
+      // TODO(crbug.com/1383938): Add metric – note resolved – imported note is
+      // a substring of local note.
+      return false;
+    }
+
+    if (imported_note.size() + 1u + local_credential.note.size() >=
+        MAX_NOTE_LENGTH) {
+      // Notes concatenation size should not exceed 1000 characters.
+      results.failed_imports.push_back(CreateFailedImportEntry(
+          credential, ImportEntry::Status::LONG_CONCATENATED_NOTE));
+      // TODO(crbug.com/1383938): Add metric – note resolved – notes
+      // concatenation is too long. Error reported. Imported credential doesn't
+      // require further processing.
+      return true;
+    }
+
+    std::u16string concatenation =
+        local_credential.note.empty()
+            ? imported_note
+            : local_credential.note + u"\n" + imported_note;
+    DCHECK(concatenation.size() <= MAX_NOTE_LENGTH);
+    CredentialUIEntry updated_credential = local_credential;
+    updated_credential.note = concatenation;
+    // TODO(crbug.com/1407114): This is supposed to be a very rare operation.
+    // Otherwise, accumulate credentials that need to be edited and ideally do
+    // updates as a bulk operation.
+    presenter_->EditSavedCredentials(local_credential, updated_credential);
+    // TODO(crbug.com/1383938): Add metric – note resolved – notes concatenated.
+    results.number_imported++;
+
+    // Matching local credentials were updated with notes concatenation.
+    // Imported credential doesn't require further processing.
+    return true;
+  };
+
   // Go over all canonically parsed passwords:
   // 1) aggregate all valid ones in `credentials` to be passed over to the
   // presenter. 2) aggregate all parsing errors in the results.
@@ -251,10 +334,20 @@ void PasswordImporter::ConsumePasswords(
     base::expected<password_manager::CredentialUIEntry, ImportEntry>
         credential = CSVPasswordToCredentialUIEntry(csv_password, store);
 
-    if (credential.has_value())
-      credentials.emplace_back(std::move(credential.value()));
-    else
+    if (!credential.has_value()) {
       results.failed_imports.emplace_back(std::move(credential.error()));
+      continue;
+    }
+
+    const CredentialUIEntry& current_credential = credential.value();
+    if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+      credentials.emplace_back(std::move(current_credential));
+      credentials.back().note.clear();
+      continue;
+    }
+    if (!ResolveConflictingNotes(current_credential)) {
+      credentials.emplace_back(std::move(current_credential));
+    }
   }
 
   // Pass `credentials` along with import results `results` to the callback

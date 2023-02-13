@@ -126,7 +126,8 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
 CredentialUIEntry::CredentialUIEntry(const CSVPassword& csv_password,
                                      PasswordForm::Store to_store)
     : username(base::UTF8ToUTF16(csv_password.GetUsername())),
-      password(base::UTF8ToUTF16(csv_password.GetPassword())) {
+      password(base::UTF8ToUTF16(csv_password.GetPassword())),
+      note(base::UTF8ToUTF16(csv_password.GetNote())) {
   CredentialFacet facet;
   facet.url = csv_password.GetURL().value();
   facet.signon_realm =
