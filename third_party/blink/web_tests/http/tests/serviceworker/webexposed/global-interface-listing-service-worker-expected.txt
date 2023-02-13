@@ -78,21 +78,6 @@ interface ByteLengthQueuingStrategy
     getter highWaterMark
     getter size
     method constructor
-interface CSPViolationReportBody : ReportBody
-    attribute @@toStringTag
-    getter blockedURL
-    getter columnNumber
-    getter disposition
-    getter documentURL
-    getter effectiveDirective
-    getter lineNumber
-    getter originalPolicy
-    getter referrer
-    getter sample
-    getter sourceFile
-    getter statusCode
-    method constructor
-    method toJSON
 interface CSSSkewX : CSSTransformComponent
     attribute @@toStringTag
     getter ax
@@ -186,18 +171,6 @@ interface CookieStoreManager
     method getSubscriptions
     method subscribe
     method unsubscribe
-interface CoopAccessViolationReportBody : ReportBody
-    attribute @@toStringTag
-    getter columnNumber
-    getter lineNumber
-    getter openeeURL
-    getter openerURL
-    getter otherDocumentURL
-    getter property
-    getter sourceFile
-    getter type
-    method constructor
-    method toJSON
 interface CountQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -428,26 +401,6 @@ interface DecompressionStream
     getter readable
     getter writable
     method constructor
-interface DeprecationReportBody : ReportBody
-    attribute @@toStringTag
-    getter anticipatedRemoval
-    getter columnNumber
-    getter id
-    getter lineNumber
-    getter message
-    getter sourceFile
-    method constructor
-    method toJSON
-interface DocumentPolicyViolationReportBody : ReportBody
-    attribute @@toStringTag
-    getter columnNumber
-    getter disposition
-    getter featureId
-    getter lineNumber
-    getter message
-    getter sourceFile
-    method constructor
-    method toJSON
 interface ErrorEvent : Event
     attribute @@toStringTag
     getter colno
@@ -825,15 +778,6 @@ interface ImageData
 interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method constructor
-interface InterventionReportBody : ReportBody
-    attribute @@toStringTag
-    getter columnNumber
-    getter id
-    getter lineNumber
-    getter message
-    getter sourceFile
-    method constructor
-    method toJSON
 interface Lock
     attribute @@toStringTag
     getter mode
@@ -1242,16 +1186,6 @@ interface Permissions
     method request
     method requestAll
     method revoke
-interface PermissionsPolicyViolationReportBody : ReportBody
-    attribute @@toStringTag
-    getter columnNumber
-    getter disposition
-    getter featureId
-    getter lineNumber
-    getter message
-    getter sourceFile
-    method constructor
-    method toJSON
 interface PromiseRejectionEvent : Event
     attribute @@toStringTag
     getter promise
@@ -1338,17 +1272,6 @@ interface ReadableStreamDefaultReader
     method constructor
     method read
     method releaseLock
-interface Report
-    attribute @@toStringTag
-    getter body
-    getter type
-    getter url
-    method constructor
-    method toJSON
-interface ReportBody
-    attribute @@toStringTag
-    method constructor
-    method toJSON
 interface ReportingObserver
     attribute @@toStringTag
     method constructor

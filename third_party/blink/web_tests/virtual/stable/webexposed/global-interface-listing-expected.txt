@@ -437,21 +437,6 @@ interface ByteLengthQueuingStrategy
 interface CDATASection : Text
     attribute @@toStringTag
     method constructor
-interface CSPViolationReportBody : ReportBody
-    attribute @@toStringTag
-    getter blockedURL
-    getter columnNumber
-    getter disposition
-    getter documentURL
-    getter effectiveDirective
-    getter lineNumber
-    getter originalPolicy
-    getter referrer
-    getter sample
-    getter sourceFile
-    getter statusCode
-    method constructor
-    method toJSON
 interface CSSAnimation : Animation
     attribute @@toStringTag
     getter animationName
@@ -1040,18 +1025,6 @@ interface CookieStoreManager
     method getSubscriptions
     method subscribe
     method unsubscribe
-interface CoopAccessViolationReportBody : ReportBody
-    attribute @@toStringTag
-    getter columnNumber
-    getter lineNumber
-    getter openeeURL
-    getter openerURL
-    getter otherDocumentURL
-    getter property
-    getter sourceFile
-    getter type
-    method constructor
-    method toJSON
 interface CountQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -1402,16 +1375,6 @@ interface DelegatedInkTrailPresenter
     getter presentationArea
     method constructor
     method updateInkTrailStartPoint
-interface DeprecationReportBody : ReportBody
-    attribute @@toStringTag
-    getter anticipatedRemoval
-    getter columnNumber
-    getter id
-    getter lineNumber
-    getter message
-    getter sourceFile
-    method constructor
-    method toJSON
 interface DeviceMotionEvent : Event
     attribute @@toStringTag
     getter acceleration
@@ -1824,16 +1787,6 @@ interface DocumentFragment : Node
     method querySelector
     method querySelectorAll
     method replaceChildren
-interface DocumentPolicyViolationReportBody : ReportBody
-    attribute @@toStringTag
-    getter columnNumber
-    getter disposition
-    getter featureId
-    getter lineNumber
-    getter message
-    getter sourceFile
-    method constructor
-    method toJSON
 interface DocumentTimeline : AnimationTimeline
     attribute @@toStringTag
     method constructor
@@ -4484,15 +4437,6 @@ interface IntersectionObserverEntry
     getter target
     getter time
     method constructor
-interface InterventionReportBody : ReportBody
-    attribute @@toStringTag
-    getter columnNumber
-    getter id
-    getter lineNumber
-    getter message
-    getter sourceFile
-    method constructor
-    method toJSON
 interface Keyboard
     attribute @@toStringTag
     method constructor
@@ -6489,17 +6433,6 @@ interface RemotePlayback : EventTarget
     setter onconnect
     setter onconnecting
     setter ondisconnect
-interface Report
-    attribute @@toStringTag
-    getter body
-    getter type
-    getter url
-    method constructor
-    method toJSON
-interface ReportBody
-    attribute @@toStringTag
-    method constructor
-    method toJSON
 interface ReportingObserver
     attribute @@toStringTag
     method constructor
