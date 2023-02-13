@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -278,6 +279,41 @@ TEST_F(InteractiveViewsTestTest, NameDescendantViewByTypeAndIndex) {
                         kTab1Title),
       CheckViewProperty(kViewName2, &views::TabbedPaneTab::GetTitleText,
                         kTab3Title));
+}
+
+TEST_F(InteractiveViewsTestTest, IfViewTrue) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(const LabelButton*)>,
+                         condition);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step);
+
+  EXPECT_CALL(condition, Run(button1_.get())).WillOnce(testing::Return(true));
+  EXPECT_CALL(step, Run);
+  RunTestSequence(IfView(kButton1Id, condition.Get(), Do(step.Get())));
+}
+
+TEST_F(InteractiveViewsTestTest, IfViewFalse) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(const LabelButton*)>,
+                         condition);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step);
+
+  EXPECT_CALL(condition, Run(button1_.get())).WillOnce(testing::Return(false));
+  RunTestSequence(IfView(kButton1Id, condition.Get(), Do(step.Get())));
+}
+
+// Test that elements named in the main test sequence are available in
+// subsequences.
+TEST_F(InteractiveViewsTestTest, InParallelNamedView) {
+  auto is_view = []() {
+    return base::BindOnce([](View* actual) { return actual; });
+  };
+
+  RunTestSequence(
+      // Name two views. Each will be referenced in a subsequence.
+      NameView(kViewName, button1_.get()), NameView(kViewName2, button2_.get()),
+      // Run subsequences, each of which references a different named view from
+      // the outer sequence. Both should succeed.
+      InParallel(CheckView(kViewName, is_view(), button1_),
+                 CheckView(kViewName2, is_view(), button2_)));
 }
 
 }  // namespace views::test

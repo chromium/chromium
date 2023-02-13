@@ -247,6 +247,52 @@ class InteractiveTestApi {
   template <typename T>
   [[nodiscard]] StepBuilder InContext(ElementContext context, T&& step);
 
+  // Executes `steps` (which may be a StepBuilder, MultiStep, etc.) if
+  // `condition` returns true. Note that if `element` cannot be found, the
+  // step will not wait for it; null will be passed to `condition` instead.
+  //
+  // For IfElement(), the signature of the (once) callback passed as `condition`
+  // should be of the form:
+  //   [[const InteractionSequence*,] const TrackedElement*] -> bool
+  // For If(), the signature should be:
+  //   [const InteractionSequence*] -> bool
+  template <typename T, typename U>
+  [[nodiscard]] static StepBuilder IfElement(ElementSpecifier element,
+                                             T condition,
+                                             U&& steps);
+  template <typename T, typename U>
+  [[nodiscard]] static StepBuilder If(T condition, U&& steps);
+
+  // Executes each of `sequences` in parallel, independently of each other, with
+  // the expectation that all will succeed. Each sequence should be a step or
+  // MultiStep.
+  //
+  // All of `sequences` must succeed or the test will fail.
+  //
+  // This is useful when you are waiting for several discrete events, but the
+  // order they may occur in is unspecified/undefined, and there is no way to
+  // wait for them in sequence in a way that won't occasionally flake due to the
+  // race condition.
+  //
+  // Side-effects due to callbacks during these subsequences should be
+  // minimized, as one sequence could theoretically interfere with the
+  // functioning of another.
+  template <typename... Args>
+  [[nodiscard]] static StepBuilder InParallel(Args&&... sequences);
+
+  // Executes each of `sequences` in parallel, independently of each other, with
+  // the expectation that at least one will succeed. (The others will be
+  // canceled.) Each sequence should be a step or MultiStep.
+  //
+  // At least one of `sequences` must succeed or the test will fail.
+  //
+  // Side-effects due to callbacks during these subsequences should be
+  // minimized, as one sequence could theoretically interfere with the
+  // functioning of another, and no one sequence is guaranteed to execute to
+  // completion.
+  template <typename... Args>
+  [[nodiscard]] static StepBuilder AnyOf(Args&&... sequences);
+
   // Sets how to handle a case where a test attempts an operation that is not
   // supported in the current platform/build/environment. Default is to fail
   // the test. See chrome/test/interaction/README.md for best practices.
@@ -422,6 +468,66 @@ InteractionSequence::StepBuilder InteractiveTestApi::InContext(
 }
 
 // static
+template <typename T, typename U>
+InteractionSequence::StepBuilder InteractiveTestApi::IfElement(
+    ElementSpecifier element,
+    T condition,
+    U&& steps) {
+  InteractionSequence::StepBuilder step;
+  internal::SpecifyElement(step, element);
+  step.AddSubsequence(
+      internal::BuildSubsequence(Steps(std::move(steps))),
+      base::RectifyCallback<InteractionSequence::SubsequenceCondition>(
+          std::move(condition)));
+  step.SetDescription("IfElement()");
+  return step;
+}
+
+// static
+template <typename T, typename U>
+InteractionSequence::StepBuilder InteractiveTestApi::If(T condition,
+                                                        U&& steps) {
+  auto step = IfElement(
+      internal::kInteractiveTestPivotElementId,
+      base::BindOnce(
+          [](base::OnceCallback<bool(const InteractionSequence*)> condition,
+             const InteractionSequence* seq, const ui::TrackedElement*) {
+            return std::move(condition).Run(seq);
+          },
+          base::RectifyCallback<bool(const InteractionSequence*)>(
+              std::move(condition))),
+      std::move(steps));
+  step.SetDescription("If()");
+  return step;
+}
+
+// static
+template <typename... Args>
+InteractionSequence::StepBuilder InteractiveTestApi::InParallel(
+    Args&&... sequences) {
+  InteractionSequence::StepBuilder step;
+  step.SetElementID(internal::kInteractiveTestPivotElementId);
+  step.SetSubsequenceMode(InteractionSequence::SubsequenceMode::kAll);
+  (step.AddSubsequence(internal::BuildSubsequence(Steps(std::move(sequences)))),
+   ...);
+  step.SetDescription("InParallel()");
+  return step;
+}
+
+// static
+template <typename... Args>
+InteractionSequence::StepBuilder InteractiveTestApi::AnyOf(
+    Args&&... sequences) {
+  InteractionSequence::StepBuilder step;
+  step.SetElementID(internal::kInteractiveTestPivotElementId);
+  step.SetSubsequenceMode(InteractionSequence::SubsequenceMode::kAtLeastOne);
+  (step.AddSubsequence(internal::BuildSubsequence(Steps(std::move(sequences)))),
+   ...);
+  step.SetDescription("AnyOf()");
+  return step;
+}
+
+// static
 template <template <typename...> typename C, typename T, typename U>
 InteractionSequence::StepBuilder InteractiveTestApi::CheckResult(
     C<T()> function,
@@ -435,7 +541,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::CheckResult(
                              },
                              base::OnceCallback<T()>(std::move(function)),
                              testing::Matcher<T>(std::forward<U>(matcher))))
-                       .SetDescription("CheckResult"));
+                       .SetDescription("CheckResult()"));
 }
 
 // static

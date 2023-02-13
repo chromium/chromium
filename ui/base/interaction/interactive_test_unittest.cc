@@ -5,6 +5,7 @@
 #include "ui/base/interaction/interactive_test.h"
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -788,6 +789,232 @@ TEST_F(InteractiveTestTest, ActuallySkipsTestOnSimulatorFailure) {
   if (!testing::Test::IsSkipped()) {
     GTEST_FAIL();
   }
+}
+
+TEST_F(InteractiveTestTest, IfTrue) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(void)>, condition);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step);
+
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  EXPECT_CALL(condition, Run).WillOnce(testing::Return(true));
+  EXPECT_CALL(step, Run);
+  RunTestSequenceInContext(e1.context(), If(condition.Get(), Do(step.Get())));
+}
+
+TEST_F(InteractiveTestTest, IfFalse) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(void)>, condition);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step);
+
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  EXPECT_CALL(condition, Run).WillOnce(testing::Return(false));
+  RunTestSequenceInContext(e1.context(), If(condition.Get(), Do(step.Get())));
+}
+
+TEST_F(InteractiveTestTest, IfWithMultiStep) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(void)>, condition);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step1);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2);
+
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  EXPECT_CALL(condition, Run).WillOnce(testing::Return(true));
+  EXPECT_CALL(step1, Run);
+  EXPECT_CALL(step2, Run);
+  RunTestSequenceInContext(
+      e1.context(),
+      If(condition.Get(), Steps(Do(step1.Get()), Do(step2.Get()))));
+}
+
+TEST_F(InteractiveTestTest, IfElementTrue) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(const TrackedElement*)>,
+                         condition);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step);
+
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  EXPECT_CALL(condition, Run(&e1)).WillOnce(testing::Return(true));
+  EXPECT_CALL(step, Run);
+  RunTestSequenceInContext(
+      e1.context(),
+      IfElement(e1.identifier(), condition.Get(), Do(step.Get())));
+}
+
+TEST_F(InteractiveTestTest, IfElementFalse) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(const TrackedElement*)>,
+                         condition);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step);
+
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  EXPECT_CALL(condition, Run(&e1)).WillOnce(testing::Return(false));
+  RunTestSequenceInContext(
+      e1.context(),
+      IfElement(e1.identifier(), condition.Get(), Do(step.Get())));
+}
+
+TEST_F(InteractiveTestTest, IfElementWithMultiStep) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(const TrackedElement*)>,
+                         condition);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step1);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, step2);
+
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  EXPECT_CALL(condition, Run(&e1)).WillOnce(testing::Return(true));
+  EXPECT_CALL(step1, Run);
+  EXPECT_CALL(step2, Run);
+  RunTestSequenceInContext(e1.context(),
+                           IfElement(e1.identifier(), condition.Get(),
+                                     Steps(Do(step1.Get()), Do(step2.Get()))));
+}
+
+TEST_F(InteractiveTestTest, IfFails) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<bool(void)>, condition);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  EXPECT_CALL(condition, Run).WillOnce(testing::Return(true));
+  EXPECT_CALL(aborted, Run);
+  RunTestSequenceInContext(
+      e1.context(),
+      If(condition.Get(), Check(base::BindOnce([]() { return false; }))));
+}
+
+TEST_F(InteractiveTestTest, InParallel) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, seq1);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, seq2);
+
+  EXPECT_CALL(seq1, Run);
+  EXPECT_CALL(seq2, Run);
+  RunTestSequenceInContext(kTestContext1,
+                           InParallel(Do(seq1.Get()), Do(seq2.Get())));
+}
+
+TEST_F(InteractiveTestTest, InParallelMultiStep) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, seq11);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, seq12);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, seq21);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, seq22);
+
+  EXPECT_CALL(seq11, Run);
+  EXPECT_CALL(seq12, Run);
+  EXPECT_CALL(seq21, Run);
+  EXPECT_CALL(seq22, Run);
+  RunTestSequenceInContext(kTestContext1,
+                           InParallel(Steps(Do(seq11.Get()), Do(seq12.Get())),
+                                      Steps(Do(seq21.Get()), Do(seq22.Get()))));
+}
+
+TEST_F(InteractiveTestTest, InParallelAsync) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(ui::TrackedElement*)>, seq1);
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(ui::TrackedElement*)>, seq2);
+
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId2, kTestContext1);
+
+  QueueActions(base::BindLambdaForTesting([&e1]() { e1.Show(); }));
+  QueueActions(base::BindLambdaForTesting([&e2]() { e2.Show(); }));
+  EXPECT_CALL(seq1, Run(&e1));
+  EXPECT_CALL(seq2, Run(&e2));
+  RunTestSequenceInContext(kTestContext1,
+                           InParallel(AfterShow(e1.identifier(), seq1.Get()),
+                                      AfterShow(e2.identifier(), seq2.Get())));
+}
+
+// Parallel sequences where one sequence triggers a step in another.
+TEST_F(InteractiveTestTest, InParallelDependent) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(ui::TrackedElement*)>, seq1);
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(ui::TrackedElement*)>, seq2);
+
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId2, kTestContext1);
+
+  QueueActions(base::BindLambdaForTesting([&e1]() { e1.Show(); }));
+  EXPECT_CALL(seq1, Run(&e1)).WillOnce([&e2](TrackedElement*) { e2.Show(); });
+  EXPECT_CALL(seq2, Run(&e2));
+  RunTestSequenceInContext(kTestContext1,
+                           InParallel(AfterShow(e1.identifier(), seq1.Get()),
+                                      AfterShow(e2.identifier(), seq2.Get())));
+}
+
+// Parallel sequences where one sequence triggers a step in another, which then
+// triggers the final step in the first subsequence.
+TEST_F(InteractiveTestTest, InParallelPingPong) {
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(ui::TrackedElement*)>, seq1);
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(ui::TrackedElement*)>, seq2);
+  UNCALLED_MOCK_CALLBACK(base::OnceCallback<void(ui::TrackedElement*)>, seq3);
+
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId2, kTestContext1);
+
+  QueueActions(base::BindLambdaForTesting([&e1]() { e1.Show(); }));
+  EXPECT_CALL(seq1, Run(&e1)).WillOnce([&e2](TrackedElement*) { e2.Show(); });
+  EXPECT_CALL(seq2, Run(&e2)).WillOnce([&e1](TrackedElement*) {
+    e1.SendCustomEvent(kTestEvent1);
+  });
+  EXPECT_CALL(seq3, Run(&e1));
+  RunTestSequenceInContext(
+      kTestContext1,
+      InParallel(Steps(AfterShow(e1.identifier(), seq1.Get()),
+                       AfterEvent(e1.identifier(), kTestEvent1, seq3.Get())),
+                 AfterShow(e2.identifier(), seq2.Get())));
+}
+
+TEST_F(InteractiveTestTest, InParallelFails) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  EXPECT_CALL(aborted, Run);
+  RunTestSequenceInContext(
+      e1.context(), InParallel(Do(base::DoNothing()),
+                               Check(base::BindOnce([]() { return false; }))));
+}
+
+TEST_F(InteractiveTestTest, AnyOf) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, seq1);
+
+  EXPECT_CALL(seq1, Run).Times(1);
+  RunTestSequenceInContext(kTestContext1,
+                           AnyOf(Do(seq1.Get()), Do(seq1.Get())));
+}
+
+TEST_F(InteractiveTestTest, AnyOfOneFailsOneSucceeds) {
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, seq1);
+
+  EXPECT_CALL(seq1, Run).Times(1);
+  RunTestSequenceInContext(kTestContext1,
+                           AnyOf(Check(base::BindOnce([]() { return false; })),
+                                 Do(seq1.Get()), Do(seq1.Get())));
+}
+
+TEST_F(InteractiveTestTest, AnyOfAllFail) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+
+  TestElement e1(kTestId1, kTestContext1);
+  e1.Show();
+
+  EXPECT_CALL(aborted, Run);
+  RunTestSequenceInContext(
+      e1.context(), InParallel(Check(base::BindOnce([]() { return false; })),
+                               Check(base::BindOnce([]() { return false; }))));
 }
 
 }  // namespace ui::test

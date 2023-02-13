@@ -229,6 +229,9 @@ void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
 
 std::string DescribeElement(ElementSpecifier spec);
 
+InteractionSequence::Builder BuildSubsequence(
+    InteractiveTestPrivate::MultiStep steps);
+
 }  // namespace internal
 
 }  // namespace ui::test

@@ -154,4 +154,13 @@ std::string DescribeElement(ElementSpecifier element) {
                             absl::get<base::StringPiece>(element).data());
 }
 
+InteractionSequence::Builder BuildSubsequence(
+    InteractiveTestPrivate::MultiStep steps) {
+  InteractionSequence::Builder builder;
+  for (auto& step : steps) {
+    builder.AddStep(std::move(step));
+  }
+  return builder;
+}
+
 }  // namespace ui::test::internal

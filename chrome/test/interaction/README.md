@@ -244,6 +244,130 @@ RunTestSequence(
     WaitForShow(kDownloadsMenuItemElementId))));
 ```
 
+### Control Flow
+
+Kombucha now provides two options for control flow:
+ - Conditionals
+ - Parallel execution
+
+#### Conditionals
+
+In some cases, you may want to execute part of a test only if, for example, a
+particular flag is set. In order to do this, we provide the various `If()`
+control-flow statements:
+ - `If(condition, step[s])` - executes `step[s]` if `condition` returns true.
+ - `IfElement(element, condition, step[s])` - executes `step[s]` if `condition`
+   returns true when `element` is passed to it.
+ - `IfView(view, condition, step[s])` - executes `step[s]` if `condition`
+   returns true when `view` is converted to the type accepted by `condition` and
+   passed to it (the element must be of the correct type).
+
+Example:
+```cpp
+RunTestSequence(
+  /* ... */
+  // If MyFeature is enabled, it may interfere with the rest of this test, so
+  // toggle its UI off:
+  If(base::BindOnce([](){ return base::FeatureList::IsEnabled(kMyFeature); }),
+     Steps(PressButton(kFeatureToggleButtonElementId),
+           WaitForHide(kMyFeatureUiElementId))),
+  /* Proceed with test... */
+)
+```
+
+Note that in the case of elements, if the element isn't present/visible, the
+step does not fail; `condition` will simply receive a null value.
+```cpp
+RunTestSequence(
+  /* ... */
+  // If the side panel is still visible, close it.
+  IfView(kSidePanelElementId,
+         base::BindOnce([](const SidePanel* side_panel) {
+              // If the element is visible, it will be passed here, otherwise it
+              // will be null.
+              return side_panel != nullptr;
+            }),
+            PressButton(kSidePanelButtonElementId))
+  /* ... */
+)
+```
+
+#### Parallel Execution
+
+Another common case you might want to handle in a test is when multiple events
+are going to happen, but you can't guarantee the exact order. Because Kombucha
+tests are sequential, if a test needs to respond to two discrete events with
+non-deterministic timing, you need to be able to execute multiple steps in
+parallel.
+
+For this, we provide `InParallel()` and `AnyOf()`:
+ - `InParallel(step[s], step[s], ...)` - Executes each of `step[s]` in parallel
+   with each other. All must complete before the main test sequence can proceed.
+ - `AnyOf(step[s], step[s], ...)` - Executes each of `step[s]` in parallel with
+   each other. Only one must complete, at which point the main test sequence
+   proceeds and the other sequences are scuttled.
+
+Example:
+```cpp
+RunTestSequence(
+  /* ... */
+  // This button press will cause two asynchronous processes to spawn.
+  PressButton(kStartBackgroundProcessesButtonElementId),
+  InParallel(
+    WaitForEvent(kMyFeatureUiElementID, kUserDataUpdatedEvent),
+    WaitForEvent(kMyFeatureUiElementId, kUiUpdated)),
+  // It's now safe to proceed.
+  /* ... */
+)
+```
+
+#### Control Structure Usage Notes and Limitations
+
+Avoid executing steps with side-effects during an `InParallel()` or `AnyOf()`,
+especially if those steps could affect other subsequences running in parallel.
+
+Avoid relying on any side-effects of a step in an `If()` or `AnyOf()` in the
+remainder of the test, as there is no guarantee those steps will be executed
+(or in the case of `AnyOf()`, they may be executed non-deterministically, which
+is worse). For example:
+
+```cpp
+RunTestSequence(
+  /* ... */
+  AnyOf(
+    // WARNING: One or both of these buttons will be pressed, but which is not
+    // deterministic!
+    Steps(WaitForShow(kMyElementId1), PressButton(kMyButtonId1)),
+    Steps(WaitForShow(kMyElementId2), PressButton(kMyButtonId2)))
+)
+```
+
+Triggering conditions for the first step of a conditional or parallel
+subsequence can occur during the previous step. However, the triggering
+condition for the first step of the main test sequence _following_ the control
+structure cannot occur during subsequence execution (it will be lost).
+For example:
+
+```cpp
+RunTestSequence(
+  /* ... */
+  PressButton(kButtonElementId),
+  InParallel(
+    // This is okay, since the first step of a subsequence can trigger during
+    // the previous step.
+    WaitForActivate(kButtonElementId),
+    Steps(WaitForEvent(kButtonElementId, kBackgroundProcessEvent),
+          PressButton(kOtherButtonElementId))),
+  // WARNING: This is unsafe as the PressButton() above occurs in a subsequence,
+  // but this action is in the main sequence.
+  WaitForActivate(kOtherButtonElementId)
+)
+```
+
+Named elements are inherited by conditional or parallel subsequences, but any
+names that are assigned by the subsequence are not guaranteed to be brought back
+to the top level test sequence. **We may change this behavior in the future.**
+
 ### Handling Incompatibilities
 
 Sometimes a test won't run on a specific build bot or in a specific environment

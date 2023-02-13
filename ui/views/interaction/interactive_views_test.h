@@ -17,6 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/interaction/interactive_test_internal.h"
@@ -59,6 +60,8 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   // a views::TrackedElementViews and of type `T`.
   template <typename T = View>
   static T* AsView(ui::TrackedElement* el);
+  template <typename T = View>
+  static const T* AsView(const ui::TrackedElement* el);
 
   // Runs a test InteractionSequence from a series of Steps or StepBuilders with
   // RunSynchronouslyForTesting(). Hooks both the completed and aborted
@@ -249,6 +252,14 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   [[nodiscard]] StepBuilder ReleaseMouse(
       ui_controls::MouseButton button = ui_controls::LEFT);
 
+  // As IfElement(), but `condition` takes a single argument that is a const
+  // View pointer. If `element` is not a view of type V, then the test will
+  // fail.
+  template <template <typename...> typename C, typename V, typename T>
+  [[nodiscard]] static StepBuilder IfView(ElementSpecifier element,
+                                          C<bool(const V*)> condition,
+                                          T&& steps);
+
   // Sets the context widget. Must be called before RunTestSequence() or any of
   // the mouse functions.
   void SetContextWidget(Widget* context_widget);
@@ -320,6 +331,16 @@ T* InteractiveViewsTestApi::AsView(ui::TrackedElement* el) {
   auto* const views_el = el->AsA<TrackedElementViews>();
   CHECK(views_el);
   T* const view = AsViewClass<T>(views_el->view());
+  CHECK(view);
+  return view;
+}
+
+// static
+template <class T>
+const T* InteractiveViewsTestApi::AsView(const ui::TrackedElement* el) {
+  const auto* const views_el = el->AsA<TrackedElementViews>();
+  CHECK(views_el);
+  const T* const view = AsViewClass<T>(views_el->view());
   CHECK(view);
   return view;
 }
@@ -398,6 +419,26 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::WithView(
          ui::TrackedElement* el) { std::move(function).Run(AsView<V>(el)); },
       base::OnceCallback<void(V*)>(std::move(function))));
   return builder;
+}
+
+// static
+template <template <typename...> typename C, typename V, typename T>
+ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::IfView(
+    ElementSpecifier element,
+    C<bool(const V*)> condition,
+    T&& steps) {
+  return std::move(
+      IfElement(element,
+                base::BindOnce(
+                    [](base::OnceCallback<bool(const V*)> condition,
+                       const ui::InteractionSequence* seq,
+                       const ui::TrackedElement* el) {
+                      const V* const view = el ? AsView<V>(el) : nullptr;
+                      return std::move(condition).Run(view);
+                    },
+                    base::OnceCallback<bool(const V*)>(std::move(condition))),
+                std::move(steps))
+          .SetDescription("IfView()"));
 }
 
 // static
