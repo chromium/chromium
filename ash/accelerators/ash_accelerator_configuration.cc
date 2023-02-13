@@ -12,7 +12,10 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -70,7 +73,17 @@ AcceleratorConfigResult AshAcceleratorConfiguration::AddUserAccelerator(
 AcceleratorConfigResult AshAcceleratorConfiguration::RemoveAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
-  return AcceleratorConfigResult::kActionLocked;
+  DCHECK(::features::IsShortcutCustomizationEnabled());
+  AcceleratorConfigResult result = DoRemoveAccelerator(action_id, accelerator);
+
+  if (result == AcceleratorConfigResult::kSuccess) {
+    UpdateAndNotifyAccelerators();
+  }
+
+  VLOG(1) << "RemovedAccelerator called for ActionID: " << action_id
+          << ", Accelerator: " << accelerator.GetShortcutText()
+          << " returned: " << static_cast<int>(result);
+  return result;
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::ReplaceAccelerator(
@@ -197,7 +210,6 @@ void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators(
 
 void AshAcceleratorConfiguration::AddAccelerators(
     base::span<const AcceleratorData> accelerators) {
-  accelerators_.reserve(accelerators_.size() + accelerators.size());
   for (const auto& data : accelerators) {
     ui::Accelerator accelerator(data.keycode, data.modifiers);
     accelerator.set_key_state(data.trigger_on_press
@@ -206,10 +218,30 @@ void AshAcceleratorConfiguration::AddAccelerators(
     accelerator_to_id_.InsertNew(std::make_pair(accelerator, data.action));
     id_to_accelerators_[static_cast<uint32_t>(data.action)].push_back(
         accelerator);
-    accelerators_.push_back(accelerator);
   }
-  UpdateAccelerators(id_to_accelerators_);
-  NotfiyAcceleratorsUpdated();
+  UpdateAndNotifyAccelerators();
+}
+
+AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
+    AcceleratorActionId action_id,
+    const ui::Accelerator& accelerator) {
+  DCHECK(::features::IsShortcutCustomizationEnabled());
+
+  AcceleratorAction* found_id = accelerator_to_id_.Find(accelerator);
+  auto found_accelerators_iter = id_to_accelerators_.find(action_id);
+  if (found_accelerators_iter == id_to_accelerators_.end() || !found_id) {
+    return AcceleratorConfigResult::kNotFound;
+  }
+
+  DCHECK(*found_id == action_id);
+
+  // Remove accelerator from lookup map.
+  base::Erase(found_accelerators_iter->second, accelerator);
+
+  // Remove accelerator from reverse lookup map.
+  accelerator_to_id_.Erase(accelerator);
+
+  return AcceleratorConfigResult::kSuccess;
 }
 
 const DeprecatedAcceleratorData*
@@ -222,7 +254,7 @@ AshAcceleratorConfiguration::GetDeprecatedAcceleratorData(
   return it->second;
 }
 
-void AshAcceleratorConfiguration::NotfiyAcceleratorsUpdated() {
+void AshAcceleratorConfiguration::NotifyAcceleratorsUpdated() {
   if (!::features::IsShortcutCustomizationEnabled()) {
     return;
   }
@@ -230,6 +262,17 @@ void AshAcceleratorConfiguration::NotfiyAcceleratorsUpdated() {
   for (auto& observer : observer_list_) {
     observer.OnAcceleratorsUpdated();
   }
+}
+
+void AshAcceleratorConfiguration::UpdateAndNotifyAccelerators() {
+  accelerators_.clear();
+  accelerators_.reserve(accelerator_to_id_.size());
+  for (const auto& [accel, action_id] : accelerator_to_id_) {
+    accelerators_.push_back(accel);
+  }
+
+  UpdateAccelerators(id_to_accelerators_);
+  NotifyAcceleratorsUpdated();
 }
 
 }  // namespace ash

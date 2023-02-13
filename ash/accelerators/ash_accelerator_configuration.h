@@ -54,6 +54,8 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
   AcceleratorConfigResult AddUserAccelerator(
       AcceleratorActionId action_id,
       const ui::Accelerator& accelerator) override;
+  // TODO(jimmyxgong): Implement disabling accelerators after pref storage is
+  // implemented.
   AcceleratorConfigResult RemoveAccelerator(
       AcceleratorActionId action_id,
       const ui::Accelerator& accelerator) override;
@@ -113,7 +115,14 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
 
   void AddAccelerators(base::span<const AcceleratorData> accelerators);
 
-  void NotfiyAcceleratorsUpdated();
+  // Remove the accelerator, does not notify observers.
+  AcceleratorConfigResult DoRemoveAccelerator(
+      AcceleratorActionId action_id,
+      const ui::Accelerator& accelerator);
+
+  void NotifyAcceleratorsUpdated();
+
+  void UpdateAndNotifyAccelerators();
 
   std::vector<ui::Accelerator> accelerators_;
 
