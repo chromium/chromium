@@ -1066,6 +1066,9 @@ NSInteger kTrailingSymbolSize = 18;
   PasswordFormContentItem* passwordItem =
       [[PasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.credential = credential;
+  passwordItem.title =
+      base::SysUTF8ToNSString(password_manager::GetShownOrigin(credential));
+  passwordItem.detailText = @"";
   passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(credential.GetURL())];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -1651,14 +1654,13 @@ NSInteger kTrailingSymbolSize = 18;
   if (!_blockedSites.empty()) {
     [model deleteAllItemsFromSectionWithIdentifier:SectionIdentifierBlocked];
     for (const auto& credential : _blockedSites) {
-      NSString* text =
-          base::SysUTF8ToNSString(password_manager::GetShownOrigin(credential));
-      bool hidden = searchTerm.length > 0 &&
-                    ![text localizedCaseInsensitiveContainsString:searchTerm];
+      PasswordFormContentItem* item = [self blockedSiteItem:credential];
+      bool hidden =
+          searchTerm.length > 0 &&
+          ![item.title localizedCaseInsensitiveContainsString:searchTerm];
       if (hidden)
         continue;
-      [model addItem:[self blockedSiteItem:credential]
-          toSectionWithIdentifier:SectionIdentifierBlocked];
+      [model addItem:item toSectionWithIdentifier:SectionIdentifierBlocked];
     }
   }
 }

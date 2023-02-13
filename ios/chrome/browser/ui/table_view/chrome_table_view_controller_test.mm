@@ -125,17 +125,6 @@ void ChromeTableViewControllerTest::CheckTextCellText(NSString* expected_text,
   EXPECT_NSEQ(expected_text, [cell text]);
 }
 
-void ChromeTableViewControllerTest::CheckURLCellEmptyTitle(
-    NSString* expected_title,
-    int section,
-    int item) {
-  id cell = GetTableViewItem(section, item);
-  ASSERT_TRUE([cell respondsToSelector:@selector(title)]);
-  ASSERT_TRUE([cell respondsToSelector:@selector(displayedURL)]);
-  EXPECT_EQ(nil, [cell title]);
-  EXPECT_NSEQ(expected_title, [cell displayedURL]);
-}
-
 void ChromeTableViewControllerTest::CheckTextCellTextWithId(
     int expected_text_id,
     int section,

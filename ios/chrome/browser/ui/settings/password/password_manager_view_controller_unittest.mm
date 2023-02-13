@@ -431,14 +431,14 @@ TEST_F(PasswordManagerViewControllerTest, TestSavedPasswordsOrder) {
 // Tests the order in which the blocked passwords are displayed.
 TEST_F(PasswordManagerViewControllerTest, TestBlockedPasswordsOrder) {
   AddBlockedForm2();
-  CheckURLCellEmptyTitle(@"secret2.com",
-                         GetSectionIndex(SectionIdentifierSavedPasswords), 0);
+  CheckURLCellTitleAndDetailText(
+      @"secret2.com", @"", GetSectionIndex(SectionIdentifierSavedPasswords), 0);
 
   AddBlockedForm1();
-  CheckURLCellEmptyTitle(@"secret.com",
-                         GetSectionIndex(SectionIdentifierSavedPasswords), 0);
-  CheckURLCellEmptyTitle(@"secret2.com",
-                         GetSectionIndex(SectionIdentifierSavedPasswords), 1);
+  CheckURLCellTitleAndDetailText(
+      @"secret.com", @"", GetSectionIndex(SectionIdentifierSavedPasswords), 0);
+  CheckURLCellTitleAndDetailText(
+      @"secret2.com", @"", GetSectionIndex(SectionIdentifierSavedPasswords), 1);
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
@@ -835,10 +835,10 @@ TEST_F(PasswordManagerViewControllerTest, FilterItems) {
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
   EXPECT_EQ(2,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-  CheckURLCellEmptyTitle(@"secret.com",
-                         GetSectionIndex(SectionIdentifierBlocked), 0);
-  CheckURLCellEmptyTitle(@"secret2.com",
-                         GetSectionIndex(SectionIdentifierBlocked), 1);
+  CheckURLCellTitleAndDetailText(@"secret.com", @"",
+                                 GetSectionIndex(SectionIdentifierBlocked), 0);
+  CheckURLCellTitleAndDetailText(@"secret2.com", @"",
+                                 GetSectionIndex(SectionIdentifierBlocked), 1);
 
   [passwords_controller searchBar:bar textDidChange:@""];
   // All items should be back.
