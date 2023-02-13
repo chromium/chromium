@@ -375,11 +375,13 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
       "SafeBrowsing.BrowserThrottle.WillProcessResponseCount",
       will_process_response_count_);
 
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &BrowserURLLoaderThrottle::CheckerOnIO::LogWillProcessResponseTime,
-          io_checker_->AsWeakPtr(), base::TimeTicks::Now()));
+  if (io_checker_) {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &BrowserURLLoaderThrottle::CheckerOnIO::LogWillProcessResponseTime,
+            io_checker_->AsWeakPtr(), base::TimeTicks::Now()));
+  }
 
   if (blocked_) {
     // OnCheckUrlResult() has set |blocked_| to true and called
