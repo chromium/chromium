@@ -6915,10 +6915,6 @@ virtual/portals/http/tests/devtools/portals/portals-elements-nesting.js [ Failur
 # TODO(crbug.com/1404614): Fix this test on MacOS (sheriff 2023-01-03).
 crbug.com/1404614 [ Mac ] external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Failure Pass ]
 
-# Sheriff 2023-01-04
-crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.https.html [ Pass Timeout ]
-crbug.com/1404951 external/wpt/credential-management/fedcm-iframe.https.html [ Pass Timeout ]
-
 # TODO(crbug.com/1407201): this test fails because of fast-path parser when dchecks are enabled.
 # It fails because this test expects certain console warnings. Those warnings are duplicated because
 # parsing (which generates the warnings) happens twice, once for fast-path and once for existing path.

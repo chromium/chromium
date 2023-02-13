@@ -1452,3 +1452,6 @@ crbug.com/1372747 [ Win ] http/tests/uri/css-href.php [ Slow ]
 crbug.com/1376679 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
 
 crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-storage-key-track-untrack.js [ Slow ]
+
+crbug.com/1404951 external/wpt/credential-management/fedcm-network-requests.https.html [ Slow ]
+crbug.com/1404951 external/wpt/credential-management/fedcm-iframe.https.html [ Slow ]
