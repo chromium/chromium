@@ -134,7 +134,7 @@ export class ScanOptions implements CameraUI {
     this.documentCornerOverlay.attach(deviceId);
     const scanType = this.getToggledScanOption();
     (async () => {
-      await video.onExpired;
+      await video.onExpired.wait();
       this.detachPreview();
     })();
     await this.updateOption(scanType);

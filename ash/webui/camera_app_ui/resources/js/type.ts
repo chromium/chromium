@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertExists, assertInstanceof} from './assert.js';
+import {WaitableEvent} from './waitable_event.js';
 
 /**
  * Photo or video resolution.
@@ -288,15 +289,8 @@ export function getVideoTrackSettings(videoTrack: MediaStreamTrack):
  * stream is expired.
  */
 export class PreviewVideo {
-  private expired = false;
-
   constructor(
-      readonly video: HTMLVideoElement, readonly onExpired: Promise<void>) {
-    (async () => {
-      await this.onExpired;
-      this.expired = true;
-    })();
-  }
+      readonly video: HTMLVideoElement, readonly onExpired: WaitableEvent) {}
 
   getStream(): MediaStream {
     return assertInstanceof(this.video.srcObject, MediaStream);
@@ -311,7 +305,7 @@ export class PreviewVideo {
   }
 
   isExpired(): boolean {
-    return this.expired;
+    return this.onExpired.isSignaled();
   }
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from '../assert.js';
+import {assert, assertExists, assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import {reportError} from '../error.js';
 import * as expert from '../expert.js';
@@ -106,10 +106,7 @@ export class Preview {
   }
 
   getVideo(): PreviewVideo {
-    return new PreviewVideo(
-        this.video,
-        assertInstanceof(this.onPreviewExpired, WaitableEvent).wait(),
-    );
+    return new PreviewVideo(this.video, assertExists(this.onPreviewExpired));
   }
 
   /**

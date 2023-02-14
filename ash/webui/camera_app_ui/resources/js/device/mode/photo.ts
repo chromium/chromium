@@ -105,7 +105,7 @@ export class Photo extends ModeBase {
         onReady.signal(true);
       });
       (async () => {
-        await this.video.onExpired;
+        await this.video.onExpired.wait();
         videoEl.cancelVideoFrameCallback(callbackId);
         onReady.signal(false);
       })();
