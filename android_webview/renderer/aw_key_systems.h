@@ -9,7 +9,7 @@
 
 namespace android_webview {
 
-void AwAddKeySystems(media::KeySystemInfos* key_systems_properties);
+void AwAddKeySystems(media::KeySystemInfos* key_system_infos);
 
 }  // namespace android_webview
 

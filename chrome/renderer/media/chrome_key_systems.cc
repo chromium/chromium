@@ -446,7 +446,8 @@ void AddExternalClearKey(
   }
 
   // TODO(xhwang): Actually use `capability` to determine capabilities.
-  key_systems->push_back(std::make_unique<cdm::ExternalClearKeySystemInfo>());
+  key_systems->push_back(
+      std::make_unique<cdm::ExternalClearKeyKeySystemInfo>());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -461,7 +462,7 @@ void AddMediaFoundationClearKey(
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  key_systems->push_back(std::make_unique<cdm::ExternalClearKeySystemInfo>(
+  key_systems->push_back(std::make_unique<cdm::ExternalClearKeyKeySystemInfo>(
       media::kMediaFoundationClearKeyKeySystem, std::vector<std::string>(),
       // MediaFoundation Clear Key Key System uses Windows Media Foundation's
       // decoders and H264 is always supported. VideoCodec::kH264 is an

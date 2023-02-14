@@ -271,7 +271,8 @@ void ShellContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
   media::KeySystemInfos key_systems;
   if (base::FeatureList::IsEnabled(media::kExternalClearKeyForTesting))
-    key_systems.push_back(std::make_unique<cdm::ExternalClearKeySystemInfo>());
+    key_systems.push_back(
+        std::make_unique<cdm::ExternalClearKeyKeySystemInfo>());
   std::move(cb).Run(std::move(key_systems));
 }
 #endif

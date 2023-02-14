@@ -5,21 +5,14 @@
 #ifndef CHROMECAST_RENDERER_MEDIA_KEY_SYSTEMS_CAST_H_
 #define CHROMECAST_RENDERER_MEDIA_KEY_SYSTEMS_CAST_H_
 
-#include <memory>
-#include <vector>
-
-namespace media {
-class KeySystemInfo;
-}
+#include "media/base/key_system_info.h"
 
 namespace chromecast {
 namespace media {
 
-void AddChromecastKeySystems(
-    std::vector<std::unique_ptr<::media::KeySystemInfo>>*
-        key_systems_properties,
-    bool enable_persistent_license_support,
-    bool enable_playready);
+void AddChromecastKeySystems(::media::KeySystemInfos* key_system_infos,
+                             bool enable_persistent_license_support,
+                             bool enable_playready);
 
 }  // namespace media
 }  // namespace chromecast

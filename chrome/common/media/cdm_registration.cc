@@ -289,7 +289,7 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
     return;
   }
 
-  // Supported codecs are hard-coded in ExternalClearKeySystemInfo.
+  // Supported codecs are hard-coded in ExternalClearKeyKeySystemInfo.
   media::CdmCapability capability(
       {}, {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
       {media::CdmSessionType::kTemporary,
@@ -327,7 +327,7 @@ void AddMediaFoundationClearKey(std::vector<content::CdmInfo>* cdms) {
     return;
   }
 
-  // Supported codecs are hard-coded in ExternalClearKeySystemInfo.
+  // Supported codecs are hard-coded in ExternalClearKeyKeySystemInfo.
   media::CdmCapability capability(
       {}, {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
       {media::CdmSessionType::kTemporary});

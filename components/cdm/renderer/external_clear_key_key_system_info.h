@@ -16,17 +16,17 @@
 namespace cdm {
 
 // KeySystemInfo implementation for external Clear Key key systems.
-class ExternalClearKeySystemInfo : public media::KeySystemInfo {
+class ExternalClearKeyKeySystemInfo : public media::KeySystemInfo {
  public:
-  ExternalClearKeySystemInfo();
-  ExternalClearKeySystemInfo(
+  ExternalClearKeyKeySystemInfo();
+  ExternalClearKeyKeySystemInfo(
       const std::string& key_system,
       std::vector<std::string> excluded_key_systems,
       media::SupportedCodecs codecs,
       media::EmeConfig::Rule eme_config_rule,
       media::EmeFeatureSupport persistent_state_support,
       media::EmeFeatureSupport distinctive_identifier_support);
-  ~ExternalClearKeySystemInfo() override;
+  ~ExternalClearKeyKeySystemInfo() override;
 
   std::string GetBaseKeySystemName() const override;
   bool IsSupportedKeySystem(const std::string& key_system) const override;

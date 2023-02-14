@@ -25,6 +25,7 @@ using media::CdmSessionType;
 using media::EmeFeatureSupport;
 using media::EncryptionScheme;
 using media::KeySystemInfo;
+using media::KeySystemInfos;
 #if BUILDFLAG(ENABLE_WIDEVINE)
 using Robustness = cdm::WidevineKeySystemInfo::Robustness;
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
@@ -49,8 +50,7 @@ SupportedKeySystemResponse QueryKeySystemSupport(
 }
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
-void AddAndroidWidevine(
-    std::vector<std::unique_ptr<KeySystemInfo>>* key_systems) {
+void AddAndroidWidevine(KeySystemInfos* key_systems) {
   // TODO(crbug.com/853336): Use media.mojom.KeySystemSupport instead of
   // separate IPC.
   auto response = QueryKeySystemSupport(kWidevineKeySystem);
@@ -97,8 +97,7 @@ void AddAndroidWidevine(
 }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
-void AddAndroidPlatformKeySystems(
-    std::vector<std::unique_ptr<KeySystemInfo>>* key_systems) {
+void AddAndroidPlatformKeySystems(KeySystemInfos* key_systems) {
   // TODO(crbug.com/853336): Update media.mojom.KeySystemSupport to handle this
   // case and use it instead.
 

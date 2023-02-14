@@ -959,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
 
   // Child key systems for External Clear Key are generally supported except
   // for the special one explicitly marked as "invalid". See
-  // ExternalClearKeySystemInfo.
+  // ExternalClearKeyKeySystemInfo.
   EXPECT_UNSUPPORTED(
       IsSupportedByKeySystem("org.chromium.externalclearkey.invalid",
                              kVideoWebMMimeType, video_webm_codecs()));
