@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_IOS)
-#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#include <MobileCoreServices/MobileCoreServices.h>
 #else
 #include <CoreServices/CoreServices.h>
 #endif  // BUILDFLAG(IS_IOS)
@@ -28,19 +28,6 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     ext_nodot.erase(ext_nodot.begin());
   base::ScopedCFTypeRef<CFStringRef> ext_ref(
       base::SysUTF8ToCFStringRef(ext_nodot));
-
-#if BUILDFLAG(IS_IOS)
-  UTType* uttype =
-      [UTType typeWithFilenameExtension:base::SysUTF8ToNSString(ext_nodot)];
-  // Dynamic UTTypes are made by the system in the event that there's a
-  // non-identifiable mime type. For now, we should treat dynamic UTTypes as a
-  // nonstandard format.
-  if ([uttype isDynamic] || uttype.preferredMIMEType == nil) {
-    return false;
-  }
-  *result = base::SysNSStringToUTF8(uttype.preferredMIMEType);
-  return true;
-#else
   if (!ext_ref)
     return false;
   base::ScopedCFTypeRef<CFStringRef> uti(UTTypeCreatePreferredIdentifierForTag(
@@ -54,20 +41,11 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
 
   *result = base::SysCFStringRefToUTF8(mime_ref);
   return true;
-#endif
 }
 
 bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
     const std::string& mime_type,
     base::FilePath::StringType* ext) const {
-#if BUILDFLAG(IS_IOS)
-  UTType* uttype = [UTType typeWithMIMEType:base::SysUTF8ToNSString(mime_type)];
-  if ([uttype isDynamic] || uttype.preferredFilenameExtension == nil) {
-    return false;
-  }
-  *ext = base::SysNSStringToUTF8(uttype.preferredFilenameExtension);
-  return true;
-#else
   base::ScopedCFTypeRef<CFStringRef> mime_ref(
       base::SysUTF8ToCFStringRef(mime_type));
   if (!mime_ref)
@@ -83,19 +61,11 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
 
   *ext = base::SysCFStringRefToUTF8(ext_ref);
   return true;
-#endif
 }
 
 void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
     const std::string& mime_type,
     std::unordered_set<base::FilePath::StringType>* extensions) const {
-#if BUILDFLAG(IS_IOS)
-  UTType* type = [UTType typeWithMIMEType:base::SysUTF8ToNSString(mime_type)];
-  NSArray<NSString*>* tags = type.tags[UTTagClassFilenameExtension];
-  for (NSString* extension in tags) {
-    extensions->insert(base::SysNSStringToUTF8(extension));
-  }
-#else
   base::ScopedCFTypeRef<CFStringRef> mime_ref(
       base::SysUTF8ToCFStringRef(mime_type));
   if (mime_ref) {
@@ -124,7 +94,6 @@ void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
   base::FilePath::StringType ext;
   if (GetPlatformPreferredExtensionForMimeType(mime_type, &ext))
     extensions->insert(ext);
-#endif
 }
 
 }  // namespace net

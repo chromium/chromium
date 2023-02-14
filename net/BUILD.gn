@@ -1505,7 +1505,6 @@ component("net") {
       "MobileCoreServices.framework",
       "Security.framework",
       "SystemConfiguration.framework",
-      "UniformTypeIdentifiers.framework",
     ]
   }
 
