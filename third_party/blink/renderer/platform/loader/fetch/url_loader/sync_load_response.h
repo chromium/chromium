@@ -9,10 +9,10 @@
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -55,7 +55,7 @@ struct BLINK_PLATFORM_EXPORT SyncLoadResponse {
   WebData data;
 
   // Used for blob response type XMLHttpRequest.
-  mojom::SerializedBlobPtr downloaded_blob;
+  scoped_refptr<BlobDataHandle> downloaded_blob;
 };
 
 }  // namespace blink

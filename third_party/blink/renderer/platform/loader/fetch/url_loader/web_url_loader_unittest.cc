@@ -38,11 +38,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
-#include "third_party/blink/public/platform/web_resource_request_sender.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -52,6 +50,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -84,7 +83,7 @@ class MockResourceRequestSender : public WebResourceRequestSender {
       base::TimeDelta timeout,
       const WebVector<WebString>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
-      mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
+      mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
       scoped_refptr<WebRequestPeer> peer,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper) override {
@@ -588,7 +587,7 @@ TEST_F(WebURLLoaderTest, SyncLengths) {
   WebData data;
   int64_t encoded_data_length = 0;
   uint64_t encoded_body_length = 0;
-  WebBlobInfo downloaded_blob;
+  scoped_refptr<BlobDataHandle> downloaded_blob;
 
   client()->loader()->LoadSynchronously(
       std::move(request), /*url_request_extra_data=*/nullptr,
@@ -600,7 +599,7 @@ TEST_F(WebURLLoaderTest, SyncLengths) {
 
   EXPECT_EQ(kEncodedBodyLength, encoded_body_length);
   EXPECT_EQ(kEncodedDataLength, encoded_data_length);
-  EXPECT_TRUE(downloaded_blob.Uuid().IsNull());
+  EXPECT_FALSE(downloaded_blob);
 }
 
 // Verifies that WebURLResponse::Create() copies AuthChallengeInfo to the

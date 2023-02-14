@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/web_resource_request_sender.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
 
 #include <utility>
 
-#include "base/atomic_sequence_num.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -46,6 +44,7 @@
 #include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
@@ -116,21 +115,6 @@ void CheckSchemeForReferrerPolicy(const network::ResourceRequest& request) {
   }
 }
 
-int GetInitialRequestID() {
-  // Starting with a random number speculatively avoids RDH_INVALID_REQUEST_ID
-  // which are assumed to have been caused by restarting RequestID at 0 when
-  // restarting a renderer after a crash - this would cause collisions if
-  // requests from the previously crashed renderer are still active.  See
-  // https://crbug.com/614281#c61 for more details about this hypothesis.
-  //
-  // To avoid increasing the likelihood of overflowing the range of available
-  // RequestIDs, kMax is set to a relatively low value of 2^20 (rather than
-  // to something higher like 2^31).
-  const int kMin = 0;
-  const int kMax = 1 << 20;
-  return base::RandInt(kMin, kMax);
-}
-
 // Determines if the loader should be restarted on a redirect using
 // ThrottlingURLLoader::FollowRedirectForcingRestart.
 bool RedirectRequiresLoaderRestart(const GURL& original_url,
@@ -145,13 +129,6 @@ bool RedirectRequiresLoaderRestart(const GURL& original_url,
 }
 
 }  // namespace
-
-// static
-int WebResourceRequestSender::MakeRequestID() {
-  static const int kInitialRequestID = GetInitialRequestID();
-  static base::AtomicSequenceNumber sequence;
-  return kInitialRequestID + sequence.GetNext();
-}
 
 WebResourceRequestSender::WebResourceRequestSender()
     : delegate_(Platform::Current()->GetResourceRequestSenderDelegate()) {}
@@ -168,7 +145,7 @@ void WebResourceRequestSender::SendSync(
     base::TimeDelta timeout,
     const WebVector<WebString>& cors_exempt_header_list,
     base::WaitableEvent* terminate_sync_load_event,
-    mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
+    mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
     scoped_refptr<WebRequestPeer> peer,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
@@ -259,9 +236,9 @@ int WebResourceRequestSender::SendAsync(
 #endif
 
   // Compute a unique request_id for this renderer process.
-  int request_id = MakeRequestID();
+  int request_id = GenerateRequestId();
   request_info_ = std::make_unique<PendingRequestInfo>(
-      std::move(peer), request->destination, request->url,
+      std::move(peer), request->destination, KURL(request->url),
       std::move(resource_load_info_notifier_wrapper));
 
   request_info_->resource_load_info_notifier_wrapper
@@ -359,7 +336,7 @@ void WebResourceRequestSender::DeletePendingRequest(
 WebResourceRequestSender::PendingRequestInfo::PendingRequestInfo(
     scoped_refptr<WebRequestPeer> peer,
     network::mojom::RequestDestination request_destination,
-    const GURL& request_url,
+    const KURL& request_url,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper)
     : peer(std::move(peer)),
@@ -490,7 +467,7 @@ void WebResourceRequestSender::OnReceivedRedirect(
   request_info_->remote_request_start =
       response_head->load_timing.request_start;
   request_info_->redirect_requires_loader_restart =
-      RedirectRequiresLoaderRestart(request_info_->response_url,
+      RedirectRequiresLoaderRestart(GURL(request_info_->response_url),
                                     redirect_info.new_url);
 
   base::TimeTicks remote_response_start =
@@ -514,7 +491,7 @@ void WebResourceRequestSender::OnReceivedRedirect(
         removed_headers.begin(), removed_headers.end(), vector.begin(),
         [](const std::string& h) { return WebString::FromASCII(h); });
     request_info_->removed_headers = vector;
-    request_info_->response_url = redirect_info.new_url;
+    request_info_->response_url = KURL(redirect_info.new_url);
     request_info_->has_pending_redirect = true;
     request_info_->resource_load_info_notifier_wrapper
         ->NotifyResourceRedirectReceived(redirect_info,

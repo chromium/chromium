@@ -110,7 +110,7 @@ void WebURLLoaderMock::LoadSynchronously(
     WebData& data,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,
-    blink::WebBlobInfo& downloaded_blob,
+    scoped_refptr<BlobDataHandle>& downloaded_blob,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
   DCHECK(factory_->IsMockedURL(WebURL(KURL(request->url)))) << request->url;

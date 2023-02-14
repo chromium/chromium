@@ -61,16 +61,14 @@
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
-#include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
+#include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/url_conversion.h"
-#include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
-#include "third_party/blink/public/platform/web_resource_request_sender.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -79,8 +77,10 @@
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_security_policy.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -324,7 +324,7 @@ void WebURLLoader::Context::Start(
     loader_options |= network::mojom::kURLLoadOptionSynchronous;
     request->load_flags |= net::LOAD_IGNORE_LIMITS;
 
-    mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry;
+    mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry;
     if (pass_response_pipe_to_client) {
       Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
           download_to_blob_registry.InitWithNewPipeAndPassReceiver());
@@ -515,7 +515,7 @@ void WebURLLoader::LoadSynchronously(
     WebData& data,
     int64_t& encoded_data_length,
     uint64_t& encoded_body_length,
-    WebBlobInfo& downloaded_blob,
+    scoped_refptr<BlobDataHandle>& downloaded_blob,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
   if (!context_)
@@ -569,11 +569,7 @@ void WebURLLoader::LoadSynchronously(
           ? sync_load_response.head->encoded_body_length->value
           : 0;
   if (sync_load_response.downloaded_blob) {
-    downloaded_blob = WebBlobInfo(
-        WebString::FromLatin1(sync_load_response.downloaded_blob->uuid),
-        WebString::FromLatin1(sync_load_response.downloaded_blob->content_type),
-        sync_load_response.downloaded_blob->size,
-        std::move(sync_load_response.downloaded_blob->blob));
+    downloaded_blob = std::move(sync_load_response.downloaded_blob);
   }
 
   data.Assign(sync_load_response.data);

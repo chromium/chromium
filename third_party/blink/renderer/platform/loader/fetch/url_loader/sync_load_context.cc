@@ -104,7 +104,7 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
     base::WaitableEvent* redirect_or_response_event,
     base::WaitableEvent* abort_event,
     base::TimeDelta timeout,
-    mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
+    mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
     const WebVector<WebString>& cors_exempt_header_list,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
@@ -128,7 +128,7 @@ SyncLoadContext::SyncLoadContext(
     base::WaitableEvent* redirect_or_response_event,
     base::WaitableEvent* abort_event,
     base::TimeDelta timeout,
-    mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
+    mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : response_(response),
       context_for_redirect_(context_for_redirect),
@@ -214,7 +214,7 @@ void SyncLoadContext::OnStartLoadingResponseBody(
     blob_response_started_ = true;
 
     download_to_blob_registry_->RegisterFromStream(
-        response_->head->mime_type, "",
+        String(response_->head->mime_type), "",
         std::max<int64_t>(0, response_->head->content_length), std::move(body),
         mojo::NullAssociatedRemote(),
         base::BindOnce(&SyncLoadContext::OnFinishCreatingBlob,
@@ -261,10 +261,11 @@ void SyncLoadContext::OnCompletedRequest(
   CompleteRequest();
 }
 
-void SyncLoadContext::OnFinishCreatingBlob(mojom::SerializedBlobPtr blob) {
+void SyncLoadContext::OnFinishCreatingBlob(
+    const scoped_refptr<BlobDataHandle>& blob) {
   DCHECK(!Completed());
   blob_finished_ = true;
-  response_->downloaded_blob = std::move(blob);
+  response_->downloaded_blob = blob;
   if (request_completed_)
     CompleteRequest();
 }

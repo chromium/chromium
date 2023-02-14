@@ -63,5 +63,8 @@ specific_include_rules = {
      "+net/http/http_util.h",
      "+third_party/blink/public/mojom/blob/blob.mojom.h",
      "+services/network/public/mojom/data_pipe_getter.mojom.h",
-  ]
+  ],
+  "web_url_request_util.cc": [
+      "+base/atomic_sequence_num.h",
+  ],
 }

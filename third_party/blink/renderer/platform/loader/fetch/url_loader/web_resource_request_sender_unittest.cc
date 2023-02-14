@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/web_resource_request_sender.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -36,6 +36,7 @@
 #include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "url/gurl.h"
 
@@ -304,8 +305,8 @@ class WebResourceRequestSenderTest : public testing::Test,
 
 // Tests the generation of unique request ids.
 TEST_F(WebResourceRequestSenderTest, MakeRequestID) {
-  int first_id = WebResourceRequestSender::MakeRequestID();
-  int second_id = WebResourceRequestSender::MakeRequestID();
+  int first_id = GenerateRequestId();
+  int second_id = GenerateRequestId();
 
   // Child process ids are unique (per process) and counting from 0 upwards:
   EXPECT_GT(second_id, first_id);

@@ -140,6 +140,7 @@ blink_platform_sources("loader") {
     "fetch/url_loader/sync_load_response.cc",
     "fetch/url_loader/sync_load_response.h",
     "fetch/url_loader/web_resource_request_sender.cc",
+    "fetch/url_loader/web_resource_request_sender.h",
     "fetch/url_loader/web_url_loader.cc",
     "fetch/url_loader/web_url_loader.h",
     "fetch/url_loader/web_url_loader_client.cc",

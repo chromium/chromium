@@ -48,6 +48,14 @@ GetRequestDestinationForWebURLRequest(const WebURLRequest& request);
 BLINK_PLATFORM_EXPORT mojom::MixedContentContextType
 GetMixedContentContextTypeForWebURLRequest(const WebURLRequest& request);
 
+// Generates ids for requests initiated by child processes unique to the
+// particular process, counted up from 0 (browser initiated requests count
+// down from -2).
+//
+// Public to be used by content::RenderFrameImpl with the need to fill a
+// navigation request id.
+BLINK_PLATFORM_EXPORT int GenerateRequestId();
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_REQUEST_UTIL_H_

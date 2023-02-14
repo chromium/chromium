@@ -109,7 +109,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
         WebData&,
         int64_t& encoded_data_length,
         uint64_t& encoded_body_length,
-        WebBlobInfo& downloaded_blob,
+        scoped_refptr<BlobDataHandle>& downloaded_blob,
         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
             resource_load_info_notifier_wrapper) override {
       NOTREACHED();

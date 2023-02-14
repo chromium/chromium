@@ -55,7 +55,6 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -1393,7 +1392,7 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   WebData data_out;
   int64_t encoded_data_length = WebURLLoaderClient::kUnknownEncodedDataLength;
   uint64_t encoded_body_length = 0;
-  WebBlobInfo downloaded_blob;
+  scoped_refptr<BlobDataHandle> downloaded_blob;
 
   if (CanHandleDataURLRequestLocally(request)) {
     // We don't have to verify mime type again since it's allowed to handle
@@ -1447,10 +1446,10 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   }
 
   if (request.DownloadToBlob()) {
-    auto blob = downloaded_blob.GetBlobHandle();
-    if (blob)
-      OnProgress(blob->size());
-    FinishedCreatingBlob(blob);
+    if (downloaded_blob) {
+      OnProgress(downloaded_blob->size());
+    }
+    FinishedCreatingBlob(std::move(downloaded_blob));
   }
   DidFinishLoading(base::TimeTicks::Now(), encoded_data_length,
                    encoded_body_length, decoded_body_length, false);

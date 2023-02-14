@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RESOURCE_REQUEST_SENDER_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RESOURCE_REQUEST_SENDER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_RESOURCE_REQUEST_SENDER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_RESOURCE_REQUEST_SENDER_H_
 
 #include <stdint.h>
 
@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -26,14 +25,14 @@
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/mojom/blob/blob_registry.mojom-forward.h"
+#include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "url/gurl.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace base {
 class WaitableEvent;
@@ -46,9 +45,6 @@ struct RedirectInfo;
 namespace network {
 struct ResourceRequest;
 struct URLLoaderCompletionStatus;
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
 }  // namespace network
 
 namespace blink {
@@ -65,15 +61,6 @@ struct SyncLoadResponse;
 // WebURLLoaderImpl::Context or SyncLoadContext.
 class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
  public:
-  // Generates ids for requests initiated by child processes unique to the
-  // particular process, counted up from 0 (browser initiated requests count
-  // down from -2).
-  //
-  // Public to be used by URLLoaderFactory and/or URLLoader implementations with
-  // the need to perform additional requests besides the main request, e.g.,
-  // CORS preflight requests.
-  static int MakeRequestID();
-
   WebResourceRequestSender();
   WebResourceRequestSender(const WebResourceRequestSender&) = delete;
   WebResourceRequestSender& operator=(const WebResourceRequestSender&) = delete;
@@ -101,7 +88,7 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
       base::TimeDelta timeout,
       const WebVector<WebString>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
-      mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
+      mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
       scoped_refptr<WebRequestPeer> peer,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper);
@@ -176,7 +163,7 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
   struct PendingRequestInfo {
     PendingRequestInfo(scoped_refptr<WebRequestPeer> peer,
                        network::mojom::RequestDestination request_destination,
-                       const GURL& request_url,
+                       const KURL& request_url,
                        std::unique_ptr<ResourceLoadInfoNotifierWrapper>
                            resource_load_info_notifier_wrapper);
 
@@ -186,10 +173,10 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
     network::mojom::RequestDestination request_destination;
     WebLoaderFreezeMode freeze_mode = WebLoaderFreezeMode::kNone;
     // Original requested url.
-    GURL url;
+    KURL url;
     // The url, method and referrer of the latest response even in case of
     // redirection.
-    GURL response_url;
+    KURL response_url;
     bool has_pending_redirect = false;
     base::TimeTicks local_request_start;
     base::TimeTicks local_response_start;
@@ -223,7 +210,7 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
       network::mojom::URLResponseHead& response_head) const;
 
   // `delegate_` is expected to live longer than `this`.
-  raw_ptr<WebResourceRequestSenderDelegate> delegate_;
+  WebResourceRequestSenderDelegate* delegate_;
 
   // The instance is created on StartAsync() or StartSync(), and it's deleted
   // when the response has finished, or when the request is canceled.
@@ -234,4 +221,4 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RESOURCE_REQUEST_SENDER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_RESOURCE_REQUEST_SENDER_H_

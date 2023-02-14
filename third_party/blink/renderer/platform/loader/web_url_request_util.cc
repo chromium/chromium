@@ -9,8 +9,10 @@
 
 #include <limits>
 
+#include "base/atomic_sequence_num.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom-blink.h"
@@ -62,6 +64,21 @@ class HeaderFlattener : public WebHTTPHeaderVisitor {
  private:
   StringBuilder buffer_;
 };
+
+int GetInitialRequestID() {
+  // Starting with a random number speculatively avoids RDH_INVALID_REQUEST_ID
+  // which are assumed to have been caused by restarting RequestID at 0 when
+  // restarting a renderer after a crash - this would cause collisions if
+  // requests from the previously crashed renderer are still active.  See
+  // https://crbug.com/614281#c61 for more details about this hypothesis.
+  //
+  // To avoid increasing the likelihood of overflowing the range of available
+  // RequestIDs, kMax is set to a relatively low value of 2^20 (rather than
+  // to something higher like 2^31).
+  const int kMin = 0;
+  const int kMax = 1 << 20;
+  return base::RandInt(kMin, kMax);
+}
 
 }  // namespace
 
@@ -203,6 +220,12 @@ mojom::blink::MixedContentContextType
 GetMixedContentContextTypeForWebURLRequest(const WebURLRequest& request) {
   return MixedContent::ContextTypeFromRequestContext(
       request.GetRequestContext(), MixedContent::CheckModeForPlugin::kLax);
+}
+
+int GenerateRequestId() {
+  static const int kInitialRequestID = GetInitialRequestID();
+  static base::AtomicSequenceNumber sequence;
+  return kInitialRequestID + sequence.GetNext();
 }
 
 }  // namespace blink
