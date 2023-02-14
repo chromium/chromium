@@ -1037,7 +1037,7 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (NSError*)verifyAccessibilityForCurrentScreen {
   NSError* error = nil;
-  bool success = chrome_test_util::VerifyAccessibilityForCurrentScreen(error);
+  BOOL success = chrome_test_util::VerifyAccessibilityForCurrentScreen(&error);
   if (!success || error) {
     NSString* errorDescription = [NSString
         stringWithFormat:@"Accessibility checks failed! Error: %@", error];
