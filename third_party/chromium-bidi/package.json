@@ -16,8 +16,7 @@
     "rollup": "rollup -c",
     "server": "npm run build && npm run server-no-build --",
     "server-no-build": "node lib/cjs/bidiServer/index.js",
-    "test": "npm run build && npm run unit",
-    "unit": "cross-env TS_NODE_PROJECT='src/tsconfig.json' mocha",
+    "test": "npm run build && mocha",
     "watch": "tsc -b src/tsconfig.json --watch & rollup -c --watch",
     "yapf": "yapf --in-place --parallel --recursive --exclude=wpt examples/ tests/"
   },
@@ -53,7 +52,6 @@
     "chai": "4.3.6",
     "chai-as-promised": "7.1.1",
     "chai-exclude": "2.1.0",
-    "cross-env": "7.0.3",
     "debug": "4.3.4",
     "devtools-protocol": "0.0.1007249",
     "eslint": "8.24.0",

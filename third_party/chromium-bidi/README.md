@@ -196,7 +196,7 @@ output to the file `log.txt`:
 Running:
 
 ```sh
-npm run unit
+npm test
 ```
 
 ### E2E tests
