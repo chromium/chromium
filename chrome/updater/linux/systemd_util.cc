@@ -208,6 +208,8 @@ bool InstallSystemdUnits(UpdaterScope scope) {
 
   ReloadUnitFiles(scope);
   EnableSocketUnit(scope);
+  LOG_IF(ERROR, !base::PathExists(GetActivationSocketPath(scope)))
+      << "Activation socket file is missing post-install.";
   return true;
 }
 
