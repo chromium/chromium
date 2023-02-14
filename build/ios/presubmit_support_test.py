@@ -20,7 +20,6 @@ class BundleDataPresubmit(unittest.TestCase):
         os.path.dirname(__file__), '..', '..')
     self.mock_input_api.PresubmitLocalPath = lambda: os.path.dirname(__file__)
     self.mock_output_api = MockOutputApi()
-    self.mock_input_api.verbose = False
 
   def testBasic(self):
     """
