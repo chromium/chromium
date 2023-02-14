@@ -1431,13 +1431,6 @@ test("views_unittests") {
           [ "widget/desktop_aura/desktop_window_tree_host_win_unittest.cc" ]
     }
 
-    if (is_chromeos_lacros) {
-      # TODO(crbug.com/1394914): Tooltip is handled on server side for Lacros,
-      # so it requires TooltipLacros's test API instead of TooltipAura's one and
-      # tests need to support async operation.
-      sources -= [ "corewm/tooltip_controller_unittest.cc" ]
-    }
-
     if (enable_desktop_aura) {
       sources += [
         "widget/desktop_aura/desktop_focus_rules_unittest.cc",
