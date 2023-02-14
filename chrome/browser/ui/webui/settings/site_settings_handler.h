@@ -375,8 +375,8 @@ class SiteSettingsHandler
   // Keeps track of events related to zooming.
   base::CallbackListSubscription host_zoom_map_subscription_;
 
-  // The host for which to fetch usage.
-  std::string usage_host_;
+  // The origin for which to fetch usage.
+  std::string usage_origin_;
 
   // The origin for which to clear usage.
   std::string clearing_origin_;

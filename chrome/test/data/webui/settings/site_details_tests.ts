@@ -203,7 +203,7 @@ suite('SiteDetails', function() {
     // If there is, check the correct amount of usage is specified.
     const usage = '1 KB';
     webUIListenerCallback(
-        'usage-total-changed', 'foo.com', usage, '10 cookies');
+        'usage-total-changed', 'https://foo.com:443', usage, '10 cookies');
     assertTrue(testElement.$.noStorage.hidden);
     assertFalse(testElement.$.storage.hidden);
     assertTrue(testElement.$.usage.textContent!.includes(usage));
@@ -222,7 +222,7 @@ suite('SiteDetails', function() {
     ]);
 
     const hostRequested = results[1];
-    assertEquals('foo.com', hostRequested);
+    assertEquals('https://foo.com:443', hostRequested);
     webUIListenerCallback(
         'usage-total-changed', hostRequested, '1 KB', '10 cookies');
     assertEquals(
@@ -252,7 +252,7 @@ suite('SiteDetails', function() {
     // Ensure the mock's methods were called and check usage was cleared
     // on clicking the trash button.
     const hostRequested = results[1];
-    assertEquals('foo.com', hostRequested);
+    assertEquals('https://foo.com:443', hostRequested);
     webUIListenerCallback(
         'usage-total-changed', hostRequested, '1 KB', '10 cookies');
     assertEquals(
@@ -473,7 +473,7 @@ suite('SiteDetails', function() {
     ]);
 
     const hostRequested = results[0];
-    assertEquals('foo.com', hostRequested);
+    assertEquals('https://foo.com:443', hostRequested);
     webUIListenerCallback(
         'usage-total-changed', hostRequested, '1 KB', '10 cookies', '');
     assertTrue(testElement.$.fpsMembership.hidden);
@@ -492,7 +492,7 @@ suite('SiteDetails', function() {
         ]);
 
         const hostRequested = results[0];
-        assertEquals('foo.com', hostRequested);
+        assertEquals('https://foo.com:443', hostRequested);
         webUIListenerCallback(
             'usage-total-changed', hostRequested, '1 KB', '10 cookies',
             'Allowed for 1 foo.com site', false);
@@ -519,7 +519,7 @@ suite('SiteDetails', function() {
         ]);
 
         const hostRequested = results[0];
-        assertEquals('foo.com', hostRequested);
+        assertEquals('https://foo.com:443', hostRequested);
         webUIListenerCallback(
             'usage-total-changed', hostRequested, '1 KB', '10 cookies',
             'Allowed for 1 foo.com site', true);

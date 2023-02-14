@@ -92,6 +92,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user_manager.h"
@@ -874,10 +875,17 @@ void SiteSettingsHandler::OnGetUsageInfo() {
   std::string cookie_string;
   std::string fps_string;
   bool fpsPolicy = false;
+  // Convert origin to hostname because CookieTreeNode use hostname as
+  // |title|(key).
+  // TODO(crbug.com/1415380): Ensure the key uniquely identifies the owner of
+  // the browsing data (hostname is insufficient) in CookieTreeModel or the new
+  // BrowsingDataModel.
+  std::string usage_hostname = GURL(usage_origin_).host();
   for (const auto& site : root->children()) {
     std::string title = base::UTF16ToUTF8(site->GetTitle());
-    if (title != usage_host_)
+    if (title != usage_hostname) {
       continue;
+    }
     int64_t size = site->InclusiveSize();
     if (size != 0)
       usage_string = base::UTF16ToUTF8(ui::FormatBytes(size));
@@ -925,7 +933,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
     }
     break;
   }
-  FireWebUIListener("usage-total-changed", base::Value(usage_host_),
+  FireWebUIListener("usage-total-changed", base::Value(usage_origin_),
                     base::Value(usage_string), base::Value(cookie_string),
                     base::Value(fps_string), base::Value(fpsPolicy));
 }
@@ -1010,7 +1018,7 @@ void SiteSettingsHandler::OnZoomLevelChanged(
 void SiteSettingsHandler::HandleFetchUsageTotal(const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
-  usage_host_ = args[0].GetString();
+  usage_origin_ = args[0].GetString();
 
   update_site_details_ = true;
   RebuildModels();

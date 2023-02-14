@@ -156,8 +156,6 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private fpsEnterprisePref_: chrome.settingsPrivate.PrefObject;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
-
-  private fetchingForHost_: string = '';
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
 
@@ -196,9 +194,8 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
       if (!valid) {
         Router.getInstance().navigateToPreviousRoute();
       } else {
-        this.fetchingForHost_ = this.toUrl(this.origin_)!.hostname;
         this.storedData_ = '';
-        this.websiteUsageProxy_.fetchUsageTotal(this.fetchingForHost_);
+        this.websiteUsageProxy_.fetchUsageTotal(this.origin_);
         this.browserProxy.getCategoryList(this.origin_).then((categoryList) => {
           this.updatePermissions_(categoryList, /*hideOthers=*/ true);
         });
@@ -226,16 +223,16 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
 
   /**
    * Callback for when the usage total is known.
-   * @param host The host that the usage was fetched for.
+   * @param origin The origin that the usage was fetched for.
    * @param usage The string showing how much data the given host is using.
    * @param cookies The string showing how many cookies the given host is using.
    * @param fpsMembership The string showing first party set membership details.
    * @param fpsPolicy Whether a policy is applied to this FPS member.
    */
   private onUsageTotalChanged_(
-      host: string, usage: string, cookies: string, fpsMembership: string,
+      origin: string, usage: string, cookies: string, fpsMembership: string,
       fpsPolicy: boolean) {
-    if (this.fetchingForHost_ === host) {
+    if (this.origin_ === origin) {
       this.storedData_ = usage;
       this.numCookies_ = cookies;
       this.fpsMembership_ = fpsMembership;

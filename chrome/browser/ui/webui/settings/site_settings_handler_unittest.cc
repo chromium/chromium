@@ -4822,30 +4822,30 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
                              handler()->browsing_data_model_->end()));
 
   base::Value::List args;
-  args.Append("www.example.com");
+  args.Append("http://www.example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("www.example.com", "2 B", "1 cookie",
+  ValidateUsageInfo("http://www.example.com", "2 B", "1 cookie",
                     "1 site in example.com's group", true);
 
   args.clear();
-  args.Append("example.com");
+  args.Append("http://example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("example.com", "", "1 cookie",
+  ValidateUsageInfo("http://example.com", "", "1 cookie",
                     "1 site in example.com's group", true);
 
   args.clear();
-  args.Append("google.com");
+  args.Append("http://google.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("google.com", "", "2 cookies",
+  ValidateUsageInfo("http://google.com", "", "2 cookies",
                     "2 sites in google.com's group", false);
   args.clear();
-  args.Append("ungrouped.com");
+  args.Append("http://ungrouped.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("ungrouped.com", "", "1 cookie", "", false);
+  ValidateUsageInfo("http://ungrouped.com", "", "1 cookie", "", false);
 }
 
 TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {
