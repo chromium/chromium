@@ -8,78 +8,85 @@
 
 import {Msgs} from '../common/msgs.js';
 
-export const Color = {};
-
-/**
- * Returns a string representation of a color.
- * @param {number|undefined} color The argb value represented as an integer.
- * @return {string}
- */
-Color.getColorDescription = function(color) {
-  if (!color) {
-    return '';
-  }
-  // Convert to unsigned integer.
-  color = color >>> 0;
-  // The following 24 bits represent the rgb value. Filter out first 8 bits.
-  const rgb = color & 0x00ffffff;
-  const optSubs =
-      [Color.findClosestMatchingColor(rgb), Color.getOpacityPercentage(color)];
-  return Msgs.getMsg('color_description', optSubs);
-};
-
-/**
- * Extracts the opacity of the color, which is encoded within the first 8 bits.
- * @param {number} color An integer representation of a color.
- * @return {number}
- */
-Color.getOpacityPercentage = color => Math.round(((color >>> 24) / 256) * 100);
-
-/**
- * Finds the most similar stored color given an rgb value.
- * @param {number} target The rgb value as an integer.
- * @return {string}
- */
-Color.findClosestMatchingColor = function(target) {
-  const bestMatch = Color.ColorObjectArray.reduce((closest, color) => {
-    const distance = Color.findDistance(target, color.value);
-    if (distance < closest.distance) {
-      return {color, distance};
+export class Color {
+  /**
+   * Returns a string representation of a color.
+   * @param {number|undefined} color The argb value represented as an integer.
+   * @return {string}
+   */
+  static getColorDescription(color) {
+    if (!color) {
+      return '';
     }
-    return closest;
-  }, {distance: Number.MAX_VALUE});
-
-  // Do not report color if most similar color is too inaccurate.
-  if (bestMatch.distance > Color.DISTANCE_THRESHOLD) {
-    return '';
+    // Convert to unsigned integer.
+    color = color >>> 0;
+    // The following 24 bits represent the rgb value. Filter out first 8 bits.
+    const rgb = color & 0x00ffffff;
+    const optSubs = [
+      Color.findClosestMatchingColor(rgb),
+      Color.getOpacityPercentage(color),
+    ];
+    return Msgs.getMsg('color_description', optSubs);
   }
-  return Msgs.getMsg(bestMatch.color.colorMessageId);
-};
 
-/**
- * Calculates the distance between two 3-D points, encoded as numbers,
- * that represent colors.
- * The first 8 bits are unused as they have either been shifted off or are
- * simply filled by zeros. The x component is designated by the second
- * 8 bits. The y component is designated by the third 8 bits.
- * The z component is designated by the last 8 bits.
- * @param {number} firstColor
- * @param {number} secondColor
- * @return {number}
- */
-Color.findDistance = function(firstColor, secondColor) {
-  // Extract x, y, and z components.
-  const firstColorX = (firstColor & 0xff0000) >> 16;
-  const firstColorY = (firstColor & 0x00ff00) >> 8;
-  const firstColorZ = (firstColor & 0x0000ff);
-  const secondColorX = (secondColor & 0xff0000) >> 16;
-  const secondColorY = (secondColor & 0x00ff00) >> 8;
-  const secondColorZ = (secondColor & 0x0000ff);
+  /**
+   * Extracts the opacity of the color, which is encoded within the first 8
+   * bits.
+   * @param {number} color An integer representation of a color.
+   * @return {number}
+   */
+  static getOpacityPercentage(color) {
+    return Math.round(((color >>> 24) / 256) * 100);
+  }
 
-  return Math.pow(secondColorX - firstColorX, 2) +
-      Math.pow(secondColorY - firstColorY, 2) +
-      Math.pow(secondColorZ - firstColorZ, 2);
-};
+  /**
+   * Finds the most similar stored color given an rgb value.
+   * @param {number} target The rgb value as an integer.
+   * @return {string}
+   */
+  static findClosestMatchingColor(target) {
+    const bestMatch = ColorObjectArray.reduce((closest, color) => {
+      const distance = Color.findDistance(target, color.value);
+      if (distance < closest.distance) {
+        return {color, distance};
+      }
+      return closest;
+    }, {distance: Number.MAX_VALUE});
+
+    // Do not report color if most similar color is too inaccurate.
+    if (bestMatch.distance > DISTANCE_THRESHOLD) {
+      return '';
+    }
+    return Msgs.getMsg(bestMatch.color.colorMessageId);
+  }
+
+  /**
+   * Calculates the distance between two 3-D points, encoded as numbers,
+   * that represent colors.
+   * The first 8 bits are unused as they have either been shifted off or are
+   * simply filled by zeros. The x component is designated by the second
+   * 8 bits. The y component is designated by the third 8 bits.
+   * The z component is designated by the last 8 bits.
+   * @param {number} firstColor
+   * @param {number} secondColor
+   * @return {number}
+   */
+  static findDistance(firstColor, secondColor) {
+    // Extract x, y, and z components.
+    const firstColorX = (firstColor & 0xff0000) >> 16;
+    const firstColorY = (firstColor & 0x00ff00) >> 8;
+    const firstColorZ = (firstColor & 0x0000ff);
+    const secondColorX = (secondColor & 0xff0000) >> 16;
+    const secondColorY = (secondColor & 0x00ff00) >> 8;
+    const secondColorZ = (secondColor & 0x0000ff);
+
+    return Math.pow(secondColorX - firstColorX, 2) +
+        Math.pow(secondColorY - firstColorY, 2) +
+        Math.pow(secondColorZ - firstColorZ, 2);
+  }
+}
+
+// Module-local variables.
 
 /**
  * The distance between black and dark grey is the threshold.
@@ -88,7 +95,7 @@ Color.findDistance = function(firstColor, secondColor) {
  * a shade of grey that could be visibly identified as black.
  * @const {number}
  */
-Color.DISTANCE_THRESHOLD = Color.findDistance(0X000000, 0X282828);
+const DISTANCE_THRESHOLD = Color.findDistance(0X000000, 0X282828);
 
 /**
  * Holds objects that contain hexadecimal RGB values of colors and their
@@ -96,7 +103,7 @@ Color.DISTANCE_THRESHOLD = Color.findDistance(0X000000, 0X282828);
  * @private {!Array<{colorMessageId: string, value: number}>}
  * Obtained from url: https://www.w3schools.com/lib/w3color.js
  */
-Color.ColorObjectArray = [
+const ColorObjectArray = [
   {'value': 0x0, 'colorMessageId': 'color_black'},
   {'value': 0x6400, 'colorMessageId': 'color_dark_green'},
   {'value': 0x8000, 'colorMessageId': 'color_green'},
