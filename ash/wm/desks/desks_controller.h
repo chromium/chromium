@@ -255,6 +255,9 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // users are not allowed to set empty names.
   void RestoreNameOfDeskAtIndex(std::u16string name, size_t index);
 
+  // Sets the `uuid_` of the desk at `index` to the supplied `guid`.
+  void RestoreGuidOfDeskAtIndex(base::GUID guid, size_t index);
+
   // Restores the creation time of the desk at |index|.
   void RestoreCreationTimeOfDeskAtIndex(base::Time creation_time, size_t index);
 

@@ -590,6 +590,7 @@ void DesksController::NewDesk(DesksCreationRemovalSource source) {
     observer.OnDeskAdded(new_desk);
 
   if (!is_first_ever_desk) {
+    desks_restore_util::UpdatePrimaryUserDeskGuidsPrefs();
     desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
     desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
     UMA_HISTOGRAM_ENUMERATION(kNewDeskHistogramName, source);
@@ -646,6 +647,7 @@ void DesksController::ReorderDesk(int old_index, int new_index) {
   // 1. Update desk name and metrics lists in the user prefs to maintain the
   // right order.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+  desks_restore_util::UpdatePrimaryUserDeskGuidsPrefs();
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 
   // 2. For multi-profile switching, update all affected active desk index in
@@ -982,6 +984,12 @@ void DesksController::RestoreNameOfDeskAtIndex(std::u16string name,
   DCHECK_LT(index, desks_.size());
 
   desks_[index]->SetName(std::move(name), /*set_by_user=*/true);
+}
+
+void DesksController::RestoreGuidOfDeskAtIndex(base::GUID guid, size_t index) {
+  DCHECK(guid.is_valid());
+  DCHECK_LT(index, desks_.size());
+  desks_[index]->SetGuid(std::move(guid));
 }
 
 void DesksController::RestoreCreationTimeOfDeskAtIndex(base::Time creation_time,
@@ -1829,6 +1837,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   }
 
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+  desks_restore_util::UpdatePrimaryUserDeskGuidsPrefs();
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 
   DCHECK_LE(available_container_ids_.size(), desks_util::GetMaxNumberOfDesks());

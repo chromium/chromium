@@ -268,6 +268,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAltTabPerDesk[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kContextualTooltips[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDesksNamesList[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDesksGuidsList[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDesksMetricsList[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDesksWeeklyActiveDesksMetrics[];

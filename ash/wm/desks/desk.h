@@ -158,6 +158,10 @@ class ASH_EXPORT Desk {
   // from its mini view in overview mode.
   void SetName(std::u16string new_name, bool set_by_user);
 
+  // Sets the desks `uuid_` to the `new_guid` if `new_guid` is valid, used when
+  // restoring desks on sign-in. If `new_guid` is invalid no change happens.
+  void SetGuid(base::GUID new_guid);
+
   // Prepares for the animation to activate this desk (i.e. this desk is not
   // active yet), by showing its containers on all root windows while setting
   // their opacities to 0. Calling Activate() during the animation will set the
@@ -287,7 +291,7 @@ class ASH_EXPORT Desk {
   void ResumeContentUpdateNotification(bool notify_when_fully_resumed);
 
   // Uniquely identifies the desk.
-  const base::GUID uuid_;
+  base::GUID uuid_;
 
   // The associated container ID with this desk.
   const int container_id_;

@@ -2768,6 +2768,19 @@ void VerifyDesksRestoreData(PrefService* user_prefs,
     EXPECT_EQ(desks_names[index++], value.GetString());
 }
 
+// Returns the GUIDs in the given `user_prefs`.
+std::vector<base::GUID> GetDeskRestoreGuids(PrefService* user_prefs) {
+  const base::Value::List& desks_restore_guids =
+      user_prefs->GetList(prefs::kDesksGuidsList);
+
+  std::vector<base::GUID> guids;
+  for (const base::Value& value : desks_restore_guids) {
+    const base::GUID guid = base::GUID::ParseLowercase(value.GetString());
+    guids.emplace_back(guid);
+  }
+  return guids;
+}
+
 }  // namespace
 
 class DesksEditableNamesTest : public DesksTest {
@@ -9044,6 +9057,58 @@ TEST_P(DesksCloseAllTest, TestRecordingNumerOfClosedWindowsMetrics) {
         break;
     }
   }
+}
+
+// Tests that when a desk is created its GUID is saved in the desks restore
+// data, and when a desk is removed its GUID is removed.
+TEST_P(DesksTest, DeskGuidsSaved) {
+  // We don't need to save the desk GUID for restore if there is only one desk.
+  NewDesk();
+  auto* controller = DesksController::Get();
+  base::GUID desk1_guid = controller->desks()[0].get()->uuid();
+  base::GUID desk2_guid = controller->desks()[1].get()->uuid();
+  EXPECT_THAT(GetDeskRestoreGuids(GetPrimaryUserPrefService()),
+              testing::ElementsAre(desk1_guid, desk2_guid));
+
+  // Add a third desk, close the second desk, and check the GUIDs.
+  NewDesk();
+  base::GUID desk3_guid = controller->desks()[2].get()->uuid();
+  EnterOverview();
+  CloseDeskFromMiniView(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+                            ->desks_bar_view()
+                            ->mini_views()[1],
+                        GetEventGenerator());
+  EXPECT_THAT(GetDeskRestoreGuids(GetPrimaryUserPrefService()),
+              testing::ElementsAre(desk1_guid, desk3_guid));
+}
+
+// Tests that when desks are reordered their GUIDs are reordered in the desk
+// restore data correspondingly.
+TEST_P(DesksTest, DeskGuidsReorder) {
+  NewDesk();
+  NewDesk();
+  auto* controller = DesksController::Get();
+  base::GUID desk1_guid = controller->desks()[0].get()->uuid();
+  base::GUID desk2_guid = controller->desks()[1].get()->uuid();
+  base::GUID desk3_guid = controller->desks()[2].get()->uuid();
+  EXPECT_THAT(GetDeskRestoreGuids(GetPrimaryUserPrefService()),
+              testing::ElementsAre(desk1_guid, desk2_guid, desk3_guid));
+
+  // Swap the 2nd and 3rd desks with the mouse.
+  EnterOverview();
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+  std::vector<DeskMiniView*> mini_views = desks_bar_view->mini_views();
+  auto* event_generator = GetEventGenerator();
+
+  StartDragDeskPreview(mini_views[1], event_generator);
+  gfx::Point desk_center_2 =
+      mini_views[2]->GetPreviewBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(desk_center_2);
+  event_generator->ReleaseLeftButton();
+
+  EXPECT_THAT(GetDeskRestoreGuids(GetPrimaryUserPrefService()),
+              testing::ElementsAre(desk1_guid, desk3_guid, desk2_guid));
 }
 
 // TODO(afakhry): Add more tests:

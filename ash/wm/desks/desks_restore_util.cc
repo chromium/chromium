@@ -48,7 +48,7 @@ constexpr char kInteractedWithThisWeekKey[] = "interacted_week";
 // value pairs (<key> : <entry>):
 // |kWeeklyActiveDesksKey| : an int representing the number of weekly active
 // desks.
-// |kReportTimeKey| : an int respresenting the time a user's weekly active desks
+// |kReportTimeKey| : an int representing the time a user's weekly active desks
 // metric is scheduled to go off at. The value is the time left on the
 // scheduler + the user's current time stored as the number of minutes for
 // base::Time::FromDeltaSinceWindowsEpoch().
@@ -123,6 +123,7 @@ base::Time GetLocalEpoch() {
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   constexpr int kDefaultActiveDeskIndex = 0;
   registry->RegisterListPref(prefs::kDesksNamesList);
+  registry->RegisterListPref(prefs::kDesksGuidsList);
   registry->RegisterListPref(prefs::kDesksMetricsList);
   registry->RegisterDictionaryPref(prefs::kDesksWeeklyActiveDesksMetrics);
   registry->RegisterIntegerPref(prefs::kDesksActiveDesk,
@@ -145,6 +146,8 @@ void RestorePrimaryUserDesks() {
 
   const base::Value::List& desks_names_list =
       primary_user_prefs->GetList(prefs::kDesksNamesList);
+  const base::Value::List& desks_guids_list =
+      primary_user_prefs->GetList(prefs::kDesksGuidsList);
   const base::Value::List& desks_metrics_list =
       primary_user_prefs->GetList(prefs::kDesksMetricsList);
 
@@ -174,6 +177,12 @@ void RestorePrimaryUserDesks() {
     if (!desk_name.empty()) {
       desks_controller->RestoreNameOfDeskAtIndex(base::UTF8ToUTF16(desk_name),
                                                  index);
+    }
+    // It's possible that desks_guids_list is not yet populated.
+    if (index < desks_guids_list.size()) {
+      desks_controller->RestoreGuidOfDeskAtIndex(
+          base::GUID::ParseLowercase(desks_guids_list[index].GetString()),
+          index);
     }
 
     // Only restore metrics if there is existing data.
@@ -278,6 +287,29 @@ void UpdatePrimaryUserDeskNamesPrefs() {
       !primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently)) {
     primary_user_prefs->SetBoolean(kUserHasUsedDesksRecently, true);
   }
+}
+
+void UpdatePrimaryUserDeskGuidsPrefs() {
+  if (g_pause_desks_prefs_updates) {
+    return;
+  }
+
+  PrefService* primary_user_prefs = GetPrimaryUserPrefService();
+  if (!primary_user_prefs) {
+    // Can be null in tests.
+    return;
+  }
+
+  ScopedListPrefUpdate guid_update(primary_user_prefs, prefs::kDesksGuidsList);
+  base::Value::List& guid_pref_data = guid_update.Get();
+  guid_pref_data.clear();
+
+  const auto& desks = DesksController::Get()->desks();
+  for (const auto& desk : desks) {
+    guid_pref_data.Append(desk->uuid().AsLowercaseString());
+  }
+
+  DCHECK_EQ(guid_pref_data.size(), desks.size());
 }
 
 void UpdatePrimaryUserDeskMetricsPrefs() {

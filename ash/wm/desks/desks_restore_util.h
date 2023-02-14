@@ -29,6 +29,10 @@ void RestorePrimaryUserDesks();
 // desks count or a desk name changes.
 ASH_EXPORT void UpdatePrimaryUserDeskNamesPrefs();
 
+// Called to update the desk guids restore prefs for the primary user whenever
+// a desk is created or destroyed.
+ASH_EXPORT void UpdatePrimaryUserDeskGuidsPrefs();
+
 // Called to update the desk metrics restore prefs for the primary user whenever
 // desks count changes, desks order changes or during
 // `DesksController::Shutdown()`.

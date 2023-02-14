@@ -467,6 +467,12 @@ void Desk::SetName(std::u16string new_name, bool set_by_user) {
   DesksController::Get()->NotifyDeskNameChanged(this, name_);
 }
 
+void Desk::SetGuid(base::GUID new_guid) {
+  if (new_guid.is_valid()) {
+    uuid_ = std::move(new_guid);
+  }
+}
+
 void Desk::PrepareForActivationAnimation() {
   DCHECK(!is_active_);
 
