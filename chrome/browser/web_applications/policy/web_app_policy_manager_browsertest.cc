@@ -222,8 +222,14 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, DontOverrideManifest) {
 // specified in manifest. Next time we navigate to kStartUrl, but we still
 // need to override the manifest even though the policy key is kInstallUrl.
 // This is done by matching the AppId.
+// TODO(crbug.com/1415979): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MismatchedInstallAndStartUrl DISABLED_MismatchedInstallAndStartUrl
+#else
+#define MAYBE_MismatchedInstallAndStartUrl MismatchedInstallAndStartUrl
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
-                       MismatchedInstallAndStartUrl) {
+                       MAYBE_MismatchedInstallAndStartUrl) {
   WebAppPolicyManager& policy_manager =
       WebAppProvider::GetForTest(profile())->policy_manager();
 
