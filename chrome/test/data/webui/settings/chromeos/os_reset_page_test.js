@@ -241,7 +241,7 @@ suite('DialogTests', function() {
         await flushAsync();
 
         assertEquals(
-            routes.INTERNET_NETWORKS, Router.getInstance().getCurrentRoute());
+            routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
         assertEquals(
             'type=Cellular',
             Router.getInstance().getQueryParameters().toString());

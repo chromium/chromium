@@ -288,7 +288,6 @@ suite('PeoplePageTests', function() {
 
     // Sub-page trigger navigates to Google account manager.
     subpageTrigger.click();
-    assertEquals(
-        Router.getInstance().getCurrentRoute(), routes.ACCOUNT_MANAGER);
+    assertEquals(Router.getInstance().currentRoute, routes.ACCOUNT_MANAGER);
   });
 });

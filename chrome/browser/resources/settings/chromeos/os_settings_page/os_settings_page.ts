@@ -167,7 +167,7 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.currentRoute_ = Router.getInstance().getCurrentRoute();
+    this.currentRoute_ = Router.getInstance().currentRoute;
 
     this.allowCrostini_ = loadTimeData.valueExists('allowCrostini') &&
         loadTimeData.getBoolean('allowCrostini');

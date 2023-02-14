@@ -230,7 +230,7 @@ suite('PerDeviceKeyboardSubsection', function() {
     await flushTasks();
     assertEquals(
         routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
-        Router.getInstance().getCurrentRoute());
+        Router.getInstance().currentRoute);
 
     const urlSearchQuery =
         Router.getInstance().getQueryParameters().get('keyboardId');

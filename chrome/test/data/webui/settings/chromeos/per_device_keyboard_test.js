@@ -46,7 +46,6 @@ suite('PerDeviceKeyboard', function() {
     await initializePerDeviceKeyboardPage();
     perDeviceKeyboardPage.shadowRoot.querySelector('#showLanguagesInput')
         .click();
-    assertEquals(
-        routes.OS_LANGUAGES_INPUT, Router.getInstance().getCurrentRoute());
+    assertEquals(routes.OS_LANGUAGES_INPUT, Router.getInstance().currentRoute);
   });
 });

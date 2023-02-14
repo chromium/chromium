@@ -27,7 +27,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {OsSettingsRoutes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
@@ -58,15 +57,6 @@ class SettingsMultideviceSubpageElement extends
   static get properties() {
     return {
       /**
-       * Alias for allowing Polymer bindings to routes.
-       */
-      routes: {
-        type: Object,
-        value: routes,
-        readonly: true,
-      },
-
-      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -89,7 +79,6 @@ class SettingsMultideviceSubpageElement extends
     };
   }
 
-  routes: OsSettingsRoutes;
   private browserProxy_: MultiDeviceBrowserProxy;
 
   constructor() {

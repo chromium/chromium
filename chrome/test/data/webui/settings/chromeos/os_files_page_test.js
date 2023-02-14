@@ -47,7 +47,7 @@ suite('FilesPageTests', function() {
 
     smbShares.click();
     flush();
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.SMB_SHARES);
+    assertEquals(Router.getInstance().currentRoute, routes.SMB_SHARES);
   });
 
   test('Office row is hidden when showOfficeSettings is false', async () => {
@@ -91,7 +91,7 @@ suite('FilesPageTests', function() {
 
       officeRow.click();
       flush();
-      assertEquals(Router.getInstance().getCurrentRoute(), routes.OFFICE);
+      assertEquals(Router.getInstance().currentRoute, routes.OFFICE);
     });
   });
 });

@@ -489,15 +489,15 @@ class SettingsMultidevicePageElement extends
 
     // Host status doesn't matter if we are navigating to Nearby Share
     // settings.
-    if (routes.NEARBY_SHARE === Router.getInstance().getCurrentRoute()) {
+    if (routes.NEARBY_SHARE === Router.getInstance().currentRoute) {
       return;
     }
 
     // If the user gets to the a nested page without a host (e.g. by clicking a
     // stale 'existing user' notifications after forgetting their host) we
     // direct them back to the main settings page.
-    if (routes.MULTIDEVICE !== Router.getInstance().getCurrentRoute() &&
-        routes.MULTIDEVICE.contains(Router.getInstance().getCurrentRoute()) &&
+    if (routes.MULTIDEVICE !== Router.getInstance().currentRoute &&
+        routes.MULTIDEVICE.contains(Router.getInstance().currentRoute) &&
         !this.isHostSet()) {
       // Render MULTIDEVICE page before the MULTIDEVICE_FEATURES has a chance.
       beforeNextRender(this, () => {

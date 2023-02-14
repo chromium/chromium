@@ -388,7 +388,7 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
       return;
     }
 
-    if (Router.getInstance().getCurrentRoute() === routes.LOCK_SCREEN) {
+    if (Router.getInstance().currentRoute === routes.LOCK_SCREEN) {
       // Show deep links again if the user authentication dialog just closed.
       this.attemptDeepLink().then(result => {
         // If there were no supported deep links, focus the default element.
@@ -459,7 +459,7 @@ class SettingsLockScreenElement extends SettingsLockScreenElementBase {
    * @return whether an event was fired to show the password dialog.
    */
   private requestPasswordIfApplicable_(): boolean {
-    const currentRoute = Router.getInstance().getCurrentRoute();
+    const currentRoute = Router.getInstance().currentRoute;
     if (currentRoute === routes.LOCK_SCREEN && !this.setModes) {
       const event = new CustomEvent(
           'password-requested', {bubbles: true, composed: true});

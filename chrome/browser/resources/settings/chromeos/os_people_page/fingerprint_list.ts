@@ -105,7 +105,7 @@ class SettingsFingerprintListElement extends
    * @return whether an event was fired to show the password dialog.
    */
   private requestPasswordIfApplicable_(): boolean {
-    const currentRoute = Router.getInstance().getCurrentRoute();
+    const currentRoute = Router.getInstance().currentRoute;
     if (currentRoute === routes.FINGERPRINT && !this.authToken) {
       const event = new CustomEvent(
           'password-requested', {bubbles: true, composed: true});
@@ -175,7 +175,7 @@ class SettingsFingerprintListElement extends
    */
   private onScreenLocked_(screenIsLocked: boolean): void {
     if (!screenIsLocked &&
-        Router.getInstance().getCurrentRoute() === routes.FINGERPRINT) {
+        Router.getInstance().currentRoute === routes.FINGERPRINT) {
       this.onSetupFingerprintDialogClose_();
     }
   }
@@ -186,7 +186,7 @@ class SettingsFingerprintListElement extends
       return;
     }
 
-    if (Router.getInstance().getCurrentRoute() === routes.FINGERPRINT) {
+    if (Router.getInstance().currentRoute === routes.FINGERPRINT) {
       // Show deep links again if the user authentication dialog just closed.
       this.attemptDeepLink();
     }

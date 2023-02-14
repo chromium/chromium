@@ -175,8 +175,7 @@ class OsSettingsMainElement extends OsSettingsMainElementBase {
    * current route.
    */
   override currentRouteChanged(newRoute: Route) {
-    const inAbout =
-        routes.ABOUT.contains(Router.getInstance().getCurrentRoute());
+    const inAbout = routes.ABOUT.contains(Router.getInstance().currentRoute);
     this.showPages_ = {about: inAbout, settings: !inAbout};
 
     if (!newRoute.isSubpage()) {

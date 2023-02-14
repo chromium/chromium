@@ -16,8 +16,6 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
-import {routes} from '../os_route.js';
-import {OsSettingsRoutes} from '../os_settings_routes.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
 import {MultiDeviceFeature, MultiDevicePageContentData, MultiDeviceSettingsMode} from './multidevice_constants.js';
@@ -47,15 +45,6 @@ class SettingsMultideviceSmartlockItemElement extends
   static get properties() {
     return {
       /**
-       * Alias for allowing Polymer HTML bindings to routes.
-       */
-      routes: {
-        type: Object,
-        value: routes,
-        readonly: true,
-      },
-
-      /**
        * Authentication token provided by lock-screen-password-prompt-dialog.
        */
       authToken: {
@@ -65,7 +54,6 @@ class SettingsMultideviceSmartlockItemElement extends
   }
 
   authToken: chrome.quickUnlockPrivate.TokenInfo|undefined;
-  routes: OsSettingsRoutes|null;
   private browserProxy_: MultiDeviceBrowserProxy;
 
   constructor() {

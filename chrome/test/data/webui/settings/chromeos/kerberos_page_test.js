@@ -47,6 +47,6 @@ suite('KerberosPageTests', function() {
     // Sub-page trigger navigates to Kerberos Accounts V2.
     subpageTrigger.click();
     assertEquals(
-        Router.getInstance().getCurrentRoute(), routes.KERBEROS_ACCOUNTS_V2);
+        Router.getInstance().currentRoute, routes.KERBEROS_ACCOUNTS_V2);
   });
 });

@@ -362,7 +362,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     getChangeMouseSettings().click();
     await flushAsync();
 
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.POINTERS);
+    assertEquals(Router.getInstance().currentRoute, routes.POINTERS);
 
     // Navigate back to the detail page.
     assertNotEquals(
@@ -400,7 +400,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     getChangeKeyboardSettings().click();
     await flushAsync();
 
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.KEYBOARD);
+    assertEquals(Router.getInstance().currentRoute, routes.KEYBOARD);
 
     // Navigate back to the detail page.
     assertNotEquals(

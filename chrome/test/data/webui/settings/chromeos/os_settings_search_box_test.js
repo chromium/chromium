@@ -436,7 +436,7 @@ suite('OSSettingsSearchBox', () => {
     assertFalse(dropDown.opened);
     const router = Router.getInstance();
     assertEquals(router.getQueryParameters().get('search'), 'fake query');
-    assertEquals(router.getCurrentRoute().path, '/networks');
+    assertEquals(router.currentRoute.path, '/networks');
     assertEquals(router.getQueryParameters().get('type'), 'WiFi');
   });
 
@@ -504,7 +504,7 @@ suite('OSSettingsSearchBox', () => {
     assertFalse(dropDown.opened);
     const router = Router.getInstance();
     assertEquals(router.getQueryParameters().get('search'), 'fake query 1');
-    assertEquals(router.getCurrentRoute().path, '/networks');
+    assertEquals(router.currentRoute.path, '/networks');
     assertEquals(router.getQueryParameters().get('type'), 'WiFi');
   });
 
@@ -524,7 +524,7 @@ suite('OSSettingsSearchBox', () => {
     assertFalse(dropDown.opened);
     const router = Router.getInstance();
     assertEquals(router.getQueryParameters().get('search'), 'fake query 2');
-    assertEquals(router.getCurrentRoute().path, '/networks');
+    assertEquals(router.currentRoute.path, '/networks');
     assertEquals(router.getQueryParameters().get('type'), 'WiFi');
   });
 

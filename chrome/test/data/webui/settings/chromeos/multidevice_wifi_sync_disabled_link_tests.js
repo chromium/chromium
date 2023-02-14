@@ -47,6 +47,6 @@ suite('Multidevice', function() {
     chromeSyncLink.click();
     flush();
 
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.OS_SYNC);
+    assertEquals(Router.getInstance().currentRoute, routes.OS_SYNC);
   });
 });

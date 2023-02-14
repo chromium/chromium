@@ -84,7 +84,7 @@ export const GlobalScrollTargetMixin = dedupingMixin(
           super.connectedCallback();
 
           this.active_ =
-              Router.getInstance().getCurrentRoute() === this.subpageRoute;
+              Router.getInstance().currentRoute === this.subpageRoute;
           scrollTargetResolver.promise.then(this._setScrollTarget.bind(this));
         }
 

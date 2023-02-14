@@ -275,7 +275,7 @@ class SettingsCrostiniSubpageElement extends
 
   private onCrostiniEnabledChanged_(enabled: boolean) {
     if (!enabled &&
-        Router.getInstance().getCurrentRoute() === routes.CROSTINI_DETAILS) {
+        Router.getInstance().currentRoute === routes.CROSTINI_DETAILS) {
       Router.getInstance().navigateToPreviousRoute();
     }
     if (enabled) {

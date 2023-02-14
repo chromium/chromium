@@ -285,7 +285,7 @@ suite('PrivacyPageTests', function() {
     subpageTrigger.click();
     flush();
 
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.LOCK_SCREEN);
+    assertEquals(Router.getInstance().currentRoute, routes.LOCK_SCREEN);
     const lockScreenPage =
         assert(privacyPage.shadowRoot.querySelector('#lockScreen'));
 
@@ -297,7 +297,7 @@ suite('PrivacyPageTests', function() {
     editFingerprintsTrigger.click();
     flush();
 
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.FINGERPRINT);
+    assertEquals(Router.getInstance().currentRoute, routes.FINGERPRINT);
     assertFalse(privacyPage.showPasswordPromptDialog_);
 
     const fingerprintTrigger =
@@ -311,7 +311,7 @@ suite('PrivacyPageTests', function() {
     lockScreenPage.dispatchEvent(event);
     assertTrue(privacyPage.authToken_ === undefined);
 
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.FINGERPRINT);
+    assertEquals(Router.getInstance().currentRoute, routes.FINGERPRINT);
     assertTrue(privacyPage.showPasswordPromptDialog_);
   });
 

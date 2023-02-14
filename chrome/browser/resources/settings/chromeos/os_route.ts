@@ -2,43 +2,142 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import * as routesMojomWebui from '../mojom-webui/routes.mojom-webui.js';
+
 import {Route, Router} from './router.js';
 
-import {OsSettingsRoutes} from './os_settings_routes.js';
-
-const {Section, Subpage} = routesMojomWebui;
-
-/**
- * @param {!Route} parent
- * @param {string} path
- * @param {!Section} section
- * @return {!Route}
- */
-function createSection(parent, path, section) {
-  // TODO(khorimoto): Add |section| to the the Route object.
-  return parent.createSection('/' + path, /*section=*/ path);
+export interface MinimumRoutes {
+  BASIC: Route;
+  ADVANCED: Route;
+  ABOUT: Route;
 }
 
 /**
- * @param {!Route} parent
- * @param {string} path
- * @param {!Subpage} subpage
- * @return {!Route}
+ * Specifies all possible routes in CrOS Settings. Keep routes alphabetized.
  */
-function createSubpage(parent, path, subpage) {
+export interface OsSettingsRoutes extends MinimumRoutes {
+  A11Y_AUDIO_AND_CAPTIONS: Route;
+  A11Y_CURSOR_AND_TOUCHPAD: Route;
+  A11Y_DISPLAY_AND_MAGNIFICATION: Route;
+  A11Y_KEYBOARD_AND_TEXT_INPUT: Route;
+  A11Y_TEXT_TO_SPEECH: Route;
+  A11Y_SELECT_TO_SPEAK: Route;
+  ABOUT: Route;
+  ABOUT_ABOUT: Route;
+  ACCOUNTS: Route;
+  ACCOUNT_MANAGER: Route;
+  ADVANCED: Route;
+  APN: Route;
+  APP_NOTIFICATIONS: Route;
+  APP_MANAGEMENT: Route;
+  APP_MANAGEMENT_DETAIL: Route;
+  APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS: Route;
+  APP_MANAGEMENT_PLUGIN_VM_SHARED_USB_DEVICES: Route;
+  APPS: Route;
+  ANDROID_APPS_DETAILS: Route;
+  ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES: Route;
+  AUDIO: Route;
+  CROSTINI: Route;
+  CROSTINI_ANDROID_ADB: Route;
+  CROSTINI_DETAILS: Route;
+  CROSTINI_DISK_RESIZE: Route;
+  CROSTINI_EXPORT_IMPORT: Route;
+  CROSTINI_EXTRA_CONTAINERS: Route;
+  CROSTINI_PORT_FORWARDING: Route;
+  CROSTINI_SHARED_PATHS: Route;
+  CROSTINI_SHARED_USB_DEVICES: Route;
+  BASIC: Route;
+  BLUETOOTH: Route;
+  BLUETOOTH_DEVICES: Route;
+  BLUETOOTH_DEVICE_DETAIL: Route;
+  BLUETOOTH_SAVED_DEVICES: Route;
+  BRUSCHETTA_DETAILS: Route;
+  BRUSCHETTA_SHARED_USB_DEVICES: Route;
+  BRUSCHETTA_SHARED_PATHS: Route;
+  CHANGE_PICTURE: Route;
+  CUPS_PRINTERS: Route;
+  DARK_MODE: Route;
+  DATETIME: Route;
+  DATETIME_TIMEZONE_SUBPAGE: Route;
+  DETAILED_BUILD_INFO: Route;
+  DEVICE: Route;
+  DISPLAY: Route;
+  EXTERNAL_STORAGE_PREFERENCES: Route;
+  FINGERPRINT: Route;
+  FILES: Route;
+  GOOGLE_ASSISTANT: Route;
+  HOTSPOT_DETAIL: Route;
+  INTERNET: Route;
+  INTERNET_NETWORKS: Route;
+  KERBEROS: Route;
+  KERBEROS_ACCOUNTS_V2: Route;
+  KEYBOARD: Route;
+  KNOWN_NETWORKS: Route;
+  LOCK_SCREEN: Route;
+  MANAGE_ACCESSIBILITY: Route;
+  MANAGE_SWITCH_ACCESS_SETTINGS: Route;
+  MANAGE_TTS_SETTINGS: Route;
+  MULTIDEVICE: Route;
+  MULTIDEVICE_FEATURES: Route;
+  NEARBY_SHARE: Route;
+  NETWORK_DETAIL: Route;
+  OFFICE: Route;
+  ON_STARTUP: Route;
+  OS_ACCESSIBILITY: Route;
+  OS_LANGUAGES: Route;
+  OS_LANGUAGES_EDIT_DICTIONARY: Route;
+  OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY: Route;
+  OS_LANGUAGES_INPUT: Route;
+  OS_LANGUAGES_INPUT_METHOD_OPTIONS: Route;
+  OS_LANGUAGES_LANGUAGES: Route;
+  OS_LANGUAGES_SMART_INPUTS: Route;
+  OS_PRINTING: Route;
+  OS_PRIVACY: Route;
+  OS_RESET: Route;
+  OS_SEARCH: Route;
+  OS_SIGN_OUT: Route;
+  OS_SYNC: Route;
+  OS_PEOPLE: Route;
+  PER_DEVICE_KEYBOARD: Route;
+  PER_DEVICE_KEYBOARD_REMAP_KEYS: Route;
+  PER_DEVICE_MOUSE: Route;
+  PER_DEVICE_POINTING_STICK: Route;
+  PER_DEVICE_TOUCHPAD: Route;
+  PERSONALIZATION: Route;
+  POINTERS: Route;
+  POWER: Route;
+  PRIVACY: Route;
+  PRIVACY_HUB: Route;
+  SEARCH: Route;
+  SEARCH_SUBPAGE: Route;
+  SMART_PRIVACY: Route;
+  SMB_SHARES: Route;
+  STORAGE: Route;
+  STYLUS: Route;
+  SYNC: Route;
+  SYNC_ADVANCED: Route;
+}
+
+function createSection(
+    parent: Route, path: string, _section: routesMojomWebui.Section): Route {
+  // TODO(khorimoto): Add |section| to the the Route object.
+  return parent.createSection(`/${path}`, /*section=*/ path);
+}
+
+function createSubpage(
+    parent: Route, path: string, _subpage: routesMojomWebui.Subpage): Route {
   // TODO(khorimoto): Add |subpage| to the Route object.
   return parent.createChild('/' + path);
 }
 
 /**
  * Creates Route objects for each path corresponding to CrOS settings content.
- * @return {!OsSettingsRoutes}
  */
-function createOSSettingsRoutes() {
-  const r = /** @type {!OsSettingsRoutes} */ ({});
+function createOsSettingsRoutes(): OsSettingsRoutes {
+  const r: Partial<OsSettingsRoutes> = {};
+  const {Section, Subpage} = routesMojomWebui;
 
   // Special routes: BASIC is the main page which loads if no path is
   // provided, ADVANCED is the bottom section of the main page which is not
@@ -398,32 +497,28 @@ function createOSSettingsRoutes() {
       r.ABOUT_ABOUT, routesMojomWebui.DETAILED_BUILD_INFO_SUBPAGE_PATH,
       Subpage.kDetailedBuildInfo);
 
-  return r;
+  return r as OsSettingsRoutes;
 }
 
 /**
- * @return {!Router} A router with at least those routes common to OS
- *     and browser settings. If the window is not in OS settings (based on
- *     loadTimeData) then browser specific routes are added. If the window is
- *     OS settings or if Chrome OS is using a consolidated settings page for
- *     OS and browser settings then OS specific routes are added.
+ * Returns a router with at least those routes common to OS
+ * and browser settings. If the window is not in OS settings (based on
+ * loadTimeData) then browser specific routes are added. If the window is
+ * OS settings or if Chrome OS is using a consolidated settings page for
+ * OS and browser settings then OS specific routes are added.
  */
-function buildRouter() {
-  return new Router(createOSSettingsRoutes());
+function buildRouter(): Router {
+  return new Router(createOsSettingsRoutes());
 }
 
 Router.setInstance(buildRouter());
 
-window.addEventListener('popstate', function(event) {
+window.addEventListener('popstate', () => {
   // On pop state, do not push the state onto the window.history again.
-  const routerInstance = Router.getInstance();
-  routerInstance.setCurrentRoute(
-      routerInstance.getRouteForPath(window.location.pathname) ||
-          routerInstance.getRoutes().BASIC,
+  const router = Router.getInstance();
+  router.setCurrentRoute(
+      router.getRouteForPath(window.location.pathname) || router.routes.BASIC,
       new URLSearchParams(window.location.search), true);
 });
 
-// TODO(dpapad): Change to 'get routes() {}' in export when we fix a bug in
-// ChromePass that limits the syntax of what can be returned from cr.define().
-export const routes =
-    /** @type {!OsSettingsRoutes} */ (Router.getInstance().getRoutes());
+export const routes = Router.getInstance().routes;

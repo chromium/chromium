@@ -317,7 +317,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     // We update the storage usage every 5 seconds.
     if (this.updateTimerId_ === -1) {
       this.updateTimerId_ = window.setInterval(() => {
-        if (Router.getInstance().getCurrentRoute() !== routes.STORAGE) {
+        if (Router.getInstance().currentRoute !== routes.STORAGE) {
           this.stopPeriodicUpdate_();
           return;
         }

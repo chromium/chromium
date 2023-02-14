@@ -278,11 +278,11 @@ suite('Multidevice', function() {
             undefined,
             multideviceSubpage.shadowRoot.querySelector('#smartLockItem')
                 .subpageRoute);
-        const routeBefore = Router.getInstance().getCurrentRoute();
+        const routeBefore = Router.getInstance().currentRoute;
         multideviceSubpage.shadowRoot.querySelector('#smartLockItem')
             .shadowRoot.querySelector('.link-wrapper')
             .click();
-        assertEquals(Router.getInstance().getCurrentRoute(), routeBefore);
+        assertEquals(Router.getInstance().currentRoute, routeBefore);
 
         loadTimeData.overrideValues({'isSmartLockSignInRemoved': false});
       });

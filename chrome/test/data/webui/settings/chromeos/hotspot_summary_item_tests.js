@@ -71,8 +71,7 @@ suite('HotspotSummaryItemTest', function() {
             '#hotspotSummaryItemRowArrowIcon');
         assertTrue(!!subpageArrow, 'Subpage arrow should exist');
         subpageArrow.click();
-        assertEquals(
-            routes.HOTSPOT_DETAIL, Router.getInstance().getCurrentRoute());
+        assertEquals(routes.HOTSPOT_DETAIL, Router.getInstance().currentRoute);
       });
 
   test(
@@ -82,8 +81,7 @@ suite('HotspotSummaryItemTest', function() {
             '#hotspotSummaryItemRow');
         assertTrue(!!hotspotSummaryRow, 'Hotspot summary row should exist');
         hotspotSummaryRow.click();
-        assertEquals(
-            routes.HOTSPOT_DETAIL, Router.getInstance().getCurrentRoute());
+        assertEquals(routes.HOTSPOT_DETAIL, Router.getInstance().currentRoute);
       });
 
   test('UI state when hotspot is allowed and state is off', async function() {

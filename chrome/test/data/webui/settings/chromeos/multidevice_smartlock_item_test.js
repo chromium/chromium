@@ -69,10 +69,10 @@ suite('Multidevice', function() {
     element.click();
     flush();
     if (expectedRoute) {
-      assertEquals(expectedRoute, Router.getInstance().getCurrentRoute());
+      assertEquals(expectedRoute, Router.getInstance().currentRoute);
       Router.getInstance().navigateTo(initialRoute);
     }
-    assertEquals(initialRoute, Router.getInstance().getCurrentRoute());
+    assertEquals(initialRoute, Router.getInstance().currentRoute);
   }
 
   /**

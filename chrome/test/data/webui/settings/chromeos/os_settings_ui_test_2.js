@@ -194,7 +194,7 @@ suite('os-settings-ui', () => {
     aboutItem.click();
 
     flush();
-    assertEquals(routes.ABOUT_ABOUT, router.getCurrentRoute());
+    assertEquals(routes.ABOUT_ABOUT, router.currentRoute);
     assertNotEquals(aboutItem, settingsMenu.shadowRoot.activeElement);
 
     const settingsMain = ui.shadowRoot.querySelector('os-settings-main');

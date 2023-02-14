@@ -324,7 +324,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
   }
 
   override currentRouteChanged(route: Route): void {
-    if (Router.getInstance().getCurrentRoute() === routes.OS_SIGN_OUT) {
+    if (Router.getInstance().currentRoute === routes.OS_SIGN_OUT) {
       // If the sync status has not been fetched yet, optimistically display
       // the sign-out dialog. There is another check when the sync status is
       // fetched. The dialog will be closed when the user is not signed in.
@@ -416,7 +416,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
             '#disconnectButton')),
     );
 
-    if (Router.getInstance().getCurrentRoute() === routes.OS_SIGN_OUT) {
+    if (Router.getInstance().currentRoute === routes.OS_SIGN_OUT) {
       Router.getInstance().navigateToPreviousRoute();
     }
   }

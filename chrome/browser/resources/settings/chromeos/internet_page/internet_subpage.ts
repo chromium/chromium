@@ -402,7 +402,7 @@ class SettingsInternetSubpageElement extends
     }
 
     // Scans should only be triggered by the "networks" subpage.
-    if (Router.getInstance().getCurrentRoute() !== routes.INTERNET_NETWORKS) {
+    if (Router.getInstance().currentRoute !== routes.INTERNET_NETWORKS) {
       this.stopScanning_();
       return;
     }

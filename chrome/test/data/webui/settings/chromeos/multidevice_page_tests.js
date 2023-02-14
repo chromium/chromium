@@ -725,7 +725,7 @@ suite('Multidevice', function() {
         const router = Router.getInstance();
         multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
         await flushAsync();
-        assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
+        assertEquals(routes.NEARBY_SHARE, router.currentRoute);
         assertFalse(router.getQueryParameters().has('onboarding'));
       });
 
@@ -747,7 +747,7 @@ suite('Multidevice', function() {
     const router = Router.getInstance();
     multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
     await flushAsync();
-    assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
+    assertEquals(routes.NEARBY_SHARE, router.currentRoute);
     assertFalse(router.getQueryParameters().has('onboarding'));
   });
 
@@ -818,7 +818,7 @@ suite('Multidevice', function() {
         !!multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper'));
     multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
     await flushAsync();
-    assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
+    assertEquals(routes.NEARBY_SHARE, router.currentRoute);
     assertTrue(router.getQueryParameters().has('onboarding'));
   });
 
@@ -832,7 +832,7 @@ suite('Multidevice', function() {
 
     multidevicePage.shadowRoot.querySelector('#nearbyLinkWrapper').click();
     await flushAsync();
-    assertEquals(routes.NEARBY_SHARE, router.getCurrentRoute());
+    assertEquals(routes.NEARBY_SHARE, router.currentRoute);
     assertFalse(router.getQueryParameters().has('onboarding'));
   });
 });

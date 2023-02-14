@@ -221,16 +221,15 @@ suite('OsPairedBluetoothListItemTest', function() {
     const assertInDetailSubpage = async () => {
       await flushAsync();
       assertEquals(
-          Router.getInstance().getCurrentRoute(),
-          routes.BLUETOOTH_DEVICE_DETAIL);
+          Router.getInstance().currentRoute, routes.BLUETOOTH_DEVICE_DETAIL);
       assertEquals(id, Router.getInstance().getQueryParameters().get('id'));
 
       Router.getInstance().resetRouteForTesting();
-      assertEquals(Router.getInstance().getCurrentRoute(), routes.BASIC);
+      assertEquals(Router.getInstance().currentRoute, routes.BASIC);
     };
 
     // Simulate clicking item.
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.BASIC);
+    assertEquals(Router.getInstance().currentRoute, routes.BASIC);
     getItemContainer().click();
     await assertInDetailSubpage();
 

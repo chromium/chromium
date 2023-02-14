@@ -71,8 +71,7 @@ suite('OsBluetoothSummaryTest', function() {
     assertTrue(!!iconButton);
 
     iconButton.click();
-    assertEquals(
-        Router.getInstance().getCurrentRoute(), routes.BLUETOOTH_DEVICES);
+    assertEquals(Router.getInstance().currentRoute, routes.BLUETOOTH_DEVICES);
     assertNotEquals(
         iconButton, bluetoothSummary.shadowRoot.activeElement,
         'subpage icon should not be focused');

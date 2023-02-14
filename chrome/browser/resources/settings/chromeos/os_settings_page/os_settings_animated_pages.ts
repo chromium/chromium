@@ -130,7 +130,7 @@ class OsSettingsAnimatedPagesElement extends
     assert(this.focusConfig instanceof Map);
 
 
-    const currentRoute = Router.getInstance().getCurrentRoute();
+    const currentRoute = Router.getInstance().currentRoute;
     const fromToKey = `${this.previousRoute_.path}_${currentRoute.path}`;
 
     // Look for a key that captures both previous and current route first. If
@@ -212,7 +212,7 @@ class OsSettingsAnimatedPagesElement extends
    * Ensures that the template enclosing the subpage is stamped.
    */
   private ensureSubpageInstance_() {
-    const routePath = Router.getInstance().getCurrentRoute().path;
+    const routePath = Router.getInstance().currentRoute.path;
     const domIf =
         this.querySelector<DomIf>(`dom-if[route-path='${routePath}']`);
 

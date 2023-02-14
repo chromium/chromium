@@ -339,21 +339,21 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
   private mouseChanged_(hasMouse: boolean) {
     if (hasMouse === false &&
-        Router.getInstance().getCurrentRoute() === routes.PER_DEVICE_MOUSE) {
+        Router.getInstance().currentRoute === routes.PER_DEVICE_MOUSE) {
       Router.getInstance().navigateTo(routes.DEVICE);
     }
   }
 
   private touchpadChanged_(hasTouchpad: boolean) {
     if (hasTouchpad === false &&
-        Router.getInstance().getCurrentRoute() === routes.PER_DEVICE_TOUCHPAD) {
+        Router.getInstance().currentRoute === routes.PER_DEVICE_TOUCHPAD) {
       Router.getInstance().navigateTo(routes.DEVICE);
     }
   }
 
   private pointingStickChanged_(hasPointingStick: boolean) {
     if (hasPointingStick === false &&
-        Router.getInstance().getCurrentRoute() ===
+        Router.getInstance().currentRoute ===
             routes.PER_DEVICE_POINTING_STICK) {
       Router.getInstance().navigateTo(routes.DEVICE);
     }
@@ -378,7 +378,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     // Check that the properties have explicitly been set to false.
     if (this.hasMouse_ === false && this.hasPointingStick_ === false &&
         this.hasTouchpad_ === false &&
-        Router.getInstance().getCurrentRoute() === routes.POINTERS) {
+        Router.getInstance().currentRoute === routes.POINTERS) {
       Router.getInstance().navigateTo(routes.DEVICE);
     }
   }

@@ -747,7 +747,7 @@ suite('InternetPage', function() {
   test('Navigate to/from APN subpage', async function() {
     loadTimeData.overrideValues({isApnRevampEnabled: true});
     await navigateToApnSubpage();
-    assertEquals(Router.getInstance().getCurrentRoute(), routes.APN);
+    assertEquals(Router.getInstance().currentRoute, routes.APN);
     assertTrue(!!internetPage.shadowRoot.querySelector('apn-subpage'));
 
     const windowPopstatePromise = eventToPromise('popstate', window);
@@ -798,7 +798,7 @@ suite('InternetPage', function() {
       async function() {
         loadTimeData.overrideValues({isApnRevampEnabled: true});
         await navigateToApnSubpage();
-        assertEquals(Router.getInstance().getCurrentRoute(), routes.APN);
+        assertEquals(Router.getInstance().currentRoute, routes.APN);
         assertTrue(!!internetPage.shadowRoot.querySelector('apn-subpage'));
         // We use the same guid as in navigateToCellularDetailPage so that
         // we trigger onNetworkStateChanged
@@ -810,8 +810,7 @@ suite('InternetPage', function() {
         await waitBeforeNextRender(internetPage);
         // Because there were no cellular properties we call apn_subpage close
         // which navigates to the previous page.
-        assertEquals(
-            Router.getInstance().getCurrentRoute(), routes.NETWORK_DETAIL);
+        assertEquals(Router.getInstance().currentRoute, routes.NETWORK_DETAIL);
       });
 
   test(
@@ -823,7 +822,7 @@ suite('InternetPage', function() {
         Router.getInstance().navigateTo(routes.APN);
         await windowPopstatePromise;
         await waitBeforeNextRender(internetPage);
-        assertNotEquals(Router.getInstance().getCurrentRoute(), routes.APN);
+        assertNotEquals(Router.getInstance().currentRoute, routes.APN);
       });
 
   test(

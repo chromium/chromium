@@ -102,7 +102,7 @@ class SettingsUserListElement extends SettingsUserListElementBase {
   }
 
   override currentRouteChanged(): void {
-    if (Router.getInstance().getCurrentRoute() === routes.ACCOUNTS) {
+    if (Router.getInstance().currentRoute === routes.ACCOUNTS) {
       this.usersPrivate_.getUsers().then(
           (users: chrome.usersPrivate.User[]) => {
             this.setUsers_(users);

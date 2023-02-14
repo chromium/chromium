@@ -214,7 +214,7 @@ suite('KeyboardAndTextInputPageTests', function() {
           assertTrue(!!subpageButton);
 
           subpageButton.click();
-          assertEquals(route, router.getCurrentRoute());
+          assertEquals(route, router.currentRoute);
           assertNotEquals(
               subpageButton, page.shadowRoot.activeElement,
               `${selector} should not be focused`);
@@ -225,7 +225,7 @@ suite('KeyboardAndTextInputPageTests', function() {
           await waitBeforeNextRender(page);
 
           assertEquals(
-              routes.A11Y_KEYBOARD_AND_TEXT_INPUT, router.getCurrentRoute());
+              routes.A11Y_KEYBOARD_AND_TEXT_INPUT, router.currentRoute);
           assertEquals(
               subpageButton, page.shadowRoot.activeElement,
               `${selector} should be focused`);

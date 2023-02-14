@@ -130,8 +130,7 @@ class AppManagementAppDetailViewElement extends
   }
 
   private appsChanged_(): void {
-    if (Router.getInstance().getCurrentRoute() ===
-            routes.APP_MANAGEMENT_DETAIL &&
+    if (Router.getInstance().currentRoute === routes.APP_MANAGEMENT_DETAIL &&
         this.selectedAppNotFound_()) {
       microTask.run(() => {
         openMainPage();

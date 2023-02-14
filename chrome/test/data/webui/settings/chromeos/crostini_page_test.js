@@ -423,9 +423,7 @@ suite('CrostiniPageTests', function() {
         setCrostiniPrefs(false);
 
         await eventToPromise('popstate', window);
-        assertEquals(
-            Router.getInstance().getCurrentRoute(),
-            routes.CROSTINI);
+        assertEquals(Router.getInstance().currentRoute, routes.CROSTINI);
         assertTrue(!!crostiniPage.shadowRoot.querySelector('#enable'));
       });
 
@@ -448,14 +446,11 @@ suite('CrostiniPageTests', function() {
 
       test('HideOnDisable', async function() {
         assertEquals(
-            Router.getInstance().getCurrentRoute(),
-            routes.CROSTINI_DETAILS);
+            Router.getInstance().currentRoute, routes.CROSTINI_DETAILS);
         setCrostiniPrefs(false);
 
         await eventToPromise('popstate', window);
-        assertEquals(
-            Router.getInstance().getCurrentRoute(),
-            routes.CROSTINI);
+        assertEquals(Router.getInstance().currentRoute, routes.CROSTINI);
       });
 
       test('DiskResizeOpensWhenClicked', async function() {

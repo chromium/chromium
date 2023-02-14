@@ -128,8 +128,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
             .click();
         await flushAsync();
         assertEquals(
-            Router.getInstance().getCurrentRoute(),
-            routes.BLUETOOTH_SAVED_DEVICES);
+            Router.getInstance().currentRoute, routes.BLUETOOTH_SAVED_DEVICES);
       });
 
   test('Toggle button creation and a11y', async function() {

@@ -47,10 +47,9 @@ suite('Multidevice', function() {
     element.click();
     flush();
     assertEquals(
-        shouldRouteAway,
-        initialRoute !== Router.getInstance().getCurrentRoute());
+        shouldRouteAway, initialRoute !== Router.getInstance().currentRoute);
     Router.getInstance().navigateTo(initialRoute);
-    assertEquals(initialRoute, Router.getInstance().getCurrentRoute());
+    assertEquals(initialRoute, Router.getInstance().currentRoute);
   }
 
   setup(function() {

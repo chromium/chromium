@@ -194,7 +194,7 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
     const searchParams = query.length > 0 ?
         new URLSearchParams('searchSubpage=' + encodeURIComponent(query)) :
         undefined;
-    const currentRoute = Router.getInstance().getCurrentRoute();
+    const currentRoute = Router.getInstance().currentRoute;
     Router.getInstance().navigateTo(currentRoute, searchParams);
   }
 

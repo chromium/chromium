@@ -303,7 +303,7 @@ suite('SettingsDevicePage', function() {
     const row =
         assert(devicePage.shadowRoot.querySelector(`#main #${subpage}Row`));
     row.click();
-    assertEquals(expectedRoute, Router.getInstance().getCurrentRoute());
+    assertEquals(expectedRoute, Router.getInstance().currentRoute);
     const page = devicePage.shadowRoot.querySelector('settings-' + subpage);
     assert(page);
     return Promise.resolve(page);
@@ -665,7 +665,7 @@ suite('SettingsDevicePage', function() {
           devicePage.shadowRoot.querySelector(`#main #perDeviceKeyboardRow`));
       row.click();
       assertEquals(
-          routes.PER_DEVICE_KEYBOARD, Router.getInstance().getCurrentRoute());
+          routes.PER_DEVICE_KEYBOARD, Router.getInstance().currentRoute);
       const page =
           devicePage.shadowRoot.querySelector('settings-per-device-keyboard');
       assert(page);
@@ -676,7 +676,7 @@ suite('SettingsDevicePage', function() {
 
     test('per-device keyboard subpage visibility', function() {
       assertEquals(
-          routes.PER_DEVICE_KEYBOARD, Router.getInstance().getCurrentRoute());
+          routes.PER_DEVICE_KEYBOARD, Router.getInstance().currentRoute);
     });
 
     test('per-device keyboard page populated', function() {
@@ -901,7 +901,7 @@ suite('SettingsDevicePage', function() {
     });
 
     test('subpage visibility', function() {
-      assertEquals(routes.AUDIO, Router.getInstance().getCurrentRoute());
+      assertEquals(routes.AUDIO, Router.getInstance().currentRoute);
       assertTrue(
           isVisible(audioPage.shadowRoot.querySelector('#audioOutputTitle')));
       assertTrue(isVisible(
@@ -1399,8 +1399,7 @@ suite('SettingsDevicePage', function() {
       const row = assert(
           devicePage.shadowRoot.querySelector(`#main #perDeviceMouseRow`));
       row.click();
-      assertEquals(
-          routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
+      assertEquals(routes.PER_DEVICE_MOUSE, Router.getInstance().currentRoute);
       const page =
           devicePage.shadowRoot.querySelector('settings-per-device-mouse');
       assert(page);
@@ -1410,8 +1409,7 @@ suite('SettingsDevicePage', function() {
     });
 
     test('per-device mouse subpage visibility', function() {
-      assertEquals(
-          routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
+      assertEquals(routes.PER_DEVICE_MOUSE, Router.getInstance().currentRoute);
     });
   });
 
@@ -1424,7 +1422,7 @@ suite('SettingsDevicePage', function() {
           devicePage.shadowRoot.querySelector(`#main #perDeviceTouchpadRow`));
       row.click();
       assertEquals(
-          routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
+          routes.PER_DEVICE_TOUCHPAD, Router.getInstance().currentRoute);
       const page =
           devicePage.shadowRoot.querySelector('settings-per-device-touchpad');
       assert(page);
@@ -1435,7 +1433,7 @@ suite('SettingsDevicePage', function() {
 
     test('per-device touchpad subpage visibility', function() {
       assertEquals(
-          routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
+          routes.PER_DEVICE_TOUCHPAD, Router.getInstance().currentRoute);
     });
   });
 
@@ -1448,8 +1446,7 @@ suite('SettingsDevicePage', function() {
           `#main #perDevicePointingStickRow`));
       row.click();
       assertEquals(
-          routes.PER_DEVICE_POINTING_STICK,
-          Router.getInstance().getCurrentRoute());
+          routes.PER_DEVICE_POINTING_STICK, Router.getInstance().currentRoute);
       const page = devicePage.shadowRoot.querySelector(
           'settings-per-device-pointing-stick');
       assert(page);
@@ -1460,8 +1457,7 @@ suite('SettingsDevicePage', function() {
 
     test('per-device pointing stick subpage visibility', function() {
       assertEquals(
-          routes.PER_DEVICE_POINTING_STICK,
-          Router.getInstance().getCurrentRoute());
+          routes.PER_DEVICE_POINTING_STICK, Router.getInstance().currentRoute);
     });
   });
 
@@ -1477,7 +1473,7 @@ suite('SettingsDevicePage', function() {
     });
 
     test('subpage responds to pointer attach/detach', function() {
-      assertEquals(routes.POINTERS, Router.getInstance().getCurrentRoute());
+      assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
       assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse')));
       assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse h2')));
       assertTrue(
@@ -1489,7 +1485,7 @@ suite('SettingsDevicePage', function() {
           isVisible(pointersPage.shadowRoot.querySelector('#touchpad h2')));
 
       webUIListenerCallback('has-touchpad-changed', false);
-      assertEquals(routes.POINTERS, Router.getInstance().getCurrentRoute());
+      assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
       assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse')));
       assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse h2')));
       assertTrue(
@@ -1502,7 +1498,7 @@ suite('SettingsDevicePage', function() {
           isVisible(pointersPage.shadowRoot.querySelector('#touchpad h2')));
 
       webUIListenerCallback('has-pointing-stick-changed', false);
-      assertEquals(routes.POINTERS, Router.getInstance().getCurrentRoute());
+      assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
       assertTrue(isVisible(pointersPage.shadowRoot.querySelector('#mouse')));
       assertFalse(
           isVisible(pointersPage.shadowRoot.querySelector('#mouse h2')));
@@ -1516,7 +1512,7 @@ suite('SettingsDevicePage', function() {
           isVisible(pointersPage.shadowRoot.querySelector('#touchpad h2')));
 
       webUIListenerCallback('has-mouse-changed', false);
-      assertEquals(routes.DEVICE, Router.getInstance().getCurrentRoute());
+      assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
       assertFalse(
           isVisible(devicePage.shadowRoot.querySelector('#main #pointersRow')));
 
@@ -1540,8 +1536,7 @@ suite('SettingsDevicePage', function() {
                 pointersPage.shadowRoot.querySelector('#touchpad h2')));
 
             webUIListenerCallback('has-mouse-changed', true);
-            assertEquals(
-                routes.POINTERS, Router.getInstance().getCurrentRoute());
+            assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
             assertTrue(
                 isVisible(pointersPage.shadowRoot.querySelector('#mouse')));
             assertTrue(

@@ -181,7 +181,7 @@ suite('input page', () => {
       items[0].querySelector('.subpage-arrow').click();
       const router = Router.getInstance();
       assertEquals(
-          router.getCurrentRoute().getAbsolutePath(),
+          router.currentRoute.getAbsolutePath(),
           'chrome://os-settings/osLanguages/inputMethodOptions');
       assertEquals(
           router.getQueryParameters().get('id'),
@@ -887,7 +887,7 @@ suite('input page', () => {
       editDictionarySubpageTrigger.click();
       const router = Router.getInstance();
       assertEquals(
-          router.getCurrentRoute().getAbsolutePath(),
+          router.currentRoute.getAbsolutePath(),
           'chrome://os-settings/osLanguages/editDictionary');
     });
   });
@@ -1259,7 +1259,7 @@ suite('input page', () => {
       editDictionarySubpageTrigger.click();
       const router = Router.getInstance();
       assertEquals(
-          router.getCurrentRoute().getAbsolutePath(),
+          router.currentRoute.getAbsolutePath(),
           'chrome://os-settings/osLanguages/editDictionary');
     });
   });

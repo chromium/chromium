@@ -92,8 +92,7 @@ suite('EsimRemoveProfileDialog', function() {
     foundProfile = await getProfileForIccid(profiles, '1');
     assertFalse(!!foundProfile);
 
-    assertEquals(
-        routes.INTERNET_NETWORKS, Router.getInstance().getCurrentRoute());
+    assertEquals(routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
     assertEquals(
         'type=Cellular', Router.getInstance().getQueryParameters().toString());
   });
@@ -128,8 +127,7 @@ suite('EsimRemoveProfileDialog', function() {
     foundProfile = await getProfileForIccid(profiles, '1');
     assertTrue(!!foundProfile);
 
-    assertEquals(
-        routes.INTERNET_NETWORKS, Router.getInstance().getCurrentRoute());
+    assertEquals(routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
     assertEquals(
         'type=Cellular', Router.getInstance().getQueryParameters().toString());
 
@@ -168,8 +166,7 @@ suite('EsimRemoveProfileDialog', function() {
     foundProfile = await getProfileForIccid(profiles, '1');
     assertTrue(!!foundProfile);
 
-    assertEquals(
-        routes.INTERNET_NETWORKS, Router.getInstance().getCurrentRoute());
+    assertEquals(routes.INTERNET_NETWORKS, Router.getInstance().currentRoute);
     assertEquals(
         'type=Cellular', Router.getInstance().getQueryParameters().toString());
 

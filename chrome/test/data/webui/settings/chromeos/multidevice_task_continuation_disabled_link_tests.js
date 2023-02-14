@@ -51,8 +51,7 @@ suite('Multidevice', function() {
     chromeSyncLink.click();
 
     await advancedSyncOpenedPromise;
-    assertNotEquals(Router.getInstance().getCurrentRoute(), routes.OS_SYNC);
-    assertNotEquals(
-        Router.getInstance().getCurrentRoute(), routes.SYNC_ADVANCED);
+    assertNotEquals(Router.getInstance().currentRoute, routes.OS_SYNC);
+    assertNotEquals(Router.getInstance().currentRoute, routes.SYNC_ADVANCED);
   });
 });

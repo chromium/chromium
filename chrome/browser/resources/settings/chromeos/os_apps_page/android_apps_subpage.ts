@@ -102,8 +102,7 @@ class SettingsAndroidAppsSubpageElement extends
 
   private onPlayStoreEnabledChanged_(enabled: boolean) {
     if (!enabled &&
-        Router.getInstance().getCurrentRoute() ===
-            routes.ANDROID_APPS_DETAILS) {
+        Router.getInstance().currentRoute === routes.ANDROID_APPS_DETAILS) {
       Router.getInstance().navigateToPreviousRoute();
     }
   }

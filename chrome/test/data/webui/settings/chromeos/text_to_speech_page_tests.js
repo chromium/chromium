@@ -49,7 +49,7 @@ suite('TextToSpeechPageTests', function() {
           assertTrue(!!subpageButton);
 
           subpageButton.click();
-          assertEquals(route, router.getCurrentRoute());
+          assertEquals(route, router.currentRoute);
           assertNotEquals(
               subpageButton, page.shadowRoot.activeElement,
               `${selector} should not be focused`);
@@ -59,7 +59,7 @@ suite('TextToSpeechPageTests', function() {
           await popStateEventPromise;
           await waitBeforeNextRender(page);
 
-          assertEquals(routes.A11Y_TEXT_TO_SPEECH, router.getCurrentRoute());
+          assertEquals(routes.A11Y_TEXT_TO_SPEECH, router.currentRoute);
           assertEquals(
               subpageButton, page.shadowRoot.activeElement,
               `${selector} should be focused`);

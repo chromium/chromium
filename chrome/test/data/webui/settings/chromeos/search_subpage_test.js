@@ -173,7 +173,7 @@ suite('SearchSubpage', function() {
         page.getPref('settings.quick_answers.translation.enabled.value'));
 
     assertEquals(
-        routes.OS_LANGUAGES_LANGUAGES, Router.getInstance().getCurrentRoute());
+        routes.OS_LANGUAGES_LANGUAGES, Router.getInstance().currentRoute);
   });
 
   test('toggleQuickAnswersUnitConversion', function() {
