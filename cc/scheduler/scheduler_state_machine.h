@@ -517,6 +517,8 @@ class CC_EXPORT SchedulerStateMachine {
 
   // Number of consecutive BeginMainFrames that were aborted without updates.
   int aborted_begin_main_frame_count_ = 0;
+
+  unsigned consecutive_cant_draw_count_ = 0u;
 };
 
 }  // namespace cc

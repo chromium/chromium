@@ -1012,12 +1012,20 @@ void SchedulerStateMachine::WillDrawInternal() {
 void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
   switch (draw_result) {
     case INVALID_RESULT:
-    case DRAW_ABORTED_CANT_DRAW:
       NOTREACHED() << "Invalid return DrawResult:" << draw_result;
+      break;
+    case DRAW_ABORTED_CANT_DRAW:
+      if (consecutive_cant_draw_count_++ < 3u) {
+        needs_redraw_ = true;
+      } else {
+        NOTREACHED() << consecutive_cant_draw_count_ << " consecutve draws"
+                     << " with DRAW_ABORTED_CANT_DRAW result";
+      }
       break;
     case DRAW_ABORTED_DRAINING_PIPELINE:
     case DRAW_SUCCESS:
       consecutive_checkerboard_animations_ = 0;
+      consecutive_cant_draw_count_ = 0;
       forced_redraw_state_ = ForcedRedrawOnTimeoutState::IDLE;
       break;
     case DRAW_ABORTED_CHECKERBOARD_ANIMATIONS:
@@ -1025,6 +1033,7 @@ void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
       needs_begin_main_frame_ = true;
       needs_redraw_ = true;
       consecutive_checkerboard_animations_++;
+      consecutive_cant_draw_count_ = 0;
 
       if (consecutive_checkerboard_animations_ >=
               settings_.maximum_number_of_failed_draws_before_draw_is_forced &&
@@ -1041,6 +1050,7 @@ void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
       // removing textures (which might not).  To be safe, request a commit
       // anyway.
       needs_begin_main_frame_ = true;
+      consecutive_cant_draw_count_ = 0;
       break;
   }
 }
