@@ -1885,6 +1885,31 @@ fyi_mac_builder(
 )
 
 fyi_mac_builder(
+    name = "mac13-arm64-wpt-content-shell-fyi-rel",
+    schedule = "with 5h interval",
+    triggered_by = [],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
+        ),
+    ),
+    builderless = False,
+    cores = None,
+    os = os.MAC_ANY,
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+    ),
+)
+
+fyi_mac_builder(
     name = "mac13-wpt-content-shell-fyi-rel",
     # TODO(crbug.com/1385202): Enable scheduler when machine has been allocated.
     schedule = "with 5h interval",
