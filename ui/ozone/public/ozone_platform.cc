@@ -15,6 +15,7 @@
 #include "ui/ozone/platform_object.h"
 #include "ui/ozone/platform_selection.h"
 #include "ui/ozone/public/platform_global_shortcut_listener.h"
+#include "ui/ozone/public/platform_keyboard_hook.h"
 #include "ui/ozone/public/platform_menu_utils.h"
 #include "ui/ozone/public/platform_screen.h"
 #include "ui/ozone/public/platform_user_input_monitor.h"
