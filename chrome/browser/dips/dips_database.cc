@@ -301,8 +301,7 @@ bool DIPSDatabase::MigrateToVersion2() {
     return false;
   }
 
-  meta_table_.SetVersionNumber(2);
-  return true;
+  return meta_table_.SetVersionNumber(2);
 }
 
 sql::InitStatus DIPSDatabase::InitImpl() {
