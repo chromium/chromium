@@ -209,7 +209,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       }
 
       selectionItem = [GridTransitionItem
-          itemWithCell:[PinnedTransitionCell transitionCellFromCell:cell]
+          itemWithCell:[PinnedCell transitionSelectionCellFromCell:cell]
                 center:attributes.center];
     } else {
       UIView* cellSnapshot = [cell snapshotViewAfterScreenUpdates:YES];

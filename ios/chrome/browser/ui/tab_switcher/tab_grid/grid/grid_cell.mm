@@ -90,6 +90,15 @@ void PositionView(UIView* view, CGPoint point) {
 
 @implementation GridCell
 
++ (instancetype)transitionSelectionCellFromCell:(GridCell*)cell {
+  GridCell* transitionSelectionCell = [[self alloc] initWithFrame:cell.bounds];
+  transitionSelectionCell.selected = YES;
+  transitionSelectionCell.theme = cell.theme;
+  transitionSelectionCell.contentView.hidden = YES;
+  transitionSelectionCell.opacity = cell.opacity;
+  return transitionSelectionCell;
+}
+
 // `-dequeueReusableCellWithReuseIdentifier:forIndexPath:` calls this method to
 // initialize a cell.
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -627,19 +636,6 @@ void PositionView(UIView* view, CGPoint point) {
              self.traitCollection.preferredContentSizeCategory)
              ? kGridCellHeaderAccessibilityHeight
              : kGridCellHeaderHeight;
-}
-
-@end
-
-@implementation GridTransitionSelectionCell
-
-+ (instancetype)transitionCellFromCell:(GridCell*)cell {
-  GridTransitionSelectionCell* proxy = [[self alloc] initWithFrame:cell.bounds];
-  proxy.selected = YES;
-  proxy.theme = cell.theme;
-  proxy.contentView.hidden = YES;
-  proxy.opacity = cell.opacity;
-  return proxy;
 }
 
 @end

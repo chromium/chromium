@@ -447,7 +447,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       if ([cell hasIdentifier:self.lastInsertedItemID])
         activeItem.isAppearing = YES;
       selectionItem = [GridTransitionItem
-          itemWithCell:[GridTransitionSelectionCell transitionCellFromCell:cell]
+          itemWithCell:[GridCell transitionSelectionCellFromCell:cell]
                 center:attributes.center];
     } else {
       UIView* cellSnapshot = [cell snapshotViewAfterScreenUpdates:YES];

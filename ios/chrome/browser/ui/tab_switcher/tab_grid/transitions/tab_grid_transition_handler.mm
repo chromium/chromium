@@ -74,12 +74,14 @@ const CGFloat kReducedMotionDuration = 0.25;
   [animationContainer insertSubview:self.animation
                        aboveSubview:bottomViewForAnimations];
 
-  UIView* selectedCell = self.animation.activeCell;
+  UIView* activeItem = self.animation.activeItem;
+  UIView* selectedItem = self.animation.selectionItem;
   BOOL shouldReparentSelectedCell =
       [self.layoutProvider shouldReparentSelectedCell:direction];
 
   if (shouldReparentSelectedCell) {
-    [tabGrid.view addSubview:selectedCell];
+    [tabGrid.view addSubview:selectedItem];
+    [tabGrid.view addSubview:activeItem];
   }
 
   [self.animation.animator addAnimations:^{
@@ -88,7 +90,8 @@ const CGFloat kReducedMotionDuration = 0.25;
 
   [self.animation.animator addCompletion:^(UIViewAnimatingPosition position) {
     if (shouldReparentSelectedCell) {
-      [selectedCell removeFromSuperview];
+      [activeItem removeFromSuperview];
+      [selectedItem removeFromSuperview];
     }
     [self.animation removeFromSuperview];
     if (position == UIViewAnimatingPositionEnd) {
@@ -157,12 +160,14 @@ const CGFloat kReducedMotionDuration = 0.25;
   [animationContainer insertSubview:self.animation
                        aboveSubview:bottomViewForAnimations];
 
-  UIView* selectedCell = self.animation.activeCell;
+  UIView* activeItem = self.animation.activeItem;
+  UIView* selectedItem = self.animation.selectionItem;
   BOOL shouldReparentSelectedCell =
       [self.layoutProvider shouldReparentSelectedCell:direction];
 
   if (shouldReparentSelectedCell) {
-    [tabGrid.view addSubview:selectedCell];
+    [tabGrid.view addSubview:selectedItem];
+    [tabGrid.view addSubview:activeItem];
   }
 
   [self.animation.animator addAnimations:^{
@@ -171,7 +176,8 @@ const CGFloat kReducedMotionDuration = 0.25;
 
   [self.animation.animator addCompletion:^(UIViewAnimatingPosition position) {
     if (shouldReparentSelectedCell) {
-      [selectedCell removeFromSuperview];
+      [activeItem removeFromSuperview];
+      [selectedItem removeFromSuperview];
     }
     [self.animation removeFromSuperview];
     if (position == UIViewAnimatingPositionEnd) {

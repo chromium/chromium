@@ -13,6 +13,14 @@
 // A cell for the pinned tabs view. Contains an icon, title, snapshot.
 @interface PinnedCell : TabCell
 
+// Returns a transition selection cell with the same frame as `cell`, but with
+// no visible content view, no delegate, and no identifier.
+//
+// Note: Transition selection cell is a kind of "copy" of a PinnedCell to be
+// used in the animated transitions that only shows selection state (that is,
+// its content view is hidden).
++ (instancetype)transitionSelectionCellFromCell:(PinnedCell*)cell;
+
 // Settable UI elements of the cell.
 @property(nonatomic, strong) UIImage* icon;
 @property(nonatomic, strong) UIImage* snapshot;

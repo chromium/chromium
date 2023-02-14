@@ -44,6 +44,14 @@ typedef NS_ENUM(NSUInteger, GridCellState) {
 @property(nonatomic, assign) GridCellState state;
 @property(nonatomic, weak) PriceCardView* priceCardView;
 
+// Returns a transition selection cell with the same theme and frame as `cell`,
+// but with no visible content view, no delegate, and no identifier.
+//
+// Note: Transition selection cell is a kind of "copy" of a GridCell to be used
+// in the animated transitions that only shows selection state (that is, its
+// content view is hidden).
++ (instancetype)transitionSelectionCellFromCell:(GridCell*)cell;
+
 // Sets the price drop and displays the PriceViewCard.
 - (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice;
 
@@ -54,14 +62,6 @@ typedef NS_ENUM(NSUInteger, GridCellState) {
 - (void)showActivityIndicator;
 // Stops the activity indicator animation.
 - (void)hideActivityIndicator;
-@end
-
-// A GridCell for use in animated transitions that only shows selection state
-// (that is, its content view is hidden).
-@interface GridTransitionSelectionCell : GridCell
-// Returns a transition selection cell with the same theme and frame as `cell`,
-// but with no visible content view, no delegate, and no identifier.
-+ (instancetype)transitionCellFromCell:(GridCell*)cell;
 @end
 
 @interface GridTransitionCell : GridCell <GridToTabTransitionView>

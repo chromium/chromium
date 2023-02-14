@@ -97,6 +97,14 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   NSLayoutConstraint* _titleLabelFaderTrailingConstraint;
 }
 
++ (instancetype)transitionSelectionCellFromCell:(PinnedCell*)cell {
+  PinnedCell* transitionSelectionCell =
+      [[self alloc] initWithFrame:cell.bounds];
+  transitionSelectionCell.selected = YES;
+  transitionSelectionCell.contentView.hidden = YES;
+  return transitionSelectionCell;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
     self.backgroundColor = GetInterfaceStyleDarkColor(

@@ -31,9 +31,15 @@ typedef NS_ENUM(NSUInteger, GridAnimationDirection) {
 
 // The active cell view; this will be animated to or from the `expandedRect`
 // specified by the GridTransitionLayout this object is initialized with, so
-// it may be necessary to reparent `activeCell` to another view so the
+// it may be necessary to reparent `activeItem` to another view so the
 // animation can be properly layered.
-@property(nonatomic, readonly) UIView* activeCell;
+@property(nonatomic, readonly) UIView* activeItem;
+
+// The selected cell view; this will be animated to or from the `expandedRect`
+// specified by the GridTransitionLayout this object is initialized with, so
+// it may be necessary to reparent `selectionItem` to another view so the
+// animation can be properly layered.
+@property(nonatomic, readonly) UIView* selectionItem;
 
 // Designated initializer. `layout` is a GridTransitionLayout object defining
 // the layout the animation should animate to. `delegate` is an object that will

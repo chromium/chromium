@@ -59,8 +59,12 @@ const CGFloat kInactiveItemScale = 0.95;
   return self.animations;
 }
 
-- (UIView*)activeCell {
+- (UIView*)activeItem {
   return self.layout.activeItem.cell;
+}
+
+- (UIView*)selectionItem {
+  return self.layout.selectionItem.cell;
 }
 
 #pragma mark - UIView
