@@ -269,9 +269,7 @@ static bool IsAtMediaUAShadowBoundary(const Element* element) {
 // to manually stop text-decorations to apply to text inside media controls.
 static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
                                          const Element* element) {
-  return builder.Display() == EDisplay::kInlineTable ||
-         builder.Display() == EDisplay::kInlineBlock ||
-         builder.Display() == EDisplay::kWebkitInlineBox ||
+  return builder.IsDisplayReplacedType() ||
          IsAtMediaUAShadowBoundary(element) || builder.IsFloating() ||
          builder.HasOutOfFlowPosition() || IsOutermostSVGElement(element) ||
          IsA<HTMLRTElement>(element);
