@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/platform_keys/chaps_slot_session.h"
+#include "chrome/browser/chromeos/platform_keys/chaps_slot_session.h"
 
 #include <dlfcn.h>
 #include <pkcs11.h>
@@ -15,7 +15,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 namespace platform_keys {
 
 namespace {
@@ -222,4 +222,4 @@ ChapsSlotSessionFactoryImpl::CreateChapsSlotSession(CK_SLOT_ID slot_id) {
 }
 
 }  // namespace platform_keys
-}  // namespace ash
+}  // namespace chromeos

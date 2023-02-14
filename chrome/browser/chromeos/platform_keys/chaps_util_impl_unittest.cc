@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/platform_keys/chaps_util_impl.h"
+#include "chrome/browser/chromeos/platform_keys/chaps_util_impl.h"
 
 #include <pkcs11t.h>
 #include <secmodt.h>
@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/ash/platform_keys/chaps_slot_session.h"
+#include "chrome/browser/chromeos/platform_keys/chaps_slot_session.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -20,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 namespace platform_keys {
 namespace {
 
@@ -193,8 +193,9 @@ class FakeChapsSlotSession : public ChapsSlotSession {
                         CK_OBJECT_HANDLE_PTR phPrivateKey) override {
     EXPECT_TRUE(session_ok_);
     CK_RV configured_result = ApplyConfiguredResult();
-    if (configured_result != CKR_OK)
+    if (configured_result != CKR_OK) {
       return configured_result;
+    }
 
     passed_data_->public_key_gen_attributes = ObjectAttributes::ParseFrom(
         pPublicKeyTemplate, ulPublicKeyAttributeCount);
@@ -222,24 +223,29 @@ class FakeChapsSlotSession : public ChapsSlotSession {
                           CK_ULONG ulCount) override {
     EXPECT_TRUE(session_ok_);
     CK_RV configured_result = ApplyConfiguredResult();
-    if (configured_result != CKR_OK)
+    if (configured_result != CKR_OK) {
       return configured_result;
+    }
 
     if (hObject == public_key_handle_) {
       const size_t kModulusBytes = kKeySizeBits / 8;
-      if (ulCount != 1 || pTemplate[0].type != CKA_MODULUS)
+      if (ulCount != 1 || pTemplate[0].type != CKA_MODULUS) {
         return CKR_ATTRIBUTE_TYPE_INVALID;
-      if (pTemplate[0].ulValueLen < kModulusBytes)
+      }
+      if (pTemplate[0].ulValueLen < kModulusBytes) {
         return CKR_BUFFER_TOO_SMALL;
+      }
       memcpy(pTemplate[0].pValue, public_key_modulus_.data(), kModulusBytes);
       return CKR_OK;
     }
     if (hObject == private_key_handle_) {
-      if (ulCount != 1 || pTemplate[0].type != kKeyInSoftware)
+      if (ulCount != 1 || pTemplate[0].type != kKeyInSoftware) {
         return CKR_ATTRIBUTE_TYPE_INVALID;
+      }
       const CK_BBOOL key_in_software_value = true;
-      if (pTemplate[0].ulValueLen < sizeof(key_in_software_value))
+      if (pTemplate[0].ulValueLen < sizeof(key_in_software_value)) {
         return CKR_BUFFER_TOO_SMALL;
+      }
       memcpy(pTemplate[0].pValue, &key_in_software_value,
              sizeof(key_in_software_value));
       return CKR_OK;
@@ -252,11 +258,13 @@ class FakeChapsSlotSession : public ChapsSlotSession {
                           CK_ULONG ulCount) override {
     EXPECT_TRUE(session_ok_);
     CK_RV configured_result = ApplyConfiguredResult();
-    if (configured_result != CKR_OK)
+    if (configured_result != CKR_OK) {
       return configured_result;
+    }
 
-    if (ulCount != 1 || pTemplate[0].type != CKA_ID)
+    if (ulCount != 1 || pTemplate[0].type != CKA_ID) {
       return CKR_ATTRIBUTE_TYPE_INVALID;
+    }
 
     uint8_t* data = reinterpret_cast<uint8_t*>(pTemplate[0].pValue);
     size_t length = pTemplate[0].ulValueLen;
@@ -277,14 +285,16 @@ class FakeChapsSlotSession : public ChapsSlotSession {
     ++operation_count_;
 
     auto operation_result = passed_data_->operation_results.find(cur_operation);
-    if (operation_result == passed_data_->operation_results.end())
+    if (operation_result == passed_data_->operation_results.end()) {
       return CKR_OK;
+    }
     CK_RV result = operation_result->second;
     // CKR_SESSION_HANDLE_INVALID and CKR_SESSION_CLOSED have a special meaning
     // - also flag that the session handle is not usable (until the next call to
     // ReopenSession).
-    if (result == CKR_SESSION_HANDLE_INVALID || result == CKR_SESSION_CLOSED)
+    if (result == CKR_SESSION_HANDLE_INVALID || result == CKR_SESSION_CLOSED) {
       session_ok_ = false;
+    }
     return result;
   }
 
@@ -315,8 +325,9 @@ class FakeChapsSlotSessionFactory : public ChapsSlotSessionFactory {
   std::unique_ptr<ChapsSlotSession> CreateChapsSlotSession(
       CK_SLOT_ID slot_id) override {
     passed_data_->slot_id = slot_id;
-    if (!passed_data_->factory_success)
+    if (!passed_data_->factory_success) {
       return nullptr;
+    }
     return std::make_unique<FakeChapsSlotSession>(slot_, passed_data_);
   }
 
@@ -494,4 +505,4 @@ TEST_F(ChapsUtilImplTest, HandlesInvalidSessionHandle_ReopenFails) {
 
 }  // namespace
 }  // namespace platform_keys
-}  // namespace ash
+}  // namespace chromeos

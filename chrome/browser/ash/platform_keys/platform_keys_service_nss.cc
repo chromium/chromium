@@ -28,9 +28,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
-#include "chrome/browser/ash/platform_keys/chaps_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/chromeos/platform_keys/chaps_util.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -715,7 +715,7 @@ void GenerateRSAKeyOnWorkerThread(std::unique_ptr<GenerateRSAKeyState> state) {
 
   bool key_gen_success;
   if (state->sw_backed_) {
-    auto chaps_util = ChapsUtil::Create();
+    auto chaps_util = chromeos::platform_keys::ChapsUtil::Create();
     key_gen_success = chaps_util->GenerateSoftwareBackedRSAKey(
         state->slot_.get(), state->modulus_length_bits_, &public_key,
         &private_key);

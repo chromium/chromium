@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_UTIL_IMPL_H_
-#define CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_UTIL_IMPL_H_
+#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_IMPL_H_
+#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_IMPL_H_
 
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ash/platform_keys/chaps_slot_session.h"
-#include "chrome/browser/ash/platform_keys/chaps_util.h"
+#include "chrome/browser/chromeos/platform_keys/chaps_slot_session.h"
+#include "chrome/browser/chromeos/platform_keys/chaps_util.h"
 #include "crypto/scoped_nss_types.h"
 
-namespace ash {
+namespace chromeos {
 namespace platform_keys {
 
 // Default implementation of the ChapsUtil class. Communicates with the chapsd
@@ -46,6 +46,6 @@ class ChapsUtilImpl : public ChapsUtil {
 };
 
 }  // namespace platform_keys
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_UTIL_IMPL_H_
+#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_IMPL_H_

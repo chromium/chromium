@@ -12,7 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/platform_keys/chaps_util.h"
+#include "chrome/browser/chromeos/platform_keys/chaps_util.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -94,7 +94,7 @@ class GetKeyLocationsExecutionWaiter
 
 // A fake implementation of ChapsUtil which actually just generates a key pair
 // through NSS.
-class FakeChapsUtil : public ChapsUtil {
+class FakeChapsUtil : public chromeos::platform_keys::ChapsUtil {
  public:
   using OnKeyGenerated = base::RepeatingCallback<void(const std::string& spki)>;
 
@@ -130,7 +130,7 @@ class ScopedChapsUtilOverride {
   }
 
  private:
-  std::unique_ptr<ChapsUtil> CreateChapsUtil();
+  std::unique_ptr<chromeos::platform_keys::ChapsUtil> CreateChapsUtil();
 
   // Called when a FakeChapsUtil instance created by CreateChapsUtil generates a
   // key pair.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/platform_keys/chaps_util_impl.h"
+#include "chrome/browser/chromeos/platform_keys/chaps_util_impl.h"
 
 #include <dlfcn.h>
 #include <keyhi.h>
@@ -19,12 +19,12 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "chrome/browser/ash/platform_keys/chaps_slot_session.h"
+#include "chrome/browser/chromeos/platform_keys/chaps_slot_session.h"
 #include "crypto/chaps_support.h"
 #include "crypto/scoped_nss_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 namespace platform_keys {
 
 namespace {
@@ -53,8 +53,9 @@ bool PerformWithRetries(ChapsSlotSession* chaps_session,
 
   for (int attempt = 0; attempt < kMaxAttempts; ++attempt) {
     CK_RV result = operation.Run();
-    if (result == CKR_OK)
+    if (result == CKR_OK) {
       return true;
+    }
     if (result != CKR_SESSION_HANDLE_INVALID && result != CKR_SESSION_CLOSED) {
       LOG(ERROR) << operation_name << " failed with " << result;
       return false;
@@ -63,7 +64,7 @@ bool PerformWithRetries(ChapsSlotSession* chaps_session,
       return false;
     }
   }
-  LOG(ERROR) << operation_name << "failed";
+  LOG(ERROR) << operation_name << " failed";
   return false;
 }
 
@@ -158,8 +159,9 @@ absl::optional<bool> IsKeySoftwareBacked(ChapsSlotSession* chaps_session,
 crypto::ScopedSECItem CreateNssCkaId(ChapsSlotSession* chaps_session,
                                      const KeyPairHandles& key_pair) {
   auto modulus = ExtractModulus(chaps_session, key_pair.public_key);
-  if (!modulus)
+  if (!modulus) {
     return nullptr;
+  }
 
   SECItem secitem_modulus;
   secitem_modulus.data = modulus->data();
@@ -209,26 +211,31 @@ bool ChapsUtilImpl::GenerateSoftwareBackedRSAKey(
 
   std::unique_ptr<ChapsSlotSession> chaps_session =
       GetChapsSlotSessionForSlot(slot);
-  if (!chaps_session)
+  if (!chaps_session) {
     return false;
+  }
 
   absl::optional<KeyPairHandles> key_pair =
       GenerateSoftwareBackedRSAKeyPair(chaps_session.get(), num_bits);
-  if (!key_pair)
+  if (!key_pair) {
     return false;
+  }
 
   // Safety check that software-backed key generation was triggered.
   absl::optional<bool> is_software_backed =
       IsKeySoftwareBacked(chaps_session.get(), key_pair->private_key);
-  if (!is_software_backed || !is_software_backed.value())
+  if (!is_software_backed || !is_software_backed.value()) {
     return false;
+  }
 
   crypto::ScopedSECItem cka_id =
       CreateNssCkaId(chaps_session.get(), key_pair.value());
-  if (!cka_id)
+  if (!cka_id) {
     return false;
-  if (!SetCkaId(chaps_session.get(), key_pair.value(), cka_id.get()))
+  }
+  if (!SetCkaId(chaps_session.get(), key_pair.value(), cka_id.get())) {
     return false;
+  }
 
   out_private_key->reset(PK11_FindKeyByKeyID(slot, cka_id.get(), nullptr));
   if (!*out_private_key) {
@@ -258,4 +265,4 @@ std::unique_ptr<ChapsSlotSession> ChapsUtilImpl::GetChapsSlotSessionForSlot(
 }
 
 }  // namespace platform_keys
-}  // namespace ash
+}  // namespace chromeos

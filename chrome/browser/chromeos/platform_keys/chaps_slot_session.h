@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_SLOT_SESSION_H_
-#define CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_SLOT_SESSION_H_
+#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_SLOT_SESSION_H_
+#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_SLOT_SESSION_H_
 
 #include <pkcs11t.h>
 
 #include <memory>
 
-namespace ash {
+namespace chromeos {
 namespace platform_keys {
 
 // A PKCS#11 session for a slot provided by the chaps daemon.
@@ -72,6 +72,6 @@ class ChapsSlotSessionFactoryImpl : public ChapsSlotSessionFactory {
 };
 
 }  // namespace platform_keys
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_SLOT_SESSION_H_
+#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_SLOT_SESSION_H_

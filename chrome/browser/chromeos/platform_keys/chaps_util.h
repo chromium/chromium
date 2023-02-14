@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_UTIL_H_
-#define CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_UTIL_H_
+#ifndef CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_H_
+#define CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_H_
 
 #include <pk11pub.h>
 
@@ -12,7 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "crypto/scoped_nss_types.h"
 
-namespace ash {
+namespace chromeos {
 namespace platform_keys {
 
 // Utility to perform operations on the chapsd daemon in a way that is
@@ -46,6 +46,6 @@ class ChapsUtil {
 };
 
 }  // namespace platform_keys
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_CHAPS_UTIL_H_
+#endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_CHAPS_UTIL_H_
