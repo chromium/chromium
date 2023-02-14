@@ -9,6 +9,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,16 +24,19 @@ struct ArchiveAnalyzerResults;
 // This class is used to analyze 7z files in a sandboxed utility process for
 // file download protection. This class lives on the UI thread, which is where
 // the result callback will be invoked.
-class SandboxedSevenZipAnalyzer
-    : public base::RefCountedDeleteOnSequence<SandboxedSevenZipAnalyzer> {
+class SandboxedSevenZipAnalyzer {
  public:
   using ResultCallback =
       base::OnceCallback<void(const safe_browsing::ArchiveAnalyzerResults&)>;
 
-  SandboxedSevenZipAnalyzer(
-      const base::FilePath& seven_zip_file,
-      ResultCallback callback,
-      mojo::PendingRemote<chrome::mojom::FileUtilService> service);
+  // Factory function for creating SandboxedSevenZipAnalyzers with the
+  // appropriate deleter.
+  static std::unique_ptr<SandboxedSevenZipAnalyzer, base::OnTaskRunnerDeleter>
+  CreateAnalyzer(const base::FilePath& seven_zip_file,
+                 ResultCallback callback,
+                 mojo::PendingRemote<chrome::mojom::FileUtilService> service);
+
+  ~SandboxedSevenZipAnalyzer();
 
   SandboxedSevenZipAnalyzer(const SandboxedSevenZipAnalyzer&) = delete;
   SandboxedSevenZipAnalyzer& operator=(const SandboxedSevenZipAnalyzer&) =
@@ -41,13 +46,10 @@ class SandboxedSevenZipAnalyzer
   void Start();
 
  private:
-  friend class base::RefCountedDeleteOnSequence<SandboxedSevenZipAnalyzer>;
-  friend class base::DeleteHelper<SandboxedSevenZipAnalyzer>;
-
-  ~SandboxedSevenZipAnalyzer();
-
-  // Prepare the file for analysis.
-  void PrepareFileToAnalyze();
+  SandboxedSevenZipAnalyzer(
+      const base::FilePath& seven_zip_file,
+      ResultCallback callback,
+      mojo::PendingRemote<chrome::mojom::FileUtilService> service);
 
   // If file preparation failed, analysis has failed: report failure.
   void ReportFileFailure(safe_browsing::ArchiveAnalysisResult reason);
@@ -58,6 +60,9 @@ class SandboxedSevenZipAnalyzer
   // The response containing the file analyze results.
   void AnalyzeFileDone(const safe_browsing::ArchiveAnalyzerResults& results);
 
+  // Returns a weak pointer to this.
+  base::WeakPtr<SandboxedSevenZipAnalyzer> GetWeakPtr();
+
   // The file path of the file to analyze.
   const base::FilePath file_path_;
 
@@ -67,6 +72,8 @@ class SandboxedSevenZipAnalyzer
   // Remote interfaces to the file util service. Only used from the UI thread.
   mojo::Remote<chrome::mojom::FileUtilService> service_;
   mojo::Remote<chrome::mojom::SafeArchiveAnalyzer> remote_analyzer_;
+
+  base::WeakPtrFactory<SandboxedSevenZipAnalyzer> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_SERVICES_FILE_UTIL_PUBLIC_CPP_SANDBOXED_SEVEN_ZIP_ANALYZER_H_

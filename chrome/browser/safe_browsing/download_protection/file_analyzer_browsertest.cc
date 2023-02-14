@@ -36,10 +36,10 @@ class FileAnalyzerBrowserTest : public InProcessBrowserTest {
                        safe_browsing::DocumentAnalyzerResults* results) {
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
-    scoped_refptr<SandboxedDocumentAnalyzer> analyzer(
-        new SandboxedDocumentAnalyzer(file_path, file_path,
-                                      results_getter.GetCallback(),
-                                      LaunchDocumentAnalysisService()));
+    std::unique_ptr<SandboxedDocumentAnalyzer, base::OnTaskRunnerDeleter>
+        analyzer = SandboxedDocumentAnalyzer::CreateAnalyzer(
+            file_path, file_path, results_getter.GetCallback(),
+            LaunchDocumentAnalysisService());
     analyzer->Start();
     run_loop.Run();
   }

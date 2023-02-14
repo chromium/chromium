@@ -40,11 +40,12 @@ class SandboxedDMGAnalyzerTest : public testing::Test {
     FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
-    scoped_refptr<SandboxedDMGAnalyzer> analyzer(new SandboxedDMGAnalyzer(
-        path,
-        safe_browsing::FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze(
-            "dmg"),
-        results_getter.GetCallback(), std::move(remote)));
+    std::unique_ptr<SandboxedDMGAnalyzer, base::OnTaskRunnerDeleter> analyzer =
+        SandboxedDMGAnalyzer::CreateAnalyzer(
+            path,
+            safe_browsing::FileTypePolicies::GetInstance()
+                ->GetMaxFileSizeToAnalyze("dmg"),
+            results_getter.GetCallback(), std::move(remote));
     analyzer->Start();
     run_loop.Run();
   }
@@ -300,11 +301,12 @@ TEST_F(SandboxedDMGAnalyzerTest, CanDeleteDuringExecution) {
         std::move(callback).Run(safe_browsing::ArchiveAnalyzerResults());
         run_loop.Quit();
       });
-  scoped_refptr<SandboxedDMGAnalyzer> analyzer(new SandboxedDMGAnalyzer(
-      temp_path,
-      safe_browsing::FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze(
-          "dmg"),
-      base::DoNothing(), std::move(remote)));
+  std::unique_ptr<SandboxedDMGAnalyzer, base::OnTaskRunnerDeleter> analyzer =
+      SandboxedDMGAnalyzer::CreateAnalyzer(
+          temp_path,
+          safe_browsing::FileTypePolicies::GetInstance()
+              ->GetMaxFileSizeToAnalyze("dmg"),
+          base::DoNothing(), std::move(remote));
   analyzer->Start();
   run_loop.Run();
 }

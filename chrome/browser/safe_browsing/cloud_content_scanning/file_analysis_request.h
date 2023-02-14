@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 
 namespace safe_browsing {
@@ -80,9 +81,11 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
   // GetRequestData call.
   bool delay_opening_file_;
 
-  // Used to unpack and analyze ZIP archives in a sandbox.
+  // Used to unpack and analyze archives in a sandbox.
   std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter>
-      zip_analyzer_;
+      zip_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
+  std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter>
+      rar_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 
   base::WeakPtrFactory<FileAnalysisRequest> weakptr_factory_{this};
 };

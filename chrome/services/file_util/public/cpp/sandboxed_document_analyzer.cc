@@ -15,13 +15,50 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+namespace {
+
+// Prepares the file for analysis and returns the result on the UI thread with
+// either `success_callback` or `failure_callback`.
+void PrepareFileToAnalyze(
+    base::FilePath file_path,
+    base::OnceCallback<void(base::File)> success_callback,
+    base::OnceCallback<void(std::string)> failure_callback) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WIN_SHARE_DELETE);
+
+  if (!file.IsValid()) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(failure_callback), "Could not open file"));
+    return;
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file)));
+}
+
+}  // namespace
+
+// static
+std::unique_ptr<SandboxedDocumentAnalyzer, base::OnTaskRunnerDeleter>
+SandboxedDocumentAnalyzer::CreateAnalyzer(
+    const base::FilePath& target_document_path,
+    const base::FilePath& tmp_document_path,
+    ResultCallback callback,
+    mojo::PendingRemote<chrome::mojom::DocumentAnalysisService> service) {
+  return std::unique_ptr<SandboxedDocumentAnalyzer, base::OnTaskRunnerDeleter>(
+      new SandboxedDocumentAnalyzer(target_document_path, tmp_document_path,
+                                    std::move(callback), std::move(service)),
+      base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
+}
+
 SandboxedDocumentAnalyzer::SandboxedDocumentAnalyzer(
     const base::FilePath& target_document_path,
     const base::FilePath& tmp_document_path,
     ResultCallback callback,
     mojo::PendingRemote<chrome::mojom::DocumentAnalysisService> service)
-    : RefCountedDeleteOnSequence(content::GetUIThreadTaskRunner({})),
-      target_file_path_(target_document_path),
+    : target_file_path_(target_document_path),
       tmp_file_path_(tmp_document_path),
       callback_(std::move(callback)),
       service_(std::move(service)) {
@@ -30,9 +67,9 @@ SandboxedDocumentAnalyzer::SandboxedDocumentAnalyzer(
   DCHECK(!tmp_file_path_.value().empty());
   service_->BindSafeDocumentAnalyzer(
       remote_analyzer_.BindNewPipeAndPassReceiver());
-  remote_analyzer_.set_disconnect_handler(base::BindOnce(
-      &SandboxedDocumentAnalyzer::AnalyzeDocumentDone, base::Unretained(this),
-      safe_browsing::DocumentAnalyzerResults()));
+  remote_analyzer_.set_disconnect_handler(
+      base::BindOnce(&SandboxedDocumentAnalyzer::AnalyzeDocumentDone,
+                     GetWeakPtr(), safe_browsing::DocumentAnalyzerResults()));
 }
 
 void SandboxedDocumentAnalyzer::Start() {
@@ -42,36 +79,24 @@ void SandboxedDocumentAnalyzer::Start() {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&SandboxedDocumentAnalyzer::PrepareFileToAnalyze, this));
+      base::BindOnce(
+          &PrepareFileToAnalyze, tmp_file_path_,
+          base::BindOnce(&SandboxedDocumentAnalyzer::AnalyzeDocument,
+                         GetWeakPtr()),
+          base::BindOnce(&SandboxedDocumentAnalyzer::ReportFileFailure,
+                         GetWeakPtr())));
 }
 
 SandboxedDocumentAnalyzer::~SandboxedDocumentAnalyzer() = default;
 
-void SandboxedDocumentAnalyzer::PrepareFileToAnalyze() {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  base::File file(tmp_file_path_, base::File::FLAG_OPEN |
-                                      base::File::FLAG_READ |
-                                      base::File::FLAG_WIN_SHARE_DELETE);
-
-  if (!file.IsValid()) {
-    ReportFileFailure("Could not open file");
-    return;
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&SandboxedDocumentAnalyzer::AnalyzeDocument,
-                                this, std::move(file), target_file_path_));
-}
-
-void SandboxedDocumentAnalyzer::AnalyzeDocument(
-    base::File file,
-    const base::FilePath& file_path) {
+void SandboxedDocumentAnalyzer::AnalyzeDocument(base::File file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (remote_analyzer_) {
     remote_analyzer_->AnalyzeDocument(
         std::move(file), target_file_path_,
-        base::BindOnce(&SandboxedDocumentAnalyzer::AnalyzeDocumentDone, this));
+        base::BindOnce(&SandboxedDocumentAnalyzer::AnalyzeDocumentDone,
+                       GetWeakPtr()));
   } else {
     AnalyzeDocumentDone(safe_browsing::DocumentAnalyzerResults());
   }
@@ -87,6 +112,7 @@ void SandboxedDocumentAnalyzer::AnalyzeDocumentDone(
 }
 
 void SandboxedDocumentAnalyzer::ReportFileFailure(const std::string msg) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (callback_) {
     struct safe_browsing::DocumentAnalyzerResults failure_results =
         safe_browsing::DocumentAnalyzerResults();
@@ -96,7 +122,11 @@ void SandboxedDocumentAnalyzer::ReportFileFailure(const std::string msg) {
     failure_results.error_code =
         safe_browsing::ClientDownloadRequest::DocumentProcessingInfo::INTERNAL;
 
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), failure_results));
+    std::move(callback_).Run(failure_results);
   }
+}
+
+base::WeakPtr<SandboxedDocumentAnalyzer>
+SandboxedDocumentAnalyzer::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }

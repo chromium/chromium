@@ -126,20 +126,24 @@ class FileAnalyzer {
   Results results_;
 
   std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter>
-      zip_analyzer_;
+      zip_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 
-  scoped_refptr<SandboxedRarAnalyzer> rar_analyzer_;
+  std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter>
+      rar_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 
 #if BUILDFLAG(IS_MAC)
-  scoped_refptr<SandboxedDMGAnalyzer> dmg_analyzer_;
+  std::unique_ptr<SandboxedDMGAnalyzer, base::OnTaskRunnerDeleter>
+      dmg_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  scoped_refptr<SandboxedDocumentAnalyzer> document_analyzer_;
+  std::unique_ptr<SandboxedDocumentAnalyzer, base::OnTaskRunnerDeleter>
+      document_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
   base::TimeTicks document_analysis_start_time_;
 #endif
 
-  scoped_refptr<SandboxedSevenZipAnalyzer> seven_zip_analyzer_;
+  std::unique_ptr<SandboxedSevenZipAnalyzer, base::OnTaskRunnerDeleter>
+      seven_zip_analyzer_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 
   base::WeakPtrFactory<FileAnalyzer> weakptr_factory_{this};
 };

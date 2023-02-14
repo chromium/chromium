@@ -71,8 +71,7 @@ FileAnalyzer::Results::Results(const FileAnalyzer::Results& other) = default;
 
 FileAnalyzer::FileAnalyzer(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor)
-    : binary_feature_extractor_(binary_feature_extractor),
-      zip_analyzer_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
+    : binary_feature_extractor_(binary_feature_extractor) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -205,7 +204,7 @@ void FileAnalyzer::StartExtractRarFeatures() {
 
   // We give the rar analyzer a weak pointer to this object.  Since the
   // analyzer is refcounted, it might outlive the request.
-  rar_analyzer_ = new SandboxedRarAnalyzer(
+  rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
       tmp_path_,
       base::BindOnce(&FileAnalyzer::OnRarAnalysisFinished,
                      weakptr_factory_.GetWeakPtr()),
@@ -263,7 +262,7 @@ void FileAnalyzer::StartExtractDmgFeatures() {
 
   // Directly use 'dmg' extension since download file may not have any
   // extension, but has still been deemed a DMG through file type sniffing.
-  dmg_analyzer_ = new SandboxedDMGAnalyzer(
+  dmg_analyzer_ = SandboxedDMGAnalyzer::CreateAnalyzer(
       tmp_path_,
       FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze("dmg"),
       base::BindRepeating(&FileAnalyzer::OnDmgAnalysisFinished,
@@ -332,7 +331,7 @@ void FileAnalyzer::StartExtractDocumentFeatures() {
 
   document_analysis_start_time_ = base::TimeTicks::Now();
 
-  document_analyzer_ = new SandboxedDocumentAnalyzer(
+  document_analyzer_ = SandboxedDocumentAnalyzer::CreateAnalyzer(
       target_path_, tmp_path_,
       base::BindOnce(&FileAnalyzer::OnDocumentAnalysisFinished,
                      weakptr_factory_.GetWeakPtr()),
@@ -372,7 +371,7 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
 void FileAnalyzer::StartExtractSevenZipFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  seven_zip_analyzer_ = new SandboxedSevenZipAnalyzer(
+  seven_zip_analyzer_ = SandboxedSevenZipAnalyzer::CreateAnalyzer(
       tmp_path_,
       base::BindOnce(&FileAnalyzer::OnSevenZipAnalysisFinished,
                      weakptr_factory_.GetWeakPtr()),

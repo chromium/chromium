@@ -80,9 +80,9 @@ class SandboxedSevenZipAnalyzerTest : public ::testing::Test {
     FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
-    scoped_refptr<SandboxedSevenZipAnalyzer> analyzer(
-        new SandboxedSevenZipAnalyzer(file_path, results_getter.GetCallback(),
-                                      std::move(remote)));
+    std::unique_ptr<SandboxedSevenZipAnalyzer, base::OnTaskRunnerDeleter>
+        analyzer = SandboxedSevenZipAnalyzer::CreateAnalyzer(
+            file_path, results_getter.GetCallback(), std::move(remote));
     analyzer->Start();
     run_loop.Run();
   }
@@ -237,9 +237,9 @@ TEST_F(SandboxedSevenZipAnalyzerTest, CanDeleteDuringExecution) {
             std::move(callback).Run(safe_browsing::ArchiveAnalyzerResults());
             run_loop.Quit();
           });
-  scoped_refptr<SandboxedSevenZipAnalyzer> analyzer(
-      new SandboxedSevenZipAnalyzer(temp_path, base::DoNothing(),
-                                    std::move(remote)));
+  std::unique_ptr<SandboxedSevenZipAnalyzer, base::OnTaskRunnerDeleter>
+      analyzer = SandboxedSevenZipAnalyzer::CreateAnalyzer(
+          temp_path, base::DoNothing(), std::move(remote));
   analyzer->Start();
   run_loop.Run();
 }

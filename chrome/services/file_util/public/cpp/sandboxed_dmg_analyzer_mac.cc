@@ -14,6 +14,63 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+namespace {
+
+// Prepares the file for analysis and returns the result on the UI thread with
+// either `success_callback` or `failure_callback`.
+void PrepareFileToAnalyze(
+    base::FilePath file_path,
+    uint64_t max_size,
+    base::OnceCallback<void(base::File)> success_callback,
+    base::OnceCallback<void(safe_browsing::ArchiveAnalysisResult)>
+        failure_callback) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WIN_SHARE_DELETE);
+
+  if (!file.IsValid()) {
+    DLOG(ERROR) << "Could not open file: " << file_path.value();
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(failure_callback),
+            std::move(safe_browsing::ArchiveAnalysisResult::kFailedToOpen)));
+    return;
+  }
+
+  uint64_t size = file.GetLength();
+
+  bool too_big_to_unpack = base::checked_cast<uint64_t>(size) > max_size;
+  if (too_big_to_unpack) {
+    DLOG(ERROR) << "File is too big: " << file_path.value();
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(failure_callback),
+            std::move(safe_browsing::ArchiveAnalysisResult::kTooLarge)));
+    return;
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file)));
+}
+
+}  // namespace
+
+// static
+std::unique_ptr<SandboxedDMGAnalyzer, base::OnTaskRunnerDeleter>
+SandboxedDMGAnalyzer::CreateAnalyzer(
+    const base::FilePath& dmg_file,
+    const uint64_t max_size,
+    ResultCallback callback,
+    mojo::PendingRemote<chrome::mojom::FileUtilService> service) {
+  return std::unique_ptr<SandboxedDMGAnalyzer, base::OnTaskRunnerDeleter>(
+      new SandboxedDMGAnalyzer(dmg_file, max_size, std::move(callback),
+                               std::move(service)),
+      base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
+}
+
 SandboxedDMGAnalyzer::SandboxedDMGAnalyzer(
     const base::FilePath& dmg_file,
     const uint64_t max_size,
@@ -26,9 +83,9 @@ SandboxedDMGAnalyzer::SandboxedDMGAnalyzer(
   DCHECK(callback_);
   service_->BindSafeArchiveAnalyzer(
       remote_analyzer_.BindNewPipeAndPassReceiver());
-  remote_analyzer_.set_disconnect_handler(base::BindOnce(
-      &SandboxedDMGAnalyzer::AnalyzeFileDone, base::Unretained(this),
-      safe_browsing::ArchiveAnalyzerResults()));
+  remote_analyzer_.set_disconnect_handler(
+      base::BindOnce(&SandboxedDMGAnalyzer::AnalyzeFileDone, GetWeakPtr(),
+                     safe_browsing::ArchiveAnalyzerResults()));
 }
 
 void SandboxedDMGAnalyzer::Start() {
@@ -38,47 +95,23 @@ void SandboxedDMGAnalyzer::Start() {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&SandboxedDMGAnalyzer::PrepareFileToAnalyze, this));
+      base::BindOnce(
+          &PrepareFileToAnalyze, file_path_, max_size_,
+          base::BindOnce(&SandboxedDMGAnalyzer::AnalyzeFile, GetWeakPtr()),
+          base::BindOnce(&SandboxedDMGAnalyzer::ReportFileFailure,
+                         GetWeakPtr())));
 }
 
 SandboxedDMGAnalyzer::~SandboxedDMGAnalyzer() = default;
 
-void SandboxedDMGAnalyzer::PrepareFileToAnalyze() {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
-  base::File file(file_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                  base::File::FLAG_WIN_SHARE_DELETE);
-
-  if (!file.IsValid()) {
-    DLOG(ERROR) << "Could not open file: " << file_path_.value();
-    ReportFileFailure(safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
-    return;
-  }
-
-  uint64_t size = file.GetLength();
-
-  bool too_big_to_unpack = base::checked_cast<uint64_t>(size) > max_size_;
-  if (too_big_to_unpack) {
-    DLOG(ERROR) << "File is too big: " << file_path_.value();
-    ReportFileFailure(safe_browsing::ArchiveAnalysisResult::kTooLarge);
-    return;
-  }
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&SandboxedDMGAnalyzer::AnalyzeFile, this,
-                                std::move(file)));
-}
-
 void SandboxedDMGAnalyzer::ReportFileFailure(
     safe_browsing::ArchiveAnalysisResult reason) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   if (callback_) {
     safe_browsing::ArchiveAnalyzerResults results;
     results.analysis_result = reason;
-
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), results));
+    std::move(callback_).Run(results);
   }
 }
 
@@ -87,7 +120,7 @@ void SandboxedDMGAnalyzer::AnalyzeFile(base::File file) {
   if (remote_analyzer_) {
     remote_analyzer_->AnalyzeDmgFile(
         std::move(file),
-        base::BindOnce(&SandboxedDMGAnalyzer::AnalyzeFileDone, this));
+        base::BindOnce(&SandboxedDMGAnalyzer::AnalyzeFileDone, GetWeakPtr()));
   } else {
     AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());
   }
@@ -99,4 +132,8 @@ void SandboxedDMGAnalyzer::AnalyzeFileDone(
 
   remote_analyzer_.reset();
   std::move(callback_).Run(results);
+}
+
+base::WeakPtr<SandboxedDMGAnalyzer> SandboxedDMGAnalyzer::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }

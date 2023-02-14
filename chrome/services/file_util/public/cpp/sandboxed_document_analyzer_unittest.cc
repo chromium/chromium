@@ -45,10 +45,10 @@ class SandboxedDocumentAnalyzerTest : public testing::Test {
 
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
-    scoped_refptr<SandboxedDocumentAnalyzer> analyzer(
-        new SandboxedDocumentAnalyzer(file_path, file_path,
-                                      results_getter.GetCallback(),
-                                      std::move(remote)));
+    std::unique_ptr<SandboxedDocumentAnalyzer, base::OnTaskRunnerDeleter>
+        analyzer = SandboxedDocumentAnalyzer::CreateAnalyzer(
+            file_path, file_path, results_getter.GetCallback(),
+            std::move(remote));
     analyzer->Start();
     run_loop.Run();
   }
@@ -188,9 +188,9 @@ TEST_F(SandboxedDocumentAnalyzerTest, MAYBE_CanDeleteDuringExecution) {
         std::move(callback).Run(safe_browsing::DocumentAnalyzerResults());
         run_loop.Quit();
       });
-  scoped_refptr<SandboxedDocumentAnalyzer> analyzer(
-      new SandboxedDocumentAnalyzer(file_path, temp_path, base::DoNothing(),
-                                    std::move(remote)));
+  std::unique_ptr<SandboxedDocumentAnalyzer, base::OnTaskRunnerDeleter>
+      analyzer = SandboxedDocumentAnalyzer::CreateAnalyzer(
+          file_path, temp_path, base::DoNothing(), std::move(remote));
   analyzer->Start();
   run_loop.Run();
 }
