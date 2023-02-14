@@ -269,22 +269,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Certificate.LeafExtendedKeyUsage.{RootType}"
-    enum="NetCertificateEKUStatus" expires_after="2023-02-11">
-  <owner>mattm@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    For successfully validated server certificates, records information of the
-    leaf certificate's ExtendedKeyUsage extension. The buckets are mutually
-    exclusive (only one value will be logged for a particular verification.)
-  </summary>
-  <token key="RootType">
-    <variant name="KnownRoot"/>
-    <variant name="LegacyKnownRoot"/>
-    <variant name="PrivateRoot"/>
-  </token>
-</histogram>
-
 <histogram name="Net.Certificate.TLSFeatureExtensionWithPrivateRoot"
     enum="Boolean" expires_after="M77">
   <owner>estark@chromium.org</owner>

@@ -70630,28 +70630,6 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="NO_ENTRY"/>
 </enum>
 
-<enum name="NetCertificateEKUStatus">
-  <int value="0" label="Invalid">Error parsing the certificate</int>
-  <int value="1" label="NoEKU">
-    Certificate did not contain an ExtendedKeyUsage extension
-  </int>
-  <int value="2" label="AnyEKU">
-    contained AnyExtendedKeyUsage (may also have contained other EKUs, including
-    ServerAuth)
-  </int>
-  <int value="3" label="ServerAuthOnly">contained only ServerAuth</int>
-  <int value="4" label="ServerAuthAndClientAuthOnly">
-    contained only ServerAuth and ClientAuth
-  </int>
-  <int value="5" label="ServerAuthAndOthers">
-    contained ServerAuth and other EKUs
-  </int>
-  <int value="6" label="Other">
-    ExtendedKeyUsage was present but did not contain ServerAuth or
-    AnyExtendedKeyUsage
-  </int>
-</enum>
-
 <enum name="NetCertificateNameNormalization">
   <int value="0" label="Error parsing certificate chain"/>
   <int value="1" label="Byte equal Names"/>
