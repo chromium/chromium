@@ -2683,16 +2683,6 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
 
   const AttributionSourceType source_type = common_info.source_type();
 
-  std::vector<AggregatableHistogramContribution> contributions =
-      CreateAggregatableHistogram(
-          common_info.filter_data(), source_type,
-          common_info.aggregation_keys(),
-          trigger_registration.aggregatable_trigger_data,
-          trigger_registration.aggregatable_values);
-  if (contributions.empty()) {
-    return AggregatableResult::kNoHistograms;
-  }
-
   auto matched_dedup_key = base::ranges::find_if(
       trigger.registration().aggregatable_dedup_keys.vec(),
       [&](const attribution_reporting::AggregatableDedupKey&
@@ -2716,6 +2706,16 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       return AggregatableResult::kDeduplicated;
     case ReportAlreadyStoredStatus::kError:
       return AggregatableResult::kInternalError;
+  }
+
+  std::vector<AggregatableHistogramContribution> contributions =
+      CreateAggregatableHistogram(
+          common_info.filter_data(), source_type,
+          common_info.aggregation_keys(),
+          trigger_registration.aggregatable_trigger_data,
+          trigger_registration.aggregatable_values);
+  if (contributions.empty()) {
+    return AggregatableResult::kNoHistograms;
   }
 
   switch (CapacityForStoringReport(

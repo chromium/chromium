@@ -1883,9 +1883,13 @@ TEST_F(AttributionStorageTest, AggregatableDedupKey_Dedups) {
                     .Build(/*generate_event_trigger_data=*/false)));
 
   // Shouldn't be stored because attribution destination and dedup key match.
+  // Note that we intentionally don't set aggregatable values to verify that
+  // the deduplication occurs before aggregatable contributions creation.
   EXPECT_EQ(AttributionTrigger::AggregatableResult::kDeduplicated,
             MaybeCreateAndStoreAggregatableReport(
-                DefaultAggregatableTriggerBuilder()
+                TriggerBuilder()
+                    .SetAggregatableTriggerData(
+                        {attribution_reporting::AggregatableTriggerData()})
                     .SetDestinationOrigin(
                         *SuitableOrigin::Deserialize("https://b.example"))
                     .SetAggregatableDedupKey(12)
