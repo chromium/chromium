@@ -199,6 +199,15 @@ public class ShoppingService {
         return ShoppingServiceJni.get().isShoppingListEligible(mNativeShoppingServiceAndroid, this);
     }
 
+    // This is a feature check for the "merchant viewer", which will return true if the user has the
+    // feature flag enabled or (if applicable) is in an eligible country and locale.
+    public boolean isMerchantViewerEnabled() {
+        if (mNativeShoppingServiceAndroid == 0) return false;
+
+        return ShoppingServiceJni.get().isMerchantViewerEnabled(
+                mNativeShoppingServiceAndroid, this);
+    }
+
     @CalledByNative
     private void destroy() {
         mNativeShoppingServiceAndroid = 0;
@@ -285,5 +294,6 @@ public class ShoppingService {
         void unsubscribe(long nativeShoppingServiceAndroid, ShoppingService caller, int type,
                 int idType, int managementType, String id, Callback<Boolean> callback);
         boolean isShoppingListEligible(long nativeShoppingServiceAndroid, ShoppingService caller);
+        boolean isMerchantViewerEnabled(long nativeShoppingServiceAndroid, ShoppingService caller);
     }
 }

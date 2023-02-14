@@ -138,7 +138,7 @@ public class MerchantViewerConfig {
     }
 
     public static boolean isTrustSignalsMessageDisabled() {
-        boolean defaultValue = false;
+        boolean defaultValue = true;
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,

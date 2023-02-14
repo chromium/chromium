@@ -58,6 +58,7 @@ class MockShoppingService : public commerce::ShoppingService {
               IsClusterIdTrackedByUser,
               (uint64_t cluster_id, base::OnceCallback<void(bool)> callback),
               (override));
+  MOCK_METHOD(bool, IsMerchantViewerEnabled, (), (override));
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
@@ -69,6 +70,7 @@ class MockShoppingService : public commerce::ShoppingService {
   void SetUnsubscribeCallbackValue(bool unsubscribe_should_succeed);
   void SetIsShoppingListEligible(bool enabled);
   void SetIsClusterIdTrackedByUserResponse(bool is_tracked);
+  void SetIsMerchantViewerEnabled(bool is_enabled);
 };
 
 }  // namespace commerce

@@ -45,6 +45,7 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kShoppingListRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPDPMetricsRegionLaunched] = {{"us", {"en-us"}}};
     map[&ntp_features::kNtpChromeCartModule] = {{"us", {"en-us"}}};
+    map[&kCommerceMerchantViewerRegionLaunched] = {{"us", {"en-us"}}};
 
     return map;
   }());
@@ -127,6 +128,15 @@ BASE_FEATURE(kCommerceCoupons,
 BASE_FEATURE(kCommerceMerchantViewer,
              "CommerceMerchantViewer",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kCommerceMerchantViewerRegionLaunched,
+             "CommerceMerchantViewerRegionLaunched",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kCommerceMerchantViewerRegionLaunched,
+             "CommerceMerchantViewerRegionLaunched",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kCommercePriceTracking,
              "CommercePriceTracking",
@@ -385,6 +395,18 @@ bool IsEnabledForCountryAndLocale(const base::Feature& feature,
   // If the set of allowed locales contains our locale, we're considered to be
   // enabled.
   return it->second.find(base::ToLowerASCII(locale)) != it->second.end();
+}
+
+bool IsRegionLockedFeatureEnabled(const base::Feature& feature,
+                                  const base::Feature& feature_region_launched,
+                                  const std::string& country_code,
+                                  const std::string& locale) {
+  bool flag_enabled = base::FeatureList::IsEnabled(feature);
+  bool region_launched =
+      base::FeatureList::IsEnabled(feature_region_launched) &&
+      IsEnabledForCountryAndLocale(feature_region_launched, country_code,
+                                   locale);
+  return flag_enabled || region_launched;
 }
 
 #if !BUILDFLAG(IS_ANDROID)

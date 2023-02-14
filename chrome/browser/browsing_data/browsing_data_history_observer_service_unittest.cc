@@ -16,6 +16,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/commerce/shopping_service_factory.h"
+#include "components/commerce/core/mock_shopping_service.h"
+#endif
+
 class BrowsingDataHistoryObserverServiceTest : public testing::Test {
  public:
   BrowsingDataHistoryObserverServiceTest() = default;
@@ -29,8 +34,15 @@ class BrowsingDataHistoryObserverServiceTest : public testing::Test {
 TEST_F(BrowsingDataHistoryObserverServiceTest,
        TimeRangeHistoryWithRestrictions_ClearCommerceDataCalled) {
   base::HistogramTester histogram_tester;
-  TestingProfile profile;
-  BrowsingDataHistoryObserverService service(&profile);
+  std::unique_ptr<TestingProfile> profile =
+      TestingProfile::Builder()
+          .AddTestingFactory(
+              commerce::ShoppingServiceFactory::GetInstance(),
+              base::BindRepeating([](content::BrowserContext* context) {
+                return commerce::MockShoppingService::Build();
+              }))
+          .Build();
+  BrowsingDataHistoryObserverService service(profile.get());
 
   GURL origin_a = GURL("https://a.test");
 
@@ -52,9 +64,15 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
 TEST_F(BrowsingDataHistoryObserverServiceTest,
        OriginBasedCommerceDataCleared_EmptyList) {
   base::HistogramTester histogram_tester;
-
-  TestingProfile profile;
-  BrowsingDataHistoryObserverService service(&profile);
+  std::unique_ptr<TestingProfile> profile =
+      TestingProfile::Builder()
+          .AddTestingFactory(
+              commerce::ShoppingServiceFactory::GetInstance(),
+              base::BindRepeating([](content::BrowserContext* context) {
+                return commerce::MockShoppingService::Build();
+              }))
+          .Build();
+  BrowsingDataHistoryObserverService service(profile.get());
 
   history::OriginCountAndLastVisitMap origin_map;
   history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(

@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageDescriptionUI;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.tab_ui.R;
@@ -59,7 +59,8 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
         // Creating the instance of {@link MerchantTrustSignalsDataProvider} will force
         // OptimizationGuide to register for the MERCHANT_TRUST_SIGNALS type, so we need to check
         // the feature flag first.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER)) {
+        if (profile != null
+                && ShoppingServiceFactory.getForProfile(profile).isMerchantViewerEnabled()) {
             new MerchantTrustSignalsDataProvider().getDataForUrl(
                     profile, mMainController.getURL(), this::setupStoreInfoRow);
         } else {

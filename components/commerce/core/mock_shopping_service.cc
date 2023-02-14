@@ -33,6 +33,7 @@ MockShoppingService::MockShoppingService()
   SetUnsubscribeCallbackValue(true);
   SetIsShoppingListEligible(true);
   SetIsClusterIdTrackedByUserResponse(true);
+  SetIsMerchantViewerEnabled(true);
 }
 
 MockShoppingService::~MockShoppingService() = default;
@@ -119,6 +120,11 @@ void MockShoppingService::SetIsClusterIdTrackedByUserResponse(bool is_tracked) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), is_tracked));
       });
+}
+
+void MockShoppingService::SetIsMerchantViewerEnabled(bool is_enabled) {
+  ON_CALL(*this, IsMerchantViewerEnabled)
+      .WillByDefault(testing::Return(is_enabled));
 }
 
 }  // namespace commerce

@@ -15,6 +15,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -101,6 +102,7 @@ public class PageInfoStoreInfoViewTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
+        doReturn(true).when(mMockShoppingService).isMerchantViewerEnabled();
     }
 
     private void openPageInfoFromStoreIcon(boolean fromStoreIcon) {

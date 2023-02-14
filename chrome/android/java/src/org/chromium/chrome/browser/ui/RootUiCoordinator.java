@@ -850,7 +850,8 @@ public class RootUiCoordinator
     }
 
     private void initMerchantTrustSignals() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER)
+        if (ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                        .isMerchantViewerEnabled()
                 && shouldInitializeMerchantTrustSignals()) {
             MerchantTrustSignalsCoordinator merchantTrustSignalsCoordinator =
                     new MerchantTrustSignalsCoordinator(mActivity, mWindowAndroid,

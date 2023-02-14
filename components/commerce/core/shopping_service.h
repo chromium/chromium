@@ -251,6 +251,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       uint64_t cluster_id,
       base::OnceCallback<void(bool)> callback);
 
+  // This is a feature check for the "merchant viewer", which will return true
+  // if the user has the feature flag enabled or (if applicable) is in an
+  // enabled country and locale.
+  virtual bool IsMerchantViewerEnabled();
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
@@ -303,10 +308,6 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       bool is_off_the_record,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
-
-  // Whether APIs like |GetMerchantInfoForURL| are enabled and allowed to be
-  // used.
-  bool IsMerchantInfoApiEnabled();
 
   void HandleOptGuideProductInfoResponse(
       const GURL& url,

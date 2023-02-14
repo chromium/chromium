@@ -73,6 +73,7 @@ BASE_DECLARE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates);
 BASE_DECLARE_FEATURE(kCommerceAllowServerImages);
 BASE_DECLARE_FEATURE(kCommerceCoupons);
 BASE_DECLARE_FEATURE(kCommerceMerchantViewer);
+BASE_DECLARE_FEATURE(kCommerceMerchantViewerRegionLaunched);
 extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);
@@ -365,6 +366,14 @@ std::string GetCurrentCountryCode(variations::VariationsService* variations);
 bool IsEnabledForCountryAndLocale(const base::Feature& feature,
                                   std::string country,
                                   std::string locale);
+
+// A feature check for the specified |feature|, which will return true if the
+// user has the feature flag enabled or (if applicable) is in an enabled
+// country and locale.
+bool IsRegionLockedFeatureEnabled(const base::Feature& feature,
+                                  const base::Feature& feature_region_launched,
+                                  const std::string& country_code,
+                                  const std::string& locale);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Get the time delay between discount fetches.

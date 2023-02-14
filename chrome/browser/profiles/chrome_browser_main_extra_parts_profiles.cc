@@ -511,9 +511,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   CartServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(commerce::kCommerceMerchantViewer)) {
-    MerchantViewerDataManagerFactory::GetInstance();
-  }
+  MerchantViewerDataManagerFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   CertDbInitializerFactory::GetInstance();

@@ -239,4 +239,12 @@ bool ShoppingServiceAndroid::IsShoppingListEligible(
   return shopping_service_->IsShoppingListEligible();
 }
 
+bool ShoppingServiceAndroid::IsMerchantViewerEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  CHECK(shopping_service_);
+
+  return shopping_service_->IsMerchantViewerEnabled();
+}
+
 }  // namespace commerce

@@ -19,6 +19,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
+#include "components/commerce/core/shopping_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -151,7 +153,11 @@ void BrowsingDataHistoryObserverService::OnURLsDeleted(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  ClearCommerceData(profile_, deletion_info);
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile_);
+  if (shopping_service && shopping_service->IsMerchantViewerEnabled()) {
+    ClearCommerceData(profile_, deletion_info);
+  }
 #endif
 }
 
@@ -174,6 +180,7 @@ BrowsingDataHistoryObserverService::Factory::Factory()
 
 #if BUILDFLAG(IS_ANDROID)
   DependsOn(MerchantViewerDataManagerFactory::GetInstance());
+  DependsOn(commerce::ShoppingServiceFactory::GetInstance());
 #endif
 }
 

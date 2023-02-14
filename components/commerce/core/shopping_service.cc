@@ -97,7 +97,7 @@ ShoppingService::ShoppingService(
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_TRACKING);
     }
-    if (IsMerchantInfoApiEnabled()) {
+    if (IsMerchantViewerEnabled()) {
       types.push_back(optimization_guide::proto::OptimizationType::
                           MERCHANT_TRUST_SIGNALS_V2);
     }
@@ -380,7 +380,7 @@ void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
     return;
 
   // Crash if this API is used without a valid experiment.
-  CHECK(IsMerchantInfoApiEnabled());
+  CHECK(IsMerchantViewerEnabled());
 
   opt_guide_->CanApplyOptimization(
       url,
@@ -390,31 +390,25 @@ void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
 }
 
 bool ShoppingService::IsProductInfoApiEnabled() {
-  bool flag_enabled = base::FeatureList::IsEnabled(kShoppingList);
-
-  bool region_launched =
-      (base::FeatureList::IsEnabled(kShoppingListRegionLaunched) &&
-       IsEnabledForCountryAndLocale(kShoppingListRegionLaunched,
-                                    country_on_startup_, locale_on_startup_)) ||
-      (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
-       IsEnabledForCountryAndLocale(ntp_features::kNtpChromeCartModule,
-                                    country_on_startup_, locale_on_startup_));
-
-  return flag_enabled || region_launched;
+  return IsRegionLockedFeatureEnabled(
+             kShoppingList, kShoppingListRegionLaunched, country_on_startup_,
+             locale_on_startup_) ||
+         (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
+          IsEnabledForCountryAndLocale(ntp_features::kNtpChromeCartModule,
+                                       country_on_startup_,
+                                       locale_on_startup_));
 }
 
 bool ShoppingService::IsPDPMetricsRecordingEnabled() {
-  bool flag_enabled = base::FeatureList::IsEnabled(kShoppingPDPMetrics);
-  bool region_launched =
-      base::FeatureList::IsEnabled(kShoppingPDPMetricsRegionLaunched) &&
-      IsEnabledForCountryAndLocale(kShoppingPDPMetricsRegionLaunched,
-                                   country_on_startup_, locale_on_startup_);
-
-  return flag_enabled || region_launched;
+  return IsRegionLockedFeatureEnabled(kShoppingPDPMetrics,
+                                      kShoppingPDPMetricsRegionLaunched,
+                                      country_on_startup_, locale_on_startup_);
 }
 
-bool ShoppingService::IsMerchantInfoApiEnabled() {
-  return base::FeatureList::IsEnabled(kCommerceMerchantViewer);
+bool ShoppingService::IsMerchantViewerEnabled() {
+  return IsRegionLockedFeatureEnabled(kCommerceMerchantViewer,
+                                      kCommerceMerchantViewerRegionLaunched,
+                                      country_on_startup_, locale_on_startup_);
 }
 
 void ShoppingService::HandleOptGuideProductInfoResponse(
@@ -766,13 +760,8 @@ bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
                                              PrefService* prefs,
                                              const std::string& country_code,
                                              const std::string& locale) {
-  bool flag_enabled = base::FeatureList::IsEnabled(kShoppingList);
-  bool region_launched =
-      base::FeatureList::IsEnabled(kShoppingListRegionLaunched) &&
-      IsEnabledForCountryAndLocale(kShoppingListRegionLaunched, country_code,
-                                   locale);
-
-  if (!flag_enabled && !region_launched) {
+  if (!IsRegionLockedFeatureEnabled(kShoppingList, kShoppingListRegionLaunched,
+                                    country_code, locale)) {
     return false;
   }
 

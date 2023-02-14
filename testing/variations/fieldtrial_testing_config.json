@@ -3111,28 +3111,6 @@
             ]
         }
     ],
-    "CommerceMerchantViewer": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledPageInfoOnly_20220629",
-                    "params": {
-                        "trust_signals_message_disabled": "true"
-                    },
-                    "enable_features": [
-                        "CommerceMerchantViewer",
-                        "PageInfoStoreInfo"
-                    ],
-                    "disable_features": [
-                        "IPH_PageInfoStoreInfo"
-                    ]
-                }
-            ]
-        }
-    ],
     "CompositeBGColorAnimationExp4": [
         {
             "platforms": [

@@ -5937,6 +5937,8 @@ test("unit_tests") {
     "//components/commerce/core:commerce_heuristics_data",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:persisted_state_db_content_proto",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core:shopping_service_test_support",
     "//components/component_updater:test_support",
     "//components/content_settings/browser",
     "//components/content_settings/browser:test_support",
