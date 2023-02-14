@@ -5452,6 +5452,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "one-tap-experience-maps",
+    "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "oobe-hid-detection-revamp",
     "owners": [ "gordonseto", "cros-connectivity@google.com"],
     "expiry_milestone": 117

@@ -68,6 +68,15 @@ BASE_DECLARE_FEATURE(kEnableWebPageAnnotations);
 // long presses at a certain location.
 BASE_DECLARE_FEATURE(kLongPressSurroundingText);
 
+// Feature flag to enable Emails detection.
+BASE_DECLARE_FEATURE(kEnableEmails);
+
+// Feature flag to enable Phone Numbers detection.
+BASE_DECLARE_FEATURE(kEnablePhoneNumbers);
+
+// Feature flag to enable One tap experience for Maps.
+BASE_DECLARE_FEATURE(kOneTapForMaps);
+
 // When enabled, CRWWebViewScrollViewProxy's `scrollEnabled` state is not
 // restored if the new instance already has the same `scrollEnabled` state as
 // the old one.

@@ -158,14 +158,16 @@ extern const char kAppleCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Apple "
     "Calendar event handling.";
 
-extern const char kEmailName[] = "Email enable";
+extern const char kEmailName[] = "Email experience enable";
 extern const char kEmailDescription[] =
-    "When enabled, long pressing on an email address will trigger the email "
+    "When enabled, one tapping or long pressing on an email address will "
+    "trigger the email "
     "experience.";
 
-extern const char kPhoneNumberName[] = "Phone number enable";
+extern const char kPhoneNumberName[] = "Phone number experience enable";
 extern const char kPhoneNumberDescription[] =
-    "When enabled, long pressing on a phone number will trigger the phone "
+    "When enabled, one tapping or long pressing on a phone number will trigger "
+    "the phone "
     "number experience.";
 
 extern const char kEnableExpKitCalendarTextClassifierName[] =
@@ -179,6 +181,10 @@ extern const char kEnableExpKitTextClassifierName[] =
 extern const char kEnableExpKitTextClassifierDescription[] =
     "When enabled, Experience Kit will use Text Classifier library in "
     "entity detection where possible.";
+
+extern const char kOneTapForMapsName[] = "Enable one Tap Experience for Maps";
+extern const char kOneTapForMapsDescription[] =
+    "Enables the one tap experience for maps experience kit.";
 
 const char kEnablePopoutOmniboxIpadName[] = "Popout omnibox (iPad)";
 const char kEnablePopoutOmniboxIpadDescription[] =

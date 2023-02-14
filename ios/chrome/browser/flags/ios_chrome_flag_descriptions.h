@@ -615,6 +615,11 @@ extern const char kOptimizationGuidePushNotificationClientDescription[];
 extern const char kOptimizationGuideModelDownloadingName[];
 extern const char kOptimizationGuideModelDownloadingDescription[];
 
+// Title and description for the flag to enable one tap experience for maps
+// experience kit.
+extern const char kOneTapForMapsName[];
+extern const char kOneTapForMapsDescription[];
+
 // Title and description for the flag to enable the prediction of optimization
 // targets.
 extern const char kOptimizationTargetPredictionDescription[];
