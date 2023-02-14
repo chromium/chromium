@@ -64,6 +64,30 @@ void VideoConferenceTrayController::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+bool VideoConferenceTrayController::ShouldShowTray() const {
+  return state_.has_media_app;
+}
+
+bool VideoConferenceTrayController::GetHasCameraPermissions() const {
+  return state_.has_camera_permission;
+}
+
+bool VideoConferenceTrayController::GetHasMicrophonePermissions() const {
+  return state_.has_microphone_permission;
+}
+
+bool VideoConferenceTrayController::IsCapturingScreen() const {
+  return state_.is_capturing_screen;
+}
+
+bool VideoConferenceTrayController::IsCapturingCamera() const {
+  return state_.is_capturing_camera;
+}
+
+bool VideoConferenceTrayController::IsCapturingMicrophone() const {
+  return state_.is_capturing_microphone;
+}
+
 void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(
     cros::mojom::CameraPrivacySwitchState state) {
   camera_muted_by_software_switch_ =

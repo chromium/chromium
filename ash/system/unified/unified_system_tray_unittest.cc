@@ -24,6 +24,8 @@
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -43,8 +45,9 @@ namespace ash {
 using message_center::MessageCenter;
 using message_center::Notification;
 
-class UnifiedSystemTrayTest : public AshTestBase,
-                              public testing::WithParamInterface<bool> {
+class UnifiedSystemTrayTest
+    : public AshTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   UnifiedSystemTrayTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -53,13 +56,38 @@ class UnifiedSystemTrayTest : public AshTestBase,
   ~UnifiedSystemTrayTest() override = default;
 
   void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
     if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
+      enabled_features.push_back(features::kQsRevamp);
     }
+    if (IsVcControlsUiEnabled()) {
+      // Here we have to create the global instance of `CrasAudioHandler`
+      // before `FakeVideoConferenceTrayController`, so we do it here and not
+      // in `AshTestBase`.
+      CrasAudioClient::InitializeFake();
+      CrasAudioHandler::InitializeForTesting();
+      fake_video_conference_tray_controller_ =
+          std::make_unique<FakeVideoConferenceTrayController>();
+      set_create_global_cras_audio_handler(false);
+      enabled_features.push_back(features::kVideoConference);
+    }
+    feature_list_.InitWithFeatures(enabled_features, {});
     AshTestBase::SetUp();
   }
 
-  bool IsQsRevampEnabled() { return GetParam(); }
+  void TearDown() override {
+    AshTestBase::TearDown();
+
+    if (IsVcControlsUiEnabled()) {
+      fake_video_conference_tray_controller_.reset();
+      CrasAudioHandler::Shutdown();
+      CrasAudioClient::Shutdown();
+    }
+  }
+
+  bool IsQsRevampEnabled() { return std::get<0>(GetParam()); }
+
+  bool IsVcControlsUiEnabled() { return std::get<1>(GetParam()); }
 
  protected:
   const std::string AddNotification() {
@@ -80,8 +108,8 @@ class UnifiedSystemTrayTest : public AshTestBase,
   }
 
   // Show the notification center bubble. This assumes that there is at least
-  // one notification in the notification list. This should only be called when
-  // QsRevamp is enabled.
+  // one notification in the notification list. This should only be called
+  // when QsRevamp is enabled.
   void ShowNotificationBubble() {
     DCHECK(IsQsRevampEnabled());
     Shell::Get()
@@ -92,8 +120,8 @@ class UnifiedSystemTrayTest : public AshTestBase,
         ->ShowBubble();
   }
 
-  // Hide the notification center bubble. This assumes that it is already shown.
-  // This should only be called when QsRevamp is enabled.
+  // Hide the notification center bubble. This assumes that it is already
+  // shown. This should only be called when QsRevamp is enabled.
   void HideNotificationBubble() {
     DCHECK(IsQsRevampEnabled());
     Shell::Get()
@@ -146,14 +174,23 @@ class UnifiedSystemTrayTest : public AshTestBase,
     return GetPrimaryUnifiedSystemTray()->ime_mode_view_;
   }
 
+  FakeVideoConferenceTrayController* fake_video_conference_tray_controller() {
+    return fake_video_conference_tray_controller_.get();
+  }
+
  private:
   int id_ = 0;
+
+  std::unique_ptr<FakeVideoConferenceTrayController>
+      fake_video_conference_tray_controller_;
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         UnifiedSystemTrayTest,
-                         testing::Bool() /* IsQsRevampEnabled() */);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UnifiedSystemTrayTest,
+    testing::Combine(testing::Bool() /* IsQsRevampEnabled() */,
+                     testing::Bool() /* IsVcControlsUiEnabled() */));
 
 // Regression test for crbug/1360579
 TEST_P(UnifiedSystemTrayTest, GetAccessibleNameForQuickSettingsBubble) {
@@ -590,6 +627,47 @@ TEST_P(UnifiedSystemTrayTest, InputMuteStateToggledByHardwareSwitch) {
 
   // The toast should be visible as the mute state is toggled using the hw
   // switch.
+  EXPECT_TRUE(IsMicrophoneMuteToastShown());
+}
+
+// Tests if the microphone mute toast is NOT displayed when the mute state is
+// toggled by the hw switch and the VC tray is visible.
+TEST_P(UnifiedSystemTrayTest,
+       InputMuteStateToggledByHardwareSwitchVcTrayVisible) {
+  if (!IsVcControlsUiEnabled()) {
+    return;
+  }
+
+  // The microphone mute toast should not be visible initially.
+  EXPECT_FALSE(IsMicrophoneMuteToastShown());
+
+  // Show the VC tray.
+  auto* vc_tray = Shell::Get()
+                      ->GetPrimaryRootWindowController()
+                      ->shelf()
+                      ->GetStatusAreaWidget()
+                      ->video_conference_tray();
+  DCHECK(vc_tray);
+
+  // Update media state, which will make the `VideoConferenceTray` show.
+  VideoConferenceMediaState state;
+  state.has_media_app = true;
+  fake_video_conference_tray_controller()->UpdateWithMediaState(state);
+
+  CrasAudioHandler* cras_audio_handler = CrasAudioHandler::Get();
+  // Toggling the input mute state using the hw switch.
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
+      !cras_audio_handler->IsInputMuted());
+
+  // The toast should NOT be visible as the mute state is toggled using the hw
+  // switch and the VC tray is visible.
+  EXPECT_FALSE(IsMicrophoneMuteToastShown());
+
+  // Make the VC tray not-visible and toggle again, now the toast is visible.
+  state.has_media_app = false;
+  fake_video_conference_tray_controller()->UpdateWithMediaState(state);
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
+      !cras_audio_handler->IsInputMuted());
   EXPECT_TRUE(IsMicrophoneMuteToastShown());
 }
 

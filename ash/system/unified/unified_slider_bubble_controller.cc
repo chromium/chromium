@@ -22,6 +22,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/system/video_conference/video_conference_tray.h"
 #include "base/functional/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/border.h"
@@ -33,14 +34,31 @@ namespace {
 // Return true if a system tray bubble is shown in any display.
 bool IsAnyMainBubbleShown() {
   for (RootWindowController* root : Shell::GetAllRootWindowControllers()) {
-    if (root->GetStatusAreaWidget()->unified_system_tray()->IsBubbleShown())
+    if (root->GetStatusAreaWidget()->unified_system_tray()->IsBubbleShown()) {
       return true;
+    }
   }
   return false;
 }
 
 void ConfigureSliderViewStyle(views::View* slider_view) {
   slider_view->SetBorder(views::CreateEmptyBorder(kUnifiedSliderBubblePadding));
+}
+
+// Returns whether the `VideoConferenceTray` should be shown.
+bool ShouldVideoConferenceTrayBeShown() {
+  if (!features::IsVideoConferenceEnabled()) {
+    return false;
+  }
+
+  // The tray is shown on every display, so just check the primary display.
+  auto* status_area_widget =
+      Shell::Get()->GetPrimaryRootWindowController()->GetStatusAreaWidget();
+  // `UnifiedSliderBubbleController` belongs to `UnifiedSystemTray` which is
+  // created during construction of `status_area_widget`, so it is possible
+  // this is called before `status_area_widget` is created.
+  return status_area_widget &&
+         status_area_widget->video_conference_tray()->visible_preferred();
 }
 
 }  // namespace
@@ -59,18 +77,21 @@ UnifiedSliderBubbleController::~UnifiedSliderBubbleController() {
   tray_->shelf()->RemoveObserver(this);
   autoclose_.Stop();
   slider_controller_.reset();
-  if (bubble_widget_)
+  if (bubble_widget_) {
     bubble_widget_->CloseNow();
+  }
 }
 
 void UnifiedSliderBubbleController::CloseBubble() {
   autoclose_.Stop();
   slider_controller_.reset();
-  if (!bubble_widget_)
+  if (!bubble_widget_) {
     return;
+  }
   // Ignore the request if the bubble is closing.
-  if (bubble_widget_->IsClosed())
+  if (bubble_widget_->IsClosed()) {
     return;
+  }
   bubble_widget_->Close();
   tray_->SetTrayBubbleHeight(0);
 }
@@ -98,9 +119,10 @@ void UnifiedSliderBubbleController::OnMouseExitedView() {
 
 void UnifiedSliderBubbleController::DisplayMicrophoneMuteToast() {
   // We will not display the microphone mute toast if no microphone is connected
-  // to the device.
+  // to the device, or if the video conference controls tray is visible.
   if (features::IsMicMuteNotificationsEnabled() &&
-      CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage()) {
+      CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage() &&
+      !ShouldVideoConferenceTrayBeShown()) {
     ShowBubble(SLIDER_TYPE_MIC);
   }
 }
@@ -131,8 +153,9 @@ void UnifiedSliderBubbleController::OnOutputMuteChanged(bool mute_on) {
 }
 
 void UnifiedSliderBubbleController::OnDisplayBrightnessChanged(bool by_user) {
-  if (by_user)
+  if (by_user) {
     ShowBubble(SLIDER_TYPE_DISPLAY_BRIGHTNESS);
+  }
 }
 
 void UnifiedSliderBubbleController::OnKeyboardBrightnessChanged(
@@ -164,14 +187,16 @@ void UnifiedSliderBubbleController::OnAudioSettingsButtonClicked() {
 }
 
 void UnifiedSliderBubbleController::OnShelfWorkAreaInsetsChanged() {
-  if (bubble_view_)
+  if (bubble_view_) {
     bubble_view_->ChangeAnchorRect(tray_->shelf()->GetSystemTrayAnchorRect());
+  }
 }
 
 void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   // Never show slider bubble in kiosk app mode.
-  if (Shell::Get()->session_controller()->IsRunningInAppMode())
+  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
     return;
+  }
 
   bool is_audio_slider = slider_type == SLIDER_TYPE_MIC;
   // For QsRevamp: both the volume slider and mic gain slider will be shown in
@@ -202,14 +227,16 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
     // Unlike VOLUME and BRIGHTNESS, which are shown in the main bubble view,
     // MIC slider is shown in the audio details view.
-    if (slider_type == SLIDER_TYPE_MIC && tray_->bubble())
+    if (slider_type == SLIDER_TYPE_MIC && tray_->bubble()) {
       tray_->ShowAudioDetailedViewBubble();
+    }
     return;
   }
 
   // Ignore the request if the bubble is closing.
-  if (bubble_widget_ && bubble_widget_->IsClosed())
+  if (bubble_widget_ && bubble_widget_->IsClosed()) {
     return;
+  }
 
   // If the bubble already exists, update the content of the bubble and extend
   // the autoclose timer.
@@ -230,8 +257,9 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
     }
 
     // If mouse is hovered, do not restart auto close timer.
-    if (!mouse_hovered_)
+    if (!mouse_hovered_) {
       StartAutoCloseTimer();
+    }
     return;
   }
 

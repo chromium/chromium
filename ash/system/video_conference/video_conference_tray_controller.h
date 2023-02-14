@@ -70,6 +70,20 @@ class ASH_EXPORT VideoConferenceTrayController
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Whether the tray should be shown.
+  bool ShouldShowTray() const;
+
+  // Returns whether `state_` indicates permissions are granted for different
+  // mediums.
+  bool GetHasCameraPermissions() const;
+  bool GetHasMicrophonePermissions() const;
+
+  // Returns whether `state_` indicates a capture session is in progress for
+  // different mediums.
+  bool IsCapturingScreen() const;
+  bool IsCapturingCamera() const;
+  bool IsCapturingMicrophone() const;
+
   // Sets the state for camera mute. Virtual for testing/mocking.
   virtual void SetCameraMuted(bool muted) = 0;
 
