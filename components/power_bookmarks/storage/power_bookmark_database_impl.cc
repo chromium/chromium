@@ -250,9 +250,8 @@ bool PowerBookmarkDatabaseImpl::InitSchema() {
     return false;
   }
 
-  meta_table_.SetVersionNumber(kCurrentVersionNumber);
-  meta_table_.SetCompatibleVersionNumber(kCompatibleVersionNumber);
-  return true;
+  return meta_table_.SetVersionNumber(kCurrentVersionNumber) &&
+         meta_table_.SetCompatibleVersionNumber(kCompatibleVersionNumber);
 }
 
 bool PowerBookmarkDatabaseImpl::CreateSchema() {
