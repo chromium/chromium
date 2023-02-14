@@ -116,7 +116,7 @@ ci.builder(
 
 ci.builder(
     name = "CrWinAsan",
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "asn",
@@ -125,7 +125,7 @@ ci.builder(
 
 ci.builder(
     name = "CrWinAsan(dll)",
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "dll",
@@ -296,7 +296,7 @@ clang_tot_linux_builder(
 
 ci.builder(
     name = "ToTWin",
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
@@ -307,7 +307,7 @@ ci.builder(
 ci.builder(
     name = "ToTWin(dbg)",
     builderless = False,
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "dbg",
@@ -316,7 +316,7 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin(dll)",
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "dll",
@@ -325,7 +325,7 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin64",
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
         short_name = "rel",
@@ -334,7 +334,7 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin64(dbg)",
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
@@ -344,7 +344,7 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin64(dll)",
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
@@ -355,7 +355,7 @@ ci.builder(
 ci.builder(
     name = "ToTWinASanLibfuzzer",
     builderless = False,
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
         short_name = "fuz",
@@ -365,7 +365,7 @@ ci.builder(
 ci.builder(
     name = "ToTWindowsCoverage",
     executable = "recipe:chromium_clang_coverage_tot",
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
         short_name = "win",
@@ -374,7 +374,7 @@ ci.builder(
 
 ci.builder(
     name = "ToTWin64PGO",
-    os = os.WINDOWS_ANY,
+    os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|x64",
         short_name = "pgo",
