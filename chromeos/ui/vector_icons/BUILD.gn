@@ -13,6 +13,7 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "assistant.icon",
     "calculate.icon",
     "conversion_path.icon",
+    "dogfood_paw.icon",
     "enterprise.icon",
     "filetype_archive.icon",
     "filetype_audio.icon",

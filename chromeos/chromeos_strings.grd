@@ -326,6 +326,9 @@
       <message name="IDS_TABLET_MULTITASK_MENU_NUDGE_TEXT" desc="Text that is shown when the tablet multitask menu nudge is displayed.">
         Swipe down for more layout options
       </message>
+      <message name="IDS_MULTITASK_MENU_FEEDBACK_BUTTON_NAME" desc="Button text of the dogfood feedback button on the multitask menu.">
+        Send feedback
+      </message>
 
       <if expr="chromeos_ash">
         <!-- The following strings are located here for accessibility from both //ash and //chrome -->

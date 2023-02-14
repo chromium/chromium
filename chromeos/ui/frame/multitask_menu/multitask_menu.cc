@@ -21,8 +21,14 @@ namespace chromeos {
 namespace {
 
 constexpr int kMultitaskMenuBubbleCornerRadius = 8;
+// Padding between the edges of the menu and the elements.
 constexpr int kPaddingWide = 12;
+// Padding between the elements.
 constexpr int kPaddingNarrow = 8;
+
+// Dogfood feedback button layout values.
+constexpr int kButtonWidth = 130;
+constexpr int kButtonHeight = 28;
 
 }  // namespace
 
@@ -60,8 +66,9 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
       base::BindRepeating(&MultitaskMenu::HideBubble, base::Unretained(this)),
       buttons));
 
-  multitask_menu_view_->SetLayoutManager(std::make_unique<views::TableLayout>())
-      ->AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingWide)
+  auto* layout = multitask_menu_view_->SetLayoutManager(
+      std::make_unique<views::TableLayout>());
+  layout->AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingWide)
       .AddColumn(views::LayoutAlignment::kCenter,
                  views::LayoutAlignment::kCenter,
                  views::TableLayout::kFixedSize,
@@ -76,7 +83,16 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
       .AddRows(1, views::TableLayout::kFixedSize, 0)
       .AddPaddingRow(views::TableLayout::kFixedSize, kPaddingNarrow)
       .AddRows(1, views::TableLayout::kFixedSize, 0)
+      .AddPaddingRow(views::TableLayout::kFixedSize, kPaddingWide)
+      .AddRows(1, views::TableLayout::kFixedSize, kButtonHeight)
       .AddPaddingRow(views::TableLayout::kFixedSize, kPaddingWide);
+  layout->SetChildViewIgnoredByLayout(multitask_menu_view_->feedback_button(),
+                                      true);
+  auto pref_size = multitask_menu_view_->GetPreferredSize();
+  multitask_menu_view_->feedback_button()->SetBounds(
+      (pref_size.width() - kButtonWidth) / 2,
+      pref_size.height() - kButtonHeight - kPaddingWide, kButtonWidth,
+      kButtonHeight);
 
   display_observer_.emplace(this);
 }

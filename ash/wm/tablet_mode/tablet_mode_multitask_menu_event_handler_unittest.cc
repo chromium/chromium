@@ -33,7 +33,9 @@ namespace ash {
 namespace {
 
 // The vertical position used to end drag to show and start drag to hide.
-constexpr int kMenuDragPoint = 100;
+// TODO(b/267184500): Revert this value back to 100 when the feedback button is
+// removed.
+constexpr int kMenuDragPoint = 110;
 
 }  // namespace
 
