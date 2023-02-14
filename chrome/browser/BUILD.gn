@@ -6549,6 +6549,8 @@ static_library("browser") {
     sources += [
       "policy/printing_restrictions_policy_handler.cc",
       "policy/printing_restrictions_policy_handler.h",
+      "printing/print_error_dialog.cc",
+      "printing/print_error_dialog.h",
       "printing/print_job.cc",
       "printing/print_job.h",
       "printing/print_job_manager.cc",
@@ -6577,12 +6579,6 @@ static_library("browser") {
       "//printing/backend",
     ]
 
-    if (!is_android) {
-      sources += [
-        "printing/print_error_dialog.cc",
-        "printing/print_error_dialog.h",
-      ]
-    }
     if (is_win) {
       sources += [
         "printing/pdf_to_emf_converter.cc",

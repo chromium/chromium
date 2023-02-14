@@ -22,6 +22,7 @@
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
@@ -54,10 +55,6 @@
 #include "printing/printing_features.h"
 #include "printing/printing_utils.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/printing/print_error_dialog.h"
-#endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_view_manager.h"
@@ -95,11 +92,9 @@ void OnDidGetDefaultPrintSettings(
     params->document_cookie = printer_query->cookie();
   }
 
-#if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
   if (!want_pdf_settings && !PrintMsgPrintParamsIsValid(*params)) {
     ShowPrintErrorDialogForInvalidPrinterError();
   }
-#endif
 
   std::move(callback).Run(std::move(params));
 
@@ -696,7 +691,6 @@ void PrintViewManagerBase::PrintingFailed(int32_t cookie,
 
   PrintManager::PrintingFailed(cookie, reason);
 
-#if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
   // `PrintingFailed()` can occur because asynchronous compositing results
   // don't complete until after a print job has already failed and been
   // destroyed.  In such cases the error notification to the user will
@@ -706,7 +700,6 @@ void PrintViewManagerBase::PrintingFailed(int32_t cookie,
       print_job_->document()->cookie() == cookie) {
     ShowPrintErrorDialogForGenericError();
   }
-#endif
 
   ReleasePrinterQuery();
 }
@@ -788,10 +781,8 @@ void PrintViewManagerBase::OnCanceling() {
 }
 
 void PrintViewManagerBase::OnFailed() {
-#if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
   if (!canceling_job_)
     ShowPrintErrorDialogForGenericError();
-#endif
 
   TerminatePrintJob(true);
 }

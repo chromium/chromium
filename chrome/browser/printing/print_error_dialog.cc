@@ -10,14 +10,18 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#endif
 
 namespace {
 
@@ -42,10 +46,14 @@ void ShowPrintErrorDialogTask(const std::u16string& title,
     return;
   }
 
+  gfx::NativeWindow window = gfx::kNullNativeWindow;
+#if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindLastActive();
-  chrome::ShowWarningMessageBox(
-      browser ? browser->window()->GetNativeWindow() : gfx::kNullNativeWindow,
-      title, message);
+  if (browser) {
+    window = browser->window()->GetNativeWindow();
+  }
+#endif
+  chrome::ShowWarningMessageBox(window, title, message);
 }
 
 void ShowPrintErrorDialog(const std::u16string& title,
