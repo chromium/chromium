@@ -10268,6 +10268,25 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 2, 1);
 }
 
+// Test that we do not recorded FieldInfo UKM metrics for forms that have a
+// search box. We do this to reduce the number of useless UKM events.
+TEST_F(AutofillMetricsFromLogEventsTest,
+       AutofillFieldInfoMetricsNotRecordOnSearchURLForm) {
+  FormData form = CreateForm({CreateField("Search", "", "", "text")});
+  // Form whose action is a search URL should not be parsed.
+  form.action = GURL("http://google.com/search?q=hello");
+
+  SeeForm(form);
+  SubmitForm(form);
+
+  autofill_manager().Reset();
+
+  // This form is not parsed in |AutofillManager::OnFormsSeen|.
+  auto entries =
+      test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+}
+
 // TODO(crbug.com/1352826) Delete this after collecting the metrics.
 struct LaxLocalHeuristicsTestCase {
   test::FormDescription form;

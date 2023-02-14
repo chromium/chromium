@@ -3391,6 +3391,31 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     const FormStructure& form_structure) {
   // TODO(crbug.com/1325851): Log metrics if at least one field in the form was
   // classified as a certain type.
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLogUKMEventsWithSampleRate) ||
+      base::FeatureList::IsEnabled(features::kAutofillFeedback)) {
+    LogEventCountsUMAMetric(form_structure);
+  }
+
+  for (const auto& autofill_field : form_structure) {
+    // This reduces the UKM load by ignoring e.g. search boxes at best effort.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillLogUKMEventsWithSampleRate) &&
+        form_structure.ShouldBeParsed()) {
+      form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
+          form_structure, *autofill_field);
+    }
+
+    // Clear log events.
+    // Not conditions on kAutofillLogUKMEventsWithSampleRate because there may
+    // be other reasons to log events.
+    autofill_field->ClearLogEvents();
+  }
+}
+
+void BrowserAutofillManager::LogEventCountsUMAMetric(
+    const FormStructure& form_structure) {
   size_t num_ask_for_values_to_fill_event = 0;
   size_t num_trigger_fill_event = 0;
   size_t num_fill_event = 0;
@@ -3401,45 +3426,35 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
   size_t num_rationalization_event = 0;
 
   for (const auto& autofill_field : form_structure) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillLogUKMEventsWithSampleRate)) {
-      form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
-          form_structure, *autofill_field);
-      for (const auto& log_event : autofill_field->field_log_events()) {
-        static_assert(
-            absl::variant_size<AutofillField::FieldLogEventType>() == 9,
-            "When adding new variants check that this function does not "
-            "need to be updated.");
-        if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(
-                log_event)) {
-          ++num_ask_for_values_to_fill_event;
-        } else if (absl::holds_alternative<TriggerFillFieldLogEvent>(
-                       log_event)) {
-          ++num_trigger_fill_event;
-        } else if (absl::holds_alternative<FillFieldLogEvent>(log_event)) {
-          ++num_fill_event;
-        } else if (absl::holds_alternative<TypingFieldLogEvent>(log_event)) {
-          ++num_typing_event;
-        } else if (absl::holds_alternative<HeuristicPredictionFieldLogEvent>(
-                       log_event)) {
-          ++num_heuristic_prediction_event;
-        } else if (absl::holds_alternative<AutocompleteAttributeFieldLogEvent>(
-                       log_event)) {
-          ++num_autocomplete_attribute_event;
-        } else if (absl::holds_alternative<ServerPredictionFieldLogEvent>(
-                       log_event)) {
-          ++num_server_prediction_event;
-        } else if (absl::holds_alternative<RationalizationFieldLogEvent>(
-                       log_event)) {
-          ++num_rationalization_event;
-        } else {
-          NOTREACHED();
-        }
+    for (const auto& log_event : autofill_field->field_log_events()) {
+      static_assert(
+          absl::variant_size<AutofillField::FieldLogEventType>() == 9,
+          "When adding new variants check that this function does not "
+          "need to be updated.");
+      if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(log_event)) {
+        ++num_ask_for_values_to_fill_event;
+      } else if (absl::holds_alternative<TriggerFillFieldLogEvent>(log_event)) {
+        ++num_trigger_fill_event;
+      } else if (absl::holds_alternative<FillFieldLogEvent>(log_event)) {
+        ++num_fill_event;
+      } else if (absl::holds_alternative<TypingFieldLogEvent>(log_event)) {
+        ++num_typing_event;
+      } else if (absl::holds_alternative<HeuristicPredictionFieldLogEvent>(
+                     log_event)) {
+        ++num_heuristic_prediction_event;
+      } else if (absl::holds_alternative<AutocompleteAttributeFieldLogEvent>(
+                     log_event)) {
+        ++num_autocomplete_attribute_event;
+      } else if (absl::holds_alternative<ServerPredictionFieldLogEvent>(
+                     log_event)) {
+        ++num_server_prediction_event;
+      } else if (absl::holds_alternative<RationalizationFieldLogEvent>(
+                     log_event)) {
+        ++num_rationalization_event;
+      } else {
+        NOTREACHED();
       }
     }
-
-    // Clear log events.
-    autofill_field->ClearLogEvents();
   }
 
   size_t total_num_log_events =
