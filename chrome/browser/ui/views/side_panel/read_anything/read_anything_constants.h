@@ -26,6 +26,7 @@ const int kIconSize = 16;
 const int kColorsIconSize = 24;
 
 const char kReadAnythingDefaultFontName[] = "Standard font";
+const char kReadAnythingDefaultFontSyle[] = ", Sans-serif, 15px";
 
 // Font size in em
 const double kReadAnythingDefaultFontScale = 1;

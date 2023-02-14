@@ -242,7 +242,7 @@ std::string ReadAnythingFontModel::GetFontNameAt(size_t index) {
 // E.g. User chooses 'Serif', this method returns 'Serif, Arial, 18px'.
 std::string ReadAnythingFontModel::GetLabelFontListAt(size_t index) {
   std::string font_label = base::UTF16ToUTF8(GetDropDownTextAt(index));
-  base::StringAppendF(&font_label, "%s", ", Arial, 18px");
+  base::StringAppendF(&font_label, "%s", kReadAnythingDefaultFontSyle);
   return font_label;
 }
 
