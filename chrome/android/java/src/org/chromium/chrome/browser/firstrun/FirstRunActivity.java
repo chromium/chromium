@@ -154,6 +154,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         //     // TODO(crbug.com/1111490): Revisit during post-MVP.
         //     // There's an edge case where we accept the welcome page in the main app, abort the FRE,
         //     // then go through this CCT FRE again.
+        FREMobileIdentityConsistencyFieldTrial.isEnabled();
         mPages.add(new FirstRunPage<>(ToSAndUMAFirstRunFragment.class, showWelcomePage));
         // }
         mFreProgressStates.add(MobileFreProgress.WELCOME_SHOWN);
@@ -204,7 +205,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // An optional sync consent page, the visibility of this page will be decided on the fly
         // according to the situation.
         //mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, showSyncConsent));
-        mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
+        //mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
 
         if (mPagerAdapter != null) {
             mPagerAdapter.notifyDataSetChanged();

@@ -147,7 +147,8 @@ public class SyncPromoPreference extends Preference
     private void setupPersonalizedPromo(@State int state) {
         setState(state);
         setSelectable(false);
-        setVisible(true);
+        ///不要显示
+        setVisible(false);
         notifyChanged();
     }
 

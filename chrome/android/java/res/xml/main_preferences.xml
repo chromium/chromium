@@ -10,7 +10,7 @@ found in the LICENSE file.
     android:orderingFromXml="false">
 
     <org.chromium.chrome.browser.sync.settings.SyncPromoPreference
-        android:key="sync_promo"
+        android:key="sync_promo" 
         app:isPreferenceVisible="false"
         android:order="0"/>
     <PreferenceCategory
