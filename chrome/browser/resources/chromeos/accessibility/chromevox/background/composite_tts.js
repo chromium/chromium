@@ -26,7 +26,7 @@ export class CompositeTts {
   /**
    * Adds a TTS engine to the composite TTS
    * @param {TtsInterface} tts The TTS to add.
-   * @return {CompositeTts} this.
+   * @return {!CompositeTts} this.
    */
   add(tts) {
     this.ttsEngines_.push(tts);
