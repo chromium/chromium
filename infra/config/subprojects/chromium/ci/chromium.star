@@ -11,16 +11,16 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium",
     executable = ci.DEFAULT_EXECUTABLE,
-    os = os.LINUX_DEFAULT,
+    builder_group = "chromium",
     pool = ci.DEFAULT_POOL,
+    os = os.LINUX_DEFAULT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     main_console_view = "main",
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -29,7 +29,6 @@ consoles.console_view(
         branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
         branches.FUCHSIA_LTS_MILESTONE,
     ],
-    include_experimental_builds = True,
     ordering = {
         "*type*": consoles.ordering(short_names = ["dbg", "rel", "off"]),
         "android": "*type*",
@@ -38,6 +37,7 @@ consoles.console_view(
         "mac": "*type*",
         "win": "*type*",
     },
+    include_experimental_builds = True,
 )
 
 ci.builder(

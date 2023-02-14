@@ -9,18 +9,18 @@ load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.angle",
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.angle",
+    pool = try_.DEFAULT_POOL,
     builderless = False,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
-    service_account = try_.gpu.SERVICE_ACCOUNT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     goma_jobs = goma.jobs.J150,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    service_account = try_.gpu.SERVICE_ACCOUNT,
 )
 
 consoles.list_view(

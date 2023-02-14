@@ -60,8 +60,8 @@ luci.gitiles_poller(
 [consoles.overview_console_view(
     name = name,
     repo = "https://chromium.googlesource.com/chromium/src",
-    title = title,
     refs = [settings.ref],
+    title = title,
     top_level_ordering = [
         "chromium",
         "chromium.win",

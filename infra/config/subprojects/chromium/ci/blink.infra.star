@@ -19,13 +19,14 @@ consoles.console_view(
 ci.builder(
     name = "Blink Unexpected Pass Finder",
     executable = "recipe:chromium_expectation_files/expectation_file_scripts",
+    # Run once daily at 12 AM Pacific/7 AM UTC.
+    schedule = "0 7 * * *",
     triggered_by = [],
     builderless = True,
     cores = 16,
     console_view_entry = consoles.console_view_entry(
         short_name = "upf",
     ),
-    service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
     properties = {
         "scripts": [
             {
@@ -64,6 +65,5 @@ ci.builder(
             },
         ],
     },
-    # Run once daily at 12 AM Pacific/7 AM UTC.
-    schedule = "0 7 * * *",
+    service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
 )
