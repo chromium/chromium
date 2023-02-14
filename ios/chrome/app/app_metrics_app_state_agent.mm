@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/public/provider/chrome/browser/primes/primes_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -104,6 +105,9 @@
       self.firstSceneHasActivated = YES;
       [MetricsMediator logStartupDuration:self.appState.startupInformation
                     connectionInformation:sceneState.controller];
+      if (ios::provider::IsPrimesSupported()) {
+        ios::provider::PrimesAppReady();
+      }
     }
   }
 }

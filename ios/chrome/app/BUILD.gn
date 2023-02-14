@@ -221,6 +221,7 @@ source_set("app_metrics_app_state_agent") {
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
 }
 

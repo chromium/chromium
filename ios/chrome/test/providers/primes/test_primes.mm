@@ -27,5 +27,10 @@ void PrimesStopLogging() {
   NOTREACHED();
 }
 
+void PrimesAppReady() {
+  // Primes is not supported for tests.
+  NOTREACHED();
+}
+
 }  // namespace provider
 }  // namespace ios

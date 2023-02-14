@@ -27,5 +27,10 @@ void PrimesStopLogging() {
   NOTREACHED();
 }
 
+void PrimesAppReady() {
+  // Primes is not used by Chromium
+  NOTREACHED();
+}
+
 }  // namespace provider
 }  // namespace ios

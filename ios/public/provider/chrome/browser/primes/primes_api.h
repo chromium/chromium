@@ -17,6 +17,9 @@ void PrimesStartLogging();
 // Stop Primes logging
 void PrimesStopLogging();
 
+// Tell Primes to track when the app becomes ready for user interaction
+void PrimesAppReady();
+
 }  // namespace provider
 }  // namespace ios
 
