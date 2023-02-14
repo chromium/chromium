@@ -104,6 +104,7 @@ source_set("browser_tests") {
     "//components/services/app_service/public/cpp:intents",
     "//extensions/browser:test_support",
     "//ui/base/idle:test_support",
+    "//ui/events:test_support",
     "//url",
   ]
 }

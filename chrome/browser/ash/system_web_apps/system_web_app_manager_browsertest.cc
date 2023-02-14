@@ -74,7 +74,6 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -86,9 +85,9 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
-#include "ui/base/test/ui_controls.h"
 #include "ui/display/display.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -1856,22 +1855,20 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppAccessibilityTest,
 
   speech_monitor_.Call([&]() {
     LaunchApp(maybe_installation_->GetType(), &app_browser);
-
     app_window = app_browser->window()->GetNativeWindow();
-
     // F6 to switch pane.
-    ui_controls::SendKeyPress(app_window, ui::VKEY_F6, /*Ctrl*/ false,
-                              /*Shift*/ false, /*Alt*/ false,
-                              /*Launcher*/ false);
+    ui::test::EventGenerator generator(app_window->GetRootWindow(), app_window);
+    generator.PressAndReleaseKey(ui::VKEY_F6, ui::EF_FINAL);
   });
   speech_monitor_.ExpectSpeech("Test System App");
   speech_monitor_.ExpectSpeech("Application");
 
   // Launcher-B to find minimize button.
   speech_monitor_.Call([&]() {
-    ui_controls::SendKeyPress(app_window, ui::VKEY_B, /*Ctrl*/ false,
-                              /*Shift*/ false, /*Alt*/ false,
-                              /*Launcher*/ true);
+    // F6 to switch pane.
+    ui::test::EventGenerator generator(app_window->GetRootWindow());
+    generator.PressAndReleaseKey(ui::VKEY_B,
+                                 ui::EF_COMMAND_DOWN | ui::EF_FINAL);
   });
   speech_monitor_.ExpectSpeech("Minimize");
   speech_monitor_.ExpectSpeech("Button");

@@ -491,6 +491,17 @@ class EventGenerator {
   std::unique_ptr<TestTickClock> tick_clock_;
 };
 
+// This generates key events for moidfiers as well as the key with
+// modifiers.
+// TODO(crbug.com/1415115): Remove this once the EventGenerator is
+// modified to generate the same sequence.
+void EmulateFullKeyPressReleaseSequence(test::EventGenerator* generator,
+                                        KeyboardCode key,
+                                        bool control,
+                                        bool shift,
+                                        bool alt,
+                                        bool command);
+
 }  // namespace test
 }  // namespace ui
 
