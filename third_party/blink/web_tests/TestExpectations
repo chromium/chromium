@@ -6940,3 +6940,7 @@ crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-f
 # Sheriff 2023-01-24
 crbug.com/1409804 [ Mac ] fast/backgrounds/repeat/negative-offset-repeat-transformed.html [ Failure ]
 crbug.com/1409804 [ Mac ] fast/borders/border-image-rotate-transform.html [ Failure ]
+
+# Flaky tests. Disabling while investigating a deflake solution.
+crbug.com/1413838 http/tests/inspector-protocol/tracing/cpu-profiling.js [ Failure Pass ]
+crbug.com/1412866 http/tests/inspector-protocol/tracing/advanced-painting-instrumentation.js [ Failure Pass ]
