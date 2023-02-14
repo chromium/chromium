@@ -23,8 +23,8 @@ bool IsTouchDevicePresent() {
 // The following method logic is as follow :
 // - On versions prior to Windows 8 it will always return POINTER_TYPE_FINE
 // and/or POINTER_TYPE_COARSE (if the device has a touch screen).
-// - If the device is a detachable/convertible win8/10 device and the keyboard/
-// trackpad is detached/flipped it will always return POINTER_TYPE_COARSE.
+// - If the device is a detachable/convertible device and the keyboard/trackpad
+// is detached/flipped it will always return POINTER_TYPE_COARSE.
 // It does not cover the case where an external mouse/keyboard is connected
 // while the device is used as a tablet. This is because Windows doesn't provide
 // us a reliable way to detect keyboard/mouse presence with

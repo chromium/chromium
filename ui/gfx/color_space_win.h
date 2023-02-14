@@ -7,18 +7,12 @@
 
 #include <d3d11.h>
 #include <d3d9.h>
+#include <dxva2api.h>
 
 // Must be included after d3d headers, use #if to avoid lint errors.
 #if 1
 #include <DXGIType.h>
 #endif
-
-// Work around bug in this header by disabling the relevant warning for it.
-// https://connect.microsoft.com/VisualStudio/feedback/details/911260/dxva2api-h-in-win8-sdk-triggers-c4201-with-w4
-#pragma warning(push)
-#pragma warning(disable : 4201)
-#include <dxva2api.h>
-#pragma warning(pop)
 
 #include "ui/gfx/color_space.h"
 

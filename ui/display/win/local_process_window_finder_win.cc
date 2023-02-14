@@ -6,7 +6,6 @@
 
 #include "base/win/windows_version.h"
 #include "ui/display/win/screen_win.h"
-#include "ui/display/win/topmost_window_finder_win.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace display::win {
@@ -17,16 +16,8 @@ gfx::NativeWindow LocalProcessWindowFinder::GetProcessWindowAtPoint(
     const std::set<HWND>& ignore,
     ScreenWin* screen_win) {
   LocalProcessWindowFinder finder(screen_loc, screen_win, ignore);
-  // Windows 8 has a window that appears first in the list of iterated
-  // windows, yet is not visually on top of everything.
-  // TODO(sky): figure out a better way to ignore this window.
-  if (finder.result_ && ((base::win::OSInfo::GetInstance()->version() >=
-                          base::win::Version::WIN8) ||
-                         TopMostFinderWin::IsTopMostWindowAtPoint(
-                             finder.result_, screen_loc, ignore))) {
-    return screen_win->GetNativeWindowFromHWND(finder.result_);
-  }
-  return nullptr;
+  return finder.result_ ? screen_win->GetNativeWindowFromHWND(finder.result_)
+                        : nullptr;
 }
 
 bool LocalProcessWindowFinder::ShouldStopIterating(HWND hwnd) {
@@ -60,7 +51,7 @@ bool LocalProcessWindowFinder::ShouldStopIterating(HWND hwnd) {
 LocalProcessWindowFinder::LocalProcessWindowFinder(const gfx::Point& screen_loc,
                                                    ScreenWin* screen_win,
                                                    const std::set<HWND>& ignore)
-    : BaseWindowFinderWin(ignore), result_(nullptr), screen_win_(screen_win) {
+    : BaseWindowFinderWin(ignore), screen_win_(screen_win) {
   screen_loc_ = display::win::ScreenWin::DIPToScreenPoint(screen_loc);
   EnumThreadWindows(GetCurrentThreadId(), WindowCallbackProc, as_lparam());
 }

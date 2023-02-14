@@ -78,8 +78,6 @@ component("display") {
       "win/screen_win.h",
       "win/screen_win_display.cc",
       "win/screen_win_display.h",
-      "win/topmost_window_finder_win.cc",
-      "win/topmost_window_finder_win.h",
       "win/uwp_text_scale_factor.cc",
       "win/uwp_text_scale_factor.h",
     ]
