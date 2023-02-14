@@ -2042,4 +2042,23 @@ TEST_P(PaintPropertyTreeUpdateTest,
   EXPECT_EQ(200, div_properties->Transform()->Get2dTranslation().x());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, BackdropFilterBounds) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target"
+         style="width: 100px; height: 100px; backdrop-filter: blur(5px)">
+  )HTML");
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_EQ(gfx::RRectF(0, 0, 100, 100, 0),
+            properties->Effect()->BackdropFilterBounds());
+
+  GetDocument().getElementById("target")->SetInlineStyleProperty(
+      CSSPropertyID::kWidth, "200px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::RRectF(0, 0, 200, 100, 0),
+            properties->Effect()->BackdropFilterBounds());
+}
+
 }  // namespace blink

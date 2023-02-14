@@ -1508,12 +1508,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         if (auto* layer = To<LayoutBoxModelObject>(object_).Layer()) {
           CompositorFilterOperations operations;
           gfx::RRectF bounds;
-          // Try to use the cached effect for backdrop-filter.
-          if (properties_->Effect() &&
-              properties_->Effect()->BackdropFilter()) {
-            operations = *properties_->Effect()->BackdropFilter();
-            bounds = properties_->Effect()->BackdropFilterBounds();
-          }
           layer->UpdateCompositorFilterOperationsForBackdropFilter(operations,
                                                                    bounds);
           if (!operations.IsEmpty()) {
@@ -2912,10 +2906,6 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   if (box.Size() == box.PreviousSize())
     return;
 
-  // CSS mask and clip-path comes with an implicit clip to the border box.
-  // Currently only CAP generate and take advantage of those.
-  const bool box_generates_property_nodes_for_mask_and_clip_path =
-      box.HasMask() || box.HasClipPath();
   // The overflow clip paint property depends on the border box rect through
   // overflowClipRect(). The border box rect's size equals the frame rect's
   // size so we trigger a paint property update when the frame rect changes.
@@ -2928,7 +2918,10 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
       // frame rect, so force a property update if it changes. TODO(pdr): We
       // only need to update properties if there are relative lengths.
       box.HasTransform() || NeedsPerspective(box) ||
-      box_generates_property_nodes_for_mask_and_clip_path) {
+      // CSS mask and clip-path comes with an implicit clip to the border box.
+      box.HasMask() || box.HasClipPath() ||
+      // Backdrop-filter's bounds use the border box rect.
+      !box.StyleRef().BackdropFilter().IsEmpty()) {
     box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
   }
 
