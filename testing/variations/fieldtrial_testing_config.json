@@ -3923,7 +3923,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {},
+                    "params": {
+                        "ShortcutBoostSearchScore": "1414",
+                        "ShortcutBoostUrlScore": "1414"
+                    },
                     "enable_features": [
                         "OmniboxShortcutBoost"
                     ]
