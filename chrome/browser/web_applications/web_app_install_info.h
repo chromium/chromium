@@ -14,6 +14,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -294,6 +295,10 @@ struct WebAppInstallInfo {
   // The app intends to act as a URL handler for URLs described by this
   // information.
   apps::UrlHandlers url_handlers;
+
+  // The app intends to have an extended scope containing URLs described by this
+  // information.
+  std::vector<web_app::ScopeExtensionInfo> scope_extensions;
 
   // URL within scope to launch on the lock screen for a "show on lock screen"
   // action. Valid iff this is considered a lock-screen-capable app.

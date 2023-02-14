@@ -663,6 +663,14 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     url_handler_proto->set_has_origin_wildcard(url_handler.has_origin_wildcard);
   }
 
+  for (const auto& scope_extension : web_app.scope_extensions()) {
+    WebAppScopeExtensionProto* scope_extension_proto =
+        local_data->add_scope_extensions();
+    scope_extension_proto->set_origin(scope_extension.origin.Serialize());
+    scope_extension_proto->set_has_origin_wildcard(
+        scope_extension.has_origin_wildcard);
+  }
+
   if (web_app.lock_screen_start_url().is_valid()) {
     local_data->set_lock_screen_start_url(
         web_app.lock_screen_start_url().spec());
@@ -1272,6 +1280,25 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     url_handlers.push_back(std::move(url_handler));
   }
   web_app->SetUrlHandlers(std::move(url_handlers));
+
+  std::vector<ScopeExtensionInfo> scope_extensions;
+  for (const auto& scope_extension_proto : local_data.scope_extensions()) {
+    ScopeExtensionInfo scope_extension;
+
+    url::Origin origin =
+        url::Origin::Create(GURL(scope_extension_proto.origin()));
+    if (origin.opaque()) {
+      DLOG(ERROR) << "WebApp ScopeExtension proto url parse error: "
+                  << origin.GetDebugString();
+      return nullptr;
+    }
+    scope_extension.origin = std::move(origin);
+    scope_extension.has_origin_wildcard =
+        scope_extension_proto.has_origin_wildcard();
+
+    scope_extensions.push_back(std::move(scope_extension));
+  }
+  web_app->SetScopeExtensions(std::move(scope_extensions));
 
   if (local_data.has_lock_screen_start_url()) {
     web_app->SetLockScreenStartUrl(GURL(local_data.lock_screen_start_url()));

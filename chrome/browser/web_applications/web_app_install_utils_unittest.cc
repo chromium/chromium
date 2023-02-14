@@ -147,6 +147,14 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   }
 
   {
+    auto scope_extension = blink::mojom::ManifestScopeExtension::New();
+    scope_extension->origin =
+        url::Origin::Create(GURL("https://scope_extensions_origin.com/"));
+    scope_extension->has_origin_wildcard = false;
+    manifest.scope_extensions.push_back(std::move(scope_extension));
+  }
+
+  {
     blink::ParsedPermissionsPolicyDeclaration declaration;
     declaration.feature = blink::mojom::PermissionsPolicyFeature::kFullscreen;
     declaration.allowed_origins = {blink::OriginWithPossibleWildcards(
@@ -253,6 +261,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(url_handler.origin,
             url::Origin::Create(GURL("https://url_handlers_origin.com/")));
   EXPECT_FALSE(url_handler.has_origin_wildcard);
+
+  // Check scope extensions were updated.
+  EXPECT_EQ(1u, web_app_info.scope_extensions.size());
+  auto scope_extension = web_app_info.scope_extensions[0];
+  EXPECT_EQ(scope_extension.origin,
+            url::Origin::Create(GURL("https://scope_extensions_origin.com/")));
+  EXPECT_FALSE(scope_extension.has_origin_wildcard);
 
   EXPECT_EQ(GURL("http://www.chromium.org/lock-screen-start-url"),
             web_app_info.lock_screen_start_url);
@@ -453,6 +468,15 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
     url_handler->has_origin_wildcard = true;
     manifest.url_handlers.push_back(std::move(url_handler));
   }
+
+  {
+    auto scope_extension = blink::mojom::ManifestScopeExtension::New();
+    scope_extension->origin =
+        url::Origin::Create(GURL("https://scope_extensions_origin.com/"));
+    scope_extension->has_origin_wildcard = true;
+    manifest.scope_extensions.push_back(std::move(scope_extension));
+  }
+
   WebAppInstallInfo web_app_info_original{web_app_info.Clone()};
 
   const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
@@ -574,6 +598,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   EXPECT_EQ(url_handler.origin,
             url::Origin::Create(GURL("https://url_handlers_origin.com/")));
   EXPECT_TRUE(url_handler.has_origin_wildcard);
+
+  // Check scope extensions were updated.
+  EXPECT_EQ(1u, web_app_info.scope_extensions.size());
+  auto scope_extension = web_app_info.scope_extensions[0];
+  EXPECT_EQ(scope_extension.origin,
+            url::Origin::Create(GURL("https://scope_extensions_origin.com/")));
+  EXPECT_TRUE(scope_extension.has_origin_wildcard);
 }
 
 // Tests that we limit the number of shortcut menu items.

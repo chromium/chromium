@@ -238,6 +238,25 @@ std::vector<apps::UrlHandlerInfo> CreateRandomUrlHandlers(uint32_t suffix) {
   return url_handlers;
 }
 
+std::vector<ScopeExtensionInfo> CreateRandomScopeExtensions(
+    uint32_t suffix,
+    RandomHelper& random) {
+  std::vector<ScopeExtensionInfo> scope_extensions;
+
+  for (unsigned int i = 0; i < 3; ++i) {
+    std::string suffix_str =
+        base::NumberToString(suffix) + base::NumberToString(i);
+
+    ScopeExtensionInfo scope_extension;
+    scope_extension.origin =
+        url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
+    scope_extension.has_origin_wildcard = random.next_bool();
+    scope_extensions.push_back(std::move(scope_extension));
+  }
+
+  return scope_extensions;
+}
+
 std::vector<WebAppShortcutsMenuItemInfo> CreateRandomShortcutsMenuItemInfos(
     const GURL& scope,
     RandomHelper& random) {
@@ -566,6 +585,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetShareTarget(CreateRandomShareTarget(random.next_uint()));
   app->SetProtocolHandlers(CreateRandomProtocolHandlers(random.next_uint()));
   app->SetUrlHandlers(CreateRandomUrlHandlers(random.next_uint()));
+  app->SetScopeExtensions(
+      CreateRandomScopeExtensions(random.next_uint(), random));
   if (random.next_bool()) {
     app->SetLockScreenStartUrl(scope.Resolve(
         "lock_screen_start_url" + base::NumberToString(random.next_uint())));

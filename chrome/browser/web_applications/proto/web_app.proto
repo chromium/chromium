@@ -51,6 +51,11 @@ message WebAppUrlHandlerProto {
   required bool has_origin_wildcard = 2;
 }
 
+message WebAppScopeExtensionProto {
+  required string origin = 1;
+  required bool has_origin_wildcard = 2;
+}
+
 // A set to track simultaneous installs and uninstalls from multiple install
 // sources. This should stay in sync with |WebAppManagement| in
 // chrome/browser/web_applications/web_app_constants.h
@@ -397,4 +402,7 @@ message WebAppProto {
   // If present, signals that this app is an Isolated Web App, and contains
   // IWA-specific information like bundle location.
   optional IsolationDataProto isolation_data = 60;
+
+  // Contains web origins that are part of the app's extended scope.
+  repeated WebAppScopeExtensionProto scope_extensions = 61;
 }

@@ -198,6 +198,10 @@ class WebApp {
 
   const apps::UrlHandlers& url_handlers() const { return url_handlers_; }
 
+  const std::vector<ScopeExtensionInfo>& scope_extensions() const {
+    return scope_extensions_;
+  }
+
   RunOnOsLoginMode run_on_os_login_mode() const {
     return run_on_os_login_mode_;
   }
@@ -378,6 +382,7 @@ class WebApp {
   void SetDisallowedLaunchProtocols(
       base::flat_set<std::string> disallowed_launch_protocols);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
+  void SetScopeExtensions(std::vector<ScopeExtensionInfo> scope_extensions);
   void SetLockScreenStartUrl(const GURL& lock_screen_start_url);
   void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
@@ -481,6 +486,7 @@ class WebApp {
   base::flat_set<std::string> disallowed_launch_protocols_;
   // TODO(crbug.com/1072058): No longer aiming to ship, remove.
   apps::UrlHandlers url_handlers_;
+  std::vector<ScopeExtensionInfo> scope_extensions_;
   GURL lock_screen_start_url_;
   GURL note_taking_new_note_url_;
   base::Time last_badging_time_;
