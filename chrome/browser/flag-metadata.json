@@ -5610,11 +5610,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "page-info-store-info",
-    "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 102
-  },
-  {
     "name": "page-visibility-page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 115

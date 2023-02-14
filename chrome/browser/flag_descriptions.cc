@@ -3804,10 +3804,6 @@ const char kPageInfoHistoryDescription[] =
     "Enable a history sub page to the page info menu, and a button to forget "
     "a site, removing all preferences and history.";
 
-const char kPageInfoStoreInfoName[] = "Page info store info";
-const char kPageInfoStoreInfoDescription[] =
-    "Enable a store info row to the page info menu on eligible pages.";
-
 const char kPageInfoAboutThisSiteImprovedBottomSheetName[] =
     "Page info 'About this site' improved bottomsheet";
 const char kPageInfoAboutThisSiteImprovedBottomSheetDescription[] =
