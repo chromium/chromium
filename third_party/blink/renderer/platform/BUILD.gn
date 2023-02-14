@@ -19,6 +19,10 @@ import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
 import("//v8/gni/v8.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 # Most targets in this file are private actions so use that as the default.
 visibility = [
   ":*",
@@ -2004,6 +2008,9 @@ test("blink_platform_unittests") {
       "//testing/buildbot/filters:blink_platform_unittests",
     ]
   }
+  if (is_ios) {
+    bundle_deps = [ ":blink_platform_unittests_bundle_data" ]
+  }
 }
 
 source_set("blink_platform_unittests_sources") {
@@ -2341,6 +2348,13 @@ source_set("bridge_ice_controller_tests") {
     "//third_party/webrtc_overrides:ice_controller_test_utils",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+}
+
+if (is_ios) {
+  bundle_data_from_filelist("blink_platform_unittests_bundle_data") {
+    testonly = true
+    filelist_name = "blink_platform_unittests_bundle_data.filelist"
+  }
 }
 
 executable("image_decode_bench") {

@@ -436,9 +436,9 @@ TEST_F(HarfBuzzShaperTest, ShapeLatinSegment) {
 
 // Represents the case where a part of a cluster has a different color.
 // <div>0x647<span style="color: red;">0x64A</span></
-// Cannot be enabled on Mac yet, compare
+// Cannot be enabled on Apple yet, compare
 // https:// https://github.com/harfbuzz/harfbuzz/issues/1415
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #define MAYBE_ShapeArabicWithContext DISABLED_ShapeArabicWithContext
 #else
 #define MAYBE_ShapeArabicWithContext ShapeArabicWithContext
@@ -1528,7 +1528,7 @@ TEST_F(HarfBuzzShaperTest, MAYBE_SafeToBreakArabicCommonLigatures) {
   EXPECT_EQ(3u, result->NextSafeToBreakOffset(2));
   EXPECT_EQ(3u, result->NextSafeToBreakOffset(3));
   EXPECT_EQ(4u, result->NextSafeToBreakOffset(4));
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   EXPECT_EQ(5u, result->NextSafeToBreakOffset(5));
   EXPECT_EQ(11u, result->NextSafeToBreakOffset(6));
   EXPECT_EQ(11u, result->NextSafeToBreakOffset(7));
@@ -1552,7 +1552,7 @@ TEST_F(HarfBuzzShaperTest, MAYBE_SafeToBreakArabicCommonLigatures) {
   EXPECT_EQ(0u, result->PreviousSafeToBreakOffset(2));
   EXPECT_EQ(3u, result->PreviousSafeToBreakOffset(3));
   EXPECT_EQ(4u, result->PreviousSafeToBreakOffset(4));
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(5));
   EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(6));
   EXPECT_EQ(5u, result->PreviousSafeToBreakOffset(7));

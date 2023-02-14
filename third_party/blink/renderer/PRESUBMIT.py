@@ -23,6 +23,9 @@ def CheckChange(input_api, output_api):
         results += presubmit_support.CheckBundleData(
             input_api, output_api, 'controller/blink_unittests_bundle_data',
             'controller')
+        results += presubmit_support.CheckBundleData(
+            input_api, output_api,
+            'platform/blink_platform_unittests_bundle_data', 'platform')
     finally:
         sys.path = old_sys_path
     return results

@@ -102,7 +102,7 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
 // synthesizing characters are hyphen (0x2010) and non-breaking hyphen (0x2011).
 // For performance reasons, we limit this fallback lookup to the specific
 // missing glyphs for hyphens and only to Mac OS, where we're facing this issue.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   if (!hb_has_glyph) {
     SkTypeface* typeface = hb_font_data->font_.getTypeface();
     if (!typeface) {
@@ -294,7 +294,7 @@ class HarfBuzzSkiaFontFuncs final {
     return shared_hb_funcs;
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   HarfBuzzSkiaFontFuncs()
       : hb_font_funcs_skia_advances_(
             CreateFontFunctions(kSkiaHorizontalAdvances)),
@@ -350,7 +350,7 @@ class HarfBuzzSkiaFontFuncs final {
  private:
   enum HorizontalAdvanceSource {
     kSkiaHorizontalAdvances,
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     kHarfBuzzHorizontalAdvances,
 #endif
   };
@@ -383,7 +383,7 @@ class HarfBuzzSkiaFontFuncs final {
   }
 
   hb_font_funcs_t* const hb_font_funcs_skia_advances_;
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   hb_font_funcs_t* const hb_font_funcs_harfbuzz_advances_;
 #endif
 };
@@ -419,7 +419,7 @@ static hb::unique_ptr<hb_face_t> CreateFace(FontPlatformData* platform_data) {
 
   sk_sp<SkTypeface> typeface = sk_ref_sp(platform_data->Typeface());
   CHECK(typeface);
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_APPLE)
   face = HbFaceFromSkTypeface(typeface);
 #endif
 

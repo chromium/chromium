@@ -729,7 +729,7 @@ void ShapeResultView::ComputePartInkBounds(
   auto glyph_offsets = part.GetGlyphOffsets<has_non_zero_glyph_offsets>();
   const SimpleFontData& current_font_data = *part.run_->font_data_;
   unsigned num_glyphs = part.NumGlyphs();
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_APPLE)
   Vector<Glyph, 256> glyphs(num_glyphs);
   unsigned i = 0;
   for (const auto& glyph_data : part)
@@ -741,7 +741,7 @@ void ShapeResultView::ComputePartInkBounds(
   GlyphBoundsAccumulator bounds(run_advance);
   for (unsigned j = 0; j < num_glyphs; ++j) {
     const HarfBuzzRunGlyphData& glyph_data = part.GlyphAt(j);
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
     gfx::RectF glyph_bounds =
         current_font_data.BoundsForGlyph(glyph_data.glyph);
 #else
