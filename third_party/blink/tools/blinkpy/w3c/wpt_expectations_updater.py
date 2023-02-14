@@ -328,10 +328,10 @@ class WPTExpectationsUpdater(object):
         test_results = self.host.results_fetcher.gather_results(
             build,
             test_suite,
-            # This is not exactly correct because exonerations could include
-            # reasons other than an unexpected pass (e.g., build is
-            # experimental), but this is good enough in practice.
-            exclude_exonerated=(not self.options.include_unexpected_pass))
+            # `exclude_exonerations=(not include_unexpected_pass)` will leave
+            # out unexpected passes as well as other kinds of exonerations
+            # (e.g., experimental build). This is good enough in practice.
+            not self.options.include_unexpected_pass)
         tests_to_update = []
         if not self.options.include_unexpected_pass:
             for result in test_results:
