@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -83,26 +84,12 @@ class KeyboardAccessoryIPHUtils {
      * session or other config restrictions apply.
      * @param feature A String identifying the IPH feature and its appropriate help text.
      * @param rectProvider The {@link RectProvider} providing bounds to which the bubble will point.
-     * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
-     */
-    static void showHelpBubble(String feature, RectProvider rectProvider, View rootView) {
-        TextBubble helpBubble = createBubble(feature, rectProvider, rootView, null);
-        if (helpBubble != null) helpBubble.show();
-    }
-
-    /**
-     * Shows a help bubble pointing to the given view. It contains an appropriate text for the given
-     * feature. The help bubble will not be shown if the {@link Tracker} doesn't allow it anymore.
-     * This may happen for example: if it was shown too often, too many IPH were triggered this
-     * session or other config restrictions apply.
-     * @param feature A String identifying the IPH feature and its appropriate help text.
-     * @param helpText String that should be displayed within the IPH bubble.
-     * @param rectProvider The {@link RectProvider} providing bounds to which the bubble will point.
+     * @param context  Context to draw resources from.
      * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
      */
     static void showHelpBubble(
-            String feature, RectProvider rectProvider, View rootView, @Nullable String helpText) {
-        TextBubble helpBubble = createBubble(feature, rectProvider, rootView, helpText);
+            String feature, RectProvider rectProvider, Context context, View rootView) {
+        TextBubble helpBubble = createBubble(feature, rectProvider, context, rootView, null);
         if (helpBubble != null) helpBubble.show();
     }
 
@@ -112,14 +99,31 @@ class KeyboardAccessoryIPHUtils {
      * This may happen for example: if it was shown too often, too many IPH were triggered this
      * session or other config restrictions apply.
      * @param feature A String identifying the IPH feature and its appropriate help text.
+     * @param rectProvider The {@link RectProvider} providing bounds to which the bubble will point.
+     * @param context  Context to draw resources from.
+     * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
      * @param helpText String that should be displayed within the IPH bubble.
+     */
+    static void showHelpBubble(String feature, RectProvider rectProvider, Context context,
+            View rootView, @Nullable String helpText) {
+        TextBubble helpBubble = createBubble(feature, rectProvider, context, rootView, helpText);
+        if (helpBubble != null) helpBubble.show();
+    }
+
+    /**
+     * Shows a help bubble pointing to the given view. It contains an appropriate text for the given
+     * feature. The help bubble will not be shown if the {@link Tracker} doesn't allow it anymore.
+     * This may happen for example: if it was shown too often, too many IPH were triggered this
+     * session or other config restrictions apply.
+     * @param feature A String identifying the IPH feature and its appropriate help text.
      * @param view The {@link View} providing context and the Rect to which the bubble will point.
      * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
+     * @param helpText String that should be displayed within the IPH bubble.
      */
     static void showHelpBubble(
             String feature, View view, View rootView, @Nullable String helpText) {
-        TextBubble helpBubble =
-                createBubble(feature, new ViewRectProvider(view), rootView, helpText);
+        TextBubble helpBubble = createBubble(
+                feature, new ViewRectProvider(view), view.getContext(), rootView, helpText);
         if (helpBubble == null) return;
         // To emphasize which chip is pointed to, set selected to true for the built-in highlight.
         // Prefer ViewHighlighter for views without a LayerDrawable background.
@@ -128,23 +132,22 @@ class KeyboardAccessoryIPHUtils {
         helpBubble.show();
     }
 
-    private static TextBubble createBubble(
-            String feature, RectProvider rectProvider, View rootView, @Nullable String helpText) {
+    private static TextBubble createBubble(String feature, RectProvider rectProvider,
+            Context context, View rootView, @Nullable String helpText) {
         final Tracker tracker = getTrackerFromProfile();
         if (tracker == null) return null;
         if (!tracker.shouldTriggerHelpUI(feature)) return null; // This call records the IPH intent.
         TextBubble helpBubble;
         // If the help text is provided, then use it directly to generate the text bubble.
         if (helpText != null && !helpText.isEmpty()) {
-            helpBubble = new TextBubble(rootView.getContext(), rootView, helpText, helpText,
+            helpBubble = new TextBubble(context, rootView, helpText, helpText,
                     /* showArrow= */ true, rectProvider,
                     ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         } else {
             @StringRes
             int helpTextResourceId = getHelpTextForFeature(feature);
-            helpBubble = new TextBubble(rootView.getContext(), rootView, helpTextResourceId,
-                    helpTextResourceId, rectProvider,
-                    ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+            helpBubble = new TextBubble(context, rootView, helpTextResourceId, helpTextResourceId,
+                    rectProvider, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         }
         helpBubble.setDismissOnTouchInteraction(true);
         helpBubble.addOnDismissListener(() -> { tracker.dismissed(feature); });
