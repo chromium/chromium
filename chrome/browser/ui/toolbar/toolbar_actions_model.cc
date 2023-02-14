@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -382,6 +383,11 @@ void ToolbarActionsModel::InitializeActionList() {
     // "Extensions.Toolbar" for historical reasons.
     base::UmaHistogramCounts100("ExtensionToolbarModel.BrowserActionsCount",
                                 action_ids_.size());
+    if (extensions::profile_util::ProfileCanUseNonComponentExtensions(
+            profile_)) {
+      base::UmaHistogramCounts100("Extension.Toolbar.BrowserActionsCount2",
+                                  action_ids_.size());
+    }
     if (!action_ids_.empty()) {
       base::UmaHistogramCounts100("Extensions.Toolbar.PinnedExtensionCount2",
                                   pinned_action_ids_.size());

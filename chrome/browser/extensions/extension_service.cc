@@ -1713,11 +1713,15 @@ void ExtensionService::OnExtensionInstalled(
       UMA_HISTOGRAM_ENUMERATION("Extensions.InstallType.NonUser",
                                 extension->GetType(), 100);
     }
-    // TODO(crbug.com/1383740): Should split as well, but linked to suffix
-    // SideloadWipeout:
-    // //tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
     UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource",
                               extension->location());
+    if (is_user_profile) {
+      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.User",
+                                extension->GetType(), 100);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.NonUser",
+                                extension->GetType(), 100);
+    }
     // TODO(crbug.com/1383740): Address Install metrics below in a follow-up CL.
     RecordPermissionMessagesHistogram(extension, "Install", is_user_profile);
   }

@@ -754,9 +754,14 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     loader.LoadExtension(good_extension_dir.UnpackedPath());
 
     histograms.ExpectTotalCount("Extensions.InstallType", 1);
+    histograms.ExpectTotalCount("Extensions.InstallSource", 1);
     histograms.ExpectTotalCount("Extensions.InstallType.NonUser",
                                 nonuser_expected_total_count);
     histograms.ExpectTotalCount("Extensions.InstallType.User",
+                                user_expected_total_count);
+    histograms.ExpectTotalCount("Extensions.InstallSource.NonUser",
+                                nonuser_expected_total_count);
+    histograms.ExpectTotalCount("Extensions.InstallSource.User",
                                 user_expected_total_count);
   }
 
@@ -5510,7 +5515,7 @@ TEST_F(ExtensionServiceTest, LoadExtension) {
       R"({
            "name": "Good Extension",
            "version": "0.1",
-           "manifest_version": 2
+           "manifest_version": 3
          })");
 
   {

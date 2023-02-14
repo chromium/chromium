@@ -2666,12 +2666,50 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.InstallSource" enum="ExtensionLocation"
+    expires_after="2023-04-30">
+  <obsolete>
+    Histogram is in the process of being removed in favor of its new versions
+    (Extensions.InstallType.User and Extensions.InstallType.Nonuser) that emit
+    only on profile open for &quot;user&quot; profiles (profiles where people
+    can install extensions, specifically profiles that can have non-component
+    extensions installed).
+  </obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Installs grouped by the location property in prefs. Emitted once per profile
+    open.
+  </summary>
+</histogram>
+
+<!-- TODO(crbug.com/1383740): Change all .NonUser/.User metrics to use histogram suffixes rather than be duplicated here. -->
+
+<histogram name="Extensions.InstallSource.NonUser" enum="ExtensionLocation"
     expires_after="never">
 <!-- expires-never: Monitoring core extension usage. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
-  <summary>Installs grouped by the location property in prefs.</summary>
+  <summary>
+    Installs grouped by the location property in prefs for &quot;non-user&quot;
+    profiles (profiles where people can't install extensions, specifically
+    profiles that can have only have non-component extensions installed).
+    Emitted once per profile open.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.InstallSource.User" enum="ExtensionLocation"
+    expires_after="never">
+<!-- expires-never: Monitoring core extension usage. -->
+
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Installs grouped by the location property in prefs for &quot;user&quot;
+    profiles (profiles where people can install extensions, specifically
+    profiles that can have non-component extensions installed). Emitted once per
+    profile open.
+  </summary>
 </histogram>
 
 <histogram name="Extensions.InstallType" enum="ExtensionType"
@@ -4613,6 +4651,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ExtensionToolbarModel.BrowserActionsCount" units="actions"
+    expires_after="2023-04-30">
+  <obsolete>
+    Histogram is in the process of being removed in favor of its incremented
+    version that emits only on profile open for &quot;user&quot; profiles
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
+  </obsolete>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The total number of extensions that have an icon in the extension toolbar,
+    including those that are unpinned and only show in the extensions menu.
+    Measured once per (non-incognito) profile open.
+  </summary>
+</histogram>
+
+<histogram name="ExtensionToolbarModel.BrowserActionsCount2" units="actions"
     expires_after="never">
 <!-- expires-never: Monitoring core user behavior with extensions. -->
 
@@ -4621,7 +4676,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total number of extensions that have an icon in the extension toolbar,
     including those that are unpinned and only show in the extensions menu.
-    Measured once per startup per (non-incognito) profile.
+    Measured once per &quot;user&quot; profile (profiles where people can
+    install extensions, specifically profiles that can have non-component
+    extensions installed) open.
   </summary>
 </histogram>
 

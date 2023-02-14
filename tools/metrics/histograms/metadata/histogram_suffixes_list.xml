@@ -5667,12 +5667,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Network.Shill.WiFi.RememberedUserNetworkCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SideloadWipeout" separator="_">
-  <suffix name="Disabled" label="Control group."/>
-  <suffix name="Enabled" label="Sideload Wipeout Active."/>
-  <affected-histogram name="Extensions.InstallSource"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Signin_Actions" separator=".">
   <suffix name="AllAccessPointActions" label=""/>
   <suffix name="AndroidAccountConsistencyFirstRunActions"

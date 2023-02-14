@@ -18,17 +18,19 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -121,7 +123,7 @@ ToolbarActionsModelTestObserver::~ToolbarActionsModelTestObserver() {
 }  // namespace
 
 class ToolbarActionsModelUnitTest
-    : public extensions::ExtensionServiceTestBase {
+    : public extensions::ExtensionServiceUserTestBase {
  public:
   ToolbarActionsModelUnitTest() {}
 
@@ -154,6 +156,10 @@ class ToolbarActionsModelUnitTest
 
   // Returns true if the |toobar_model_| has an action with the given |id|.
   bool ModelHasActionForId(const std::string& id) const;
+
+  // Test that certain histograms are emitted for user and non-user profiles
+  // (for ChromeOS Ash we look at user accounts vs profiles).
+  void RunEmitUserHistogramsTest(int incremented_histogram_count);
 
   ToolbarActionsModel* toolbar_model() { return toolbar_model_; }
 
@@ -211,14 +217,29 @@ void ToolbarActionsModelUnitTest::Init() {
 void ToolbarActionsModelUnitTest::InitToolbarModelAndObserver() {
   toolbar_model_ =
       extensions::extension_action_test_util::CreateToolbarModelForProfile(
-          profile());
+          // ExtensionServiceTestBase::profile() returns a different profile on
+          // Ash if it's a guest session. testing_profile() gives use the same
+          // profile, but we must downcast to satisfy the
+          // CreateToolbarModelForProfile which expect a Profile.
+          static_cast<Profile*>(testing_profile()));
   model_observer_ =
       std::make_unique<ToolbarActionsModelTestObserver>(toolbar_model_);
 }
 
 void ToolbarActionsModelUnitTest::TearDown() {
   model_observer_.reset();
-  extensions::ExtensionServiceTestBase::TearDown();
+  extensions::ExtensionServiceUserTestBase::TearDown();
+}
+
+void ToolbarActionsModelUnitTest::RunEmitUserHistogramsTest(
+    int incremented_histogram_count) {
+  base::HistogramTester histograms;
+
+  InitToolbarModelAndObserver();
+
+  histograms.ExpectTotalCount("ExtensionToolbarModel.BrowserActionsCount", 1);
+  histograms.ExpectTotalCount("Extension.Toolbar.BrowserActionsCount2",
+                              incremented_histogram_count);
 }
 
 testing::AssertionResult ToolbarActionsModelUnitTest::AddExtension(
@@ -1162,4 +1183,18 @@ TEST_F(ToolbarActionsModelUnitTest, UnloadedExtensionsPinnedStatePreserved) {
   EXPECT_THAT(toolbar_model()->pinned_action_ids(),
               ::testing::ElementsAre(browser_action_a()->id(),
                                      browser_action_c()->id()));
+}
+
+TEST_F(ToolbarActionsModelUnitTest, InitActionList_EmitUserHistograms) {
+  InitializeEmptyExtensionService();
+  ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(
+      /*is_guest=*/false));
+  RunEmitUserHistogramsTest(/*incremented_histogram_count=*/1);
+}
+
+TEST_F(ToolbarActionsModelUnitTest, InitActionList_NonUserEmitHistograms) {
+  InitializeEmptyExtensionService();
+  ASSERT_NO_FATAL_FAILURE(MaybeSetUpTestUser(
+      /*is_guest=*/true));
+  RunEmitUserHistogramsTest(/*incremented_histogram_count=*/0);
 }
