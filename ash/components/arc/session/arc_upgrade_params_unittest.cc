@@ -24,7 +24,7 @@ TEST(ArcUpgradeParamsTest, Constructor_WithTtsCacheDisableSwitch) {
 
 TEST(ArcUpgradeParamsTest, Constructor_DefaultTtsState) {
   UpgradeParams upgradeParams;
-  EXPECT_TRUE(upgradeParams.skip_tts_cache);
+  EXPECT_FALSE(upgradeParams.skip_tts_cache);
 }
 
 TEST(ArcUpgradeParamsTest, Constructor_WithTtsCacheSetupFeatureDisabled) {
