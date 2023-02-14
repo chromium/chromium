@@ -599,6 +599,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.StreamChannelCount" units="channels"
+    expires_after="2024-02-14">
+<!-- Name completed by histogram_suffixes
+     name="Cras.Direction" and
+     name="Cras.ClientType" -->
+
+  <owner>pteerapong@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    The channel count of stream in CRAS(Chrome OS audio server). This value is
+    recorded when the stream is created.
+  </summary>
+</histogram>
+
 <histogram name="Cras.StreamClientTypeInput" enum="CrasClientType"
     expires_after="2023-08-08">
   <owner>yuhsuan@chromium.org</owner>

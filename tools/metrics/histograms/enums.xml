@@ -20279,6 +20279,9 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="CRAS_CLIENT_TYPE_SERVER_STREAM"/>
   <int value="8" label="CRAS_CLIENT_TYPE_LACROS"/>
   <int value="9" label="CRAS_CLIENT_TYPE_PLUGIN"/>
+  <int value="10" label="CRAS_CLIENT_TYPE_ARCVM"/>
+  <int value="11" label="CRAS_CLIENT_TYPE_BOREALIS"/>
+  <int value="12" label="CRAS_CLIENT_TYPE_SOUND_CARD_INIT"/>
 </enum>
 
 <enum name="CrasDevicePair">

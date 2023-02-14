@@ -1222,6 +1222,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="Cras_ClientType" separator=".">
   <suffix name="ARC" label="A client created by ARC++."/>
+  <suffix name="ARCVM" label="A client created by ARCVM."/>
   <suffix name="Chrome" label="A client created by Chrome."/>
   <suffix name="CrOSVM" label="A client created by ChromeOS VM."/>
   <suffix name="InvalidType" label="Invalid client."/>
@@ -1234,6 +1235,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.FetchDelayMilliSeconds"/>
   <affected-histogram name="Cras.StreamCallbackThreshold.Input"/>
   <affected-histogram name="Cras.StreamCallbackThreshold.Output"/>
+  <affected-histogram name="Cras.StreamChannelCount.Input"/>
+  <affected-histogram name="Cras.StreamChannelCount.Output"/>
   <affected-histogram name="Cras.StreamEffects.Input"/>
   <affected-histogram name="Cras.StreamEffects.Output"/>
   <affected-histogram name="Cras.StreamFlags.Input"/>
@@ -1284,6 +1287,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Input" label="Capture"/>
   <suffix name="Output" label="Playback"/>
   <affected-histogram name="Cras.StreamCallbackThreshold"/>
+  <affected-histogram name="Cras.StreamChannelCount"/>
   <affected-histogram name="Cras.StreamEffects"/>
   <affected-histogram name="Cras.StreamFlags"/>
   <affected-histogram name="Cras.StreamRuntime"/>
@@ -1295,14 +1299,17 @@ chromium-metrics-reviews@google.com.
   <suffix name="Default" label="Default"/>
   <suffix name="VoiceCommunication" label="WebRTC"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.ARC"/>
+  <affected-histogram name="Cras.FetchDelayMilliSeconds.ARCVM"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.Chrome"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.CrOSVM"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.LaCrOS"/>
   <affected-histogram name="Cras.StreamRuntime.Input.ARC"/>
+  <affected-histogram name="Cras.StreamRuntime.Input.ARCVM"/>
   <affected-histogram name="Cras.StreamRuntime.Input.Chrome"/>
   <affected-histogram name="Cras.StreamRuntime.Input.CrOSVM"/>
   <affected-histogram name="Cras.StreamRuntime.Input.LaCrOS"/>
   <affected-histogram name="Cras.StreamRuntime.Output.ARC"/>
+  <affected-histogram name="Cras.StreamRuntime.Output.ARCVM"/>
   <affected-histogram name="Cras.StreamRuntime.Output.Chrome"/>
   <affected-histogram name="Cras.StreamRuntime.Output.CrOSVM"/>
   <affected-histogram name="Cras.StreamRuntime.Output.LaCrOS"/>
