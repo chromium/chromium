@@ -27,6 +27,92 @@
 
 namespace reporting {
 
+// Manager implementation.
+
+// static
+FileUploadJob::Manager* FileUploadJob::Manager::GetInstance() {
+  return instance_ref().get();
+}
+
+// static
+std::unique_ptr<FileUploadJob::Manager>&
+FileUploadJob::Manager::instance_ref() {
+  static base::NoDestructor<std::unique_ptr<FileUploadJob::Manager>> instance(
+      new FileUploadJob::Manager());
+  return *instance;
+}
+
+FileUploadJob::Manager::Manager()
+    : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {
+  DETACH_FROM_SEQUENCE(manager_sequence_checker_);
+}
+
+FileUploadJob::Manager::~Manager() = default;
+
+void FileUploadJob::Manager::Register(
+    const UploadSettings& settings,
+    const UploadTracker& tracker,
+    Delegate* delegate,
+    base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb) {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](Manager* self, const UploadSettings settings,
+             const UploadTracker tracker, Delegate* delegate,
+             base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb) {
+            // Serialize settings to get the map key.
+            std::string serialized_settings;
+            if (!settings.SerializeToString(&serialized_settings)) {
+              std::move(result_cb).Run(Status(
+                  error::INVALID_ARGUMENT, "Job settings failed to serialize"));
+              return;
+            }
+            // Now add the job to the map.
+            // Existing job is returned, new job is recorded and
+            // returned.
+            DCHECK_CALLED_ON_VALID_SEQUENCE(self->manager_sequence_checker_);
+            auto it = self->uploads_in_progress_.find(serialized_settings);
+            if (it == self->uploads_in_progress_.end()) {
+              auto res = self->uploads_in_progress_.emplace(
+                  serialized_settings,
+                  std::make_unique<FileUploadJob>(settings, tracker, delegate));
+              DCHECK(res.second);
+              it = res.first;
+              DCHECK_CALLED_ON_VALID_SEQUENCE(
+                  it->second->job_sequence_checker_);
+              it->second->timer_.Start(
+                  FROM_HERE, kLifeTime,
+                  base::BindRepeating(
+                      [](Manager* self, std::string serialized_settings) {
+                        // Locate the job in the map.
+                        DCHECK_CALLED_ON_VALID_SEQUENCE(
+                            self->manager_sequence_checker_);
+                        auto it = self->uploads_in_progress_.find(
+                            serialized_settings);
+                        if (it == self->uploads_in_progress_.end()) {
+                          // Not found.
+                          return;
+                        }
+                        // Stop timer and remove the job from map (thus deleting
+                        // it).
+                        DCHECK_CALLED_ON_VALID_SEQUENCE(
+                            it->second->job_sequence_checker_);
+                        it->second->timer_.Stop();
+                        self->uploads_in_progress_.erase(it);
+                      },
+                      base::Unretained(self), std::move(serialized_settings)));
+            }
+            std::move(result_cb).Run(it->second.get());
+          },
+          base::Unretained(this), settings, tracker, base::Unretained(delegate),
+          std::move(result_cb)));
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+FileUploadJob::Manager::sequenced_task_runner() const {
+  return sequenced_task_runner_;
+}
+
 // FileUploadJob implementation.
 
 FileUploadJob::FileUploadJob(const UploadSettings& settings,
@@ -61,6 +147,9 @@ void FileUploadJob::Initiate(base::OnceClosure done_cb) {
   }
   settings_.set_retry_count(settings_.retry_count() - 1);
   in_action_ = true;
+  if (timer_.IsRunning()) {
+    timer_.Reset();
+  }
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
@@ -134,6 +223,9 @@ void FileUploadJob::NextStep(base::OnceClosure done_cb) {
     return;
   }
   in_action_ = true;
+  if (timer_.IsRunning()) {
+    timer_.Reset();
+  }
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
@@ -209,6 +301,9 @@ void FileUploadJob::Finalize(base::OnceClosure done_cb) {
     return;
   }
   in_action_ = true;
+  if (timer_.IsRunning()) {
+    timer_.Reset();
+  }
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(

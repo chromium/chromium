@@ -19,6 +19,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
@@ -66,6 +68,54 @@ class FileUploadJob {
 
    protected:
     Delegate() = default;
+  };
+
+  // Singleton manager class responsible for keeping track of incoming jobs:
+  // when an event shows up for processing, it needs to create a FileUploadJob
+  // but only if the same job is not already in progress because of the same
+  // upload events showing up earlier.
+  class Manager {
+   public:
+    // Job lifetime (extended on every update).
+    static constexpr base::TimeDelta kLifeTime = base::Hours(1);
+
+    // Access single instance of the manager.
+    static Manager* GetInstance();
+
+    ~Manager();
+
+    // Registers new job to the map or finds it, if the matching one is already
+    // there. Hands over to the callback (if it is indeed new, the first action
+    // needs to be initiation, otherwise processing based on the current state).
+    // The returned job is owned by the `Manager`.
+    void Register(const UploadSettings& settings,
+                  const UploadTracker& tracker,
+                  Delegate* delegate,  // not owned, must outlive the Job!
+                  base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb);
+
+    // Accessor.
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner() const;
+
+   private:
+    friend class base::NoDestructor<Manager>;
+    friend class TestEnvironment;
+
+    // Private constructor, used only internally and in TestEnvironment.
+    Manager();
+
+    // Access manager instance, used only internally and in TestEnvironment.
+    static std::unique_ptr<FileUploadJob::Manager>& instance_ref();
+
+    // Map of the jobs in progress. Indexed by serialized UploadSettings proto -
+    // so any new upload job with e.g. different `retry_count` or different
+    // `upload_parameters` is accepted. Job is removed from the map once
+    // respective event is confirmed.
+    base::flat_map<std::string, std::unique_ptr<FileUploadJob>>
+        uploads_in_progress_ GUARDED_BY_CONTEXT(manager_sequence_checker_);
+
+    // Task runner is not declared `const` for testing: to be able to reset it.
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+    SEQUENCE_CHECKER(manager_sequence_checker_);
   };
 
   // Constructor populates both `settings` and `tracker`, based on `LOG_UPLOAD`
@@ -132,6 +182,10 @@ class FileUploadJob {
   // Flag indicating that the job is performing an action.
   // Any other action is rejected while the flag is set.
   bool in_action_ GUARDED_BY_CONTEXT(job_sequence_checker_) = false;
+
+  // Expiration timer of the job. Once the timer fires, the job is unregistered
+  // and destructed. The timer is reset every time the job is accessed.
+  base::RetainingOneShotTimer timer_ GUARDED_BY_CONTEXT(job_sequence_checker_);
 
   // Weak pointer factory to be used for returning from async calls to Delegate.
   // Must be the last member in the class.

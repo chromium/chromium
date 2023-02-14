@@ -13,6 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/policy/messaging_layer/upload/file_upload_job_test_util.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -21,6 +22,7 @@
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Between;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
@@ -69,7 +71,10 @@ class FileUploadJobTest : public ::testing::Test {
                                  base::Unretained(&waiter)));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  FileUploadJob::TestEnvironment manager_test_env_;
 
   MockFileUploadJobDelegate mock_delegate_;
 };
@@ -465,6 +470,291 @@ TEST_F(FileUploadJobTest, FailToResumeFinalize) {
       AllOf(Property(&StatusProto::code, Eq(error::FAILED_PRECONDITION)),
             Property(&StatusProto::error_message,
                      StrEq("Job has not been initiated yet"))));
+}
+
+TEST_F(FileUploadJobTest, AttemptToInitiateMultipleJobs) {
+  // Imitate multiple copies of the same event initiating jobs.
+  // Only one is expected to succeed (call `DoInitiate`), others just pass.
+
+  // Collect weak pointers to track jobs life.
+  std::vector<base::WeakPtr<FileUploadJob>> jobs_weak_ptrs;
+
+  {
+    static constexpr size_t kJobsCount = 16u;
+    test::TestCallbackAutoWaiter waiter;
+    waiter.Attach(kJobsCount - 1);
+
+    // Initiation will happen only once!
+    EXPECT_CALL(mock_delegate_, DoInitiate(_, _, _, _))
+        .WillOnce(Invoke([](base::StringPiece origin_path,
+                            base::StringPiece upload_parameters, int64_t* total,
+                            std::string* session_token) {
+          EXPECT_THAT(*session_token, IsEmpty());
+          *total = 300L;
+          *session_token = "ABC";
+          return Status::StatusOK();
+        }));
+
+    // Attempt to add and initiate jobs multiple times.
+    for (size_t i = 0u; i < kJobsCount; ++i) {
+      UploadSettings init_settings;
+      init_settings.set_origin_path("/tmp/file");
+      init_settings.set_retry_count(1);
+      init_settings.set_upload_parameters("http://upload");
+      UploadTracker tracker;
+      base::ScopedClosureRunner done(base::BindOnce(
+          &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
+      FileUploadJob::Manager::GetInstance()->Register(
+          init_settings, tracker, &mock_delegate_,
+          base::BindOnce(
+              [](base::ScopedClosureRunner done,
+                 std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
+                 StatusOr<FileUploadJob*> job_or_error) {
+                EXPECT_OK(job_or_error) << job_or_error.status();
+                auto* const job = job_or_error.ValueOrDie();
+                jobs_weak_ptrs->push_back(job->GetWeakPtr());
+                job->Initiate(done.Release());
+              },
+              std::move(done), base::Unretained(&jobs_weak_ptrs)));
+    }
+  }
+  // Wait for less than job life time.
+  task_environment_.FastForwardBy(FileUploadJob::Manager::kLifeTime / 2);
+  // Check that all weak pointers are still valid.
+  for (auto& job_weak_ptr : jobs_weak_ptrs) {
+    EXPECT_TRUE(job_weak_ptr.MaybeValid());
+  }
+  // Wait for the jobs to be unregistered and erased.
+  task_environment_.FastForwardBy(FileUploadJob::Manager::kLifeTime / 2);
+  // Now all weak pointers are invalid.
+  for (auto& job_weak_ptr : jobs_weak_ptrs) {
+    EXPECT_FALSE(job_weak_ptr.MaybeValid());
+  }
+}
+
+TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
+  // Imitate multiple copies of the same event initiating jobs.
+  // Only one is expected to succeed (call `DoInitiate`), others just pass.
+
+  // Collect weak pointers to track jobs life.
+  std::vector<base::WeakPtr<FileUploadJob>> jobs_weak_ptrs;
+
+  {
+    static constexpr size_t kJobsCount = 16u;
+    test::TestCallbackAutoWaiter waiter;
+    waiter.Attach(kJobsCount - 1);
+
+    // Next step will happen at least once and no more than 3 times!
+    // After the first Job is registered, every time we attempt to register
+    // a new one, we actually get the same Job.
+    // In production code we would probably also compare `uploaded` to the one
+    // specified in the event, and only proceed if they match, but in the test
+    // we can do differently.
+    EXPECT_CALL(mock_delegate_, DoNextStep(_, _, _))
+        .Times(Between(1, 3))
+        .WillRepeatedly(
+            [](int64_t total, int64_t* uploaded, std::string* session_token) {
+              EXPECT_THAT(*session_token, StrEq("ABC"));
+              *uploaded += 100L;
+              return Status::StatusOK();
+            });
+
+    // Attempt to add and step jobs multiple times.
+    for (size_t i = 0u; i < kJobsCount; ++i) {
+      UploadSettings init_settings;
+      init_settings.set_origin_path("/tmp/file");
+      init_settings.set_retry_count(1);
+      init_settings.set_upload_parameters("http://upload");
+      UploadTracker tracker;
+      tracker.set_uploaded(0L);
+      tracker.set_total(300L);
+      tracker.set_session_token("ABC");
+      base::ScopedClosureRunner done(base::BindOnce(
+          &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
+      FileUploadJob::Manager::GetInstance()->Register(
+          init_settings, tracker, &mock_delegate_,
+          base::BindOnce(
+              [](base::ScopedClosureRunner done,
+                 std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
+                 StatusOr<FileUploadJob*> job_or_error) {
+                EXPECT_OK(job_or_error) << job_or_error.status();
+                auto* const job = job_or_error.ValueOrDie();
+                jobs_weak_ptrs->push_back(job->GetWeakPtr());
+                job->NextStep(done.Release());
+              },
+              std::move(done), base::Unretained(&jobs_weak_ptrs)));
+    }
+  }
+  // Wait for less than job life time.
+  task_environment_.FastForwardBy(FileUploadJob::Manager::kLifeTime / 2);
+  // Check that all weak pointers are still valid.
+  for (auto& job_weak_ptr : jobs_weak_ptrs) {
+    EXPECT_TRUE(job_weak_ptr.MaybeValid());
+  }
+  // Wait for the jobs to be unregistered and erased.
+  task_environment_.FastForwardBy(FileUploadJob::Manager::kLifeTime / 2);
+  // Now all weak pointers are invalid.
+  for (auto& job_weak_ptr : jobs_weak_ptrs) {
+    EXPECT_FALSE(job_weak_ptr.MaybeValid());
+  }
+}
+
+TEST_F(FileUploadJobTest, AttemptToFinalizeMultipleJobs) {
+  // Imitate multiple copies of the same event initiating jobs.
+  // Only one is expected to succeed (call `DoInitiate`), others just pass.
+
+  // Collect weak pointers to track jobs life.
+  std::vector<base::WeakPtr<FileUploadJob>> jobs_weak_ptrs;
+
+  {
+    static constexpr size_t kJobsCount = 16u;
+    test::TestCallbackAutoWaiter waiter;
+    waiter.Attach(kJobsCount - 1);
+
+    // Finalize will happen only once!
+    EXPECT_CALL(mock_delegate_, DoFinalize(_, _))
+        .WillOnce(Invoke([](base::StringPiece session_token,
+                            std::string* access_parameters) {
+          EXPECT_THAT(session_token, StrEq("ABC"));
+          *access_parameters = "http://destination";
+          return Status::StatusOK();
+        }));
+
+    // Attempt to add and finalize jobs multiple times.
+    for (size_t i = 0u; i < kJobsCount; ++i) {
+      UploadSettings init_settings;
+      init_settings.set_origin_path("/tmp/file");
+      init_settings.set_retry_count(1);
+      init_settings.set_upload_parameters("http://upload");
+      UploadTracker tracker;
+      tracker.set_total(300L);
+      tracker.set_uploaded(tracker.total());
+      tracker.set_session_token("ABC");
+      base::ScopedClosureRunner done(base::BindOnce(
+          &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
+      FileUploadJob::Manager::GetInstance()->Register(
+          init_settings, tracker, &mock_delegate_,
+          base::BindOnce(
+              [](base::ScopedClosureRunner done,
+                 std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
+                 StatusOr<FileUploadJob*> job_or_error) {
+                EXPECT_OK(job_or_error) << job_or_error.status();
+                auto* const job = job_or_error.ValueOrDie();
+                jobs_weak_ptrs->push_back(job->GetWeakPtr());
+                job->Finalize(done.Release());
+              },
+              std::move(done), base::Unretained(&jobs_weak_ptrs)));
+    }
+  }
+  // Wait for less than job life time.
+  task_environment_.FastForwardBy(FileUploadJob::Manager::kLifeTime / 2);
+  // Check that all weak pointers are still valid.
+  for (auto& job_weak_ptr : jobs_weak_ptrs) {
+    EXPECT_TRUE(job_weak_ptr.MaybeValid());
+  }
+  // Wait for the jobs to be unregistered and erased.
+  task_environment_.FastForwardBy(FileUploadJob::Manager::kLifeTime / 2);
+  // Now all weak pointers are invalid.
+  for (auto& job_weak_ptr : jobs_weak_ptrs) {
+    EXPECT_FALSE(job_weak_ptr.MaybeValid());
+  }
+}
+
+TEST_F(FileUploadJobTest, MultipleStagesJob) {
+  // Run single job through multiple stages with 1/2 life time delay,
+  // to make sure the timer is extended every time.
+
+  // Collect weak pointer to track job's life.
+  base::WeakPtr<FileUploadJob> job_weak_ptr;
+
+  {
+    test::TestCallbackAutoWaiter waiter;
+
+    EXPECT_CALL(mock_delegate_, DoInitiate(_, _, _, _))
+        .WillOnce(Invoke([](base::StringPiece origin_path,
+                            base::StringPiece upload_parameters, int64_t* total,
+                            std::string* session_token) {
+          EXPECT_THAT(*session_token, IsEmpty());
+          *total = 300L;
+          *session_token = "ABC";
+          return Status::StatusOK();
+        }));
+
+    // Attempt to add and initiate job.
+    UploadSettings init_settings;
+    init_settings.set_origin_path("/tmp/file");
+    init_settings.set_retry_count(1);
+    init_settings.set_upload_parameters("http://upload");
+    UploadTracker tracker;
+    base::ScopedClosureRunner done(base::BindOnce(
+        &test::TestCallbackAutoWaiter::Signal, base::Unretained(&waiter)));
+    FileUploadJob::Manager::GetInstance()->Register(
+        init_settings, tracker, &mock_delegate_,
+        base::BindOnce(
+            [](base::ScopedClosureRunner done,
+               base::WeakPtr<FileUploadJob>* job_weak_ptr,
+               StatusOr<FileUploadJob*> job_or_error) {
+              EXPECT_OK(job_or_error) << job_or_error.status();
+              auto* const job = job_or_error.ValueOrDie();
+              *job_weak_ptr = job->GetWeakPtr();
+              job->Initiate(done.Release());
+            },
+            std::move(done), base::Unretained(&job_weak_ptr)));
+  }
+
+  // Make 3 steps.
+  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, _))
+      .Times(3)
+      .WillRepeatedly(
+          [](int64_t total, int64_t* uploaded, std::string* session_token) {
+            EXPECT_THAT(*session_token, StrEq("ABC"));
+            *uploaded += 100L;
+            return Status::StatusOK();
+          });
+  for (size_t i = 0; i < 3; ++i) {
+    // Wait for less than job life time.
+    task_environment_.FastForwardBy(FileUploadJob::Manager::kLifeTime / 2);
+    // Check that weak pointer is still valid.
+    EXPECT_TRUE(job_weak_ptr.MaybeValid());
+
+    test::TestCallbackAutoWaiter waiter;
+    FileUploadJob::Manager::GetInstance()->sequenced_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FileUploadJob::NextStep, job_weak_ptr,
+                       base::BindOnce(&test::TestCallbackAutoWaiter::Signal,
+                                      base::Unretained(&waiter))));
+  }
+
+  // Wait for less than job life time.
+  task_environment_.FastForwardBy(FileUploadJob::Manager::kLifeTime / 2);
+  // Check that weak pointer is still valid.
+  EXPECT_TRUE(job_weak_ptr.MaybeValid());
+
+  // Finalize job.
+  {
+    test::TestCallbackAutoWaiter waiter;
+    EXPECT_CALL(mock_delegate_, DoFinalize(_, _))
+        .WillOnce(Invoke([](base::StringPiece session_token,
+                            std::string* access_parameters) {
+          EXPECT_THAT(session_token, StrEq("ABC"));
+          *access_parameters = "http://destination";
+          return Status::StatusOK();
+        }));
+    FileUploadJob::Manager::GetInstance()->sequenced_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FileUploadJob::Finalize, job_weak_ptr,
+                       base::BindOnce(&test::TestCallbackAutoWaiter::Signal,
+                                      base::Unretained(&waiter))));
+  }
+
+  // Wait for less than job life time.
+  task_environment_.FastForwardBy(FileUploadJob::Manager::kLifeTime / 2);
+  // Check that weak pointer is still valid.
+  EXPECT_TRUE(job_weak_ptr.MaybeValid());
+  // Wait for the job to be unregistered and erased.
+  task_environment_.FastForwardBy(FileUploadJob::Manager::kLifeTime / 2);
+  // Now weak pointer is invalid.
+  EXPECT_FALSE(job_weak_ptr.MaybeValid());
 }
 }  // namespace
 }  // namespace reporting
