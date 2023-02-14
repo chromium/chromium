@@ -23,6 +23,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PointingStick} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_pointing_stick_subsection.html.js';
 
 export class SettingsPerDevicePointingStickSubsectionElement extends
@@ -108,15 +109,26 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
       'onSettingsChanged(primaryRightPref.value,' +
           'accelerationPref.value,' +
           'sensitivityPref.value)',
+      'updateSettingsToCurrentPrefs(pointingStick)',
     ];
   }
 
-  private pointingStick: Object;
+  private pointingStick: PointingStick;
   private sensitivityValues: number[];
   private swapPrimaryOptions: number[];
   private primaryRightPref: chrome.settingsPrivate.PrefObject;
   private accelerationPref: chrome.settingsPrivate.PrefObject;
   private sensitivityPref: chrome.settingsPrivate.PrefObject;
+  private isInitialized: boolean = false;
+
+  private updateSettingsToCurrentPrefs(): void {
+    this.set('primaryRightPref.value', this.pointingStick.settings.swapRight);
+    this.set(
+        'accelerationPref.value',
+        this.pointingStick.settings.accelerationEnabled);
+    this.set('sensitivityPref.value', this.pointingStick.settings.sensitivity);
+    this.isInitialized = true;
+  }
 
   private onLearnMoreLinkClicked_(event: Event): void {
     const path = event.composedPath();
@@ -132,6 +144,9 @@ export class SettingsPerDevicePointingStickSubsectionElement extends
 
   private onSettingsChanged(): void {
     // TODO(wangdanny): Implement onSettingsChanged.
+    if (!this.isInitialized) {
+      return;
+    }
   }
 }
 
