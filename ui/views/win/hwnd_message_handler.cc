@@ -2104,12 +2104,8 @@ LRESULT HWNDMessageHandler::OnMouseRange(UINT message,
 LRESULT HWNDMessageHandler::OnPointerActivate(UINT message,
                                               WPARAM w_param,
                                               LPARAM l_param) {
-  using GetPointerTypeFn = BOOL(WINAPI*)(UINT32, POINTER_INPUT_TYPE*);
-  UINT32 pointer_id = GET_POINTERID_WPARAM(w_param);
   POINTER_INPUT_TYPE pointer_type;
-  static const auto get_pointer_type = reinterpret_cast<GetPointerTypeFn>(
-      base::win::GetUser32FunctionPointer("GetPointerType"));
-  if (get_pointer_type && get_pointer_type(pointer_id, &pointer_type) &&
+  if (::GetPointerType(GET_POINTERID_WPARAM(w_param), &pointer_type) &&
       pointer_type == PT_TOUCHPAD) {
     return PA_NOACTIVATE;
   }
@@ -2120,15 +2116,11 @@ LRESULT HWNDMessageHandler::OnPointerActivate(UINT message,
 LRESULT HWNDMessageHandler::OnPointerEvent(UINT message,
                                            WPARAM w_param,
                                            LPARAM l_param) {
-  UINT32 pointer_id = GET_POINTERID_WPARAM(w_param);
-  using GetPointerTypeFn = BOOL(WINAPI*)(UINT32, POINTER_INPUT_TYPE*);
   POINTER_INPUT_TYPE pointer_type;
-  static const auto get_pointer_type = reinterpret_cast<GetPointerTypeFn>(
-      base::win::GetUser32FunctionPointer("GetPointerType"));
   // If the WM_POINTER messages are not sent from a stylus device, then we do
   // not handle them to make sure we do not change the current behavior of
   // touch and mouse inputs.
-  if (!get_pointer_type || !get_pointer_type(pointer_id, &pointer_type)) {
+  if (!::GetPointerType(GET_POINTERID_WPARAM(w_param), &pointer_type)) {
     SetMsgHandled(FALSE);
     return -1;
   }
