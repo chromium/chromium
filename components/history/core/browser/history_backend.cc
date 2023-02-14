@@ -2086,6 +2086,7 @@ std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
     bool include_duplicates) {
   auto annotated_visits = ToAnnotatedVisits(visit_ids);
   std::vector<ClusterVisit> cluster_visits;
+  std::set<VisitID> seen_duplicate_ids;
   base::ranges::for_each(annotated_visits, [&](const auto& annotated_visit) {
     ClusterVisit cluster_visit =
         db_->GetClusterVisit(annotated_visit.visit_row.visit_id);
@@ -2098,9 +2099,22 @@ std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
       cluster_visit.duplicate_visits = ToDuplicateClusterVisits(
           db_->GetDuplicateClusterVisitIdsForClusterVisit(
               annotated_visit.visit_row.visit_id));
+      base::ranges::for_each(
+          cluster_visit.duplicate_visits, [&](const auto& duplicate_visit) {
+            seen_duplicate_ids.insert(duplicate_visit.visit_id);
+          });
     }
     cluster_visits.push_back(cluster_visit);
   });
+
+  if (include_duplicates && !seen_duplicate_ids.empty()) {
+    // Prune out top-level visits that are duplicates elsewhere.
+    base::EraseIf(cluster_visits, [&](const auto& cluster_visit) {
+      return seen_duplicate_ids.find(
+                 cluster_visit.annotated_visit.visit_row.visit_id) !=
+             seen_duplicate_ids.end();
+    });
+  }
   return cluster_visits;
 }
 

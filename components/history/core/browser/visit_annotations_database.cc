@@ -738,7 +738,9 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
   sql::Statement clusters_statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "UPDATE clusters "
-      "SET should_show_on_prominent_ui_surfaces=?, triggerability_calculated=? "
+      "SET "
+      "should_show_on_prominent_ui_surfaces=?,label=?,"
+      "raw_label=?,triggerability_calculated=? "
       "WHERE cluster_id=?"));
 
   sql::Statement delete_cluster_keywords_statement(GetDB().GetCachedStatement(
@@ -750,6 +752,19 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
                                  "(cluster_id,keyword,type,score,collections)"
                                  "VALUES(?,?,?,?,?)"));
 
+  sql::Statement update_cluster_visit_scores_statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "UPDATE clusters_and_visits SET score=? WHERE "
+                                 "cluster_id=? AND visit_id=?"));
+
+  // INSERT OR IGNORE, because these rows are not keyed on `cluster_id`, so it's
+  // difficult to guarantee complete cleanup. https://crbug.com/1383274
+  sql::Statement cluster_visit_duplicates_statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR IGNORE INTO cluster_visit_duplicates"
+      "(visit_id,duplicate_visit_id)"
+      "VALUES(?,?)"));
+
   base::ranges::for_each(clusters, [&](const auto& cluster) {
     DCHECK_GT(cluster.cluster_id, 0);
 
@@ -757,8 +772,10 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
     clusters_statement.Reset(true);
     clusters_statement.BindBool(0,
                                 cluster.should_show_on_prominent_ui_surfaces);
-    clusters_statement.BindBool(1, cluster.triggerability_calculated);
-    clusters_statement.BindInt64(2, cluster.cluster_id);
+    clusters_statement.BindString16(1, cluster.label.value_or(u""));
+    clusters_statement.BindString16(2, cluster.raw_label.value_or(u""));
+    clusters_statement.BindBool(3, cluster.triggerability_calculated);
+    clusters_statement.BindInt64(4, cluster.cluster_id);
     if (!clusters_statement.Run()) {
       DVLOG(0) << "Failed to execute clusters update statement:  "
                << "cluster_id = " << cluster.cluster_id;
@@ -791,6 +808,38 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
                  << ", keyword = " << keyword;
       }
     }
+
+    base::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
+      const auto visit_id = cluster_visit.annotated_visit.visit_row.visit_id;
+      DCHECK_GT(visit_id, 0);
+      update_cluster_visit_scores_statement.Reset(true);
+      update_cluster_visit_scores_statement.BindDouble(0, cluster_visit.score);
+      update_cluster_visit_scores_statement.BindInt64(1, cluster.cluster_id);
+      update_cluster_visit_scores_statement.BindInt64(2, visit_id);
+      if (!update_cluster_visit_scores_statement.Run()) {
+        DVLOG(0) << "Failed to execute 'clusters_and_visits' update statement "
+                    "in `UpdateClusterTriggerability()`:  "
+                 << "cluster_id = " << cluster.cluster_id
+                 << ", visit_id = " << visit_id;
+      }
+
+      // Insert each `ClusterVisit`'s duplicate visits into
+      // 'cluster_visit_duplicates_statement'.
+      for (const auto& duplicate_visit : cluster_visit.duplicate_visits) {
+        DCHECK_GT(duplicate_visit.visit_id, 0);
+        cluster_visit_duplicates_statement.Reset(true);
+        cluster_visit_duplicates_statement.BindInt64(0, visit_id);
+        cluster_visit_duplicates_statement.BindInt64(1,
+                                                     duplicate_visit.visit_id);
+        if (!cluster_visit_duplicates_statement.Run()) {
+          DVLOG(0) << "Failed to execute 'cluster_visit_duplicates' insert in "
+                      "statement in `UpdateClusterTriggerability()`:  "
+                   << "cluster_id = " << cluster.cluster_id
+                   << ", visit_id = " << visit_id
+                   << ", duplicate_visit_id = " << duplicate_visit.visit_id;
+        }
+      }
+    });
   });
 }
 
