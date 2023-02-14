@@ -144,7 +144,11 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return True
 
   def _GetSerialGlobs(self) -> Set[str]:
-    return set()
+    return {
+        # crbug.com/1406799. Large test.
+        # Run serially to avoid impact on other tests.
+        '*:api,operation,rendering,basic:large_draw:*',
+    }
 
   def _GetSerialTests(self) -> Set[str]:
     return set()
