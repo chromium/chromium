@@ -1013,7 +1013,7 @@ public class ImeAdapterImpl
                 editableNodeBoundsPixOnScreen = new Rect();
             }
             mWebContents.getStylusWritingHandler().onFocusedNodeChanged(
-                    editableNodeBoundsPixOnScreen, isEditable);
+                    editableNodeBoundsPixOnScreen, isEditable, mViewDelegate.getContainerView());
         }
     }
 

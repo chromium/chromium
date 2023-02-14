@@ -41,10 +41,12 @@ public interface StylusWritingHandler {
 
     /**
      * Notify focused node has changed in web page.
-     *  @param editableBounds the Editable element bounds Rect in pix
-     * @param isEditable is true if focused node is of editable type.
+     *
+     * @param editableBounds the Editable element bounds Rect in pix
+     * @param isEditable     is true if focused node is of editable type.
+     * @param currentView the {@link View} in which the focused node changed.
      */
-    default void onFocusedNodeChanged(Rect editableBounds, boolean isEditable) {}
+    default void onFocusedNodeChanged(Rect editableBounds, boolean isEditable, View currentView) {}
 
     /**
      * Handle touch events if needed for stylus writing.

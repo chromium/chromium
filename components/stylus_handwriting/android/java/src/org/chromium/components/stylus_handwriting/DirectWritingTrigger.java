@@ -79,28 +79,25 @@ class DirectWritingTrigger
     }
 
     @Override
-    public void onFocusedNodeChanged(Rect editableBoundsOnScreen, boolean isEditable) {
-        if (!mDwServiceEnabled || !mBinder.isServiceConnected()
-                || mStylusWritingImeCallback == null) {
-            return;
-        }
+    public void onFocusedNodeChanged(
+            Rect editableBoundsOnScreen, boolean isEditable, View currentView) {
+        if (!mDwServiceEnabled || !mBinder.isServiceConnected()) return;
         mEditableNodeBounds = editableBoundsOnScreen;
         mCallback.updateEditableBounds(editableBoundsOnScreen, /* cursorPosition */ new Point());
 
         if (isEditable) {
             if (!mStylusWritingDetected && mNeedsFocusedNodeChangedAfterTouchUp
                     && mStylusUpEvent != null) {
+                mBinder.updateEditableBounds(editableBoundsOnScreen, currentView);
                 // Call onStopRecognition with editable bounds to show DW toolbar on Pen TAP in
                 // input field.
-                onStopRecognition(mStylusUpEvent, editableBoundsOnScreen);
+                onStopRecognition(mStylusUpEvent, editableBoundsOnScreen, currentView);
                 mNeedsFocusedNodeChangedAfterTouchUp = false;
-                mBinder.updateEditableBounds(
-                        editableBoundsOnScreen, mStylusWritingImeCallback.getContainerView());
             }
         } else {
             // Stop recognition and hide DW toolbar as focused node is not editable.
             hideDWToolbar();
-            onStopRecognition(/* motionEvent */ null, /*editableBounds */ null);
+            onStopRecognition(/* motionEvent */ null, /*editableBounds */ null, currentView);
         }
     }
 
@@ -345,7 +342,7 @@ class DirectWritingTrigger
                             && mCurrentStylusDownEvent != null
                             && mEditableNodeBounds.contains((int) mCurrentStylusDownEvent.getX(),
                                     (int) mCurrentStylusDownEvent.getY())) {
-                        onStopRecognition(me, mEditableNodeBounds);
+                        onStopRecognition(me, mEditableNodeBounds, rootView);
                     } else {
                         // It is possible that Pen TAP is done in an Input element without writing,
                         // so wait until element is focused to show DW toolbar.
@@ -360,7 +357,7 @@ class DirectWritingTrigger
                 // Post task to stop recognition and hide DW toolbar as stylus is moved away.
                 mHideDwToolbarCallbackToken = new Object();
                 mHandler.postDelayed(() -> {
-                    onStopRecognition(/* motionEvent */ null, /*editableBounds */ null);
+                    onStopRecognition(/* motionEvent */ null, /*editableBounds */ null, rootView);
                     mHideDwToolbarCallbackToken = null;
                 }, mHideDwToolbarCallbackToken, mConfig.getHideDwToolbarDelayMs());
                 break;
@@ -418,8 +415,13 @@ class DirectWritingTrigger
     }
 
     private void onStopRecognition(MotionEvent me, Rect editableBounds) {
-        if (!mDwServiceEnabled || mStylusWritingImeCallback == null) return;
-        mBinder.onStopRecognition(me, editableBounds, mStylusWritingImeCallback.getContainerView());
+        if (mStylusWritingImeCallback == null) return;
+        onStopRecognition(me, editableBounds, mStylusWritingImeCallback.getContainerView());
+    }
+
+    private void onStopRecognition(MotionEvent me, Rect editableBounds, View currentView) {
+        if (!mDwServiceEnabled) return;
+        mBinder.onStopRecognition(me, editableBounds, currentView);
         resetRecognition();
     }
 
