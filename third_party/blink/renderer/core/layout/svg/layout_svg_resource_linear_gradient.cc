@@ -40,9 +40,8 @@ const GradientAttributes& LayoutSVGResourceLinearGradient::EnsureAttributes()
   NOT_DESTROYED();
   DCHECK(GetElement());
   if (should_collect_gradient_attributes_) {
-    attributes_ = LinearGradientAttributes();
-    To<SVGLinearGradientElement>(GetElement())
-        ->CollectGradientAttributes(attributes_);
+    attributes_ =
+        To<SVGLinearGradientElement>(*GetElement()).CollectGradientAttributes();
     should_collect_gradient_attributes_ = false;
   }
   return attributes_;

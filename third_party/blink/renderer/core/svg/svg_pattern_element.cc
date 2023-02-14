@@ -254,11 +254,11 @@ const SVGPatternElement* SVGPatternElement::ReferencedElement() const {
       TargetElementFromIRIString(HrefString(), GetTreeScope()));
 }
 
-void SVGPatternElement::CollectPatternAttributes(
-    PatternAttributes& attributes) const {
+PatternAttributes SVGPatternElement::CollectPatternAttributes() const {
   HeapHashSet<Member<const SVGPatternElement>> processed_patterns;
   const SVGPatternElement* current = this;
 
+  PatternAttributes attributes;
   while (true) {
     SetPatternAttributes(*current, attributes);
     processed_patterns.insert(current);
@@ -274,6 +274,7 @@ void SVGPatternElement::CollectPatternAttributes(
     if (processed_patterns.Contains(current))
       break;
   }
+  return attributes;
 }
 
 AffineTransform SVGPatternElement::LocalCoordinateSpaceTransform(

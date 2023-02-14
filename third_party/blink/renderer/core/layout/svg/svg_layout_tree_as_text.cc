@@ -588,9 +588,8 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
     // SVGPatternElement for its patternUnits(), as it may link to other
     // patterns using xlink:href, we need to build the full inheritance chain,
     // aka. collectPatternProperties()
-    PatternAttributes attributes;
-    To<SVGPatternElement>(pattern->GetElement())
-        ->CollectPatternAttributes(attributes);
+    PatternAttributes attributes = To<SVGPatternElement>(*pattern->GetElement())
+                                       .CollectPatternAttributes();
 
     WriteNameValuePair(ts, "patternUnits", attributes.PatternUnits());
     WriteNameValuePair(ts, "patternContentUnits",
@@ -608,9 +607,9 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
     // SVGGradientElement for its gradientUnits(), as it may link to other
     // gradients using xlink:href, we need to build the full inheritance chain,
     // aka. collectGradientProperties()
-    LinearGradientAttributes attributes;
-    To<SVGLinearGradientElement>(gradient->GetElement())
-        ->CollectGradientAttributes(attributes);
+    LinearGradientAttributes attributes =
+        To<SVGLinearGradientElement>(*gradient->GetElement())
+            .CollectGradientAttributes();
     WriteCommonGradientProperties(ts, attributes);
 
     ts << " [start=" << gradient->StartPoint(attributes)
@@ -622,9 +621,9 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
     // SVGGradientElement for its gradientUnits(), as it may link to other
     // gradients using xlink:href, we need to build the full inheritance chain,
     // aka. collectGradientProperties()
-    RadialGradientAttributes attributes;
-    To<SVGRadialGradientElement>(gradient->GetElement())
-        ->CollectGradientAttributes(attributes);
+    RadialGradientAttributes attributes =
+        To<SVGRadialGradientElement>(*gradient->GetElement())
+            .CollectGradientAttributes();
     WriteCommonGradientProperties(ts, attributes);
 
     gfx::PointF focal_point = gradient->FocalPoint(attributes);

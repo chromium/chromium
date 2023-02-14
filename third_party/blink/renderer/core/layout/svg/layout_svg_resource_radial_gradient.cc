@@ -41,9 +41,8 @@ const GradientAttributes& LayoutSVGResourceRadialGradient::EnsureAttributes()
   NOT_DESTROYED();
   DCHECK(GetElement());
   if (should_collect_gradient_attributes_) {
-    attributes_ = RadialGradientAttributes();
-    To<SVGRadialGradientElement>(GetElement())
-        ->CollectGradientAttributes(attributes_);
+    attributes_ =
+        To<SVGRadialGradientElement>(*GetElement()).CollectGradientAttributes();
     should_collect_gradient_attributes_ = false;
   }
   return attributes_;

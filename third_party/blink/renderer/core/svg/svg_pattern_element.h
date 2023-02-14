@@ -45,8 +45,6 @@ class SVGPatternElement final : public SVGElement,
  public:
   explicit SVGPatternElement(Document&);
 
-  void CollectPatternAttributes(PatternAttributes&) const;
-
   AffineTransform LocalCoordinateSpaceTransform(CTMScope) const override;
 
   SVGAnimatedLength* x() const { return x_.Get(); }
@@ -77,6 +75,7 @@ class SVGPatternElement final : public SVGElement,
   void InvalidatePattern(LayoutInvalidationReasonForTracing);
   void InvalidateDependentPatterns();
 
+  PatternAttributes CollectPatternAttributes() const;
   const SVGPatternElement* ReferencedElement() const;
 
   void Trace(Visitor*) const override;

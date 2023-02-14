@@ -112,13 +112,14 @@ static void SetGradientAttributes(const SVGGradientElement& element,
     attributes.SetY2(linear.y2()->CurrentValue());
 }
 
-void SVGLinearGradientElement::CollectGradientAttributes(
-    LinearGradientAttributes& attributes) const {
+LinearGradientAttributes SVGLinearGradientElement::CollectGradientAttributes()
+    const {
   DCHECK(GetLayoutObject());
 
   VisitedSet visited;
   const SVGGradientElement* current = this;
 
+  LinearGradientAttributes attributes;
   while (true) {
     SetGradientAttributes(*current, attributes,
                           IsA<SVGLinearGradientElement>(*current));
@@ -133,6 +134,7 @@ void SVGLinearGradientElement::CollectGradientAttributes(
     if (visited.Contains(current))
       break;
   }
+  return attributes;
 }
 
 bool SVGLinearGradientElement::SelfHasRelativeLengths() const {

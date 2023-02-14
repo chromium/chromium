@@ -132,13 +132,14 @@ static void SetGradientAttributes(const SVGGradientElement& element,
     attributes.SetFr(radial.fr()->CurrentValue());
 }
 
-void SVGRadialGradientElement::CollectGradientAttributes(
-    RadialGradientAttributes& attributes) const {
+RadialGradientAttributes SVGRadialGradientElement::CollectGradientAttributes()
+    const {
   DCHECK(GetLayoutObject());
 
   VisitedSet visited;
   const SVGGradientElement* current = this;
 
+  RadialGradientAttributes attributes;
   while (true) {
     SetGradientAttributes(*current, attributes,
                           IsA<SVGRadialGradientElement>(*current));
@@ -159,6 +160,8 @@ void SVGRadialGradientElement::CollectGradientAttributes(
 
   if (!attributes.HasFy())
     attributes.SetFy(attributes.Cy());
+
+  return attributes;
 }
 
 bool SVGRadialGradientElement::SelfHasRelativeLengths() const {

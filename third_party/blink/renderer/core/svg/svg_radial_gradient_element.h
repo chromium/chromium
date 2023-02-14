@@ -36,14 +36,14 @@ class SVGRadialGradientElement final : public SVGGradientElement {
  public:
   explicit SVGRadialGradientElement(Document&);
 
-  void CollectGradientAttributes(RadialGradientAttributes&) const;
-
   SVGAnimatedLength* cx() const { return cx_.Get(); }
   SVGAnimatedLength* cy() const { return cy_.Get(); }
   SVGAnimatedLength* r() const { return r_.Get(); }
   SVGAnimatedLength* fx() const { return fx_.Get(); }
   SVGAnimatedLength* fy() const { return fy_.Get(); }
   SVGAnimatedLength* fr() const { return fr_.Get(); }
+
+  RadialGradientAttributes CollectGradientAttributes() const;
 
   void Trace(Visitor*) const override;
 

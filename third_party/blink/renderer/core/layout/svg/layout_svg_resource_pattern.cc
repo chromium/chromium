@@ -100,9 +100,8 @@ const PatternAttributes& LayoutSVGResourcePattern::EnsureAttributes() const {
   // avoid tearing down the pattern we're currently working on. Preferably the
   // state validation should have no side-effects though.
   if (should_collect_pattern_attributes_) {
-    attributes_ = PatternAttributes();
-    auto* pattern_element = To<SVGPatternElement>(GetElement());
-    pattern_element->CollectPatternAttributes(attributes_);
+    attributes_ =
+        To<SVGPatternElement>(*GetElement()).CollectPatternAttributes();
     should_collect_pattern_attributes_ = false;
   }
   return attributes_;
