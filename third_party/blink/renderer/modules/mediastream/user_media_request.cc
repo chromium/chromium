@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
-#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_set.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
@@ -396,12 +395,12 @@ MediaConstraints ParseOptions(
         return MediaConstraints();
     case V8UnionBooleanOrMediaTrackConstraints::ContentType::
         kMediaTrackConstraints:
-      MediaErrorState error_state;
+      String error_message;
       auto constraints = media_constraints_impl::Create(
           execution_context, options->GetAsMediaTrackConstraints(),
-          error_state);
-      if (error_state.HadException()) {
-        error_state.Throw(exception_state);
+          error_message);
+      if (constraints.IsNull()) {
+        exception_state.ThrowTypeError(error_message);
       }
       return constraints;
   }

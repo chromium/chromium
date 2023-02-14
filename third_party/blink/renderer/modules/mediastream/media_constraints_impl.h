@@ -37,7 +37,6 @@
 namespace blink {
 
 class ExecutionContext;
-class MediaErrorState;
 class MediaTrackConstraints;
 
 namespace media_constraints_impl {
@@ -52,7 +51,7 @@ const size_t kMaxConstraintStringSeqLength = 100;
 MediaConstraints Create();
 MediaConstraints Create(ExecutionContext*,
                         const MediaTrackConstraints*,
-                        MediaErrorState&);
+                        String&);
 
 // Exported with MODULES_EXPORT for testing
 MODULES_EXPORT MediaTrackConstraints* ConvertConstraints(
@@ -61,7 +60,7 @@ MODULES_EXPORT MediaTrackConstraints* ConvertConstraints(
 // Exported for testing only.
 MODULES_EXPORT MediaConstraints
 ConvertTrackConstraintsToMediaConstraints(const MediaTrackConstraints*,
-                                          MediaErrorState& error_state);
+                                          String&);
 }
 
 }  // namespace blink

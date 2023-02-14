@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -345,28 +344,22 @@ void CopyBooleanOrDoubleConstraint(
   }
 }
 
-bool ValidateString(const String& str, MediaErrorState& error_state) {
-  DCHECK(!error_state.HadException());
-
+bool ValidateString(const String& str, String& error_message) {
   if (str.length() > kMaxConstraintStringLength) {
-    error_state.MarkTypeError("Constraint string too long.");
+    error_message = "Constraint string too long.";
     return false;
   }
   return true;
 }
 
-bool ValidateStringSeq(const Vector<String>& strs,
-                       MediaErrorState& error_state) {
-  DCHECK(!error_state.HadException());
-
+bool ValidateStringSeq(const Vector<String>& strs, String& error_message) {
   if (strs.size() > kMaxConstraintStringSeqLength) {
-    error_state.MarkTypeError("Constraint string sequence too long.");
+    error_message = "Constraint string sequence too long.";
     return false;
   }
 
   for (const String& str : strs) {
-    if (!ValidateString(str, error_state)) {
-      DCHECK(error_state.HadException());
+    if (!ValidateString(str, error_message)) {
       return false;
     }
   }
@@ -376,16 +369,14 @@ bool ValidateStringSeq(const Vector<String>& strs,
 
 bool ValidateStringConstraint(
     V8UnionStringOrStringSequence* string_or_string_seq,
-    MediaErrorState& error_state) {
-  DCHECK(!error_state.HadException());
-
+    String& error_message) {
   switch (string_or_string_seq->GetContentType()) {
     case V8UnionStringOrStringSequence::ContentType::kString: {
-      return ValidateString(string_or_string_seq->GetAsString(), error_state);
+      return ValidateString(string_or_string_seq->GetAsString(), error_message);
     }
     case V8UnionStringOrStringSequence::ContentType::kStringSequence: {
       return ValidateStringSeq(string_or_string_seq->GetAsStringSequence(),
-                               error_state);
+                               error_message);
     }
   }
   NOTREACHED();
@@ -393,28 +384,26 @@ bool ValidateStringConstraint(
 }
 
 bool ValidateStringConstraint(const V8ConstrainDOMString* blink_union_form,
-                              MediaErrorState& error_state) {
-  DCHECK(!error_state.HadException());
-
+                              String& error_message) {
   switch (blink_union_form->GetContentType()) {
     case V8ConstrainDOMString::ContentType::kConstrainDOMStringParameters: {
       const auto* blink_form =
           blink_union_form->GetAsConstrainDOMStringParameters();
       if (blink_form->hasIdeal() &&
-          !ValidateStringConstraint(blink_form->ideal(), error_state)) {
+          !ValidateStringConstraint(blink_form->ideal(), error_message)) {
         return false;
       }
       if (blink_form->hasExact() &&
-          !ValidateStringConstraint(blink_form->exact(), error_state)) {
+          !ValidateStringConstraint(blink_form->exact(), error_message)) {
         return false;
       }
       return true;
     }
     case V8ConstrainDOMString::ContentType::kString:
-      return ValidateString(blink_union_form->GetAsString(), error_state);
+      return ValidateString(blink_union_form->GetAsString(), error_message);
     case V8ConstrainDOMString::ContentType::kStringSequence:
       return ValidateStringSeq(blink_union_form->GetAsStringSequence(),
-                               error_state);
+                               error_message);
   }
   NOTREACHED();
   return false;
@@ -424,10 +413,8 @@ bool ValidateStringConstraint(const V8ConstrainDOMString* blink_union_form,
     const V8ConstrainDOMString* blink_union_form,
     NakedValueDisposition naked_treatment,
     StringConstraint& web_form,
-    MediaErrorState& error_state) {
-  DCHECK(!error_state.HadException());
-
-  if (!ValidateStringConstraint(blink_union_form, error_state)) {
+    String& error_message) {
+  if (!ValidateStringConstraint(blink_union_form, error_message)) {
     return false;
   }
   web_form.SetIsPresent(true);
@@ -516,9 +503,7 @@ bool ValidateAndCopyConstraintSet(
     const MediaTrackConstraintSet* constraints_in,
     NakedValueDisposition naked_treatment,
     MediaTrackConstraintSetPlatform& constraint_buffer,
-    MediaErrorState& error_state) {
-  DCHECK(!error_state.HadException());
-
+    String& error_message) {
   if (constraints_in->hasWidth()) {
     CopyLongConstraint(constraints_in->width(), naked_treatment,
                        constraint_buffer.width);
@@ -542,8 +527,7 @@ bool ValidateAndCopyConstraintSet(
   if (constraints_in->hasFacingMode()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->facingMode(), naked_treatment,
-            constraint_buffer.facing_mode, error_state)) {
-      DCHECK(error_state.HadException());
+            constraint_buffer.facing_mode, error_message)) {
       return false;
     }
   }
@@ -551,8 +535,7 @@ bool ValidateAndCopyConstraintSet(
   if (constraints_in->hasResizeMode()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->resizeMode(), naked_treatment,
-            constraint_buffer.resize_mode, error_state)) {
-      DCHECK(error_state.HadException());
+            constraint_buffer.resize_mode, error_message)) {
       return false;
     }
   }
@@ -595,8 +578,7 @@ bool ValidateAndCopyConstraintSet(
   if (constraints_in->hasDeviceId()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->deviceId(), naked_treatment,
-            constraint_buffer.device_id, error_state)) {
-      DCHECK(error_state.HadException());
+            constraint_buffer.device_id, error_message)) {
       return false;
     }
   }
@@ -604,8 +586,7 @@ bool ValidateAndCopyConstraintSet(
   if (constraints_in->hasGroupId()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->groupId(), naked_treatment,
-            constraint_buffer.group_id, error_state)) {
-      DCHECK(error_state.HadException());
+            constraint_buffer.group_id, error_message)) {
       return false;
     }
   }
@@ -628,8 +609,7 @@ bool ValidateAndCopyConstraintSet(
   if (constraints_in->hasDisplaySurface()) {
     if (!ValidateAndCopyStringConstraint(
             constraints_in->displaySurface(), naked_treatment,
-            constraint_buffer.display_surface, error_state)) {
-      DCHECK(error_state.HadException());
+            constraint_buffer.display_surface, error_message)) {
       return false;
     }
   }
@@ -644,52 +624,50 @@ bool ValidateAndCopyConstraintSet(
 
 MediaConstraints ConvertTrackConstraintsToMediaConstraints(
     const MediaTrackConstraints* constraints_in,
-    MediaErrorState& error_state) {
-  MediaConstraints constraints;
+    String& error_message) {
   MediaTrackConstraintSetPlatform constraint_buffer;
   Vector<MediaTrackConstraintSetPlatform> advanced_buffer;
   if (!ValidateAndCopyConstraintSet(constraints_in,
                                     NakedValueDisposition::kTreatAsIdeal,
-                                    constraint_buffer, error_state)) {
-    DCHECK(error_state.HadException());
-    return constraints;
+                                    constraint_buffer, error_message)) {
+    return MediaConstraints();
   }
   if (constraints_in->hasAdvanced()) {
     for (const auto& element : constraints_in->advanced()) {
       MediaTrackConstraintSetPlatform advanced_element;
       if (!ValidateAndCopyConstraintSet(element,
                                         NakedValueDisposition::kTreatAsExact,
-                                        advanced_element, error_state)) {
-        DCHECK(error_state.HadException());
-        return constraints;
+                                        advanced_element, error_message)) {
+        return MediaConstraints();
       }
       advanced_buffer.push_back(advanced_element);
     }
   }
+  MediaConstraints constraints;
   constraints.Initialize(constraint_buffer, advanced_buffer);
   return constraints;
 }
 
 MediaConstraints Create(ExecutionContext* context,
                         const MediaTrackConstraints* constraints_in,
-                        MediaErrorState& error_state) {
+                        String& error_message) {
   MediaConstraints standard_form =
-      ConvertTrackConstraintsToMediaConstraints(constraints_in, error_state);
-  if (error_state.HadException()) {
+      ConvertTrackConstraintsToMediaConstraints(constraints_in, error_message);
+  if (standard_form.IsNull()) {
     return standard_form;
   }
   if (constraints_in->hasOptional() || constraints_in->hasMandatory()) {
     if (!standard_form.IsUnconstrained()) {
       UseCounter::Count(context, WebFeature::kMediaStreamConstraintsOldAndNew);
-      error_state.MarkTypeError(
+      error_message =
           "Malformed constraint: Cannot use both optional/mandatory and "
-          "specific or advanced constraints.");
+          "specific or advanced constraints.";
       return MediaConstraints();
     }
     Vector<NameValueStringConstraint> optional;
     Vector<NameValueStringConstraint> mandatory;
     if (!Parse(constraints_in, optional, mandatory)) {
-      error_state.MarkTypeError("Malformed constraints object.");
+      error_message = "Malformed constraints object.";
       return MediaConstraints();
     }
     UseCounter::Count(context, WebFeature::kMediaStreamConstraintsNameValue);

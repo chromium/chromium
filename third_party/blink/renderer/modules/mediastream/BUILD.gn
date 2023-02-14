@@ -35,8 +35,6 @@ blink_modules_sources("mediastream") {
     "media_device_info.h",
     "media_devices.cc",
     "media_devices.h",
-    "media_error_state.cc",
-    "media_error_state.h",
     "media_stream.cc",
     "media_stream.h",
     "media_stream_audio_processor.cc",
