@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "net/base/url_util.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -352,18 +353,38 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
   }
 
   SetSize(gfx::Size(menu_width, kMenuHeight));
-  int x = std::max(0, parent_size.width() - width() -
-                          GetMenuMarginRight(parent_size.width()));
-  // Set the menu in the middle if there is not enough margin on the left
-  // side.
-  if (x < GetMenuMarginRight(parent_size.width()))
-    x = std::max(0, (parent_size.width() - width()) / 2);
-
+  int x;
   int y = entry_view_->y();
+
+  if (AllowReposition()) {
+    x = entry_view_->x();
+    // If the menu entry view is on the right side of the screen, bias toward
+    // the center.
+    if (x > parent_size.width() / 2)
+      x -= width() - entry_view_->width();
+    // Set the menu at the middle if there is not enough margin on the right
+    // or left side.
+    if (x + width() > parent_size.width() || x < 0)
+      x = std::max(0, parent_size.width() - width() - kMenuMarginSmall);
+
+    // If the menu entry is at the bottom side of the screen, bias towards the
+    // center.
+    if (y > parent_size.height() / 2)
+      y -= height() - entry_view_->height();
+  } else {
+    int menu_margin_right = GetMenuMarginRight(parent_size.width());
+    x = std::max(0, parent_size.width() - width() - menu_margin_right);
+    // Set the menu in the middle if there is not enough margin on the left
+    // side.
+    if (x < menu_margin_right)
+      x = std::max(0, (parent_size.width() - width()) / 2);
+  }
+
   // Set the menu at the bottom if there is not enough margin on the bottom
   // side.
   if (y + height() > parent_size.height())
     y = std::max(0, parent_size.height() - height() - kMenuMarginSmall);
+
   SetPosition(gfx::Point(x, y));
 }
 
