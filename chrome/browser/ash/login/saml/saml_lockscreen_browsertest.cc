@@ -802,7 +802,14 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
   ScreenLockerTester().WaitForUnlock();
 }
 
-IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuthCanBeCancelled) {
+// TODO(crbug.com/1415984): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ProxyAuthCanBeCancelled DISABLED_ProxyAuthCanBeCancelled
+#else
+#define MAYBE_ProxyAuthCanBeCancelled ProxyAuthCanBeCancelled
+#endif
+IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
+                       MAYBE_ProxyAuthCanBeCancelled) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
