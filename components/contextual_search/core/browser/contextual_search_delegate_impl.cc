@@ -170,7 +170,7 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
     SearchTermResolutionCallback callback) {
   DCHECK(context);
   GURL request_url(BuildRequestUrl(context.get()));
-  DCHECK(request_url.is_valid());
+  DCHECK(request_url.is_valid()) << request_url.possibly_invalid_spec();
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = request_url;
