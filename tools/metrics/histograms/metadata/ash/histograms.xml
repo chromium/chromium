@@ -2743,6 +2743,54 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.FloatingWorkspace.TemplateLaunchFailureStatus"
+    enum="FloatingWorkspaceV2LaunchTemplateFailureType"
+    expires_after="2024-02-08">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>Recorded the reason for template launch failures.</summary>
+</histogram>
+
+<histogram name="Ash.FloatingWorkspace.TemplateLaunchTimeOut"
+    enum="FloatingWorkspaceV2LaunchTemplateTimeoutType"
+    expires_after="2024-02-08">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>
+    Recorded the reason for template launch timeouts either when we pass the
+    threshold for waiting for a floating workspace to be downloaded or when
+    there's no floating workspace template to be downloaded after waiting for
+    the set timeout.
+  </summary>
+</histogram>
+
+<histogram name="Ash.FloatingWorkspace.TemplateLoadTime" units="seconds"
+    expires_after="2024-02-08">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>
+    Indicate the time to download a floating workspace template. If after set
+    timeout is reached and there is no floating workspace template downloaded, a
+    record of the timeout will be recorded in
+    &quot;Ash.FloatingWorkspace.TemplateLaunchTimeOut&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Ash.FloatingWorkspace.TemplateSize" units="B"
+    expires_after="2024-02-08">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>Record the size of an uploaded floating workspace template.</summary>
+</histogram>
+
+<histogram name="Ash.FloatingWorkspace.TemplateUploadStatus"
+    enum="FloatingWorkspaceV2UploadTemplateStatusType"
+    expires_after="2024-02-08">
+  <owner>ligeng@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>Record the floating workspace template upload status.</summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.SignoutScreenshotDuration" units="ms"
     expires_after="2023-07-02">
   <owner>jamescook@chromium.org</owner>

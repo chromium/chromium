@@ -16,4 +16,41 @@ void RecordFloatingWorkspaceV1RestoredSessionType(
   base::UmaHistogramEnumeration(kFloatingWorkspaceV1RestoredSessionType, type);
 }
 
+void RecordFloatingWorkspaceV2TemplateLaunchFailureType(
+    LaunchTemplateFailureType type) {
+  base::UmaHistogramEnumeration(kFloatingWorkspaceV2TemplateLaunchFailureStatus,
+                                type);
+}
+
+void RecordFloatingWorkspaceV2TemplateLaunchTimeout(
+    LaunchTemplateTimeoutType type) {
+  base::UmaHistogramEnumeration(kFloatingWorkspaceV2TemplateLaunchTimedOut,
+                                type);
+}
+
+void RecordFloatingWorkspaceV2TemplateLoadTime(base::TimeDelta duration) {
+  constexpr size_t bucket_count = 50;
+  constexpr base::TimeDelta min_bucket = base::Seconds(0);
+  constexpr base::TimeDelta max_bucket = base::Seconds(300);  // Five minute.
+
+  static auto* histogram = base::Histogram::FactoryGet(
+      kFloatingWorkspaceV2TemplateLoadTime, min_bucket.InSeconds(),
+      max_bucket.InSeconds(), bucket_count,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+
+  histogram->Add(duration.InSeconds());
+}
+
+void RecordFloatingWorkspaceV2TemplateSize(size_t proto_size) {
+  // Record template sizes between ranges of 0 and 10kB. The expected size of
+  // `proto_size` is around 8kB.
+  base::UmaHistogramCounts10000(kFloatingWorkspaceV2TemplateSize, proto_size);
+}
+
+void RecordFloatingWorkspaceV2TemplateUploadStatusHistogram(
+    desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
+  base::UmaHistogramEnumeration(kFloatingWorkspaceV2TemplateUploadStatus,
+                                status);
+}
+
 }  // namespace ash::floating_workspace_metrics_util

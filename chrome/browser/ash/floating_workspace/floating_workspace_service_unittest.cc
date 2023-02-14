@@ -4,12 +4,19 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/synced_session.h"
 #include "content/public/test/browser_task_environment.h"
@@ -35,6 +42,30 @@ std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
   return session;
 }
 
+// Creates an app_restore::RestoreData object with `num_windows.size()` apps,
+// where the ith app has `num_windows[i]` windows. The windows
+// activation index is its creation order.
+std::unique_ptr<app_restore::RestoreData> CreateRestoreData(
+    std::vector<int> num_windows) {
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
+  int32_t activation_index_counter = 0;
+  for (size_t i = 0; i < num_windows.size(); ++i) {
+    const std::string app_id = base::NumberToString(i);
+
+    for (int32_t window_id = 0; window_id < num_windows[i]; ++window_id) {
+      restore_data->AddAppLaunchInfo(
+          std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id));
+
+      app_restore::WindowInfo window_info;
+      window_info.activation_index =
+          absl::make_optional<int32_t>(activation_index_counter++);
+
+      restore_data->ModifyWindowInfo(app_id, window_id, window_info);
+    }
+  }
+  return restore_data;
+}
+
 std::unique_ptr<ash::DeskTemplate> MakeTestFloatingWorkspaceDeskTemplate(
     std::string name) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
@@ -43,7 +74,9 @@ std::unique_ptr<ash::DeskTemplate> MakeTestFloatingWorkspaceDeskTemplate(
               "c098bdcf-5803-484b-9bfd-d3a9a4b497ab"),
           ash::DeskTemplateSource::kUser, name, base::Time::Now(),
           DeskTemplateType::kFloatingWorkspace);
-
+  std::unique_ptr<app_restore::RestoreData> restore_data =
+      CreateRestoreData(std::vector<int>(10, 1));
+  desk_template->set_desk_restore_data(std::move(restore_data));
   return desk_template;
 }
 
@@ -375,6 +408,57 @@ TEST_F(FloatingWorkspaceServiceTest, FloatingWorkspaceTemplateTimeOut) {
       desk_template_entries);
   EXPECT_FALSE(test_floating_workspace_service_v2
                    .GetRestoredFloatingWorkspaceTemplate());
+}
+
+TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLoadMetric) {
+  base::HistogramTester histogram_tester;
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV2Enabled);
+  std::vector<const DeskTemplate*> desk_template_entries;
+  const std::string template_name = "floating_workspace_template";
+  std::unique_ptr<const DeskTemplate> floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name);
+  desk_template_entries.push_back(floating_workspace_template.get());
+  test_floating_workspace_service_v2.EntriesAddedOrUpdatedRemotely(
+      desk_template_entries);
+  EXPECT_TRUE(test_floating_workspace_service_v2
+                  .GetRestoredFloatingWorkspaceTemplate());
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetRestoredFloatingWorkspaceTemplate()
+          ->template_name(),
+      base::UTF8ToUTF16(template_name));
+  histogram_tester.ExpectTotalCount(
+      floating_workspace_metrics_util::kFloatingWorkspaceV2TemplateLoadTime,
+      1u);
+}
+
+TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateLaunchTimeout) {
+  base::HistogramTester histogram_tester;
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV2Enabled);
+  std::vector<const DeskTemplate*> desk_template_entries;
+  const std::string template_name = "floating_workspace_template";
+  std::unique_ptr<const DeskTemplate> floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name);
+  desk_template_entries.push_back(floating_workspace_template.get());
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin
+          .Get() +
+      base::Seconds(1));
+  test_floating_workspace_service_v2.EntriesAddedOrUpdatedRemotely(
+      desk_template_entries);
+  EXPECT_FALSE(test_floating_workspace_service_v2
+                   .GetRestoredFloatingWorkspaceTemplate());
+  histogram_tester.ExpectTotalCount(
+      floating_workspace_metrics_util::
+          kFloatingWorkspaceV2TemplateLaunchTimedOut,
+      1u);
+  histogram_tester.ExpectBucketCount(
+      floating_workspace_metrics_util::
+          kFloatingWorkspaceV2TemplateLaunchTimedOut,
+      static_cast<int>(floating_workspace_metrics_util::
+                           LaunchTemplateTimeoutType::kPassedWaitPeriod),
+      1u);
 }
 
 }  // namespace ash

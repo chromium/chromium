@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -166,11 +167,25 @@ void FloatingWorkspaceService::OnDeskModelDestroying() {
 
 void FloatingWorkspaceService::EntriesAddedOrUpdatedRemotely(
     const std::vector<const DeskTemplate*>& new_entries) {
+  bool found_floating_workspace_template = false;
   for (const DeskTemplate* desk_template : new_entries) {
     if (desk_template &&
         desk_template->type() == DeskTemplateType::kFloatingWorkspace) {
+      floating_workspace_metrics_util::
+          RecordFloatingWorkspaceV2TemplateLoadTime(base::TimeTicks::Now() -
+                                                    initialization_timestamp_);
       RestoreFloatingWorkspaceTemplate(desk_template);
+      found_floating_workspace_template = true;
     }
+  }
+  // Completed waiting for desk templates to download. Unable to find a floating
+  // workspace template. Emit a metric indictating we timeout because there is
+  // no floating workspace template.
+  if (!found_floating_workspace_template) {
+    floating_workspace_metrics_util::
+        RecordFloatingWorkspaceV2TemplateLaunchTimeout(
+            floating_workspace_metrics_util::LaunchTemplateTimeoutType::
+                kNoFloatingWorkspaceTemplate);
   }
 }
 
@@ -259,7 +274,7 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
   if (!should_run_restore_) {
     return;
   }
-
+  RecordWindowAndTabCountHistogram(*desk_template);
   // Check if template has been downloaded after 15 seconds (TBD).
   if (base::TimeTicks::Now() >
       initialization_timestamp_ +
@@ -267,6 +282,10 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
               kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin.Get()) {
     // No need to restore any remote session 15 seconds (TBD) after login.
     should_run_restore_ = false;
+    floating_workspace_metrics_util::
+        RecordFloatingWorkspaceV2TemplateLaunchTimeout(
+            floating_workspace_metrics_util::LaunchTemplateTimeoutType::
+                kPassedWaitPeriod);
     return;
   }
 
@@ -326,11 +345,48 @@ bool FloatingWorkspaceService::IsCurrentDeskSameAsPrevious(
   return true;
 }
 
+void FloatingWorkspaceService::HandleTemplateUploadErrors(
+    DesksClient::DeskActionError error) {
+  switch (error) {
+    case DesksClient::DeskActionError::kUnknownError:
+      floating_workspace_metrics_util::
+          RecordFloatingWorkspaceV2TemplateLaunchFailureType(
+              floating_workspace_metrics_util::LaunchTemplateFailureType::
+                  kUnknownError);
+      return;
+    case DesksClient::DeskActionError::kStorageError:
+      floating_workspace_metrics_util::
+          RecordFloatingWorkspaceV2TemplateLaunchFailureType(
+              floating_workspace_metrics_util::LaunchTemplateFailureType::
+                  kStorageError);
+      return;
+    case DesksClient::DeskActionError::kDesksCountCheckFailedError:
+      floating_workspace_metrics_util::
+          RecordFloatingWorkspaceV2TemplateLaunchFailureType(
+              floating_workspace_metrics_util::LaunchTemplateFailureType::
+                  kDesksCountCheckFailedError);
+      return;
+    // No need to record metrics for the below desk action errors since they do
+    // not relate to template launch.
+    case DesksClient::DeskActionError::kNoCurrentUserError:
+    case DesksClient::DeskActionError::kBadProfileError:
+    case DesksClient::DeskActionError::kResourceNotFoundError:
+    case DesksClient::DeskActionError::kInvalidIdError:
+    case DesksClient::DeskActionError::kDesksBeingModifiedError:
+      return;
+  }
+}
+
 void FloatingWorkspaceService::OnTemplateLaunched(
     absl::optional<DesksClient::DeskActionError> error,
     const base::GUID& desk_uuid) {
   // Disable future floating workspace restore.
   should_run_restore_ = false;
+  if (error) {
+    HandleTemplateUploadErrors(error.value());
+    return;
+  }
+  RecordLaunchSavedDeskHistogram(DeskTemplateType::kFloatingWorkspace);
 }
 
 void FloatingWorkspaceService::OnTemplateCaptured(
@@ -355,9 +411,9 @@ void FloatingWorkspaceService::OnTemplateCaptured(
 void FloatingWorkspaceService::OnTemplateUploaded(
     desks_storage::DeskModel::AddOrUpdateEntryStatus status,
     std::unique_ptr<DeskTemplate> new_entry) {
-  if (status == desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk) {
-    previously_captured_desk_template_ = std::move(new_entry);
-  }
+  previously_captured_desk_template_ = std::move(new_entry);
+  floating_workspace_metrics_util::
+      RecordFloatingWorkspaceV2TemplateUploadStatusHistogram(status);
 }
 
 }  // namespace ash

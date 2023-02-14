@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/types/strong_alias.h"
@@ -27,6 +28,7 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/desks_storage/core/desk_model_observer.h"
+#include "components/desks_storage/core/desk_storage_metrics_util.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/desks_storage/core/desk_test_util.h"
 #include "components/desks_storage/core/saved_desk_builder.h"
@@ -1761,6 +1763,21 @@ TEST_F(DeskSyncBridgeTest, AddUnknownDeskTypeShouldFail) {
             loop.Quit();
           }));
   loop.Run();
+}
+
+TEST_F(DeskSyncBridgeTest, CanRecordFileSizeMetrics) {
+  base::HistogramTester histogram_tester;
+
+  InitializeBridge();
+
+  AddTwoTemplates();
+
+  EXPECT_EQ(2ul, bridge()->GetEntryCount());
+
+  histogram_tester.ExpectTotalCount(kSaveAndRecallTemplateSizeHistogramName,
+                                    2u);
+  histogram_tester.ExpectBucketCount(kSaveAndRecallTemplateSizeHistogramName,
+                                     572, 2u);
 }
 
 }  // namespace

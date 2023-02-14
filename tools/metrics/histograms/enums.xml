@@ -44655,6 +44655,27 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Remote browser session"/>
 </enum>
 
+<enum name="FloatingWorkspaceV2LaunchTemplateFailureType">
+  <int value="0" label="Unknown failure type"/>
+  <int value="1" label="Storage error"/>
+  <int value="2" label="The desk count requirement not met"/>
+</enum>
+
+<enum name="FloatingWorkspaceV2LaunchTemplateTimeoutType">
+  <int value="0" label="Unknown timeout type"/>
+  <int value="1" label="Passed wait period timeout"/>
+  <int value="2" label="No floating workspace template"/>
+</enum>
+
+<enum name="FloatingWorkspaceV2UploadTemplateStatusType">
+  <int value="0" label="Unknown upload status"/>
+  <int value="1" label="Success upload status"/>
+  <int value="2" label="Template size too large status"/>
+  <int value="3" label="Failure upload status"/>
+  <int value="4" label="Invalid argument upload status"/>
+  <int value="5" label="Hit maximum number of template status"/>
+</enum>
+
 <enum name="FontDisplayValue">
   <int value="0" label="auto"/>
   <int value="1" label="block"/>

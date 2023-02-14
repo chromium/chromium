@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DESKS_STORAGE_CORE_LOCAL_DESK_DATA_MANAGER_METRICS_UTIL_H_
-#define COMPONENTS_DESKS_STORAGE_CORE_LOCAL_DESK_DATA_MANAGER_METRICS_UTIL_H_
+#ifndef COMPONENTS_DESKS_STORAGE_CORE_DESK_STORAGE_METRICS_UTIL_H_
+#define COMPONENTS_DESKS_STORAGE_CORE_DESK_STORAGE_METRICS_UTIL_H_
 
 #include "ash/public/cpp/desk_template.h"
 #include "components/desks_storage/core/desk_model.h"
@@ -17,10 +17,16 @@ constexpr char kTemplateSizeHistogramName[] = "Ash.DeskTemplate.TemplateSize";
 constexpr char kSaveAndRecallTemplateSizeHistogramName[] =
     "Ash.DeskTemplate.SaveAndRecallTemplateSize";
 
+// Histogram names for Floating Workspace.
+constexpr char kFloatingWorkspaceTemplateSizeHistogramName[] =
+    "Ash.FloatingWorkspace.TemplateSize";
+
 // Wrappers calls base::uma with correct histogram name.
 void RecordSavedDeskTemplateSizeHistogram(ash::DeskTemplateType type,
                                           int64_t file_size);
+void RecordSavedDeskTemplateSizeHistogram(ash::DeskTemplateType type,
+                                          size_t file_size);
 
 }  // namespace desks_storage
 
-#endif  // COMPONENTS_DESKS_STORAGE_CORE_LOCAL_DESK_DATA_MANAGER_METRICS_UTIL_H_
+#endif  // COMPONENTS_DESKS_STORAGE_CORE_DESK_STORAGE_METRICS_UTIL_H_

@@ -116,6 +116,9 @@ class FloatingWorkspaceService : public KeyedService,
   // If no difference is recorded no upload job will be triggered.
   bool IsCurrentDeskSameAsPrevious(DeskTemplate* current_desk_template) const;
 
+  // Handles the recording of the error for template launch.
+  void HandleTemplateUploadErrors(DesksClient::DeskActionError error);
+
   // Callback function that is run after a floating workspace template
   // is downloaded and launched.
   void OnTemplateLaunched(absl::optional<DesksClient::DeskActionError> error,
