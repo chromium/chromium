@@ -8,16 +8,16 @@ load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.accessibility",
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.accessibility",
+    pool = try_.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     compilator_cores = 16,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = 150,
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.list_view(

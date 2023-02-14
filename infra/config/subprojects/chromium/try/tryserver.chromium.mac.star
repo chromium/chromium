@@ -10,17 +10,17 @@ load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.mac",
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.mac",
+    pool = try_.DEFAULT_POOL,
     builderless = True,
     os = os.MAC_ANY,
     ssd = True,
-    pool = try_.DEFAULT_POOL,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     compilator_goma_jobs = goma.jobs.J150,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     orchestrator_cores = 2,
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
 def ios_builder(*, name, **kwargs):
@@ -94,7 +94,6 @@ try_.builder(
 try_.orchestrator_builder(
     name = "mac-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    compilator = "mac-rel-compilator",
     mirrors = [
         "ci/Mac Builder",
         "ci/Mac12 Tests",
@@ -109,13 +108,14 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    main_list_view = "try",
     check_for_flakiness = True,
+    compilator = "mac-rel-compilator",
     coverage_test_types = ["overall", "unit"],
-    tryjob = try_.job(),
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
     use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -124,20 +124,20 @@ try_.orchestrator_builder(
 
 try_.orchestrator_builder(
     name = "mac-rel-inverse-fyi",
-    compilator = "mac-rel-compilator",
     mirrors = builder_config.copy_from("try/mac-rel"),
     try_settings = builder_config.try_settings(
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    main_list_view = "try",
     check_for_flakiness = True,
+    compilator = "mac-rel-compilator",
     coverage_test_types = ["overall", "unit"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
         "chromium_rts.inverted_rts_bail_early": 100,
     },
+    main_list_view = "try",
     use_clang_coverage = True,
     use_orchestrator_pool = True,
 )
@@ -146,9 +146,9 @@ try_.compilator_builder(
     name = "mac-rel-compilator",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     os = os.MAC_DEFAULT,
-    main_list_view = "try",
     check_for_flakiness = True,
     goma_jobs = goma.jobs.J300,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -163,13 +163,13 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "mac12-arm64-rel",
-    compilator = "mac12-arm64-rel-compilator",
     mirrors = [
         "ci/mac-arm64-rel",
         "ci/mac12-arm64-rel-tests",
     ],
-    main_list_view = "try",
     check_for_flakiness = True,
+    compilator = "mac12-arm64-rel-compilator",
+    main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 100,
     ),
@@ -178,10 +178,10 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "mac12-arm64-rel-compilator",
     os = os.MAC_12,
-    main_list_view = "try",
     check_for_flakiness = True,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
+    main_list_view = "try",
 )
 
 # NOTE: the following trybots aren't sensitive to Mac version on which
@@ -255,8 +255,8 @@ try_.builder(
         is_compile_only = True,
     ),
     os = os.MAC_DEFAULT,
-    main_list_view = "try",
     goma_jobs = goma.jobs.J150,
+    main_list_view = "try",
     tryjob = try_.job(),
 )
 
@@ -339,7 +339,6 @@ ios_builder(
 try_.orchestrator_builder(
     name = "ios-simulator",
     branch_selector = branches.STANDARD_MILESTONE,
-    compilator = "ios-simulator-compilator",
     mirrors = [
         "ci/ios-simulator",
     ],
@@ -348,10 +347,11 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
     cores = 2,
     os = os.LINUX_DEFAULT,
-    main_list_view = "try",
     check_for_flakiness = True,
+    compilator = "ios-simulator-compilator",
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -363,9 +363,9 @@ try_.compilator_builder(
     builderless = False,
     os = os.MAC_DEFAULT,
     ssd = None,
-    xcode = xcode.x14main,
-    main_list_view = "try",
     check_for_flakiness = True,
+    main_list_view = "try",
+    xcode = xcode.x14main,
 )
 
 ios_builder(
@@ -374,8 +374,8 @@ ios_builder(
     mirrors = [
         "ci/ios-simulator-cronet",
     ],
-    main_list_view = "try",
     check_for_flakiness = True,
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "components/cronet/.+",
@@ -392,10 +392,10 @@ ios_builder(
     mirrors = [
         "ci/ios-simulator-full-configs",
     ],
-    main_list_view = "try",
     check_for_flakiness = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "ios/.+",

@@ -7,9 +7,9 @@ load("//console-header.star", "HEADER")
 load("//project.star", "settings")
 
 consoles.defaults.set(
-    header = HEADER,
     repo = "https://chromium.googlesource.com/chromium/src",
     refs = [settings.ref],
+    header = HEADER,
 )
 
 exec("./ci.star")

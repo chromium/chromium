@@ -873,8 +873,8 @@ goma_mac_builder(
         ),
     ),
     os = os.MAC_DEFAULT,
-    xcode = xcode.x14main,
     goma_backend = goma.backend.RBE_TOT,
+    xcode = xcode.x14main,
 )
 
 goma_mac_builder(

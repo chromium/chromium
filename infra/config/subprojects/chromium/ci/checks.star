@@ -8,8 +8,8 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     console_view = "checks",
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(

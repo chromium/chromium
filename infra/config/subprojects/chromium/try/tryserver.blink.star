@@ -10,12 +10,12 @@ load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
-    builder_group = "tryserver.blink",
     executable = try_.DEFAULT_EXECUTABLE,
-    cores = 8,
+    builder_group = "tryserver.blink",
     pool = try_.DEFAULT_POOL,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    cores = 8,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.list_view(
@@ -55,8 +55,8 @@ try_.builder(
         retry_failed_shards = False,
     ),
     os = os.LINUX_DEFAULT,
-    main_list_view = "try",
     goma_backend = goma.backend.RBE_PROD,
+    main_list_view = "try",
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     tryjob = try_.job(
         location_filters = [

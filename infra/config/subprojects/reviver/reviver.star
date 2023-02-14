@@ -37,44 +37,46 @@ consoles.list_view(
 
 defaults.set(
     bucket = "reviver",
-    os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
+    os = os.LINUX_DEFAULT,
     list_view = "reviver",
-    service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
 
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
+    service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
 polymorphic.launcher(
     name = "android-launcher",
+    # To avoid peak hours, we run it at 2 AM, 5 AM, 8 AM, 11AM, 2 PM UTC.
+    schedule = "0 2,5,8,11,14 * * *",
+    pool = ci.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
         "ci/android-nougat-x86-rel",
         "ci/android-pie-x86-rel",
         "ci/android-12-x64-rel",
     ],
-    cores = 8,
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
-    # To avoid peak hours, we run it at 2 AM, 5 AM, 8 AM, 11AM, 2 PM UTC.
-    schedule = "0 2,5,8,11,14 * * *",
 )
 
 polymorphic.launcher(
     name = "android-device-launcher",
+    # To avoid peak hours, we run it at 5 AM, 8 AM, 11AM UTC.
+    schedule = "0 5,8,11 * * *",
+    pool = ci.DEFAULT_POOL,
+    os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
         "ci/android-pie-arm64-rel",
     ],
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
-    # To avoid peak hours, we run it at 5 AM, 8 AM, 11AM UTC.
-    schedule = "0 5,8,11 * * *",
 )
 
 polymorphic.launcher(
     name = "linux-launcher",
+    # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
+    schedule = "0 5-11/3 * * *",
     runner = "reviver/runner",
     target_builders = [
         polymorphic.target_builder(
@@ -84,12 +86,12 @@ polymorphic.launcher(
             ],
         ),
     ],
-    # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
-    schedule = "0 5-11/3 * * *",
 )
 
 polymorphic.launcher(
     name = "win-launcher",
+    # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
+    schedule = "0 5-11/3 * * *",
     runner = "reviver/runner",
     target_builders = [
         polymorphic.target_builder(
@@ -105,12 +107,12 @@ polymorphic.launcher(
             ],
         ),
     ],
-    # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
-    schedule = "0 5-11/3 * * *",
 )
 
 polymorphic.launcher(
     name = "mac-launcher",
+    # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
+    schedule = "0 5-11/3 * * *",
     runner = "reviver/runner",
     target_builders = [
         polymorphic.target_builder(
@@ -126,14 +128,16 @@ polymorphic.launcher(
             ],
         ),
     ],
-    # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
-    schedule = "0 5-11/3 * * *",
 )
 
 # A coordinator of slightly aggressive scheduling with effectively unlimited
 # test bot capacity for fuchsia.
 polymorphic.launcher(
     name = "fuchsia-coordinator",
+    # Avoid peak hours.
+    schedule = "0 2,4,6,8,10,12,14 * * *",
+    pool = ci.DEFAULT_POOL,
+    os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
         "ci/fuchsia-fyi-arm64-dbg",
@@ -141,15 +145,16 @@ polymorphic.launcher(
         "ci/fuchsia-fyi-x64-dbg",
         "ci/fuchsia-x64-rel",
     ],
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
-    # Avoid peak hours.
-    schedule = "0 2,4,6,8,10,12,14 * * *",
 )
 
 # A coordinator for lacros.
 polymorphic.launcher(
     name = "lacros-coordinator",
+    # To avoid peak hours, we run it from 8PM TO 4AM PST. It is
+    # 3 AM to 11 AM UTC.
+    schedule = "0 3,5,7,9 * * *",
+    pool = ci.DEFAULT_POOL,
+    os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
         polymorphic.target_builder(
@@ -159,30 +164,25 @@ polymorphic.launcher(
             ],
         ),
     ],
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
-    # To avoid peak hours, we run it from 8PM TO 4AM PST. It is
-    # 3 AM to 11 AM UTC.
-    schedule = "0 3,5,7,9 * * *",
 )
 
 builder(
     name = "runner",
     executable = "recipe:reviver/chromium/runner",
-    auto_builder_dimension = False,
+    pool = ci.DEFAULT_POOL,
     builderless = 1,
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
     ssd = False,
-    pool = ci.DEFAULT_POOL,
     free_space = free_space.standard,
-    # TODO(crbug/1346396) Remove this once the reviver service account has
-    # necessary permissions
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    auto_builder_dimension = False,
     execution_timeout = 6 * time.hour,
     resultdb_bigquery_exports = [
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.reviver_test_results",
         ),
     ],
+    # TODO(crbug/1346396) Remove this once the reviver service account has
+    # necessary permissions
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
