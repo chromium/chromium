@@ -23,6 +23,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Mouse} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_mouse_subsection.html.js';
 
 export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
@@ -149,16 +150,30 @@ export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
           'scrollAccelerationPref.value,' +
           'scrollSensitivityPref.value,' +
           'reverseScrollValue)',
+      'updateSettingsToCurrentPrefs(mouse)',
     ];
   }
 
-  private mouse: Object;
+  private mouse: Mouse;
   private primaryRightPref: chrome.settingsPrivate.PrefObject;
   private accelerationPref: chrome.settingsPrivate.PrefObject;
   private sensitivityPref: chrome.settingsPrivate.PrefObject;
   private scrollAccelerationPref: chrome.settingsPrivate.PrefObject;
   private scrollSensitivityPref: chrome.settingsPrivate.PrefObject;
   private reverseScrollValue: boolean;
+  private isInitialized: boolean = false;
+
+  private updateSettingsToCurrentPrefs(): void {
+    this.set('primaryRightPref.value', this.mouse.settings.swapRight);
+    this.set('accelerationPref.value', this.mouse.settings.accelerationEnabled);
+    this.set('sensitivityPref.value', this.mouse.settings.sensitivity);
+    this.set(
+        'scrollAccelerationPref.value', this.mouse.settings.scrollAcceleration);
+    this.set(
+        'scrollSensitivityPref.value', this.mouse.settings.scrollSensitivity);
+    this.reverseScrollValue = this.mouse.settings.reverseScrolling;
+    this.isInitialized = true;
+  }
 
   private onLearnMoreLinkClicked_(event: Event): void {
     const path = event.composedPath();
@@ -178,6 +193,9 @@ export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
 
   private onSettingsChanged(): void {
     // TODO(wangdanny): Implement onSettingsChanged.
+    if (!this.isInitialized) {
+      return;
+    }
   }
 }
 
