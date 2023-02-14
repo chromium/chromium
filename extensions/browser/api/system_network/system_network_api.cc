@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
+#include "extensions/common/api/system_network.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace {
@@ -15,16 +16,7 @@ const char kNetworkListError[] = "Network lookup failed or unsupported";
 
 }  // namespace
 
-namespace extensions {
-namespace api {
-
-SystemNetworkGetNetworkInterfacesFunction::
-    SystemNetworkGetNetworkInterfacesFunction() {
-}
-
-SystemNetworkGetNetworkInterfacesFunction::
-    ~SystemNetworkGetNetworkInterfacesFunction() {
-}
+namespace extensions::api {
 
 ExtensionFunction::ResponseAction
 SystemNetworkGetNetworkInterfacesFunction::Run() {
@@ -59,5 +51,4 @@ void SystemNetworkGetNetworkInterfacesFunction::SendResponseOnUIThread(
       api::system_network::GetNetworkInterfaces::Results::Create(create_arg)));
 }
 
-}  // namespace api
-}  // namespace extensions
+}  // namespace extensions::api

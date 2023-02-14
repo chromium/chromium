@@ -6,6 +6,7 @@
 
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
+#include "extensions/common/api/system_network.h"
 #include "extensions/common/extension_builder.h"
 
 using extensions::api_test_utils::RunFunctionAndReturnSingleResult;
