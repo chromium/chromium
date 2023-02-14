@@ -62,7 +62,8 @@ constexpr int kCornerRadius = 4;
 constexpr int kFontSize = 14;
 constexpr int kSideInset = 4;
 // For ActionMove.
-constexpr int kCrossPadding = 8;  // 4 + 4(kCrossOutsideStrokeThickness)
+constexpr int kCrossPadding =
+    9;  // 4 + 4(kCrossOutsideStrokeThickness) + 1(kCrossInsideStrokeThickness)
 // About focus ring.
 // Gap between focus ring outer edge to label.
 constexpr float kHaloInset = -5;

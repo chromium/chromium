@@ -25,6 +25,7 @@ constexpr int kDotInsideStrokeThickness = 1;
 constexpr int kDotOutsideStrokeThickness = 3;
 
 constexpr int kCrossCenterLength = 78;
+constexpr int kCrossCenterMiddleLength = 30;
 constexpr int kCrossInsideStrokeThickness = 1;
 constexpr int kCrossOutsideStrokeThickness = 4;
 constexpr int kCrossCornerRadius = 6;
@@ -115,7 +116,7 @@ SkPath DrawCrossPath(SkScalar overall_length,
 SkPath DrawCrossCenter(gfx::Canvas* canvas) {
   return DrawCrossPath(
       /*overall_length=*/SkIntToScalar(kCrossCenterLength),
-      /*mid_length=*/SkIntToScalar(kCrossCenterLength / 3),
+      /*mid_length=*/SkIntToScalar(kCrossCenterMiddleLength),
       /*corner_radius=*/SkIntToScalar(kCrossCornerRadius),
       /*out_stroke_thickness=*/SkIntToScalar(0));
 }
@@ -123,7 +124,7 @@ SkPath DrawCrossCenter(gfx::Canvas* canvas) {
 SkPath DrawCrossInsideStroke(gfx::Canvas* canvas) {
   return DrawCrossPath(
       /*overall_length=*/SkIntToScalar(kCrossCenterLength),
-      /*mid_length=*/SkIntToScalar(kCrossCenterLength / 3),
+      /*mid_length=*/SkIntToScalar(kCrossCenterMiddleLength),
       /*corner_radius=*/SkIntToScalar(kCrossCornerRadius),
       /*out_stroke_thickness=*/SkIntToScalar(kCrossInsideStrokeThickness));
 }
@@ -133,7 +134,7 @@ SkPath DrawCrossOutsideStroke(gfx::Canvas* canvas) {
       /*overall_length=*/SkIntToScalar(kCrossCenterLength +
                                        2 * kCrossInsideStrokeThickness),
       /*mid_length=*/
-      SkIntToScalar(kCrossCenterLength / 3 + 2 * kCrossInsideStrokeThickness),
+      SkIntToScalar(kCrossCenterMiddleLength + 2 * kCrossInsideStrokeThickness),
       /*corner_radius=*/SkIntToScalar(kCrossCornerRadius),
       /*out_stroke_thickness=*/SkIntToScalar(kCrossOutsideStrokeThickness));
 }
