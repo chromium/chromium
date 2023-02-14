@@ -226,9 +226,7 @@ void PillButton::OnThemeChanged() {
 }
 
 gfx::Insets PillButton::GetInsets() const {
-  const int height = GetButtonHeight(type_);
-  const int vertical_spacing =
-      std::max((height - GetPreferredSize().height()) / 2, 0);
+  const int vertical_spacing = (GetButtonHeight(type_) - kIconSize) / 2;
   const int icon_padding = IsIconPillButton(type_)
                                ? GetHorizontalSpacingWithIcon()
                                : horizontal_spacing_;
