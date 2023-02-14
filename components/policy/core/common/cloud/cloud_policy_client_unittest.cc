@@ -1794,14 +1794,30 @@ INSTANTIATE_TEST_SUITE_P(,
                          CloudPolicyClientUploadSecurityEventTest,
                          testing::Bool());
 
+TEST_F(CloudPolicyClientTest, UploadSecurityEventReportNotRegistered) {
+  ASSERT_FALSE(client_->is_registered());
+
+  base::test::TestFuture<CloudPolicyClient::Result> result_future;
+
+  client_->UploadSecurityEventReport(nullptr, /*include_device_info=*/false,
+                                     MakeDefaultRealtimeReport(),
+                                     result_future.GetCallback());
+
+  const CloudPolicyClient::Result& result = result_future.Get();
+  EXPECT_EQ(result,
+            CloudPolicyClient::Result(CloudPolicyClient::NotRegistered()));
+}
+
 TEST_P(CloudPolicyClientUploadSecurityEventTest, Test) {
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(1);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(1);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
 
   client_->UploadSecurityEventReport(nullptr, include_device_info(),
                                      MakeDefaultRealtimeReport(),
@@ -1970,14 +1986,29 @@ TEST_F(CloudPolicyClientTest, UploadEncryptedReport) {
   EXPECT_EQ(client_->last_dm_status(), DM_STATUS_SUCCESS);
 }
 
+TEST_F(CloudPolicyClientTest, UploadAppInstallReportNotRegistered) {
+  ASSERT_FALSE(client_->is_registered());
+
+  base::test::TestFuture<CloudPolicyClient::Result> result_future;
+
+  client_->UploadAppInstallReport(MakeDefaultRealtimeReport(),
+                                  result_future.GetCallback());
+
+  const CloudPolicyClient::Result& result = result_future.Get();
+  EXPECT_EQ(result,
+            CloudPolicyClient::Result(CloudPolicyClient::NotRegistered()));
+}
+
 TEST_F(CloudPolicyClientTest, UploadAppInstallReport) {
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(1);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(1);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
 
   client_->UploadAppInstallReport(MakeDefaultRealtimeReport(),
                                   std::move(callback));
@@ -1993,11 +2024,13 @@ TEST_F(CloudPolicyClientTest, CancelUploadAppInstallReport) {
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(0);
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(0);
 
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
 
   em::AppInstallReportRequest app_install_report;
   client_->UploadAppInstallReport(MakeDefaultRealtimeReport(),
@@ -2022,10 +2055,12 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReportSupersedesPending) {
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(0);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(0);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
 
   client_->UploadAppInstallReport(MakeDefaultRealtimeReport(),
                                   std::move(callback));
@@ -2037,9 +2072,11 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReportSupersedesPending) {
   // Starting another app push-install report upload should cancel the pending
   // one.
   ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(1);
-  callback = base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                            base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(1);
+  callback = base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                            base::Unretained(&result_callback_observer_));
   client_->UploadAppInstallReport(MakeDefaultRealtimeReport(),
                                   std::move(callback));
   EXPECT_EQ(1, client_->GetActiveRequestCountForTest());
@@ -2052,14 +2089,29 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReportSupersedesPending) {
   EXPECT_EQ(0, client_->GetActiveRequestCountForTest());
 }
 
+TEST_F(CloudPolicyClientTest, UploadExtensionInstallReportNotRegistered) {
+  ASSERT_FALSE(client_->is_registered());
+
+  base::test::TestFuture<CloudPolicyClient::Result> result_future;
+
+  client_->UploadExtensionInstallReport(MakeDefaultRealtimeReport(),
+                                        result_future.GetCallback());
+
+  const CloudPolicyClient::Result& result = result_future.Get();
+  EXPECT_EQ(result,
+            CloudPolicyClient::Result(CloudPolicyClient::NotRegistered()));
+}
+
 TEST_F(CloudPolicyClientTest, UploadExtensionInstallReport) {
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(1);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(1);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
 
   client_->UploadExtensionInstallReport(MakeDefaultRealtimeReport(),
                                         std::move(callback));
@@ -2075,11 +2127,13 @@ TEST_F(CloudPolicyClientTest, CancelUploadExtensionInstallReport) {
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(0);
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(0);
 
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
 
   em::ExtensionInstallReportRequest app_install_report;
   client_->UploadExtensionInstallReport(MakeDefaultRealtimeReport(),
@@ -2104,10 +2158,12 @@ TEST_F(CloudPolicyClientTest, UploadExtensionInstallReportSupersedesPending) {
   RegisterClient();
 
   ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(0);
-  CloudPolicyClient::StatusCallback callback =
-      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(0);
+  CloudPolicyClient::ResultCallback callback =
+      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&result_callback_observer_));
 
   client_->UploadExtensionInstallReport(MakeDefaultRealtimeReport(),
                                         std::move(callback));
@@ -2119,9 +2175,11 @@ TEST_F(CloudPolicyClientTest, UploadExtensionInstallReportSupersedesPending) {
   // Starting another extension install report upload should cancel the pending
   // one.
   ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(status_callback_observer_, OnCallbackComplete(true)).Times(1);
-  callback = base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
-                            base::Unretained(&status_callback_observer_));
+  EXPECT_CALL(result_callback_observer_,
+              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
+      .Times(1);
+  callback = base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
+                            base::Unretained(&result_callback_observer_));
   client_->UploadExtensionInstallReport(MakeDefaultRealtimeReport(),
                                         std::move(callback));
   EXPECT_EQ(1, client_->GetActiveRequestCountForTest());

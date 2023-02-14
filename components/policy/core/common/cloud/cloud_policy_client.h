@@ -363,7 +363,7 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void UploadSecurityEventReport(content::BrowserContext* context,
                                          bool include_device_info,
                                          base::Value::Dict report,
-                                         StatusCallback callback);
+                                         ResultCallback callback);
 
   // Uploads a report containing |merging_payload| (merged into the default
   // payload of the job). The client must be in a registered state. The
@@ -379,7 +379,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // In case the new push-installs report upload is started, the previous one
   // will be canceled.
   virtual void UploadAppInstallReport(base::Value::Dict report,
-                                      StatusCallback callback);
+                                      ResultCallback callback);
 
   // Cancels the pending app push-install status report upload, if exists.
   virtual void CancelAppInstallReportUpload();
@@ -391,7 +391,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // In case the new installs report upload is started, the previous one
   // will be canceled.
   virtual void UploadExtensionInstallReport(base::Value::Dict report,
-                                            StatusCallback callback);
+                                            ResultCallback callback);
 
   // Cancels the pending extension install status report upload, if exists.
   virtual void CancelExtensionInstallReportUpload();
@@ -632,7 +632,7 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Callback for realtime report upload requests.
   void OnRealtimeReportUploadCompleted(
-      StatusCallback callback,
+      ResultCallback callback,
       DeviceManagementService::Job* job,
       DeviceManagementStatus status,
       int net_error,
@@ -759,7 +759,7 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& server_url,
       bool include_device_info,
       bool add_connector_url_params,
-      StatusCallback callback);
+      ResultCallback callback);
 
   void SetClientId(const std::string& client_id);
   // Fills in the common fields of a DeviceRegisterRequest for |Register| and

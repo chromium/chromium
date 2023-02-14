@@ -131,14 +131,14 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   void UploadSecurityEventReport(content::BrowserContext* context,
                                  bool include_device_info,
                                  base::Value::Dict value,
-                                 StatusCallback callback) override {
+                                 ResultCallback callback) override {
     UploadSecurityEventReport_(context, include_device_info, value, callback);
   }
   MOCK_METHOD4(UploadSecurityEventReport_,
                void(content::BrowserContext* context,
                     bool include_device_info,
                     base::Value::Dict&,
-                    StatusCallback&));
+                    ResultCallback&));
 
   MOCK_METHOD3(UploadEncryptedReport,
                void(base::Value::Dict,
@@ -146,17 +146,17 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                     ResponseCallback));
 
   void UploadAppInstallReport(base::Value::Dict value,
-                              StatusCallback callback) override {
+                              ResultCallback callback) override {
     UploadAppInstallReport_(value, callback);
   }
   MOCK_METHOD2(UploadAppInstallReport_,
-               void(base::Value::Dict&, StatusCallback&));
+               void(base::Value::Dict&, ResultCallback&));
   void UploadExtensionInstallReport(base::Value::Dict value,
-                                    StatusCallback callback) override {
+                                    ResultCallback callback) override {
     UploadExtensionInstallReport_(value, callback);
   }
   MOCK_METHOD2(UploadExtensionInstallReport_,
-               void(base::Value::Dict&, StatusCallback&));
+               void(base::Value::Dict&, ResultCallback&));
 
   MOCK_METHOD2(
       ClientCertProvisioningRequest,

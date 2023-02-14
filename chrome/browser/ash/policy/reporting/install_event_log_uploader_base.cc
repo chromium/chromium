@@ -83,13 +83,18 @@ void InstallEventLogUploaderBase::OnRegistrationStateChanged(
   }
 }
 
-void InstallEventLogUploaderBase::OnUploadDone(bool success) {
-  if (success) {
+void InstallEventLogUploaderBase::OnUploadDone(
+    CloudPolicyClient::Result result) {
+  // TODO(b/256553070): Do not crash if the client is unregistered.
+  CHECK(!result.IsClientNotRegisteredError());
+
+  if (result.IsSuccess()) {
     upload_requested_ = false;
     retry_backoff_ms_ = kMinRetryBackoffMs;
     OnUploadSuccess();
     return;
   }
+
   PostTaskForStartSerialization();
   if (FastUploadForTestsEnabled())
     return;

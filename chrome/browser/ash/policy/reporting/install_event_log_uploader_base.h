@@ -70,11 +70,10 @@ class InstallEventLogUploaderBase : public CloudPolicyClient::Observer {
   // a callback.
   virtual void StartSerialization() = 0;
 
-  // Notification by the client that the most recent log upload has succeeded if
-  // |success| is |true| or retries have been exhausted if |success| is |false|.
+  // |result| contains the result of the most recent log upload.
   // Forwards success to the delegate and schedules a retry with exponential
   // backoff in case of failure.
-  void OnUploadDone(bool success);
+  void OnUploadDone(CloudPolicyClient::Result result);
 
   // Notifies delegate on success of upload.
   virtual void OnUploadSuccess() = 0;

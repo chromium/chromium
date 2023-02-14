@@ -362,9 +362,12 @@ void RealtimeReportingClient::ReportRealtimeEvent(
 
   auto upload_callback = base::BindOnce(
       [](base::Value::Dict wrapper, bool per_profile, std::string dm_token,
-         bool uploaded) {
+         policy::CloudPolicyClient::Result upload_result) {
+        // TODO(b/256553070): Do not crash if the client is unregistered.
+        CHECK(!upload_result.IsClientNotRegisteredError());
+
         // Show the report on chrome://safe-browsing, if appropriate.
-        wrapper.Set("uploaded_successfully", uploaded);
+        wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
         wrapper.Set(per_profile ? "profile_dm_token" : "browser_dm_token",
                     std::move(dm_token));
         safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
