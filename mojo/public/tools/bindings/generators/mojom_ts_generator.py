@@ -5,6 +5,7 @@
 
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
+import itertools
 import os
 import sys
 import urllib.request
@@ -387,10 +388,46 @@ class Generator(generator.Generator):
         or mojom.IsUnionKind(kind)):
       return [make_import(kind.name), make_import(kind.name, 'Spec')]
     if mojom.IsInterfaceKind(kind):
-      return [
-          make_import(kind.name, 'Remote'),
-          make_import(kind.name, 'PendingReceiver')
-      ]
+      # Collect referenced kinds that may refer to an interface Remote or
+      # PendingReceiver.
+      referenced_kinds = []
+      for interface in self.module.interfaces:
+        for method in interface.methods:
+          referenced_kinds.extend(method.parameters or [])
+          referenced_kinds.extend(method.response_parameters or [])
+      for struct in self.module.structs:
+        referenced_kinds.extend(struct.fields)
+      for union in self.module.unions:
+        referenced_kinds.extend(union.fields)
+
+      # Determine whether Remote and/or PendingReceiver are referenced.
+      imports = []
+      imported_receiver = False
+      imported_remote = False
+
+      for referenced_kind in referenced_kinds:
+        # Early return if both references have already been found.
+        if imported_remote and imported_receiver:
+          return imports
+        if (not imported_remote
+            and (mojom.IsInterfaceKind(referenced_kind.kind)
+                 or mojom.IsPendingRemoteKind(referenced_kind.kind)
+                 or mojom.IsAssociatedInterfaceKind(referenced_kind.kind)
+                 or mojom.IsPendingAssociatedRemoteKind(referenced_kind.kind))
+            and referenced_kind.kind.kind == kind):
+          imported_remote = True
+          imports.append(make_import(kind.name, 'Remote'))
+          continue
+        if (not imported_receiver
+            and (mojom.IsPendingReceiverKind(referenced_kind.kind)
+                 or mojom.IsInterfaceRequestKind(referenced_kind.kind)
+                 or mojom.IsAssociatedInterfaceRequestKind(referenced_kind.kind)
+                 or mojom.IsPendingAssociatedReceiverKind(referenced_kind.kind))
+            and referenced_kind.kind.kind == kind):
+          imported_receiver = True
+          imports.append(make_import(kind.name, 'PendingReceiver'))
+      return imports
+
     assert False, kind.name
 
   def _GetSpecType(self, kind):
