@@ -115,6 +115,9 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   wallet_specifics_card2.mutable_masked_card()
       ->set_virtual_card_enrollment_state(
           sync_pb::WalletMaskedCreditCard::ENROLLED);
+  wallet_specifics_card2.mutable_masked_card()
+      ->set_virtual_card_enrollment_type(
+          sync_pb::WalletMaskedCreditCard::NETWORK);
   wallet_specifics_card2.mutable_masked_card()->set_card_art_url(
       "https://www.example.com/card.png");
   wallet_specifics_card2.mutable_masked_card()->set_product_description(
@@ -173,6 +176,10 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
             CreditCard::UNENROLLED);
   EXPECT_EQ(wallet_cards.back().virtual_card_enrollment_state(),
             CreditCard::ENROLLED);
+
+  // Verify that the virtual_card_enrollment_type is set correctly.
+  EXPECT_EQ(wallet_cards.back().virtual_card_enrollment_type(),
+            CreditCard::NETWORK);
 
   // Verify that the card_art_url is set correctly.
   EXPECT_TRUE(wallet_cards.front().card_art_url().is_empty());

@@ -419,6 +419,8 @@ TEST_F(AutofillWalletSyncBridgeTest,
   CreditCard card_with_nickname = test::GetMaskedServerCardWithNickname();
   card2.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  card2.set_virtual_card_enrollment_type(
+      CreditCard::VirtualCardEnrollmentType::NETWORK);
   table()->SetServerCreditCards({card1, card2, card_with_nickname});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);
@@ -459,6 +461,8 @@ TEST_F(AutofillWalletSyncBridgeTest,
             card_specifics1.masked_card().virtual_card_enrollment_state());
   EXPECT_EQ(sync_pb::WalletMaskedCreditCard::ENROLLED,
             card_specifics2.masked_card().virtual_card_enrollment_state());
+  EXPECT_EQ(sync_pb::WalletMaskedCreditCard::NETWORK,
+            card_specifics2.masked_card().virtual_card_enrollment_type());
   EXPECT_EQ("https://www.example.com/card.png",
             card_specifics1.masked_card().card_art_url());
   EXPECT_TRUE(card_specifics2.masked_card().card_art_url().empty());

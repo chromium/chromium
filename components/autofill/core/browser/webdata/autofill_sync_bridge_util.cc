@@ -105,7 +105,7 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
     result.SetNickname(base::UTF8ToUTF16(card.nickname()));
   result.set_instrument_id(card.instrument_id());
 
-  CreditCard::VirtualCardEnrollmentState state = CreditCard::UNSPECIFIED;
+  CreditCard::VirtualCardEnrollmentState state;
   switch (card.virtual_card_enrollment_state()) {
     case sync_pb::WalletMaskedCreditCard::UNENROLLED:
       state = CreditCard::UNENROLLED;
@@ -120,9 +120,28 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
       state = CreditCard::UNENROLLED_AND_ELIGIBLE;
       break;
     case sync_pb::WalletMaskedCreditCard::UNSPECIFIED:
+      state = CreditCard::UNSPECIFIED;
       break;
   }
   result.set_virtual_card_enrollment_state(state);
+
+  // We should only have a virtual card enrollment type for enrolled cards.
+  if (card.virtual_card_enrollment_state() ==
+      sync_pb::WalletMaskedCreditCard::ENROLLED) {
+    CreditCard::VirtualCardEnrollmentType virtual_card_enrollment_type;
+    switch (card.virtual_card_enrollment_type()) {
+      case sync_pb::WalletMaskedCreditCard::TYPE_UNSPECIFIED:
+        virtual_card_enrollment_type = CreditCard::TYPE_UNSPECIFIED;
+        break;
+      case sync_pb::WalletMaskedCreditCard::ISSUER:
+        virtual_card_enrollment_type = CreditCard::ISSUER;
+        break;
+      case sync_pb::WalletMaskedCreditCard::NETWORK:
+        virtual_card_enrollment_type = CreditCard::NETWORK;
+        break;
+    }
+    result.set_virtual_card_enrollment_type(virtual_card_enrollment_type);
+  }
 
   if (!card.card_art_url().empty())
     result.set_card_art_url(GURL(card.card_art_url()));
@@ -288,8 +307,7 @@ void SetAutofillWalletSpecificsFromServerCard(
 
   wallet_card->set_instrument_id(card.instrument_id());
 
-  sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState state =
-      sync_pb::WalletMaskedCreditCard::UNSPECIFIED;
+  sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState state;
   switch (card.virtual_card_enrollment_state()) {
     case CreditCard::UNENROLLED:
       state = sync_pb::WalletMaskedCreditCard::UNENROLLED;
@@ -308,6 +326,25 @@ void SetAutofillWalletSpecificsFromServerCard(
       break;
   }
   wallet_card->set_virtual_card_enrollment_state(state);
+
+  // We should only have a virtual card enrollment type for enrolled cards.
+  if (card.virtual_card_enrollment_state() == CreditCard::ENROLLED) {
+    sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentType
+        virtual_card_enrollment_type;
+    switch (card.virtual_card_enrollment_type()) {
+      case CreditCard::TYPE_UNSPECIFIED:
+        virtual_card_enrollment_type =
+            sync_pb::WalletMaskedCreditCard::TYPE_UNSPECIFIED;
+        break;
+      case CreditCard::ISSUER:
+        virtual_card_enrollment_type = sync_pb::WalletMaskedCreditCard::ISSUER;
+        break;
+      case CreditCard::NETWORK:
+        virtual_card_enrollment_type = sync_pb::WalletMaskedCreditCard::NETWORK;
+        break;
+    }
+    wallet_card->set_virtual_card_enrollment_type(virtual_card_enrollment_type);
+  }
 
   if (!card.card_art_url().is_empty())
     wallet_card->set_card_art_url(card.card_art_url().spec());
