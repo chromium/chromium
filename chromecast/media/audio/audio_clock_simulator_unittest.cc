@@ -189,7 +189,7 @@ TEST_P(AudioClockSimulatorLongRunningTest, Run) {
 
   EXPECT_GE(input_frames, std::floor(rate * output_frames));
   EXPECT_LE(input_frames, std::ceil(rate * output_frames) +
-                              2 * ::media::SincResampler::kKernelSize);
+                              ::media::SincResampler::kSmallRequestSize);
 }
 
 INSTANTIATE_TEST_SUITE_P(Rates,

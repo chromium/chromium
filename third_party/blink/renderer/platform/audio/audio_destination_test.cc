@@ -126,9 +126,10 @@ class AudioDestinationTest
       exact_frames_required =
           std::ceil(request_frames * destination->SampleRate() /
                     Platform::Current()->AudioHardwareSampleRate());
-      // The internal resampler requires |kKernelSize| / 2 more frames to flush
-      // the output. See sinc_resampler.cc for more details.
-      exact_frames_required += media::SincResampler::kKernelSize / 2;
+      // The internal resampler requires media::SincResampler::KernelSize() / 2
+      // more frames to flush the output. See sinc_resampler.cc for details.
+      exact_frames_required +=
+          media::SincResampler::KernelSizeFromRequestFrames(request_frames) / 2;
     }
     const int expected_frames_processed =
         std::ceil(exact_frames_required /

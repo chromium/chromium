@@ -134,4 +134,9 @@ void MultiChannelResampler::PrimeWithSilence() {
     resamplers_[i]->PrimeWithSilence();
 }
 
+int MultiChannelResampler::KernelSize() const {
+  DCHECK(!resamplers_.empty());
+  return resamplers_[0]->KernelSize();
+}
+
 }  // namespace media

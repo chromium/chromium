@@ -70,14 +70,15 @@ MixerInput::MixerInput(Source* source, FilterGroup* filter_group)
       output_samples_per_second_ != input_samples_per_second_) {
     if (source_->require_clock_rate_simulation()) {
       // Minimize latency.
-      source_read_size_ = ::media::SincResampler::kKernelSize * 2;
+      source_read_size_ = ::media::SincResampler::kSmallRequestSize;
     } else {
-      // Round up to nearest multiple of SincResampler::kKernelSize. The read
-      // size must be > kKernelSize, so we round up to at least 2 * kKernelSize.
+      // Round up to nearest multiple of SincResampler::kMaxKernelSize. The read
+      // size must be > kMaxKernelSize, so we round up to at least 2 *
+      // kMaxKernelSize.
       source_read_size_ =
           RoundUpMultiple(std::max(source_->desired_read_size(),
-                                   ::media::SincResampler::kKernelSize + 1),
-                          ::media::SincResampler::kKernelSize);
+                                   ::media::SincResampler::kMaxKernelSize + 1),
+                          ::media::SincResampler::kMaxKernelSize);
     }
     resample_ratio_ = static_cast<double>(input_samples_per_second_) /
                       output_samples_per_second_;
@@ -351,7 +352,7 @@ int MixerInput::FillBuffer(int num_frames,
     // Based on testing, the buffered frames reported by SincResampler does not
     // include the delay incurred by the filter kernel, so add it explicitly.
     resampler_buffered_frames_ =
-        resampler_->BufferedFrames() + ::media::SincResampler::kKernelSize / 2;
+        resampler_->BufferedFrames() + resampler_->KernelSize() / 2;
     filled_for_resampler_ = 0;
     tried_to_fill_resampler_ = false;
     resampler_->Resample(num_frames, dest);

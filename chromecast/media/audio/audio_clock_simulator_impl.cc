@@ -37,7 +37,7 @@ class AudioClockSimulatorImpl : public AudioClockSimulator {
     resample_buffer_ =
         ::media::AudioBus::Create(num_channels_, kDefaultResampleBufferFrames);
     resampler_ = std::make_unique<::media::MultiChannelResampler>(
-        num_channels_, 1.0, ::media::SincResampler::kKernelSize * 2,
+        num_channels_, 1.0, ::media::SincResampler::kSmallRequestSize,
         base::BindRepeating(&AudioClockSimulatorImpl::ResamplerReadCallback,
                             base::Unretained(this)));
     resampler_->PrimeWithSilence();
@@ -62,8 +62,7 @@ class AudioClockSimulatorImpl : public AudioClockSimulator {
   }
 
   double DelayFrames() const override {
-    return resampler_->BufferedFrames() +
-           ::media::SincResampler::kKernelSize / 2;
+    return resampler_->BufferedFrames() + resampler_->KernelSize() / 2;
   }
 
   void SetSampleRate(int sample_rate) override { sample_rate_ = sample_rate; }

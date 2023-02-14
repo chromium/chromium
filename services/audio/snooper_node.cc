@@ -32,13 +32,8 @@ constexpr base::TimeDelta kDelayBufferSize = base::Milliseconds(1000);
 // tones 1 Hz away from 1000 Hz.
 constexpr int kStepBasisHz = 1000;
 
-// The number of frames the resampler should request at a time. Three kernel's
-// worth is an arbitrary choice, but performs well since the lock guarding
-// access to the delay buffer is only held a reasonably short time during the
-// data extraction.
-// Since the kernel size has been jacked up to 64 from 32, 2 * kernels is a
-// preferred choice. See also crbug.com/1407622.
-constexpr int kResamplerRequestSize = 2 * media::SincResampler::kKernelSize;
+// The number of frames the resampler should request at a time.
+constexpr int kResamplerRequestSize = media::SincResampler::kSmallRequestSize;
 
 // Returns the deviation, around an estimated reference time, beyond which a
 // SnooperNode considers a skip in input/output to have occurred.

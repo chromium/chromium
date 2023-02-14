@@ -66,6 +66,9 @@ class MEDIA_EXPORT MultiChannelResampler {
   // See SincResampler::PrimeWithSilence.
   void PrimeWithSilence();
 
+  // See SincResampler::KernelSize().
+  int KernelSize() const;
+
  private:
   // SincResampler::ReadCB implementation.  ProvideInput() will be called for
   // each channel (in channel order) as SincResampler needs more data.

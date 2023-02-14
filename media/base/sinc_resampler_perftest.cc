@@ -19,16 +19,20 @@ static const int kBenchmarkIterations = 50000000;
 static const double kSampleRateRatio = 192000.0 / 44100.0;
 static const double kKernelInterpolationFactor = 0.5;
 
-static void RunConvolveBenchmark(
-    float (*convolve_fn)(const float*, const float*, const float*, double),
-    bool aligned,
-    const std::string& trace_name) {
+static void RunConvolveBenchmark(float (*convolve_fn)(const int,
+                                                      const float*,
+                                                      const float*,
+                                                      const float*,
+                                                      double),
+                                 bool aligned,
+                                 const std::string& trace_name) {
   SincResampler resampler(kSampleRateRatio, SincResampler::kDefaultRequestSize,
                           base::DoNothing());
 
   base::TimeTicks start = base::TimeTicks::Now();
   for (int i = 0; i < kBenchmarkIterations; ++i) {
-    convolve_fn(resampler.get_kernel_for_testing() + (aligned ? 0 : 1),
+    convolve_fn(resampler.KernelSize(),
+                resampler.get_kernel_for_testing() + (aligned ? 0 : 1),
                 resampler.get_kernel_for_testing(),
                 resampler.get_kernel_for_testing(), kKernelInterpolationFactor);
   }
