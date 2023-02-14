@@ -11,20 +11,20 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.chromiumos",
-    cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    os = os.LINUX_DEFAULT,
+    builder_group = "chromium.chromiumos",
     pool = ci.DEFAULT_POOL,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
 
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -39,18 +39,19 @@ consoles.console_view(
 
 ci.builder(
     name = "linux-ash-chromium-generator-rel",
-    # This builder gets triggered against multiple branches, so it shouldn't be
-    # bootstrapped
-    bootstrap = False,
+    schedule = "triggered",
+    triggered_by = [],
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "default",
     ),
-    tree_closing = False,
     main_console_view = "main",
+    # This builder gets triggered against multiple branches, so it shouldn't be
+    # bootstrapped
+    bootstrap = False,
+    goma_backend = goma.backend.RBE_PROD,
     notifies = ["chrome-lacros-engprod-alerts"],
-    triggered_by = [],
-    schedule = "triggered",
-    sheriff_rotations = args.ignore_default(None),
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -71,7 +72,6 @@ ci.builder(
             ],
         },
     },
-    goma_backend = goma.backend.RBE_PROD,
     reclient_instance = None,
 )
 
@@ -131,10 +131,10 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "amd64-generic",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
@@ -163,10 +163,10 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "amd64-generic",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
@@ -196,10 +196,10 @@ ci.builder(
             build_config = builder_config.build_config.DEBUG,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "amd64-generic",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
@@ -207,13 +207,14 @@ ci.builder(
         category = "simple|debug|x64",
         short_name = "dbg",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "chromeos-amd64-generic-lacros-dbg",
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -230,20 +231,19 @@ ci.builder(
             build_config = builder_config.build_config.DEBUG,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "amd64-generic",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|x64",
         short_name = "dbg",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -251,30 +251,30 @@ ci.builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
     builder_spec = builder_config.builder_spec(
-        build_gs_bucket = "chromium-chromiumos-archive",
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos", "checkout_lacros_sdk"],
+        ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "amd64-generic",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
             cros_boards_with_qemu_images = "amd64-generic-vm",
         ),
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos", "checkout_lacros_sdk"],
-        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
     ),
     console_view_entry = consoles.console_view_entry(
         category = "simple|release|x64",
         short_name = "rel",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -295,10 +295,10 @@ ci.builder(
             build_config = builder_config.build_config.DEBUG,
             target_arch = builder_config.target_arch.ARM,
             target_bits = 32,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "arm-generic",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
@@ -312,7 +312,12 @@ ci.builder(
 
 ci.builder(
     name = "chromeos-arm-generic-rel",
+    branch_selector = branches.CROS_LTS_MILESTONE,
     builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos"],
+        ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
@@ -322,24 +327,24 @@ ci.builder(
             target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = ["arm-generic"],
         ),
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
     ),
-    branch_selector = branches.CROS_LTS_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "arm",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "chromeos-arm64-generic-rel",
+    branch_selector = branches.CROS_LTS_MILESTONE,
     builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos"],
+        ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
@@ -349,12 +354,7 @@ ci.builder(
             target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = ["arm64-generic"],
         ),
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
     ),
-    branch_selector = branches.CROS_LTS_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "a64",
@@ -383,22 +383,22 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.ARM,
             target_bits = 32,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "jacuzzi",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
+    # TODO(crbug.com/1342987): Add to the sheriff rotation if/when the builder
+    # is stable.
+    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "jcz",
     ),
     main_console_view = "main",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    # TODO(crbug.com/1342987): Add to the sheriff rotation if/when the builder
-    # is stable.
-    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -419,22 +419,22 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "octopus",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
+    # TODO(crbug.com/1342987): Add to the sheriff rotation if/when the builder
+    # is stable.
+    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "oct",
     ),
     main_console_view = "main",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    # TODO(crbug.com/1342987): Add to the sheriff rotation if/when the builder
-    # is stable.
-    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -455,10 +455,10 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "amd64-generic",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
@@ -516,10 +516,10 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "eve",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
             cros_boards_with_qemu_images = [
                 "amd64-generic",
             ],
@@ -530,8 +530,8 @@ ci.builder(
         category = "lacros|x64",
         short_name = "rel",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -554,22 +554,22 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "arm-generic",
                 "jacuzzi",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
+    # TODO(crbug.com/1202631) Enable tree closing when stable.
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|arm",
         short_name = "arm",
     ),
-    # TODO(crbug.com/1202631) Enable tree closing when stable.
-    tree_closing = False,
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -592,28 +592,29 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
             target_cros_boards = [
                 "arm64-generic",
             ],
-            target_platform = builder_config.target_platform.CHROMEOS,
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "lacros|arm64",
-        short_name = "arm64",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    main_console_view = "main",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     # TODO(https://crbug.com/1342761): enable sheriff rotation and tree_closing
     # when the builder is stable.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros|arm64",
+        short_name = "arm64",
+    ),
+    main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "linux-chromeos-dbg",
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -632,13 +633,12 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "default",
         short_name = "dbg",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -664,19 +664,20 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
+    # See crbug.com/1345687. This builder need higher memory.
+    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "default",
         short_name = "rel",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    # See crbug.com/1345687. This builder need higher memory.
-    builderless = False,
 )
 
 ci.builder(
     name = "linux-lacros-builder-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium_no_telemetry_dependencies",
@@ -695,20 +696,21 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    branch_selector = branches.STANDARD_MILESTONE,
+    # See crbug.com/1345687. This builder need higher memory.
+    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "default",
         short_name = "lcr",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    # See crbug.com/1345687. This builder need higher memory.
-    builderless = False,
 )
 
 ci.thin_tester(
     name = "linux-lacros-tester-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["linux-lacros-builder-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -729,15 +731,13 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    branch_selector = branches.STANDARD_MILESTONE,
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "default",
         short_name = "lcr",
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["linux-lacros-builder-rel"],
-    tree_closing = False,
 )
 
 ci.builder(
@@ -761,15 +761,15 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
+    # See crbug.com/1345687. This builder need higher memory.
+    builderless = False,
     console_view_entry = consoles.console_view_entry(
         category = "debug",
         short_name = "lcr",
     ),
-    cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    # See crbug.com/1345687. This builder need higher memory.
-    builderless = False,
 )
 
 # For Chromebox for meetings(CfM)

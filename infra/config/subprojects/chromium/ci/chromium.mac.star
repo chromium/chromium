@@ -11,17 +11,17 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.mac",
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.mac",
+    pool = ci.DEFAULT_POOL,
+    os = os.MAC_DEFAULT,
+    sheriff_rotations = sheriff_rotations.CHROMIUM,
+    tree_closing = True,
+    main_console_view = "main",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    main_console_view = "main",
-    os = os.MAC_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    sheriff_rotations = sheriff_rotations.CHROMIUM,
     thin_tester_cores = 8,
-    tree_closing = True,
 )
 
 consoles.console_view(
@@ -101,12 +101,12 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-mac-archive",
     ),
+    os = os.MAC_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "debug",
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
-    os = os.MAC_ANY,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
@@ -132,12 +132,12 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",
         short_name = "a64",
     ),
-    cpu = cpu.ARM64,
-    os = os.MAC_DEFAULT,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
@@ -161,11 +161,11 @@ ci.builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",
         short_name = "bld",
     ),
-    os = os.MAC_DEFAULT,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
@@ -174,6 +174,7 @@ ci.builder(
 ci.thin_tester(
     name = "mac11-arm64-rel-tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/mac-arm64-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -190,17 +191,17 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",
         short_name = "11",
     ),
-    tree_closing = False,
-    triggered_by = ["ci/mac-arm64-rel"],
 )
 
 ci.thin_tester(
     name = "mac12-arm64-rel-tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/mac-arm64-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -217,17 +218,17 @@ ci.thin_tester(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",
         short_name = "12",
     ),
-    tree_closing = False,
-    triggered_by = ["ci/mac-arm64-rel"],
 )
 
 ci.thin_tester(
     name = "Mac10.13 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/Mac Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -253,12 +254,12 @@ ci.thin_tester(
         short_name = "13",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Mac Builder"],
 )
 
 ci.thin_tester(
     name = "Mac10.14 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/Mac Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -281,12 +282,12 @@ ci.thin_tester(
         short_name = "14",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Mac Builder"],
 )
 
 ci.thin_tester(
     name = "Mac10.15 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/Mac Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -309,12 +310,12 @@ ci.thin_tester(
         short_name = "15",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Mac Builder"],
 )
 
 ci.thin_tester(
     name = "Mac11 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/Mac Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -335,12 +336,12 @@ ci.thin_tester(
         category = "mac",
         short_name = "11",
     ),
-    triggered_by = ["ci/Mac Builder"],
 )
 
 ci.thin_tester(
     name = "Mac12 Tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/Mac Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -361,12 +362,12 @@ ci.thin_tester(
         category = "mac",
         short_name = "12",
     ),
-    triggered_by = ["ci/Mac Builder"],
 )
 
 ci.thin_tester(
     name = "Mac12 Tests (dbg)",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/Mac Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -383,13 +384,12 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-mac-archive",
     ),
+    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "debug",
         short_name = "12",
     ),
     cq_mirrors_console_view = "mirrors",
-    sheriff_rotations = args.ignore_default(None),
-    triggered_by = ["ci/Mac Builder (dbg)"],
 )
 
 ios_builder(
@@ -576,10 +576,10 @@ ios_builder(
             short_name = "non",
         ),
     ],
-    # We don't have necessary capacity to run this configuration in CQ, but it
-    # is part of the main waterfall
-    xcode = xcode.x14main,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
+    # We don't have necessary capacity to run this configuration in CQ, but it
+    # is part of the main waterfall
+    xcode = xcode.x14main,
 )

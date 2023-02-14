@@ -10,21 +10,21 @@ load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
+    executable = try_.DEFAULT_EXECUTABLE,
     builder_group = "tryserver.chromium.win",
+    pool = try_.DEFAULT_POOL,
     builderless = True,
     cores = 8,
-    orchestrator_cores = 2,
+    os = os.WINDOWS_DEFAULT,
     compilator_cores = 32,
-    executable = try_.DEFAULT_EXECUTABLE,
+    compilator_goma_jobs = goma.jobs.J300,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    compilator_goma_jobs = goma.jobs.J300,
-    os = os.WINDOWS_DEFAULT,
-    pool = try_.DEFAULT_POOL,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
+    orchestrator_cores = 2,
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.list_view(
@@ -41,8 +41,8 @@ try_.builder(
     mirrors = [
         "ci/win-asan",
     ],
-    goma_jobs = goma.jobs.J150,
     execution_timeout = 6 * time.hour,
+    goma_jobs = goma.jobs.J150,
 )
 
 try_.builder(
@@ -59,10 +59,10 @@ try_.builder(
 try_.builder(
     name = "win-libfuzzer-asan-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    builderless = False,
     executable = "recipe:chromium_libfuzzer_trybot",
-    main_list_view = "try",
+    builderless = False,
     os = os.WINDOWS_ANY,
+    main_list_view = "try",
     tryjob = try_.job(),
 )
 
@@ -83,6 +83,9 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
+    builderless = False,
+    cores = 16,
+    ssd = True,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(
@@ -90,9 +93,6 @@ try_.builder(
         # out builder cache
         cancel_stale = False,
     ),
-    builderless = False,
-    cores = 16,
-    ssd = True,
 )
 
 try_.builder(
@@ -116,12 +116,12 @@ try_.builder(
 
 try_.builder(
     name = "win_upload_clang",
+    executable = "recipe:chromium_upload_clang",
     builderless = False,
     cores = 32,
-    executable = "recipe:chromium_upload_clang",
-    goma_backend = None,
     os = os.WINDOWS_ANY,
     execution_timeout = 6 * time.hour,
+    goma_backend = None,
 )
 
 try_.builder(
@@ -155,9 +155,9 @@ try_.builder(
         "ci/Win11 Tests x64",
     ],
     builderless = True,
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
     os = os.WINDOWS_10,
+    coverage_test_types = ["unit", "overall"],
+    use_clang_coverage = True,
 )
 
 try_.builder(
@@ -173,8 +173,6 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "win10_chromium_x64_rel_ng",
-    check_for_flakiness = True,
-    compilator = "win10_chromium_x64_rel_ng-compilator",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     mirrors = [
         "ci/Win x64 Builder",
@@ -187,13 +185,15 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    use_clang_coverage = True,
+    check_for_flakiness = True,
+    compilator = "win10_chromium_x64_rel_ng-compilator",
     coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
-    tryjob = try_.job(),
     experiments = {
         "remove_src_checkout_experiment": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
+    use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     #use_orchestrator_pool = True,
@@ -201,11 +201,11 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "win10_chromium_x64_rel_ng-compilator",
-    check_for_flakiness = True,
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    main_list_view = "try",
+    check_for_flakiness = True,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -222,10 +222,10 @@ try_.builder(
         "ci/Win7 Tests (1)",
     ],
     cores = 16,
+    ssd = True,
     execution_timeout = 4 * time.hour + 30 * time.minute,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
-    ssd = True,
     tryjob = try_.job(
         location_filters = [
             "sandbox/win/.+",
@@ -236,8 +236,8 @@ try_.builder(
 
 try_.builder(
     name = "win-fieldtrial-rel",
-    os = os.WINDOWS_DEFAULT,
     mirrors = ["ci/win-fieldtrial-rel"],
+    os = os.WINDOWS_DEFAULT,
 )
 
 try_.builder(
@@ -249,6 +249,7 @@ try_.builder(
 
 try_.gpu.optional_tests_builder(
     name = "win_optional_gpu_tests_rel",
+    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -269,10 +270,9 @@ try_.gpu.optional_tests_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     builderless = True,
-    main_list_view = "try",
     os = os.WINDOWS_DEFAULT,
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "chrome/browser/vr/.+",

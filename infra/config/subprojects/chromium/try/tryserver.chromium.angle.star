@@ -8,21 +8,21 @@ load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
+    executable = try_.DEFAULT_EXECUTABLE,
     builder_group = "tryserver.chromium.angle",
+    pool = try_.DEFAULT_POOL,
     builderless = False,
     cores = 8,
-    executable = try_.DEFAULT_EXECUTABLE,
+    os = os.LINUX_DEFAULT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     goma_jobs = goma.jobs.J150,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-    os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
-    service_account = try_.gpu.SERVICE_ACCOUNT,
 
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    service_account = try_.gpu.SERVICE_ACCOUNT,
 )
 
 consoles.list_view(
@@ -46,19 +46,19 @@ try_.builder(
 
 try_.builder(
     name = "mac-angle-chromium-try",
+    executable = "recipe:angle_chromium_trybot",
     cores = None,
     os = os.MAC_ANY,
-    executable = "recipe:angle_chromium_trybot",
 )
 
 try_.builder(
     name = "win-angle-chromium-x64-try",
-    os = os.WINDOWS_ANY,
     executable = "recipe:angle_chromium_trybot",
+    os = os.WINDOWS_ANY,
 )
 
 try_.builder(
     name = "win-angle-chromium-x86-try",
-    os = os.WINDOWS_ANY,
     executable = "recipe:angle_chromium_trybot",
+    os = os.WINDOWS_ANY,
 )

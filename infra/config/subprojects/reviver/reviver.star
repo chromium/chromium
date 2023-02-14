@@ -36,10 +36,10 @@ consoles.list_view(
 defaults.set(
     bucket = "reviver",
     list_view = "reviver",
-    service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
 
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
+    service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
 def target_builder(*, name):
@@ -54,8 +54,10 @@ def target_builder(*, name):
 builder(
     name = "android-launcher",
     executable = "recipe:chromium_polymorphic/launcher",
-    os = os.LINUX_DEFAULT,
+    # To avoid peak hours, we run it at 1 AM, 4 AM, 7 AM, 10AM, 1 PM UTC.
+    schedule = "0 1,4,7,10,13 * * *",
     pool = "luci.chromium.ci",
+    os = os.LINUX_DEFAULT,
     properties = {
         "runner_builder": {
             "project": "chromium",
@@ -71,8 +73,6 @@ builder(
             ),
         ],
     },
-    # To avoid peak hours, we run it at 1 AM, 4 AM, 7 AM, 10AM, 1 PM UTC.
-    schedule = "0 1,4,7,10,13 * * *",
 )
 
 # A coordinator of slightly aggressive scheduling with effectively unlimited
@@ -80,8 +80,10 @@ builder(
 builder(
     name = "fuchsia-coordinator",
     executable = "recipe:chromium_polymorphic/launcher",
-    os = os.LINUX_DEFAULT,
+    # Avoid peak hours.
+    schedule = "0 1,3,5,7,9,11,13 * * *",
     pool = "luci.chromium.ci",
+    os = os.LINUX_DEFAULT,
     properties = {
         "runner_builder": {
             "project": "chromium",
@@ -100,27 +102,25 @@ builder(
             ),
         ],
     },
-    # Avoid peak hours.
-    schedule = "0 1,3,5,7,9,11,13 * * *",
 )
 
 builder(
     name = "runner",
     executable = "recipe:reviver/chromium/runner",
+    pool = ci.DEFAULT_POOL,
+    builderless = 1,
+    os = os.LINUX_DEFAULT,
+    cpu = cpu.X86_64,
+    ssd = False,
+    free_space = free_space.standard,
     auto_builder_dimension = False,
     execution_timeout = 6 * time.hour,
-    pool = ci.DEFAULT_POOL,
-    # TODO(crbug/1346396) Remove this once the reviver service account has
-    # necessary permissions
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     resultdb_bigquery_exports = [
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.reviver_test_results",
         ),
     ],
-    builderless = 1,
-    cpu = cpu.X86_64,
-    free_space = free_space.standard,
-    os = os.LINUX_DEFAULT,
-    ssd = False,
+    # TODO(crbug/1346396) Remove this once the reviver service account has
+    # necessary permissions
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )

@@ -11,40 +11,43 @@ load("//lib/try.star", "try_")
 load("//project.star", "settings")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.fuchsia",
-    cores = 8,
-    orchestrator_cores = 2,
-    compilator_cores = 16,
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.fuchsia",
+    pool = try_.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    compilator_cores = 16,
+    compilator_goma_jobs = goma.jobs.J150,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    compilator_goma_jobs = goma.jobs.J150,
-    os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
+    orchestrator_cores = 2,
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.list_view(
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     name = "tryserver.chromium.fuchsia",
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
 )
 
 # TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
 try_.builder(
     name = "fuchsia-arm64-cast",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    main_list_view = "try",
     mirrors = [
         "ci/fuchsia-arm64-cast-receiver-rel",
     ],
+    main_list_view = "try",
 )
 
 try_.builder(
     name = "fuchsia-arm64-cast-receiver-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    mirrors = [
+        "ci/fuchsia-arm64-cast-receiver-rel",
+    ],
     main_list_view = "try",
     # This is the only bot that builds //chromecast code for Fuchsia on ARM64
     # so trigger it when changes are made.
@@ -53,9 +56,6 @@ try_.builder(
             "chromecast/.+",
         ],
     ),
-    mirrors = [
-        "ci/fuchsia-arm64-cast-receiver-rel",
-    ],
 )
 
 try_.builder(
@@ -68,25 +68,25 @@ try_.builder(
 try_.builder(
     name = "fuchsia-arm64-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
     mirrors = [
         "ci/fuchsia-arm64-rel",
     ],
+    builderless = not settings.is_main,
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.builder(
     name = "fuchsia-binary-size",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    executable = "recipe:binary_size_fuchsia_trybot",
     builderless = not settings.is_main,
     cores = 16 if settings.is_main else 8,
-    executable = "recipe:binary_size_fuchsia_trybot",
     goma_jobs = goma.jobs.J150,
     properties = {
         "$build/binary_size": {
@@ -103,19 +103,19 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-compile-x64-dbg",
-    tryjob = try_.job(
-        location_filters = [
-            "base/fuchsia/.+",
-            "fuchsia/.+",
-            "media/fuchsia/.+",
-        ],
-    ),
     mirrors = [
         "ci/fuchsia-x64-dbg",
     ],
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
+    ),
+    tryjob = try_.job(
+        location_filters = [
+            "base/fuchsia/.+",
+            "fuchsia/.+",
+            "media/fuchsia/.+",
+        ],
     ),
 )
 
@@ -138,32 +138,32 @@ try_.builder(
 try_.builder(
     name = "fuchsia-x64-cast",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
     mirrors = [
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
+    builderless = not settings.is_main,
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+    main_list_view = "try",
 )
 
 try_.builder(
     name = "fuchsia-x64-cast-receiver-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
     mirrors = [
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
+    builderless = not settings.is_main,
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -176,7 +176,6 @@ try_.builder(
 try_.builder(
     name = "fuchsia-x64-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    main_list_view = "try",
     mirrors = [
         "ci/fuchsia-x64-rel",
     ],
@@ -185,6 +184,7 @@ try_.builder(
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -196,30 +196,30 @@ try_.builder(
 try_.builder(
     name = "fuchsia_arm64",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
     mirrors = [
         "ci/fuchsia-arm64-rel",
     ],
+    builderless = not settings.is_main,
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+    main_list_view = "try",
 )
 
 # TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
 try_.builder(
     name = "fuchsia_x64",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
     mirrors = [
         "ci/fuchsia-x64-rel",
     ],
+    builderless = not settings.is_main,
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+    main_list_view = "try",
 )

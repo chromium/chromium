@@ -7,6 +7,11 @@ load("//lib/try.star", "try_")
 
 try_.defaults.set(
     bucket = "try",
+    executable = "recipe:chromium_trybot",
+    pool = "luci.chromium.try",
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    cpu = cpu.X86_64,
     build_numbers = True,
     caches = [
         swarming.cache(
@@ -14,21 +19,16 @@ try_.defaults.set(
             path = "win_toolchain",
         ),
     ],
-    cores = 8,
-    cpu = cpu.X86_64,
     cq_group = "cq",
-    executable = "recipe:chromium_trybot",
     execution_timeout = 6 * time.hour,
     # Max. pending time for builds. CQ considers builds pending >2h as timed
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
     expiration_timeout = 2 * time.hour,
-    os = os.LINUX_DEFAULT,
-    pool = "luci.chromium.try",
+    # TODO(crbug.com/1362440): remove this.
+    omit_python2 = False,
     service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     subproject_list_view = "luci.chromium.try",
     task_template_canary_percentage = 5,
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 # Builders appear after the function used to define them, with all builders
@@ -55,64 +55,64 @@ def gpu_android_builder(*, name, **kwargs):
 
 gpu_android_builder(
     name = "gpu-fyi-try-android-l-nexus-5-32",
-    pool = "luci.chromium.gpu.android.nexus5.try",
     mirrors = [
         "ci/GPU FYI Android arm Builder",
         "ci/Android FYI Release (Nexus 5)",
     ],
+    pool = "luci.chromium.gpu.android.nexus5.try",
 )
 
 gpu_android_builder(
     name = "gpu-fyi-try-android-m-nexus-5x-64",
-    pool = "luci.chromium.gpu.android.nexus5x.try",
     mirrors = [
         "ci/GPU FYI Android arm64 Builder",
         "ci/Android FYI Release (Nexus 5X)",
     ],
+    pool = "luci.chromium.gpu.android.nexus5x.try",
 )
 
 gpu_android_builder(
     name = "gpu-fyi-try-android-nvidia-shield-tv",
-    pool = "luci.chromium.gpu.android.nvidia.shield.tv.try",
     mirrors = [
         "ci/GPU FYI Android arm Builder",
         "ci/Android FYI Release (NVIDIA Shield TV)",
     ],
+    pool = "luci.chromium.gpu.android.nvidia.shield.tv.try",
 )
 
 gpu_android_builder(
     name = "gpu-fyi-try-android-p-pixel-2-32",
-    pool = "luci.chromium.gpu.android.pixel2.chromium.try",
     mirrors = [
         "ci/GPU FYI Android arm Builder",
         "ci/Android FYI Release (Pixel 2)",
     ],
+    pool = "luci.chromium.gpu.android.pixel2.chromium.try",
 )
 
 gpu_android_builder(
     name = "gpu-fyi-try-android-r-pixel-4-32",
-    pool = "luci.chromium.gpu.android.pixel4.try",
     mirrors = [
         "ci/GPU FYI Android arm Builder",
         "ci/Android FYI Release (Pixel 4)",
     ],
+    pool = "luci.chromium.gpu.android.pixel4.try",
 )
 
 gpu_android_builder(
     name = "gpu-fyi-try-android-pixel-6-64",
-    pool = "luci.chromium.gpu.android.pixel6.try",
     mirrors = [
         "ci/GPU FYI Android arm64 Builder",
         "ci/Android FYI Release (Pixel 6)",
     ],
+    pool = "luci.chromium.gpu.android.pixel6.try",
 )
 
 gpu_android_builder(
     name = "gpu-try-android-m-nexus-5x-64",
-    pool = "luci.chromium.gpu.android.nexus5x.try",
     mirrors = [
         "ci/Android Release (Nexus 5X)",
     ],
+    pool = "luci.chromium.gpu.android.nexus5x.try",
 )
 
 def gpu_chromeos_builder(*, name, **kwargs):
@@ -322,11 +322,11 @@ gpu_mac_builder(
 
 gpu_mac_builder(
     name = "gpu-fyi-try-mac-nvidia-retina-exp",
+    pool = "luci.chromium.gpu.mac.retina.nvidia.try",
     # This bot has one machine backing its tests at the moment.
     # If it gets more, the modified execution_timeout should be removed.
     # See crbug.com/853307 for more context.
     execution_timeout = 12 * time.hour,
-    pool = "luci.chromium.gpu.mac.retina.nvidia.try",
 )
 
 gpu_mac_builder(

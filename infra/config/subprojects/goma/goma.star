@@ -98,8 +98,8 @@ fyi_goma_rbe_canary_builder(
         ),
     ),
     cores = 4,
-    goma_jobs = goma.jobs.J80,
     os = os.MAC_DEFAULT,
+    goma_jobs = goma.jobs.J80,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -119,9 +119,9 @@ fyi_goma_rbe_canary_builder(
         ),
     ),
     cores = None,
-    goma_jobs = goma.jobs.J80,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
+    goma_jobs = goma.jobs.J80,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -221,8 +221,8 @@ fyi_goma_rbe_canary_builder(
         ),
     ),
     cores = 4,
-    goma_jobs = goma.jobs.J80,
     os = os.MAC_DEFAULT,
+    goma_jobs = goma.jobs.J80,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -240,8 +240,8 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    goma_enable_ats = False,
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = False,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -260,8 +260,8 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    goma_enable_ats = False,
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = False,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -281,8 +281,8 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    goma_enable_ats = False,
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = False,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -300,8 +300,8 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    goma_enable_ats = True,
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = True,
 )
 
 fyi_goma_rbe_canary_builder(
@@ -320,8 +320,8 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    goma_enable_ats = True,
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = True,
 )
 
 def fyi_goma_rbe_latest_client_builder(
@@ -374,8 +374,8 @@ fyi_goma_rbe_latest_client_builder(
         ),
     ),
     cores = 4,
-    goma_jobs = goma.jobs.J80,
     os = os.MAC_DEFAULT,
+    goma_jobs = goma.jobs.J80,
 )
 
 fyi_goma_rbe_latest_client_builder(
@@ -393,8 +393,8 @@ fyi_goma_rbe_latest_client_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    goma_enable_ats = False,
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = False,
 )
 
 fyi_goma_rbe_latest_client_builder(
@@ -413,8 +413,8 @@ fyi_goma_rbe_latest_client_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    goma_enable_ats = False,
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = False,
 )
 
 fyi_goma_rbe_latest_client_builder(
@@ -432,8 +432,8 @@ fyi_goma_rbe_latest_client_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    goma_enable_ats = True,
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = True,
 )
 
 fyi_goma_rbe_latest_client_builder(
@@ -452,8 +452,8 @@ fyi_goma_rbe_latest_client_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    goma_enable_ats = True,
     os = os.WINDOWS_DEFAULT,
+    goma_enable_ats = True,
 )
 
 fyi_goma_rbe_latest_client_builder(
@@ -553,8 +553,8 @@ fyi_goma_rbe_latest_client_builder(
         ),
     ),
     cores = 4,
-    goma_jobs = goma.jobs.J80,
     os = os.MAC_DEFAULT,
+    goma_jobs = goma.jobs.J80,
 )
 
 def goma_builder(
@@ -573,22 +573,22 @@ def goma_builder(
 
 goma_builder(
     name = "Chromium Android ARM 32-bit Goma RBE Staging",
-    goma_backend = goma.backend.RBE_STAGING,
     execution_timeout = 5 * time.hour,
+    goma_backend = goma.backend.RBE_STAGING,
 )
 
 goma_builder(
     name = "Chromium Android ARM 32-bit Goma RBE ToT",
+    execution_timeout = 5 * time.hour,
     goma_backend = goma.backend.RBE_TOT,
     goma_enable_ats = False,
-    execution_timeout = 5 * time.hour,
 )
 
 goma_builder(
     name = "Chromium Android ARM 32-bit Goma RBE ToT (ATS)",
+    execution_timeout = 5 * time.hour,
     goma_backend = goma.backend.RBE_TOT,
     goma_enable_ats = True,
-    execution_timeout = 5 * time.hour,
 )
 
 goma_builder(
@@ -661,8 +661,8 @@ def goma_mac_builder(
 
 goma_mac_builder(
     name = "Chromium iOS Goma RBE ToT",
-    goma_backend = goma.backend.RBE_TOT,
     os = os.MAC_DEFAULT,
+    goma_backend = goma.backend.RBE_TOT,
     xcode = xcode.x13main,
 )
 
