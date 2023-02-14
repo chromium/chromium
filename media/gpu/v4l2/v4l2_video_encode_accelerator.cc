@@ -1593,13 +1593,9 @@ void V4L2VideoEncodeAccelerator::RequestEncodingParametersChangeTask(
   if (current_bitrate_ != bitrate) {
     switch (bitrate.mode()) {
       case Bitrate::Mode::kVariable:
-        if (!device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
-                                  {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE_PEAK,
-                                               bitrate.peak_bps())})) {
-          VLOGF(1) << "Failed to change peak bitrate";
-          NOTIFY_ERROR(kPlatformFailureError);
-          return;
-        }
+        device_->SetExtCtrls(V4L2_CTRL_CLASS_MPEG,
+                             {V4L2ExtCtrl(V4L2_CID_MPEG_VIDEO_BITRATE_PEAK,
+                                          bitrate.peak_bps())});
 
         // Both the average and peak bitrate are to be set in VBR.
         // Only the average bitrate are to be set in CBR.
