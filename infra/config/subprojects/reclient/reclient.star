@@ -29,26 +29,26 @@ luci.bucket(
 
 ci.defaults.set(
     bucket = "reclient",
-    build_numbers = True,
+    executable = "recipe:chromium",
+    triggered_by = ["chromium-gitiles-trigger"],
     builder_group = "chromium.reclient.fyi",
+    pool = "luci.chromium.ci",
     cores = 8,
     cpu = cpu.X86_64,
-    executable = "recipe:chromium",
+    free_space = builders.free_space.standard,
+    build_numbers = True,
     execution_timeout = 3 * time.hour,
     goma_backend = None,
-    pool = "luci.chromium.ci",
     service_account = (
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
     ),
-    triggered_by = ["chromium-gitiles-trigger"],
-    free_space = builders.free_space.standard,
 )
 
 consoles.console_view(
     name = "chromium.reclient.fyi",
+    repo = "https://chromium.googlesource.com/chromium/src",
     header = HEADER,
     include_experimental_builds = True,
-    repo = "https://chromium.googlesource.com/chromium/src",
 )
 
 def fyi_reclient_staging_builder(
@@ -130,8 +130,8 @@ fyi_reclient_staging_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    console_view_category = "linux",
     os = os.LINUX_DEFAULT,
+    console_view_category = "linux",
 )
 
 fyi_reclient_test_builder(
@@ -149,8 +149,8 @@ fyi_reclient_test_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    console_view_category = "linux",
     os = os.LINUX_DEFAULT,
+    console_view_category = "linux",
 )
 
 fyi_reclient_staging_builder(
@@ -168,10 +168,10 @@ fyi_reclient_staging_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    console_view_category = "mac",
-    os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
+    os = os.MAC_DEFAULT,
+    console_view_category = "mac",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -193,10 +193,10 @@ fyi_reclient_test_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    console_view_category = "mac",
-    os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
+    os = os.MAC_DEFAULT,
+    console_view_category = "mac",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -220,10 +220,10 @@ fyi_reclient_staging_builder(
         ),
     ),
     builderless = True,
-    console_view_category = "win",
     cores = 32,
-    execution_timeout = 5 * time.hour,
     os = os.WINDOWS_ANY,
+    console_view_category = "win",
+    execution_timeout = 5 * time.hour,
 )
 
 fyi_reclient_test_builder(
@@ -242,38 +242,19 @@ fyi_reclient_test_builder(
         ),
     ),
     builderless = True,
-    console_view_category = "win",
     cores = 32,
-    execution_timeout = 5 * time.hour,
     os = os.WINDOWS_ANY,
+    console_view_category = "win",
+    execution_timeout = 5 * time.hour,
 )
 
 fyi_reclient_staging_builder(
     name = "Simple Chrome Builder reclient staging",
-    console_view_category = "linux",
-    os = os.LINUX_DEFAULT,
     builder_spec = builder_config.builder_spec(
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            cros_boards_with_qemu_images = "amd64-generic-vm",
-        ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = ["chromeos", "reclient_staging"],
         ),
-    ),
-)
-
-fyi_reclient_test_builder(
-    name = "Simple Chrome Builder reclient test",
-    console_view_category = "linux",
-    os = os.LINUX_DEFAULT,
-    builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
@@ -283,11 +264,30 @@ fyi_reclient_test_builder(
             target_platform = builder_config.target_platform.CHROMEOS,
             cros_boards_with_qemu_images = "amd64-generic-vm",
         ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_category = "linux",
+)
+
+fyi_reclient_test_builder(
+    name = "Simple Chrome Builder reclient test",
+    builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = ["chromeos", "reclient_test"],
         ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            cros_boards_with_qemu_images = "amd64-generic-vm",
+        ),
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_category = "linux",
 )
 
 fyi_reclient_test_builder(
@@ -305,15 +305,15 @@ fyi_reclient_test_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    console_view_category = "ios",
-    os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
-    xcode = xcode.x14main,
+    os = os.MAC_DEFAULT,
+    console_view_category = "ios",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
+    xcode = xcode.x14main,
 )
 
 fyi_reclient_staging_builder(
@@ -331,15 +331,15 @@ fyi_reclient_staging_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    console_view_category = "ios",
-    os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
-    xcode = xcode.x14main,
+    os = os.MAC_DEFAULT,
+    console_view_category = "ios",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
+    xcode = xcode.x14main,
 )
 
 fyi_reclient_staging_builder(
@@ -357,10 +357,10 @@ fyi_reclient_staging_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    console_view_category = "mac",
-    os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
+    os = os.MAC_DEFAULT,
+    console_view_category = "mac",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -382,10 +382,10 @@ fyi_reclient_test_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    console_view_category = "mac",
-    os = os.MAC_DEFAULT,
     builderless = True,
     cores = None,
+    os = os.MAC_DEFAULT,
+    console_view_category = "mac",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
@@ -394,20 +394,20 @@ fyi_reclient_test_builder(
 
 ci.builder(
     name = "Comparison Linux (reclient vs reclient remote links)",
+    executable = "recipe:reclient_reclient_comparison",
+    os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "cmp",
     ),
-    executable = "recipe:reclient_reclient_comparison",
     execution_timeout = 6 * time.hour,
-    reclient_cache_silo = "Comparison Linux remote links - cache siloed",
-    os = os.LINUX_DEFAULT,
-    reclient_jobs = reclient.jobs.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_bootstrap_env = {
         "RBE_ip_reset_min_delay": "-1s",
         "RBE_experimental_goma_deps_cache": "true",
         "RBE_deps_cache_mode": "reproxy",
         "RBE_clang_depscan_archive": "true",
     },
+    reclient_cache_silo = "Comparison Linux remote links - cache siloed",
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )

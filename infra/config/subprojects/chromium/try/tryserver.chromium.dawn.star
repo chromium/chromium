@@ -9,13 +9,13 @@ load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.dawn",
-    builderless = False,
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.dawn",
+    pool = try_.DEFAULT_POOL,
+    builderless = False,
+    os = os.LINUX_DEFAULT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     service_account = try_.gpu.SERVICE_ACCOUNT,
@@ -33,6 +33,9 @@ try_.builder(
         "ci/Dawn Android arm DEPS Release (Pixel 4)",
     ],
     main_list_view = "try",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
     tryjob = try_.job(
         location_filters = [
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
@@ -47,9 +50,6 @@ try_.builder(
             cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
             cq.location_filter(path_regexp = "ui/gl/features.gni"),
         ],
-    ),
-    test_presentation = resultdb.test_presentation(
-        grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
@@ -61,7 +61,11 @@ try_.builder(
         "ci/Dawn Linux x64 DEPS Release (Intel UHD 630)",
         "ci/Dawn Linux x64 DEPS Release (NVIDIA)",
     ],
+    goma_backend = None,
     main_list_view = "try",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
     tryjob = try_.job(
         location_filters = [
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
@@ -77,10 +81,6 @@ try_.builder(
             cq.location_filter(path_regexp = "ui/gl/features.gni"),
         ],
     ),
-    test_presentation = resultdb.test_presentation(
-        grouping_keys = ["status", "v.test_suite", "v.gpu"],
-    ),
-    goma_backend = None,
 )
 
 try_.builder(
@@ -92,8 +92,11 @@ try_.builder(
         # "ci/Dawn Mac x64 DEPS Release (AMD)",
         "ci/Dawn Mac x64 DEPS Release (Intel)",
     ],
-    main_list_view = "try",
     os = os.MAC_ANY,
+    main_list_view = "try",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
     tryjob = try_.job(
         location_filters = [
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
@@ -108,9 +111,6 @@ try_.builder(
             cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
             cq.location_filter(path_regexp = "ui/gl/features.gni"),
         ],
-    ),
-    test_presentation = resultdb.test_presentation(
-        grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
@@ -122,8 +122,11 @@ try_.builder(
         "ci/Dawn Win10 x64 DEPS Release (Intel HD 630)",
         "ci/Dawn Win10 x64 DEPS Release (NVIDIA)",
     ],
-    main_list_view = "try",
     os = os.WINDOWS_ANY,
+    main_list_view = "try",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
     tryjob = try_.job(
         location_filters = [
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
@@ -138,9 +141,6 @@ try_.builder(
             cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
             cq.location_filter(path_regexp = "ui/gl/features.gni"),
         ],
-    ),
-    test_presentation = resultdb.test_presentation(
-        grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
@@ -152,8 +152,11 @@ try_.builder(
         "ci/Dawn Win10 x86 DEPS Release (Intel HD 630)",
         "ci/Dawn Win10 x86 DEPS Release (NVIDIA)",
     ],
-    main_list_view = "try",
     os = os.WINDOWS_ANY,
+    main_list_view = "try",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
     tryjob = try_.job(
         location_filters = [
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
@@ -168,9 +171,6 @@ try_.builder(
             cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
             cq.location_filter(path_regexp = "ui/gl/features.gni"),
         ],
-    ),
-    test_presentation = resultdb.test_presentation(
-        grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
 )
 
@@ -198,13 +198,13 @@ try_.builder(
 
 try_.builder(
     name = "mac-dawn-rel",
-    os = os.MAC_ANY,
     mirrors = [
         "ci/Dawn Mac x64 Builder",
         # Not enough capacity on Mac AMD https://crbug.com/1380184.
         # "ci/Dawn Mac x64 Release (AMD)",
         "ci/Dawn Mac x64 Release (Intel)",
     ],
+    os = os.MAC_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -212,13 +212,13 @@ try_.builder(
 
 try_.builder(
     name = "dawn-try-mac-amd-exp",
-    builderless = True,
-    os = os.MAC_ANY,
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
     mirrors = [
         "ci/Dawn Mac x64 Builder",
         "ci/Dawn Mac x64 Experimental Release (AMD)",
     ],
+    pool = "luci.chromium.gpu.mac.retina.amd.try",
+    builderless = True,
+    os = os.MAC_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -226,13 +226,13 @@ try_.builder(
 
 try_.builder(
     name = "dawn-try-mac-intel-exp",
-    builderless = True,
-    os = os.MAC_ANY,
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
     mirrors = [
         "ci/Dawn Mac x64 Builder",
         "ci/Dawn Mac x64 Experimental Release (Intel)",
     ],
+    pool = "luci.chromium.gpu.mac.mini.intel.try",
+    builderless = True,
+    os = os.MAC_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -240,12 +240,12 @@ try_.builder(
 
 try_.builder(
     name = "win-dawn-rel",
-    os = os.WINDOWS_ANY,
     mirrors = [
         "ci/Dawn Win10 x64 Builder",
         "ci/Dawn Win10 x64 Release (Intel HD 630)",
         "ci/Dawn Win10 x64 Release (NVIDIA)",
     ],
+    os = os.WINDOWS_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -253,12 +253,12 @@ try_.builder(
 
 try_.builder(
     name = "dawn-try-win10-x86-rel",
-    os = os.WINDOWS_ANY,
     mirrors = [
         "ci/Dawn Win10 x86 Builder",
         "ci/Dawn Win10 x86 Release (Intel HD 630)",
         "ci/Dawn Win10 x86 Release (NVIDIA)",
     ],
+    os = os.WINDOWS_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -266,10 +266,10 @@ try_.builder(
 
 try_.builder(
     name = "dawn-try-win10-x64-asan-rel",
-    os = os.WINDOWS_ANY,
     mirrors = [
         "ci/Dawn Win10 x64 ASAN Release",
     ],
+    os = os.WINDOWS_ANY,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),

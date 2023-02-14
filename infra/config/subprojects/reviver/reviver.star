@@ -37,59 +37,59 @@ consoles.list_view(
 defaults.set(
     bucket = "reviver",
     list_view = "reviver",
-    service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
 
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
+    service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 
 polymorphic.launcher(
     name = "android-launcher",
+    # To avoid peak hours, we run it at 1 AM, 4 AM, 7 AM, 10AM, 1 PM UTC.
+    schedule = "0 1,4,7,10,13 * * *",
+    pool = ci.DEFAULT_POOL,
+    os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
         "ci/android-nougat-x86-rel",
         "ci/android-pie-x86-rel",
         "ci/android-12-x64-rel",
     ],
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
-    # To avoid peak hours, we run it at 1 AM, 4 AM, 7 AM, 10AM, 1 PM UTC.
-    schedule = "0 1,4,7,10,13 * * *",
 )
 
 # A coordinator of slightly aggressive scheduling with effectively unlimited
 # test bot capacity for fuchsia.
 polymorphic.launcher(
     name = "fuchsia-coordinator",
+    # Avoid peak hours.
+    schedule = "0 1,3,5,7,9,11,13 * * *",
+    pool = ci.DEFAULT_POOL,
+    os = os.LINUX_DEFAULT,
     runner = "reviver/runner",
     target_builders = [
         "ci/fuchsia-fyi-arm64-dbg",
         "ci/fuchsia-fyi-x64-asan",
         "ci/fuchsia-x64-rel",
     ],
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
-    # Avoid peak hours.
-    schedule = "0 1,3,5,7,9,11,13 * * *",
 )
 
 builder(
     name = "runner",
     executable = "recipe:reviver/chromium/runner",
+    pool = ci.DEFAULT_POOL,
+    builderless = 1,
+    os = os.LINUX_DEFAULT,
+    cpu = cpu.X86_64,
+    ssd = False,
+    free_space = free_space.standard,
     auto_builder_dimension = False,
     execution_timeout = 6 * time.hour,
-    pool = ci.DEFAULT_POOL,
-    # TODO(crbug/1346396) Remove this once the reviver service account has
-    # necessary permissions
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     resultdb_bigquery_exports = [
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.reviver_test_results",
         ),
     ],
-    builderless = 1,
-    cpu = cpu.X86_64,
-    free_space = free_space.standard,
-    os = os.LINUX_DEFAULT,
-    ssd = False,
+    # TODO(crbug/1346396) Remove this once the reviver service account has
+    # necessary permissions
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )

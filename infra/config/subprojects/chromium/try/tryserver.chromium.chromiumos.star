@@ -11,15 +11,15 @@ load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.chromiumos",
-    cores = 8,
-    orchestrator_cores = 2,
-    compilator_cores = 32,
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.chromiumos",
+    pool = try_.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    compilator_cores = 32,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
+    orchestrator_cores = 2,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
@@ -52,9 +52,9 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "chromeos-amd64-generic-rel",
-    compilator = "chromeos-amd64-generic-rel-compilator",
     branch_selector = branches.CROS_LTS_MILESTONE,
     mirrors = ["ci/chromeos-amd64-generic-rel"],
+    compilator = "chromeos-amd64-generic-rel-compilator",
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -65,8 +65,8 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-compilator",
     branch_selector = branches.CROS_LTS_MILESTONE,
-    main_list_view = "try",
     cores = 16,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -116,24 +116,16 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "lacros-amd64-generic-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
+    cores = None,
     # TODO (crbug.com/1287228): Set correct values once bots are set up
     ssd = None,
-    cores = None,
+    main_list_view = "try",
 )
 
 try_.builder(
     name = "lacros-amd64-generic-rel-skylab-fyi",
     branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb", "mb_no_luci_auth"],
-            target_bits = 64,
-            target_cros_boards = "eve",
-            cros_boards_with_qemu_images = "amd64-generic",
-            target_platform = "chromeos",
-        ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
@@ -141,13 +133,21 @@ try_.builder(
                 "checkout_lacros_sdk",
             ],
         ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb", "mb_no_luci_auth"],
+            target_bits = 64,
+            target_platform = "chromeos",
+            target_cros_boards = "eve",
+            cros_boards_with_qemu_images = "amd64-generic",
+        ),
+        build_gs_bucket = "chromium-fyi-archive",
         skylab_upload_location = builder_config.skylab_upload_location(
             gs_bucket = "gs://lacros-amd64-generic-rel-skylab-try",
         ),
         test_results_config = builder_config.test_results_config(
             config = "staging_server",
         ),
-        build_gs_bucket = "chromium-fyi-archive",
     ),
     builderless = not settings.is_main,
     main_list_view = "try",
@@ -163,10 +163,10 @@ try_.builder(
 
 try_.builder(
     name = "lacros-arm-generic-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/lacros-arm-generic-rel",
     ],
-    branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -174,15 +174,16 @@ try_.builder(
 
 try_.builder(
     name = "lacros-arm64-generic-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/lacros-arm64-generic-rel",
     ],
-    branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
 )
 
 try_.builder(
     name = "linux-chromeos-compile-dbg",
+    branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/linux-chromeos-dbg",
     ],
@@ -190,7 +191,6 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -230,15 +230,15 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "linux-chromeos-rel",
+    branch_selector = branches.CROS_LTS_MILESTONE,
     mirrors = [
         "ci/linux-chromeos-rel",
     ],
     compilator = "linux-chromeos-rel-compilator",
-    branch_selector = branches.CROS_LTS_MILESTONE,
-    main_list_view = "try",
-    use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
+    main_list_view = "try",
     tryjob = try_.job(),
+    use_clang_coverage = True,
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -247,8 +247,8 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-chromeos-rel-compilator",
     branch_selector = branches.CROS_LTS_MILESTONE,
-    main_list_view = "try",
     goma_jobs = goma.jobs.J300,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -261,13 +261,13 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "linux-lacros-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/linux-lacros-builder-rel",
         "ci/linux-lacros-tester-rel",
     ],
-    branch_selector = branches.STANDARD_MILESTONE,
-    compilator = "linux-lacros-rel-compilator",
     check_for_flakiness = True,
+    compilator = "linux-lacros-rel-compilator",
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -278,18 +278,18 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-lacros-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
     goma_jobs = goma.jobs.J300,
+    main_list_view = "try",
 )
 
 try_.builder(
     name = "linux-chromeos-dbg",
-    mirrors = [
-        "ci/linux-chromeos-dbg",
-    ],
     # The CI builder that this mirrors is enabled on branches, so this will
     # allow testing changes that would break it before submitting
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/linux-chromeos-dbg",
+    ],
 )
 
 try_.builder(
@@ -301,6 +301,9 @@ try_.builder(
     mirrors = [
         "ci/linux-cfm-rel",
     ],
+    goma_backend = None,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
             "chromeos/ash/components/chromebox_for_meetings/.+",
@@ -312,9 +315,6 @@ try_.builder(
             "chrome/test/data/webui/chromeos/chromebox_for_meetings/.+",
         ],
     ),
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 # RTS builders
@@ -330,9 +330,9 @@ try_.builder(
         ),
     ),
     builderless = False,
-    use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
         experiment_percentage = 5,
     ),
+    use_clang_coverage = True,
 )

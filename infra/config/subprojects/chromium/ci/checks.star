@@ -18,16 +18,16 @@ consoles.console_view(
 
 ci.builder(
     name = "linux-presubmit",
+    executable = "recipe:presubmit",
+    builderless = True,
+    cores = 32,
+    os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         console_view = "checks",
         category = "presubmit",
         short_name = "linux",
     ),
-    cores = 32,
-    builderless = True,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    os = os.LINUX_DEFAULT,
-    executable = "recipe:presubmit",
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,

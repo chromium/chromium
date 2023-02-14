@@ -11,18 +11,18 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.win",
-    cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.win",
+    pool = ci.DEFAULT_POOL,
+    cores = 8,
+    os = os.WINDOWS_DEFAULT,
+    sheriff_rotations = sheriff_rotations.CHROMIUM,
+    tree_closing = True,
+    main_console_view = "main",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
-    main_console_view = "main",
-    os = os.WINDOWS_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    sheriff_rotations = sheriff_rotations.CHROMIUM,
-    tree_closing = True,
 )
 
 consoles.console_view(
@@ -40,6 +40,7 @@ consoles.console_view(
 
 ci.builder(
     name = "WebKit Win10",
+    triggered_by = ["Win Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -60,7 +61,6 @@ ci.builder(
         category = "misc",
         short_name = "wbk",
     ),
-    triggered_by = ["Win Builder"],
 )
 
 ci.builder(
@@ -81,12 +81,12 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    cores = 32,
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "release|builder",
         short_name = "32",
     ),
-    cores = 32,
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
@@ -106,16 +106,17 @@ ci.builder(
         build_gs_bucket = "chromium-win-archive",
     ),
     builderless = True,
+    cores = 32,
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "debug|builder",
         short_name = "64",
     ),
-    cores = 32,
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
     name = "Win10 Tests x64 (dbg)",
+    triggered_by = ["Win x64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -131,18 +132,18 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    # Too flaky. See crbug.com/876224 for more details.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "debug|tester",
         short_name = "10",
     ),
-    triggered_by = ["Win x64 Builder (dbg)"],
-    # Too flaky. See crbug.com/876224 for more details.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
 )
 
 ci.thin_tester(
     name = "Win7 (32) Tests",
+    triggered_by = ["Win Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -163,12 +164,12 @@ ci.thin_tester(
         category = "release|tester",
         short_name = "32",
     ),
-    triggered_by = ["Win Builder"],
 )
 
 ci.builder(
     name = "Win7 Tests (1)",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["Win Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -186,18 +187,17 @@ ci.builder(
         build_gs_bucket = "chromium-win-archive",
     ),
     builderless = True,
+    os = os.WINDOWS_10,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
         short_name = "32",
     ),
-    os = os.WINDOWS_10,
-    triggered_by = ["Win Builder"],
 )
 
 ci.builder(
     name = "Win 7 Tests x64 (1)",
-    builderless = True,
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/Win x64 Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -214,13 +214,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    builderless = True,
+    os = os.WINDOWS_10,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
-    os = os.WINDOWS_10,
-    triggered_by = ["ci/Win x64 Builder"],
 )
 
 ci.builder(
@@ -240,13 +240,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    cores = 32,
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "debug|builder",
         short_name = "32",
     ),
-    cores = 32,
     cq_mirrors_console_view = "mirrors",
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
@@ -270,18 +270,19 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    cores = 32,
+    os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "release|builder",
         short_name = "64",
     ),
-    cores = 32,
     cq_mirrors_console_view = "mirrors",
-    os = os.WINDOWS_ANY,
 )
 
 ci.builder(
     name = "Win10 Tests x64",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    triggered_by = ["ci/Win x64 Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -306,11 +307,11 @@ ci.builder(
         short_name = "w10",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Win x64 Builder"],
 )
 
 ci.thin_tester(
     name = "Win11 Tests x64",
+    triggered_by = ["ci/Win x64 Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -330,22 +331,21 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-win-archive",
     ),
+    # TODO(kuanhuang): Add back to sheriff rotation after verified green.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
         short_name = "w11",
     ),
-    triggered_by = ["ci/Win x64 Builder"],
-    # TODO(kuanhuang): Add back to sheriff rotation after verified green.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
 )
 
 ci.builder(
     name = "Windows deterministic",
+    executable = "recipe:swarming/deterministic_build",
     console_view_entry = consoles.console_view_entry(
         category = "misc",
         short_name = "det",
     ),
-    executable = "recipe:swarming/deterministic_build",
     execution_timeout = 12 * time.hour,
 )

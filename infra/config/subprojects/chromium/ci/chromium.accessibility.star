@@ -9,15 +9,15 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.accessibility",
-    cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.accessibility",
+    pool = ci.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     notifies = ["cr-accessibility"],
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
@@ -28,14 +28,14 @@ consoles.console_view(
 ci.builder(
     name = "linux-blink-web-tests-force-accessibility-rel",
     builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
-        ),
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
         ),
     ),
     console_view_entry = consoles.console_view_entry(
