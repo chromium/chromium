@@ -47,6 +47,16 @@
 
 namespace updater {
 
+namespace {
+
+std::string ReadPlist(const std::string& path, const std::string& key) {
+  return base::SysNSStringToUTF8([NSDictionary
+      dictionaryWithContentsOfFile:base::SysUTF8ToNSString(
+                                       path)][base::SysUTF8ToNSString(key)]);
+}
+
+}  // namespace
+
 // base::CommandLine can't be used because it enforces that all switches are
 // lowercase, but ksadmin has case-sensitive switches. This argument parser
 // converts an argv set into a map of switch name to switch value; for example
@@ -378,6 +388,27 @@ void KSAdminApp::Register() {
     return;
   }
 
+  const std::string tag_key = SwitchValue(kCommandTagKey);
+  const std::string tag_path = SwitchValue(kCommandTagPath);
+  if (tag_key.empty() != tag_path.empty()) {
+    PrintUsage("--tag-key must be set if and only if --tag_path is set.");
+    return;
+  }
+  if (!tag_key.empty()) {
+    registration.ap = ReadPlist(tag_path, tag_key);
+  }
+
+  const std::string version_key = SwitchValue(kCommandVersionKey);
+  const std::string version_path = SwitchValue(kCommandVersionPath);
+  if (version_key.empty() != version_path.empty()) {
+    PrintUsage(
+        "--version-key must be set if and only if --version_path is set.");
+    return;
+  }
+  if (!version_key.empty()) {
+    registration.version = base::Version(ReadPlist(version_path, version_key));
+  }
+
   if (registration.app_id.empty()) {
     PrintUsage("--register requires -P.");
     return;
@@ -611,6 +642,7 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+  VLOG(0) << base::CommandLine::ForCurrentProcess()->GetCommandLineString();
   return base::MakeRefCounted<KSAdminApp>(command_line)->Run();
 }
 
