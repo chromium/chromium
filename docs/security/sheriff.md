@@ -350,7 +350,7 @@ explanatory text.
     * [Report phishing](https://safebrowsing.google.com/safebrowsing/report_phish/?hl=en)
     * [Report incorrect phishing warning](https://safebrowsing.google.com/safebrowsing/report_error/?hl=en)
   * Googlers: see instructions at [go/safebrowsing-escalation](https://goto.google.com/safebrowsing-escalation)
-  * Report suspected malicious file attachments to SafeBrowsing and VirusTotal.
+  * Report suspected malicious file attachments to SafeBrowsing.
 * Make sure the report is properly forwarded when the vulnerability is in an
   upstream project, the OS, or some other dependency.
 * For vulnerabilities in services Chrome uses (e.g. Omaha, Chrome Web Store,
