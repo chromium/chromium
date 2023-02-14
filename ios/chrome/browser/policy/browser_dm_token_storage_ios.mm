@@ -12,12 +12,14 @@
 #import "base/hash/sha1.h"
 #import "base/ios/device_util.h"
 #import "base/mac/backup_util.h"
+#import "base/mac/foundation_util.h"
 #import "base/path_service.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/policy_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,7 +31,6 @@ namespace {
 
 const char kDmTokenBaseDir[] =
     FILE_PATH_LITERAL("Google/Chrome Cloud Enrollment/");
-const char kEnrollmentTokenPolicyName[] = "CloudManagementEnrollmentToken";
 
 bool GetDmTokenFilePath(base::FilePath* token_file_path,
                         const std::string& client_id,
@@ -91,7 +92,8 @@ std::string BrowserDMTokenStorageIOS::InitEnrollmentToken() {
   NSDictionary* raw_policies = [[NSUserDefaults standardUserDefaults]
       dictionaryForKey:kPolicyLoaderIOSConfigurationKey];
   NSString* token =
-      raw_policies[base::SysUTF8ToNSString(kEnrollmentTokenPolicyName)];
+      base::mac::ObjCCast<NSString>(raw_policies[base::SysUTF8ToNSString(
+          key::kCloudManagementEnrollmentToken)]);
 
   if (token) {
     return std::string(base::TrimWhitespaceASCII(base::SysNSStringToUTF8(token),
