@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/web_navigation.h"
+#include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
@@ -258,45 +259,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventAfterPermissionRemoved) {
             run_script_in_worker("queryUnrestrictedListenerCallCount()"));
 }
 
-namespace {
-
-class ProfileDestructionWatcher : public ProfileObserver {
- public:
-  ProfileDestructionWatcher() = default;
-
-  ProfileDestructionWatcher(const ProfileDestructionWatcher&) = delete;
-  ProfileDestructionWatcher& operator=(const ProfileDestructionWatcher&) =
-      delete;
-
-  ~ProfileDestructionWatcher() override = default;
-
-  void Watch(Profile* profile) { observed_profiles_.AddObservation(profile); }
-  void WaitForDestruction() { run_loop_.Run(); }
-  bool will_be_destroyed() const { return will_be_destroyed_; }
-
- private:
-  // ProfileObserver:
-  void OnProfileWillBeDestroyed(Profile* profile) override {
-    DCHECK(!will_be_destroyed_) << "Double profile destruction";
-    will_be_destroyed_ = true;
-    observed_profiles_.RemoveObservation(profile);
-    run_loop_.Quit();
-
-    // Broadcast an event to the event router. Since a shutdown is occurring, it
-    // should be ignored and cause no problems.
-    EventRouter* event_router = EventRouter::Get(profile);
-    event_router->BroadcastEvent(std::make_unique<Event>(
-        events::FOR_TEST, "tabs.onActivated", base::Value::List()));
-  }
-
-  bool will_be_destroyed_ = false;
-  base::RunLoop run_loop_;
-  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
-      observed_profiles_{this};
-};
-
-}  // namespace
-
 // Tests that events broadcast right after a profile has started to be destroyed
 // do not cause a crash. Regression test for crbug.com/1335837.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DispatchEventDuringShutdown) {
@@ -333,11 +295,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DispatchEventDuringShutdown) {
       .WaitForBackgroundClosed();
 
   // Dispatch event after starting profile destruction.
-  ProfileDestructionWatcher watcher;
-  watcher.Watch(profile());
+  ProfileDestructionWaiter waiter(profile());
   profile()->MaybeSendDestroyedNotification();
-  watcher.WaitForDestruction();
-  ASSERT_TRUE(watcher.will_be_destroyed());
+  waiter.Wait();
+  ASSERT_TRUE(waiter.destroyed());
+
+  // Broadcast an event to the event router. Since a shutdown is occurring, it
+  // should be ignored and cause no problems.
+  event_router->BroadcastEvent(std::make_unique<Event>(
+      events::FOR_TEST, "tabs.onActivated", base::Value::List()));
 }
 
 class EventsApiTest : public ExtensionApiTest {

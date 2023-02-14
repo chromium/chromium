@@ -52,6 +52,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -168,37 +169,6 @@ class MockProfileDelegate : public Profile::Delegate {
   MOCK_METHOD2(OnProfileCreationStarted, void(Profile*, Profile::CreateMode));
   MOCK_METHOD4(OnProfileCreationFinished,
                void(Profile*, Profile::CreateMode, bool, bool));
-};
-
-class ProfileDestructionWatcher : public ProfileObserver {
- public:
-  ProfileDestructionWatcher() = default;
-
-  ProfileDestructionWatcher(const ProfileDestructionWatcher&) = delete;
-  ProfileDestructionWatcher& operator=(const ProfileDestructionWatcher&) =
-      delete;
-
-  ~ProfileDestructionWatcher() override = default;
-
-  void Watch(Profile* profile) { observed_profiles_.AddObservation(profile); }
-
-  bool destroyed() const { return destroyed_; }
-
-  void WaitForDestruction() { run_loop_.Run(); }
-
- private:
-  // ProfileObserver:
-  void OnProfileWillBeDestroyed(Profile* profile) override {
-    DCHECK(!destroyed_) << "Double profile destruction";
-    destroyed_ = true;
-    run_loop_.Quit();
-    observed_profiles_.RemoveObservation(profile);
-  }
-
-  bool destroyed_ = false;
-  base::RunLoop run_loop_;
-  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
-      observed_profiles_{this};
 };
 
 // Creates a prefs file in the given directory.
@@ -701,18 +671,17 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     // Start monitoring |incognito_profile| for shutdown.
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     EXPECT_TRUE(profile_manager->IsValidProfile(incognito_profile));
-    ProfileDestructionWatcher watcher;
-    watcher.Watch(incognito_profile);
+    ProfileDestructionWaiter waiter(incognito_profile);
 
     // Close all incognito tabs, starting profile shutdown.
     incognito_browser->tab_strip_model()->CloseAllTabs();
 
-    // ProfileDestructionWatcher waits for
+    // ProfileDestructionWaiter waits for
     // BrowserContext::NotifyWillBeDestroyed, but after the RunLoop unwinds, the
     // profile should already be gone - let's assert this below (since this
     // ensures that |simple_loader_helper2| really tests what needs to be
     // tested).
-    watcher.WaitForDestruction();
+    waiter.Wait();
     EXPECT_FALSE(profile_manager->IsValidProfile(incognito_profile));
   }
 
@@ -849,16 +818,14 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithoutDestroyProfile,
   Profile* otr_profile2 = regular_profile->GetOffTheRecordProfile(
       otr_profile_id2, /*create_if_needed=*/true);
 
-  ProfileDestructionWatcher watcher1;
-  ProfileDestructionWatcher watcher2;
-  watcher1.Watch(otr_profile1);
-  watcher2.Watch(otr_profile2);
+  ProfileDestructionWaiter waiter1(otr_profile1);
+  ProfileDestructionWaiter waiter2(otr_profile2);
 
   ProfileDestroyer::DestroyOriginalProfileWhenAppropriate(
       std::move(regular_profile));
 
-  EXPECT_TRUE(watcher1.destroyed());
-  EXPECT_TRUE(watcher2.destroyed());
+  EXPECT_TRUE(waiter1.destroyed());
+  EXPECT_TRUE(waiter2.destroyed());
 }
 
 // Regression test for: https://crbug.com/1357476
@@ -876,20 +843,21 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
   Browser* incognito_browser =
       OpenURLOffTheRecord(browser()->profile(), GURL(url::kAboutBlankURL));
 
-  ProfileDestructionWatcher watcher[3];
-  watcher[0].Watch(otr_profile[0]);
-  watcher[1].Watch(otr_profile[1]);
-  watcher[2].Watch(otr_profile[2]);
+  ProfileDestructionWaiter waiter[3] = {
+      ProfileDestructionWaiter(otr_profile[0]),
+      ProfileDestructionWaiter(otr_profile[1]),
+      ProfileDestructionWaiter(otr_profile[2]),
+  };
 
   scoped_refptr<base::SequencedTaskRunner> profile_task_runner =
       incognito_browser->profile()->GetIOTaskRunner();
 
   // Request the destruction of one OTR profile:
   ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile[1]);
-  EXPECT_FALSE(watcher[0].destroyed());
-  EXPECT_TRUE(watcher[1].destroyed());
-  EXPECT_FALSE(watcher[2].destroyed());
-  // The `watcher` are not observing the real destruction of the Profile. Make
+  EXPECT_FALSE(waiter[0].destroyed());
+  EXPECT_TRUE(waiter[1].destroyed());
+  EXPECT_FALSE(waiter[2].destroyed());
+  // The `waiter` are not observing the real destruction of the Profile. Make
   // sure no crash are happening during the real destruction of the Profile.
   // This is needed to reproduce: https://crbug.com/1357476
   base::RunLoop loop;
@@ -900,18 +868,18 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DestroyOnOTRProfileAmongMany) {
   // Request the destruction of the primary OTR profile. This happens
   // synchronously, because it requires releasing the RenderProcessHost used.
   incognito_browser->tab_strip_model()->CloseAllTabs();
-  EXPECT_FALSE(watcher[0].destroyed());
-  EXPECT_TRUE(watcher[1].destroyed());
-  EXPECT_FALSE(watcher[2].destroyed());
+  EXPECT_FALSE(waiter[0].destroyed());
+  EXPECT_TRUE(waiter[1].destroyed());
+  EXPECT_FALSE(waiter[2].destroyed());
 
-  watcher[0].WaitForDestruction();
-  EXPECT_TRUE(watcher[0].destroyed());
-  EXPECT_TRUE(watcher[1].destroyed());
-  EXPECT_FALSE(watcher[2].destroyed());
+  waiter[0].Wait();
+  EXPECT_TRUE(waiter[0].destroyed());
+  EXPECT_TRUE(waiter[1].destroyed());
+  EXPECT_FALSE(waiter[2].destroyed());
 
   // Cleanup
   ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile[2]);
-  watcher[2].WaitForDestruction();
+  waiter[2].Wait();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -947,10 +915,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
   Profile* otr_profile = regular_profile->GetOffTheRecordProfile(
       otr_profile_id, /*create_if_needed=*/true);
 
-  ProfileDestructionWatcher regular_watcher;
-  ProfileDestructionWatcher otr_watcher;
-  regular_watcher.Watch(regular_profile);
-  otr_watcher.Watch(otr_profile);
+  ProfileDestructionWaiter regular_waiter(regular_profile);
+  ProfileDestructionWaiter otr_waiter(otr_profile);
 
   EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
       regular_profile, ProfileKeepAliveOrigin::kBrowserWindow));
@@ -968,11 +934,11 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
 
   // Destroy the OTR profile. *Now* the regular Profile should get deleted.
   ProfileDestroyer::DestroyOTRProfileWhenAppropriate(otr_profile);
-  otr_watcher.WaitForDestruction();
-  regular_watcher.WaitForDestruction();
+  otr_waiter.Wait();
+  regular_waiter.Wait();
 
-  EXPECT_TRUE(regular_watcher.destroyed());
-  EXPECT_TRUE(otr_watcher.destroyed());
+  EXPECT_TRUE(regular_waiter.destroyed());
+  EXPECT_TRUE(otr_waiter.destroyed());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -999,11 +965,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
       secondary_profile, ProfileKeepAliveOrigin::kLacrosMainProfile));
 
-  // Destruction Watchers for both profiles.
-  ProfileDestructionWatcher main_watcher;
-  ProfileDestructionWatcher secondary_watcher;
-  main_watcher.Watch(main_profile);
-  secondary_watcher.Watch(secondary_profile);
+  // Destruction Waiters for both profiles.
+  ProfileDestructionWaiter main_waiter(main_profile);
+  ProfileDestructionWaiter secondary_waiter(secondary_profile);
 
   // Close both browsers.
   CloseBrowserSynchronously(secondary_browser);
@@ -1017,10 +981,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTestWithDestroyProfile,
   EXPECT_TRUE(profile_manager->HasKeepAliveForTesting(
       main_profile, ProfileKeepAliveOrigin::kLacrosMainProfile));
   // So the profile is not destroyed on browser close.
-  EXPECT_FALSE(main_watcher.destroyed());
+  EXPECT_FALSE(main_waiter.destroyed());
 
   // The secondary profile is destroyed on browser close.
-  EXPECT_TRUE(secondary_watcher.destroyed());
+  EXPECT_TRUE(secondary_waiter.destroyed());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

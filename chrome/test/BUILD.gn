@@ -202,6 +202,8 @@ static_library("test_support") {
     "base/js_test_api.h",
     "base/profile_deletion_observer.cc",
     "base/profile_deletion_observer.h",
+    "base/profile_destruction_waiter.cc",
+    "base/profile_destruction_waiter.h",
     "base/profile_waiter.cc",
     "base/profile_waiter.h",
     "base/scoped_browser_locale.cc",
