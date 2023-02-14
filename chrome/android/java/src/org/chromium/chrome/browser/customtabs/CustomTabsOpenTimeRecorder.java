@@ -93,7 +93,7 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
         if (mIsCctFinishing.getAsBoolean()) {
             long time = System.currentTimeMillis() / DateUtils.SECOND_IN_MILLIS;
             boolean wasUserClose = mCloseCause != CloseCause.AUTOCLOSE;
-            boolean isPartial = mIntent.isPartialHeightCustomTab();
+            boolean isPartial = mIntent.isPartialCustomTab();
 
             long recordDuration = Math.min(duration / DateUtils.SECOND_IN_MILLIS, 300);
             // For the real implementation, there'll be a native method on this class or a new

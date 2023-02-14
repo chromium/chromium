@@ -277,7 +277,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         super.performPreInflationStartup();
 
-        if (mIntentDataProvider.isPartialHeightCustomTab()) {
+        if (mIntentDataProvider.isPartialCustomTab()) {
             overridePendingTransition(R.anim.slide_in_up, R.anim.no_anim);
         }
 
@@ -477,7 +477,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             // CustomTabActivityNavigationController#FinishHandler. Pass the mode enum into
             // CustomTabActivityModule, so that it can provide the correct implementation.
             getComponent().resolveTwaFinishHandler().onFinish(defaultBehavior);
-        } else if (intentDataProvider.isPartialHeightCustomTab()
+        } else if (intentDataProvider.isPartialCustomTab()
                 && intentDataProvider.shouldAnimateOnFinish()) {
             // WebContents is missing during the close animation due to android:windowIsTranslucent.
             // We let partial CCT handle the animation.

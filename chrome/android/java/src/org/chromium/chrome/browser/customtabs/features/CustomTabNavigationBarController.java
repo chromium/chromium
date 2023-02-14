@@ -36,7 +36,7 @@ public class CustomTabNavigationBarController {
         // PCCT is deemed incapable of system dark button support due to the way it implements
         // partial height (window coordinate translation). We do the darkening ourselves.
         boolean supportsDarkButtons = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && !intentDataProvider.isPartialHeightCustomTab();
+                && !intentDataProvider.isPartialCustomTab();
         boolean needsDarkButtons = navigationBarColor != null
                 && !ColorUtils.shouldUseLightForegroundOnBackground(navigationBarColor);
 

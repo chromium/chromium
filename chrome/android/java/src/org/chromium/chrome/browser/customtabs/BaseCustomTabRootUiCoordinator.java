@@ -214,7 +214,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mBrandingController.onToolbarInitialized(toolbar.getBrandingDelegate());
         }
         toolbar.setCloseButtonPosition(mIntentDataProvider.get().getCloseButtonPosition());
-        if (mIntentDataProvider.get().isPartialHeightCustomTab()) {
+        if (mIntentDataProvider.get().isPartialCustomTab()) {
             Callback<Runnable> softInputCallback;
             if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
                 softInputCallback = ((
@@ -319,7 +319,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         // This is necessary if app handler cannot rely on the popup window that ensures the menu
         // will not be clipped off the screen, which can happen in partial CCT.
         // TODO(crbug.com/1382010): Add a render test to prevent regressions.
-        if (mIntentDataProvider.get().isPartialHeightCustomTab()) {
+        if (mIntentDataProvider.get().isPartialCustomTab()) {
             View coord = mActivity.findViewById(R.id.coordinator);
             int[] location = new int[2];
             coord.getLocationInWindow(location);

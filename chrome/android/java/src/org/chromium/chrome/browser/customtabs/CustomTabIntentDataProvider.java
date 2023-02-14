@@ -936,6 +936,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
+    public boolean isPartialCustomTab() {
+        return isPartialHeightCustomTab()
+                || (ChromeFeatureList.sCctResizableSideSheet.isEnabled()
+                        && isPartialWidthCustomTab());
+    }
+
+    @Override
     public boolean shouldAnimateOnFinish() {
         return mAnimationBundle != null && getClientPackageName() != null;
     }
