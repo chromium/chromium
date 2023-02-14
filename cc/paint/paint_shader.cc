@@ -311,6 +311,13 @@ sk_sp<PaintShader> PaintShader::CreateScaledPaintRecord(
   if (!GetClampedRasterizationTileRect(ctm, max_texture_size, &tile_rect))
     return nullptr;
 
+  *raster_scale =
+      gfx::SizeF(SkIntToScalar(tile_rect.width()) / tile_.width(),
+                 SkIntToScalar(tile_rect.height()) / tile_.height());
+  SkMatrix local_matrix_with_inv_raster_scale = GetLocalMatrix();
+  local_matrix_with_inv_raster_scale.preScale(1 / raster_scale->width(),
+                                              1 / raster_scale->height());
+
   sk_sp<PaintShader> shader(new PaintShader(Type::kPaintRecord));
   shader->record_ = record_;
   shader->id_ = id_;
@@ -318,16 +325,7 @@ sk_sp<PaintShader> PaintShader::CreateScaledPaintRecord(
   // Use a fixed scale since we have already scaled the tile rect and fixed the
   // raster scale.
   shader->scaling_behavior_ = ScalingBehavior::kFixedScale;
-  shader->tx_ = tx_;
-  shader->ty_ = ty_;
-
-  *raster_scale =
-      gfx::SizeF(SkIntToScalar(tile_rect.width()) / tile_.width(),
-                 SkIntToScalar(tile_rect.height()) / tile_.height());
-  shader->local_matrix_ = GetLocalMatrix();
-  shader->local_matrix_->preScale(1 / raster_scale->width(),
-                                  1 / raster_scale->height());
-
+  shader->SetMatrixAndTiling(&local_matrix_with_inv_raster_scale, tx_, ty_);
   return shader;
 }
 
@@ -519,8 +517,13 @@ void PaintShader::SetColorsAndPositions(const SkColor4f* colors,
 void PaintShader::SetMatrixAndTiling(const SkMatrix* matrix,
                                      SkTileMode tx,
                                      SkTileMode ty) {
-  if (matrix)
+  if (matrix) {
     local_matrix_ = *matrix;
+    // The matrix type is mutable and set lazily. Force it to be computed here
+    // to avoid a data race from the lazy computation happening on a worker
+    // thread.
+    local_matrix_->getType();
+  }
   tx_ = tx;
   ty_ = ty;
 }

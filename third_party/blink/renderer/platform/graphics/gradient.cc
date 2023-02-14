@@ -236,9 +236,6 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
           color, DarkModeFilter::ElementRole::kBackground);
     }
   }
-  // The matrix type is mutable and set lazily. Force it to be computed here to
-  // avoid a data race from the lazy computation happening on a worker thread.
-  local_matrix.getType();
   sk_sp<PaintShader> shader = CreateShader(
       colors, pos, tile, ResolveSkInterpolation(), local_matrix, colors.back());
   DCHECK(shader);
