@@ -439,8 +439,8 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
 
     auto* publisher = GetPublisher(app_type);
     DCHECK(publisher);
-    publisher->Uninstall(app_id, uninstall_source,
-                         /*clear_site_data=*/false, /*report_abuse=*/false);
+    publisher->Uninstall(app_id, uninstall_source, clear_site_data,
+                         report_abuse);
 
     PerformPostUninstallTasks(app_type, app_id, uninstall_source);
   }
