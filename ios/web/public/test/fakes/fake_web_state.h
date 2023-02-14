@@ -61,8 +61,8 @@ class FakeWebState : public WebState {
   void Stop() override {}
   const NavigationManager* GetNavigationManager() const override;
   NavigationManager* GetNavigationManager() override;
-  const WebFramesManager* GetWebFramesManager() const override;
-  WebFramesManager* GetWebFramesManager() override;
+  const WebFramesManager* GetPageWorldWebFramesManager() const override;
+  WebFramesManager* GetPageWorldWebFramesManager() override;
   const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
       const override;
   SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() override;

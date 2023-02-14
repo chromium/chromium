@@ -15,7 +15,7 @@
 namespace web {
 
 WebFrame* GetMainFrame(WebState* web_state) {
-  return web_state->GetWebFramesManager()->GetMainWebFrame();
+  return web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
 }
 
 std::string GetMainWebFrameId(WebState* web_state) {
@@ -29,7 +29,7 @@ std::string GetMainWebFrameId(WebState* web_state) {
 WebFrame* GetWebFrameWithId(WebState* web_state, const std::string& frame_id) {
   if (frame_id.empty())
     return nullptr;
-  return web_state->GetWebFramesManager()->GetFrameWithId(frame_id);
+  return web_state->GetPageWorldWebFramesManager()->GetFrameWithId(frame_id);
 }
 
 std::string GetWebFrameId(WebFrame* frame) {

@@ -192,7 +192,7 @@ class SaveCardInfobarEGTestHelper
   static CreditCardSaveManager* GetCreditCardSaveManager() {
     web::WebState* web_state = chrome_test_util::GetCurrentWebState();
     web::WebFrame* main_frame =
-        web_state->GetWebFramesManager()->GetMainWebFrame();
+        web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->autofill_manager()
         ->client()
@@ -204,7 +204,7 @@ class SaveCardInfobarEGTestHelper
   static payments::PaymentsClient* GetPaymentsClient() {
     web::WebState* web_state = chrome_test_util::GetCurrentWebState();
     web::WebFrame* main_frame =
-        web_state->GetWebFramesManager()->GetMainWebFrame();
+        web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
     DCHECK(web_state);
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
         ->autofill_manager()

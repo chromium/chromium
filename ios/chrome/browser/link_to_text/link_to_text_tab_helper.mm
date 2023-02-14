@@ -92,7 +92,7 @@ bool LinkToTextTabHelper::ShouldOffer() {
   }
 
   web::WebFrame* main_frame =
-      web_state_->GetWebFramesManager()->GetMainWebFrame();
+      web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!web_state_->ContentIsHTML() || !main_frame ||
       !main_frame->CanCallJavaScriptFunction()) {
     LogShouldOfferResult(ShouldOfferResult::kUnableToInvokeJavaScript);

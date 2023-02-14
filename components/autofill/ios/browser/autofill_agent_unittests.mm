@@ -174,9 +174,9 @@ TEST_F(AutofillAgentTests,
   field.is_autofilled = true;
   field.unique_renderer_id = FieldRendererId(5);
   form.fields.push_back(field);
-  [autofill_agent_
-      fillFormData:form
-           inFrame:fake_web_state_.GetWebFramesManager()->GetMainWebFrame()];
+  [autofill_agent_ fillFormData:form
+                        inFrame:fake_web_state_.GetPageWorldWebFramesManager()
+                                    ->GetMainWebFrame()];
   fake_web_state_.WasShown();
   EXPECT_EQ(u"__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"section\":\"-"
             u"default\",\"value\":\"number_value\"},\"3\":{\"section\":\"-"

@@ -60,7 +60,8 @@ class CreditCard;
        withBaseViewController:(UIViewController*)viewController {
   // Payment Request is only enabled in main frame.
   web::WebState* webState = self.webStateList->GetActiveWebState();
-  web::WebFrame* mainFrame = webState->GetWebFramesManager()->GetMainWebFrame();
+  web::WebFrame* mainFrame =
+      webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!mainFrame) {
     return;
   }

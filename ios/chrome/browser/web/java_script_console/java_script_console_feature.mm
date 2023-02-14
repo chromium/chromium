@@ -71,7 +71,7 @@ void JavaScriptConsoleFeature::ScriptMessageReceived(
   }
 
   web::WebFrame* sender_frame =
-      web_state->GetWebFramesManager()->GetFrameWithId(*frame_id);
+      web_state->GetPageWorldWebFramesManager()->GetFrameWithId(*frame_id);
   if (!sender_frame) {
     return;
   }

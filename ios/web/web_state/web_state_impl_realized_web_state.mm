@@ -151,12 +151,13 @@ NavigationManagerImpl& WebStateImpl::RealizedWebState::GetNavigationManager() {
 }
 
 const WebFramesManagerImpl&
-WebStateImpl::RealizedWebState::GetWebFramesManager() const {
+WebStateImpl::RealizedWebState::GetPageWorldWebFramesManager() const {
   return WebFramesManagerImpl::FromWebState(owner_,
                                             ContentWorld::kPageContentWorld);
 }
 
-WebFramesManagerImpl& WebStateImpl::RealizedWebState::GetWebFramesManager() {
+WebFramesManagerImpl&
+WebStateImpl::RealizedWebState::GetPageWorldWebFramesManager() {
   return WebFramesManagerImpl::FromWebState(owner_,
                                             ContentWorld::kPageContentWorld);
 }
@@ -494,7 +495,7 @@ void WebStateImpl::RealizedWebState::OnAuthRequired(
 void WebStateImpl::RealizedWebState::WebFrameBecameAvailable(
     std::unique_ptr<WebFrame> frame) {
   WebFrame* frame_ptr = frame.get();
-  bool success = GetWebFramesManager().AddFrame(std::move(frame));
+  bool success = GetPageWorldWebFramesManager().AddFrame(std::move(frame));
   if (!success) {
     // Frame was not added, do not notify observers.
     return;
@@ -506,7 +507,7 @@ void WebStateImpl::RealizedWebState::WebFrameBecameAvailable(
 
 void WebStateImpl::RealizedWebState::WebFrameBecameUnavailable(
     const std::string& frame_id) {
-  WebFrame* frame = GetWebFramesManager().GetFrameWithId(frame_id);
+  WebFrame* frame = GetPageWorldWebFramesManager().GetFrameWithId(frame_id);
   if (!frame) {
     return;
   }
@@ -523,7 +524,7 @@ void WebStateImpl::RealizedWebState::RetrieveExistingFrames() {
 }
 
 void WebStateImpl::RealizedWebState::RemoveAllWebFrames() {
-  for (WebFrame* frame : GetWebFramesManager().GetAllWebFrames()) {
+  for (WebFrame* frame : GetPageWorldWebFramesManager().GetAllWebFrames()) {
     NotifyObserversAndRemoveWebFrame(frame);
   }
 }
@@ -983,7 +984,7 @@ void WebStateImpl::RealizedWebState::NotifyObserversAndRemoveWebFrame(
   for (auto& observer : observers())
     observer.WebFrameWillBecomeUnavailable(owner_, frame);
 
-  GetWebFramesManager().RemoveFrameWithId(frame->GetFrameId());
+  GetPageWorldWebFramesManager().RemoveFrameWithId(frame->GetFrameId());
 }
 
 std::unique_ptr<WebUIIOS> WebStateImpl::RealizedWebState::CreateWebUIIOS(

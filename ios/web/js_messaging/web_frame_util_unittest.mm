@@ -118,8 +118,9 @@ TEST_F(WebFrameUtilTest, GetWebFrameId) {
 
 // Tests the GetAllWebFrames function.
 TEST_F(WebFrameUtilTest, GetAllWebFrames) {
-  EXPECT_EQ(0U,
-            fake_web_state_.GetWebFramesManager()->GetAllWebFrames().size());
+  EXPECT_EQ(
+      0U,
+      fake_web_state_.GetPageWorldWebFramesManager()->GetAllWebFrames().size());
   auto main_frame = FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
   FakeWebFrame* main_frame_ptr = main_frame.get();
   fake_web_frames_manager_->AddWebFrame(std::move(main_frame));
@@ -127,7 +128,7 @@ TEST_F(WebFrameUtilTest, GetAllWebFrames) {
   FakeWebFrame* iframe_ptr = iframe.get();
   fake_web_frames_manager_->AddWebFrame(std::move(iframe));
   std::set<WebFrame*> all_frames =
-      fake_web_state_.GetWebFramesManager()->GetAllWebFrames();
+      fake_web_state_.GetPageWorldWebFramesManager()->GetAllWebFrames();
   // Both frames should be returned
   EXPECT_NE(all_frames.end(), all_frames.find(main_frame_ptr));
   EXPECT_NE(all_frames.end(), all_frames.find(iframe_ptr));

@@ -162,8 +162,8 @@ class TextFragmentsManagerImplTest : public WebTest {
   }
 
   void AddMainWebFrame(TextFragmentsManagerImpl* fragments_mgr) {
-    FakeWebFramesManager* frames_mgr =
-        static_cast<FakeWebFramesManager*>(web_state_->GetWebFramesManager());
+    FakeWebFramesManager* frames_mgr = static_cast<FakeWebFramesManager*>(
+        web_state_->GetPageWorldWebFramesManager());
     frames_mgr->AddWebFrame(
         FakeWebFrame::CreateMainWebFrame(GURL("https://chromium.org")));
     fragments_mgr->WebFrameDidBecomeAvailable(web_state_,

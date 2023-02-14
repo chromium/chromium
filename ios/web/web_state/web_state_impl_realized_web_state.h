@@ -56,8 +56,8 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   NavigationManagerImpl& GetNavigationManager();
 
   // Returns the WebFrameManagerImpl associated with the owning WebStateImpl.
-  const WebFramesManagerImpl& GetWebFramesManager() const;
-  WebFramesManagerImpl& GetWebFramesManager();
+  const WebFramesManagerImpl& GetPageWorldWebFramesManager() const;
+  WebFramesManagerImpl& GetPageWorldWebFramesManager();
 
   // Returns the SessionCertificationPolicyCacheImpl associated with the owning
   // WebStateImpl.

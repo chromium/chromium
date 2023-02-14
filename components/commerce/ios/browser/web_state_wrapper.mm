@@ -37,21 +37,24 @@ bool WebStateWrapper::IsOffTheRecord() {
 void WebStateWrapper::RunJavascript(
     const std::u16string& script,
     base::OnceCallback<void(const base::Value)> callback) {
-  // GetWebFramesManager() never returns null, but the main frame mght be.
-  if (!web_state_ || !web_state_->GetWebFramesManager()->GetMainWebFrame()) {
+  // GetPageWorldWebFramesManager() never returns null, but the main frame mght
+  // be.
+  if (!web_state_ ||
+      !web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame()) {
     std::move(callback).Run(base::Value());
     return;
   }
 
-  web_state_->GetWebFramesManager()->GetMainWebFrame()->ExecuteJavaScript(
-      script,
-      base::BindOnce(
-          [](base::OnceCallback<void(const base::Value)> callback,
-             const base::Value* response) {
-            std::move(callback).Run(response ? response->Clone()
-                                             : base::Value());
-          },
-          std::move(callback)));
+  web_state_->GetPageWorldWebFramesManager()
+      ->GetMainWebFrame()
+      ->ExecuteJavaScript(
+          script, base::BindOnce(
+                      [](base::OnceCallback<void(const base::Value)> callback,
+                         const base::Value* response) {
+                        std::move(callback).Run(response ? response->Clone()
+                                                         : base::Value());
+                      },
+                      std::move(callback)));
 }
 
 void WebStateWrapper::ClearWebStatePointer() {

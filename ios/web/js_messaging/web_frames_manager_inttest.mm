@@ -68,7 +68,8 @@ class WebFramesManagerTest : public WebIntTest {
 
 // Tests that the WebFramesManager correctly adds a WebFrame for a webpage.
 TEST_F(WebFramesManagerTest, SingleWebFrame) {
-  WebFramesManager* frames_manager = web_state()->GetWebFramesManager();
+  WebFramesManager* frames_manager =
+      web_state()->GetPageWorldWebFramesManager();
 
   GURL url = test_server_->GetURL("/echo");
   ASSERT_TRUE(LoadUrl(url));
@@ -88,7 +89,8 @@ TEST_F(WebFramesManagerTest, SingleWebFrame) {
 // Tests that the WebFramesManager correctly adds a unique WebFrame after a
 // webpage navigates back.
 TEST_F(WebFramesManagerTest, SingleWebFrameBack) {
-  WebFramesManager* frames_manager = web_state()->GetWebFramesManager();
+  WebFramesManager* frames_manager =
+      web_state()->GetPageWorldWebFramesManager();
 
   // Load first page.
   GURL url = test_server_->GetURL("/echo");
@@ -129,7 +131,8 @@ TEST_F(WebFramesManagerTest, SingleWebFrameBack) {
 // Tests that the WebFramesManager correctly adds a unique WebFrame after a
 // webpage navigates back from a clicked link.
 TEST_F(WebFramesManagerTest, SingleWebFrameLinkNavigationBackForward) {
-  WebFramesManager* frames_manager = web_state()->GetWebFramesManager();
+  WebFramesManager* frames_manager =
+      web_state()->GetPageWorldWebFramesManager();
 
   // Load page with links.
   GURL url = test_server_->GetURL(kLinksPageURL);
@@ -186,7 +189,8 @@ TEST_F(WebFramesManagerTest, SingleWebFrameLinkNavigationBackForward) {
 // Tests that the WebFramesManager correctly adds a unique WebFrame after a
 // webpage navigates back from a clicked same page link.
 TEST_F(WebFramesManagerTest, SingleWebFrameSamePageNavigationBackForward) {
-  WebFramesManager* frames_manager = web_state()->GetWebFramesManager();
+  WebFramesManager* frames_manager =
+      web_state()->GetPageWorldWebFramesManager();
 
   GURL url = test_server_->GetURL(kLinksPageURL);
   ASSERT_TRUE(LoadUrl(url));

@@ -67,7 +67,7 @@ class SuggestionControllerJavaScriptFeatureTest : public PlatformTest {
 };
 
 web::WebFrame* SuggestionControllerJavaScriptFeatureTest::GetMainFrame() {
-  web::WebFramesManager* manager = web_state()->GetWebFramesManager();
+  web::WebFramesManager* manager = web_state()->GetPageWorldWebFramesManager();
   return manager->GetMainWebFrame();
 }
 

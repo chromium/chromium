@@ -109,7 +109,7 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
         ->FrameUnavailableMessageReceived(message);
   }
 
-  WebFramesManagerImpl& GetWebFramesManager() {
+  WebFramesManagerImpl& GetPageWorldWebFramesManager() {
     return WebStateImpl::FromWebState(web_state())->GetWebFramesManagerImpl();
   }
 
@@ -132,18 +132,18 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, WebFrameWithInvalidId) {
       /*is_main_frame=*/true, GURL("https://www.main.test"));
   SendFrameBecameAvailableMessage(frame_with_invalid_id.get());
 
-  EXPECT_EQ(0ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(0ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
 }
 
 // Tests multiple web frames construction/destruction.
 TEST_F(WebFramesManagerJavaScriptFeatureTest, MultipleWebFrame) {
   // Add main frame.
   SendFrameBecameAvailableMessage(main_frame_.get());
-  EXPECT_EQ(1ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(1ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
   // Check main frame.
-  WebFrame* main_frame = GetWebFramesManager().GetMainWebFrame();
+  WebFrame* main_frame = GetPageWorldWebFramesManager().GetMainWebFrame();
   WebFrame* main_frame_by_id =
-      GetWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
+      GetPageWorldWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
   ASSERT_TRUE(main_frame);
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
@@ -151,97 +151,104 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, MultipleWebFrame) {
 
   // Add frame 1.
   SendFrameBecameAvailableMessage(frame_1_.get());
-  EXPECT_EQ(2ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(2ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
   // Check main frame.
-  main_frame = GetWebFramesManager().GetMainWebFrame();
+  main_frame = GetPageWorldWebFramesManager().GetMainWebFrame();
   main_frame_by_id =
-      GetWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
+      GetPageWorldWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
   ASSERT_TRUE(main_frame);
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
   EXPECT_EQ(main_frame_->GetSecurityOrigin(), main_frame->GetSecurityOrigin());
   // Check frame 1.
   WebFrame* frame_1 =
-      GetWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
+      GetPageWorldWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
   ASSERT_TRUE(frame_1);
   EXPECT_FALSE(frame_1->IsMainFrame());
   EXPECT_EQ(frame_1_->GetSecurityOrigin(), frame_1->GetSecurityOrigin());
 
   // Add frame 2.
   SendFrameBecameAvailableMessage(frame_2_.get());
-  EXPECT_EQ(3ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(3ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
   // Check main frame.
-  main_frame = GetWebFramesManager().GetMainWebFrame();
+  main_frame = GetPageWorldWebFramesManager().GetMainWebFrame();
   main_frame_by_id =
-      GetWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
+      GetPageWorldWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
   ASSERT_TRUE(main_frame);
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
   EXPECT_EQ(main_frame_->GetSecurityOrigin(), main_frame->GetSecurityOrigin());
   // Check frame 1.
-  frame_1 = GetWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
+  frame_1 =
+      GetPageWorldWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
   ASSERT_TRUE(frame_1);
   EXPECT_FALSE(frame_1->IsMainFrame());
   EXPECT_EQ(frame_1_->GetSecurityOrigin(), frame_1->GetSecurityOrigin());
   // Check frame 2.
   WebFrame* frame_2 =
-      GetWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
+      GetPageWorldWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
   ASSERT_TRUE(frame_2);
   EXPECT_FALSE(frame_2->IsMainFrame());
   EXPECT_EQ(frame_2_->GetSecurityOrigin(), frame_2->GetSecurityOrigin());
 
   // Remove frame 1.
   SendFrameBecameUnavailableMessage(frame_1_.get());
-  EXPECT_EQ(2ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(2ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
   // Check main frame.
-  main_frame = GetWebFramesManager().GetMainWebFrame();
+  main_frame = GetPageWorldWebFramesManager().GetMainWebFrame();
   main_frame_by_id =
-      GetWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
+      GetPageWorldWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
   ASSERT_TRUE(main_frame);
   EXPECT_EQ(main_frame, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
   EXPECT_EQ(main_frame_->GetSecurityOrigin(), main_frame->GetSecurityOrigin());
   // Check frame 1.
-  frame_1 = GetWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
+  frame_1 =
+      GetPageWorldWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
   EXPECT_FALSE(frame_1);
   // Check frame 2.
-  frame_2 = GetWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
+  frame_2 =
+      GetPageWorldWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
   ASSERT_TRUE(frame_2);
   EXPECT_FALSE(frame_2->IsMainFrame());
   EXPECT_EQ(frame_2_->GetSecurityOrigin(), frame_2->GetSecurityOrigin());
 
   // Remove main frame.
   SendFrameBecameUnavailableMessage(main_frame_.get());
-  EXPECT_EQ(1ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(1ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
   // Check main frame.
-  main_frame = GetWebFramesManager().GetMainWebFrame();
+  main_frame = GetPageWorldWebFramesManager().GetMainWebFrame();
   main_frame_by_id =
-      GetWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
+      GetPageWorldWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
   EXPECT_FALSE(main_frame);
   EXPECT_FALSE(main_frame_by_id);
   // Check frame 1.
-  frame_1 = GetWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
+  frame_1 =
+      GetPageWorldWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
   EXPECT_FALSE(frame_1);
   // Check frame 2.
-  frame_2 = GetWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
+  frame_2 =
+      GetPageWorldWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
   ASSERT_TRUE(frame_2);
   EXPECT_FALSE(frame_2->IsMainFrame());
   EXPECT_EQ(frame_2_->GetSecurityOrigin(), frame_2->GetSecurityOrigin());
 
   // Remove frame 2.
   SendFrameBecameUnavailableMessage(frame_2_.get());
-  EXPECT_EQ(0ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(0ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
   // Check main frame.
-  main_frame = GetWebFramesManager().GetMainWebFrame();
+  main_frame = GetPageWorldWebFramesManager().GetMainWebFrame();
   main_frame_by_id =
-      GetWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
+      GetPageWorldWebFramesManager().GetFrameWithId(main_frame_->GetFrameId());
   EXPECT_FALSE(main_frame);
   EXPECT_FALSE(main_frame_by_id);
   // Check frame 1.
-  frame_1 = GetWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
+  frame_1 =
+      GetPageWorldWebFramesManager().GetFrameWithId(frame_1_->GetFrameId());
   EXPECT_FALSE(frame_1);
   // Check frame 2.
-  frame_2 = GetWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
+  frame_2 =
+      GetPageWorldWebFramesManager().GetFrameWithId(frame_2_->GetFrameId());
   EXPECT_FALSE(frame_2);
 }
 
@@ -250,7 +257,7 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, MultipleWebFrame) {
 TEST_F(WebFramesManagerJavaScriptFeatureTest, OnWebViewUpdated) {
   SendFrameBecameAvailableMessage(main_frame_.get());
   SendFrameBecameAvailableMessage(frame_1_.get());
-  EXPECT_EQ(2ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(2ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
 
   // Update the WKWebView associated with web_state().
   WKWebView* web_view_2 = OCMClassMock([WKWebView class]);
@@ -263,11 +270,11 @@ TEST_F(WebFramesManagerJavaScriptFeatureTest, OnWebViewUpdated) {
   // for `web_view_` and removed all web frames, so no web frame should be
   // added.
   SendFrameBecameAvailableMessage(frame_1_.get());
-  EXPECT_EQ(0ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(0ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
   SendFrameBecameAvailableMessage(frame_2_.get());
-  EXPECT_EQ(0ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(0ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
   SendFrameBecameUnavailableMessage(frame_1_.get());
-  EXPECT_EQ(0ul, GetWebFramesManager().GetAllWebFrames().size());
+  EXPECT_EQ(0ul, GetPageWorldWebFramesManager().GetAllWebFrames().size());
 }
 
 }  // namespace web

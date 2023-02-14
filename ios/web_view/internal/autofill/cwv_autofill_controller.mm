@@ -273,8 +273,9 @@ using UserDecision =
 }
 
 - (void)focusPreviousField {
-  web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
-      _lastFormActivityWebFrameID);
+  web::WebFrame* frame =
+      _webState->GetPageWorldWebFramesManager()->GetFrameWithId(
+          _lastFormActivityWebFrameID);
 
   if (!frame)
     return;
@@ -284,8 +285,9 @@ using UserDecision =
 }
 
 - (void)focusNextField {
-  web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
-      _lastFormActivityWebFrameID);
+  web::WebFrame* frame =
+      _webState->GetPageWorldWebFramesManager()->GetFrameWithId(
+          _lastFormActivityWebFrameID);
 
   if (!frame)
     return;
@@ -296,8 +298,9 @@ using UserDecision =
 
 - (void)checkIfPreviousAndNextFieldsAreAvailableForFocusWithCompletionHandler:
     (void (^)(BOOL previous, BOOL next))completionHandler {
-  web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
-      _lastFormActivityWebFrameID);
+  web::WebFrame* frame =
+      _webState->GetPageWorldWebFramesManager()->GetFrameWithId(
+          _lastFormActivityWebFrameID);
 
   autofill::SuggestionControllerJavaScriptFeature::GetInstance()
       ->FetchPreviousAndNextElementsPresenceInFrame(

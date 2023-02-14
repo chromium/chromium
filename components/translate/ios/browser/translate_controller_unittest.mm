@@ -251,7 +251,7 @@ TEST_F(TranslateControllerTest, TranslationFailure) {
 TEST_F(TranslateControllerTest, OnTranslateSendRequestWithValidCommand) {
   web::FakeWebFramesManager* web_frames_manager =
       static_cast<web::FakeWebFramesManager*>(
-          fake_web_state_->GetWebFramesManager());
+          fake_web_state_->GetPageWorldWebFramesManager());
   web_frames_manager->AddWebFrame(std::move(fake_main_frame_));
 
   base::Value::Dict command;
@@ -306,7 +306,7 @@ TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadURL) {
 TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadMethod) {
   web::FakeWebFramesManager* web_frames_manager =
       static_cast<web::FakeWebFramesManager*>(
-          fake_web_state_->GetWebFramesManager());
+          fake_web_state_->GetPageWorldWebFramesManager());
   web_frames_manager->AddWebFrame(std::move(fake_main_frame_));
 
   base::Value::Dict command;

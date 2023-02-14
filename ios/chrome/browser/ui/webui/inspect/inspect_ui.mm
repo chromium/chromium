@@ -137,8 +137,10 @@ void InspectDOMHandler::DidReceiveConsoleMessage(
     web::WebState* web_state,
     web::WebFrame* sender_frame,
     const JavaScriptConsoleMessage& message) {
-  web::WebFrame* inspect_ui_main_frame =
-      web_ui()->GetWebState()->GetWebFramesManager()->GetMainWebFrame();
+  web::WebFrame* inspect_ui_main_frame = web_ui()
+                                             ->GetWebState()
+                                             ->GetPageWorldWebFramesManager()
+                                             ->GetMainWebFrame();
   if (!inspect_ui_main_frame) {
     // Disable logging and drop this message because the inspect page no longer
     // exists.
@@ -148,7 +150,7 @@ void InspectDOMHandler::DidReceiveConsoleMessage(
 
   std::vector<base::Value> params;
   web::WebFrame* main_web_frame =
-      web_state->GetWebFramesManager()->GetMainWebFrame();
+      web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
   params.push_back(base::Value(main_web_frame->GetFrameId()));
   params.push_back(base::Value(sender_frame->GetFrameId()));
   params.push_back(base::Value(message.url.spec()));

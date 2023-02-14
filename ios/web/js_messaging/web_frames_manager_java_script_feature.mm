@@ -116,7 +116,7 @@ void WebFramesManagerJavaScriptFeature::FrameAvailableMessageReceived(
   }
 
   std::string frame_id = base::SysNSStringToUTF8(message.body[@"crwFrameId"]);
-  if (web_state->GetWebFramesManager()->GetFrameWithId(frame_id)) {
+  if (web_state->GetPageWorldWebFramesManager()->GetFrameWithId(frame_id)) {
     return;
   }
 

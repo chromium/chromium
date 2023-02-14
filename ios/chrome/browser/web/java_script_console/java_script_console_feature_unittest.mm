@@ -136,10 +136,10 @@ class JavaScriptConsoleFeatureTest : public PlatformTest {
 
   web::WebFrame* GetWebFrameForIframe() {
     web::WebFrame* main_frame =
-        web_state()->GetWebFramesManager()->GetMainWebFrame();
+        web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
     web::WebFrame* iframe = nullptr;
     for (web::WebFrame* web_frame :
-         web_state()->GetWebFramesManager()->GetAllWebFrames()) {
+         web_state()->GetPageWorldWebFramesManager()->GetAllWebFrames()) {
       if (web_frame != main_frame) {
         iframe = web_frame;
         break;
@@ -167,7 +167,7 @@ TEST_F(JavaScriptConsoleFeatureTest, DebugMessageReceivedMainFrame) {
 
   EXPECT_EQ(web_state(), delegate_.last_received_web_state());
   web::WebFrame* web_frame =
-      web_state()->GetWebFramesManager()->GetMainWebFrame();
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   EXPECT_EQ(web_frame, delegate_.last_received_web_frame());
   EXPECT_EQ(kTestHostName, delegate_.last_received_message_url());
   EXPECT_NSEQ(@"debug", delegate_.last_received_message_level());
@@ -183,7 +183,7 @@ TEST_F(JavaScriptConsoleFeatureTest, ErrorMessageReceivedMainFrame) {
 
   EXPECT_EQ(web_state(), delegate_.last_received_web_state());
   web::WebFrame* web_frame =
-      web_state()->GetWebFramesManager()->GetMainWebFrame();
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   EXPECT_EQ(web_frame, delegate_.last_received_web_frame());
   EXPECT_EQ(kTestHostName, delegate_.last_received_message_url());
   EXPECT_NSEQ(@"error", delegate_.last_received_message_level());
@@ -199,7 +199,7 @@ TEST_F(JavaScriptConsoleFeatureTest, InfoMessageReceivedMainFrame) {
 
   EXPECT_EQ(web_state(), delegate_.last_received_web_state());
   web::WebFrame* web_frame =
-      web_state()->GetWebFramesManager()->GetMainWebFrame();
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   EXPECT_EQ(web_frame, delegate_.last_received_web_frame());
   EXPECT_EQ(kTestHostName, delegate_.last_received_message_url());
   EXPECT_NSEQ(@"info", delegate_.last_received_message_level());
@@ -215,7 +215,7 @@ TEST_F(JavaScriptConsoleFeatureTest, LogMessageReceivedMainFrame) {
 
   EXPECT_EQ(web_state(), delegate_.last_received_web_state());
   web::WebFrame* web_frame =
-      web_state()->GetWebFramesManager()->GetMainWebFrame();
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   EXPECT_EQ(web_frame, delegate_.last_received_web_frame());
   EXPECT_EQ(kTestHostName, delegate_.last_received_message_url());
   EXPECT_NSEQ(@"log", delegate_.last_received_message_level());
@@ -231,7 +231,7 @@ TEST_F(JavaScriptConsoleFeatureTest, WarnMessageReceivedMainFrame) {
 
   EXPECT_EQ(web_state(), delegate_.last_received_web_state());
   web::WebFrame* web_frame =
-      web_state()->GetWebFramesManager()->GetMainWebFrame();
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   EXPECT_EQ(web_frame, delegate_.last_received_web_frame());
   EXPECT_EQ(kTestHostName, delegate_.last_received_message_url());
   EXPECT_NSEQ(@"warn", delegate_.last_received_message_level());

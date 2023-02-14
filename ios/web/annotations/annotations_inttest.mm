@@ -143,7 +143,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
   std::set<WebFrameImpl*> AllWebFrames() {
     std::set<WebFrameImpl*> frames;
     for (WebFrame* frame :
-         web_state()->GetWebFramesManager()->GetAllWebFrames()) {
+         web_state()->GetPageWorldWebFramesManager()->GetAllWebFrames()) {
       frames.insert(static_cast<WebFrameImpl*>(frame));
     }
     return frames;
@@ -152,7 +152,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
   // Returns main frame for `web_state_`.
   WebFrameInternal* MainWebFrame() {
     WebFrame* main_frame =
-        web_state()->GetWebFramesManager()->GetMainWebFrame();
+        web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
     return main_frame->GetWebFrameInternal();
   }
 

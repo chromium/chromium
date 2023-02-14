@@ -425,7 +425,7 @@ void AutofillControllerTest::WaitForCondition(ConditionBlock condition) {
 TEST_F(AutofillControllerTest, ReadForm) {
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
   web::WebFrame* main_frame =
-      web_state()->GetWebFramesManager()->GetMainWebFrame();
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   BrowserAutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();
@@ -446,7 +446,7 @@ TEST_F(AutofillControllerTest, ReadForm) {
 TEST_F(AutofillControllerTest, ReadFormName) {
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kMinimalFormWithNameHtml, 1));
   web::WebFrame* main_frame =
-      web_state()->GetWebFramesManager()->GetMainWebFrame();
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   BrowserAutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
           ->autofill_manager();

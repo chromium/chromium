@@ -87,7 +87,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
     frames_manager->AddWebFrame(std::move(main_frame));
     web_state()->SetWebFramesManager(std::move(frames_manager));
     web_state()->OnWebFrameDidBecomeAvailable(
-        web_state()->GetWebFramesManager()->GetMainWebFrame());
+        web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame());
 
     UniqueIDDataTabHelper::CreateForWebState(web_state());
 
@@ -112,7 +112,7 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
     // AutofillClient.
     web::FakeWebFramesManager* frames_manager =
         static_cast<web::FakeWebFramesManager*>(
-            web_state()->GetWebFramesManager());
+            web_state()->GetPageWorldWebFramesManager());
     std::string frame_id = frames_manager->GetMainWebFrame()->GetFrameId();
     frames_manager->RemoveWebFrame(frame_id);
 
@@ -162,7 +162,7 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissLegacyPrompt) {
 
   EXPECT_EQ(nil, base_view_controller.presentedViewController);
   web::WebFrame* main_frame =
-      web_state()->GetWebFramesManager()->GetMainWebFrame();
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   autofill::BrowserAutofillManager* autofill_manager =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state(),
                                                            main_frame)
@@ -212,7 +212,7 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissNewPrompt) {
 
   EXPECT_EQ(nil, base_view_controller.presentedViewController);
   web::WebFrame* main_frame =
-      web_state()->GetWebFramesManager()->GetMainWebFrame();
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   autofill::BrowserAutofillManager* autofill_manager =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state(),
                                                            main_frame)

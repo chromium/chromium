@@ -295,7 +295,8 @@ class PasswordControllerTest : public PlatformTest {
     __block web::WebFrame* main_frame = nullptr;
     bool success =
         WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-          main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+          main_frame =
+              web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
           return main_frame != nullptr;
         });
     if (!success) {
@@ -469,7 +470,7 @@ class PasswordControllerTest : public PlatformTest {
   // This method only works if there are no more than 1 iframes per page.
   web::WebFrame* GetWebFrame(bool is_main_frame) {
     std::set<WebFrame*> all_frames =
-        web_state()->GetWebFramesManager()->GetAllWebFrames();
+        web_state()->GetPageWorldWebFramesManager()->GetAllWebFrames();
     for (auto* frame : all_frames) {
       if (is_main_frame == frame->IsMainFrame()) {
         return frame;
@@ -2051,7 +2052,7 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
 
   std::string mainFrameID = web::GetMainWebFrameId(web_state());
   std::set<WebFrame*> all_frames =
-      web_state()->GetWebFramesManager()->GetAllWebFrames();
+      web_state()->GetPageWorldWebFramesManager()->GetAllWebFrames();
   std::string iFrameID;
   for (auto* frame : all_frames) {
     if (!frame->IsMainFrame()) {
@@ -2129,7 +2130,8 @@ TEST_F(PasswordControllerTest,
        "frame1.parentNode.removeChild(frame1);",
       web_state());
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
-    auto frames = web_state()->GetWebFramesManager()->GetAllWebFrames();
+    auto frames =
+        web_state()->GetPageWorldWebFramesManager()->GetAllWebFrames();
     return frames.size() == 1;
   }));
 }

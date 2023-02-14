@@ -836,7 +836,8 @@ class AutofillControllerJsTest : public PlatformTest {
   web::WebFrame* WaitForMainFrame() {
     __block web::WebFrame* main_frame = nullptr;
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+      main_frame =
+          web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
       return main_frame != nullptr;
     }));
     return main_frame;

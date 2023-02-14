@@ -297,8 +297,8 @@ class WebStateImpl final : public WebState {
   void Stop() final;
   const NavigationManager* GetNavigationManager() const final;
   NavigationManager* GetNavigationManager() final;
-  const WebFramesManager* GetWebFramesManager() const final;
-  WebFramesManager* GetWebFramesManager() final;
+  const WebFramesManager* GetPageWorldWebFramesManager() const final;
+  WebFramesManager* GetPageWorldWebFramesManager() final;
   const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
       const final;
   SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() final;

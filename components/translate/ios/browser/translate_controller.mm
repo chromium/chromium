@@ -80,14 +80,14 @@ TranslateController::TranslateController(
   DCHECK(web_state_);
   web_state_->AddObserver(this);
   if (web_state_->IsRealized()) {
-    web_state_->GetWebFramesManager()->AddObserver(this);
+    web_state_->GetPageWorldWebFramesManager()->AddObserver(this);
   }
 }
 
 TranslateController::~TranslateController() {
   if (web_state_) {
     web_state_->RemoveObserver(this);
-    web_state_->GetWebFramesManager()->RemoveObserver(this);
+    web_state_->GetPageWorldWebFramesManager()->RemoveObserver(this);
     web_state_ = nullptr;
   }
 }
@@ -300,7 +300,7 @@ void TranslateController::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
   if (web_state_->IsRealized()) {
-    web_state_->GetWebFramesManager()->RemoveObserver(this);
+    web_state_->GetPageWorldWebFramesManager()->RemoveObserver(this);
   }
   web_state_ = nullptr;
   main_web_frame_ = nullptr;
@@ -319,7 +319,7 @@ void TranslateController::DidStartNavigation(
 }
 
 void TranslateController::WebStateRealized(web::WebState* web_state) {
-  web_state_->GetWebFramesManager()->AddObserver(this);
+  web_state_->GetPageWorldWebFramesManager()->AddObserver(this);
 }
 
 #pragma mark - web::WebFramesManager implementation
@@ -327,7 +327,7 @@ void TranslateController::WebStateRealized(web::WebState* web_state) {
 void TranslateController::WebFrameBecameAvailable(
     web::WebFramesManager* web_frames_manager,
     web::WebFrame* web_frame) {
-  DCHECK_EQ(web_state_->GetWebFramesManager(), web_frames_manager);
+  DCHECK_EQ(web_state_->GetPageWorldWebFramesManager(), web_frames_manager);
   if (web_frame->IsMainFrame()) {
     js_manager_factory_->CreateForWebFrame(web_frame);
     main_web_frame_ = web_frame;
@@ -337,7 +337,7 @@ void TranslateController::WebFrameBecameAvailable(
 void TranslateController::WebFrameBecameUnavailable(
     web::WebFramesManager* web_frames_manager,
     const std::string frame_id) {
-  DCHECK_EQ(web_state_->GetWebFramesManager(), web_frames_manager);
+  DCHECK_EQ(web_state_->GetPageWorldWebFramesManager(), web_frames_manager);
   if (web_frames_manager->GetFrameWithId(frame_id) == main_web_frame_) {
     main_web_frame_ = nullptr;
   }

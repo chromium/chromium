@@ -66,7 +66,7 @@ void LinkToTextJavaScriptFeature::GetLinkToText(
   base::ElapsedTimer link_generation_timer;
 
   RunGenerationJS(
-      web_state->GetWebFramesManager()->GetMainWebFrame(),
+      web_state->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       base::BindOnce(&LinkToTextJavaScriptFeature::HandleResponse,
                      weak_ptr_factory_.GetWeakPtr(), web_state,
                      std::move(link_generation_timer), std::move(callback)));
@@ -110,8 +110,9 @@ void LinkToTextJavaScriptFeature::HandleResponse(
 
   std::vector<web::WebFrame*> amp_frames;
   if (ShouldAttemptIframeGeneration(error, web_state->GetLastCommittedURL())) {
-    base::ranges::copy_if(web_state->GetWebFramesManager()->GetAllWebFrames(),
-                          std::back_inserter(amp_frames), IsKnownAmpCache);
+    base::ranges::copy_if(
+        web_state->GetPageWorldWebFramesManager()->GetAllWebFrames(),
+        std::back_inserter(amp_frames), IsKnownAmpCache);
   }
 
   // Empty indicates we're not attempting AMP generation (e.g., succeeded or

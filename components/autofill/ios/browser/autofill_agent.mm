@@ -700,11 +700,12 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     return;
   }
   // Check that the main frame has already been processed.
-  if (!webState->GetWebFramesManager()->GetMainWebFrame()) {
+  if (!webState->GetPageWorldWebFramesManager()->GetMainWebFrame()) {
     return;
   }
   if (!autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
-           webState, webState->GetWebFramesManager()->GetMainWebFrame())
+           webState,
+           webState->GetPageWorldWebFramesManager()->GetMainWebFrame())
            ->is_processed()) {
     return;
   }
@@ -734,7 +735,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 #pragma mark - Private methods
 
 - (void)processPage:(web::WebState*)webState {
-  web::WebFramesManager* framesManager = webState->GetWebFramesManager();
+  web::WebFramesManager* framesManager =
+      webState->GetPageWorldWebFramesManager();
   if (!framesManager->GetMainWebFrame()) {
     return;
   }
@@ -1013,9 +1015,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   if (!_webState)
     return;
 
-  DCHECK(_webState->GetWebFramesManager());
+  DCHECK(_webState->GetPageWorldWebFramesManager());
   web::WebFrame* webFrame =
-      _webState->GetWebFramesManager()->GetFrameWithId(webFrameId);
+      _webState->GetPageWorldWebFramesManager()->GetFrameWithId(webFrameId);
   if (!webFrame)
     return;
 

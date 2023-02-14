@@ -41,7 +41,7 @@ class TestAutofillManagerInjector : public web::WebStateObserver {
       : web_state_(web_state) {
     observation_.Observe(web_state);
     if (web::WebFrame* main_frame =
-            web_state->GetWebFramesManager()->GetMainWebFrame()) {
+            web_state->GetPageWorldWebFramesManager()->GetMainWebFrame()) {
       Inject(main_frame);
     }
   }
@@ -49,7 +49,8 @@ class TestAutofillManagerInjector : public web::WebStateObserver {
   ~TestAutofillManagerInjector() override = default;
 
   T* GetForMainFrame() {
-    return GetForFrame(web_state_->GetWebFramesManager()->GetMainWebFrame());
+    return GetForFrame(
+        web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame());
   }
 
   T* GetForFrame(web::WebFrame* web_frame) {

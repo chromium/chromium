@@ -27,7 +27,7 @@ FontSizeJavaScriptFeature* FontSizeJavaScriptFeature::GetInstance() {
 void FontSizeJavaScriptFeature::AdjustFontSize(web::WebState* web_state,
                                                int size) {
   for (web::WebFrame* frame :
-       web_state->GetWebFramesManager()->GetAllWebFrames()) {
+       web_state->GetPageWorldWebFramesManager()->GetAllWebFrames()) {
     AdjustFontSize(frame, size);
   }
 }

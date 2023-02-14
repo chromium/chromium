@@ -31,7 +31,8 @@ namespace {
 // Returns the first WebFrame found which is not the main frame in the given
 // `web_state`. Does not wait and returns null if such a frame is not found.
 web::WebFrame* GetChildWebFrameForWebState(web::WebState* web_state) {
-  __block web::WebFramesManager* manager = web_state->GetWebFramesManager();
+  __block web::WebFramesManager* manager =
+      web_state->GetPageWorldWebFramesManager();
   web::WebFrame* iframe = nullptr;
   for (web::WebFrame* frame : manager->GetAllWebFrames()) {
     if (!frame->IsMainFrame()) {
@@ -53,7 +54,8 @@ typedef WebTestWithWebState WebFrameImplIntTest;
 TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnMainFrame) {
   ASSERT_TRUE(LoadHtml("<p>"));
 
-  WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+  WebFrame* main_frame =
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   ASSERT_TRUE(main_frame);
 
   __block bool called = false;
@@ -75,7 +77,8 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnMainFrame) {
 TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnIframe) {
   ASSERT_TRUE(LoadHtml("<p><iframe srcdoc='<p>'/>"));
 
-  __block WebFramesManager* manager = web_state()->GetWebFramesManager();
+  __block WebFramesManager* manager =
+      web_state()->GetPageWorldWebFramesManager();
   ASSERT_TRUE(WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^bool {
         return manager->GetAllWebFrames().size() == 2;
@@ -108,7 +111,8 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionTimeout) {
                      "  while(true) {}"
                      "};");
 
-  WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+  WebFrame* main_frame =
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   ASSERT_TRUE(main_frame);
 
   __block bool called = false;
@@ -142,7 +146,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
                     @"}");
 
   web::WebFrameImpl* main_frame_impl = static_cast<web::WebFrameImpl*>(
-      web_state()->GetWebFramesManager()->GetMainWebFrame());
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame());
   ASSERT_TRUE(main_frame_impl);
 
   JavaScriptContentWorld world(GetBrowserState(), WKContentWorld.pageWorld);
@@ -178,7 +182,7 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
                           @"}");
 
   web::WebFrameImpl* main_frame_impl = static_cast<web::WebFrameImpl*>(
-      web_state()->GetWebFramesManager()->GetMainWebFrame());
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame());
   ASSERT_TRUE(main_frame_impl);
 
   JavaScriptContentWorld world(GetBrowserState(),

@@ -286,8 +286,8 @@ class WebState : public base::SupportsUserData {
 
   // Gets the WebFramesManager associated with this WebState. Can never return
   // null.
-  virtual const WebFramesManager* GetWebFramesManager() const = 0;
-  virtual WebFramesManager* GetWebFramesManager() = 0;
+  virtual const WebFramesManager* GetPageWorldWebFramesManager() const = 0;
+  virtual WebFramesManager* GetPageWorldWebFramesManager() = 0;
 
   // Gets the SessionCertificatePolicyCache for this WebState.  Can never return
   // null.

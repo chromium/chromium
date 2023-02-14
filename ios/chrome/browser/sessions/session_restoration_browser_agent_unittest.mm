@@ -152,7 +152,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
         web::WebState::Create(create_params);
     web_state->GetView();
     web_state->GetNavigationManager()->LoadURLWithParams(load_params);
-    web_state->GetWebFramesManager();
+    web_state->GetPageWorldWebFramesManager();
     web::WebState* web_state_ptr = web_state.get();
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
       return !web_state_ptr->IsLoading();

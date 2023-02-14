@@ -51,7 +51,8 @@ class PasswordControllerJsTest : public PlatformTest {
     __block web::WebFrame* main_frame = nullptr;
     bool success =
         WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-          main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+          main_frame =
+              web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
           return main_frame != nullptr;
         });
     if (!success) {
@@ -322,7 +323,8 @@ TEST_F(PasswordControllerJsTest,
   ASSERT_TRUE(SetUpUniqueIDs());
 
   const std::string base_url = BaseUrl();
-  WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+  WebFrame* main_frame =
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   std::string mainFrameID = main_frame->GetFrameId();
   NSString* result = [NSString
       stringWithFormat:
@@ -368,7 +370,8 @@ TEST_F(PasswordControllerJsTest,
   ASSERT_TRUE(SetUpUniqueIDs());
 
   const std::string base_url = BaseUrl();
-  WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+  WebFrame* main_frame =
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   std::string mainFrameID = main_frame->GetFrameId();
   NSString* result = [NSString
       stringWithFormat:
@@ -432,7 +435,8 @@ TEST_F(PasswordControllerJsTest, GetPasswordFormData) {
   const std::string base_url = BaseUrl();
   NSString* parameter = @"window.document.getElementsByTagName('form')[0]";
 
-  WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+  WebFrame* main_frame =
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   std::string mainFrameID = main_frame->GetFrameId();
   NSString* result = [NSString
       stringWithFormat:
@@ -479,7 +483,8 @@ TEST_F(PasswordControllerJsTest, FormActionIsNotSet) {
   ASSERT_TRUE(SetUpUniqueIDs());
 
   const std::string base_url = BaseUrl();
-  WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+  WebFrame* main_frame =
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   std::string mainFrameID = main_frame->GetFrameId();
   NSString* result = [NSString
       stringWithFormat:
@@ -548,7 +553,8 @@ TEST_F(PasswordControllerJsTest, TouchendAsSubmissionIndicator) {
   EXPECT_NSEQ(@1, web::test::ExecuteJavaScript(@"submittedFormMessageCalls",
                                                web_state()));
 
-  WebFrame* main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+  WebFrame* main_frame =
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
   std::string mainFrameID = main_frame->GetFrameId();
   NSString* expected_command = [NSString
       stringWithFormat:

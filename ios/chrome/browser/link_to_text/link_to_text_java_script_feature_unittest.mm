@@ -121,7 +121,7 @@ class LinkToTextJavaScriptFeatureTest : public PlatformTest {
 
   web::FakeWebFramesManager* manager() {
     return static_cast<web::FakeWebFramesManager*>(
-        web_state_.GetWebFramesManager());
+        web_state_.GetPageWorldWebFramesManager());
   }
 
   void InvokeGenerationAndExpectSuccess() {

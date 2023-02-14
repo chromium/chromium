@@ -48,14 +48,14 @@ bool IsMainFrame(web::WebFrame* frame) {
 // Verifies that the web frame passed to the observer is the main frame.
 ACTION_P(VerifyMainWebFrame, web_state) {
   EXPECT_EQ(web_state, arg0);
-  EXPECT_EQ(web_state->GetWebFramesManager()->GetMainWebFrame(), arg1);
+  EXPECT_EQ(web_state->GetPageWorldWebFramesManager()->GetMainWebFrame(), arg1);
 }
 
 // Verifies that the web frame passed to the observer is a child frame.
 ACTION_P(VerifyChildWebFrame, web_state) {
   EXPECT_EQ(web_state, arg0);
 
-  web::WebFramesManager* manager = web_state->GetWebFramesManager();
+  web::WebFramesManager* manager = web_state->GetPageWorldWebFramesManager();
   auto frames = manager->GetAllWebFrames();
   EXPECT_TRUE(base::Contains(frames, arg1));
   EXPECT_NE(manager->GetMainWebFrame(), arg1);

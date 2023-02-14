@@ -85,7 +85,8 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
     __block web::WebFrame* main_frame = nullptr;
     bool success =
         WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-          main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+          main_frame =
+              web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame();
           return main_frame != nullptr;
         });
     if (!success) {

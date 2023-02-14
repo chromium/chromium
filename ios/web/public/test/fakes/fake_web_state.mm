@@ -151,11 +151,11 @@ NavigationManager* FakeWebState::GetNavigationManager() {
   return navigation_manager_.get();
 }
 
-const WebFramesManager* FakeWebState::GetWebFramesManager() const {
+const WebFramesManager* FakeWebState::GetPageWorldWebFramesManager() const {
   return web_frames_manager_.get();
 }
 
-WebFramesManager* FakeWebState::GetWebFramesManager() {
+WebFramesManager* FakeWebState::GetPageWorldWebFramesManager() {
   return web_frames_manager_.get();
 }
 

@@ -28,7 +28,7 @@ namespace {
 web::WebFrame* WaitForMainFrame(web::WebState* web_state) {
   __block web::WebFrame* main_frame = nullptr;
   DCHECK(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    main_frame = web_state->GetWebFramesManager()->GetMainWebFrame();
+    main_frame = web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
     return main_frame != nullptr;
   }));
   return main_frame;

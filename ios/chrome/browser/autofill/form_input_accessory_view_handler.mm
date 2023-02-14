@@ -253,8 +253,9 @@ NSArray* FindDescendantToolbarItemsForActionName(
     return;
   }
 
-  web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
-      base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+  web::WebFrame* frame =
+      _webState->GetPageWorldWebFramesManager()->GetFrameWithId(
+          base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
 
   if (!frame) {
     completionHandler(false, false);
@@ -290,8 +291,9 @@ NSArray* FindDescendantToolbarItemsForActionName(
   if (!performedAction && _webState) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
-        base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+    web::WebFrame* frame =
+        _webState->GetPageWorldWebFramesManager()->GetFrameWithId(
+            base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
 
     if (frame) {
       autofill::SuggestionControllerJavaScriptFeature::GetInstance()
@@ -309,8 +311,9 @@ NSArray* FindDescendantToolbarItemsForActionName(
   if (!performedAction && _webState) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    web::WebFrame* frame = _webState->GetWebFramesManager()->GetFrameWithId(
-        base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+    web::WebFrame* frame =
+        _webState->GetPageWorldWebFramesManager()->GetFrameWithId(
+            base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
 
     if (frame) {
       autofill::SuggestionControllerJavaScriptFeature::GetInstance()
