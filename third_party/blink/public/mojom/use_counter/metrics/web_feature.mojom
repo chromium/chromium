@@ -3584,7 +3584,7 @@ enum WebFeature {
   kCrossOriginOpenerPolicyRestrictPropertiesReportOnly = 4255,
   kEventTimingInteractionId = 4256,
   kSecurePaymentConfirmationOptOut = 4257,
-  kAnyPopoverAttribute = 4258,
+  kOBSOLETE_AnyPopoverAttribute = 4258,
   kOBSOLETE_DeferredShapingWorked = 4259,
   kOBSOLETE_DeferredShapingReshapedByForceLayout = 4260,
   kMediaSourceGetHandle = 4261,
@@ -3802,6 +3802,9 @@ enum WebFeature {
   kTopicsAPIXhr = 4461,
   kParseFromString = 4462,
   kHTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode = 4463,
+  kPopoverTypeAuto = 4464,
+  kPopoverTypeManual = 4465,
+  kPopoverTypeInvalid = 4466,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

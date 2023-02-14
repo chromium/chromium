@@ -1205,6 +1205,7 @@ void HTMLElement::UpdatePopoverAttribute(String value) {
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
         "Found a 'popover' attribute with an invalid value."));
+    UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeInvalid);
   }
   if (HasPopoverAttribute()) {
     if (PopoverType() == type)
@@ -1232,6 +1233,16 @@ void HTMLElement::UpdatePopoverAttribute(String value) {
     return;
   }
   UseCounter::Count(GetDocument(), WebFeature::kValidPopoverAttribute);
+  switch (type) {
+    case PopoverValueType::kAuto:
+      UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeAuto);
+      break;
+    case PopoverValueType::kManual:
+      UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeManual);
+      break;
+    case PopoverValueType::kNone:
+      NOTREACHED();
+  }
   DCHECK_EQ(type, GetPopoverTypeFromAttributeValue(
                       FastGetAttribute(html_names::kPopoverAttr)));
   EnsurePopoverData()->setType(type);

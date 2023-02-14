@@ -41981,7 +41981,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="CrossOriginOpenerPolicyRestrictPropertiesReportOnly"/>
   <int value="4256" label="EventTimingInteractionId"/>
   <int value="4257" label="SecurePaymentConfirmationOptOut"/>
-  <int value="4258" label="AnyPopoverAttribute"/>
+  <int value="4258" label="OBSOLETE_AnyPopoverAttribute"/>
   <int value="4259" label="OBSOLETE_DeferredShapingWorked"/>
   <int value="4260" label="OBSOLETE_DeferredShapingReshapedByForceLayout"/>
   <int value="4261" label="MediaSourceGetHandle"/>
@@ -42201,6 +42201,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4462" label="ParseFromString"/>
   <int value="4463"
       label="HTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode"/>
+  <int value="4464" label="PopoverTypeAuto"/>
+  <int value="4465" label="PopoverTypeManual"/>
+  <int value="4466" label="PopoverTypeInvalid"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
