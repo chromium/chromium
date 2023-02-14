@@ -8,9 +8,9 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
+    pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
 )
 
@@ -34,6 +34,6 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         console_view = "metadata.exporter",
     ),
-    service_account = "component-mapping-updater@chops-service-accounts.iam.gserviceaccount.com",
     notifies = "metadata-mapping",
+    service_account = "component-mapping-updater@chops-service-accounts.iam.gserviceaccount.com",
 )

@@ -11,17 +11,17 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.chromiumos",
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.chromiumos",
+    pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -36,6 +36,8 @@ consoles.console_view(
 
 ci.builder(
     name = "linux-ash-chromium-generator-rel",
+    schedule = "triggered",
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -50,7 +52,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    triggered_by = [],
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -84,7 +85,6 @@ ci.builder(
             ],
         },
     },
-    schedule = "triggered",
 )
 
 ci.builder(
@@ -611,13 +611,13 @@ ci.builder(
         ),
     ),
     os = os.LINUX_DEFAULT,
+    # TODO(crbug.com/1407339): Enable when stable.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|arm",
         short_name = "sky",
     ),
-    # TODO(crbug.com/1407339): Enable when stable.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
@@ -832,6 +832,7 @@ ci.builder(
 ci.thin_tester(
     name = "linux-lacros-tester-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["linux-lacros-builder-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -852,7 +853,6 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    triggered_by = ["linux-lacros-builder-rel"],
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "default",

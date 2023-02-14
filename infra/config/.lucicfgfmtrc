@@ -1,0 +1,76 @@
+rules {
+    path: "subprojects"
+    path: "dev/subprojects"
+    function_args_sort {
+        # Common arguments
+        arg: "name"
+        arg: "branch_selector"
+        arg: "bucket"
+
+        # ACLs/swarming triggerers
+        arg: "builder_realm"
+        arg: "pool_realm"
+        arg: "roles"
+        arg: "groups"
+        arg: "users"
+
+        # Console views
+        arg: "repo"
+        arg: "refs"
+        arg: "title"
+        arg: "header"
+        arg: "ordering"
+
+        # CQ groups
+        arg: "retry_config"
+        arg: "watch"
+
+        # Buckets
+        arg: "shadows"
+        arg: "constraints"
+
+        # Builders
+        arg: "description_html"
+        arg: "executable"
+        arg: "schedule"
+        arg: "triggered_by"
+        arg: "triggering_policy"
+        arg: "builder_group"
+        arg: "builder_spec"
+        arg: "mirrors"
+        arg: "try_settings"
+        arg: "pool"
+        arg: "builderless"
+        arg: "cores"
+        arg: "os"
+        arg: "cpu"
+        arg: "ssd"
+        arg: "free_space"
+        arg: "disallow_gce"
+        arg: "sheriff_rotations"
+        arg: "tree_closing"
+        arg: "console_view_entry"
+        arg: "main_console_view"
+        arg: "cq_mirrors_console_view"
+        arg: "list_view"
+
+        # Builder spec
+        arg: "execution_mode"
+        arg: "gclient_config"
+        arg: "chromium_config"
+
+        # gclient config/chromium config
+        arg: "config"
+        arg: "apply_configs"
+        arg: "build_config"
+        arg: "target_arch"
+        arg: "target_bits"
+        arg: "target_platform"
+        arg: "target_cros_boards"
+
+        # console view entry
+        arg: "console_view"
+        arg: "builder"
+        arg: "category"
+    }
+}

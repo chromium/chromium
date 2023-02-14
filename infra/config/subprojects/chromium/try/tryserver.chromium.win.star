@@ -10,13 +10,12 @@ load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.win",
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.win",
+    pool = try_.DEFAULT_POOL,
     builderless = True,
     cores = 8,
     os = os.WINDOWS_DEFAULT,
-    pool = try_.DEFAULT_POOL,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     compilator_cores = 16,
     compilator_goma_jobs = goma.jobs.J300,
     compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
@@ -25,6 +24,7 @@ try_.defaults.set(
     orchestrator_cores = 2,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.list_view(
@@ -65,8 +65,8 @@ try_.builder(
     executable = "recipe:chromium_libfuzzer_trybot",
     builderless = False,
     os = os.WINDOWS_ANY,
-    main_list_view = "try",
     goma_backend = None,
+    main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
@@ -74,7 +74,6 @@ try_.builder(
 try_.orchestrator_builder(
     name = "win-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    compilator = "win-rel-compilator",
     mirrors = [
         "ci/Win x64 Builder",
         "ci/Win10 Tests x64",
@@ -86,13 +85,14 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    main_list_view = "try",
     check_for_flakiness = True,
+    compilator = "win-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(),
     experiments = {
         "chromium_rts.inverted_rts": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
     use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
@@ -102,10 +102,10 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "win-rel-compilator",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    main_list_view = "try",
     check_for_flakiness = True,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -129,8 +129,8 @@ try_.builder(
     builderless = False,
     cores = 16,
     ssd = True,
-    main_list_view = "try",
     goma_backend = None,
+    main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
@@ -229,7 +229,6 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "win-rel-inverse-fyi",
-    compilator = "win-rel-compilator",
     mirrors = [
         "ci/Win x64 Builder",
         "ci/Win10 Tests x64",
@@ -242,6 +241,7 @@ try_.orchestrator_builder(
         ),
     ),
     check_for_flakiness = True,
+    compilator = "win-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
         "chromium_rts.inverted_rts": 100,
@@ -294,8 +294,8 @@ try_.gpu.optional_tests_builder(
         retry_failed_shards = False,
     ),
     os = os.WINDOWS_DEFAULT,
-    main_list_view = "try",
     goma_backend = None,
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             cq.location_filter(path_regexp = "chrome/browser/vr/.+"),

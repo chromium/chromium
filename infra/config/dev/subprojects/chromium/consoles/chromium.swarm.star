@@ -4,8 +4,8 @@
 
 luci.console_view(
     name = "chromium.dev",
-    header = "//dev/chromium-header.textpb",
     repo = "https://chromium.googlesource.com/chromium/src",
+    header = "//dev/chromium-header.textpb",
     entries = [
         luci.console_view_entry(builder = "ci/android-pie-arm64-rel-swarming"),
         luci.console_view_entry(builder = "ci/linux-rel-swarming"),

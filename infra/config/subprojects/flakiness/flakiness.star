@@ -8,14 +8,14 @@ load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     bucket = "flakiness",
-    os = os.LINUX_DEFAULT,
     pool = "luci.chromium.ci",
+    os = os.LINUX_DEFAULT,
     free_space = builders.free_space.standard,
+    build_numbers = True,
+    execution_timeout = 3 * time.hour,
     # TODO(jeffyoon): replace with smaller scoped service account, and update
     # below for bucket ACL
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    build_numbers = True,
-    execution_timeout = 3 * time.hour,
 )
 
 luci.bucket(
@@ -47,10 +47,10 @@ consoles.console_view(
 ci.builder(
     name = "flakiness-data-packager",
     executable = "recipe:flakiness/generate_builder_test_data",
+    schedule = "0 */1 * * *",
     console_view_entry = consoles.console_view_entry(
         console_view = "chromium.flakiness",
         category = "flakiness",
         short_name = "model",
     ),
-    schedule = "0 */1 * * *",
 )

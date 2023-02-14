@@ -9,14 +9,13 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.clang",
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.clang",
+    pool = ci.DEFAULT_POOL,
     builderless = True,
     cores = 32,
     os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     sheriff_rotations = sheriff_rotations.CHROMIUM_CLANG,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     # Because these run ToT Clang, goma is not used.
     # Naturally the runtime will be ~4-8h on average, depending on config.
     # CFI builds will take even longer - around 11h.
@@ -24,6 +23,7 @@ ci.defaults.set(
     properties = {
         "perf_dashboard_machine_group": "ChromiumClang",
     },
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -88,8 +88,8 @@ def clang_tot_linux_builder(short_name, category = "ToT Linux", **kwargs):
         ),
         notifies = [luci.notifier(
             name = "ToT Linux notifier",
-            on_new_status = ["FAILURE"],
             notify_emails = ["thomasanderson@chromium.org"],
+            on_new_status = ["FAILURE"],
         )],
         **kwargs
     )
@@ -276,8 +276,8 @@ clang_tot_linux_builder(
 
 clang_tot_linux_builder(
     name = "ToTLinuxMSan",
-    short_name = "msn",
     os = os.LINUX_FOCAL,
+    short_name = "msn",
 )
 
 clang_tot_linux_builder(
@@ -396,11 +396,11 @@ ci.builder(
     cores = None,
     os = os.MAC_12,
     ssd = True,
-    xcode = xcode.x14main,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|public",
         short_name = "sim",
     ),
+    xcode = xcode.x14main,
 )
 
 ci.builder(
@@ -409,11 +409,11 @@ ci.builder(
     cores = None,
     os = os.MAC_12,
     ssd = True,
-    xcode = xcode.x14main,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|public",
         short_name = "dev",
     ),
+    xcode = xcode.x14main,
 )
 
 clang_mac_builder(

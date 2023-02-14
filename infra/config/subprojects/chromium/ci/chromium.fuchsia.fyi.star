@@ -10,17 +10,17 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.fuchsia.fyi",
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.fuchsia.fyi",
+    pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     sheriff_rotations = sheriff_rotations.FUCHSIA,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = 10 * time.hour,
     notifies = ["cr-fuchsia"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(

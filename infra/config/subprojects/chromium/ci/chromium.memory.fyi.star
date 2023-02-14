@@ -10,12 +10,12 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.memory.fyi",
-    cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    os = os.LINUX_DEFAULT,
+    builder_group = "chromium.memory.fyi",
     pool = ci.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     priority = ci.DEFAULT_FYI_PRIORITY,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
@@ -32,6 +32,7 @@ consoles.console_view(
 ci.builder(
     name = "linux-ubsan-fyi-rel",
     branch_selector = branches.MAIN,
+    schedule = "with 12h interval",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -43,12 +44,11 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    builderless = 1,
     console_view_entry = consoles.console_view_entry(
         category = "linux|ubsan",
         short_name = "fyi",
     ),
-    builderless = 1,
     execution_timeout = 4 * time.hour,
-    schedule = "with 12h interval",
     reclient_jobs = reclient.jobs.DEFAULT,
 )

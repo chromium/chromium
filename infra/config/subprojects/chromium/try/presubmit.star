@@ -11,13 +11,12 @@ load("//project.star", "BRANCH_TYPES", "branch_type")
 load("../fallback-cq.star", "fallback_cq")
 
 try_.defaults.set(
+    pool = try_.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
-    main_list_view = "try",
     list_view = "presubmit",
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = 15 * time.minute,
+    main_list_view = "try",
 
     # TODO(crbug.com/1362440): remove this.
     omit_python2 = False,
@@ -26,6 +25,7 @@ try_.defaults.set(
     # This will improve our turnaround time for landing infra/config changes
     # when addressing outages
     priority = 25,
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.list_view(

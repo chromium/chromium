@@ -8,8 +8,8 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     console_view = "checks",
+    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(
@@ -46,6 +46,10 @@ ci.builder(
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
+
+    # Adding sheriff rotations to none for the time being until we confirm
+    # this works
+    sheriff_rotations = None,
     console_view_entry = consoles.console_view_entry(
         console_view = "checks",
         category = "presubmit",
@@ -62,8 +66,4 @@ ci.builder(
         },
         "repo_name": "chromium",
     },
-
-    # Adding sheriff rotations to none for the time being until we confirm
-    # this works
-    sheriff_rotations = None,
 )

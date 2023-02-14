@@ -8,18 +8,18 @@ load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "SOURCELESS_BUILDER_CACHES", "try_")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.tricium",
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.tricium",
+    pool = try_.DEFAULT_POOL,
     builderless = True,
     cores = 8,
-    pool = try_.DEFAULT_POOL,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     goma_jobs = goma.jobs.J150,
     orchestrator_cores = 2,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 
     # Make each bot specify its own OS, since we have a variety of these in this
     # file.

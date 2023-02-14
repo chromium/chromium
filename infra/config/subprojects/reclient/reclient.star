@@ -29,25 +29,25 @@ luci.bucket(
 
 ci.defaults.set(
     bucket = "reclient",
-    builder_group = "chromium.reclient.fyi",
     executable = "recipe:chromium",
     triggered_by = ["chromium-gitiles-trigger"],
+    builder_group = "chromium.reclient.fyi",
+    pool = "luci.chromium.ci",
     cores = 8,
     cpu = cpu.X86_64,
-    pool = "luci.chromium.ci",
     free_space = builders.free_space.standard,
-    service_account = (
-        "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
-    ),
     build_numbers = True,
     execution_timeout = 3 * time.hour,
     goma_backend = None,
+    service_account = (
+        "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
+    ),
 )
 
 consoles.console_view(
     name = "chromium.reclient.fyi",
-    header = HEADER,
     repo = "https://chromium.googlesource.com/chromium/src",
+    header = HEADER,
     include_experimental_builds = True,
 )
 
@@ -344,12 +344,12 @@ fyi_reclient_test_builder(
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x14main,
     console_view_category = "ios",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
+    xcode = xcode.x14main,
 )
 
 fyi_reclient_test_builder(
@@ -370,13 +370,13 @@ fyi_reclient_test_builder(
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x14main,
     console_view_category = "ios",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
     reclient_scandeps_server = True,
+    xcode = xcode.x14main,
 )
 
 fyi_reclient_staging_builder(
@@ -397,12 +397,12 @@ fyi_reclient_staging_builder(
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
-    xcode = xcode.x14main,
     console_view_category = "ios",
     priority = 35,
     reclient_bootstrap_env = {
         "GLOG_vmodule": "bridge*=2",
     },
+    xcode = xcode.x14main,
 )
 
 fyi_reclient_staging_builder(

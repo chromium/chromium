@@ -6,9 +6,8 @@ load("//console-header.star", "HEADER")
 
 luci.console_view(
     name = "chromium.goma.fyi",
-    header = HEADER,
-    include_experimental_builds = True,
     repo = "https://chromium.googlesource.com/chromium/src",
+    header = HEADER,
     entries = [
         luci.console_view_entry(
             builder = "goma/linux-archive-rel-goma-rbe-canary",
@@ -81,4 +80,5 @@ luci.console_view(
             short_name = "ats",
         ),
     ],
+    include_experimental_builds = True,
 )
