@@ -596,6 +596,22 @@ const char kDictationAcceleratorDialogHasBeenAccepted[] =
 // has ever been shown.
 const char kDictationDlcSuccessNotificationHasBeenShown[] =
     "settings.a11y.dictation_dlc_success_notification_has_been_shown";
+// A boolean pref which indicates whether the Dictation DLC only Pumpkin
+// downloaded notification has ever been shown.
+const char kDictationDlcOnlyPumpkinDownloadedNotificationHasBeenShown[] =
+    "settings.a11y.dictation_dlc_only_pumpkin_downloaded_notification_has_been_"
+    "shown";
+// A boolean pref which indicates whether the Dictation DLC only SODA
+// downloaded notification has ever been shown.
+const char kDictationDlcOnlySodaDownloadedNotificationHasBeenShown[] =
+    "settings.a11y.dictation_dlc_only_soda_downloaded_notification_has_been_"
+    "shown";
+// A boolean pref which indicates whether the Dictation No DLCs downloaded
+// notification has ever been shown.
+const char kDictationNoDlcsDownloadedNotificationHasBeenShown[] =
+    "settings.a11y.dictation_dlc_no_dlcs_downloaded_notification_has_been_"
+    "shown";
+
 // A boolean pref which indicates whether the display rotation confirmation
 // dialog has ever been shown.
 // Renamed 10/2019 to force reset the pref to false.

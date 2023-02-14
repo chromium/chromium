@@ -1228,10 +1228,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
   AssertMessageCenterEmpty();
 }
 
-// Ensures that SODA failed notification could be shown each time Dictation
-// is toggled on.
+// Ensures that SODA failed notification is only shown once.
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
-                       SodaFailedNotificationShownOncePerDownload) {
+                       SodaFailedNotificationShownOnlyOnce) {
   SetDictationEnabled(true);
   soda_installer()->NotifySodaErrorForTesting(en_us());
   AssertDictationNoDlcsNotifcation(en_us_display_name());
@@ -1244,7 +1243,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
   // A fresh attempt at Dictation means another chance to show an error message.
   SetDictationEnabled(true);
   soda_installer()->NotifySodaErrorForTesting(en_us());
-  AssertDictationNoDlcsNotifcation(en_us_display_name());
+  AssertMessageCenterEmpty();
 }
 
 // Tests that the SODA download notification for Dictation is NOT given if
@@ -1379,7 +1378,109 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
 
   ClearMessageCenter();
 
-  // Request a Pumpkin install again and ensure the message center is empty.
+  // Recreate the conditions for the notification and ensure it's not shown
+  // again.
+  InstallPumpkinAndWait();
+  AssertMessageCenterEmpty();
+  soda_installer()->NotifySodaInstalledForTesting();
+  AssertMessageCenterEmpty();
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
+  AssertMessageCenterEmpty();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       PumpkinNotificationOnlyShownOnce) {
+  ASSERT_FALSE(GetActiveUserPrefs()->GetBoolean(
+      prefs::kDictationDlcOnlyPumpkinDownloadedNotificationHasBeenShown));
+  // Calling `InstallPumpkinAndWait()` will run the message loop and cause SODA
+  // to be installed. Avoid this scenario for the purposes of this test.
+  soda_installer()->NeverDownloadSodaForTesting();
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  soda_installer()->NotifySodaErrorForTesting(en_us());
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
+  InstallPumpkinAndWait();
+  AssertDictationOnlyPumpkinNotifcation(en_us_display_name());
+  ASSERT_TRUE(GetActiveUserPrefs()->GetBoolean(
+      prefs::kDictationDlcOnlyPumpkinDownloadedNotificationHasBeenShown));
+
+  ClearMessageCenter();
+
+  // Recreate the conditions for the notification and ensure it's not shown
+  // again.
+  InstallPumpkinAndWait();
+  AssertMessageCenterEmpty();
+  soda_installer()->NotifySodaErrorForTesting(en_us());
+  AssertMessageCenterEmpty();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       SodaNotificationOnlyShownOnce) {
+  ASSERT_FALSE(GetActiveUserPrefs()->GetBoolean(
+      prefs::kDictationDlcOnlySodaDownloadedNotificationHasBeenShown));
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
+  AssertMessageCenterEmpty();
+  soda_installer()->NotifySodaInstalledForTesting();
+  AssertDictationOnlySodaNotifcation(en_us_display_name());
+  OnPumpkinError();
+  AssertDictationOnlySodaNotifcation(en_us_display_name());
+  ASSERT_TRUE(GetActiveUserPrefs()->GetBoolean(
+      prefs::kDictationDlcOnlySodaDownloadedNotificationHasBeenShown));
+
+  ClearMessageCenter();
+
+  // Recreate the conditions for the notification and ensure it's not shown
+  // again.
+  OnPumpkinError();
+  AssertMessageCenterEmpty();
+  soda_installer()->NotifySodaInstalledForTesting(en_us());
+  AssertMessageCenterEmpty();
+  soda_installer()->NotifySodaInstalledForTesting();
+  AssertMessageCenterEmpty();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       NoDlcsNotificationOnlyShownOnce) {
+  ASSERT_FALSE(GetActiveUserPrefs()->GetBoolean(
+      prefs::kDictationNoDlcsDownloadedNotificationHasBeenShown));
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  soda_installer()->NotifySodaErrorForTesting(en_us());
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
+  OnPumpkinError();
+  AssertDictationNoDlcsNotifcation(en_us_display_name());
+  ASSERT_TRUE(GetActiveUserPrefs()->GetBoolean(
+      prefs::kDictationNoDlcsDownloadedNotificationHasBeenShown));
+
+  ClearMessageCenter();
+
+  // Recreate the conditions for the notification and ensure it's not shown
+  // again.
+  soda_installer()->NotifySodaErrorForTesting(en_us());
+  AssertMessageCenterEmpty();
+  OnPumpkinError();
+  AssertMessageCenterEmpty();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       PumpkinNotificationOnlyShownOnceFrench) {
+  ASSERT_FALSE(GetActiveUserPrefs()->GetBoolean(
+      prefs::kDictationDlcOnlyPumpkinDownloadedNotificationHasBeenShown));
+  g_browser_process->SetApplicationLocale("fr-FR");
+  SetDictationLocale("fr-FR");
+  SetDictationEnabled(true);
+  AssertMessageCenterEmpty();
+  InstallPumpkinAndWait();
+  AssertDictationOnlyPumpkinNotifcation(u"français (France)");
+  ASSERT_TRUE(GetActiveUserPrefs()->GetBoolean(
+      prefs::kDictationDlcOnlyPumpkinDownloadedNotificationHasBeenShown));
+
+  ClearMessageCenter();
+
+  // Recreate the conditions for the notification and ensure it's not shown
+  // again.
   InstallPumpkinAndWait();
   AssertMessageCenterEmpty();
 }

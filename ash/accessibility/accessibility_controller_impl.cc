@@ -226,6 +226,9 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted,
     prefs::kDictationAcceleratorDialogHasBeenAccepted,
     prefs::kDictationDlcSuccessNotificationHasBeenShown,
+    prefs::kDictationDlcOnlyPumpkinDownloadedNotificationHasBeenShown,
+    prefs::kDictationDlcOnlySodaDownloadedNotificationHasBeenShown,
+    prefs::kDictationNoDlcsDownloadedNotificationHasBeenShown,
     prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2,
 };
 
@@ -982,6 +985,12 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
       prefs::kDictationAcceleratorDialogHasBeenAccepted, false);
   registry->RegisterBooleanPref(
       prefs::kDictationDlcSuccessNotificationHasBeenShown, false);
+  registry->RegisterBooleanPref(
+      prefs::kDictationDlcOnlyPumpkinDownloadedNotificationHasBeenShown, false);
+  registry->RegisterBooleanPref(
+      prefs::kDictationDlcOnlySodaDownloadedNotificationHasBeenShown, false);
+  registry->RegisterBooleanPref(
+      prefs::kDictationNoDlcsDownloadedNotificationHasBeenShown, false);
   registry->RegisterBooleanPref(
       prefs::kDisplayRotationAcceleratorDialogHasBeenAccepted2, false);
   registry->RegisterBooleanPref(prefs::kShouldAlwaysShowAccessibilityMenu,

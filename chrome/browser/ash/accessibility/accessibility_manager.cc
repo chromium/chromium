@@ -2420,24 +2420,31 @@ void AccessibilityManager::UpdateDictationNotification() {
   // 3. Pumpkin not installed, SODA installed
   // 4. Pumpkin not installed, SODA not installed
   DictationNotificationType type;
+  std::string notification_shown_pref;
   if (pumpkin_installed && soda_installed) {
-    if (profile_->GetPrefs()->GetBoolean(
-            prefs::kDictationDlcSuccessNotificationHasBeenShown)) {
-      // Do not show the DLC success notification if it has already been shown.
-      return;
-    }
-
     type = DictationNotificationType::kAllDlcsDownloaded;
-    profile_->GetPrefs()->SetBoolean(
-        prefs::kDictationDlcSuccessNotificationHasBeenShown, true);
+    notification_shown_pref =
+        prefs::kDictationDlcSuccessNotificationHasBeenShown;
   } else if (pumpkin_installed && !soda_installed) {
     type = DictationNotificationType::kOnlyPumpkinDownloaded;
+    notification_shown_pref =
+        prefs::kDictationDlcOnlyPumpkinDownloadedNotificationHasBeenShown;
   } else if (!pumpkin_installed && soda_installed) {
     type = DictationNotificationType::kOnlySodaDownloaded;
+    notification_shown_pref =
+        prefs::kDictationDlcOnlySodaDownloadedNotificationHasBeenShown;
   } else {
     type = DictationNotificationType::kNoDlcsDownloaded;
+    notification_shown_pref =
+        prefs::kDictationNoDlcsDownloadedNotificationHasBeenShown;
   }
 
+  if (profile_->GetPrefs()->GetBoolean(notification_shown_pref)) {
+    // Do not show DLC notifications more than once.
+    return;
+  }
+
+  profile_->GetPrefs()->SetBoolean(notification_shown_pref, true);
   AccessibilityController::Get()->ShowNotificationForDictation(type,
                                                                display_name);
 

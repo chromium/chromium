@@ -288,6 +288,12 @@ extern const char kDictationAcceleratorDialogHasBeenAccepted[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDictationDlcSuccessNotificationHasBeenShown[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDictationDlcOnlyPumpkinDownloadedNotificationHasBeenShown[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDictationDlcOnlySodaDownloadedNotificationHasBeenShown[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDictationNoDlcsDownloadedNotificationHasBeenShown[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisplayRotationAcceleratorDialogHasBeenAccepted[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisplayRotationAcceleratorDialogHasBeenAccepted2[];
