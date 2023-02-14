@@ -197,7 +197,6 @@ void DecoderSelector<StreamType>::SelectDecoderInternal(
   }
 
   if (needs_new_decoders) {
-    decoder_selection_start_ = base::TimeTicks::Now();
     decode_failure_reinit_cause_ = absl::nullopt;
     CreateDecoders();
   }
@@ -231,45 +230,8 @@ void DecoderSelector<StreamType>::FinalizeDecoderSelection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!select_decoder_cb_);
 
-  const std::string decoder_type = is_platform_decoder_ ? "HW" : "SW";
-  const std::string stream_type =
-      StreamType == DemuxerStream::AUDIO ? "Audio" : "Video";
-
-  if (is_selecting_for_config_change_) {
-    is_selecting_for_config_change_ = false;
-    base::UmaHistogramTimes("Media.ConfigChangeDecoderSelectionTime." +
-                                stream_type + "." + decoder_type,
-                            base::TimeTicks::Now() - decoder_selection_start_);
-  } else {
-    // Initial selection
-    base::UmaHistogramTimes(
-        "Media.InitialDecoderSelectionTime." + stream_type + "." + decoder_type,
-        base::TimeTicks::Now() - decoder_selection_start_);
-  }
-
-  if (is_codec_changing_) {
-    is_codec_changing_ = false;
-    base::UmaHistogramTimes(
-        "Media.MSE.CodecChangeTime." + stream_type + "." + decoder_type,
-        base::TimeTicks::Now() - codec_change_start_);
-  }
-
   // Discard any remaining decoder instances, they won't be used.
   decoders_.clear();
-}
-
-template <DemuxerStream::Type StreamType>
-void DecoderSelector<StreamType>::NotifyConfigChanged() {
-  DVLOG(2) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  is_selecting_for_config_change_ = true;
-
-  DecoderConfig config = traits_->GetDecoderConfig(stream_);
-  if (config.codec() != config_.codec()) {
-    is_codec_changing_ = true;
-    codec_change_start_ = base::TimeTicks::Now();
-  }
 }
 
 template <DemuxerStream::Type StreamType>
@@ -327,7 +289,6 @@ void DecoderSelector<StreamType>::GetAndInitializeNextDecoder() {
   // Initialize the first decoder on the list.
   decoder_ = std::move(decoders_.front());
   decoders_.erase(decoders_.begin());
-  is_platform_decoder_ = decoder_->IsPlatformDecoder();
   TRACE_EVENT_ASYNC_STEP_INTO0("media", kSelectDecoderTrace, this,
                                GetDecoderName(decoder_->GetDecoderType()));
 

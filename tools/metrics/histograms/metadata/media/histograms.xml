@@ -1761,6 +1761,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Media.ConfigChangeDecoderSelectionTime" units="ms"
     expires_after="2023-01-01">
+  <obsolete>
+    Removed 02/2023 due to lack of further need for this data.
+  </obsolete>
   <owner>cassew@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3035,6 +3038,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Media.InitialDecoderSelectionTime" units="ms"
     expires_after="2023-03-25">
+  <obsolete>
+    Removed 02/2023 due to lack of further need for this data.
+  </obsolete>
   <owner>cassew@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3634,6 +3640,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Media.MSE.CodecChangeTime" units="ms"
     expires_after="2023-07-02">
+  <obsolete>
+    Removed 02/2023 due to lack of further need for this data.
+  </obsolete>
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>

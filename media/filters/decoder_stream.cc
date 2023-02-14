@@ -845,7 +845,6 @@ void DecoderStream<StreamType>::OnBufferReady(
         << " decoder config changed midstream, new config: "
         << config.AsHumanReadableString();
 
-    decoder_selector_.NotifyConfigChanged();
     if (config_change_observer_cb_)
       config_change_observer_cb_.Run(config);
 
