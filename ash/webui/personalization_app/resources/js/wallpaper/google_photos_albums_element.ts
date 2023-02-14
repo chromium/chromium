@@ -35,9 +35,14 @@ const PLACEHOLDER_ID = 'placeholder';
 /** Returns placeholders to show while Google Photos albums are loading. */
 function getPlaceholders(): GooglePhotosAlbum[] {
   return getLoadingPlaceholders(() => {
-    const album = new GooglePhotosAlbum();
-    album.id = PLACEHOLDER_ID;
-    return album;
+    return {
+      id: PLACEHOLDER_ID,
+      title: '',
+      photoCount: 0,
+      isShared: false,
+      preview: {url: ''},
+      timestamp: {internalValue: BigInt(0)},
+    };
   });
 }
 

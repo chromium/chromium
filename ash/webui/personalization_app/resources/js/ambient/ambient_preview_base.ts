@@ -45,7 +45,7 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
         computed: 'computePreviewAlbums_(albums_, topicSource_)',
       },
       firstPreviewAlbum_: {
-        type: AmbientModeAlbum,
+        type: Object,
         computed: 'computeFirstPreviewAlbum_(previewAlbums_)',
       },
       loading_: {

@@ -653,8 +653,14 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
   });
 
   test('reattempts failed photos load on show', async () => {
-    const album = new GooglePhotosAlbum();
-    album.id = '1';
+    const album: GooglePhotosAlbum = {
+      id: '1',
+      title: '',
+      photoCount: 0,
+      isShared: false,
+      preview: {url: ''},
+      timestamp: {internalValue: BigInt(0)},
+    };
 
     // Initialize Google Photos data in the |personalizationStore| such as would
     // occur if photos for an album were previously fetched but failed to load.

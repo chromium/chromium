@@ -37,9 +37,12 @@ const PLACEHOLDER_ID = 'placeholder';
 /** Returns placeholders to show while Google Photos photos are loading. */
 function getPlaceholders(): GooglePhotosPhoto[] {
   return getLoadingPlaceholders(() => {
-    const photo = new GooglePhotosPhoto();
-    photo.id = PLACEHOLDER_ID;
-    return photo;
+    return {
+      id: PLACEHOLDER_ID,
+      name: '',
+      date: {data: []},
+      url: {url: ''},
+    };
   });
 }
 

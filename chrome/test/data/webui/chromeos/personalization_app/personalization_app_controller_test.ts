@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -123,9 +123,14 @@ suite('Personalization app controller', () => {
   test('sets Google Photos album in store', async () => {
     loadTimeData.overrideValues({isGooglePhotosIntegrationEnabled: true});
 
-    const album = new GooglePhotosAlbum();
-    album.id = '9bd1d7a3-f995-4445-be47-53c5b58ce1cb';
-    album.preview = {url: 'bar.com'};
+    const album = {
+      id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+      title: '',
+      photoCount: 0,
+      isShared: false,
+      preview: {url: 'bar.com'},
+      timestamp: {internalValue: BigInt(0)},
+    };
 
     const photos: GooglePhotosPhoto[] = [{
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
@@ -185,7 +190,11 @@ suite('Personalization app controller', () => {
               albums: [
                 {
                   id: album.id,
+                  title: album.title,
                   preview: album.preview,
+                  photoCount: album.photoCount,
+                  isShared: album.isShared,
+                  timestamp: album.timestamp,
                 },
               ],
               albumsShared: undefined,
@@ -215,7 +224,11 @@ suite('Personalization app controller', () => {
               albums: [
                 {
                   id: album.id,
+                  title: album.title,
+                  photoCount: album.photoCount,
+                  isShared: album.isShared,
                   preview: album.preview,
+                  timestamp: album.timestamp,
                 },
               ],
               albumsShared: undefined,

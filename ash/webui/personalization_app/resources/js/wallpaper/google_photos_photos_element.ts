@@ -38,9 +38,12 @@ function getPlaceholders(): GooglePhotosPhotosRow[] {
   const placeholdersPerRow = getNumberOfGridItemsPerRow();
   const placeholders: GooglePhotosPhotosRow[] = [];
   getLoadingPlaceholders(() => {
-    const photo = new GooglePhotosPhoto();
-    photo.id = PLACEHOLDER_ID;
-    return photo;
+    return {
+      id: PLACEHOLDER_ID,
+      name: '',
+      date: {data: []},
+      url: {url: ''},
+    };
   }).forEach((placeholder, i) => {
     let row = placeholders[placeholders.length - 1];
     if (!row || row.length === placeholdersPerRow) {

@@ -284,8 +284,14 @@ suite('GooglePhotosCollectionTest', function() {
   });
 
   test('displays zero state when photos by album id is empty', async () => {
-    const album = new GooglePhotosAlbum();
-    album.id = '1';
+    const album: GooglePhotosAlbum = {
+      id: '1',
+      title: '',
+      photoCount: 0,
+      isShared: false,
+      preview: {url: ''},
+      timestamp: {internalValue: BigInt(0)},
+    };
 
     // Initialize Google Photos data in the |personalizationStore|.
     personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId[album.id] =
