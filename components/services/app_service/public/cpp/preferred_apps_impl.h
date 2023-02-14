@@ -19,6 +19,7 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 
 namespace apps {
 
@@ -35,9 +36,17 @@ class PreferredAppsImpl {
     Host& operator=(const Host&) = delete;
     ~Host() = default;
 
-    virtual void InitializePreferredAppsForAllSubscribers() = 0;
+    // Called when the PreferredAppsList has been loaded from disk, and can
+    // be used to initialize subscribers.
+    // Only implemented in Ash, to support initializing the Lacros copy of the
+    // PreferredAppsList.
+    virtual void InitializePreferredAppsForAllSubscribers() {}
 
-    virtual void OnPreferredAppsChanged(PreferredAppChangesPtr changes) = 0;
+    // Called when changes have been made to the PreferredAppsList which should
+    // be propagated to subscribers.
+    // Only implemented in Ash, to support updating the Lacros copy of the
+    // PreferredAppsList.
+    virtual void OnPreferredAppsChanged(PreferredAppChangesPtr changes) {}
 
     virtual void OnPreferredAppSet(
         const std::string& app_id,
@@ -80,7 +89,7 @@ class PreferredAppsImpl {
   void RemoveSupportedLinksPreference(AppType app_type,
                                       const std::string& app_id);
 
-  const PreferredAppsList& preferred_apps_list() const {
+  PreferredAppsListHandle& preferred_apps_list() {
     return preferred_apps_list_;
   }
 

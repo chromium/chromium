@@ -33,7 +33,6 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
-#include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -109,9 +108,7 @@ class AppServiceProxyBase : public KeyedService,
   // be destroyed earlier than AppServiceProxy.
   void UnregisterPublisher(AppType app_type);
 
-  // PreferredApps::Host overrides.
-  void InitializePreferredAppsForAllSubscribers() override;
-  void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
+  // PreferredAppsImpl::Host overrides.
   void OnPreferredAppSet(
       const std::string& app_id,
       IntentFilterPtr intent_filter,
@@ -423,7 +420,6 @@ class AppServiceProxyBase : public KeyedService,
   IconCache outer_icon_loader_;
 
   std::unique_ptr<apps::PreferredAppsImpl> preferred_apps_impl_;
-  apps::PreferredAppsList preferred_apps_list_;
 
   raw_ptr<Profile> profile_;
 

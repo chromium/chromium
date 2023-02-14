@@ -184,7 +184,7 @@ BrowserAppLauncher* AppServiceProxyBase::BrowserAppLauncher() {
 }
 
 apps::PreferredAppsListHandle& AppServiceProxyBase::PreferredAppsList() {
-  return preferred_apps_list_;
+  return preferred_apps_impl_->preferred_apps_list();
 }
 
 void AppServiceProxyBase::RegisterPublisher(AppType app_type,
@@ -194,16 +194,6 @@ void AppServiceProxyBase::RegisterPublisher(AppType app_type,
 
 void AppServiceProxyBase::UnregisterPublisher(AppType app_type) {
   publishers_.erase(app_type);
-}
-
-void AppServiceProxyBase::InitializePreferredAppsForAllSubscribers() {
-  preferred_apps_list_.Init(
-      preferred_apps_impl_->preferred_apps_list().GetValue());
-}
-
-void AppServiceProxyBase::OnPreferredAppsChanged(
-    PreferredAppChangesPtr changes) {
-  preferred_apps_list_.ApplyBulkUpdate(std::move(changes));
 }
 
 void AppServiceProxyBase::OnPreferredAppSet(
@@ -595,7 +585,6 @@ void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,
     return;
   }
 
-  preferred_apps_list_.AddPreferredApp(app_id, intent_filter);
   preferred_apps_impl_->AddPreferredApp(
       app_registry_cache_.GetAppType(app_id), app_id, std::move(intent_filter),
       intent->Clone(), /*from_publisher=*/false);
