@@ -11,12 +11,23 @@
 #include "media/base/ipc/media_param_traits_macros.h"
 #include "media/base/video_frame.h"
 #include "media/mojo/mojom/media_types.mojom.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
+
+template <>
+struct EnumTraits<media::mojom::SharedImageFormatType,
+                  media::SharedImageFormatType> {
+  static media::mojom::SharedImageFormatType ToMojom(
+      media::SharedImageFormatType type);
+
+  static bool FromMojom(media::mojom::SharedImageFormatType input,
+                        media::SharedImageFormatType* out);
+};
 
 template <>
 struct StructTraits<media::mojom::VideoFrameDataView,
@@ -64,6 +75,11 @@ struct StructTraits<media::mojom::VideoFrameDataView,
   static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
       const scoped_refptr<media::VideoFrame>& input) {
     return input->hdr_metadata();
+  }
+
+  static media::SharedImageFormatType shared_image_format_type(
+      const scoped_refptr<media::VideoFrame>& input) {
+    return input->shared_image_format_type();
   }
 
   static const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
