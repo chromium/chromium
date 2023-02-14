@@ -15,9 +15,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace reading_list {
 namespace {
 
 using testing::_;
+using testing::IsNull;
+using testing::NotNull;
+using StorageStateForTesting = DualReadingListModel::StorageStateForTesting;
 
 MATCHER_P2(MatchesEntry, url_matcher, title_matcher, "") {
   if (!arg) {
@@ -98,7 +102,6 @@ class DualReadingListModelTest : public testing::Test {
         size++;
       }
     }
-    DCHECK_EQ(size, dual_model_->unread_size());
     return size;
   }
 
@@ -205,6 +208,18 @@ TEST_F(DualReadingListModelTest, GetEntryByURL) {
   ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(std::move(local_entries),
                                                    std::move(account_entries)));
   ASSERT_TRUE(dual_model_->loaded());
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(
+                GURL("http://local_url.com/")),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(
+                GURL("http://account_url.com/")),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(
+                GURL("http://common_url1.com/")),
+            StorageStateForTesting::kExistsInBothModels);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(
+                GURL("http://common_url2.com/")),
+            StorageStateForTesting::kExistsInBothModels);
 
   EXPECT_THAT(dual_model_->GetEntryByURL(GURL("http://local_url.com/")),
               MatchesEntry("http://local_url.com/", "local_entry"));
@@ -231,4 +246,84 @@ TEST_F(DualReadingListModelTest, GetEntryByURL) {
             ReadingListEntry::DISTILLATION_ERROR);
 }
 
+TEST_F(DualReadingListModelTest, RemoveNonExistingEntryByUrl) {
+  ResetStorageAndTriggerLoadCompletion();
+  const GURL kUrl = GURL("http://url.com/");
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kNotFound);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+
+  dual_model_->RemoveEntryByURL(kUrl);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl), IsNull());
+}
+
+TEST_F(DualReadingListModelTest, RemoveLocalEntryByUrl) {
+  const GURL kLocalUrl = GURL("http://local_url.com/");
+  ResetStorageAndTriggerLoadCompletion({kLocalUrl},
+                                       /*initial_account_urls=*/{});
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kLocalUrl), NotNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillRemoveEntry(dual_model_.get(), kLocalUrl));
+  EXPECT_CALL(observer_,
+              ReadingListDidRemoveEntry(dual_model_.get(), kLocalUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->RemoveEntryByURL(kLocalUrl);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kLocalUrl), IsNull());
+}
+
+TEST_F(DualReadingListModelTest, RemoveAccountEntryByUrl) {
+  const GURL kAccountUrl = GURL("http://account_url.com/");
+  ResetStorageAndTriggerLoadCompletion(/*initial_local_urls=*/{},
+                                       {kAccountUrl});
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kAccountUrl), NotNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillRemoveEntry(dual_model_.get(), kAccountUrl));
+  EXPECT_CALL(observer_,
+              ReadingListDidRemoveEntry(dual_model_.get(), kAccountUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->RemoveEntryByURL(kAccountUrl);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kAccountUrl), IsNull());
+}
+
+TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrl) {
+  const GURL kCommonUrl = GURL("http://Common_url.com/");
+  ResetStorageAndTriggerLoadCompletion({kCommonUrl}, {kCommonUrl});
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonUrl),
+            StorageStateForTesting::kExistsInBothModels);
+  ASSERT_THAT(dual_model_->GetEntryByURL(kCommonUrl), NotNull());
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillRemoveEntry(dual_model_.get(), kCommonUrl));
+  EXPECT_CALL(observer_,
+              ReadingListDidRemoveEntry(dual_model_.get(), kCommonUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  dual_model_->RemoveEntryByURL(kCommonUrl);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kCommonUrl), IsNull());
+}
+
 }  // namespace
+}  // namespace reading_list

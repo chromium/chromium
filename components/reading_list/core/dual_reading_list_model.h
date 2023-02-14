@@ -30,6 +30,13 @@ namespace reading_list {
 class DualReadingListModel : public ReadingListModel,
                              public ReadingListModelObserver {
  public:
+  enum class StorageStateForTesting {
+    kNotFound,
+    kExistsInAccountModelOnly,
+    kExistsInLocalOrSyncableModelOnly,
+    kExistsInBothModels
+  };
+
   DualReadingListModel(
       std::unique_ptr<ReadingListModel> local_or_syncable_model,
       std::unique_ptr<ReadingListModel> account_model);
@@ -94,6 +101,8 @@ class DualReadingListModel : public ReadingListModel,
         local_or_syncable_model_batch_;
     std::unique_ptr<ScopedReadingListBatchUpdate> account_model_batch_;
   };
+
+  StorageStateForTesting GetStorageStateForURLForTesting(const GURL& url);
 
  private:
   const std::unique_ptr<ReadingListModel> local_or_syncable_model_;

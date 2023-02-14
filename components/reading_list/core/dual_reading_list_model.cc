@@ -170,8 +170,26 @@ const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(
 
 void DualReadingListModel::RemoveEntryByURL(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
+  DCHECK(loaded());
+
+  scoped_refptr<const ReadingListEntry> entry = GetEntryByURL(url);
+  // If there is no entry with the given URL, then an early return is needed to
+  // avoid notifying observers.
+  if (!entry) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.ReadingListWillRemoveEntry(this, url);
+  }
+
+  local_or_syncable_model_->RemoveEntryByURL(url);
+  account_model_->RemoveEntryByURL(url);
+
+  for (auto& observer : observers_) {
+    observer.ReadingListDidRemoveEntry(this, url);
+    observer.ReadingListDidApplyChanges(this);
+  }
 }
 
 void DualReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
@@ -235,6 +253,24 @@ void DualReadingListModel::ReadingListModelLoaded(
       observer.ReadingListModelLoaded(this);
     }
   }
+}
+
+DualReadingListModel::StorageStateForTesting
+DualReadingListModel::GetStorageStateForURLForTesting(const GURL& url) {
+  const bool exists_in_local_or_syncable_model =
+      local_or_syncable_model_->GetEntryByURL(url) != nullptr;
+  const bool exists_in_account_model =
+      account_model_->GetEntryByURL(url) != nullptr;
+  if (exists_in_local_or_syncable_model && exists_in_account_model) {
+    return StorageStateForTesting::kExistsInBothModels;
+  }
+  if (exists_in_local_or_syncable_model) {
+    return StorageStateForTesting::kExistsInLocalOrSyncableModelOnly;
+  }
+  if (exists_in_account_model) {
+    return StorageStateForTesting::kExistsInAccountModelOnly;
+  }
+  return StorageStateForTesting::kNotFound;
 }
 
 }  // namespace reading_list
