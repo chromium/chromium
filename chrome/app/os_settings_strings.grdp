@@ -4401,6 +4401,9 @@ Press an assigned switch or key to remove assignment.
      =1 {1 remapped key}
      other {{COUNT} remapped keys}}
   </message>
+  <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_DESCRIPTION" translateable="false" desc="In Keyboard remap keys subpage, the description label above remapping keys to describe the actions user can perform.">
+    For each key listed below, choose the action you want it to perform
+  </message>
   <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS" translateable="false" desc="In Device Settings, the inverted checkbox label for interpreting the top-row keys as function keys instead.">
     Convert F keys to ChromeOS top-row keys
   </message>

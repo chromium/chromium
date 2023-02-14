@@ -151,7 +151,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
           if (routes.PER_DEVICE_KEYBOARD_REMAP_KEYS) {
             map.set(
                 routes.PER_DEVICE_KEYBOARD_REMAP_KEYS.path,
-                '#perDeviceKeyboardRemapKeys');
+                '#perDeviceKeyboardRemapKeysRow');
           }
           if (routes.KEYBOARD) {
             map.set(routes.KEYBOARD.path, '#keyboardRow');

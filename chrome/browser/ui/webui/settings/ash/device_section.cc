@@ -616,6 +616,8 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"keyRepeatRateSlow", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_RATE_SLOW},
       {"perDeviceKeyboardTitle", IDS_SETTINGS_PER_DEVICE_KEYBOARD_TITLE},
       {"remapKeyboardKeysRowLabel", IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_LABEL},
+      {"remapKeyboardKeysDescription",
+       IDS_SETTINGS_KEYBOARD_REMAP_KEYS_DESCRIPTION},
       {"showKeyboardShortcutViewer",
        IDS_SETTINGS_KEYBOARD_SHOW_SHORTCUT_VIEWER},
   };

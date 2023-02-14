@@ -512,6 +512,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
+   'PerDeviceKeyboardRemapKeys', 'per_device_keyboard_remap_keys_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+ ],
+ [
    'PerDeviceKeyboardSubsection',
    'per_device_keyboard_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},

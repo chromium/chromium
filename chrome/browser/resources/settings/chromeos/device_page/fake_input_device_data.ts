@@ -20,7 +20,7 @@ export const fakeKeyboards: Keyboard[] = [
     ],
     settings: {
       modifierRemappings: new Map<ModifierKey, ModifierKey>([
-        [ModifierKey.META, ModifierKey.VOID],
+        [ModifierKey.CONTROL, ModifierKey.CAPS_LOCK],
         [ModifierKey.CAPS_LOCK, ModifierKey.ASSISTANT],
       ]),
       topRowAreFKeys: false,
@@ -67,7 +67,7 @@ export const fakeKeyboards: Keyboard[] = [
     ],
     settings: {
       modifierRemappings: new Map<ModifierKey, ModifierKey>([
-        [ModifierKey.CAPS_LOCK, ModifierKey.ASSISTANT],
+        [ModifierKey.ALT, ModifierKey.ASSISTANT],
       ]),
       topRowAreFKeys: true,
       suppressMetaFKeyRewrites: false,

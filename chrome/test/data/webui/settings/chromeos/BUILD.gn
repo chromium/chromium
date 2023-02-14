@@ -145,6 +145,7 @@ test_files = [
   "parental_controls_page_test.js",
   "people_page_account_manager_test.js",
   "per_device_keyboard_subsection_test.js",
+  "per_device_keyboard_remap_keys_test.js",
   "per_device_keyboard_test.js",
   "per_device_mouse_subsection_test.js",
   "per_device_pointing_stick_subsection_test.js",

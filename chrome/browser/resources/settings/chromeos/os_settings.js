@@ -159,7 +159,7 @@ export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClo
 export {fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from './device_page/fake_input_device_data.js';
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
-export {MetaKey} from './device_page/input_device_settings_types.js';
+export {MetaKey, ModifierKey} from './device_page/input_device_settings_types.js';
 export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';
 export {SettingsPerDeviceKeyboardRemapKeysElement} from './device_page/per_device_keyboard_remap_keys.js';
 export {SettingsPerDeviceKeyboardSubsectionElement} from './device_page/per_device_keyboard_subsection.js';

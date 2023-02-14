@@ -1,1 +1,64 @@
-<h2>{{keyboardId}}</h2>
+<style include="settings-shared"></style>
+<div id="container">
+  <div id="description">$i18n{remapKeyboardKeysDescription}</div>
+  <div class="settings-box">
+    <div class="start" aria-hidden="true">$i18n{keyboardKeySearch}</div>
+    <settings-dropdown-menu id="metaKey"
+        label="$i18n{keyboardKeySearch}"
+        pref="{{fakeMetaPref}}"
+        menu-options="[[keyMapTargets]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="settings-box">
+    <div class="start" aria-hidden="true">$i18n{keyboardKeyCtrl}</div>
+    <settings-dropdown-menu id="ctrlKey"
+        label="$i18n{keyboardKeyCtrl}"
+        pref="{{fakeCtrlPref}}"
+        menu-options="[[keyMapTargets]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="settings-box">
+    <div class="start" aria-hidden="true">$i18n{keyboardKeyAlt}</div>
+    <settings-dropdown-menu id="altKey"
+        label="$i18n{keyboardKeyAlt}"
+        pref="{{fakeAltPref}}"
+        menu-options="[[keyMapTargets]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="settings-box">
+    <div class="start" aria-hidden="true">$i18n{keyboardKeyEscape}</div>
+    <settings-dropdown-menu id="escKey"
+        label="$i18n{keyboardKeyEscape}"
+        pref="{{fakeEscPref}}"
+        menu-options="[[keyMapTargets]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="settings-box">
+    <div class="start" aria-hidden="true">$i18n{keyboardKeyBackspace}</div>
+    <settings-dropdown-menu id="backspaceKey"
+        label="$i18n{keyboardKeyBackspace}"
+        pref="{{fakeBackspacePref}}"
+        menu-options="[[keyMapTargets]]">
+    </settings-dropdown-menu>
+  </div>
+  <template is="dom-if" if="[[hasAssistantKey_]]">
+    <div class="settings-box">
+      <div class="start" aria-hidden="true">$i18n{keyboardKeyAssistant}</div>
+      <settings-dropdown-menu id="assistantKey"
+          label="$i18n{keyboardKeyAssistant}"
+          pref="{{fakeAssistantPref}}"
+          menu-options="[[keyMapTargets]]">
+      </settings-dropdown-menu>
+    </div>
+  </template>
+  <template is="dom-if" if="[[hasCapsLockKey]]">
+    <div class="settings-box">
+      <div class="start" aria-hidden="true">$i18n{keyboardKeyCapsLock}</div>
+      <settings-dropdown-menu id="capsLockKey"
+          label="$i18n{keyboardKeyCapsLock}"
+          pref="{{fakeCapsLockPref}}"
+          menu-options="[[keyMapTargets]]">
+      </settings-dropdown-menu>
+    </div>
+  </template>
+</div>
