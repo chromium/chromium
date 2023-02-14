@@ -66,7 +66,17 @@ extern const char kErrorEvents[];
 extern const char kPageLoadCompletedAfterAppBackground[];
 extern const char kPageLoadPrerender2Event[];
 extern const char kPageLoadStartedInForeground[];
+extern const char kPageLoadPrerender2VisibilityAtActivation[];
 extern const char kPageLoadTrackerPageType[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class VisibilityAtActivation {
+  kHidden = 0,
+  kOccluded = 1,
+  kVisible = 2,
+  kMaxValue = kVisible
+};
 
 }  // namespace internal
 
