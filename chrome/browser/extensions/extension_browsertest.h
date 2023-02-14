@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -26,6 +27,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
@@ -46,7 +48,8 @@ class ProcessManager;
 
 // Base class for extension browser tests. Provides utilities for loading,
 // unloading, and installing extensions.
-class ExtensionBrowserTest : virtual public InProcessBrowserTest {
+class ExtensionBrowserTest : virtual public InProcessBrowserTest,
+                             public ExtensionRegistryObserver {
  public:
   // Different types of extension's lazy background contexts used in some tests.
   enum class ContextType {
@@ -70,6 +73,11 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
 
   ExtensionBrowserTest(const ExtensionBrowserTest&) = delete;
   ExtensionBrowserTest& operator=(const ExtensionBrowserTest&) = delete;
+
+  // ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override;
+  void OnShutdown(ExtensionRegistry* registry) override;
 
  protected:
   struct LoadOptions {
@@ -120,7 +128,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   }
 
   const std::string& last_loaded_extension_id() {
-    return observer_->last_loaded_extension_id();
+    return last_loaded_extension_id_;
   }
 
   // Get the profile to use.
@@ -442,6 +450,12 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
       verifier_format_override_;
 
   ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_check_;
+
+  // Listens to extension loaded notifications.
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
+
+  std::string last_loaded_extension_id_;
 };
 
 }  // namespace extensions

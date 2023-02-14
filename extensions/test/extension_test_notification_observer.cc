@@ -105,24 +105,10 @@ void ExtensionTestNotificationObserver::NotificationSet::WebContentsDestroyed(
 
 ExtensionTestNotificationObserver::ExtensionTestNotificationObserver(
     content::BrowserContext* context)
-    : context_(context) {
-  if (context_)
-    registry_observation_.Observe(ExtensionRegistry::Get(context_));
-}
+    : context_(context) {}
 
-ExtensionTestNotificationObserver::~ExtensionTestNotificationObserver() {}
-
-void ExtensionTestNotificationObserver::OnExtensionLoaded(
-    content::BrowserContext* browser_context,
-    const Extension* extension) {
-  last_loaded_extension_id_ = extension->id();
-  VLOG(1) << "Got EXTENSION_LOADED notification.";
-}
-
-void ExtensionTestNotificationObserver::OnShutdown(
-    ExtensionRegistry* registry) {
-  registry_observation_.Reset();
-}
+ExtensionTestNotificationObserver::~ExtensionTestNotificationObserver() =
+    default;
 
 void ExtensionTestNotificationObserver::WaitForCondition(
     const ConditionCallback& condition,

@@ -322,6 +322,17 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
 ExtensionBrowserTest::~ExtensionBrowserTest() {
 }
 
+void ExtensionBrowserTest::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  last_loaded_extension_id_ = extension->id();
+  VLOG(1) << "Got EXTENSION_LOADED notification.";
+}
+
+void ExtensionBrowserTest::OnShutdown(ExtensionRegistry* registry) {
+  registry_observation_.Reset();
+}
+
 Profile* ExtensionBrowserTest::profile() {
   if (!profile_) {
     if (browser())
@@ -412,12 +423,14 @@ void ExtensionBrowserTest::SetUpOnMainThread() {
   SetExtensionProtocolTestHandler(&test_protocol_handler_);
   content::URLDataSource::Add(profile(),
                               std::make_unique<ThemeSource>(profile()));
+  registry_observation_.Observe(ExtensionRegistry::Get(profile()));
 }
 
 void ExtensionBrowserTest::TearDownOnMainThread() {
   ExtensionMessageBubbleFactory::set_override_for_tests(
       ExtensionMessageBubbleFactory::NO_OVERRIDE);
   SetExtensionProtocolTestHandler(nullptr);
+  registry_observation_.Reset();
 }
 
 const Extension* ExtensionBrowserTest::LoadExtension(
@@ -463,7 +476,7 @@ const Extension* ExtensionBrowserTest::LoadExtension(
   scoped_refptr<const Extension> extension =
       loader.LoadExtension(extension_path);
   if (extension)
-    observer_->set_last_loaded_extension_id(extension->id());
+    last_loaded_extension_id_ = extension->id();
 
   if (options.wait_for_registration_stored &&
       BackgroundInfo::IsServiceWorkerBased(extension.get())) {
@@ -490,7 +503,7 @@ const Extension* ExtensionBrowserTest::LoadExtensionAsComponentWithManifest(
       extension_registry()->enabled_extensions().GetByID(extension_id);
   if (!extension)
     return nullptr;
-  observer_->set_last_loaded_extension_id(extension->id());
+  last_loaded_extension_id_ = extension->id();
   return extension;
 }
 

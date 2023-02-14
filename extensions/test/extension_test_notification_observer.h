@@ -15,8 +15,6 @@
 #include "base/scoped_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
 
@@ -29,7 +27,7 @@ class WebContents;
 namespace extensions {
 
 // Test helper class for observing extension-related events.
-class ExtensionTestNotificationObserver : ExtensionRegistryObserver {
+class ExtensionTestNotificationObserver {
  public:
   explicit ExtensionTestNotificationObserver(content::BrowserContext* context);
 
@@ -38,20 +36,7 @@ class ExtensionTestNotificationObserver : ExtensionRegistryObserver {
   ExtensionTestNotificationObserver& operator=(
       const ExtensionTestNotificationObserver&) = delete;
 
-  ~ExtensionTestNotificationObserver() override;
-
-  const std::string& last_loaded_extension_id() {
-    return last_loaded_extension_id_;
-  }
-  void set_last_loaded_extension_id(
-      const std::string& last_loaded_extension_id) {
-    last_loaded_extension_id_ = last_loaded_extension_id;
-  }
-
-  // ExtensionRegistryObserver:
-  void OnExtensionLoaded(content::BrowserContext* browser_context,
-                         const Extension* extension) override;
-  void OnShutdown(ExtensionRegistry* registry) override;
+  ~ExtensionTestNotificationObserver();
 
  protected:
   class NotificationSet : public content::NotificationObserver,
@@ -112,18 +97,12 @@ class ExtensionTestNotificationObserver : ExtensionRegistryObserver {
   raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
 
  private:
-  std::string last_loaded_extension_id_;
-
   // The condition for which we are waiting. This should be checked in any
   // observing methods that could trigger it.
   base::RepeatingCallback<bool(void)> condition_;
 
   // The closure to quit the currently-running message loop.
   base::OnceClosure quit_closure_;
-
-  // Listens to extension loaded notifications.
-  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observation_{this};
 };
 
 }  // namespace extensions
