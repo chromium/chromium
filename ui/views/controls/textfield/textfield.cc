@@ -774,6 +774,12 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         SelectWordAt(event->location());
         OnAfterUserAction();
         CreateTouchSelectionControllerAndNotifyIt();
+#if BUILDFLAG(IS_CHROMEOS)
+        if (::features::IsTouchTextEditingRedesignEnabled()) {
+          selection_dragging_state_ =
+              SelectionDraggingState::kDraggingSelectionExtent;
+        }
+#endif
         // If touch selection activated successfully, mark event as handled
         // so that the regular context menu is not shown.
         if (touch_selection_controller_)
@@ -788,6 +794,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::ET_GESTURE_LONG_TAP:
+      selection_dragging_state_ = SelectionDraggingState::kNone;
       // If touch selection is enabled, the context menu on long tap will be
       // shown by the |touch_selection_controller_|, hence we mark the event
       // handled so Views does not try to show context menu on it.
@@ -801,17 +808,11 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         DestroyTouchSelection();
 #if BUILDFLAG(IS_CHROMEOS)
         if (::features::IsTouchTextEditingRedesignEnabled()) {
-          // If the scroll begins in a horizontal direction, use the scroll
-          // sequence for cursor placement.
-          const float abs_delta_x = abs(event->details().scroll_x_hint());
-          const float abs_delta_y = abs(event->details().scroll_y_hint());
-          if (abs_delta_x >= abs_delta_y) {
-            dragging_cursor_ = true;
-          }
+          MaybeStartSelectionDragging(event);
         }
 #endif
-        if (!dragging_cursor_) {
-          drag_start_location_ = event->location();
+        if (selection_dragging_state_ == SelectionDraggingState::kNone) {
+          drag_start_location_x_ = event->location().x();
           drag_start_display_offset_ =
               GetRenderText()->GetUpdatedDisplayOffset().x();
         }
@@ -820,13 +821,21 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       if (HasFocus()) {
-        if (dragging_cursor_) {
-          MoveCursorTo(event->location(), false);
-        } else {
-          int new_offset = drag_start_display_offset_ + event->location().x() -
-                           drag_start_location_.x();
-          GetRenderText()->SetDisplayOffset(new_offset);
-          SchedulePaint();
+        switch (selection_dragging_state_) {
+          case SelectionDraggingState::kDraggingSelectionExtent:
+            MoveRangeSelectionExtent(event->location() +
+                                     selection_dragging_offset_);
+            break;
+          case SelectionDraggingState::kDraggingCursor:
+            MoveCursorTo(event->location(), false);
+            break;
+          case SelectionDraggingState::kNone:
+            int new_display_offset = drag_start_display_offset_ +
+                                     event->location().x() -
+                                     drag_start_location_x_;
+            GetRenderText()->SetDisplayOffset(new_display_offset);
+            SchedulePaint();
+            break;
         }
         event->SetHandled();
       }
@@ -834,9 +843,10 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_SCROLL_FLING_START:
       if (HasFocus()) {
-        if (dragging_cursor_ || touch_handles_hidden_due_to_scroll_) {
+        if (selection_dragging_state_ != SelectionDraggingState::kNone ||
+            touch_handles_hidden_due_to_scroll_) {
           CreateTouchSelectionControllerAndNotifyIt();
-          dragging_cursor_ = false;
+          selection_dragging_state_ = SelectionDraggingState::kNone;
           touch_handles_hidden_due_to_scroll_ = false;
         }
         event->SetHandled();
@@ -2804,6 +2814,53 @@ float Textfield::GetCornerRadius() {
              ? LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kHigh)
              : FocusRing::kDefaultCornerRadiusDp;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void Textfield::MaybeStartSelectionDragging(ui::GestureEvent* event) {
+  if (event->type() != ui::ET_GESTURE_SCROLL_BEGIN) {
+    return;
+  }
+
+  const float delta_x = event->details().scroll_x_hint();
+  const float delta_y = event->details().scroll_y_hint();
+  if (selection_dragging_state_ ==
+      SelectionDraggingState::kDraggingSelectionExtent) {
+    gfx::RenderText* render_text = GetRenderText();
+    gfx::SelectionModel start_sel =
+        render_text->GetSelectionModelForSelectionStart();
+    const gfx::SelectionModel& sel = render_text->selection_model();
+    gfx::Point selection_start =
+        render_text->GetCursorBounds(start_sel, true).CenterPoint();
+    gfx::Point selection_end =
+        render_text->GetCursorBounds(sel, true).CenterPoint();
+
+    gfx::LogicalCursorDirection drag_direction = gfx::CURSOR_FORWARD;
+    if (std::fabs(delta_y) > std::fabs(delta_x)) {
+      // If the initial dragging motion is up/down, extend the
+      // selection backwards/forwards.
+      drag_direction = delta_y < 0 ? gfx::CURSOR_BACKWARD : gfx::CURSOR_FORWARD;
+    } else {
+      // Otherwise, extend the selection in the direction of
+      // horizontal movement.
+      drag_direction = delta_x * (selection_end.x() - selection_start.x()) < 0
+                           ? gfx::CURSOR_BACKWARD
+                           : gfx::CURSOR_FORWARD;
+    }
+
+    gfx::Point base =
+        drag_direction == gfx::CURSOR_FORWARD ? selection_start : selection_end;
+    gfx::Point extent =
+        drag_direction == gfx::CURSOR_FORWARD ? selection_end : selection_start;
+    SelectBetweenCoordinates(base, extent);
+    selection_dragging_offset_ = extent - event->location();
+  } else if (std::fabs(delta_x) >= std::fabs(delta_y)) {
+    // Use the scroll sequence for cursor placement if it begins in a
+    // horizontal direction and is not already being used for dragging
+    // the selection.
+    selection_dragging_state_ = SelectionDraggingState::kDraggingCursor;
+  }
+}
+#endif
 
 BEGIN_METADATA(Textfield, View)
 ADD_PROPERTY_METADATA(bool, ReadOnly)

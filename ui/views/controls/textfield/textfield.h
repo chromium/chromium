@@ -663,6 +663,15 @@ class VIEWS_EXPORT Textfield : public View,
   // Returns the corner radius of the text field.
   float GetCornerRadius();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Checks and updates the selection dragging state for the upcoming scroll
+  // sequence, if required. If the scroll sequence starts while long pressing,
+  // it will be used for adjusting the text selection. Otherwise, if the scroll
+  // begins horizontally it will be used for cursor placement. Otherwise, the
+  // scroll sequence won't be used for selection dragging.
+  void MaybeStartSelectionDragging(ui::GestureEvent* event);
+#endif
+
   // The text model.
   std::unique_ptr<TextfieldModel> model_;
 
@@ -749,14 +758,23 @@ class VIEWS_EXPORT Textfield : public View,
 
   SelectionController selection_controller_;
 
-  // Whether the user is currently dragging the cursor. If true, the current
-  // scroll sequence will be used for cursor placement rather than for
-  // scrolling.
-  bool dragging_cursor_ = false;
+  // Tracks when the current scroll sequence should be used for cursor placement
+  // or adjusting the text selection.
+  enum class SelectionDraggingState {
+    kNone,
+    kDraggingCursor,
+    kDraggingSelectionExtent
+  };
+  SelectionDraggingState selection_dragging_state_ =
+      SelectionDraggingState::kNone;
+
+  // The offset applied to the touch drag location when determining selection
+  // updates.
+  gfx::Vector2d selection_dragging_offset_;
 
   // Used to track touch drag starting location and offset to enable touch
   // scrolling.
-  gfx::Point drag_start_location_;
+  int drag_start_location_x_;
   int drag_start_display_offset_ = 0;
 
   // Tracks the selection extent, which is used to determine the logical end of
