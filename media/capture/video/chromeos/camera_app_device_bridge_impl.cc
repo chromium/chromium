@@ -42,9 +42,15 @@ void CameraAppDeviceBridgeImpl::BindReceiver(
 void CameraAppDeviceBridgeImpl::OnVideoCaptureDeviceCreated(
     const std::string& device_id,
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner) {
-  base::AutoLock lock(task_runner_map_lock_);
-  DCHECK_EQ(ipc_task_runners_.count(device_id), 0u);
-  ipc_task_runners_.emplace(device_id, ipc_task_runner);
+  {
+    base::AutoLock lock(task_runner_map_lock_);
+    DCHECK_EQ(ipc_task_runners_.count(device_id), 0u);
+    ipc_task_runners_.emplace(device_id, ipc_task_runner);
+  }
+
+  // Update the cached camera info while VCD is connected as well so that when
+  // the camera service is restarted the camera info can be updated properly.
+  UpdateCameraInfo(device_id);
 }
 
 void CameraAppDeviceBridgeImpl::OnVideoCaptureDeviceClosing(
@@ -89,6 +95,24 @@ void CameraAppDeviceBridgeImpl::OnDeviceMojoDisconnected(
     }
   }
   std::move(remove_device).Run();
+}
+
+void CameraAppDeviceBridgeImpl::UpdateCameraInfo(const std::string& device_id) {
+  cros::mojom::CameraInfoPtr camera_info;
+  {
+    base::AutoLock lock(camera_info_getter_lock_);
+    DCHECK(camera_info_getter_);
+    camera_info = camera_info_getter_.Run(device_id);
+  }
+
+  {
+    base::AutoLock lock(device_map_lock_);
+    auto it = camera_app_devices_.find(device_id);
+    if (it != camera_app_devices_.end()) {
+      const auto& device = it->second;
+      device->OnCameraInfoUpdated(std::move(camera_info));
+    }
+  }
 }
 
 void CameraAppDeviceBridgeImpl::InvalidateDevicePtrsOnDeviceIpcThread(
@@ -159,35 +183,25 @@ void CameraAppDeviceBridgeImpl::GetCameraAppDevice(
   DCHECK(is_supported_);
 
   mojo::PendingRemote<cros::mojom::CameraAppDevice> device_remote;
-  auto* device = GetOrCreateCameraAppDevice(device_id);
-  DCHECK(device);
+  {
+    base::AutoLock lock(device_map_lock_);
 
-  device->BindReceiver(device_remote.InitWithNewPipeAndPassReceiver());
+    CameraAppDeviceImpl* device;
+    auto it = camera_app_devices_.find(device_id);
+    if (it != camera_app_devices_.end()) {
+      device = it->second.get();
+    } else {
+      auto device_impl =
+          std::make_unique<media::CameraAppDeviceImpl>(device_id);
+      const auto& iterator =
+          camera_app_devices_.emplace(device_id, std::move(device_impl)).first;
+      device = iterator->second.get();
+    }
+    device->BindReceiver(device_remote.InitWithNewPipeAndPassReceiver());
+  }
+  UpdateCameraInfo(device_id);
   std::move(callback).Run(cros::mojom::GetCameraAppDeviceStatus::SUCCESS,
                           std::move(device_remote));
-}
-
-media::CameraAppDeviceImpl*
-CameraAppDeviceBridgeImpl::GetOrCreateCameraAppDevice(
-    const std::string& device_id) {
-  base::AutoLock lock(device_map_lock_);
-  auto it = camera_app_devices_.find(device_id);
-  if (it != camera_app_devices_.end()) {
-    return it->second.get();
-  }
-
-  base::AutoLock camera_info_lock(camera_info_getter_lock_);
-  // Since we ensure that VideoCaptureDeviceFactory is created before binding
-  // CameraAppDeviceBridge and VideoCaptureDeviceFactory is only destroyed when
-  // the video capture service dies, we can guarantee that |camera_info_getter_|
-  // is always valid here.
-  DCHECK(camera_info_getter_);
-
-  auto device_info = camera_info_getter_.Run(device_id);
-  auto device_impl = std::make_unique<media::CameraAppDeviceImpl>(
-      device_id, std::move(device_info));
-  auto result = camera_app_devices_.emplace(device_id, std::move(device_impl));
-  return result.first->second.get();
 }
 
 void CameraAppDeviceBridgeImpl::IsSupported(IsSupportedCallback callback) {

@@ -48,6 +48,8 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
   void OnDeviceMojoDisconnected(const std::string& device_id);
 
+  void UpdateCameraInfo(const std::string& device_id);
+
   void InvalidateDevicePtrsOnDeviceIpcThread(const std::string& device_id,
                                              bool should_disable_new_ptrs,
                                              base::OnceClosure callback);
@@ -81,8 +83,6 @@ class CAPTURE_EXPORT CameraAppDeviceBridgeImpl
 
  private:
   friend struct base::DefaultSingletonTraits<CameraAppDeviceBridgeImpl>;
-
-  CameraAppDeviceImpl* GetOrCreateCameraAppDevice(const std::string& device_id);
 
   bool is_supported_;
 

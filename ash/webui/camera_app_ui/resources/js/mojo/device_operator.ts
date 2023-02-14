@@ -27,6 +27,7 @@ import {
   CameraEventObserverCallbackRouter,
   CameraFacing,
   CameraInfo,
+  CameraInfoObserverCallbackRouter,
   CameraMetadata,
   CameraMetadataEntry,
   CameraMetadataTag,
@@ -145,7 +146,7 @@ export class DeviceOperator {
   /**
    * Map for cached camera infos.
    */
-  private readonly cameraInfos = new Map<string, Promise<CameraInfo>>();
+  private readonly cameraInfos = new Map<string, CancelableEvent<CameraInfo>>();
 
   /**
    * Return if the direct communication between camera app and video capture
@@ -161,6 +162,11 @@ export class DeviceOperator {
    */
   removeDevice(deviceId: string): void {
     this.devices.delete(deviceId);
+
+    const info = this.cameraInfos.get(deviceId);
+    if (info !== undefined) {
+      info.signalError(new Error('Camera info retrieval is canceled'));
+    }
     this.cameraInfos.delete(deviceId);
   }
 
@@ -202,15 +208,12 @@ export class DeviceOperator {
   private async getCameraInfo(deviceId: string): Promise<CameraInfo> {
     const info = this.cameraInfos.get(deviceId);
     if (info !== undefined) {
-      return info;
+      return info.wait();
     }
-    const newInfo = (async () => {
-      const device = await this.getDevice(deviceId);
-      const {cameraInfo} = await device.getCameraInfo();
-      return cameraInfo;
-    })();
-    this.cameraInfos.set(deviceId, newInfo);
-    return newInfo;
+    const onInfoReady = new CancelableEvent<CameraInfo>();
+    this.cameraInfos.set(deviceId, onInfoReady);
+    this.registerCameraInfoObserver(deviceId);
+    return onInfoReady.wait();
   }
 
   /**
@@ -708,6 +711,25 @@ export class DeviceOperator {
     await device.registerDocumentCornersObserver(
         observerCallbackRouter.$.bindNewPipeAndPassRemote());
     return observerCallbackRouter;
+  }
+
+  /**
+   * Registers observer to monitor when the camera info is updated.
+   *
+   * @param deviceId The id of the target camera device.
+   */
+  async registerCameraInfoObserver(deviceId: string): Promise<void> {
+    const observerCallbackRouter =
+        wrapEndpoint(new CameraInfoObserverCallbackRouter());
+    observerCallbackRouter.onCameraInfoUpdated.addListener(
+        (info: CameraInfo) => {
+          const onInfoReady = this.cameraInfos.get(deviceId);
+          assert(onInfoReady !== undefined);
+          onInfoReady.signal(info);
+        });
+    const device = await this.getDevice(deviceId);
+    await device.registerCameraInfoObserver(
+        observerCallbackRouter.$.bindNewPipeAndPassRemote());
   }
 
   /**

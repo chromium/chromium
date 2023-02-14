@@ -71,11 +71,9 @@ ReprocessTaskQueue CameraAppDeviceImpl::GetSingleShotReprocessOptions(
   return result_task_queue;
 }
 
-CameraAppDeviceImpl::CameraAppDeviceImpl(const std::string& device_id,
-                                         cros::mojom::CameraInfoPtr camera_info)
+CameraAppDeviceImpl::CameraAppDeviceImpl(const std::string& device_id)
     : device_id_(device_id),
       allow_new_ipc_weak_ptrs_(true),
-      camera_info_(std::move(camera_info)),
       capture_intent_(cros::mojom::CaptureIntent::DEFAULT),
       camera_device_context_(nullptr) {}
 
@@ -168,6 +166,20 @@ void CameraAppDeviceImpl::OnShutterDone() {
                      weak_ptr_factory_for_mojo_.GetWeakPtr()));
 }
 
+void CameraAppDeviceImpl::OnCameraInfoUpdated(
+    cros::mojom::CameraInfoPtr camera_info) {
+  base::AutoLock lock(camera_info_lock_);
+  camera_info_ = std::move(camera_info);
+
+  if (!mojo_task_runner_) {
+    return;
+  }
+  mojo_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CameraAppDeviceImpl::NotifyCameraInfoUpdatedOnMojoThread,
+                     weak_ptr_factory_for_mojo_.GetWeakPtr()));
+}
+
 void CameraAppDeviceImpl::SetCameraDeviceContext(
     CameraDeviceContext* camera_device_context) {
   base::AutoLock lock(camera_device_context_lock_);
@@ -196,13 +208,6 @@ void CameraAppDeviceImpl::MaybeDetectDocumentCorners(
 bool CameraAppDeviceImpl::IsMultipleStreamsEnabled() {
   base::AutoLock lock(multi_stream_lock_);
   return multi_stream_enabled_;
-}
-
-void CameraAppDeviceImpl::GetCameraInfo(GetCameraInfoCallback callback) {
-  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
-  DCHECK(camera_info_);
-
-  std::move(callback).Run(camera_info_.Clone());
 }
 
 void CameraAppDeviceImpl::SetReprocessOptions(
@@ -239,6 +244,12 @@ void CameraAppDeviceImpl::SetFpsRange(const gfx::Range& fps_range,
 
   const int entry_length = 2;
 
+  base::AutoLock camera_info_lock(camera_info_lock_);
+  if (!camera_info_) {
+    LOG(ERROR) << "Camera info is still not available at this moment";
+    std::move(callback).Run(false);
+    return;
+  }
   auto& static_metadata = camera_info_->static_camera_characteristics;
   auto available_fps_range_entries = GetMetadataEntryAsSpan<int32_t>(
       static_metadata, cros::mojom::CameraMetadataTag::
@@ -364,6 +375,17 @@ void CameraAppDeviceImpl::SetMultipleStreamsEnabled(
   base::AutoLock lock(multi_stream_lock_);
   multi_stream_enabled_ = enabled;
   std::move(callback).Run();
+}
+
+void CameraAppDeviceImpl::RegisterCameraInfoObserver(
+    mojo::PendingRemote<cros::mojom::CameraInfoObserver> observer,
+    RegisterCameraInfoObserverCallback callback) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  camera_info_observers_.Add(std::move(observer));
+  std::move(callback).Run();
+
+  NotifyCameraInfoUpdatedOnMojoThread();
 }
 
 // static
@@ -507,6 +529,18 @@ void CameraAppDeviceImpl::NotifyResultMetadataOnMojoThread(
   auto& metadata_observers = stream_to_metadata_observers_map_[streamType];
   for (auto& observer : metadata_observers) {
     observer->OnMetadataAvailable(metadata.Clone());
+  }
+}
+
+void CameraAppDeviceImpl::NotifyCameraInfoUpdatedOnMojoThread() {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  base::AutoLock lock(camera_info_lock_);
+  if (!camera_info_) {
+    return;
+  }
+  for (auto& observer : camera_info_observers_) {
+    observer->OnCameraInfoUpdated(camera_info_.Clone());
   }
 }
 

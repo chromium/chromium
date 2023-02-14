@@ -37,6 +37,7 @@ export {
   CameraAppDeviceProviderRemote,
   CameraAppDeviceRemote,
   CameraEventObserverCallbackRouter,
+  CameraInfoObserverCallbackRouter,
   CaptureIntent,
   DocumentCornersObserverCallbackRouter,
   Effect,

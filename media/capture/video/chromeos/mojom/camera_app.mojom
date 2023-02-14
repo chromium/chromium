@@ -85,10 +85,6 @@ interface CameraAppDeviceBridge {
 // a renderer process, with all the code resides in the Chrome OS rootfs. The
 // camera device runs inside the browser process.
 interface CameraAppDevice {
-  // Gets camera information |camera_info| which includes camera facing,
-  // characteristics, orientation, etc.
-  GetCameraInfo() => (CameraInfo camera_info);
-
   // Sets reprocess options to bind with the coming take photo request. When
   // this method is called, the reprocess options will be queued. All reprocess
   // options in the queue will be consumed when ImageCapture::TakePhoto() is
@@ -140,6 +136,10 @@ interface CameraAppDevice {
   // Enable/Disable the multiple streams feature for video recording on the
   // device given by its |device_id|.
   SetMultipleStreamsEnabled(bool enabled) => ();
+
+  // Registers the observer to monitor the camera info update.
+  RegisterCameraInfoObserver(
+    pending_remote<CameraInfoObserver> observer) => ();
 };
 
 // Interface for camera device to send camera metadata to Chrome Camera App.
@@ -162,6 +162,13 @@ interface DocumentCornersObserver {
   // detected, or 4, which are in top-left => bottom-left => bottom-right =>
   // top-right order. The value of the coordinate of a corner will be in [0, 1).
   OnDocumentCornersUpdated(array<gfx.mojom.PointF> corners);
+};
+
+// Interface for monitoring the change of camera info.
+interface CameraInfoObserver {
+  // Triggered when the camera info is updated, generally happened when the
+  // underlying camera is restarted.
+  OnCameraInfoUpdated(CameraInfo camera_info);
 };
 
 // Interface for the listener of reprocess results.
