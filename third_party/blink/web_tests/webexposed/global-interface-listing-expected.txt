@@ -11991,7 +11991,6 @@ namespace console
     getter top
     getter trustedTypes
     getter visualViewport
-    getter webkitStorageInfo
     getter window
     method NodeFilter
     method alert

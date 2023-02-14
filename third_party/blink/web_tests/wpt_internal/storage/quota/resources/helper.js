@@ -1,23 +1,3 @@
-const requestQuota = (size) => {
-  return new Promise((resolve, reject) => {
-    window.webkitStorageInfo.requestQuota(PERSISTENT, size, resolve, reject);
-  });
-};
-
-const usageDetails = async (type) => {
-  return new Promise((resolve, reject) => {
-    window.webkitStorageInfo.queryUsageAndQuota(
-      type,
-      (usage, quota) => resolve({ usage: usage, quota: quota }),
-      reject
-    );
-  })
-    .then((details) => details)
-    .catch((error) => {
-      throw error;
-    });
-};
-
 const requestFileSystemAndWriteDummyFile = async (type) => {
   return new Promise((resolve, reject) =>
     webkitRequestFileSystem(type, 512, resolve, reject)

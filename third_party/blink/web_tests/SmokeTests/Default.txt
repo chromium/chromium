@@ -857,7 +857,6 @@ storage/domstorage/sessionstorage/delete-removal.html
 storage/domstorage/window-attributes-exist.html
 storage/indexeddb/mozilla/create-objectstore-null-name.html
 storage/indexeddb/transaction-crash-in-tasks.html
-storage/quota/storageinfo-no-callbacks.html
 storage/quota/storagequota-query-usage.html
 svg/animations/animate-stroke-crash.html
 svg/animations/animate-update-crash.xhtml
