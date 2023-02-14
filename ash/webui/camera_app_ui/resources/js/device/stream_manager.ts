@@ -168,7 +168,7 @@ export class StreamManager {
     if (devices === null) {
       return;
     }
-    await this.doDeviceNotify(devices);
+    this.doDeviceNotify(devices);
   }
 
   /**
@@ -189,7 +189,7 @@ export class StreamManager {
    * Notifies device changes to listeners and create a mapping for real and
    * virtual device.
    */
-  private async doDeviceNotify(devices: DeviceInfo[]) {
+  private doDeviceNotify(devices: DeviceInfo[]) {
     function isVirtual(d: DeviceInfo) {
       return d.v3Info !== null &&
           (d.v3Info.facing === Facing.VIRTUAL_USER ||
