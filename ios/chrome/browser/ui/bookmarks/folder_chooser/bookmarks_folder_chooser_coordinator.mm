@@ -36,6 +36,8 @@
   std::set<const bookmarks::BookmarkNode*> _hiddenNodes;
   // The currently selected folder to show in the UI.
   const bookmarks::BookmarkNode* _selectedFolder;
+  // The current nodes that are considered for a move.
+  std::set<const bookmarks::BookmarkNode*> _editedNodes;
 }
 
 @end
@@ -171,7 +173,7 @@
             (BookmarksFolderChooserViewController*)viewController
                          didFinishWithFolder:
                              (const bookmarks::BookmarkNode*)folder {
-  self.editedNodes = _folderChooserViewController.editedNodes;
+  _editedNodes = _folderChooserViewController.editedNodes;
   [_delegate bookmarksFolderChooserCoordinatorDidConfirm:self
                                       withSelectedFolder:folder];
 }
@@ -197,4 +199,11 @@
     (UIPresentationController*)presentationController {
   return [self canDismiss];
 }
+
+#pragma mark - Properties
+
+- (const std::set<const bookmarks::BookmarkNode*>&)editedNodes {
+  return _editedNodes;
+}
+
 @end

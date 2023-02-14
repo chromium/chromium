@@ -912,8 +912,12 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   DCHECK(_folderChooserCoordinator);
   DCHECK(folder);
 
-  std::set<const bookmarks::BookmarkNode*>& editedNodes =
+  // Copy the list of edited nodes from BookmarksFolderChooserCoordinator
+  // as the reference may become invalid when `_folderChooserCoordinator`
+  // is set to nil (if `self` holds the last reference to the object).
+  std::set<const bookmarks::BookmarkNode*> editedNodes =
       _folderChooserCoordinator.editedNodes;
+
   [_folderChooserCoordinator stop];
   _folderChooserCoordinator.delegate = nil;
   _folderChooserCoordinator = nil;
@@ -924,7 +928,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self setTableViewEditing:NO];
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
-                              editedNodes, self.bookmarks, folder,
+                              std::move(editedNodes), self.bookmarks, folder,
                               self.browserState)];
 }
 

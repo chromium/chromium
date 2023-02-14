@@ -270,12 +270,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                  bookmarks::metrics::BookmarkEditSource::kUser);
     if (self.folder->parent() != self.parentFolder) {
       base::AutoReset<BOOL> autoReset(&_ignoresOwnMove, YES);
-      std::set<const BookmarkNode*> editedNodes;
-      editedNodes.insert(self.folder);
       [self.snackbarCommandsHandler
           showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
-                                  editedNodes, self.bookmarkModel,
-                                  self.parentFolder, self.browserState)];
+                                  std::set<const BookmarkNode*>{self.folder},
+                                  self.bookmarkModel, self.parentFolder,
+                                  self.browserState)];
     }
   } else {
     DCHECK(!self.folder);

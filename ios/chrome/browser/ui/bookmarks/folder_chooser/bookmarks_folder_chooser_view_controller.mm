@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/containers/contains.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -327,10 +328,10 @@ using bookmarks::BookmarkNode;
                  fromFolder:(const BookmarkNode*)folder {
   // Remove node from editedNodes if it is already deleted (possibly remotely by
   // another sync device).
-  if (self.editedNodes.find(bookmarkNode) != self.editedNodes.end()) {
-    self.editedNodes.erase(bookmarkNode);
+  if (base::Contains(_editedNodes, bookmarkNode)) {
+    _editedNodes.erase(bookmarkNode);
     // if editedNodes becomes empty, nothing to move.  Exit the folder picker.
-    if (self.editedNodes.empty()) {
+    if (_editedNodes.empty()) {
       [self.delegate bookmarksFolderChooserViewControllerDidCancel:self];
     }
     // Exit here because nodes in editedNodes cannot be any visible folders in
@@ -456,6 +457,12 @@ using bookmarks::BookmarkNode;
         strongSelf.view.userInteractionEnabled = YES;
         [strongSelf done:nil];
       });
+}
+
+#pragma mark - Properties
+
+- (const std::set<const bookmarks::BookmarkNode*>&)editedNodes {
+  return _editedNodes;
 }
 
 @end

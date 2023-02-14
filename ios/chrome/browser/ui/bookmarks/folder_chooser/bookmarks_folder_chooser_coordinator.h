@@ -29,7 +29,7 @@ class BookmarkNode;
 // Will be set right before this coordinator sends a confirm selection signal
 // through it's delegate.
 @property(nonatomic, assign, readonly)
-    std::set<const bookmarks::BookmarkNode*>& editedNodes;
+    const std::set<const bookmarks::BookmarkNode*>& editedNodes;
 
 // The folder that has a blue check mark beside it in the UI. This property has
 // 2 functionality.

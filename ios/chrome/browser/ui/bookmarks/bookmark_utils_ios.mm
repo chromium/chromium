@@ -294,16 +294,12 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
   return CreateUndoToastWithWrapper(wrapper, text);
 }
 
-bool MoveBookmarks(const std::set<const BookmarkNode*>& bookmarks,
+bool MoveBookmarks(std::set<const BookmarkNode*> bookmarks,
                    bookmarks::BookmarkModel* model,
                    const BookmarkNode* folder) {
   bool did_perform_move = false;
 
-  // Calling Move() on the model will triger observer methods to fire, one of
-  // them may modify the passed in `bookmarks`. To protect against this scenario
-  // a copy of the set is made first.
-  const std::set<const BookmarkNode*> bookmarks_copy(bookmarks);
-  for (const BookmarkNode* node : bookmarks_copy) {
+  for (const BookmarkNode* node : bookmarks) {
     // The bookmarks model can change under us at any time, so we can't make
     // any assumptions.
     if (folder->HasAncestor(node)) {
@@ -318,7 +314,7 @@ bool MoveBookmarks(const std::set<const BookmarkNode*>& bookmarks,
 }
 
 MDCSnackbarMessage* MoveBookmarksWithUndoToast(
-    const std::set<const BookmarkNode*>& nodes,
+    std::set<const BookmarkNode*> nodes,
     bookmarks::BookmarkModel* model,
     const BookmarkNode* folder,
     ChromeBrowserState* browser_state) {
@@ -330,8 +326,8 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
 
   // Move the selected bookmarks.
   [wrapper startGroupingActions];
-  bool did_perform_move =
-      bookmark_utils_ios::MoveBookmarks(nodes, model, folder);
+  const bool did_perform_move =
+      bookmark_utils_ios::MoveBookmarks(std::move(nodes), model, folder);
   [wrapper stopGroupingActions];
   [wrapper resetUndoManagerChanged];
 

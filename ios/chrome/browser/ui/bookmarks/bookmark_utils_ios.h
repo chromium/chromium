@@ -99,7 +99,7 @@ void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
 // undo action. Returns nil if the operation wasn't successful or there's
 // nothing to undo.
 MDCSnackbarMessage* MoveBookmarksWithUndoToast(
-    const std::set<const bookmarks::BookmarkNode*>& bookmarks,
+    std::set<const bookmarks::BookmarkNode*> bookmarks,
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* folder,
     ChromeBrowserState* browser_state);
@@ -107,7 +107,7 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
 // Move all `bookmarks` to the given `folder`.
 // Returns whether this method actually moved bookmarks (for example, only
 // moving a folder to its parent will return `false`).
-bool MoveBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
+bool MoveBookmarks(std::set<const bookmarks::BookmarkNode*> bookmarks,
                    bookmarks::BookmarkModel* model,
                    const bookmarks::BookmarkNode* folder);
 

@@ -35,7 +35,7 @@ class BookmarkNode;
 
 // The current nodes (bookmarks or folders) that are considered for a move.
 @property(nonatomic, assign, readonly)
-    std::set<const bookmarks::BookmarkNode*>& editedNodes;
+    const std::set<const bookmarks::BookmarkNode*>& editedNodes;
 
 // Initializes the view controller with a bookmarks model. `allowsNewFolders`
 // will instruct the controller to provide the necessary UI to create a folder.
