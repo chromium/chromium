@@ -150,3 +150,6 @@ use_asan_unowned_ptr=true
 This will crash when the object containing the dangling ptr is destructed,
 giving the usual three-stack trace from ASAN showing where the deleted object
 was allocated and freed.
+
+When running under this mode, there is no need to specify any --enable-features
+flag as above.
