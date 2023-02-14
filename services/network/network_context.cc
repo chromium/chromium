@@ -777,7 +777,8 @@ void NetworkContext::OnComputedFirstPartySetMetadata(
       std::make_unique<RestrictedCookieManager>(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
-          std::move(cookie_observer), std::move(first_party_set_metadata)),
+          std::move(cookie_observer), std::move(first_party_set_metadata),
+          network_service_->metrics_updater()),
       std::move(receiver));
 }
 

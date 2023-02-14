@@ -736,11 +736,11 @@ TEST_F(NetworkServiceTest, DohProbe_MultipleContexts) {
   EXPECT_TRUE(dns_client_ptr->factory()->doh_probes_running());
 
   network_context2.reset();
-  task_environment()->FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_TRUE(dns_client_ptr->factory()->doh_probes_running());
 
   network_context1.reset();
-  task_environment()->FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 }
 
@@ -814,7 +814,7 @@ TEST_F(NetworkServiceTest, DohProbe_ContextRemovedBeforeTimeout) {
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 
   network_context.reset();
-  task_environment()->FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 
   task_environment()->FastForwardBy(NetworkService::kInitialDohProbeTimeout);
@@ -844,7 +844,7 @@ TEST_F(NetworkServiceTest, DohProbe_ContextRemovedAfterTimeout) {
   EXPECT_TRUE(dns_client_ptr->factory()->doh_probes_running());
 
   network_context.reset();
-  task_environment()->FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 }
 

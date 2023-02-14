@@ -56,6 +56,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -201,7 +202,14 @@ class AttributionManagerImplTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         browser_context_(std::make_unique<TestBrowserContext>()),
         mock_storage_policy_(
-            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {}
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {
+    // This UMA records a sample every 30s via a periodic task which
+    // interacts poorly with TaskEnvironment::FastForward using day long
+    // delays (we need to run the uma update every 30s for that
+    // interval)
+    scoped_feature_list_.InitAndDisableFeature(
+        network::features::kGetCookiesStringUma);
+  }
 
   void SetUp() override {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
@@ -303,6 +311,7 @@ class AttributionManagerImplTest : public testing::Test {
   // irretrievably to storage.
   virtual void ConfigureStorageDelegate(ConfigurableStorageDelegate&) const {}
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir dir_;
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;

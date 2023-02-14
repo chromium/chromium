@@ -53,6 +53,7 @@
 #include "services/network/public/mojom/system_dns_resolution.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
+#include "services/network/restricted_cookie_manager.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -303,6 +304,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   mojom::URLLoaderNetworkServiceObserver*
   GetDefaultURLLoaderNetworkServiceObserver();
 
+  RestrictedCookieManager::UmaMetricsUpdater* metrics_updater() const {
+    return metrics_updater_.get();
+  }
+
   static NetworkService* GetNetworkServiceForTesting();
 
  private:
@@ -329,6 +334,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     ConfigureStubHostResolver,
     SetTestDohConfigForTesting,
   };
+
+  std::unique_ptr<RestrictedCookieManager::UmaMetricsUpdater> metrics_updater_;
 
   FunctionTag dns_config_overrides_set_by_ = FunctionTag::None;
 

@@ -57,6 +57,15 @@ class CookieSettings;
 class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     : public mojom::RestrictedCookieManager {
  public:
+  // Callback to record metrics about IPCs received.
+  class UmaMetricsUpdater {
+   public:
+    UmaMetricsUpdater();
+    virtual ~UmaMetricsUpdater();
+    // Called on the same sequence the RestrictedCookieManager was created on.
+    virtual void OnGetCookiesString() = 0;
+  };
+
   // All the pointers passed to the constructor are expected to point to
   // objects that will outlive `this`.
   //
@@ -73,6 +82,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // `first_party_set_metadata` should have been previously computed by
   // `ComputeFirstPartySetMetadata` using the same `origin`, `cookie_store` and
   // `isolation_info` as were passed in here.
+  //
+  // `metrics_updater` if not null will be used to record metrics about IPCs
+  // serviced.
   RestrictedCookieManager(
       mojom::RestrictedCookieManagerRole role,
       net::CookieStore* cookie_store,
@@ -80,7 +92,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-      net::FirstPartySetMetadata first_party_set_metadata);
+      net::FirstPartySetMetadata first_party_set_metadata,
+      UmaMetricsUpdater* metrics_updater = nullptr);
 
   RestrictedCookieManager(const RestrictedCookieManager&) = delete;
   RestrictedCookieManager& operator=(const RestrictedCookieManager&) = delete;
@@ -250,6 +263,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   CookieAccessesByURLAndSite recent_cookie_accesses_;
 
   bool same_party_attribute_enabled_;
+
+  const raw_ptr<UmaMetricsUpdater> metrics_updater_;
 
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};
 };

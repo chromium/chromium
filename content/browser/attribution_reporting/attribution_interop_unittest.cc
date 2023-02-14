@@ -11,12 +11,14 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_interop_runner.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,11 +71,21 @@ class AttributionInteropTest : public ::testing::TestWithParam<base::FilePath> {
     g_config_ = *maybe_config;
   }
 
+  AttributionInteropTest() {
+    // This UMA records a sample every 30s via a periodic task which
+    // interacts poorly with TaskEnvironment::FastForward using day long
+    // delays (we need to run the uma update every 30s for that
+    // interval)
+    scoped_feature_list_.InitAndDisableFeature(
+        network::features::kGetCookiesStringUma);
+  }
+
  protected:
   static AttributionConfig GetConfig() { return g_config_; }
 
  private:
   static AttributionConfig g_config_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // static

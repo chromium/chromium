@@ -121,6 +121,12 @@ BASE_DECLARE_FEATURE(kPrefetchNoVarySearch);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kPrerender2ContentSecurityPolicyExtensions);
 
+// Enables UMA to track received GetCookiesString IPCs. This feature is enabled
+// by default, it is just here to allow some tests to disable it. These tests
+// make use of TaskEnvironment::FastForward with very long delays (days) which
+// interacts poorly with this metric that is recorded every 30s.
+COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kGetCookiesStringUma);
+
 }  // namespace features
 }  // namespace network
 

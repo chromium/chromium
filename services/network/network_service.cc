@@ -81,6 +81,7 @@
 #include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/system_dns_resolution.mojom-forward.h"
+#include "services/network/restricted_cookie_manager.h"
 #include "services/network/url_loader.h"
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
@@ -230,6 +231,42 @@ void ResolveSystemDnsWithMojo(
   system_dns_override->Resolve(hostname, addr_family, flags, network,
                                std::move(results_cb_with_default_invoke));
 }
+
+// Creating an instance of this class starts exporting UMA data related to
+// RestrictedCookieManager. There should only be one instance of this class at a
+// time and it should be kept around for the duration of the program. This is
+// accomplished by having NetworkService own the instance.
+class RestrictedCookieManagerMetrics
+    : public RestrictedCookieManager::UmaMetricsUpdater {
+ public:
+  RestrictedCookieManagerMetrics() {
+    histogram_ = base::Histogram::FactoryGet(
+        "Net.RestrictedCookieManager.GetCookiesString.Count30Seconds", 1, 10000,
+        50, base::HistogramBase::kUmaTargetedHistogramFlag);
+    timer_.Start(
+        FROM_HERE, base::Seconds(30),
+        base::BindRepeating(&RestrictedCookieManagerMetrics::OnTimerTick,
+                            base::Unretained(this)));
+  }
+  ~RestrictedCookieManagerMetrics() override = default;
+
+ private:
+  void OnGetCookiesString() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    ++get_cookies_string_count_;
+  }
+
+  void OnTimerTick() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    histogram_->Add(get_cookies_string_count_);
+    get_cookies_string_count_ = 0;
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  uint64_t get_cookies_string_count_{0};
+  base::HistogramBase* histogram_;
+  base::RepeatingTimer timer_;
+};
 
 }  // namespace
 
@@ -386,6 +423,10 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
   sct_auditing_cache_ =
       std::make_unique<SCTAuditingCache>(kMaxSCTAuditingCacheEntries);
 #endif
+
+  if (base::FeatureList::IsEnabled(features::kGetCookiesStringUma)) {
+    metrics_updater_ = std::make_unique<RestrictedCookieManagerMetrics>();
+  }
 }
 
 NetworkService::~NetworkService() {

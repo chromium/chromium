@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"  // for [[fallthrough]];
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -124,6 +122,9 @@ net::CookieOptions MakeOptionsForGet(
 }
 
 }  // namespace
+
+RestrictedCookieManager::UmaMetricsUpdater::UmaMetricsUpdater() = default;
+RestrictedCookieManager::UmaMetricsUpdater::~UmaMetricsUpdater() = default;
 
 // static
 void RestrictedCookieManager::ComputeFirstPartySetMetadata(
@@ -332,7 +333,8 @@ RestrictedCookieManager::RestrictedCookieManager(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-    net::FirstPartySetMetadata first_party_set_metadata)
+    net::FirstPartySetMetadata first_party_set_metadata,
+    UmaMetricsUpdater* metrics_updater)
     : role_(role),
       cookie_store_(cookie_store),
       cookie_settings_(cookie_settings),
@@ -346,7 +348,8 @@ RestrictedCookieManager::RestrictedCookieManager(
           net::CookiePartitionKeyCollection::FromOptional(
               cookie_partition_key_)),
       same_party_attribute_enabled_(base::FeatureList::IsEnabled(
-          net::features::kSamePartyAttributeEnabled)) {
+          net::features::kSamePartyAttributeEnabled)),
+      metrics_updater_(metrics_updater) {
   DCHECK(cookie_store);
 }
 
@@ -776,7 +779,11 @@ void RestrictedCookieManager::GetCookiesString(
     const url::Origin& top_frame_origin,
     GetCookiesStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Checks done by GetAllForUrl.
+  // Checks done by GetAllForUrl
+
+  if (metrics_updater_) {
+    metrics_updater_->OnGetCookiesString();
+  }
 
   // Match everything.
   auto match_options = mojom::CookieManagerGetOptions::New();
