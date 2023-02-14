@@ -25,20 +25,6 @@ cp wbn/hello.wbn wbn/hello.wbn-wrong-mime-type
 
 gen-bundle \
   -version b2 \
-  -baseURL https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-origin-trial/ \
-  -primaryURL https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-origin-trial/script.js \
-  -dir wbn-subresource-origin-trial/ \
-  -o wbn/wbn-subresource-origin-trial.wbn
-
-gen-bundle \
-  -version b2 \
-  -baseURL https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-third-party-origin-trial/ \
-  -primaryURL https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-third-party-origin-trial/script.js \
-  -dir wbn-subresource-third-party-origin-trial/ \
-  -o wbn/wbn-subresource-third-party-origin-trial.wbn
-
-gen-bundle \
-  -version b2 \
   -baseURL http://127.0.0.1:8000/loading/wbn/resources/wbn/ \
   -primaryURL http://127.0.0.1:8000/loading/wbn/resources/wbn/empty.js \
   -dir empty-resource/ \
