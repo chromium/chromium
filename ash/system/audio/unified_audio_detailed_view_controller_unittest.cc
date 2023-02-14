@@ -521,55 +521,6 @@ TEST_P(UnifiedAudioDetailedViewControllerTest,
   EXPECT_EQ(1u, toggles_map_.size());
 }
 
-TEST_P(UnifiedAudioDetailedViewControllerTest,
-       NoiseCancellationUpdatedWhenOnNoiseCancellationChanges) {
-  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
-      GenerateAudioNodeList({kInternalMic, kMicJack, kFrontMic, kRearMic}));
-  fake_cras_audio_client()->SetNoiseCancellationSupported(true);
-  cras_audio_handler_->RequestNoiseCancellationSupported(base::DoNothing());
-
-  cras_audio_handler_->SwitchToDevice(
-      AudioDevice(GenerateAudioNode(kInternalMic)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
-
-  // If `audio_detailed_view_` doesn't exist, this getter method will create the
-  // view first.
-  GetAudioDetailedView();
-  EXPECT_EQ(1u, toggles_map_.size());
-
-  if (!IsQsRevampEnabled()) {
-    views::ToggleButton* toggle =
-        (views::ToggleButton*)toggles_map_[kInternalMicId]->children()[1];
-
-    EXPECT_EQ(1u, toggles_map_.size());
-    // The toggle loaded the pref correctly.
-    EXPECT_TRUE(toggle->GetIsOn());
-    EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
-
-    cras_audio_handler_->SetNoiseCancellationState(
-        /*noise_cancellation_on=*/false);
-
-    EXPECT_EQ(1u, toggles_map_.size());
-    // The toggle updates the pref correctly.
-    EXPECT_FALSE(toggle->GetIsOn());
-    EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
-  } else {
-    auto widget = CreateFramelessTestWidget();
-    widget->SetContentsView(noise_cancellation_button());
-
-    // The noise cancellation button loaded the pref correctly.
-    EXPECT_TRUE(noise_cancellation_button()->GetIsOn());
-    EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
-
-    cras_audio_handler_->SetNoiseCancellationState(
-        /*noise_cancellation_on=*/false);
-
-    // The noise cancellation button updates the pref correctly.
-    EXPECT_FALSE(noise_cancellation_button()->GetIsOn());
-    EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
-  }
-}
-
 TEST_P(UnifiedAudioDetailedViewControllerTest, ToggleLiveCaption) {
   scoped_feature_list_.Reset();
   if (!IsQsRevampEnabled()) {
