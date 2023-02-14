@@ -183,4 +183,17 @@ std::ostream& operator<<(std::ostream& out,
   }
 }
 
+std::ostream& operator<<(std::ostream& out, SingleWebFeedEntryPoint value) {
+  switch (value) {
+    case SingleWebFeedEntryPoint::kMenu:
+      return out << "kMenu";
+    case SingleWebFeedEntryPoint::kAttribution:
+      return out << "kAttribution";
+    case SingleWebFeedEntryPoint::kRecommendation:
+      return out << "kRecommendation";
+    case SingleWebFeedEntryPoint::kOther:
+      return out << "kOther";
+  }
+}
+
 }  // namespace feed

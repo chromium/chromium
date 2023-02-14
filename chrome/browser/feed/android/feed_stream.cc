@@ -69,7 +69,8 @@ FeedStream::FeedStream(const JavaRef<jobject>& j_this,
                        jint feed_entry_point)
     : ::feed::FeedStreamSurface(
           StreamType(static_cast<StreamKind>(stream_kind),
-                     std::move(web_feed_id)),
+                     std::move(web_feed_id),
+                     static_cast<SingleWebFeedEntryPoint>(feed_entry_point)),
           static_cast<SingleWebFeedEntryPoint>(feed_entry_point)),
       feed_stream_api_(nullptr),
       reliability_logging_bridge_(reliability_logging_bridge) {

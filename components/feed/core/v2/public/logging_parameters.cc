@@ -8,7 +8,9 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/types.h"
 
 namespace feed {
 
@@ -37,8 +39,10 @@ LoggingParameters MakeLoggingParameters(
   logging_params.client_instance_id = client_instance_id;
   logging_params.root_event_id = stream_data.root_event_id();
   logging_params.logging_enabled =
-      ((signed_in && stream_data.logging_enabled()) ||
-       (!signed_in && GetFeedConfig().send_signed_out_session_logs));
+      !(feedstore::StreamTypeFromKey(stream_data.stream_key())
+            .IsSingleWebFeedEntryMenu()) &&
+      (((signed_in && stream_data.logging_enabled()) ||
+        (!signed_in && GetFeedConfig().send_signed_out_session_logs)));
   logging_params.view_actions_enabled = logging_params.logging_enabled;
 
   if (signed_in) {

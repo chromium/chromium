@@ -92,6 +92,10 @@ class LoadStreamTask : public offline_pages::Task {
     // Reliability logging feed launch result: CARDS_UNSPECIFIED if loading is
     // successful.
     feedwire::DiscoverLaunchResult launch_result;
+
+    // The entry point for a Single Web Feed.
+    SingleWebFeedEntryPoint single_feed_entry_point =
+        SingleWebFeedEntryPoint::kOther;
   };
 
   LoadStreamTask(const Options& options,

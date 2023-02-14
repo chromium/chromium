@@ -76,21 +76,31 @@ TEST(feedstore_util_test, StreamTypeFromId) {
   StreamType for_you = StreamType(StreamKind::kForYou);
   StreamType following = StreamType(StreamKind::kFollowing);
   StreamType single_web_feed = StreamType(StreamKind::kSingleWebFeed);
-  StreamType single_web_feed_a = StreamType(StreamKind::kSingleWebFeed, "A");
+  StreamType single_web_feed_menu = StreamType(
+      StreamKind::kSingleWebFeed, "A", feed::SingleWebFeedEntryPoint::kMenu);
+  StreamType single_web_feed_other = StreamType(
+      StreamKind::kSingleWebFeed, "A", feed::SingleWebFeedEntryPoint::kOther);
+
   StreamType unknown = StreamType();
 
   EXPECT_EQ(StreamKey(for_you), kForYouStreamKey);
   EXPECT_EQ(StreamKey(following), kFollowStreamKey);
   EXPECT_DCHECK_DEATH(StreamKey(unknown));
 
-  EXPECT_TRUE(StreamTypeFromId(StreamKey(single_web_feed)).IsSingleWebFeed());
-  EXPECT_TRUE(StreamTypeFromId(StreamKey(single_web_feed_a)).IsSingleWebFeed());
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(single_web_feed)).IsSingleWebFeed());
+  EXPECT_TRUE(
+      StreamTypeFromKey(StreamKey(single_web_feed_menu)).IsSingleWebFeed());
+  EXPECT_TRUE(
+      StreamTypeFromKey(StreamKey(single_web_feed_other)).IsSingleWebFeed());
 
-  EXPECT_EQ(StreamTypeFromId(StreamKey(single_web_feed_a)).GetWebFeedId(), "A");
+  EXPECT_EQ(StreamTypeFromKey(StreamKey(single_web_feed_menu)).GetWebFeedId(),
+            "A");
+  EXPECT_EQ(StreamTypeFromKey(StreamKey(single_web_feed_other)).GetWebFeedId(),
+            "A");
 
-  EXPECT_TRUE(StreamTypeFromId(StreamKey(following)).IsWebFeed());
-  EXPECT_TRUE(StreamTypeFromId(StreamKey(for_you)).IsForYou());
-  EXPECT_EQ(StreamTypeFromId("z"), StreamType());
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(following)).IsWebFeed());
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(for_you)).IsForYou());
+  EXPECT_EQ(StreamTypeFromKey("z"), StreamType());
 }
 
 }  // namespace

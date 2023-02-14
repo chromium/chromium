@@ -278,6 +278,7 @@ enum class SingleWebFeedEntryPoint : int {
 
   kMaxValue = kOther,
 };
+std::ostream& operator<<(std::ostream& out, SingleWebFeedEntryPoint value);
 
 // For testing and debugging only.
 std::ostream& operator<<(std::ostream& out,

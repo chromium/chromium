@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "components/feed/core/v2/public/types.h"
+
 namespace feedui {
 class LoggingParameters;
 }

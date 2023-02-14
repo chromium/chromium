@@ -28,10 +28,10 @@ namespace {
 
 // Keys are defined as:
 // [Key format]                     -> [Record field]
-// S/<stream-id>                    -> stream_data
-// T/<stream-id>/<sequence-number>  -> stream_structures
-// c/<stream-id>/<content-id>       -> content
-// s/<stream-id>/<content-id>       -> shared_state
+// S/<stream-key>                    -> stream_data
+// T/<stream-key>/<sequence-number>  -> stream_structures
+// c/<stream-key>/<content-id>       -> content
+// s/<stream-key>/<content-id>       -> shared_state
 // a/<action-id>                    -> action
 // m                                -> metadata
 // subs                             -> subscribed_web_feeds
@@ -57,8 +57,8 @@ leveldb::ReadOptions CreateReadOptions() {
   content_id.content_domain(), ",", base::NumberToString(content_id.type()), \
       ",", base::NumberToString(content_id.id())
 
-std::string StreamDataKey(const base::StringPiece stream_id) {
-  return base::StrCat({kStreamDataPrefix, stream_id});
+std::string StreamDataKey(const base::StringPiece stream_key) {
+  return base::StrCat({kStreamDataPrefix, stream_key});
 }
 std::string StreamDataKey(const StreamType& stream_type) {
   return StreamDataKey(feedstore::StreamKey(stream_type));
@@ -100,29 +100,30 @@ bool IsAnyStreamRecordKey(const std::string& key) {
 class StreamKeyMatcher {
  public:
   explicit StreamKeyMatcher(const StreamType& stream_type) {
-    stream_id_ = std::string(feedstore::StreamKey(stream_type));
-    stream_id_plus_slash_ = stream_id_ + '/';
+    stream_key_ = std::string(feedstore::StreamKey(stream_type));
+    stream_key_plus_slash_ = stream_key_ + '/';
   }
 
   // Returns true if `key` is a key specific to `stream_type`.
   bool IsKeyForStream(base::StringPiece key) const {
-    if (key.size() < 2 || key[1] != '/')
+    if (key.size() < 2 || key[1] != '/') {
       return false;
+    }
     const base::StringPiece key_suffix = key.substr(2);
     switch (key[0]) {
       case 'S':
-        return key_suffix == stream_id_;
+        return key_suffix == stream_key_;
       case 'T':
       case 'c':
       case 's':
-        return base::StartsWith(key_suffix, stream_id_plus_slash_);
+        return base::StartsWith(key_suffix, stream_key_plus_slash_);
     }
     return false;
   }
 
  private:
-  std::string stream_id_;
-  std::string stream_id_plus_slash_;
+  std::string stream_key_;
+  std::string stream_key_plus_slash_;
 };
 
 // For matching keys that belong to a specific stream type.
@@ -134,8 +135,9 @@ class StreamPrefixMatcher {
 
   // Returns true if `key` is a key specific to `stream_kind`.
   bool IsKeyForStream(base::StringPiece key) const {
-    if (key.size() < 2 || key[1] != '/')
+    if (key.size() < 2 || key[1] != '/') {
       return false;
+    }
     const base::StringPiece key_suffix = key.substr(2);
     switch (key[0]) {
       case 'S':
@@ -158,21 +160,21 @@ bool IsLocalActionKey(const std::string& key) {
 std::string KeyForRecord(const feedstore::Record& record) {
   switch (record.data_case()) {
     case feedstore::Record::kStreamData: {
-      const std::string stream_id = record.stream_data().stream_id();
-      return stream_id.empty() ? StreamDataKey(StreamType(StreamKind::kForYou))
-                               : StreamDataKey(stream_id);
+      const std::string stream_key = record.stream_data().stream_key();
+      return stream_key.empty() ? StreamDataKey(StreamType(StreamKind::kForYou))
+                                : StreamDataKey(stream_key);
     }
     case feedstore::Record::kStreamStructures:
       return base::StrCat(
-          {"T/", record.stream_structures().stream_id(), "/",
+          {"T/", record.stream_structures().stream_key(), "/",
            base::NumberToString(record.stream_structures().sequence_number())});
     case feedstore::Record::kContent:
-      return ContentKey(record.content().stream_id(),
+      return ContentKey(record.content().stream_key(),
                         record.content().content_id());
     case feedstore::Record::kLocalAction:
       return LocalActionKey(record.local_action().id());
     case feedstore::Record::kSharedState:
-      return SharedStateKey(record.shared_state().stream_id(),
+      return SharedStateKey(record.shared_state().stream_key(),
                             record.shared_state().content_id());
     case feedstore::Record::kMetadata:
       return kMetadataKey;
@@ -273,22 +275,22 @@ MakeUpdatesForStreamModelUpdateRequest(
     int32_t structure_set_sequence_number,
     const StreamType& stream_type,
     std::unique_ptr<StreamModelUpdateRequest> update_request) {
-  std::string stream_id = feedstore::StreamKey(stream_type);
+  std::string stream_key = feedstore::StreamKey(stream_type);
   auto updates = std::make_unique<
       std::vector<std::pair<std::string, feedstore::Record>>>();
-  update_request->stream_data.set_stream_id(std::string(stream_id));
+  update_request->stream_data.set_stream_key(stream_key);
   updates->push_back(MakeKeyAndRecord(std::move(update_request->stream_data)));
   for (feedstore::Content& content : update_request->content) {
-    content.set_stream_id(std::string(stream_id));
+    content.set_stream_key(stream_key);
     updates->push_back(MakeKeyAndRecord(std::move(content)));
   }
   for (feedstore::StreamSharedState& shared_state :
        update_request->shared_states) {
-    shared_state.set_stream_id(stream_id);
+    shared_state.set_stream_key(stream_key);
     updates->push_back(MakeKeyAndRecord(std::move(shared_state)));
   }
   feedstore::StreamStructureSet stream_structure_set;
-  stream_structure_set.set_stream_id(stream_id);
+  stream_structure_set.set_stream_key(stream_key);
   stream_structure_set.set_sequence_number(structure_set_sequence_number);
   for (feedstore::StreamStructure& structure :
        update_request->stream_structures) {
@@ -440,14 +442,14 @@ void FeedStore::OnLoadStreamFinished(
       switch (record.data_case()) {
         case feedstore::Record::kStreamData:
           result.stream_data = std::move(*record.mutable_stream_data());
-          DLOG_IF(ERROR, result.stream_data.stream_id() !=
+          DLOG_IF(ERROR, result.stream_data.stream_key() !=
                              feedstore::StreamKey(stream_type))
-              << "Read a record with the wrong stream_id";
+              << "Read a record with the wrong stream_key";
           break;
         case feedstore::Record::kStreamStructures:
-          DLOG_IF(ERROR, record.stream_structures().stream_id() !=
+          DLOG_IF(ERROR, record.stream_structures().stream_key() !=
                              feedstore::StreamKey(stream_type))
-              << "Read a record with the wrong stream_id";
+              << "Read a record with the wrong stream_key";
           result.stream_structures.push_back(
               std::move(*record.mutable_stream_structures()));
           break;
@@ -550,7 +552,7 @@ void FeedStore::WriteOperations(
     const StreamType& stream_type,
     int32_t sequence_number,
     std::vector<feedstore::DataOperation> operations) {
-  std::string stream_id = feedstore::StreamKey(stream_type);
+  std::string stream_key = feedstore::StreamKey(stream_type);
   std::vector<feedstore::Record> records;
   feedstore::Record structures_record;
   feedstore::StreamStructureSet& structure_set =
@@ -559,12 +561,12 @@ void FeedStore::WriteOperations(
     *structure_set.add_structures() = std::move(*operation.mutable_structure());
     if (operation.has_content()) {
       feedstore::Record record;
-      operation.mutable_content()->set_stream_id(std::string(stream_id));
+      operation.mutable_content()->set_stream_key(stream_key);
       record.set_allocated_content(operation.release_content());
       records.push_back(std::move(record));
     }
   }
-  structure_set.set_stream_id(std::string(feedstore::StreamKey(stream_type)));
+  structure_set.set_stream_key(std::string(feedstore::StreamKey(stream_type)));
   structure_set.set_sequence_number(sequence_number);
 
   records.push_back(std::move(structures_record));

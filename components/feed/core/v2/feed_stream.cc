@@ -255,7 +255,7 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   for (const feedstore::StreamData& stream_data :
        result.startup_data.stream_data) {
     StreamType stream_type =
-        feedstore::StreamTypeFromId(stream_data.stream_id());
+        feedstore::StreamTypeFromKey(stream_data.stream_key());
     if (stream_type.IsValid()) {
       GetStream(stream_type).content_ids =
           feedstore::GetContentIds(stream_data);
@@ -276,7 +276,7 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   for (const feedstore::StreamData& stream_data :
        result.startup_data.stream_data) {
     StreamType stream_type =
-        feedstore::StreamTypeFromId(stream_data.stream_id());
+        feedstore::StreamTypeFromKey(stream_data.stream_key());
     if (stream_type.IsValid())
       MaybeNotifyHasUnreadContent(stream_type);
   }

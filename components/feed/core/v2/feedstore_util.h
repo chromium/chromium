@@ -24,9 +24,11 @@ class Metadata;
 const char kForYouStreamKey[] = "i";
 const char kFollowStreamKey[] = "w";
 constexpr base::StringPiece kSingleWebFeedStreamKeyPrefix = "c";
+constexpr base::StringPiece kSingleWebFeedMenuStreamKeyPrefix = "m/";
+constexpr base::StringPiece kSingleWebFeedOtherStreamKeyPrefix = "o/";
 
 std::string StreamKey(const feed::StreamType& stream_type);
-feed::StreamType StreamTypeFromId(base::StringPiece key);
+feed::StreamType StreamTypeFromKey(base::StringPiece key);
 
 base::StringPiece StreamPrefix(feed::StreamKind stream_type);
 

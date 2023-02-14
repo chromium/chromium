@@ -143,7 +143,7 @@ TEST_F(FeedStoreTest, OverwriteStream) {
     shared_state_ids {
       content_domain: "render_data"
     }
-    stream_id: "i"
+    stream_key: "i"
     content_hashes {
       hashes: 1403410510
     }
@@ -154,7 +154,7 @@ TEST_F(FeedStoreTest, OverwriteStream) {
 }
 [T/i/0] {
   stream_structures {
-    stream_id: "i"
+    stream_key: "i"
     structures {
       operation: 1
     }
@@ -223,7 +223,7 @@ TEST_F(FeedStoreTest, OverwriteStream) {
       type: 4
     }
     frame: "f:0"
-    stream_id: "i"
+    stream_key: "i"
   }
 }
 [c/i/stories,4,1] {
@@ -234,7 +234,7 @@ TEST_F(FeedStoreTest, OverwriteStream) {
       id: 1
     }
     frame: "f:1"
-    stream_id: "i"
+    stream_key: "i"
   }
 }
 [s/i/render_data,0,0] {
@@ -243,7 +243,7 @@ TEST_F(FeedStoreTest, OverwriteStream) {
       content_domain: "render_data"
     }
     shared_state_data: "ss:0"
-    stream_id: "i"
+    stream_key: "i"
   }
 }
 )";
@@ -271,7 +271,7 @@ TEST_F(FeedStoreTest, OverwriteStreamWebFeed) {
     shared_state_ids {
       content_domain: "render_data"
     }
-    stream_id: "w"
+    stream_key: "w"
     content_hashes {
       hashes: 1403410510
     }
@@ -282,7 +282,7 @@ TEST_F(FeedStoreTest, OverwriteStreamWebFeed) {
 }
 [T/w/0] {
   stream_structures {
-    stream_id: "w"
+    stream_key: "w"
     structures {
       operation: 1
     }
@@ -351,7 +351,7 @@ TEST_F(FeedStoreTest, OverwriteStreamWebFeed) {
       type: 4
     }
     frame: "f:0"
-    stream_id: "w"
+    stream_key: "w"
   }
 }
 [c/w/stories,4,1] {
@@ -362,7 +362,7 @@ TEST_F(FeedStoreTest, OverwriteStreamWebFeed) {
       id: 1
     }
     frame: "f:1"
-    stream_id: "w"
+    stream_key: "w"
   }
 }
 [s/w/render_data,0,0] {
@@ -371,7 +371,7 @@ TEST_F(FeedStoreTest, OverwriteStreamWebFeed) {
       content_domain: "render_data"
     }
     shared_state_data: "ss:0"
-    stream_id: "w"
+    stream_key: "w"
   }
 }
 )";
@@ -476,7 +476,7 @@ TEST_F(FeedStoreTest, WriteOperations) {
 
   constexpr char want[] = R"([T/i/5] {
   stream_structures {
-    stream_id: "i"
+    stream_key: "i"
     sequence_number: 5
     structures {
       operation: 2

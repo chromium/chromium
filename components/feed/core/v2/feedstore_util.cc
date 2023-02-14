@@ -6,6 +6,7 @@
 
 #include "base/base64url.h"
 #include "base/hash/hash.h"
+#include "base/strings/strcat.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/consistency_token.pb.h"
 #include "components/feed/core/v2/config.h"
@@ -16,6 +17,8 @@ namespace feedstore {
 using feed::LocalActionId;
 using feed::StreamType;
 
+// This returns a string version of StreamType which can be used in datastore
+// keys.
 std::string StreamKey(const StreamType& stream_type) {
   if (stream_type.IsForYou())
     return kForYouStreamKey;
@@ -26,7 +29,15 @@ std::string StreamKey(const StreamType& stream_type) {
   base::Base64UrlEncode(stream_type.GetWebFeedId(),
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                         &encoding);
-  return std::string(kSingleWebFeedStreamKeyPrefix) + encoding;
+  if (stream_type.IsSingleWebFeedEntryMenu()) {
+    return base::StrCat({std::string(kSingleWebFeedStreamKeyPrefix), "/",
+                         std::string(kSingleWebFeedMenuStreamKeyPrefix),
+                         encoding});
+  } else {
+    return base::StrCat({std::string(kSingleWebFeedStreamKeyPrefix), "/",
+                         std::string(kSingleWebFeedOtherStreamKeyPrefix),
+                         encoding});
+  }
 }
 
 base::StringPiece StreamPrefix(feed::StreamKind stream_kind) {
@@ -37,19 +48,47 @@ base::StringPiece StreamPrefix(feed::StreamKind stream_kind) {
   DCHECK(stream_kind == feed::StreamKind::kSingleWebFeed);
   return kSingleWebFeedStreamKeyPrefix;
 }
-StreamType StreamTypeFromId(base::StringPiece id) {
+
+StreamType DecodeSingleWebFeedKeySuffix(
+    base::StringPiece suffix,
+    feed::SingleWebFeedEntryPoint entry_point,
+    base::StringPiece prefix) {
+  if (base::StartsWith(suffix, prefix, base::CompareCase::SENSITIVE)) {
+    suffix.remove_prefix(prefix.size());
+    std::string single_web_feed_key;
+    if (base::Base64UrlDecode(suffix,
+                              base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                              &single_web_feed_key)) {
+      return StreamType(feed::StreamKind::kSingleWebFeed, single_web_feed_key,
+                        entry_point);
+    }
+  }
+  return {};
+}
+
+StreamType StreamTypeFromKey(base::StringPiece id) {
   if (id == kForYouStreamKey)
     return StreamType(feed::StreamKind::kForYou);
   if (id == kFollowStreamKey)
     return StreamType(feed::StreamKind::kFollowing);
   if (base::StartsWith(id, kSingleWebFeedStreamKeyPrefix,
                        base::CompareCase::SENSITIVE)) {
-    std::string single_web_feed_key;
-    if (base::Base64UrlDecode(id.substr(kSingleWebFeedStreamKeyPrefix.size()),
-                              base::Base64UrlDecodePolicy::IGNORE_PADDING,
-                              &single_web_feed_key)) {
-      return StreamType(feed::StreamKind::kSingleWebFeed, single_web_feed_key);
+    if ((id.size() < (kSingleWebFeedStreamKeyPrefix.size() +
+                      kSingleWebFeedMenuStreamKeyPrefix.size() + 1))) {
+      return {};
     }
+    // add  +1 to account for the '/' separating the c/[mo]/webid
+    base::StringPiece substr =
+        id.substr(kSingleWebFeedStreamKeyPrefix.size() + 1);
+    StreamType result = DecodeSingleWebFeedKeySuffix(
+        substr, feed::SingleWebFeedEntryPoint::kMenu,
+        kSingleWebFeedMenuStreamKeyPrefix);
+    if (!result.IsValid()) {
+      result = DecodeSingleWebFeedKeySuffix(
+          substr, feed::SingleWebFeedEntryPoint::kOther,
+          kSingleWebFeedOtherStreamKeyPrefix);
+    }
+    return result;
   }
   return {};
 }

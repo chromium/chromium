@@ -339,9 +339,10 @@ TestSingleWebFeedSurface::TestSingleWebFeedSurface(
     FeedStream* stream,
     std::string web_feed_id,
     SingleWebFeedEntryPoint entry_point)
-    : TestSurfaceBase(StreamType(StreamKind::kSingleWebFeed, web_feed_id),
-                      stream,
-                      entry_point) {}
+    : TestSurfaceBase(
+          StreamType(StreamKind::kSingleWebFeed, web_feed_id, entry_point),
+          stream,
+          entry_point) {}
 
 TestReliabilityLoggingBridge::TestReliabilityLoggingBridge() = default;
 TestReliabilityLoggingBridge::~TestReliabilityLoggingBridge() = default;
@@ -542,7 +543,8 @@ void TestFeedNetwork::SendDiscoverApiRequest(
       request_type == SingleWebFeedListContentsDiscoverApi::kRequestType ||
       request_type == QueryInteractiveFeedDiscoverApi::kRequestType ||
       request_type == QueryBackgroundFeedDiscoverApi::kRequestType ||
-      request_type == QueryNextPageDiscoverApi::kRequestType;
+      request_type == QueryNextPageDiscoverApi::kRequestType ||
+      request_type == QueryWebFeedDiscoverApi::kRequestType;
 
   if (is_feed_query_request) {
     feedwire::Request request_proto;

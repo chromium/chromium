@@ -202,7 +202,7 @@ class TextProtoPrinter {
     PRINT_FIELD(next_page_token);
     PRINT_FIELD(last_added_time_millis);
     PRINT_FIELD(shared_state_ids);
-    PRINT_FIELD(stream_id);
+    PRINT_FIELD(stream_key);
     PRINT_FIELD(content_hashes);
     EndMessage();
     return *this;
@@ -217,7 +217,7 @@ class TextProtoPrinter {
   }
   TextProtoPrinter& operator<<(const feedstore::StreamStructureSet& v) {
     BeginMessage();
-    PRINT_FIELD(stream_id);
+    PRINT_FIELD(stream_key);
     PRINT_FIELD(sequence_number);
     PRINT_FIELD(structures);
     EndMessage();
@@ -324,7 +324,7 @@ class TextProtoPrinter {
     BeginMessage();
     PRINT_FIELD(content_id);
     PRINT_FIELD(frame);
-    PRINT_FIELD(stream_id);
+    PRINT_FIELD(stream_key);
     EndMessage();
     return *this;
   }
@@ -332,7 +332,7 @@ class TextProtoPrinter {
     BeginMessage();
     PRINT_FIELD(content_id);
     PRINT_FIELD(shared_state_data);
-    PRINT_FIELD(stream_id);
+    PRINT_FIELD(stream_key);
     EndMessage();
     return *this;
   }

@@ -269,6 +269,7 @@ StreamModelUpdateRequestGenerator::MakeFirstPageWithSpecificContents(
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
+  initial_update->stream_data.set_stream_key(stream_key);
 
   for (size_t i = 0; i < id_numbers.size(); ++i) {
     AddContentHashes(initial_update->content[i], initial_update->stream_data);
@@ -325,12 +326,15 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
     base::Time last_added_time,
     bool signed_in,
     bool logging_enabled,
-    bool privacy_notice_fulfilled) {
+    bool privacy_notice_fulfilled,
+    std::string stream_key) {
   StreamModelUpdateRequestGenerator generator;
   generator.last_added_time = last_added_time;
   generator.signed_in = signed_in;
   generator.logging_enabled = logging_enabled;
   generator.privacy_notice_fulfilled = privacy_notice_fulfilled;
+  generator.stream_key = stream_key;
+
   return generator.MakeFirstPage(first_cluster_id);
 }
 

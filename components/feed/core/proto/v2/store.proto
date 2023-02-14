@@ -20,10 +20,10 @@ option optimize_for = LITE_RUNTIME;
 // This is the 'value' in the key/value store.
 // Keys are defined as:
 // [Key format]                     -> [Record field]
-// S/<stream-id>                    -> stream_data
-// T/<stream-id>/<sequence-number>  -> stream_structures
-// c/<stream-id>/<content-id>       -> content
-// s/<stream-id>/<content-id>       -> shared_state
+// S/<stream-key>                   -> stream_data
+// T/<stream-key>/<sequence-number> -> stream_structures
+// c/<stream-key>/<content-id>      -> content
+// s/<stream-key>/<content-id>      -> shared_state
 // a/<action-id>                    -> action
 // m                                -> metadata
 // subs                             -> subscribed_web_feeds
@@ -74,7 +74,7 @@ message StreamData {
   // Has the privacy notice been fulfilled?
   bool privacy_notice_fulfilled = 9;
   // Stream ID. Should match the id value stored in the record's key.
-  string stream_id = 10;
+  string stream_key = 10;
   // List of hashes for all the contents contained in the stream.
   repeated StreamContentHashList content_hashes = 11;
   // Root EventID provided by the server.
@@ -129,7 +129,7 @@ message Metadata {
   SessionID session_id = 3;
   // Schema version number. Schema versions:
   // 0: Initial version.
-  // 1: Current version. Added <stream-id> to the key patterns of "content" and
+  // 1: Current version. Added <stream-key> to the key patterns of "content" and
   // "shared_state"
   //    records.
   int32 stream_schema_version = 4;
@@ -157,7 +157,7 @@ message Metadata {
 // A set of StreamStructures that should be applied to a stream.
 message StreamStructureSet {
   // Stream ID. Should match the id value stored in the record's key.
-  string stream_id = 1;
+  string stream_key = 1;
   int32 sequence_number = 2;
   repeated StreamStructure structures = 3;
 }
@@ -225,7 +225,7 @@ message Content {
   bytes frame = 2;
   repeated feedwire.PrefetchMetadata prefetch_metadata = 3;
   // Stream ID. Should match the id value stored in the record's key.
-  string stream_id = 4;
+  string stream_key = 4;
 }
 
 // This represents a shared state item.
@@ -234,7 +234,7 @@ message StreamSharedState {
   // Opaque data required to render content.
   bytes shared_state_data = 2;
   // Stream ID. Should match the id value stored in the record's key.
-  string stream_id = 3;
+  string stream_key = 3;
 }
 
 // A stored action awaiting upload.
