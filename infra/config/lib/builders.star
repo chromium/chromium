@@ -30,6 +30,7 @@ load("./args.star", "args")
 load("./branches.star", "branches")
 load("./bootstrap.star", "register_bootstrap")
 load("./builder_config.star", "register_builder_config")
+load("./builder_health_indicators.star", "register_health_spec")
 load("./recipe_experiments.star", "register_recipe_experiments_ref")
 load("./sheriff_rotations.star", "register_sheriffed_builder")
 
@@ -410,6 +411,7 @@ defaults = args.defaults(
     reclient_cache_silo = None,
     reclient_ensure_verified = None,
     reclient_disable_bq_upload = None,
+    health_spec = None,
 
     # This is to enable luci.buildbucket.omit_python2 experiment.
     # TODO(crbug.com/1362440): remove this after enabling this in all builders.
@@ -478,6 +480,7 @@ def builder(
         reclient_ensure_verified = None,
         reclient_disable_bq_upload = None,
         omit_python2 = args.DEFAULT,
+        health_spec = args.DEFAULT,
         **kwargs):
     """Define a builder.
 
@@ -871,6 +874,9 @@ def builder(
     register_builder_config(bucket, name, builder_group, builder_spec, mirrors, try_settings)
 
     register_bootstrap(bucket, name, bootstrap, executable)
+
+    health_spec = defaults.get_value("health_spec", health_spec)
+    register_health_spec(bucket, name, health_spec)
 
     builder_name = "{}/{}".format(bucket, name)
 

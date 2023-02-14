@@ -9,6 +9,7 @@ load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -463,6 +464,13 @@ ci.builder(
         short_name = "off",
     ),
     execution_timeout = 7 * time.hour,
+    health_spec = health_spec(
+        build_time = struct(
+            p50_mins = 240,
+            p95_mins = 300,
+            p99_mins = 360,
+        ),
+    ),
 )
 
 ci.builder(

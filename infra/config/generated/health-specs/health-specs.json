@@ -1,0 +1,125 @@
+{
+  "_default": {
+    "build_time": {
+      "p50_mins": 60,
+      "p95_mins": 90,
+      "p99_mins": 120
+    },
+    "fail_rate": {
+      "average": 0.2
+    },
+    "infra_fail_rate": {
+      "average": 0.05
+    },
+    "pending_time": {
+      "p50_mins": 10,
+      "p95_mins": 20,
+      "p99_mins": 30
+    },
+    "test_pending_time": {
+      "p50_mins": 10,
+      "p95_mins": 20,
+      "p99_mins": 30
+    }
+  },
+  "ci": {
+    "Linux ChromiumOS Full": {
+      "_default": "_default"
+    },
+    "chromeos-amd64-generic-asan-rel": {
+      "_default": "_default"
+    },
+    "chromeos-amd64-generic-cfi-thin-lto-rel": {
+      "_default": "_default"
+    },
+    "chromeos-amd64-generic-dbg": {
+      "_default": "_default"
+    },
+    "chromeos-amd64-generic-lacros-dbg": {
+      "_default": "_default"
+    },
+    "chromeos-amd64-generic-rel": {
+      "_default": "_default"
+    },
+    "chromeos-arm-generic-dbg": {
+      "_default": "_default"
+    },
+    "chromeos-arm-generic-rel": {
+      "_default": "_default"
+    },
+    "chromeos-arm64-generic-rel": {
+      "_default": "_default"
+    },
+    "chromeos-jacuzzi-rel": {
+      "_default": "_default"
+    },
+    "chromeos-octopus-rel": {
+      "_default": "_default"
+    },
+    "lacros-amd64-generic-binary-size-rel": {
+      "_default": "_default"
+    },
+    "lacros-amd64-generic-rel": {
+      "_default": "_default"
+    },
+    "lacros-amd64-generic-rel-skylab": {
+      "_default": "_default"
+    },
+    "lacros-arm-generic-rel": {
+      "_default": "_default"
+    },
+    "lacros-arm-generic-rel-skylab": {
+      "_default": "_default"
+    },
+    "lacros-arm64-generic-rel": {
+      "_default": "_default"
+    },
+    "lacros-arm64-generic-rel-skylab": {
+      "_default": "_default"
+    },
+    "linux-ash-chromium-generator-rel": {
+      "_default": "_default"
+    },
+    "linux-cfm-rel": {
+      "_default": "_default"
+    },
+    "linux-chromeos-dbg": {
+      "_default": "_default"
+    },
+    "linux-chromeos-rel": {
+      "_default": "_default"
+    },
+    "linux-lacros-builder-rel": {
+      "_default": "_default"
+    },
+    "linux-lacros-dbg": {
+      "_default": "_default"
+    },
+    "linux-lacros-tester-rel": {
+      "_default": "_default"
+    },
+    "linux-official": {
+      "build_time": {
+        "p50_mins": 240,
+        "p95_mins": 300,
+        "p99_mins": 360
+      },
+      "fail_rate": {
+        "average": 0.2
+      },
+      "infra_fail_rate": {
+        "average": 0.05
+      },
+      "pending_time": {
+        "p50_mins": 10,
+        "p95_mins": 20,
+        "p99_mins": 30
+      },
+      "test_pending_time": {
+        "p50_mins": 10,
+        "p95_mins": 20,
+        "p99_mins": 30
+      }
+    }
+  }
+}
