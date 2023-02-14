@@ -169,7 +169,9 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   bool is_showing_;
   bool is_occluded_;
   PageVisibilityState page_visibility_ = PageVisibilityState::kHidden;
+#if !BUILDFLAG(IS_IOS)
   ui::DummyTextInputClient text_input_client_;
+#endif
   ui::Cursor last_cursor_;
 
   // Latest capture sequence number which is incremented when the caller

@@ -348,7 +348,7 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsNullInternalUrnTest) {
   RedactedFencedFrameConfig input_config =
       browser_config.RedactFor(FencedFrameEntity::kEmbedder);
   RedactedFencedFrameConfig output_config;
-  EXPECT_DEATH(
+  EXPECT_DEATH_IF_SUPPORTED(
       mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameConfig>(
           input_config, output_config),
       "");

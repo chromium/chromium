@@ -9,6 +9,10 @@ import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/core/core.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 visibility = [
   "//:gn_all",
   "//third_party/blink/*",
@@ -141,10 +145,17 @@ group("webkit_unit_tests") {
 test("blink_unittests") {
   deps = [ ":blink_unittests_sources" ]
 
-  data_deps = [
-    ":blink_unittests_data",
-    "//content/shell:pak",
-  ]
+  if (is_ios) {
+    bundle_deps = [
+      ":blink_unittests_bundle_data",
+      ":blink_unittests_pak_bundle_data",
+    ]
+  } else {
+    data_deps = [
+      ":blink_unittests_data",
+      "//content/shell:pak",
+    ]
+  }
 
   if (is_android) {
     deps += [
@@ -281,4 +292,18 @@ source_set("blink_unittests_sources") {
     "//third_party/blink/renderer:inside_blink",
     "//third_party/blink/renderer/core:blink_core_pch",
   ]
+}
+
+if (is_ios) {
+  bundle_data("blink_unittests_pak_bundle_data") {
+    testonly = true
+    public_deps = [ "//content/shell:pak" ]
+    sources = [ "$root_out_dir/content_shell.pak" ]
+    outputs = [ "{{bundle_resources_dir}}/content_shell.pak" ]
+  }
+
+  bundle_data_from_filelist("blink_unittests_bundle_data") {
+    testonly = true
+    filelist_name = "blink_unittests_bundle_data.filelist"
+  }
 }

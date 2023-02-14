@@ -30,6 +30,10 @@ if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
 }
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("test_support") {
@@ -669,6 +673,13 @@ static_library("test_support") {
     deps += [
       "//ui/base/mojom",
       "//ui/views:test_support",
+    ]
+  }
+
+  if (is_ios) {
+    sources += [
+      "../browser/renderer_host/test_render_widget_host_view_ios_factory.h",
+      "../browser/renderer_host/test_render_widget_host_view_ios_factory.mm",
     ]
   }
 
@@ -2693,6 +2704,12 @@ test("content_unittests") {
       "//content/test/data/browsing_topics/",
     ]
   }
+  if (is_ios) {
+    bundle_deps = [
+      ":content_unittests_bundle_data",
+      ":content_unittests_pak_bundle_data",
+    ]
+  }
 
   configs += [ "//build/config:precompiled_headers" ]
 
@@ -3143,6 +3160,20 @@ test("content_unittests") {
   # TODO(crbug.com/1293538): Update to check is_cast_audio_only
   if (is_castos || is_cast_android) {
     deps += [ "//chromecast:chromecast_buildflags" ]
+  }
+}
+
+if (is_ios) {
+  bundle_data("content_unittests_pak_bundle_data") {
+    testonly = true
+    public_deps = [ "//content/shell:pak" ]
+    sources = [ "$root_out_dir/content_shell.pak" ]
+    outputs = [ "{{bundle_resources_dir}}/content_shell.pak" ]
+  }
+
+  bundle_data_from_filelist("content_unittests_bundle_data") {
+    testonly = true
+    filelist_name = "content_unittests_bundle_data.filelist"
   }
 }
 

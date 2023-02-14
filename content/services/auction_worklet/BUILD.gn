@@ -130,9 +130,7 @@ source_set("tests") {
 
   sources = [
     "auction_downloader_unittest.cc",
-    "auction_v8_helper_unittest.cc",
     "auction_v8_inspector_util_unittest.cc",
-    "bidder_worklet_unittest.cc",
     "context_recycler_unittest.cc",
     "debug_command_queue_unittest.cc",
     "direct_from_seller_signals_requester_unittest.cc",
@@ -141,12 +139,20 @@ source_set("tests") {
     "trusted_signals_unittest.cc",
     "worklet_devtools_debug_test_util.cc",
     "worklet_devtools_debug_test_util.h",
-    "worklet_loader_unittest.cc",
     "worklet_test_util.cc",
     "worklet_test_util.h",
     "worklet_v8_debug_test_util.cc",
     "worklet_v8_debug_test_util.h",
   ]
+
+  # TODO(crbug.com/1413818): These tests depend on WASM.
+  if (!is_ios) {
+    sources += [
+      "auction_v8_helper_unittest.cc",
+      "bidder_worklet_unittest.cc",
+      "worklet_loader_unittest.cc",
+    ]
+  }
 
   deps = [
     "//base",

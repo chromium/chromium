@@ -85,6 +85,10 @@
 #include "ui/display/test/test_screen.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "content/browser/renderer_host/test_render_widget_host_view_ios_factory.h"
+#endif
+
 #if defined(USE_AURA) || BUILDFLAG(IS_MAC)
 #include "content/browser/compositor/test/test_image_transport_factory.h"
 #endif
@@ -1368,8 +1372,8 @@ TEST_F(RenderWidgetHostTest, Background) {
   view = new RenderWidgetHostViewAndroid(host_.get(), nullptr);
 #elif BUILDFLAG(IS_MAC)
   view = CreateRenderWidgetHostViewMacForTesting(host_.get());
-#else
-#error "This test isn't implemented for this platform."
+#elif BUILDFLAG(IS_IOS)
+  view = CreateRenderWidgetHostViewIOSForTesting(host_.get());
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

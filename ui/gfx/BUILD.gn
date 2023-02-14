@@ -401,13 +401,15 @@ component("gfx") {
     deps += [ "//third_party/fontconfig" ]
   }
 
+  if (is_apple) {
+    frameworks = [ "IOSurface.framework" ]
+  }
   if (is_mac) {
-    frameworks = [
+    frameworks += [
       "AppKit.framework",
       "CoreFoundation.framework",
       "CoreGraphics.framework",
       "CoreText.framework",
-      "IOSurface.framework",
     ]
   }
 
@@ -723,6 +725,9 @@ test("gfx_unittests") {
   if (is_linux || is_chromeos) {
     sources += [ "font_fallback_linux_unittest.cc" ]
   }
+  if (is_apple) {
+    frameworks = [ "IOSurface.framework" ]
+  }
   if (is_mac) {
     sources += [
       "font_fallback_mac_unittest.cc",
@@ -732,7 +737,6 @@ test("gfx_unittests") {
       "platform_font_mac_unittest.mm",
       "range/range_mac_unittest.mm",
     ]
-    frameworks = [ "IOSurface.framework" ]
   }
   if (is_win) {
     sources += [ "font_fallback_win_unittest.cc" ]

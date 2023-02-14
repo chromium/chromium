@@ -104,7 +104,12 @@ gfx::NativeViewAccessible TestRenderWidgetHostView::GetNativeViewAccessible() {
 }
 
 ui::TextInputClient* TestRenderWidgetHostView::GetTextInputClient() {
+#if !BUILDFLAG(IS_IOS)
   return &text_input_client_;
+#else
+  NOTREACHED();
+  return nullptr;
+#endif
 }
 
 bool TestRenderWidgetHostView::HasFocus() {

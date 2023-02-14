@@ -113,6 +113,10 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void Destroy() override;
   ui::Compositor* GetCompositor() override;
 
+  BrowserCompositorIOS* BrowserCompositor() const {
+    return browser_compositor_.get();
+  }
+
   // BrowserCompositorIOS overrides:
   SkColor BrowserCompositorIOSGetGutterColor() override;
   void OnFrameTokenChanged(uint32_t frame_token,
