@@ -6,7 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_GRAPH_OPERATIONS_H_
 
 #include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 
 namespace performance_manager {
 
@@ -17,7 +17,7 @@ class ProcessNode;
 // A collection of utilities for performing common queries and traversals on a
 // graph.
 struct GraphOperations {
-  using FrameNodeVisitor = base::RepeatingCallback<bool(const FrameNode*)>;
+  using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
 
   // Returns the collection of page nodes that are associated with the given
   // |process|. A page is associated with a process if the page's frame tree
@@ -41,9 +41,9 @@ struct GraphOperations {
   // false then then the iteration is halted. Returns true if all calls to the
   // visitor returned true, false otherwise.
   static bool VisitFrameTreePreOrder(const PageNode* page,
-                                     const FrameNodeVisitor& visitor);
+                                     FrameNodeVisitor visitor);
   static bool VisitFrameTreePostOrder(const PageNode* page,
-                                      const FrameNodeVisitor& visitor);
+                                      FrameNodeVisitor visitor);
 
   // Returns true if the given |frame| is in the frame tree associated with the
   // given |page|.

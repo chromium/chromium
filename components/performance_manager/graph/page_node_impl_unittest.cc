@@ -390,27 +390,21 @@ TEST_F(PageNodeImplTest, VisitMainFrameNodes) {
   auto frame2 = CreateFrameNodeAutoId(process.get(), page.get());
 
   std::set<const FrameNode*> visited;
-  EXPECT_TRUE(
-      ToPublic(page.get())
-          ->VisitMainFrameNodes(base::BindRepeating(
-              [](std::set<const FrameNode*>* visited, const FrameNode* frame) {
-                EXPECT_TRUE(visited->insert(frame).second);
-                return true;
-              },
-              base::Unretained(&visited))));
+  EXPECT_TRUE(ToPublic(page.get())
+                  ->VisitMainFrameNodes([&visited](const FrameNode* frame) {
+                    EXPECT_TRUE(visited.insert(frame).second);
+                    return true;
+                  }));
   EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(frame1.get()),
                                                      ToPublic(frame2.get())));
 
   // Do an aborted visit.
   visited.clear();
-  EXPECT_FALSE(
-      ToPublic(page.get())
-          ->VisitMainFrameNodes(base::BindRepeating(
-              [](std::set<const FrameNode*>* visited, const FrameNode* frame) {
-                EXPECT_TRUE(visited->insert(frame).second);
-                return false;
-              },
-              base::Unretained(&visited))));
+  EXPECT_FALSE(ToPublic(page.get())
+                   ->VisitMainFrameNodes([&visited](const FrameNode* frame) {
+                     EXPECT_TRUE(visited.insert(frame).second);
+                     return false;
+                   }));
   EXPECT_EQ(1u, visited.size());
 }
 

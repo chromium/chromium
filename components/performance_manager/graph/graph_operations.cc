@@ -36,23 +36,23 @@ std::vector<const FrameNode*> GraphOperations::GetFrameNodes(
 
 // static
 bool GraphOperations::VisitFrameTreePreOrder(const PageNode* page,
-                                             const FrameNodeVisitor& visitor) {
+                                             FrameNodeVisitor visitor) {
   return GraphImplOperations::VisitFrameTreePreOrder(
       PageNodeImpl::FromNode(page),
       [&visitor](FrameNodeImpl* frame_impl) -> bool {
         const FrameNode* frame = frame_impl;
-        return visitor.Run(frame);
+        return visitor(frame);
       });
 }
 
 // static
 bool GraphOperations::VisitFrameTreePostOrder(const PageNode* page,
-                                              const FrameNodeVisitor& visitor) {
+                                              FrameNodeVisitor visitor) {
   return GraphImplOperations::VisitFrameTreePostOrder(
       PageNodeImpl::FromNode(page),
       [&visitor](FrameNodeImpl* frame_impl) -> bool {
         const FrameNode* frame = frame_impl;
-        return visitor.Run(frame);
+        return visitor(frame);
       });
 }
 

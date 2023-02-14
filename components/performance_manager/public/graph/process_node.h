@@ -7,7 +7,7 @@
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/graph/node.h"
@@ -41,7 +41,7 @@ class BrowserChildProcessHostProxy;
 // it.
 class ProcessNode : public Node {
  public:
-  using FrameNodeVisitor = base::RepeatingCallback<bool(const FrameNode*)>;
+  using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
   using Observer = ProcessNodeObserver;
   class ObserverDefaultImpl;
 

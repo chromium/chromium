@@ -354,8 +354,9 @@ bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
   for (auto* frame_impl : frame_nodes()) {
     const FrameNode* frame = frame_impl;
-    if (!visitor.Run(frame))
+    if (!visitor(frame)) {
       return false;
+    }
   }
   return true;
 }

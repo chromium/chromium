@@ -544,8 +544,9 @@ bool PageNodeImpl::VisitMainFrameNodes(const FrameNodeVisitor& visitor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto* frame_impl : main_frame_nodes_) {
     const FrameNode* frame = frame_impl;
-    if (!visitor.Run(frame))
+    if (!visitor(frame)) {
       return false;
+    }
   }
   return true;
 }
@@ -585,24 +586,20 @@ PageState PageNodeImpl::GetPageState() const {
 uint64_t PageNodeImpl::EstimateResidentSetSize() const {
   uint64_t total = 0;
   performance_manager::GraphOperations::VisitFrameTreePreOrder(
-      this, base::BindRepeating(
-                [](uint64_t* total, const FrameNode* frame_node) {
-                  *total += frame_node->GetResidentSetKbEstimate();
-                  return true;
-                },
-                &total));
+      this, [&total](const FrameNode* frame_node) {
+        total += frame_node->GetResidentSetKbEstimate();
+        return true;
+      });
   return total;
 }
 
 uint64_t PageNodeImpl::EstimatePrivateFootprintSize() const {
   uint64_t total = 0;
   performance_manager::GraphOperations::VisitFrameTreePreOrder(
-      this, base::BindRepeating(
-                [](uint64_t* total, const FrameNode* frame_node) {
-                  *total += frame_node->GetPrivateFootprintKbEstimate();
-                  return true;
-                },
-                &total));
+      this, [&total](const FrameNode* frame_node) {
+        total += frame_node->GetPrivateFootprintKbEstimate();
+        return true;
+      });
   return total;
 }
 

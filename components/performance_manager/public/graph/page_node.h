@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
@@ -39,7 +39,7 @@ enum class PageType {
 // Extensions.
 class PageNode : public Node {
  public:
-  using FrameNodeVisitor = base::RepeatingCallback<bool(const FrameNode*)>;
+  using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
   using LifecycleState = mojom::LifecycleState;
   using Observer = PageNodeObserver;
   class ObserverDefaultImpl;

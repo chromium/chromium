@@ -185,19 +185,16 @@ void V8DetailedMemoryRequestOneShotAnySeq::OnMeasurementAvailable(
   using FrameAndData = std::pair<content::GlobalRenderFrameHostId,
                                  V8DetailedMemoryExecutionContextData>;
   std::vector<FrameAndData> all_frame_data;
-  process_node->VisitFrameNodes(base::BindRepeating(
-      [](std::vector<FrameAndData>* all_frame_data,
-         const FrameNode* frame_node) {
-        const auto* frame_data =
-            V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
-        if (frame_data) {
-          all_frame_data->push_back(std::make_pair(
-              frame_node->GetRenderFrameHostProxy().global_frame_routing_id(),
-              *frame_data));
-        }
-        return true;
-      },
-      base::Unretained(&all_frame_data)));
+  process_node->VisitFrameNodes([&all_frame_data](const FrameNode* frame_node) {
+    const auto* frame_data =
+        V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
+    if (frame_data) {
+      all_frame_data.push_back(std::make_pair(
+          frame_node->GetRenderFrameHostProxy().global_frame_routing_id(),
+          *frame_data));
+    }
+    return true;
+  });
 
   sequence_bound_callback.PostTaskWithThisObject(
       base::BindOnce(

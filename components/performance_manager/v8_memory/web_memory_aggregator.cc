@@ -436,21 +436,19 @@ double GetBrowsingInstanceV8BytesFraction(
     content::BrowsingInstanceId browsing_instance_id) {
   uint64_t bytes_used = 0;
   uint64_t total_bytes_used = 0;
-  process_node->VisitFrameNodes(base::BindRepeating(
-      [](absl::optional<content::BrowsingInstanceId> browsing_instance_id,
-         uint64_t* bytes_used, uint64_t* total_bytes_used,
-         const FrameNode* frame_node) {
+  process_node->VisitFrameNodes(
+      [&bytes_used, &total_bytes_used,
+       browsing_instance_id](const FrameNode* frame_node) {
         const auto* data =
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
         if (data) {
           if (frame_node->GetBrowsingInstanceId() == browsing_instance_id) {
-            *bytes_used += data->v8_bytes_used();
+            bytes_used += data->v8_bytes_used();
           }
-          *total_bytes_used += data->v8_bytes_used();
+          total_bytes_used += data->v8_bytes_used();
         }
         return true;
-      },
-      browsing_instance_id, &bytes_used, &total_bytes_used));
+      });
   DCHECK_LE(bytes_used, total_bytes_used);
   return total_bytes_used == 0
              ? 1
@@ -464,17 +462,15 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<const FrameNode*> top_frames;
-  main_process_node_->VisitFrameNodes(base::BindRepeating(
-      [](std::vector<const FrameNode*>* top_frames,
-         content::BrowsingInstanceId browsing_instance_id,
-         const FrameNode* node) {
+  main_process_node_->VisitFrameNodes(
+      [&top_frames,
+       browsing_instance_id = browsing_instance_id_](const FrameNode* node) {
         if (node->GetBrowsingInstanceId() == browsing_instance_id &&
             !node->GetParentFrameNode() && !GetOrigin(node).opaque()) {
-          top_frames->push_back(node);
+          top_frames.push_back(node);
         }
         return true;
-      },
-      &top_frames, browsing_instance_id_));
+      });
 
   CHECK(!top_frames.empty());
   url::Origin main_origin = GetOrigin(top_frames[0]);
@@ -524,12 +520,14 @@ bool WebMemoryAggregator::VisitFrame(AggregationPointVisitor* ap_visitor,
     return true;
   }
   ap_visitor->OnFrameEntered(frame_node);
-
-  frame_node->VisitChildDedicatedWorkers(base::BindRepeating(
-      &WebMemoryAggregator::VisitWorker, base::Unretained(this), ap_visitor));
-  frame_node->VisitChildFrameNodes(base::BindRepeating(
-      &WebMemoryAggregator::VisitFrame, base::Unretained(this), ap_visitor));
-
+  frame_node->VisitChildDedicatedWorkers(
+      [this, ap_visitor](const WorkerNode* worker_node) {
+        return this->VisitWorker(ap_visitor, worker_node);
+      });
+  frame_node->VisitChildFrameNodes(
+      [this, ap_visitor](const FrameNode* frame_node) {
+        return this->VisitFrame(ap_visitor, frame_node);
+      });
   ap_visitor->OnFrameExited(frame_node);
 
   return true;
@@ -542,10 +540,10 @@ bool WebMemoryAggregator::VisitWorker(AggregationPointVisitor* ap_visitor,
   DCHECK_EQ(worker_node->GetWorkerType(), WorkerNode::WorkerType::kDedicated);
 
   ap_visitor->OnWorkerEntered(worker_node);
-
-  worker_node->VisitChildDedicatedWorkers(base::BindRepeating(
-      &WebMemoryAggregator::VisitWorker, base::Unretained(this), ap_visitor));
-
+  worker_node->VisitChildDedicatedWorkers(
+      [this, ap_visitor](const WorkerNode* worker_node) {
+        return this->VisitWorker(ap_visitor, worker_node);
+      });
   ap_visitor->OnWorkerExited(worker_node);
 
   return true;

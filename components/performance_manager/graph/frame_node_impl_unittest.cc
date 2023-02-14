@@ -534,27 +534,21 @@ TEST_F(FrameNodeImplTest, VisitChildFrameNodes) {
   auto frame3 = CreateFrameNodeAutoId(process.get(), page.get(), frame1.get());
 
   std::set<const FrameNode*> visited;
-  EXPECT_TRUE(
-      ToPublic(frame1.get())
-          ->VisitChildFrameNodes(base::BindRepeating(
-              [](std::set<const FrameNode*>* visited, const FrameNode* frame) {
-                EXPECT_TRUE(visited->insert(frame).second);
-                return true;
-              },
-              base::Unretained(&visited))));
+  EXPECT_TRUE(ToPublic(frame1.get())
+                  ->VisitChildFrameNodes([&visited](const FrameNode* frame) {
+                    EXPECT_TRUE(visited.insert(frame).second);
+                    return true;
+                  }));
   EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(frame2.get()),
                                                      ToPublic(frame3.get())));
 
   // Do an aborted visit.
   visited.clear();
-  EXPECT_FALSE(
-      ToPublic(frame1.get())
-          ->VisitChildFrameNodes(base::BindRepeating(
-              [](std::set<const FrameNode*>* visited, const FrameNode* frame) {
-                EXPECT_TRUE(visited->insert(frame).second);
-                return false;
-              },
-              base::Unretained(&visited))));
+  EXPECT_FALSE(ToPublic(frame1.get())
+                   ->VisitChildFrameNodes([&visited](const FrameNode* frame) {
+                     EXPECT_TRUE(visited.insert(frame).second);
+                     return false;
+                   }));
   EXPECT_EQ(1u, visited.size());
 }
 
@@ -649,38 +643,29 @@ TEST_F(FrameNodeImplTest, PageRelationships) {
 
   // Do an embedded page traversal.
   std::set<const PageNode*> visited;
-  EXPECT_TRUE(
-      ToPublic(frameA1.get())
-          ->VisitEmbeddedPageNodes(base::BindRepeating(
-              [](std::set<const PageNode*>* visited, const PageNode* page) {
-                EXPECT_TRUE(visited->insert(page).second);
-                return true;
-              },
-              base::Unretained(&visited))));
+  EXPECT_TRUE(ToPublic(frameA1.get())
+                  ->VisitEmbeddedPageNodes([&visited](const PageNode* page) {
+                    EXPECT_TRUE(visited.insert(page).second);
+                    return true;
+                  }));
   EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(pageB.get())));
 
   // Do an opened page traversal.
   visited.clear();
-  EXPECT_TRUE(
-      ToPublic(frameA1.get())
-          ->VisitOpenedPageNodes(base::BindRepeating(
-              [](std::set<const PageNode*>* visited, const PageNode* page) {
-                EXPECT_TRUE(visited->insert(page).second);
-                return true;
-              },
-              base::Unretained(&visited))));
+  EXPECT_TRUE(ToPublic(frameA1.get())
+                  ->VisitOpenedPageNodes([&visited](const PageNode* page) {
+                    EXPECT_TRUE(visited.insert(page).second);
+                    return true;
+                  }));
   EXPECT_THAT(visited, testing::UnorderedElementsAre(ToPublic(pageC.get())));
 
   // Do an aborted visit.
   visited.clear();
-  EXPECT_FALSE(
-      ToPublic(frameA1.get())
-          ->VisitEmbeddedPageNodes(base::BindRepeating(
-              [](std::set<const PageNode*>* visited, const PageNode* page) {
-                EXPECT_TRUE(visited->insert(page).second);
-                return false;
-              },
-              base::Unretained(&visited))));
+  EXPECT_FALSE(ToPublic(frameA1.get())
+                   ->VisitEmbeddedPageNodes([&visited](const PageNode* page) {
+                     EXPECT_TRUE(visited.insert(page).second);
+                     return false;
+                   }));
   EXPECT_EQ(1u, visited.size());
 
   // Manually clear the embedder relationship (initiated from the page).

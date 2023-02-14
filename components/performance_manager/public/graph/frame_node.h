@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/types/strong_alias.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
@@ -61,11 +62,11 @@ using execution_context_priority::PriorityAndReason;
 // it.
 class FrameNode : public Node {
  public:
-  using FrameNodeVisitor = base::RepeatingCallback<bool(const FrameNode*)>;
+  using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
   using LifecycleState = mojom::LifecycleState;
   using Observer = FrameNodeObserver;
-  using PageNodeVisitor = base::RepeatingCallback<bool(const PageNode*)>;
-  using WorkerNodeVisitor = base::RepeatingCallback<bool(const WorkerNode*)>;
+  using PageNodeVisitor = base::FunctionRef<bool(const PageNode*)>;
+  using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
 
   class ObserverDefaultImpl;
 

@@ -283,11 +283,11 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   }
 
   decltype(public_frame_nodes) visited_frame_nodes;
-  public_process_node->VisitFrameNodes(base::BindLambdaForTesting(
+  public_process_node->VisitFrameNodes(
       [&visited_frame_nodes](const FrameNode* frame_node) -> bool {
         visited_frame_nodes.insert(frame_node);
         return true;
-      }));
+      });
   EXPECT_EQ(public_frame_nodes, visited_frame_nodes);
 
   process_node->SetMainThreadTaskLoadIsLow(true);

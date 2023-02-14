@@ -254,8 +254,9 @@ bool WorkerNodeImpl::VisitChildDedicatedWorkers(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto* worker_node_impl : child_workers_) {
     const WorkerNode* node = worker_node_impl;
-    if (node->GetWorkerType() == WorkerType::kDedicated && !visitor.Run(node))
+    if (node->GetWorkerType() == WorkerType::kDedicated && !visitor(node)) {
       return false;
+    }
   }
   return true;
 }
