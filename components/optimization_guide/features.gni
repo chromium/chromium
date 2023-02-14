@@ -40,5 +40,7 @@ declare_args() {
     # When TFLite works for windows arm64, this lib should just work seamlessly.
     # Use is_chrome_branded as a proxy for "does src-internal exist".
     build_with_internal_optimization_guide = is_chrome_branded
+  } else {
+    build_with_internal_optimization_guide = false
   }
 }
