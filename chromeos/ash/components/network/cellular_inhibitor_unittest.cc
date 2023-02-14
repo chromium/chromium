@@ -136,7 +136,7 @@ class CellularInhibitorTest : public testing::Test {
       return GetInhibitedPropertyResult::kOperationFailed;
 
     absl::optional<bool> inhibited =
-        properties_.FindBoolKey(shill::kInhibitedProperty);
+        properties_.GetDict().FindBool(shill::kInhibitedProperty);
     EXPECT_TRUE(inhibited.has_value());
     return inhibited.value() ? GetInhibitedPropertyResult::kTrue
                              : GetInhibitedPropertyResult::kFalse;

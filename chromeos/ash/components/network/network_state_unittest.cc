@@ -383,21 +383,21 @@ TEST_F(NetworkStateTest, TetherProperties) {
   network_state_->GetStateProperties(&dictionary);
 
   absl::optional<int> signal_strength =
-      dictionary.FindIntKey(kTetherSignalStrength);
+      dictionary.GetDict().FindInt(kTetherSignalStrength);
   EXPECT_TRUE(signal_strength.has_value());
   EXPECT_EQ(75, signal_strength.value());
 
   absl::optional<int> battery_percentage =
-      dictionary.FindIntKey(kTetherBatteryPercentage);
+      dictionary.GetDict().FindInt(kTetherBatteryPercentage);
   EXPECT_TRUE(battery_percentage.has_value());
   EXPECT_EQ(85, battery_percentage.value());
 
   absl::optional<bool> tether_has_connected_to_host =
-      dictionary.FindBoolKey(kTetherHasConnectedToHost);
+      dictionary.GetDict().FindBool(kTetherHasConnectedToHost);
   EXPECT_TRUE(tether_has_connected_to_host.has_value());
   EXPECT_TRUE(tether_has_connected_to_host.value());
 
-  std::string* carrier = dictionary.FindStringKey(kTetherCarrier);
+  std::string* carrier = dictionary.GetDict().FindString(kTetherCarrier);
   EXPECT_NE(nullptr, carrier);
   EXPECT_EQ("Project Fi", *carrier);
 }

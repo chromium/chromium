@@ -401,8 +401,10 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
   // ReadResponse deletes the request
   base::Value response_value =
       TestingTailoredSecurityService::ReadResponse(request.get());
-  EXPECT_TRUE(
-      response_value.FindBoolKey("history_recording_enabled").value_or(false));
+  ASSERT_TRUE(response_value.is_dict());
+  EXPECT_TRUE(response_value.GetDict()
+                  .FindBool("history_recording_enabled")
+                  .value_or(false));
   // Test that properly formatted response with good response code returns false
   // as expected.
   std::unique_ptr<TailoredSecurityService::Request> request2(new TestRequest(
@@ -413,8 +415,10 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
   // ReadResponse deletes the request
   base::Value response_value2 =
       TestingTailoredSecurityService::ReadResponse(request2.get());
-  EXPECT_FALSE(
-      response_value2.FindBoolKey("history_recording_enabled").value_or(false));
+  ASSERT_TRUE(response_value2.is_dict());
+  EXPECT_FALSE(response_value2.GetDict()
+                   .FindBool("history_recording_enabled")
+                   .value_or(false));
 
   // Test that a bad response code returns false.
   std::unique_ptr<TailoredSecurityService::Request> request3(
@@ -451,8 +455,10 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
   // ReadResponse deletes the request
   base::Value response_value5 =
       TestingTailoredSecurityService::ReadResponse(request5.get());
-  EXPECT_FALSE(
-      response_value2.FindBoolKey("history_recording_enabled").value_or(false));
+  ASSERT_TRUE(response_value5.is_dict());
+  EXPECT_FALSE(response_value2.GetDict()
+                   .FindBool("history_recording_enabled")
+                   .value_or(false));
 }
 
 TEST_F(TailoredSecurityServiceTest, TestShutdown) {

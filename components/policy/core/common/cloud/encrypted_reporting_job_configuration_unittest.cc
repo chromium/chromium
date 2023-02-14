@@ -290,7 +290,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
       EncryptedReportingJobConfiguration* configuration) {
     base::Value* const payload = GetPayload(configuration);
     const auto attach_encryption_settings =
-        payload->FindBoolKey(kAttachEncryptionSettingsKey);
+        payload->GetDict().FindBool(kAttachEncryptionSettingsKey);
     return attach_encryption_settings.has_value() &&
            attach_encryption_settings.value();
   }

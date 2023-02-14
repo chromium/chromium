@@ -389,25 +389,26 @@ TEST_F(NetworkConfigurationHandlerTest, GetProperties_TetherNetwork) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(success);
-  const std::string* guid = result.FindStringKey(shill::kGuidProperty);
+  const base::Value::Dict& result_dict = result.GetDict();
+  const std::string* guid = result_dict.FindString(shill::kGuidProperty);
   ASSERT_TRUE(guid);
   EXPECT_EQ(kTetherGuid, *guid);
-  const std::string* name = result.FindStringKey(shill::kNameProperty);
+  const std::string* name = result_dict.FindString(shill::kNameProperty);
   ASSERT_TRUE(name);
   EXPECT_EQ(kTetherNetworkName, *name);
   absl::optional<int> battery_percentage =
-      result.FindIntKey(kTetherBatteryPercentage);
+      result_dict.FindInt(kTetherBatteryPercentage);
   ASSERT_TRUE(battery_percentage);
   EXPECT_EQ(kBatteryPercentage, *battery_percentage);
-  const std::string* carrier = result.FindStringKey(kTetherCarrier);
+  const std::string* carrier = result_dict.FindString(kTetherCarrier);
   ASSERT_TRUE(carrier);
   EXPECT_EQ(kTetherNetworkCarrier, *carrier);
   absl::optional<bool> has_connected_to_host =
-      result.FindBoolKey(kTetherHasConnectedToHost);
+      result_dict.FindBool(kTetherHasConnectedToHost);
   ASSERT_TRUE(has_connected_to_host);
   EXPECT_TRUE(*has_connected_to_host);
   absl::optional<int> signal_strength =
-      result.FindIntKey(kTetherSignalStrength);
+      result_dict.FindInt(kTetherSignalStrength);
   ASSERT_TRUE(signal_strength);
   EXPECT_EQ(kSignalStrength, *signal_strength);
 }
