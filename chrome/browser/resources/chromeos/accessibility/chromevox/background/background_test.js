@@ -565,20 +565,6 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'EarconsForControls', async function() {
   await mockFeedback.replay();
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'GlobsToRegExp', function() {
-  this.newCallback(async () => {
-    const module = await import('./background.js');
-    const Background = module.Background;
-    assertEquals('/^()$/', Background.globsToRegExp_([]).toString());
-    assertEquals(
-        '/^(http:\\/\\/host\\/path\\+here)$/',
-        Background.globsToRegExp_(['http://host/path+here']).toString());
-    assertEquals(
-        '/^(url1.*|u.l2|.*url3)$/',
-        Background.globsToRegExp_(['url1*', 'u?l2', '*url3']).toString());
-  })();
-});
-
 AX_TEST_F('ChromeVoxBackgroundTest', 'ShouldNotFocusIframe', async function() {
   const site = `
     <iframe tabindex=0 src="data:text/html,<p>Inside</p>"></iframe>
