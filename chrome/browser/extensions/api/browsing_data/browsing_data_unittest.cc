@@ -85,8 +85,9 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
   uint64_t GetAsMask(const base::Value::Dict* dict,
                      std::string path,
                      uint64_t mask_value) {
-    EXPECT_TRUE(dict->FindBool(path));
-    return *dict->FindBool(path) ? mask_value : 0;
+    absl::optional<bool> value = dict->FindBool(path);
+    DCHECK(value.has_value());
+    return *value ? mask_value : 0;
   }
 
   void RunBrowsingDataRemoveFunctionAndCompareRemovalMask(
@@ -227,12 +228,12 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
         function.get(), std::string("[]"), browser()));
 
-    EXPECT_TRUE(result->is_dict());
+    ASSERT_TRUE(result->is_dict());
     const base::Value::Dict& result_dict = result->GetDict();
     const base::Value::Dict* origin_types =
         result_dict.FindDictByDottedPath("options.originTypes");
 
-    EXPECT_TRUE(origin_types);
+    ASSERT_TRUE(origin_types);
     uint64_t origin_type_mask =
         GetAsMask(origin_types, "unprotectedWeb", UNPROTECTED_WEB) |
         GetAsMask(origin_types, "protectedWeb", PROTECTED_WEB) |
@@ -241,7 +242,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
 
     const base::Value::Dict* data_to_remove =
         result_dict.FindDict("dataToRemove");
-    EXPECT_TRUE(data_to_remove);
+    ASSERT_TRUE(data_to_remove);
     uint64_t removal_mask =
         GetAsMask(data_to_remove, "cache",
                   content::BrowsingDataRemover::DATA_TYPE_CACHE) |

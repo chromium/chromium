@@ -111,18 +111,20 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
   if (!verified_contents->GetPayload(contents, &payload))
     return nullptr;
 
-  absl::optional<base::Value> dictionary = base::JSONReader::Read(payload);
-  if (!dictionary || !dictionary->is_dict())
+  absl::optional<base::Value> dictionary_value =
+      base::JSONReader::Read(payload);
+  if (!dictionary_value || !dictionary_value->is_dict()) {
     return nullptr;
+  }
 
-  const std::string* item_id = dictionary->FindStringKey(kItemIdKey);
+  base::Value::Dict& dictionary = dictionary_value->GetDict();
+  const std::string* item_id = dictionary.FindString(kItemIdKey);
   if (!item_id || !crx_file::id_util::IdIsValid(*item_id))
     return nullptr;
 
   verified_contents->extension_id_ = *item_id;
 
-  const std::string* version_string =
-      dictionary->FindStringKey(kItemVersionKey);
+  const std::string* version_string = dictionary.FindString(kItemVersionKey);
   if (!version_string)
     return nullptr;
 
@@ -130,20 +132,23 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
   if (!verified_contents->version_.IsValid())
     return nullptr;
 
-  const base::Value* hashes_list = dictionary->FindListKey(kContentHashesKey);
+  const base::Value::List* hashes_list = dictionary.FindList(kContentHashesKey);
   if (!hashes_list)
     return nullptr;
 
-  for (const base::Value& hashes : hashes_list->GetList()) {
-    if (!hashes.is_dict())
+  for (const base::Value& hashes : *hashes_list) {
+    const base::Value::Dict* hashes_dict = hashes.GetIfDict();
+    if (!hashes_dict) {
       return nullptr;
+    }
 
-    const std::string* format = hashes.FindStringKey(kFormatKey);
+    const std::string* format = hashes_dict->FindString(kFormatKey);
     if (!format || *format != kTreeHash)
       continue;
 
-    absl::optional<int> block_size = hashes.FindIntKey(kBlockSizeKey);
-    absl::optional<int> hash_block_size = hashes.FindIntKey(kHashBlockSizeKey);
+    absl::optional<int> block_size = hashes_dict->FindInt(kBlockSizeKey);
+    absl::optional<int> hash_block_size =
+        hashes_dict->FindInt(kHashBlockSizeKey);
     if (!block_size || !hash_block_size)
       return nullptr;
 
@@ -154,16 +159,19 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
     if (verified_contents->block_size_ != *hash_block_size)
       return nullptr;
 
-    const base::Value* files = hashes.FindListKey(kFilesKey);
+    const base::Value::List* files = hashes_dict->FindList(kFilesKey);
     if (!files)
       return nullptr;
 
-    for (const base::Value& data : files->GetList()) {
-      if (!data.is_dict())
+    for (const base::Value& data : *files) {
+      const base::Value::Dict* data_dict = data.GetIfDict();
+      if (!data_dict) {
         return nullptr;
+      }
 
-      const std::string* file_path_string = data.FindStringKey(kPathKey);
-      const std::string* encoded_root_hash = data.FindStringKey(kRootHashKey);
+      const std::string* file_path_string = data_dict->FindString(kPathKey);
+      const std::string* encoded_root_hash =
+          data_dict->FindString(kRootHashKey);
       std::string root_hash;
       if (!file_path_string || !encoded_root_hash ||
           !base::IsStringUTF8(*file_path_string) ||

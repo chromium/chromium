@@ -195,10 +195,10 @@ class NavigateTabMessageHandler {
   void HandleNavigateTabMessage(const std::string& message) {
     absl::optional<base::Value> command = base::JSONReader::Read(message);
     if (command && command->is_dict()) {  // Check the message decoded from JSON
-      base::Value* data = command->FindDictKey("navigate");
-      if (data && data->is_dict()) {
-        int tab_id = *data->FindIntKey("tabId");
-        GURL url = GURL(*data->FindStringKey("url"));
+      base::Value::Dict* data = command->GetDict().FindDict("navigate");
+      if (data) {
+        int tab_id = data->FindInt("tabId").value();
+        GURL url = GURL(*data->FindString("url"));
         ASSERT_TRUE(url.is_valid());
 
         content::WebContents* contents = nullptr;
