@@ -70,7 +70,7 @@ void AttributionReportNetworkSender::SendReport(
 void AttributionReportNetworkSender::SendReport(
     AttributionDebugReport report,
     DebugReportSentCallback callback) {
-  GURL url = report.ReportURL();
+  GURL url = report.report_url();
   std::string body = SerializeAttributionJson(report.ReportBody());
   SendReport(
       std::move(url), body, net::HttpRequestHeaders(),

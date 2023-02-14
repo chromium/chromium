@@ -7,12 +7,14 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
-class GURL;
+namespace attribution_reporting {
+class SuitableOrigin;
+}  // namespace attribution_reporting
 
 namespace content {
 
@@ -44,7 +46,7 @@ class CONTENT_EXPORT AttributionDebugReport {
 
   const base::Value::List& ReportBody() const { return report_body_; }
 
-  GURL ReportURL() const;
+  const GURL& report_url() const { return report_url_; }
 
   // TODO(apaseltiner): This is a workaround to allow the simulator to adjust
   // times while accounting for sub-second precision. Investigate removing it.
@@ -53,12 +55,13 @@ class CONTENT_EXPORT AttributionDebugReport {
   }
 
  private:
-  AttributionDebugReport(base::Value::List report_body,
-                         attribution_reporting::SuitableOrigin reporting_origin,
-                         base::Time original_report_time);
+  AttributionDebugReport(
+      base::Value::List report_body,
+      const attribution_reporting::SuitableOrigin& reporting_origin,
+      base::Time original_report_time);
 
   base::Value::List report_body_;
-  attribution_reporting::SuitableOrigin reporting_origin_;
+  GURL report_url_;
 
   // Only set for report bodies that would include an event-level
   // scheduled_report_time field.

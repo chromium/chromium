@@ -385,7 +385,7 @@ void AttributionInternalsHandlerImpl::OnDebugReportSent(
     int status,
     base::Time time) {
   auto web_report = WebUIDebugReport::New();
-  web_report->url = report.ReportURL();
+  web_report->url = report.report_url();
   web_report->time = time.ToJsTime();
   web_report->body =
       SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true);
