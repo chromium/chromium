@@ -842,9 +842,7 @@ def builder(
 
     # TODO: remove this after this experiment is removed from
     # cr-buildbucket/settings.cfg (http://shortn/_cz2s9ql61X).
-    if defaults.get_value("omit_python2", omit_python2):
-        experiments["luci.buildbucket.omit_python2"] = 100
-    elif "luci.buildbucket.omit_python2" not in experiments:
+    if not defaults.get_value("omit_python2", omit_python2):
         experiments["luci.buildbucket.omit_python2"] = 0
 
     builder = branches.builder(
