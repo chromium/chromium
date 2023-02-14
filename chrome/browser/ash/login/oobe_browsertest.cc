@@ -44,10 +44,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -123,9 +123,11 @@ IN_PROC_BROWSER_TEST_F(OobeTest, Accelerator) {
 
   gfx::NativeWindow login_window = GetLoginWindowWidget()->GetNativeWindow();
 
-  ui::test::EventGenerator generator(login_window->GetRootWindow());
-
-  generator.PressKey(ui::VKEY_E, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+  ui_controls::SendKeyPress(login_window, ui::VKEY_E,
+                            true,    // control
+                            false,   // shift
+                            true,    // alt
+                            false);  // command
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 }
 
