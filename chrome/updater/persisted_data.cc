@@ -148,11 +148,21 @@ void PersistedData::SetAP(const std::string& id, const std::string& ap) {
 void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   VLOG(2) << __func__ << ": Registering " << rq.app_id << " at version "
           << rq.version;
-  SetProductVersion(rq.app_id, rq.version);
-  SetExistenceCheckerPath(rq.app_id, rq.existence_checker_path);
-  SetBrandCode(rq.app_id, rq.brand_code);
-  SetBrandPath(rq.app_id, rq.brand_path);
-  SetAP(rq.app_id, rq.ap);
+  if (rq.version.IsValid()) {
+    SetProductVersion(rq.app_id, rq.version);
+  }
+  if (!rq.existence_checker_path.empty()) {
+    SetExistenceCheckerPath(rq.app_id, rq.existence_checker_path);
+  }
+  if (!rq.brand_code.empty()) {
+    SetBrandCode(rq.app_id, rq.brand_code);
+  }
+  if (!rq.brand_path.empty()) {
+    SetBrandPath(rq.app_id, rq.brand_path);
+  }
+  if (!rq.ap.empty()) {
+    SetAP(rq.app_id, rq.ap);
+  }
 }
 
 bool PersistedData::RemoveApp(const std::string& id) {

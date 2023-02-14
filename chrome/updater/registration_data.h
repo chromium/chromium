@@ -14,7 +14,6 @@
 namespace updater {
 
 inline constexpr int kRegistrationSuccess = 0;
-inline constexpr int kRegistrationAlreadyRegistered = 1;
 
 struct RegistrationRequest {
   RegistrationRequest();
@@ -41,7 +40,7 @@ struct RegistrationRequest {
 
   // The version of the app already installed. 0.0.0.0 if the app is not
   // already installed.
-  base::Version version = base::Version(kNullVersion);
+  base::Version version;
 
   // A file path. A file exists at this path if and only if the app is
   // still installed. This is used (on Mac, for example) to detect

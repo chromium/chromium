@@ -227,8 +227,7 @@ void AppInstall::RegisterUpdater() {
   update_service_->RegisterApp(
       request, base::BindOnce(
                    [](scoped_refptr<AppInstall> app_install, int result) {
-                     if (result != kRegistrationSuccess &&
-                         result != kRegistrationAlreadyRegistered) {
+                     if (result != kRegistrationSuccess) {
                        VLOG(2) << "Updater registration failed: " << result;
                        app_install->Shutdown(kErrorRegistrationFailed);
                        return;

@@ -363,29 +363,23 @@ void KSAdminApp::PrintUsage(const std::string& error_message) {
 }
 
 void KSAdminApp::Register() {
-  const std::string app_path = SwitchValue(kCommandXCPath);
-  if (app_path.empty()) {
-    PrintUsage("Empty existence checker path.");
-    return;
-  }
-
   RegistrationRequest registration;
   registration.app_id = SwitchValue(kCommandProductId);
   registration.ap = SwitchValue(kCommandTag);
+  registration.brand_path = base::FilePath(SwitchValue(kCommandBrandPath));
   registration.version = base::Version(SwitchValue(kCommandVersion));
-  registration.existence_checker_path = base::FilePath(app_path);
+  registration.existence_checker_path =
+      base::FilePath(SwitchValue(kCommandXCPath));
 
   const std::string brand_key = SwitchValue(kCommandBrandKey);
-  if (brand_key.empty() ||
-      brand_key == base::SysNSStringToUTF8(kCRUTicketBrandKey)) {
-    registration.brand_path = base::FilePath(SwitchValue(kCommandBrandPath));
-  } else {
+  if (!brand_key.empty() &&
+      brand_key != base::SysNSStringToUTF8(kCRUTicketBrandKey)) {
     PrintUsage("Unsupported brand key.");
     return;
   }
 
-  if (registration.app_id.empty() || !registration.version.IsValid()) {
-    PrintUsage("Registration information invalid.");
+  if (registration.app_id.empty()) {
+    PrintUsage("--register requires -P.");
     return;
   }
 

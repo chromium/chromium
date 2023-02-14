@@ -74,8 +74,8 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   std::string GetAP(const std::string& id) const;
   void SetAP(const std::string& id, const std::string& ap);
 
-  // This function sets everything in the registration request object into the
-  // persistent data store.
+  // This function sets any non-empty field in the registration request object
+  // into the persistent data store.
   void RegisterApp(const RegistrationRequest& rq);
 
   // This function removes a registered application from the persistent store.

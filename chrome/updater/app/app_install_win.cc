@@ -486,6 +486,7 @@ void AppInstallControllerImpl::DoInstallApp() {
 
   RegistrationRequest request;
   request.app_id = app_id_;
+  request.version = base::Version(kNullVersion);
   absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
   absl::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   if (app_args) {
@@ -608,6 +609,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
       GetTagArgsForCommandLine(cmd_line).tag_args;
   RegistrationRequest request;
   request.app_id = app_id_;
+  request.version = base::Version(kNullVersion);
 
   absl::optional<tagging::AppArgs> app_args =
       GetAppArgsForCommandLine(cmd_line, app_id_);
@@ -634,8 +636,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
                  const std::string& install_args,
                  const std::string& install_data,
                  const std::string& install_settings, int result) {
-                if (result != kRegistrationSuccess &&
-                    result != kRegistrationAlreadyRegistered) {
+                if (result != kRegistrationSuccess) {
                   VLOG(1) << "Registration failed: " << result;
                   self->InstallComplete(UpdateService::Result::kServiceFailed);
                   return;
