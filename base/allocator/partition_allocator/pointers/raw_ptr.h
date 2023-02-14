@@ -300,9 +300,25 @@ struct MTECheckedPtrImpl {
   // Wraps a pointer, and returns its uintptr_t representation.
   template <typename T>
   static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
-    // Return a raw `T*` if protection is disabled, e.g. when `ptr` is
-    // `nullptr` or `uintptr_t{-1ull}`.
-    if (!PartitionAllocSupport::EnabledForPtr(ptr)) {
+    // Catch the obviously unsupported cases, e.g. `nullptr` or `-1ull`.
+    //
+    // `ExtractPtr(ptr)` should be functionally identical to `ptr` for
+    // the purposes of `EnabledForPtr()`, since we assert that `ptr` is
+    // an untagged raw pointer (there are no tag bits provided by
+    // MTECheckedPtr to strip off). However, something like `-1ull`
+    // looks identical to a fully tagged-up pointer. We'll add a check
+    // here just to make sure there's no difference in the support check
+    // whether extracted or not.
+    const bool extracted_supported =
+        PartitionAllocSupport::EnabledForPtr(ExtractPtr(ptr));
+    const bool raw_supported = PartitionAllocSupport::EnabledForPtr(ptr);
+    PA_BASE_DCHECK(extracted_supported == raw_supported);
+
+    // At the expense of consistency, we use the `raw_supported`
+    // condition. When wrapping a raw pointer, we assert that having set
+    // bits conflatable with the MTECheckedPtr tag disqualifies `ptr`
+    // from support.
+    if (!raw_supported) {
       return ptr;
     }
 
@@ -365,14 +381,26 @@ struct MTECheckedPtrImpl {
   // memory was freed or not.
   template <typename T>
   static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
-    return ExtractPtr(wrapped_ptr);
+    // Return `wrapped_ptr` straightaway if protection is disabled, e.g.
+    // when `ptr` is `nullptr` or `uintptr_t{-1ull}`.
+    T* extracted_ptr = ExtractPtr(wrapped_ptr);
+    if (!PartitionAllocSupport::EnabledForPtr(extracted_ptr)) {
+      return wrapped_ptr;
+    }
+    return extracted_ptr;
   }
 
   // Unwraps the pointer's uintptr_t representation, without making an assertion
   // on whether memory was freed or not.
   template <typename T>
   static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
-    return ExtractPtr(wrapped_ptr);
+    // Return `wrapped_ptr` straightaway if protection is disabled, e.g.
+    // when `ptr` is `nullptr` or `uintptr_t{-1ull}`.
+    T* extracted_ptr = ExtractPtr(wrapped_ptr);
+    if (!PartitionAllocSupport::EnabledForPtr(extracted_ptr)) {
+      return wrapped_ptr;
+    }
+    return extracted_ptr;
   }
 
   // Upcasts the wrapped pointer.
