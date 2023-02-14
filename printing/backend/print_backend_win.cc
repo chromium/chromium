@@ -218,8 +218,10 @@ void LoadPaper(const wchar_t* printer,
   if (!default_size.IsEmpty()) {
     // Reset default paper if `dmPaperWidth` or `dmPaperLength` does not
     // match default paper set by.
-    if (default_size != caps->default_paper.size_um)
+    if (default_size != caps->default_paper.size_um) {
       caps->default_paper = PrinterSemanticCapsAndDefaults::Paper();
+      caps->default_paper.printable_area_um = gfx::Rect(default_size);
+    }
     caps->default_paper.size_um = default_size;
   }
 }
