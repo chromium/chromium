@@ -168,7 +168,8 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
   if (trackableItem && !currentlyTracking) {
     [self addItem:trackableItem
-        toSection:SectionIdentifierTrackableItemsOnCurrentSite];
+        toBeginning:YES
+          ofSection:SectionIdentifierTrackableItemsOnCurrentSite];
   }
 
   if (!self.viewIfLoaded.window) {
@@ -182,7 +183,8 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
       withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
-- (void)addTrackedItem:(PriceNotificationsTableViewItem*)trackedItem {
+- (void)addTrackedItem:(PriceNotificationsTableViewItem*)trackedItem
+           toBeginning:(BOOL)beginning {
   _shouldHideLoadingState = YES;
   [self initializeTableViewModelIfNeeded];
   [self removeLoadingState];
@@ -199,7 +201,9 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   }
 
   _hasTrackedItems = YES;
-  [self addItem:trackedItem toSection:SectionIdentifierTrackedItems];
+  [self addItem:trackedItem
+      toBeginning:beginning
+        ofSection:SectionIdentifierTrackedItems];
 
   if (!self.viewIfLoaded.window || !shouldReloadSection) {
     return;
@@ -280,7 +284,7 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
                                   SectionIdentifierTrackableItemsOnCurrentSite}]
       withRowAnimation:UITableViewRowAnimationAutomatic];
 
-  [self addTrackedItem:trackableItem];
+  [self addTrackedItem:trackableItem toBeginning:YES];
 }
 
 #pragma mark - PriceNotificationsTableViewCellDelegate
@@ -305,13 +309,18 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
 
 // Adds an item to `sectionID` and displays it to the UI.
 - (void)addItem:(PriceNotificationsTableViewItem*)item
-      toSection:(SectionIdentifier)sectionID {
+    toBeginning:(BOOL)toBeginning
+      ofSection:(SectionIdentifier)sectionID {
   DCHECK(item);
   item.type = ItemTypeListItem;
   item.delegate = self;
-  [self.tableViewModel insertItem:item
-          inSectionWithIdentifier:sectionID
-                          atIndex:0];
+  if (toBeginning) {
+    [self.tableViewModel insertItem:item
+            inSectionWithIdentifier:sectionID
+                            atIndex:0];
+  } else {
+    [self.tableViewModel addItem:item toSectionWithIdentifier:sectionID];
+  }
 
   if (!self.viewIfLoaded.window) {
     return;
@@ -391,9 +400,14 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   emptyTrackedItem.loading = YES;
   emptyTrackedItem.tracking = YES;
   [self addItem:emptyTrackableItem
-      toSection:SectionIdentifierTrackableItemsOnCurrentSite];
-  [self addItem:emptyTrackedItem toSection:SectionIdentifierTrackedItems];
-  [self addItem:emptyTrackedItem toSection:SectionIdentifierTrackedItems];
+      toBeginning:YES
+        ofSection:SectionIdentifierTrackableItemsOnCurrentSite];
+  [self addItem:emptyTrackedItem
+      toBeginning:YES
+        ofSection:SectionIdentifierTrackedItems];
+  [self addItem:emptyTrackedItem
+      toBeginning:YES
+        ofSection:SectionIdentifierTrackedItems];
   _displayedLoadingState = YES;
 }
 

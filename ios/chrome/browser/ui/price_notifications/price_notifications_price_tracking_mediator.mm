@@ -277,7 +277,8 @@ using PriceNotificationItems =
       [self createPriceNotificationTableViewItem:YES
                                  fromProductInfo:productInfo
                                            atURL:URL];
-  [self.consumer addTrackedItem:item];
+  [self.consumer addTrackedItem:item
+                    toBeginning:self.webState->GetVisibleURL() == URL];
 
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
   // Fetches the current item's trackable image.
