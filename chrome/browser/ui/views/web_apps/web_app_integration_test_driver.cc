@@ -58,6 +58,9 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/file_handler_launch_dialog_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -2808,6 +2811,15 @@ void WebAppIntegrationTestDriver::CheckWindowControlsOverlayToggle(
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(),
                                                 GetAppIdBySiteMode(site)));
   EXPECT_EQ(app_browser()->app_controller()->AppUsesWindowControlsOverlay(),
+            is_shown == IsShown::kShown);
+  WebAppFrameToolbarView* toolbar =
+      BrowserView::GetBrowserViewForBrowser(app_browser())
+          ->web_app_frame_toolbar_for_testing();
+  ASSERT_EQ(toolbar->get_right_container_for_testing()
+                    ->window_controls_overlay_toggle_button() &&
+                toolbar->get_right_container_for_testing()
+                    ->window_controls_overlay_toggle_button()
+                    ->GetVisible(),
             is_shown == IsShown::kShown);
   AfterStateCheckAction();
 }
