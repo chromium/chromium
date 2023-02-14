@@ -1,0 +1,8 @@
+# crbug.com/1297682
+-org.chromium.chrome.browser.download.DownloadForegroundServiceManagerTest.*
+
+# crbug.com/1415561
+-org.chromium.components.external_intents.ExternalNavigationHandlerTest.testFileAccessImage
+
+# crbug.com/1347641
+-org.chromium.components.messages.MessageBannerViewTest.testSecondaryActionDirectCallback

@@ -1,0 +1,19 @@
+# crbug.com/1297682
+-org.chromium.chrome.browser.download.DownloadForegroundServiceManagerTest.*
+
+# crbug.com/1297678
+-org.chromium.ui.base.ClipboardAndroidTest.*
+
+# crbug.com/1415559
+-org.chromium.chrome.browser.compositor.bottombar.OverlayPanelEventFilterTest.testDragPanelThenContinuouslyScrollContentView
+-org.chromium.chrome.browser.compositor.bottombar.OverlayPanelEventFilterTest.testScrollDownContentView
+-org.chromium.chrome.browser.compositor.bottombar.OverlayPanelEventFilterTest.testScrollUpContentView
+-org.chromium.chrome.browser.compositor.bottombar.OverlayPanelEventFilterTest.testTapContentView
+-org.chromium.chrome.browser.compositor.bottombar.OverlayPanelEventFilterTest.testUnwantedScrollDoesNotHappenInContentView
+
+# crbug.com/1360427
+-org.chromium.components.browser_ui.photo_picker.PhotoPickerDialogTest.testBackPressDismiss
+-org.chromium.components.browser_ui.photo_picker.PhotoPickerDialogTest.testBorderPersistence
+-org.chromium.components.browser_ui.photo_picker.PhotoPickerDialogTest.testMultiSelectionPhoto
+-org.chromium.components.browser_ui.photo_picker.PhotoPickerDialogTest.testNoSelection
+-org.chromium.components.browser_ui.photo_picker.PhotoPickerDialogTest.testSingleSelectionPhoto
