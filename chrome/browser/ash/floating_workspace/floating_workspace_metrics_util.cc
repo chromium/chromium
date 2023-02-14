@@ -41,12 +41,6 @@ void RecordFloatingWorkspaceV2TemplateLoadTime(base::TimeDelta duration) {
   histogram->Add(duration.InSeconds());
 }
 
-void RecordFloatingWorkspaceV2TemplateSize(size_t proto_size) {
-  // Record template sizes between ranges of 0 and 10kB. The expected size of
-  // `proto_size` is around 8kB.
-  base::UmaHistogramCounts10000(kFloatingWorkspaceV2TemplateSize, proto_size);
-}
-
 void RecordFloatingWorkspaceV2TemplateUploadStatusHistogram(
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
   base::UmaHistogramEnumeration(kFloatingWorkspaceV2TemplateUploadStatus,
