@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -90,14 +89,6 @@ class HttpBridge : public HttpPostProvider {
                                  int net_error_code,
                                  const GURL& final_url,
                                  std::unique_ptr<std::string> response_body);
-
-  // Used to destroy a fetcher when the bridge is Abort()ed, to ensure that
-  // a reference to |this| is held while flushing any pending fetch completion
-  // callbacks coming from the IO thread en route to finally destroying the
-  // fetcher.
-  void DestroyURLLoaderOnIOThread(
-      std::unique_ptr<network::SimpleURLLoader> loader,
-      std::unique_ptr<base::DelayTimer> loader_timer);
 
   // Helper method to abort the request if we timed out.
   void OnURLLoadTimedOut();

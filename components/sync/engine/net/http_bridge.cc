@@ -88,6 +88,7 @@ HttpBridge::HttpBridge(
       network_task_runner_(network_task_runner) {}
 
 HttpBridge::~HttpBridge() {
+  // Note: This may run on either the sync thread or the network thread!
 #if DCHECK_IS_ON()
   {
     base::AutoLock lock(fetch_state_lock_);
@@ -271,11 +272,11 @@ void HttpBridge::MakeAsynchronousPost() {
   // net/connection errors).
   url_loader->SetAllowHttpErrorResults(true);
 
-  url_loader->SetOnUploadProgressCallback(base::BindRepeating(
-      &HttpBridge::OnURLLoadUploadProgress, base::Unretained(this)));
+  url_loader->SetOnUploadProgressCallback(
+      base::BindRepeating(&HttpBridge::OnURLLoadUploadProgress, this));
   url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&HttpBridge::OnURLLoadComplete, base::Unretained(this)));
+      base::BindOnce(&HttpBridge::OnURLLoadComplete, this));
 }
 
 int HttpBridge::GetResponseContentLength() const {
@@ -311,26 +312,16 @@ void HttpBridge::Abort() {
     return;
 
   fetch_state_.aborted = true;
-  if (!network_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&HttpBridge::DestroyURLLoaderOnIOThread, this,
-                         std::move(fetch_state_.url_loader),
-                         std::move(fetch_state_.http_request_timeout_timer)))) {
-    // Madness ensues.
-    NOTREACHED() << "Could not post task to delete URLLoader";
-  }
+
+  // Schedule deletion/release of the network resources on the network thread.
+  network_task_runner_->DeleteSoon(FROM_HERE,
+                                   std::move(fetch_state_.url_loader));
+  network_task_runner_->DeleteSoon(
+      FROM_HERE, std::move(fetch_state_.http_request_timeout_timer));
+  network_task_runner_->ReleaseSoon(FROM_HERE, std::move(url_loader_factory_));
 
   fetch_state_.net_error_code = net::ERR_ABORTED;
   http_post_completed_.Signal();
-}
-
-void HttpBridge::DestroyURLLoaderOnIOThread(
-    std::unique_ptr<network::SimpleURLLoader> loader,
-    std::unique_ptr<base::DelayTimer> loader_timer) {
-  DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
-
-  // Both |loader_timer| and |loader| go out of scope.
-  url_loader_factory_ = nullptr;
 }
 
 void HttpBridge::OnURLLoadComplete(std::unique_ptr<std::string> response_body) {
