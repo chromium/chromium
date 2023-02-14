@@ -5,6 +5,7 @@
 import {assert, assertInstanceof} from './assert.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
+import {AsyncIntervalRunner} from './models/async_interval.js';
 import {Filenamer} from './models/file_namer.js';
 import * as filesystem from './models/file_system.js';
 import {
@@ -210,14 +211,14 @@ export class GalleryButton implements ResultSaver {
     async function checkFileCount() {
       const newFileCount = (await filesystem.getEntries()).length;
       if (prevFileCount === newFileCount) {
-        clearInterval(intervalId);
+        runner.stop();
         cameraFolderStable.signal();
       } else {
         prevFileCount = newFileCount;
       }
     }
 
-    const intervalId = setInterval(checkFileCount, 500);
+    const runner = new AsyncIntervalRunner(checkFileCount, 500);
     return cameraFolderStable.wait();
   }
 
