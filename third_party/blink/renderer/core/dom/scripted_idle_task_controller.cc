@@ -36,10 +36,19 @@ class IdleRequestCallbackWrapper
   static void IdleTaskFired(
       scoped_refptr<IdleRequestCallbackWrapper> callback_wrapper,
       base::TimeTicks deadline) {
+
+    if (!recordreplay::AreEventsDisallowed())
+      recordreplay::Assert("[RUN-1335-1336] IdleTaskFired A %d",
+                           callback_wrapper->Id());
+
     if (ScriptedIdleTaskController* controller =
             callback_wrapper->Controller()) {
       // If we are going to yield immediately, reschedule the callback for
       // later.
+
+      if (!recordreplay::AreEventsDisallowed())
+        recordreplay::Assert("[RUN-1335-1336] IdleTaskFired B");
+
       if (ThreadScheduler::Current()->ShouldYieldForHighPriorityWork()) {
         controller->ScheduleCallback(std::move(callback_wrapper),
                                      /* timeout_millis */ 0);
