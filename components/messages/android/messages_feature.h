@@ -62,6 +62,8 @@ bool UseGPayIconForSaveCardMessage();
 
 bool UseDialogV2ForSaveCardMessage();
 
+bool IsStackingAnimationEnabled();
+
 }  // namespace messages
 
 #endif  // COMPONENTS_MESSAGES_ANDROID_MESSAGES_FEATURE_H_

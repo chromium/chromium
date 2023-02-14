@@ -282,6 +282,21 @@
             ]
         }
     ],
+    "AndroidMessagesStackingAnimation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230206",
+                    "enable_features": [
+                        "MessagesForAndroidStackingAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidOmniboxUxRevampPhase2": [
         {
             "platforms": [

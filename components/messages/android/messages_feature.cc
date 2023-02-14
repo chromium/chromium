@@ -94,6 +94,11 @@ bool IsPermissionUpdateMessagesUiEnabled() {
          base::FeatureList::IsEnabled(kMessagesForAndroidPermissionUpdate);
 }
 
+bool IsStackingAnimationEnabled() {
+  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
+         base::FeatureList::IsEnabled(kMessagesForAndroidStackingAnimation);
+}
+
 static jboolean JNI_MessageFeatureList_IsEnabled(
     JNIEnv* env,
     const JavaParamRef<jstring>& jfeature_name) {

@@ -255,7 +255,9 @@ class OfferNotificationControllerAndroidBrowserTestForMessagesUi
 
   void VerifyMessageShownCountMetric(int count) {
     histogram_tester_.ExpectBucketCount(
-        "Android.Messages.Enqueued.Visible",
+        messages::IsStackingAnimationEnabled()
+            ? "Android.Messages.Stacking.InsertAtFront"
+            : "Android.Messages.Enqueued.Visible",
         static_cast<int>(messages::MessageIdentifier::OFFER_NOTIFICATION),
         count);
   }
