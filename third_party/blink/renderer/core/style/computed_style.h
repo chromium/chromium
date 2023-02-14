@@ -1840,6 +1840,14 @@ class ComputedStyle : public ComputedStyleBase,
       const;
   CORE_EXPORT TextDecorationLine TextDecorationsInEffect() const;
 
+  // Returns true if there are any text decorations.
+  bool HasAppliedTextDecorations() const {
+    if (HasSimpleUnderlineInternal()) {
+      return true;
+    }
+    return AppliedTextDecorationsInternal().get() != nullptr;
+  }
+
   // Overflow utility functions.
 
   EOverflow OverflowInlineDirection() const {

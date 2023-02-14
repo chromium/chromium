@@ -429,7 +429,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   if (!paint_selected_text_only) {
     // Paint text decorations except line-through.
     absl::optional<TextDecorationInfo> decoration_info;
-    if (style_to_use.TextDecorationsInEffect() != TextDecorationLine::kNone &&
+    if (style_to_use.HasAppliedTextDecorations() &&
         inline_text_box_.Truncation() != kCFullTruncation) {
       PhysicalOffset local_origin = box_origin;
       LayoutUnit width = inline_text_box_.LogicalWidth();

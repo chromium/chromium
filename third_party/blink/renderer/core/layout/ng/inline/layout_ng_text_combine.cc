@@ -56,7 +56,7 @@ void LayoutNGTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
   DCHECK_EQ(style.GetTextEmphasisMark(), TextEmphasisMark::kNone);
   DCHECK_EQ(style.GetWritingMode(), WritingMode::kHorizontalTb);
   DCHECK_EQ(style.LetterSpacing(), 0.0f);
-  DCHECK_EQ(style.TextDecorationsInEffect(), TextDecorationLine::kNone);
+  DCHECK(!style.HasAppliedTextDecorations());
   DCHECK_EQ(style.TextIndent(), Length::Fixed());
   DCHECK_EQ(style.GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
@@ -228,7 +228,7 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
   const PhysicalRect text_rect = ComputeTextFrameRect(PhysicalOffset());
   LayoutRect ink_overflow = text_rect.ToLayoutRect();
 
-  if (!style.AppliedTextDecorations().empty()) {
+  if (style.HasAppliedTextDecorations()) {
     // |LayoutNGTextCombine| does not support decorating box, as it is not
     // supported in vertical flow and text-combine is only for vertical flow.
     const LayoutRect decoration_rect =

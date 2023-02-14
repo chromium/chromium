@@ -42,12 +42,12 @@ void NGTextDecorationPainter::UpdateDecorationInfo(
     const AppliedTextDecoration* decoration_override) {
   result.reset();
 
-  if ((style.TextDecorationsInEffect() == TextDecorationLine::kNone &&
-       !decoration_override) ||
+  if ((!style.HasAppliedTextDecorations() && !decoration_override) ||
       // Ellipsis should not have text decorations. This is not defined, but
       // 4 impls do this: <https://github.com/w3c/csswg-drafts/issues/6531>
-      text_item_.IsEllipsis())
+      text_item_.IsEllipsis()) {
     return;
+  }
 
   absl::optional<AppliedTextDecoration> effective_selection_decoration =
       UNLIKELY(phase_ == kSelection)

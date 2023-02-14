@@ -52,8 +52,7 @@ void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
   // These values come from |NGBoxFragmentPainter::PaintAllPhasesAtomically()|.
 
   const ComputedStyle& style = text_combine.Parent()->StyleRef();
-  const bool has_text_decoration =
-      style.TextDecorationsInEffect() != TextDecorationLine::kNone;
+  const bool has_text_decoration = style.HasAppliedTextDecorations();
   const bool has_emphasis_mark =
       style.GetTextEmphasisMark() != TextEmphasisMark::kNone;
   DCHECK(has_text_decoration | has_emphasis_mark);
@@ -84,7 +83,7 @@ void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
 bool NGTextCombinePainter::ShouldPaint(
     const LayoutNGTextCombine& text_combine) {
   const auto& style = text_combine.Parent()->StyleRef();
-  return style.TextDecorationsInEffect() != TextDecorationLine::kNone ||
+  return style.HasAppliedTextDecorations() ||
          style.GetTextEmphasisMark() != TextEmphasisMark::kNone;
 }
 

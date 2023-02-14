@@ -3446,7 +3446,7 @@ scoped_refptr<const ComputedStyle> Element::PropagateInheritedProperties() {
     // of whether the property was inherited or not.
     return nullptr;
   }
-  if (style->TextDecorationsInEffect() != TextDecorationLine::kNone) {
+  if (style->HasAppliedTextDecorations()) {
     // If we have text decorations, they can depend on currentColor,
     // and are normally updated by the StyleAdjuster. We can, however,
     // reach this path when color is modified, leading to the decoration

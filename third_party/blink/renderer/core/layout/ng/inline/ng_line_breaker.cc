@@ -205,7 +205,7 @@ bool NeedsAccurateEndPosition(const NGInlineItem& line_end_item) {
   DCHECK(line_end_item.Style());
   const ComputedStyle& line_end_style = *line_end_item.Style();
   return line_end_style.HasBoxDecorationBackground() ||
-         !line_end_style.AppliedTextDecorations().empty();
+         line_end_style.HasAppliedTextDecorations();
 }
 
 inline bool NeedsAccurateEndPosition(const NGLineInfo& line_info,

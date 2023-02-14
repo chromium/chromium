@@ -337,10 +337,11 @@ static inline float ThicknessForDecoration(TextDecorationLine,
 void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
                                               TextDecorationLine decoration,
                                               const SVGTextFragment& fragment) {
-  if (svg_inline_text_box_.GetLineLayoutItem()
-          .StyleRef()
-          .TextDecorationsInEffect() == TextDecorationLine::kNone)
+  if (!svg_inline_text_box_.GetLineLayoutItem()
+           .StyleRef()
+           .HasAppliedTextDecorations()) {
     return;
+  }
 
   if (fragment.width <= 0)
     return;

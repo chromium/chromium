@@ -248,12 +248,10 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
       return true;
     }
     // If any of the originating line decorations would need to be recolored.
-    if (originating_style.TextDecorationsInEffect() !=
-        TextDecorationLine::kNone) {
-      for (const AppliedTextDecoration& decoration :
-           originating_style.AppliedTextDecorations()) {
-        if (decoration.GetColor() != pseudo_color)
-          return true;
+    for (const AppliedTextDecoration& decoration :
+         originating_style.AppliedTextDecorations()) {
+      if (decoration.GetColor() != pseudo_color) {
+        return true;
       }
     }
     // ‘text-emphasis-color’ should be meaningless for highlight pseudos, but
@@ -794,10 +792,8 @@ NGHighlightPainter::Case NGHighlightPainter::ComputePaintCase() const {
 
     // If we only have a selection, and there are no selection or originating
     // decorations, we don’t need the expense of overlay painting.
-    return originating_style_.TextDecorationsInEffect() ==
-                       TextDecorationLine::kNone &&
-                   (!pseudo_style || pseudo_style->TextDecorationsInEffect() ==
-                                         TextDecorationLine::kNone)
+    return !originating_style_.HasAppliedTextDecorations() &&
+                   (!pseudo_style || !pseudo_style->HasAppliedTextDecorations())
                ? kFastSelection
                : kOverlay;
   }
@@ -1253,9 +1249,9 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
         // TODO(crbug.com/1163436): remove once UA stylesheet sets ::spelling
         // and ::grammar to text-decoration-line:{spelling,grammar}-error
         if (decoration_layer.style &&
-            decoration_layer.style->TextDecorationsInEffect() !=
-                TextDecorationLine::kNone)
+            decoration_layer.style->HasAppliedTextDecorations()) {
           break;
+        }
 
         if (!marker_rect) {
           marker_rect =
