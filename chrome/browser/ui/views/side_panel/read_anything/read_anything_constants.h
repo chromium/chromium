@@ -21,7 +21,7 @@ const int kInternalInsets = 8;
 const int kSeparatorTopBottomPadding = 4;
 const int kMinimumComboboxWidth = 110;
 
-const int kButtonPadding = 4;
+const int kButtonPadding = 2;
 const int kIconSize = 16;
 const int kColorsIconSize = 24;
 

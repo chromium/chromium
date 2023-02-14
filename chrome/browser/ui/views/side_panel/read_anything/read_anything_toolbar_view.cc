@@ -38,6 +38,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   // Set a FlexLayout LayoutManager for this view.
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, kButtonPadding))
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetInteriorMargin(gfx::Insets(kInternalInsets));
 
