@@ -57,6 +57,7 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/event_logger.h"
 #include "components/drive/file_errors.h"
+#include "components/drive/file_system_core_util.h"
 #include "components/drive/resource_metadata_storage.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -791,6 +792,13 @@ bool DriveIntegrationService::GetRelativeDrivePath(
     *drive_path = relative;
   }
   return true;
+}
+
+bool DriveIntegrationService::IsSharedDrive(
+    const base::FilePath& local_path) const {
+  return GetMountPointPath()
+      .Append(drive::util::kDriveTeamDrivesDirName)
+      .IsParent(local_path);
 }
 
 void DriveIntegrationService::AddObserver(

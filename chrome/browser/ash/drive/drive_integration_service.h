@@ -158,6 +158,8 @@ class DriveIntegrationService : public KeyedService,
   bool GetRelativeDrivePath(const base::FilePath& local_path,
                             base::FilePath* drive_path) const;
 
+  bool IsSharedDrive(const base::FilePath& local_path) const;
+
   // Adds and removes the observer.
   void AddObserver(DriveIntegrationServiceObserver* observer);
   void RemoveObserver(DriveIntegrationServiceObserver* observer);
