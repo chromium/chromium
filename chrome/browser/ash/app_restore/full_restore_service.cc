@@ -252,6 +252,13 @@ void FullRestoreService::MaybeCloseNotification(bool allow_save) {
   VLOG(1) << "The full restore notification is closed for "
           << profile_->GetPath();
 
+  // The crash notification creates a crash lock for the browser session
+  // restore. So if the notification has been closed and the system is no longer
+  // crash, clear `crashed_lock_`. Otherwise, the crash flag might not be
+  // cleared, and the crash notification might be shown again after the normal
+  // shutdown process.
+  crashed_lock_.reset();
+
   if (notification_ != nullptr && !is_shut_down_) {
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, notification_->id());
@@ -331,14 +338,6 @@ void FullRestoreService::OnAppTerminating() {
   }
   app_launch_handler_.reset();
   ::full_restore::FullRestoreSaveHandler::GetInstance()->SetShutDown();
-
-  // The crash notification creates an crash lock for the browser session
-  // restore. So if the notification has been closed and the system is no longer
-  // crash, clear `crashed_lock_`. Otherwise, the crash flag might not be
-  // cleared, and the crash notification might be shown again after the normal
-  // shutdown process.
-  if (!notification_)
-    crashed_lock_.reset();
 }
 
 void FullRestoreService::OnActionPerformed(AcceleratorAction action) {
