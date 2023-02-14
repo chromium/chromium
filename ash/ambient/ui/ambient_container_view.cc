@@ -39,10 +39,9 @@ AmbientContainerView::AmbientContainerView(
   SetBackground(views::CreateSolidBackground(SK_ColorBLACK));
   SetLayoutManager(std::make_unique<views::FillLayout>());
   View* main_rendering_view = nullptr;
-  AmbientAnimationTheme theme =
-      animation_static_resources
-          ? animation_static_resources->GetAmbientAnimationTheme()
-          : AmbientAnimationTheme::kSlideshow;
+  AmbientTheme theme = animation_static_resources
+                           ? animation_static_resources->GetAmbientTheme()
+                           : AmbientTheme::kSlideshow;
   if (animation_static_resources) {
     main_rendering_view = AddChildView(std::make_unique<AmbientAnimationView>(
         delegate, progress_tracker, std::move(animation_static_resources),

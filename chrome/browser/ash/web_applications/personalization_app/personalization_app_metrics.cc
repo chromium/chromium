@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "base/metrics/histogram_functions.h"
 
 namespace ash::personalization_app {
@@ -13,7 +13,7 @@ void LogPersonalizationTheme(ColorMode color_mode) {
                                 color_mode);
 }
 
-void LogAmbientModeAnimationTheme(ash::AmbientAnimationTheme animation_theme) {
+void LogAmbientModeTheme(ash::AmbientTheme animation_theme) {
   base::UmaHistogramEnumeration(kAmbientModeAnimationThemeHistogramName,
                                 animation_theme);
 }

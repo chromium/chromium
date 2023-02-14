@@ -88,7 +88,7 @@ constexpr int kTimeFontSizeDip = 32;
 constexpr SkColor kDarkModeShieldColor =
     SkColorSetA(gfx::kGoogleGrey900, SK_AlphaOPAQUE / 10);
 
-void LogCompositorThroughput(AmbientAnimationTheme theme, int smoothness) {
+void LogCompositorThroughput(AmbientTheme theme, int smoothness) {
   // Use VLOG instead of DVLOG since this log is performance-related and
   // developers will almost certainly only care about this log on non-debug
   // builds.
@@ -98,7 +98,7 @@ void LogCompositorThroughput(AmbientAnimationTheme theme, int smoothness) {
 
 void OnCompositorThroughputReported(
     base::TimeTicks logging_start_time,
-    AmbientAnimationTheme theme,
+    AmbientTheme theme,
     const cc::FrameSequenceMetrics::CustomReportData& data) {
   base::TimeDelta duration = base::TimeTicks::Now() - logging_start_time;
   float duration_sec = duration.InSecondsF();
@@ -348,8 +348,7 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
   // gets cut off at the top when doing this, making it look strange. UX
   // decision is to just omit the tree shadow in portrait mode. If/when
   // portrait versions of the animation are made, this logic can be removed.
-  if (static_resources_->GetAmbientAnimationTheme() ==
-      AmbientAnimationTheme::kFeelTheBreeze) {
+  if (static_resources_->GetAmbientTheme() == AmbientTheme::kFeelTheBreeze) {
     bool tree_shadow_toggled = animation_photo_provider_.ToggleStaticImageAsset(
         cc::HashSkottieResourceId(ambient::resources::kTreeShadowAssetId),
         /*enabled=*/content_bounds.width() >= content_bounds.height());
@@ -427,7 +426,7 @@ void AmbientAnimationView::RestartThroughputTracking() {
   throughput_tracker_->Start(
       base::BindOnce(&OnCompositorThroughputReported,
                      /*logging_start_time=*/base::TimeTicks::Now(),
-                     static_resources_->GetAmbientAnimationTheme()));
+                     static_resources_->GetAmbientTheme()));
 }
 
 void AmbientAnimationView::ApplyJitter() {

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
@@ -23,7 +23,7 @@ class ImageSkia;
 
 namespace ash {
 
-// Loads static resources for a given AmbientAnimationTheme. "Static" resources
+// Loads static resources for a given AmbientTheme. "Static" resources
 // are those that are fixed for the lifetime of the animation, as opposed to
 // dynamic ones that can change between animation cycles (photos from IMAX).
 // All resources are only loaded one time internally, so callers are free to
@@ -42,7 +42,7 @@ class ASH_EXPORT AmbientAnimationStaticResources {
   // If false, resource creation is cheaper and uses less memory but cannot be
   // used for OOP rasterization.
   static std::unique_ptr<AmbientAnimationStaticResources> Create(
-      AmbientAnimationTheme theme,
+      AmbientTheme theme,
       bool serializable);
 
   virtual ~AmbientAnimationStaticResources() = default;
@@ -65,8 +65,8 @@ class ASH_EXPORT AmbientAnimationStaticResources {
   virtual gfx::ImageSkia GetStaticImageAsset(
       base::StringPiece asset_id) const = 0;
 
-  // Returns the AmbientAnimationTheme that the static resources belong to.
-  virtual AmbientAnimationTheme GetAmbientAnimationTheme() const = 0;
+  // Returns the AmbientTheme that the static resources belong to.
+  virtual AmbientTheme GetAmbientTheme() const = 0;
 };
 
 }  // namespace ash

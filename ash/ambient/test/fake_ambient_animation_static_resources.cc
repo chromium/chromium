@@ -44,9 +44,8 @@ gfx::ImageSkia FakeAmbientAnimationStaticResources::GetStaticImageAsset(
   return iter == images_.end() ? gfx::ImageSkia() : iter->second;
 }
 
-AmbientAnimationTheme
-FakeAmbientAnimationStaticResources::GetAmbientAnimationTheme() const {
-  return ambient_animation_theme_;
+AmbientTheme FakeAmbientAnimationStaticResources::GetAmbientTheme() const {
+  return ambient_theme_;
 }
 
 }  // namespace ash

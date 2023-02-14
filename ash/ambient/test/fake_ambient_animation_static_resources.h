@@ -10,7 +10,7 @@
 
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ash_export.h"
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
@@ -44,21 +44,19 @@ class ASH_EXPORT FakeAmbientAnimationStaticResources
   // GetStaticImageAsset() will return a null image.
   void SetStaticImageAsset(base::StringPiece asset_id, gfx::ImageSkia image);
 
-  void set_ambient_animation_theme(
-      AmbientAnimationTheme ambient_animation_theme) {
-    ambient_animation_theme_ = ambient_animation_theme;
+  void set_ambient_theme(AmbientTheme ambient_theme) {
+    ambient_theme_ = ambient_theme;
   }
 
   // AmbientAnimationStaticResources implementation:
   const scoped_refptr<cc::SkottieWrapper>& GetSkottieWrapper() const override;
   gfx::ImageSkia GetStaticImageAsset(base::StringPiece asset_id) const override;
-  AmbientAnimationTheme GetAmbientAnimationTheme() const override;
+  AmbientTheme GetAmbientTheme() const override;
 
  private:
   scoped_refptr<cc::SkottieWrapper> animation_;
   base::flat_map</*asset_id*/ std::string, gfx::ImageSkia> images_;
-  AmbientAnimationTheme ambient_animation_theme_ =
-      AmbientAnimationTheme::kFeelTheBreeze;
+  AmbientTheme ambient_theme_ = AmbientTheme::kFeelTheBreeze;
 };
 
 }  // namespace ash

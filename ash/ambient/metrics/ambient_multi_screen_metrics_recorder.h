@@ -6,7 +6,7 @@
 #define ASH_AMBIENT_METRICS_AMBIENT_MULTI_SCREEN_METRICS_RECORDER_H_
 
 #include "ash/ash_export.h"
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "base/containers/flat_set.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
@@ -28,7 +28,7 @@ namespace ash {
 class ASH_EXPORT AmbientMultiScreenMetricsRecorder
     : public lottie::AnimationObserver {
  public:
-  explicit AmbientMultiScreenMetricsRecorder(AmbientAnimationTheme theme);
+  explicit AmbientMultiScreenMetricsRecorder(AmbientTheme theme);
   AmbientMultiScreenMetricsRecorder(const AmbientMultiScreenMetricsRecorder&) =
       delete;
   AmbientMultiScreenMetricsRecorder& operator=(
@@ -59,7 +59,7 @@ class ASH_EXPORT AmbientMultiScreenMetricsRecorder
       const lottie::Animation& animation_l,
       const lottie::Animation& animation_r) const;
 
-  const AmbientAnimationTheme theme_;
+  const AmbientTheme theme_;
 
   int num_registered_screens_ = 0;
   base::flat_set<const lottie::Animation*> registered_animations_;

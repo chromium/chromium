@@ -569,7 +569,7 @@ void AmbientAnimationPhotoProvider::RecordDynamicAssetMetrics() {
   float match_percentage =
       num_photo_orientation_matches * 100.f / total_num_assets_with_size;
   ambient::RecordAmbientModePhotoOrientationMatch(
-      match_percentage, static_resources_->GetAmbientAnimationTheme());
+      match_percentage, static_resources_->GetAmbientTheme());
 }
 
 }  // namespace ash

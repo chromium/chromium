@@ -526,7 +526,7 @@ interface UserProvider {
 };
 
 // The animation theme for screen saver. Should be kept in sync with
-// |ash::AmbientAnimationTheme|.
+// |ash::AmbientTheme|.
 enum AnimationTheme {
   kSlideshow = 0,
   kFeelTheBreeze = 1,

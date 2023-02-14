@@ -706,8 +706,7 @@ TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
 }
 
 TEST_F(AmbientAnimationPhotoProviderTest, RecordsPhotoOrientationMatch) {
-  static_resources_.set_ambient_animation_theme(
-      AmbientAnimationTheme::kFeelTheBreeze);
+  static_resources_.set_ambient_theme(AmbientTheme::kFeelTheBreeze);
 
   // 2 landscape 2 portrait
   AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));

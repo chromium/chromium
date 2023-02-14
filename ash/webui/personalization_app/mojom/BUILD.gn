@@ -58,7 +58,7 @@ mojom("mojom") {
         },
         {
           mojom = "ash.personalization_app.mojom.AnimationTheme"
-          cpp = "::ash::AmbientAnimationTheme"
+          cpp = "::ash::AmbientTheme"
         },
         {
           mojom = "ash.personalization_app.mojom.TopicSource"

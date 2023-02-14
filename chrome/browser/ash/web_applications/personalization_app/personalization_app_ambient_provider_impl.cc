@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "ash/ambient/ambient_controller.h"
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
@@ -76,7 +76,7 @@ PersonalizationAppAmbientProviderImpl::PersonalizationAppAmbientProviderImpl(
           &PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
-      ash::ambient::prefs::kAmbientAnimationTheme,
+      ash::ambient::prefs::kAmbientTheme,
       base::BindRepeating(
           &PersonalizationAppAmbientProviderImpl::OnAnimationThemeChanged,
           base::Unretained(this)));
@@ -138,11 +138,11 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientModeEnabled(
 }
 
 void PersonalizationAppAmbientProviderImpl::SetAnimationTheme(
-    ash::AmbientAnimationTheme animation_theme) {
+    ash::AmbientTheme animation_theme) {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
-  LogAmbientModeAnimationTheme(animation_theme);
-  pref_service->SetInteger(ash::ambient::prefs::kAmbientAnimationTheme,
+  LogAmbientModeTheme(animation_theme);
+  pref_service->SetInteger(ash::ambient::prefs::kAmbientTheme,
                            static_cast<int>(animation_theme));
 }
 
@@ -343,12 +343,12 @@ bool PersonalizationAppAmbientProviderImpl::IsAmbientModeEnabled() {
   return pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled);
 }
 
-ash::AmbientAnimationTheme
+ash::AmbientTheme
 PersonalizationAppAmbientProviderImpl::GetCurrentAnimationTheme() {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
-  return static_cast<ash::AmbientAnimationTheme>(
-      pref_service->GetInteger(ash::ambient::prefs::kAmbientAnimationTheme));
+  return static_cast<ash::AmbientTheme>(
+      pref_service->GetInteger(ash::ambient::prefs::kAmbientTheme));
 }
 
 void PersonalizationAppAmbientProviderImpl::UpdateSettings() {

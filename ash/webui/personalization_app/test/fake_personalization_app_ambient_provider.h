@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_AMBIENT_PROVIDER_H_
 #define ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_AMBIENT_PROVIDER_H_
 
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 
 #include <stdint.h>
@@ -44,7 +44,7 @@ class FakePersonalizationAppAmbientProvider
       mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
           observer) override {}
   void SetAmbientModeEnabled(bool enabled) override {}
-  void SetAnimationTheme(ash::AmbientAnimationTheme animation_theme) override {}
+  void SetAnimationTheme(ash::AmbientTheme animation_theme) override {}
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) override {}
   void SetTemperatureUnit(
       ash::AmbientModeTemperatureUnit temperature_unit) override {}

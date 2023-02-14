@@ -16,7 +16,7 @@
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_info_view.h"
 #include "ash/ambient/ui/photo_view.h"
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/test/ash_test_base.h"
@@ -52,12 +52,12 @@ class AmbientAshTestBase : public AshTestBase {
   // Enables/disables ambient mode for the currently active user session.
   void SetAmbientModeEnabled(bool enabled);
 
-  // Sets the AmbientAnimationTheme to use when ShowAmbientScreen() is called.
+  // Sets the AmbientTheme to use when ShowAmbientScreen() is called.
   // To reflect real world usage, the incoming |theme| does not take effect
   // immediately if the test is currently displaying the ambient screen. In that
   // case, the ambient screen must be closed, and the new |theme| will take
   // effect with the next call to ShowAmbientScreen().
-  void SetAmbientAnimationTheme(AmbientAnimationTheme theme);
+  void SetAmbientTheme(AmbientTheme theme);
 
   // Sets jitters configs to zero for pixel testing.
   void DisableJitter();

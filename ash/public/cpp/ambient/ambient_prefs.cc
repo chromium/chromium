@@ -10,7 +10,14 @@ namespace ash {
 namespace ambient {
 namespace prefs {
 
-constexpr char kAmbientAnimationTheme[] = "ash.ambient.animation_theme";
+// Unfortunately, this used to be referred to as "ambient animation theme" all
+// throughout the code until it became clear that every theme in ambient
+// mode would not be implemented as an animation. Since this name is persisted
+// in pref service and it's not trivial to migrate it to a different name, its
+// string literal has not been changed to keep backwards compatibility. However,
+// all references to this concept in the code now use the more generic "ambient
+// theme".
+constexpr char kAmbientTheme[] = "ash.ambient.animation_theme";
 
 constexpr char kAmbientBackdropClientId[] = "ash.ambient.backdrop.client.id";
 

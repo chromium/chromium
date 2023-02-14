@@ -178,9 +178,8 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
       kPhotoRefreshInterval.InSeconds());
 
-  registry->RegisterIntegerPref(
-      ambient::prefs::kAmbientAnimationTheme,
-      static_cast<int>(kDefaultAmbientAnimationTheme));
+  registry->RegisterIntegerPref(ambient::prefs::kAmbientTheme,
+                                static_cast<int>(kDefaultAmbientTheme));
 
   registry->RegisterDoublePref(
       ambient::prefs::kAmbientModeAnimationPlaybackSpeed,
@@ -262,7 +261,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       // ambient mode has just started.
       if (start_time_) {
         auto elapsed = base::Time::Now() - start_time_.value();
-        AmbientAnimationTheme theme = GetCurrentTheme();
+        AmbientTheme theme = GetCurrentTheme();
         DVLOG(2) << "Exit ambient mode. Elapsed time: " << elapsed;
         ambient::RecordAmbientModeTimeElapsed(
             elapsed, Shell::Get()->IsInTabletMode(), theme);
@@ -661,8 +660,8 @@ void AmbientController::OnEnabledPrefChanged() {
             weak_ptr_factory_.GetWeakPtr()));
 
     pref_change_registrar_->Add(
-        ambient::prefs::kAmbientAnimationTheme,
-        base::BindRepeating(&AmbientController::OnAnimationThemePrefChanged,
+        ambient::prefs::kAmbientTheme,
+        base::BindRepeating(&AmbientController::OnThemePrefChanged,
                             weak_ptr_factory_.GetWeakPtr()));
 
     pref_change_registrar_->Add(
@@ -674,7 +673,7 @@ void AmbientController::OnEnabledPrefChanged() {
     OnLockScreenInactivityTimeoutPrefChanged();
     OnLockScreenBackgroundTimeoutPrefChanged();
     OnPhotoRefreshIntervalPrefChanged();
-    OnAnimationThemePrefChanged();
+    OnThemePrefChanged();
     OnAnimationPlaybackSpeedChanged();
 
     DCHECK(AmbientClient::Get());
@@ -709,7 +708,7 @@ void AmbientController::OnEnabledPrefChanged() {
          {ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
           ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
           ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
-          ambient::prefs::kAmbientAnimationTheme,
+          ambient::prefs::kAmbientTheme,
           ambient::prefs::kAmbientModeAnimationPlaybackSpeed}) {
       if (pref_change_registrar_->IsObserved(pref_name))
         pref_change_registrar_->Remove(pref_name);
@@ -757,27 +756,25 @@ void AmbientController::OnPhotoRefreshIntervalPrefChanged() {
           ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds)));
 }
 
-void AmbientController::OnAnimationThemePrefChanged() {
-  absl::optional<AmbientAnimationTheme> previous_theme_from_pref =
+void AmbientController::OnThemePrefChanged() {
+  absl::optional<AmbientTheme> previous_theme_from_pref =
       current_theme_from_pref_;
   DCHECK(GetPrimaryUserPrefService());
-  int current_theme_as_int = GetPrimaryUserPrefService()->GetInteger(
-      ambient::prefs::kAmbientAnimationTheme);
+  int current_theme_as_int =
+      GetPrimaryUserPrefService()->GetInteger(ambient::prefs::kAmbientTheme);
   // Gracefully handle pref having invalid value in case pref storage is
   // corrupted somehow.
   if (current_theme_as_int < 0 ||
-      current_theme_as_int >
-          static_cast<int>(AmbientAnimationTheme::kMaxValue)) {
+      current_theme_as_int > static_cast<int>(AmbientTheme::kMaxValue)) {
     LOG(WARNING) << "Loaded invalid ambient theme from pref storage: "
                  << current_theme_as_int << ". Default to "
-                 << ToString(kDefaultAmbientAnimationTheme);
-    current_theme_as_int = static_cast<int>(kDefaultAmbientAnimationTheme);
+                 << ToString(kDefaultAmbientTheme);
+    current_theme_as_int = static_cast<int>(kDefaultAmbientTheme);
   }
-  current_theme_from_pref_ =
-      static_cast<AmbientAnimationTheme>(current_theme_as_int);
+  current_theme_from_pref_ = static_cast<AmbientTheme>(current_theme_as_int);
 
   if (previous_theme_from_pref.has_value()) {
-    DVLOG(4) << "AmbientAnimationTheme changed from "
+    DVLOG(4) << "AmbientTheme changed from "
              << ToString(*previous_theme_from_pref) << " to "
              << ToString(*current_theme_from_pref_);
     // For a given topic category, the topics downloaded from IMAX and saved to
@@ -799,7 +796,7 @@ void AmbientController::OnAnimationThemePrefChanged() {
     DCHECK(ambient_photo_controller_);
     ambient_photo_controller_->ClearCache();
   } else {
-    DVLOG(4) << "AmbientAnimationTheme initialized to "
+    DVLOG(4) << "AmbientTheme initialized to "
              << ToString(*current_theme_from_pref_);
   }
 }
@@ -860,7 +857,7 @@ void AmbientController::OnImagesFailed() {
 
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
-  AmbientAnimationTheme current_theme = GetCurrentTheme();
+  AmbientTheme current_theme = GetCurrentTheme();
   auto container_view = std::make_unique<AmbientContainerView>(
       &delegate_, ambient_animation_progress_tracker_.get(),
       AmbientAnimationStaticResources::Create(current_theme,
@@ -927,12 +924,12 @@ void AmbientController::StartRefreshingImages() {
   // model/controller with the appropriate config each time before calling
   // StartScreenUpdate().
   DCHECK(!ambient_photo_controller_->IsScreenUpdateActive());
-  AmbientAnimationTheme current_theme = GetCurrentTheme();
+  AmbientTheme current_theme = GetCurrentTheme();
   DVLOG(4) << "Loaded ambient theme " << ToString(current_theme);
 
   AmbientPhotoConfig photo_config;
   std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate;
-  if (current_theme == AmbientAnimationTheme::kSlideshow) {
+  if (current_theme == AmbientTheme::kSlideshow) {
     photo_config = CreateAmbientSlideshowPhotoConfig();
     topic_queue_delegate =
         std::make_unique<AmbientTopicQueueSlideshowDelegate>();
@@ -977,7 +974,7 @@ void AmbientController::MaybeStartScreenSaver() {
   StartRefreshingImages();
 }
 
-AmbientAnimationTheme AmbientController::GetCurrentTheme() const {
+AmbientTheme AmbientController::GetCurrentTheme() const {
   DCHECK(current_theme_from_pref_);
   return *current_theme_from_pref_;
 }

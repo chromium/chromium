@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 
 namespace ash {
 
-base::StringPiece ToString(AmbientAnimationTheme theme) {
+base::StringPiece ToString(AmbientTheme theme) {
   // See the "AmbientModeThemes" <variants> tag in histograms.xml. These names
   // are currently used for metrics purposes, so they cannot be arbitrarily
   // renamed.
   switch (theme) {
-    case AmbientAnimationTheme::kSlideshow:
+    case AmbientTheme::kSlideshow:
       return "SlideShow";
-    case AmbientAnimationTheme::kFeelTheBreeze:
+    case AmbientTheme::kFeelTheBreeze:
       return "FeelTheBreeze";
-    case AmbientAnimationTheme::kFloatOnBy:
+    case AmbientTheme::kFloatOnBy:
       return "FloatOnBy";
   }
 }

@@ -15,7 +15,7 @@
 namespace ash {
 
 AmbientMultiScreenMetricsRecorder::AmbientMultiScreenMetricsRecorder(
-    AmbientAnimationTheme theme)
+    AmbientTheme theme)
     : theme_(theme) {}
 
 AmbientMultiScreenMetricsRecorder::~AmbientMultiScreenMetricsRecorder() {
@@ -77,15 +77,15 @@ void AmbientMultiScreenMetricsRecorder::AnimationFramePainted(
 #define MUTLISCREEN_OFFSET_NAME(theme) \
   "Ash.AmbientMode.MultiScreenOffset." theme
   switch (theme_) {
-    case AmbientAnimationTheme::kFeelTheBreeze:
+    case AmbientTheme::kFeelTheBreeze:
       UMA_HISTOGRAM_TIMES(MUTLISCREEN_OFFSET_NAME("FeelTheBreeze"),
                           *largest_timestamp_offset);
       break;
-    case AmbientAnimationTheme::kFloatOnBy:
+    case AmbientTheme::kFloatOnBy:
       UMA_HISTOGRAM_TIMES(MUTLISCREEN_OFFSET_NAME("FloatOnBy"),
                           *largest_timestamp_offset);
       break;
-    case AmbientAnimationTheme::kSlideshow:
+    case AmbientTheme::kSlideshow:
       LOG(DFATAL) << "Should not be recording animation metrics for slideshow";
       break;
   }

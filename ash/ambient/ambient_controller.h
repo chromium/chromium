@@ -17,7 +17,7 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -190,7 +190,7 @@ class ASH_EXPORT AmbientController
   void StopRefreshingImages();
   void MaybeStartScreenSaver();
   void MaybeDismissUIOnMouseMove();
-  AmbientAnimationTheme GetCurrentTheme() const;
+  AmbientTheme GetCurrentTheme() const;
 
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after
   // device being inactive for a specific amount of time.
@@ -210,7 +210,7 @@ class ASH_EXPORT AmbientController
   void OnLockScreenInactivityTimeoutPrefChanged();
   void OnLockScreenBackgroundTimeoutPrefChanged();
   void OnPhotoRefreshIntervalPrefChanged();
-  void OnAnimationThemePrefChanged();
+  void OnThemePrefChanged();
   void OnAnimationPlaybackSpeedChanged();
 
   AmbientAccessTokenController* access_token_controller_for_testing() {
@@ -283,9 +283,9 @@ class ASH_EXPORT AmbientController
   // TODO(safarli): Remove this workaround when b/266234711 is fixed.
   bool last_mouse_event_was_move_ = false;
 
-  // Not set until the AmbientAnimationTheme is initially read from pref
+  // Not set until the AmbientTheme is initially read from pref
   // storage when ambient mode is enabled.
-  absl::optional<AmbientAnimationTheme> current_theme_from_pref_;
+  absl::optional<AmbientTheme> current_theme_from_pref_;
 
   std::unique_ptr<AmbientMultiScreenMetricsRecorder>
       multi_screen_metrics_recorder_;

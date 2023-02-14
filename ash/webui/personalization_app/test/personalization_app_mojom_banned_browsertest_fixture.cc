@@ -39,7 +39,7 @@ class MockPersonalizationAppAmbientProvider
   MOCK_METHOD(void, SetAmbientModeEnabled, (bool enabled), (override));
   MOCK_METHOD(void,
               SetAnimationTheme,
-              (ash::AmbientAnimationTheme animation_theme),
+              (ash::AmbientTheme animation_theme),
               (override));
   MOCK_METHOD(void,
               SetTopicSource,

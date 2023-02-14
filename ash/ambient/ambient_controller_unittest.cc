@@ -14,7 +14,7 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
@@ -148,7 +148,7 @@ class AmbientControllerTest : public AmbientAshTestBase {
   base::UserActionTester user_action_tester_;
 };
 
-// Tests for behavior that are agnostic to the AmbientAnimationTheme selected by
+// Tests for behavior that are agnostic to the AmbientTheme selected by
 // the user should use this test harness.
 //
 // Currently there are test cases that actually fall under this category but
@@ -157,11 +157,11 @@ class AmbientControllerTest : public AmbientAshTestBase {
 // cases).
 class AmbientControllerTestForAnyTheme
     : public AmbientControllerTest,
-      public ::testing::WithParamInterface<AmbientAnimationTheme> {
+      public ::testing::WithParamInterface<AmbientTheme> {
  protected:
   void SetUp() override {
     AmbientControllerTest::SetUp();
-    SetAmbientAnimationTheme(GetParam());
+    SetAmbientTheme(GetParam());
   }
 };
 
@@ -171,10 +171,10 @@ INSTANTIATE_TEST_SUITE_P(
     // Only one lottie-animated theme is sufficient here. The main goal here is
     // to make sure that fundamental behavior holds for both the slideshow and
     // lottie-animated codepaths.
-    testing::Values(AmbientAnimationTheme::kSlideshow
+    testing::Values(AmbientTheme::kSlideshow
 #if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
                     ,
-                    AmbientAnimationTheme::kFeelTheBreeze
+                    AmbientTheme::kFeelTheBreeze
 #endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
                     ));
 
@@ -1056,7 +1056,7 @@ TEST_P(AmbientControllerTestForAnyTheme, ShowsOnMultipleDisplays) {
   EXPECT_EQ(screen->GetNumDisplays(), 2);
   EXPECT_EQ(GetContainerViews().size(), 2u);
   AmbientViewID expected_child_view_id =
-      GetParam() == AmbientAnimationTheme::kSlideshow
+      GetParam() == AmbientTheme::kSlideshow
           ? AmbientViewID::kAmbientPhotoView
           : AmbientViewID::kAmbientAnimationView;
   EXPECT_TRUE(GetContainerViews().front()->GetViewByID(expected_child_view_id));
@@ -1269,7 +1269,7 @@ TEST_P(AmbientControllerTestForAnyTheme,
 
 TEST_F(AmbientControllerTest,
        ANIMATION_TEST_WITH_RESOURCES(RendersCorrectView)) {
-  SetAmbientAnimationTheme(AmbientAnimationTheme::kFeelTheBreeze);
+  SetAmbientTheme(AmbientTheme::kFeelTheBreeze);
 
   LockScreen();
   FastForwardToLockScreenTimeout();
@@ -1282,7 +1282,7 @@ TEST_F(AmbientControllerTest,
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientAnimationView));
 
   UnlockScreen();
-  SetAmbientAnimationTheme(AmbientAnimationTheme::kSlideshow);
+  SetAmbientTheme(AmbientTheme::kSlideshow);
 
   LockScreen();
   FastForwardToLockScreenTimeout();
@@ -1295,7 +1295,7 @@ TEST_F(AmbientControllerTest,
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientAnimationView));
 
   UnlockScreen();
-  SetAmbientAnimationTheme(AmbientAnimationTheme::kFeelTheBreeze);
+  SetAmbientTheme(AmbientTheme::kFeelTheBreeze);
 
   LockScreen();
   FastForwardToLockScreenTimeout();
@@ -1310,7 +1310,7 @@ TEST_F(AmbientControllerTest,
 
 TEST_F(AmbientControllerTest,
        ANIMATION_TEST_WITH_RESOURCES(ClearsCacheWhenSwitchingThemes)) {
-  SetAmbientAnimationTheme(AmbientAnimationTheme::kSlideshow);
+  SetAmbientTheme(AmbientTheme::kSlideshow);
 
   LockScreen();
   FastForwardToLockScreenTimeout();
@@ -1320,7 +1320,7 @@ TEST_F(AmbientControllerTest,
   ASSERT_FALSE(GetCachedFiles().empty());
 
   UnlockScreen();
-  SetAmbientAnimationTheme(AmbientAnimationTheme::kFeelTheBreeze);
+  SetAmbientTheme(AmbientTheme::kFeelTheBreeze);
 
   // Mimic a network outage where no photos can be downloaded. Since the cache
   // should have been cleared when we switched ambient animation themes, the
@@ -1411,7 +1411,7 @@ TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTime) {
 
 TEST_F(AmbientControllerTest,
        ANIMATION_TEST_WITH_RESOURCES(MetricsStartupTimeSuspendAfterTimeMax)) {
-  SetAmbientAnimationTheme(AmbientAnimationTheme::kSlideshow);
+  SetAmbientTheme(AmbientTheme::kSlideshow);
   base::HistogramTester histogram_tester;
   LockScreen();
   FastForwardToLockScreenTimeout();
@@ -1429,7 +1429,7 @@ TEST_F(AmbientControllerTest,
 
 TEST_F(AmbientControllerTest,
        ANIMATION_TEST_WITH_RESOURCES(MetricsStartupTimeScreenOffAfterTimeMax)) {
-  SetAmbientAnimationTheme(AmbientAnimationTheme::kSlideshow);
+  SetAmbientTheme(AmbientTheme::kSlideshow);
   base::HistogramTester histogram_tester;
   LockScreen();
   FastForwardToLockScreenTimeout();

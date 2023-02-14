@@ -74,8 +74,8 @@ TEST(AmbientOrientationMetricsRecorderTest, RecordsEngagementTime) {
   base::HistogramTester histogram_tester;
   {
     views::View test_view;
-    AmbientOrientationMetricsRecorder recorder(
-        &test_view, AmbientAnimationTheme::kFeelTheBreeze);
+    AmbientOrientationMetricsRecorder recorder(&test_view,
+                                               AmbientTheme::kFeelTheBreeze);
     test_view.SetSize(gfx::Size(200, 100));
     // No change in size shouldn't count.
     test_view.SetSize(gfx::Size(200, 100));

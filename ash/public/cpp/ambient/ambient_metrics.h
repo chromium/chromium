@@ -5,7 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_AMBIENT_AMBIENT_METRICS_H_
 #define ASH_PUBLIC_CPP_AMBIENT_AMBIENT_METRICS_H_
 
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
@@ -44,26 +44,24 @@ AmbientSettingsToPhotoSource(const AmbientSettings& settings);
 ASH_PUBLIC_EXPORT void RecordAmbientModeActivation(AmbientUiMode ui_mode,
                                                    bool tablet_mode);
 
-ASH_PUBLIC_EXPORT void RecordAmbientModeTimeElapsed(
-    base::TimeDelta time_delta,
-    bool tablet_mode,
-    AmbientAnimationTheme theme);
+ASH_PUBLIC_EXPORT void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
+                                                    bool tablet_mode,
+                                                    AmbientTheme theme);
 
 ASH_PUBLIC_EXPORT void RecordAmbientModeTotalNumberOfAlbums(int num_albums);
 
 ASH_PUBLIC_EXPORT void RecordAmbientModeSelectedNumberOfAlbums(int num_albums);
 
-ASH_PUBLIC_EXPORT void RecordAmbientModeAnimationSmoothness(
-    int smoothness,
-    AmbientAnimationTheme theme);
+ASH_PUBLIC_EXPORT void RecordAmbientModeAnimationSmoothness(int smoothness,
+                                                            AmbientTheme theme);
 
 ASH_PUBLIC_EXPORT void RecordAmbientModePhotoOrientationMatch(
     int percentage_match,
-    AmbientAnimationTheme theme);
+    AmbientTheme theme);
 
 ASH_PUBLIC_EXPORT void RecordAmbientModeStartupTime(
     base::TimeDelta startup_time,
-    AmbientAnimationTheme theme);
+    AmbientTheme theme);
 
 // Records metrics that track the total usage of each orientation in ambient
 // mode.
@@ -71,7 +69,7 @@ class ASH_PUBLIC_EXPORT AmbientOrientationMetricsRecorder
     : public views::ViewObserver {
  public:
   AmbientOrientationMetricsRecorder(views::View* root_rendering_view,
-                                    AmbientAnimationTheme theme);
+                                    AmbientTheme theme);
   AmbientOrientationMetricsRecorder(const AmbientOrientationMetricsRecorder&) =
       delete;
   AmbientOrientationMetricsRecorder& operator=(

@@ -216,9 +216,9 @@ void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
   }
 }
 
-void AmbientAshTestBase::SetAmbientAnimationTheme(AmbientAnimationTheme theme) {
+void AmbientAshTestBase::SetAmbientTheme(AmbientTheme theme) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
-      ambient::prefs::kAmbientAnimationTheme, static_cast<int>(theme));
+      ambient::prefs::kAmbientTheme, static_cast<int>(theme));
 }
 
 void AmbientAshTestBase::DisableJitter() {

@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/default_user_image.h"
 #include "ash/public/cpp/personalization_app/user_display_info.h"
@@ -350,31 +350,30 @@ bool StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
          data.ReadSourceInfo(&out->source_info);
 }
 
-MojomAnimationTheme
-EnumTraits<MojomAnimationTheme, ash::AmbientAnimationTheme>::ToMojom(
-    ash::AmbientAnimationTheme input) {
+MojomAnimationTheme EnumTraits<MojomAnimationTheme, ash::AmbientTheme>::ToMojom(
+    ash::AmbientTheme input) {
   switch (input) {
-    case ash::AmbientAnimationTheme::kSlideshow:
+    case ash::AmbientTheme::kSlideshow:
       return MojomAnimationTheme::kSlideshow;
-    case ash::AmbientAnimationTheme::kFeelTheBreeze:
+    case ash::AmbientTheme::kFeelTheBreeze:
       return MojomAnimationTheme::kFeelTheBreeze;
-    case ash::AmbientAnimationTheme::kFloatOnBy:
+    case ash::AmbientTheme::kFloatOnBy:
       return MojomAnimationTheme::kFloatOnBy;
   }
 }
 
-bool EnumTraits<MojomAnimationTheme, ash::AmbientAnimationTheme>::FromMojom(
+bool EnumTraits<MojomAnimationTheme, ash::AmbientTheme>::FromMojom(
     MojomAnimationTheme input,
-    ash::AmbientAnimationTheme* output) {
+    ash::AmbientTheme* output) {
   switch (input) {
     case MojomAnimationTheme::kSlideshow:
-      *output = ash::AmbientAnimationTheme::kSlideshow;
+      *output = ash::AmbientTheme::kSlideshow;
       return true;
     case MojomAnimationTheme::kFeelTheBreeze:
-      *output = ash::AmbientAnimationTheme::kFeelTheBreeze;
+      *output = ash::AmbientTheme::kFeelTheBreeze;
       return true;
     case MojomAnimationTheme::kFloatOnBy:
-      *output = ash::AmbientAnimationTheme::kFloatOnBy;
+      *output = ash::AmbientTheme::kFloatOnBy;
       return true;
   }
   NOTREACHED();

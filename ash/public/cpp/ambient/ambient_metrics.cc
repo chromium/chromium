@@ -85,7 +85,7 @@ void RecordAmbientModeActivation(AmbientUiMode ui_mode, bool tablet_mode) {
 
 void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
                                   bool tablet_mode,
-                                  AmbientAnimationTheme theme) {
+                                  AmbientTheme theme) {
   base::UmaHistogramCustomTimes(
       /*name=*/GetHistogramName("Ash.AmbientMode.EngagementTime", tablet_mode),
       /*sample=*/time_delta,
@@ -108,8 +108,7 @@ void RecordAmbientModeSelectedNumberOfAlbums(int num_albums) {
                               num_albums);
 }
 
-void RecordAmbientModeAnimationSmoothness(int smoothness,
-                                          AmbientAnimationTheme theme) {
+void RecordAmbientModeAnimationSmoothness(int smoothness, AmbientTheme theme) {
   base::UmaHistogramPercentage(
       base::StrCat(
           {"Ash.AmbientMode.LottieAnimationSmoothness.", ToString(theme)}),
@@ -117,14 +116,14 @@ void RecordAmbientModeAnimationSmoothness(int smoothness,
 }
 
 void RecordAmbientModePhotoOrientationMatch(int percentage_match,
-                                            AmbientAnimationTheme theme) {
+                                            AmbientTheme theme) {
   base::UmaHistogramPercentage(
       base::StrCat({"Ash.AmbientMode.PhotoOrientationMatch.", ToString(theme)}),
       percentage_match);
 }
 
 void RecordAmbientModeStartupTime(base::TimeDelta startup_time,
-                                  AmbientAnimationTheme theme) {
+                                  AmbientTheme theme) {
   base::UmaHistogramCustomTimes(
       /*name=*/base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(theme)}),
       /*sample=*/startup_time,
@@ -135,7 +134,7 @@ void RecordAmbientModeStartupTime(base::TimeDelta startup_time,
 
 AmbientOrientationMetricsRecorder::AmbientOrientationMetricsRecorder(
     views::View* root_rendering_view,
-    AmbientAnimationTheme theme)
+    AmbientTheme theme)
     : theme_(ToString(theme)) {
   root_rendering_view_observer_.Observe(root_rendering_view);
   // Capture initial orientation with manual call.

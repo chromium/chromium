@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/constants/ambient_animation_theme.h"
+#include "ash/constants/ambient_theme.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -31,7 +31,7 @@ class AmbientMultiScreenMetricsRecorderTest : public ::testing::Test {
     static constexpr base::TimeDelta kTotalAnimationDuration =
         base::Seconds(10);
 
-    explicit Harness(AmbientAnimationTheme theme)
+    explicit Harness(AmbientTheme theme)
         : recorder(theme),
           animation_1(cc::CreateSkottie(kTestSize,
                                         kTotalAnimationDuration.InSecondsF())),
@@ -53,7 +53,7 @@ class AmbientMultiScreenMetricsRecorderTest : public ::testing::Test {
 
 class AmbientMultiScreenMetricsRecorderTestForAllThemes
     : public AmbientMultiScreenMetricsRecorderTest,
-      public ::testing::WithParamInterface<AmbientAnimationTheme> {
+      public ::testing::WithParamInterface<AmbientTheme> {
  protected:
   std::string GetMetricNameForTheme(base::StringPiece prefix) {
     return base::StrCat({prefix, ToString(GetParam())});
@@ -62,8 +62,8 @@ class AmbientMultiScreenMetricsRecorderTestForAllThemes
 
 INSTANTIATE_TEST_SUITE_P(AllAnimationThemes,
                          AmbientMultiScreenMetricsRecorderTestForAllThemes,
-                         testing::Values(AmbientAnimationTheme::kFeelTheBreeze,
-                                         AmbientAnimationTheme::kFloatOnBy));
+                         testing::Values(AmbientTheme::kFeelTheBreeze,
+                                         AmbientTheme::kFloatOnBy));
 
 TEST_P(AmbientMultiScreenMetricsRecorderTestForAllThemes, RecordsScreenCount) {
   base::HistogramTester histogram_tester;
@@ -202,8 +202,7 @@ TEST_P(AmbientMultiScreenMetricsRecorderTestForAllThemes,
 TEST_F(AmbientMultiScreenMetricsRecorderTest, HandlesNullAnimations) {
   base::HistogramTester histogram_tester;
   {
-    AmbientMultiScreenMetricsRecorder recorder(
-        AmbientAnimationTheme::kSlideshow);
+    AmbientMultiScreenMetricsRecorder recorder(AmbientTheme::kSlideshow);
     recorder.RegisterScreen(nullptr);
     recorder.RegisterScreen(nullptr);
   }

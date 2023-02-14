@@ -20,29 +20,27 @@
 namespace ash {
 namespace {
 
-using AnimationThemeToResourceIdMap =
-    base::flat_map<AmbientAnimationTheme, int>;
+using AnimationThemeToResourceIdMap = base::flat_map<AmbientTheme, int>;
 using AssetIdToResourceIdMap = base::flat_map<base::StringPiece, int>;
 
 const AnimationThemeToResourceIdMap& GetAnimationThemeToLottieResourceIdMap() {
   static const AnimationThemeToResourceIdMap* m =
       new AnimationThemeToResourceIdMap(
-          {{AmbientAnimationTheme::kFeelTheBreeze,
+          {{AmbientTheme::kFeelTheBreeze,
             IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FEEL_THE_BREEZE_ANIMATION_JSON},
-           {AmbientAnimationTheme::kFloatOnBy,
+           {AmbientTheme::kFloatOnBy,
             IDR_ASH_AMBIENT_LOTTIE_LOTTIE_FLOAT_ON_BY_ANIMATION_JSON}});
   return *m;
 }
 
 // TODO(esum): Look into auto-generating this map and the one above via a
 // build-time script.
-AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(
-    AmbientAnimationTheme theme) {
-  base::flat_map<AmbientAnimationTheme, AssetIdToResourceIdMap> m = {
+AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(AmbientTheme theme) {
+  base::flat_map<AmbientTheme, AssetIdToResourceIdMap> m = {
       // Themes
       {
           // Theme: Feel the Breeze
-          AmbientAnimationTheme::kFeelTheBreeze,
+          AmbientTheme::kFeelTheBreeze,
           {
               // Assets
               {ambient::resources::kClipBottomAssetId,
@@ -63,7 +61,7 @@ AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(
       },
       {
           // Theme: Float on By
-          AmbientAnimationTheme::kFloatOnBy,
+          AmbientTheme::kFloatOnBy,
           {
               // Assets
               {ambient::resources::kShadowA1AssetId,
@@ -120,7 +118,7 @@ class AmbientAnimationStaticResourcesImpl
     : public AmbientAnimationStaticResources {
  public:
   AmbientAnimationStaticResourcesImpl(
-      AmbientAnimationTheme theme,
+      AmbientTheme theme,
       int lottie_json_resource_id,
       base::flat_map<base::StringPiece, int> asset_id_to_resource_id,
       bool create_serializable_skottie)
@@ -154,12 +152,10 @@ class AmbientAnimationStaticResourcesImpl
     return *image;
   }
 
-  AmbientAnimationTheme GetAmbientAnimationTheme() const override {
-    return theme_;
-  }
+  AmbientTheme GetAmbientTheme() const override { return theme_; }
 
  private:
-  const AmbientAnimationTheme theme_;
+  const AmbientTheme theme_;
   // The skottie animation object built off of the animation json string
   // loaded from the resource pak.
   const scoped_refptr<cc::SkottieWrapper> animation_;
@@ -172,8 +168,7 @@ class AmbientAnimationStaticResourcesImpl
 
 // static
 std::unique_ptr<AmbientAnimationStaticResources>
-AmbientAnimationStaticResources::Create(AmbientAnimationTheme theme,
-                                        bool serializable) {
+AmbientAnimationStaticResources::Create(AmbientTheme theme, bool serializable) {
   if (!GetAnimationThemeToLottieResourceIdMap().contains(theme))
     return nullptr;
 

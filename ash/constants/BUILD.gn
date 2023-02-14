@@ -10,8 +10,8 @@ component("constants") {
   output_name = "ash_constants"
   defines = [ "IS_ASH_CONSTANTS_IMPL" ]
   sources = [
-    "ambient_animation_theme.cc",
-    "ambient_animation_theme.h",
+    "ambient_theme.cc",
+    "ambient_theme.h",
     "app_types.h",
     "ash_constants.cc",
     "ash_constants.h",
