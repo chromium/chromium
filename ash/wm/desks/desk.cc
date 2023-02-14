@@ -141,7 +141,7 @@ void FixWindowStackingAccordingToGlobalMru(aura::Window* window_to_fix) {
 class ScopedWindowPositionerDisabler {
  public:
   ScopedWindowPositionerDisabler() {
-    WindowPositioner::DisableAutoPositioning(true);
+    window_positioner::DisableAutoPositioning(true);
   }
 
   ScopedWindowPositionerDisabler(const ScopedWindowPositionerDisabler&) =
@@ -150,7 +150,7 @@ class ScopedWindowPositionerDisabler {
       const ScopedWindowPositionerDisabler&) = delete;
 
   ~ScopedWindowPositionerDisabler() {
-    WindowPositioner::DisableAutoPositioning(false);
+    window_positioner::DisableAutoPositioning(false);
   }
 };
 

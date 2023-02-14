@@ -127,7 +127,7 @@ void ClientControlledShellSurfaceDelegate::Commit() {
 // ExoTestHelper, public:
 
 ExoTestHelper::ExoTestHelper() {
-  ash::WindowPositioner::DisableAutoPositioning(true);
+  ash::window_positioner::DisableAutoPositioning(true);
 }
 
 ExoTestHelper::~ExoTestHelper() {}

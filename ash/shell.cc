@@ -198,7 +198,6 @@
 #include "ash/wm/video_detector.h"
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
-#include "ash/wm/window_positioner.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_util.h"
@@ -1176,8 +1175,6 @@ void Shell::Init(
     keyboard_backlight_color_controller_ =
         std::make_unique<KeyboardBacklightColorController>(local_state_);
   }
-
-  window_positioner_ = std::make_unique<WindowPositioner>();
 
   native_cursor_manager_ = new NativeCursorManagerAsh;
   cursor_manager_ =

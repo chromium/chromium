@@ -22,16 +22,18 @@
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
-namespace ash {
+namespace ash::window_positioner {
 namespace {
 
 // The time in milliseconds which should be used to visually move a window
 // through an automatic "intelligent" window management option.
-const int kWindowAutoMoveDurationMS = 125;
+constexpr int kWindowAutoMoveDurationMS = 125;
 
 // If set to true all window repositioning actions will be ignored. Set through
 // WindowPositioner::SetIgnoreActivations().
 static bool disable_auto_positioning = false;
+
+constexpr int kWindowOffset = 32;
 
 // Check if any management should be performed (with a given |window|).
 bool UseAutoWindowManager(const aura::Window* window) {
@@ -202,12 +204,10 @@ aura::Window* GetReferenceWindow(const aura::Window* root_window,
 
 }  // namespace
 
-// static
-void WindowPositioner::GetBoundsAndShowStateForNewWindow(
-    bool is_saved_bounds,
-    ui::WindowShowState show_state_in,
-    gfx::Rect* bounds_in_out,
-    ui::WindowShowState* show_state_out) {
+void GetBoundsAndShowStateForNewWindow(bool is_saved_bounds,
+                                       ui::WindowShowState show_state_in,
+                                       gfx::Rect* bounds_in_out,
+                                       ui::WindowShowState* show_state_out) {
   aura::Window* root_window = Shell::GetRootWindowForNewWindows();
   aura::Window* top_window = GetReferenceWindow(
       root_window, nullptr, /*on_hide_remove=*/false, nullptr);
@@ -255,9 +255,7 @@ void WindowPositioner::GetBoundsAndShowStateForNewWindow(
   *bounds_in_out = top_window->GetBoundsInScreen();
 }
 
-// static
-void WindowPositioner::RearrangeVisibleWindowOnHideOrRemove(
-    const aura::Window* removed_window) {
+void RearrangeVisibleWindowOnHideOrRemove(const aura::Window* removed_window) {
   if (!UseAutoWindowManager(removed_window))
     return;
   // Find a single open browser window.
@@ -271,16 +269,13 @@ void WindowPositioner::RearrangeVisibleWindowOnHideOrRemove(
   AutoPlaceSingleWindow(other_shown_window, true);
 }
 
-// static
-bool WindowPositioner::DisableAutoPositioning(bool ignore) {
+bool DisableAutoPositioning(bool ignore) {
   bool old_state = disable_auto_positioning;
   disable_auto_positioning = ignore;
   return old_state;
 }
 
-// static
-void WindowPositioner::RearrangeVisibleWindowOnShow(
-    aura::Window* added_window) {
+void RearrangeVisibleWindowOnShow(aura::Window* added_window) {
   WindowState* added_window_state = WindowState::Get(added_window);
   // TODO(b/267884882): Temporarily disable auto positioning if there is a
   // floated window on the same desk, see b/265839238.
@@ -356,8 +351,4 @@ void WindowPositioner::RearrangeVisibleWindowOnShow(
     added_window->SetBounds(added_bounds);
 }
 
-WindowPositioner::WindowPositioner() = default;
-
-WindowPositioner::~WindowPositioner() = default;
-
-}  // namespace ash
+}  // namespace ash::window_positioner

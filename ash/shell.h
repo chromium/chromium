@@ -234,7 +234,6 @@ class VideoActivityNotifier;
 class VideoDetector;
 class WallpaperControllerImpl;
 class WindowCycleController;
-class WindowPositioner;
 class WindowTreeHostManager;
 class WmModeController;
 class ArcInputMethodBoundsTracker;
@@ -703,7 +702,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   WindowCycleController* window_cycle_controller() {
     return window_cycle_controller_.get();
   }
-  WindowPositioner* window_positioner() { return window_positioner_.get(); }
   OverviewController* overview_controller() {
     return overview_controller_.get();
   }
@@ -869,7 +867,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<KeyboardModifierMetricsRecorder>
       keyboard_modifier_metrics_recorder_;
   std::unique_ptr<UserMetricsRecorder> user_metrics_recorder_;
-  std::unique_ptr<WindowPositioner> window_positioner_;
 
   std::unique_ptr<AshAcceleratorConfiguration> ash_accelerator_configuration_;
   std::unique_ptr<AcceleratorControllerImpl> accelerator_controller_;

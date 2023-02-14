@@ -36,7 +36,7 @@ constexpr base::TimeDelta kMinimalAnimationTime = base::Milliseconds(1);
 class UserChangeActionDisabler {
  public:
   UserChangeActionDisabler() {
-    WindowPositioner::DisableAutoPositioning(true);
+    window_positioner::DisableAutoPositioning(true);
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(true);
   }
 
@@ -44,7 +44,7 @@ class UserChangeActionDisabler {
   UserChangeActionDisabler& operator=(const UserChangeActionDisabler&) = delete;
 
   ~UserChangeActionDisabler() {
-    WindowPositioner::DisableAutoPositioning(false);
+    window_positioner::DisableAutoPositioning(false);
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(false);
   }
 };

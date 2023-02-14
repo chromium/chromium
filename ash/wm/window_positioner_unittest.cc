@@ -23,15 +23,7 @@
 
 namespace ash {
 
-class WindowPositionerTest : public AshTestBase {
- public:
-  WindowPositionerTest() = default;
-
-  WindowPositionerTest(const WindowPositionerTest&) = delete;
-  WindowPositionerTest& operator=(const WindowPositionerTest&) = delete;
-
-  ~WindowPositionerTest() override = default;
-};
+using WindowPositionerTest = AshTestBase;
 
 TEST_F(WindowPositionerTest, OpenDefaultWindowOnSecondDisplay) {
   UpdateDisplay("500x400,1400x900");
@@ -139,4 +131,5 @@ TEST_F(WindowPositionerTest, AutoRearrangeOnHideOrRemove) {
   window2.reset();
   EXPECT_EQ(gfx::Rect(200, 200, 330, 230), window1->GetBoundsInScreen());
 }
+
 }  // namespace ash
