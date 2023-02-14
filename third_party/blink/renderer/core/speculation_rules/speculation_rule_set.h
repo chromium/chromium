@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SPECULATION_RULES_SPECULATION_RULE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SPECULATION_RULES_SPECULATION_RULE_SET_H_
 
+#include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -48,6 +49,8 @@ class CORE_EXPORT SpeculationRuleSet final
     // Only set when the SpeculationRuleSet was loaded from inline script.
     Member<Document> document_;
   };
+
+  SpeculationRuleSet(base::PassKey<SpeculationRuleSet>, Source* source);
 
   // If provided, |out_error| may be populated with an error/warning message.
   // A warning may be present even if parsing succeeds, to indicate a case that,

@@ -370,6 +370,10 @@ BASE_FEATURE(kSpeculationRulesJSONComments,
 
 }  // namespace
 
+SpeculationRuleSet::SpeculationRuleSet(base::PassKey<SpeculationRuleSet>,
+                                       Source* source)
+    : inspector_id_(IdentifiersFactory::CreateIdentifier()), source_(source) {}
+
 // static
 SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
                                               ExecutionContext* context,
@@ -398,9 +402,8 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
   }
 
   // Let result be an empty speculation rule set.
-  SpeculationRuleSet* result = MakeGarbageCollected<SpeculationRuleSet>();
-  result->source_ = source;
-  result->inspector_id_ = IdentifiersFactory::CreateIdentifier();
+  SpeculationRuleSet* result = MakeGarbageCollected<SpeculationRuleSet>(
+      base::PassKey<SpeculationRuleSet>(), source);
 
   const auto parse_for_action =
       [&](const char* key, HeapVector<Member<SpeculationRule>>& destination,
