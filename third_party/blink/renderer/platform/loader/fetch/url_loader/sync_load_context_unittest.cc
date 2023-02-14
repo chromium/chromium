@@ -113,7 +113,7 @@ class SyncLoadContextTest : public testing::Test {
             nullptr /* terminate_sync_load_event */,
             base::Seconds(60) /* timeout */,
             mojo::NullRemote() /* download_to_blob_registry */,
-            WebVector<WebString>() /* cors_exempt_header_list */,
+            Vector<String>() /* cors_exempt_header_list */,
             std::make_unique<ResourceLoadInfoNotifierWrapper>(
                 /*resource_load_info_notifier=*/nullptr,
                 task_environment_.GetMainThreadTaskRunner())));

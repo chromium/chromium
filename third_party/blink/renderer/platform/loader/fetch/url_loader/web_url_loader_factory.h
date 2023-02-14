@@ -15,8 +15,8 @@
 #include "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -38,7 +38,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderFactory {
  public:
   WebURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      const WebVector<WebString>& cors_exempt_header_list,
+      const Vector<String>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event);
   WebURLLoaderFactory();
   WebURLLoaderFactory(const WebURLLoaderFactory&) = delete;
@@ -59,7 +59,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderFactory {
 
  protected:
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
-  WebVector<WebString> cors_exempt_header_list_;
+  Vector<String> cors_exempt_header_list_;
   base::WaitableEvent* terminate_sync_load_event_ = nullptr;
 };
 

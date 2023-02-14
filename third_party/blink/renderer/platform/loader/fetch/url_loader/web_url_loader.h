@@ -75,7 +75,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
   // When non-null |keep_alive_handle| is specified, this loader prolongs
   // this render process's lifetime.
   WebURLLoader(
-      const WebVector<WebString>& cors_exempt_header_list,
+      const Vector<String>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,

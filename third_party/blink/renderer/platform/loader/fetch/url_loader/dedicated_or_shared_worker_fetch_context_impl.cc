@@ -62,7 +62,7 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
     : public WebURLLoaderFactory {
  public:
   Factory(scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-          const WebVector<WebString>& cors_exempt_header_list,
+          const Vector<String>& cors_exempt_header_list,
           base::WaitableEvent* terminate_sync_load_event)
       : WebURLLoaderFactory(std::move(loader_factory),
                             cors_exempt_header_list,
@@ -166,7 +166,7 @@ DedicatedOrSharedWorkerFetchContextImpl::
         std::unique_ptr<URLLoaderThrottleProvider> throttle_provider,
         std::unique_ptr<WebSocketHandshakeThrottleProvider>
             websocket_handshake_throttle_provider,
-        const WebVector<WebString>& cors_exempt_header_list,
+        Vector<String> cors_exempt_header_list,
         mojo::PendingRemote<mojom::ResourceLoadInfoNotifier>
             pending_resource_load_info_notifier)
     : service_worker_client_receiver_(
@@ -184,12 +184,9 @@ DedicatedOrSharedWorkerFetchContextImpl::
       throttle_provider_(std::move(throttle_provider)),
       websocket_handshake_throttle_provider_(
           std::move(websocket_handshake_throttle_provider)),
-      cors_exempt_header_list_(cors_exempt_header_list.size()),
+      cors_exempt_header_list_(std::move(cors_exempt_header_list)),
       pending_resource_load_info_notifier_(
-          std::move(pending_resource_load_info_notifier)) {
-  for (const WebString& cors_exempt_header : cors_exempt_header_list)
-    cors_exempt_header_list_.emplace_back(cors_exempt_header);
-}
+          std::move(pending_resource_load_info_notifier)) {}
 
 scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
 DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorkerDeprecated(
@@ -637,7 +634,7 @@ WebDedicatedOrSharedWorkerFetchContext::Create(
         pending_fallback_factory,
     CrossVariantMojoReceiver<mojom::SubresourceLoaderUpdaterInterfaceBase>
         pending_subresource_loader_updater,
-    const WebVector<WebString>& cors_exempt_header_list,
+    const WebVector<WebString>& web_cors_exempt_header_list,
     mojo::PendingRemote<mojom::ResourceLoadInfoNotifier>
         pending_resource_load_info_notifier) {
   mojo::PendingReceiver<mojom::blink::ServiceWorkerWorkerClient>
@@ -662,6 +659,13 @@ WebDedicatedOrSharedWorkerFetchContext::Create(
         provider_context->CloneRemoteContainerHost();
   }
 
+  Vector<String> cors_exempt_header_list(
+      base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
+  std::transform(web_cors_exempt_header_list.begin(),
+                 web_cors_exempt_header_list.end(),
+                 cors_exempt_header_list.begin(),
+                 [](const WebString& h) { return WTF::String(h); });
+
   scoped_refptr<DedicatedOrSharedWorkerFetchContextImpl> worker_fetch_context =
       base::AdoptRef(new DedicatedOrSharedWorkerFetchContextImpl(
           renderer_preferences, std::move(watcher_receiver),
@@ -674,7 +678,7 @@ WebDedicatedOrSharedWorkerFetchContext::Create(
           Platform::Current()->CreateURLLoaderThrottleProviderForWorker(
               URLLoaderThrottleProviderType::kWorker),
           Platform::Current()->CreateWebSocketHandshakeThrottleProvider(),
-          cors_exempt_header_list,
+          std::move(cors_exempt_header_list),
           std::move(pending_resource_load_info_notifier)));
   if (provider_context) {
     worker_fetch_context->set_controller_service_worker_mode(

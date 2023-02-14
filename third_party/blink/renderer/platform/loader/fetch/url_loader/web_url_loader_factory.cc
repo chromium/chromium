@@ -14,7 +14,7 @@ namespace blink {
 
 WebURLLoaderFactory::WebURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    const WebVector<WebString>& cors_exempt_header_list,
+    const Vector<String>& cors_exempt_header_list,
     base::WaitableEvent* terminate_sync_load_event)
     : loader_factory_(std::move(loader_factory)),
       cors_exempt_header_list_(cors_exempt_header_list),

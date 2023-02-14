@@ -99,7 +99,7 @@ namespace blink {
 class WebURLLoader::Context : public WebRequestPeer {
  public:
   Context(WebURLLoader* loader,
-          const WebVector<WebString>& cors_exempt_header_list,
+          const Vector<String>& cors_exempt_header_list,
           base::WaitableEvent* terminate_sync_load_event,
           scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
           scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
@@ -183,7 +183,7 @@ class WebURLLoader::Context : public WebRequestPeer {
   scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner_;
   mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle_;
   WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
-  const WebVector<WebString> cors_exempt_header_list_;
+  const Vector<String> cors_exempt_header_list_;
   base::WaitableEvent* terminate_sync_load_event_;
 
   int request_id_;
@@ -204,7 +204,7 @@ class WebURLLoader::Context : public WebRequestPeer {
 
 WebURLLoader::Context::Context(
     WebURLLoader* loader,
-    const WebVector<WebString>& cors_exempt_header_list,
+    const Vector<String>& cors_exempt_header_list,
     base::WaitableEvent* terminate_sync_load_event,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
@@ -481,7 +481,7 @@ void WebURLLoader::Context::CancelBodyStreaming() {
 // WebURLLoader ----------------------------------------------------------------
 
 WebURLLoader::WebURLLoader(
-    const WebVector<WebString>& cors_exempt_header_list,
+    const Vector<String>& cors_exempt_header_list,
     base::WaitableEvent* terminate_sync_load_event,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,

@@ -81,7 +81,7 @@ class MockResourceRequestSender : public WebResourceRequestSender {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
-      const WebVector<WebString>& cors_exempt_header_list,
+      const Vector<String>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
       mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
       scoped_refptr<WebRequestPeer> peer,
@@ -95,7 +95,7 @@ class MockResourceRequestSender : public WebResourceRequestSender {
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
-      const WebVector<WebString>& cors_exempt_header_list,
+      const Vector<String>& cors_exempt_header_list,
       scoped_refptr<WebRequestPeer> peer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
@@ -163,7 +163,7 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
  public:
   TestWebURLLoaderClient()
       : loader_(new WebURLLoader(
-            /*cors_exempt_header_list=*/WebVector<WebString>(),
+            /*cors_exempt_header_list=*/Vector<String>(),
             /*terminate_sync_load_event=*/nullptr,
             scheduler::GetSingleThreadTaskRunnerForTesting(),
             scheduler::GetSingleThreadTaskRunnerForTesting(),

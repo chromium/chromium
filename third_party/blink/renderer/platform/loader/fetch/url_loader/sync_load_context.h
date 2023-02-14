@@ -69,7 +69,7 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public WebRequestPeer {
       base::WaitableEvent* abort_event,
       base::TimeDelta timeout,
       mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
-      const WebVector<WebString>& cors_exempt_header_list,
+      const Vector<String>& cors_exempt_header_list,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper);
 
