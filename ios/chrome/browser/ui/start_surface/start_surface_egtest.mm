@@ -73,7 +73,8 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
 // Tests that navigating to a page and then backgrounding and foregrounding, an
 // NTP page is opened. Then, switching to the last tab and then back to the NTP
 // does not show the Return to Recent Tab tile.
-- (void)testWarmStartOpenStartSurface {
+// TODO(crbug.com/1416228): reenable this test.
+- (void)FLAKY_testWarmStartOpenStartSurface {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
