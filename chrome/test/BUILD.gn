@@ -340,7 +340,6 @@ static_library("test_support") {
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/content/browser:test_support",
     "//components/subresource_filter/core/common",
-    "//components/supervised_user/core/common",
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
@@ -391,6 +390,15 @@ static_library("test_support") {
 
   if (enable_pdf) {
     public_deps += [ "//pdf" ]
+  }
+
+  if (enable_supervised_users) {
+    public_deps += [
+      "//chrome/browser/supervised_user:test_support",
+      "//components/supervised_user/core/browser",
+      "//components/supervised_user/core/browser/proto",
+      "//components/supervised_user/core/common",
+    ]
   }
 
   if (is_chromeos_lacros && also_build_ash_chrome) {
@@ -8968,6 +8976,7 @@ test("unit_tests") {
     }
     deps += [
       "//chrome/browser/supervised_user:test_support",
+      "//components/supervised_user/core/browser",
       "//components/supervised_user/core/browser/proto",
       "//components/supervised_user/core/common",
       "//components/supervised_user/core/common:buildflags",

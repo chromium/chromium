@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 
-#import "components/supervised_user/core/common/supervised_user_settings_service.h"
+#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"

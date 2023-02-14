@@ -22,7 +22,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
-#include "components/supervised_user/core/common/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"

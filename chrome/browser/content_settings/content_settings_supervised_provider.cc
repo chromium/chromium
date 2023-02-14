@@ -10,8 +10,8 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/supervised_user/core/common/supervised_user_settings_service.h"
 
 namespace {
 

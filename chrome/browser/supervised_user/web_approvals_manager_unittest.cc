@@ -13,7 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
-#include "components/supervised_user/core/common/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"

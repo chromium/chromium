@@ -20,7 +20,7 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "components/supervised_user/core/common/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"

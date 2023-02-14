@@ -3929,6 +3929,7 @@ source_set("ash") {
     "//components/spellcheck/browser",
     "//components/startup_metric_utils/browser",
     "//components/strings:components_strings",
+    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//components/sync/base",
     "//components/sync/chromeos",

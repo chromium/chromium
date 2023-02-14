@@ -6,7 +6,7 @@
 
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
-#include "components/supervised_user/core/common/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 
 // static
 supervised_user::SupervisedUserSettingsService*

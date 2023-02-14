@@ -24,6 +24,7 @@ source_set("unit_tests") {
   deps = [
     ":supervised_user",
     "//base/test:test_support",
+    "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/web/public/test",

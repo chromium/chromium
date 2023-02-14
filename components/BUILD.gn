@@ -219,7 +219,6 @@ test("components_unittests") {
     "//components/subresource_filter/core/browser:unit_tests",
     "//components/subresource_filter/core/common:unit_tests",
     "//components/subresource_filter/tools:unit_tests",
-    "//components/supervised_user/core/common:unit_tests",
     "//components/sync:unit_tests",
     "//components/sync_bookmarks:unit_tests",
     "//components/sync_device_info:unit_tests",
@@ -249,7 +248,10 @@ test("components_unittests") {
   ]
 
   if (enable_supervised_users) {
-    deps += [ "//components/supervised_user/core/browser:unit_tests" ]
+    deps += [
+      "//components/supervised_user/core/browser:unit_tests",
+      "//components/supervised_user/core/common:unit_tests",
+    ]
   }
 
   if (!is_ios) {
