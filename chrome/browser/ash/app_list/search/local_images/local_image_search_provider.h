@@ -5,13 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGES_LOCAL_IMAGE_SEARCH_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGES_LOCAL_IMAGE_SEARCH_PROVIDER_H_
 
-#include <string>
-#include <unordered_set>
-
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 
@@ -19,42 +15,11 @@ namespace app_list {
 
 class FileResult;
 class AnnotationStorage;
-
-// TODO(b/260646344): Split into two structs. Rename to ImageSearchResult.
-// Image metadata retrieved from the database. Currently, it does double duty.
-// 1. It manipulates rows in the database, for which `relevance` is
-// null.
-// 2. It returns a result for LocalImageSearch, for which `relevance` is needed
-// for ranking.
-struct ImageInfo {
-  // Image annotation.
-  std::set<std::string> annotations;
-  // Full path to the image.
-  base::FilePath path;
-  // Last modified time.
-  base::Time last_modified;
-  // Search relevance on the scale from 0-1. It represents how closely a query
-  // matches the annotation.
-  absl::optional<double> relevance;
-
-  ImageInfo(const std::set<std::string>& annotations,
-            const base::FilePath& path,
-            const base::Time& last_modified);
-
-  ImageInfo(const std::set<std::string>& annotations,
-            const base::FilePath& path,
-            const base::Time& last_modified,
-            const double relevance);
-
-  ~ImageInfo();
-  ImageInfo(const ImageInfo&);
-  ImageInfo& operator=(const ImageInfo&) = delete;
-};
+struct FileSearchResult;
 
 // Searches for images based on their annotations. Owns an annotation store and
 // a worker for updating the store.
 // TODO(b/260646344): Still in a prototype stage.
-// TODO(b/260646344): Add unit tests.
 class LocalImageSearchProvider : public SearchProvider {
  public:
   explicit LocalImageSearchProvider(Profile* profile);
@@ -69,8 +34,8 @@ class LocalImageSearchProvider : public SearchProvider {
   void StopQuery() override;
 
  private:
-  void OnSearchComplete(std::vector<ImageInfo> paths);
-  std::unique_ptr<FileResult> MakeResult(const ImageInfo& path);
+  void OnSearchComplete(std::vector<FileSearchResult> paths);
+  std::unique_ptr<FileResult> MakeResult(const FileSearchResult& path);
 
   base::TimeTicks query_start_time_;
   std::u16string last_query_;

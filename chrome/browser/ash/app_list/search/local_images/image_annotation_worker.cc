@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/local_images/image_annotation_worker.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <vector>
@@ -12,22 +13,32 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
+#include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
+#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 
 namespace app_list {
 namespace {
 
+// ~ 20MiB
+constexpr int kMaxFileSizeBytes = 2e+7;
+constexpr int kConfidenceThreshold = 128;  // 50% of 255 (max of ICA)
+
 bool IsImage(const base::FilePath& path) {
   DVLOG(1) << "IsImage? " << path.Extension();
   const std::string extension = path.Extension();
-  // TODO(b/260646344): Decide on the supported extensions.
-  return extension == ".jpeg" || extension == ".jpg" || extension == ".png";
+  // Note: The UI design stipulates jpg, png, gif, and svg, but we use
+  // the subset that ICA can handle.
+  return extension == ".jpeg" || extension == ".jpg" || extension == ".png" ||
+         extension == ".JPEG" || extension == ".JPG" || extension == ".PNG";
 }
 
-// Check files for existence, so needs to be called on a blocking task runner.
+// Returns deleted files. Needs to be done in background.
 std::set<base::FilePath> GetDeletedPaths(const std::vector<ImageInfo>& images) {
   std::set<base::FilePath> deleted_paths;
   for (const auto& image : images) {
@@ -38,58 +49,6 @@ std::set<base::FilePath> GetDeletedPaths(const std::vector<ImageInfo>& images) {
   return deleted_paths;
 }
 
-using OnFileChangeCallback = base::RepeatingCallback<
-    void(const base::FilePath&, bool, std::unique_ptr<base::File::Info>)>;
-
-// Reposts file change callbacks run by a file watcher to task_runner,
-// adapting callback arguments to provide more information about the file.
-// Obtains file info, so needs to be called on a blocking task runner.
-void RelayPathChangedCallback(
-    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    const OnFileChangeCallback& on_file_change_callback,
-    const base::FilePath& path,
-    bool error) {
-  if (DirectoryExists(path) || !IsImage(path)) {
-    return;
-  }
-
-  auto info = std::make_unique<base::File::Info>();
-  const bool is_file_exist = base::GetFileInfo(path, info.get());
-
-  task_runner->PostTask(
-      FROM_HERE, base::BindOnce(on_file_change_callback, path, is_file_exist,
-                                std::move(info)));
-}
-
-// Setups a file watcher and lists all the images in the watched folder, so
-// needs to be called on a blocking task runner.
-void StartWatchOnWorkerThread(
-    base::FilePathWatcher* watcher,
-    base::FilePath watcher_root_path,
-    const base::FilePathWatcher::Callback& on_file_change_callback) {
-  DCHECK(watcher);
-  DVLOG(1) << "Start WatchWithOptions";
-  watcher->WatchWithOptions(watcher_root_path,
-                            {.type = base::FilePathWatcher::Type::kRecursive,
-                             .report_modified_path = true},
-                            on_file_change_callback);
-
-  // TODO(b/260646344): make it as a 10 sec delayed task if needed.
-  base::FileEnumerator images(watcher_root_path,
-                              /*recursive=*/true, base::FileEnumerator::FILES,
-                              FILE_PATH_LITERAL("*.jpg"),
-                              base::FileEnumerator::FolderSearchPolicy::ALL);
-
-  for (base::FilePath file = images.Next(); !file.empty();
-       file = images.Next()) {
-    DVLOG(1) << "Found files: " << file;
-    on_file_change_callback.Run(file, /*error=*/false);
-  }
-}
-
-// Lets the `watcher` get out of scope.
-void DeleteFileWatcher(std::unique_ptr<base::FilePathWatcher> watcher) {}
-
 }  // namespace
 
 ImageAnnotationWorker::ImageAnnotationWorker(const base::FilePath& root_path)
@@ -98,48 +57,127 @@ ImageAnnotationWorker::ImageAnnotationWorker(const base::FilePath& root_path)
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
-ImageAnnotationWorker::~ImageAnnotationWorker() {
-  // `file_watcher_` needs to be deleted in the same sequence it was created.
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteFileWatcher, std::move(file_watcher_)));
-}
+ImageAnnotationWorker::~ImageAnnotationWorker() = default;
 
-void ImageAnnotationWorker::Run(AnnotationStorage* const annotation_storage) {
+void ImageAnnotationWorker::Run(
+    scoped_refptr<AnnotationStorage> annotation_storage) {
   DCHECK(annotation_storage);
-
   annotation_storage_ = annotation_storage;
-  file_watcher_ = std::make_unique<base::FilePathWatcher>();
-  task_runner_->PostTaskAndReply(
+
+  on_file_change_callback_ = base::BindRepeating(
+      &ImageAnnotationWorker::OnFileChange, weak_ptr_factory_.GetWeakPtr());
+
+  if (!use_fake_annotator_for_tests_) {
+    EnsureAnnotatorIsConnected();
+
+    file_watcher_ = std::make_unique<base::FilePathWatcher>();
+
+    DVLOG(1) << "Start WatchWithOptions " << root_path_;
+    // `file_watcher_` needs to be deleted in the same sequence it was
+    // initialized.
+    file_watcher_->WatchWithOptions(
+        root_path_,
+        {.type = base::FilePathWatcher::Type::kRecursive,
+         .report_modified_path = true},
+        on_file_change_callback_);
+  }
+
+  // TODO(b/260646344): make it as a 10 sec delayed task if needed.
+  task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          &StartWatchOnWorkerThread, file_watcher_.get(),
-          // TODO(b/260646344): change to `root_path_`
-          base::FilePath("/root/test"),
-          base::BindRepeating(
-              &RelayPathChangedCallback,
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindRepeating(&ImageAnnotationWorker::OnFileChange,
-                                  weak_ptr_factory_.GetWeakPtr()))),
-      base::BindOnce(&ImageAnnotationWorker::CheckForDeletedImages,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
+          [](base::FilePath root_path)
+              -> std::unique_ptr<base::FileEnumerator> {
+            return std::make_unique<base::FileEnumerator>(
+                root_path,
+                /*recursive=*/true, base::FileEnumerator::FILES,
+                // There is an image extension test down the pipe.
+                "*.[j,p,J,P][p,n,P,N]*[g,G]",
+                base::FileEnumerator::FolderSearchPolicy::ALL);
+          },
+          root_path_),
+      base::BindOnce(
+          [](base::FilePathWatcher::Callback on_file_change_callback,
+             std::unique_ptr<base::FileEnumerator> file_enumerator) {
+            for (base::FilePath file = file_enumerator->Next(); !file.empty();
+                 file = file_enumerator->Next()) {
+              DVLOG(1) << "Found files: " << file;
+              on_file_change_callback.Run(std::move(file), /*error=*/false);
+            }
+          },
+          on_file_change_callback_));
 
-void ImageAnnotationWorker::CheckForDeletedImages() {
   annotation_storage_->GetAllAnnotationsAsync(
       base::BindOnce(&ImageAnnotationWorker::FindAndRemoveDeletedImages,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ImageAnnotationWorker::OnFileChange(
-    const base::FilePath& path,
-    bool is_exist,
-    std::unique_ptr<base::File::Info> file_info) {
-  if (!is_exist) {
+void ImageAnnotationWorker::EnsureAnnotatorIsConnected() {
+  if (ml_service_.is_bound() && image_content_annotator_.is_bound() &&
+      ml_service_.is_connected() && image_content_annotator_.is_connected()) {
+    return;
+  }
+
+  // Sanity checks.
+  if (ml_service_.is_bound() && !ml_service_.is_connected()) {
+    ml_service_.reset();
+  }
+  if (image_content_annotator_.is_bound() &&
+      !image_content_annotator_.is_connected()) {
+    image_content_annotator_.reset();
+  }
+
+  if (!ml_service_.is_bound()) {
+    chromeos::machine_learning::ServiceConnection::GetInstance()
+        ->BindMachineLearningService(ml_service_.BindNewPipeAndPassReceiver());
+  }
+  if (!image_content_annotator_.is_bound()) {
+    ConnectToImageAnnotator();
+  }
+
+  ml_service_.reset_on_disconnect();
+  image_content_annotator_.reset_on_disconnect();
+}
+
+void ImageAnnotationWorker::ConnectToImageAnnotator() {
+  auto config = chromeos::machine_learning::mojom::ImageAnnotatorConfig::New();
+  config->locale = "en-US";
+
+  DVLOG(1) << "Bind ICA.";
+  bool model_callback_done = false;
+  ml_service_->LoadImageAnnotator(
+      std::move(config), image_content_annotator_.BindNewPipeAndPassReceiver(),
+      base::BindOnce(
+          [](bool* model_callback_done,
+             const chromeos::machine_learning::mojom::LoadModelResult result) {
+            DCHECK_EQ(result,
+                      chromeos::machine_learning::mojom::LoadModelResult::OK);
+            *model_callback_done = true;
+            DVLOG(1) << "Bind is done.";
+          },
+          &model_callback_done));
+}
+
+void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
+                                         bool error) {
+  if (DirectoryExists(path) || !IsImage(path) || error) {
+    return;
+  }
+
+  auto file_info = std::make_unique<base::File::Info>();
+  if (!base::GetFileInfo(path, file_info.get())) {
     annotation_storage_->RemoveAsync(path);
     return;
   }
 
   DCHECK(file_info);
+
+  // Ignore images bigger than the threshold.
+  if (file_info->size > kMaxFileSizeBytes) {
+    // TODO(b/260646344): Add a histogram for file sizes.
+    return;
+  }
+
   if (file_info->size == 0) {
     annotation_storage_->RemoveAsync(path);
     return;
@@ -169,34 +207,106 @@ void ImageAnnotationWorker::ProcessImage(
     }
   }
 
-  DVLOG(1) << "Processing new " << image_path << " " << file_info->last_modified
-           << " " << image_path.BaseName().RemoveFinalExtension();
-  // TODO(b/260646344): use mojo::ica::GetLabel(path);
-  const std::string annotation =
-      image_path.BaseName().RemoveFinalExtension().value();
-  ImageInfo image_info({annotation, "test_" + annotation}, image_path,
-                       file_info->last_modified);
+  DVLOG(1) << "Processing new " << image_path << " "
+           << file_info->last_modified;
+  ImageInfo image_info({}, image_path, file_info->last_modified);
 
-  // Annotations have many-to-many mapping to file paths, so it is easier to
-  // remove and insert than replace.
-  annotation_storage_->RemoveAsync(image_path);
-  annotation_storage_->InsertOrReplaceAsync(image_info);
+  auto callback =
+      !use_fake_annotator_for_tests_
+          ? base::BindOnce(&ImageAnnotationWorker::RunImageAnnotator,
+                           weak_ptr_factory_.GetWeakPtr(), image_info)
+          : base::BindOnce(&ImageAnnotationWorker::RunFakeImageAnnotator,
+                           weak_ptr_factory_.GetWeakPtr(), image_info);
+
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::FilePath image_path) -> base::MappedReadOnlyRegion {
+            DVLOG(1) << "Making a MemoryMappedFile.";
+            base::MemoryMappedFile data;
+            if (!data.Initialize(image_path)) {
+              LOG(ERROR) << "Could not create a memory mapped file for an "
+                            "image file to generate annotations";
+            }
+            base::MappedReadOnlyRegion mapped_region =
+                base::ReadOnlySharedMemoryRegion::Create(data.length());
+            memcpy(mapped_region.mapping.memory(), data.data(), data.length());
+            DCHECK(mapped_region.IsValid());
+            DCHECK(mapped_region.region.IsValid());
+            return mapped_region;
+          },
+          image_path),
+      std::move(callback));
+}
+
+void ImageAnnotationWorker::RunImageAnnotator(
+    ImageInfo image_info,
+    base::MappedReadOnlyRegion mapped_region) {
+  DCHECK(mapped_region.IsValid());
+  DCHECK(mapped_region.region.IsValid());
+
+  EnsureAnnotatorIsConnected();
+
+  image_content_annotator_->AnnotateEncodedImage(
+      std::move(mapped_region.region),
+      base::BindOnce(
+          [](scoped_refptr<AnnotationStorage> annotation_storage,
+             ImageInfo image_info,
+             chromeos::machine_learning::mojom::ImageAnnotationResultPtr ptr) {
+            DVLOG(1) << "Status: " << ptr->status
+                     << " Size: " << ptr->annotations.size();
+            for (const auto& a : ptr->annotations) {
+              if (a->confidence < kConfidenceThreshold) {
+                break;
+              }
+              DVLOG(1) << "Id: " << a->id << " MId: " << a->mid
+                       << " Confidence: " << (int)a->confidence
+                       << " Name: " << a->name.value_or("null");
+              if (a->name.has_value() && !a->name->empty()) {
+                image_info.annotations.insert(a->name.value());
+              }
+            }
+            if (!image_info.annotations.empty()) {
+              annotation_storage->RemoveAsync(image_info.path);
+              annotation_storage->InsertOrReplaceAsync(image_info);
+            }
+          },
+          annotation_storage_, image_info));
 }
 
 void ImageAnnotationWorker::FindAndRemoveDeletedImages(
     const std::vector<ImageInfo> images) {
-  DVLOG(1) << "FindAndRemoveDeletedImages";
+  DVLOG(1) << "FindAndRemoveDeletedImages.";
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&GetDeletedPaths, std::move(images)),
-      base::BindOnce(&ImageAnnotationWorker::RemovePathsFromDb,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          [](scoped_refptr<AnnotationStorage> annotation_storage,
+             std::set<base::FilePath> paths) {
+            std::for_each(paths.begin(), paths.end(), [&](auto path) {
+              annotation_storage->RemoveAsync(path);
+            });
+          },
+          annotation_storage_));
 }
 
-void ImageAnnotationWorker::RemovePathsFromDb(
-    const std::set<base::FilePath>& paths) {
-  for (const auto& path : paths) {
-    annotation_storage_->RemoveAsync(path);
-  }
+void ImageAnnotationWorker::UseFakeAnnotatorForTests() {
+  use_fake_annotator_for_tests_ = true;
+}
+
+void ImageAnnotationWorker::RunFakeImageAnnotator(
+    ImageInfo image_info,
+    base::MappedReadOnlyRegion mapped_region) {
+  const std::string annotation =
+      image_info.path.BaseName().RemoveFinalExtension().value();
+  image_info.annotations.insert(annotation);
+  annotation_storage_->RemoveAsync(image_info.path);
+  annotation_storage_->InsertOrReplaceAsync(image_info);
+}
+
+void ImageAnnotationWorker::TriggerOnFileChangeForTests(
+    const base::FilePath& path,
+    bool error) {
+  on_file_change_callback_.Run(path, error);
 }
 
 }  // namespace app_list
