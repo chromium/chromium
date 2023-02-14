@@ -391,6 +391,17 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
   container_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
   for (const std::unique_ptr<password_manager::PasswordForm>& password_form :
        controller_.GetCredentials()) {
+    absl::optional<ui::ImageModel> store_icon = absl::nullopt;
+    if (password_form->IsUsingAccountStore()) {
+      store_icon = ui::ImageModel::FromVectorIcon(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          vector_icons::kGoogleGLogoIcon,
+#else
+          vector_icons::kSyncIcon,
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          gfx::kPlaceholderColor, gfx::kFaviconSize);
+    }
+
     // TODO(crbug.com/1382017): Make sure the alignment works for different use
     // cases. (e.g. long username, federated credentials)
     container_view->AddChildView(std::make_unique<RichHoverButton>(
@@ -409,7 +420,7 @@ std::unique_ptr<views::View> ManagePasswordsView::CreatePasswordListView() {
         /*action_image_icon=*/
         ui::ImageModel::FromVectorIcon(vector_icons::kSubmenuArrowIcon,
                                        ui::kColorIcon),
-        /*state_icon=*/absl::nullopt));
+        /*state_icon=*/store_icon));
   }
 
   container_view->AddChildView(std::make_unique<views::Separator>());
