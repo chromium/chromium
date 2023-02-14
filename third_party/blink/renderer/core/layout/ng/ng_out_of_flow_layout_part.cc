@@ -1903,11 +1903,14 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
   const NodeInfo& node_info = oof_node_to_layout.node_info;
   const OffsetInfo& offset_info = oof_node_to_layout.offset_info;
 
-  // Reset the |layout_result| computed earlier to allow fragmentation in the
-  // next layout pass, if needed.
-  const NGLayoutResult* layout_result = !fragmentainer_constraint_space
-                                            ? offset_info.initial_layout_result
-                                            : nullptr;
+  const NGLayoutResult* layout_result = offset_info.initial_layout_result;
+  // Reset the layout result computed earlier to allow fragmentation in the next
+  // layout pass, if needed. Also do this if we're inside repeatable content, as
+  // the pre-computed layout result is unusable then.
+  if (fragmentainer_constraint_space ||
+      ConstraintSpace().IsInsideRepeatableContent()) {
+    layout_result = nullptr;
+  }
 
   // Skip this step if we produced a fragment that can be reused when
   // estimating the block-size.
