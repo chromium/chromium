@@ -10,7 +10,7 @@
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-@class BookmarksFolderChooserViewController;
+@protocol BookmarksFolderChooserViewControllerPresentationDelegate;
 class Browser;
 @protocol SnackbarCommands;
 
@@ -19,19 +19,6 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
-@protocol BookmarksFolderChooserViewControllerDelegate <NSObject>
-
-// Called when a bookmark folder is selected. `folder` is the newly selected
-// folder.
-- (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
-    didFinishWithFolder:(const bookmarks::BookmarkNode*)folder;
-// Called when the user is done with the picker, either by tapping the Cancel or
-// the Back button.
-- (void)folderPickerDidCancel:
-    (BookmarksFolderChooserViewController*)folderPicker;
-
-@end
-
 // A folder selector view controller.
 //
 // This controller monitors the state of the bookmark model, so changes to the
@@ -39,8 +26,9 @@ class BookmarkNode;
 // The bookmark model is assumed to be loaded, thus also not to be NULL.
 @interface BookmarksFolderChooserViewController : ChromeTableViewController
 
-@property(nonatomic, weak) id<BookmarksFolderChooserViewControllerDelegate>
-    delegate;
+@property(nonatomic, weak)
+    id<BookmarksFolderChooserViewControllerPresentationDelegate>
+        delegate;
 
 // Handler for Snackbar Commands.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;

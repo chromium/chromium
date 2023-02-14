@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
@@ -194,7 +195,7 @@ using bookmarks::BookmarkNode;
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
-  [self.delegate folderPickerDidCancel:self];
+  [self.delegate bookmarksFolderChooserViewControllerDidCancel:self];
   return YES;
 }
 
@@ -330,7 +331,7 @@ using bookmarks::BookmarkNode;
     self.editedNodes.erase(bookmarkNode);
     // if editedNodes becomes empty, nothing to move.  Exit the folder picker.
     if (self.editedNodes.empty()) {
-      [self.delegate folderPickerDidCancel:self];
+      [self.delegate bookmarksFolderChooserViewControllerDidCancel:self];
     }
     // Exit here because nodes in editedNodes cannot be any visible folders in
     // folder picker.
@@ -359,11 +360,12 @@ using bookmarks::BookmarkNode;
 #pragma mark - Actions
 
 - (void)done:(id)sender {
-  [self.delegate folderPicker:self didFinishWithFolder:self.selectedFolder];
+  [self.delegate bookmarksFolderChooserViewController:self
+                                  didFinishWithFolder:self.selectedFolder];
 }
 
 - (void)cancel:(id)sender {
-  [self.delegate folderPickerDidCancel:self];
+  [self.delegate bookmarksFolderChooserViewControllerDidCancel:self];
 }
 
 #pragma mark - Private

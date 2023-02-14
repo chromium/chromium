@@ -15,13 +15,14 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller_presentation_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @interface BookmarksFolderChooserCoordinator () <
-    BookmarksFolderChooserViewControllerDelegate,
+    BookmarksFolderChooserViewControllerPresentationDelegate,
     UIAdaptivePresentationControllerDelegate> {
   // If folder chooser is created with a base view controller then folder
   // chooser will create and own `_navigationController` that should be deleted
@@ -166,14 +167,16 @@
 
 #pragma mark - BookmarkFolderViewControllerDelegate
 
-- (void)folderPicker:(BookmarksFolderChooserViewController*)folderPicker
-    didFinishWithFolder:(const bookmarks::BookmarkNode*)folder {
+- (void)bookmarksFolderChooserViewController:
+            (BookmarksFolderChooserViewController*)viewController
+                         didFinishWithFolder:
+                             (const bookmarks::BookmarkNode*)folder {
   self.editedNodes = _folderChooserViewController.editedNodes;
   [_delegate bookmarksFolderChooserCoordinatorDidConfirm:self
                                       withSelectedFolder:folder];
 }
 
-- (void)folderPickerDidCancel:
+- (void)bookmarksFolderChooserViewControllerDidCancel:
     (BookmarksFolderChooserViewController*)folderPicker {
   [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];
 }
