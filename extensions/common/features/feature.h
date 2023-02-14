@@ -115,6 +115,10 @@ class Feature {
   // Tests whether this is an internal API or not.
   virtual bool IsInternal() const = 0;
 
+  // Returns if this feature's availability requires a delegated availability
+  // check.
+  virtual bool RequiresDelegatedAvailabilityCheck() const = 0;
+
   // Returns true if the feature is available to be parsed into a new extension
   // manifest.
   Availability IsAvailableToManifest(const HashedExtensionId& hashed_id,

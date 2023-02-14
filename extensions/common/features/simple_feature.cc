@@ -515,6 +515,10 @@ bool SimpleFeature::MatchesSessionTypes(
          base::Contains(session_types_, mojom::FeatureSessionType::kKiosk);
 }
 
+bool SimpleFeature::RequiresDelegatedAvailabilityCheck() const {
+  return requires_delegated_availability_check_;
+}
+
 Feature::Availability SimpleFeature::CheckDependencies(
     const base::RepeatingCallback<Availability(const Feature*)>& checker)
     const {

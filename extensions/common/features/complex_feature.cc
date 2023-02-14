@@ -8,13 +8,16 @@ namespace extensions {
 
 ComplexFeature::ComplexFeature(std::vector<Feature*>* features) {
   DCHECK_GT(features->size(), 1UL);
-  for (Feature* f : *features)
+  for (Feature* f : *features) {
     features_.push_back(std::unique_ptr<Feature>(f));
+    requires_delegated_availability_check_ |=
+        f->RequiresDelegatedAvailabilityCheck();
+  }
   features->clear();
   no_parent_ = features_[0]->no_parent();
 
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
-  // Verify IsInternal and no_parent is consistent across all features.
+  // Verify IsInternal and no_parent are consistent across all features.
   bool first_is_internal = features_[0]->IsInternal();
   for (FeatureList::const_iterator it = features_.begin() + 1;
        it != features_.end();
@@ -116,6 +119,10 @@ bool ComplexFeature::IsInternal() const {
   // Constructor verifies that composed features are consistent, thus we can
   // return just the first feature's value.
   return features_[0]->IsInternal();
+}
+
+bool ComplexFeature::RequiresDelegatedAvailabilityCheck() const {
+  return requires_delegated_availability_check_;
 }
 
 }  // namespace extensions
