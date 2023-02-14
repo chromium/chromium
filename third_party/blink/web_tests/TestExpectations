@@ -5735,7 +5735,7 @@ crbug.com/1285857 plugins/plugin-destroyed-enumerate.html [ Failure Pass ]
 
 # Sheriff 2021-12-22
 crbug.com/1179857 [ Linux ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Failure Pass ]
-crbug.com/1179857 [ Mac10.13 ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Failure Pass ]
+crbug.com/1179857 [ Mac ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Failure Pass ]
 crbug.com/1179857 [ Win ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Pass Timeout ]
 
 # Sheriff 2021-12-22
