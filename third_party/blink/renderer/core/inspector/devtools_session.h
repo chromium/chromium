@@ -33,6 +33,7 @@ class Document;
 class DocumentLoader;
 class InspectorAgent;
 class LocalFrame;
+class InspectorAccessibilityAgent;
 class InspectorAuditsAgent;
 class InspectorCSSAgent;
 class InspectorCacheStorageAgent;
@@ -138,6 +139,7 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
     return std::disjunction_v<std::is_same<T, InspectorAuditsAgent>,
                               std::is_same<T, InspectorCSSAgent>,
                               std::is_same<T, InspectorCacheStorageAgent>,
+                              std::is_same<T, InspectorAccessibilityAgent>,
                               std::is_same<T, InspectorDOMAgent>,
                               std::is_same<T, InspectorDOMDebuggerAgent>,
                               std::is_same<T, InspectorDOMSnapshotAgent>,
