@@ -55,6 +55,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -317,13 +318,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       kInstallAndWaitForActivatedPageWithModuleScript);
 }
 
-// TODO(crbug.com/1395715): The test is flaky. Re-enable it.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_SubresourceCountUKM DISABLED_SubresourceCountUKM
-#else
-#define MAYBE_SubresourceCountUKM SubresourceCountUKM
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCountUKM) {
   base::RunLoop ukm_loop;
   ukm::TestAutoSetUkmRecorder test_recorder;
   test_recorder.SetOnAddEntryCallback(
@@ -386,13 +381,23 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
 
-  // Navigate to the service worker controlled page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/subresources.html")));
+  {
+    // Navigate to the service worker controlled page.
+    content::TestFrameNavigationObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/subresources.html")));
+    observer.WaitForCommit();
+  }
 
-  // Navigate away to record metrics.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  {
+    // Navigate away to record metrics.
+    content::TestFrameNavigationObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+    observer.WaitForCommit();
+  }
 
   // Wait until the UKM record has enough entries.
   ukm_loop.Run();
