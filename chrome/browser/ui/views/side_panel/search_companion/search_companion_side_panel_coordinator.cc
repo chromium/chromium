@@ -29,7 +29,8 @@ BrowserView* SearchCompanionSidePanelCoordinator::GetBrowserView() {
 
 void SearchCompanionSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
-  std::u16string label(u"Search Companion");
+  // TODO(b/269331995): Localize menu item label.
+  std::u16string label(u"Companion");
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kSearchCompanion, label,
       ui::ImageModel::FromVectorIcon(kJourneysIcon, ui::kColorIcon,
