@@ -63,7 +63,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
@@ -199,8 +198,7 @@ public class InstantStartTabSwitcherTest {
     @Feature({"RenderTest"})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS})
-    @DisabledTest(message = "crbug.com/1314460 - test doesn't work with FeedV2. FeedV1 is removed.")
+        INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"})
     public void renderTabSwitcher() throws IOException, InterruptedException {
         // clang-format on
         StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1, 2});
