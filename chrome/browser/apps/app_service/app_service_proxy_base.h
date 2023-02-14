@@ -116,10 +116,6 @@ class AppServiceProxyBase : public KeyedService,
       ReplacedAppPreferences replaced_app_preferences) override;
   void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                          bool open_in_app) override;
-  void OnSupportedLinksPreferenceChanged(AppType app_type,
-                                         const std::string& app_id,
-                                         bool open_in_app) override;
-  bool HasPublisher(AppType app_type) override;
 
   // apps::IconLoader overrides.
   absl::optional<IconKey> GetIconKey(const std::string& app_id) override;

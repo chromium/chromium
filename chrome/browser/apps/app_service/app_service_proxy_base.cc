@@ -212,20 +212,12 @@ void AppServiceProxyBase::OnPreferredAppSet(
 void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
     const std::string& app_id,
     bool open_in_app) {
-  for (const auto& iter : publishers_) {
-    iter.second->OnSupportedLinksPreferenceChanged(app_id, open_in_app);
+  AppType app_type = AppRegistryCache().GetAppType(app_id);
+  if (!base::Contains(publishers_, app_type)) {
+    return;
   }
-}
 
-void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
-    AppType app_type,
-    const std::string& app_id,
-    bool open_in_app) {
   publishers_[app_type]->OnSupportedLinksPreferenceChanged(app_id, open_in_app);
-}
-
-bool AppServiceProxyBase::HasPublisher(AppType app_type) {
-  return base::Contains(publishers_, app_type);
 }
 
 absl::optional<IconKey> AppServiceProxyBase::GetIconKey(
@@ -575,7 +567,7 @@ void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,
   if (app_id == apps_util::kUseBrowserForLink) {
     std::vector<IntentFilterPtr> filters;
     filters.push_back(std::move(intent_filter));
-    preferred_apps_impl_->SetSupportedLinksPreference(AppType::kUnknown, app_id,
+    preferred_apps_impl_->SetSupportedLinksPreference(app_id,
                                                       std::move(filters));
     return;
   }
@@ -611,16 +603,14 @@ void AppServiceProxyBase::SetSupportedLinksPreference(
   DCHECK(!app_id.empty());
 
   preferred_apps_impl_->SetSupportedLinksPreference(
-      app_registry_cache_.GetAppType(app_id), app_id,
-      std::move(all_link_filters));
+      app_id, std::move(all_link_filters));
 }
 
 void AppServiceProxyBase::RemoveSupportedLinksPreference(
     const std::string& app_id) {
   DCHECK(!app_id.empty());
 
-  preferred_apps_impl_->RemoveSupportedLinksPreference(
-      app_registry_cache_.GetAppType(app_id), app_id);
+  preferred_apps_impl_->RemoveSupportedLinksPreference(app_id);
 }
 
 void AppServiceProxyBase::SetWindowMode(const std::string& app_id,

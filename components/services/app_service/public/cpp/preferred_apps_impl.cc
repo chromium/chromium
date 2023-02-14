@@ -114,21 +114,18 @@ void PreferredAppsImpl::RemovePreferredApp(const std::string& app_id) {
 }
 
 void PreferredAppsImpl::SetSupportedLinksPreference(
-    AppType app_type,
     const std::string& app_id,
     IntentFilters all_link_filters) {
-  RunAfterPreferredAppsReady(
-      base::BindOnce(&PreferredAppsImpl::SetSupportedLinksPreferenceImpl,
-                     weak_ptr_factory_.GetWeakPtr(), app_type, app_id,
-                     std::move(all_link_filters)));
+  RunAfterPreferredAppsReady(base::BindOnce(
+      &PreferredAppsImpl::SetSupportedLinksPreferenceImpl,
+      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(all_link_filters)));
 }
 
 void PreferredAppsImpl::RemoveSupportedLinksPreference(
-    AppType app_type,
     const std::string& app_id) {
   RunAfterPreferredAppsReady(
       base::BindOnce(&PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl,
-                     weak_ptr_factory_.GetWeakPtr(), app_type, app_id));
+                     weak_ptr_factory_.GetWeakPtr(), app_id));
 }
 
 void PreferredAppsImpl::InitializePreferredApps() {
@@ -285,7 +282,6 @@ void PreferredAppsImpl::RemovePreferredAppImpl(const std::string& app_id) {
 }
 
 void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
-    AppType app_type,
     const std::string& app_id,
     IntentFilters all_link_filters) {
   auto changes = std::make_unique<PreferredAppChanges>();
@@ -334,25 +330,16 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
 
   // Notify publishers: The new app has been set to open links, and all removed
   // apps no longer handle links.
-  if (host_->HasPublisher(app_type)) {
-    host_->OnSupportedLinksPreferenceChanged(app_type, app_id,
-                                             /*open_in_app=*/true);
-  }
+  host_->OnSupportedLinksPreferenceChanged(app_id,
+                                           /*open_in_app=*/true);
   for (const auto& removed_app_and_filters : removed) {
-    // We don't know what app type the app is, so we have to notify all
-    // publishers.
-    // TODO(crbug.com/1322000): Only notify the relevant publishers.
     host_->OnSupportedLinksPreferenceChanged(removed_app_and_filters.first,
                                              /*open_in_app=*/false);
   }
 }
-void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
-    AppType app_type,
-    const std::string& app_id) {
-  if (!host_->HasPublisher(app_type)) {
-    return;
-  }
 
+void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
+    const std::string& app_id) {
   IntentFilters removed_filters =
       preferred_apps_list_.DeleteSupportedLinks(app_id);
 
@@ -364,7 +351,7 @@ void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
     host_->OnPreferredAppsChanged(std::move(changes));
   }
 
-  host_->OnSupportedLinksPreferenceChanged(app_type, app_id,
+  host_->OnSupportedLinksPreferenceChanged(app_id,
                                            /*open_in_app=*/false);
 }
 
