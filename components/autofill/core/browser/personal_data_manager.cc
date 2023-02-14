@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
+#include "components/autofill/core/browser/manual_testing_profile_import.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
@@ -346,6 +347,11 @@ void PersonalDataManager::Init(
 
   personal_data_manager_cleaner_ = std::make_unique<PersonalDataManagerCleaner>(
       this, alternative_state_name_map_updater_.get(), pref_service);
+
+  // Potentially import profiles for testing. `Init()` is called whenever the
+  // corresponding Chrome profile is created. This is either during start-up or
+  // when the Chrome profile is changed (including incognito mode).
+  MaybeImportProfilesForManualTesting(weak_factory_.GetWeakPtr());
 }
 
 PersonalDataManager::~PersonalDataManager() {
