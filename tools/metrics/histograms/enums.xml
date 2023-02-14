@@ -60972,7 +60972,6 @@ from previous Chrome versions.
   <int value="-373365335" label="JourneysOmniboxAction:disabled"/>
   <int value="-373233195" label="SyncUSSAutofillWalletData:enabled"/>
   <int value="-372171039" label="BlinkGenPropertyTrees:disabled"/>
-  <int value="-371397346" label="ChromeOSSharingHub:enabled"/>
   <int value="-371321069" label="SyncPromoAfterSigninIntercept:enabled"/>
   <int value="-370876369" label="ContextualSearchLiteralTapSearch:enabled"/>
   <int value="-369565225" label="SkipServiceWorkerCheckInstallOnly:disabled"/>
@@ -65208,7 +65207,6 @@ from previous Chrome versions.
   <int value="2050985807" label="AllowPopupsDuringPageUnload:enabled"/>
   <int value="2051403297" label="ShowBluetoothDeviceBattery:disabled"/>
   <int value="2051886966" label="PwaInstallUseBottomSheet:enabled"/>
-  <int value="2052194225" label="ChromeOSSharingHub:disabled"/>
   <int value="2053269084" label="EcheLauncher:disabled"/>
   <int value="2055184887" label="LocalHistoryZeroSuggestBeyondNTP:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>

@@ -2763,21 +2763,6 @@
             ]
         }
     ],
-    "ChromeOSSharingHub": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ChromeOSSharingHub"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSZramWriteback": [
         {
             "platforms": [

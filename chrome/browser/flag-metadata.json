@@ -1017,11 +1017,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "chromeos-sharing-hub",
-    "owners": [ "kristipark", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "chromeos-synced-session-sharing",
     "owners": ["jasonrhee", "chromeos-cross-device-eng@google.com"],
     "expiry_milestone": 115
