@@ -147,24 +147,27 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      *         if the homepage button is force enabled via flag.
      */
     public static String getDefaultHomepageUri() {
-        if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
-            return PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec();
-        }
+        
+        return "https://www.baidu.com";
 
-        String homepagePartnerDefaultUri;
-        String homepagePartnerDefaultGurlSerialized =
-                SharedPreferencesManager.getInstance().readString(
-                        ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
-        if (!homepagePartnerDefaultGurlSerialized.equals("")) {
-            homepagePartnerDefaultUri =
-                    GURL.deserialize(homepagePartnerDefaultGurlSerialized).getSpec();
-        } else {
-            homepagePartnerDefaultUri = SharedPreferencesManager.getInstance().readString(
-                    ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, "");
-        }
-        if (!homepagePartnerDefaultUri.equals("")) return homepagePartnerDefaultUri;
+        // if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
+        //     return PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec();
+        // }
 
-        return UrlConstants.NTP_NON_NATIVE_URL;
+        // String homepagePartnerDefaultUri;
+        // String homepagePartnerDefaultGurlSerialized =
+        //         SharedPreferencesManager.getInstance().readString(
+        //                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
+        // if (!homepagePartnerDefaultGurlSerialized.equals("")) {
+        //     homepagePartnerDefaultUri =
+        //             GURL.deserialize(homepagePartnerDefaultGurlSerialized).getSpec();
+        // } else {
+        //     homepagePartnerDefaultUri = SharedPreferencesManager.getInstance().readString(
+        //             ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, "");
+        // }
+        // if (!homepagePartnerDefaultUri.equals("")) return homepagePartnerDefaultUri;
+
+        // return UrlConstants.NTP_NON_NATIVE_URL;
     }
 
     /**

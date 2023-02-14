@@ -48,7 +48,7 @@
       "name": "\u767e\u5ea6",
       "keyword": "baidu.com",
       "favicon_url": "https://www.baidu.com/favicon.ico",
-      "search_url": "https://www.baidu.com/#ie={inputEncoding}&wd={searchTerms}",
+      "search_url": "https://www.baidu.com/s?ie={inputEncoding}&wd={searchTerms}",
       "alternate_urls": [
         "https://www.baidu.com/s?ie={inputEncoding}&wd={searchTerms}",
         "https://www.baidu.com/s?ie={inputEncoding}&word={searchTerms}",

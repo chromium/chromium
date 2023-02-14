@@ -205,7 +205,6 @@ const PrepopulatedEngine* const engines_CN[] = {
     &bing,
     &sogou,
     &so_360,
-    &google,
 };
 
 // Colombia
