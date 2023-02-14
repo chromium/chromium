@@ -335,7 +335,7 @@ class Gmail2018SmoothPage(TopRealWorldDesktopPage):
 
   def RunNavigateSteps(self, action_runner):
     if self.wpr_mode != wpr_modes.WPR_REPLAY:
-      if self.wpr_mode == wpr_modes.WPR_OFF:
+      if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
         self._url = google_login.GetLoginUrl(self.URL)
       else:
         google_login.NewLoginGoogleAccount(action_runner, 'googletest')
@@ -367,7 +367,7 @@ class GoogleCalendar2018SmoothPage(TopRealWorldDesktopPage):
 
   def RunNavigateSteps(self, action_runner):
     if self.wpr_mode != wpr_modes.WPR_REPLAY:
-      if self.wpr_mode == wpr_modes.WPR_OFF:
+      if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
         self._url = google_login.GetLoginUrl(self.URL)
       else:
         google_login.NewLoginGoogleAccount(action_runner, 'googletest')

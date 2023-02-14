@@ -492,7 +492,7 @@ class LoadGmailStory2019(_LoadingStory):
   EXTRA_BROWSER_ARGUMENTS = ['--allow-browser-signin=false']
 
   def _Login(self, action_runner):
-    if self.wpr_mode == wpr_modes.WPR_OFF:
+    if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
       self._url = google_login.GetLoginUrl(self.URL)
     else:
       google_login.NewLoginGoogleAccount(action_runner, 'googletest')
@@ -519,7 +519,7 @@ class LoadChatStory2020(_LoadingStory):
   EXTRA_BROWSER_ARGUMENTS = ['--allow-browser-signin=false']
 
   def _Login(self, action_runner):
-    if self.wpr_mode == wpr_modes.WPR_OFF:
+    if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
       self._url = google_login.GetLoginUrl(self.URL)
     else:
       google_login.NewLoginGoogleAccount(action_runner, 'chatfeature')
@@ -563,7 +563,7 @@ class LoadDriveStory2019(_LoadingStory):
   EXTRA_BROWSER_ARGUMENTS = ['--allow-browser-signin=false']
 
   def _Login(self, action_runner):
-    if self.wpr_mode == wpr_modes.WPR_OFF:
+    if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
       self._url = google_login.GetLoginUrl(self.URL)
     else:
       google_login.NewLoginGoogleAccount(action_runner, 'googletest')
