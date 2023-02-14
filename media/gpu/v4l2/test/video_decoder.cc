@@ -170,16 +170,21 @@ void VideoDecoder::Initialize() {
 
   // If there is a dynamic resolution change, the Initialization sequence will
   // be performed again, minus the allocation of OUTPUT queue buffers.
-  if (!IsResolutionChanged()) {
+  if (IsResolutionChanged()) {
+    if (!v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_,
+                                       number_of_buffers_in_capture_queue_)) {
+      LOG(FATAL) << "ReqBufs for CAPTURE queue failed.";
+    }
+  } else {
     if (!v4l2_ioctl_->ReqBufs(OUTPUT_queue_))
       LOG(FATAL) << "ReqBufs for OUTPUT queue failed.";
 
     if (!v4l2_ioctl_->QueryAndMmapQueueBuffers(OUTPUT_queue_))
       LOG(FATAL) << "QueryAndMmapQueueBuffers for OUTPUT queue failed";
-  }
 
-  if (!v4l2_ioctl_->ReqBufs(CAPTURE_queue_))
-    LOG(FATAL) << "ReqBufs for CAPTURE queue failed.";
+    if (!v4l2_ioctl_->ReqBufs(CAPTURE_queue_))
+      LOG(FATAL) << "ReqBufs for CAPTURE queue failed.";
+  }
 
   if (!v4l2_ioctl_->QueryAndMmapQueueBuffers(CAPTURE_queue_))
     LOG(FATAL) << "QueryAndMmapQueueBuffers for CAPTURE queue failed.";
@@ -226,10 +231,6 @@ VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
   OUTPUT_queue_->set_display_size(new_resolution);
   OUTPUT_queue_->set_coded_size(new_resolution);
 
-  if (!v4l2_ioctl_->ReqBufsWithCount(CAPTURE_queue_,
-                                     number_of_buffers_in_capture_queue_)) {
-    LOG(FATAL) << "ReqBufs for CAPTURE queue failed.";
-  }
   CAPTURE_queue_->set_display_size(new_resolution);
 
   // Perform the initialization sequence again
