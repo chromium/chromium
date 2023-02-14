@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFavicon;
+import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.PriceWelcomeMessageController;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
@@ -464,9 +465,16 @@ class TabListMediator {
                 return;
             }
             if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
-            mModel.get(mModel.indexFromId(tab.getId()))
-                    .model.set(TabProperties.FAVICON,
-                            mTabListFaviconProvider.getDefaultFavicon(tab.isIncognito()));
+            if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+                mModel.get(mModel.indexFromId(tab.getId()))
+                        .model.set(TabProperties.FAVICON_FETCHER,
+                                mTabListFaviconProvider.getDefaultFaviconFetcher(
+                                        tab.isIncognito()));
+            } else {
+                mModel.get(mModel.indexFromId(tab.getId()))
+                        .model.set(TabProperties.FAVICON,
+                                mTabListFaviconProvider.getDefaultFavicon(tab.isIncognito()));
+            }
         }
 
         @Override
@@ -1289,6 +1297,7 @@ class TabListMediator {
         for (int i = 0; i < mModel.size(); i++) {
             if (mModel.get(i).model.get(CARD_TYPE) == TAB) {
                 mModel.get(i).model.set(TabProperties.THUMBNAIL_FETCHER, null);
+                mModel.get(i).model.set(TabProperties.FAVICON_FETCHER, null);
             }
         }
     }
@@ -1624,8 +1633,9 @@ class TabListMediator {
                         .with(TabProperties.TITLE, getLatestTitleForTab(pseudoTab))
                         .with(TabProperties.URL_DOMAIN,
                                 isRealTab ? getDomainForTab(pseudoTab.getTab()) : null)
-                        .with(TabProperties.FAVICON,
-                                mTabListFaviconProvider.getDefaultFavicon(pseudoTab.isIncognito()))
+                        .with(TabProperties.FAVICON, null)
+                        .with(TabProperties.FAVICON_FETCHER, null)
+                        .with(TabProperties.FAVICON_FETCHED, false)
                         .with(TabProperties.IS_SELECTED, isSelected)
                         .with(TabProperties.IPH_PROVIDER, showIPH ? mIphProvider : null)
                         .with(CARD_ALPHA, 1f)
@@ -1642,6 +1652,14 @@ class TabListMediator {
                         .with(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false)
                         .with(CARD_TYPE, TAB)
                         .build();
+
+        if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+            tabInfo.set(TabProperties.FAVICON_FETCHER,
+                    mTabListFaviconProvider.getDefaultFaviconFetcher(pseudoTab.isIncognito()));
+        } else {
+            tabInfo.set(TabProperties.FAVICON,
+                    mTabListFaviconProvider.getDefaultFavicon(pseudoTab.isIncognito()));
+        }
 
         if (mUiType == UiType.SELECTABLE) {
             // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
@@ -1853,6 +1871,7 @@ class TabListMediator {
             if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
                 // For tab group card in grid tab switcher, the favicon is set to be null.
                 mModel.get(modelIndex).model.set(TabProperties.FAVICON, null);
+                mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, null);
                 return;
             }
 
@@ -1865,8 +1884,15 @@ class TabListMediator {
             }
 
             // For tab group card in grid tab switcher, the favicon is the composed favicon.
-            mTabListFaviconProvider.getComposedFaviconImageAsync(
-                    urls, pseudoTab.isIncognito(), faviconCallback);
+            if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+                mModel.get(modelIndex)
+                        .model.set(TabProperties.FAVICON_FETCHER,
+                                mTabListFaviconProvider.getComposedFaviconImageFetcher(
+                                        urls, pseudoTab.isIncognito()));
+            } else {
+                mTabListFaviconProvider.getComposedFaviconImageAsync(
+                        urls, pseudoTab.isIncognito(), faviconCallback);
+            }
 
             return;
         }
@@ -1876,13 +1902,25 @@ class TabListMediator {
 
         // If there is an available icon, we fetch favicon synchronously; otherwise asynchronously.
         if (icon != null && iconUrl != null) {
-            TabFavicon favicon = mTabListFaviconProvider.getFaviconFromBitmap(icon, iconUrl);
-            mModel.get(modelIndex).model.set(TabProperties.FAVICON, favicon);
+            if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+                mModel.get(modelIndex)
+                        .model.set(TabProperties.FAVICON_FETCHER,
+                                mTabListFaviconProvider.getFaviconFromBitmapFetcher(icon, iconUrl));
+            } else {
+                TabFavicon favicon = mTabListFaviconProvider.getFaviconFromBitmap(icon, iconUrl);
+                mModel.get(modelIndex).model.set(TabProperties.FAVICON, favicon);
+            }
             return;
         }
 
-        mTabListFaviconProvider.getFaviconForUrlAsync(
-                pseudoTab.getUrl(), pseudoTab.isIncognito(), faviconCallback);
+        if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+            TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForUrlFetcher(
+                    pseudoTab.getUrl(), pseudoTab.isIncognito());
+            mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, fetcher);
+        } else {
+            mTabListFaviconProvider.getFaviconForUrlAsync(
+                    pseudoTab.getUrl(), pseudoTab.isIncognito(), faviconCallback);
+        }
     }
 
     /**

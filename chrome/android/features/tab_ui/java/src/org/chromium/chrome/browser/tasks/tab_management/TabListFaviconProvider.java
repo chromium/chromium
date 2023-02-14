@@ -314,6 +314,14 @@ public class TabListFaviconProvider {
         }
     }
 
+    @VisibleForTesting
+    public void initForTesting(Profile profile, FaviconHelper helper) {
+        assert !mIsInitialized;
+        mProfile = profile;
+        mFaviconHelper = helper;
+        mIsInitialized = true;
+    }
+
     public void initWithNative(Profile profile) {
         if (mIsInitialized) return;
 
@@ -359,6 +367,27 @@ public class TabListFaviconProvider {
     }
 
     /**
+     * Interface for lazily fetching favicons. Instances of this class should implement the fetch
+     * method to resolve to an appropriate favicon returned via callback when invoked.
+     */
+    public interface TabFaviconFetcher {
+        /**
+         * Asynchronously fetches a tab favicon.
+         * @param faviconCallback Called once with a favicon for the tab. Payload may be null.
+         */
+        public void fetch(Callback<TabFavicon> faviconCallback);
+    }
+
+    public TabFaviconFetcher getDefaultFaviconFetcher(boolean isIncognito) {
+        return new TabFaviconFetcher() {
+            @Override
+            public void fetch(Callback<TabFavicon> faviconCallback) {
+                faviconCallback.onResult(getDefaultFavicon(isIncognito));
+            }
+        };
+    }
+
+    /**
      * Returns the scaled rounded globe drawable used for default favicon. Used when favicon is
      * static and not changing colors when its parent component is selected.
      * @see #getDefaultFavicon(boolean)
@@ -384,6 +413,15 @@ public class TabListFaviconProvider {
             GURL url, boolean isIncognito, Callback<Drawable> faviconCallback) {
         getFaviconForUrlAsync(url, isIncognito,
                 tabFavicon -> faviconCallback.onResult(tabFavicon.getDefaultDrawable()));
+    }
+
+    public TabFaviconFetcher getFaviconForUrlFetcher(GURL url, boolean isIncognito) {
+        return new TabFaviconFetcher() {
+            @Override
+            public void fetch(Callback<TabFavicon> faviconCallback) {
+                getFaviconForUrlAsync(url, isIncognito, faviconCallback);
+            }
+        };
     }
 
     /**
@@ -417,6 +455,17 @@ public class TabListFaviconProvider {
         }
     }
 
+    public TabFaviconFetcher getFaviconFromBitmapFetcher(
+            @NonNull Bitmap icon, @NonNull GURL iconUrl) {
+        Drawable processedBitmap = processBitmap(icon, mIsTabStrip);
+        return new TabFaviconFetcher() {
+            @Override
+            public void fetch(Callback<TabFavicon> faviconCallback) {
+                faviconCallback.onResult(new UrlTabFavicon(processedBitmap, iconUrl));
+            }
+        };
+    }
+
     /**
      * Synchronously get the processed favicon, assuming it is not recolor allowed.
      * @param icon The favicon that was received.
@@ -425,6 +474,15 @@ public class TabListFaviconProvider {
      */
     TabFavicon getFaviconFromBitmap(@NonNull Bitmap icon, @NonNull GURL iconUrl) {
         return new UrlTabFavicon(processBitmap(icon, mIsTabStrip), iconUrl);
+    }
+
+    public TabFaviconFetcher getComposedFaviconImageFetcher(List<GURL> urls, boolean isIncognito) {
+        return new TabFaviconFetcher() {
+            @Override
+            public void fetch(Callback<TabFavicon> faviconCallback) {
+                getComposedFaviconImageAsync(urls, isIncognito, faviconCallback);
+            }
+        };
     }
 
     /**

@@ -112,6 +112,12 @@ class TabGridViewBinder {
                     model.get(TabProperties.IS_SELECTED));
             updateFavicon(view, model);
         } else if (TabProperties.FAVICON == propertyKey) {
+            if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) return;
+
+            updateFavicon(view, model);
+        } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
+            if (!TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) return;
+
             updateFavicon(view, model);
         } else if (TabProperties.THUMBNAIL_FETCHER == propertyKey) {
             updateThumbnail(view, model);
@@ -386,7 +392,31 @@ class TabGridViewBinder {
      * #bindCommonProperties}.
      */
     private static void updateFavicon(ViewLookupCachingFrameLayout rootView, PropertyModel model) {
+        if (TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.getValue()) {
+            final TabListFaviconProvider.TabFaviconFetcher fetcher =
+                    model.get(TabProperties.FAVICON_FETCHER);
+            if (fetcher == null) {
+                setFavicon(rootView, model, null);
+                return;
+            }
+            fetcher.fetch(tabFavicon -> {
+                if (fetcher != model.get(TabProperties.FAVICON_FETCHER)) return;
+
+                setFavicon(rootView, model, tabFavicon);
+            });
+            return;
+        }
         TabListFaviconProvider.TabFavicon favicon = model.get(TabProperties.FAVICON);
+        setFavicon(rootView, model, favicon);
+    }
+
+    /**
+     * Set the favicon drawable to use from {@link TabListFaviconProvider.TabFavicon}, and the
+     * padding around it. The color work is already handled when favicon is bind in {@link
+     * #bindCommonProperties}.
+     */
+    private static void setFavicon(ViewLookupCachingFrameLayout rootView, PropertyModel model,
+            TabListFaviconProvider.TabFavicon favicon) {
         ImageView faviconView = (ImageView) rootView.fastFindViewById(R.id.tab_favicon);
         if (favicon == null) {
             faviconView.setImageDrawable(null);

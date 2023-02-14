@@ -111,6 +111,12 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
                     TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM, false);
 
+    // Field trial parameter for deferring favicon fetching until required.
+    private static final String DEFERRED_FAVICON = "deferred_favicon";
+    public static final BooleanCachedFieldTrialParameter ENABLE_DEFERRED_FAVICON =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, DEFERRED_FAVICON, false);
+
     private static Boolean sTabManagementModuleSupportedForTesting;
     private static Boolean sGridTabSwitcherPolishEnabledForTesting;
     private static Boolean sGridTabSwitcherDelayCreationEnabledForTesting;

@@ -32,7 +32,8 @@ import java.util.Set;
  */
 public class TabStripSnapshotter {
     private static final Set<PropertyKey> SNAPSHOT_PROPERTY_KEY_SET =
-            CollectionUtil.newHashSet(TabProperties.FAVICON, TabProperties.IS_SELECTED);
+            CollectionUtil.newHashSet(TabProperties.FAVICON, TabProperties.FAVICON_FETCHER,
+                    TabProperties.FAVICON_FETCHED, TabProperties.IS_SELECTED);
 
     /**
      * A token that contains an ordered list of tuples for each tab in the tab strip. Should be
@@ -72,19 +73,23 @@ public class TabStripSnapshotter {
 
     /** Simple tuple to hold all relevant fields for a single tab item. */
     private static class TabStripItemSnapshot {
-        @NonNull
+        @Nullable
         public final TabListFaviconProvider.TabFavicon mTabFavicon;
-        @NonNull
+        @Nullable
+        public final TabListFaviconProvider.TabFaviconFetcher mTabFaviconFetcher;
+        public final boolean mFaviconFetched;
         public final boolean mIsSelected;
 
         public TabStripItemSnapshot(PropertyModel propertyModel) {
             mTabFavicon = propertyModel.get(TabProperties.FAVICON);
+            mTabFaviconFetcher = propertyModel.get(TabProperties.FAVICON_FETCHER);
+            mFaviconFetched = propertyModel.get(TabProperties.FAVICON_FETCHED);
             mIsSelected = propertyModel.get(TabProperties.IS_SELECTED);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(mTabFavicon, mIsSelected);
+            return Objects.hash(mTabFavicon, mTabFaviconFetcher, mFaviconFetched, mIsSelected);
         }
 
         @Override
@@ -94,6 +99,8 @@ public class TabStripSnapshotter {
             }
             TabStripItemSnapshot other = (TabStripItemSnapshot) obj;
             return Objects.equals(mTabFavicon, other.mTabFavicon)
+                    && Objects.equals(mTabFaviconFetcher, other.mTabFaviconFetcher)
+                    && this.mFaviconFetched == other.mFaviconFetched
                     && this.mIsSelected == other.mIsSelected;
         }
     }

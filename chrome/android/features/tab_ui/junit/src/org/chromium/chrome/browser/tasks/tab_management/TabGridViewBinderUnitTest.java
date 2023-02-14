@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -19,8 +20,10 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
 import org.junit.After;
@@ -36,6 +39,9 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFavicon;
+import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,10 +64,17 @@ public final class TabGridViewBinderUnitTest {
     private TabListMediator.ThumbnailFetcher mFetcher;
     @Mock
     private TabGridThumbnailView mThumbnailView;
+    @Mock
+    private ImageView mFaviconView;
     @Captor
     private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
     @Mock
     private TypedArray mTypedArray;
+
+    @Mock
+    private TabFavicon mTabFavicon;
+    @Mock
+    private Drawable mDrawable;
 
     private PropertyModel mModel;
     private LayoutParams mLayoutParams;
@@ -79,6 +92,8 @@ public final class TabGridViewBinderUnitTest {
                          .with(TabProperties.GRID_CARD_SIZE, new Size(INIT_WIDTH, INIT_HEIGHT))
                          .build();
         when(mViewGroup.fastFindViewById(R.id.tab_thumbnail)).thenReturn(mThumbnailView);
+        when(mViewGroup.fastFindViewById(R.id.tab_favicon)).thenReturn(mFaviconView);
+        when(mFaviconView.getContext()).thenReturn(mContext);
         when(mViewGroup.getContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
         when(mTypedArray.getResourceId(anyInt(), anyInt())).thenReturn(RESOURCE_ID);
@@ -98,6 +113,7 @@ public final class TabGridViewBinderUnitTest {
     @After
     public void tearDown() {
         TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(null);
+        CachedFeatureFlags.resetFlagsForTesting();
     }
 
     @Test
@@ -224,6 +240,34 @@ public final class TabGridViewBinderUnitTest {
         // xTranslate = (updatedBitmapWidth - scaledWidth) /2 = (60 - (100*1.8))/2 = -60.
         float expectedXTrans = -60f;
         assertImageMatrix(matrixCaptor, expectedScale, expectedXTrans);
+    }
+
+    @Test
+    public void testBindFaviconFetcher() {
+        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
+
+        doReturn(mDrawable).when(mTabFavicon).getSelectedDrawable();
+
+        TabFaviconFetcher fetcher = new TabFaviconFetcher() {
+            @Override
+            public void fetch(Callback<TabFavicon> callback) {
+                callback.onResult(mTabFavicon);
+            }
+        };
+        mModel.set(TabProperties.FAVICON_FETCHER, fetcher);
+        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
+
+        verify(mFaviconView).setImageDrawable(mDrawable);
+    }
+
+    @Test
+    public void testBindNullFaviconFetcher() {
+        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
+
+        mModel.set(TabProperties.FAVICON_FETCHER, null);
+        TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
+
+        verify(mFaviconView).setImageDrawable(null);
     }
 
     private void assertImageMatrix(

@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -17,9 +20,11 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,12 +48,14 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
@@ -64,6 +71,10 @@ import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorage;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorageJni;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.ResourceTabFavicon;
+import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.StaticTabFaviconType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFavicon;
+import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -269,6 +280,8 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             mStripModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_STRIP)
                                   .with(TabProperties.TAB_SELECTED_LISTENER, mMockSelectedListener)
                                   .with(TabProperties.TAB_CLOSED_LISTENER, mMockCloseListener)
+                                  .with(TabProperties.TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
+                                          R.color.favicon_background_color)
                                   .build();
             mSelectableModel =
                     new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
@@ -986,6 +999,57 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                                             .getContentDescription()));
     }
 
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testFaviconFetcherAllViewsAndModels() {
+        TabUiFeatureUtilities.ENABLE_DEFERRED_FAVICON.setForTesting(true);
+        final TabFavicon tabFavicon =
+                new ResourceTabFavicon(newDrawable(), StaticTabFaviconType.ROUNDED_GLOBE);
+        TabFaviconFetcher fetcher = new TabFaviconFetcher() {
+            @Override
+            public void fetch(Callback<TabFavicon> callback) {
+                callback.onResult(tabFavicon);
+            }
+        };
+
+        testFaviconFetcher(
+                mGridModel, mTabGridView.findViewById(R.id.tab_favicon), fetcher, tabFavicon);
+
+        testFaviconFetcher(
+                mGridModel, mTabListView.findViewById(R.id.start_icon), fetcher, tabFavicon);
+
+        testFaviconFetcher(mSelectableModel, mSelectableTabGridView.findViewById(R.id.tab_favicon),
+                fetcher, tabFavicon);
+
+        testFaviconFetcher(mSelectableModel, mSelectableTabListView.findViewById(R.id.start_icon),
+                fetcher, tabFavicon);
+
+        testFaviconFetcher(mStripModel, mTabStripView.findViewById(R.id.tab_strip_item_button),
+                fetcher, tabFavicon);
+    }
+
+    private void testFaviconFetcher(PropertyModel model, ImageView faviconView,
+            TabFaviconFetcher fetcher, TabFavicon expectedFavicon) {
+        model.set(TabProperties.IS_SELECTED, true);
+
+        model.set(TabProperties.FAVICON_FETCHER, null);
+        assertNull(faviconView.getDrawable());
+
+        model.set(TabProperties.FAVICON_FETCHER, fetcher);
+        assertNotNull(faviconView.getDrawable());
+        assertEquals(faviconView.getDrawable(), expectedFavicon.getSelectedDrawable());
+
+        model.set(TabProperties.FAVICON_FETCHER, null);
+        assertNull(faviconView.getDrawable());
+    }
+
+    private Drawable newDrawable() {
+        Bitmap image = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        return new BitmapDrawable(resources, image);
+    }
+
     private void mockCurrencyFormatter() {
         doAnswer(new Answer<String>() {
             @Override
@@ -1033,6 +1097,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             mStripMCP.destroy();
             mGridMCP.destroy();
             mSelectableMCP.destroy();
+            CachedFeatureFlags.resetFlagsForTesting();
         });
         super.tearDownTest();
     }

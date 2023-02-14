@@ -264,6 +264,8 @@ android_library("unit_device_javatests") {
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSelectionEditorLayoutBinderTest.java",
   ]
 
+  # NOTE: the chrome/android:chrome_java dep is necessary to include the
+  # public_tab_management_java_sources.
   deps = [
     ":java",
     ":java_resources",
@@ -271,6 +273,7 @@ android_library("unit_device_javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base/test:test_support_java",
+    "//chrome/android:chrome_java",
     "//chrome/android/features/tab_ui:java",
     "//chrome/android/features/tab_ui:tab_suggestions_java",
     "//chrome/browser/commerce/price_tracking/android:java",
