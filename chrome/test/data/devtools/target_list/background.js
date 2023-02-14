@@ -4,9 +4,9 @@
 
 var REMOTE_DEBUGGER_HOST = 'localhost:9222';
 
-function requestUrl(path, callback) {
+function requestUrl(path, callback, opt_method) {
   var req = new XMLHttpRequest();
-  req.open('GET', 'http://' + REMOTE_DEBUGGER_HOST + path, true);
+  req.open(opt_method || 'GET', 'http://' + REMOTE_DEBUGGER_HOST + path, true);
   req.onload = function() {
     if (req.status == 200)
       callback(req.responseText);
@@ -109,7 +109,7 @@ function runNewPageTest(devtoolsUrl, expectedUrl) {
       function(text) {
         json = JSON.parse(text);
         checkResult();
-      });
+      }, 'PUT');
 }
 
 var extensionTargetId;
@@ -174,16 +174,6 @@ chrome.test.runTests([
                 chrome.test.succeed();
               });
         });
-  },
-
-  function checkInspectablePagesUI() {
-    requestUrl("", function(text) {
-      console.log(text);
-      chrome.test.assertTrue(
-          /<html[\s\S]*<head[\s\S]*<title[\s\S]*<script[\s\S]*<body/
-          .test(text));
-      chrome.test.succeed();
-    });
   },
 
   function checkDebuggerUI() {

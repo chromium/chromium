@@ -2252,6 +2252,7 @@ class RemoteDebuggingTest : public extensions::ExtensionApiTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionApiTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kRemoteDebuggingPort, "9222");
+    command_line->AppendSwitchASCII(switches::kRemoteAllowOrigins, "*");
 
     // Override the extension root path.
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
@@ -2263,8 +2264,7 @@ class RemoteDebuggingTest : public extensions::ExtensionApiTest {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_RemoteDebugger DISABLED_RemoteDebugger
 #else
-// TODO(crbug.com/997911): Flaky on all platforms.
-#define MAYBE_RemoteDebugger DISABLED_RemoteDebugger
+#define MAYBE_RemoteDebugger RemoteDebugger
 #endif
 IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, MAYBE_RemoteDebugger) {
   ASSERT_TRUE(RunExtensionTest("target_list")) << message_;
