@@ -531,7 +531,10 @@ size_t PersistentMemoryAllocator::GetAllocSize(Reference ref) const {
   uint32_t size = block->size;
   // Header was verified by GetBlock() but a malicious actor could change
   // the value between there and here. Check it again.
-  if (size <= sizeof(BlockHeader) || ref + size > mem_size_) {
+  uint32_t total_size;
+  if (size <= sizeof(BlockHeader) ||
+      !base::CheckAdd(ref, size).AssignIfValid(&total_size) ||
+      total_size > mem_size_) {
     SetCorrupt();
     return 0;
   }
