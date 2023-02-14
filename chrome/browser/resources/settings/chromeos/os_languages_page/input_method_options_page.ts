@@ -20,8 +20,8 @@ import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resource
 
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {assertExhaustive} from '../assert_extras.js';
-import {routes} from '../os_route.js';
 import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
+import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 

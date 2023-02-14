@@ -12,8 +12,8 @@ import {App} from 'chrome://resources/cr_components/app_management/app_managemen
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {routes} from '../../../os_settings_routes.js';
 import {Router} from '../../../router.js';
-import {routes} from '../../../os_route.js';
 import {AppManagementStoreMixin} from '../store_mixin.js';
 
 import {getTemplate} from './borealis_detail_view.html.js';

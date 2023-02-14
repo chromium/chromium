@@ -40,7 +40,7 @@ import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_p
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {OsPageVisibility} from '../os_page_visibility.js';
-import {routes} from '../os_route.js';
+import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 

@@ -8,7 +8,7 @@ import * as routesMojomWebui from '../mojom-webui/routes.mojom-webui.js';
 
 import {Route, Router} from './router.js';
 
-export interface MinimumRoutes {
+interface MinimumRoutes {
   BASIC: Route;
   ADVANCED: Route;
   ABOUT: Route;

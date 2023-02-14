@@ -17,9 +17,9 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Router} from '../../../router.js';
 import {cast} from '../../../assert_extras.js';
-import {routes} from '../../../os_route.js';
+import {routes} from '../../../os_settings_routes.js';
+import {Router} from '../../../router.js';
 import {AppManagementStoreMixin} from '../store_mixin.js';
 
 import {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';

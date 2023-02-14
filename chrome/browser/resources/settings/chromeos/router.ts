@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {castExists} from './assert_extras.js';
-import {OsSettingsRoutes} from './os_route.js';
+import {OsSettingsRoutes} from './os_settings_routes.js';
 import {RouteObserverMixinInterface} from './route_observer_mixin.js';
 
 /** Class for navigable routes. */

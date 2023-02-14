@@ -20,7 +20,7 @@ import {ESimOperationResult, ESimProfileRemote} from 'chrome://resources/mojo/ch
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {routes} from '../os_route.js';
+import {routes} from '../os_settings_routes.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './esim_remove_profile_dialog.html.js';

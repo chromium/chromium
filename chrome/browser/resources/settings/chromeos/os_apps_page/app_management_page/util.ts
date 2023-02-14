@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {routes} from '../../os_settings_routes.js';
 import {Router} from '../../router.js';
-import {routes} from '../../os_route.js';
 
 /**
  * Navigates to the App Detail page.

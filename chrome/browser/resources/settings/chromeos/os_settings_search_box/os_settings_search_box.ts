@@ -29,7 +29,7 @@ import {SearchResultsObserverInterface as PersonalizationSearchResultsObserverIn
 import {ParentResultBehavior, SearchResultsObserverInterface, SearchResultsObserverReceiver} from '../../mojom-webui/search/search.mojom-webui.js';
 import {castExists} from '../assert_extras.js';
 import {recordSearch} from '../metrics_recorder.js';
-import {routes} from '../os_route.js';
+import {routes} from '../os_settings_routes.js';
 import {Router} from '../router.js';
 import {combinedSearch, getPersonalizationSearchHandler, getSettingsSearchHandler, SearchResult} from '../search/combined_search_handler.js';
 
