@@ -40,9 +40,11 @@ class UnitTestTestSuite {
   struct ContentClients {
     ContentClients();
     ~ContentClients();
-    std::unique_ptr<ContentClient> content_client;
+
+    // Must outlive `content_client`.
     std::unique_ptr<ContentBrowserClient> content_browser_client;
     std::unique_ptr<ContentUtilityClient> content_utility_client;
+    std::unique_ptr<ContentClient> content_client;
   };
 
   // Create test versions of ContentClient interfaces.
