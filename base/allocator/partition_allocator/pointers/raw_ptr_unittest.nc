@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 
 namespace {
 
@@ -140,6 +141,90 @@ void WontCompile() {
       [](raw_ptr<int> ptr) {
       },
       ptr);
+}
+
+#elif defined(NCTEST_BINDING_RAW_PTR_DISALLOW_PLUS_EQUALS_STRUCT) // [r"no viable overloaded '\+='"]
+
+void WontCompile() {
+  raw_ptr<int> ptr = new int(3);
+  struct {} s;
+  ptr += s;
+}
+
+#elif defined(NCTEST_BINDING_RAW_PTR_DISALLOW_MINUS_EQUALS_STRUCT) // [r"no viable overloaded '-='"]
+
+void WontCompile() {
+  raw_ptr<int> ptr = new int(3);
+  struct {} s;
+  ptr -= s;
+}
+
+#elif defined(NCTEST_BINDING_RAW_PTR_DISALLOW_PLUS_STRUCT) // [r"no viable overloaded '\+='"]
+
+void WontCompile() {
+  raw_ptr<int> ptr = new int(3);
+  struct {} s;
+  // Note, operator + exists, but it calls += which doesn't.
+  [[maybe_unused]] raw_ptr<int> ptr2 = ptr + s;
+}
+
+#elif defined(NCTEST_BINDING_RAW_PTR_DISALLOW_MINUS_STRUCT) // [r"no viable overloaded '-='"]
+
+void WontCompile() {
+  raw_ptr<int> ptr = new int(3);
+  struct {} s;
+  // Note, operator - exists, but it calls -= which doesn't.
+  [[maybe_unused]] raw_ptr<int> ptr2 = ptr - s;
+}
+
+#elif defined(NCTEST_BINDING_RAW_PTR_DISALLOW_PLUS_EQUALS_UINT64) // [r"no viable overloaded '\+='"]
+
+void WontCompile() {
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+  raw_ptr<int> ptr = new int(3);
+  ptr += uint64_t{2};
+#else
+  // Fake error on 64-bit to match the expectation.
+  static_assert(false, "no viable overloaded '+='");
+#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
+}
+
+#elif defined(NCTEST_BINDING_RAW_PTR_DISALLOW_MINUS_EQUALS_UINT64) // [r"no viable overloaded '-='"]
+
+void WontCompile() {
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+  raw_ptr<int> ptr = new int(3);
+  ptr -= uint64_t{2};
+#else
+  // Fake error on 64-bit to match the expectation.
+  static_assert(false, "no viable overloaded '-='");
+#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
+}
+
+#elif defined(NCTEST_BINDING_RAW_PTR_DISALLOW_PLUS_UINT64) // [r"no viable overloaded '\+='"]
+
+void WontCompile() {
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+  raw_ptr<int> ptr = new int(3);
+  // Note, operator + exists, but it calls += which doesn't.
+  [[maybe_unused]] raw_ptr<int> ptr2 = ptr + uint64_t{2};
+#else
+  // Fake error on 64-bit to match the expectation.
+  static_assert(false, "no viable overloaded '+='");
+#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
+}
+
+#elif defined(NCTEST_BINDING_RAW_PTR_DISALLOW_MINUS_UINT64) // [r"no viable overloaded '-='"]
+
+void WontCompile() {
+#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+  raw_ptr<int> ptr = new int(3);
+  // Note, operator - exists, but it calls -= which doesn't.
+  [[maybe_unused]] raw_ptr<int> ptr2 = ptr - uint64_t{2};
+#else
+  // Fake error on 64-bit to match the expectation.
+  static_assert(false, "no viable overloaded '-='");
+#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
 }
 
 #endif
