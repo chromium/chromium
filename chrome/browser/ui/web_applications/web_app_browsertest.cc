@@ -1149,8 +1149,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallWithPolicyPwa) {
             kEnabled);
 }
 
+// TODO(crbug.com/1415857): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OpenDetailedInstallDialogOnlyOnce \
+  DISABLED_OpenDetailedInstallDialogOnlyOnce
+#else
+#define MAYBE_OpenDetailedInstallDialogOnlyOnce \
+  OpenDetailedInstallDialogOnlyOnce
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DetailedInstallDialog,
-                       OpenDetailedInstallDialogOnlyOnce) {
+                       MAYBE_OpenDetailedInstallDialogOnlyOnce) {
   base::UserActionTester user_action_tester;
   NavigateToURLAndWait(
       browser(),
