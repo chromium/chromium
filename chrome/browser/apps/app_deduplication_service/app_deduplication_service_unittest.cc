@@ -8,6 +8,9 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service_factory.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/deduplication_data.pb.h"
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
@@ -18,6 +21,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,9 +70,10 @@ class AppDeduplicationServiceTest : public testing::Test {
     return duplicated_group_list;
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AppDeduplicationServiceTest, ServiceAccessPerProfile) {
@@ -503,6 +509,75 @@ TEST_F(AppDeduplicationServiceTest, DeduplicateDataToEntries) {
   EXPECT_THAT(map_it->second.entries,
               ElementsAre(Entry(EntryId(duo_arc_app_id, AppType::kArc)),
                           Entry(EntryId(duo_web_app_id, AppType::kWeb))));
+}
+
+TEST_F(AppDeduplicationServiceTest, PrefUnchangedAfterServerError) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kAppDeduplicationServiceFondue},
+      /*disabled_features=*/{features::kAppDeduplicationService});
+
+  TestingProfile::Builder profile_builder;
+  network::TestURLLoaderFactory url_loader_factory;
+  profile_builder.SetSharedURLLoaderFactory(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &url_loader_factory));
+
+  url_loader_factory.AddResponse(
+      AppDeduplicationServerConnector::GetServerUrl().spec(), /*content=*/"",
+      net::HTTP_INTERNAL_SERVER_ERROR);
+
+  base::test::TestFuture<bool> result;
+  auto profile = profile_builder.Build();
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+  EXPECT_NE(nullptr, service);
+
+  base::Time time_before = service->GetServerPref();
+
+  service->GetDeduplicateAppsCompleteCallbackForTesting(result.GetCallback());
+  ASSERT_FALSE(result.Get());
+
+  base::Time time_after = service->GetServerPref();
+  EXPECT_EQ(time_before, time_after);
+}
+
+TEST_F(AppDeduplicationServiceTest, PrefSetAfterServerSuccess) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kAppDeduplicationServiceFondue},
+      /*disabled_features=*/{features::kAppDeduplicationService});
+
+  TestingProfile::Builder profile_builder;
+  network::TestURLLoaderFactory url_loader_factory;
+  profile_builder.SetSharedURLLoaderFactory(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &url_loader_factory));
+
+  proto::DeduplicateData data;
+  auto* app = data.add_app_group()->add_app();
+  app->set_app_id("com.skype.raider");
+  app->set_platform("phonehub");
+
+  url_loader_factory.AddResponse(
+      AppDeduplicationServerConnector::GetServerUrl().spec(),
+      data.SerializeAsString());
+
+  base::test::TestFuture<bool> result;
+  auto profile = profile_builder.Build();
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+  EXPECT_NE(nullptr, service);
+
+  base::Time time_before = service->GetServerPref();
+
+  service->GetDeduplicateAppsCompleteCallbackForTesting(result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  base::Time time_after = service->GetServerPref();
+  EXPECT_TRUE(time_before < time_after);
 }
 
 }  // namespace apps::deduplication

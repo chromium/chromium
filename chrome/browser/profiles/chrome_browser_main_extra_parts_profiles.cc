@@ -237,6 +237,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/apps/app_deduplication_service/app_deduplication_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/browser_context_keyed_service_factories.h"
@@ -453,6 +454,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   apps::AppPreloadServiceFactory::GetInstance();
   ash::AccountAppsAvailabilityFactory::GetInstance();
   ash::SystemWebAppManagerFactory::GetInstance();
+  apps::deduplication::AppDeduplicationServiceFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   apps::AppServiceProxyFactory::GetInstance();

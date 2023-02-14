@@ -41,7 +41,14 @@ AppDeduplicationServiceFactory* AppDeduplicationServiceFactory::GetInstance() {
 // app deduplication.
 bool AppDeduplicationServiceFactory::
     IsAppDeduplicationServiceAvailableForProfile(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kAppDeduplicationService)) {
+  if (!base::FeatureList::IsEnabled(features::kAppDeduplicationService) &&
+      !base::FeatureList::IsEnabled(features::kAppDeduplicationServiceFondue)) {
+    return false;
+  }
+  // These two feature flags should not be on at the same time otherwise the
+  // deduplication data may be overwritten.
+  if (base::FeatureList::IsEnabled(features::kAppDeduplicationService) &&
+      base::FeatureList::IsEnabled(features::kAppDeduplicationServiceFondue)) {
     return false;
   }
   return AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile);
@@ -75,6 +82,11 @@ content::BrowserContext* AppDeduplicationServiceFactory::GetBrowserContextToUse(
     return chrome::GetBrowserContextOwnInstanceInIncognito(context);
   }
   return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
+}
+
+bool AppDeduplicationServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
 }
 
 }  // namespace apps::deduplication

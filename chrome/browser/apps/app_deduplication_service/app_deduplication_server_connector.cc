@@ -84,6 +84,9 @@ void AppDeduplicationServerConnector::GetDeduplicateAppsFromServer(
   auto* loader_ptr = loader.get();
   // Server expects an empty request.
   loader_ptr->AttachStringForUpload("", "application/x-protobuf");
+  loader_ptr->SetRetryOptions(
+      3, network::SimpleURLLoader::RETRY_ON_5XX |
+             network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   loader_ptr->DownloadToString(
       url_loader_factory.get(),
       base::BindOnce(
@@ -117,7 +120,9 @@ void AppDeduplicationServerConnector::OnGetDeduplicateAppsResponse(
   const bool server_error =
       net_error != net::OK || (response_code >= 500 && response_code < 600);
   if (server_error) {
-    LOG(ERROR) << "Server error: response code = " << response_code;
+    LOG(ERROR) << "Server error. "
+               << "Response code: " << response_code
+               << ". Net error: " << net::ErrorToString(net_error);
     std::move(callback).Run(absl::nullopt);
     return;
   }

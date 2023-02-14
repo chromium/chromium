@@ -23,6 +23,10 @@
 
 class Profile;
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
+
 namespace apps::deduplication {
 
 class AppDeduplicationService : public KeyedService,
@@ -37,6 +41,9 @@ class AppDeduplicationService : public KeyedService,
   std::vector<Entry> GetDuplicates(const EntryId& entry_id);
   bool AreDuplicates(const EntryId& entry_id_1, const EntryId& entry_id_2);
 
+  // Registers prefs used for the App Deduplication Service.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
  private:
   friend class AppDeduplicationServiceTest;
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
@@ -47,6 +54,10 @@ class AppDeduplicationService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Websites);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
                            DeduplicateDataToEntries);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
+                           PrefUnchangedAfterServerError);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
+                           PrefSetAfterServerSuccess);
 
   enum class EntryStatus {
     // This entry is not an app entry (could be website, phonehub, etc.).
@@ -54,6 +65,11 @@ class AppDeduplicationService : public KeyedService,
     kInstalledApp = 1,
     kNotInstalledApp = 2
   };
+
+  // Starts the process of calling the server to retrieve duplicate app data.
+  // A call is only made to the server if there is a difference of over 24 hours
+  // between now and the time stored in the server pref.
+  void StartLoginFlow();
 
   // AppProvisioningDataManager::Observer:
   void OnDuplicatedGroupListUpdated(
@@ -90,8 +106,16 @@ class AppDeduplicationService : public KeyedService,
 
   // Maps deduplicate data read from disk to `Entry`s which are then stored
   // inside the class as maps.
-  void DeduplicateDataToEntries(
-      const absl::optional<proto::DeduplicateData> data);
+  void DeduplicateDataToEntries(proto::DeduplicateData data);
+
+  // Gets the pref which stores the last time the client made a call to the
+  // server.
+  base::Time GetServerPref();
+
+  void GetDeduplicateAppsCompleteCallbackForTesting(
+      base::OnceCallback<void(bool)> callback) {
+    get_data_complete_callback_for_testing_ = std::move(callback);
+  }
 
   std::map<uint32_t, DuplicateGroup> duplication_map_;
   std::map<EntryId, uint32_t> entry_to_group_map_;
@@ -107,6 +131,9 @@ class AppDeduplicationService : public KeyedService,
 
   std::unique_ptr<AppDeduplicationServerConnector> server_connector_;
   std::unique_ptr<AppDeduplicationCache> cache_;
+
+  // For testing
+  base::OnceCallback<void(bool)> get_data_complete_callback_for_testing_;
 
   // `weak_ptr_factory_` must be the last member of this class.
   base::WeakPtrFactory<AppDeduplicationService> weak_ptr_factory_{this};

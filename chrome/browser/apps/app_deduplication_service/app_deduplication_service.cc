@@ -5,13 +5,18 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 namespace {
@@ -22,6 +27,11 @@ constexpr char kAppDeduplicationFolderPath[] =
 
 namespace apps::deduplication {
 
+namespace prefs {
+constexpr char kLastGetDataFromServerTimestamp[] =
+    "apps.app_deduplication_service.last_get_data_from_server_timestamp";
+}  // namespace prefs
+
 AppDeduplicationService::AppDeduplicationService(Profile* profile)
     : profile_(profile),
       server_connector_(std::make_unique<AppDeduplicationServerConnector>()) {
@@ -31,12 +41,35 @@ AppDeduplicationService::AppDeduplicationService(Profile* profile)
       &apps::AppServiceProxyFactory::GetForProfile(profile)
            ->AppRegistryCache());
 
-  base::FilePath path =
-      profile_->GetPath().AppendASCII(kAppDeduplicationFolderPath);
-  cache_ = std::make_unique<AppDeduplicationCache>(path);
+  if (base::FeatureList::IsEnabled(features::kAppDeduplicationServiceFondue)) {
+    base::FilePath path =
+        profile_->GetPath().AppendASCII(kAppDeduplicationFolderPath);
+    cache_ = std::make_unique<AppDeduplicationCache>(path);
+    StartLoginFlow();
+  }
 }
 
 AppDeduplicationService::~AppDeduplicationService() = default;
+
+void AppDeduplicationService::StartLoginFlow() {
+  const int hours_diff =
+      std::abs((GetServerPref() - base::Time::Now()).InHours());
+
+  if (hours_diff >= 24) {
+    GetDeduplicateDataFromServer();
+  } else {
+    // Read most recent data from cache.
+    cache_->ReadDeduplicationCache(base::BindOnce(
+        &AppDeduplicationService::OnReadDeduplicationCacheCompleted,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void AppDeduplicationService::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterTimePref(prefs::kLastGetDataFromServerTimestamp,
+                             base::Time());
+}
 
 std::vector<Entry> AppDeduplicationService::GetDuplicates(
     const EntryId& entry_id) {
@@ -210,7 +243,24 @@ void AppDeduplicationService::GetDeduplicateDataFromServer() {
 
 void AppDeduplicationService::OnGetDeduplicateDataFromServerCompleted(
     absl::optional<proto::DeduplicateData> response) {
-  // TODO(b/264216262): handle response data and store in disk.
+  if (response.has_value()) {
+    profile_->GetPrefs()->SetTime(prefs::kLastGetDataFromServerTimestamp,
+                                  base::Time::Now());
+    cache_->WriteDeduplicationCache(
+        response.value(),
+        base::BindOnce(
+            &AppDeduplicationService::OnWriteDeduplicationCacheCompleted,
+            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    cache_->ReadDeduplicationCache(base::BindOnce(
+        &AppDeduplicationService::OnReadDeduplicationCacheCompleted,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (get_data_complete_callback_for_testing_) {
+    std::move(get_data_complete_callback_for_testing_)
+        .Run(response.has_value());
+  }
 }
 
 void AppDeduplicationService::OnWriteDeduplicationCacheCompleted(bool result) {
@@ -218,7 +268,6 @@ void AppDeduplicationService::OnWriteDeduplicationCacheCompleted(bool result) {
     LOG(ERROR) << "Writing deduplication data to disk failed.";
     return;
   }
-
   cache_->ReadDeduplicationCache(base::BindOnce(
       &AppDeduplicationService::OnReadDeduplicationCacheCompleted,
       weak_ptr_factory_.GetWeakPtr()));
@@ -227,18 +276,26 @@ void AppDeduplicationService::OnWriteDeduplicationCacheCompleted(bool result) {
 
 void AppDeduplicationService::OnReadDeduplicationCacheCompleted(
     absl::optional<proto::DeduplicateData> data) {
-  // TODO(b/267549842): handle data and map to list of Entries.
+  if (!data.has_value()) {
+    LOG(ERROR) << "Reading deduplication data from disk failed.";
+    return;
+  }
+  DeduplicateDataToEntries(data.value());
+}
+
+base::Time AppDeduplicationService::GetServerPref() {
+  return profile_->GetPrefs()->GetTime(prefs::kLastGetDataFromServerTimestamp);
 }
 
 // This function is only used when the kAppDeduplicationServiceFondue flag
 // is enabled.
 void AppDeduplicationService::DeduplicateDataToEntries(
-    const absl::optional<proto::DeduplicateData> data) {
+    const proto::DeduplicateData data) {
   // Use the index as the internal indexing key for fast look up. If the
   // size of the duplicated groups goes over integer 32 limit, a new indexing
   // key needs to be introduced.
   uint32_t index = 1;
-  for (auto const& group : data.value().app_group()) {
+  for (auto const& group : data.app_group()) {
     DuplicateGroup duplicate_group;
     for (auto const& app : group.app()) {
       const std::string& app_id = app.app_id();
