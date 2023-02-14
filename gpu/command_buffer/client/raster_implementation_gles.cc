@@ -32,7 +32,7 @@ namespace raster {
 
 namespace {
 
-GLenum SkColorTypeToGLDataFormat(SkColorType color_type) {
+GLenum SkColorTypeToGLDataFormat(SkColorType color_type, bool supports_rg) {
   switch (color_type) {
     case kRGBA_8888_SkColorType:
       return GL_RGBA;
@@ -41,7 +41,7 @@ GLenum SkColorTypeToGLDataFormat(SkColorType color_type) {
     case kR8G8_unorm_SkColorType:
       return GL_RG_EXT;
     case kGray_8_SkColorType:
-      return GL_LUMINANCE;
+      return supports_rg ? GL_RED : GL_LUMINANCE;
     default:
       DLOG(ERROR) << "Unknown SkColorType " << color_type;
   }
@@ -206,10 +206,11 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
   gl_->PixelStorei(GL_UNPACK_ALIGNMENT, 1);
   gl_->PixelStorei(GL_UNPACK_ROW_LENGTH, row_bytes / src_info.bytesPerPixel());
   gl_->BindTexture(texture_target, texture_id);
-  gl_->TexSubImage2D(texture_target, 0, dst_x_offset, dst_y_offset,
-                     src_info.width(), src_info.height(),
-                     SkColorTypeToGLDataFormat(src_info.colorType()),
-                     SkColorTypeToGLDataType(src_info.colorType()), src_pixels);
+  gl_->TexSubImage2D(
+      texture_target, 0, dst_x_offset, dst_y_offset, src_info.width(),
+      src_info.height(),
+      SkColorTypeToGLDataFormat(src_info.colorType(), capabilities_.texture_rg),
+      SkColorTypeToGLDataType(src_info.colorType()), src_pixels);
   gl_->BindTexture(texture_target, 0);
   gl_->PixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   gl_->PixelStorei(GL_UNPACK_ALIGNMENT, old_align);

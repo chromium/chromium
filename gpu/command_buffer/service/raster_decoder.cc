@@ -1138,6 +1138,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       gpu_preferences_.texture_target_exception_list;
   caps.texture_format_bgra8888 =
       feature_info()->feature_flags().ext_texture_format_bgra8888;
+  caps.texture_rg = feature_info()->feature_flags().ext_texture_rg;
   caps.supports_scanout_shared_images =
       SharedImageManager::SupportsScanoutImages();
   // TODO(piman): have a consistent limit in shared image backings.

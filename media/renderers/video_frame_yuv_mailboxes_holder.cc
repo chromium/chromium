@@ -24,10 +24,10 @@ namespace media {
 
 namespace {
 
-viz::ResourceFormat PlaneResourceFormat(int num_channels, bool for_surface) {
+viz::ResourceFormat PlaneResourceFormat(int num_channels, bool supports_red) {
   switch (num_channels) {
     case 1:
-      return for_surface ? viz::RED_8 : viz::LUMINANCE_8;
+      return supports_red ? viz::RED_8 : viz::LUMINANCE_8;
     case 2:
       return viz::RG_88;
     case 3:
@@ -121,7 +121,8 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     auto* sii = provider_->SharedImageInterface();
     DCHECK(sii);
     uint32_t mailbox_usage;
-    if (provider_->ContextCapabilities().supports_oop_raster) {
+    auto& caps = provider_->ContextCapabilities();
+    if (caps.supports_oop_raster) {
       mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER |
                       gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     } else {
@@ -131,7 +132,8 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
       gfx::Size tex_size = {plane_sizes_[plane].width(),
                             plane_sizes_[plane].height()};
       int num_channels = yuva_info_.numChannelsInPlane(plane);
-      viz::ResourceFormat format = PlaneResourceFormat(num_channels, false);
+      viz::ResourceFormat format =
+          PlaneResourceFormat(num_channels, caps.texture_rg);
       holders_[plane].mailbox = sii->CreateSharedImage(
           format, tex_size, video_frame->ColorSpace(), kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, mailbox_usage, gpu::kNullSurfaceHandle);
