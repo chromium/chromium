@@ -732,6 +732,10 @@ const CGFloat kSymbolSize = 18;
 }
 
 - (void)setHighlightsSelectedTab:(BOOL)highlightsSelectedTab {
+  if (IsTabStripContextMenuEnabled()) {
+    return;
+  }
+
   if (highlightsSelectedTab)
     [self installDimmingViewWithAnimation:YES];
   else
