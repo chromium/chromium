@@ -102,14 +102,14 @@ PublicKeyCredentialParametersPtr CreatePublicKeyCredentialParameter(int alg) {
 // HashPRFValue hashes a PRF evaluation point with a fixed prefix in order to
 // separate the set of points that a website can evaluate. See
 // https://w3c.github.io/webauthn/#prf-extension.
-Vector<uint8_t> HashPRFValue(const blink::DOMArrayBuffer* value) {
+Vector<uint8_t> HashPRFValue(const blink::DOMArrayPiece value) {
   constexpr char kPrefix[] = "WebAuthn PRF";
 
   SHA256_CTX ctx;
   SHA256_Init(&ctx);
   // This deliberately includes the terminating NUL.
   SHA256_Update(&ctx, kPrefix, sizeof(kPrefix));
-  SHA256_Update(&ctx, value->Data(), value->ByteLength());
+  SHA256_Update(&ctx, value.Data(), value.ByteLength());
 
   uint8_t digest[SHA256_DIGEST_LENGTH];
   SHA256_Final(digest, &ctx);

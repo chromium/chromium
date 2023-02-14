@@ -859,10 +859,14 @@ void OnGetAssertionComplete(
       if (credential->prf_results) {
         auto* values = AuthenticationExtensionsPRFValues::Create();
         values->setFirst(
-            VectorToDOMArrayBuffer(std::move(credential->prf_results->first)));
+            MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+                VectorToDOMArrayBuffer(
+                    std::move(credential->prf_results->first))));
         if (credential->prf_results->second) {
-          values->setSecond(VectorToDOMArrayBuffer(
-              std::move(credential->prf_results->second.value())));
+          values->setSecond(
+              MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+                  VectorToDOMArrayBuffer(
+                      std::move(credential->prf_results->second.value()))));
         }
         prf_outputs->setResults(values);
       }

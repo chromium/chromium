@@ -10,6 +10,6 @@ dictionary AuthenticationExtensionsPRFInputs {
 };
 
 dictionary AuthenticationExtensionsPRFValues {
-    required ArrayBuffer first;
-    ArrayBuffer second;
+    required BufferSource first;
+    BufferSource second;
 };
