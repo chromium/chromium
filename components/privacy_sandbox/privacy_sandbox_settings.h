@@ -96,6 +96,12 @@ class PrivacySandboxSettings : public KeyedService {
   // future, in which case no history is eligible.
   virtual base::Time TopicsDataAccessibleSince() const = 0;
 
+  // Returns whether any Attribution Rerpoting operation would ever be allowed.
+  // If false, no attribution reporting operation is allowed (e.g. because the
+  // user has disabled the setting). If true, the appropriate context specific
+  // check must also be made.
+  virtual bool IsAttributionReportingEverAllowed() const = 0;
+
   // Determines whether Attribution Reporting is allowable in a particular
   // context. Should be called at both source and trigger registration. At each
   // of these points |top_frame_origin| is the same as either the source origin

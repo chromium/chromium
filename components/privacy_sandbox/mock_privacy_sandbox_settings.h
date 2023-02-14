@@ -33,6 +33,7 @@ class MockPrivacySandboxSettings
               (override));
   MOCK_METHOD(void, ClearTopicSettings, (base::Time, base::Time), (override));
   MOCK_METHOD(base::Time, TopicsDataAccessibleSince, (), (override, const));
+  MOCK_METHOD(bool, IsAttributionReportingEverAllowed, (), (override, const));
   MOCK_METHOD(bool,
               IsAttributionReportingAllowed,
               (const url::Origin&, const url::Origin&),
