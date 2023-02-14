@@ -85,8 +85,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
       bool intercept_only,
       absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
           security_options,
-      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
-      url::Origin top_frame_origin);
+      scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher);
 
   InterceptedRequest(const InterceptedRequest&) = delete;
   InterceptedRequest& operator=(const InterceptedRequest&) = delete;
@@ -198,7 +197,6 @@ class InterceptedRequest : public network::mojom::URLLoader,
   mojo::Remote<network::mojom::URLLoader> target_loader_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
-  url::Origin top_frame_origin_;
 
   base::WeakPtrFactory<InterceptedRequest> weak_factory_{this};
 };
@@ -294,8 +292,7 @@ InterceptedRequest::InterceptedRequest(
     bool intercept_only,
     absl::optional<AwProxyingURLLoaderFactory::SecurityOptions>
         security_options,
-    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
-    url::Origin top_frame_origin)
+    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher)
     : frame_tree_node_id_(frame_tree_node_id),
       request_id_(request_id),
       options_(options),
@@ -308,8 +305,7 @@ InterceptedRequest::InterceptedRequest(
       proxied_loader_receiver_(this, std::move(loader_receiver)),
       target_client_(std::move(client)),
       target_factory_(std::move(target_factory)),
-      xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)),
-      top_frame_origin_(std::move(top_frame_origin)) {
+      xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)) {
   // If there is a client error, clean up the request.
   target_client_.set_disconnect_handler(base::BindOnce(
       &InterceptedRequest::OnURLLoaderClientError, base::Unretained(this)));
@@ -327,13 +323,31 @@ namespace {
 // Persistent Origin Trials can only be checked on the UI thread.
 // |result_args| is owned by a BarrierClosure that executes after this call.
 void CheckXrwOriginTrialOnUiThread(GURL request_url,
-                                   url::Origin partition_origin,
+                                   int frame_tree_node_id,
+                                   blink::mojom::ResourceType resource_type,
                                    InterceptResponseReceivedArgs* result_args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::OriginTrialsControllerDelegate* delegate =
       AwBrowserContext::GetDefault()->GetOriginTrialsControllerDelegate();
   if (!delegate)
     return;
+
+  // Use the request URL for main frame resources (main frame navigation).
+  // Use last committed origin of outermost main frame for all other requests.
+  // Fall back to an opaque origin if neither is available (not expected to
+  // happen).
+  url::Origin partition_origin;
+  if (resource_type == blink::mojom::ResourceType::kMainFrame) {
+    partition_origin = url::Origin::Create(request_url);
+  } else {
+    content::WebContents* wc =
+        content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+    if (wc) {
+      partition_origin = wc->GetPrimaryMainFrame()
+                             ->GetOutermostMainFrame()
+                             ->GetLastCommittedOrigin();
+    }
+  }
 
   result_args->xrw_origin_trial_enabled = delegate->IsTrialPersistedForOrigin(
       url::Origin::Create(request_url), partition_origin,
@@ -354,13 +368,14 @@ void CheckXrwOriginTrialOnUiThread(GURL request_url,
 // for |request_url|, saving the result in |result_args|.
 // |result_args| is owned by the |done_callback|.
 void CheckXrwOriginTrialAsync(GURL request_url,
-                              url::Origin partition_origin,
+                              int frame_tree_node_id,
+                              blink::mojom::ResourceType resource_type,
                               InterceptResponseReceivedArgs* result_args,
                               base::OnceClosure done_callback) {
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&CheckXrwOriginTrialOnUiThread, request_url,
-                     std::move(partition_origin),
+      base::BindOnce(&CheckXrwOriginTrialOnUiThread, std::move(request_url),
+                     frame_tree_node_id, resource_type,
                      base::Unretained(result_args)),
       std::move(done_callback));
 }
@@ -398,12 +413,6 @@ void InterceptedRequest::Restart() {
   request_.load_flags =
       UpdateLoadFlags(request_.load_flags, io_thread_client.get());
 
-  url::Origin partition_origin = top_frame_origin_;
-  // Main frame navigation request should partition by the request URL.
-  if (static_cast<blink::mojom::ResourceType>(request_.resource_type) ==
-      blink::mojom::ResourceType::kMainFrame) {
-    partition_origin = url::Origin::Create(request_.url);
-  }
   if (!io_thread_client || ShouldNotInterceptRequest()) {
     // equivalent to no interception
     std::unique_ptr<InterceptResponseReceivedArgs>
@@ -411,7 +420,8 @@ void InterceptedRequest::Restart() {
             std::make_unique<InterceptResponseReceivedArgs>();
 
     CheckXrwOriginTrialAsync(
-        request_.url, std::move(partition_origin),
+        request_.url, frame_tree_node_id_,
+        static_cast<blink::mojom::ResourceType>(request_.resource_type),
         intercept_response_received_args.get(),
         base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
                        weak_factory_.GetWeakPtr(),
@@ -437,9 +447,10 @@ void InterceptedRequest::Restart() {
                             weak_factory_.GetWeakPtr(), std::move(call_args)));
     }
 
-    CheckXrwOriginTrialAsync(request_.url, std::move(partition_origin),
-                             intercept_response_received_args,
-                             arg_ready_closure);
+    CheckXrwOriginTrialAsync(
+        request_.url, frame_tree_node_id_,
+        static_cast<blink::mojom::ResourceType>(request_.resource_type),
+        intercept_response_received_args, arg_ready_closure);
 
     // TODO: verify the case when WebContents::RenderFrameDeleted is called
     // before network request is intercepted (i.e. if that's possible and
@@ -885,13 +896,11 @@ AwProxyingURLLoaderFactory::AwProxyingURLLoaderFactory(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     bool intercept_only,
     absl::optional<SecurityOptions> security_options,
-    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
-    url::Origin top_frame_origin)
+    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher)
     : frame_tree_node_id_(frame_tree_node_id),
       intercept_only_(intercept_only),
       security_options_(security_options),
-      xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)),
-      top_frame_origin_(std::move(top_frame_origin)) {
+      xrw_allowlist_matcher_(std::move(xrw_allowlist_matcher)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!(intercept_only_ && target_factory_remote));
   if (target_factory_remote) {
@@ -914,15 +923,14 @@ void AwProxyingURLLoaderFactory::CreateProxy(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
     absl::optional<SecurityOptions> security_options,
-    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher,
-    url::Origin top_frame_origin) {
+    scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   // will manage its own lifetime
-  new AwProxyingURLLoaderFactory(
-      frame_tree_node_id, std::move(loader_receiver),
-      std::move(target_factory_remote), false, security_options,
-      std::move(xrw_allowlist_matcher), std::move(top_frame_origin));
+  new AwProxyingURLLoaderFactory(frame_tree_node_id, std::move(loader_receiver),
+                                 std::move(target_factory_remote), false,
+                                 security_options,
+                                 std::move(xrw_allowlist_matcher));
 }
 
 void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
@@ -960,8 +968,7 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
   InterceptedRequest* req = new InterceptedRequest(
       frame_tree_node_id_, request_id, options, request, traffic_annotation,
       std::move(loader), std::move(client), std::move(target_factory_clone),
-      intercept_only_, security_options_, xrw_allowlist_matcher_,
-      top_frame_origin_);
+      intercept_only_, security_options_, xrw_allowlist_matcher_);
   req->Restart();
 }
 
