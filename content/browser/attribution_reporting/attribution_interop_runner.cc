@@ -17,6 +17,8 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -26,7 +28,6 @@
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/parsing_utils.h"
@@ -70,56 +71,57 @@ struct AttributionReportJsonConverter {
     // Report IDs are a source of nondeterminism, so remove them.
     report_body.Remove("report_id");
 
-    switch (report.GetReportType()) {
-      case AttributionReport::Type::kAggregatableAttribution: {
-        // These fields normally encode a random GUID or the absolute time and
-        // therefore are sources of nondeterminism in the output.
+    absl::visit(
+        base::Overloaded{
+            [&](const AttributionReport::AggregatableAttributionData&
+                    aggregatable_data) {
+              // These fields normally encode a random GUID or the absolute time
+              // and therefore are sources of nondeterminism in the output.
 
-        // Output attribution_destination from the shared_info field.
-        absl::optional<base::Value> shared_info =
-            report_body.Extract("shared_info");
-        DCHECK(shared_info);
-        std::string* shared_info_str = shared_info->GetIfString();
-        DCHECK(shared_info_str);
+              // Output attribution_destination from the shared_info field.
+              absl::optional<base::Value> shared_info =
+                  report_body.Extract("shared_info");
+              DCHECK(shared_info);
+              std::string* shared_info_str = shared_info->GetIfString();
+              DCHECK(shared_info_str);
 
-        base::Value shared_info_value = base::test::ParseJson(*shared_info_str);
-        DCHECK(shared_info_value.is_dict());
+              absl::optional<base::Value> shared_info_value =
+                  base::JSONReader::Read(*shared_info_str,
+                                         base::JSON_PARSE_RFC);
+              DCHECK(shared_info_value && shared_info_value->is_dict());
 
-        static constexpr char kKeyAttributionDestination[] =
-            "attribution_destination";
-        std::string* attribution_destination =
-            shared_info_value.GetDict().FindString(kKeyAttributionDestination);
-        DCHECK(attribution_destination);
-        DCHECK(!report_body.contains(kKeyAttributionDestination));
-        report_body.Set(kKeyAttributionDestination,
-                        std::move(*attribution_destination));
+              static constexpr char kKeyAttributionDestination[] =
+                  "attribution_destination";
+              std::string* attribution_destination =
+                  shared_info_value->GetDict().FindString(
+                      kKeyAttributionDestination);
+              DCHECK(attribution_destination);
+              DCHECK(!report_body.contains(kKeyAttributionDestination));
+              report_body.Set(kKeyAttributionDestination,
+                              std::move(*attribution_destination));
 
-        report_body.Remove("aggregation_service_payloads");
-        report_body.Remove("source_registration_time");
+              report_body.Remove("aggregation_service_payloads");
+              report_body.Remove("source_registration_time");
 
-        const auto& aggregatable_data =
-            absl::get<AttributionReport::AggregatableAttributionData>(
-                report.data());
+              base::Value::List list;
+              for (const auto& contribution : aggregatable_data.contributions) {
+                base::Value::Dict dict;
+                dict.Set("key", attribution_reporting::HexEncodeAggregationKey(
+                                    contribution.key()));
+                dict.Set("value",
+                         base::checked_cast<int>(contribution.value()));
 
-        base::Value::List list;
-        for (const auto& contribution : aggregatable_data.contributions) {
-          base::Value::Dict dict;
-          dict.Set("key", attribution_reporting::HexEncodeAggregationKey(
-                              contribution.key()));
-          dict.Set("value", base::checked_cast<int>(contribution.value()));
-
-          list.Append(std::move(dict));
-        }
-        report_body.Set("histograms", std::move(list));
-
-        break;
-      }
-      case AttributionReport::Type::kEventLevel:
-        bool ok =
-            AdjustScheduledReportTime(report_body, report.OriginalReportTime());
-        DCHECK(ok);
-        break;
-    }
+                list.Append(std::move(dict));
+              }
+              report_body.Set("histograms", std::move(list));
+            },
+            [&](const AttributionReport::EventLevelData&) {
+              bool ok = AdjustScheduledReportTime(report_body,
+                                                  report.OriginalReportTime());
+              DCHECK(ok);
+            },
+        },
+        report.data());
 
     base::Value::Dict value;
     value.Set("payload", std::move(report_body));
@@ -250,20 +252,18 @@ class AttributionEventHandler : public AttributionObserver {
   ~AttributionEventHandler() override { manager_->RemoveObserver(this); }
 
   void Handle(AttributionSimulationEvent event) {
-    absl::visit(*this, std::move(event));
-  }
-
-  // For use with `absl::visit()`.
-  void operator()(AttributionSource source) {
-    fake_cookie_checker_->set_debug_cookie_set(source.debug_permission);
-    manager_->HandleSource(std::move(source.source), GlobalRenderFrameHostId());
-  }
-
-  // For use with `absl::visit()`.
-  void operator()(AttributionTriggerAndTime trigger) {
-    fake_cookie_checker_->set_debug_cookie_set(trigger.debug_permission);
-    manager_->HandleTrigger(std::move(trigger.trigger),
-                            GlobalRenderFrameHostId());
+    fake_cookie_checker_->set_debug_cookie_set(event.debug_permission);
+    absl::visit(base::Overloaded{
+                    [&](StorableSource source) {
+                      manager_->HandleSource(std::move(source),
+                                             GlobalRenderFrameHostId());
+                    },
+                    [&](AttributionTriggerAndTime trigger) {
+                      manager_->HandleTrigger(std::move(trigger.trigger),
+                                              GlobalRenderFrameHostId());
+                    },
+                },
+                std::move(event.event));
   }
 
   base::Value::Dict TakeOutput() {

@@ -23,16 +23,25 @@ struct AttributionConfig;
 struct AttributionTriggerAndTime {
   AttributionTrigger trigger;
   base::Time time;
-  bool debug_permission = false;
 };
 
-struct AttributionSource {
-  StorableSource source;
-  bool debug_permission = false;
-};
+struct AttributionSimulationEvent {
+  absl::variant<StorableSource, AttributionTriggerAndTime> event;
+  bool debug_permission;
 
-using AttributionSimulationEvent =
-    absl::variant<AttributionSource, AttributionTriggerAndTime>;
+  AttributionSimulationEvent(
+      absl::variant<StorableSource, AttributionTriggerAndTime> event,
+      bool debug_permission);
+
+  ~AttributionSimulationEvent();
+
+  AttributionSimulationEvent(const AttributionSimulationEvent&) = delete;
+  AttributionSimulationEvent& operator=(const AttributionSimulationEvent&) =
+      delete;
+
+  AttributionSimulationEvent(AttributionSimulationEvent&&);
+  AttributionSimulationEvent& operator=(AttributionSimulationEvent&&);
+};
 
 using AttributionSimulationEvents = std::vector<AttributionSimulationEvent>;
 

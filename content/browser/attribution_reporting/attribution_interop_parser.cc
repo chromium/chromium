@@ -334,10 +334,8 @@ class AttributionInteropParser {
                     return;
                   }
 
-                  events_.push_back(AttributionSource{
-                      .source = std::move(*storable_source),
-                      .debug_permission = debug_permission,
-                  });
+                  events_.emplace_back(std::move(*storable_source),
+                                       debug_permission);
                 });
           });
         },
@@ -383,16 +381,17 @@ class AttributionInteropParser {
                           return;
                         }
 
-                        events_.push_back(AttributionTriggerAndTime{
-                            .trigger = AttributionTrigger(
-                                std::move(*reporting_origin),
-                                std::move(*trigger_registration),
-                                std::move(*destination_origin),
-                                /*attestation=*/absl::nullopt,
-                                /*is_within_fenced_frame=*/false),
-                            .time = trigger_time,
-                            .debug_permission = debug_permission,
-                        });
+                        events_.emplace_back(
+                            AttributionTriggerAndTime{
+                                .trigger = AttributionTrigger(
+                                    std::move(*reporting_origin),
+                                    std::move(*trigger_registration),
+                                    std::move(*destination_origin),
+                                    /*attestation=*/absl::nullopt,
+                                    /*is_within_fenced_frame=*/false),
+                                .time = trigger_time,
+                            },
+                            debug_permission);
                       });
           });
         },
@@ -594,6 +593,19 @@ class AttributionInteropParser {
 
 }  // namespace
 
+AttributionSimulationEvent::AttributionSimulationEvent(
+    absl::variant<StorableSource, AttributionTriggerAndTime> event,
+    bool debug_permission)
+    : event(std::move(event)), debug_permission(debug_permission) {}
+
+AttributionSimulationEvent::~AttributionSimulationEvent() = default;
+
+AttributionSimulationEvent::AttributionSimulationEvent(
+    AttributionSimulationEvent&&) = default;
+
+AttributionSimulationEvent& AttributionSimulationEvent::operator=(
+    AttributionSimulationEvent&&) = default;
+
 base::expected<AttributionSimulationEvents, std::string>
 ParseAttributionInteropInput(base::Value::Dict input,
                              const base::Time offset_time) {
@@ -620,12 +632,12 @@ std::string MergeAttributionConfig(const base::Value::Dict& dict,
 base::Time GetEventTime(const AttributionSimulationEvent& event) {
   return absl::visit(
       base::Overloaded{
-          [](const AttributionSource& source) {
-            return source.source.common_info().source_time();
+          [](const StorableSource& source) {
+            return source.common_info().source_time();
           },
           [](const AttributionTriggerAndTime& trigger) { return trigger.time; },
       },
-      event);
+      event.event);
 }
 
 }  // namespace content

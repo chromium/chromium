@@ -33,23 +33,24 @@ namespace content {
 
 bool operator==(const AttributionTriggerAndTime& a,
                 const AttributionTriggerAndTime& b) {
-  return a.trigger == b.trigger && a.time == b.time &&
-         a.debug_permission == b.debug_permission;
+  return a.trigger == b.trigger && a.time == b.time;
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionTriggerAndTime& t) {
-  return out << "{time=" << t.time << ",trigger=" << t.trigger
-             << ",debug_permission=" << t.debug_permission << "}";
+  return out << "{time=" << t.time << ",trigger=" << t.trigger << "}";
 }
 
-bool operator==(const AttributionSource& a, const AttributionSource& b) {
-  return a.source == b.source && a.debug_permission == b.debug_permission;
+bool operator==(const AttributionSimulationEvent& a,
+                const AttributionSimulationEvent& b) {
+  return a.event == b.event && a.debug_permission == b.debug_permission;
 }
 
-std::ostream& operator<<(std::ostream& out, const AttributionSource& s) {
-  return out << "{source=" << s.source
-             << ",debug_permission=" << s.debug_permission << "}";
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionSimulationEvent& e) {
+  out << "{event=";
+  absl::visit([&](const auto& event) { out << event; }, e.event);
+  return out << ",debug_permission=" << e.debug_permission << "}";
 }
 
 bool operator==(AttributionConfig::RateLimitConfig a,
@@ -164,37 +165,37 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
   ASSERT_TRUE(result.has_value()) << result.error();
   ASSERT_EQ(result->size(), 2u);
 
-  const auto* source1 = absl::get_if<AttributionSource>(&result->front());
+  const auto* source1 = absl::get_if<StorableSource>(&result->front().event);
   ASSERT_TRUE(source1);
 
-  const auto* source2 = absl::get_if<AttributionSource>(&result->back());
+  const auto* source2 = absl::get_if<StorableSource>(&result->back().event);
   ASSERT_TRUE(source2);
 
-  EXPECT_EQ(source1->source.common_info().source_time(),
+  EXPECT_EQ(source1->common_info().source_time(),
             kOffsetTime + base::Milliseconds(1643235573123));
-  EXPECT_EQ(source1->source.common_info().source_type(),
+  EXPECT_EQ(source1->common_info().source_type(),
             AttributionSourceType::kNavigation);
-  EXPECT_EQ(source1->source.common_info().reporting_origin(),
+  EXPECT_EQ(source1->common_info().reporting_origin(),
             *SuitableOrigin::Deserialize("https://a.r.test"));
-  EXPECT_EQ(source1->source.common_info().source_origin(),
+  EXPECT_EQ(source1->common_info().source_origin(),
             *SuitableOrigin::Deserialize("https://a.s.test"));
-  EXPECT_EQ(source1->source.common_info().destination_site(),
+  EXPECT_EQ(source1->common_info().destination_site(),
             net::SchemefulSite::Deserialize("https://d.test"));
-  EXPECT_FALSE(source1->source.is_within_fenced_frame());
-  EXPECT_TRUE(source1->debug_permission);
+  EXPECT_FALSE(source1->is_within_fenced_frame());
+  EXPECT_TRUE(result->front().debug_permission);
 
-  EXPECT_EQ(source2->source.common_info().source_time(),
+  EXPECT_EQ(source2->common_info().source_time(),
             kOffsetTime + base::Milliseconds(1643235574123));
-  EXPECT_EQ(source2->source.common_info().source_type(),
+  EXPECT_EQ(source2->common_info().source_type(),
             AttributionSourceType::kEvent);
-  EXPECT_EQ(source2->source.common_info().reporting_origin(),
+  EXPECT_EQ(source2->common_info().reporting_origin(),
             *SuitableOrigin::Deserialize("https://b.r.test"));
-  EXPECT_EQ(source2->source.common_info().source_origin(),
+  EXPECT_EQ(source2->common_info().source_origin(),
             *SuitableOrigin::Deserialize("https://b.s.test"));
-  EXPECT_EQ(source2->source.common_info().destination_site(),
+  EXPECT_EQ(source2->common_info().destination_site(),
             net::SchemefulSite::Deserialize("https://d.test"));
-  EXPECT_FALSE(source2->source.is_within_fenced_frame());
-  EXPECT_FALSE(source2->debug_permission);
+  EXPECT_FALSE(source2->is_within_fenced_frame());
+  EXPECT_FALSE(result->back().debug_permission);
 }
 
 TEST(AttributionInteropParserTest, ValidTriggerParses) {
@@ -223,7 +224,7 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
   ASSERT_EQ(result->size(), 1u);
 
   const auto* trigger =
-      absl::get_if<AttributionTriggerAndTime>(&result->front());
+      absl::get_if<AttributionTriggerAndTime>(&result->front().event);
   ASSERT_TRUE(trigger);
 
   EXPECT_EQ(trigger->time, kOffsetTime + base::Milliseconds(1643235575123));
@@ -233,7 +234,7 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
             *SuitableOrigin::Deserialize("https://b.d.test"));
   EXPECT_EQ(trigger->trigger.attestation(), absl::nullopt);
   EXPECT_FALSE(trigger->trigger.is_within_fenced_frame());
-  EXPECT_TRUE(trigger->debug_permission);
+  EXPECT_TRUE(result->front().debug_permission);
 }
 
 struct ParseErrorTestCase {
