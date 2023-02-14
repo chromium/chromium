@@ -61,13 +61,13 @@ export class Options implements CameraUI {
    */
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
-    this.switchDeviceButton.addEventListener('click', () => {
+    this.switchDeviceButton.addEventListener('click', async () => {
       if (state.get(state.State.TAKING) || !this.cameraAvailable) {
         return;
       }
       const switching = this.cameraManager.switchCamera();
       if (switching !== null) {
-        animate.play(dom.get('#switch-device', HTMLElement));
+        await animate.play(dom.get('#switch-device', HTMLElement));
       }
     });
     dom.get('#open-settings', HTMLButtonElement)
