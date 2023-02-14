@@ -1307,25 +1307,28 @@ TEST_P(RemoteTest, SharedRemoteSyncCallsFromBoundNonConstructionSequence) {
 }
 
 TEST_P(RemoteTest, RemoteSet) {
-  std::vector<absl::optional<MathCalculatorImpl>> impls(3);
+  std::vector<absl::optional<MathCalculatorImpl>> impls(4);
 
   PendingRemote<math::Calculator> remote0;
   PendingRemote<math::Calculator> remote1;
   PendingRemote<math::Calculator> remote2;
+  PendingRemote<math::Calculator> remote3;
   impls[0].emplace(remote0.InitWithNewPipeAndPassReceiver());
   impls[1].emplace(remote1.InitWithNewPipeAndPassReceiver());
   impls[2].emplace(remote2.InitWithNewPipeAndPassReceiver());
+  impls[3].emplace(remote3.InitWithNewPipeAndPassReceiver());
 
   RemoteSet<math::Calculator> remotes;
   auto id0 = remotes.Add(Remote<math::Calculator>(std::move(remote0)));
   auto id1 = remotes.Add(std::move(remote1));
   auto id2 = remotes.Add(std::move(remote2));
+  auto id3 = remotes.Add(std::move(remote3));
 
   // Send a message to each and wait for a reply.
   {
     base::RunLoop loop;
     constexpr double kValue = 42.0;
-    auto on_add = base::BarrierClosure(6, loop.QuitClosure());
+    auto on_add = base::BarrierClosure(8, loop.QuitClosure());
     for (auto& remote : remotes) {
       remote->Add(kValue, base::BindLambdaForTesting([&](double total) {
                     EXPECT_EQ(kValue, total);
@@ -1334,7 +1337,7 @@ TEST_P(RemoteTest, RemoteSet) {
     }
 
     // Use Get() to get a specified remote from RemoteSet.
-    std::vector<mojo::RemoteSetElementId> ids = {id0, id1, id2};
+    std::vector<mojo::RemoteSetElementId> ids = {id0, id1, id2, id3};
     for (auto& id : ids) {
       remotes.Get(id)->Add(kValue,
                            base::BindLambdaForTesting([&](double total) {
@@ -1347,6 +1350,7 @@ TEST_P(RemoteTest, RemoteSet) {
     EXPECT_EQ(kValue * 2, impls[0]->total());
     EXPECT_EQ(kValue * 2, impls[1]->total());
     EXPECT_EQ(kValue * 2, impls[2]->total());
+    EXPECT_EQ(kValue * 2, impls[3]->total());
   }
 
   EXPECT_FALSE(remotes.empty());
@@ -1361,6 +1365,7 @@ TEST_P(RemoteTest, RemoteSet) {
           EXPECT_FALSE(remotes.Contains(id0));
           EXPECT_TRUE(remotes.Contains(id1));
           EXPECT_TRUE(remotes.Contains(id2));
+          EXPECT_TRUE(remotes.Contains(id3));
           loop.Quit();
         }));
     impls[0].reset();
@@ -1377,6 +1382,7 @@ TEST_P(RemoteTest, RemoteSet) {
           EXPECT_FALSE(remotes.Contains(id0));
           EXPECT_TRUE(remotes.Contains(id1));
           EXPECT_FALSE(remotes.Contains(id2));
+          EXPECT_TRUE(remotes.Contains(id3));
           loop.Quit();
         }));
     impls[2].reset();
@@ -1386,16 +1392,44 @@ TEST_P(RemoteTest, RemoteSet) {
   EXPECT_FALSE(remotes.empty());
 
   {
+    // Test that remote set disconnect_with_reason_handler can handle resets
+    // without reason.
     base::RunLoop loop;
-    remotes.set_disconnect_handler(
-        base::BindLambdaForTesting([&](RemoteSetElementId id) {
+    remotes.set_disconnect_with_reason_handler(base::BindLambdaForTesting(
+        [&](RemoteSetElementId id, uint32_t custom_reason_code,
+            const std::string& description) {
           EXPECT_EQ(id, id1);
+          EXPECT_EQ(custom_reason_code, static_cast<uint32_t>(0));
+          EXPECT_EQ(description, "");
           EXPECT_FALSE(remotes.Contains(id0));
           EXPECT_FALSE(remotes.Contains(id1));
           EXPECT_FALSE(remotes.Contains(id2));
+          EXPECT_TRUE(remotes.Contains(id3));
           loop.Quit();
         }));
     impls[1].reset();
+    loop.Run();
+  }
+
+  EXPECT_FALSE(remotes.empty());
+
+  {
+    // Test that remote set disconnect_with_reason_handler can handle resets
+    // with reason.
+    base::RunLoop loop;
+    remotes.set_disconnect_with_reason_handler(base::BindLambdaForTesting(
+        [&](RemoteSetElementId id, uint32_t custom_reason_code,
+            const std::string& description) {
+          EXPECT_EQ(id, id3);
+          EXPECT_EQ(custom_reason_code, static_cast<uint32_t>(10));
+          EXPECT_EQ(description, "custom description");
+          EXPECT_FALSE(remotes.Contains(id0));
+          EXPECT_FALSE(remotes.Contains(id1));
+          EXPECT_FALSE(remotes.Contains(id2));
+          EXPECT_FALSE(remotes.Contains(id3));
+          loop.Quit();
+        }));
+    impls[3]->receiver().ResetWithReason(10, "custom description");
     loop.Run();
   }
 

@@ -98,8 +98,8 @@ class RemoteSetImpl {
   RemoteSetElementId Add(RemoteType<Interface> remote) {
     DCHECK(remote.is_bound());
     auto id = GenerateNextElementId();
-    remote.set_disconnect_handler(base::BindOnce(&RemoteSetImpl::OnDisconnect,
-                                                 base::Unretained(this), id));
+    remote.set_disconnect_with_reason_handler(base::BindOnce(
+        &RemoteSetImpl::OnDisconnect, base::Unretained(this), id));
     auto result = storage_.emplace(id, std::move(remote));
     DCHECK(result.second);
     return id;
@@ -148,8 +148,19 @@ class RemoteSetImpl {
   // Note that the remote in question is already removed from the set by the
   // time the callback is run for its disconnection.
   using DisconnectHandler = base::RepeatingCallback<void(RemoteSetElementId)>;
+  using DisconnectWithReasonHandler =
+      base::RepeatingCallback<void(RemoteSetElementId,
+                                   uint32_t /* custom_reason */,
+                                   const std::string& /* description */)>;
+
   void set_disconnect_handler(DisconnectHandler handler) {
     disconnect_handler_ = std::move(handler);
+    disconnect_with_reason_handler_.Reset();
+  }
+
+  void set_disconnect_with_reason_handler(DisconnectWithReasonHandler handler) {
+    disconnect_with_reason_handler_ = std::move(handler);
+    disconnect_handler_.Reset();
   }
 
   void Clear() { storage_.clear(); }
@@ -181,15 +192,21 @@ class RemoteSetImpl {
     return remote_set_element_id_generator_.GenerateNextId();
   }
 
-  void OnDisconnect(RemoteSetElementId id) {
+  void OnDisconnect(RemoteSetElementId id,
+                    uint32_t custom_reason_code,
+                    const std::string& description) {
     Remove(id);
     if (disconnect_handler_)
       disconnect_handler_.Run(id);
+    else if (disconnect_with_reason_handler_) {
+      disconnect_with_reason_handler_.Run(id, custom_reason_code, description);
+    }
   }
 
   RemoteSetElementId::Generator remote_set_element_id_generator_;
   Storage storage_;
   DisconnectHandler disconnect_handler_;
+  DisconnectWithReasonHandler disconnect_with_reason_handler_;
 };
 
 template <typename Interface>
