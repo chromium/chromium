@@ -51,11 +51,13 @@ void KeyItemView::OnThemeChanged() {
 
 void KeyItemView::Layout() {
   const auto bounds = GetContentsBounds();
-  if (icon_)
+  if (icon_) {
     icon_->SetBoundsRect(bounds);
+  }
 
-  if (label_)
+  if (label_) {
     label_->SetBoundsRect(bounds);
+  }
 }
 
 gfx::Size KeyItemView::CalculatePreferredSize() const {

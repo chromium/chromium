@@ -10,8 +10,13 @@
 
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/capture_mode/key_item_view.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/public/cpp/assistant/assistant_state_base.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "key_item_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/insets.h"
@@ -42,9 +47,42 @@ std::vector<ui::KeyboardCode> DecodeModifiers(int modifiers) {
   return modifier_vector;
 }
 
+bool IsAssistantAvailable() {
+  AssistantStateBase* state = AssistantState::Get();
+  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
+         state->settings_enabled().value_or(false);
+}
+
+// Returns the corresponding vector icon for search or launcher key depending on
+// the keyboard layout and whether the assistant is enabled or not.
+const gfx::VectorIcon* GetVectorIconForSearchOrLauncherIcon() {
+  if (Shell::Get()->keyboard_capability()->HasLauncherButton()) {
+    return IsAssistantAvailable()
+               ? &kCaptureModeDemoToolsLauncherAssistantOnIcon
+               : &kCaptureModeDemoToolsLauncherAssistantOffIcon;
+  }
+
+  return &kCaptureModeDemoToolsSearchIcon;
+}
+
+// Returns the vector icons for keys that have icons on the keyboard.
+const gfx::VectorIcon* GetVectorIconForDemoTools(ui::KeyboardCode key_code) {
+  switch (key_code) {
+    case ui::VKEY_COMMAND:
+      return GetVectorIconForSearchOrLauncherIcon();
+    case ui::VKEY_ASSISTANT:
+      return &kCaptureModeDemoToolsAssistantIcon;
+    case ui::VKEY_SETTINGS:
+      return &kCaptureModeDemoToolsMenuIcon;
+    default:
+      return GetVectorIconForKeyboardCode(key_code);
+  }
+}
+
 std::unique_ptr<KeyItemView> CreateKeyItemView(ui::KeyboardCode key_code) {
   std::unique_ptr key_item_view = std::make_unique<KeyItemView>();
-  const gfx::VectorIcon* vector_icon = GetVectorIconForKeyboardCode(key_code);
+  const gfx::VectorIcon* vector_icon = GetVectorIconForDemoTools(key_code);
+
   if (vector_icon) {
     key_item_view->SetIcon(*vector_icon);
   } else {
