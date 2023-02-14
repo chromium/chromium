@@ -73,19 +73,30 @@ KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
   PersonalDataManager* service =
       new PersonalDataManager(g_browser_process->GetApplicationLocale(),
                               GetCountryCodeFromVariations());
+
+  // WebDataServiceFactory redirects to the original profile.
   auto local_storage = WebDataServiceFactory::GetAutofillWebDataForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   auto account_storage = WebDataServiceFactory::GetAutofillWebDataForAccount(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
+
+  // The HistoryServiceFactory redirects to the original profile.
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
+
+  // This is null for OTR profiles.
   auto* strike_database = StrikeDatabaseFactory::GetForProfile(profile);
+
+  // The AutofillImageFetcherFactory redirects to the original profile.
   auto* image_fetcher = AutofillImageFetcherFactory::GetForProfile(profile);
 
+  // This is null for OTR profiles.
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+
   service->Init(local_storage, account_storage, profile->GetPrefs(),
-                g_browser_process->local_state(),
-                IdentityManagerFactory::GetForProfile(profile), history_service,
-                strike_database, image_fetcher, profile->IsOffTheRecord());
+                g_browser_process->local_state(), identity_manager,
+                history_service, strike_database, image_fetcher,
+                profile->IsOffTheRecord());
 
   if (!syncer::IsSyncAllowedByFlag())
     service->OnSyncServiceInitialized(nullptr);
