@@ -68,9 +68,6 @@ export class Background extends ChromeVoxState {
   constructor() {
     super();
 
-    /** @private {CursorRange} */
-    this.currentRange_ = null;
-
     /** @private {!AbstractEarcons} */
     this.earcons_ = new Earcons();
 
@@ -157,8 +154,8 @@ export class Background extends ChromeVoxState {
 
   /** @override */
   getCurrentRange() {
-    if (this.currentRange_?.isValid()) {
-      return this.currentRange_;
+    if (ChromeVoxRange.getCurrentRangeWithoutRecovery()?.isValid()) {
+      return ChromeVoxRange.getCurrentRangeWithoutRecovery();
     }
     return null;
   }
@@ -180,7 +177,7 @@ export class Background extends ChromeVoxState {
 
   /** @override */
   getCurrentRangeWithoutRecovery() {
-    return this.currentRange_;
+    return ChromeVoxRange.getCurrentRangeWithoutRecovery();
   }
 
   /**
@@ -188,8 +185,8 @@ export class Background extends ChromeVoxState {
    * @override
    */
   setCurrentRange(newRange) {
-    ChromeVoxRange.previous = this.currentRange_;
-    this.currentRange_ = newRange;
+    ChromeVoxRange.previous = ChromeVoxRange.getCurrentRangeWithoutRecovery();
+    ChromeVoxRange.instance.current_ = newRange;
   }
 
   /** @override */
@@ -215,7 +212,7 @@ export class Background extends ChromeVoxState {
     opt_focus = opt_focus ?? true;
     opt_speechProps = opt_speechProps ?? new TtsSpeechProperties();
     opt_skipSettingSelection = opt_skipSettingSelection ?? false;
-    const prevRange = this.currentRange_;
+    const prevRange = ChromeVoxRange.getCurrentRangeWithoutRecovery();
 
     // Specialization for math output.
     let skipOutput = false;
@@ -314,7 +311,7 @@ export class Background extends ChromeVoxState {
       return;
     }
 
-    if (!this.currentRange_?.isValid()) {
+    if (!ChromeVoxRange.getCurrentRangeWithoutRecovery()?.isValid()) {
       ChromeVoxRange.set(ChromeVoxRange.previous);
     }
   }

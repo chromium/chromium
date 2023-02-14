@@ -43,6 +43,9 @@ export class ChromeVoxRangeObserver {
 export class ChromeVoxRange {
   /** @private */
   constructor() {
+    // Temporarily public, as part of the gradual migration.
+    /** @public {?CursorRange} */
+    this.current_ = null;
     /** @private {?CursorRange} */
     this.previous_ = null;
   }
@@ -68,6 +71,11 @@ export class ChromeVoxRange {
     if (index > -1) {
       ChromeVoxRange.observers_.splice(index, 1);
     }
+  }
+
+  /** @return {?CursorRange} */
+  static getCurrentRangeWithoutRecovery() {
+    return ChromeVoxRange.instance.current_;
   }
 
   /** @return {?CursorRange} */
