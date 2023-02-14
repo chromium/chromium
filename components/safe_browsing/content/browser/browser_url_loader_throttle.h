@@ -210,6 +210,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // The time when we started deferring the request.
   base::TimeTicks defer_start_time_;
   bool deferred_ = false;
+  // Whether the response loaded is from cache.
+  bool is_response_from_cache_ = false;
 
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;

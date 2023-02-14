@@ -8,7 +8,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/test/browser_task_environment.h"
@@ -289,7 +291,18 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
     return defer;
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  // This function returns the value of |defer| after the function is called.
+  bool CallWillProcessResponseFromCache() {
+    bool defer = false;
+    response_head_->was_fetched_via_cache = true;
+    response_head_->network_accessed = false;
+    throttle_->WillProcessResponse(url_, response_head_.get(), &defer);
+    task_environment_.RunUntilIdle();
+    return defer;
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   GURL url_;
   network::mojom::URLResponseHeadPtr response_head_;
   std::unique_ptr<BrowserURLLoaderThrottle> throttle_;
@@ -453,6 +466,94 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
 
   CallWillStartRequest();
   EXPECT_EQ(throttle_delegate_->GetErrorCode(), net::ERR_ABORTED);
+}
+
+TEST_F(SBBrowserUrlLoaderThrottleTest,
+       VerifyTotalDelayHistograms_FastCheckFromNetwork) {
+  base::HistogramTester histograms;
+  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                /*should_show_interstitial=*/false,
+                                /*should_delay_callback=*/false);
+
+  CallWillStartRequest();
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  CallWillProcessResponse();
+
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.HashBasedCheck",
+      base::Milliseconds(0), 1);
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.FromNetwork",
+      base::Milliseconds(0), 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.FromCache", 0);
+}
+
+TEST_F(SBBrowserUrlLoaderThrottleTest,
+       VerifyTotalDelayHistograms_FastCheckFromCache) {
+  base::HistogramTester histograms;
+  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                /*should_show_interstitial=*/false,
+                                /*should_delay_callback=*/false);
+
+  CallWillStartRequest();
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  CallWillProcessResponseFromCache();
+
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.HashBasedCheck",
+      base::Milliseconds(0), 1);
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.FromCache",
+      base::Milliseconds(0), 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.FromNetwork", 0);
+}
+
+TEST_F(SBBrowserUrlLoaderThrottleTest,
+       VerifyTotalDelayHistograms_SlowCheckFromNetwork) {
+  base::HistogramTester histograms;
+  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                /*should_show_interstitial=*/false,
+                                /*should_delay_callback=*/true);
+
+  CallWillStartRequest();
+  CallWillProcessResponse();
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  url_checker_->RestartDelayedCallback(/*index=*/0);
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.HashBasedCheck",
+      base::Milliseconds(200), 1);
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.FromNetwork",
+      base::Milliseconds(200), 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.FromCache", 0);
+}
+
+TEST_F(SBBrowserUrlLoaderThrottleTest,
+       VerifyTotalDelayHistograms_SlowCheckFromCache) {
+  base::HistogramTester histograms;
+  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                /*should_show_interstitial=*/false,
+                                /*should_delay_callback=*/true);
+
+  CallWillStartRequest();
+  CallWillProcessResponseFromCache();
+  task_environment_.FastForwardBy(base::Milliseconds(200));
+  url_checker_->RestartDelayedCallback(/*index=*/0);
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.HashBasedCheck",
+      base::Milliseconds(200), 1);
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.FromCache",
+      base::Milliseconds(200), 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.BrowserThrottle.TotalDelay2.FromNetwork", 0);
 }
 
 }  // namespace safe_browsing

@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
@@ -32,34 +33,75 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
       network::mojom::RequestDestination request_destination,
       bool has_user_gesture,
       bool originated_from_service_worker,
-      CreateCheckerAndCheckCallback callback) override {}
+      CreateCheckerAndCheckCallback callback) override {
+    if (should_delay_callback_) {
+      pending_callback_ = std::move(callback);
+      receiver_ = std::move(receiver);
+    } else {
+      std::move(callback).Run(/*slow_check_notifier=*/mojo::NullReceiver(),
+                              /*proceed=*/true, /*show_interstitial=*/false,
+                              /*did_perform_real_time_check=*/false,
+                              /*did_check_allowlist=*/false);
+    }
+  }
 
   void Clone(mojo::PendingReceiver<mojom::SafeBrowsing> receiver) override {
     NOTREACHED();
   }
+
+  void RestartDelayedCallback() {
+    ASSERT_TRUE(should_delay_callback_);
+    std::move(pending_callback_)
+        .Run(/*slow_check_notifier=*/mojo::NullReceiver(),
+             /*proceed=*/true, /*show_interstitial=*/false,
+             /*did_perform_real_time_check=*/false,
+             /*did_check_allowlist=*/false);
+  }
+
+  void EnableDelayCallback() { should_delay_callback_ = true; }
+
+ private:
+  bool should_delay_callback_ = false;
+  mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver_;
+  CreateCheckerAndCheckCallback pending_callback_;
+};
+
+class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
+ public:
+  ~MockThrottleDelegate() override = default;
+
+  void CancelWithError(int error_code,
+                       base::StringPiece custom_reason) override {}
+  void Resume() override {}
 };
 
 class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
  protected:
   SBRendererUrlLoaderThrottleTest() : mojo_receiver_(&safe_browsing_) {
     mojo_receiver_.Bind(safe_browsing_remote_.BindNewPipeAndPassReceiver());
+    throttle_delegate_ = std::make_unique<MockThrottleDelegate>();
     throttle_ = std::make_unique<RendererURLLoaderThrottle>(
         safe_browsing_remote_.get(), MSG_ROUTING_NONE);
+    throttle_->set_delegate(throttle_delegate_.get());
   }
 
-  base::test::TaskEnvironment message_loop_;
+  base::test::TaskEnvironment message_loop_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeSafeBrowsing safe_browsing_;
   mojo::Receiver<mojom::SafeBrowsing> mojo_receiver_;
   mojo::Remote<mojom::SafeBrowsing> safe_browsing_remote_;
   std::unique_ptr<RendererURLLoaderThrottle> throttle_;
+  std::unique_ptr<MockThrottleDelegate> throttle_delegate_;
 };
 
 TEST_F(SBRendererUrlLoaderThrottleTest, DefersHttpsUrl) {
+  safe_browsing_.EnableDelayCallback();
   GURL url("https://example.com/");
   bool defer = false;
   network::ResourceRequest request;
   request.url = url;
   throttle_->WillStartRequest(&request, &defer);
+  message_loop_.RunUntilIdle();
 
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
@@ -76,6 +118,111 @@ TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferChromeUrl) {
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
+}
+
+TEST_F(SBRendererUrlLoaderThrottleTest,
+       VerifyTotalDelayHistograms_DoesNotDefer) {
+  base::HistogramTester histograms;
+  GURL url("https://example.com/");
+  bool defer = false;
+  network::ResourceRequest request;
+  request.url = url;
+  throttle_->WillStartRequest(&request, &defer);
+  message_loop_.RunUntilIdle();
+
+  message_loop_.FastForwardBy(base::Milliseconds(200));
+  auto response_head = network::mojom::URLResponseHead::New();
+  throttle_->WillProcessResponse(url, response_head.get(), &defer);
+
+  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay2",
+                                    base::Milliseconds(0), 1);
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork",
+      base::Milliseconds(0), 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache", 0);
+}
+
+TEST_F(SBRendererUrlLoaderThrottleTest,
+       VerifyTotalDelayHistograms_DoesNotDeferFromCache) {
+  base::HistogramTester histograms;
+  GURL url("https://example.com/");
+  bool defer = false;
+  network::ResourceRequest request;
+  request.url = url;
+  throttle_->WillStartRequest(&request, &defer);
+  message_loop_.RunUntilIdle();
+
+  message_loop_.FastForwardBy(base::Milliseconds(200));
+  auto response_head = network::mojom::URLResponseHead::New();
+  // Set up a "cache" response.
+  response_head->was_fetched_via_cache = true;
+  response_head->network_accessed = false;
+  throttle_->WillProcessResponse(url, response_head.get(), &defer);
+
+  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay2",
+                                    base::Milliseconds(0), 1);
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache",
+      base::Milliseconds(0), 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork", 0);
+}
+
+TEST_F(SBRendererUrlLoaderThrottleTest, VerifyTotalDelayHistograms_Defer) {
+  base::HistogramTester histograms;
+  safe_browsing_.EnableDelayCallback();
+  GURL url("https://example.com/");
+  bool defer = false;
+  network::ResourceRequest request;
+  request.url = url;
+  throttle_->WillStartRequest(&request, &defer);
+  message_loop_.RunUntilIdle();
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  throttle_->WillProcessResponse(url, response_head.get(), &defer);
+
+  message_loop_.FastForwardBy(base::Milliseconds(200));
+  safe_browsing_.RestartDelayedCallback();
+  message_loop_.RunUntilIdle();
+
+  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay2",
+                                    base::Milliseconds(200), 1);
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork",
+      base::Milliseconds(200), 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache", 0);
+}
+
+TEST_F(SBRendererUrlLoaderThrottleTest,
+       VerifyTotalDelayHistograms_DeferFromCache) {
+  base::HistogramTester histograms;
+  safe_browsing_.EnableDelayCallback();
+  GURL url("https://example.com/");
+  bool defer = false;
+  network::ResourceRequest request;
+  request.url = url;
+  throttle_->WillStartRequest(&request, &defer);
+  message_loop_.RunUntilIdle();
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  // Set up a "cache" response.
+  response_head->was_fetched_via_cache = true;
+  response_head->network_accessed = false;
+  throttle_->WillProcessResponse(url, response_head.get(), &defer);
+
+  message_loop_.FastForwardBy(base::Milliseconds(200));
+  safe_browsing_.RestartDelayedCallback();
+  message_loop_.RunUntilIdle();
+
+  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay2",
+                                    base::Milliseconds(200), 1);
+  histograms.ExpectUniqueTimeSample(
+      "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache",
+      base::Milliseconds(200), 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork", 0);
 }
 
 }  // namespace safe_browsing

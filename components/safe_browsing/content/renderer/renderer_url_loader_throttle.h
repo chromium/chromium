@@ -38,6 +38,14 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest, DefersHttpsUrl);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            DoesNotDeferChromeUrl);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           VerifyTotalDelayHistograms_DoesNotDefer);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           VerifyTotalDelayHistograms_DoesNotDeferFromCache);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           VerifyTotalDelayHistograms_Defer);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           VerifyTotalDelayHistograms_DeferFromCache);
 
   // blink::URLLoaderThrottle implementation.
   void DetachFromCurrentSequence() override;
@@ -98,6 +106,8 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
   // The time when we started deferring the request.
   base::TimeTicks defer_start_time_;
   bool deferred_ = false;
+  // Whether the response loaded is from cache.
+  bool is_response_from_cache_ = false;
 
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;

@@ -33,6 +33,9 @@ namespace {
 
 constexpr char kFullURLLookup[] = "FullUrlLookup";
 
+constexpr char kFromCacheUmaSuffix[] = ".FromCache";
+constexpr char kFromNetworkUmaSuffix[] = ".FromNetwork";
+
 void LogTotalDelay2Metrics(const std::string& url_check_type,
                            bool did_check_allowlist,
                            base::TimeDelta total_delay) {
@@ -47,6 +50,15 @@ void LogTotalDelay2Metrics(const std::string& url_check_type,
              did_check_allowlist ? ".AllowlistChecked" : ".AllowlistBypassed"}),
         total_delay);
   }
+}
+
+void LogTotalDelay2MetricsWithResponseType(bool is_response_from_cache,
+                                           base::TimeDelta total_delay) {
+  base::UmaHistogramTimes(
+      base::StrCat({"SafeBrowsing.BrowserThrottle.TotalDelay2",
+                    is_response_from_cache ? kFromCacheUmaSuffix
+                                           : kFromNetworkUmaSuffix}),
+      total_delay);
 }
 
 }  // namespace
@@ -370,18 +382,23 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
   base::UmaHistogramBoolean(
       "SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse",
       check_completed);
+  is_response_from_cache_ =
+      response_head->was_fetched_via_cache && !response_head->network_accessed;
   if (is_start_request_called_) {
     base::TimeTicks process_time = base::TimeTicks::Now();
     base::UmaHistogramTimes(
         "SafeBrowsing.BrowserThrottle.IntervalBetweenStartAndProcess",
         process_time - start_request_time_);
-    bool is_response_from_cache = response_head->was_fetched_via_cache &&
-                                  !response_head->network_accessed;
     base::UmaHistogramTimes(
         base::StrCat(
             {"SafeBrowsing.BrowserThrottle.IntervalBetweenStartAndProcess",
-             is_response_from_cache ? ".FromCache" : ".FromNetwork"}),
+             is_response_from_cache_ ? kFromCacheUmaSuffix
+                                     : kFromNetworkUmaSuffix}),
         process_time - start_request_time_);
+    if (check_completed) {
+      LogTotalDelay2MetricsWithResponseType(is_response_from_cache_,
+                                            base::TimeDelta());
+    }
     is_start_request_called_ = false;
   }
 
@@ -430,6 +447,8 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(bool slow_check,
     // If the resource load is currently deferred, there is a delay.
     if (deferred_) {
       total_delay_ = base::TimeTicks::Now() - defer_start_time_;
+      LogTotalDelay2MetricsWithResponseType(is_response_from_cache_,
+                                            total_delay_);
     }
     std::string url_check_type =
         (did_perform_real_time_check)
