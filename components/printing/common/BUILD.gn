@@ -11,6 +11,8 @@ static_library("common") {
   sources = [
     "cloud_print_cdd_conversion.cc",
     "cloud_print_cdd_conversion.h",
+    "print_params.cc",
+    "print_params.h",
   ]
 
   deps = [

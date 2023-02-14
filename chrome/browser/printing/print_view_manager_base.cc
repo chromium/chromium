@@ -34,6 +34,7 @@
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_manager_utils.h"
 #include "components/printing/common/print.mojom.h"
+#include "components/printing/common/print_params.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -83,6 +84,7 @@ using PrintSettingsCallback =
 
 void OnDidGetDefaultPrintSettings(
     scoped_refptr<PrintQueriesQueue> queue,
+    bool want_pdf_settings,
     std::unique_ptr<PrinterQuery> printer_query,
     mojom::PrintManagerHost::GetDefaultPrintSettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -92,6 +94,12 @@ void OnDidGetDefaultPrintSettings(
     RenderParamsFromPrintSettings(printer_query->settings(), params.get());
     params->document_cookie = printer_query->cookie();
   }
+
+#if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
+  if (!want_pdf_settings && !PrintMsgPrintParamsIsValid(*params)) {
+    ShowPrintErrorDialogForInvalidPrinterError();
+  }
+#endif
 
   std::move(callback).Run(std::move(params));
 
@@ -574,7 +582,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
   // will hang until the settings are retrieved.
   auto* printer_query_ptr = printer_query.get();
   printer_query_ptr->GetDefaultSettings(
-      base::BindOnce(&OnDidGetDefaultPrintSettings, queue_,
+      base::BindOnce(&OnDidGetDefaultPrintSettings, queue_, want_pdf_settings,
                      std::move(printer_query), std::move(callback_wrapper)),
       !render_process_host->IsPdf(), want_pdf_settings);
 }
@@ -709,12 +717,6 @@ void PrintViewManagerBase::AddObserver(Observer& observer) {
 
 void PrintViewManagerBase::RemoveObserver(Observer& observer) {
   observers_.RemoveObserver(&observer);
-}
-
-void PrintViewManagerBase::ShowInvalidPrinterSettingsError() {
-#if !BUILDFLAG(IS_ANDROID)  // Android does not implement this function.
-  ShowPrintErrorDialogForInvalidPrinterError();
-#endif
 }
 
 void PrintViewManagerBase::RenderFrameHostStateChanged(

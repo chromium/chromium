@@ -34,6 +34,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/grit/components_resources.h"
+#include "components/printing/common/print_params.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -105,8 +106,6 @@ enum PrintPreviewHelperEvents {
   PREVIEW_EVENT_MAX,
 };
 
-constexpr double kMinDpi = 1.0;
-
 // Also set in third_party/WebKit/Source/core/page/PrintContext.h
 constexpr float kPrintingMinimumShrinkFactor = 1.33333333f;
 
@@ -143,13 +142,6 @@ int GetDPI(const mojom::PrintParams& print_params) {
   return static_cast<int>(
       std::max(print_params.dpi.width(), print_params.dpi.height()));
 #endif  // BUILDFLAG(IS_APPLE)
-}
-
-bool PrintMsgPrintParamsIsValid(const mojom::PrintParams& params) {
-  return !params.content_size.IsEmpty() && !params.page_size.IsEmpty() &&
-         !params.printable_area.IsEmpty() && params.document_cookie &&
-         params.dpi.width() > kMinDpi && params.dpi.height() > kMinDpi &&
-         params.margin_top >= 0 && params.margin_left >= 0;
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -2416,9 +2408,7 @@ bool PrintRenderFrameHelper::InitPrintSettings(bool fit_to_paper_size) {
   // Check if the printer returned any settings, if the settings is empty, we
   // can safely assume there are no printer drivers configured. So we safely
   // terminate.
-  bool result = true;
-  if (!PrintMsgPrintParamsIsValid(*settings.params))
-    result = false;
+  const bool result = PrintMsgPrintParamsIsValid(*settings.params);
 
   // Reset to default values.
   ignore_css_margins_ = false;
@@ -2438,8 +2428,8 @@ bool PrintRenderFrameHelper::CalculateNumberOfPages(blink::WebLocalFrame* frame,
   DCHECK(frame);
   bool fit_to_paper_size = !IsPrintingPdfFrame(frame, node);
   if (!InitPrintSettings(fit_to_paper_size)) {
+    // Browser triggered this code path. It already knows about the failure.
     notify_browser_of_print_failure_ = false;
-    GetPrintManagerHost()->ShowInvalidPrinterSettingsError();
     return false;
   }
 
