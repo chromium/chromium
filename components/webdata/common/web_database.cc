@@ -11,9 +11,9 @@
 
 // Current version number.  Note: when changing the current version number,
 // corresponding changes must happen in the unit tests, and new migration test
-// added.  See |WebDatabaseMigrationTest::kCurrentTestedVersionNumber|.
+// added.  See `WebDatabaseMigrationTest::kCurrentTestedVersionNumber`.
 // static
-const int WebDatabase::kCurrentVersionNumber = 110;
+const int WebDatabase::kCurrentVersionNumber = 111;
 
 const int WebDatabase::kDeprecatedVersionNumber = 82;
 

@@ -631,6 +631,7 @@ void CreditCard::operator=(const CreditCard& credit_card) {
   issuer_id_ = credit_card.issuer_id_;
   instrument_id_ = credit_card.instrument_id_;
   virtual_card_enrollment_state_ = credit_card.virtual_card_enrollment_state_;
+  virtual_card_enrollment_type_ = credit_card.virtual_card_enrollment_type_;
   card_art_url_ = GURL(credit_card.card_art_url_);
   product_description_ = credit_card.product_description_;
 
@@ -732,6 +733,15 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
   }
   if (static_cast<int>(virtual_card_enrollment_state_) >
       static_cast<int>(credit_card.virtual_card_enrollment_state_)) {
+    return 1;
+  }
+
+  if (virtual_card_enrollment_type_ <
+      credit_card.virtual_card_enrollment_type_) {
+    return -1;
+  }
+  if (virtual_card_enrollment_type_ >
+      credit_card.virtual_card_enrollment_type_) {
     return 1;
   }
 

@@ -84,6 +84,19 @@ class CreditCard : public AutofillDataModel {
     UNENROLLED_AND_ELIGIBLE = 4,
   };
 
+  // The enrollment type of the virtual card attached to this card, if one is
+  // present. This must stay in sync with the proto enum in
+  // autofill_specifics.proto.
+  enum VirtualCardEnrollmentType {
+    // Type unspecified. This is the default value of this enum. Should not be
+    // used with cards that have a virtual card enrolled.
+    TYPE_UNSPECIFIED = 0,
+    // Issuer-level enrollment.
+    ISSUER = 1,
+    // Network-level enrollment.
+    NETWORK = 2,
+  };
+
   CreditCard(const std::string& guid, const std::string& origin);
 
   // Creates a server card. The type must be MASKED_SERVER_CARD or
@@ -377,6 +390,14 @@ class CreditCard : public AutofillDataModel {
     virtual_card_enrollment_state_ = virtual_card_enrollment_state;
   }
 
+  VirtualCardEnrollmentType virtual_card_enrollment_type() const {
+    return virtual_card_enrollment_type_;
+  }
+  void set_virtual_card_enrollment_type(
+      VirtualCardEnrollmentType virtual_card_enrollment_type) {
+    virtual_card_enrollment_type_ = virtual_card_enrollment_type;
+  }
+
   const GURL& card_art_url() const { return card_art_url_; }
   void set_card_art_url(const GURL& card_art_url) {
     card_art_url_ = card_art_url;
@@ -472,6 +493,13 @@ class CreditCard : public AutofillDataModel {
   // The virtual card enrollment state of this card. If it is ENROLLED, then
   // this card has virtual cards linked to it.
   VirtualCardEnrollmentState virtual_card_enrollment_state_ = UNSPECIFIED;
+
+  // The virtual card enrollment type of this card. This will be used when the
+  // enrollment type can make a difference in the functionality we offer for
+  // virtual cards. An example of differing functionality is if this virtual
+  // card enrollment type is a network-level enrollment, and we are on a URL
+  // that is opted out of virtual cards with the network of this card.
+  VirtualCardEnrollmentType virtual_card_enrollment_type_ = TYPE_UNSPECIFIED;
 
   // The url to fetch the rich card art image.
   GURL card_art_url_;
