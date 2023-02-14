@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error Platform not supported
@@ -258,12 +259,21 @@ class EnterpriseWelcomeUIDialogPixelTest
     content::TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
 
+    // ShowUi() can sometimes return before the dialog widget is shown because
+    // the call to show the latter is asynchronous. Adding
+    // NamedWidgetShownWaiter will prevent that from happening.
+    views::NamedWidgetShownWaiter widget_waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "SigninViewControllerDelegateViews");
+
     auto* controller = browser()->signin_view_controller();
     controller->ShowModalEnterpriseConfirmationDialog(
         account_info, GetParam().profile_creation_required_by_policy,
         GetParam().show_link_data_checkbox,
         GetDefaultProfileThemeColors().profile_highlight_color,
         base::DoNothing());
+
+    widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }
 
