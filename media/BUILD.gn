@@ -18,6 +18,10 @@ if (enable_library_cdms) {
   import("//media/cdm/library_cdm/cdm_paths.gni")
 }
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+}
+
 buildflag_header("media_buildflags") {
   header = "media_buildflags.h"
 
@@ -166,6 +170,13 @@ source_set("test_support") {
   ]
 }
 
+if (is_ios) {
+  bundle_data_from_filelist("unit_tests_bundle_data") {
+    testonly = true
+    filelist_name = "unit_tests_bundle_data.filelist"
+  }
+}
+
 # Contains tests for all targets in the "media" folder.
 # TODO(xhwang): Move mojo/capture/remoting tests here where applicable.
 test("media_unittests") {
@@ -247,6 +258,10 @@ test("media_unittests") {
 
   # The test needs OPUS_FIXED_POINT conditional define.
   configs += [ "//third_party/opus:opus_config" ]
+
+  if (is_ios) {
+    deps += [ ":unit_tests_bundle_data" ]
+  }
 }
 
 test("media_perftests") {

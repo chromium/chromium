@@ -10,6 +10,8 @@ for more details about the presubmit API built into depot_tools.
 
 import re
 
+PRESUBMIT_VERSION = '2.0.0'
+
 # This line is 'magic' in that git-cl looks for it to decide whether to
 # use Python3 instead of Python2 when running the code in this file.
 USE_PYTHON3 = True
@@ -235,6 +237,19 @@ def _CheckForNoV4L2AggregateInitialization(input_api, output_api):
       problems)]
   return []
 
+def _CheckChangeInBundle(input_api, output_api):
+    import sys
+    old_sys_path = sys.path[:]
+    results = []
+    try:
+        sys.path.append(input_api.change.RepositoryRoot())
+        from build.ios import presubmit_support
+        results += presubmit_support.CheckBundleData(input_api, output_api,
+                                                     'unit_tests_bundle_data')
+    finally:
+        sys.path = old_sys_path
+    return results
+
 def _CheckChange(input_api, output_api):
   results = []
   results.extend(_CheckForUseOfWrongClock(input_api, output_api))
@@ -243,6 +258,7 @@ def _CheckChange(input_api, output_api):
   results.extend(_CheckForUseOfLazyInstance(input_api, output_api))
   results.extend(_CheckNoLoggingOverrideInHeaders(input_api, output_api))
   results.extend(_CheckForNoV4L2AggregateInitialization(input_api, output_api))
+  results.extend(_CheckChangeInBundle(input_api, output_api))
   return results
 
 
