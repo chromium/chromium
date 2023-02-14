@@ -641,7 +641,7 @@ std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView(
       l10n_util::GetStringFUTF16(ID_ASH_ECHE_APP_STREAMING_BUBBLE_TITLE,
                                  phone_name),
       views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY,
-      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
+      gfx::DirectionalityMode::DIRECTIONALITY_FROM_TEXT));
   ConfigureLabelText(title);
 
   // Add minimize button
