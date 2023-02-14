@@ -22,7 +22,7 @@ public class MetricsUploadService extends Service {
         @Override
         public void uploadMetricsLog(byte[] serializedLog) {
             // TODO(crbug.com/1264425): return the status code.
-            PlatformServiceBridge.getInstance().logMetricsBlocking(serializedLog);
+            PlatformServiceBridge.getInstance().logMetricsBlocking(serializedLog, false);
         }
     };
 
