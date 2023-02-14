@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -67,7 +68,7 @@ class V8DetailedMemoryRequestQueue {
 
  private:
   void ApplyToAllRequests(
-      base::RepeatingCallback<void(V8DetailedMemoryRequest*)> callback) const;
+      base::FunctionRef<void(V8DetailedMemoryRequest*)> func) const;
 
   // Lists of requests sorted by min_time_between_requests (lowest first).
   std::vector<V8DetailedMemoryRequest*> bounded_measurement_requests_
@@ -262,12 +263,12 @@ class NodeAttachedProcessData
   NodeAttachedProcessData(const NodeAttachedProcessData&) = delete;
   NodeAttachedProcessData& operator=(const NodeAttachedProcessData&) = delete;
 
-  // Runs the given |callback| for every ProcessNode in |graph| with type
+  // Runs the given `func` for every ProcessNode in `graph` with type
   // PROCESS_TYPE_RENDERER, passing the NodeAttachedProcessData attached to the
   // node.
   static void ApplyToAllRenderers(
       Graph* graph,
-      base::RepeatingCallback<void(NodeAttachedProcessData*)> callback);
+      base::FunctionRef<void(NodeAttachedProcessData*)> func);
 
   const V8DetailedMemoryProcessData* data() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -357,7 +358,7 @@ NodeAttachedProcessData::NodeAttachedProcessData(
 // static
 void NodeAttachedProcessData::ApplyToAllRenderers(
     Graph* graph,
-    base::RepeatingCallback<void(NodeAttachedProcessData*)> callback) {
+    base::FunctionRef<void(NodeAttachedProcessData*)> func) {
   for (const ProcessNode* node : graph->GetAllProcessNodes()) {
     NodeAttachedProcessData* process_data = NodeAttachedProcessData::Get(node);
     if (!process_data) {
@@ -366,7 +367,7 @@ void NodeAttachedProcessData::ApplyToAllRenderers(
       DCHECK_NE(content::PROCESS_TYPE_RENDERER, node->GetProcessType());
       continue;
     }
-    callback.Run(process_data);
+    func(process_data);
   }
 }
 
@@ -717,8 +718,7 @@ void V8DetailedMemoryDecorator::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(graph, graph_);
 
-  ApplyToAllRequestQueues(
-      base::BindRepeating(&V8DetailedMemoryRequestQueue::OnOwnerUnregistered));
+  ApplyToAllRequestQueues(&V8DetailedMemoryRequestQueue::OnOwnerUnregistered);
   UpdateProcessMeasurementSchedules();
 
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
@@ -818,28 +818,22 @@ void V8DetailedMemoryDecorator::RemoveMeasurementRequest(
   // Attempt to remove this request from all process-specific queues and the
   // global queue. It will only be in one of them.
   size_t removal_count = 0;
-  ApplyToAllRequestQueues(base::BindRepeating(
-      // Raw pointers are safe because this callback is synchronous.
-      [](V8DetailedMemoryRequest* request, size_t* removal_count,
-         V8DetailedMemoryRequestQueue* queue) {
-        (*removal_count) += queue->RemoveMeasurementRequest(request);
-      },
-      request, &removal_count));
+  ApplyToAllRequestQueues(
+      [request, &removal_count](V8DetailedMemoryRequestQueue* queue) {
+        removal_count += queue->RemoveMeasurementRequest(request);
+      });
   DCHECK_EQ(removal_count, 1ULL);
   UpdateProcessMeasurementSchedules();
 }
 
 void V8DetailedMemoryDecorator::ApplyToAllRequestQueues(
-    RequestQueueCallback callback) const {
+    base::FunctionRef<void(V8DetailedMemoryRequestQueue*)> func) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  callback.Run(measurement_requests_.get());
+  func(measurement_requests_.get());
   NodeAttachedProcessData::ApplyToAllRenderers(
-      graph_, base::BindRepeating(
-                  [](RequestQueueCallback callback,
-                     NodeAttachedProcessData* process_data) {
-                    callback.Run(&process_data->process_measurement_requests());
-                  },
-                  std::move(callback)));
+      graph_, [func](NodeAttachedProcessData* process_data) {
+        func(&process_data->process_measurement_requests());
+      });
 }
 
 void V8DetailedMemoryDecorator::UpdateProcessMeasurementSchedules() const {
@@ -847,8 +841,7 @@ void V8DetailedMemoryDecorator::UpdateProcessMeasurementSchedules() const {
   DCHECK(graph_);
   measurement_requests_->Validate();
   NodeAttachedProcessData::ApplyToAllRenderers(
-      graph_,
-      base::BindRepeating(&NodeAttachedProcessData::ScheduleNextMeasurement));
+      graph_, &NodeAttachedProcessData::ScheduleNextMeasurement);
 }
 
 void V8DetailedMemoryDecorator::NotifyObserversOnMeasurementAvailable(
@@ -974,19 +967,17 @@ void V8DetailedMemoryRequestQueue::NotifyObserversOnMeasurementAvailable(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Raw pointers are safe because the callback is synchronous.
-  ApplyToAllRequests(base::BindRepeating(
-      [](const ProcessNode* process_node, V8DetailedMemoryRequest* request) {
-        request->NotifyObserversOnMeasurementAvailable(
-            base::PassKey<V8DetailedMemoryRequestQueue>(), process_node);
-      },
-      process_node));
+  ApplyToAllRequests([process_node](V8DetailedMemoryRequest* request) {
+    request->NotifyObserversOnMeasurementAvailable(
+        base::PassKey<V8DetailedMemoryRequestQueue>(), process_node);
+  });
 }
 
 void V8DetailedMemoryRequestQueue::OnOwnerUnregistered() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ApplyToAllRequests(base::BindRepeating([](V8DetailedMemoryRequest* request) {
+  ApplyToAllRequests([](V8DetailedMemoryRequest* request) {
     request->OnOwnerUnregistered(base::PassKey<V8DetailedMemoryRequestQueue>());
-  }));
+  });
   bounded_measurement_requests_.clear();
   lazy_measurement_requests_.clear();
 }
@@ -1014,9 +1005,9 @@ void V8DetailedMemoryRequestQueue::Validate() {
 }
 
 void V8DetailedMemoryRequestQueue::ApplyToAllRequests(
-    base::RepeatingCallback<void(V8DetailedMemoryRequest*)> callback) const {
+    base::FunctionRef<void(V8DetailedMemoryRequest*)> func) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // First collect all requests to notify. The callback may add or remove
+  // First collect all requests to notify. The function may add or remove
   // requests from the queue, invalidating iterators.
   std::vector<V8DetailedMemoryRequest*> requests_to_notify;
   requests_to_notify.insert(requests_to_notify.end(),
@@ -1026,8 +1017,8 @@ void V8DetailedMemoryRequestQueue::ApplyToAllRequests(
                             lazy_measurement_requests_.begin(),
                             lazy_measurement_requests_.end());
   for (V8DetailedMemoryRequest* request : requests_to_notify) {
-    callback.Run(request);
-    // The callback may have deleted |request| so it is no longer safe to
+    func(request);
+    // The function may have deleted |request| so it is no longer safe to
     // reference.
   }
 }

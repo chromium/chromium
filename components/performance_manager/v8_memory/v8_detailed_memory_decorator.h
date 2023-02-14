@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
@@ -99,12 +100,10 @@ class V8DetailedMemoryDecorator
       const ProcessNode* node);
 
  private:
-  using RequestQueueCallback =
-      base::RepeatingCallback<void(V8DetailedMemoryRequestQueue*)>;
-
   // Runs the given |callback| for every V8DetailedMemoryRequestQueue (global
   // and per-process).
-  void ApplyToAllRequestQueues(RequestQueueCallback callback) const;
+  void ApplyToAllRequestQueues(
+      base::FunctionRef<void(V8DetailedMemoryRequestQueue*)> func) const;
 
   void UpdateProcessMeasurementSchedules() const;
 
