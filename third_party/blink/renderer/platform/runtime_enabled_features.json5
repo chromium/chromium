@@ -811,7 +811,8 @@
       //
       // https://csswg.sesse.net/css-nesting-1/
       name: "CSSNesting",
-      status: "stable"
+      status: "stable",
+      base_feature: "CSSNesting",
     },
     {
       name: "CSSNewRootFontUnits",
