@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessCodeCast.Session.RouteDuration" units="ms"
-    expires_after="2023-06-12">
+    expires_after="2023-08-13">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1544,7 +1544,7 @@ chromium-metrics-reviews@google.com.
   <summary>Records whenever a Blimp tab toggles visibility.</summary>
 </histogram>
 
-<histogram name="BlueZ.AdapterLost" units="seconds" expires_after="2023-06-11">
+<histogram name="BlueZ.AdapterLost" units="seconds" expires_after="2023-08-13">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1601,7 +1601,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="BlueZ.ChipLost2" units="seconds" expires_after="2023-06-11">
+<histogram name="BlueZ.ChipLost2" units="seconds" expires_after="2023-08-13">
   <owner>sonnysasaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1612,7 +1612,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.NumberOfExistingAdvertisements" units="advertisements"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1650,7 +1650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.ReasonOfDisconnection" enum="BlueZReasonOfDisconnection"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1672,7 +1672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.ResultOfConnection" enum="BlueZResultOfConnection"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1683,7 +1683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.ResultOfPairing" enum="BlueZResultOfPairing"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1706,7 +1706,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfDiscoverable" units="seconds"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1718,7 +1718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfDiscovering" units="seconds"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1730,7 +1730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfPairing" units="seconds"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1741,7 +1741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfSetupConnection" units="seconds"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1753,7 +1753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TypeOfDiscovery" enum="BlueZTypeOfDiscovery"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -2970,7 +2970,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.Viewport.IsDeviceScaleFactorOne" enum="Boolean"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>curranmax@chromium.org</owner>
   <summary>
     This records whether or not the device scale factor was exactly 1.0 or not
@@ -3406,7 +3406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.TimeToTakeAction.Abandoned" units="ms"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4904,7 +4904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.UnifiedDesktopDisplayCountRange"
-    enum="MultiDisplayModeDisplayCountRanges" expires_after="2023-06-11">
+    enum="MultiDisplayModeDisplayCountRanges" expires_after="2023-08-13">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -6294,7 +6294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.LaunchSource" enum="FirstRunLaunchSource"
-    expires_after="2023-04-01">
+    expires_after="2023-08-13">
   <owner>jlebel@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -7101,7 +7101,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Incognito.ClearBrowsingDataDialog.ActionType"
     enum="IncognitoClearBrowsingDataDialogActionType"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -8094,7 +8094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.ErrorOrResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-06-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-08-13">
   <owner>carlosil@chromium.org</owner>
   <summary>
     The net error or HTTP response code of a mixed content resource request that

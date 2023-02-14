@@ -713,7 +713,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OfflinePages.OfflineUsage" enum="OfflinePagesOfflineUsage"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>dimich@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>

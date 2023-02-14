@@ -925,7 +925,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Error" enum="AppListUserEventError"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -1508,7 +1508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListBubbleShowSource" enum="AppListShowSource"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1843,7 +1843,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListShowSource" enum="AppListShowSource"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>

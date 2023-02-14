@@ -195,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.ConsentVerifiedCount" units="count"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.DisplayCount" units="count"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordUseCount" units="count"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.QuickPasswordUseCount" units="count"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -359,7 +359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SearchCount" units="count"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -2217,7 +2217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManualFallback.PresentedOptions.Profiles" units="Profiles"
-    expires_after="2023-05-01">
+    expires_after="2023-08-13">
   <owner>tmartino@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>

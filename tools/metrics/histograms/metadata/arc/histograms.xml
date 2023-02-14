@@ -505,7 +505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppShortcutSearchResult.ShortcutStatus"
-    enum="ArcAppShortcutStatus" expires_after="2023-06-10">
+    enum="ArcAppShortcutStatus" expires_after="2023-08-13">
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -516,7 +516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppShortcutsRequest.ShortcutStatus"
-    enum="ArcAppShortcutStatus" expires_after="2023-06-10">
+    enum="ArcAppShortcutStatus" expires_after="2023-08-13">
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1372,7 +1372,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.InputOverlay.Customized" enum="BooleanEnabled"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>cuicuiruan@google.com</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -1585,7 +1585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Net.ArcNetworkError" enum="ArcNetworkError"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-networking@google.com</owner>
   <summary>
@@ -1690,7 +1690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInNetworkErrorAction" enum="ArcOptInNetworkErrorAction"
-    expires_after="2023-06-11">
+    expires_after="2023-08-13">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>

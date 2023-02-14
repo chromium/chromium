@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DocumentCheckDownloadStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2023-06-10">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2023-08-13">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DocumentContainsMacros"
-    enum="BooleanContainsMacros" expires_after="2023-06-10">
+    enum="BooleanContainsMacros" expires_after="2023-08-13">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
