@@ -70,7 +70,7 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
 
   bool Equals(const CSSImageValue&) const;
 
-  CSSImageValue* ValueWithURLMadeAbsolute() const {
+  CSSImageValue* ComputedCSSValue() const {
     return MakeGarbageCollected<CSSImageValue>(
         absolute_url_, KURL(absolute_url_), Referrer(), origin_clean_,
         is_ad_related_, cached_image_.Get());

@@ -92,7 +92,7 @@ bool CSSURIValue::Equals(const CSSURIValue& other) const {
   return absolute_url_ == other.absolute_url_;
 }
 
-CSSURIValue* CSSURIValue::ValueWithURLMadeAbsolute(
+CSSURIValue* CSSURIValue::ComputedCSSValue(
     const KURL& base_url,
     const WTF::TextEncoding& charset) const {
   if (!charset.IsValid()) {

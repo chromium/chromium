@@ -11,19 +11,19 @@
 namespace blink {
 namespace {
 
-TEST(CSSURIValueTest, ValueWithURLMadeAbsolute) {
+TEST(CSSURIValueTest, ComputedCSSValue) {
   cssvalue::CSSURIValue* rel = MakeGarbageCollected<cssvalue::CSSURIValue>(
       "a", KURL("http://foo.com/a"));
-  cssvalue::CSSURIValue* abs = rel->ValueWithURLMadeAbsolute(
-      KURL("http://bar.com"), WTF::TextEncoding());
+  cssvalue::CSSURIValue* abs =
+      rel->ComputedCSSValue(KURL("http://bar.com"), WTF::TextEncoding());
   EXPECT_EQ("url(\"http://bar.com/a\")", abs->CssText());
 }
 
-TEST(CSSURIValueTest, AlreadyAbsoluteURLMadeAbsolute) {
+TEST(CSSURIValueTest, AlreadyComputedCSSValue) {
   cssvalue::CSSURIValue* rel = MakeGarbageCollected<cssvalue::CSSURIValue>(
       "http://baz.com/a", KURL("http://baz.com/a"));
-  cssvalue::CSSURIValue* abs = rel->ValueWithURLMadeAbsolute(
-      KURL("http://bar.com"), WTF::TextEncoding());
+  cssvalue::CSSURIValue* abs =
+      rel->ComputedCSSValue(KURL("http://bar.com"), WTF::TextEncoding());
   EXPECT_EQ("url(\"http://baz.com/a\")", abs->CssText());
 }
 

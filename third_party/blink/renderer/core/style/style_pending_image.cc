@@ -43,7 +43,7 @@ CSSValue* ComputedCSSValueBuilder::CrossfadeArgument(CSSValue* value) const {
 
 CSSValue* ComputedCSSValueBuilder::Build(CSSValue* value) const {
   if (auto* image_value = DynamicTo<CSSImageValue>(value)) {
-    return image_value->ValueWithURLMadeAbsolute();
+    return image_value->ComputedCSSValue();
   }
   if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
     return image_set_value->ComputedCSSValue();

@@ -165,7 +165,7 @@ CSSImageSetValue* CSSImageSetValue::ComputedCSSValue() {
   for (auto& item : *this) {
     auto* image_value = DynamicTo<CSSImageValue>(item.Get());
     if (image_value != nullptr) {
-      value->Append(*image_value->ValueWithURLMadeAbsolute());
+      value->Append(*image_value->ComputedCSSValue());
       continue;
     }
 

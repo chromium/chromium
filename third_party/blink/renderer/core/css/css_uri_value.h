@@ -48,8 +48,8 @@ class CORE_EXPORT CSSURIValue : public CSSValue {
 
   bool Equals(const CSSURIValue&) const;
 
-  CSSURIValue* ValueWithURLMadeAbsolute(const KURL& base_url,
-                                        const WTF::TextEncoding&) const;
+  CSSURIValue* ComputedCSSValue(const KURL& base_url,
+                                const WTF::TextEncoding&) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
