@@ -8,7 +8,6 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {ShoppingListApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/commerce/shopping_list_api_proxy.js';
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
-import {BookmarkProductInfo} from 'chrome://bookmarks-side-panel.top-chrome/shopping_list.mojom-webui.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -17,8 +16,15 @@ import {TestShoppingListApiProxy} from './commerce/test_shopping_list_api_proxy.
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {TestPowerBookmarksDelegate} from './test_power_bookmarks_delegate.js';
 
+class ServiceTestPowerBookmarksDelegate extends TestPowerBookmarksDelegate {
+  override isPriceTracked(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    this.methodCalled('isPriceTracked', bookmark);
+    return bookmark.id === '3';
+  }
+}
+
 suite('SidePanelPowerBookmarksServiceTest', () => {
-  let delegate: TestPowerBookmarksDelegate;
+  let delegate: ServiceTestPowerBookmarksDelegate;
   let service: PowerBookmarksService;
   let bookmarksApi: TestBookmarksApiProxy;
   let shoppingListApi: TestShoppingListApiProxy;
@@ -62,18 +68,6 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     },
   ];
 
-  const products: BookmarkProductInfo[] = [{
-    bookmarkId: BigInt(3),
-    info: {
-      title: 'Product Foo',
-      domain: 'foo.com',
-      imageUrl: {url: 'https://foo.com/image'},
-      productUrl: {url: 'https://foo.com/product'},
-      currentPrice: '$12',
-      previousPrice: '$34',
-    },
-  }];
-
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -82,13 +76,12 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     shoppingListApi = new TestShoppingListApiProxy();
-    shoppingListApi.setProducts(products);
     ShoppingListApiProxyImpl.setInstance(shoppingListApi);
 
     const pluralString = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
 
-    delegate = new TestPowerBookmarksDelegate();
+    delegate = new ServiceTestPowerBookmarksDelegate();
     service = new PowerBookmarksService(delegate);
     service.startListening();
 

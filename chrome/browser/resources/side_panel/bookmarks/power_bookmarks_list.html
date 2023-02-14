@@ -160,13 +160,16 @@
             on-checkbox-change="onRowSelectedChange_"
             on-input-change="onRename_">
           <div slot="badges">
-            <template is="dom-if" if="[[isPriceTracked_(item)]]" restamp>
-              <sp-list-item-badge updated="[[showDiscountedPrice_(item)]]">
+            <template is="dom-if"
+                if="[[isPriceTracked(item, trackedProductInfos_.*)]]" restamp>
+              <sp-list-item-badge updated="[[showDiscountedPrice_(
+                                             item, trackedProductInfos_.*)]]">
                 <iron-icon icon="bookmarks:price-tracking"></iron-icon>
-                <div>[[getCurrentPrice_(item)]]</div>
+                <div>[[getCurrentPrice_(item, trackedProductInfos_.*)]]</div>
                 <div slot="previous-badge"
-                    hidden$="[[!showDiscountedPrice_(item)]]">
-                  [[getPreviousPrice_(item)]]
+                    hidden$="[[!showDiscountedPrice_(
+                                item, trackedProductInfos_.*)]]">
+                  [[getPreviousPrice_(item, trackedProductInfos_.*)]]
                 </div>
               </sp-list-item-badge>
             </template>

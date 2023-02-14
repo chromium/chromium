@@ -8,8 +8,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
-import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shopping_list_api_proxy.js';
-import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
 
 export interface Label {
   label: string;
@@ -33,18 +31,15 @@ interface PowerBookmarksDelegate {
       oldParent: chrome.bookmarks.BookmarkTreeNode,
       newParent: chrome.bookmarks.BookmarkTreeNode): void;
   onBookmarkRemoved(bookmark: chrome.bookmarks.BookmarkTreeNode): void;
+  isPriceTracked(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean;
 }
 
 export class PowerBookmarksService {
   private delegate_: PowerBookmarksDelegate;
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private shoppingListApi_: ShoppingListApiProxy =
-      ShoppingListApiProxyImpl.getInstance();
   private listeners_ = new Map<string, Function>();
   private folders_: chrome.bookmarks.BookmarkTreeNode[] = [];
-  private productInfos_ = new Map<string, BookmarkProductInfo>();
-  private shoppingListenerIds_: number[] = [];
 
   constructor(delegate: PowerBookmarksDelegate) {
     this.delegate_ = delegate;
@@ -88,20 +83,6 @@ export class PowerBookmarksService {
           });
       this.delegate_.onBookmarksLoaded();
     });
-    this.shoppingListApi_.getAllPriceTrackedBookmarkProductInfo().then(res => {
-      res.productInfos.forEach(
-          product =>
-              this.productInfos_.set(product.bookmarkId.toString(), product));
-      if (this.productInfos_.size > 0) {
-        chrome.metricsPrivate.recordUserAction(
-            'Commerce.PriceTracking.SidePanel.TrackedProductsShown');
-      }
-    });
-    const callbackRouter = this.shoppingListApi_.getCallbackRouter();
-    this.shoppingListenerIds_.push(
-        callbackRouter.priceTrackedForBookmark.addListener(
-            () => this.onBookmarkPriceTracked_()),
-    );
   }
 
   /**
@@ -112,8 +93,6 @@ export class PowerBookmarksService {
     for (const [eventName, callback] of this.listeners_.entries()) {
       this.bookmarksApi_.callbackRouter[eventName]!.removeListener(callback);
     }
-    this.shoppingListenerIds_.forEach(
-        id => this.shoppingListApi_.getCallbackRouter().removeListener(id));
   }
 
   /**
@@ -235,14 +214,6 @@ export class PowerBookmarksService {
     return folder.children!.findIndex(b => b.url === url) === -1;
   }
 
-  /**
-   * Returns shopping information associated with the given bookmark.
-   */
-  getProductInfo(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      BookmarkProductInfo|undefined {
-    return this.productInfos_.get(bookmark.id);
-  }
-
   private addListener_(eventName: string, callback: Function): void {
     this.bookmarksApi_.callbackRouter[eventName]!.addListener(callback);
     this.listeners_.set(eventName, callback);
@@ -295,7 +266,6 @@ export class PowerBookmarksService {
     const removedNode = oldPath.pop()!;
     const oldParent = oldPath[oldPath.length - 1]!;
     oldParent.children!.splice(oldParent.children!.indexOf(removedNode), 1);
-    this.productInfos_.delete(id);
     this.delegate_.onBookmarkRemoved(removedNode);
     this.findBookmarkDescriptions_(oldParent, false);
   }
@@ -396,17 +366,9 @@ export class PowerBookmarksService {
       bookmark: chrome.bookmarks.BookmarkTreeNode, labels: Label[]): boolean {
     // Price tracking label
     if (labels[0] && labels[0]!.active &&
-        !this.productInfos_.has(bookmark.id)) {
+        !this.delegate_.isPriceTracked(bookmark)) {
       return false;
     }
     return true;
-  }
-
-  private onBookmarkPriceTracked_() {
-    if (this.productInfos_.size > 0) {
-      return;
-    }
-    chrome.metricsPrivate.recordUserAction(
-        'Commerce.PriceTracking.SidePanel.TrackedProductsShown');
   }
 }

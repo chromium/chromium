@@ -15,6 +15,7 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
       'onBookmarkCreated',
       'onBookmarkMoved',
       'onBookmarkRemoved',
+      'isPriceTracked',
     ]);
   }
 
@@ -55,5 +56,10 @@ export class TestPowerBookmarksDelegate extends TestBrowserProxy {
 
   onBookmarkRemoved(bookmark: chrome.bookmarks.BookmarkTreeNode) {
     this.methodCalled('onBookmarkRemoved', bookmark);
+  }
+
+  isPriceTracked(bookmark: chrome.bookmarks.BookmarkTreeNode) {
+    this.methodCalled('isPriceTracked', bookmark);
+    return false;
   }
 }

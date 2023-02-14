@@ -14,6 +14,7 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {ActionSource} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
+import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shopping_list_api_proxy.js';
 import {getTemplate} from './power_bookmarks_context_menu.html.js';
 
 export interface PowerBookmarksContextMenuElement {
@@ -28,14 +29,16 @@ export enum MenuItemId {
   OPEN_INCOGNITO = 2,
   ADD_TO_BOOKMARKS_BAR = 3,
   REMOVE_FROM_BOOKMARKS_BAR = 4,
-  RENAME = 5,
-  DELETE = 6,
-  DIVIDER = 7,
+  TRACK_PRICE = 5,
+  RENAME = 6,
+  DELETE = 7,
+  DIVIDER = 8,
 }
 
 export interface MenuItem {
   id: MenuItemId;
   label?: string;
+  trailingIcon?: string;
 }
 
 export class PowerBookmarksContextMenuElement extends PolymerElement {
@@ -55,16 +58,27 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
 
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private bookmarks_: chrome.bookmarks.BookmarkTreeNode[];
+  private shoppingListApi_: ShoppingListApiProxy =
+      ShoppingListApiProxyImpl.getInstance();
+  private bookmarks_: chrome.bookmarks.BookmarkTreeNode[] = [];
+  private priceTracked_: boolean;
+  private priceTrackingEligible_: boolean;
 
-  showAt(event: MouseEvent, bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
+  showAt(
+      event: MouseEvent, bookmarks: chrome.bookmarks.BookmarkTreeNode[],
+      priceTracked: boolean, priceTrackingEligible: boolean) {
     this.bookmarks_ = bookmarks;
+    this.priceTracked_ = priceTracked;
+    this.priceTrackingEligible_ = priceTrackingEligible;
     this.$.menu.showAt(event.target as HTMLElement);
   }
 
   showAtPosition(
-      event: MouseEvent, bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
+      event: MouseEvent, bookmarks: chrome.bookmarks.BookmarkTreeNode[],
+      priceTracked: boolean, priceTrackingEligible: boolean) {
     this.bookmarks_ = bookmarks;
+    this.priceTracked_ = priceTracked;
+    this.priceTrackingEligible_ = priceTrackingEligible;
     this.$.menu.showAtPosition({top: event.clientY, left: event.clientX});
   }
 
@@ -96,7 +110,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       });
     }
 
-    if (this.bookmarks_.length > 1 ||
+    if (this.bookmarks_.length !== 1 ||
         this.bookmarks_[0]!.id === loadTimeData.getString('bookmarksBarId')) {
       return menuItems;
     }
@@ -116,6 +130,17 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
         id: MenuItemId.ADD_TO_BOOKMARKS_BAR,
         label: loadTimeData.getString('menuMoveToBookmarksBar'),
       });
+    }
+
+    if (this.priceTrackingEligible_) {
+      menuItems.push(
+          {id: MenuItemId.DIVIDER},
+          {
+            id: MenuItemId.TRACK_PRICE,
+            label: loadTimeData.getString('menuTrackPrice'),
+            trailingIcon: this.priceTracked_ ? 'cr:check' : undefined,
+          },
+      );
     }
 
     menuItems.push(
@@ -165,6 +190,19 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       case MenuItemId.REMOVE_FROM_BOOKMARKS_BAR:
         this.bookmarksApi_.contextMenuRemoveFromBookmarksBar(
             this.bookmarks_[0]!.id, ActionSource.kBookmark);
+        break;
+      case MenuItemId.TRACK_PRICE:
+        if (this.priceTracked_) {
+          this.shoppingListApi_.untrackPriceForBookmark(
+              BigInt(this.bookmarks_[0]!.id));
+          chrome.metricsPrivate.recordUserAction(
+              'Commerce.PriceTracking.SidePanel.Untrack.ContextMenu');
+        } else {
+          this.shoppingListApi_.trackPriceForBookmark(
+              BigInt(this.bookmarks_[0]!.id));
+          chrome.metricsPrivate.recordUserAction(
+              'Commerce.PriceTracking.SidePanel.Track.ContextMenu');
+        }
         break;
       case MenuItemId.RENAME:
         this.dispatchEvent(new CustomEvent('rename-clicked', {

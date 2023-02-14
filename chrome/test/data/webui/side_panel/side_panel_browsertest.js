@@ -29,6 +29,18 @@ TEST_F('SidePanelBookmarksListTest', 'All', function() {
   mocha.run();
 });
 
+var SidePanelPowerBookmarksContextMenuTest =
+    class extends SidePanelBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://bookmarks-side-panel.top-chrome/test_loader.html?module=side_panel/bookmarks/power_bookmarks_context_menu_test.js';
+  }
+};
+
+TEST_F('SidePanelPowerBookmarksContextMenuTest', 'All', function() {
+  mocha.run();
+});
+
 var SidePanelPowerBookmarksEditDialogTest = class extends SidePanelBrowserTest {
   /** @override */
   get browsePreload() {
