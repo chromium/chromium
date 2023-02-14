@@ -371,7 +371,9 @@ inline constexpr unsigned short GetReferenceableValue(               // NOLINT
   return t;
 }
 inline constexpr int GetReferenceableValue(int t) { return t; }
-inline unsigned int GetReferenceableValue(unsigned int t) { return t; }
+inline constexpr unsigned int GetReferenceableValue(unsigned int t) {
+  return t;
+}
 inline constexpr long GetReferenceableValue(long t) { return t; }  // NOLINT
 inline constexpr unsigned long GetReferenceableValue(              // NOLINT
     unsigned long t) {                                             // NOLINT

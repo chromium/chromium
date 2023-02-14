@@ -1014,6 +1014,7 @@ absl_cc_test(
     absl::flags_program_name
     absl::log
     absl::log_internal_test_helpers
+    absl::log_severity
     absl::strerror
     absl::strings
     absl::str_format

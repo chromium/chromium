@@ -889,7 +889,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #error ABSL_INTERNAL_HAVE_SSE cannot be directly set
 #elif defined(__SSE__)
 #define ABSL_INTERNAL_HAVE_SSE 1
-#elif defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP >= 1)
+#elif (defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP >= 1)) && \
+    !defined(_M_ARM64EC)
 // MSVC only defines _M_IX86_FP for x86 32-bit code, and _M_IX86_FP >= 1
 // indicates that at least SSE was targeted with the /arch:SSE option.
 // All x86-64 processors support SSE, so support can be assumed.
@@ -904,7 +905,8 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #error ABSL_INTERNAL_HAVE_SSE2 cannot be directly set
 #elif defined(__SSE2__)
 #define ABSL_INTERNAL_HAVE_SSE2 1
-#elif defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP >= 2)
+#elif (defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP >= 2)) && \
+    !defined(_M_ARM64EC)
 // MSVC only defines _M_IX86_FP for x86 32-bit code, and _M_IX86_FP >= 2
 // indicates that at least SSE2 was targeted with the /arch:SSE2 option.
 // All x86-64 processors support SSE2, so support can be assumed.

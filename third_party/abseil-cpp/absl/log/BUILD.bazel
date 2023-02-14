@@ -546,6 +546,7 @@ cc_test(
     deps = [
         ":check",
         ":log",
+        "//absl/base:log_severity",
         "//absl/base:strerror",
         "//absl/flags:program_name",
         "//absl/log/internal:test_helpers",

@@ -53,6 +53,7 @@ cc_library(
 
 cc_library(
     name = "kernel_timeout_internal",
+    srcs = ["internal/kernel_timeout.cc"],
     hdrs = ["internal/kernel_timeout.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -60,9 +61,22 @@ cc_library(
         "//absl/synchronization:__pkg__",
     ],
     deps = [
-        "//absl/base:core_headers",
+        "//absl/base:config",
         "//absl/base:raw_logging_internal",
         "//absl/time",
+    ],
+)
+
+cc_test(
+    name = "kernel_timeout_internal_test",
+    srcs = ["internal/kernel_timeout_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":kernel_timeout_internal",
+        "//absl/base:config",
+        "//absl/time",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 

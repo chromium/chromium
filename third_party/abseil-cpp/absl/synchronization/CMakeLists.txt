@@ -39,12 +39,28 @@ absl_cc_library(
     kernel_timeout_internal
   HDRS
     "internal/kernel_timeout.h"
+  SRCS
+    "internal/kernel_timeout.cc"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
-    absl::core_headers
+    absl::config
     absl::raw_logging_internal
     absl::time
+)
+
+absl_cc_test(
+  NAME
+    kernel_timeout_internal_test
+  SRCS
+    "internal/kernel_timeout_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::kernel_timeout_internal
+    absl::config
+    absl::time
+    GTest::gmock_main
 )
 
 absl_cc_library(

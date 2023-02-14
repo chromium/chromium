@@ -363,6 +363,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "synchronization/internal/graphcycles.cc"
   "synchronization/internal/graphcycles.h"
   "synchronization/internal/kernel_timeout.h"
+  "synchronization/internal/kernel_timeout.cc"
   "synchronization/internal/per_thread_sem.cc"
   "synchronization/internal/per_thread_sem.h"
   "synchronization/internal/thread_pool.h"

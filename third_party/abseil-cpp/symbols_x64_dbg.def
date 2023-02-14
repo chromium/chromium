@@ -1514,6 +1514,7 @@ EXPORTS
     ??0InlineRep@Cord@absl@@QEAA@W4DefaultInitType@InlineData@cord_internal@2@@Z
     ??0InlineRep@Cord@absl@@QEAA@XZ
     ??0InputValue@UnboundConversion@str_format_internal@absl@@QEAA@XZ
+    ??0KernelTimeout@synchronization_internal@absl@@QEAA@VDuration@2@@Z
     ??0KernelTimeout@synchronization_internal@absl@@QEAA@VTime@2@@Z
     ??0KernelTimeout@synchronization_internal@absl@@QEAA@XZ
     ??0LockHolder@synchronization_internal@absl@@QEAA@PEAU_RTL_SRWLOCK@@@Z
@@ -2698,7 +2699,7 @@ EXPORTS
     ?IDivDuration@absl@@YA_JVDuration@1@0PEAV21@@Z
     ?IDivDuration@time_internal@absl@@YA_J_NVDuration@2@1PEAV32@@Z
     ?In@Time@absl@@QEBA?AUBreakdown@12@VTimeZone@2@@Z
-    ?InMillisecondsFromNow@KernelTimeout@synchronization_internal@absl@@AEBAKXZ
+    ?InMillisecondsFromNow@KernelTimeout@synchronization_internal@absl@@QEBAKXZ
     ?Increment@RefcountAndFlags@cord_internal@absl@@QEAAXXZ
     ?IncrementSynchSem@Mutex@absl@@CAXPEAV12@PEAUPerThreadSynch@base_internal@2@@Z
     ?IndexBefore@CordRepBtree@cord_internal@absl@@AEBA?AUPosition@123@U4123@_K@Z
@@ -2816,6 +2817,8 @@ EXPORTS
     ?LowLevelHash@hash_internal@absl@@YA_KPEBX_K1QEB_K@Z
     ?LowLevelHashImpl@MixingHashState@hash_internal@absl@@CA_KPEBE_K@Z
     ?LowestBitSet@?$NonIterableBitMask@I$0BA@$0A@@container_internal@absl@@QEBAIXZ
+    ?MakeAbsNanos@KernelTimeout@synchronization_internal@absl@@QEBA_JXZ
+    ?MakeAbsTimespec@KernelTimeout@synchronization_internal@absl@@QEBA?AUtimespec@@XZ
     ?MakeCheckFailString@status_internal@absl@@YAPEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@PEBVStatus@2@PEBD@Z
     ?MakeCheckOpValueString@log_internal@absl@@YAXAEAV?$basic_ostream@DU?$char_traits@D@Cr@std@@@Cr@std@@C@Z
     ?MakeCheckOpValueString@log_internal@absl@@YAXAEAV?$basic_ostream@DU?$char_traits@D@Cr@std@@@Cr@std@@D@Z
@@ -2826,7 +2829,7 @@ EXPORTS
     ?MakeFlatWithExtraCapacity@InlineRep@Cord@absl@@QEAAPEAUCordRepFlat@cord_internal@3@_K@Z
     ?MakeInt128@absl@@YA?AVint128@1@_J_K@Z
     ?MakeNormalizedDuration@time_internal@absl@@YA?AVDuration@2@_J0@Z
-    ?MakeNs@KernelTimeout@synchronization_internal@absl@@CA_JVTime@3@@Z
+    ?MakeRelativeTimespec@KernelTimeout@synchronization_internal@absl@@QEBA?AUtimespec@@XZ
     ?MakeSeedSeq@absl@@YA?AV?$SaltedSeedSeq@Vseed_seq@Cr@std@@@random_internal@1@XZ
     ?MakeStorageView@?$Storage@PEAUCordRep@cord_internal@absl@@$01V?$allocator@PEAUCordRep@cord_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEAA?AU?$StorageView@V?$allocator@PEAUCordRep@cord_internal@absl@@@Cr@std@@@23@XZ
     ?MakeStorageView@?$Storage@PEAVLogSink@absl@@$0BA@V?$allocator@PEAVLogSink@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEAA?AU?$StorageView@V?$allocator@PEAVLogSink@absl@@@Cr@std@@@23@XZ
@@ -2973,6 +2976,7 @@ EXPORTS
     ?RawEnableLogPrefix@log_internal@absl@@YAX_N@Z
     ?RawLog@raw_log_internal@absl@@YAXW4LogSeverity@2@PEBDH1ZZ
     ?RawLoggingFullySupported@raw_log_internal@absl@@YA_NXZ
+    ?RawNanos@KernelTimeout@synchronization_internal@absl@@AEBA_JXZ
     ?RawSetMinLogLevel@log_internal@absl@@YAXW4LogSeverityAtLeast@2@@Z
     ?RawSetStderrThreshold@log_internal@absl@@YAXW4LogSeverityAtLeast@2@@Z
     ?Read1To3@MixingHashState@hash_internal@absl@@CAIPEBE_K@Z
@@ -4221,6 +4225,7 @@ EXPORTS
     ?is_leap_year@impl@detail@cctz@time_internal@absl@@YA_N_J@Z
     ?is_length@ConvTag@str_format_internal@absl@@QEBA_NXZ
     ?is_profiled@InlineData@cord_internal@absl@@QEBA_NXZ
+    ?is_relative_timeout@KernelTimeout@synchronization_internal@absl@@QEBA_NXZ
     ?is_short@Rep@CordBuffer@absl@@QEBA_NXZ
     ?is_small@container_internal@absl@@YA_N_K@Z
     ?is_snapshot@CordzHandle@cord_internal@absl@@QEBA_NXZ

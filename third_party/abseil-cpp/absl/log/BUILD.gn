@@ -375,6 +375,7 @@ absl_test("stripping_test") {
   deps = [
     ":check",
     ":log",
+    "//third_party/abseil-cpp/absl/base:log_severity",
     "//third_party/abseil-cpp/absl/base:strerror",
     "//third_party/abseil-cpp/absl/flags:program_name",
     "//third_party/abseil-cpp/absl/log/internal:test_helpers",

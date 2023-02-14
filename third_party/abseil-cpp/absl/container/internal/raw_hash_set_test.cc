@@ -2078,6 +2078,19 @@ TEST(TableDeathTest, InvalidIteratorAsserts) {
       "erased or .*the table might have rehashed.");
 }
 
+// Invalid iterator use can trigger heap-use-after-free in asan,
+// use-of-uninitialized-value in msan, or invalidated iterator assertions.
+constexpr const char* kInvalidIteratorDeathMessage =
+    "heap-use-after-free|use-of-uninitialized-value|invalidated "
+    "iterator|Invalid iterator";
+
+// MSVC doesn't support | in regex.
+#if defined(_MSC_VER)
+constexpr bool kMsvc = true;
+#else
+constexpr bool kMsvc = false;
+#endif
+
 TEST(TableDeathTest, IteratorInvalidAssertsEqualityOperator) {
   if (!IsAssertEnabled()) GTEST_SKIP() << "Assertions not enabled.";
 
@@ -2105,15 +2118,18 @@ TEST(TableDeathTest, IteratorInvalidAssertsEqualityOperator) {
   iter1 = t1.begin();
   iter2 = t2.begin();
   const char* const kContainerDiffDeathMessage =
-      "Invalid iterator comparison. The iterators may be from different "
-      ".*containers or the container might have rehashed.";
+      SwisstableGenerationsEnabled()
+          ? "Invalid iterator comparison.*non-end"
+          : "Invalid iterator comparison. The iterators may be from different "
+            ".*containers or the container might have rehashed.";
   EXPECT_DEATH_IF_SUPPORTED(void(iter1 == iter2), kContainerDiffDeathMessage);
   EXPECT_DEATH_IF_SUPPORTED(void(iter2 == iter1), kContainerDiffDeathMessage);
 
   for (int i = 0; i < 10; ++i) t1.insert(i);
   // There should have been a rehash in t1.
+  if (kMsvc) return;  // MSVC doesn't support | in regex.
   EXPECT_DEATH_IF_SUPPORTED(void(iter1 == t1.begin()),
-                            kContainerDiffDeathMessage);
+                            kInvalidIteratorDeathMessage);
 }
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
@@ -2258,21 +2274,9 @@ TEST(Table, AlignOne) {
   }
 }
 
-// Invalid iterator use can trigger heap-use-after-free in asan,
-// use-of-uninitialized-value in msan, or invalidated iterator assertions.
-constexpr const char* kInvalidIteratorDeathMessage =
-    "heap-use-after-free|use-of-uninitialized-value|invalidated "
-    "iterator|Invalid iterator";
-
-#if defined(__clang__) && defined(_MSC_VER)
-constexpr bool kLexan = true;
-#else
-constexpr bool kLexan = false;
-#endif
-
 TEST(Iterator, InvalidUseCrashesWithSanitizers) {
   if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
-  if (kLexan) GTEST_SKIP() << "Lexan doesn't support | in regexp.";
+  if (kMsvc) GTEST_SKIP() << "MSVC doesn't support | in regexp.";
 
   IntTable t;
   // Start with 1 element so that `it` is never an end iterator.
@@ -2288,7 +2292,7 @@ TEST(Iterator, InvalidUseCrashesWithSanitizers) {
 
 TEST(Iterator, InvalidUseWithReserveCrashesWithSanitizers) {
   if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
-  if (kLexan) GTEST_SKIP() << "Lexan doesn't support | in regexp.";
+  if (kMsvc) GTEST_SKIP() << "MSVC doesn't support | in regexp.";
 
   IntTable t;
   t.reserve(10);
@@ -2347,6 +2351,30 @@ TEST(Table, InvalidReferenceUseCrashesWithSanitizers) {
     t.insert(++i);
     EXPECT_DEATH_IF_SUPPORTED(std::cout << *ptr, "heap-use-after-free") << i;
   }
+}
+
+TEST(Iterator, InvalidComparisonDifferentTables) {
+  if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
+
+  IntTable t1, t2;
+  IntTable::iterator default_constructed_iter;
+  // TODO(b/254649633): Currently, we can't detect when end iterators from
+  // different empty tables are compared. If we allocate generations separately
+  // from control bytes, then we could do so.
+  // EXPECT_DEATH_IF_SUPPORTED(void(t1.end() == t2.end()),
+  //                           "Invalid iterator comparison.*empty hashtable");
+  // EXPECT_DEATH_IF_SUPPORTED(void(t1.end() == default_constructed_iter),
+  //                           "Invalid iterator comparison.*default-const...");
+  t1.insert(0);
+  EXPECT_DEATH_IF_SUPPORTED(void(t1.begin() == t2.end()),
+                            "Invalid iterator comparison.*empty hashtable");
+  EXPECT_DEATH_IF_SUPPORTED(void(t1.begin() == default_constructed_iter),
+                            "Invalid iterator comparison.*default-constructed");
+  t2.insert(0);
+  EXPECT_DEATH_IF_SUPPORTED(void(t1.begin() == t2.end()),
+                            "Invalid iterator comparison.*end.. iterator");
+  EXPECT_DEATH_IF_SUPPORTED(void(t1.begin() == t2.begin()),
+                            "Invalid iterator comparison.*non-end");
 }
 
 }  // namespace

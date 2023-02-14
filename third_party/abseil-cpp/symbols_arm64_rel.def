@@ -214,6 +214,8 @@ EXPORTS
     ??0GraphCycles@synchronization_internal@absl@@QEAA@XZ
     ??0HashtablezInfo@container_internal@absl@@QEAA@XZ
     ??0Impl@time_zone@cctz@time_internal@absl@@AEAA@AEBV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
+    ??0KernelTimeout@synchronization_internal@absl@@QEAA@VDuration@2@@Z
+    ??0KernelTimeout@synchronization_internal@absl@@QEAA@VTime@2@@Z
     ??0LogMessage@log_internal@absl@@QEAA@PEBDHW4LogSeverity@2@@Z
     ??0LogMessageData@LogMessage@log_internal@absl@@QEAA@PEBDHW4LogSeverity@3@VTime@3@@Z
     ??0LogMessageFatal@log_internal@absl@@QEAA@PEBDH@Z
@@ -693,7 +695,7 @@ EXPORTS
     ?HexStringToBytes@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@Vstring_view@1@@Z
     ?IDivDuration@time_internal@absl@@YA_J_NVDuration@2@1PEAV32@@Z
     ?In@Time@absl@@QEBA?AUBreakdown@12@VTimeZone@2@@Z
-    ?InMillisecondsFromNow@KernelTimeout@synchronization_internal@absl@@AEBAKXZ
+    ?InMillisecondsFromNow@KernelTimeout@synchronization_internal@absl@@QEBAKXZ
     ?IncrementSynchSem@Mutex@absl@@CAXPEAV12@PEAUPerThreadSynch@base_internal@2@@Z
     ?InitDiscreteDistribution@random_internal@absl@@YA?AV?$vector@U?$pair@N_K@Cr@std@@V?$allocator@U?$pair@N_K@Cr@std@@@23@@Cr@std@@PEAV?$vector@NV?$allocator@N@Cr@std@@@45@@Z
     ?InitFrom@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEAAXAEBV123@@Z
@@ -754,11 +756,14 @@ EXPORTS
     ?LogToSinks@log_internal@absl@@YAXAEBVLogEntry@2@V?$Span@PEAVLogSink@absl@@@2@_N@Z
     ?LowLevelHash@hash_internal@absl@@YA_KPEBX_K1QEB_K@Z
     ?LowLevelHashImpl@MixingHashState@hash_internal@absl@@CA_KPEBE_K@Z
+    ?MakeAbsNanos@KernelTimeout@synchronization_internal@absl@@QEBA_JXZ
+    ?MakeAbsTimespec@KernelTimeout@synchronization_internal@absl@@QEBA?AUtimespec@@XZ
     ?MakeCheckFailString@status_internal@absl@@YAPEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@PEBVStatus@2@PEBD@Z
     ?MakeCheckOpValueString@log_internal@absl@@YAXAEAV?$basic_ostream@DU?$char_traits@D@Cr@std@@@Cr@std@@C@Z
     ?MakeCheckOpValueString@log_internal@absl@@YAXAEAV?$basic_ostream@DU?$char_traits@D@Cr@std@@@Cr@std@@D@Z
     ?MakeCheckOpValueString@log_internal@absl@@YAXAEAV?$basic_ostream@DU?$char_traits@D@Cr@std@@@Cr@std@@E@Z
     ?MakeCheckOpValueString@log_internal@absl@@YAXAEAV?$basic_ostream@DU?$char_traits@D@Cr@std@@@Cr@std@@PEBX@Z
+    ?MakeRelativeTimespec@KernelTimeout@synchronization_internal@absl@@QEBA?AUtimespec@@XZ
     ?MakeSeedSeq@absl@@YA?AV?$SaltedSeedSeq@Vseed_seq@Cr@std@@@random_internal@1@XZ
     ?MakeTime@TimeZoneInfo@cctz@time_internal@absl@@UEBA?AUcivil_lookup@time_zone@234@AEBV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@detail@234@@Z
     ?MakeTime@TimeZoneLibC@cctz@time_internal@absl@@UEBA?AUcivil_lookup@time_zone@234@AEBV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@detail@234@@Z

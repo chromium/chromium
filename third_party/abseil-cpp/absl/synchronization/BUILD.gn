@@ -19,13 +19,24 @@ absl_source_set("graphcycles_internal") {
 }
 
 absl_source_set("kernel_timeout_internal") {
+  sources = [ "internal/kernel_timeout.cc" ]
   public = [ "internal/kernel_timeout.h" ]
   deps = [
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/time",
   ]
   visibility = [ ":*" ]
+}
+
+absl_test("kernel_timeout_internal_test") {
+  sources = [ "internal/kernel_timeout_test.cc" ]
+  deps = [
+    ":kernel_timeout_internal",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/time",
+  ]
 }
 
 absl_source_set("synchronization") {

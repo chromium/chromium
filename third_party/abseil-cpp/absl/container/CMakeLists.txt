@@ -706,6 +706,7 @@ absl_cc_library(
     absl::container_common
     absl::container_memory
     absl::core_headers
+    absl::dynamic_annotations
     absl::endian
     absl::hash
     absl::hash_policy_traits

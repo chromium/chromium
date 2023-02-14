@@ -853,6 +853,9 @@ class HashSetIteratorGenerationInfoEnabled {
   void set_generation_ptr(const GenerationType* ptr) { generation_ptr_ = ptr; }
 
  private:
+  // TODO(b/254649633): use a different static generation for default
+  // constructed iterators so that we can detect when default constructed
+  // iterators are compared to iterators from empty tables.
   const GenerationType* generation_ptr_ = EmptyGeneration();
   GenerationType generation_ = *generation_ptr_;
 };
@@ -1087,12 +1090,33 @@ inline bool AreItersFromSameContainer(const ctrl_t* ctrl_a,
 // Asserts that two iterators come from the same container.
 // Note: we take slots by reference so that it's not UB if they're uninitialized
 // as long as we don't read them (when ctrl is null).
-// TODO(b/254649633): when generations are enabled, we can detect more cases of
-// different containers by comparing the pointers to the generations - this
-// can cover cases of end iterators that we would otherwise miss.
 inline void AssertSameContainer(const ctrl_t* ctrl_a, const ctrl_t* ctrl_b,
                                 const void* const& slot_a,
-                                const void* const& slot_b) {
+                                const void* const& slot_b,
+                                const GenerationType* generation_ptr_a,
+                                const GenerationType* generation_ptr_b) {
+  if (SwisstableGenerationsEnabled() && generation_ptr_a != generation_ptr_b) {
+    // TODO(b/254649633): use a different static generation for default
+    // constructed iterators so that we can split the empty/default cases.
+    const bool a_is_empty_or_default = generation_ptr_a == EmptyGeneration();
+    const bool b_is_empty_or_default = generation_ptr_b == EmptyGeneration();
+    if (a_is_empty_or_default != b_is_empty_or_default) {
+      ABSL_INTERNAL_LOG(FATAL,
+                        "Invalid iterator comparison. Comparing iterator from "
+                        "a non-empty hashtable with an iterator from an empty "
+                        "hashtable or a default-constructed iterator.");
+    }
+    const bool a_is_end = ctrl_a == nullptr;
+    const bool b_is_end = ctrl_b == nullptr;
+    if (a_is_end || b_is_end) {
+      ABSL_INTERNAL_LOG(FATAL,
+                        "Invalid iterator comparison. Comparing iterator with "
+                        "an end() iterator from a different hashtable.");
+    }
+    ABSL_INTERNAL_LOG(FATAL,
+                      "Invalid iterator comparison. Comparing non-end() "
+                      "iterators from different hashtables.");
+  }
   ABSL_HARDENING_ASSERT(
       AreItersFromSameContainer(ctrl_a, ctrl_b, slot_a, slot_b) &&
       "Invalid iterator comparison. The iterators may be from different "
@@ -1463,9 +1487,10 @@ class raw_hash_set {
     }
 
     friend bool operator==(const iterator& a, const iterator& b) {
-      AssertSameContainer(a.ctrl_, b.ctrl_, a.slot_, b.slot_);
       AssertIsValidForComparison(a.ctrl_, a.generation(), a.generation_ptr());
       AssertIsValidForComparison(b.ctrl_, b.generation(), b.generation_ptr());
+      AssertSameContainer(a.ctrl_, b.ctrl_, a.slot_, b.slot_,
+                          a.generation_ptr(), b.generation_ptr());
       return a.ctrl_ == b.ctrl_;
     }
     friend bool operator!=(const iterator& a, const iterator& b) {
@@ -1499,6 +1524,8 @@ class raw_hash_set {
       if (ABSL_PREDICT_FALSE(*ctrl_ == ctrl_t::kSentinel)) ctrl_ = nullptr;
     }
 
+    // TODO(b/254649633): use non-null control for default-constructed iterators
+    // so that we can distinguish between them and end iterators in debug mode.
     ctrl_t* ctrl_ = nullptr;
     // To avoid uninitialized member warnings, put slot_ in an anonymous union.
     // The member is not initialized on singleton and end iterators.
