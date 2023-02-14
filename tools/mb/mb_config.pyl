@@ -1437,7 +1437,7 @@
 
     'android_binary_size_reclient': [
       'android', 'chrome_with_codecs', 'reclient', 'minimal_symbols',
-      'official_optimize', 'stable_channel',
+      'official_optimize', 'stable_channel', 'v8_release_branch',
     ],
 
     'android_cast_debug_static_bot_compile_only': [
@@ -4566,6 +4566,7 @@
     },
 
     'pgo_phase_1': {
+      'mixins': ['v8_release_branch'],
       'gn_args': 'chrome_pgo_phase=1'
     },
 
@@ -4796,6 +4797,11 @@
       # TODO(machenbach): Temporarily toggle pointer-compression off while it
       # is on by default.
       'gn_args': 'v8_enable_pointer_compression=false',
+    },
+
+    'v8_release_branch': {
+      # V8 flag that disables v8_enable_runtime_call_stats on release branches.
+      'gn_args': 'is_on_release_branch=true',
     },
 
     'v8_simulate_arm': {
