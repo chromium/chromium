@@ -58,7 +58,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:paddingTop="@dimen/fast_checkout_home_sheet_address_card_padding"
             android:paddingBottom="@dimen/fast_checkout_home_sheet_address_card_padding"
-            android:background="@drawable/fast_checkout_item_background_top"
+            android:background="@drawable/fast_checkout_item_background_top_copy"
             android:orientation="horizontal">
           <ImageView
               android:layout_width="@dimen/fast_checkout_address_icon"
