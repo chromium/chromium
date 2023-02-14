@@ -425,12 +425,17 @@ struct PasswordForm {
   // with a syncing account AND it was associated with one in the past.
   std::string previously_associated_sync_account_email;
 
-  // Return true if we consider this form to be a signup form. It's based on
-  // local heuristics and may be inaccurate.
+  // Returns true if this form is considered to be a login form, i.e. it has
+  // a username field, a password field and no new password field. It's based
+  // on heuristics and may be inaccurate.
+  bool IsLikelyLoginForm() const;
+
+  // Returns true if we consider this form to be a signup form. It's based on
+  // heuristics and may be inaccurate.
   bool IsLikelySignupForm() const;
 
-  // Return true if we consider this form to be a change password form and not
-  // a signup form. It's based on local heuristics and may be inaccurate.
+  // Returns true if we consider this form to be a change password form and not
+  // a signup form. It's based on heuristics and may be inaccurate.
   bool IsLikelyChangePasswordForm() const;
 
   // Returns true if current password element is set.

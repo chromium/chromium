@@ -267,6 +267,11 @@ PasswordForm& PasswordForm::operator=(const PasswordForm& form) = default;
 
 PasswordForm& PasswordForm::operator=(PasswordForm&& form) = default;
 
+bool PasswordForm::IsLikelyLoginForm() const {
+  return HasUsernameElement() && HasPasswordElement() &&
+         !HasNewPasswordElement();
+}
+
 bool PasswordForm::IsLikelySignupForm() const {
   return HasNewPasswordElement() && HasUsernameElement() &&
          !HasPasswordElement();
