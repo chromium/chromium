@@ -7,6 +7,7 @@
 #import <stdint.h>
 
 #import <limits>
+#import <tuple>
 #import <utility>
 #import <vector>
 
@@ -97,37 +98,37 @@ void MojoFacade::HandleMojoBindInterface(base::Value::Dict args) {
   const std::string* interface_name = args.FindString("interfaceName");
   CHECK(interface_name);
 
-  absl::optional<int> raw_handle = args.FindInt("requestHandle");
-  CHECK(raw_handle.has_value());
+  absl::optional<int> pipe_id = args.FindInt("requestHandle");
+  CHECK(pipe_id.has_value());
 
-  mojo::ScopedMessagePipeHandle handle(
-      static_cast<mojo::MessagePipeHandle>(*raw_handle));
+  mojo::ScopedMessagePipeHandle pipe = TakePipeFromId(*pipe_id);
+  CHECK(pipe.is_valid());
   web_state_->GetInterfaceBinderForMainFrame()->BindInterface(
-      mojo::GenericPendingReceiver(*interface_name, std::move(handle)));
+      mojo::GenericPendingReceiver(*interface_name, std::move(pipe)));
 }
 
 void MojoFacade::HandleMojoHandleClose(base::Value::Dict args) {
-  absl::optional<int> handle = args.FindInt("handle");
-  CHECK(handle.has_value());
+  absl::optional<int> pipe_id = args.FindInt("handle");
+  CHECK(pipe_id.has_value());
 
-  mojo::Handle(*handle).Close();
+  // Will close once out of scope.
+  mojo::ScopedMessagePipeHandle pipe = TakePipeFromId(*pipe_id);
 }
 
 base::Value MojoFacade::HandleMojoCreateMessagePipe(base::Value::Dict args) {
-  mojo::ScopedMessagePipeHandle handle0, handle1;
-  MojoResult mojo_result = mojo::CreateMessagePipe(nullptr, &handle0, &handle1);
+  mojo::MessagePipe pipe;
   base::Value::Dict result;
-  result.Set("result", static_cast<int>(mojo_result));
-  if (mojo_result == MOJO_RESULT_OK) {
-    result.Set("handle0", static_cast<int>(handle0.release().value()));
-    result.Set("handle1", static_cast<int>(handle1.release().value()));
-  }
+  result.Set("result", static_cast<int>(MOJO_RESULT_OK));
+  result.Set("handle0", AllocatePipeId(std::move(pipe.handle0)));
+  result.Set("handle1", AllocatePipeId(std::move(pipe.handle1)));
   return base::Value(std::move(result));
 }
 
 base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value::Dict args) {
-  absl::optional<int> handle = args.FindInt("handle");
-  CHECK(handle.has_value());
+  absl::optional<int> pipe_id = args.FindInt("handle");
+  CHECK(pipe_id.has_value());
+  mojo::MessagePipeHandle pipe = GetPipeFromId(*pipe_id);
+  CHECK(pipe.is_valid());
 
   const base::Value::List* handles_list = args.FindList("handles");
   CHECK(handles_list);
@@ -137,45 +138,47 @@ base::Value MojoFacade::HandleMojoHandleWriteMessage(base::Value::Dict args) {
 
   int flags = MOJO_WRITE_MESSAGE_FLAG_NONE;
 
-  std::vector<MojoHandle> handles(handles_list->size());
+  std::vector<mojo::ScopedMessagePipeHandle> handles(handles_list->size());
   for (size_t i = 0; i < handles_list->size(); i++) {
     int one_handle = (*handles_list)[i].GetInt();
-    handles[i] = one_handle;
+    handles[i] = TakePipeFromId(one_handle);
   }
   absl::optional<std::vector<uint8_t>> bytes = base::Base64Decode(*buffer);
   if (!bytes) {
     return base::Value(static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
   }
 
-  mojo::MessagePipeHandle message_pipe(static_cast<MojoHandle>(*handle));
-  MojoResult result =
-      mojo::WriteMessageRaw(message_pipe, bytes->data(), bytes->size(),
-                            handles.data(), handles.size(), flags);
+  MojoResult result = mojo::WriteMessageRaw(
+      pipe, bytes->data(), bytes->size(),
+      reinterpret_cast<MojoHandle*>(handles.data()), handles.size(), flags);
+  for (auto& handle : handles) {
+    std::ignore = handle.release();
+  }
 
   return base::Value(static_cast<int>(result));
 }
 
 base::Value MojoFacade::HandleMojoHandleReadMessage(base::Value::Dict args) {
-  base::Value* handle_as_value = args.Find("handle");
-  CHECK(handle_as_value);
-  int handle_as_int = 0;
-  if (handle_as_value->is_int()) {
-    handle_as_int = handle_as_value->GetInt();
+  base::Value* id_as_value = args.Find("handle");
+  CHECK(id_as_value);
+  mojo::MessagePipeHandle pipe;
+  if (id_as_value->is_int()) {
+    pipe = GetPipeFromId(id_as_value->GetInt());
   }
+  CHECK(pipe.is_valid());
 
   int flags = MOJO_READ_MESSAGE_FLAG_NONE;
 
   std::vector<uint8_t> bytes;
   std::vector<mojo::ScopedHandle> handles;
-  mojo::MessagePipeHandle handle(static_cast<MojoHandle>(handle_as_int));
-  MojoResult mojo_result =
-      mojo::ReadMessageRaw(handle, &bytes, &handles, flags);
+  MojoResult mojo_result = mojo::ReadMessageRaw(pipe, &bytes, &handles, flags);
 
   base::Value::Dict result;
   if (mojo_result == MOJO_RESULT_OK) {
     base::Value::List handles_list;
     for (uint32_t i = 0; i < handles.size(); i++) {
-      handles_list.Append(static_cast<int>(handles[i].release().value()));
+      handles_list.Append(AllocatePipeId(mojo::ScopedMessagePipeHandle(
+          mojo::MessagePipeHandle(handles[i].release().value()))));
     }
     result.Set("handles", std::move(handles_list));
 
@@ -191,8 +194,8 @@ base::Value MojoFacade::HandleMojoHandleReadMessage(base::Value::Dict args) {
 }
 
 base::Value MojoFacade::HandleMojoHandleWatch(base::Value::Dict args) {
-  absl::optional<int> handle = args.FindInt("handle");
-  CHECK(handle.has_value());
+  absl::optional<int> pipe_id = args.FindInt("handle");
+  CHECK(pipe_id.has_value());
   absl::optional<int> signals = args.FindInt("signals");
   CHECK(signals.has_value());
   absl::optional<int> callback_id = args.FindInt("callbackId");
@@ -212,7 +215,9 @@ base::Value MojoFacade::HandleMojoHandleWatch(base::Value::Dict args) {
       *callback_id);
   auto watcher = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC);
-  watcher->Watch(static_cast<mojo::Handle>(*handle), *signals, callback);
+
+  mojo::MessagePipeHandle pipe = GetPipeFromId(*pipe_id);
+  watcher->Watch(pipe, *signals, callback);
   watchers_.insert(std::make_pair(++last_watch_id_, std::move(watcher)));
   return base::Value(last_watch_id_);
 }
@@ -221,6 +226,31 @@ void MojoFacade::HandleMojoWatcherCancel(base::Value::Dict args) {
   absl::optional<int> watch_id = args.FindInt("watchId");
   CHECK(watch_id.has_value());
   watchers_.erase(*watch_id);
+}
+
+int MojoFacade::AllocatePipeId(mojo::ScopedMessagePipeHandle pipe) {
+  const int pipe_id = next_pipe_id_++;
+  pipes_.emplace(pipe_id, std::move(pipe));
+  return pipe_id;
+}
+
+mojo::MessagePipeHandle MojoFacade::GetPipeFromId(int id) {
+  auto it = pipes_.find(id);
+  if (it == pipes_.end()) {
+    return {};
+  }
+  return it->second.get();
+}
+
+mojo::ScopedMessagePipeHandle MojoFacade::TakePipeFromId(int id) {
+  auto it = pipes_.find(id);
+  if (it == pipes_.end()) {
+    return {};
+  }
+
+  mojo::ScopedMessagePipeHandle pipe = std::move(it->second);
+  pipes_.erase(it);
+  return pipe;
 }
 
 }  // namespace web

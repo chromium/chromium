@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "base/functional/callback.h"
 #include "base/values.h"
@@ -110,8 +111,29 @@ class MojoFacade {
   // returned from "MojoHandle.watch").
   void HandleMojoWatcherCancel(base::Value::Dict args);
 
+  // Assigns a new unique integer ID to the given message pipe handle and
+  // returns that ID. The ID can be used by JS to reference this pipe.
+  int AllocatePipeId(mojo::ScopedMessagePipeHandle pipe);
+
+  // Returns the pipe handle associated with `id` in JS, or an invalid handle if
+  // no such association exists.
+  mojo::MessagePipeHandle GetPipeFromId(int id);
+
+  // Returns the pipe handle associated with `id` in JS, and removes that
+  // association, effectively invalidating `id` and taking ownership of the
+  // pipe. Returns an invalid pipe if `id` had no associated pipe.
+  mojo::ScopedMessagePipeHandle TakePipeFromId(int id);
+
   // Runs JavaScript on WebUI page.
   WebState* web_state_ = nil;
+
+  // The next available integer ID to assign a Mojo pipe for use in JS.
+  int next_pipe_id_ = 1;
+
+  // A mapping of integer handles used by JS, to actual pipe handles used with
+  // Mojo APIs.
+  std::unordered_map<int, mojo::ScopedMessagePipeHandle> pipes_;
+
   // Id of the last created watch.
   int last_watch_id_ = 0;
   // Currently active watches created through this facade.
