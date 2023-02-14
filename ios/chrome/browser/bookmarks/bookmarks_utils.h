@@ -26,21 +26,9 @@ class BookmarkNode;
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
     bookmarks::BookmarkModel* model);
 
-// Returns an unsorted vector of folders that are considered to be at the "root"
-// level of the bookmark hierarchy. Functionally, this means all direct
-// descendants of PrimaryPermanentNodes.
-std::vector<const bookmarks::BookmarkNode*> RootLevelFolders(
-    bookmarks::BookmarkModel* model);
-
 // Returns whether `node` is a primary permanent node in the sense of
 // `PrimaryPermanentNodes`.
 bool IsPrimaryPermanentNode(const bookmarks::BookmarkNode* node,
                             bookmarks::BookmarkModel* model);
-
-// Returns the root level folder in which this node is directly, or indirectly
-// via subfolders, located.
-const bookmarks::BookmarkNode* RootLevelFolderForNode(
-    const bookmarks::BookmarkNode* node,
-    bookmarks::BookmarkModel* model);
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARKS_UTILS_H_

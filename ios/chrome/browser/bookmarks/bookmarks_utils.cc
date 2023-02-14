@@ -46,37 +46,7 @@ std::vector<const BookmarkNode*> PrimaryPermanentNodes(BookmarkModel* model) {
   return nodes;
 }
 
-std::vector<const BookmarkNode*> RootLevelFolders(BookmarkModel* model) {
-  std::vector<const BookmarkNode*> root_level_folders;
-
-  // Find the direct folder children of the primary permanent nodes.
-  std::vector<const BookmarkNode*> primary_permanent_nodes =
-      PrimaryPermanentNodes(model);
-  for (const BookmarkNode* parent : primary_permanent_nodes) {
-    for (const auto& child : parent->children()) {
-      if (child->is_folder() && child->IsVisible())
-        root_level_folders.push_back(child.get());
-    }
-  }
-  return root_level_folders;
-}
-
 bool IsPrimaryPermanentNode(const BookmarkNode* node, BookmarkModel* model) {
   std::vector<const BookmarkNode*> primary_nodes(PrimaryPermanentNodes(model));
   return base::Contains(primary_nodes, node);
-}
-
-const BookmarkNode* RootLevelFolderForNode(const BookmarkNode* node,
-                                           BookmarkModel* model) {
-  // This helper function doesn't work for managed bookmarks. This checks that
-  // `node` is editable by the user, which currently covers all the other
-  // bookmarks except the managed bookmarks.
-  DCHECK(model->client()->CanBeEditedByUser(node));
-
-  const std::vector<const BookmarkNode*> root_folders(RootLevelFolders(model));
-  const BookmarkNode* top = node;
-  while (top && !base::Contains(root_folders, top)) {
-    top = top->parent();
-  }
-  return top;
 }
