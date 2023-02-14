@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/session_hierarchy_match_checker.h"
@@ -16,6 +15,7 @@
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/protocol/client_commands.pb.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using sessions_helper::CheckInitialState;
@@ -35,6 +35,12 @@ class SingleClientPollingSyncTest : public SyncTest {
       delete;
 
   ~SingleClientPollingSyncTest() override = default;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    SyncTest::SetUpOnMainThread();
+  }
 };
 
 // This test verifies that the poll interval in prefs gets initialized if no
@@ -67,11 +73,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
 
   // Trigger a sync-cycle.
   ASSERT_TRUE(CheckInitialState(0));
-  ASSERT_TRUE(OpenTab(0, GURL(chrome::kChromeUIHistoryURL)));
+  const GURL url = embedded_test_server()->GetURL("/sync/simple.html");
+  ASSERT_TRUE(OpenTab(0, url));
   SessionHierarchyMatchChecker checker(
-      fake_server::SessionsHierarchy(
-          {{GURL(chrome::kChromeUIHistoryURL).spec()}}),
-      GetSyncService(0), GetFakeServer());
+      fake_server::SessionsHierarchy({{url.spec()}}), GetSyncService(0),
+      GetFakeServer());
   ASSERT_TRUE(checker.Wait());
 
   syncer::SyncTransportDataPrefs transport_data_prefs(
@@ -111,10 +117,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
 
   // Trigger a sync-cycle.
   ASSERT_TRUE(CheckInitialState(0));
-  ASSERT_TRUE(OpenTab(0, GURL(chrome::kChromeUIHistoryURL)));
+  const GURL url = embedded_test_server()->GetURL("/sync/simple.html");
+  ASSERT_TRUE(OpenTab(0, url));
   ASSERT_TRUE(SessionHierarchyMatchChecker(
-                  fake_server::SessionsHierarchy(
-                      {{GURL(chrome::kChromeUIHistoryURL).spec()}}),
+                  fake_server::SessionsHierarchy({{url.spec()}}),
                   GetSyncService(0), GetFakeServer())
                   .Wait());
 

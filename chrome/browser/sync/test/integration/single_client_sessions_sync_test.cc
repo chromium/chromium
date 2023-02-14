@@ -419,15 +419,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NoSessions) {
   WaitForHierarchyOnServer(SessionsHierarchy());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, ChromeHistoryPage) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  ASSERT_TRUE(CheckInitialState(0));
-
-  ASSERT_TRUE(OpenTab(0, GURL(chrome::kChromeUIHistoryURL)));
-  WaitForURLOnServer(GURL(chrome::kChromeUIHistoryURL));
-}
-
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateThenCloseTab) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(CheckInitialState(0));

@@ -50,11 +50,6 @@ namespace {
 const char kChromeNativeScheme[] = "chrome-native";
 
 bool ShouldSyncURLImpl(const GURL& url) {
-  if (url == kChromeUIHistoryURL) {
-    // Allow the chrome history page, home for "Tabs from other devices",
-    // so it can trigger starting up the sync engine.
-    return true;
-  }
   return url.is_valid() && !url.SchemeIs(kChromeUIScheme) &&
          !url.SchemeIs(kChromeNativeScheme) && !url.SchemeIsFile() &&
          !url.SchemeIs(dom_distiller::kDomDistillerScheme);

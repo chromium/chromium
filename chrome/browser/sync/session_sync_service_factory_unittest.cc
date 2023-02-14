@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/session_sync_service_factory.h"
 
-#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -34,8 +34,6 @@ TEST(SessionSyncServiceFactoryTest, ShouldSyncURL) {
 
   EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
       GURL("chrome-untrusted://anything")));
-  EXPECT_TRUE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
-      GURL(chrome::kChromeUIHistoryURL)));
 }
 
 }  // namespace
