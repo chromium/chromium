@@ -45,7 +45,7 @@ void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent);
 // Parses |button_string| into |leading_buttons| and
 // |trailing_buttons|.  The string is of the format
 // "<button>*:<button*>", for example, "close:minimize:maximize".
-// This format is used by GTK settings and gsettings.
+// This format is used by GTK settings.
 void ParseButtonLayout(const std::string& button_string,
                        std::vector<views::FrameButton>* leading_buttons,
                        std::vector<views::FrameButton>* trailing_buttons);
@@ -113,34 +113,6 @@ class GtkCssContext {
 };
 
 using ScopedCssProvider = ScopedGObject<GtkCssProvider>;
-
-}  // namespace gtk
-
-// Template override cannot be in the gtk namespace.
-template <>
-inline void ScopedGObject<GtkStyleContext>::Unref() {
-  // Versions of GTK earlier than 3.15.4 had a bug where a g_assert
-  // would be triggered when trying to free a GtkStyleContext that had
-  // a parent whose only reference was the child context in question.
-  // This is a hack to work around that case.  See GTK commit
-  // "gtkstylecontext: Don't try to emit a signal when finalizing".
-  GtkStyleContext* context = obj_;
-  while (context) {
-    GtkStyleContext* parent = gtk_style_context_get_parent(context);
-    if (parent && G_OBJECT(context)->ref_count == 1 &&
-        !gtk::GtkCheckVersion(3, 15, 4)) {
-      g_object_ref(parent);
-      gtk_style_context_set_parent(context, nullptr);
-      g_object_unref(context);
-    } else {
-      g_object_unref(context);
-      return;
-    }
-    context = parent;
-  }
-}
-
-namespace gtk {
 
 // Converts ui::NativeTheme::State to GtkStateFlags.
 GtkStateFlags StateToStateFlags(ui::NativeTheme::State state);

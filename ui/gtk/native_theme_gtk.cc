@@ -56,8 +56,9 @@ SkBitmap GetWidgetBitmap(const gfx::Size& size,
     case BG_RENDER_NONE:
       break;
   }
-  if (render_frame)
+  if (render_frame) {
     gtk_render_frame(context, cr, 0, 0, size.width(), size.height());
+  }
   bitmap.setImmutable();
   return bitmap;
 }
@@ -172,19 +173,8 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
                                     GtkParamSpec* param) {
   SetThemeCssOverride(ScopedCssProvider());
 
-  // Hack to workaround a bug on GNOME standard themes which would
-  // cause black patches to be rendered on GtkFileChooser dialogs.
   std::string theme_name =
       GetGtkSettingsStringProperty(settings, "gtk-theme-name");
-  if (!GtkCheckVersion(3, 14)) {
-    if (theme_name == "Adwaita") {
-      SetThemeCssOverride(GetCssProvider(
-          "GtkFileChooser GtkPaned { background-color: @theme_bg_color; }"));
-    } else if (theme_name == "HighContrast") {
-      SetThemeCssOverride(GetCssProvider(
-          "GtkFileChooser GtkPaned { background-color: @theme_base_color; }"));
-    }
-  }
 
   // GTK has a dark mode setting called "gtk-application-prefer-dark-theme", but
   // this is really only used for themes that have a dark or light variant that
@@ -265,48 +255,24 @@ void NativeThemeGtk::PaintMenuSeparator(
         return (rect.height() - separator_thickness) / 2;
     }
   };
-  if (GtkCheckVersion(3, 20)) {
-    auto context = GetStyleContextFromCss(
-        StrCat({GtkCssMenu(), " GtkSeparator#separator.horizontal"}));
-    int min_height = 1;
-    auto margin = GtkStyleContextGetMargin(context);
-    auto border = GtkStyleContextGetBorder(context);
-    auto padding = GtkStyleContextGetPadding(context);
-    if (GtkCheckVersion(4))
-      min_height = GetSeparatorSize(true).height();
-    else
-      GtkStyleContextGet(context, "min-height", &min_height, nullptr);
-    int w = rect.width() - margin.left() - margin.right();
-    int h = std::max(min_height + padding.top() + padding.bottom() +
-                         border.top() + border.bottom(),
-                     1);
-    int x = margin.left();
-    int y = separator_offset(h);
-    PaintWidget(canvas, gfx::Rect(x, y, w, h), context, BG_RENDER_NORMAL, true);
+  auto context = GetStyleContextFromCss(
+      StrCat({GtkCssMenu(), " GtkSeparator#separator.horizontal"}));
+  int min_height = 1;
+  auto margin = GtkStyleContextGetMargin(context);
+  auto border = GtkStyleContextGetBorder(context);
+  auto padding = GtkStyleContextGetPadding(context);
+  if (GtkCheckVersion(4)) {
+    min_height = GetSeparatorSize(true).height();
   } else {
-    auto context = GetStyleContextFromCss(
-        StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), ".separator.horizontal"}));
-    gboolean wide_separators = false;
-    gint separator_height = 0;
-    GtkStyleContextGetStyle(context, "wide-separators", &wide_separators,
-                            "separator-height", &separator_height, nullptr);
-    // This code was adapted from gtk/gtkmenuitem.c.  For some reason,
-    // padding is used as the margin.
-    auto padding = GtkStyleContextGetPadding(context);
-    int w = rect.width() - padding.left() - padding.right();
-    int x = rect.x() + padding.left();
-    int h = wide_separators ? separator_height : 1;
-    int y = rect.y() + separator_offset(h);
-    if (wide_separators) {
-      PaintWidget(canvas, gfx::Rect(x, y, w, h), context, BG_RENDER_NONE, true);
-    } else {
-      cc::PaintFlags flags;
-      flags.setColor(GtkStyleContextGetColor(context));
-      flags.setAntiAlias(true);
-      flags.setStrokeWidth(1);
-      canvas->drawLine(x + 0.5f, y + 0.5f, x + w + 0.5f, y + 0.5f, flags);
-    }
+    GtkStyleContextGet(context, "min-height", &min_height, nullptr);
   }
+  int w = rect.width() - margin.left() - margin.right();
+  int h = std::max(min_height + padding.top() + padding.bottom() +
+                       border.top() + border.bottom(),
+                   1);
+  int x = margin.left();
+  int y = separator_offset(h);
+  PaintWidget(canvas, gfx::Rect(x, y, w, h), context, BG_RENDER_NORMAL, true);
 }
 
 void NativeThemeGtk::PaintFrameTopArea(

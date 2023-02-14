@@ -98,8 +98,9 @@ gfx::Size LoadNavButtonIcon(ui::NavButtonProvider::FrameButtonDisplayType type,
         icon_info, button_context, nullptr, nullptr));
     gfx::Size size{gdk_pixbuf_get_width(icon_pixbuf),
                    gdk_pixbuf_get_height(icon_pixbuf)};
-    if (icon)
+    if (icon) {
       icon->pixbuf = std::move(icon_pixbuf);
+    }
     return size;
   }
   auto icon_paintable = Gtk4IconThemeLookupIcon(
@@ -119,8 +120,9 @@ gfx::Size LoadNavButtonIcon(ui::NavButtonProvider::FrameButtonDisplayType type,
     size_t stride = sizeof(SkColor) * width;
     gdk_texture_download(texture, reinterpret_cast<guchar*>(pixels), stride);
     SkColor fg = GtkStyleContextGetColor(button_context);
-    for (int i = 0; i < width * height; ++i)
+    for (int i = 0; i < width * height; ++i) {
       pixels[i] = SkColorSetA(fg, SkColorGetA(pixels[i]));
+    }
     icon->texture = TakeGObject(
         gdk_memory_texture_new(width, height, GDK_MEMORY_B8G8R8A8,
                                g_bytes_new_take(pixels, nbytes), stride));
@@ -133,8 +135,9 @@ gfx::Size GetMinimumWidgetSize(gfx::Size content_size,
                                GtkStyleContext* content_context,
                                GtkCssContext widget_context) {
   gfx::Rect widget_rect = gfx::Rect(content_size);
-  if (content_context)
+  if (content_context) {
     widget_rect.Inset(-GtkStyleContextGetMargin(content_context));
+  }
 
   int min_width = 0;
   int min_height = 0;
@@ -174,8 +177,9 @@ gfx::Size GetMinimumWidgetSize(gfx::Size content_size,
 
 GtkCssContext CreateHeaderContext(bool maximized) {
   std::string window_selector = "GtkWindow#window.background.csd";
-  if (maximized)
+  if (maximized) {
     window_selector += ".maximized";
+  }
   return AppendCssNodeToStyleContext(
       AppendCssNodeToStyleContext({}, window_selector),
       "GtkHeaderBar#headerbar.header-bar.titlebar");
@@ -232,8 +236,9 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
     // RenderNavButton() is called at most once for each needed scale
     // factor.  Additionally, buttons in the HOVERED or PRESSED states
     // are not actually rendered until they are needed.
-    if (button_size_.IsEmpty())
+    if (button_size_.IsEmpty()) {
       return gfx::ImageSkiaRep();
+    }
 
     auto button_context =
         AppendCssNodeToStyleContext(CreateWindowControlsContext(maximized_),
@@ -317,13 +322,10 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
 
     cairo_save(cr);
     cairo_scale(cr, scale, scale);
-    if (GtkCheckVersion(3, 11, 3) ||
-        (button_state & (GTK_STATE_FLAG_PRELIGHT | GTK_STATE_FLAG_ACTIVE))) {
-      gtk_render_background(button_context, cr, 0, 0, button_size_.width(),
-                            button_size_.height());
-      gtk_render_frame(button_context, cr, 0, 0, button_size_.width(),
-                       button_size_.height());
-    }
+    gtk_render_background(button_context, cr, 0, 0, button_size_.width(),
+                          button_size_.height());
+    gtk_render_frame(button_context, cr, 0, 0, button_size_.width(),
+                     button_size_.height());
     cairo_restore(cr);
     cairo_save(cr);
     float pixbuf_extra_scale = scale / pixbuf_scale;
@@ -380,9 +382,10 @@ void NavButtonProviderGtk::RedrawImages(int top_area_height,
     int needed_height = header_padding.top() + button_unconstrained_height +
                         header_padding.bottom();
 
-    if (needed_height > top_area_height)
+    if (needed_height > top_area_height) {
       scale =
           std::min(scale, static_cast<double>(top_area_height) / needed_height);
+    }
   }
 
   top_area_spacing_ =

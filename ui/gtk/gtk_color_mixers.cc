@@ -18,8 +18,9 @@ namespace gtk {
 
 void AddGtkNativeColorMixer(ui::ColorProvider* provider,
                             const ui::ColorProviderManager::Key& key) {
-  if (key.system_theme != ui::SystemTheme::kGtk)
+  if (key.system_theme != ui::SystemTheme::kGtk) {
     return;
+  }
 
   ui::ColorMixer& mixer = provider->AddMixer();
 
@@ -28,9 +29,8 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
           ? "#headerbar.header-bar.titlebar"
           : "GtkMenuBar#menubar";
   const std::string header_selector_inactive = header_selector + ":backdrop";
-  const auto tooltip_context = AppendCssNodeToStyleContext(
-      {}, GtkCheckVersion(3, 20) ? "#tooltip.background"
-                                 : "GtkWindow#window.background.tooltip");
+  const auto tooltip_context =
+      AppendCssNodeToStyleContext({}, "#tooltip.background");
 
   const SkColor primary_bg = GetBgColor("");
   const SkColor button_bg_disabled =
@@ -71,11 +71,9 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorPrimaryForeground] = {label_fg};
   mixer[ui::kColorSecondaryForeground] = {label_fg_disabled};
   mixer[ui::kColorTextSelectionBackground] = {
-      GetSelectionBgColor(GtkCheckVersion(3, 20) ? "GtkLabel#label #selection"
-                                                 : "GtkLabel#label:selected")};
+      GetSelectionBgColor("GtkLabel#label #selection")};
   mixer[ui::kColorTextSelectionForeground] = {
-      GetFgColor(GtkCheckVersion(3, 20) ? "GtkLabel#label #selection"
-                                        : "GtkLabel#label:selected")};
+      GetFgColor("GtkLabel#label #selection")};
 
   // UI element colors
   mixer[ui::kColorAvatarHeaderArt] =
@@ -120,37 +118,16 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       GetFgColor("GtkButton#button.flat.scale GtkImage#image")};
   mixer[ui::kColorHelpIconInactive] = {
       GetFgColor("GtkButton#button.image-button")};
-  if (GtkCheckVersion(3, 12)) {
-    mixer[ui::kColorLinkForeground] = {GetFgColor("GtkLabel#label.link:link")};
-    mixer[ui::kColorLinkForegroundDisabled] = {
-        GetFgColor("GtkLabel#label.link:link:disabled")};
-    mixer[ui::kColorLinkForegroundPressed] = {
-        GetFgColor("GtkLabel#label.link:link:hover:active")};
-  } else {
-    auto link_context = GetStyleContextFromCss("GtkLabel#label.view");
-    GdkColor* gdk_color = nullptr;
-    GtkStyleContextGetStyle(link_context, "link-color", &gdk_color, nullptr);
-    SkColor color = SkColorSetRGB(0x00, 0x00, 0xEE);  // From gtklinkbutton.c.
-    if (gdk_color) {
-      color = SkColorSetRGB(gdk_color->red >> 8, gdk_color->green >> 8,
-                            gdk_color->blue >> 8);
-      // gdk_color_free() was deprecated in Gtk3.14.  This code path is only
-      // taken on versions earlier than Gtk3.12, but the compiler doesn't know
-      // that, so silence the deprecation warnings.
-      G_GNUC_BEGIN_IGNORE_DEPRECATIONS;
-      gdk_color_free(gdk_color);
-      G_GNUC_END_IGNORE_DEPRECATIONS;
-    }
-    mixer[ui::kColorLinkForeground] = {color};
-    mixer[ui::kColorLinkForegroundDisabled] = {color};
-    mixer[ui::kColorLinkForegroundPressed] = {color};
-  }
+  mixer[ui::kColorLinkForeground] = {GetFgColor("GtkLabel#label.link:link")};
+  mixer[ui::kColorLinkForegroundDisabled] = {
+      GetFgColor("GtkLabel#label.link:link:disabled")};
+  mixer[ui::kColorLinkForegroundPressed] = {
+      GetFgColor("GtkLabel#label.link:link:hover:active")};
   mixer[ui::kColorMenuBackground] = {GetBgColor(GtkCssMenu())};
   mixer[ui::kColorMenuBorder] = {GetBorderColor(GtkCssMenu())};
   mixer[ui::kColorMenuDropmarker] = {ui::kColorMenuItemForeground};
   mixer[ui::kColorMenuIcon] = {GetFgColor(
-      base::StrCat({GtkCssMenu(), " ", GtkCssMenuItem(),
-                    GtkCheckVersion(3, 20) ? " #radio" : ".radio"}))};
+      base::StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), " #radio"}))};
   mixer[ui::kColorMenuItemBackgroundHighlighted] = {ui::kColorMenuBackground};
   mixer[ui::kColorMenuItemForeground] = {GetFgColor(
       base::StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), " GtkLabel#label"}))};
@@ -159,15 +136,11 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorMenuItemForegroundDisabled] = {GetFgColor(base::StrCat(
       {GtkCssMenu(), " ", GtkCssMenuItem(), ":disabled GtkLabel#label"}))};
   mixer[ui::kColorMenuItemForegroundSecondary] = {GetFgColor(
-      base::StrCat({GtkCssMenu(), " ", GtkCssMenuItem(),
-                    GtkCheckVersion(3, 20) ? " #accelerator"
-                                           : " GtkLabel#label.accelerator"}))};
+      base::StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), " #accelerator"}))};
   mixer[ui::kColorMenuItemForegroundSelected] = {GetFgColor(base::StrCat(
       {GtkCssMenu(), " ", GtkCssMenuItem(), ":hover GtkLabel#label"}))};
   mixer[ui::kColorMenuSeparator] = {GetSeparatorColor(
-      GtkCheckVersion(3, 20)
-          ? base::StrCat({GtkCssMenu(), " GtkSeparator#separator.horizontal"})
-          : base::StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), ".separator"}))};
+      base::StrCat({GtkCssMenu(), " GtkSeparator#separator.horizontal"}))};
   mixer[ui::kColorNotificationInputForeground] = {accent};
   mixer[ui::kColorOverlayScrollbarFill] = {
       GetBgColor("#GtkScrollbar#scrollbar #slider")};
@@ -188,8 +161,8 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       GetBgColor("GtkNotebook#notebook #tab:checked")};
   mixer[ui::kColorTabBackgroundHighlightedFocused] = {
       GetBgColor("GtkNotebook#notebook:focus #tab:checked")};
-  mixer[ui::kColorTabContentSeparator] = {GetBorderColor(
-      GtkCheckVersion(3, 20) ? "GtkFrame#frame #border" : "GtkFrame#frame")};
+  mixer[ui::kColorTabContentSeparator] = {
+      GetBorderColor("GtkFrame#frame #border")};
   mixer[ui::kColorTabForegroundSelected] = {ui::kColorPrimaryForeground};
   mixer[ui::kColorTableBackground] = {ui::kColorTreeBackground};
   mixer[ui::kColorTableBackgroundAlternate] = {ui::kColorTreeBackground};
@@ -208,24 +181,18 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTableHeaderSeparator] = {
       GetBorderColor("GtkTreeView#treeview.view GtkButton#button")};
   mixer[ui::kColorTextfieldBackground] = {
-      GetBgColor(GtkCheckVersion(3, 20) ? "GtkTextView#textview.view"
-                                        : "GtkTextView.view")};
+      GetBgColor("GtkTextView#textview.view")};
   mixer[ui::kColorTextfieldBackgroundDisabled] = {
-      GetBgColor(GtkCheckVersion(3, 20) ? "GtkTextView#textview.view:disabled"
-                                        : "GtkTextView.view:disabled")};
+      GetBgColor("GtkTextView#textview.view:disabled")};
   mixer[ui::kColorTextfieldForeground] = {
-      GetFgColor(GtkCheckVersion(3, 20) ? "GtkTextView#textview.view #text"
-                                        : "GtkTextView.view")};
-  mixer[ui::kColorTextfieldForegroundDisabled] = {GetFgColor(
-      GtkCheckVersion(3, 20) ? "GtkTextView#textview.view:disabled #text"
-                             : "GtkTextView.view:disabled")};
+      GetFgColor("GtkTextView#textview.view #text")};
+  mixer[ui::kColorTextfieldForegroundDisabled] = {
+      GetFgColor("GtkTextView#textview.view:disabled #text")};
   mixer[ui::kColorTextfieldForegroundPlaceholder] = {GtkCheckVersion(4)};
-  mixer[ui::kColorTextfieldSelectionBackground] = {GetSelectionBgColor(
-      GtkCheckVersion(3, 20) ? "GtkTextView#textview.view #text #selection"
-                             : "GtkTextView.view:selected")};
-  mixer[ui::kColorTextfieldSelectionForeground] = {GetFgColor(
-      GtkCheckVersion(3, 20) ? "GtkTextView#textview.view #text #selection"
-                             : "GtkTextView.view:selected")};
+  mixer[ui::kColorTextfieldSelectionBackground] = {
+      GetSelectionBgColor("GtkTextView#textview.view #text #selection")};
+  mixer[ui::kColorTextfieldSelectionForeground] = {
+      GetFgColor("GtkTextView#textview.view #text #selection")};
   mixer[ui::kColorThrobber] = {GetFgColor("GtkSpinner#spinner")};
   mixer[ui::kColorThrobberPreconnect] = {
       GetFgColor("GtkSpinner#spinner:disabled")};

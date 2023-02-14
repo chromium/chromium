@@ -56,20 +56,23 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
                                              object_name.c_str(), nullptr);
     auto widget = TakeGObject(GTK_WIDGET(widget_object));
 
-    if (!name.empty())
+    if (!name.empty()) {
       gtk_widget_set_name(widget, name.c_str());
+    }
 
     std::vector<const char*> css_classes;
     css_classes.reserve(classes.size() + 1);
-    for (const auto& css_class : classes)
+    for (const auto& css_class : classes) {
       css_classes.push_back(css_class.c_str());
+    }
     css_classes.push_back(nullptr);
     gtk_widget_set_css_classes(widget, css_classes.data());
 
     gtk_widget_set_state_flags(widget, state, false);
 
-    if (context)
+    if (context) {
       gtk_widget_set_parent(widget, context.widget());
+    }
 
     gtk_style_context_set_scale(gtk_widget_get_style_context(widget), scale);
 
@@ -81,36 +84,23 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
     gtk_widget_path_append_type(path, gtype);
 
     if (!object_name.empty()) {
-      if (GtkCheckVersion(3, 20))
-        gtk_widget_path_iter_set_object_name(path, -1, object_name.c_str());
-      else
-        gtk_widget_path_iter_add_class(path, -1, object_name.c_str());
+      gtk_widget_path_iter_set_object_name(path, -1, object_name.c_str());
     }
 
-    if (!name.empty())
+    if (!name.empty()) {
       gtk_widget_path_iter_set_name(path, -1, name.c_str());
+    }
 
-    for (const auto& css_class : classes)
+    for (const auto& css_class : classes) {
       gtk_widget_path_iter_add_class(path, -1, css_class.c_str());
+    }
 
-    if (GtkCheckVersion(3, 14))
-      gtk_widget_path_iter_set_state(path, -1, state);
+    gtk_widget_path_iter_set_state(path, -1, state);
 
     GtkCssContext child_context(TakeGObject(gtk_style_context_new()));
     gtk_style_context_set_path(child_context, path);
-    if (GtkCheckVersion(3, 14)) {
-      gtk_style_context_set_state(child_context, state);
-    } else {
-      GtkStateFlags child_state = state;
-      if (context) {
-        child_state = static_cast<GtkStateFlags>(
-            child_state | gtk_style_context_get_state(context));
-      }
-      gtk_style_context_set_state(child_context, child_state);
-    }
-
+    gtk_style_context_set_state(child_context, state);
     gtk_style_context_set_scale(child_context, scale);
-
     gtk_style_context_set_parent(child_context, context);
 
     gtk_widget_path_unref(path);
@@ -152,8 +142,9 @@ bool GtkInitFromCommandLine(int* argc, char** argv) {
 }
 
 void SetGtkTransientForAura(GtkWidget* dialog, aura::Window* parent) {
-  if (!parent || !parent->GetHost())
+  if (!parent || !parent->GetHost()) {
     return;
+  }
 
   gtk_widget_realize(dialog);
   gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
@@ -185,8 +176,9 @@ void ParseButtonLayout(const std::string& button_string,
   tokenizer.set_options(base::StringTokenizer::RETURN_DELIMS);
   while (tokenizer.GetNext()) {
     if (tokenizer.token_is_delim()) {
-      if (*tokenizer.token_begin() == ':')
+      if (*tokenizer.token_begin() == ':') {
         left_side = false;
+      }
     } else {
       base::StringPiece token = tokenizer.token_piece();
       if (token == "minimize") {
@@ -252,8 +244,9 @@ SkColor CairoSurface::GetAveragePixelValue(bool frame) {
     g += SkColorGetG(color);
     b += SkColorGetB(color);
   }
-  if (a == 0)
+  if (a == 0) {
     return SK_ColorTRANSPARENT;
+  }
   return SkColorSetARGB(frame ? max_alpha : a / (width * height), r * 255 / a,
                         g * 255 / a, b * 255 / a);
 }
@@ -276,8 +269,9 @@ GtkCssContext& GtkCssContext::operator=(GtkCssContext&&) = default;
 GtkCssContext::~GtkCssContext() = default;
 
 GtkCssContext::operator GtkStyleContext*() {
-  if (GtkCheckVersion(4))
+  if (GtkCheckVersion(4)) {
     return widget_ ? gtk_widget_get_style_context(widget_) : nullptr;
+  }
   return context_;
 }
 
@@ -477,8 +471,9 @@ void ApplyCssToContext(GtkCssContext context, const std::string& css) {
 void RenderBackground(const gfx::Size& size,
                       cairo_t* cr,
                       GtkCssContext context) {
-  if (!context)
+  if (!context) {
     return;
+  }
   RenderBackground(size, cr, context.GetParent());
   gtk_render_background(context, cr, 0, 0, size.width(), size.height());
 }
@@ -498,13 +493,7 @@ SkColor GetBorderColor(const std::string& css_selector) {
 }
 
 SkColor GetSelectionBgColor(const std::string& css_selector) {
-  auto context = GetStyleContextFromCss(css_selector);
-  if (GtkCheckVersion(3, 20))
-    return GetBgColorFromStyleContext(context);
-  DCHECK(!GtkCheckVersion(4));
-  // This is verbatim how Gtk gets the selection color on versions
-  // before 3.20.
-  return GtkStyleContextGetBackgroundColor(context);
+  return GetBgColorFromStyleContext(GetStyleContextFromCss(css_selector));
 }
 
 bool ContextHasClass(GtkCssContext context, const std::string& style_class) {
@@ -517,9 +506,6 @@ bool ContextHasClass(GtkCssContext context, const std::string& style_class) {
 }
 
 SkColor GetSeparatorColor(const std::string& css_selector) {
-  if (!GtkCheckVersion(3, 20))
-    return GetFgColor(css_selector);
-
   auto context = GetStyleContextFromCss(css_selector);
   bool horizontal = ContextHasClass(context, "horizontal");
 
@@ -594,8 +580,9 @@ GdkModifierType ExtractGdkEventStateFromKeyEventFlags(int flags) {
 int GetKeyEventProperty(const ui::KeyEvent& key_event,
                         const char* property_key) {
   auto* properties = key_event.properties();
-  if (!properties)
+  if (!properties) {
     return 0;
+  }
   auto it = properties->find(property_key);
   DCHECK(it == properties->end() || it->second.size() == 1);
   return (it != properties->end()) ? it->second[0] : 0;
@@ -607,11 +594,13 @@ GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) {
   // See also x11_event_translation.cc where it is annotated.
   // cf) https://crbug.com/1086946#c11.
   const ui::Event::Properties* properties = key_event.properties();
-  if (!properties)
+  if (!properties) {
     return static_cast<GdkModifierType>(0);
+  }
   auto it = properties->find(ui::kPropertyKeyboardState);
-  if (it == properties->end())
+  if (it == properties->end()) {
     return static_cast<GdkModifierType>(0);
+  }
   DCHECK_EQ(it->second.size(), 4u);
   // Stored in little endian.
   int result = 0;
@@ -667,10 +656,11 @@ GtkIconTheme* GetDefaultIconTheme() {
 }
 
 void GtkWindowDestroy(GtkWidget* widget) {
-  if (GtkCheckVersion(4))
+  if (GtkCheckVersion(4)) {
     gtk_window_destroy(GTK_WINDOW(widget));
-  else
+  } else {
     gtk_widget_destroy(widget);
+  }
 }
 
 GtkWidget* GetDummyWindow() {
@@ -718,24 +708,29 @@ GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {
        gsk_gl_shader_node_get_child},
   };
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   auto node_type = gsk_render_node_get_node_type(node);
-  if (node_type == GSK_TEXTURE_NODE)
+  if (node_type == GSK_TEXTURE_NODE) {
     return gsk_texture_node_get_texture(node);
+  }
   for (const auto& getter : simple_getters) {
     if (node_type == getter.node_type) {
-      if (auto* texture = GetTextureFromRenderNode(getter.get_child(node)))
+      if (auto* texture = GetTextureFromRenderNode(getter.get_child(node))) {
         return texture;
+      }
     }
   }
   for (const auto& getter : container_getters) {
-    if (node_type != getter.node_type)
+    if (node_type != getter.node_type) {
       continue;
+    }
     for (guint i = 0; i < getter.get_n_children(node); ++i) {
-      if (auto* texture = GetTextureFromRenderNode(getter.get_child(node, i)))
+      if (auto* texture = GetTextureFromRenderNode(getter.get_child(node, i))) {
         return texture;
+      }
     }
     return nullptr;
   }

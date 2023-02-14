@@ -100,8 +100,6 @@ component("gtk") {
     "select_file_dialog_linux_gtk.cc",
     "select_file_dialog_linux_gtk.h",
     "settings_provider.h",
-    "settings_provider_gsettings.cc",
-    "settings_provider_gsettings.h",
     "settings_provider_gtk.cc",
     "settings_provider_gtk.h",
     "window_frame_provider_gtk.cc",
