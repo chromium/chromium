@@ -30,17 +30,6 @@ class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
   gpu::SyncToken GenVerifiedSyncToken() override { return gpu::SyncToken(); }
 
   gpu::Mailbox CreateSharedImage(
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::span<const uint8_t> pixel_data) override {
-    return gpu::Mailbox();
-  }
-
-  gpu::Mailbox CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       gfx::BufferPlane plane,

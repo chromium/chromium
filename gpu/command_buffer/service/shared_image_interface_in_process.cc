@@ -237,19 +237,6 @@ void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
 }
 
 Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    base::span<const uint8_t> pixel_data) {
-  return CreateSharedImage(viz::SharedImageFormat::SinglePlane(format), size,
-                           color_space, surface_origin, alpha_type, usage,
-                           pixel_data);
-}
-
-Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
