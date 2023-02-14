@@ -1527,6 +1527,10 @@ String LocalFrame::SelectedText() const {
   return Selection().SelectedText();
 }
 
+String LocalFrame::SelectedText(const TextIteratorBehavior& behavior) const {
+  return Selection().SelectedText(behavior);
+}
+
 String LocalFrame::SelectedTextForClipboard() const {
   if (!GetDocument())
     return g_empty_string;

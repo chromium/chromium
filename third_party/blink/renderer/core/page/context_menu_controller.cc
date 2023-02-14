@@ -657,7 +657,13 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
   if (result.IsSelected(location) ||
       source_type == kMenuSourceAdjustSelection ||
       source_type == kMenuSourceAdjustSelectionReset) {
-    data.selected_text = selected_frame->SelectedText().Utf8();
+    // Remove any unselectable content from the selected text.
+    data.selected_text =
+        selected_frame
+            ->SelectedText(TextIteratorBehavior::Builder()
+                               .SetSkipsUnselectableContent(true)
+                               .Build())
+            .Utf8();
     WebRange range =
         selected_frame->GetInputMethodController().GetSelectionOffsets();
     data.selection_start_offset = range.StartOffset();
