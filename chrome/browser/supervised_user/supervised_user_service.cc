@@ -29,6 +29,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
@@ -561,7 +562,9 @@ void SupervisedUserService::UpdateAsyncUrlChecker() {
 
   if (use_online_check != url_filter_.HasAsyncURLChecker()) {
     if (use_online_check) {
-      url_filter_.InitAsyncURLChecker();
+      url_filter_.InitAsyncURLChecker(
+          KidsChromeManagementClientFactory::GetInstance()
+              ->GetForBrowserContext(profile_));
     } else {
       url_filter_.ClearAsyncURLChecker();
     }

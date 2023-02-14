@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
@@ -54,6 +55,7 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 #endif
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(KidsChromeManagementClientFactory::GetInstance());
 }
 
 SupervisedUserServiceFactory::~SupervisedUserServiceFactory() {}

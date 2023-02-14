@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
@@ -83,6 +84,16 @@ class SupervisedUserRegionalURLFilterTest
     }
   };
 
+  void SetUpInProcessBrowserTestFixture() override {
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&SupervisedUserRegionalURLFilterTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ASSERT_TRUE(embedded_test_server()->Started());
     std::string host_port = embedded_test_server()->host_port_pair().ToString();
@@ -99,12 +110,14 @@ class SupervisedUserRegionalURLFilterTest
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
     logged_in_user_mixin_.LogInUser();
+  }
 
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     kids_chrome_management_client_ =
         static_cast<MockKidsChromeManagementClient*>(
             KidsChromeManagementClientFactory::GetInstance()
                 ->SetTestingFactoryAndUse(
-                    browser()->profile(),
+                    Profile::FromBrowserContext(context),
                     base::BindRepeating(
                         &MockKidsChromeManagementClient::MakeUnique)));
   }
@@ -113,6 +126,9 @@ class SupervisedUserRegionalURLFilterTest
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
       embedded_test_server(), this};
+
+ private:
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 // Verifies that the regional setting is passed to the RPC backend.

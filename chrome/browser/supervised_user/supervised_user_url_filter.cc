@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
 #include "chrome/browser/supervised_user/kids_management_url_checker_client.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/common/url_constants.h"
@@ -522,7 +523,8 @@ void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
   url_map_ = std::move(url_map);
 }
 
-void SupervisedUserURLFilter::InitAsyncURLChecker() {
+void SupervisedUserURLFilter::InitAsyncURLChecker(
+    KidsChromeManagementClient* kids_chrome_management_client) {
   std::string country;
   variations::VariationsService* variations_service =
       g_browser_process->variations_service();
@@ -533,7 +535,8 @@ void SupervisedUserURLFilter::InitAsyncURLChecker() {
   }
 
   std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
-      std::make_unique<KidsManagementURLCheckerClient>(country);
+      std::make_unique<KidsManagementURLCheckerClient>(
+          kids_chrome_management_client, country);
   async_url_checker_ = std::make_unique<safe_search_api::URLChecker>(
       std::move(url_checker_client));
 }

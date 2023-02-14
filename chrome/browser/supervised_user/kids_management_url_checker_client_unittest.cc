@@ -91,11 +91,6 @@ class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
   KidsChromeManagementClient::ErrorCode error_code_;
 };
 
-std::unique_ptr<KeyedService> CreateKidsChromeManagementClient(
-    content::BrowserContext* context) {
-  return std::make_unique<KidsChromeManagementClientForTesting>(context);
-}
-
 }  // namespace
 
 class KidsManagementURLCheckerClientTest : public testing::Test {
@@ -132,19 +127,17 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
 
     DCHECK(test_profile_);
 
-    KidsChromeManagementClientFactory::GetInstance()->SetTestingFactory(
-        test_profile_, base::BindRepeating(&CreateKidsChromeManagementClient));
-
-    url_classifier_ = std::make_unique<KidsManagementURLCheckerClient>("us");
+    test_kids_chrome_management_client_ =
+        std::make_unique<KidsChromeManagementClientForTesting>(test_profile_);
+    url_classifier_ = std::make_unique<KidsManagementURLCheckerClient>(
+        test_kids_chrome_management_client_.get(), "us");
   }
 
  protected:
   void SetupClientResponse(std::unique_ptr<ClassifyUrlResponse> response_proto,
                            KidsChromeManagementClient::ErrorCode error_code) {
-    static_cast<KidsChromeManagementClientForTesting*>(
-        KidsChromeManagementClientFactory::GetInstance()->GetForBrowserContext(
-            test_profile_))
-        ->SetupResponse(std::move(response_proto), error_code);
+    test_kids_chrome_management_client_->SetupResponse(
+        std::move(response_proto), error_code);
   }
 
   // Asynchronously checks the URL and waits until finished.
@@ -163,6 +156,8 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<TestingProfile> test_profile_;
   std::unique_ptr<TestingProfileManager> test_profile_manager_;
+  std::unique_ptr<KidsChromeManagementClientForTesting>
+      test_kids_chrome_management_client_;
   std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::FakeChromeUserManager* user_manager_;

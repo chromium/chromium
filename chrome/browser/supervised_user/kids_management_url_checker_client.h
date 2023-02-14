@@ -26,7 +26,9 @@ class KidsManagementURLCheckerClient
  public:
   // |country| should be a two-letter country code (ISO 3166-1 alpha-2), e.g.,
   // "us".
-  explicit KidsManagementURLCheckerClient(const std::string& country);
+  explicit KidsManagementURLCheckerClient(
+      KidsChromeManagementClient* kids_chrome_management_client,
+      const std::string& country);
 
   KidsManagementURLCheckerClient(const KidsManagementURLCheckerClient&) =
       delete;
@@ -49,6 +51,7 @@ class KidsManagementURLCheckerClient
       std::unique_ptr<google::protobuf::MessageLite> response_proto,
       KidsChromeManagementClient::ErrorCode error_code);
 
+  raw_ptr<KidsChromeManagementClient> kids_chrome_management_client_;
   const std::string country_;
 
   base::WeakPtrFactory<KidsManagementURLCheckerClient> weak_factory_{this};

@@ -32,6 +32,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class KidsChromeManagementClient;
+
 // This class manages the filtering behavior for URLs, i.e. it tells callers
 // if a URL should be allowed or blocked. It uses information
 // from multiple sources:
@@ -211,7 +213,8 @@ class SupervisedUserURLFilter {
   void SetManualURLs(std::map<GURL, bool> url_map);
 
   // Initializes the experimental asynchronous checker.
-  void InitAsyncURLChecker();
+  void InitAsyncURLChecker(
+      KidsChromeManagementClient* kids_chrome_management_client);
 
   // Clears any asynchronous checker.
   void ClearAsyncURLChecker();

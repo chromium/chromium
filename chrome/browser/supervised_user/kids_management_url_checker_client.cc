@@ -8,8 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
+#include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 
@@ -32,8 +31,12 @@ safe_search_api::ClientClassification ToSafeSearchClientClassification(
 }  // namespace
 
 KidsManagementURLCheckerClient::KidsManagementURLCheckerClient(
+    KidsChromeManagementClient* kids_chrome_management_client,
     const std::string& country)
-    : country_(country) {}
+    : kids_chrome_management_client_(kids_chrome_management_client),
+      country_(country) {
+  DCHECK(kids_chrome_management_client_);
+}
 
 KidsManagementURLCheckerClient::~KidsManagementURLCheckerClient() = default;
 
@@ -44,11 +47,8 @@ void KidsManagementURLCheckerClient::CheckURL(const GURL& url,
   classify_url_request->set_url(url.spec());
   classify_url_request->set_region_code(country_);
 
-  KidsChromeManagementClient* kids_chrome_management_client =
-      KidsChromeManagementClientFactory::GetInstance()->GetForBrowserContext(
-          ProfileManager::GetActiveUserProfile());
-
-  kids_chrome_management_client->ClassifyURL(
+  DCHECK(kids_chrome_management_client_);
+  kids_chrome_management_client_->ClassifyURL(
       std::move(classify_url_request),
       base::BindOnce(&KidsManagementURLCheckerClient::ConvertResponseCallback,
                      weak_factory_.GetWeakPtr(), url, std::move(callback)));
