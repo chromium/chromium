@@ -14,7 +14,8 @@ found in the LICENSE file.
     android:minHeight="@dimen/snippets_article_header_height"
     android:orientation="vertical"
     android:gravity="center_vertical"
-    android:layoutDirection="locale" >
+    android:layoutDirection="locale"
+    android:visibility="gone">
 
     <RelativeLayout
         tools:ignore="RelativeOverlap"
