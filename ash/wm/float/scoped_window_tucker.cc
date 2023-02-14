@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
-#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -95,15 +94,26 @@ class ScopedWindowTucker::TuckHandle : public views::Button {
       canvas->Scale(-1, 1);
     }
 
-    // We draw two icons on top of each other because we need separate
+    // We draw three icons on top of each other because we need separate
     // themeing on different parts which is not supported by `VectorIcon`.
-    const SkColor container_color = ColorUtil::GetSecondToneColor(
-        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
-            ? SK_ColorWHITE
-            : SK_ColorBLACK);
-    const gfx::ImageSkia& tuck_container = gfx::CreateVectorIcon(
-        kTuckHandleContainerIcon, kTuckHandleWidth, container_color);
-    canvas->DrawImageInt(tuck_container, 0, 0);
+    const bool dark_mode =
+        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+
+    // Paint the container bottom layer with default 80% opacity.
+    const SkColor bottom_color = ColorUtil::GetSecondToneColor(
+        dark_mode ? gfx::kGoogleGrey500 : gfx::kGoogleGrey600);
+    const gfx::ImageSkia& tuck_container_bottom = gfx::CreateVectorIcon(
+        kTuckHandleContainerBottomIcon, kTuckHandleWidth, bottom_color);
+    canvas->DrawImageInt(tuck_container_bottom, 0, 0);
+
+    // Paint the container top layer. This is mostly transparent, with 12%
+    // opacity.
+    const SkColor color = dark_mode ? gfx::kGoogleGrey200 : gfx::kGoogleGrey600;
+    const SkColor top_color =
+        SkColorSetA(color, std::round(SkColorGetA(color) * 0.12f));
+    const gfx::ImageSkia& tuck_container_top = gfx::CreateVectorIcon(
+        kTuckHandleContainerTopIcon, kTuckHandleWidth, top_color);
+    canvas->DrawImageInt(tuck_container_top, 0, 0);
 
     const gfx::ImageSkia& tuck_icon = gfx::CreateVectorIcon(
         kTuckHandleChevronIcon, kTuckHandleWidth, SK_ColorWHITE);
