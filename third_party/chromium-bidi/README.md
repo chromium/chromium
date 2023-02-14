@@ -306,8 +306,16 @@ https://www.google.com/chrome/dev/
 
 #### 2. Build ChromeDriver BiDi
 
+Oneshot:
+
 ```sh
 npm run build
+```
+
+Continuously:
+
+```sh
+npm run watch
 ```
 
 #### 3. Run
