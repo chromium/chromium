@@ -33,6 +33,7 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -313,10 +314,25 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
       layer_tree_frame_sink_holder_->resource_manager(), &frame);
 
   std::vector<GLbyte*> sync_tokens;
-  for (auto& resource : frame.resource_list)
+  // We track previously verified tokens and set them to be verified to avoid
+  // the considerable overhead of flush verification in
+  // 'VerifySyncTokensCHROMIUM'.
+  for (auto& resource : frame.resource_list) {
+    if (prev_frame_verified_tokens_.find(resource.mailbox_holder.sync_token) !=
+        prev_frame_verified_tokens_.end()) {
+      resource.mailbox_holder.sync_token.SetVerifyFlush();
+    }
     sync_tokens.push_back(resource.mailbox_holder.sync_token.GetData());
+  }
   gpu::gles2::GLES2Interface* gles2 = context_provider_->ContextGL();
   gles2->VerifySyncTokensCHROMIUM(sync_tokens.data(), sync_tokens.size());
+
+  prev_frame_verified_tokens_.clear();
+  for (auto& resource : frame.resource_list) {
+    if (resource.mailbox_holder.sync_token.verified_flush()) {
+      prev_frame_verified_tokens_.insert(resource.mailbox_holder.sync_token);
+    }
+  }
 
   frame.metadata.content_color_usage = gfx::ContentColorUsage::kSRGB;
   for (auto& resource : frame.resource_list) {

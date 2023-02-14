@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_SURFACE_TREE_HOST_H_
 
 #include <memory>
+#include <set>
 
 #include "base/memory/weak_ptr.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
@@ -207,6 +208,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
   bool client_submits_surfaces_in_pixel_coordinates_ = false;
 
   SecurityDelegate* security_delegate_ = nullptr;
+
+  std::set<gpu::SyncToken> prev_frame_verified_tokens_;
 
   base::WeakPtrFactory<SurfaceTreeHost> weak_ptr_factory_{this};
 };
