@@ -32740,6 +32740,7 @@ Called by update_document_policy_enum.py.-->
       label="ExtensionExtendedBackgroundLifetimeForPortConnectionsToUrls"/>
   <int value="1075" label="DeviceActivityHeartbeatEnabled"/>
   <int value="1076" label="DeviceActivityHeartbeatCollectionRateMs"/>
+  <int value="1077" label="WallpaperGooglePhotosIntegrationEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
