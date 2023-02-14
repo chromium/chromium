@@ -18,6 +18,8 @@ class KURL;
 class SpeculationRule;
 class StyleRule;
 
+using SpeculationRuleSetId = String;
+
 // A set of rules generated from a single <script type=speculationrules>, which
 // provides rules to identify URLs and corresponding conditions for speculation,
 // grouped by the action that is suggested.
@@ -54,6 +56,8 @@ class CORE_EXPORT SpeculationRuleSet final
                                    ExecutionContext* context,
                                    String* out_error = nullptr);
 
+  SpeculationRuleSetId InspectorId() const { return inspector_id_; }
+
   const HeapVector<Member<SpeculationRule>>& prefetch_rules() const {
     return prefetch_rules_;
   }
@@ -74,6 +78,7 @@ class CORE_EXPORT SpeculationRuleSet final
   void Trace(Visitor*) const;
 
  private:
+  SpeculationRuleSetId inspector_id_;
   HeapVector<Member<SpeculationRule>> prefetch_rules_;
   HeapVector<Member<SpeculationRule>> prefetch_with_subresources_rules_;
   HeapVector<Member<SpeculationRule>> prerender_rules_;

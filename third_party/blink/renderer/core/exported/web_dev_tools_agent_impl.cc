@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_performance_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_performance_timeline_agent.h"
+#include "third_party/blink/renderer/core/inspector/inspector_preload_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
@@ -326,6 +327,8 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
       web_local_frame_impl_.Get());
 
   session->CreateAndAppend<InspectorPerformanceTimelineAgent>(inspected_frames);
+
+  session->CreateAndAppend<InspectorPreloadAgent>();
 
   // Call session init callbacks registered from higher layers.
   CoreInitializer::GetInstance().InitInspectorAgentSession(

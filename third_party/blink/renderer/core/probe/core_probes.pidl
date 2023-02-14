@@ -195,4 +195,6 @@ interface CoreProbes {
   void IsCacheDisabled(ExecutionContext*, bool* is_cache_disabled);
   void PerformanceEntryAdded([Keep] ExecutionContext*, PerformanceEntry*);
   void ApplyAutomationOverride(ExecutionContext*, bool& enabled);
+  void DidAddSpeculationRuleSet([Keep] Document&, const SpeculationRuleSet& rule_set);
+  void DidRemoveSpeculationRuleSet(Document&, const SpeculationRuleSet& rule_set);
 }

@@ -69,6 +69,8 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/memory.h",
     "inspector/protocol/network.cc",
     "inspector/protocol/network.h",
+    "inspector/protocol/preload.cc",
+    "inspector/protocol/preload.h",
     "inspector/protocol/overlay.cc",
     "inspector/protocol/overlay.h",
     "inspector/protocol/page.cc",

@@ -1,0 +1,54 @@
+
+Running test: testEnabled
+Tests that Preload.ruleSetUpdated and Preload.ruleSetDeleted are dispatched.
+{
+    method : Preload.ruleSetUpdated
+    params : {
+        ruleSet : {
+            id : <string>
+            loaderId : <string>
+            sourceText : {
+                prefetch : [
+                    [0] : {
+                        source : list
+                        urls : [
+                            [0] : /subresource.js
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.ruleSetUpdated
+    params : {
+        ruleSet : {
+            id : <string>
+            loaderId : <string>
+            sourceText : {
+                prerender : [
+                    [0] : {
+                        source : list
+                        urls : [
+                            [0] : /page.html
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.ruleSetRemoved
+    params : {
+        id : <string>
+    }
+    sessionId : <string>
+}
+
+Running test: testDisabled
+Tests that Preload.ruleSetUpdated and Preload.ruleSetDeleted are not dispatched.
+

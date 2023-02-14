@@ -76,6 +76,8 @@ blink_core_sources_inspector = [
   "inspector_memory_agent.h",
   "inspector_network_agent.cc",
   "inspector_network_agent.h",
+  "inspector_preload_agent.cc",
+  "inspector_preload_agent.h",
   "inspector_overlay_agent.cc",
   "inspector_overlay_agent.h",
   "inspector_overlay_host.cc",

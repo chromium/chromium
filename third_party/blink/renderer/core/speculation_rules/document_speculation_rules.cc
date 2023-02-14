@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
@@ -183,6 +184,8 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
     }
   }
   QueueUpdateSpeculationCandidates();
+
+  probe::DidAddSpeculationRuleSet(*GetSupplementable(), *rule_set);
 }
 
 void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
@@ -196,6 +199,8 @@ void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
     }
   }
   QueueUpdateSpeculationCandidates();
+
+  probe::DidRemoveSpeculationRuleSet(*GetSupplementable(), *rule_set);
 }
 
 void DocumentSpeculationRules::AddSpeculationRuleLoader(
