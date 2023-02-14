@@ -266,4 +266,7 @@ ci.builder(
         short_name = "det",
     ),
     execution_timeout = 12 * time.hour,
+    reclient_bootstrap_env = {
+        "RBE_ip_timeout": "10m",
+    },
 )
