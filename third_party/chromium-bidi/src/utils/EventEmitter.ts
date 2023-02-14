@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import mitt, {Emitter, EventType, Handler, WildcardHandler} from 'mitt';
 
 export class EventEmitter<Events extends Record<EventType, unknown>> {
@@ -74,7 +73,7 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
    * @param eventData - any data you'd like to emit with the event
    * @returns `true` if there are any listeners, `false` if there are not.
    */
-  emit(event: EventType, eventData: Events[EventType]): void {
+  emit<Key extends keyof Events>(event: Key, eventData: Events[Key]): void {
     this.#emitter.emit(event, eventData);
   }
 }

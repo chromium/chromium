@@ -21,7 +21,7 @@ import sinon from 'sinon';
 describe('EventEmitter', () => {
   type Events = {
     foo: undefined;
-    bar: undefined;
+    bar: string;
   };
   let emitter: EventEmitter<Events>;
 
@@ -40,9 +40,9 @@ describe('EventEmitter', () => {
 
       it(`${methodName} sends the event data to the handler`, () => {
         const listener = sinon.spy();
-        const data = {};
-        emitter[methodName]('foo', listener);
-        emitter.emit('foo', data);
+        const data = 'data';
+        emitter[methodName]('bar', listener);
+        emitter.emit('bar', data);
         expect(listener.callCount).to.equal(1);
         expect(listener.firstCall.args[0]!).to.equal(data);
       });
@@ -112,7 +112,7 @@ describe('EventEmitter', () => {
     it('passes data through to the listener', () => {
       const listener = sinon.spy();
       emitter.on('foo', listener);
-      const data = {};
+      const data = undefined;
 
       emitter.emit('foo', data);
       expect(listener.callCount).to.equal(1);
