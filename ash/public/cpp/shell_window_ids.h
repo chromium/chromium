@@ -112,7 +112,7 @@ enum ShellWindowId {
   kShellWindowId_ArcVirtualKeyboardContainer,
 
   // The container for UI on the shelf (shelf, navigation, hotseat,
-  // status area, notifications).
+  // status area).
   kShellWindowId_ShelfContainer,
 
   // The container for bubbles which float over the shelf.
@@ -150,8 +150,8 @@ enum ShellWindowId {
   // The container for menus.
   kShellWindowId_MenuContainer,
 
-  // The container for drag/drop images, tooltips, toasts, and widgets that are
-  // tagged with ui::ZOrderLevel::kSecuritySurface.
+  // The container for drag/drop images, tooltips, and widgets that are tagged
+  // with ui::ZOrderLevel::kSecuritySurface.
   kShellWindowId_DragImageAndTooltipContainer,
 
   // The container for the fullscreen power button menu.
