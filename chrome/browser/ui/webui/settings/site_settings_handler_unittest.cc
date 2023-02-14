@@ -2558,8 +2558,8 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
 
-  const base::FilePath kTestPath = base::FilePath(FILE_PATH_LITERAL("/a/b/"));
-  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/c/d/"));
+  const base::FilePath kTestPath = base::FilePath(FILE_PATH_LITERAL("/a/b"));
+  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/c/d"));
   const base::FilePath kTestPath3 = base::FilePath(FILE_PATH_LITERAL("/e/"));
   const base::FilePath kTestPath4 =
       base::FilePath(FILE_PATH_LITERAL("/f/g/h/"));
@@ -2601,7 +2601,6 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
       context->GetPermissionGrants(kTestOrigin2).directory_write_grants.size(),
       1UL);
 
-  url::Origin originToTest = kTestOrigin1;
   base::Value::List get_file_system_permissions_args;
   get_file_system_permissions_args.Append(kCallbackId);
 
@@ -2660,6 +2659,156 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
                   .GetDict()
                   .Find(site_settings::kIsDirectory)
                   ->GetBool());
+}
+
+// RevokeGrant() revokes a single File System Access permission grant,
+// for a given origin and file path.
+TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
+       HandleRevokeFileSystemGrant) {
+  ChromeFileSystemAccessPermissionContext* context =
+      FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
+
+  auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
+  auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
+
+  const base::FilePath kTestPath = base::FilePath(FILE_PATH_LITERAL("/a/b"));
+  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/c/d/"));
+  const base::FilePath kTestPath3 = base::FilePath(FILE_PATH_LITERAL("/e/"));
+  const base::FilePath kTestPath4 =
+      base::FilePath(FILE_PATH_LITERAL("/f/g/h/"));
+
+  // Populate the `grants` object with permissions.
+  auto file_read_grant = context->GetPersistedReadPermissionGrantForTesting(
+      kTestOrigin1, kTestPath,
+      ChromeFileSystemAccessPermissionContext::HandleType::kFile);
+  auto directory_read_grant =
+      context->GetPersistedReadPermissionGrantForTesting(
+          kTestOrigin1, kTestPath2,
+          ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
+  auto directory_write_grant =
+      context->GetPersistedWritePermissionGrantForTesting(
+          kTestOrigin2, kTestPath3,
+          ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
+  auto second_directory_write_grant =
+      context->GetPersistedWritePermissionGrantForTesting(
+          kTestOrigin2, kTestPath4,
+          ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
+
+  base::Value::List revoke_origin1_grant_permissions_args;
+  revoke_origin1_grant_permissions_args.Append("https://www.a.com");
+  revoke_origin1_grant_permissions_args.Append("/a/b");
+
+  base::Value::List get_file_system_grants_permissions_args;
+  get_file_system_grants_permissions_args.Append(kCallbackId);
+
+  handler_->HandleRevokeFileSystemGrant(revoke_origin1_grant_permissions_args);
+  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  const base::Value::List& grants = data.arg3()->GetList();
+
+  // After revoking the `file_read_grant` for kTestOrigin1, only one
+  // `directory_read_grant` should remain when retrieving the file system grants
+  // for kTestOrigin1.
+  EXPECT_EQ(grants[0].FindKey(site_settings::kFileReadGrants)->GetList().size(),
+            0UL);
+  EXPECT_EQ(
+      grants[0].FindKey(site_settings::kDirectoryReadGrants)->GetList().size(),
+      1UL);
+
+  // Revoking a single grant from an origin with multiple grants in a given
+  // grants list only revokes the grant with the given file path.
+  // In this case, for kTestOrigin2, only the directory write grant for
+  // kTestPath2 is revoked, and the directory write grant with kTestPath4
+  // remains in the `directory_write_grants` list.
+  base::Value::List revoke_origin2_grant_permissions_args;
+  revoke_origin2_grant_permissions_args.Append("https://www.b.com");
+  revoke_origin2_grant_permissions_args.Append("/e/");
+
+  handler_->HandleRevokeFileSystemGrant(revoke_origin2_grant_permissions_args);
+  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  const content::TestWebUI::CallData& updated_data =
+      *web_ui()->call_data().back();
+  const base::Value::List& updated_grants = updated_data.arg3()->GetList();
+
+  EXPECT_EQ(updated_grants[1]
+                .FindKey(site_settings::kDirectoryWriteGrants)
+                ->GetList()
+                .size(),
+            1UL);
+  EXPECT_EQ(updated_grants[1]
+                .FindKey(site_settings::kDirectoryWriteGrants)
+                ->GetList()[0]
+                .FindKey(site_settings::kFilePath)
+                ->GetString(),
+            "/f/g/h/");
+}
+
+// RevokeGrants() revokes all File System Access permission grants,
+// for a given origin.
+TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
+       HandleRevokeFileSystemGrants) {
+  ChromeFileSystemAccessPermissionContext* context =
+      FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
+
+  auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
+  auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
+
+  const base::FilePath kTestPath = base::FilePath(FILE_PATH_LITERAL("/a/b"));
+  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/c/d"));
+  const base::FilePath kTestPath3 = base::FilePath(FILE_PATH_LITERAL("/e/"));
+  const base::FilePath kTestPath4 =
+      base::FilePath(FILE_PATH_LITERAL("/f/g/h/"));
+
+  // Populate the `grants` object with permissions.
+  auto file_read_grant = context->GetPersistedReadPermissionGrantForTesting(
+      kTestOrigin1, kTestPath,
+      ChromeFileSystemAccessPermissionContext::HandleType::kFile);
+  auto file_write_grant = context->GetPersistedWritePermissionGrantForTesting(
+      kTestOrigin2, kTestPath2,
+      ChromeFileSystemAccessPermissionContext::HandleType::kFile);
+  auto directory_read_grant =
+      context->GetPersistedReadPermissionGrantForTesting(
+          kTestOrigin1, kTestPath3,
+          ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
+  auto directory_write_grant =
+      context->GetPersistedWritePermissionGrantForTesting(
+          kTestOrigin2, kTestPath4,
+          ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
+
+  base::Value::List get_file_system_grants_permissions_args;
+  get_file_system_grants_permissions_args.Append(kCallbackId);
+
+  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  const base::Value::List& grants = data.arg3()->GetList();
+
+  // The number of entries in grants is equal to the number of origins with
+  // permission grants, before revoking grants for a given origin.
+  EXPECT_EQ(grants.size(), 2UL);
+
+  base::Value::List revoke_origin1_grants_permissions_args;
+  revoke_origin1_grants_permissions_args.Append("https://www.a.com");
+
+  handler_->HandleRevokeFileSystemGrants(
+      revoke_origin1_grants_permissions_args);
+  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  const content::TestWebUI::CallData& updated_data =
+      *web_ui()->call_data().back();
+  const base::Value::List& updated_grants = updated_data.arg3()->GetList();
+
+  // All grants are revoked for kTestOrigin1, and the grants for kTestOrigin2
+  // are unaffected.
+  EXPECT_EQ(updated_grants.size(), 1UL);
+  EXPECT_EQ(updated_grants[0]
+                .FindKey(site_settings::kFileWriteGrants)
+                ->GetList()
+                .size(),
+            1UL);
+  EXPECT_EQ(updated_grants[0]
+                .FindKey(site_settings::kDirectoryWriteGrants)
+                ->GetList()
+                .size(),
+            1UL);
 }
 
 namespace {

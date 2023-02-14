@@ -88,6 +88,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -719,6 +720,18 @@ void SiteSettingsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getExceptionList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetExceptionList,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getFileSystemGrants",
+      base::BindRepeating(&SiteSettingsHandler::HandleGetFileSystemGrants,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "revokeFileSystemGrant",
+      base::BindRepeating(&SiteSettingsHandler::HandleRevokeFileSystemGrant,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "revokeFileSystemGrants",
+      base::BindRepeating(&SiteSettingsHandler::HandleRevokeFileSystemGrants,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getChooserExceptionList",
@@ -1518,6 +1531,53 @@ void SiteSettingsHandler::HandleGetFileSystemGrants(
   base::Value::List grants = PopulateFileSystemGrantData();
 
   ResolveJavascriptCallback(callback_id, grants);
+}
+
+void SiteSettingsHandler::HandleRevokeFileSystemGrant(
+    const base::Value::List& args) {
+  // TODO(crbug.com/1373962): Remove feature flag check after persisted
+  // permissions is fully launched.
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kFileSystemAccessPersistentPermissions));
+  CHECK_EQ(2U, args.size());
+  AllowJavascript();
+
+  auto url = GURL(args[0].GetString());
+  DCHECK(url.is_valid());
+  const url::Origin& origin = url::Origin::Create(url);
+
+  const base::FilePath& file_path =
+      storage::StringToFilePath(args[1].GetString());
+
+  ChromeFileSystemAccessPermissionContext* permission_context =
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile_);
+
+  permission_context->RevokeGrant(
+      origin, file_path,
+      ChromeFileSystemAccessPermissionContext::PersistedPermissionOptions::
+          kUpdatePersistedPermission);
+}
+
+void SiteSettingsHandler::HandleRevokeFileSystemGrants(
+    const base::Value::List& args) {
+  // TODO(crbug.com/1373962): Remove feature flag check after persisted
+  // permissions is fully launched.
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kFileSystemAccessPersistentPermissions));
+
+  CHECK_EQ(1U, args.size());
+  AllowJavascript();
+
+  auto url = GURL(args[0].GetString());
+  DCHECK(url.is_valid());
+  const url::Origin& origin = url::Origin::Create(url);
+
+  ChromeFileSystemAccessPermissionContext* permission_context =
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile_);
+
+  permission_context->RevokeGrants(
+      origin, ChromeFileSystemAccessPermissionContext::
+                  PersistedPermissionOptions::kUpdatePersistedPermission);
 }
 
 void SiteSettingsHandler::HandleSetOriginPermissions(

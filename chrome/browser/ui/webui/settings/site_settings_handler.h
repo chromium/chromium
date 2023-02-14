@@ -98,6 +98,10 @@ class SiteSettingsHandler
   friend class PersistentPermissionsSiteSettingsHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(PersistentPermissionsSiteSettingsHandlerTest,
                            HandleGetFileSystemGrants);
+  FRIEND_TEST_ALL_PREFIXES(PersistentPermissionsSiteSettingsHandlerTest,
+                           HandleRevokeFileSystemGrant);
+  FRIEND_TEST_ALL_PREFIXES(PersistentPermissionsSiteSettingsHandlerTest,
+                           HandleRevokeFileSystemGrants);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerInfobarTest,
                            SettingPermissionsTriggersInfobar);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
@@ -261,6 +265,13 @@ class SiteSettingsHandler
   // Returns the list of the allowed permission grants as defined by the
   // File System Access API.
   void HandleGetFileSystemGrants(const base::Value::List& args);
+
+  // Revokes the File System Access permission for a given origin
+  // and file path.
+  void HandleRevokeFileSystemGrant(const base::Value::List& args);
+
+  // Revokes all of the File System Access permissions for a given origin.
+  void HandleRevokeFileSystemGrants(const base::Value::List& args);
 
   // Gets and sets a list of ContentSettingTypes for an origin.
   // TODO(https://crbug.com/739241): Investigate replacing the
