@@ -334,11 +334,6 @@ class ChannelMac : public Channel,
     return true;
   }
 
-  void SendPendingMessages() {
-    base::AutoLock lock(write_lock_);
-    SendPendingMessagesLocked();
-  }
-
   void SendPendingMessagesLocked() EXCLUSIVE_LOCKS_REQUIRED(write_lock_) {
     // If a previous send failed due to the receiver's kernel message queue
     // being full, attempt to send that failed message first.
@@ -471,11 +466,18 @@ class ChannelMac : public Channel,
       if (kr == MACH_SEND_TIMED_OUT) {
         // The kernel message queue for the peer's receive port is full, so the
         // send timed out. Since the send buffer contains a fully serialized
-        // message, set a flag to indicate this condition and arrange to try
-        // sending it again.
+        // message, set a flag to indicate this condition.
         send_buffer_contains_message_ = true;
-        io_task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(&ChannelMac::SendPendingMessages, this));
+        if (!is_retry_scheduled_) {
+          // Arrange to retry sending the message again. Set a flag to ensure
+          // that this does not build up a flood of tasks to retry it, which
+          // could happen if Write() is called (potentially from a different
+          // thread), and the receiver's queue is still blocked.
+          io_task_runner_->PostTask(
+              FROM_HERE,
+              base::BindOnce(&ChannelMac::RetrySendPendingMessages, this));
+          is_retry_scheduled_ = true;
+        }
       } else {
         // If the message failed to send for other reasons, destroy it.
         send_buffer_contains_message_ = false;
@@ -496,6 +498,12 @@ class ChannelMac : public Channel,
 
     send_buffer_contains_message_ = false;
     return true;
+  }
+
+  void RetrySendPendingMessages() {
+    base::AutoLock lock(write_lock_);
+    is_retry_scheduled_ = false;
+    SendPendingMessagesLocked();
   }
 
   // base::CurrentThread::DestructionObserver:
@@ -736,6 +744,10 @@ class ChannelMac : public Channel,
   // be sent. If this is true, then other calls to Write() queue messages onto
   // |pending_messages_|.
   bool send_buffer_contains_message_ GUARDED_BY(write_lock_) = false;
+  // If |send_buffer_contains_message_| is true, this boolean tracks whether
+  // a task to RetrySendPendingMessages() has been posted. There should only be
+  // one retry task in-flight at once.
+  bool is_retry_scheduled_ GUARDED_BY(write_lock_) = false;
   // When |handshake_done_| is false or |send_buffer_contains_message_| is true,
   // calls to Write() will enqueue messages here.
   base::circular_deque<MessagePtr> pending_messages_ GUARDED_BY(write_lock_);
