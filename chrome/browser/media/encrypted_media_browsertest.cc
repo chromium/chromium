@@ -829,7 +829,13 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_CDMCrashDuringDecode) {
                        kEmeSessionClosedAndError);
 }
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, FileIOTest) {
+// TODO(crbug.com/1415537): Failing on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FileIOTest DISABLED_FileIOTest
+#else
+#define MAYBE_FileIOTest FileIOTest
+#endif
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_FileIOTest) {
   TestNonPlaybackCases(media::kExternalClearKeyFileIOTestKeySystem,
                        kUnitTestSuccess);
 }
@@ -944,7 +950,13 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, VerifyCdmHostTest) {
 }
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, StorageIdTest) {
+// TODO(crbug.com/1415537): Failing on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_StorageIdTest DISABLED_StorageIdTest
+#else
+#define MAYBE_StorageIdTest StorageIdTest
+#endif
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_StorageIdTest) {
   TestNonPlaybackCases(media::kExternalClearKeyStorageIdTestKeySystem,
                        kUnitTestSuccess);
 }
