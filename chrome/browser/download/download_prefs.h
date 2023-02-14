@@ -134,6 +134,10 @@ class DownloadPrefs {
   // forward - whatever has been passed to SetDownloadPath will be used.
   void SkipSanitizeDownloadTargetPathForTesting();
 
+  // Returns true if the download_duplicate_file_prompt_enabled pref is set and
+  // the new download bubble UI is enabled. Returns false on Android.
+  bool PromptForDuplicateFile() const;
+
  private:
   void SaveAutoOpenState();
   bool CanPlatformEnableAutoOpenForPdf() const;
@@ -158,6 +162,7 @@ class DownloadPrefs {
   IntegerPrefMember save_file_type_;
   IntegerPrefMember download_restriction_;
   BooleanPrefMember download_bubble_enabled_;
+  BooleanPrefMember prompt_for_duplicate_file_;
   BooleanPrefMember safebrowsing_for_trusted_sources_enabled_;
 
   PrefChangeRegistrar pref_change_registrar_;

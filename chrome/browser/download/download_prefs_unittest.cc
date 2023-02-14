@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -709,6 +710,50 @@ TEST(DownloadPrefsTest, ManagedPromptForDownload) {
   EXPECT_FALSE(prefs.PromptForDownload());
 }
 
+#else  // !is_android
+// Verifies the returned value of PromptForDuplicateFile().
+TEST(DownloadPrefsTest, PromptForDuplicateFile) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  DownloadPrefs prefs(&profile);
+
+  // Duplicate prompt disabled.
+  profile.GetPrefs()->SetBoolean(prefs::kDownloadDuplicateFilePromptEnabled,
+                                 false);
+  EXPECT_FALSE(prefs.PromptForDuplicateFile());
+
+  // BubbleV2 enabled and duplicate prompt enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{safe_browsing::kDownloadBubble,
+                              safe_browsing::kDownloadBubbleV2},
+        /*disabled_features=*/{});
+    profile.GetPrefs()->SetBoolean(prefs::kDownloadDuplicateFilePromptEnabled,
+                                   true);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    EXPECT_FALSE(prefs.PromptForDuplicateFile());
+#else
+    EXPECT_TRUE(prefs.PromptForDuplicateFile());
+#endif
+  }
+
+  // BubbleV2 disabled and duplicate prompt enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{safe_browsing::kDownloadBubble},
+        /*disabled_features=*/{safe_browsing::kDownloadBubbleV2});
+    profile.GetPrefs()->SetBoolean(prefs::kDownloadDuplicateFilePromptEnabled,
+                                   true);
+    EXPECT_FALSE(prefs.PromptForDuplicateFile());
+  }
+
+  // Bubble disabled by enterprise policy.
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kDownloadBubbleEnabled, std::make_unique<base::Value>(false));
+  EXPECT_FALSE(prefs.PromptForDuplicateFile());
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

@@ -54,6 +54,11 @@ const char kDownloadRestrictions[] = "download_restrictions";
 // set to false, the old download shelf UI will be shown instead.
 const char kDownloadBubbleEnabled[] = "download_bubble_enabled";
 
+// Whether the user wants to be prompted upon downloading a duplicate file. Only
+// used when the new download bubble UI is enabled.
+const char kDownloadDuplicateFilePromptEnabled[] =
+    "download_duplicate_file_prompt_enabled";
+
 // If set to true profiles are created in ephemeral mode and do not store their
 // data in the profile folder on disk but only in memory.
 const char kForceEphemeralProfiles[] = "profile.ephemeral_mode";
