@@ -47554,6 +47554,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="kUserSelectedThisTab"/>
 </enum>
 
+<enum name="GetDeviceInfosResult">
+  <int value="0" label="SuccessNoRetry"/>
+  <int value="1" label="FailureNoRetry"/>
+  <int value="2" label="SucessAfterRetry"/>
+  <int value="3" label="FailureAfterRetry"/>
+</enum>
+
 <enum name="GetDisplayMediaBooleanConstraint">
   <int value="0" label="Not specified"/>
   <int value="1" label="True"/>
@@ -65644,52 +65651,6 @@ from previous Chrome versions.
   <int value="2" label="GLInkOverlay::LowLatencyStylusLibInActiveUse"/>
   <int value="3" label="GLInkRenderer::SetProjectionMatrix"/>
   <int value="4" label="GLInkRenderer::SetViewMatrix"/>
-</enum>
-
-<enum name="MacbookRetryGetDeviceInfosEvent">
-  <int value="0"
-      label="Provider received zero infos. Stopping service for retry."/>
-  <int value="1" label="Service has stopped. Provider issuing retry."/>
-  <int value="2" label="Provider received zero infos from retry. Giving up."/>
-  <int value="3" label="Provider received &gt; 0 infos from retry."/>
-  <int value="4"
-      label="Provider not attempting retry because a retry is already
-             pending."/>
-  <int value="5"
-      label="AVFoundation received zero device infos on first try and first
-             attempt since process start."/>
-  <int value="6"
-      label="AVFoundation received &gt; 0 device infos on first try and first
-             attempt since process start."/>
-  <int value="7"
-      label="AVFoundation received zero device infos on first try and
-             non-first attempt since process start (service was already
-             running)."/>
-  <int value="8"
-      label="AVFoundation received &gt; 0 device infos on first try and and
-             non-first attempt since process start (service was already
-             running)."/>
-  <int value="9"
-      label="AVFoundation received zero device infos on retry. Retry did not
-             help."/>
-  <int value="10"
-      label="AVFoundation received &gt; 0 device infos on retry. Retry has
-             helped."/>
-  <int value="11"
-      label="AVFoundation device count has changed from zero to &gt; 0 on a
-             subsequent attempt without restarting the process."/>
-  <int value="12"
-      label="AVFoundation device count has changed from &gt; 0 to zero on a
-             subsequent attempt without restarting the process."/>
-  <int value="13"
-      label="Device infos were dropped at
-             VideoCaptureDeviceFactoryMac::GetDeviceDescriptors."/>
-  <int value="14"
-      label="The video capture service dropped the callback to GetSourceInfos
-             on first try."/>
-  <int value="15"
-      label="The video capture service dropped the callback to GetSourceInfos
-             on retry."/>
 </enum>
 
 <enum name="MacBookVersions">

@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -41,6 +41,20 @@ CreateAcceleratorFactory() {
       content::DelegateToBrowserGpuServiceAcceleratorFactory>();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Do not reorder, used for UMA Media.VideoCapture.GetDeviceInfosResult
+enum class GetDeviceInfosResult {
+  kSucessNoRetry = 0,
+  kFailureNoRetry = 1,
+  kSucessAfterRetry = 2,
+  kFailureAfterRetry = 3,
+  kMaxValue = kFailureAfterRetry,
+};
+
+void LogGetDeviceInfosResult(GetDeviceInfosResult result) {
+  base::UmaHistogramEnumeration("Media.VideoCapture.GetDeviceInfosResult",
+                                result);
+}
 
 }  // anonymous namespace
 
@@ -268,6 +282,9 @@ void ServiceVideoCaptureProvider::OnDeviceInfosReceived(
     scoped_refptr<RefCountedVideoSourceProvider> service_connection,
     const std::vector<media::VideoCaptureDeviceInfo>& infos) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  LogGetDeviceInfosResult(get_device_infos_retried_
+                              ? GetDeviceInfosResult::kSucessAfterRetry
+                              : GetDeviceInfosResult::kSucessNoRetry);
   for (GetDeviceInfosCallback& callback : get_device_infos_pending_callbacks_) {
     std::move(callback).Run(media::mojom::DeviceEnumerationResult::kSuccess,
                             infos);
@@ -291,6 +308,10 @@ void ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped(
         "ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped: Too many "
         "retries");
   }
+
+  LogGetDeviceInfosResult(get_device_infos_retried_
+                              ? GetDeviceInfosResult::kFailureAfterRetry
+                              : GetDeviceInfosResult::kFailureNoRetry);
 
   // After too many retries, we just return an empty list
   for (GetDeviceInfosCallback& callback : get_device_infos_pending_callbacks_) {

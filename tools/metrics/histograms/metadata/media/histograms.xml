@@ -5085,6 +5085,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.GetDeviceInfosResult"
+    enum="GetDeviceInfosResult" expires_after="M115">
+  <owner>orphis@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
+  <summary>
+    Used to track the resolution of
+    ServiceVideoCaptureProvider::GetDeviceInfosAsync() and if a retry has been
+    used to get to the current result. See http://crbug.com/1379392.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Height" units="pixels" expires_after="M120">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
@@ -5167,16 +5178,6 @@ chromium-metrics-reviews@google.com.
     Number of video capture devices detected by Chrome during device
     enumeration. Zero devices indicate a problem since all MacBooks should have
     a built-in camera. This is used for tracking http://crbug.com/582931.
-  </summary>
-</histogram>
-
-<histogram name="Media.VideoCapture.MacBook.RetryGetDeviceInfosEvent"
-    enum="MacbookRetryGetDeviceInfosEvent" expires_after="2019-05-15">
-  <owner>chfremer@chromium.org</owner>
-  <summary>
-    Counts events that are emitted in the context of attempting to mitigate the
-    issue of no cameras being found on Macbooks by restarting the video capture
-    service and retrying to obtain device infos, see http://crbug.com/582931.
   </summary>
 </histogram>
 
