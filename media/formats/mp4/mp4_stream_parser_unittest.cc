@@ -699,6 +699,17 @@ TEST_F(MP4StreamParserTest, Flac192kHz) {
       AppendAllDataThenParseInPieces(buffer->data(), buffer->data_size(), 512));
 }
 
+TEST_F(MP4StreamParserTest, VideoColorSpaceInvalidValues) {
+  ColorParameterInformation invalid;
+  invalid.colour_primaries = 1234;
+  invalid.transfer_characteristics = 42;
+  invalid.matrix_coefficients = 999;
+  invalid.full_range = true;
+  invalid.fully_parsed = true;
+  MediaSerialize(
+      VideoSampleEntry::ConvertColorParameterInformationToColorSpace(invalid));
+}
+
 TEST_F(MP4StreamParserTest, Vp9) {
   auto params = GetDefaultInitParametersExpectations();
   params.detected_audio_track_count = 0;

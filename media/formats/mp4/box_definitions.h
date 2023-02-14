@@ -350,6 +350,10 @@ struct MEDIA_EXPORT VideoSampleEntry : Box {
   bool IsFormatValid() const;
 
   scoped_refptr<BitstreamConverter> frame_bitstream_converter;
+
+  // Static method for testing.
+  static VideoColorSpace ConvertColorParameterInformationToColorSpace(
+      const ColorParameterInformation& info);
 };
 
 struct MEDIA_EXPORT ElementaryStreamDescriptor : Box {
