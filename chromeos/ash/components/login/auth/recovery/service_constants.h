@@ -15,6 +15,10 @@ namespace ash {
 
 std::string GetRecoveryHsmPublicKey();
 
+std::string GetRecoveryLedgerName();
+std::string GetRecoveryLedgerPublicKey();
+uint32_t GetRecoveryLedgerPublicKeyHash();
+
 // Used to fetch the epoch public key and metadata from the recovery server.
 GURL GetRecoveryServiceEpochURL();
 

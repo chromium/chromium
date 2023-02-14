@@ -18,6 +18,14 @@ const char kTestingHsmPublicKey[] =
     "3633dc0de71f926d919927e9190aa409a89ffc8fa8b6072516ddc88785ae78de0411357d27"
     "0b1793859f1d8725911005b4384edcda7f";
 
+// Hard-coded development ledger info, including the public key, name and key
+// hash. It mirrors the value from the server.
+constexpr char kDevLedgerName[] = "ChromeOSLedgerOwnerPrototype";
+constexpr uint32_t kDevLedgerPublicKeyHash = 0x960a3b30;
+constexpr char kDevLedgerPublicKey[] =
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEUL2cKW4wHEdyWDjjJktxkijFOKJZ8rflR-Sfb-"
+    "ToowJtLyNOBh6wj0anP4kP4llXK4HMZoJDKy9texKJl2UOog==";
+
 const char kEpochSuffix[] = "v1/epoch/1";
 const char kMediateSuffix[] = "v1/cryptorecovery";
 const char kReauthTokenSuffix[] = "v1/rart";
@@ -33,6 +41,18 @@ GURL GetRecoveryServiceBaseURL() {
 
 std::string GetRecoveryHsmPublicKey() {
   return kTestingHsmPublicKey;
+}
+
+std::string GetRecoveryLedgerName() {
+  return kDevLedgerName;
+}
+
+std::string GetRecoveryLedgerPublicKey() {
+  return kDevLedgerPublicKey;
+}
+
+uint32_t GetRecoveryLedgerPublicKeyHash() {
+  return kDevLedgerPublicKeyHash;
 }
 
 GURL GetRecoveryServiceEpochURL() {

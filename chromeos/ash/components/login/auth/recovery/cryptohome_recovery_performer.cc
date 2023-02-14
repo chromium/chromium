@@ -153,6 +153,11 @@ void CryptohomeRecoveryPerformer::OnFetchRecoveryServiceResponse(
       request.mutable_auth_input()->mutable_cryptohome_recovery_input();
   recovery_input->set_epoch_response(epoch->data(), epoch->size());
   recovery_input->set_recovery_response(response->data(), response->size());
+  user_data_auth::CryptohomeRecoveryAuthInput::LedgerInfo* ledger =
+      recovery_input->mutable_ledger_info();
+  ledger->set_name(GetRecoveryLedgerName());
+  ledger->set_key_hash(GetRecoveryLedgerPublicKeyHash());
+  ledger->set_public_key(GetRecoveryLedgerPublicKey());
 
   user_data_auth_client_->AuthenticateAuthFactor(
       std::move(request),
