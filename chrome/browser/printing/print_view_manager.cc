@@ -275,8 +275,8 @@ void PrintViewManager::RejectPrintPreviewRequestIfRestrictedByContentAnalysis(
       base::FeatureList::IsEnabled(features::kEnablePrintContentAnalysis) &&
       enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-          web_contents()->GetLastCommittedURL(), &scanning_data,
-          enterprise_connectors::AnalysisConnector::PRINT)) {
+          web_contents()->GetOutermostWebContents()->GetLastCommittedURL(),
+          &scanning_data, enterprise_connectors::AnalysisConnector::PRINT)) {
     set_snapshotting_for_content_analysis();
     GetPrintRenderFrame(rfh)->SnapshotForContentAnalysis(base::BindOnce(
         &PrintViewManager::OnGotSnapshotCallback, weak_factory_.GetWeakPtr(),

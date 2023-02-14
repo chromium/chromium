@@ -838,6 +838,8 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     ASSERT_TRUE(web_contents());
     ASSERT_TRUE(params);
     EXPECT_TRUE(params->content->metafile_data_region.IsValid());
+    EXPECT_EQ(data.url,
+              web_contents()->GetOutermostWebContents()->GetLastCommittedURL());
 
     PrintViewManager::OnGotSnapshotCallback(
         std::move(callback), std::move(data), rfh_id, std::move(params));
@@ -861,6 +863,8 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     EXPECT_EQ(data.settings.block_until_verdict,
               enterprise_connectors::BlockUntilVerdict::kBlock);
     EXPECT_TRUE(data.settings.block_large_files);
+    EXPECT_EQ(data.url,
+              web_contents()->GetOutermostWebContents()->GetLastCommittedURL());
 
     // The snapshot should be valid and populated.
     EXPECT_TRUE(LooksLikePdf(page_region.Map().GetMemoryAsSpan<char>()));

@@ -663,8 +663,8 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
   if (base::FeatureList::IsEnabled(features::kEnablePrintContentAnalysis) &&
       enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-          web_contents()->GetLastCommittedURL(), &scanning_data,
-          enterprise_connectors::AnalysisConnector::PRINT)) {
+          web_contents()->GetOutermostWebContents()->GetLastCommittedURL(),
+          &scanning_data, enterprise_connectors::AnalysisConnector::PRINT)) {
     auto scanning_done_callback = base::BindOnce(
         &PrintViewManagerBase::CompleteScriptedPrintAfterContentAnalysis,
         weak_ptr_factory_.GetWeakPtr(), std::move(params), std::move(callback));
@@ -1192,7 +1192,7 @@ void PrintViewManagerBase::OnCompositedForContentAnalysis(
   data.page = std::move(page_region);
 
   enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
-      web_contents(), std::move(data),
+      web_contents()->GetOutermostWebContents(), std::move(data),
       base::BindOnce(
           [](base::OnceCallback<void(bool should_proceed)> callback,
              const enterprise_connectors::ContentAnalysisDelegate::Data& data,
