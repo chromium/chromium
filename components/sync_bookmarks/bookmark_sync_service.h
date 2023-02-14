@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync_bookmarks/bookmark_model_type_processor.h"
 
 class BookmarkUndoService;
 
@@ -66,8 +67,7 @@ class BookmarkSyncService : public KeyedService {
  private:
   // BookmarkModelTypeProcessor handles communications between sync engine and
   // BookmarkModel/HistoryService.
-  std::unique_ptr<sync_bookmarks::BookmarkModelTypeProcessor>
-      bookmark_model_type_processor_;
+  BookmarkModelTypeProcessor bookmark_model_type_processor_;
 };
 
 }  // namespace sync_bookmarks
