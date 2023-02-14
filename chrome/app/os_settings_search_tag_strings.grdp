@@ -464,7 +464,7 @@
     Send URLs of pages you visit to Google
   </message>
   <message name="IDS_OS_SETTINGS_TAG_GOOGLE_DRIVE_SEARCH_SUGGESTIONS" desc="Text for search result item which, when clicked, navigates the user to Google services settings, with a toggle to enable/disable a feature which provides suggestions to visit Google Drive items when the user types in the address bar.">
-    Google Drive search suggestions
+    Show Google Drive suggestions
   </message>
 
   <!-- Kerberos section. -->

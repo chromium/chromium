@@ -209,9 +209,6 @@
   <message name="IDS_SETTINGS_SPELLING_PREF" desc="The documentation string of the 'Use Spelling' preference">
     Enhanced spell check
   </message>
-  <message name="IDS_SETTINGS_SUGGEST_PREF" desc="The label of the checkbox to enable/disable sending omnibox input to the user's default search engine to get additional suggestions.">
-    Improve search suggestions
-  </message>
   <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF" desc="The label of the checkbox to enable/disable crash and user metrics logging. This string does not need a Chromium counter-part because it will only be visible if Google-branded.">
     Help improve Chrome's features and performance
   </message>
@@ -233,8 +230,11 @@
   <message name="IDS_SETTINGS_LINKDOCTOR_PREF_DESC" desc="The description of the 'Use Link Doctor' preference to help with navigation errors.">
     Sends the web address of the page you're trying to reach to Google
   </message>
-  <message name="IDS_DRIVE_SUGGEST_PREF" desc="The documentation string of the 'Show Drive Results in Omnibox' preference - short description">
-    Google Drive search suggestions
+  <message name="IDS_SETTINGS_SUGGEST_PREF" desc="The label of the checkbox to enable/disable sending omnibox input to the user's default search engine to get additional suggestions.">
+    Improve search suggestions
+  </message>
+  <message name="IDS_SETTINGS_DRIVE_SUGGEST_PREF" desc="The label of the checkbox to enable/disable sending omnibox input to Google Drive to get suggestions for documents and other items in Drive.">
+    Show Google Drive suggestions
   </message>
 
   <!-- Sync Accounts page (used by the <settings-sync-account-control> element) -->
