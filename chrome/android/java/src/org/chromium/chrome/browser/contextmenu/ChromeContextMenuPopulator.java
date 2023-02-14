@@ -836,7 +836,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @return The service that handles TemplateUrls.
      */
     protected TemplateUrlService getTemplateUrlService() {
-        return TemplateUrlServiceFactory.get();
+        return TemplateUrlServiceFactory.getForProfile(getProfile());
     }
 
     /**

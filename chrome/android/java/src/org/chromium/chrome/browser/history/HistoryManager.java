@@ -124,6 +124,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             new ObservableSupplierImpl<>();
 
     private final PrefService mPrefService;
+    private final Profile mProfile;
     private @Nullable TabLayout mHistoryTabToggle;
     private @Nullable TabLayout mJourneysTabToggle;
 
@@ -153,7 +154,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mSnackbarManager = snackbarManager;
         mIsIncognito = isIncognito;
         mHistoryProvider = historyProvider;
-        mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        mProfile = Profile.getLastUsedRegularProfile();
+        mPrefService = UserPrefs.get(mProfile);
         mBackPressStateSupplier.set(false);
 
         recordUserAction("Show");
@@ -289,9 +291,9 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 }
             };
 
-            mHistoryClustersCoordinator = new HistoryClustersCoordinator(
-                    Profile.getLastUsedRegularProfile(), activity, TemplateUrlServiceFactory.get(),
-                    historyClustersDelegate, ChromeAccessibilityUtil.get(), mSnackbarManager);
+            mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
+                    TemplateUrlServiceFactory.getForProfile(mProfile), historyClustersDelegate,
+                    ChromeAccessibilityUtil.get(), mSnackbarManager);
         }
 
         // 1. Create selectable components.
@@ -553,8 +555,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
 
     private String getSearchEmptyString() {
         String defaultSearchEngineName = null;
-        TemplateUrl dseTemplateUrl =
-                TemplateUrlServiceFactory.get().getDefaultSearchEngineTemplateUrl();
+        TemplateUrl dseTemplateUrl = TemplateUrlServiceFactory.getForProfile(mProfile)
+                                             .getDefaultSearchEngineTemplateUrl();
         if (dseTemplateUrl != null) defaultSearchEngineName = dseTemplateUrl.getShortName();
         return defaultSearchEngineName == null
                 ? mActivity.getString(R.string.history_manager_no_results_no_dse)

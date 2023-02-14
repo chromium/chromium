@@ -251,6 +251,20 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
           'ui/android/java/src/org/chromium/ui/base/ViewUtils.java',
       ),
     ),
+    BanRule(
+      'Profile.getLastUsedRegularProfile()',
+      (
+       'Prefer passing in the Profile reference instead of relying on the '
+       'static getLastUsedRegularProfile() call. Only top level entry points '
+       '(e.g. Activities) should call this method. Otherwise, the Profile '
+       'should either be passed in explicitly or retreived from an existing '
+       'entity with a reference to the Profile (e.g. WebContents).',
+      ),
+      False,
+      excluded_paths=(
+        r'.*Test[A-Z]?.*\.java',
+      ),
+    ),
 )
 
 _BANNED_JAVASCRIPT_FUNCTIONS : Sequence [BanRule] = (

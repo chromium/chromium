@@ -843,7 +843,7 @@ public class RootUiCoordinator
             };
 
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(profile, mActivity,
-                    TemplateUrlServiceFactory.get(), historyClustersDelegate,
+                    TemplateUrlServiceFactory.getForProfile(profile), historyClustersDelegate,
                     ChromeAccessibilityUtil.get(), mSnackbarManagerSupplier.get());
             mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
@@ -888,7 +888,9 @@ public class RootUiCoordinator
      * Generate the LoadUrlParams necessary to load the specified search query.
      */
     private static LoadUrlParams generateUrlParamsForSearch(Tab tab, String query) {
-        String url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(query);
+        String url = TemplateUrlServiceFactory
+                             .getForProfile(Profile.fromWebContents(tab.getWebContents()))
+                             .getUrlForSearchQuery(query);
         String headers = GeolocationHeader.getGeoHeader(url, tab);
 
         LoadUrlParams loadUrlParams = new LoadUrlParams(url);

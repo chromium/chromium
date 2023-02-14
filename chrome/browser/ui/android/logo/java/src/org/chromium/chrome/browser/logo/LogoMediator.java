@@ -132,7 +132,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
             if (mIsLoadPending) loadSearchProviderLogo(/*animationEnabled=*/false);
         }
 
-        TemplateUrlServiceFactory.get().addObserver(this);
+        TemplateUrlServiceFactory.getForProfile(mProfile).addObserver(this);
     }
 
     /** Update the logo based on default search engine changes.*/
@@ -186,7 +186,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         cleanUp();
 
         if (mProfile != null) {
-            TemplateUrlServiceFactory.get().removeObserver(this);
+            TemplateUrlServiceFactory.getForProfile(mProfile).removeObserver(this);
         }
 
         if (mVisibilityObserver != null) {
@@ -224,7 +224,8 @@ public class LogoMediator implements TemplateUrlServiceObserver {
 
         // If default search engine is google and doodle is not supported, doesn't bother to fetch
         // logo image.
-        if (TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle() && !mShouldFetchDoodle) {
+        if (TemplateUrlServiceFactory.getForProfile(mProfile).isDefaultSearchEngineGoogle()
+                && !mShouldFetchDoodle) {
             return;
         }
 
@@ -268,7 +269,8 @@ public class LogoMediator implements TemplateUrlServiceObserver {
 
     private void updateVisibility() {
         boolean doesDseHaveLogo = mProfile != null
-                ? TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo()
+                ? TemplateUrlServiceFactory.getForProfile(mProfile)
+                          .doesDefaultSearchEngineHaveLogo()
                 : SharedPreferencesManager.getInstance().readBoolean(
                         APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, true);
         mShouldShowLogo = mIsParentSurfaceShown && doesDseHaveLogo;
@@ -285,7 +287,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
      */
     @VisibleForTesting
     Bitmap getDefaultGoogleLogo(Context context) {
-        return TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
+        return TemplateUrlServiceFactory.getForProfile(mProfile).isDefaultSearchEngineGoogle()
                 ? mDefaultGoogleLogo.getBitmap(context)
                 : null;
     }

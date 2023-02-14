@@ -468,6 +468,8 @@ public class VoiceRecognitionHandlerTest {
     public void testCallback_successWithLanguages() {
         // Needs to run on the UI thread because we use the TemplateUrlService on success.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mProfileSupplier.set(Profile.getLastUsedRegularProfile());
+
             mWindowAndroid.setVoiceResults(RecognitionTestHelper.createDummyBundle("testing",
                     VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD, "en-us"));
             RecognitionTestHelper.startVoiceRecognition(

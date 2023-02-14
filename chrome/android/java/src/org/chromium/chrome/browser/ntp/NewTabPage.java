@@ -93,6 +93,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -158,6 +159,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
     private final Supplier<Toolbar> mToolbarSupplier;
     private final TabModelSelector mTabModelSelector;
+    private final TemplateUrlService mTemplateUrlService;
 
     @Nullable
     private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
@@ -372,7 +374,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mTitle = activity.getResources().getString(R.string.new_tab_title);
         mBackgroundColor = SemanticColorUtils.getDefaultBgColor(mContext);
         mIsTablet = isTablet;
-        TemplateUrlServiceFactory.get().addObserver(this);
+        mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
+        mTemplateUrlService.addObserver(this);
 
         mTabObserver = new EmptyTabObserver() {
             @Override
@@ -471,8 +474,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         windowAndroid.addContextMenuCloseListener(mContextMenuManager);
 
         mNewTabPageLayout.initialize(mNewTabPageManager, activity, mTileGroupDelegate,
-                mSearchProviderHasLogo,
-                TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle(),
+                mSearchProviderHasLogo, mTemplateUrlService.isDefaultSearchEngineGoogle(),
                 mFeedSurfaceProvider.getScrollDelegate(),
                 mFeedSurfaceProvider.getTouchEnabledDelegate(), mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher, uma, mTab.isIncognito(), windowAndroid);
@@ -626,13 +628,13 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     private void updateSearchProviderHasLogo() {
-        mSearchProviderHasLogo = TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
+        mSearchProviderHasLogo = mTemplateUrlService.doesDefaultSearchEngineHaveLogo();
     }
 
     private void onSearchEngineUpdated() {
         updateSearchProviderHasLogo();
-        setSearchProviderInfoOnView(mSearchProviderHasLogo,
-                TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle());
+        setSearchProviderInfoOnView(
+                mSearchProviderHasLogo, mTemplateUrlService.isDefaultSearchEngineGoogle());
         // TODO(https://crbug.com/1329288): Remove this call when the Feed position experiment is
         // cleaned up.
         updateMargins();
@@ -880,7 +882,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         mNewTabPageManager.onDestroy();
         mTileGroupDelegate.destroy();
-        TemplateUrlServiceFactory.get().removeObserver(this);
+        mTemplateUrlService.removeObserver(this);
         mTab.removeObserver(mTabObserver);
         mTabObserver = null;
         mActivityLifecycleDispatcher.unregister(mLifecycleObserver);

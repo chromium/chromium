@@ -8,8 +8,9 @@ include_rules = [
   "+chrome/browser/ui/messages/android/java",
   "+chrome/browser/xsurface/android",
   "+components/background_task_scheduler",
+  "+components/browser_ui/settings",
   "+components/feature_engagement",
   "+components/feed",
-  "+components/browser_ui/settings",
+  "+components/search_engines",
   "+content/public/android/java/src/org/chromium/content_public/browser",
 ]

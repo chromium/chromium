@@ -415,7 +415,10 @@ public class VoiceRecognitionHandler {
 
             RenderFrameHost renderFrameHost = webContents.getMainFrame();
             if (renderFrameHost == null) return;
-            if (TemplateUrlServiceFactory.get().isSearchResultsPageFromDefaultSearchProvider(url)) {
+
+            if (!mProfileSupplier.hasValue()) return;
+            if (TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get())
+                            .isSearchResultsPageFromDefaultSearchProvider(url)) {
                 renderFrameHost.notifyUserActivation();
             }
         }
@@ -529,16 +532,17 @@ public class VoiceRecognitionHandler {
                 }
             }
 
-            AutocompleteMatch match = null;
-            if (mProfileSupplier.hasValue()) {
-                match = AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
-                                .get(mProfileSupplier.get())
-                                .classify(topResultQuery, false);
-            }
+            if (!mProfileSupplier.hasValue()) return;
+
+            Profile profile = mProfileSupplier.get();
+            AutocompleteMatch match =
+                    AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
+                            .get(profile)
+                            .classify(topResultQuery, false);
 
             String url;
             if (match == null || match.isSearchSuggestion()) {
-                url = TemplateUrlServiceFactory.get()
+                url = TemplateUrlServiceFactory.getForProfile(profile)
                               .getUrlForVoiceSearchQuery(topResultQuery)
                               .getSpec();
                 // If a language was returned to us from voice recognition, then use it. Currently,

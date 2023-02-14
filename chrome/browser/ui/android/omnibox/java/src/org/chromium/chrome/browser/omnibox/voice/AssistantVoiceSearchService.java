@@ -372,13 +372,12 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
      * See reportUserEligibility for details on which histograms are recorded.
      */
     public static void reportStartupUserEligibility(Context context) {
-        AssistantVoiceSearchService service =
-                new AssistantVoiceSearchService(context, ExternalAuthUtils.getInstance(),
-                        TemplateUrlServiceFactory.get(), GSAState.getInstance(),
-                        /*observer=*/null, SharedPreferencesManager.getInstance(),
-                        IdentityServicesProvider.get().getIdentityManager(
-                                Profile.getLastUsedRegularProfile()),
-                        AccountManagerFacadeProvider.getInstance());
+        Profile profile = Profile.getLastUsedRegularProfile();
+        AssistantVoiceSearchService service = new AssistantVoiceSearchService(context,
+                ExternalAuthUtils.getInstance(), TemplateUrlServiceFactory.getForProfile(profile),
+                GSAState.getInstance(), /*observer=*/null, SharedPreferencesManager.getInstance(),
+                IdentityServicesProvider.get().getIdentityManager(profile),
+                AccountManagerFacadeProvider.getInstance());
         service.reportUserEligibility(STARTUP_HISTOGRAM_SUFFIX);
     }
 

@@ -209,9 +209,10 @@ public class MainSettings extends PreferenceFragmentCompat
             getPreferenceScreen().removePreference(findPreference(PREF_NOTIFICATIONS));
         }
 
-        if (!TemplateUrlServiceFactory.get().isLoaded()) {
-            TemplateUrlServiceFactory.get().registerLoadListener(this);
-            TemplateUrlServiceFactory.get().load();
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        if (!templateUrlService.isLoaded()) {
+            templateUrlService.registerLoadListener(this);
+            templateUrlService.load();
         }
 
         new AdaptiveToolbarStatePredictor(null).recomputeUiState(uiState -> {
@@ -311,7 +312,8 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private void updateSearchEnginePreference() {
-        if (!TemplateUrlServiceFactory.get().isLoaded()) {
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        if (!templateUrlService.isLoaded()) {
             ChromeBasePreference searchEnginePref =
                     (ChromeBasePreference) findPreference(PREF_SEARCH_ENGINE);
             searchEnginePref.setEnabled(false);
@@ -319,8 +321,7 @@ public class MainSettings extends PreferenceFragmentCompat
         }
 
         String defaultSearchEngineName = null;
-        TemplateUrl dseTemplateUrl =
-                TemplateUrlServiceFactory.get().getDefaultSearchEngineTemplateUrl();
+        TemplateUrl dseTemplateUrl = templateUrlService.getDefaultSearchEngineTemplateUrl();
         if (dseTemplateUrl != null) defaultSearchEngineName = dseTemplateUrl.getShortName();
 
         Preference searchEnginePreference = findPreference(PREF_SEARCH_ENGINE);
@@ -393,7 +394,7 @@ public class MainSettings extends PreferenceFragmentCompat
     // TemplateUrlService.LoadListener implementation.
     @Override
     public void onTemplateUrlServiceLoaded() {
-        TemplateUrlServiceFactory.get().unregisterLoadListener(this);
+        TemplateUrlServiceFactory.getForProfile(mProfile).unregisterLoadListener(this);
         updateSearchEnginePreference();
     }
 
@@ -413,7 +414,8 @@ public class MainSettings extends PreferenceFragmentCompat
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
-                    return TemplateUrlServiceFactory.get().isDefaultSearchManaged();
+                    return TemplateUrlServiceFactory.getForProfile(mProfile)
+                            .isDefaultSearchManaged();
                 }
                 if (usesUnifiedPasswordManagerUI() && PREF_PASSWORDS.equals(preference.getKey())) {
                     return UserPrefs.get(mProfile).isManagedPreference(
@@ -425,7 +427,8 @@ public class MainSettings extends PreferenceFragmentCompat
             @Override
             public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
-                    return TemplateUrlServiceFactory.get().isDefaultSearchManaged();
+                    return TemplateUrlServiceFactory.getForProfile(mProfile)
+                            .isDefaultSearchManaged();
                 }
                 if (usesUnifiedPasswordManagerUI() && PREF_PASSWORDS.equals(preference.getKey())) {
                     return false;

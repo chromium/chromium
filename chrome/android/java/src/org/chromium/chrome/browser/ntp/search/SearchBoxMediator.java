@@ -85,11 +85,11 @@ class SearchBoxMediator
 
     @Override
     public void onFinishNativeInitialization() {
+        Profile profile = Profile.getLastUsedRegularProfile();
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(mContext,
-                ExternalAuthUtils.getInstance(), TemplateUrlServiceFactory.get(),
+                ExternalAuthUtils.getInstance(), TemplateUrlServiceFactory.getForProfile(profile),
                 GSAState.getInstance(), this, SharedPreferencesManager.getInstance(),
-                IdentityServicesProvider.get().getIdentityManager(
-                        Profile.getLastUsedRegularProfile()),
+                IdentityServicesProvider.get().getIdentityManager(profile),
                 AccountManagerFacadeProvider.getInstance());
         onAssistantVoiceSearchServiceChanged();
     }

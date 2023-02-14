@@ -131,7 +131,7 @@ public class SearchResumptionModuleUtils {
             return false;
         }
 
-        if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) {
+        if (!TemplateUrlServiceFactory.getForProfile(profile).isDefaultSearchEngineGoogle()) {
             recordModuleNotShownReason(ModuleNotShownReason.DEFAULT_ENGINE_NOT_GOOGLE);
             return false;
         }

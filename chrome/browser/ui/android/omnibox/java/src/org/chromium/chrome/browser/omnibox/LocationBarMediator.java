@@ -319,17 +319,17 @@ class LocationBarMediator
     /*package */ void onFinishNativeInitialization() {
         mNativeInitialized = true;
         mOmniboxPrerender = new OmniboxPrerender();
-        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
-        if (templateUrlService != null) {
+        mTemplateUrlServiceSupplier.onAvailable((templateUrlService) -> {
             templateUrlService.addObserver(this);
-        }
-        mAssistantVoiceSearchServiceSupplier.set(new AssistantVoiceSearchService(mContext,
-                ExternalAuthUtils.getInstance(), templateUrlService, GSAState.getInstance(), this,
-                SharedPreferencesManager.getInstance(),
-                IdentityServicesProvider.get().getIdentityManager(
-                        Profile.getLastUsedRegularProfile()),
-                AccountManagerFacadeProvider.getInstance()));
-        onAssistantVoiceSearchServiceChanged();
+            mAssistantVoiceSearchServiceSupplier.set(new AssistantVoiceSearchService(mContext,
+                    ExternalAuthUtils.getInstance(), templateUrlService, GSAState.getInstance(),
+                    LocationBarMediator.this, SharedPreferencesManager.getInstance(),
+                    IdentityServicesProvider.get().getIdentityManager(
+                            Profile.getLastUsedRegularProfile()),
+                    AccountManagerFacadeProvider.getInstance()));
+            onAssistantVoiceSearchServiceChanged();
+        });
+
         mLocationBarLayout.onFinishNativeInitialization();
         setProfile(mProfileSupplier.get());
         onPrimaryColorChanged();

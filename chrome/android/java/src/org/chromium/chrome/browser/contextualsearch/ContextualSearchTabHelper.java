@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
@@ -33,8 +34,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /** Manages the enabling and disabling and gesture listeners for ContextualSearch on a given Tab. */
-public class ContextualSearchTabHelper
-        extends EmptyTabObserver implements NetworkChangeNotifier.ConnectionTypeObserver {
+public class ContextualSearchTabHelper extends EmptyTabObserver
+        implements NetworkChangeNotifier.ConnectionTypeObserver, TemplateUrlServiceObserver {
     private static final String TAG = "ContextualSearch";
 
     /** The Tab that this helper tracks. */
@@ -43,8 +44,7 @@ public class ContextualSearchTabHelper
     // Device scale factor.
     private final float mPxToDp;
 
-    /** Notification handler for Contextual Search events. */
-    private TemplateUrlServiceObserver mTemplateUrlObserver;
+    private TemplateUrlService mTemplateUrlService;
 
     /**
      * The WebContents associated with the Tab which this helper is monitoring, unless detached.
@@ -114,24 +114,15 @@ public class ContextualSearchTabHelper
     public void onContentChanged(Tab tab) {
         // Native initialization happens after a page loads or content is changed to ensure profile
         // is initialized.
+        Profile profile = Profile.fromWebContents(tab.getWebContents());
         if (mNativeHelper == 0 && tab.getWebContents() != null) {
             mNativeHelper = ContextualSearchTabHelperJni.get().init(
-                    ContextualSearchTabHelper.this, Profile.fromWebContents(tab.getWebContents()));
+                    ContextualSearchTabHelper.this, profile);
         }
-        if (mTemplateUrlObserver == null) {
-            mTemplateUrlObserver = new TemplateUrlServiceObserver() {
-                @Override
-                public void onTemplateURLServiceChanged() {
-                    boolean isDefaultSearchEngineGoogle =
-                            TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle();
-                    if (mIsDefaultSearchEngineGoogle == null
-                            || isDefaultSearchEngineGoogle != mIsDefaultSearchEngineGoogle) {
-                        mIsDefaultSearchEngineGoogle = isDefaultSearchEngineGoogle;
-                        updateContextualSearchHooks(mWebContents);
-                    }
-                }
-            };
-            TemplateUrlServiceFactory.get().addObserver(mTemplateUrlObserver);
+        if (profile != null && mTemplateUrlService == null) {
+            mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
+            mTemplateUrlService.addObserver(this);
+            if (mTemplateUrlService.isLoaded()) onTemplateURLServiceChanged();
         }
         updateHooksForTab(tab);
     }
@@ -148,8 +139,8 @@ public class ContextualSearchTabHelper
                     mNativeHelper, ContextualSearchTabHelper.this);
             mNativeHelper = 0;
         }
-        if (mTemplateUrlObserver != null) {
-            TemplateUrlServiceFactory.get().removeObserver(mTemplateUrlObserver);
+        if (mTemplateUrlService != null) {
+            mTemplateUrlService.removeObserver(this);
         }
         if (NetworkChangeNotifier.isInitialized()) {
             NetworkChangeNotifier.removeConnectionTypeObserver(this);
@@ -181,6 +172,21 @@ public class ContextualSearchTabHelper
         ContextualSearchManager manager = getContextualSearchManager(tab);
         if (manager != null) {
             manager.onContextMenuShown();
+        }
+    }
+
+    // ============================================================================================
+    // TemplateUrlServiceObserver overrides.
+    // ============================================================================================
+
+    @Override
+    public void onTemplateURLServiceChanged() {
+        assert mTemplateUrlService != null;
+        boolean isDefaultSearchEngineGoogle = mTemplateUrlService.isDefaultSearchEngineGoogle();
+        if (mIsDefaultSearchEngineGoogle == null
+                || isDefaultSearchEngineGoogle != mIsDefaultSearchEngineGoogle) {
+            mIsDefaultSearchEngineGoogle = isDefaultSearchEngineGoogle;
+            updateContextualSearchHooks(mWebContents);
         }
     }
 
@@ -299,9 +305,11 @@ public class ContextualSearchTabHelper
             return false;
         }
 
+        boolean isDseGoogle =
+                TemplateUrlServiceFactory.getForProfile(Profile.fromWebContents(webContents))
+                        .isDefaultSearchEngineGoogle();
         boolean isActive = !webContents.isIncognito() && FirstRunStatus.getFirstRunFlowComplete()
-                && !ContextualSearchPolicy.isContextualSearchDisabled()
-                && TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
+                && !ContextualSearchPolicy.isContextualSearchDisabled() && isDseGoogle
                 && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
                 // Svelte and Accessibility devices are incompatible with the first-run flow and
                 // Talkback has poor interaction with Contextual Search (see http://crbug.com/399708
@@ -316,8 +324,7 @@ public class ContextualSearchTabHelper
                             + FirstRunStatus.getFirstRunFlowComplete()
                             + " !isContextualSearchDisabled: "
                             + !ContextualSearchManager.isContextualSearchDisabled()
-                            + " isDefaultSearchEngineGoogle: "
-                            + TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
+                            + " isDefaultSearchEngineGoogle: " + isDseGoogle
                             + " !needToCheckForSearchEnginePromo: "
                             + !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
                             + " !isRunningInCompatibilityMode: "
