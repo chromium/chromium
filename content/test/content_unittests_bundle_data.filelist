@@ -572,6 +572,8 @@
 //content/test/data/accessibility/aria/aria-controls-expected-blink.txt
 //content/test/data/accessibility/aria/aria-controls-expected-mac.txt
 //content/test/data/accessibility/aria/aria-controls-expected-win.txt
+//content/test/data/accessibility/aria/aria-controls-many-paragraphs-between-expected-blink.txt
+//content/test/data/accessibility/aria/aria-controls-many-paragraphs-between.html
 //content/test/data/accessibility/aria/aria-controls.html
 //content/test/data/accessibility/aria/aria-current-expected-android-external.txt
 //content/test/data/accessibility/aria/aria-current-expected-android.txt

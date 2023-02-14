@@ -650,6 +650,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaControls) {
   RunAriaTest(FILE_PATH_LITERAL("aria-controls.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaControlsManyParagraphsBetween) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-controls-many-paragraphs-between.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaCurrent) {
   RunAriaTest(FILE_PATH_LITERAL("aria-current.html"));
 }

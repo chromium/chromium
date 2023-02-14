@@ -99,8 +99,25 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
     return;
   HeapVector<Member<Element>>* attr_associated_elements =
       element->GetElementArrayAttribute(qualified_name);
-  if (!attr_associated_elements || attr_associated_elements->empty())
+  if (!attr_associated_elements) {
     return;
+  }
+
+  if (attr_associated_elements->empty()) {
+    // The target element was not yet available, so keep the source element
+    // dirty until the target element is in the DOM. For example, this can
+    // happen during a page load, if the source and target are loaded in
+    // separate batches.
+    // TODO(accessibility) Are there realistic cases where we need to do this
+    // outside of page loads? We currently only do this during page loads so
+    // so that bad markup, where the target id will never exist, doesn't stay
+    // dirty during the lifetime of the document.
+    DCHECK(object->GetDocument());
+    if (!object->GetDocument()->IsLoadCompleted()) {
+      object->AXObjectCache().MarkAXObjectDirty(object);
+    }
+    return;
+  }
   std::vector<int32_t> ax_ids;
 
   for (const auto& associated_element : *attr_associated_elements) {

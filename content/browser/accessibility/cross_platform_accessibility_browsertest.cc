@@ -1522,9 +1522,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 // Flaky on Lacros: https://crbug.com/1292527
 // TODO(https://crbug.com/1318197): Enable on Fuchsia when content_browsertests
 // runs in non-headless mode.
-// TODO(https://crbug.com/1415374): Deflake ARIA relation serializations.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_FUCHSIA) || \
-    defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_ControlsIdsForDateTimePopup DISABLED_ControlsIdsForDateTimePopup
 #else
 #define MAYBE_ControlsIdsForDateTimePopup ControlsIdsForDateTimePopup
