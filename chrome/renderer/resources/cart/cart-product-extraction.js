@@ -6,7 +6,7 @@ var verbose = 0;
 
 // Aliexpress uses 'US $12.34' format in the price.
 // Macy's uses "$12.34 to 56.78" format.
-var priceCleanupPrefix = 'sale|with offer|only|our price|now|starting at';
+var priceCleanupPrefix = 'price|sale|with offer|only|our price|now|starting at';
 var priceCleanupPostfix = '(/(each|set))';
 var priceRegexTemplate = '((reg|regular|orig|from|' + priceCleanupPrefix +
     ')\\s+)?' +
