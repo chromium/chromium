@@ -75,13 +75,8 @@ std::tuple<bool, absl::optional<std::string>> Base64UrlDecodeNullableStringKey(
   if (value->is_none()) {
     return {true, absl::nullopt};
   }
-  DCHECK(value->is_string());
-  const std::string* b64url_data = dict.FindString(key);
-  if (!b64url_data) {
-    return {false, absl::nullopt};
-  }
   std::string decoded;
-  if (!Base64UrlDecode(*b64url_data, &decoded)) {
+  if (!Base64UrlDecode(value->GetString(), &decoded)) {
     return {false, absl::nullopt};
   }
   return {true, decoded};

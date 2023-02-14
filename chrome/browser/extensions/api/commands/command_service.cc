@@ -293,17 +293,18 @@ Command CommandService::FindCommandByName(const std::string& extension_id,
   const base::Value::Dict& bindings =
       profile_->GetPrefs()->GetDict(prefs::kExtensionCommands);
   for (const auto it : bindings) {
-    const std::string* extension = it.second.FindStringKey(kExtension);
+    const std::string* extension = it.second.GetDict().FindString(kExtension);
     if (!extension || *extension != extension_id)
       continue;
-    const std::string* command_name = it.second.FindStringKey(kCommandName);
+    const std::string* command_name =
+        it.second.GetDict().FindString(kCommandName);
     if (!command_name || *command_name != command)
       continue;
     // Format stored in Preferences is: "Platform:Shortcut[:ExtensionId]".
     std::string shortcut = it.first;
     if (!IsForCurrentPlatform(shortcut))
       continue;
-    absl::optional<bool> global = it.second.FindBoolKey(kGlobal);
+    absl::optional<bool> global = it.second.GetDict().FindBool(kGlobal);
 
     std::vector<base::StringPiece> tokens = base::SplitStringPiece(
         shortcut, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
