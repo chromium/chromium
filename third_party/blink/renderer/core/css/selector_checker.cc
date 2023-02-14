@@ -323,17 +323,20 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
       (scrollbar_ || dynamic_pseudo == kPseudoIdScrollbarCorner ||
        dynamic_pseudo == kPseudoIdResizer);
 
-  // Only match pseudo classes following scrollbar pseudo elements while
-  // actually computing style for scrollbar pseudo elements. This is to
-  // avoid incorrectly setting affected-by flags on actual elements for
-  // cases like: div::-webkit-scrollbar-thumb:hover { }
-  // Also allow pseudo-classes after ::view-transition* pseudo-elements if the
-  // class is the rightmost compound in the selector.
-  if (context.in_rightmost_compound && dynamic_pseudo != kPseudoIdNone &&
-      dynamic_pseudo != kPseudoIdSelection &&
-      !IsTransitionPseudoElement(dynamic_pseudo) &&
-      !next_context.has_scrollbar_pseudo) {
-    return kSelectorFailsCompletely;
+  // If we saw a pseudo element while not computing pseudo element styles, do
+  // not try to match any simple selectors after the pseudo element as those
+  // selectors need to match the actual pseudo element.
+  //
+  // Examples:
+  //
+  // span::selection:window-inactive {}
+  // #id::before:initial {}
+  // .class::before:hover {}
+  //
+  // In all of those cases we need to skip matching the pseudo classes after the
+  // pseudo element on the originating element.
+  if (dynamic_pseudo != kPseudoIdNone && context.pseudo_id == kPseudoIdNone) {
+    return kSelectorMatches;
   }
 
   next_context.has_selection_pseudo = dynamic_pseudo == kPseudoIdSelection;
