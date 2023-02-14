@@ -15,12 +15,22 @@ namespace ash::quick_start {
 class Connection {
  public:
   explicit Connection(NearbyConnection* nearby_connection);
+  Connection(const Connection&) = delete;
+  Connection& operator=(const Connection&) = delete;
   virtual ~Connection() = default;
 
  protected:
+  friend class ConnectionTest;
+
+  using PayloadResponseCallback =
+      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
+
   // Reusable method to serialize a payload into JSON bytes and send via Nearby
   // Connections.
   void SendPayload(const base::Value::Dict& message_payload);
+
+  void SendPayloadAndReadResponse(const base::Value::Dict& message_payload,
+                                  PayloadResponseCallback callback);
 
   NearbyConnection* nearby_connection_;
 };

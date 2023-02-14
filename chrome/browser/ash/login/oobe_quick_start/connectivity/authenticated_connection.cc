@@ -62,6 +62,8 @@ const uint8_t kAuthenticatorGetAssertionCommand = 0x02;
 const char kUserPresenceMapKey[] = "up";
 const char kUserVerificationMapKey[] = "uv";
 
+const char kNotifySourceOfUpdateMessageKey[] = "isForcedUpdateRequired";
+
 }  // namespace
 
 AuthenticatedConnection::AuthenticatedConnection(
@@ -93,6 +95,12 @@ void AuthenticatedConnection::RequestAccountTransferAssertion(
 
   // Call into SetBootstrapOptions, starting the chain of callbacks.
   SendBootstrapOptions(std::move(get_info));
+}
+
+void AuthenticatedConnection::NotifySourceOfUpdate() {
+  base::Value::Dict message_payload;
+  message_payload.Set(kNotifySourceOfUpdateMessageKey, true);
+  SendPayload(message_payload);
 }
 
 void AuthenticatedConnection::SendBootstrapOptions(

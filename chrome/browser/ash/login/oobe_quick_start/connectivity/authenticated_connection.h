@@ -35,6 +35,8 @@ class AuthenticatedConnection : public Connection {
       const std::string& challenge_b64url,
       RequestAccountTransferAssertionCallback callback);
 
+  void NotifySourceOfUpdate();
+
  private:
   using ConnectionResponseCallback =
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
