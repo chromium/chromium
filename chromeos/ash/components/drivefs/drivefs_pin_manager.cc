@@ -820,8 +820,8 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
         return false;
       }
 
-      VLOG(3) << "Synced " << id << " " << Quote(path) << ": " << Quote(event);
-      VLOG_IF(2, !VLOG_IS_ON(3)) << "Synced " << id << " " << Quote(path);
+      VLOG(2) << "Synced " << id << " " << Quote(path) << ": " << Quote(event);
+      VLOG_IF(1, !VLOG_IS_ON(2)) << "Synced " << id << " " << Quote(path);
       progress_.pinned_files++;
       return true;
 

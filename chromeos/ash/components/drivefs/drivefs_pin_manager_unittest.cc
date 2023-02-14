@@ -56,6 +56,8 @@ using testing::UnorderedElementsAre;
 using Id = PinManager::Id;
 using Path = base::FilePath;
 
+const FileError kFileOk = FileError::FILE_ERROR_OK;
+
 // Shorthand way to represent drive files with the information that is relevant
 // for the pinning manager.
 struct DriveItem {
@@ -851,8 +853,7 @@ TEST_F(DriveFsPinManagerTest, OnFileCreated) {
   manager.progress_.stage = Stage::kListingFiles;
   EXPECT_CALL(drivefs_, GetMetadataByStableId(item.stable_id, _))
       .Times(1)
-      .WillOnce(
-          RunOnceCallback<1>(FileError::FILE_ERROR_OK, MakeMetadata(item)));
+      .WillOnce(RunOnceCallback<1>(kFileOk, MakeMetadata(item)));
   manager.OnFileCreated(std::as_const(event));
 
   EXPECT_EQ(manager.progress_.pinned_files, 0);
@@ -878,6 +879,56 @@ TEST_F(DriveFsPinManagerTest, OnFileCreated) {
 
   EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(Id(item.stable_id)));
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  manager.progress_.stage = Stage::kStopped;
+}
+
+// Tests PinManager::OnMetadataForCreatedFile().
+TEST_F(DriveFsPinManagerTest, OnMetadataForCreatedFile) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+
+  manager.progress_.stage = Stage::kListingFiles;
+
+  const Id id = Id(101);
+  const Path path("/root/Path 1");
+  const DriveItem item{.stable_id = static_cast<int64_t>(id), .size = 2487};
+
+  // Cannot get metadata for an untracked file.
+  manager.OnMetadataForCreatedFile(id, path, drive::FILE_ERROR_ACCESS_DENIED,
+                                   nullptr);
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+
+  // Add a tracked file.
+  ASSERT_TRUE(manager.Add(*MakeMetadata(item), path));
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+
+  // Cannot get metadata for a tracked file.
+  manager.OnMetadataForCreatedFile(
+      id, path, FileError::FILE_ERROR_ACCESS_DENIED, nullptr);
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.failed_files, 1);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+
+  // Get metadata for an untracked file.
+  manager.progress_.failed_files = 0;
+  manager.OnMetadataForCreatedFile(id, path, kFileOk, MakeMetadata(item));
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
 
   manager.progress_.stage = Stage::kStopped;
 }
@@ -1133,8 +1184,7 @@ TEST_F(DriveFsPinManagerTest, InvalidFileList) {
   base::RunLoop run_loop;
 
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
-  EXPECT_CALL(drivefs_, OnGetNextPage(_))
-      .WillOnce(Return(FileError::FILE_ERROR_OK));
+  EXPECT_CALL(drivefs_, OnGetNextPage(_)).WillOnce(Return(kFileOk));
   EXPECT_CALL(mock_callback, Run(Stage::kCannotListFiles))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
@@ -1166,10 +1216,8 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace) {
 
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
-      .WillOnce(
-          DoAll(PopulateSearchItems(items), Return(FileError::FILE_ERROR_OK)))
-      .WillOnce(
-          DoAll(PopulateNoSearchItems(), Return(FileError::FILE_ERROR_OK)));
+      .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)))
+      .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
   EXPECT_CALL(mock_callback, Run(Stage::kNotEnoughSpace))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
@@ -1200,10 +1248,8 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
 
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
-      .WillOnce(
-          DoAll(PopulateSearchItems(items), Return(FileError::FILE_ERROR_OK)))
-      .WillOnce(
-          DoAll(PopulateNoSearchItems(), Return(FileError::FILE_ERROR_OK)));
+      .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)))
+      .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
   EXPECT_CALL(mock_callback, Run(Stage::kSuccess))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
@@ -1235,22 +1281,19 @@ TEST_F(DriveFsPinManagerTest,
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(2);
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       // Results returned whilst calculating free disk space.
-      .WillOnce(
-          DoAll(PopulateSearchItems(items), Return(FileError::FILE_ERROR_OK)))
-      .WillOnce(
-          DoAll(PopulateNoSearchItems(), Return(FileError::FILE_ERROR_OK)))
+      .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)))
+      .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)))
       // Results returned when actually performing the pinning, don't return a
       // final empty list as this should be aborted due to one of the pinning
       // operations being mock failed.
-      .WillOnce(
-          DoAll(PopulateSearchItems(items), Return(FileError::FILE_ERROR_OK)));
+      .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)));
   EXPECT_CALL(mock_callback, Run(Stage::kSuccess))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
   EXPECT_CALL(drivefs_, SetPinned(_, true, _))
       // Mock the first file to successfully get pinned.
-      .WillOnce(RunOnceCallback<2>(FileError::FILE_ERROR_OK))
+      .WillOnce(RunOnceCallback<2>(kFileOk))
       // Mock the second file to unsuccessfully get pinned.
       .WillOnce(RunOnceCallback<2>(FileError::FILE_ERROR_FAILED));
 
@@ -1276,8 +1319,7 @@ TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
                    OnceCallback<void(FileError, FileMetadataPtr)> callback) {
             for (const DriveItem& item : items) {
               if (item.path == path) {
-                std::move(callback).Run(FileError::FILE_ERROR_OK,
-                                        MakeMetadata(item));
+                std::move(callback).Run(kFileOk, MakeMetadata(item));
                 return;
               }
             }
@@ -1289,26 +1331,24 @@ TEST_F(DriveFsPinManagerTest, DISABLED_OnlyUnpinnedItemsShouldGetPinned) {
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       // Results returned whilst calculating free disk space.
-      .WillOnce(
-          DoAll(PopulateSearchItems(items), Return(FileError::FILE_ERROR_OK)))
-      .WillOnce(
-          DoAll(PopulateNoSearchItems(), Return(FileError::FILE_ERROR_OK)));
+      .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)))
+      .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
   EXPECT_CALL(drivefs_, SetPinnedByStableId(items[0].stable_id, true, _))
-      .WillOnce([&items](int64_t, bool,
-                         OnceCallback<void(FileError)> callback) {
-        items[0].pinned = true;
-        SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, BindOnce(std::move(callback), FileError::FILE_ERROR_OK));
-      });
+      .WillOnce(
+          [&items](int64_t, bool, OnceCallback<void(FileError)> callback) {
+            items[0].pinned = true;
+            SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, BindOnce(std::move(callback), kFileOk));
+          });
   EXPECT_CALL(drivefs_, SetPinnedByStableId(items[1].stable_id, true, _))
-      .WillOnce([&items](int64_t, bool,
-                         OnceCallback<void(FileError)> callback) {
-        items[1].pinned = true;
-        SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, BindOnce(std::move(callback), FileError::FILE_ERROR_OK));
-      });
+      .WillOnce(
+          [&items](int64_t, bool, OnceCallback<void(FileError)> callback) {
+            items[1].pinned = true;
+            SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, BindOnce(std::move(callback), kFileOk));
+          });
   EXPECT_CALL(mock_callback, Run(Stage::kSuccess))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
@@ -1354,25 +1394,22 @@ TEST_F(DriveFsPinManagerTest,
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(2);
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       // Results returned whilst calculating free disk space.
-      .WillOnce(
-          DoAll(PopulateSearchItems(items), Return(FileError::FILE_ERROR_OK)))
-      .WillOnce(
-          DoAll(PopulateNoSearchItems(), Return(FileError::FILE_ERROR_OK)))
+      .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)))
+      .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)))
       // Results returned when actually performing the pinning, the final
       // response (i.e. PopulateNoSearchItems()) happens after the
       // `OnSyncingStatusUpdate` instead.
-      .WillOnce(
-          DoAll(PopulateSearchItems(items), Return(FileError::FILE_ERROR_OK)));
+      .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
   EXPECT_CALL(drivefs_, SetPinned(_, true, _))
       .Times(2)
-      .WillOnce(RunOnceCallback<2>(FileError::FILE_ERROR_OK))
+      .WillOnce(RunOnceCallback<2>(kFileOk))
       // `RunOnceCallback` can't be chained together in a `DoAll` action
       // combinator, so use an inline lambda instead.
       .WillOnce([&run_loop](const Path& path, bool pinned,
                             OnceCallback<void(FileError)> callback) {
-        std::move(callback).Run(FileError::FILE_ERROR_OK);
+        std::move(callback).Run(kFileOk);
         run_loop.QuitClosure().Run();
       });
 
@@ -1394,16 +1431,13 @@ TEST_F(DriveFsPinManagerTest,
   base::RunLoop new_run_loop;
   EXPECT_CALL(drivefs_, GetMetadata(b_path, _))
       .WillOnce(RunOnceCallback<1>(
-          FileError::FILE_ERROR_OK,
-          MakeMetadata(/*available_offline=*/true, /*size=*/128)));
+          kFileOk, MakeMetadata(/*available_offline=*/true, /*size=*/128)));
   EXPECT_CALL(drivefs_, GetMetadata(gdoc_path, _))
       // Mock the first file to be available offline with a 0 size.
       .WillOnce(RunOnceCallback<1>(
-          FileError::FILE_ERROR_OK,
-          MakeMetadata(/*available_offline=*/true, /*size=*/0)));
+          kFileOk, MakeMetadata(/*available_offline=*/true, /*size=*/0)));
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
-      .WillOnce(
-          DoAll(PopulateNoSearchItems(), Return(FileError::FILE_ERROR_OK)));
+      .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
   EXPECT_CALL(mock_callback, Run(Stage::kSuccess))
       .WillOnce(RunClosure(new_run_loop.QuitClosure()));
   SetState(status->item_events, ItemEvent::State::kCompleted);
@@ -1439,15 +1473,12 @@ TEST_F(DriveFsPinManagerTest,
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(2);
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
       // Results returned whilst calculating free disk space.
-      .WillOnce(
-          DoAll(PopulateSearchItems(items), Return(FileError::FILE_ERROR_OK)))
-      .WillOnce(
-          DoAll(PopulateNoSearchItems(), Return(FileError::FILE_ERROR_OK)))
+      .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)))
+      .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)))
       // Results returned when actually performing the pinning, the final
       // response (i.e. PopulateNoSearchItems()) happens after the
       // `OnSyncingStatusUpdate` instead.
-      .WillOnce(
-          DoAll(PopulateSearchItems(items), Return(FileError::FILE_ERROR_OK)));
+      .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)));
   EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
       .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
   EXPECT_CALL(drivefs_, SetPinned(_, true, _))
@@ -1456,7 +1487,7 @@ TEST_F(DriveFsPinManagerTest,
       // combinator, so use an inline lambda instead.
       .WillOnce([&run_loop](const Path& path, bool pinned,
                             OnceCallback<void(FileError)> callback) {
-        std::move(callback).Run(FileError::FILE_ERROR_OK);
+        std::move(callback).Run(kFileOk);
         run_loop.QuitClosure().Run();
       });
 
@@ -1492,12 +1523,10 @@ TEST_F(DriveFsPinManagerTest,
   // delta so we expect the pinned disk space to only equal the final file size.
   base::RunLoop new_run_loop;
   EXPECT_CALL(drivefs_, OnGetNextPage(_))
-      .WillOnce(
-          DoAll(PopulateNoSearchItems(), Return(FileError::FILE_ERROR_OK)));
+      .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
   EXPECT_CALL(drivefs_, GetMetadata(_, _))
       .WillOnce(RunOnceCallback<1>(
-          FileError::FILE_ERROR_OK,
-          MakeMetadata(/*available_offline=*/true, /*size=*/128)));
+          kFileOk, MakeMetadata(/*available_offline=*/true, /*size=*/128)));
   EXPECT_CALL(mock_callback, Run(Stage::kSuccess))
       .WillOnce(RunClosure(new_run_loop.QuitClosure()));
   SetState(status->item_events, ItemEvent::State::kCompleted);
