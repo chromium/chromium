@@ -189,7 +189,9 @@ void CouponService::InitializeCouponsMap() {
 void CouponService::OnInitializeCouponsMap(
     bool success,
     std::vector<CouponDB::KeyAndValue> proto_pairs) {
-  DCHECK(success);
+  if (!success) {
+    return;
+  }
   for (auto pair : proto_pairs) {
     const GURL origin(GURL(pair.first));
     for (auto coupon : pair.second.free_listing_coupons()) {
@@ -218,7 +220,9 @@ void CouponService::OnUpdateCouponTimestamp(
     const base::Time last_display_timestamp,
     bool success,
     std::vector<CouponDB::KeyAndValue> proto_pairs) {
-  DCHECK(success);
+  if (!success) {
+    return;
+  }
   if (proto_pairs.empty())
     return;
   coupon_db::CouponContentProto proto = proto_pairs[0].second;
