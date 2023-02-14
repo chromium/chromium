@@ -54,7 +54,9 @@ AuthenticatorSupportedOptions WinWebAuthnApiOptions(int api_version) {
   options.supports_user_presence = true;
   options.supports_cred_protect = api_version >= WEBAUTHN_API_VERSION_2;
   options.enterprise_attestation = api_version >= WEBAUTHN_API_VERSION_3;
-  options.supports_large_blobs = api_version >= WEBAUTHN_API_VERSION_3;
+  if (api_version >= WEBAUTHN_API_VERSION_3) {
+    options.large_blob_type = LargeBlobSupportType::kKey;
+  }
   options.supports_min_pin_length_extension =
       api_version >= WEBAUTHN_API_VERSION_3;
   if (api_version >= WEBAUTHN_API_VERSION_3) {
@@ -356,10 +358,6 @@ WinWebAuthnApiAuthenticator::AuthenticatorTransport() const {
   // The Windows API could potentially use any external or
   // platform authenticator.
   return absl::nullopt;
-}
-
-bool WinWebAuthnApiAuthenticator::SupportsLargeBlobs() const {
-  return win_api_->SupportsLargeBlobs();
 }
 
 const AuthenticatorSupportedOptions& WinWebAuthnApiAuthenticator::Options()

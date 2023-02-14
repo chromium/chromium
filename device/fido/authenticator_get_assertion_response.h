@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -74,6 +75,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   // Whether a large blob was successfully written as part of this GetAssertion
   // request.
   bool large_blob_written = false;
+
+  // Contains the compressed largeBlob data when the extension form is used.
+  // This will be decompressed during processing and used to populate
+  // `large_blob`.
+  absl::optional<LargeBlob> large_blob_extension;
 
   // The transport used to generate this response. This is unknown when using
   // the Windows WebAuthn API.

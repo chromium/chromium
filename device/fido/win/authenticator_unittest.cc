@@ -262,8 +262,16 @@ TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlob) {
                  << ", availability="
                  << static_cast<bool>(test_case.availability));
 
-    fake_webauthn_api_->set_supports_large_blobs(test_case.availability);
-    EXPECT_EQ(authenticator_->SupportsLargeBlobs(), test_case.availability);
+    fake_webauthn_api_->set_version(test_case.availability
+                                        ? WEBAUTHN_API_VERSION_3
+                                        : WEBAUTHN_API_VERSION_2);
+    // `WinWebAuthnApiAuthenticator` does not expect the webauthn.dll version to
+    // change during its lifetime, thus needs to be recreated for each
+    // iteration.
+    authenticator_ = std::make_unique<WinWebAuthnApiAuthenticator>(
+        /*current_window=*/nullptr, fake_webauthn_api_.get());
+    EXPECT_EQ(authenticator_->Options().large_blob_type.has_value(),
+              test_case.availability);
     PublicKeyCredentialRpEntity rp("adrestian-empire.com");
     PublicKeyCredentialUserEntity user(std::vector<uint8_t>{1, 2, 3, 4},
                                        "el@adrestian-empire.com", "Edelgard");
@@ -277,8 +285,7 @@ TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlob) {
                                    callback.callback());
     callback.WaitForCallback();
     ASSERT_EQ(callback.status(), CtapDeviceResponseCode::kSuccess);
-    EXPECT_EQ(callback.value()->has_associated_large_blob_key,
-              test_case.result);
+    EXPECT_EQ(callback.value()->large_blob_type.has_value(), test_case.result);
   }
 }
 

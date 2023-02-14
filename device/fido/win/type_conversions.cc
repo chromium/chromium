@@ -109,8 +109,9 @@ ToAuthenticatorMakeCredentialResponse(
       WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4) {
     ret.enterprise_attestation_returned = credential_attestation.bEpAtt;
     ret.is_resident_key = credential_attestation.bResidentKey;
-    ret.has_associated_large_blob_key =
-        credential_attestation.bLargeBlobSupported;
+    if (credential_attestation.bLargeBlobSupported) {
+      ret.large_blob_type = LargeBlobSupportType::kKey;
+    }
   }
 
   return ret;

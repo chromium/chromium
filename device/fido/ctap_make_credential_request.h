@@ -81,8 +81,14 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // the authenticator associate a PRF with the credential.
   bool prf = false;
 
+  // large_blob_support indicates whether support for largeBlobs should be
+  // requested using the `largeBlob` extension. This should be mutually
+  // exclusive with `large_blob_key`.
+  LargeBlobSupport large_blob_support = LargeBlobSupport::kNotRequested;
+
   // large_blob_key indicates whether a large blob key should be associated to
-  // the new credential through the "largeBlobKey" extension.
+  // the new credential through the "largeBlobKey" extension. This should be
+  // mutually exclusive with `large_blob_support`.
   bool large_blob_key = false;
 
   std::vector<PublicKeyCredentialDescriptor> exclude_list;

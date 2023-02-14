@@ -65,10 +65,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
     supports_silent_discovery_ = supports_silent_discovery;
   }
 
-  void set_supports_large_blobs(bool supports_large_blobs) {
-    supports_large_blobs_ = supports_large_blobs;
-  }
-
   void set_version(int version) { version_ = version; }
 
   // Returns a pointer to a copy of the last get credentials options passed to
@@ -83,7 +79,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   // WinWebAuthnApi:
   bool IsAvailable() const override;
   bool SupportsSilentDiscovery() const override;
-  bool SupportsLargeBlobs() const override;
   HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
       BOOL* available) override;
   HRESULT AuthenticatorMakeCredential(
@@ -124,7 +119,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   bool is_available_ = true;
   bool is_uvpaa_ = false;
   bool supports_silent_discovery_ = false;
-  bool supports_large_blobs_ = false;
   int version_ = WEBAUTHN_API_VERSION_2;
   int transport_ = WEBAUTHN_CTAP_TRANSPORT_USB;
   HRESULT result_override_ = S_OK;

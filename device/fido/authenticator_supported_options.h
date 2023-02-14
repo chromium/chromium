@@ -101,9 +101,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSupportedOptions {
   // uninteresting to Chromium because we do not support the administrative
   // operation to configure it. Thus this member reduces to a boolean.)
   bool enterprise_attestation = false;
-  // Indicates whether the authenticator supports the authenticatorLargeBlobs
-  // command.
-  bool supports_large_blobs = false;
+  // Whether the authenticator supports large blobs, and, if so, the method of
+  // that support.
+  absl::optional<LargeBlobSupportType> large_blob_type;
   // Indicates whether user verification must be used for make credential, final
   // (i.e. not pre-flight) get assertion requests, and writing large blobs. An
   // |always_uv| value of true will make uv=0 get assertion requests return

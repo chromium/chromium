@@ -461,6 +461,9 @@ bool VirtualFidoDevice::State::InjectResidentKey(
 
 absl::optional<LargeBlob> VirtualFidoDevice::State::GetLargeBlob(
     const RegistrationData& credential) {
+  if (credential.large_blob) {
+    return credential.large_blob;
+  }
   if (!credential.large_blob_key) {
     return absl::nullopt;
   }

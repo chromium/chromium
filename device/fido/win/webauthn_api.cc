@@ -178,10 +178,6 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
     return get_platform_credential_list_;
   }
 
-  bool SupportsLargeBlobs() const override {
-    return is_bound_ && (api_version_ >= WEBAUTHN_API_VERSION_3);
-  }
-
   HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
       BOOL* available) override {
     DCHECK(is_bound_);
@@ -309,9 +305,9 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     CtapMakeCredentialRequest request,
                                     MakeCredentialOptions request_options) {
   DCHECK(webauthn_api->IsAvailable());
-  DCHECK(request_options.large_blob_support != LargeBlobSupport::kRequired ||
-         webauthn_api->SupportsLargeBlobs());
   const int api_version = webauthn_api->Version();
+  DCHECK(request_options.large_blob_support != LargeBlobSupport::kRequired ||
+         api_version >= WEBAUTHN_API_VERSION_3);
 
   std::u16string rp_id = base::UTF8ToUTF16(request.rp.id);
   std::u16string rp_name = base::UTF8ToUTF16(request.rp.name.value_or(""));

@@ -48,11 +48,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApi {
   // This should be preferred to checking the API version.
   virtual bool SupportsSilentDiscovery() const = 0;
 
-  // Returns whether the API is available and supports large blobs.
-  // Attempting to request large blob support is not allowed if this returns
-  // false.
-  virtual bool SupportsLargeBlobs() const = 0;
-
   virtual HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
       BOOL* available) = 0;
 

@@ -72,6 +72,7 @@ const char kCtap2_1Version[] = "FIDO_2_1";
 
 const char kExtensionHmacSecret[] = "hmac-secret";
 const char kExtensionCredProtect[] = "credProtect";
+const char kExtensionLargeBlob[] = "largeBlob";
 const char kExtensionLargeBlobKey[] = "largeBlobKey";
 const char kExtensionCredBlob[] = "credBlob";
 const char kExtensionMinPINLength[] = "minPinLength";
@@ -84,6 +85,16 @@ const char kExtensionPRFEvalByCredential[] = "evalByCredential";
 const char kExtensionPRFFirst[] = "first";
 const char kExtensionPRFResults[] = "results";
 const char kExtensionPRFSecond[] = "second";
+
+const char kExtensionLargeBlobBlob[] = "blob";
+const char kExtensionLargeBlobOriginalSize[] = "originalSize";
+const char kExtensionLargeBlobRead[] = "read";
+const char kExtensionLargeBlobSupport[] = "support";
+const char kExtensionLargeBlobSupported[] = "supported";
+const char kExtensionLargeBlobSupportPreferred[] = "preferred";
+const char kExtensionLargeBlobSupportRequired[] = "required";
+const char kExtensionLargeBlobWrite[] = "write";
+const char kExtensionLargeBlobWritten[] = "written";
 
 const char kDevicePublicKeyAttestationKey[] = "attestation";
 const char kDevicePublicKeyAttestationFormatsKey[] = "attestationFormats";

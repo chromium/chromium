@@ -198,8 +198,4 @@ ProtocolVersion FidoAuthenticator::SupportedProtocol() const {
   return ProtocolVersion::kUnknown;
 }
 
-bool FidoAuthenticator::SupportsLargeBlobs() const {
-  return false;
-}
-
 }  // namespace device

@@ -17,6 +17,7 @@
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/device_public_key_extension.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -148,6 +149,12 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   // e.g. phones, want all the inputs at once and thus process the CTAP-level
   // `prf` extension.
   std::vector<PRFInput> prf_inputs;
+
+  // These fields indicate that a large-blob operation should be performed
+  // using the largeBlob extension that includes largeBlob data directly
+  // in getAssertion requests.
+  bool large_blob_extension_read = false;
+  absl::optional<LargeBlob> large_blob_extension_write;
 
   // device_public_key contains parameters for the devicePubKey extension
   // https://github.com/w3c/webauthn/pull/1663

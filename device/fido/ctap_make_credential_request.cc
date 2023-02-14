@@ -178,6 +178,26 @@ absl::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
           return absl::nullopt;
         }
         request.large_blob_key = true;
+      } else if (extension_name == kExtensionLargeBlob) {
+        if (!extension.second.is_map()) {
+          return absl::nullopt;
+        }
+        const cbor::Value::MapValue& large_blob_ext = extension.second.GetMap();
+        const auto support_it =
+            large_blob_ext.find(cbor::Value(kExtensionLargeBlobSupport));
+        if (support_it != large_blob_ext.end()) {
+          if (!support_it->second.is_string()) {
+            return absl::nullopt;
+          }
+          const std::string& support = support_it->second.GetString();
+          if (support == kExtensionLargeBlobSupportRequired) {
+            request.large_blob_support = LargeBlobSupport::kRequired;
+          } else if (support == kExtensionLargeBlobSupportPreferred) {
+            request.large_blob_support = LargeBlobSupport::kPreferred;
+          } else {
+            return absl::nullopt;
+          }
+        }
       } else if (extension_name == kExtensionCredBlob) {
         if (!extension.second.is_bytestring()) {
           return absl::nullopt;
@@ -300,6 +320,16 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
 
   if (request.prf) {
     extensions.emplace(kExtensionPRF, cbor::Value::MapValue());
+  }
+
+  if (request.large_blob_support != LargeBlobSupport::kNotRequested) {
+    cbor::Value::MapValue large_blob_ext;
+    large_blob_ext.emplace(
+        kExtensionLargeBlobSupport,
+        request.large_blob_support == LargeBlobSupport::kRequired
+            ? kExtensionLargeBlobSupportRequired
+            : kExtensionLargeBlobSupportPreferred);
+    extensions.emplace(kExtensionLargeBlob, std::move(large_blob_ext));
   }
 
   if (request.large_blob_key) {

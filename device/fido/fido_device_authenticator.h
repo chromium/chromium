@@ -128,7 +128,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   std::string GetId() const override;
   std::string GetDisplayName() const override;
   ProtocolVersion SupportedProtocol() const override;
-  bool SupportsLargeBlobs() const override;
   const AuthenticatorSupportedOptions& Options() const override;
   absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
@@ -149,6 +148,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   void DoGetAssertion(CtapGetAssertionRequest request,
                       CtapGetAssertionOptions options,
                       GetAssertionCallback callback);
+  void OnHaveCompressedLargeBlobForGetAssertion(
+      CtapGetAssertionRequest request,
+      CtapGetAssertionOptions options,
+      GetAssertionCallback callback,
+      size_t original_size,
+      base::expected<mojo_base::BigBuffer, std::string> result);
+  void MaybeGetEphemeralKeyForGetAssertion(CtapGetAssertionRequest request,
+                                           CtapGetAssertionOptions options,
+                                           GetAssertionCallback callback);
   void OnHaveNextAssertion(
       CtapGetAssertionRequest request,
       CtapGetAssertionOptions options,
@@ -192,15 +200,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       CtapDeviceResponseCode status,
       absl::optional<pin::KeyAgreementResponse> key);
 
-  // Attempts to write a |large_blob| into the credential. If there
-  // is an existing credential for the |large_blob_key|, it will be overwritten.
-  void WriteLargeBlob(
-      const LargeBlobKey& large_blob_key,
-      absl::optional<pin::TokenResponse> pin_uv_auth_token,
-      size_t original_size,
-      base::OnceCallback<void(CtapDeviceResponseCode)> callback,
-      base::expected<mojo_base::BigBuffer, std::string> large_blob);
-
   // Attempts to read large blobs from the credential encrypted with
   // |large_blob_keys|. Returns a map of keys to their blobs.
   void ReadLargeBlob(const std::vector<LargeBlobKey>& large_blob_keys,
@@ -242,6 +241,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       LargeBlobKey uncompressed_key,
       GetAssertionCallback callback,
       base::expected<mojo_base::BigBuffer, std::string> result);
+  void OnLargeBlobExtensionUncompressed(
+      std::vector<AuthenticatorGetAssertionResponse> responses,
+      GetAssertionCallback callback,
+      base::expected<mojo_base::BigBuffer, std::string> result);
   void OnCredentialsEnumeratedForGarbageCollect(
       const pin::TokenResponse& pin_uv_auth_token,
       base::OnceCallback<void(CtapDeviceResponseCode)> callback,
@@ -249,7 +252,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       absl::optional<std::vector<AggregatedEnumerateCredentialsResponse>>
           credentials);
   void OnHaveLargeBlobArrayForWrite(
-      LargeBlob large_blob,
       const LargeBlobKey& large_blob_key,
       absl::optional<pin::TokenResponse> pin_uv_auth_token,
       base::OnceCallback<void(CtapDeviceResponseCode)> callback,
@@ -312,6 +314,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
   absl::optional<PINUVAuthProtocol> chosen_pin_uv_auth_protocol_;
 
   data_decoder::DataDecoder data_decoder_;
+  // large_blob_ contains a compressed largeBlob and indicates that an
+  // largeBlobKey-based write will occur in a `GetAssertion` operation.
+  absl::optional<LargeBlob> large_blob_;
+  // large_blob_read_ indicates that a largeBlobKey-based read will occur
+  // in a `GetAssertion` operation.
+  bool large_blob_read_;
 
   base::WeakPtrFactory<FidoDeviceAuthenticator> weak_factory_{this};
 };

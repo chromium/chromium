@@ -79,6 +79,17 @@ enum class LargeBlobSupport {
   kPreferred,
 };
 
+// LargeBlobSupportType enumerates the methods by which an authenticator may
+// support large blobs.
+enum class LargeBlobSupportType {
+  // The `largeBlobKey` extension and `authenticatorLargeBlobs` command. See
+  // https://fidoalliance.org/specs/fido-v2.1-rd-20210309/fido-client-to-authenticator-protocol-v2.1-rd-20210309.html#authenticatorLargeBlobs
+  kKey,
+  // The `largeBlob` extension that includes blob data directly in getAssertion
+  // commands.
+  kExtension,
+};
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FIDO_TYPES_H_

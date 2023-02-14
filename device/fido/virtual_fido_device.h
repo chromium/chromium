@@ -121,6 +121,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     absl::optional<std::pair<std::array<uint8_t, 32>, std::array<uint8_t, 32>>>
         hmac_key;
 
+    // large_blob stores associated large blob data when the largeBlob extension
+    // is used. It is not pertinent when the largeBlob command and largeBlobKey
+    // extension are used.
+    absl::optional<LargeBlob> large_blob;
     absl::optional<std::array<uint8_t, 32>> large_blob_key;
     absl::optional<std::vector<uint8_t>> cred_blob;
 
@@ -336,14 +340,19 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
     // Injects a large blob for the credential. If the credential already has an
     // associated large blob, replaces it. If the |large_blob| is malformed,
-    // completely replaces its contents.
+    // completely replaces its contents. (If `large_blob_extension_support` is
+    // set then this method shouldn't be called. Just set the `large_blob`
+    // member of `RegistrationData` directly.)
     void InjectLargeBlob(RegistrationData* credential, LargeBlob blob);
 
     // Injects an opaque large blob. |blob| does not need to conform to the CTAP
-    // large-blob CBOR structure.
+    // large-blob CBOR structure. (If `large_blob_extension_support` is set
+    // then this method shouldn't be called.)
     void InjectOpaqueLargeBlob(cbor::Value blob);
 
-    // Clears all large blobs resetting |large_blob| to its default value.
+    // Clears all large blobs resetting |large_blob| to its default value. (If
+    // `large_blob_extension_support` is set then this method shouldn't be
+    // called.)
     void ClearLargeBlobs();
 
    private:

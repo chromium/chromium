@@ -89,9 +89,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
   absl::optional<FidoTransportProtocol> transport_used;
 
   // Whether the credential that was created has an associated large blob key or
-  // not. This can only be true if the credential is created with the
-  // largeBlobKey extension on a capable authenticator.
-  bool has_associated_large_blob_key = false;
+  // supports the largeBlob extension. This can only be true if the credential
+  // is created with the largeBlob or largeBlobKey extension on a capable
+  // authenticator.
+  absl::optional<LargeBlobSupportType> large_blob_type;
 
   // Whether a PRF is configured for this credential. This only reflects the
   // output of the `prf` extension. Any output from the `hmac-secret` extension

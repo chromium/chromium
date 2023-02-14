@@ -93,7 +93,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   void Cancel() override;
   Type GetType() const override;
   std::string GetId() const override;
-  bool SupportsLargeBlobs() const override;
   const AuthenticatorSupportedOptions& Options() const override;
   absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;

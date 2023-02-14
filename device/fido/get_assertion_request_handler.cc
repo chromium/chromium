@@ -53,7 +53,8 @@ const std::set<pin::Permissions> GetPinTokenPermissionsFor(
     const FidoAuthenticator& authenticator,
     const CtapGetAssertionOptions& options) {
   std::set<pin::Permissions> permissions = {pin::Permissions::kGetAssertion};
-  if (options.large_blob_write && authenticator.SupportsLargeBlobs()) {
+  if (options.large_blob_write &&
+      authenticator.Options().large_blob_type == LargeBlobSupportType::kKey) {
     permissions.emplace(pin::Permissions::kLargeBlobWrite);
   }
   return permissions;
@@ -301,14 +302,14 @@ CtapGetAssertionOptions SpecializeOptionsForAuthenticator(
     const CtapGetAssertionOptions& options,
     const FidoAuthenticator& authenticator) {
   CtapGetAssertionOptions specialized_options(options);
+  const AuthenticatorSupportedOptions& auth_options = authenticator.Options();
 
   if (!options.prf_inputs.empty() &&
-      (!authenticator.Options().supports_hmac_secret ||
-       authenticator.Options().supports_prf)) {
+      (!auth_options.supports_hmac_secret || auth_options.supports_prf)) {
     specialized_options.prf_inputs.clear();
   }
 
-  if (!authenticator.SupportsLargeBlobs()) {
+  if (!auth_options.large_blob_type) {
     specialized_options.large_blob_read = false;
     specialized_options.large_blob_write = absl::nullopt;
   }

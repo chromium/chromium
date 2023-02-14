@@ -123,20 +123,18 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
     FidoAuthenticator* authenticator,
     const MakeCredentialOptions& options,
     const FidoRequestHandlerBase::Observer* observer) {
+  const AuthenticatorSupportedOptions& auth_options = authenticator->Options();
   if (options.cred_protect_request && options.cred_protect_request->second &&
-      !authenticator->Options().supports_cred_protect) {
+      !auth_options.supports_cred_protect) {
     return MakeCredentialStatus::kAuthenticatorMissingResidentKeys;
   }
 
   // The largeBlobs extension only works for resident credentials on CTAP 2.1
   // authenticators or on some Windows versions.
   if (options.large_blob_support == LargeBlobSupport::kRequired &&
-      (!authenticator->SupportsLargeBlobs() ||
-       !request.resident_key_required)) {
+      (!auth_options.large_blob_type || !request.resident_key_required)) {
     return MakeCredentialStatus::kAuthenticatorMissingLargeBlob;
   }
-
-  const AuthenticatorSupportedOptions& auth_options = authenticator->Options();
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Allow dispatch of UP-only cross-platform requests to the platform
@@ -378,8 +376,11 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
     return false;
   }
 
-  if (request.large_blob_key && !response.has_associated_large_blob_key) {
-    FIDO_LOG(ERROR) << "Large blob key requested but not returned";
+  if ((request.large_blob_key &&
+       response.large_blob_type != LargeBlobSupportType::kKey) ||
+      (options.large_blob_support == LargeBlobSupport::kRequired &&
+       !response.large_blob_type)) {
+    FIDO_LOG(ERROR) << "Large blob requested but not returned";
     return false;
   }
 
@@ -990,17 +991,25 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       break;
   }
 
+  bool want_large_blob = false;
   switch (options_.large_blob_support) {
     case LargeBlobSupport::kRequired:
-      request->large_blob_key = true;
+      want_large_blob = true;
       break;
     case LargeBlobSupport::kPreferred:
-      request->large_blob_key =
-          auth_options.supports_large_blobs && request->resident_key_required;
+      want_large_blob =
+          auth_options.large_blob_type && request->resident_key_required;
       break;
     case LargeBlobSupport::kNotRequested:
-      request->large_blob_key = false;
       break;
+  }
+
+  if (auth_options.large_blob_type == LargeBlobSupportType::kExtension) {
+    if (want_large_blob) {
+      request->large_blob_support = options_.large_blob_support;
+    }
+  } else if (auth_options.large_blob_type == LargeBlobSupportType::kKey) {
+    request->large_blob_key = want_large_blob;
   }
 
   if (request->resident_key_required || auth_options.always_uv) {
@@ -1020,10 +1029,6 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->prf = auth_options.supports_prf;
     request->hmac_secret =
         !auth_options.supports_prf && auth_options.supports_hmac_secret;
-  }
-
-  if (request->large_blob_key && !auth_options.supports_large_blobs) {
-    request->large_blob_key = false;
   }
 
   if (request->min_pin_length_requested &&

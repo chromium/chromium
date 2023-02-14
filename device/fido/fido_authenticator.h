@@ -298,7 +298,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   // same VID:PID. It defaults to returning the value of |GetId|.
   virtual std::string GetDisplayName() const;
   virtual ProtocolVersion SupportedProtocol() const;
-  virtual bool SupportsLargeBlobs() const;
   virtual const AuthenticatorSupportedOptions& Options() const = 0;
   virtual absl::optional<FidoTransportProtocol> AuthenticatorTransport()
       const = 0;

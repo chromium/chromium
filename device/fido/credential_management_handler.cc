@@ -124,7 +124,7 @@ void CredentialManagementHandler::OnHavePIN(std::string pin) {
   state_ = State::kGettingPINToken;
   std::vector<pin::Permissions> permissions = {
       pin::Permissions::kCredentialManagement};
-  if (authenticator_->Options().supports_large_blobs) {
+  if (authenticator_->Options().large_blob_type == LargeBlobSupportType::kKey) {
     permissions.push_back(pin::Permissions::kLargeBlobWrite);
   }
   authenticator_->GetPINToken(
@@ -167,7 +167,7 @@ void CredentialManagementHandler::OnHavePINToken(
   }
 
   pin_token_ = response;
-  if (authenticator_->Options().supports_large_blobs) {
+  if (authenticator_->Options().large_blob_type == LargeBlobSupportType::kKey) {
     authenticator_->GarbageCollectLargeBlob(
         *pin_token_,
         base::BindOnce(&CredentialManagementHandler::OnInitFinished,
@@ -218,7 +218,8 @@ void CredentialManagementHandler::OnDeleteCredentials(
   }
 
   if (remaining_credential_ids.empty()) {
-    if (authenticator_->Options().supports_large_blobs) {
+    if (authenticator_->Options().large_blob_type ==
+        LargeBlobSupportType::kKey) {
       authenticator_->GarbageCollectLargeBlob(*pin_token_, std::move(callback));
       return;
     }

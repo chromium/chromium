@@ -176,10 +176,6 @@ bool FakeWinWebAuthnApi::SupportsSilentDiscovery() const {
   return supports_silent_discovery_;
 }
 
-bool FakeWinWebAuthnApi::SupportsLargeBlobs() const {
-  return supports_large_blobs_;
-}
-
 HRESULT FakeWinWebAuthnApi::IsUserVerifyingPlatformAuthenticatorAvailable(
     BOOL* result) {
   DCHECK(is_available_);
@@ -283,7 +279,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
   attestation->win_attestation.bResidentKey = resident_key;
   attestation->win_attestation.bLargeBlobSupported =
       options->dwLargeBlobSupport != WEBAUTHN_LARGE_BLOB_SUPPORT_NONE &&
-      SupportsLargeBlobs();
+      version_ >= WEBAUTHN_API_VERSION_3;
   attestation->win_attestation.dwUsedTransport =
       options->dwAuthenticatorAttachment ==
               WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM

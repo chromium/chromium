@@ -267,6 +267,40 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
           }
         }
         std::sort(request.prf_inputs.begin(), request.prf_inputs.end());
+      } else if (extension_id == kExtensionLargeBlob) {
+        if (!extension.second.is_map()) {
+          return absl::nullopt;
+        }
+        const cbor::Value::MapValue& large_blob_ext = extension.second.GetMap();
+        const auto read_it =
+            large_blob_ext.find(cbor::Value(kExtensionLargeBlobRead));
+        const bool has_read = read_it != large_blob_ext.end();
+
+        const auto write_it =
+            large_blob_ext.find(cbor::Value(kExtensionLargeBlobWrite));
+        const bool has_write = write_it != large_blob_ext.end();
+
+        const auto original_size_it =
+            large_blob_ext.find(cbor::Value(kExtensionLargeBlobOriginalSize));
+        const bool has_original_size = original_size_it != large_blob_ext.end();
+
+        if ((has_read && !read_it->second.is_bool()) ||
+            (has_write && !write_it->second.is_bytestring()) ||
+            (has_original_size && !original_size_it->second.is_unsigned())) {
+          return absl::nullopt;
+        }
+
+        if (has_read && !has_write && !has_original_size) {
+          request.large_blob_extension_read = read_it->second.GetBool();
+        } else if (!has_read && has_write && has_original_size) {
+          request.large_blob_extension_write.emplace(
+              write_it->second.GetBytestring(),
+              base::checked_cast<size_t>(
+                  original_size_it->second.GetUnsigned()));
+        } else {
+          // No other combinations of keys are acceptable.
+          return absl::nullopt;
+        }
       }
     }
   }
@@ -364,6 +398,25 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
 
   if (request.large_blob_key) {
     extensions.emplace(kExtensionLargeBlobKey, cbor::Value(true));
+  }
+
+  if (request.large_blob_extension_read) {
+    DCHECK(!request.large_blob_key);
+    cbor::Value::MapValue large_blob_ext;
+    large_blob_ext.emplace(kExtensionLargeBlobRead, true);
+    extensions.emplace(kExtensionLargeBlob, std::move(large_blob_ext));
+  }
+
+  if (request.large_blob_extension_write) {
+    DCHECK(!request.large_blob_key);
+    const LargeBlob& large_blob = *request.large_blob_extension_write;
+    cbor::Value::MapValue large_blob_ext;
+    large_blob_ext.emplace(kExtensionLargeBlobWrite,
+                           large_blob.compressed_data);
+    large_blob_ext.emplace(
+        kExtensionLargeBlobOriginalSize,
+        base::checked_cast<int64_t>(large_blob.original_size));
+    extensions.emplace(kExtensionLargeBlob, std::move(large_blob_ext));
   }
 
   if (request.hmac_secret) {

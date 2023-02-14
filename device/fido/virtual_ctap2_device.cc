@@ -158,7 +158,7 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
     base::span<const uint8_t> signature,
     AuthenticatorData authenticator_data,
     bool enterprise_attestation_requested,
-    absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key,
+    absl::optional<LargeBlobSupportType> large_blob_type,
     const absl::optional<std::vector<uint8_t>>& dpk_signature,
     bool prf_enabled) {
   std::unique_ptr<OpaqueAttestationStatement> attestation_statement;
@@ -186,8 +186,7 @@ std::vector<uint8_t> ConstructMakeCredentialResponse(
                         std::move(attestation_statement)));
   make_credential_response.enterprise_attestation_returned =
       enterprise_attestation_requested;
-  make_credential_response.has_associated_large_blob_key =
-      large_blob_key.has_value();
+  make_credential_response.large_blob_type = large_blob_type;
   make_credential_response.device_public_key_signature =
       std::move(dpk_signature);
   make_credential_response.prf_enabled = prf_enabled;
@@ -474,6 +473,24 @@ std::vector<uint8_t> EncodeGetAssertionResponse(
     prf.emplace(kExtensionPRFResults, std::move(prf_results));
     unsigned_extension_outputs.emplace(kExtensionPRF, std::move(prf));
   }
+  if (response.large_blob_extension) {
+    DCHECK(!response.large_blob_written);
+    cbor::Value::MapValue large_blob_ext;
+    large_blob_ext.emplace(kExtensionLargeBlobBlob,
+                           response.large_blob_extension->compressed_data);
+    large_blob_ext.emplace(kExtensionLargeBlobOriginalSize,
+                           base::checked_cast<int64_t>(
+                               response.large_blob_extension->original_size));
+    unsigned_extension_outputs.emplace(kExtensionLargeBlob,
+                                       std::move(large_blob_ext));
+  }
+  if (response.large_blob_written) {
+    DCHECK(!response.large_blob_extension);
+    cbor::Value::MapValue large_blob_ext;
+    large_blob_ext.emplace(kExtensionLargeBlobWritten, true);
+    unsigned_extension_outputs.emplace(kExtensionLargeBlob,
+                                       std::move(large_blob_ext));
+  }
   if (!unsigned_extension_outputs.empty()) {
     response_map.emplace(8, cbor::Value(std::move(unsigned_extension_outputs)));
   }
@@ -636,12 +653,13 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
   if (config.large_blob_support) {
     DCHECK(config.resident_key_support);
     DCHECK(SupportsAtLeast(Ctap2Version::kCtap2_1));
+    DCHECK(!config.large_blob_extension_support);
     DCHECK((!config.pin_support && !config.internal_uv_support) ||
            config.pin_uv_auth_token_support)
         << "PinUvAuthToken support is required to write large blobs for "
            "uv-enabled authenticators";
     options_updated = true;
-    options.supports_large_blobs = true;
+    options.large_blob_type = LargeBlobSupportType::kKey;
     device_info_->max_serialized_large_blob_array =
         config.available_large_blob_storage;
   }
@@ -683,7 +701,13 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
   }
 
   if (config.large_blob_support) {
+    DCHECK(!config.large_blob_extension_support);
     extensions.emplace_back(device::kExtensionLargeBlobKey);
+  }
+
+  if (config.large_blob_extension_support) {
+    DCHECK(!config.large_blob_support);
+    extensions.emplace_back(device::kExtensionLargeBlob);
   }
 
   if (config.min_pin_length_extension_support) {
@@ -1301,6 +1325,7 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
                            cbor::Value(static_cast<int64_t>(cred_protect)));
   }
 
+  absl::optional<LargeBlobSupportType> supports_large_blob;
   if (request.large_blob_key) {
     if (!config_.large_blob_support) {
       DLOG(ERROR) << "Rejecting makeCredential due to unexpected largeBlobKey "
@@ -1311,6 +1336,18 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
       DLOG(ERROR)
           << "largeBlobKey is not supported for non resident credentials";
       return CtapDeviceResponseCode::kCtap2ErrInvalidOption;
+    }
+    supports_large_blob = LargeBlobSupportType::kKey;
+  }
+
+  if (request.large_blob_support != LargeBlobSupport::kNotRequested) {
+    DCHECK(!request.large_blob_key);
+    DCHECK(config_.large_blob_extension_support);
+    DCHECK(!supports_large_blob.has_value());
+    if (*config_.large_blob_extension_support) {
+      supports_large_blob = LargeBlobSupportType::kExtension;
+    } else if (request.large_blob_support == LargeBlobSupport::kRequired) {
+      return CtapDeviceResponseCode::kCtap2ErrLargeBlobStorageFull;
     }
   }
 
@@ -1429,15 +1466,10 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     }
   }
 
-  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
-  if (request.large_blob_key) {
-    large_blob_key.emplace();
-    RAND_bytes(large_blob_key->data(), large_blob_key->size());
-  }
-
   *response = ConstructMakeCredentialResponse(
       std::move(attestation_cert), sig, std::move(authenticator_data),
-      enterprise_attestation_requested, large_blob_key, dpk_sig, prf_enabled);
+      enterprise_attestation_requested, supports_large_blob, dpk_sig,
+      prf_enabled);
   RegistrationData registration(std::move(private_key), rp_id_hash,
                                 /*counter=*/1);
 
@@ -1469,6 +1501,7 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
   registration.protection = cred_protect;
   registration.device_key = std::move(device_key);
+  registration.cred_blob = std::move(request.cred_blob);
 
   if (request.hmac_secret || prf_enabled) {
     registration.hmac_key.emplace();
@@ -1478,8 +1511,11 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
                registration.hmac_key->second.size());
   }
 
-  registration.large_blob_key = std::move(large_blob_key);
-  registration.cred_blob = std::move(request.cred_blob);
+  if (request.large_blob_key) {
+    registration.large_blob_key.emplace();
+    RAND_bytes(registration.large_blob_key->data(),
+               registration.large_blob_key->size());
+  }
 
   StoreNewKey(key_handle, std::move(registration));
   return CtapDeviceResponseCode::kSuccess;
@@ -1814,6 +1850,20 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
       if (registration.second->large_blob_key) {
         assertion.large_blob_key = *registration.second->large_blob_key;
       }
+    }
+
+    if (request.large_blob_extension_read) {
+      DCHECK(config_.large_blob_extension_support == true);
+      DCHECK(!registration.second->large_blob_key);
+      assertion.large_blob_extension = registration.second->large_blob;
+    }
+
+    if (request.large_blob_extension_write) {
+      DCHECK(config_.large_blob_extension_support == true);
+      const LargeBlob& large_blob = *request.large_blob_extension_write;
+      registration.second->large_blob.emplace(large_blob.compressed_data,
+                                              large_blob.original_size);
+      assertion.large_blob_written = true;
     }
 
     if (!request.prf_inputs.empty() && user_verified &&
