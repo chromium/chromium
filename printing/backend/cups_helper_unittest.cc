@@ -733,9 +733,9 @@ TEST(PrintBackendCupsHelperTest, PpdParsingCupsMaxCopies) {
 }
 
 TEST(PrintBackendCupsHelperTest, PpdParsingResolutionTagNames) {
-  constexpr const char* kTestResNames[] = {"Resolution",     "JCLResolution",
-                                           "SetResolution",  "CNRes_PGP",
-                                           "HPPrintQuality", "LXResolution"};
+  constexpr const char* kTestResNames[] = {
+      "Resolution",     "JCLResolution", "SetResolution", "CNRes_PGP",
+      "HPPrintQuality", "LXResolution",  "BRResolution"};
   const std::vector<gfx::Size> kExpectedResolutions = {gfx::Size(600, 600)};
   PrinterSemanticCapsAndDefaults caps;
   for (const char* res_name : kTestResNames) {

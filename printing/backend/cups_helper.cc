@@ -113,8 +113,8 @@ void GetResolutionSettings(ppd_file_t* ppd,
                            std::vector<gfx::Size>* dpis,
                            gfx::Size* default_dpi) {
   static constexpr const char* kResolutions[] = {
-      "Resolution", "JCLResolution",  "SetResolution",
-      "CNRes_PGP",  "HPPrintQuality", "LXResolution"};
+      "Resolution",     "JCLResolution", "SetResolution", "CNRes_PGP",
+      "HPPrintQuality", "LXResolution",  "BRResolution"};
   ppd_option_t* res;
   for (const char* res_name : kResolutions) {
     res = ppdFindOption(ppd, res_name);
