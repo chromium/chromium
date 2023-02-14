@@ -81,7 +81,7 @@ export function reportError(
   triggeredErrorSet.add(hash);
 
   if (appWindow !== null) {
-    appWindow.reportError({
+    void appWindow.reportError({
       type: errorType,
       level,
       stack: stackStr,
