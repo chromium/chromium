@@ -1088,15 +1088,17 @@ class _AvdInstance:
     which is recommended when emulator is not responding to adb commands.
     """
     # Close output file first in case emulator process killing goes wrong.
-    if self._debug_tags:
-      if self._output_manager:
-        self._output_manager.ArchiveArchivedFile(self._output_file, delete=True)
-        link = self._output_file.Link()
-        if link:
-          logging.critical('Emulator logs saved to %s', link)
-    else:
-      self._output_file.close()
-    self._output_file = None
+    if self._output_file:
+      if self._debug_tags:
+        if self._output_manager:
+          self._output_manager.ArchiveArchivedFile(self._output_file,
+                                                   delete=True)
+          link = self._output_file.Link()
+          if link:
+            logging.critical('Emulator logs saved to %s', link)
+      else:
+        self._output_file.close()
+      self._output_file = None
 
     if self._emulator_proc:
       if self._emulator_proc.poll() is None:
