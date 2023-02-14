@@ -91,8 +91,8 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
       std::unique_ptr<TrustStoreChrome> trust_store_chrome,
       TrustStore* trust_store_system)
       : trust_store_chrome_(std::move(trust_store_chrome)) {
-    trust_store_collection_.AddTrustStore(trust_store_chrome_.get());
     trust_store_collection_.AddTrustStore(trust_store_system);
+    trust_store_collection_.AddTrustStore(trust_store_chrome_.get());
   }
 
   TrustStore* GetTrustStore() override { return &trust_store_collection_; }

@@ -5,6 +5,7 @@
 #include "net/cert/internal/system_trust_store.h"
 
 #include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/trust_store.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/net_buildflags.h"
@@ -57,6 +58,48 @@ TEST(SystemTrustStoreChrome, SystemDistrustOverridesChromeTrust) {
   EXPECT_TRUE(system_trust_store_chrome->GetTrustStore()
                   ->GetTrust(root.get(), /*debug_data=*/nullptr)
                   .IsDistrusted());
+}
+
+TEST(SystemTrustStoreChrome, SystemLeafTrustDoesNotOverrideChromeTrust) {
+  CertificateList certs = CreateCertificateListFromFile(
+      GetTestNetDataDirectory().AppendASCII("ssl/chrome_root_store"),
+      "test_store.certs", X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
+  ASSERT_GE(certs.size(), 1u);
+
+  std::shared_ptr<const ParsedCertificate> root = ParsedCertificate::Create(
+      bssl::UpRef(certs[0]->cert_buffer()),
+      x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(root);
+
+  auto test_system_trust_store = std::make_unique<TrustStoreInMemory>();
+  auto* test_system_trust_store_ptr = test_system_trust_store.get();
+
+  std::unique_ptr<TrustStoreChrome> test_trust_store_chrome =
+      TrustStoreChrome::CreateTrustStoreForTesting(
+          base::span<const ChromeRootCertInfo>(kChromeRootCertList),
+          /*version=*/1);
+
+  std::unique_ptr<SystemTrustStore> system_trust_store_chrome =
+      CreateSystemTrustStoreChromeForTesting(
+          std::move(test_trust_store_chrome),
+          std::move(test_system_trust_store));
+
+  // With no trust settings in the fake system trust store, the cert is trusted
+  // by the test chrome root store.
+  EXPECT_TRUE(system_trust_store_chrome->GetTrustStore()
+                  ->GetTrust(root.get(), /*debug_data=*/nullptr)
+                  .IsTrustAnchor());
+
+  // Adding the certificate to the fake system store as a trusted leaf doesn't
+  // matter, the trust in the chrome root store is still preferred.
+  test_system_trust_store_ptr->AddCertificate(
+      root, CertificateTrust::ForTrustedLeaf());
+  EXPECT_TRUE(system_trust_store_chrome->GetTrustStore()
+                  ->GetTrust(root.get(), /*debug_data=*/nullptr)
+                  .IsTrustAnchor());
+  EXPECT_FALSE(system_trust_store_chrome->GetTrustStore()
+                   ->GetTrust(root.get(), /*debug_data=*/nullptr)
+                   .IsTrustLeaf());
 }
 #endif  // CHROME_ROOT_STORE_SUPPORTED
         //
