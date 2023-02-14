@@ -32,14 +32,15 @@ PrintJobHistoryServiceFactory* PrintJobHistoryServiceFactory::GetInstance() {
 }
 
 PrintJobHistoryServiceFactory::PrintJobHistoryServiceFactory()
-    : ProfileKeyedServiceFactory("PrintJobHistoryService",
-                                 ProfileSelections::Builder()
-                                     // We do not want an instance of
-                                     // PrintJobHistory on the lock screen.  The
-                                     // result is multiple print job
-                                     // notifications. https://crbug.com/1011532
-                                     .WithAshInternals(ProfileSelection::kNone)
-                                     .Build()) {
+    : ProfileKeyedServiceFactory(
+          "PrintJobHistoryService",
+          ProfileSelections::Builder()
+              .WithGuest(ProfileSelections::kRegularProfileDefault)
+              // We do not want an instance of PrintJobHistory on the lock
+              // screen.  The result is multiple print job notifications.
+              // https://crbug.com/1011532
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(CupsPrintJobManagerFactory::GetInstance());
   DependsOn(PrintJobReportingServiceFactory::GetInstance());
 }

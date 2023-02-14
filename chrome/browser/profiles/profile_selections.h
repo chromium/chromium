@@ -19,18 +19,6 @@
 // explicitly use `ProfileSelections::Builder::WithSystem()`.
 BASE_DECLARE_FEATURE(kSystemProfileSelectionDefaultNone);
 
-// Similar experiment to `kSystemProfileSelectionDefaultNone` described above
-// affecting Guest Profile.
-// However the experiment will be conducted slightly differently.
-// All force_guest values are by default true, bypassing the experiment and
-// keeping the old behavior. Only force_guest values that will be explicitly set
-// to false will trigger the experiment and activating the
-// `ProfileSelection::kNone` for that service.
-// This is done in more conservative approach (activating all services by
-// default) because of the uncertainty of the need of services for the Guest
-// Profile.
-BASE_DECLARE_FEATURE(kGuestProfileSelectionDefaultNone);
-
 class Profile;
 
 // A helper function that checks whether Keyed Services should be created for

@@ -33,10 +33,12 @@ DeviceSettingsService* GetDeviceSettingsService() {
 }  // namespace
 
 OwnerSettingsServiceAshFactory::OwnerSettingsServiceAshFactory()
-    : ProfileKeyedServiceFactory("OwnerSettingsService",
-                                 ProfileSelections::Builder()
-                                     .WithAshInternals(ProfileSelection::kNone)
-                                     .Build()) {}
+    : ProfileKeyedServiceFactory(
+          "OwnerSettingsService",
+          ProfileSelections::Builder()
+              .WithGuest(ProfileSelections::kRegularProfileDefault)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {}
 
 OwnerSettingsServiceAshFactory::~OwnerSettingsServiceAshFactory() = default;
 

@@ -35,6 +35,8 @@ OptimizationGuideKeyedServiceFactory::OptimizationGuideKeyedServiceFactory()
           "OptimizationGuideKeyedService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
+              // Guest Profile follows Regular Profile selection mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
               // Do not build the OptimizationGuideKeyedService if it's a
               // sign-in or lockscreen profile since it basically is an
               // ephemeral profile anyway and we cannot provide hints or models

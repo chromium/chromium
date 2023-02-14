@@ -33,6 +33,8 @@ PrintingManagerFactory::PrintingManagerFactory()
           "PrintingManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // Guest Profile follows Regular Profile selection mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // We do not want an instance of PrintingManager on the lock
               // screen. The result is multiple print job notifications.
               // https://crbug.com/1011532

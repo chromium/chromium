@@ -29,6 +29,7 @@ LorgnetteScannerManagerFactory::LorgnetteScannerManagerFactory()
     : ProfileKeyedServiceFactory(
           "LorgnetteScannerManager",
           ProfileSelections::Builder()
+              .WithGuest(ProfileSelections::kRegularProfileDefault)
               .WithAshInternals(ProfileSelection::kNone)
               // Prevent an instance of LorgnetteScannerManager from being
               // created on the lock screen.

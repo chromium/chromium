@@ -62,10 +62,12 @@ UserPrivateTokenKeyPermissionsManagerServiceFactory::GetInstance() {
 
 UserPrivateTokenKeyPermissionsManagerServiceFactory::
     UserPrivateTokenKeyPermissionsManagerServiceFactory()
-    : ProfileKeyedServiceFactory("UserPrivateTokenKeyPermissionsManagerService",
-                                 ProfileSelections::Builder()
-                                     .WithAshInternals(ProfileSelection::kNone)
-                                     .Build()) {
+    : ProfileKeyedServiceFactory(
+          "UserPrivateTokenKeyPermissionsManagerService",
+          ProfileSelections::Builder()
+              .WithGuest(ProfileSelections::kRegularProfileDefault)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(PlatformKeysServiceFactory::GetInstance());
 }
 

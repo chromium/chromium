@@ -50,6 +50,8 @@ ScanServiceFactory::ScanServiceFactory()
           "ScanService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // Guest Profile follows Regular Profile selection mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // Prevent an instance of ScanService from being created on the
               // lock screen.
               .WithAshInternals(ProfileSelection::kNone)

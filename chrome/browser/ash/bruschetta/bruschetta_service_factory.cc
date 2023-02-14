@@ -27,12 +27,14 @@ BruschettaServiceFactory* BruschettaServiceFactory::GetInstance() {
 }
 
 BruschettaServiceFactory::BruschettaServiceFactory()
-    : ProfileKeyedServiceFactory("BruschettaService",
-                                 // Takes care of not creating the service for
-                                 // OTR and non user profiles.
-                                 ProfileSelections::Builder()
-                                     .WithAshInternals(ProfileSelection::kNone)
-                                     .Build()) {}
+    : ProfileKeyedServiceFactory(
+          "BruschettaService",
+          // Takes care of not creating the service for OTR and non user
+          // profiles.
+          ProfileSelections::Builder()
+              .WithGuest(ProfileSelections::kRegularProfileDefault)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {}
 
 BruschettaServiceFactory::~BruschettaServiceFactory() = default;
 

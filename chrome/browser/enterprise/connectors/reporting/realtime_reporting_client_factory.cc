@@ -30,6 +30,8 @@ RealtimeReportingClientFactory::RealtimeReportingClientFactory()
           "RealtimeReportingClient",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
+              // Guest Profile follows Regular Profile selection mode.
+              .WithGuest(ProfileSelection::kOwnInstance)
               .WithSystem(ProfileSelection::kNone)
               .Build()) {
   DependsOn(

@@ -41,6 +41,8 @@ UserNetworkConfigurationUpdaterFactory::UserNetworkConfigurationUpdaterFactory()
           "UserNetworkConfigurationUpdater",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // Guest Profile follows Regular Profile selection mode.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
               // On the login/lock screen only device network policies apply.
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
