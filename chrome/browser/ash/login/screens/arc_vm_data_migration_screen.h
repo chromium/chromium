@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
@@ -21,6 +22,7 @@ namespace ash {
 class ScopedScreenLockBlocker;
 
 class ArcVmDataMigrationScreen : public BaseScreen,
+                                 public ConciergeClient::VmObserver,
                                  public chromeos::PowerManagerClient::Observer {
  public:
   explicit ArcVmDataMigrationScreen(
@@ -38,26 +40,46 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
+  // Stops ARCVM instance and ARC-related Upstart jobs that have outlived the
+  // previous session.
+  void StopArcVmInstanceAndArcUpstartJobs();
+
+  void OnGetVmInfoResponse(
+      absl::optional<vm_tools::concierge::GetVmInfoResponse> response);
+  void OnStopVmResponse(
+      absl::optional<vm_tools::concierge::StopVmResponse> response);
+
+  void StopArcUpstartJobs();
+  void OnArcUpstartJobsStopped(bool result);
+
   void SetUpInitialView();
 
   void OnGetFreeDiskSpace(absl::optional<int64_t> reply);
+
+  // ConciergeClient::VmObserver overrides:
+  void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
+  void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
 
   void UpdateUIState(ArcVmDataMigrationScreenView::UIState state);
 
   void HandleSkip();
   void HandleUpdate();
 
-  void HandleFatalError();
+  virtual void HandleFatalError();
 
-  device::mojom::WakeLock* GetWakeLock();
+  virtual device::mojom::WakeLock* GetWakeLock();
 
   Profile* profile_;
+  std::string user_id_hash_;
 
   ArcVmDataMigrationScreenView::UIState current_ui_state_ =
       ArcVmDataMigrationScreenView::UIState::kLoading;
 
   double battery_percent_ = 100.0;
   bool is_connected_to_charger_ = true;
+
+  base::ScopedObservation<ConciergeClient, ConciergeClient::VmObserver>
+      concierge_observation_{this};
 
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>

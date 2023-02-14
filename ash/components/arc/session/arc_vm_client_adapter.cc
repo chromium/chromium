@@ -73,18 +73,6 @@
 namespace arc {
 namespace {
 
-// The "_2d" in job names below corresponds to "-". Upstart escapes characters
-// that aren't valid in D-Bus object paths with underscore followed by its
-// ascii code in hex. So "arc_2dcreate_2ddata" becomes "arc-create-data".
-constexpr const char kArcVmPerBoardFeaturesJobName[] =
-    "arcvm_2dper_2dboard_2dfeatures";
-constexpr char kArcVmPreLoginServicesJobName[] =
-    "arcvm_2dpre_2dlogin_2dservices";
-constexpr char kArcVmPostLoginServicesJobName[] =
-    "arcvm_2dpost_2dlogin_2dservices";
-constexpr char kArcVmPostVmStartServicesJobName[] =
-    "arcvm_2dpost_2dvm_2dstart_2dservices";
-
 constexpr const char kArcVmBootNotificationServerSocketPath[] =
     "/run/arcvm_boot_notification_server/host.socket";
 
@@ -617,23 +605,27 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     }
 
     start_params_ = std::move(params);
-    std::vector<std::string> enviroment;
-    if (start_params_.disable_ureadahead)
-      enviroment.emplace_back("DISABLE_UREADAHEAD=1");
+
     std::deque<JobDesc> jobs{
         // Note: the first Upstart job is a task, and the callback for the start
         // request won't be called until the task finishes. When the callback is
         // called with true, it is ensured that the per-board features files
         // exist.
         JobDesc{kArcVmPerBoardFeaturesJobName, UpstartOperation::JOB_START, {}},
-        JobDesc{
-            kArcVmMediaSharingServicesJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{
-            kArcVmPostVmStartServicesJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{kArcVmPreLoginServicesJobName,
-                UpstartOperation::JOB_STOP_AND_START, std::move(enviroment)},
     };
+
+    for (const char* job : kArcVmUpstartJobsToBeStoppedOnRestart) {
+      jobs.emplace_back(job, UpstartOperation::JOB_STOP,
+                        std::vector<std::string>());
+    }
+
+    std::vector<std::string> environment;
+    if (start_params_.disable_ureadahead) {
+      environment.emplace_back("DISABLE_UREADAHEAD=1");
+    }
+    jobs.emplace_back(kArcVmPreLoginServicesJobName,
+                      UpstartOperation::JOB_START, std::move(environment));
+
     ConfigureUpstartJobs(
         std::move(jobs),
         base::BindOnce(

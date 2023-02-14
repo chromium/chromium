@@ -61,16 +61,8 @@
 namespace arc {
 namespace {
 
-constexpr const char kArcVmPerBoardFeaturesJobName[] =
-    "arcvm_2dper_2dboard_2dfeatures";
 constexpr const char kArcVmBootNotificationServerAddressPrefix[] =
     "\0test_arcvm_boot_notification_server";
-constexpr char kArcVmPreLoginServicesJobName[] =
-    "arcvm_2dpre_2dlogin_2dservices";
-constexpr char kArcVmPostLoginServicesJobName[] =
-    "arcvm_2dpost_2dlogin_2dservices";
-constexpr char kArcVmPostVmStartServicesJobName[] =
-    "arcvm_2dpost_2dvm_2dstart_2dservices";
 
 // Disk path contained in CreateDiskImageResponse().
 constexpr const char kCreatedDiskImagePath[] = "test/data.img";
@@ -794,25 +786,27 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcVmPreLoginServicesJobFail) {
   StopArcInstance();
 }
 
-// Tests that StartMiniArc()'s JOB_STOP_AND_START for
-// |kArcVmPreLoginServicesJobName| is properly implemented.
+// Tests that |kArcVmPreLoginServicesJobName| is properly stopped and then
+// started in StartMiniArc().
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_JobRestart) {
   StartRecordingUpstartOperations();
   StartMiniArc();
 
   const auto& ops = upstart_operations();
   // Find the STOP operation for the job.
-  auto it =
-      base::ranges::find_if(ops, [](const UpstartOperation& op) {
-        return op.type == UpstartOperationType::STOP &&
-               kArcVmPreLoginServicesJobName == op.name;
-      });
-  ASSERT_NE(ops.end(), it);
+  auto it = base::ranges::find_if(ops, [](const UpstartOperation& op) {
+    return op.type == UpstartOperationType::STOP &&
+           op.name == kArcVmPreLoginServicesJobName;
+  });
+  ASSERT_NE(it, ops.end());
   ++it;
-  ASSERT_NE(ops.end(), it);
-  // The next operation must be START for the job.
-  EXPECT_EQ(it->name, kArcVmPreLoginServicesJobName);
-  EXPECT_EQ(UpstartOperationType::START, it->type);
+  ASSERT_NE(it, ops.end());
+  // Find the START operation for the job.
+  it = base::ranges::find_if(it, ops.end(), [](const UpstartOperation& op) {
+    return op.type == UpstartOperationType::START &&
+           op.name == kArcVmPreLoginServicesJobName;
+  });
+  ASSERT_NE(it, ops.end());
 }
 
 // Tests that StopArcInstance() eventually notifies the observer.
