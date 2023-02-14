@@ -329,15 +329,23 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     SemanticColorUtils.getDefaultIconColorAccent1(context),
                     (int) (NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY * 255));
 
-            // Surface 2 baseline for folio, surface 3 baseline for detached incognito bg color.
+            // Surface-2 baseline for folio, surface-3 baseline for detached incognito bg color.
+            int defaultBgColorDarkElev2 = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                    ? R.color.default_bg_color_dark_elev_2_gm3_baseline
+                    : R.color.default_bg_color_dark_elev_2_baseline;
+            int defaultBgColorDarkElev3 = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                    ? R.color.default_bg_color_dark_elev_3_gm3_baseline
+                    : R.color.default_bg_color_dark_elev_3_baseline;
             int incognitoBackgroundTint = TabManagementFieldTrial.isTabStripFolioEnabled()
-                    ? context.getResources().getColor(R.color.default_bg_color_dark_elev_2_baseline)
-                    : context.getResources().getColor(
-                            R.color.default_bg_color_dark_elev_3_baseline);
+                    ? context.getResources().getColor(defaultBgColorDarkElev2)
+                    : context.getResources().getColor(defaultBgColorDarkElev3);
 
-            // surface 5 baseline for incognito pressed bg color
+            // Surface-5 baseline for incognito pressed bg color
+            int defaultBgColorDarkElev5 = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                    ? R.color.default_bg_color_dark_elev_5_gm3_baseline
+                    : R.color.default_bg_color_dark_elev_5_baseline;
             int incognitoBackgroundPressedTint =
-                    context.getResources().getColor(R.color.default_bg_color_dark_elev_5_baseline);
+                    context.getResources().getColor(defaultBgColorDarkElev5);
 
             // Tab strip redesign new tab button night mode bg color.
             if (ColorUtils.inNightMode(context)) {

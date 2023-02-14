@@ -69,6 +69,11 @@ found in the LICENSE file.
     <color name="default_bg_color_light_elev_4_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_12_with_primary_600_2</color>
     <color name="default_bg_color_light_elev_5_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_14_with_primary_600_2</color>
     <color name="default_bg_color_light_elev_6_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_20_with_primary_600_2</color>
+    <color name="default_bg_color_light_elev_1_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_light_alpha_5</color>
+    <color name="default_bg_color_light_elev_2_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_light_alpha_8</color>
+    <color name="default_bg_color_light_elev_3_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_light_alpha_11</color>
+    <color name="default_bg_color_light_elev_4_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_light_alpha_12</color>
+    <color name="default_bg_color_light_elev_5_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_light_alpha_14</color>
     <color name="legacy_bg_color_light_elev_1">@color/modern_white</color>
     <color name="legacy_bg_color_light_elev_4">@color/modern_white</color>
     <color name="default_bg_color_dark_elev_1_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
@@ -77,6 +82,11 @@ found in the LICENSE file.
     <color name="default_bg_color_dark_elev_4_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2</color>
     <color name="default_bg_color_dark_elev_5_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_14_with_primary_200_alpha_2</color>
     <color name="default_bg_color_dark_elev_6_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_20_with_primary_200_alpha_2</color>
+    <color name="default_bg_color_dark_elev_1_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_dark_alpha_5</color>
+    <color name="default_bg_color_dark_elev_2_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_dark_alpha_8</color>
+    <color name="default_bg_color_dark_elev_3_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_dark_alpha_11</color>
+    <color name="default_bg_color_dark_elev_4_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_dark_alpha_12</color>
+    <color name="default_bg_color_dark_elev_5_gm3_baseline" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_surface_tint_dark_alpha_14</color>
     <color name="legacy_bg_color_dark_elev_1">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
     <color name="legacy_bg_color_dark_elev_4">@color/baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2</color>
 

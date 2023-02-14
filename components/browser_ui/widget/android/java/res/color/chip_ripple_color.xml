@@ -10,12 +10,12 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources">
     <item android:alpha="@dimen/default_pressed_alpha"
-        android:color="@color/default_chip_ripple_color" android:state_pressed="true"/>
+        android:color="?attr/defaultChipRippleColor" android:state_pressed="true"/>
     <item android:alpha="@dimen/default_focused_hovered_alpha"
-        android:color="@color/default_chip_ripple_color" android:state_focused="true" android:state_hovered="true"/>
+        android:color="?attr/defaultChipRippleColor" android:state_focused="true" android:state_hovered="true"/>
     <item android:alpha="@dimen/default_focused_alpha"
-        android:color="@color/default_chip_ripple_color" android:state_focused="true"/>
+        android:color="?attr/defaultChipRippleColor" android:state_focused="true"/>
     <item android:alpha="@dimen/default_hovered_alpha"
-        android:color="@color/default_chip_ripple_color" android:state_hovered="true"/>
+        android:color="?attr/defaultChipRippleColor" android:state_hovered="true"/>
     <item android:color="@macro/default_bg_color" />
 </selector>

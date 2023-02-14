@@ -20,10 +20,10 @@ found in the LICENSE file.
     <color name="incognito_tab_action_button_color">@color/baseline_neutral_variant_200</color>
     <color name="incognito_tab_action_button_selected_color">@color/baseline_primary_800</color>
 
-    <color name="incognito_tab_bg_color">@color/baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2</color>
+    <color name="incognito_tab_bg_color">@color/default_bg_color_dark_elev_4_baseline</color>
     <color name="incognito_tab_bg_selected_color">@color/baseline_primary_200</color>
 
-    <color name="incognito_tab_group_hovered_bg_color">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
+    <color name="incognito_tab_group_hovered_bg_color">@color/default_bg_color_dark_elev_1_baseline</color>
     <color name="incognito_tab_group_hovered_bg_selected_color">@color/baseline_primary_200_alpha_10</color>
 
     <color name="incognito_tab_title_color">@color/baseline_neutral_100</color>

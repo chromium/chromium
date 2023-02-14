@@ -23,6 +23,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -241,7 +242,10 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
 
         mDropdownStandardBackgroundColor = ChromeColors.getSurfaceColor(
                 context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
-        mDropdownIncognitoBackgroundColor = context.getColor(R.color.omnibox_dropdown_bg_incognito);
+        int incognitoBgColorRes = ChromeFeatureList.sBaselineGm3SurfaceColors.isEnabled()
+                ? R.color.default_bg_color_dark_elev_1_gm3_baseline
+                : R.color.omnibox_dropdown_bg_incognito;
+        mDropdownIncognitoBackgroundColor = context.getColor(incognitoBgColorRes);
         mSuggestionStandardBackgroundColor =
                 ChromeColors.getSurfaceColor(context, R.dimen.omnibox_suggestion_bg_elevation);
         mSuggestionIncognitoBackgroundColor =
