@@ -26,7 +26,7 @@ struct Invoker;
 template <typename T, typename Trait>
 class UnretainedWrapper;
 
-template <typename T, typename Trait, bool>
+template <typename T, typename Trait>
 class UnretainedRefWrapper;
 }  // namespace internal
 
@@ -86,10 +86,9 @@ class BASE_EXPORT RawPtrAsanBoundArgTracker {
 
   // When argument is a reference type that's supported by raw_ptr, add the
   // argument to the set of arguments protected in this scope.
-  template <typename T, typename Trait, bool IsSupportedType>
-  void AddArg(
-      const internal::UnretainedRefWrapper<T, Trait, IsSupportedType>& arg) {
-    if constexpr (IsSupportedType) {
+  template <typename T, typename Trait>
+  void AddArg(const internal::UnretainedRefWrapper<T, Trait>& arg) {
+    if constexpr (raw_ptr_traits::IsSupportedType<T>::value) {
       Add(reinterpret_cast<uintptr_t>(&arg.get()));
     }
   }
