@@ -5865,7 +5865,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6295158916970320988">Vsa spletna mesta</translation>
 <translation id="6295855836753816081">Shranjevanje ...</translation>
 <translation id="6298962879096096191">Uporaba Googla Play za nameščanje aplikacij za Android</translation>
-<translation id="6300125580697461004">Pošljite povratne informacije o varčevanju z energijo</translation>
 <translation id="6300177430812514606">Ni dovoljeno dokončanje pošiljanja ali prejemanja podatkov</translation>
 <translation id="630065524203833229">I&amp;zhod</translation>
 <translation id="6300718114348072351">Tiskalnika <ph name="PRINTER_NAME" /> ni bilo mogoče samodejno konfigurirati. Določite dodatne podrobnosti tiskalnika. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
@@ -6070,7 +6069,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6491376743066338510">Odobritev ni uspela</translation>
 <translation id="6494327278868541139">Prikaz podatkov o izboljšani zaščiti</translation>
 <translation id="6494445798847293442">Ni overitelj potrdil</translation>
-<translation id="6497548114956205206">Preberite več o varčevanju z energijo</translation>
 <translation id="6497784818439587832">Spremenite velikost zaslona, če želite pomanjšati ali povečati elemente na zaslonu.</translation>
 <translation id="6497789971060331894">Obratno pomikanje z miško</translation>
 <translation id="6498249116389603658">&amp;Vsi jeziki</translation>
@@ -7694,7 +7692,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7955177647836564772">Če je vklopljena funkcija Smart Lock in je telefon odklenjen, vam ni treba vnesti gesla ali kode PIN.</translation>
 <translation id="7956373551960864128">Shranjeni tiskalniki</translation>
 <translation id="7957074856830851026">Prikaz podatkov o napravi, denimo serijske številke ali ID-ja sredstva</translation>
-<translation id="7957186326898555886">Pošljite povratne informacije o varčevanju s pomnilnikom</translation>
 <translation id="7959074893852789871">Datoteka je vsebovala več potrdil in nekatera niso bila uvožena:</translation>
 <translation id="7959665254555683862">Novi anonimni &amp;zavihek</translation>
 <translation id="7961015016161918242">Nikoli</translation>
@@ -8124,7 +8121,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8340547030807793004">Več dejanj za <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Preglejte <ph name="BEGIN_BOLD" />1 spletno mesto<ph name="END_BOLD" />, ki je v zadnjem času poslalo veliko obvestil}one{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletno mesto<ph name="END_BOLD" />, ki je v zadnjem času poslalo veliko obvestil}two{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletni mesti<ph name="END_BOLD" />, ki sta v zadnjem času poslali veliko obvestil}few{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletna mesta<ph name="END_BOLD" />, ki so v zadnjem času poslala veliko obvestil}other{Preglejte <ph name="BEGIN_BOLD" />{NUM_SITES} spletnih mest<ph name="END_BOLD" />, ki so v zadnjem času poslala veliko obvestil}}</translation>
 <translation id="8342221978608739536">Nisem poskusil(-a)</translation>
-<translation id="8342399870062010251">Preberite več o varčevanju s pomnilnikom</translation>
 <translation id="8342861492835240085">Izberi zbirko</translation>
 <translation id="8345848587667658367">Zdaj si lahko ogledate nedavne fotografije, predstavnost, obvestila in aplikacije telefona</translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
@@ -8436,7 +8432,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8645354835496065562">Še naprej dovoli dostop do tipal</translation>
 <translation id="8645920082661222035">Predvideva nevarne dogodke, preden se zgodijo, in vas opozarja nanje</translation>
 <translation id="8646209145740351125">Onemogočanje sinhronizacije</translation>
-<translation id="8646340610303779673">PPD-ja ni mogoče dobiti.</translation>
 <translation id="864637694230589560">Spletna mesta običajno pošiljajo obvestila, da vas obvestijo glede zadnjih novic ali sporočil v klepetih.</translation>
 <translation id="8646467750715887511">Strani se naložijo samo, ko jih odprete.</translation>
 <translation id="8647385344110255847">Z vašim dovoljenjem lahko vaš otrok uporablja Google Play za nameščanje aplikacij.</translation>

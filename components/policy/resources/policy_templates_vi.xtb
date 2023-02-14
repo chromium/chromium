@@ -1791,8 +1791,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2665422249821137126">Bật con trỏ lớn trên màn hình đăng nhập</translation>
 <translation id="2667894101494585925">Bật chế độ Tìm nạp hướng dẫn tối ưu hoá</translation>
 <translation id="2669157090883237118">Không thay đổi cấu hình <ph name="PRODUCT_OS_NAME" /> đề xuất.</translation>
-<translation id="2671763491132059785">Chính sách này chỉ được áp dụng qua <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> và có thể được sử dụng để bật tính năng xoay khoá tự động cho
-<ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /></translation>
 <translation id="2672012807430078509">Kiểm soát việc bật NTLM làm giao thức xác thực cho các điểm kết nối SMB</translation>
 <translation id="2673363037046384711">Người dùng cuối có thể bật hoặc tắt Chế độ hiệu quả cao.</translation>
 <translation id="2678503605767349615">Chứng chỉ ứng dụng bắt buộc cho toàn thiết bị</translation>
@@ -3766,7 +3764,6 @@ Nếu bạn không đặt hoặc để trống chính sách này thì sẽ khôn
 <translation id="4557134566541205630">URL trang thẻ mới của nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="4558166110367609724">Tự động bỏ qua Điều khoản dịch vụ (ToS) và tải trình duyệt.</translation>
 <translation id="4559846397119102037">Cho phép sử dụng <ph name="LACROS_NAME" /></translation>
-<translation id="4560035077317813825">Bật tính năng xoay khoá tự động cho <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /></translation>
 <translation id="4561560385824323005">Cho phép người dùng chọn một bố cục màn hình được thiết lập sẵn để tải</translation>
 <translation id="4561940244682063697">Không cho phép các trang web nhắc người dùng chia sẻ luồng video màn hình</translation>
 <translation id="4562165737444703281">Cho phép người dùng [bật/định cấu hình] dịch vụ chuyển tiếp cổng vào Crostini</translation>

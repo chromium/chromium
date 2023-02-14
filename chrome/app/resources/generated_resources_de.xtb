@@ -5838,7 +5838,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
 <translation id="6295855836753816081">Wird gespeichert...</translation>
 <translation id="6298962879096096191">Google Play verwenden, um Android-Apps zu installieren</translation>
-<translation id="6300125580697461004">Feedback zum Energiesparmodus geben</translation>
 <translation id="6300177430812514606">Dürfen den Datenversand und ‑empfang nicht abschließen</translation>
 <translation id="630065524203833229">&amp;Beenden</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> konnte nicht automatisch konfiguriert werden. Bitte lege erweiterte Einstellungen für den Drucker fest. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -6043,7 +6042,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6491376743066338510">Fehler bei Autorisierung</translation>
 <translation id="6494327278868541139">Details zum erweiterten Schutz anzeigen</translation>
 <translation id="6494445798847293442">Keine Zertifizierungsstelle</translation>
-<translation id="6497548114956205206">Weitere Informationen zum Energiesparmodus</translation>
 <translation id="6497784818439587832">Du kannst die Bildschirmgröße ändern, um Elemente auf dem Bildschirm zu verkleinern oder zu vergrößern</translation>
 <translation id="6497789971060331894">Gegenläufiges Scrollen für Maus</translation>
 <translation id="6498249116389603658">&amp;Alle deine Sprachen</translation>
@@ -7661,7 +7659,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7955177647836564772">Wenn Smart Lock aktiviert ist und dein Smartphone entsperrt ist, musst du weder ein Passwort noch eine PIN eingeben</translation>
 <translation id="7956373551960864128">Deine gespeicherten Drucker</translation>
 <translation id="7957074856830851026">Geräteinformationen wie Seriennummer oder Asset-ID abrufen</translation>
-<translation id="7957186326898555886">Feedback zum Arbeitsspeicher-Sparmodus geben</translation>
 <translation id="7959074893852789871">Die Datei enthielt mehrere Zertifikate, von denen einige nicht importiert wurden:</translation>
 <translation id="7959665254555683862">Neuer Inkognito&amp;tab</translation>
 <translation id="7961015016161918242">Nie</translation>
@@ -8091,7 +8088,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8340547030807793004">Weitere Aktionen für „<ph name="DEVICE" />“</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 Website<ph name="END_BOLD" /> ansehen, die in letzter Zeit viele Benachrichtigungen gesendet hat}other{<ph name="BEGIN_BOLD" />{NUM_SITES} Websites<ph name="END_BOLD" /> ansehen, die in letzter Zeit viele Benachrichtigungen gesendet haben}}</translation>
 <translation id="8342221978608739536">Nicht ausprobiert</translation>
-<translation id="8342399870062010251">Weitere Informationen zum Arbeitsspeicher-Sparmodus</translation>
 <translation id="8342861492835240085">Sammlung auswählen</translation>
 <translation id="8345848587667658367">Du kannst jetzt die neuesten Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone ansehen</translation>
 <translation id="8347227221149377169">Druckaufträge</translation>
@@ -8111,6 +8107,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8358912028636606457">Das Audio-Streaming von einem Tab wird auf diesem Gerät nicht unterstützt.</translation>
 <translation id="835951711479681002">Im Google-Konto speichern</translation>
 <translation id="8360140320636871023">Displaydesign personalisieren</translation>
+<translation id="8360267485906769442">Schaltfläche „Feedback senden“</translation>
 <translation id="8363095875018065315">Stabil</translation>
 <translation id="8363142353806532503">Mikrofon blockiert</translation>
 <translation id="8366396658833131068">Deine Netzwerkverbindung wurde wiederhergestellt. Wähle ein anderes Netzwerk aus oder klicke unten auf "Weiter", um deine Kiosk-App zu starten.</translation>
@@ -8403,7 +8400,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8645354835496065562">Zugriff auf Sensor weiterhin zulassen</translation>
 <translation id="8645920082661222035">Erkennt schädliche Ereignisse im Voraus und warnt dich, bevor sie eintreten</translation>
 <translation id="8646209145740351125">Synchronisierung deaktivieren</translation>
-<translation id="8646340610303779673">Die PPD kann nicht abgerufen werden.</translation>
 <translation id="864637694230589560">Websites senden normalerweise Benachrichtigungen, um dich über Eilmeldungen oder Chatnachrichten zu informieren</translation>
 <translation id="8646467750715887511">Seiten werden nur geladen, wenn du sie tatsächlich öffnest.</translation>
 <translation id="8647385344110255847">Mit deiner Erlaubnis kann dein Kind Apps von Google Play installieren</translation>

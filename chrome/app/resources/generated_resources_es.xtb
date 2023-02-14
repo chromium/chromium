@@ -2909,7 +2909,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3593152357631900254">Habilitar modo de pinyin difuso</translation>
 <translation id="3593965109698325041">Restricciones de nombres de certificado</translation>
 <translation id="3596012367874587041">Configuración de la aplicación</translation>
-<translation id="3596414637720633074">Bloquear cookies de terceros en incógnito</translation>
+<translation id="3596414637720633074">Bloquear cookies de terceros en Incógnito</translation>
 <translation id="3599221874935822507">Elevada</translation>
 <translation id="3600051066689725006">Solicitud de información web</translation>
 <translation id="360180734785106144">Ofrecer funciones nuevas cuando estén disponibles</translation>
@@ -5844,7 +5844,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6295855836753816081">Guardando...</translation>
 <translation id="6298962879096096191">Usa Google Play para descargar aplicaciones de Android</translation>
-<translation id="6300125580697461004">Enviar comentarios sobre el ahorro de energía</translation>
 <translation id="6300177430812514606">No puede terminar de enviar o recibir datos</translation>
 <translation id="630065524203833229">&amp;Salir</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> no se ha podido configurar automáticamente. Debes especificar información detallada de la impresora. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -6041,7 +6040,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6483485061007832714">Abrir descarga</translation>
 <translation id="6483805311199035658">Abriendo <ph name="FILE" />...</translation>
-<translation id="6486301003991593638">Para gestionar claves de acceso, usa una versión más reciente de Windows</translation>
+<translation id="6486301003991593638">Para gestionar llaves de acceso, usa una versión más reciente de Windows</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> no puede comprobar tus contraseñas en busca de brechas de seguridad de datos. Prueba a revisar tu conexión a Internet.</translation>
 <translation id="6488384360522318064">Seleccionar idioma</translation>
 <translation id="648927581764831596">Ningún medio disponible</translation>
@@ -6049,7 +6048,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6491376743066338510">Error de autorización</translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
 <translation id="6494445798847293442">No es una entidad emisora de certificados</translation>
-<translation id="6497548114956205206">Más información sobre el ahorro de energía</translation>
 <translation id="6497784818439587832">Cambia el tamaño de la pantalla para ampliar o reducir el tamaño de los elementos que aparecen</translation>
 <translation id="6497789971060331894">Desplazamiento inverso del ratón</translation>
 <translation id="6498249116389603658">&amp;Todos tus idiomas</translation>
@@ -7667,7 +7665,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7955177647836564772">Si Smart Lock está activado y tu teléfono está desbloqueado, no tendrás que introducir ni una contraseña ni un PIN</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o el ID de recurso</translation>
-<translation id="7957186326898555886">Enviar comentarios sobre Ahorro de memoria</translation>
 <translation id="7959074893852789871">El archivo contenía varios certificados, pero algunos de ellos no se han importado:</translation>
 <translation id="7959665254555683862">Nueva pestaña de Incógnito</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -8097,7 +8094,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8340547030807793004">Más acciones de <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que ha enviado muchas notificaciones recientemente}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que han enviado muchas notificaciones recientemente}}</translation>
 <translation id="8342221978608739536">No lo he intentado</translation>
-<translation id="8342399870062010251">Más información sobre Ahorro de memoria</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8345848587667658367">Ahora puedes consultar las fotos, el contenido multimedia, las notificaciones y las aplicaciones recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
@@ -8394,6 +8390,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8634348081024879304">Ya no podrás usar tu tarjeta virtual con Google Play. <ph name="BEGIN_LINK" />Información sobre las tarjetas virtuales<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Cargando de nuevo...</translation>
 <translation id="8636284842992792762">Inicializando extensiones...</translation>
+<translation id="8636323803535540285">Para llegar aquí más rápido, añade un acceso directo a <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">No permitir que los sitios envíen ventanas emergentes ni utilicen redirecciones</translation>
 <translation id="8637688295594795546">Hay disponible una actualización del sistema. Preparando para descargar…</translation>
 <translation id="8639047128869322042">Buscando software dañino...</translation>
@@ -8408,7 +8405,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8645354835496065562">Seguir permitiendo el acceso a los sensores</translation>
 <translation id="8645920082661222035">Predice y te advierte de eventos peligrosos antes de que se produzcan</translation>
 <translation id="8646209145740351125">Inhabilitar sincronización</translation>
-<translation id="8646340610303779673">No se puede obtener el PPD.</translation>
 <translation id="864637694230589560">Los sitios suelen enviar notificaciones para informarte sobre las últimas noticias o mensajes de chat.</translation>
 <translation id="8646467750715887511">Las páginas se cargan solo después de que las abras.</translation>
 <translation id="8647385344110255847">Con tu permiso, tu hijo/a puede usar Google Play para descargar aplicaciones.</translation>

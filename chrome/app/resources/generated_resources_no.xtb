@@ -5858,7 +5858,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6295158916970320988">Alle nettsteder</translation>
 <translation id="6295855836753816081">Lagrer …</translation>
 <translation id="6298962879096096191">Bruk Google Play til å installere Android-apper</translation>
-<translation id="6300125580697461004">Send tilbakemelding om strømsparing</translation>
 <translation id="6300177430812514606">Nettsteder som ikke har lov til å fullføre sending eller mottak av data</translation>
 <translation id="630065524203833229">&amp;Avslutt</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kunne ikke konfigureres automatisk. Angi avanserte detaljer om skriveren. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -6063,7 +6062,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6491376743066338510">Kunne ikke autorisere</translation>
 <translation id="6494327278868541139">Vis detaljer om økt beskyttelse</translation>
 <translation id="6494445798847293442">Ikke en sertifiseringsinstans</translation>
-<translation id="6497548114956205206">Finn ut mer om strømsparing</translation>
 <translation id="6497784818439587832">Endre skjermstørrelsen for å gjøre elementer på skjermen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulling med musen</translation>
 <translation id="6498249116389603658">&amp;Alle språkene dine</translation>
@@ -6987,6 +6985,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7353261921908507769">Kontaktene dine kan dele med deg når de er i nærheten. Overføringer starter ikke før du godtar.</translation>
 <translation id="735361434055555355">Installerer Linux ...</translation>
+<translation id="7354120289251608189">Nå kan du når som helst gi nettleseren et nytt utseende.</translation>
 <translation id="7356908624372060336">Nettverkslogger</translation>
 <translation id="735745346212279324">VPN frakoblet</translation>
 <translation id="7358324924540718595">Minner er skjult for i dag</translation>
@@ -7681,7 +7680,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7955177647836564772">Hvis Smart Lock er slått på og telefonen låses opp, trenger du ikke å oppgi passord eller PIN-kode</translation>
 <translation id="7956373551960864128">Dine lagrede skrivere</translation>
 <translation id="7957074856830851026">Se informasjon om enheten, som for eksempel serienummeret eller element-ID-en</translation>
-<translation id="7957186326898555886">Send tilbakemelding om minnesparing</translation>
 <translation id="7959074893852789871">Filen inneholdt flere sertifikater, og enkelte av dem ble ikke importert:</translation>
 <translation id="7959665254555683862">Ny inkognito&amp;fane</translation>
 <translation id="7961015016161918242">Aldri</translation>
@@ -8111,7 +8109,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8340547030807793004">Flere handlinger for <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Gjennomgå <ph name="BEGIN_BOLD" />1 nettsted<ph name="END_BOLD" /> som nylig har sendt mange varsler}other{Gjennomgå <ph name="BEGIN_BOLD" />{NUM_SITES} nettsteder<ph name="END_BOLD" /> som nylig har sendt mange varsler}}</translation>
 <translation id="8342221978608739536">Prøvde ikke</translation>
-<translation id="8342399870062010251">Finn ut mer om minnesparing</translation>
 <translation id="8342861492835240085">Velg en samling</translation>
 <translation id="8345848587667658367">Nå kan du se telefonens nylige bilder, medier, varsler og apper</translation>
 <translation id="8347227221149377169">Utskriftsjobber</translation>
@@ -8425,7 +8422,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8645354835496065562">Fortsett å tillate sensortilgang</translation>
 <translation id="8645920082661222035">Forutsier og advarer deg om farlige hendelser før de inntreffer</translation>
 <translation id="8646209145740351125">Deaktiver synkronisering</translation>
-<translation id="8646340610303779673">Kunne ikke hente PPD.</translation>
 <translation id="864637694230589560">Nettsteder sender vanligvis varsler for å informere deg om siste nytt eller chatmeldinger</translation>
 <translation id="8646467750715887511">Sider lastes bare inn etter at du har åpnet dem.</translation>
 <translation id="8647385344110255847">Med tillatelse fra deg kan barnet ditt bruke Google Play til å installere apper</translation>

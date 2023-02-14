@@ -12,7 +12,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />Logga in i Chromium<ph name="END_LINK" /> om du vill kontrollera att dina lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1203500561924088507">Tack för att du installerat programmet. Du måste starta om webbläsaren innan du använder <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1231839967188101156">När det här alternativet är aktiverat frigörs minne från inaktiva flikar i Chromium. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chromium fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Minnessparläget har gjort Chromium snabbare</translation>
 <translation id="1315551408014407711">Konfigurera din nya profil i Chromium</translation>
 <translation id="1396446129537741364">Chromium försöker visa lösenord.</translation>
@@ -220,6 +219,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6072463441809498330">Gör Chromium snabbare</translation>
 <translation id="608006075545470555">Lägg till en jobbprofil i den här webbläsaren</translation>
 <translation id="6096348254544841612">Anpassa och styr Chromium. En uppdatering är tillgänglig.</translation>
+<translation id="6102072151902574948">När inställningen är aktiverad sparar Chromium batteri genom att begränsa aktivitet i bakgrunden och visuella effekter, till exempel jämnare scrollning och bildfrekvenser för video.</translation>
 <translation id="6119438414301547735">Tillåt att tillägg visar åtkomstförfrågningar i verktygsfältet i Chromium</translation>
 <translation id="6120345080069858279">Det här lösenordet sparas i ditt Google-konto. Du behöver inte komma ihåg det.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> är skadlig och har blockerats av Chromium.</translation>
@@ -280,6 +280,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6940431691900807093">Senare kan en webbplats fråga efter dina intressen i Chromium för att anpassa vilka annonser som visas. Chromium kan dela upp till tre intressen.</translation>
 <translation id="6964305034639999644">Öppna länken i ett inko&amp;gnitofönster i Chromium.</translation>
 <translation id="6978145336957848883">Svaga lösenord är lätta att lista ut. Låt Chromium <ph name="BEGIN_LINK" />skapa och spara starka lösenord åt dig<ph name="END_LINK" />.</translation>
+<translation id="6981396265751285733">När det här alternativet är aktiverat frigörs minne från inaktiva flikar i Chromium. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chromium fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem.</translation>
 <translation id="6984667024406244807">Chromium är inaktivt</translation>
 <translation id="6985329841647292029">Villkor för Chromium OS</translation>
 <translation id="6990124437352146030">Du behöver ge Chromium behörighet att använda mikrofonen på webbplatsen</translation>
@@ -353,7 +354,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8550334526674375523">Jobbprofilen hålls helt åtskild från din privata profil.</translation>
 <translation id="8558383651099478961">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium. Det är inte tillåtet att lägga till denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot</translation>
-<translation id="8574036838419011058">När inställningen är aktiverad sparar Chromium batteri genom att begränsa aktivitet i bakgrunden och visuella effekter, till exempel jämnare scrollning och bildfrekvenser för video. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Webbplatser kan lagra information om dina intressen i Chromium. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
 <translation id="8619360774459241877">Chromium startas …</translation>

@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Выберыце альбом "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">Сэнсарная панэль з USB</translation>
 <translation id="4117637339509843559">Цёмны рэжым</translation>
+<translation id="4130035430755296270">Навядзіце і ўтрымлівайце курсор, каб убачыць іншыя параметры макета</translation>
 <translation id="4131410914670010031">Чорна-белы друк</translation>
 <translation id="4145784616224233563">Брандмаўар HTTP</translation>
 <translation id="4147897805161313378">Google Фота</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) DNS-пераўтварэнне</translation>
 <translation id="4848429997038228357">ВЫКОНВАЕЦЦА</translation>
 <translation id="4854586501323951986">Убудаваны сэнсарны экран</translation>
+<translation id="4855250849489639581">Каб пабачыць іншыя варыянты макета, правядзіце пальцам уніз</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}many{<ph name="ERROR_MESSAGE" /> Засталося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}}</translation>
 <translation id="4873827928179867585">Алгарытм аўтэнтыфікацыі</translation>
 <translation id="4880328057631981605">Назва пункта доступу</translation>

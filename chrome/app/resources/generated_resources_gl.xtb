@@ -5840,7 +5840,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6295158916970320988">Todos os sitios</translation>
 <translation id="6295855836753816081">Gardando...</translation>
 <translation id="6298962879096096191">Utiliza Google Play para instalar aplicacións para Android</translation>
-<translation id="6300125580697461004">Enviar comentarios sobre Aforro de enerxía</translation>
 <translation id="6300177430812514606">Sitios que non poden rematar de enviar ou recibir datos</translation>
 <translation id="630065524203833229">Sa&amp;ír</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> non se puido configurar automaticamente. Indica os detalles avanzados da impresora. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -6045,7 +6044,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6491376743066338510">Produciuse un erro na autorización</translation>
 <translation id="6494327278868541139">Mostrar detalles de protección mellorada</translation>
 <translation id="6494445798847293442">Non é unha autoridade de certificación</translation>
-<translation id="6497548114956205206">Máis información sobre Aforro de enerxía</translation>
 <translation id="6497784818439587832">Cambia o tamaño da pantalla para que os elementos que se mostran nela sexan máis pequenos ou máis grandes</translation>
 <translation id="6497789971060331894">Desprazamento inverso do rato</translation>
 <translation id="6498249116389603658">&amp;Todos os teus idiomas</translation>
@@ -7663,7 +7661,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7955177647836564772">Se activas Smart Lock e o teu teléfono está desbloqueado, non é necesario que poñas un contrasinal ou PIN</translation>
 <translation id="7956373551960864128">As túas impresoras gardadas</translation>
 <translation id="7957074856830851026">Consultar información do dispositivo, como o seu número de serie ou código de identificación de recurso</translation>
-<translation id="7957186326898555886">Enviar comentarios sobre Aforro de memoria</translation>
 <translation id="7959074893852789871">O ficheiro contiña varios certificados, algúns dos cales non se importaron:</translation>
 <translation id="7959665254555683862">Nova pestana do modo de incógni&amp;to</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -8092,7 +8089,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8340547030807793004">Máis accións para <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisar <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que enviou moitas notificacións recentemente}other{Revisar <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que enviaron moitas notificacións recentemente}}</translation>
 <translation id="8342221978608739536">Non se intentou</translation>
-<translation id="8342399870062010251">Máis información sobre Aforro de memoria</translation>
 <translation id="8342861492835240085">Seleccionar unha colección</translation>
 <translation id="8345848587667658367">Xa podes acceder ás aplicacións, ás notificacións, ao contido multimedia e ás fotos recentes do teu teléfono</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
@@ -8404,7 +8400,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8645354835496065562">Continuar permitindo o acceso aos sensores</translation>
 <translation id="8645920082661222035">Predí eventos perigosos antes de que se produzan e móstrache unha advertencia</translation>
 <translation id="8646209145740351125">Desactivar sincronización</translation>
-<translation id="8646340610303779673">Non se puido obter o PPD.</translation>
 <translation id="864637694230589560">Os sitios adoitan enviar notificacións con noticias de última hora ou mensaxes de chat</translation>
 <translation id="8646467750715887511">As páxinas só se cargarán unha vez que as abras.</translation>
 <translation id="8647385344110255847">Co teu permiso, o teu fillo ou filla pode usar Google Play para instalar aplicacións</translation>

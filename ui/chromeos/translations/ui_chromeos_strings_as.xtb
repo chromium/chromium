@@ -192,6 +192,7 @@
 <translation id="2574327434504608656">Bruschettaৰ সৈতে ১ টা ফ’ল্ডাৰটো শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="2578394532502990878">তামিল ফ’নেটিক</translation>
 <translation id="2579959351793446050">ওড়িয়া</translation>
+<translation id="2587195714949534472"><ph name="FILE_NAME" /> ছিংক কৰিবলৈ সাজু কৰি থকা হৈছে...</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে, সবিশেষ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ভিডিঅ’</translation>
 <translation id="2620090360073999360">এই মুহূৰ্তত Google Driveৰ সৈতে সংযোগ স্থাপন কৰিব নোৱাৰি।</translation>
@@ -293,6 +294,7 @@
 <translation id="3486821258960016770">মংগোলিয়ান</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />টা আসোঁৱাহ।</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
+<translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু ছিংক কৰিবলৈ সাজু কৰি থকা হৈছে...</translation>
 <translation id="3522708245912499433">পর্তুগীজ</translation>
 <translation id="3524311639100184459">সাৱধান: এই ফাইলসমূহ অস্থায়ী আৰু ডিস্কত খালী ঠাই উলিয়াবলৈ এইবোৰ স্বয়ংক্ৰিয়ভাৱে মচা যাব পাৰে।  <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ফ’ল্ডাৰ</translation>

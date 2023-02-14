@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">Նոր որոնում</translation>
 <translation id="1209206284964581585">Առայժմ թաքցնել</translation>
 <translation id="1219674500290482172">Հնարավոր չէ միանալ համացանցին:</translation>
+<translation id="1226238226094914652">Գաղտնաբառերը ձեր բոլոր սարքերում</translation>
 <translation id="122699739164161391">Փակել բոլոր ներդիրները</translation>
 <translation id="1229222343402087523">Որոնեք ${searchPhrase} Chrome-ում</translation>
 <translation id="1242044645101871359">Նորից մուտք գործեք</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">Բացել բոլորը</translation>
 <translation id="2556092377360758201">Առանց պաշտպանության (խորհուրդ չի տրվում)</translation>
 <translation id="2562041823070056534">Ուղարկվում է <ph name="DEVICE_NAME" /> սարքին...</translation>
+<translation id="2576499762020411840">Օգտագործել և պահել գաղտնաբառերը Google հաշվում</translation>
 <translation id="2578571896248130439">Կայքէջի ուղարկում</translation>
 <translation id="2584132361465095047">Ավելացնել հաշիվ</translation>
 <translation id="2600682495497606169">Ջնջել կայքի քուքիները</translation>
@@ -302,6 +304,7 @@
 <translation id="3181825792072797598">Միացնել համաժամացումը</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
 <translation id="3184767182050912705">Ապակողպել՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Այլևս չհետագծել</translation>
 <translation id="3214379938835224220">Ձեր iPad-ը վերակայելիս դուք դուրս եք գրվել հաշվից։ Հաշիվ մտնելու համար ներքևում հպեք «Շարունակել»։</translation>
 <translation id="3224641773458703735">Գաղտնաբառերն արտահանելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
@@ -409,6 +412,7 @@
 <translation id="4063300985191096908">Անցնել ֆիդ</translation>
 <translation id="408404951701638773">Որոնման տողից այժմ ավելի հեշտ է օգտվել</translation>
 <translation id="4092655288299341041">Ցույց տալ օգնության էջը</translation>
+<translation id="4101942614374785540">Գաղտնաբառերն այժմ պահվում են ձեր Google հաշվում (<ph name="ACCOUNT" />)։ Դուք կարող եք օգտագործել դրանք ցանկացած սարքում, որում մուտք եք գործել հաշիվ։ Այս գործառույթն անջատելու համար անցեք <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" />։</translation>
 <translation id="4108998448622696017">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին։</translation>
 <translation id="411254640334432676">Ներբեռնումը չհաջողվեց:</translation>
 <translation id="4112644173421521737">Որոնել</translation>
@@ -692,6 +696,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6184086493125982861">Ցույց տալ ներդիրները</translation>
 <translation id="6187302354554850004">Վերջին անգամ համաժամացվել է՝ <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Չկարդացված</translation>
+<translation id="6193424046394092997">{count,plural, =1{Էջանշվեց «{title}» պանակում}one{Էջանշվեց «{title}» պանակում}other{Էջանշվեցին «{title}» պանակում}}</translation>
 <translation id="6196207969502475924">Ձայնային որոնում</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Փակել {COUNT} ներդիր}one{Փակել {COUNT} ներդիր}other{Փակել {COUNT} ներդիր}}</translation>
 <translation id="6219550825416862075">Բարի վերադարձ</translation>
@@ -837,6 +842,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7053983685419859001">Արգելափակել</translation>
 <translation id="7062545763355031412">Ընդունել և փոխարկել հաշիվները</translation>
 <translation id="7080806333218412752">Ուղարկում է URL-ները Ապահով դիտարկմանը՝ դրանք ստուգելու համար։ Ուղարկվում են նաև էջերի, ներբեռնված ֆայլերի, ընդլայնումների գործողությունների և համակարգի մասին տեղեկություններից որոշ հատվածներ, որոնք օգնում են հայտնաբերել օգտատերերին սպառնացող նոր վտանգներ։ Երբ մտնում եք Google հաշիվ, այդ տվյալները ժամանակավորապես կապվում են տվյալ հաշվի հետ՝ պաշտպանելով ձեզ Google-ի հավելվածներում։</translation>
+<translation id="7083860864742905105">Երբ այս գործառույթը միացված է, գաղտնաբառերը պահվում են <ph name="ACCOUNT" /> հաշվում։ Երբ այն անջատված է, գաղտնաբառերը պահվում են միայն այս սարքում։</translation>
 <translation id="7095110968493193530">Google Գաղտնաբառերի կառավարիչում <ph name="EMAIL" /> հաշվի համար</translation>
 <translation id="7099761977003084116">Վերջին ներդիրները</translation>
 <translation id="7102005569666697658">Ներբեռնում… <ph name="FILE_SIZE" /></translation>
@@ -866,7 +872,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="734758817008927353">Քարտը պահելու կարգավորումներ</translation>
 <translation id="7351537303876921605">Տեղային ընտրացանկում հպեք «Ստեղծել հղում»</translation>
 <translation id="7353432112255316844">Հաստատեք ձեր ինքնությունը</translation>
-<translation id="7356359962760467032">Դադարեցնել գների հետագծումը</translation>
 <translation id="7383797227493018512">Ընթերցանության ցանկ</translation>
 <translation id="7398893703713203428">Ստեղծել հղում</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -913,6 +918,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7756478488453921771">Ընտրացանկ → Կարգավորումներ → Վճարման եղանակներ</translation>
 <translation id="7765158879357617694">Տեղափոխել</translation>
 <translation id="7772032839648071052">Հաստատեք անցաբառը</translation>
+<translation id="777572173400717978">{count,plural, =1{Էջանշվեց}one{Էջանշվեց}other{Էջանշվեցին}}</translation>
 <translation id="7781011649027948662">Թարգմանե՞լ էջը</translation>
 <translation id="7781069478569868053">Նոր ներդիրի էջ</translation>
 <translation id="7781829728241885113">Երեկ</translation>
@@ -1114,6 +1120,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="952704832371081537">Չեղարկել</translation>
 <translation id="953008885340860025">Դուք դուրս եք գրվել Chrome-ից</translation>
 <translation id="959066944189734975">Դուք հետևում եք <ph name="CHANNEL_NAME" /> կայքին</translation>
+<translation id="980712131080209571">Նոր</translation>
 <translation id="981498610235328462">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։ Հաշիվները, որոնց մուտքն արգելված է, կթաքցվեն։</translation>
 <translation id="984509647832111802">Համաժամացումը չի աշխատում։</translation>
 <translation id="988141524645182168">Այլ սարքեր</translation>

@@ -5834,7 +5834,6 @@
 <translation id="6295158916970320988">すべてのサイト</translation>
 <translation id="6295855836753816081">保存しています...</translation>
 <translation id="6298962879096096191">Google Play を使用して Android アプリをインストールします</translation>
-<translation id="6300125580697461004">省エネツールに関するフィードバックを送信する</translation>
 <translation id="6300177430812514606">データの送受信の完了を許可しないサイト</translation>
 <translation id="630065524203833229">終了(&amp;X)</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> を自動的に設定できませんでした。プリンタの詳細設定を指定してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -6039,7 +6038,6 @@
 <translation id="6491376743066338510">認証できませんでした</translation>
 <translation id="6494327278868541139">保護強化機能の詳細を表示</translation>
 <translation id="6494445798847293442">認証局ではありません</translation>
-<translation id="6497548114956205206">省エネツールの詳細</translation>
 <translation id="6497784818439587832">画面上の項目のサイズを変えるには、表示サイズを変更します</translation>
 <translation id="6497789971060331894">マウスの逆スクロール</translation>
 <translation id="6498249116389603658">選択したすべての言語(&amp;A)</translation>
@@ -7653,7 +7651,6 @@
 <translation id="7955177647836564772">Smart Lock がオンになっていて、スマートフォンのロックが解除されている場合、パスワードや PIN を入力する必要はありません</translation>
 <translation id="7956373551960864128">保存されているプリンタ</translation>
 <translation id="7957074856830851026">シリアル番号やアセット ID などのデバイス情報を読み取る</translation>
-<translation id="7957186326898555886">メモリセーバーに関するフィードバックを送信する</translation>
 <translation id="7959074893852789871">ファイルに含まれる複数の証明書のうち、一部をインポートできませんでした:</translation>
 <translation id="7959665254555683862">新しいシークレット タブ(&amp;T)</translation>
 <translation id="7961015016161918242">使用しない</translation>
@@ -8083,7 +8080,6 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> に対するその他の操作</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{最近、通知を多数送信した <ph name="BEGIN_BOLD" />1 件のサイト<ph name="END_BOLD" />を確認する}other{最近、通知を多数送信した <ph name="BEGIN_BOLD" />{NUM_SITES} 件のサイト<ph name="END_BOLD" />を確認する}}</translation>
 <translation id="8342221978608739536">試していない</translation>
-<translation id="8342399870062010251">メモリセーバーの詳細</translation>
 <translation id="8342861492835240085">コレクションを選択</translation>
 <translation id="8345848587667658367">スマートフォンの最近の写真、メディア、通知、アプリを表示できるようになりました</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
@@ -8103,6 +8099,7 @@
 <translation id="8358912028636606457">このデバイスのタブの音声をキャストすることはできません。</translation>
 <translation id="835951711479681002">Google アカウントに保存</translation>
 <translation id="8360140320636871023">ディスプレイのテーマをカスタマイズ</translation>
+<translation id="8360267485906769442">フィードバックの送信ボタン</translation>
 <translation id="8363095875018065315">Stable</translation>
 <translation id="8363142353806532503">マイクがブロックされています</translation>
 <translation id="8366396658833131068">ネットワーク接続が復元されました。キオスク アプリを起動するには、別のネットワークを選択するか、下の [続行] ボタンを押してください。</translation>
@@ -8395,7 +8392,6 @@
 <translation id="8645354835496065562">センサーへのアクセスを引き続き許可する</translation>
 <translation id="8645920082661222035">危険なイベントの発生を予測して警告します</translation>
 <translation id="8646209145740351125">同期の無効化</translation>
-<translation id="8646340610303779673">PPD を取得できません。</translation>
 <translation id="864637694230589560">サイトは最新情報やチャット メッセージなどを知らせる目的で通知を送信します</translation>
 <translation id="8646467750715887511">ページは、ページを開くまでプリロードされません。</translation>
 <translation id="8647385344110255847">保護者の方が許可した場合、お子様は Google Play からアプリをインストールできます</translation>

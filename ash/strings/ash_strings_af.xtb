@@ -580,7 +580,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4123259114412175274">Maak seker jou foon se Bluetooth is aan as jy jou Chromebook wil ontsluit</translation>
 <translation id="4125970834901680537">Kan nie programme in tabletmodus stroom nie. Probeer weer in skootrekenaarmodus.</translation>
 <translation id="4129129681837227511">Om kennisgewings op jou sluitskerm te sien, ontsluit om die instelling te verander</translation>
-<translation id="4130035430755296270">Hou oor kieslys vir nog uitlegopsies</translation>
 <translation id="4136724716305260864">Aan tot sonsopkoms</translation>
 <translation id="4146833061457621061">Speel musiek</translation>
 <translation id="4150201353443180367">Vertoon</translation>
@@ -735,6 +734,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4895488851634969361">Battery is vol.</translation>
 <translation id="490375751687810070">Vertikaal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% batterykrag</translation>
+<translation id="491504982845934899">Aktiveer ná toestelopstelling <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4918086044614829423">Aanvaar</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> gebruik tans jou kamera</translation>
@@ -1331,6 +1331,7 @@ Nuwe installasie</translation>
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8131994907636310308">Maak "sorteer opspringers" toe</translation>
 <translation id="8132793192354020517">Gekoppel aan <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Aktiveer ná toestelopstelling</translation>
 <translation id="813913629614996137">Inisialiseer tans …</translation>
 <translation id="8142441511840089262">Dubbelklik</translation>
 <translation id="8142699993796781067">Privaat netwerk</translation>

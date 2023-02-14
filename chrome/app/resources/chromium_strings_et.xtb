@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Kui soovite kontrollida, kas teie paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chromiumi sisse<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>
-<translation id="1231839967188101156">Kui see on sisse lülitatud, vabastab Chromium inaktiivsete vahelehtede mälu. See annab aktiivsetele vahelehtedele ja muudele rakendustele rohkem arvutiressursse ja tagab Chromiumi kiiruse. Teie inaktiivsed vahelehed muutuvad automaatselt aktiivseks niipea, kui nendele naasete. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Mälusäästja muutis Chromiumi kiiremaks</translation>
 <translation id="1315551408014407711">Uue Chromiumi profiili seadistamine</translation>
 <translation id="1396446129537741364">Chromium püüab paroole kuvada.</translation>
@@ -350,7 +349,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8550334526674375523">See tööprofiil on teie isiklikust profiilist täielikult eraldi.</translation>
 <translation id="8558383651099478961">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chromiumi puhul välja. Laienduse <ph name="EXTENSION_TYPE_PARAMETER" /> lubamine on keelatud.</translation>
 <translation id="8568283329061645092">Chromium saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga</translation>
-<translation id="8574036838419011058">Kui see on sisse lülitatud, säästab Chromium akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Saidid võivad talletada Chromiumissse teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
 <translation id="8619360774459241877">Chromiumi käivitamine …</translation>

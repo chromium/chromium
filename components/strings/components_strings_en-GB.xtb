@@ -892,7 +892,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3218181027817787318">Relative</translation>
 <translation id="3223287115535306850">App launching throbber</translation>
 <translation id="3223425961342298674">Location not allowed</translation>
-<translation id="3225347164936328585">Clapping</translation>
 <translation id="3225919329040284222">The server presented a certificate that doesn't match built-in expectations. These expectations are included for certain, high-security websites in order to protect you.</translation>
 <translation id="3226128629678568754">Press the reload button to resubmit the data needed to load the page.</translation>
 <translation id="3226387218769101247">Thumbnails</translation>
@@ -949,7 +948,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3340978935015468852">settings</translation>
 <translation id="3342018947887487892">Later, a site that you visit can ask for this information – either your ad topics or ads suggested by sites that you’ve visited.</translation>
 <translation id="3342366525167526994">Body art</translation>
-<translation id="3345782426586609320">Eyes</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Change proxy settings...</translation>
 <translation id="3359565626472459400">Marriage</translation>
@@ -1317,6 +1315,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4223404254440398437">Microphone not allowed</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Try running Network Diagnostics<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Can ask to use and move your camera</translation>
+<translation id="4231448684371260244">8 x 13 in</translation>
 <translation id="4235360514405112390">Valid</translation>
 <translation id="4250431568374086873">Your connection to this site is not fully secure</translation>
 <translation id="4250680216510889253">No</translation>
@@ -1389,7 +1388,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4393632246160856858">Nail care products</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">search results</translation>
-<translation id="4407755609041463909">Fire</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Consumer electronics</translation>
 <translation id="4412074349188076601">This configuration is marked as installable, but no image is provided for this architecture, so it cannot be installed.</translation>
@@ -1775,7 +1773,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5333022057423422993">Chrome found the password that you just used in a data breach. To secure your accounts, we recommend checking your saved passwords.</translation>
 <translation id="5334013548165032829">Detailed system logs</translation>
 <translation id="5334145288572353250">Save Address?</translation>
-<translation id="5335920952954443287">Beating heart</translation>
 <translation id="5337569431717511221">Set Chrome as default browser button, press Enter to set Chrome as the system's default browser</translation>
 <translation id="5340250774223869109">Application is blocked</translation>
 <translation id="534295439873310000">NFC devices</translation>
@@ -1783,7 +1780,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5344579389779391559">This page may try to charge you money</translation>
 <translation id="5347645913823149105">Customise fonts in Chrome button, press Enter to customise font sizes and typefaces in Chrome</translation>
 <translation id="5355557959165512791">You cannot visit <ph name="SITE" /> right now because its certificate has been revoked. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
-<translation id="5356837363448394805">Flushed</translation>
 <translation id="5357848622083956825">Visual art and design</translation>
 <translation id="536296301121032821">Failed to store policy settings</translation>
 <translation id="5363309033720083897">Serial port allowed by your administrator</translation>
@@ -2114,7 +2110,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to personalise your accessibility tools in Chrome settings</translation>
 <translation id="6229649258872345286">Family travel</translation>
 <translation id="6232271601416750929">Clean beauty</translation>
-<translation id="6233160458685643793">Grinning</translation>
 <translation id="6234122620015464377">Trim after each document</translation>
 <translation id="6236290670123303279">Manage Settings</translation>
 <translation id="6240447795304464094">Google Pay logo</translation>
@@ -2182,7 +2177,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6391700400718590966">Secure payment credential no matching credential sheet is closed</translation>
 <translation id="6393956493820063117">Pasting from <ph name="ORIGIN_NAME" /> to this location is blocked by administrator policy</translation>
 <translation id="6394852772105848029">This site wants to open the <ph name="APP_NAME" /> app</translation>
-<translation id="6398277657359595425">Loudly crying</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="6401136357288658127">This policy is deprecated. You should use the <ph name="NEW_POLICY" /> policy instead.</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
@@ -2282,7 +2276,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6660413144148052430">location</translation>
 <translation id="6662457027866368246">First roll</translation>
 <translation id="666259744093848177">(x86_64 translated)</translation>
-<translation id="6663846344464066639">Folded hands</translation>
 <translation id="6665553082534466207">Triple punch right</translation>
 <translation id="6668389483194953109">Found paper size name 'custom', but the 'custom_size' property is empty or invalid.</translation>
 <translation id="6671697161687535275">Remove form suggestion from Chromium?</translation>
@@ -2383,7 +2376,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6939469646605424232">TV dramas</translation>
 <translation id="6944692733090228304">You entered your password on a site that’s not managed by <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. To protect your account, don’t reuse your password on other apps and sites.</translation>
 <translation id="6945221475159498467">Select</translation>
-<translation id="6946722113367118030">Thinking</translation>
 <translation id="6948051842255602737">Game over; your score is <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">To see pickup methods and requirements, select an address</translation>
 <translation id="6948874830249067134">A1 x 3</translation>
@@ -2707,7 +2699,6 @@ Additional details:
 <translation id="765676359832457558">Hide advanced settings ...</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
-<translation id="7659878911471462949">Tears of joy</translation>
 <translation id="766014026101194726">{0,plural, =1{Uploading this file is blocked by administrator policy}other{Uploading # files is blocked by administrator policy}}</translation>
 <translation id="7662298039739062396">Setting controlled by an extension</translation>
 <translation id="7663736086183791259">Certificate <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -3196,6 +3187,7 @@ Additional details:
 <translation id="8899807382908246773">Intrusive ads</translation>
 <translation id="8903921497873541725">Zoom in</translation>
 <translation id="890493561996401738">Remove Suggestion button, press Enter to remove, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="8910898109640902752">8 x 10 in</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8913778647360618320">Manage payment methods button; press enter to manage your payments and credit card info in Chrome settings</translation>
 <translation id="8922013791253848639">Always allow ads on this site</translation>

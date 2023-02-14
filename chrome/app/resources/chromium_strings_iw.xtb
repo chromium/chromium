@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">‏כדי לבדוק אם שאר הסיסמאות מוגנות מפני פרצות באבטחת מידע ובעיות אבטחה אחרות, <ph name="BEGIN_LINK" />יש להיכנס ל-Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1203500561924088507">תודה שהתקנת. עליך להפעיל מחדש את הדפדפן לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
-<translation id="1231839967188101156">‏כשההגדרה מופעלת, Chromium מפנה מקום בזיכרון שמוקצה לכרטיסיות לא פעילות. כך, לכרטיסיות הפעילות ולאפליקציות אחרות יש יותר משאבים מהמחשב ו-Chromium פועל מהר. כשחוזרים לכרטיסיות הלא פעילות, הן מופעלות מחדש באופן אוטומטי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">‏Chromium פועל מהר יותר בזכות מצב החיסכון בזיכרון</translation>
 <translation id="1315551408014407711">‏הגדרת הפרופיל החדש שלך ב-Chromium</translation>
 <translation id="1396446129537741364">‏Chromium מנסה להציג סיסמאות.</translation>
@@ -349,7 +348,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8550334526674375523">פרופיל העבודה שלך נפרד לחלוטין מהפרופיל האישי שלך.</translation>
 <translation id="8558383651099478961">‏אחד מההורים השבית ב-Chromium את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להוסיף את ה<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google</translation>
-<translation id="8574036838419011058">‏כשהתכונה מופעלת, Chromium חוסך בחיי הסוללה על ידי הגבלת הפעילות ברקע והאפקטים החזותיים, כמו גלילה חלקה וקצב פריימים של סרטונים. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8608079656141766906">‏<ph name="BEGIN_BOLD" />איך אנחנו משתמשים בנתונים האלה:<ph name="END_BOLD" /> אתרים יכולים לשמור מידע ב-Chromium לגבי תחומי העניין שלך. לדוגמה, אם ביקרת באתר כדי לקנות נעליים למרתון, האתר עשוי להגדיר 'ריצת מרתון' כתחום עניין שלך. לאחר מכן, בביקור באתר שונה, למשל כדי להירשם למרוץ, יכול להיות שתוצג לך מודעה לנעלי ריצה על סמך תחומי העניין שלך.</translation>
 <translation id="8619360774459241877">‏הפעלת Chromium מתבצעת...</translation>

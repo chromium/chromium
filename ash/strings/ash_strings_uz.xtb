@@ -139,6 +139,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qoldi</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ulanmadi.</translation>
 <translation id="1677582821739292812">Kimdir ekranga qarayapti</translation>
+<translation id="1683399938733266832">CPU joriy faolligi: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> taymer · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 manzil: <ph name="ADDRESS" /></translation>
@@ -381,6 +382,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3051189971848907985">Profil qayta nomlanmoqda. Bir necha daqiqa kuting.</translation>
 <translation id="3055162170959710888">Bu qurilmadan bugun <ph name="USED_TIME" /> foydalandingiz</translation>
 <translation id="3062298103034426069">Hozircha ishlamaydi</translation>
+<translation id="3068622547379332530">Versiyasi: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Javon chapda</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Menyuni ochish</translation>
@@ -579,7 +581,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4123259114412175274">Chromebook qurilmangiz qulfini ochish uchun telefoningizda Bluetooth yoniqligini. tekshiring</translation>
 <translation id="4125970834901680537">Planshet rejimida ilovalar translatsiyasi ishlamaydi. Laptop rejimida qaytadan urining.</translation>
 <translation id="4129129681837227511">Bildirishnomalar qulflangan ekranda chiqishi uchun avval qulfdan chiqaring va sozlamani yangilang</translation>
-<translation id="4130035430755296270">Boshqa dizayn variantlari uchun kursorni shu joyda ushlab turing</translation>
+<translation id="4131973331381812765">Harorat: <ph name="TEMPERATURE" />°C - Joriy tezlik: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GGs</translation>
 <translation id="4136724716305260864">Quyosh botishigacha yoniq</translation>
 <translation id="4146833061457621061">Musiqani tinglash</translation>
 <translation id="4150201353443180367">Ekran</translation>
@@ -720,7 +722,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="481455355267255546">Keyingisi</translation>
 <translation id="4831034276697007977">Avtomatik kliklar bekor qilinsinmi?</translation>
 <translation id="4849058404725798627">Obyektlar klaviatura fokusi orqali ajratib ko‘rsatilsin</translation>
-<translation id="4855250849489639581">Boshqa dizayn variantlari uchun pastga suring</translation>
 <translation id="485592688953820832">Harakatsiz (pauza)</translation>
 <translation id="485634149294284819">Klaviatura menyusini ochish</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> faylini yuklab olish uchun internetga ulanishni tekshiring</translation>

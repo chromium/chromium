@@ -6,7 +6,6 @@
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1257458525759135959">Para guardar imagens, toque em Definições para permitir que o Chromium adicione as suas fotos.</translation>
 <translation id="1289216811211435351">Mude para o Chromium</translation>
-<translation id="1352919863522755794">O Gestor de Palavras-passe da Google não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="1361748954329991663">O Chromium está desatualizado. Se não estiverem disponíveis atualizações na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que o seu dispositivo já não suporte novas versões do Chromium.</translation>
 <translation id="1431818719585918472">Permita que o Chromium bloqueie os seus separadores de navegação anónima.</translation>
 <translation id="1472013873724362412">A sua conta não funciona no Chromium. Contacte o gestor do domínio ou utilize uma Conta Google normal para iniciar sessão.</translation>
@@ -36,7 +35,6 @@
 <translation id="2650312721222849884">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, ative a sincronização.</translation>
 <translation id="2684230048001240293">Defina o Chromium como a predefinição para sincronizar os separadores, as palavras-chave e as informações de pagamento em todos os seus dispositivos</translation>
 <translation id="2730884209570016437">O Chromium não pode utilizar a câmara porque está a ser utilizada por outra aplicação</translation>
-<translation id="2767464022270041271">Não existem palavras-passe guardadas. O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando as guardar.</translation>
 <translation id="2915596697727466327">O Chromium utiliza o Face ID para assegurar o acesso autorizado às suas palavras-passe.</translation>
 <translation id="2918709798697875261">A sua entidade requer que se mantenha sem sessão iniciada no Chromium.</translation>
 <translation id="2942241131342758843">Utilize o Chromium por predefinição para abrir links, pesquisar a partir de widgets e preencher automaticamente palavras-passe noutras apps</translation>
@@ -59,7 +57,6 @@
 <translation id="4681781466797808448">Ative o leitor do Chromium</translation>
 <translation id="4736424910885271643">A sua conta é gerida pelo domínio <ph name="HOSTED_DOMAIN" />, pelo que os seus dados do Chromium serão limpos deste dispositivo</translation>
 <translation id="4828317641996116749">O Chromium não conseguiu verificar todas as palavras-passe. Tente mais tarde.</translation>
-<translation id="4840404732697892756">O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="4985291216379576555">Está offline. O Chromium não consegue verificar se existem atualizações.</translation>
 <translation id="4996471330284142407">Faça mais com um Chromium simples, seguro e mais rápido do que nunca.</translation>
 <translation id="4999538639245140991">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chromium serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
@@ -71,7 +68,6 @@
 <translation id="5521125884468363740">Para ver os seus separadores onde quer que esteja a utilizar o Chromium, inicie sessão e ative a sincronização.</translation>
 <translation id="5522297504975449419">Algumas funcionalidades do Chromium vão deixar de estar disponíveis.</translation>
 <translation id="5573014823074921752">Sugestão para o Chromium: para obter mais opções de separadores, toque sem soltar no botão Mostrar separadores na barra de ferramentas, que se encontra na parte superior ou inferior do ecrã.</translation>
-<translation id="5661521615548540542">O Gestor de Palavras-passe da Google não conseguiu verificar todas as palavras-passe. Tente mais tarde.</translation>
 <translation id="5700709190537129682">O Chromium não consegue verificar as suas palavras-passe.</translation>
 <translation id="5777187867430702742">Página do Chromium</translation>
 <translation id="5945387852661427312">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chromium. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chromium elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
@@ -121,7 +117,6 @@
 <translation id="8460301378281140593">Nas Definições do seu iPhone, abra as "Opções de palavras-passe" e selecione "Chromium"</translation>
 <translation id="858114650497379505">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe noutras apps no seu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
-<translation id="8603022514504485810">O Gestor de Palavras-passe da Google não conseguiu verificar todas as palavras-passe. Tente amanhã ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Mantém a sua segurança no Chromium e pode ser usada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada</translation>
 <translation id="8663480472502753423">Mantenha o Chromium atualizado.</translation>
 <translation id="8685813584220679697">Inicie sessão neste site e no Chromium.</translation>
@@ -135,7 +130,6 @@ Aspetos a considerar:
 
   • Se ativar a sincronização, as métricas também podem incluir informações sobre os URLs que visita.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Esta conta e quaisquer dados não guardados serão removidos do Chromium.</translation>
-<translation id="8857676124663337448">O Gestor de Palavras-passe da Google não conseguiu verificar todas as palavras-passe. Tente amanhã.</translation>
 <translation id="894437814105052438">Quando terminar sessão, o Chromium não irá sincronizar quaisquer dados novos com a sua Conta Google. Os dados anteriormente sincronizados mantêm-se na conta.</translation>
 <translation id="9022552996538154597">Iniciar sessão no Chromium</translation>
 <translation id="9059693977935746710">Não terá de memorizar esta palavra-passe. Será guardada no Gestor de palavras-passe de <ph name="EMAIL" /></translation>

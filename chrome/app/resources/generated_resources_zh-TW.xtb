@@ -5848,7 +5848,6 @@
 <translation id="6295158916970320988">所有網站</translation>
 <translation id="6295855836753816081">儲存中...</translation>
 <translation id="6298962879096096191">使用 Google Play 安裝 Android 應用程式</translation>
-<translation id="6300125580697461004">提供你對節能模式的意見回饋</translation>
 <translation id="6300177430812514606">不得完成資料的傳送或接收</translation>
 <translation id="630065524203833229">結束(&amp;X)</translation>
 <translation id="6300718114348072351">無法自動設定「<ph name="PRINTER_NAME" />」。請手動設定印表機的進階選項。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -6053,7 +6052,6 @@
 <translation id="6491376743066338510">授權失敗</translation>
 <translation id="6494327278868541139">顯示強化防護功能詳細資料</translation>
 <translation id="6494445798847293442">這不是憑證授權單位</translation>
-<translation id="6497548114956205206">進一步瞭解節能模式</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="6498249116389603658">所選全部語言(&amp;A)</translation>
@@ -7671,7 +7669,6 @@
 <translation id="7955177647836564772">如果 Smart Lock 已開啟，且手機處於解鎖狀態，你就不必輸入密碼或 PIN 碼</translation>
 <translation id="7956373551960864128">已儲存的印表機</translation>
 <translation id="7957074856830851026">查看裝置資訊，例如裝置序號或資產 ID</translation>
-<translation id="7957186326898555886">提供你對記憶體節省模式的意見回饋</translation>
 <translation id="7959074893852789871">檔案含有多個憑證，但某些無法匯入：</translation>
 <translation id="7959665254555683862">新無痕分頁</translation>
 <translation id="7961015016161918242">一律不要</translation>
@@ -8101,7 +8098,6 @@
 <translation id="8340547030807793004">可對 <ph name="DEVICE" /> 執行的其他動作</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{查看最近傳送大量通知的<ph name="BEGIN_BOLD" />網站 (1 個)<ph name="END_BOLD" />}other{查看最近傳送大量通知的<ph name="BEGIN_BOLD" />網站 ({NUM_SITES} 個)<ph name="END_BOLD" />}}</translation>
 <translation id="8342221978608739536">沒有試過</translation>
-<translation id="8342399870062010251">進一步瞭解記憶體節省模式</translation>
 <translation id="8342861492835240085">選取集合</translation>
 <translation id="8345848587667658367">你現在可以查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>
@@ -8415,7 +8411,6 @@
 <translation id="8645354835496065562">繼續允許存取感應器</translation>
 <translation id="8645920082661222035">可預測不安全事件，並在這類事件發生前顯示警告訊息</translation>
 <translation id="8646209145740351125">停用同步功能</translation>
-<translation id="8646340610303779673">無法擷取 PPD。</translation>
 <translation id="864637694230589560">網站通常會傳送通知，讓你掌握最新消息或留意即時通訊訊息</translation>
 <translation id="8646467750715887511">在你開啟網頁後才載入網頁。</translation>
 <translation id="8647385344110255847">只要你同意，孩子就可以透過 Google Play 安裝應用程式</translation>

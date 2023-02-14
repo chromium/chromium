@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Piliin ang album na <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB na touchpad</translation>
 <translation id="4117637339509843559">Dark mode</translation>
+<translation id="4130035430755296270">Mag-hover lang para sa higit pang opsyon sa layout</translation>
 <translation id="4131410914670010031">Itim at puti</translation>
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) Resolution ng DNS</translation>
 <translation id="4848429997038228357">TUMATAKBO</translation>
 <translation id="4854586501323951986">Built-in na touchscreen</translation>
+<translation id="4855250849489639581">Mag-swipe pababa para sa higit pang opsyon sa layout</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}one{<ph name="ERROR_MESSAGE" /> {0} pagsubok na lang ang natitira}other{<ph name="ERROR_MESSAGE" /> {0} na pagsubok na lang ang natitira}}</translation>
 <translation id="4873827928179867585">Algorithm ng pag-authenticate</translation>
 <translation id="4880328057631981605">Access point name</translation>

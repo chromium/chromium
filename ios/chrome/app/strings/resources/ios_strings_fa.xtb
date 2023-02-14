@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">روشن کردن همگام‌سازی</translation>
 <translation id="3181954750937456830">مرور ایمن (از شما و دستگاهتان درمقابل سایت‌های خطرناک محافظت می‌کند)</translation>
 <translation id="3184767182050912705">باز کردن قفل با <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">لغو پیگیری</translation>
 <translation id="3214379938835224220">‏به‌عنوان بخشی از بازنشانی iPad، از سیستم خارج شده‌اید. برای ورود به سیستم، روی Continue (ادامه) در زیر ضربه بزنید.</translation>
 <translation id="3224641773458703735">برای صادر کردن گذرواژه‌ها، ابتدا باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
 <translation id="3227137524299004712">میکروفن</translation>
@@ -866,7 +867,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="734758817008927353">گزینه‌های ذخیره کارت</translation>
 <translation id="7351537303876921605">‏در Context Menu (منوی بافت) روی Create Link (ایجاد پیوند) ضربه بزنید</translation>
 <translation id="7353432112255316844">تأیید کنید هویتتان</translation>
-<translation id="7356359962760467032">توقف پیگیری قیمت</translation>
 <translation id="7383797227493018512">فهرست خواندن</translation>
 <translation id="7398893703713203428">ایجاد پیوند</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
@@ -1114,6 +1114,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="952704832371081537">لغو</translation>
 <translation id="953008885340860025">‏Chrome از سیستم خارج شده است</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
+<translation id="980712131080209571">ج</translation>
 <translation id="981498610235328462">سازمانتان فقط ورود به سیستم با حساب‌های خاصی را مجاز کرده است. حساب‌هایی که مجاز نیستند پنهان می‌شوند.</translation>
 <translation id="984509647832111802">همگام‌سازی کار نمی‌کند.</translation>
 <translation id="988141524645182168">دستگاه‌های دیگر</translation>

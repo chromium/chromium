@@ -892,7 +892,6 @@
 <translation id="3218181027817787318">संबंधित</translation>
 <translation id="3223287115535306850">ॲप लाँचिंग थ्रॉबर</translation>
 <translation id="3223425961342298674">स्थानाला अनुमती नाही</translation>
-<translation id="3225347164936328585">टाळ्या वाजवणे</translation>
 <translation id="3225919329040284222">सर्व्हरने असे सर्टिफिकेट सादर केले आहे जे अंगभूत अपेक्षांशी जुळत नाही. या अपेक्षा तुम्हाला संरक्षित करण्यासाठी विशिष्ट, उच्च सुरक्षिततेच्या वेबसाइटसाठी समाविष्ट केल्या आहेत.</translation>
 <translation id="3226128629678568754">पृष्ठ लोड करण्यास आवश्यक असलेला डेटा पुन्हा सबमिट करण्यासाठी रीलोड बटण दाबा.</translation>
 <translation id="3226387218769101247">थंबनेल</translation>
@@ -949,7 +948,6 @@
 <translation id="3340978935015468852">सेटिंग्ज</translation>
 <translation id="3342018947887487892">नंतर, तुम्ही भेट दिलेली साइट ही माहिती मागू शकते — तुमचे जाहिरातीचे विषय किंवा तुम्ही भेट दिलेल्या साइटद्वारे सुचवलेल्या जाहिराती.</translation>
 <translation id="3342366525167526994">बॉडी आर्ट</translation>
-<translation id="3345782426586609320">डोळे</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग्ज बदला...</translation>
 <translation id="3359565626472459400">विवाह</translation>
@@ -1388,7 +1386,6 @@
 <translation id="4393632246160856858">नखांच्या निगेशी संबंधित उत्पादने</translation>
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4406896451731180161">शोध परिणाम</translation>
-<translation id="4407755609041463909">आग</translation>
 <translation id="4408413947728134509">कुकीज <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">ग्राहकांशी संबंधित इलेक्‍ट्रॉनिक उपकरणे</translation>
 <translation id="4412074349188076601">हे कॉंफिगरेशन इंस्टॉल करण्यायोग्य म्हणून मार्क केले आहे, पण या आर्किटेक्चरसाठी कोणतीही इमेज पुरवलेली नाही, म्हणून ते इंस्टॉल केली जाऊ शकत नाही.</translation>
@@ -1774,7 +1771,6 @@
 <translation id="5333022057423422993">Chrome ला तुम्ही नुकताच डेटा भंगामध्ये वापरलेला पासवर्ड आढळळा आहे. तुमची खाती सुरक्षित करण्यासाठी, आम्ही तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करतो.</translation>
 <translation id="5334013548165032829">तपशीलवार सिस्टम लॉग</translation>
 <translation id="5334145288572353250">पत्ता सेव्ह करायचा आहे का?</translation>
-<translation id="5335920952954443287">धडधडणारे हृदय</translation>
 <translation id="5337569431717511221">Chrome ला डीफॉल्ट ब्राउझर बटण म्हणून सेट करा, Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी एंटर दाबा</translation>
 <translation id="5340250774223869109">अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
 <translation id="534295439873310000">NFC डिव्हाइस</translation>
@@ -1782,7 +1778,6 @@
 <translation id="5344579389779391559">या पेजवर कदाचित तुमच्याकडून शुल्क आकारले जाऊ शकते</translation>
 <translation id="5347645913823149105">Chrome मधील फॉंट कस्टमाइझ करा बटण, Chrome मधील फॉंटचे आकार आणि टाइपफेस कस्टमाइझ करण्यासाठी एंटर दाबा</translation>
 <translation id="5355557959165512791">तुम्ही आत्ता <ph name="SITE" /> ला भेट देऊ शकत नाही कारण तिचे सर्टिफिकेट काढून टाकले आहे. नेटवर्क एरर आणि आक्रमण शक्यतो तात्पुरती असतात, त्यामुळे हे पेज नंतर पाहता येईल.</translation>
-<translation id="5356837363448394805">चेहरा लालबुंद झालेला</translation>
 <translation id="5357848622083956825">व्हिज्युअल आर्ट आणि डिझाइन</translation>
 <translation id="536296301121032821">धोरण सेटिंग्ज संचयित करण्यात अयशस्वी</translation>
 <translation id="5363309033720083897">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अनुमती दिलेला सिरीअल पोर्ट</translation>
@@ -2114,7 +2109,6 @@
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करण्यासाठी, टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="6229649258872345286">कुटुंबासोबत करता येईल असा प्रवास</translation>
 <translation id="6232271601416750929">पर्यावरण आणि आरोग्याला अनुकूल असे सौंदर्य उत्पादन</translation>
-<translation id="6233160458685643793">दात काढून हसणारा</translation>
 <translation id="6234122620015464377">प्रत्येक दस्तऐवजानंतर ट्रिम करा</translation>
 <translation id="6236290670123303279">सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="6240447795304464094">Google Pay लोगो</translation>
@@ -2182,7 +2176,6 @@
 <translation id="6391700400718590966">सुरक्षित पेमेंट क्रेडेंशियल याची जुळणारे कोणतेही क्रेडेंशियल नाही ही शीट बंद केली आहे</translation>
 <translation id="6393956493820063117">अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे <ph name="ORIGIN_NAME" /> वरून या स्थानावर पेस्ट करणे ब्लॉक केले आहे</translation>
 <translation id="6394852772105848029">या साइटला <ph name="APP_NAME" /> हे ॲप उघडायचे आहे</translation>
-<translation id="6398277657359595425">मोठ्याने रडणे</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
 <translation id="6401136357288658127">हे धोरण कालबाह्य झाले आहे. तुम्ही त्याऐवजी <ph name="NEW_POLICY" /> धोरण वापरले पाहिजे.</translation>
 <translation id="6404511346730675251">बुकमार्क संपादित करा</translation>
@@ -2282,7 +2275,6 @@
 <translation id="6660413144148052430">स्थान</translation>
 <translation id="6662457027866368246">पहिला रोल</translation>
 <translation id="666259744093848177">(x86_64 भाषांतरित)</translation>
-<translation id="6663846344464066639">हात जोडलेला</translation>
 <translation id="6665553082534466207">ट्रिपल पंच राइट</translation>
 <translation id="6668389483194953109">"कस्टम" असे नाव असलेला पेपरचा आकार आढळला आहे, पण "custom_size" ही प्रॉपर्टी रिकामी किंवा चुकीची आहे.</translation>
 <translation id="6671697161687535275">Chromium वरून फॉर्म सूचना काढून टाकायच्या?</translation>
@@ -2383,7 +2375,6 @@
 <translation id="6939469646605424232">टीव्हीवरील नाट्यमय कार्यक्रम आणि मालिका</translation>
 <translation id="6944692733090228304">तुम्ही पासवर्ड एंटर केलेली साइट <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> द्वारे व्यवस्थापित केलेली नाही. तुमच्या खात्याच्या संरक्षणासाठी, तुमचा पासवर्ड इतर ॲप्स किंवा साइटवर पुन्हा वापरू नका.</translation>
 <translation id="6945221475159498467">निवडा</translation>
-<translation id="6946722113367118030">विचार करणे</translation>
 <translation id="6948051842255602737">गेम संपला, तुमचा स्कोअर <ph name="SCORE" /> आहे.</translation>
 <translation id="6948701128805548767">पिकअप पद्धती आणि आवश्यकता पाहण्यासाठी, एक पत्ता निवडा</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2575,6 +2566,7 @@
 <translation id="7388594495505979117">{0,plural, =1{तुमचे डिव्हाइस एका मिनिटामध्ये रीस्टार्ट होईल}other{तुमचे डिव्हाइस # मिनिटांमध्ये रीस्टार्ट होईल}}</translation>
 <translation id="7390545607259442187">कार्डची पुष्टी करा</translation>
 <translation id="7392089738299859607">पत्ता अपडेट करा</translation>
+<translation id="739728382607845710">पेमेंट हँडलरचा आयकन</translation>
 <translation id="7399802613464275309">सुरक्षितता तपासणी</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">लिंक शेअर करून, QR कोड तयार करून, कास्ट करून आणि आणखी बऱ्याच पर्यायांद्वारे हा टॅब शेअर करा</translation>
@@ -2706,7 +2698,6 @@
 <translation id="765676359832457558">प्रगत सेटिंग्ज लपवा...</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7659327900411729175">एन्व्हलप काकू ८</translation>
-<translation id="7659878911471462949">आनंदाश्रू</translation>
 <translation id="766014026101194726">{0,plural, =1{ही फाइल अपलोड करणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे}other{# फाइल अपलोड करणे अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे ब्लॉक केले आहे}}</translation>
 <translation id="7662298039739062396">सेटिंग एका एक्स्टेंशनद्वारे नियंत्रित केली आहेत</translation>
 <translation id="7663736086183791259">सर्टिफिकेट <ph name="CERTIFICATE_VALIDITY" /></translation>

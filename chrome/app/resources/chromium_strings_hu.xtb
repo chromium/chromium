@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Ha ellenőrizni szeretné, hogy jelszavai biztonságban vannak-e az adatvédelmi incidensektől és más biztonsági problémáktól, <ph name="BEGIN_LINK" />jelentkezzen be a Chromiumba<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
-<translation id="1231839967188101156">Ha be van kapcsolva, a Chromium memóriát szabadít fel az inaktív lapokból. Így az aktív lapok és más alkalmazások több számítógépes erőforrást kapnak, és a Chromium gyors marad. Az inaktív lapok automatikusan ismét aktívak lesznek, amikor visszalép rájuk. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1261119230216066228">A Memóriatakarékos mód felgyorsította a Chromiumot</translation>
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
 <translation id="1396446129537741364">A Chromium megpróbálja megjeleníteni a jelszavakat.</translation>
@@ -349,7 +348,6 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8550334526674375523">Ez a munkaprofil teljesen el van választva a személyes profiljától.</translation>
 <translation id="8558383651099478961">Szülőd kikapcsolta a Chromium „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítását. A(z) <ph name="EXTENSION_TYPE_PARAMETER" /> nem telepíthető.</translation>
 <translation id="8568283329061645092">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával</translation>
-<translation id="8574036838419011058">Ha be van kapcsolva, a Chromium kíméli az akkumulátort: korlátozza a háttértevékenységeket és a vizuális effekteket, például a finomgörgetést és a videók képkockasebességét. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Az adatok felhasználási módja:<ph name="END_BOLD" /> A webhelyek tárolhatnak az Ön érdeklődési köreivel kapcsolatos információkat a Chromiumban. Ha például felkeres egy webhelyet, ahol maratonfutáshoz való cipőt vásárol, akkor a webhely meghatározhatja a maratonfutást az Ön egyik érdeklődési köreként. Ha később felkeres egy másik webhelyet, hogy jelentkezzen egy versenyre, ezen a webhelyen megjelenhet egy futócipőket reklámozó hirdetés az Ön érdeklődési köre alapján.</translation>
 <translation id="8619360774459241877">Chromium indítása…</translation>

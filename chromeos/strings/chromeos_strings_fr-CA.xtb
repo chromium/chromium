@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Sélectionner un album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Pavé tactile USB</translation>
 <translation id="4117637339509843559">Mode sombre</translation>
+<translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">Résolution DNS (Android)</translation>
 <translation id="4848429997038228357">EXÉCUTION EN COURS…</translation>
 <translation id="4854586501323951986">Écran tactile intégré</translation>
+<translation id="4855250849489639581">Balayer vers le bas pour plus d'options de mise en page</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}one{<ph name="ERROR_MESSAGE" /> Il reste {0} tentative}other{<ph name="ERROR_MESSAGE" /> Il reste {0} tentatives}}</translation>
 <translation id="4873827928179867585">Algorithme d'authentification</translation>
 <translation id="4880328057631981605">Nom du point d'accès</translation>

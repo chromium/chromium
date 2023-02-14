@@ -302,6 +302,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3181825792072797598">Szinkronizálás bekapcsolása</translation>
 <translation id="3181954750937456830">Biztonságos Böngészés (megvédi Önt és eszközét a veszélyes webhelyekkel szemben)</translation>
 <translation id="3184767182050912705">Feloldás a következővel: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Nyomon követés megszüntetése</translation>
 <translation id="3214379938835224220">Az iPad visszaállítása során a rendszer kijelentkeztette Önt. A bejelentkezéshez koppintson a Folytatás gombra alább.</translation>
 <translation id="3224641773458703735">A jelszavak exportálásához előbb be kell állítania az eszközön a biztonsági kódot.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -812,7 +813,6 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="6869389390665537774">Megtekintheti a felkeresett oldalakat, és törölheti őket az előzmények közül.</translation>
 <translation id="687135068089457384">Beállítások megjelenítése</translation>
 <translation id="6873263987691478642">Osztott nézet</translation>
-<translation id="6873366418270195926">Ha az ár csökken bármelyik webhelyen, Ön értesítést kap majd. A rendszer az oldalt a <ph name="BEGIN_LINK" />Könyvjelzők<ph name="END_LINK" /> közé mentette.</translation>
 <translation id="6882836635272038266">Normál védelem azon webhelyekkel, letöltésekkel és bővítményekkel szemben, amelyekről ismert, hogy veszélyesek.</translation>
 <translation id="6888009575607455378">Biztosan elveti a módosításokat?</translation>
 <translation id="6896758677409633944">Másolás</translation>
@@ -867,7 +867,6 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="734758817008927353">A kártya mentésével kapcsolatos beállítások</translation>
 <translation id="7351537303876921605">Koppintson a Link létrehozása elemre a helyi menüben</translation>
 <translation id="7353432112255316844">Igazolja személyazonosságát</translation>
-<translation id="7356359962760467032">Árkövetés leállítása</translation>
 <translation id="7383797227493018512">Olvasási lista</translation>
 <translation id="7398893703713203428">Link létrehozása</translation>
 <translation id="7400418766976504921">URL</translation>

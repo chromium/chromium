@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Jos haluat tarkistaa, ovatko salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromiumiin<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
-<translation id="1231839967188101156">Kun tämä on päällä, Chromium vapauttaa muistia ei-aktiivisilta välilehdiltä. Näin aktiiviset välilehdet ja muut sovellukset voivat käyttää enemmän tietokoneen resursseja ja Chromium pysyy nopeana. Ei-aktiiviset välilehdet aktivoituvat automaattisesti, kun palaat niihin. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Muistinsäästö nopeuttaa Chromiumia</translation>
 <translation id="1315551408014407711">Luo uusi Chromium-profiili</translation>
 <translation id="1396446129537741364">Chromium yrittää näyttää salasanat.</translation>
@@ -351,7 +350,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8550334526674375523">Tämä työprofiili on täysin erillinen henkilökohtaisesta profiilistasi.</translation>
 <translation id="8558383651099478961">Vanhempasi ovat laittaneet Chromiumin sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Lisäämistä (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
 <translation id="8568283329061645092">Chromium voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi</translation>
-<translation id="8574036838419011058">Kun se on päällä, Chromium säästää akkua rajoittamalla taustatoimintaa ja visuaalisia tehosteita, esim. sujuvaa vierittämistä ja videon kuvanopeutta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Miten käytämme tätä dataa:<ph name="END_BOLD" /> Sivustot voivat tallentaa Chromiumiin tietoja kiinnostuksen kohteistasi. Jos esimerkiksi käyt sivustolla, koska haluat ostaa kengät maratonia varten, sivusto voi määritellä maratonjuoksun sinua kiinnostavaksi aiheeksi. Jos myöhemmin käyt toisella sivustolla, jolla ilmoittaudut juoksukilpailuun, kyseinen sivusto voi näyttää sinulle mainoksen juoksukengistä kiinnostuksen kohteidesi perusteella.</translation>
 <translation id="8619360774459241877">Käynnistetään Chromiumia…</translation>

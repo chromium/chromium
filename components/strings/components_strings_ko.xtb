@@ -892,7 +892,6 @@
 <translation id="3218181027817787318">상대</translation>
 <translation id="3223287115535306850">앱 실행용 트로버</translation>
 <translation id="3223425961342298674">위치가 허용되지 않음</translation>
-<translation id="3225347164936328585">박수</translation>
 <translation id="3225919329040284222">서버가 내장된 기대치와 일치하지 않는 인증서를 전달했습니다. 이러한 기대치는 사용자를 보호하기 위해 보안이 엄격한 특정 웹사이트에 포함됩니다.</translation>
 <translation id="3226128629678568754">페이지 로드에 필요한 데이터를 다시 제출하려면 새로고침 버튼을 누릅니다.</translation>
 <translation id="3226387218769101247">미리보기 이미지</translation>
@@ -949,7 +948,6 @@
 <translation id="3340978935015468852">설정</translation>
 <translation id="3342018947887487892">나중에 방문한 사이트에서 광고 주제 또는 이전에 방문한 사이트에서 추천한 광고에 관한 정보를 요청할 수 있습니다.</translation>
 <translation id="3342366525167526994">바디아트</translation>
-<translation id="3345782426586609320">눈</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">프록시 설정 변경...</translation>
 <translation id="3359565626472459400">결혼</translation>
@@ -1389,7 +1387,6 @@
 <translation id="4393632246160856858">네일케어 제품</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4406896451731180161">검색결과</translation>
-<translation id="4407755609041463909">불</translation>
 <translation id="4408413947728134509">쿠키 <ph name="NUM_COOKIES" />개</translation>
 <translation id="4411435778612100394">소비자 가전</translation>
 <translation id="4412074349188076601">이 구성은 설치 가능으로 표시되지만 이 아키텍처에 제공된 이미지가 없으므로 설치할 수 없습니다.</translation>
@@ -1775,7 +1772,6 @@
 <translation id="5333022057423422993">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="5334013548165032829">세부 시스템 로그</translation>
 <translation id="5334145288572353250">주소를 저장하시겠습니까?</translation>
-<translation id="5335920952954443287">두근거리는 하트</translation>
 <translation id="5337569431717511221">Chrome을 기본 브라우저로 설정하는 버튼, Enter 키를 눌러 Chrome을 시스템 기본 브라우저로 설정</translation>
 <translation id="5340250774223869109">애플리케이션이 차단됨</translation>
 <translation id="534295439873310000">NFC 기기</translation>
@@ -1783,7 +1779,6 @@
 <translation id="5344579389779391559">이 페이지에서 금액을 청구할 수 있습니다.</translation>
 <translation id="5347645913823149105">Chrome의 글꼴 맞춤설정 버튼, Chrome 글꼴 크기와 서체를 맞춤설정하려면 Enter를 누르세요</translation>
 <translation id="5355557959165512791">인증서가 취소되었기 때문에 현재 <ph name="SITE" />에 방문할 수 없습니다. 네트워크 오류와 공격은 대부분 일시적이므로 나중에 이 페이지가 정상적으로 작동할 수 있습니다.</translation>
-<translation id="5356837363448394805">얼굴 빨개짐</translation>
 <translation id="5357848622083956825">시각 예술 및 디자인</translation>
 <translation id="536296301121032821">정책 설정 저장 실패</translation>
 <translation id="5363309033720083897">관리자가 허용한 직렬 포트</translation>
@@ -2114,7 +2109,6 @@
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 접근성 도구를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="6229649258872345286">가족여행</translation>
 <translation id="6232271601416750929">클린 뷰티</translation>
-<translation id="6233160458685643793">활짝 웃음</translation>
 <translation id="6234122620015464377">각 문서 뒤에 트림</translation>
 <translation id="6236290670123303279">설정 관리</translation>
 <translation id="6240447795304464094">Google Pay 로고</translation>
@@ -2182,7 +2176,6 @@
 <translation id="6391700400718590966">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 닫힘</translation>
 <translation id="6393956493820063117">관리자 정책에 의해 <ph name="ORIGIN_NAME" />에서 이 위치로 붙여넣는 작업이 차단되었습니다.</translation>
 <translation id="6394852772105848029">이 사이트에서 <ph name="APP_NAME" /> 앱을 열려고 합니다.</translation>
-<translation id="6398277657359595425">엉엉 울기</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
 <translation id="6401136357288658127">지원 중단된 정책입니다. <ph name="NEW_POLICY" /> 정책을 대신 사용해야 합니다.</translation>
 <translation id="6404511346730675251">북마크 수정</translation>
@@ -2282,7 +2275,6 @@
 <translation id="6660413144148052430">위치</translation>
 <translation id="6662457027866368246">1번째 롤</translation>
 <translation id="666259744093848177">(x86_64 번역 버전)</translation>
-<translation id="6663846344464066639">합장</translation>
 <translation id="6665553082534466207">오른쪽 3공 펀칭</translation>
 <translation id="6668389483194953109">이름이 'custom'인 용지 크기를 찾았으나 'custom_size' 속성이 비어 있거나 유효하지 않습니다.</translation>
 <translation id="6671697161687535275">Chromium에서 자동완성 항목 추천을 삭제하시겠습니까?</translation>
@@ -2383,7 +2375,6 @@
 <translation id="6939469646605424232">TV 드라마</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />에서 관리하지 않는 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 다른 앱과 사이트에서 동일한 비밀번호를 재사용하지 마세요.</translation>
 <translation id="6945221475159498467">선택</translation>
-<translation id="6946722113367118030">생각 중</translation>
 <translation id="6948051842255602737">게임 종료, 점수는 <ph name="SCORE" />점입니다.</translation>
 <translation id="6948701128805548767">수령 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2575,6 +2566,7 @@
 <translation id="7388594495505979117">{0,plural, =1{1분 후에 기기가 다시 시작됩니다}other{#분 후에 기기가 다시 시작됩니다}}</translation>
 <translation id="7390545607259442187">카드 확인</translation>
 <translation id="7392089738299859607">주소 업데이트</translation>
+<translation id="739728382607845710">결제 핸들러 아이콘</translation>
 <translation id="7399802613464275309">안전 확인</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">링크 공유, QR 코드 생성, 전송 등의 옵션으로 탭 공유</translation>
@@ -2705,7 +2697,6 @@
 <translation id="765676359832457558">고급 설정 숨기기</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7659327900411729175">봉투 Kaku 8</translation>
-<translation id="7659878911471462949">기쁨의 눈물</translation>
 <translation id="766014026101194726">{0,plural, =1{관리자 정책에 의해 이 파일의 업로드가 차단되었습니다.}other{관리자 정책에 의해 파일 #개의 업로드가 차단되었습니다.}}</translation>
 <translation id="7662298039739062396">확장 프로그램에서 관리되는 설정</translation>
 <translation id="7663736086183791259">인증서: <ph name="CERTIFICATE_VALIDITY" /></translation>

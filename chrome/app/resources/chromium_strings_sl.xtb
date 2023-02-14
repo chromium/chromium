@@ -12,7 +12,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1131805035311359397">Če želite preveriti, ali so gesla varna pred podatkovnimi kršitvami in drugimi varnostnimi težavami, <ph name="BEGIN_LINK" />se prijavite v Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">O Chromiumu</translation>
 <translation id="1203500561924088507">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati brskalnik.</translation>
-<translation id="1231839967188101156">Če je vklopljeno, Chromium sprosti pomnilnik z neaktivnih zavihkov. Tako imajo aktivni zavihki in druge aplikacije več računalniških sredstev, Chromium pa je še naprej hiter. Neaktivni zavihki znova postanejo aktivni, ko se vrnete nanje. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Varčevanje s pomnilnikom je pospešilo Chromium</translation>
 <translation id="1315551408014407711">Nastavitev novega profila v Chromiumu</translation>
 <translation id="1396446129537741364">Chromium poskuša prikazati gesla.</translation>
@@ -353,7 +352,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8550334526674375523">Ta delovni profil je v celoti ločen od osebnega profila.</translation>
 <translation id="8558383651099478961">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chromium. Dodajanje tega ni dovoljeno: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">Chromium lahko preveri vaša gesla, ko se prijavite z računom Google</translation>
-<translation id="8574036838419011058">Če je vklopljena ta nastavitev, Chromium varčuje z energijo baterije tako, da omeji dejavnost v ozadju in vizualne učinke, kot sta tekoče pomikanje in število sličic v sekundi pri videoposnetkih. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kako uporabljamo te podatke:<ph name="END_BOLD" /> Spletna mesta lahko v Chromiumu shranjujejo podatke o vaših zanimanjih. Če na primer obiščete spletno mesto zaradi nakupa športnih copatov za maraton, bo spletno mesto morda določilo vaše zanimanje kot udeleževanje maratonov. Če pozneje obiščete drugo spletno mesto za registriranje za tek, vam lahko to spletno mesto glede na vaša zanimanja prikaže oglas za tekaško obutev.</translation>
 <translation id="8619360774459241877">Zagon Chromiuma …</translation>

@@ -40,6 +40,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1207113853726624428">Nuwe soektog</translation>
 <translation id="1209206284964581585">Versteek vir eers</translation>
 <translation id="1219674500290482172">Kon nie aan die internet koppel nie.</translation>
+<translation id="1226238226094914652">Wagwoorde op al jou toestelle</translation>
 <translation id="122699739164161391">Maak alle oortjies toe</translation>
 <translation id="1229222343402087523">Soek ${searchPhrase} in Chrome</translation>
 <translation id="1242044645101871359">Meld weer aan</translation>
@@ -205,6 +206,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2529021024822217800">Maak almal oop</translation>
 <translation id="2556092377360758201">Geen beskerming nie (nie aanbeveel nie)</translation>
 <translation id="2562041823070056534">Stuur tans na <ph name="DEVICE_NAME" /> …</translation>
+<translation id="2576499762020411840">Gebruik en stoor wagwoorde in jou Google-rekening</translation>
 <translation id="2578571896248130439">Stuur webbladsy</translation>
 <translation id="2584132361465095047">Voeg rekening by …</translation>
 <translation id="2600682495497606169">Vee werf se webkoekies uit</translation>
@@ -302,6 +304,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3181825792072797598">Skakel Sinkronisering aan</translation>
 <translation id="3181954750937456830">Veiligblaai (beskerm jou en jou toestel teen gevaarlike werwe)</translation>
 <translation id="3184767182050912705">Ontsluit met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Stop nasporing</translation>
 <translation id="3214379938835224220">Jy is as deel van jou iPad-terugestelling afgemeld. Tik hieronder op gaan voort om aan te meld.</translation>
 <translation id="3224641773458703735">Om wagwoorde uit te voer, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
@@ -409,6 +412,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4063300985191096908">Gaan na Stroom toe</translation>
 <translation id="408404951701638773">Soekbalk kan nou makliker bereik word</translation>
 <translation id="4092655288299341041">Wys hulp</translation>
+<translation id="4101942614374785540">Wagwoorde word nou in jou Google-rekening (<ph name="ACCOUNT" />) gestoor. Jy kan hulle gebruik wanneer ook al jy aangemeld is. Gaan na <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> om dit af te skakel.</translation>
 <translation id="4108998448622696017">Bespeur en waarsku jou oor gevaarlike gevalle wanneer hulle plaasvind.</translation>
 <translation id="411254640334432676">Kon nie aflaai nie.</translation>
 <translation id="4112644173421521737">Soek</translation>
@@ -692,6 +696,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6184086493125982861">Wys oortjies</translation>
 <translation id="6187302354554850004">Laas gesinkroniseer: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Nie gelees nie</translation>
+<translation id="6193424046394092997">{count,plural, =1{Geboekmerk in {title}}other{Geboekmerk in {title}}}</translation>
 <translation id="6196207969502475924">Stemsoektog</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Maak {COUNT} oortjie toe}other{Maak {COUNT} oortjies toe}}</translation>
 <translation id="6219550825416862075">Welkom terug</translation>
@@ -812,7 +817,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6869389390665537774">Jy kan die bladsye sien wat jy besoek het of hulle van jou geskiedenis af uitvee</translation>
 <translation id="687135068089457384">Wys instellings</translation>
 <translation id="6873263987691478642">Deelaansig</translation>
-<translation id="6873366418270195926">Jy sal ’n opletberig kry as die prys op enige werf daal. Hierdie bladsy is in <ph name="BEGIN_LINK" />Boekmerke<ph name="END_LINK" /> gestoor.</translation>
 <translation id="6882836635272038266">Standaardbeskerming teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is.</translation>
 <translation id="6888009575607455378">Is jy seker jy wil jou veranderinge weggooi?</translation>
 <translation id="6896758677409633944">Kopieer</translation>
@@ -838,6 +842,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7053983685419859001">Blokkeer</translation>
 <translation id="7062545763355031412">Aanvaar en wissel rekeninge</translation>
 <translation id="7080806333218412752">Stuur URL'e na Veiligblaai toe om hulle na te gaan. Stuur ook 'n klein voorbeeld van bladsye, aflaaie, uitbreidingaktiwiteit en stelselinligting om te help om nuwe bedreigings te ontdek. Koppel hierdie data tydelik aan jou Google-rekening wanneer jy aangemeld is om jou oral in Google-programme te beskerm.</translation>
+<translation id="7083860864742905105">Indien dit aan is, word wagwoorde in <ph name="ACCOUNT" /> gestoor. Indien dit af is, word wagwoorde net op hierdie toestel gestoor.</translation>
 <translation id="7095110968493193530">Na Google Wagwoordbestuurder vir <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Onlangse oortjies</translation>
 <translation id="7102005569666697658">Laai tans af … <ph name="FILE_SIZE" /></translation>
@@ -867,7 +872,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="734758817008927353">Opsies om 'n kaart te stoor</translation>
 <translation id="7351537303876921605">Tik op Skep skakel op die kontekskieslys</translation>
 <translation id="7353432112255316844">Verifieer dis jy</translation>
-<translation id="7356359962760467032">Stop prysnasporing</translation>
 <translation id="7383797227493018512">Leeslys</translation>
 <translation id="7398893703713203428">Skep skakel</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -914,6 +918,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7756478488453921771">Kieslys → Instellings → Betaalmetodes</translation>
 <translation id="7765158879357617694">Skuif</translation>
 <translation id="7772032839648071052">Bevestig wagfrase</translation>
+<translation id="777572173400717978">{count,plural, =1{Geboekmerk}other{Geboekmerk}}</translation>
 <translation id="7781011649027948662">Vertaal bladsy?</translation>
 <translation id="7781069478569868053">Nuwe oortjie-bladsy</translation>
 <translation id="7781829728241885113">Gister</translation>

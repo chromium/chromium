@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Hautatu <ph name="TITLE" /> (<ph name="DESC" />) albuma</translation>
 <translation id="4111761024568264522">USB bidezko ukipen-panela</translation>
 <translation id="4117637339509843559">Modu iluna</translation>
+<translation id="4130035430755296270">Diseinu-aukera gehiago ikusteko, jarraitu gainetik pasatzen</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
 <translation id="4145784616224233563">HTTP protokolorako suebakia</translation>
 <translation id="4147897805161313378">Google Argazkiak</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">DNS bidezko ebazpena (Android)</translation>
 <translation id="4848429997038228357">ABIAN</translation>
 <translation id="4854586501323951986">Ukipen-pantaila integratua</translation>
+<translation id="4855250849489639581">Diseinu-aukera gehiago ikusteko, pasatu hatza behera</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} saiaketa gelditzen da}other{<ph name="ERROR_MESSAGE" /> {0} saiakera gelditzen dira}}</translation>
 <translation id="4873827928179867585">Autentifikazio-algoritmoa</translation>
 <translation id="4880328057631981605">Sarbide-puntuaren izena</translation>

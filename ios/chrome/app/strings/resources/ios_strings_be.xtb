@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">Уключыць сінхранізацыю</translation>
 <translation id="3181954750937456830">Бяспечны прагляд (абараняе вас і прыладу ад небяспечных сайтаў)</translation>
 <translation id="3184767182050912705">Разблакіраваць, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Перастаць адсочваць</translation>
 <translation id="3214379938835224220">У выніку скіду налад iPad адбыўся выхад з уліковага запісу. Каб увайсці ў яго, націсніце Continue ("Працягнуць") ніжэй.</translation>
 <translation id="3224641773458703735">Каб экспартаваць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
 <translation id="3227137524299004712">Мікрафон</translation>
@@ -812,7 +813,6 @@
 <translation id="6869389390665537774">Вы можаце прагледзець наведаныя старонкі або выдаліць іх з гісторыі</translation>
 <translation id="687135068089457384">Паказаць налады</translation>
 <translation id="6873263987691478642">Раздзяленне экрана</translation>
-<translation id="6873366418270195926">Пры зніжэнні цаны на любым з сайтаў вы атрымаеце абвестку. Гэта старонка захавана ў <ph name="BEGIN_LINK" />закладках<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Стандартная абарона ад вэб-сайтаў, спамповак і пашырэнняў, вядомых як небяспечныя.</translation>
 <translation id="6888009575607455378">Вы сапраўды хочаце адхіліць змяненні?</translation>
 <translation id="6896758677409633944">Капіраваць</translation>
@@ -867,7 +867,6 @@
 <translation id="734758817008927353">Параметры захавання карткі</translation>
 <translation id="7351537303876921605">Націсніце Create Link ("Стварыць спасылку") у кантэкстным меню</translation>
 <translation id="7353432112255316844">Пацвердзіць маю асобу</translation>
-<translation id="7356359962760467032">Перастаць адсочваць цану</translation>
 <translation id="7383797227493018512">Спіс для чытання</translation>
 <translation id="7398893703713203428">Стварыць спасылку</translation>
 <translation id="7400418766976504921">URL-адрас</translation>

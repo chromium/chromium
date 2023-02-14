@@ -40,6 +40,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1207113853726624428">Nova pesquisa</translation>
 <translation id="1209206284964581585">Ocultar para já</translation>
 <translation id="1219674500290482172">Não é possível estabelecer ligação à Internet.</translation>
+<translation id="1226238226094914652">Palavras-passe em todos os dispositivos</translation>
 <translation id="122699739164161391">Fechar todos os separadores</translation>
 <translation id="1229222343402087523">Pesquise ${searchPhrase} no Chrome</translation>
 <translation id="1242044645101871359">Inicie sessão novamente</translation>
@@ -205,6 +206,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2556092377360758201">Sem proteção (não recomendado)</translation>
 <translation id="2562041823070056534">A enviar para o dispositivo <ph name="DEVICE_NAME" />…</translation>
+<translation id="2576499762020411840">Usar e guardar palavras-passe na sua Conta Google</translation>
 <translation id="2578571896248130439">Envie a página Web</translation>
 <translation id="2584132361465095047">Adicionar conta...</translation>
 <translation id="2600682495497606169">Limpar cookies de sites</translation>
@@ -302,6 +304,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3181825792072797598">Ativar Sincronização</translation>
 <translation id="3181954750937456830">Navegação segura (protege o utilizador e o seu dispositivo contra sites perigosos)</translation>
 <translation id="3184767182050912705">Desbloquear com <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Desativar monitorização</translation>
 <translation id="3214379938835224220">Como parte da reposição do iPad, a sua sessão foi terminada. Toque em Continuar abaixo para iniciar sessão.</translation>
 <translation id="3224641773458703735">Para exportar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="3227137524299004712">Microfone</translation>
@@ -409,6 +412,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4063300985191096908">Aceder ao feed</translation>
 <translation id="408404951701638773">Agora é mais fácil aceder à barra de pesquisa</translation>
 <translation id="4092655288299341041">Mostrar ajuda</translation>
+<translation id="4101942614374785540">As palavras-passe estão agora guardadas na sua Conta Google (<ph name="ACCOUNT" />). Pode usá-las sempre que tiver sessão iniciada. Para desativar esta opção, aceda a <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
 <translation id="411254640334432676">A transferência falhou.</translation>
 <translation id="4112644173421521737">Pesquisar</translation>
@@ -692,6 +696,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6184086493125982861">Mostrar Separadores</translation>
 <translation id="6187302354554850004">Última sincronização: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Não lidas</translation>
+<translation id="6193424046394092997">{count,plural, =1{Adicionado aos marcadores em {title}}other{Adicionado aos marcadores em {title}}}</translation>
 <translation id="6196207969502475924">Pesquisa por Voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fechar {COUNT} separador}other{Fechar {COUNT} separadores}}</translation>
 <translation id="6219550825416862075">Damos-lhe as boas-vindas de volta</translation>
@@ -812,7 +817,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6869389390665537774">Pode ver as páginas que visitou ou limpá-las do seu histórico.</translation>
 <translation id="687135068089457384">Mostrar definições</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
-<translation id="6873366418270195926">Vai receber um alerta se o preço descer em qualquer site. Esta página está guardada nos <ph name="BEGIN_LINK" />Marcadores<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Proteção padrão contra Websites, transferências e extensões identificados como perigosos.</translation>
 <translation id="6888009575607455378">Tem a certeza de que pretende rejeitar as alterações?</translation>
 <translation id="6896758677409633944">Copiar</translation>
@@ -838,6 +842,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7062545763355031412">Aceitar e mudar de contas</translation>
 <translation id="7080806333218412752">Envia URLs para a Navegação segura para os verificar. Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças. Associa temporariamente estes dados à sua Conta Google quando tiver sessão iniciada, para garantir a sua proteção nas apps Google.</translation>
+<translation id="7083860864742905105">Quando esta opção está ativada, as palavras-passe são guardadas na conta <ph name="ACCOUNT" />. Quando esta opção está desativada, as palavras-passe são guardadas apenas neste dispositivo.</translation>
 <translation id="7095110968493193530">Para o Gestor de Palavras-passe da Google da conta <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">Separadores recentes</translation>
 <translation id="7102005569666697658">A transferir… <ph name="FILE_SIZE" /></translation>
@@ -867,7 +872,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="734758817008927353">Opções para guardar o cartão</translation>
 <translation id="7351537303876921605">Toque em Criar link no menu de contexto</translation>
 <translation id="7353432112255316844">Validar identidade</translation>
-<translation id="7356359962760467032">Parar monitorização de preços</translation>
 <translation id="7383797227493018512">Lista de leitura</translation>
 <translation id="7398893703713203428">Criar link</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -914,6 +918,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7756478488453921771">Menu → Definições → Métodos de pagamento</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar frase de acesso</translation>
+<translation id="777572173400717978">{count,plural, =1{Adicionado aos marcadores}other{Adicionados aos marcadores}}</translation>
 <translation id="7781011649027948662">Pretende traduzir a página?</translation>
 <translation id="7781069478569868053">Página Novo separador</translation>
 <translation id="7781829728241885113">Ontem</translation>

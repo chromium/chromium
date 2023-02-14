@@ -133,6 +133,7 @@
 <translation id="163517899691012366">Мазаламау режимі қосулы кезде хабарландырулар дыбысы өшіріледі</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> құрылғы</translation>
 <translation id="1639239467298939599">Жүктелуде</translation>
+<translation id="1647986356840967552">Алдыңғы бет</translation>
 <translation id="1654477262762802994">Дауыстық сұрауды бастау</translation>
 <translation id="1668469839109562275">Ендірілген VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> қалды</translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="397726367135689299">Батарея дұрыс зарядталмауы мүмкін.</translation>
 <translation id="3977512764614765090">Батарея қуаты – <ph name="PERCENTAGE" />%. Зарядталып жатыр.</translation>
+<translation id="3984536049089846927">Келесі бет</translation>
 <translation id="3986082989454912832">Жауап беру</translation>
 <translation id="3995138139523574647">USB-C құрылғысы (оң жақ артқы порты)</translation>
 <translation id="40062176907008878">Қолжазба</translation>
@@ -577,7 +579,6 @@
 <translation id="4123259114412175274">Chromebook-тың құлпын ашу үшін телефонда Bluetooth қосылып тұрғанына көз жеткізіңіз.</translation>
 <translation id="4125970834901680537">Планшет режимінде қолданбалардағы контентті трансляциялау мүмкін емес. Ноутбук режимінде қайталап көріңіз.</translation>
 <translation id="4129129681837227511">Құлып экранында хабарландыруларды көру және параметрді өзгерту үшін құлыпты ашыңыз.</translation>
-<translation id="4130035430755296270">Тағы басқа формат опцияларын көру үшін курсорды апарыңыз.</translation>
 <translation id="4136724716305260864">Күн шыққанға дейін қосулы</translation>
 <translation id="4146833061457621061">Музыка ойнату</translation>
 <translation id="4150201353443180367">Дисплей</translation>

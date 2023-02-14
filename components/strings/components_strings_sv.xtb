@@ -892,7 +892,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3223287115535306850">Ikon för appstart</translation>
 <translation id="3223425961342298674">Plats tillåts inte</translation>
-<translation id="3225347164936328585">Klappar händerna</translation>
 <translation id="3225919329040284222">Ett certifikat som inte överensstämmer med inbyggda förväntningar presenterades på servern. Förväntningarna gäller för webbplatser med hög säkerhet för att skydda dig.</translation>
 <translation id="3226128629678568754">Om du på nytt vill skicka datan som behövs för att läsa in sidan trycker du på knappen Läs in igen.</translation>
 <translation id="3226387218769101247">Miniatyrer</translation>
@@ -949,7 +948,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3340978935015468852">inställningar</translation>
 <translation id="3342018947887487892">Senare kan en webbplats be om denna information – antingen dina annonsämnen eller annonser som föreslås av webbplatser du har besökt.</translation>
 <translation id="3342366525167526994">Kroppskonst</translation>
-<translation id="3345782426586609320">Ögon</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Ändra proxyinställningar...</translation>
 <translation id="3359565626472459400">Äktenskap</translation>
@@ -1389,7 +1387,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4393632246160856858">Nagelvårdsprodukter</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">sökresultat</translation>
-<translation id="4407755609041463909">Eld</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Hemelektronik</translation>
 <translation id="4412074349188076601">Denna konfiguration har markerats som installerbar, men ingen avbildning tillhandahålls för denna arkitektur och kan därför inte installeras.</translation>
@@ -1775,7 +1772,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5333022057423422993">Chrome upptäckte att lösenordet som du precis använde har läckt ut vid ett dataintrång. Vi rekommenderar att du kontrollerar dina sparade lösenord för att skydda dina konton.</translation>
 <translation id="5334013548165032829">Detaljerade systemloggar</translation>
 <translation id="5334145288572353250">Vill du spara adressen?</translation>
-<translation id="5335920952954443287">Hjärta som slår</translation>
 <translation id="5337569431717511221">Knappen Ställ in Chrome som standardwebbläsare: tryck på Retur om du vill ställa in Chrome som standardwebbläsare</translation>
 <translation id="5340250774223869109">Appen blockeras</translation>
 <translation id="534295439873310000">NFC-enheter</translation>
@@ -1783,7 +1779,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5344579389779391559">Den här sidan kan försöka debitera dig</translation>
 <translation id="5347645913823149105">Knappen Anpassa teckensnitt i Chrome: tryck på Retur om du vill anpassa teckenstorlekar och teckensnitt i Chrome</translation>
 <translation id="5355557959165512791">Det går inte att besöka <ph name="SITE" /> just nu eftersom dess certifikat har återkallats. Nätverksfel och attacker är ofta tillfälliga, så sidan kommer förmodligen att fungera senare.</translation>
-<translation id="5356837363448394805">Rodnar</translation>
 <translation id="5357848622083956825">Bildkonst och design</translation>
 <translation id="536296301121032821">Det gick inte att spara policyinställningarna</translation>
 <translation id="5363309033720083897">Serieporten tillåts av administratören</translation>
@@ -2114,7 +2109,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill anpassa tillgänglighetsverktygen i Chrome-inställningarna</translation>
 <translation id="6229649258872345286">Familjeresor</translation>
 <translation id="6232271601416750929">Ren skönhet</translation>
-<translation id="6233160458685643793">Flinar</translation>
 <translation id="6234122620015464377">Beskär efter varje dokument</translation>
 <translation id="6236290670123303279">Hantera inställningar</translation>
 <translation id="6240447795304464094">Google Pay-logotyp</translation>
@@ -2182,7 +2176,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6391700400718590966">Arbetsblad för användaruppgifter för säker betalning utan överensstämmande användaruppgifter är stängt</translation>
 <translation id="6393956493820063117">Möjligheten att klistra in från <ph name="ORIGIN_NAME" /> här blockeras av administratörspolicyn</translation>
 <translation id="6394852772105848029">Webbplatsen vill öppna <ph name="APP_NAME" />-appen</translation>
-<translation id="6398277657359595425">Storgråter</translation>
 <translation id="6398765197997659313">Avsluta helskärmsläge</translation>
 <translation id="6401136357288658127">Den här principen är utfasad. Använd principen <ph name="NEW_POLICY" /> i stället.</translation>
 <translation id="6404511346730675251">Redigera bokmärke</translation>
@@ -2282,7 +2275,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6660413144148052430">plats</translation>
 <translation id="6662457027866368246">Första rullen</translation>
 <translation id="666259744093848177">(x86_64, översatt)</translation>
-<translation id="6663846344464066639">Knäppta händer</translation>
 <translation id="6665553082534466207">Tre hål till höger</translation>
 <translation id="6668389483194953109">Pappersstorleken custom hittades, men egenskapen custom_size saknas eller är ogiltig.</translation>
 <translation id="6671697161687535275">Vill du ta bort formulärförslaget från Chromium?</translation>
@@ -2383,7 +2375,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6939469646605424232">Tv-drama</translation>
 <translation id="6944692733090228304">Du har angett ditt lösenord på en webbplats som inte hanteras av <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Skydda kontot genom att inte återanvända lösenordet i andra appar och webbplatser.</translation>
 <translation id="6945221475159498467">Välj</translation>
-<translation id="6946722113367118030">Tänker</translation>
 <translation id="6948051842255602737">Spelet är slut, du fick <ph name="SCORE" /> poäng.</translation>
 <translation id="6948701128805548767">Välj en adress för att visa alternativ för utlämning och krav</translation>
 <translation id="6948874830249067134">A1 x 3</translation>
@@ -2706,7 +2697,6 @@ Mer information.
 <translation id="765676359832457558">Dölj avancerade inställningar ...</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7659327900411729175">Kaku 8-kuvert</translation>
-<translation id="7659878911471462949">Glädjetårar</translation>
 <translation id="766014026101194726">{0,plural, =1{Möjligheten att ladda upp den här filen blockeras av administratörspolicyn}other{Möjligheten att ladda upp # filer blockeras av administratörspolicyn}}</translation>
 <translation id="7662298039739062396">Inställningen styrs av ett tillägg</translation>
 <translation id="7663736086183791259">Certifikat <ph name="CERTIFICATE_VALIDITY" /></translation>

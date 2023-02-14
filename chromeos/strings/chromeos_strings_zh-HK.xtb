@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">揀相簿 <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB 觸控板</translation>
 <translation id="4117637339509843559">暗光模式</translation>
+<translation id="4130035430755296270">將滑鼠游標懸停在上方，即可查看更多版面配置選項</translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
 <translation id="4147897805161313378">Google 相片</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) DNS 解析</translation>
 <translation id="4848429997038228357">執行中</translation>
 <translation id="4854586501323951986">內置觸控螢幕</translation>
+<translation id="4855250849489639581">向下滑動以查看更多版面配置選項</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}other{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}}</translation>
 <translation id="4873827928179867585">驗證演算法</translation>
 <translation id="4880328057631981605">接入點名稱 (APN)</translation>

@@ -192,6 +192,7 @@
 <translation id="2574327434504608656">S virtuálnym počítačom je zdieľaný 1 priečinok</translation>
 <translation id="2578394532502990878">Tamilská fonetická klávesnica</translation>
 <translation id="2579959351793446050">Uríjska klávesnica</translation>
+<translation id="2587195714949534472">Pripravuje sa synchronizácia súboru <ph name="FILE_NAME" />…</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, zablokoval váš správca, podrobnosti</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Služba Disk Google nie je momentálne k dispozícii.</translation>
@@ -293,6 +294,7 @@
 <translation id="3486821258960016770">Mongolská klávesnica</translation>
 <translation id="3495304270784461826">Počet chýb: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
+<translation id="3511705761158917664">Pripravuje sa synchronizácia <ph name="NUMBER_OF_ITEMS" /> položiek…</translation>
 <translation id="3522708245912499433">Portugalčina</translation>
 <translation id="3524311639100184459">Upozornenie: Tieto súbory sú dočasné a môžu byť automaticky odstránené na uvoľnenie priestoru na disku.  <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Priečinok</translation>

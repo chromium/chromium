@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Επιλογή λευκώματος <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Οθόνη αφής USB</translation>
 <translation id="4117637339509843559">Λειτουργία χαμηλού φωτισμού</translation>
+<translation id="4130035430755296270">Κρατήστε τον δείκτη πάνω από το στοιχείο για περισσότερες επιλογές διάταξης</translation>
 <translation id="4131410914670010031">Ασπρόμαυρο</translation>
 <translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) Επίλυση DNS</translation>
 <translation id="4848429997038228357">ΕΚΤΕΛΕΙΤΑΙ</translation>
 <translation id="4854586501323951986">Ενσωματωμένη οθόνη αφής</translation>
+<translation id="4855250849489639581">Σύρετε προς τα κάτω για περισσότερες επιλογές διάταξης</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Απομένει {0} προσπάθεια}other{<ph name="ERROR_MESSAGE" /> Απομένουν {0} προσπάθειες}}</translation>
 <translation id="4873827928179867585">Αλγόριθμος ελέγχου ταυτότητας</translation>
 <translation id="4880328057631981605">Όνομα σημείου πρόσβασης</translation>

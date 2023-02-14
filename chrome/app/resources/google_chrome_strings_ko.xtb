@@ -367,7 +367,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="828798499196665338">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 사용은 허용되지 않습니다.</translation>
 <translation id="8290100596633877290">Chrome이 다운되었습니다. 다시 시작하시겠습니까?</translation>
-<translation id="8341646175450781745">메모리 절약 모드를 사용 설정하면 Chrome이 비활성 탭에서 메모리를 확보합니다. 이에 따라 활성 탭과 기타 앱에 더 많은 컴퓨터 리소스가 제공되고 Chrome의 빠른 속도가 유지됩니다. 비활성 탭으로 돌아가면 탭이 자동으로 다시 활성화됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /> 또는 <ph name="BEGIN_LINK_2" />의견 보내기<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">이 파일은 위험하므로 Chrome에서 차단했습니다.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" /> 사이트에서는 Chrome에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
@@ -412,7 +411,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8986207147630327271">직장 프로필을 이 브라우저에 추가하고 직장 프로필 제어 권한을 관리자에게 부여합니다.</translation>
 <translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>
-<translation id="9003498785844995646">Chrome에서는 백그라운드 활동 및 부드러운 스크롤과 동영상 프레임 속도 같은 시각적 효과를 제한하여 배터리 전원을 절약합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /> 또는 <ph name="BEGIN_LINK_2" />의견 보내기<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex 시스템</translation>
 <translation id="9067395829937117663">Chrome은 Windows 7 이상 버전에서 사용할 수 있습니다.</translation>
 <translation id="911206726377975832">인터넷 사용 기록도 삭제하시겠습니까?</translation>

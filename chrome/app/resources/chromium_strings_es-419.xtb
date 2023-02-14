@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Para comprobar si tus contraseñas están a salvo de violaciones de la seguridad de los datos y otros problemas de seguridad, <ph name="BEGIN_LINK" />accede a Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1203500561924088507">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu navegador antes de usarlo.</translation>
-<translation id="1231839967188101156">Cuando está activado, Chromium libera memoria de las pestañas inactivas. Esto brinda más recursos informáticos a las pestañas activas y a otras apps y permite que Chromium siga funcionando rápido. Las pestañas inactivas se vuelven a activar automáticamente cuando regresas a ellas. <ph name="BEGIN_LINK" />Obtén más información<ph name="END_LINK" />.</translation>
 <translation id="1261119230216066228">El Ahorro de memoria hizo que Chromium sea más rápido</translation>
 <translation id="1315551408014407711">Configura tu nuevo perfil de Chromium</translation>
 <translation id="1396446129537741364">Chromium está intentando mostrar contraseñas.</translation>
@@ -345,7 +344,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8550334526674375523">Este perfil de trabajo está totalmente separado de tu perfil personal.</translation>
 <translation id="8558383651099478961">Tu padre o madre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chromium. No se permite agregar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">Chromium puede revisar las contraseñas solo cuando accedes con tu Cuenta de Google</translation>
-<translation id="8574036838419011058">Cuando está activado, Chromium limita la actividad en segundo plano y los efectos visuales, como el desplazamiento suave y las velocidades de fotogramas de video a fin de conservar la batería. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cómo usamos esta información:<ph name="END_BOLD" /> Los sitios pueden almacenar información sobre tus intereses con Chromium. Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio defina que te interesa correr maratones. Luego, si visitas otro sitio para registrarte en una carrera, ese sitio podrá mostrarte un anuncio sobre calzado para correr en función de tus intereses.</translation>
 <translation id="8619360774459241877">Iniciando Chromium…</translation>

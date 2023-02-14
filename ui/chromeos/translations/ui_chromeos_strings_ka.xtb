@@ -192,6 +192,7 @@
 <translation id="2574327434504608656">Bruschetta-სთან გაზიარებულია 1 საქაღალდე</translation>
 <translation id="2578394532502990878">ტამილური ფონეტიკური</translation>
 <translation id="2579959351793446050">ორია</translation>
+<translation id="2587195714949534472">მიმდინარეობს „<ph name="FILE_NAME" />“-ის სინქრონიზაციისთვის მომზადება...</translation>
 <translation id="2602810353103180630">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაბლოკილია თქვენი ადმინისტრატორის მიერ, დეტალები</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ვიდეო</translation>
 <translation id="2620090360073999360">Google Drive-ზე წვდომა ამჟამად შეუძლებელია.</translation>
@@ -293,6 +294,7 @@
 <translation id="3486821258960016770">მონღოლური</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> შეცდომა.</translation>
 <translation id="3509680540198371098">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
+<translation id="3511705761158917664">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის სინქრონიზაციისთვის მომზადება...</translation>
 <translation id="3522708245912499433">პორტუგალიური</translation>
 <translation id="3524311639100184459">გაფრთხილება: ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასათავისუფლებლად.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">საქაღალდე</translation>

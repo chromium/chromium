@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Перезапустить Linux?</translation>
 <translation id="1047431265488717055">Скопировать &amp;текст ссылки</translation>
 <translation id="1048286738600630630">Дисплеи</translation>
+<translation id="1048770690598418849">Сейчас этот процесс можно пропустить. Он будет автоматически запущен после настройки.</translation>
 <translation id="1048986595386481879">Динамическое выделение места</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}one{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}few{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}many{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}other{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}}</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
@@ -1174,7 +1175,7 @@
 Вы можете управлять настройками этого аккаунта, установив приложение Family Link на своем устройстве.  Мы отправили вам инструкции по электронной почте.</translation>
 <translation id="2039464276165755892">Скрывать уведомления при приближении другого человека</translation>
 <translation id="2040460856718599782">Не удалось выполнить аутентификацию. Проверьте учетные данные и повторите попытку.</translation>
-<translation id="2040894699575719559">Местоположение заблокировано</translation>
+<translation id="2040894699575719559">Доступ к местоположению закрыт</translation>
 <translation id="2042279886444479655">Активные профили</translation>
 <translation id="2044014337866019681">Чтобы разблокировать сеанс, подтвердите аккаунт <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Название шаблона сертификата Microsoft</translation>
@@ -1625,6 +1626,7 @@
 <translation id="2410754283952462441">Выберите аккаунт</translation>
 <translation id="241082044617551207">Неизвестный плагин</translation>
 <translation id="2410940059315936967">На сайте, который вы просматриваете, может быть встроенный контент с других сайтов, например изображения, реклама и текст. Файлы cookie с таких сайтов называются сторонними файлами cookie.</translation>
+<translation id="2411666601450687801">На этом устройстве запрещено использовать виртуальные машины</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Функциональные клавиши клавиатуры</translation>
 <translation id="2418307627282545839">Делает изображение на экране ярче.</translation>
@@ -1886,6 +1888,7 @@
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="265390580714150011">Значение поля</translation>
 <translation id="2654553774144920065">Запрос на печать</translation>
+<translation id="265748523151262387">Не отключайте телефон</translation>
 <translation id="2657612187216250073">Настройки специальных возможностей для курсора</translation>
 <translation id="2658941648214598230">Показать оригинальный контент?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Набор доступных функций зависит от устройства.</translation>
@@ -5301,6 +5304,7 @@
 <translation id="5801051031414037185">Настроить телефон</translation>
 <translation id="5801568494490449797">Настройки</translation>
 <translation id="5804241973901381774">Разрешения</translation>
+<translation id="5804259315582798390">Не удалось включить восстановление локальных данных</translation>
 <translation id="5805268472388605531">Нажмите и удерживайте клавиши, чтобы увидеть диакритические знаки и специальные символы</translation>
 <translation id="5805697420284793859">Менеджер окон</translation>
 <translation id="5806447147478173900">Объем хранилища, занятый указанными сайтами: <ph name="TOTAL_USAGE" /></translation>
@@ -5842,7 +5846,6 @@
 <translation id="6295158916970320988">Все сайты</translation>
 <translation id="6295855836753816081">Сохранение...</translation>
 <translation id="6298962879096096191">Использование Google Play для установки приложений Android</translation>
-<translation id="6300125580697461004">Отправить отзыв о режиме энергосбережения</translation>
 <translation id="6300177430812514606">Запретить сайтам завершать отправку и получение данных</translation>
 <translation id="630065524203833229">В&amp;ыход</translation>
 <translation id="6300718114348072351">Не удалось автоматически настроить принтер "<ph name="PRINTER_NAME" />". Задайте дополнительные параметры. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -6047,7 +6050,6 @@
 <translation id="6491376743066338510">Не удалось выполнить авторизацию</translation>
 <translation id="6494327278868541139">Открыть описание улучшенной защиты</translation>
 <translation id="6494445798847293442">Не является центром сертификации</translation>
-<translation id="6497548114956205206">Подробнее о режиме энергосбережения</translation>
 <translation id="6497784818439587832">Изменить масштаб изображения, чтобы увеличить или уменьшить объекты на экране</translation>
 <translation id="6497789971060331894">Обратное направление прокрутки мышью</translation>
 <translation id="6498249116389603658">&amp;Все языки</translation>
@@ -6690,6 +6692,7 @@
 <translation id="7047059339731138197">Выберите фон</translation>
 <translation id="7049293980323620022">Сохранить файл?</translation>
 <translation id="7050037487872780845">Неверная конфигурация точки доступа.</translation>
+<translation id="7051551856857948729">Скрыть код IBAN</translation>
 <translation id="7052237160939977163">Отправлять данные отслеживания производительности</translation>
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7055152154916055070">Заблокирована попытка переадресации:</translation>
@@ -7670,7 +7673,6 @@
 <translation id="7955177647836564772">Если функция Smart Lock включена и телефон разблокирован, вводить пароль или PIN-код не нужно.</translation>
 <translation id="7956373551960864128">Сохраненные принтеры</translation>
 <translation id="7957074856830851026">Получать данные об устройстве, например серийный номер или идентификатор объекта</translation>
-<translation id="7957186326898555886">Отправить отзыв о режиме экономии памяти</translation>
 <translation id="7959074893852789871">Файл содержал несколько сертификатов, некоторые из которых не были импортированы:</translation>
 <translation id="7959665254555683862">Новая вкладка инкогнито</translation>
 <translation id="7961015016161918242">Нет</translation>
@@ -8100,7 +8102,6 @@
 <translation id="8340547030807793004">Другие действия с устройством "<ph name="DEVICE" />"</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Проверьте <ph name="BEGIN_BOLD" />1 сайт<ph name="END_BOLD" />, который недавно отправлял много уведомлений}one{Проверьте <ph name="BEGIN_BOLD" />{NUM_SITES} сайт<ph name="END_BOLD" />, которые недавно отправляли много уведомлений}few{Проверьте <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, которые недавно отправляли много уведомлений}many{Проверьте <ph name="BEGIN_BOLD" />{NUM_SITES} сайтов<ph name="END_BOLD" />, которые недавно отправляли много уведомлений}other{Проверьте <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, которые недавно отправляли много уведомлений}}</translation>
 <translation id="8342221978608739536">Не знаю</translation>
-<translation id="8342399870062010251">Подробнее о режиме экономии памяти</translation>
 <translation id="8342861492835240085">Выберите коллекцию</translation>
 <translation id="8345848587667658367">Теперь вы можете просматривать недавние фотографии, медиафайлы, уведомления и приложения с телефона</translation>
 <translation id="8347227221149377169">Задания печати</translation>
@@ -8120,6 +8121,7 @@
 <translation id="8358912028636606457">Трансляция аудио из вкладки не поддерживается на этом устройстве</translation>
 <translation id="835951711479681002">Сохранить в аккаунте Google</translation>
 <translation id="8360140320636871023">Персонализация темы</translation>
+<translation id="8360267485906769442">Кнопка для отправки отзыва</translation>
 <translation id="8363095875018065315">стабильная</translation>
 <translation id="8363142353806532503">Доступ к микрофону запрещен</translation>
 <translation id="8366396658833131068">Подключение к сети восстановлено. Выберите другую сеть или нажмите кнопку "Продолжить", чтобы запустить киоск-приложение.</translation>
@@ -8397,6 +8399,7 @@
 <translation id="8634348081024879304">Вы больше не сможете использовать виртуальную карту для оплаты через Google Pay. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Перезапуск…</translation>
 <translation id="8636284842992792762">Инициализация расширений…</translation>
+<translation id="8636323803535540285">Для быстрого доступа создайте ярлык сервиса "<ph name="BRAND" />".</translation>
 <translation id="8636500887554457830">Запретить сайтам показывать всплывающие окна и использовать переадресацию</translation>
 <translation id="8637688295594795546">Доступно обновление системы. Подготовка к скачиванию…</translation>
 <translation id="8639047128869322042">Поиск вредоносного ПО…</translation>
@@ -8411,7 +8414,6 @@
 <translation id="8645354835496065562">Всегда разрешать использовать датчики</translation>
 <translation id="8645920082661222035">Предсказывает опасные события и предупреждает вас о них.</translation>
 <translation id="8646209145740351125">Отключение синхронизации</translation>
-<translation id="8646340610303779673">Не удалось получить PPD-файл</translation>
 <translation id="864637694230589560">Обычно сайты показывают уведомления, чтобы оповестить вас о сообщениях в чате или срочных новостях.</translation>
 <translation id="8646467750715887511">Страницы загружаются только после того, как вы их откроете.</translation>
 <translation id="8647385344110255847">С вашего разрешения ребенок может устанавливать приложения из Google Play.</translation>
@@ -8556,6 +8558,7 @@
 <translation id="8767621466733104912">Обновить Chrome для всех пользователей</translation>
 <translation id="8770406935328356739">Корневой каталог расширения</translation>
 <translation id="8771300903067484968">Фон стартовой страницы изменен на вариант по умолчанию.</translation>
+<translation id="8773280816776735812">Показать код IBAN</translation>
 <translation id="8773302562181397928">Сохранить принтер "<ph name="PRINTER_NAME" />"</translation>
 <translation id="8774379074441005279">Подтвердите восстановление</translation>
 <translation id="8774934320277480003">Верхнее поле</translation>

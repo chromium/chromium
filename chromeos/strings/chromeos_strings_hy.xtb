@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Ընտրեք ալբոմը՝ «<ph name="TITLE" />» (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB հպահարթակ</translation>
 <translation id="4117637339509843559">Մուգ ռեժիմ</translation>
+<translation id="4130035430755296270">Մկնիկի նշորդը շարունակեք պահել վրան՝ դասավորության այլ տարբերակներ տեսնելու համար</translation>
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
 <translation id="4145784616224233563">HTTP հրապատ</translation>
 <translation id="4147897805161313378">Google Լուսանկարներ</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">DNS-ի լուծաչափ (Android)</translation>
 <translation id="4848429997038228357">ՓՈՐՁԱՐԿՎՈՒՄ Է</translation>
 <translation id="4854586501323951986">Ներկառուցված հպէկրան</translation>
+<translation id="4855250849489639581">Սահեցրեք ներքև՝ դասավորության այլ տարբերակներ տեսնելու համար</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}one{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}other{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}}</translation>
 <translation id="4873827928179867585">Իսկորոշման ալգորիթմ</translation>
 <translation id="4880328057631981605">Մուտքի կետի անունը</translation>

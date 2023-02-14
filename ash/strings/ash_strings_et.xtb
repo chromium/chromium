@@ -578,7 +578,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4123259114412175274">Chromebooki avamiseks veenduge, et telefoni Bluetooth oleks sisse lülitatud</translation>
 <translation id="4125970834901680537">Ei saa rakendusi tahvelarvutirežiimis voogesitada. Proovige uuesti sülearvutirežiimis.</translation>
 <translation id="4129129681837227511">Lukustuskuval märguannete nägemiseks avage ekraan ja muutke seadet</translation>
-<translation id="4130035430755296270">Jätkake hõljutamist, et näha rohkem paigutuse valikuid</translation>
 <translation id="4136724716305260864">Päikesetõusuni sisse lülitatud</translation>
 <translation id="4146833061457621061">Esita muusikat</translation>
 <translation id="4150201353443180367">Kuva</translation>
@@ -733,6 +732,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4895488851634969361">Aku on täis.</translation>
 <translation id="490375751687810070">Vertikaalne</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% akut</translation>
+<translation id="491504982845934899">Aktiveerige pärast seadme seadistust <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Tugev</translation>
 <translation id="4918086044614829423">Nõustu</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> kasutab praegu teie kaamerat</translation>
@@ -1329,6 +1329,7 @@ Uus installimine</translation>
 <translation id="8131740175452115882">Kinnita</translation>
 <translation id="8131994907636310308">Sulge sortimise teatis</translation>
 <translation id="8132793192354020517">Ühendus <ph name="NAME" />iga</translation>
+<translation id="8138705869659070104">Aktiveerige pärast seadme seadistust</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>
 <translation id="8142441511840089262">Topeltklikk</translation>
 <translation id="8142699993796781067">Privaatvõrk</translation>

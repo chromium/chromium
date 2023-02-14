@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">הפעלת סנכרון</translation>
 <translation id="3181954750937456830">גלישה בטוחה (מגנה עליך ועל המכשיר מפני אתרים מסוכנים)</translation>
 <translation id="3184767182050912705">ביטול נעילה עם <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">ביטול המעקב</translation>
 <translation id="3214379938835224220">‏יצאת מהחשבון במהלך האיפוס של iPad. כדי להיכנס אליו, יש להקיש על 'המשך' למטה.</translation>
 <translation id="3224641773458703735">כדי שניתן יהיה לייצא את הסיסמאות, יש להגדיר קוד גישה במכשיר.</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
@@ -812,7 +813,6 @@
 <translation id="6869389390665537774">בדף ההיסטוריה אפשר לראות את הדפים שאליהם נכנסת או למחוק אותם</translation>
 <translation id="687135068089457384">הצגת ההגדרות</translation>
 <translation id="6873263987691478642">‏מצב Split View</translation>
-<translation id="6873366418270195926">תתקבל התראה על הנחות באתר כלשהו. הדף הזה שמור ב<ph name="BEGIN_LINK" />סימניות<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים.</translation>
 <translation id="6888009575607455378">השינויים יימחקו. להמשיך?</translation>
 <translation id="6896758677409633944">העתקה</translation>
@@ -867,7 +867,6 @@
 <translation id="734758817008927353">אפשרויות לשמירת כרטיס</translation>
 <translation id="7351537303876921605">מקישים על 'יצירת קישור' בתפריט ההקשר</translation>
 <translation id="7353432112255316844">אימות הזהות שלך</translation>
-<translation id="7356359962760467032">הפסקת המעקב אחר מחירים</translation>
 <translation id="7383797227493018512">רשימת קריאה</translation>
 <translation id="7398893703713203428">יצירת קישור</translation>
 <translation id="7400418766976504921">כתובת אתר</translation>

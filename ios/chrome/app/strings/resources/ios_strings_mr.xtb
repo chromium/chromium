@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">सिंक सुरू करा</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउझिंग (तुम्हाला आणि तुमच्या डिव्हाइसना धोकादायक साइटपासून सुरक्षित ठेवते)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरून अनलॉक करा</translation>
+<translation id="3190736958609431397">माग ठेवणे रद्द करा</translation>
 <translation id="3214379938835224220">तुमच्या iPad रीसेटचा भाग म्हणून तुम्हाला साइन आउट केले गेले होते. साइन इन करण्यासाठी, सुरू ठेवा वर खाली टॅप करा.</translation>
 <translation id="3224641773458703735">पासवर्ड एक्सपोर्ट करण्यासाठी, तुम्ही प्रथम तुमच्या डिव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
@@ -867,7 +868,6 @@
 <translation id="734758817008927353">कार्ड सेव्ह करण्यासाठी पर्याय</translation>
 <translation id="7351537303876921605">कॉंटेक्स्ट मेनू मध्ये लिंक तयार करा वर टॅप करा</translation>
 <translation id="7353432112255316844">हे तुम्हीच असल्याची पडताळणी करा</translation>
-<translation id="7356359962760467032">किमतीचा माग ठेवणे थांबवा</translation>
 <translation id="7383797227493018512">वाचन सूची</translation>
 <translation id="7398893703713203428">लिंक तयार करा</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1115,6 +1115,7 @@
 <translation id="952704832371081537">रद्द करा</translation>
 <translation id="953008885340860025">Chrome साइन आउट केले आहे</translation>
 <translation id="959066944189734975">तुम्ही <ph name="CHANNEL_NAME" /> ला फॉलो करत आहात</translation>
+<translation id="980712131080209571">नवीन</translation>
 <translation id="981498610235328462">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते. अनुमती नसलेली खाती लपवली जातात.</translation>
 <translation id="984509647832111802">सिंक काम करत नाही.</translation>
 <translation id="988141524645182168">इतर डिव्हायसेस</translation>

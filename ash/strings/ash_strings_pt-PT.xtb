@@ -577,7 +577,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4123259114412175274">Para desbloquear o Chromebook, certifique-se de que o Bluetooth do telemóvel está ativado</translation>
 <translation id="4125970834901680537">Não é possível fazer stream de apps no modo de tablet. Tente novamente no modo de portátil.</translation>
 <translation id="4129129681837227511">Para ver notificações no ecrã de bloqueio, desbloqueie o mesmo para alterar a definição</translation>
-<translation id="4130035430755296270">Mantenha o cursor do rato sobre o conteúdo para obter mais opções de esquema</translation>
 <translation id="4136724716305260864">Ativada até ao nascer do sol</translation>
 <translation id="4146833061457621061">Tocar música</translation>
 <translation id="4150201353443180367">Visualização</translation>
@@ -718,7 +717,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="481455355267255546">A seguir</translation>
 <translation id="4831034276697007977">Tem a certeza de que pretende desativar os cliques automáticos?</translation>
 <translation id="4849058404725798627">Realçar objeto com foco do teclado</translation>
-<translation id="4855250849489639581">Deslize rapidamente para baixo para obter mais opções de esquemas</translation>
 <translation id="485592688953820832">Nenhuma ação (pausar)</translation>
 <translation id="485634149294284819">Aceder ao menu do teclado</translation>
 <translation id="4860284199500934869">Verifique a sua ligação de rede para transferir o ficheiro <ph name="FILENAME" /></translation>
@@ -733,6 +731,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4895488851634969361">A bateria está carregada.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
+<translation id="491504982845934899">Ativar <ph name="NETWORK_NAME" /> após a configuração do dispositivo</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4919841137949306064">A app <ph name="APP_NAME" /> está a usar a câmara neste momento</translation>
@@ -1329,6 +1328,7 @@ Nova instalação</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8131994907636310308">Alerta Fechar ordenação</translation>
 <translation id="8132793192354020517">Ligado a <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Ativar após conf. dispositivo</translation>
 <translation id="813913629614996137">A inicializar...</translation>
 <translation id="8142441511840089262">Clicar duas vezes</translation>
 <translation id="8142699993796781067">Rede privada</translation>

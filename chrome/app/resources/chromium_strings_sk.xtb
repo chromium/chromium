@@ -12,7 +12,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1131805035311359397">Ak chcete skontrolovať, či sú vaše heslá chránené pred porušením ochrany údajov a inými bezpečnostnými hrozbami, <ph name="BEGIN_LINK" />prihláste sa do prehliadača Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
-<translation id="1231839967188101156">Keď je táto možnosť zapnutá, Chromium bude uvoľňovať pamäť z neaktívnych kariet. Aktívne karty a ďalšie aplikácie tak získajú viac zdrojov počítača a prehliadač Chromium zostane rýchly. Neaktívne karty sa automaticky znova aktivujú, keď na ne prejdete. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Šetrič pamäte zrýchlil Chromium</translation>
 <translation id="1315551408014407711">Nastavte si nový profil prehliadača Chromium</translation>
 <translation id="1396446129537741364">Prehliadač Chromium sa snaží zobraziť heslá.</translation>
@@ -353,7 +352,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8550334526674375523">Tento pracovný profil je úplne oddelený od vášho osobného.</translation>
 <translation id="8558383651099478961">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v prehliadači Chromium. Pridanie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) nie je povolené.</translation>
 <translation id="8568283329061645092">Keď sa prihlásite pomocou účtu Google, Chromium môže skontrolovať vaše heslá</translation>
-<translation id="8574036838419011058">Keď je táto možnosť zapnutá, Chromium šetrí batériu tým, že obmedzí aktivitu na pozadí a vizuálne efekty, napríklad plynulé posúvanie a snímkové frekvencie videa. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Ako používame tieto údaje:<ph name="END_BOLD" /> weby môžu v prehliadači Chromium ukladať údaje o vašich záujmoch. Ak napríklad navštívite web na nákup obuvi na maratón, daný web môže definovať váš záujem ako behanie maratónov. Ak neskôr navštívite iný, aby ste sa zaregistrovali na preteky, tento web vám môže zobraziť reklamu na bežeckú obuv na základe vašich záujmov.</translation>
 <translation id="8619360774459241877">Spúšťa sa Chromium…</translation>

@@ -133,6 +133,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="163517899691012366">Benachrichtigungen sind stummgeschaltet, wenn „Bitte nicht stören“ aktiviert ist</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> Geräte</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
+<translation id="1647986356840967552">Vorherige Seite</translation>
 <translation id="1654477262762802994">Gesprochene Anfrage starten</translation>
 <translation id="1668469839109562275">Integriertes VPN</translation>
 <translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
@@ -554,6 +555,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
 <translation id="397726367135689299">Das Aufladen des Akkus kann unzuverlässig ablaufen.</translation>
 <translation id="3977512764614765090">Der Akkustand ist <ph name="PERCENTAGE" /> %. Der Akku wird aufgeladen.</translation>
+<translation id="3984536049089846927">Nächste Seite</translation>
 <translation id="3986082989454912832">Annehmen</translation>
 <translation id="3995138139523574647">USB-C-Gerät (Port hinten rechts)</translation>
 <translation id="40062176907008878">Handschrift</translation>
@@ -576,7 +578,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4123259114412175274">Prüfe zum Entsperren deines Chromebooks, ob Bluetooth auf dem Smartphone aktiviert ist</translation>
 <translation id="4125970834901680537">Apps können im Tabletmodus nicht gestreamt werden. Bitte versuch es noch einmal im Laptopmodus.</translation>
 <translation id="4129129681837227511">Wenn du Benachrichtigungen auf dem Sperrbildschirm sehen möchtest, entsperre das Gerät, um die Einstellung zu ändern</translation>
-<translation id="4130035430755296270">Für weitere Layoutoptionen Mauszeiger weiter darauf halten</translation>
 <translation id="4136724716305260864">Bis Sonnenaufgang aktiviert</translation>
 <translation id="4146833061457621061">Musik abspielen</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -717,7 +718,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="481455355267255546">Als Nächstes</translation>
 <translation id="4831034276697007977">Möchtest du automatische Klicks wirklich deaktivieren?</translation>
 <translation id="4849058404725798627">Objekt mit Tastaturfokus hervorheben</translation>
-<translation id="4855250849489639581">Für weitere Layoutoptionen nach unten wischen</translation>
 <translation id="485592688953820832">Keine Aktion (Pause)</translation>
 <translation id="485634149294284819">Tastaturmenü öffnen</translation>
 <translation id="4860284199500934869">Prüfe deine Netzwerkverbindung, um „<ph name="FILENAME" />“ herunterzuladen</translation>

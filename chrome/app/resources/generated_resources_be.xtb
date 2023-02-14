@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Перазапусціць Linux?</translation>
 <translation id="1047431265488717055">Скапіраваць &amp;тэкст спасылкі</translation>
 <translation id="1048286738600630630">Дысплэі</translation>
+<translation id="1048770690598418849">Зараз вы можаце прапусціць гэты працэс. Ён будзе аўтаматычна запушчаны пасля завяршэння наладжвання.</translation>
 <translation id="1048986595386481879">Дынамічнае размеркаванне</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}one{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}few{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}many{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}other{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="1049743911850919806">Інкогніта</translation>
@@ -1626,6 +1627,7 @@
 <translation id="2410754283952462441">Выберыце ўліковы запіс</translation>
 <translation id="241082044617551207">Невядомая ўбудова</translation>
 <translation id="2410940059315936967">На сайце, які вы наведваеце, можа быць убудаванае змесціва з іншых сайтаў (напрыклад, відарысы, рэклама або тэкст). Файлы cookie, зададзеныя такімі сайтамі, называюцца староннімі файламі cookie.</translation>
+<translation id="2411666601450687801">Віртуальныя машыны нельга выкарыстоўваць на гэтай прыладзе</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Функцыянальныя клавішы клавіятуры</translation>
 <translation id="2418307627282545839">Яркая і лёгкая палітра колераў</translation>
@@ -1887,6 +1889,7 @@
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="265390580714150011">Значэнне поля</translation>
 <translation id="2654553774144920065">Запыт на друк</translation>
+<translation id="265748523151262387">Не адключайце тэлефон</translation>
 <translation id="2657612187216250073">Налады спецыяльных магчымасцей для ўказальніка</translation>
 <translation id="2658941648214598230">Паказаць арыгінальнае змесціва?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Функцыі адрозніваюцца ў залежнасці ад прылады</translation>
@@ -5300,6 +5303,7 @@
 <translation id="5801051031414037185">Наладзіць тэлефон</translation>
 <translation id="5801568494490449797">Параметры</translation>
 <translation id="5804241973901381774">Дазволы</translation>
+<translation id="5804259315582798390">Не ўдалося ўключыць аднаўленне лакальных даных</translation>
 <translation id="5805268472388605531">Каб пабачыць дыякрытычныя знакі і спецыяльныя сімвалы, націскайце і ўтрымлівайце клавішы на клавіятуры</translation>
 <translation id="5805697420284793859">Менеджар вокнаў</translation>
 <translation id="5806447147478173900">Агульны аб'ём сховішча, які выкарыстоўваецца паказанымі сайтамі: <ph name="TOTAL_USAGE" /></translation>
@@ -5841,7 +5845,6 @@
 <translation id="6295158916970320988">Усе сайты</translation>
 <translation id="6295855836753816081">Ідзе захаванне...</translation>
 <translation id="6298962879096096191">Для ўсталявання праграм Android выкарыстоўвайце Google Play</translation>
-<translation id="6300125580697461004">Адправіць водгук пра рэжым "Эканомія энергіі"</translation>
 <translation id="6300177430812514606">Не дазволена завяршаць адпраўку або атрыманне даных</translation>
 <translation id="630065524203833229">В&amp;ыйсці</translation>
 <translation id="6300718114348072351">Не ўдалося аўтаматычна наладзіць <ph name="PRINTER_NAME" />. Укажыце пашыраныя звесткі пра прынтар. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -6046,7 +6049,6 @@
 <translation id="6491376743066338510">Памылка аўтарызацыі</translation>
 <translation id="6494327278868541139">Паказаць падрабязныя звесткі аб палепшанай абароне</translation>
 <translation id="6494445798847293442">Не з'яўляецца цэнтрам сертыфікацыі</translation>
-<translation id="6497548114956205206">Даведацца больш пра рэжым "Эканомія энергіі"</translation>
 <translation id="6497784818439587832">Змяняйце маштаб дысплэя, каб паменшыць або павялічыць памеры аб'ектаў на экране</translation>
 <translation id="6497789971060331894">Адваротная прагортка мышшу</translation>
 <translation id="6498249116389603658">&amp;Усе вашы мовы</translation>
@@ -6689,6 +6691,7 @@
 <translation id="7047059339731138197">Выбар фону</translation>
 <translation id="7049293980323620022">Захаваць файл?</translation>
 <translation id="7050037487872780845">Няправільная канфігурацыя хот-спота</translation>
+<translation id="7051551856857948729">Схаваць нумар IBAN</translation>
 <translation id="7052237160939977163">Адпраўляць даныя трасіроўкі прадукцыйнасці</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
 <translation id="7055152154916055070">Перанакіраванне заблакіравана:</translation>
@@ -7669,7 +7672,6 @@
 <translation id="7955177647836564772">Калі Smart Lock уключаны і тэлефон разблакіраваны, уводзіць пароль або PIN-код не трэба</translation>
 <translation id="7956373551960864128">Вашы захаваныя прынтары</translation>
 <translation id="7957074856830851026">Прагляд звестак пра прыладу (напрыклад, серыйнага нумара або ідэнтыфікатара аб'екта ўласнасці)</translation>
-<translation id="7957186326898555886">Адправіць водгук пра рэжым "Эканомія памяці"</translation>
 <translation id="7959074893852789871">У файле было некалькі сертыфікатаў, некаторыя з якіх не імпартаваны:</translation>
 <translation id="7959665254555683862">Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="7961015016161918242">Ніколі</translation>
@@ -8098,7 +8100,6 @@
 <translation id="8340547030807793004">Іншыя дзеянні з прыладай "<ph name="DEVICE" />"</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Праглядзіце <ph name="BEGIN_BOLD" />1 сайт<ph name="END_BOLD" />, які нядаўна адправіў шмат апавяшчэнняў}one{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайт<ph name="END_BOLD" />, які нядаўна адправіў шмат апавяшчэнняў}few{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайты<ph name="END_BOLD" />, якія нядаўна адправілі шмат апавяшчэнняў}many{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайтаў<ph name="END_BOLD" />, якія нядаўна адправілі шмат апавяшчэнняў}other{Праглядзіце <ph name="BEGIN_BOLD" />{NUM_SITES} сайта<ph name="END_BOLD" />, якія нядаўна адправілі шмат апавяшчэнняў}}</translation>
 <translation id="8342221978608739536">Не давялося праверыць</translation>
-<translation id="8342399870062010251">Даведацца больш пра рэжым "Эканомія памяці"</translation>
 <translation id="8342861492835240085">Выберыце калекцыю</translation>
 <translation id="8345848587667658367">Цяпер вы можаце праглядаць нядаўнія апавяшчэнні, медыяфайлы, фота і праграмы з тэлефона</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
@@ -8410,7 +8411,6 @@
 <translation id="8645354835496065562">Працягваць дазваляць доступ да датчыкаў</translation>
 <translation id="8645920082661222035">Прадказвае небяспечныя падзеі і папярэджвае пра іх да таго, як яны здараюцца</translation>
 <translation id="8646209145740351125">Выключыць сінхранізацыю</translation>
-<translation id="8646340610303779673">Не ўдалося атрымаць PPD.</translation>
 <translation id="864637694230589560">Звычайна сайты адпраўляюць апавяшчэнні, каб паведаміць вам пра экстранныя навіны або новыя паведамленні ў чаце</translation>
 <translation id="8646467750715887511">Старонкі загружаюцца толькі пасля таго, як вы іх адкрыеце.</translation>
 <translation id="8647385344110255847">Калі вы дасце на гэта дазвол, дзіця зможа выкарыстоўваць Google Play для ўсталявання праграм</translation>
@@ -8555,6 +8555,7 @@
 <translation id="8767621466733104912">Аўтаматычна абнаўляць Chrome для ўсіх карыстальнікаў</translation>
 <translation id="8770406935328356739">Каранёвы каталог пашырэння</translation>
 <translation id="8771300903067484968">Фон пачатковай старонкі скінуты. Цяпер там стандартны фон.</translation>
+<translation id="8773280816776735812">Паказаць нумар IBAN</translation>
 <translation id="8773302562181397928">Захаваць <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Пацвярджэнне аднаўлення</translation>
 <translation id="8774934320277480003">Верхняе поле</translation>

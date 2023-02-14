@@ -302,6 +302,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3181825792072797598">Activer la synchronisation</translation>
 <translation id="3181954750937456830">Navigation sécurisée (assure votre protection et celle de votre appareil contre les sites dangereux)</translation>
 <translation id="3184767182050912705">Déverrouiller avec <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Ne plus suivre</translation>
 <translation id="3214379938835224220">Vous avez été déconnecté lors de la réinitialisation de votre iPad. Appuyez sur "Continuer" ci-dessous pour vous connecter.</translation>
 <translation id="3224641773458703735">Pour exporter les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="3227137524299004712">Micro</translation>
@@ -812,7 +813,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6869389390665537774">Vous pouvez voir les pages que vous avez consultées ou les supprimer de votre historique</translation>
 <translation id="687135068089457384">Afficher les paramètres</translation>
 <translation id="6873263987691478642">Vue fractionnée</translation>
-<translation id="6873366418270195926">Vous recevrez une alerte si le prix baisse sur un site. Cette page est enregistrée dans <ph name="BEGIN_LINK" />Favoris<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Ce mode offre une protection standard contre les téléchargements, les extensions et les sites Web connus pour être dangereux.</translation>
 <translation id="6888009575607455378">Voulez-vous vraiment supprimer les modifications ?</translation>
 <translation id="6896758677409633944">Copier</translation>
@@ -868,7 +868,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="734758817008927353">Options d'enregistrement de la carte</translation>
 <translation id="7351537303876921605">Appuyez sur "Créer un lien" dans le menu contextuel</translation>
 <translation id="7353432112255316844">Confirmer votre identité</translation>
-<translation id="7356359962760467032">Arrêter le suivi des prix</translation>
 <translation id="7383797227493018512">Liste de lecture</translation>
 <translation id="7398893703713203428">Créer un lien</translation>
 <translation id="7400418766976504921">URL</translation>

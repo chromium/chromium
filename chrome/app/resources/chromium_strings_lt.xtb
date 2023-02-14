@@ -12,7 +12,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1131805035311359397">Jei norite patikrinti, ar slaptažodžiai apsaugoti nuo duomenų saugos pažeidimų bei kitų saugos problemų, <ph name="BEGIN_LINK" />prisijunkite prie „Chromium“<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Apie „Chromium“</translation>
 <translation id="1203500561924088507">Dėkojame už diegimą. Turite iš naujo paleisti naršyklę, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
-<translation id="1231839967188101156">Įjungus, „Chromium“ atlaisvina atminties iš neaktyvių skirtukų. Taip aktyviems skirtukams ir kitoms programoms suteikiama daugiau kompiuterio išteklių ir „Chromium“ veikia sparčiai. Neaktyvūs skirtukai automatiškai vėl tampa aktyvūs, kai grįžtate į juos. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Atminties taupymo priemonė paspartino „Chromium“</translation>
 <translation id="1315551408014407711">Nustatykite naują „Chromium“ profilį</translation>
 <translation id="1396446129537741364">„Chromium“ bando parodyti slaptažodžius.</translation>
@@ -353,7 +352,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8550334526674375523">Šis darbo profilis visiškai atskirtas nuo jūsų asmeninio profilio.</translation>
 <translation id="8558383651099478961">Jūsų tėvai išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chromium“. Neleidžiama pridėti šio <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">„Chromium“ gali tikrinti jūsų slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą</translation>
-<translation id="8574036838419011058">Kai įjungta, „Chromium“ taupo akumuliatoriaus energiją, apribodama veiklą fone ir vaizdo efektus, pvz., tolygų slinkimą ir vaizdo įrašų kadrų dažnį. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Autorių teisės priklauso „Chromium“ autoriams, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kaip naudojame šiuos duomenis:<ph name="END_BOLD" /> svetainėse gali būti renkama su „Chromium“ susijusi informacija apie jūsų pomėgius. Pavyzdžiui, jei apsilankote svetainėje norėdami įsigyti batelius maratonui, svetainė gali prie jūsų pomėgių prisikirti maratonų bėgimą. Vėliau, apsilankius kitoje svetainėje norint užsiregistruoti į lenktynes, atsižvelgiant į jūsų pomėgius joje galės būti rodomas bėgimo batelių skelbimas.</translation>
 <translation id="8619360774459241877">Pristatoma „Chromium“...</translation>

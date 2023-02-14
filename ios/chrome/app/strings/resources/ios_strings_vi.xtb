@@ -304,6 +304,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3181825792072797598">Bật Đồng bộ hóa</translation>
 <translation id="3181954750937456830">Duyệt web an toàn (bảo vệ bạn cũng như thiết bị của bạn khỏi các trang web nguy hiểm)</translation>
 <translation id="3184767182050912705">Mở khóa bằng <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Bỏ theo dõi</translation>
 <translation id="3214379938835224220">Bạn đã bị đăng xuất trong quá trình đặt lại iPad. Nhấn vào Tiếp tục bên dưới để đăng nhập.</translation>
 <translation id="3224641773458703735">Để xuất mật khẩu, trước tiên bạn phải đặt mật mã trên thiết bị của mình.</translation>
 <translation id="3227137524299004712">Micrô</translation>
@@ -816,7 +817,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6869389390665537774">Bạn có thể xem các trang mình đã truy cập hoặc xóa các trang này khỏi lịch sử hoạt động</translation>
 <translation id="687135068089457384">Hiện phần Cài đặt</translation>
 <translation id="6873263987691478642">Chế độ xem phân tách</translation>
-<translation id="6873366418270195926">Bạn sẽ nhận được thông báo nếu có chương trình giảm giá trên một trang web bất kỳ. Trang này được lưu trong phần <ph name="BEGIN_LINK" />Dấu trang<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Chế độ bảo vệ thông thường chống lại các trang web, tệp đã tải xuống và tiện ích được xác định là nguy hiểm.</translation>
 <translation id="6888009575607455378">Bạn có chắc chắn muốn hủy các nội dung mình thay đổi không?</translation>
 <translation id="6896758677409633944">Sao chép</translation>
@@ -872,7 +872,6 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="734758817008927353">Các tùy chọn lưu thẻ</translation>
 <translation id="7351537303876921605">Nhấn vào Tạo đường liên kết trong trình đơn theo bối cảnh</translation>
 <translation id="7353432112255316844">Xác minh danh tính của bạn</translation>
-<translation id="7356359962760467032">Dừng theo dõi giá</translation>
 <translation id="7383797227493018512">Danh sách đọc</translation>
 <translation id="7398893703713203428">Tạo đường liên kết</translation>
 <translation id="7400418766976504921">URL</translation>

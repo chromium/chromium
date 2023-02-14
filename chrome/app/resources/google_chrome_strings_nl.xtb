@@ -364,7 +364,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8286862437124483331">Google Chrome probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="828798499196665338">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chrome. Je mag deze <ph name="EXTENSION_TYPE_PARAMETER" /> niet aanzetten.</translation>
 <translation id="8290100596633877290">Oeps! Google Chrome is vastgelopen. Nu opnieuw starten?</translation>
-<translation id="8341646175450781745">Als deze functie aanstaat, maakt Chrome geheugen van inactieve tabbladen vrij. Zo krijgen actieve tabbladen en andere apps meer resources en blijft Chrome snel. Je inactieve tabbladen worden automatisch weer actief als je ernaar terugkeert. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> of <ph name="BEGIN_LINK_2" />feedback sturen<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Dit bestand is gevaarlijk en is daarom door Chrome geblokkeerd.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Sites kunnen informatie over je interesses in Chrome opslaan. Als je bijvoorbeeld een site bezoekt om schoenen voor een marathon te kopen, kan de site je interesse definiëren als 'deelname aan marathons'. Als je later een andere site bezoekt om je aan te melden voor een race, kan die site je een advertentie voor hardloopschoenen laten zien op basis van je interesses.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
@@ -409,7 +408,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8986207147630327271">Je voegt een werkprofiel toe aan deze browser en geeft je beheerder alleen de controle over het werkprofiel.</translation>
 <translation id="8989968390305463310">Je browsegeschiedenis heeft invloed op de advertenties die je ziet en je interesses. Hieronder staat een schatting. Ter bescherming van je privacy verwijdert Chrome je interesses automatisch elke maand op voortschrijdende basis. Interesses kunnen worden vernieuwd, tenzij je ze verwijdert.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Er is een Chrome-update beschikbaar}=1{Er is een Chrome-update beschikbaar}other{Er is al # dagen een Chrome-update beschikbaar}}</translation>
-<translation id="9003498785844995646">Als deze instelling aanstaat, spaart Chrome de batterij door achtergrondactiviteit en visuele effecten te beperken, zoals vloeiend scrollen en videoframesnelheden. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> of <ph name="BEGIN_LINK_2" />feedback sturen<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">Chrome OS Flex-systeem</translation>
 <translation id="9067395829937117663">Voor Google Chrome is Windows 7 of hoger vereist.</translation>
 <translation id="911206726377975832">Ook browsegegevens wissen?</translation>

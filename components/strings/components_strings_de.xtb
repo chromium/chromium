@@ -892,7 +892,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3223287115535306850">Ladesymbol beim Starten der App</translation>
 <translation id="3223425961342298674">Standortermittlung nicht zulässig</translation>
-<translation id="3225347164936328585">Applaus</translation>
 <translation id="3225919329040284222">Der Server hat ein Zertifikat übermittelt, das nicht mit den integrierten Erwartungen übereinstimmt. Diese Erwartungen sind zu deinem Schutz in bestimmten Websites mit hohen Sicherheitsstandards enthalten.</translation>
 <translation id="3226128629678568754">Klicke auf die Schaltfläche zum erneuten Laden, um die für das Laden der Seite erforderlichen Daten noch einmal zu senden.</translation>
 <translation id="3226387218769101247">Miniaturansichten</translation>
@@ -949,7 +948,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3340978935015468852">Einstellungen</translation>
 <translation id="3342018947887487892">Wenn du dann eine Website besuchst, kann diese Informationen anfordern – entweder deine Werbethemen oder Werbung, die andere Websites dir vorgeschlagen haben.</translation>
 <translation id="3342366525167526994">Körperschmuck und -kunst</translation>
-<translation id="3345782426586609320">Augen</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Proxy-Einstellungen ändern...</translation>
 <translation id="3359565626472459400">Ehe</translation>
@@ -1387,7 +1385,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4393632246160856858">Nagelpflegeprodukte</translation>
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4406896451731180161">Suchergebnisse</translation>
-<translation id="4407755609041463909">Feuer</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Unterhaltungselektronik</translation>
 <translation id="4412074349188076601">Diese Konfiguration ist als installierbar gekennzeichnet, aber für diese Architektur ist kein Image verfügbar, weshalb sie nicht installiert werden kann.</translation>
@@ -1773,7 +1770,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5333022057423422993">Chrome hat das Passwort, das du gerade verwendet hast, in einer Datenpanne gefunden. Wir empfehlen dir, deine gespeicherten Passwörter zu prüfen, um deine Konten besser zu schützen.</translation>
 <translation id="5334013548165032829">Detaillierte Systemprotokolle</translation>
 <translation id="5334145288572353250">Adresse speichern?</translation>
-<translation id="5335920952954443287">Schlagendes Herz</translation>
 <translation id="5337569431717511221">Schaltfläche „Google Chrome als Standardbrowser festlegen“ – Drück die Eingabetaste, um Chrome als Standardbrowser für das System festzulegen</translation>
 <translation id="5340250774223869109">Die App ist blockiert</translation>
 <translation id="534295439873310000">NFC-Geräte</translation>
@@ -1781,7 +1777,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5344579389779391559">Auf dieser Seite wird möglicherweise versucht, dir etwas in Rechnung zu stellen</translation>
 <translation id="5347645913823149105">Schaltfläche zum Anpassen von Schriftarten in Chrome – drücke die Eingabetaste, um Schriftgrößen und Schriftarten in Chrome anzupassen</translation>
 <translation id="5355557959165512791">Du kannst <ph name="SITE" /> zurzeit nicht aufrufen, da das Zertifikat widerrufen wurde. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
-<translation id="5356837363448394805">Errötet</translation>
 <translation id="5357848622083956825">Bildende Kunst und Design</translation>
 <translation id="536296301121032821">Fehler beim Speichern der Richtlinieneinstellungen</translation>
 <translation id="5363309033720083897">Serielle Ports sind von deinem Administrator zugelassen</translation>
@@ -2112,7 +2107,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
 <translation id="6229649258872345286">Familienreisen</translation>
 <translation id="6232271601416750929">Klare Schönheit</translation>
-<translation id="6233160458685643793">Grinsen</translation>
 <translation id="6234122620015464377">Nach jedem Dokument zuschneiden</translation>
 <translation id="6236290670123303279">Einstellungen verwalten</translation>
 <translation id="6240447795304464094">Google Pay-Logo</translation>
@@ -2180,7 +2174,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6391700400718590966">Sichere Anmeldedaten für Zahlungen – Tabellenblatt für nicht übereinstimmende sichere Anmeldedaten ist geschlossen</translation>
 <translation id="6393956493820063117">Die Administratorrichtlinie blockiert das Einfügen von Inhalten aus <ph name="ORIGIN_NAME" /> an dieser Stelle</translation>
 <translation id="6394852772105848029">Diese Website möchte die App <ph name="APP_NAME" /> öffnen</translation>
-<translation id="6398277657359595425">Laut weinen</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
 <translation id="6401136357288658127">Diese Richtlinie ist veraltet. Verwende stattdessen die Richtlinie "<ph name="NEW_POLICY" />".</translation>
 <translation id="6404511346730675251">Lesezeichen bearbeiten</translation>
@@ -2280,7 +2273,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6660413144148052430">Standort</translation>
 <translation id="6662457027866368246">Erste Rolle</translation>
 <translation id="666259744093848177">(x86_64 übersetzt)</translation>
-<translation id="6663846344464066639">Gefaltete Hände</translation>
 <translation id="6665553082534466207">Dreifache Lochung rechts</translation>
 <translation id="6668389483194953109">Der Name der Papiergröße wurde als „Benutzerdefiniert“ angegeben, aber die Eigenschaft „custom_size“ ist leer oder ungültig.</translation>
 <translation id="6671697161687535275">Vorschlag für das Formular aus Chromium entfernen?</translation>
@@ -2381,7 +2373,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6939469646605424232">Fernsehdramen</translation>
 <translation id="6944692733090228304">Du hast dein Passwort auf einer Website eingegeben, die nicht von <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> verwaltet wird. Zum Schutz deines Kontos solltest du das Passwort nicht für andere Apps und Websites verwenden.</translation>
 <translation id="6945221475159498467">Auswählen</translation>
-<translation id="6946722113367118030">Denken</translation>
 <translation id="6948051842255602737">Spiel vorbei, deine Punktzahl ist <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Wähle eine Adresse aus, um Abholoptionen und -anforderungen zu sehen</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2573,6 +2564,7 @@ Weitere Details:
 <translation id="7388594495505979117">{0,plural, =1{Dein Gerät startet in 1 Minute neu}other{Dein Gerät startet in # Minuten neu}}</translation>
 <translation id="7390545607259442187">Karte bestätigen</translation>
 <translation id="7392089738299859607">Adresse aktualisieren</translation>
+<translation id="739728382607845710">Symbol für die Zahlungsabwicklung</translation>
 <translation id="7399802613464275309">Sicherheitscheck</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Diesen Tab über den Link, über einen QR-Code, über Streamen usw. teilen</translation>
@@ -2704,7 +2696,6 @@ Weitere Details:
 <translation id="765676359832457558">Erweiterte Einstellungen ausblenden</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7659327900411729175">Umschlag Kaku 8</translation>
-<translation id="7659878911471462949">Freudentränen</translation>
 <translation id="766014026101194726">{0,plural, =1{Die Administratorrichtlinie blockiert das Hochladen dieser Datei}other{Die Administratorrichtlinie blockiert das Hochladen von # Dateien}}</translation>
 <translation id="7662298039739062396">Einstellung wird von einer Erweiterung gesteuert</translation>
 <translation id="7663736086183791259">Zertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>

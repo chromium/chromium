@@ -580,7 +580,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4123259114412175274">Per sbloccare Chromebook, assicurati che il Bluetooth del telefono sia attivo</translation>
 <translation id="4125970834901680537">Impossibile riprodurre app in streaming in modalità tablet. Riprova in modalità laptop.</translation>
 <translation id="4129129681837227511">Se vuoi vedere le notifiche nella schermata di blocco, sblocca il dispositivo per cambiare l'impostazione</translation>
-<translation id="4130035430755296270">Continua a passare il mouse sopra per altre opzioni di layout</translation>
 <translation id="4136724716305260864">Funzionalità attiva fino all'alba</translation>
 <translation id="4146833061457621061">Fammi ascoltare musica</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -721,7 +720,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="481455355267255546">Prossimi eventi</translation>
 <translation id="4831034276697007977">Vuoi disattivare i clic automatici?</translation>
 <translation id="4849058404725798627">Evidenzia oggetto con stato attivo della tastiera</translation>
-<translation id="4855250849489639581">Scorri verso il basso per visualizzare altre opzioni di layout</translation>
 <translation id="485592688953820832">Nessuna azione (pausa)</translation>
 <translation id="485634149294284819">Menu per impostare la tastiera</translation>
 <translation id="4860284199500934869">Controlla la tua connessione a Internet per scaricare il file <ph name="FILENAME" /></translation>
@@ -736,6 +734,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4895488851634969361">La batteria è carica.</translation>
 <translation id="490375751687810070">Verticale</translation>
 <translation id="490788395437447240">Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">Attiva <ph name="NETWORK_NAME" /> dopo la configurazione del dispositivo</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918086044614829423">Accetto</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> sta usando la fotocamera</translation>
@@ -1332,6 +1331,7 @@ Nuova installazione</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8131994907636310308">Chiudi notifica toast di ordinamento</translation>
 <translation id="8132793192354020517">Connesso a <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Attiva dopo configur. dispos.</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>
 <translation id="8142441511840089262">Doppio clic</translation>
 <translation id="8142699993796781067">Rete privata</translation>

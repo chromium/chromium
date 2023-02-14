@@ -5854,7 +5854,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6295158916970320988">Todos os sites</translation>
 <translation id="6295855836753816081">A guardar...</translation>
 <translation id="6298962879096096191">Utilizar o Google Play para instalar aplicações para Android</translation>
-<translation id="6300125580697461004">Enviar feedback sobre a poupança de energia</translation>
 <translation id="6300177430812514606">Sem autorização para concluir o envio ou a receção de dados</translation>
 <translation id="630065524203833229">&amp;Sair</translation>
 <translation id="6300718114348072351">Não foi possível configurar automaticamente a <ph name="PRINTER_NAME" />. Especifique detalhes avançados da impressora. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
@@ -6059,7 +6058,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6491376743066338510">Falha na autorização</translation>
 <translation id="6494327278868541139">Mostrar detalhes de proteção melhorada</translation>
 <translation id="6494445798847293442">Não é uma autoridade de certificação</translation>
-<translation id="6497548114956205206">Saber mais sobre a poupança de energia</translation>
 <translation id="6497784818439587832">Altere o tamanho da visualização para diminuir ou aumentar o tamanho dos itens no ecrã</translation>
 <translation id="6497789971060331894">Deslocamento inverso do rato</translation>
 <translation id="6498249116389603658">&amp;Todos os seus idiomas</translation>
@@ -7677,7 +7675,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7955177647836564772">Se o Smart Lock estiver ativado e o telemóvel estiver desbloqueado, não precisa de introduzir uma palavra-passe ou um PIN</translation>
 <translation id="7956373551960864128">As suas impressoras guardadas</translation>
 <translation id="7957074856830851026">Ver informações do dispositivo, como o respetivo número de série ou ID do recurso</translation>
-<translation id="7957186326898555886">Enviar feedback sobre a Poupança de memória</translation>
 <translation id="7959074893852789871">O ficheiro continha vários certificados, sendo que alguns deles não foram importados:</translation>
 <translation id="7959665254555683862">Novo &amp;separador de navegação anónima</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -8107,7 +8104,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8340547030807793004">Mais ações para <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Reveja <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> que enviou recentemente muitas notificações}other{Reveja <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> que enviaram recentemente muitas notificações}}</translation>
 <translation id="8342221978608739536">Não tentei</translation>
-<translation id="8342399870062010251">Saber mais sobre a Poupança de memória</translation>
 <translation id="8342861492835240085">Selecionar uma coleção</translation>
 <translation id="8345848587667658367">Agora, pode ver as fotos, o conteúdo multimédia, as notificações e as apps recentes do seu telemóvel</translation>
 <translation id="8347227221149377169">Tarefas de impressão</translation>
@@ -8420,7 +8416,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8645354835496065562">Continuar a permitir o acesso aos sensores</translation>
 <translation id="8645920082661222035">Prevê e envia-lhe avisos sobre eventos perigosos antes de ocorrerem.</translation>
 <translation id="8646209145740351125">Desativar sincronização</translation>
-<translation id="8646340610303779673">Não é possível obter o PPD (PostScript Printer Description).</translation>
 <translation id="864637694230589560">Geralmente, os sites enviam notificações para informar acerca de notícias de última hora ou mensagens de chat.</translation>
 <translation id="8646467750715887511">As páginas só são carregadas depois de as abrir.</translation>
 <translation id="8647385344110255847">Com a sua autorização, a criança pode utilizar o Google Play para instalar apps</translation>

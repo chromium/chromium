@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">Botão "Retomar jornada". Pressione Enter para retomar a jornada e ver as atividades relevantes no seu histórico do Chrome</translation>
 <translation id="1101672080107056897">Ação de erro</translation>
 <translation id="1103523840287552314">Sempre traduzir do <ph name="LANGUAGE" /></translation>
+<translation id="1104409666019087579">Alguns campos obrigatórios estão em branco. Preencha antes de salvar.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Selecione uma permissão para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Antiguidades e artigos colecionáveis</translation>
@@ -892,7 +893,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3223287115535306850">Throbber de abertura do app</translation>
 <translation id="3223425961342298674">Acesso à localização não permitido</translation>
-<translation id="3225347164936328585">Aplausos</translation>
 <translation id="3225919329040284222">O servidor apresentou um certificado que não coincide com as expectativas incorporadas. Estas expectativas são incluídas para determinados websites de alta segurança com a finalidade de oferecer proteção a você.</translation>
 <translation id="3226128629678568754">Pressione o botão "Atualizar" para reenviar os dados necessários para carregar a página.</translation>
 <translation id="3226387218769101247">Miniaturas</translation>
@@ -949,7 +949,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3340978935015468852">configurações</translation>
 <translation id="3342018947887487892">Depois, um site que você visitar poderá pedir essa informação, sejam os temas ou anúncios sugeridos em sites acessados.</translation>
 <translation id="3342366525167526994">Arte corporal</translation>
-<translation id="3345782426586609320">Olhos</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
 <translation id="3359565626472459400">Casamento</translation>
@@ -1389,7 +1388,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4393632246160856858">Produtos de cuidados com as unhas</translation>
 <translation id="4406883609789734330">Legenda instantânea</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
-<translation id="4407755609041463909">Incêndio</translation>
 <translation id="4408413947728134509">Cookies: <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Produtos eletrônicos de consumo</translation>
 <translation id="4412074349188076601">Esta configuração foi marcada como instalável, mas nenhuma imagem foi fornecida para essa arquitetura. Por isso, ela não pode ser instalada.</translation>
@@ -1775,7 +1773,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5333022057423422993">A senha que você acabou de usar foi encontrada pelo Chrome em uma violação de dados. Para proteger suas contas, recomendamos verificar as senhas salvas.</translation>
 <translation id="5334013548165032829">Registros detalhados do sistema</translation>
 <translation id="5334145288572353250">Salvar endereço?</translation>
-<translation id="5335920952954443287">Coração batendo</translation>
 <translation id="5337569431717511221">Botão "Definir o Chrome como navegador padrão": pressione Enter para usar o Chrome como o navegador padrão do sistema</translation>
 <translation id="5340250774223869109">O aplicativo foi bloqueado</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
@@ -1783,7 +1780,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5344579389779391559">Esta página pode tentar cobrar pagamento em dinheiro</translation>
 <translation id="5347645913823149105">Botão "Personalizar fontes no Chrome". Pressione Enter para personalizar tamanhos e fontes no Chrome</translation>
 <translation id="5355557959165512791">Não é possível acessar <ph name="SITE" /> neste momento, porque o certificado dele foi revogado. Como os ataques e erros de rede são geralmente temporários, esta página provavelmente funcionará mais tarde.</translation>
-<translation id="5356837363448394805">Surpresa</translation>
 <translation id="5357848622083956825">Artes visuais e design</translation>
 <translation id="536296301121032821">Falha ao armazenar as configurações da política</translation>
 <translation id="5363309033720083897">Porta serial permitida pelo administrador</translation>
@@ -2021,6 +2017,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5992691462791905444">Dobra sanfona</translation>
 <translation id="5992805036496113940">Consultar informações usadas para mostrar anúncios</translation>
 <translation id="5995727681868049093">Gerenciar suas informações, sua privacidade e sua segurança na Conta do Google.</translation>
+<translation id="5996887213716993070">O campo <ph name="FIELD" /> é obrigatório</translation>
 <translation id="5997247540087773573">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você a mude e revise as senhas salvas.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6005765687956866568">As informações preenchidas automaticamente foram removidas do formulário</translation>
@@ -2114,7 +2111,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar as ferramentas de acessibilidade nas configurações do Chrome</translation>
 <translation id="6229649258872345286">Viagens em família</translation>
 <translation id="6232271601416750929">Beleza consciente</translation>
-<translation id="6233160458685643793">Sorrindo</translation>
 <translation id="6234122620015464377">Cortar a cada página impressa</translation>
 <translation id="6236290670123303279">Gerenciar configurações</translation>
 <translation id="6240447795304464094">Logotipo do Google Pay</translation>
@@ -2182,7 +2178,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6391700400718590966">A página de credenciais para pagamento seguro sem correspondência está fechada</translation>
 <translation id="6393956493820063117">A política do administrador bloqueou a opção de colar conteúdo de <ph name="ORIGIN_NAME" /> neste local</translation>
 <translation id="6394852772105848029">Este site quer abrir o app <ph name="APP_NAME" /></translation>
-<translation id="6398277657359595425">Chorando muito</translation>
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
 <translation id="6401136357288658127">Essa política está obsoleta. Use a política <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
@@ -2282,7 +2277,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6660413144148052430">local</translation>
 <translation id="6662457027866368246">Primeiro rolo</translation>
 <translation id="666259744093848177">(x86_64 com tradução)</translation>
-<translation id="6663846344464066639">Mãos juntas</translation>
 <translation id="6665553082534466207">Perfuração tripla no lado direito</translation>
 <translation id="6668389483194953109">O nome do tamanho do papel foi encontrado como "custom", mas a propriedade "custom_size" está vazia ou é inválida.</translation>
 <translation id="6671697161687535275">Remover sugestão de formulário do Chromium?</translation>
@@ -2383,7 +2377,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6939469646605424232">Dramas de TV</translation>
 <translation id="6944692733090228304">Você inseriu sua senha em um site que não é gerenciado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger sua conta, não reutilize sua senha em outros apps e sites.</translation>
 <translation id="6945221475159498467">Selecionar</translation>
-<translation id="6946722113367118030">Pensando</translation>
 <translation id="6948051842255602737">Fim de jogo. Sua pontuação é de <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Para ver métodos e requisitos de retirada, selecione um endereço</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2706,7 +2699,6 @@ Mais detalhes:
 <translation id="765676359832457558">Ocultar configurações avançadas...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
-<translation id="7659878911471462949">Lágrimas de alegria</translation>
 <translation id="766014026101194726">{0,plural, =1{O upload desse arquivo está bloqueado pela política do administrador}one{O upload de # arquivo está bloqueado pela política do administrador}other{O upload de # arquivos está bloqueado pela política do administrador}}</translation>
 <translation id="7662298039739062396">Configuração controlada por uma extensão</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -2764,6 +2756,7 @@ Mais detalhes:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Mesma ordem virada para cima</translation>
 <translation id="7785790577395078482">este tablet</translation>
+<translation id="7786368602962652765">Um campo obrigatório está em branco. Preencha antes de salvar.</translation>
 <translation id="7790488044432570133">Os sites que você acessa podem pedir informações ao Chrome para medir a performance dos anúncios. O Chrome permite que os sites coletem tipos limitados de dados, como o horário em que um anúncio apareceu para você.</translation>
 <translation id="7791011319128895129">Não lançada</translation>
 <translation id="7791196057686275387">Agrupar</translation>

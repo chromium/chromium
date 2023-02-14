@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">ଆଲବମ୍ <ph name="TITLE" /> <ph name="DESC" /> ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4111761024568264522">USB ଟଚପ୍ୟାଡ</translation>
 <translation id="4117637339509843559">ଡାର୍କ ମୋଡ୍</translation>
+<translation id="4130035430755296270">ଅଧିକ ଲେଆଉଟ ବିକଳ୍ପ ପାଇଁ ହୋଭର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="4131410914670010031">କଳା ଏବଂ ଧଳା</translation>
 <translation id="4145784616224233563">HTTP ଫାୟାରୱାଲ୍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="4848429997038228357">ଚାଲୁଛି</translation>
 <translation id="4854586501323951986">ବିଲ୍ଟ-ଇନ ଟଚସ୍କ୍ରିନ</translation>
+<translation id="4855250849489639581">ଅଧିକ ଲେଆଉଟ ବିକଳ୍ପ ପାଇଁ ତଳକୁ ସ୍ୱାଇପ କରନ୍ତୁ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}other{<ph name="ERROR_MESSAGE" />{0}ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି}}</translation>
 <translation id="4873827928179867585">ପ୍ରମାଣୀକରଣ ଆଲଗୋରିଦମ</translation>
 <translation id="4880328057631981605">ଆକ୍ସେସ୍ ପଏଣ୍ଟର ନାମ</translation>
@@ -719,7 +721,7 @@
 <translation id="763165478673169849">ଗତଥର ରିସେଟ୍ କରାଯାଇଥିବା ସମୟ</translation>
 <translation id="7648838807254605802">HTTPSର ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7656388927906093505">ଡିଭାଇସଟି ଏକ ମାଉସ ଅଟେ।</translation>
-<translation id="7658239707568436148">ବାତିଲ୍</translation>
+<translation id="7658239707568436148">ବାତିଲ</translation>
 <translation id="7665800271478495366">ଅବତାର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="7690294790491645610">ନୂଆ ପାସ୍‌ୱାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7701040980221191251">କିଛି ନାହିଁ</translation>

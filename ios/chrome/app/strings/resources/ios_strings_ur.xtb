@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">مطابقت پذیری آن کریں</translation>
 <translation id="3181954750937456830">محفوظ براؤزنگ (آپ اور آپ کے آلہ کی خطرناک سائٹس سے حفاظت کرتی ہے)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے غیر مقفل کریں</translation>
+<translation id="3190736958609431397">ٹریک کو کالعدم کریں</translation>
 <translation id="3214379938835224220">‏آپ اپنے iPad ری سیٹ کے حصے کے طور پر سائن آؤٹ ہو گئے تھے۔ سائن ان کرنے کے لیے نیچے جاری رکھیں پر تھپتھپائیں۔</translation>
 <translation id="3224641773458703735">پاس ورڈز برآمد کرنے کیلئے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
@@ -866,7 +867,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="734758817008927353">کارڈ محفوظ کرنے کے اختیارات</translation>
 <translation id="7351537303876921605">سیاق و سباق کے مینو میں لنک بنائیں پر تھپتھپائیں</translation>
 <translation id="7353432112255316844">توثیق کریں کہ یہ آپ ہیں</translation>
-<translation id="7356359962760467032">قیمت کا ٹریک کرنا بند کریں</translation>
 <translation id="7383797227493018512">پڑھنے کی فہرست</translation>
 <translation id="7398893703713203428">لنک تخلیق کریں</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1114,6 +1114,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="952704832371081537">منسوخ کریں</translation>
 <translation id="953008885340860025">‏Chrome سے سائن آوٹ ہو گئے</translation>
 <translation id="959066944189734975">آپ <ph name="CHANNEL_NAME" /> کی پیروی کر رہے ہیں</translation>
+<translation id="980712131080209571">نئی</translation>
 <translation id="981498610235328462">آپ کی تنظیم آپ کو صرف مخصوص اکاؤنٹس کے ساتھ سائن ان کرنے کی اجازت دیتی ہے۔ جن اکاؤنٹس کی اجازت نہیں ہے وہ پوشیدہ ہیں۔</translation>
 <translation id="984509647832111802">مطابقت پذیری کام نہیں کر رہی ہے۔</translation>
 <translation id="988141524645182168">دیگر آلات</translation>

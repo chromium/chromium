@@ -327,6 +327,7 @@
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> অ্যালবাম বেছে নিন</translation>
 <translation id="4111761024568264522">ইউএসবি টাচপ্যাড</translation>
 <translation id="4117637339509843559">'ডার্ক মোড'</translation>
+<translation id="4130035430755296270">আরও লেআউট বিকল্পের জন্য ঘোরাতে থাকুন</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
 <translation id="4145784616224233563">HTTP ফায়ারওয়াল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) DNS রেজোলিউশন</translation>
 <translation id="4848429997038228357">টেস্ট করা হচ্ছে</translation>
 <translation id="4854586501323951986">বিল্ট-ইন টাচস্ক্রিন</translation>
+<translation id="4855250849489639581">আরও লেআউট বিকল্পের জন্য নিচে সোয়াইপ করুন</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}one{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}other{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}}</translation>
 <translation id="4873827928179867585">যাচাইকরণ অ্যালগরিদম</translation>
 <translation id="4880328057631981605">অ্যাক্সেস পয়েন্ট নাম</translation>

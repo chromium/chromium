@@ -579,7 +579,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4123259114412175274">Ak chcete odomknúť svoj Chromebook, uistite sa, že máte v telefóne zapnuté rozhranie Bluetooth</translation>
 <translation id="4125970834901680537">V režime tabletu sa nedajú streamovať aplikácie. Skúste to znova v režime laptopu.</translation>
 <translation id="4129129681837227511">Ak chcete, aby sa na uzamknutej obrazovke zobrazovali upozornenia, odomknite zariadenie a zmeňte nastavenie</translation>
-<translation id="4130035430755296270">Ďalšie možnosti rozloženia zobrazíte umiestnením kurzora na príslušné miesto</translation>
 <translation id="4136724716305260864">Zapnutý do východu slnka</translation>
 <translation id="4146833061457621061">Prehrať hudbu</translation>
 <translation id="4150201353443180367">Displej</translation>
@@ -720,7 +719,6 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="481455355267255546">Ďalšie</translation>
 <translation id="4831034276697007977">Naozaj chcete vypnúť automatické kliknutia?</translation>
 <translation id="4849058404725798627">Zvýrazniť objekt so zameraním klávesnice</translation>
-<translation id="4855250849489639581">Ďalšie možnosti rozloženia zobrazíte potiahnutím nadol</translation>
 <translation id="485592688953820832">Žiadna akcia (pozastaviť)</translation>
 <translation id="485634149294284819">Otvoriť ponuku klávesnice</translation>
 <translation id="4860284199500934869">Ak chcete stiahnuť <ph name="FILENAME" />, skontrolujte pripojenie k sieti</translation>
@@ -735,6 +733,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4895488851634969361">Batéria je úplne nabitá.</translation>
 <translation id="490375751687810070">Na výšku</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batérie</translation>
+<translation id="491504982845934899">Aktivovať <ph name="NETWORK_NAME" /> po nastavení zariadenia</translation>
 <translation id="4917385247580444890">Silné</translation>
 <translation id="4918086044614829423">Prijať</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> momentálne používa kameru</translation>
@@ -1331,6 +1330,7 @@ Nová inštalácia</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8131994907636310308">Zavrieť oznam k zoradeniu</translation>
 <translation id="8132793192354020517">Pripojené k stránke <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Aktivovať po nastavení zar.</translation>
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
 <translation id="8142441511840089262">Dvojité kliknutie</translation>
 <translation id="8142699993796781067">Súkromná sieť</translation>

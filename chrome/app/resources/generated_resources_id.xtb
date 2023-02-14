@@ -5860,7 +5860,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6295158916970320988">Semua situs</translation>
 <translation id="6295855836753816081">Menyimpan...</translation>
 <translation id="6298962879096096191">Menggunakan Google Play untuk memasang aplikasi Android</translation>
-<translation id="6300125580697461004">Kirim masukan tentang penghemat energi</translation>
 <translation id="6300177430812514606">Tidak diizinkan menyelesaikan pengiriman atau penerimaan data</translation>
 <translation id="630065524203833229">K&amp;eluar</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> tidak dapat dikonfigurasi secara otomatis. Harap tentukan detail printer lanjutan. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
@@ -6065,7 +6064,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6491376743066338510">Otorisasi gagal</translation>
 <translation id="6494327278868541139">Tampilkan detail perlindungan yang ditingkatkan</translation>
 <translation id="6494445798847293442">Bukan Otoritas Sertifikasi</translation>
-<translation id="6497548114956205206">Pelajari penghemat energi lebih lanjut</translation>
 <translation id="6497784818439587832">Ubah ukuran layar untuk membuat item di layar menjadi lebih besar atau lebih kecil</translation>
 <translation id="6497789971060331894">Scroll terbalik mouse</translation>
 <translation id="6498249116389603658">&amp;Semua bahasa Anda</translation>
@@ -7683,7 +7681,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7955177647836564772">Jika Smart Lock diaktifkan dan ponsel tidak terkunci, Anda tidak perlu memasukkan sandi atau PIN</translation>
 <translation id="7956373551960864128">Printer yang Anda simpan</translation>
 <translation id="7957074856830851026">Melihat informasi perangkat, seperti nomor seri atau ID aset</translation>
-<translation id="7957186326898555886">Kirim masukan tentang penghemat memori</translation>
 <translation id="7959074893852789871">File berisi beberapa sertifikat, beberapa di antaranya tidak diimpor.</translation>
 <translation id="7959665254555683862">&amp;Tab Samaran Baru</translation>
 <translation id="7961015016161918242">Jangan pernah</translation>
@@ -8113,7 +8110,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8340547030807793004">Tindakan lainnya untuk <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Tinjau <ph name="BEGIN_BOLD" />1 situs<ph name="END_BOLD" /> yang baru-baru ini mengirim banyak notifikasi}other{Tinjau <ph name="BEGIN_BOLD" />{NUM_SITES} situs<ph name="END_BOLD" /> yang baru-baru ini mengirim banyak notifikasi}}</translation>
 <translation id="8342221978608739536">Tidak mencoba</translation>
-<translation id="8342399870062010251">Pelajari penghemat memori lebih lanjut</translation>
 <translation id="8342861492835240085">Pilih koleksi</translation>
 <translation id="8345848587667658367">Anda kini dapat melihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="8347227221149377169">Pekerjaan cetak</translation>
@@ -8133,6 +8129,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8358912028636606457">Mentransmisikan audio tab tidak didukung di perangkat ini.</translation>
 <translation id="835951711479681002">Simpan di Akun Google Anda</translation>
 <translation id="8360140320636871023">Personalisasi tema tampilan Anda</translation>
+<translation id="8360267485906769442">Tombol kirim masukan</translation>
 <translation id="8363095875018065315">stabil</translation>
 <translation id="8363142353806532503">Mikrofon diblokir</translation>
 <translation id="8366396658833131068">Konektivitas jaringan Anda dipulihkan. Pilih jaringan lain atau tekan tombol 'Lanjutkan' di bawah untuk meluncurkan aplikasi kios.</translation>
@@ -8425,7 +8422,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8645354835496065562">Terus izinkan akses sensor</translation>
 <translation id="8645920082661222035">Memperkirakan dan memberikan peringatan terkait peristiwa berbahaya sebelum terjadi</translation>
 <translation id="8646209145740351125">Nonaktifkan sinkronisasi</translation>
-<translation id="8646340610303779673">Tidak dapat mengambil PPD.</translation>
 <translation id="864637694230589560">Situs biasanya mengirim notifikasi untuk memberi tahu Anda tentang berita terbaru atau pesan chat</translation>
 <translation id="8646467750715887511">Halaman dimuat hanya setelah Anda membukanya.</translation>
 <translation id="8647385344110255847">Dengan izin Anda, anak Anda dapat menggunakan Google Play untuk menginstal aplikasi</translation>

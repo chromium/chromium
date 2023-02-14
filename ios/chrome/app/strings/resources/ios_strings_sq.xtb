@@ -302,6 +302,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3181825792072797598">Aktivizo "Sinkronizimin"</translation>
 <translation id="3181954750937456830">"Shfletimi i sigurt" (të mbron ty dhe pajisjen tënde nga sajtet e rrezikshme)</translation>
 <translation id="3184767182050912705">Shkyçe me <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Anulo monitorimin</translation>
 <translation id="3214379938835224220">Ke dalë si pjesë e rivendosjes së iPad. Trokit te "Vazhdo" më poshtë për t'u identifikuar.</translation>
 <translation id="3224641773458703735">Për të eksportuar fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
@@ -866,7 +867,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="734758817008927353">Opsionet për ruajtjen e kartës</translation>
 <translation id="7351537303876921605">Trokit te "Krijo një lidhje" në menynë kontekstuale</translation>
 <translation id="7353432112255316844">Verifiko që je ti</translation>
-<translation id="7356359962760467032">Ndalo monitorimin e çmimeve</translation>
 <translation id="7383797227493018512">Lista e leximit</translation>
 <translation id="7398893703713203428">Krijo një lidhje</translation>
 <translation id="7400418766976504921">URL-ja</translation>
@@ -1114,6 +1114,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="952704832371081537">Anulo</translation>
 <translation id="953008885340860025">Ke dalë nga Chrome</translation>
 <translation id="959066944189734975">Po ndjek <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">R</translation>
 <translation id="981498610235328462">Organizata jote të lejon të identifikohesh vetëm me llogari të caktuara. Llogaritë që nuk lejohen janë të fshehura.</translation>
 <translation id="984509647832111802">Sinkronizimi nuk po punon.</translation>
 <translation id="988141524645182168">Pajisjet e tjera</translation>

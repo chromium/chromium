@@ -304,6 +304,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3181825792072797598">Sinxronizatsiyani yoqish</translation>
 <translation id="3181954750937456830">Saytlarni xavfsiz kezish (sizni va qurilmangizni xavfli saytlardan himoya qiladi)</translation>
 <translation id="3184767182050912705">Qulfni <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan ochish</translation>
+<translation id="3190736958609431397">Kuzatilmasin</translation>
 <translation id="3214379938835224220">iPad qurilmasini tiklash mobaynida hisobingizdan chiqarildingiz. Hisobga kirish uchun quyida davom etish ustiga bosing.</translation>
 <translation id="3224641773458703735">Parollarni eksport qilish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -816,7 +817,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6869389390665537774">Tarix orqali ochilgan sahifalarni koʻrish yoki tozalash mumkin</translation>
 <translation id="687135068089457384">Sozlamalarni ochish</translation>
 <translation id="6873263987691478642">Split View</translation>
-<translation id="6873366418270195926">Istalgan saytda narx tushganda ogohlantirish olasiz. Bu sahifa <ph name="BEGIN_LINK" />Bukmarklarga<ph name="END_LINK" /> saqlandi.</translation>
 <translation id="6882836635272038266">Zararli deb hisoblangan sayt, yuklanma va kengaytmalarga qarshi standart himoya</translation>
 <translation id="6888009575607455378">Haqiqatan ham oʻzgarishlarni bekor qilmoqchimisiz?</translation>
 <translation id="6896758677409633944">Nusxa olish</translation>
@@ -872,7 +872,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="734758817008927353">Kartalarni saqlash parametrlari</translation>
 <translation id="7351537303876921605">Quyi menyudagi Yaratish havolasini bosing</translation>
 <translation id="7353432112255316844">Bu siz ekaningizni isbotlang</translation>
-<translation id="7356359962760467032">Narxlar kuzatuvini toʻxtatish</translation>
 <translation id="7383797227493018512">Mutolaa ro‘yxati</translation>
 <translation id="7398893703713203428">Havola yaratish</translation>
 <translation id="7400418766976504921">URL</translation>

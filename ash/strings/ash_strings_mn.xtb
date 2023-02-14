@@ -133,6 +133,7 @@
 <translation id="163517899691012366">Бүү саад бол горим асаалттай үед мэдэгдлийн дууг хаадаг</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> төхөөрөмж</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
+<translation id="1647986356840967552">Өмнөх хуудас</translation>
 <translation id="1654477262762802994">Дуут асуулга эхлүүлэх</translation>
 <translation id="1668469839109562275">Бүрэлдэхүүн VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
@@ -556,6 +557,7 @@
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="397726367135689299">Батарейн цэнэглэлт найдваргүй байж болзошгүй.</translation>
 <translation id="3977512764614765090">Батарей <ph name="PERCENTAGE" />%-тай байгаа бөгөөд цэнэглэж байна.</translation>
+<translation id="3984536049089846927">Дараагийн хуудас</translation>
 <translation id="3986082989454912832">Хариулах</translation>
 <translation id="3995138139523574647">USB-C төхөөрөмж (ард талын портын баруун тал)</translation>
 <translation id="40062176907008878">Гараар бичих</translation>
@@ -578,7 +580,6 @@
 <translation id="4123259114412175274">Өөрийн Chromebook-н түгжээг тайлахын тулд утасныхаа Bluetooth-г асаалттай эсэхийг шалгана уу</translation>
 <translation id="4125970834901680537">Таблет горимд апп дамжуулах боломжгүй. Зөөврийн компьютерын горимд дахин оролдоно уу.</translation>
 <translation id="4129129681837227511">Мэдэгдлийг түгжигдсэн дэлгэц дээрээ харахын тулд төхөөрөмжийн түгжээг тайлж, тохиргоог өөрчилнө үү</translation>
-<translation id="4130035430755296270">Бүдүүвчийн илүү олон сонголтыг харахын тулд үргэлжлүүлэн зөөгөөрэй</translation>
 <translation id="4136724716305260864">Нар мандах хүртэл асаалттай</translation>
 <translation id="4146833061457621061">Хөгжим тоглуулах</translation>
 <translation id="4150201353443180367">Дэлгэц</translation>
@@ -719,7 +720,6 @@
 <translation id="481455355267255546">Дараагийн</translation>
 <translation id="4831034276697007977">Автомат даралтыг унтраахдаа итгэлтэй байна уу?</translation>
 <translation id="4849058404725798627">Объектыг гарын фокусаар тодруулах</translation>
-<translation id="4855250849489639581">Бүдүүвчийн бусад сонголтыг авах бол доош шударна уу</translation>
 <translation id="485592688953820832">Үйлдэл алга (түр зогсоох)</translation>
 <translation id="485634149294284819">Гарын цэсийг оруулна уу</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> татаж авахын тулд сүлжээний холболтоо шалгана уу</translation>

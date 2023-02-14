@@ -133,11 +133,13 @@
 <translation id="163517899691012366">当“勿扰”模式处于开启状态时，系统会忽略通知</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="1639239467298939599">正在加载</translation>
+<translation id="1647986356840967552">上一页</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">未连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1677582821739292812">有人正在看着您的屏幕</translation>
+<translation id="1683399938733266832">CPU 当前用量：<ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />定时器   <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 地址：<ph name="ADDRESS" /></translation>
@@ -380,6 +382,7 @@
 <translation id="3051189971848907985">正在重命名配置文件。请稍等几分钟。</translation>
 <translation id="3055162170959710888">您今天的设备使用时长：<ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">不支持</translation>
+<translation id="3068622547379332530">版本 <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /><ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">任务栏位于屏幕左侧</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">展开菜单</translation>
@@ -555,6 +558,7 @@
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="397726367135689299">正在充电的电池可能会变得不稳定。</translation>
 <translation id="3977512764614765090">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。</translation>
+<translation id="3984536049089846927">下一页</translation>
 <translation id="3986082989454912832">接听</translation>
 <translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
 <translation id="40062176907008878">手写</translation>
@@ -577,7 +581,7 @@
 <translation id="4123259114412175274">如需解锁 Chromebook，请确保手机的蓝牙已开启</translation>
 <translation id="4125970834901680537">无法在平板电脑模式下流式传输应用。请在笔记本电脑模式下重试。</translation>
 <translation id="4129129681837227511">要想在锁定屏幕上看到通知，请解锁设备以更改设置</translation>
-<translation id="4130035430755296270">将鼠标指针悬停于此处可查看更多布局选项</translation>
+<translation id="4131973331381812765">温度：<ph name="TEMPERATURE" />°C - 当前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">保持开启状态，直到日出</translation>
 <translation id="4146833061457621061">播放音乐</translation>
 <translation id="4150201353443180367">显示</translation>
@@ -718,7 +722,6 @@
 <translation id="481455355267255546">即将到来的活动</translation>
 <translation id="4831034276697007977">确定要关闭自动点击吗？</translation>
 <translation id="4849058404725798627">突出显示键盘焦点所在对象</translation>
-<translation id="4855250849489639581">向下滑动可查看更多布局选项</translation>
 <translation id="485592688953820832">不执行任何操作（暂停）</translation>
 <translation id="485634149294284819">进入键盘菜单</translation>
 <translation id="4860284199500934869">请检查您的网络连接状况以下载“<ph name="FILENAME" />”</translation>

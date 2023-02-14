@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Untuk menyemak sama ada kata laluan anda selamat daripada pelanggaran data dan isu keselamatan lain, <ph name="BEGIN_LINK" />log masuk ke Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Mengenai Chromium</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1231839967188101156">Apabila dihidupkan, Chromium mengosongkan memori daripada tab yang tidak aktif. Ini memberikan tab aktif dan apl lain lebih banyak sumber komputer dan memastikan Chromium pantas. Tab anda yang tidak aktif menjadi aktif semula secara automatik apabila anda kembali kepada tab tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Penjimat Memori Menjadikan Chromium Lebih Pantas</translation>
 <translation id="1315551408014407711">Sediakan profil Chromium baharu anda</translation>
 <translation id="1396446129537741364">Chromium sedang cuba memaparkan kata laluan.</translation>
@@ -351,7 +350,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8550334526674375523">Profil kerja ini terpisah sepenuhnya daripada profil peribadi anda.</translation>
 <translation id="8558383651099478961">Ibu/bapa anda telah mematikan "Kebenaran untuk laman web, apl dan sambungan" untuk Chromium. Tindakan menambah <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak dibenarkan.</translation>
 <translation id="8568283329061645092">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda</translation>
-<translation id="8574036838419011058">Apabila dihidupkan, Chromium menjimatkan kuasa bateri dengan mengehadkan aktiviti latar belakang dan kesan visual, seperti tatal lancar dan kadar bingkai video. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Laman boleh menyimpan maklumat tentang minat anda menggunakan Chromium. Contohnya, jika anda melawat laman untuk membeli kasut untuk maraton, laman tersebut mungkin mentakrifkan minat anda sebagai larian maraton. Kemudian, jika anda melawati laman lain untuk mendaftar perlumbaan, laman tersebut boleh memaparkan kepada anda iklan kasut untuk berlari berdasarkan minat anda.</translation>
 <translation id="8619360774459241877">Melancarkan Chromium...</translation>

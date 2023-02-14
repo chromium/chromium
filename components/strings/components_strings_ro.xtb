@@ -892,7 +892,6 @@
 <translation id="3218181027817787318">Relativă</translation>
 <translation id="3223287115535306850">Pictograma de încărcare pentru lansarea aplicației</translation>
 <translation id="3223425961342298674">Folosirea locației nu este permisă</translation>
-<translation id="3225347164936328585">Aplauze</translation>
 <translation id="3225919329040284222">Serverul a prezentat un certificat care nu se potrivește cu așteptările încorporate. Aceste așteptări sunt incluse pentru anumite site-uri web, cu un grad sporit de securitate, pentru a vă proteja.</translation>
 <translation id="3226128629678568754">Apăsați butonul de reîncărcare pentru a retrimite datele necesare pentru încărcarea paginii.</translation>
 <translation id="3226387218769101247">Miniaturi</translation>
@@ -949,7 +948,6 @@
 <translation id="3340978935015468852">setări</translation>
 <translation id="3342018947887487892">Ulterior, un site pe care îl accesezi poate solicita aceste informații, fie subiectele anunțurilor, fie anunțurile sugerate de site-uri pe care le-ai accesat.</translation>
 <translation id="3342366525167526994">Artă corporală</translation>
-<translation id="3345782426586609320">Ochi</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Modifica setările proxy...</translation>
 <translation id="3359565626472459400">Căsătorie</translation>
@@ -1389,7 +1387,6 @@
 <translation id="4393632246160856858">Produse de îngrijire pentru unghii</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4406896451731180161">rezultate ale căutării</translation>
-<translation id="4407755609041463909">Foc</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> cookie-uri</translation>
 <translation id="4411435778612100394">Produse electronice de larg consum</translation>
 <translation id="4412074349188076601">Configurația este marcată drept configurație care se poate instala, însă nu este oferită nicio imagine pentru această arhitectură, deci nu poate fi instalată.</translation>
@@ -1775,7 +1772,6 @@
 <translation id="5333022057423422993">Chrome a găsit parola pe care tocmai ai folosit-o într-o încălcare a securității datelor. Pentru a-ți securiza conturile, verifică parolele salvate.</translation>
 <translation id="5334013548165032829">Jurnale de sistem detaliate</translation>
 <translation id="5334145288572353250">Salvezi adresa?</translation>
-<translation id="5335920952954443287">Inimă bătând</translation>
 <translation id="5337569431717511221">Butonul Setează Chrome ca browser prestabilit, apasă pe Enter ca să setezi Chrome ca browser prestabilit pentru sistem</translation>
 <translation id="5340250774223869109">Aplicația a fost blocată</translation>
 <translation id="534295439873310000">Dispozitive NFC</translation>
@@ -1783,7 +1779,6 @@
 <translation id="5344579389779391559">Această pagină poate să genereze costuri</translation>
 <translation id="5347645913823149105">Personalizează fonturile în butonul Chrome, apasă pe Enter pentru a personaliza dimensiunea și tipul fontului în Chrome</translation>
 <translation id="5355557959165512791">Nu poți accesa <ph name="SITE" /> acum, deoarece certificatul său a fost revocat. Erorile de rețea și atacurile sunt de obicei temporare și probabil că această pagină va funcționa mai târziu.</translation>
-<translation id="5356837363448394805">Roșeață</translation>
 <translation id="5357848622083956825">Arte vizuale și design</translation>
 <translation id="536296301121032821">Setările pentru politică nu au putut fi stocate</translation>
 <translation id="5363309033720083897">Port serial permis de administrator</translation>
@@ -2114,7 +2109,6 @@
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a personaliza instrumentele de accesibilitate în setările Chrome</translation>
 <translation id="6229649258872345286">Călătorii în familie</translation>
 <translation id="6232271601416750929">Frumusețe naturală</translation>
-<translation id="6233160458685643793">Rânjet</translation>
 <translation id="6234122620015464377">Decupare după fiecare document</translation>
 <translation id="6236290670123303279">Gestionează setările</translation>
 <translation id="6240447795304464094">Sigla Google Pay</translation>
@@ -2182,7 +2176,6 @@
 <translation id="6391700400718590966">Foaia „Datele de conectare pentru plăți securizate nu corespund datelor de conectare” este închisă</translation>
 <translation id="6393956493820063117">Inserarea de pe <ph name="ORIGIN_NAME" /> în această locație a fost blocată de politica implementată de administrator</translation>
 <translation id="6394852772105848029">Site-ul dorește să deschidă aplicația <ph name="APP_NAME" /></translation>
-<translation id="6398277657359595425">Plâns zgomotos</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="6401136357288658127">Această politică este învechită. Ar trebui să folosești politica <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Modifică marcajul</translation>
@@ -2282,7 +2275,6 @@
 <translation id="6660413144148052430">Locație</translation>
 <translation id="6662457027866368246">Prima rolă</translation>
 <translation id="666259744093848177">(x86_64 tradus)</translation>
-<translation id="6663846344464066639">Mâini împreunate</translation>
 <translation id="6665553082534466207">Perforare triplă în dreapta</translation>
 <translation id="6668389483194953109">S-a găsit denumirea dimensiunii de hârtie „personalizată”, dar proprietatea „custom_size” este necompletată sau nevalidă.</translation>
 <translation id="6671697161687535275">Elimini sugestia pentru formular din Chromium?</translation>
@@ -2383,7 +2375,6 @@
 <translation id="6939469646605424232">Drame TV</translation>
 <translation id="6944692733090228304">Ai introdus parola pe un site care nu este gestionat de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Pentru a proteja contul, nu folosi aceeași parolă pentru alte aplicații și site-uri.</translation>
 <translation id="6945221475159498467">Selectează</translation>
-<translation id="6946722113367118030">Se gândește</translation>
 <translation id="6948051842255602737">Jocul s-a terminat. Scorul tău este de <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Pentru a vedea metodele de preluare și cerințele, selectează o adresă</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2706,7 +2697,6 @@ Detalii suplimentare:
 <translation id="765676359832457558">Ascundeți setările avansate...</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7659327900411729175">Plic Kaku 8</translation>
-<translation id="7659878911471462949">Lacrimi de bucurie</translation>
 <translation id="766014026101194726">{0,plural, =1{Încărcarea acestui fișier este blocată de politica implementată de administrator}few{Încărcarea a # fișiere este blocată de politica implementată de administrator}other{Încărcarea a # de fișiere este blocată de politica implementată de administrator}}</translation>
 <translation id="7662298039739062396">Setare controlată de o extensie</translation>
 <translation id="7663736086183791259">Certificat <ph name="CERTIFICATE_VALIDITY" /></translation>

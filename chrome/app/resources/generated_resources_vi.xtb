@@ -5868,7 +5868,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
 <translation id="6295855836753816081">Đang lưu...</translation>
 <translation id="6298962879096096191">Sử dụng Google Play để cài đặt các ứng dụng Android</translation>
-<translation id="6300125580697461004">Gửi ý kiến phản hồi về trình tiết kiệm pin</translation>
 <translation id="6300177430812514606">Không được phép kết thúc quá trình gửi hoặc nhận dữ liệu</translation>
 <translation id="630065524203833229">T&amp;hoát</translation>
 <translation id="6300718114348072351">Không thể tự động định cấu hình cho <ph name="PRINTER_NAME" />. Vui lòng chỉ định các tùy chọn cài đặt nâng cao cho máy in. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -6073,7 +6072,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6491376743066338510">Ủy quyền không thành công</translation>
 <translation id="6494327278868541139">Hiển thị thông tin chi tiết về phương thức bảo vệ nâng cao</translation>
 <translation id="6494445798847293442">Không phải tổ chức phát hành chứng chỉ</translation>
-<translation id="6497548114956205206">Tìm hiểu thêm về trình tiết kiệm pin</translation>
 <translation id="6497784818439587832">Thay đổi kích thước hiển thị để thu nhỏ hoặc phóng to các mục trên màn hình</translation>
 <translation id="6497789971060331894">Đảo ngược hướng cuộn chuột</translation>
 <translation id="6498249116389603658">&amp;Tất cả ngôn ngữ của bạn</translation>
@@ -7691,7 +7689,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7955177647836564772">Nếu bật Smart Lock và mở khoá điện thoại, bạn sẽ không cần nhập mật khẩu hoặc mã PIN</translation>
 <translation id="7956373551960864128">Các máy in bạn đã lưu</translation>
 <translation id="7957074856830851026">Xem thông tin thiết bị, chẳng hạn như số sê-ri hoặc mã tài sản</translation>
-<translation id="7957186326898555886">Gửi ý kiến phản hồi về trình tiết kiệm bộ nhớ</translation>
 <translation id="7959074893852789871">Tệp có chứa nhiều chứng chỉ, một vài chứng chỉ trong đó chưa được nhập:</translation>
 <translation id="7959665254555683862">&amp;Thẻ ẩn danh mới</translation>
 <translation id="7961015016161918242">Không bao giờ</translation>
@@ -8121,7 +8118,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8340547030807793004">Thao tác khác cho <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Xem lại <ph name="BEGIN_BOLD" />1 trang web<ph name="END_BOLD" /> đã gửi nhiều thông báo gần đây}other{Xem lại <ph name="BEGIN_BOLD" />{NUM_SITES} trang web<ph name="END_BOLD" /> đã gửi nhiều thông báo gần đây}}</translation>
 <translation id="8342221978608739536">Chưa thử</translation>
-<translation id="8342399870062010251">Tìm hiểu thêm về trình tiết kiệm bộ nhớ</translation>
 <translation id="8342861492835240085">Chọn một bộ sưu tập</translation>
 <translation id="8345848587667658367">Giờ đây, bạn có thể xem ứng dụng, thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại của mình.</translation>
 <translation id="8347227221149377169">Lệnh in</translation>
@@ -8435,7 +8431,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8645354835496065562">Tiếp tục cho phép sử dụng cảm biến</translation>
 <translation id="8645920082661222035">Dự đoán và cảnh báo cho bạn các sự kiện nguy hiểm trước khi các sự kiện đó xảy ra</translation>
 <translation id="8646209145740351125">Tắt tính năng đồng bộ hóa</translation>
-<translation id="8646340610303779673">Không thể truy xuất tệp PPD.</translation>
 <translation id="864637694230589560">Các trang web thường gửi thông báo để cho bạn biết về tin nổi bật hoặc tin nhắn trò chuyện</translation>
 <translation id="8646467750715887511">Các trang chỉ tải sau khi bạn mở chúng.</translation>
 <translation id="8647385344110255847">Khi bạn cho phép, con bạn có thể dùng Google Play để cài đặt ứng dụng</translation>

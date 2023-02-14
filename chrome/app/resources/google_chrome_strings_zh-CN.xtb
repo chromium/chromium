@@ -235,6 +235,7 @@
 <translation id="5678190148303298925">{COUNT,plural, =0{您的管理员要求您重新启动 Chrome 以应用此项更新}=1{您的管理员要求您重新启动 Chrome 以应用此项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chrome 以应用此项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="5686916850681061684">自定义和控制 Google Chrome。出了点需要您注意的状况 - 点击即可查看详情。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="570005089986962444">开启此设置后，Chrome 会释放闲置标签页占用的内存。这可让使用中的标签页和其他应用获得更多计算机资源，并让 Chrome 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活动状态。</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 将在 1 秒后重新启动}other{Google Chrome 将在 # 秒后重新启动}}</translation>
 <translation id="5727531838415286053">如果 Chrome 随机将您加入到了某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序删除您的部分兴趣。兴趣会刷新，除非您将其移除。</translation>
 <translation id="5736850870166430177">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
@@ -358,7 +359,6 @@
 <translation id="8286862437124483331">Google Chrome正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="828798499196665338">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”。因此，您无法启用该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="8290100596633877290">哎呀！Google Chrome 浏览器崩溃了。是否立即重新启动？</translation>
-<translation id="8341646175450781745">开启此设置后，Chrome 会释放闲置标签页占用的内存。这可让使用中的标签页和其他应用获得更多计算机资源，并让 Chrome 保持快速运行。当您返回到闲置标签页时，它们会自动重新变为活动状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" />或<ph name="BEGIN_LINK_2" />发送反馈<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">此文件存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：网站可以将您的兴趣信息存储在 Chrome 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
@@ -403,7 +403,6 @@
 <translation id="8986207147630327271">您将要向此浏览器添加工作资料并允许您的管理员仅控制此工作资料。</translation>
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有一项可用的 Chrome 更新}=1{有一项可用的 Chrome 更新}other{有一项可用的 Chrome 更新（已发布 # 天）}}</translation>
-<translation id="9003498785844995646">开启此设置后，Chrome 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" />或<ph name="BEGIN_LINK_2" />发送反馈<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex 系统</translation>
 <translation id="9067395829937117663">Google Chrome 仅支持 Windows 7 或更高版本的操作系统。</translation>
 <translation id="911206726377975832">同时删除您的浏览数据吗？</translation>
@@ -414,6 +413,7 @@
 <translation id="93760716455950538">重启 ChromeOS Flex</translation>
 <translation id="940313311831216333">如需在您的所有设备上访问自己的 Chrome 信息，请登录您的帐号，然后开启同步功能。</translation>
 <translation id="943390475793766444">Chrome 建议您扫描此文件，因为它可能包含危险因素。</translation>
+<translation id="963650557422347554">开启此设置后，Chrome 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。</translation>
 <translation id="989369509083708165">Google Chrome 是您的默认浏览器</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 可用于切换 Chrome 个人资料</translation>
 </translationbundle>

@@ -6,7 +6,6 @@
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Se queres gardar imaxes, para que Chromium poida engadir as túas fotos, toca Configuración</translation>
 <translation id="1289216811211435351">Pásate a Chromium</translation>
-<translation id="1352919863522755794">O xestor de contrasinais de Google non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
 <translation id="1361748954329991663">Chromium está desactualizado. Se non hai dispoñible ningunha actualización na <ph name="BEGIN_LINK" />tenda de aplicacións<ph name="END_LINK" />, é posible que o teu dispositivo xa non sexa compatible coas novas versións de Chromium.</translation>
 <translation id="1431818719585918472">Permite que Chromium bloquee as pestanas do modo de incógnito.</translation>
 <translation id="1472013873724362412">A túa conta non funciona en Chromium. Ponte en contacto co teu administrador de dominio ou utiliza unha conta de Google normal para iniciar sesión.</translation>
@@ -36,7 +35,6 @@
 <translation id="2650312721222849884">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, activa a sincronización</translation>
 <translation id="2684230048001240293">Define Chromium como predeterminado para sincronizar as pestanas, os contrasinais e a información de pago con todos os teus dispositivos</translation>
 <translation id="2730884209570016437">Chromium non pode usar a cámara porque a está usando outra aplicación</translation>
-<translation id="2767464022270041271">Non hai contrasinais gardados. O xestor de contrasinais de Google poderá comprobar os teus contrasinais cando os gardes.</translation>
 <translation id="2915596697727466327">Chromium utiliza Face ID para garantir o acceso autorizado aos contrasinais.</translation>
 <translation id="2918709798697875261">A túa organización require que manteñas a sesión pechada en Chromium.</translation>
 <translation id="2942241131342758843">Usa Chromium de forma predeterminada para abrir ligazóns, realizar buscas desde widgets e autocompletar contrasinais noutras aplicacións</translation>
@@ -59,7 +57,6 @@
 <translation id="4681781466797808448">Activar escáner de Chromium</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chromium deste dispositivo</translation>
 <translation id="4828317641996116749">Chromium non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
-<translation id="4840404732697892756">O xestor de contrasinais de Google pode comprobar os teus contrasinais cando inicies sesión coa Conta de Google.</translation>
 <translation id="4985291216379576555">Non tes conexión. Chromium non puido buscar actualizacións</translation>
 <translation id="4996471330284142407">Realiza máis tarefas cunha versión de Chromium sinxela, segura e máis rápida que nunca.</translation>
 <translation id="4999538639245140991">Dado que estás pechando sesión nunha conta xestionada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, eliminaranse os teus datos de Chromium deste dispositivo, pero conservaranse na túa Conta de Google.</translation>
@@ -71,7 +68,6 @@
 <translation id="5521125884468363740">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión e activa a sincronización</translation>
 <translation id="5522297504975449419">Algunhas funcións de Chromium deixarán de estar dispoñibles.</translation>
 <translation id="5573014823074921752">Consello sobre Chromium: Para ver máis opcións relacionadas coas pestanas, mantén premido o botón Mostrar pestanas. Atoparalo na barra de ferramentas, situada na parte inferior ou superior da pantalla.</translation>
-<translation id="5661521615548540542">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="5700709190537129682">Chromium non puido comprobar os teus contrasinais</translation>
 <translation id="5777187867430702742">Páxina de Chromium</translation>
 <translation id="5945387852661427312">Estás iniciando sesión cunha conta xestionada por <ph name="DOMAIN" /> e proporcionándolle ao seu administrador o control dos teus datos de Chromium, que quedarán ligados permanentemente a esta conta. Se pechas sesión en Chromium, eliminaranse os teus datos deste dispositivo, pero seguirán almacenados na túa conta de Google.</translation>
@@ -121,7 +117,6 @@
 <translation id="8460301378281140593">Na configuración do teu iPhone, abre Password Options (Opcións de contrasinais) e selecciona Chromium</translation>
 <translation id="858114650497379505">Podes utilizar os contrasinais que gardaches no xestor de contrasinais noutras aplicacións do teu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
-<translation id="8603022514504485810">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Protéxete en Chromium e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8685813584220679697">Inicia sesión neste sitio e en Chromium.</translation>
@@ -135,7 +130,6 @@ Cuestións que se deben ter en conta:
 
   • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Esta conta e os datos que estean sen gardar quitaranse de Chromium.</translation>
-<translation id="8857676124663337448">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
 <translation id="894437814105052438">Cando peches sesión, Chromium non sincronizará datos novos coa túa Conta de Google. Os datos que se sincronizasen antes permanecerán na conta.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9059693977935746710">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais para <ph name="EMAIL" /></translation>

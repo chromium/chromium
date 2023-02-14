@@ -133,6 +133,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="163517899691012366">Les notifications sont mises en sourdine lorsque le mode Ne pas déranger est activé</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
+<translation id="1647986356840967552">Page précédente</translation>
 <translation id="1654477262762802994">Démarrer une requête vocale</translation>
 <translation id="1668469839109562275">RPV intégré</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> d'autonomie restante</translation>
@@ -555,6 +556,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="397726367135689299">Le recharge de la pile peut ne pas être fiable.</translation>
 <translation id="3977512764614765090">Pile chargée à <ph name="PERCENTAGE" /> % et en cours de recharge.</translation>
+<translation id="3984536049089846927">Page suivante</translation>
 <translation id="3986082989454912832">Répondre</translation>
 <translation id="3995138139523574647">Appareil USB-C (port arrière-droit)</translation>
 <translation id="40062176907008878">Écriture manuscrite</translation>
@@ -577,7 +579,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4123259114412175274">Pour déverrouiller votre Chromebook, assurez-vous que le Bluetooth de votre téléphone est activé</translation>
 <translation id="4125970834901680537">Impossible de diffuser le contenu des applications en mode tablette. Réessayez en mode ordinateur portable.</translation>
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
-<translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
 <translation id="4136724716305260864">Activée jusqu'à l'aube</translation>
 <translation id="4146833061457621061">Faire jouer de la musique</translation>
 <translation id="4150201353443180367">Affichage</translation>
@@ -718,7 +719,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="481455355267255546">À venir</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques?</translation>
 <translation id="4849058404725798627">Mettre l'élément sélectionné par le clavier en surbrillance</translation>
-<translation id="4855250849489639581">Balayer vers le bas pour plus d'options de mise en page</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
 <translation id="485634149294284819">Entrez le clavier du menu</translation>
 <translation id="4860284199500934869">Vérifiez votre connexion réseau pour télécharger <ph name="FILENAME" /></translation>

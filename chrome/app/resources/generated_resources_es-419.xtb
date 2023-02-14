@@ -52,6 +52,7 @@
 <translation id="104710386808485638">¿Quieres reiniciar Linux?</translation>
 <translation id="1047431265488717055">Copiar texto del vínculo</translation>
 <translation id="1048286738600630630">Pantallas</translation>
+<translation id="1048770690598418849">Puedes omitir este paso por ahora; volveremos a intentarlo automáticamente cuando finalices la configuración</translation>
 <translation id="1048986595386481879">Asignación dinámica</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incógnito</translation>
@@ -1620,6 +1621,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2410754283952462441">Elegir una cuenta</translation>
 <translation id="241082044617551207">Complemento desconocido</translation>
 <translation id="2410940059315936967">Un sitio que estés visitando puede incorporar contenido de otros sitios, como imágenes, anuncios y texto. Las cookies que establecen estos otros sitios se denominan cookies de terceros.</translation>
+<translation id="2411666601450687801">No se permiten máquinas virtuales en este dispositivo</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Teclas de función del teclado</translation>
 <translation id="2418307627282545839">Mantén los elementos luminosos y brillantes</translation>
@@ -1881,6 +1883,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="265390580714150011">Valor de campo</translation>
 <translation id="2654553774144920065">Solicitud de impresión</translation>
+<translation id="265748523151262387">No pierdas la conexión con tu teléfono</translation>
 <translation id="2657612187216250073">Configuración de accesibilidad del puntero</translation>
 <translation id="2658941648214598230">¿Deseas mostrar el contenido original?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Las funciones varían según el dispositivo</translation>
@@ -5296,6 +5299,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5801051031414037185">Configurar el teléfono</translation>
 <translation id="5801568494490449797">Preferencias</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5804259315582798390">No se pudo habilitar la recuperación de datos locales</translation>
 <translation id="5805268472388605531">Mantén presionadas las teclas para ver acentos y caracteres especiales</translation>
 <translation id="5805697420284793859">Administrador de ventanas</translation>
 <translation id="5806447147478173900">Almacenamiento total que usan los sitios que se muestran: <ph name="TOTAL_USAGE" /></translation>
@@ -5837,7 +5841,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6295855836753816081">Guardando…</translation>
 <translation id="6298962879096096191">Usar Google Play para instalar apps de Android</translation>
-<translation id="6300125580697461004">Enviar comentarios sobre el ahorro de energía</translation>
 <translation id="6300177430812514606">No puede completar el envío ni la recepción de datos</translation>
 <translation id="630065524203833229">&amp;Salir</translation>
 <translation id="6300718114348072351">No se pudo configurar <ph name="PRINTER_NAME" /> automáticamente. Especifica los detalles avanzados de la impresora. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -6042,7 +6045,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6491376743066338510">Se produjo un error en la autorización</translation>
 <translation id="6494327278868541139">Mostrar detalles de la protección mejorada</translation>
 <translation id="6494445798847293442">No es una entidad de certificación</translation>
-<translation id="6497548114956205206">Más información sobre el ahorro de energía</translation>
 <translation id="6497784818439587832">Cambia el tamaño de la pantalla para agrandar o achicar los elementos que aparecen en pantalla.</translation>
 <translation id="6497789971060331894">Desplazamiento invertido del mouse</translation>
 <translation id="6498249116389603658">&amp;Todos tus idiomas</translation>
@@ -6679,6 +6681,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7047059339731138197">Elige un fondo de pantalla</translation>
 <translation id="7049293980323620022">¿Deseas conservar el archivo?</translation>
 <translation id="7050037487872780845">La configuración del hotspot no es válida</translation>
+<translation id="7051551856857948729">Ocultar el valor del IBAN</translation>
 <translation id="7052237160939977163">Enviar datos de seguimiento de rendimiento</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7055152154916055070">Se bloqueó el redireccionamiento:</translation>
@@ -7659,7 +7662,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7955177647836564772">Si la función Smart Lock está activada y tu teléfono está desbloqueado, no tendrás que ingresar un PIN ni una contraseña.</translation>
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o la ID del activo</translation>
-<translation id="7957186326898555886">Enviar comentarios sobre el ahorro de memoria</translation>
 <translation id="7959074893852789871">El archivo contenía múltiples certificados. Algunos fueron importados:</translation>
 <translation id="7959665254555683862">Nueva pestaña de incógnito</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -8089,7 +8091,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8340547030807793004">Más acciones para <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 sitio<ph name="END_BOLD" /> que envió muchas notificaciones recientemente}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} sitios<ph name="END_BOLD" /> que enviaron muchas notificaciones recientemente}}</translation>
 <translation id="8342221978608739536">No lo intenté</translation>
-<translation id="8342399870062010251">Más información sobre el ahorro de memoria</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8345848587667658367">Ahora puedes ver las apps, las notificaciones, el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
@@ -8109,6 +8110,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8358912028636606457">La transmisión de audio de la pestaña no es compatible con este dispositivo.</translation>
 <translation id="835951711479681002">Guardar en tu Cuenta de Google</translation>
 <translation id="8360140320636871023">Personaliza el tema de la pantalla</translation>
+<translation id="8360267485906769442">Botón para enviar comentarios</translation>
 <translation id="8363095875018065315">estable</translation>
 <translation id="8363142353806532503">Micrófono bloqueado</translation>
 <translation id="8366396658833131068">Se restauró la conexión de red. Selecciona una red distinta o presiona el botón "Continuar" para iniciar la aplicación de kiosco.</translation>
@@ -8386,6 +8388,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8634348081024879304">Ya no podrás usar tu tarjeta virtual con Google Pay. <ph name="BEGIN_LINK" />Más información sobre las tarjetas virtuales<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Cargando de nuevo…</translation>
 <translation id="8636284842992792762">Inicializando extensiones…</translation>
+<translation id="8636323803535540285">Para acceder aquí más rápido, agrega un acceso directo a <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">No permitir que los sitios envíen ventanas emergentes ni utilicen redireccionamientos</translation>
 <translation id="8637688295594795546">Actualización del sistema disponible. Preparando para descargar...</translation>
 <translation id="8639047128869322042">Buscando software dañino…</translation>
@@ -8400,7 +8403,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8645354835496065562">Seguir permitiendo el acceso a los sensores</translation>
 <translation id="8645920082661222035">Predice y te advierte sobre eventos peligrosos antes de que ocurran.</translation>
 <translation id="8646209145740351125">Inhabilitar sincronización</translation>
-<translation id="8646340610303779673">No se puede recuperar el PPD.</translation>
 <translation id="864637694230589560">Los sitios por lo general envían notificaciones sobre noticias de último momento o mensajes de chat.</translation>
 <translation id="8646467750715887511">Las páginas se cargan una vez que las abres.</translation>
 <translation id="8647385344110255847">Con tu permiso, tu hijo puede usar Google Play para instalar apps.</translation>
@@ -8545,6 +8547,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8767621466733104912">Actualizar Chrome automáticamente para todos los usuarios</translation>
 <translation id="8770406935328356739">Directorio de raíz de la extensión</translation>
 <translation id="8771300903067484968">El fondo de pantalla de la página de inicio se restableció al fondo de pantalla predeterminado.</translation>
+<translation id="8773280816776735812">Mostrar el valor del IBAN</translation>
 <translation id="8773302562181397928">Ahorra <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirma que quieres restablecer</translation>
 <translation id="8774934320277480003">Margen superior</translation>

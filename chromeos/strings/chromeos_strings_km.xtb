@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">ជ្រើសរើស​អាល់ប៊ុម <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">ផ្ទាំងប៉ះ USB</translation>
 <translation id="4117637339509843559">មុខងារ​ងងឹត</translation>
+<translation id="4130035430755296270">បន្តដាក់ព្រួញលើ​សម្រាប់​ជម្រើស​ប្លង់​ច្រើនទៀត</translation>
 <translation id="4131410914670010031">ពណ៌ខ្មៅ និងស</translation>
 <translation id="4145784616224233563">ជញ្ជាំងភ្លើង HTTP</translation>
 <translation id="4147897805161313378">Google រូបថត</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) កម្រិតច្បាស់ DNS</translation>
 <translation id="4848429997038228357">កំពុងដំណើរការ</translation>
 <translation id="4854586501323951986">អេក្រង់ថាច់ដែលបានភ្ជាប់​មកជាមួយ​ស្រាប់</translation>
+<translation id="4855250849489639581">អូស​ចុះក្រោមសម្រាប់​ជម្រើសប្លង់​ច្រើន​ទៀត</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> អាចព្យាយាមបាន {0} ដងទៀត}other{<ph name="ERROR_MESSAGE" /> អាចព្យាយាមបាន {0} ដងទៀត}}</translation>
 <translation id="4873827928179867585">ក្បួនផ្ទៀងផ្ទាត់</translation>
 <translation id="4880328057631981605">ឈ្មោះចំណុចចូលប្រើ</translation>

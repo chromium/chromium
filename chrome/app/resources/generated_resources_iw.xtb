@@ -52,6 +52,7 @@
 <translation id="104710386808485638">‏האם להפעיל מחדש את Linux?</translation>
 <translation id="1047431265488717055">העתקת ט&amp;קסט קישור</translation>
 <translation id="1048286738600630630">תצוגות</translation>
+<translation id="1048770690598418849">אפשר לדלג על השלב הזה בינתיים, ובסיום ההגדרה ננסה שוב באופן אוטומטי</translation>
 <translation id="1048986595386481879">הקצאה דינמית</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{מתקבל <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}one{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}two{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}other{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
@@ -1637,6 +1638,7 @@
 <translation id="2410754283952462441">בחירת חשבון</translation>
 <translation id="241082044617551207">פלאגין לא ידוע</translation>
 <translation id="2410940059315936967">‏לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. קובצי cookie שהוגדרו על ידי האתרים האלה נקראים 'קובצי cookie של צד שלישי'.</translation>
+<translation id="2411666601450687801">אי אפשר להשתמש במכונות וירטואליות במכשיר הזה</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">מקשי פונקציה במקלדת</translation>
 <translation id="2418307627282545839">נהנים מאווירה מוארת וזורמת</translation>
@@ -1898,6 +1900,7 @@
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="265390580714150011">ערך שדה </translation>
 <translation id="2654553774144920065">בקשת הדפסה</translation>
+<translation id="265748523151262387">חיבור תמידי לטלפון</translation>
 <translation id="2657612187216250073">ההגדרות בנושא נגישות של הסמן</translation>
 <translation id="2658941648214598230">להציג את התוכן המקורי?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />במכשירים שונים יש תכונות שונות</translation>
@@ -5315,6 +5318,7 @@
 <translation id="5801051031414037185">הגדרת הטלפון</translation>
 <translation id="5801568494490449797">העדפות</translation>
 <translation id="5804241973901381774">הרשאות</translation>
+<translation id="5804259315582798390">נכשלה ההפעלה של שחזור הנתונים המקומיים</translation>
 <translation id="5805268472388605531">כדי לראות סימנים דיאקריטיים ותווים מיוחדים, יש להקיש הקשה ארוכה על מקשי המקלדת</translation>
 <translation id="5805697420284793859">מנהל החלונות</translation>
 <translation id="5806447147478173900">נפח האחסון הכולל שבשימוש של האתרים המוצגים: <ph name="TOTAL_USAGE" /></translation>
@@ -5856,7 +5860,6 @@
 <translation id="6295158916970320988">כל האתרים</translation>
 <translation id="6295855836753816081">בתהליך שמירה...</translation>
 <translation id="6298962879096096191">‏התקנת אפליקציות ל-Android באמצעות Google Play</translation>
-<translation id="6300125580697461004">שליחת משוב לגבי מצב חיסכון באנרגיה</translation>
 <translation id="6300177430812514606">לא מורשים לסיים שליחה או קבלה של נתונים</translation>
 <translation id="630065524203833229">יצ&amp;יאה</translation>
 <translation id="6300718114348072351">לא ניתן היה להגדיר את <ph name="PRINTER_NAME" /> באופן אוטומטי. יש לקבוע את ההגדרות המתקדמות של המדפסת. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -6061,7 +6064,6 @@
 <translation id="6491376743066338510">ההרשאה נכשלה</translation>
 <translation id="6494327278868541139">הצגה של פרטי האבטחה המשופרת</translation>
 <translation id="6494445798847293442">לא רשות אישורים</translation>
-<translation id="6497548114956205206">מידע נוסף על מצב חיסכון באנרגיה</translation>
 <translation id="6497784818439587832">שינוי גודל התצוגה כדי להקטין או להגדיל את הפריטים שמופיעים במסך</translation>
 <translation id="6497789971060331894">גלילה הפוכה עם העכבר</translation>
 <translation id="6498249116389603658">&amp;כל השפות שלך</translation>
@@ -6702,6 +6704,7 @@
 <translation id="7047059339731138197">בחירת רקע</translation>
 <translation id="7049293980323620022">להשאיר את הקובץ?</translation>
 <translation id="7050037487872780845">הגדרה לא תקינה של נקודה לשיתוף אינטרנט</translation>
+<translation id="7051551856857948729">‏הסתרת ערך IBAN</translation>
 <translation id="7052237160939977163">שליחת נתוני מעקב אחר ביצועים</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7055152154916055070">הפניה אוטומטית נחסמה:</translation>
@@ -7681,7 +7684,6 @@
 <translation id="7955177647836564772">‏אם מצב Smart Lock מופעל והטלפון לא נעול, אין צורך להזין סיסמה או קוד אימות</translation>
 <translation id="7956373551960864128">מדפסות שמורות</translation>
 <translation id="7957074856830851026">הצגה של פרטי המכשיר, כמו המספר הסידורי או מזהה הנכס שלו</translation>
-<translation id="7957186326898555886">שליחת משוב לגבי מצב חיסכון בזיכרון</translation>
 <translation id="7959074893852789871">הקובץ הכיל אישורים מרובים, חלקם לא יובאו:</translation>
 <translation id="7959665254555683862">&amp;כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="7961015016161918242">אף פעם</translation>
@@ -8113,7 +8115,6 @@
 <translation id="8340547030807793004">עוד פעולות ב-<ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{יש לבדוק <ph name="BEGIN_BOLD" />אתר אחד<ph name="END_BOLD" /> ששלח הרבה התראות לאחרונה}one{יש לבדוק <ph name="BEGIN_BOLD" />{NUM_SITES} אתרים<ph name="END_BOLD" /> ששלחו הרבה התראות לאחרונה}two{יש לבדוק <ph name="BEGIN_BOLD" />{NUM_SITES} אתרים<ph name="END_BOLD" /> ששלחו הרבה התראות לאחרונה}other{יש לבדוק <ph name="BEGIN_BOLD" />{NUM_SITES} אתרים<ph name="END_BOLD" /> ששלחו הרבה התראות לאחרונה}}</translation>
 <translation id="8342221978608739536">לא ניסיתי</translation>
-<translation id="8342399870062010251">מידע נוסף על מצב חיסכון בזיכרון</translation>
 <translation id="8342861492835240085">בחירת אוסף</translation>
 <translation id="8345848587667658367">עכשיו יש לך אפשרות לראות את התמונות, המדיה, ההתראות והאפליקציות האחרונות שבטלפון</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
@@ -8426,7 +8427,6 @@
 <translation id="8645354835496065562">המשך התרת הגישה לחיישנים</translation>
 <translation id="8645920082661222035">המערכת חוזה אירועים מסוכנים ומזהירה אותך לגביהם לפני שהם מתרחשים</translation>
 <translation id="8646209145740351125">השבתת סנכרון</translation>
-<translation id="8646340610303779673">‏לא ניתן לאחזר את ה-PPD.</translation>
 <translation id="864637694230589560">בדרך כלל, אתרים שולחים התראות כדי לאפשר לך להתעדכן במבזקי החדשות או לקבל הודעות בצ'אט</translation>
 <translation id="8646467750715887511">הדפים ייטענו רק אחרי פתיחתם.</translation>
 <translation id="8647385344110255847">‏באישורך, לילד או לילדה תהיה אפשרות להתקין אפליקציות מ-Google Play</translation>
@@ -8571,6 +8571,7 @@
 <translation id="8767621466733104912">‏עדכון אוטומטי של Chrome אצל כל המשתמשים</translation>
 <translation id="8770406935328356739">ספריית הבסיס של תוסף</translation>
 <translation id="8771300903067484968">רקע דף הפתיחה עבר איפוס לרקע ברירת המחדל.</translation>
+<translation id="8773280816776735812">‏הצגת ערך IBAN</translation>
 <translation id="8773302562181397928">שמירת <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">אישור השחזור</translation>
 <translation id="8774934320277480003">שוליים עליונים</translation>

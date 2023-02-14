@@ -366,7 +366,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8286862437124483331">Google Chrome po përpiqet të shfaqë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="828798499196665338">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chrome. Nuk lejohet aktivizimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome pësoi një ndërprerje aksidentale. Dëshiron ta rinisësh tani?</translation>
-<translation id="8341646175450781745">Kur është aktiv, Chrome liron memorien nga skedat joaktive. Kjo u jep më shumë burime kompjuterike skedave aktive dhe aplikacioneve të tjera dhe bën që Chrome të jetë i shpejtë. Skedat e tua joaktive bëhen përsëri aktive në mënyrë automatike kur kthehesh tek ato. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> ose <ph name="BEGIN_LINK_2" />dërgo komente<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Ky skedar është i rrezikshëm, prandaj Chrome e ka bllokuar atë.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Si i përdorim këto të dhëna:<ph name="END_BOLD" /> Sajtet mund të ruajnë informacione për interesat e tua në Chrome. Për shembull, nëse viziton një sajt për të blerë këpucë për një maratonë, sajti mund ta përcaktojë interesin tënd si vrapim në maratona. Më vonë, nëse viziton një sajt tjetër për t'u regjistruar për një garë, ai sajt mund të të shfaqë një reklamë për këpucë vrapimi bazuar në interesat e tua.</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
@@ -411,7 +410,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8986207147630327271">Po shton një profil pune në këtë shfletues dhe po i jep administratorit tënd kontrollin vetëm mbi profilin e punës.</translation>
 <translation id="8989968390305463310">Historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chrome fshin automatikisht interesat e tua në vazhdimësi çdo muaj. Interesat mund të rifreskohen, përveçse nëse ti i heq ato.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ofrohet një përditësim i Chrome}=1{Ofrohet një përditësim i Chrome}other{Një përditësim i Chrome ofrohet prej # ditësh}}</translation>
-<translation id="9003498785844995646">Kur ai është aktiv, Chrome kursen energjinë e baterisë duke kufizuar aktivitetin në sfond dhe efektet vizuale, si p.sh. lëvizjen e butë dhe shpejtësitë e kuadrove për videot. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> ose <ph name="BEGIN_LINK_2" />dërgo komente<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">Sistemi Chrome OS Flex</translation>
 <translation id="9067395829937117663">Google Chrome kërkon Windows 7 ose një version më të lartë.</translation>
 <translation id="911206726377975832">Të fshihen po ashtu të dhënat e shfletimit?</translation>

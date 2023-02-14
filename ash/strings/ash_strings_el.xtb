@@ -579,7 +579,6 @@
 <translation id="4123259114412175274">Για να ξεκλειδώσετε το Chromebook, βεβαιωθείτε ότι το Bluetooth του τηλεφώνου είναι ενεργοποιημένο</translation>
 <translation id="4125970834901680537">Δεν είναι δυνατή η χρήση εφαρμογών μέσω ροής σε λειτουργία tablet. Δοκιμάστε ξανά σε λειτουργία φορητού υπολογιστή.</translation>
 <translation id="4129129681837227511">Για να βλέπετε ειδοποιήσεις στην οθόνη κλειδώματος, ξεκλειδώστε τη συσκευή για να αλλάξετε τη ρύθμιση</translation>
-<translation id="4130035430755296270">Κρατήστε τον δείκτη πάνω από το στοιχείο για περισσότερες επιλογές διάταξης</translation>
 <translation id="4136724716305260864">Ενεργό μέχρι την ανατολή του ηλίου</translation>
 <translation id="4146833061457621061">Αναπαραγωγή μουσικής</translation>
 <translation id="4150201353443180367">Οθόνη</translation>
@@ -720,7 +719,6 @@
 <translation id="481455355267255546">Ακολουθούν</translation>
 <translation id="4831034276697007977">Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε τα αυτόματα κλικ;</translation>
 <translation id="4849058404725798627">Επισήμανση αντικειμένου με εστίαση στο πληκτρολόγιο</translation>
-<translation id="4855250849489639581">Σύρετε προς τα κάτω για περισσότερες επιλογές διάταξης</translation>
 <translation id="485592688953820832">Καμία ενέργεια (παύση)</translation>
 <translation id="485634149294284819">Άνοιγμα του μενού πληκτρολογίου</translation>
 <translation id="4860284199500934869">Ελέγξτε τη σύνδεση δικτύου για να κατεβάσετε το αρχείο <ph name="FILENAME" /></translation>
@@ -735,6 +733,7 @@
 <translation id="4895488851634969361">Η μπαταρία είναι πλήρης.</translation>
 <translation id="490375751687810070">Κατακόρυφη περιστροφή</translation>
 <translation id="490788395437447240">Μπαταρία <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">Ενεργοποίηση μετά τη ρύθμιση της συσκευής <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Ισχυρό</translation>
 <translation id="4918086044614829423">Αποδοχή</translation>
 <translation id="4919841137949306064">Η εφαρμογή <ph name="APP_NAME" /> χρησιμοποιεί την κάμερά σας αυτήν τη στιγμή</translation>
@@ -1331,6 +1330,7 @@
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
 <translation id="8131994907636310308">Κλείσιμο αναδυόμενης ειδοποίησης ταξινόμησης</translation>
 <translation id="8132793192354020517">Έγινε σύνδεση με το δίκτυο <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Ενεργοποίηση μετά τη ρύθμιση της συσκευής</translation>
 <translation id="813913629614996137">Εκκίνηση…</translation>
 <translation id="8142441511840089262">Διπλό κλικ</translation>
 <translation id="8142699993796781067">Ιδιωτικό δίκτυο</translation>

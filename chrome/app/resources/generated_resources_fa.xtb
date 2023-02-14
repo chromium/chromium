@@ -52,6 +52,7 @@
 <translation id="104710386808485638">‏Linux بازراه‌اندازی شود؟</translation>
 <translation id="1047431265488717055">کپی کردن متن &amp;پیوند</translation>
 <translation id="1048286738600630630">نمایشگرها</translation>
+<translation id="1048770690598418849">می‌توانید فعلاً این مرحله را رد کنید. وقتی راه‌اندازی را به‌پایان رساندید، به‌طور خودکار دوباره امتحان می‌کنیم.</translation>
 <translation id="1048986595386481879">اختصاص‌یافته به‌صورت پویا</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{درحال دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" />}one{درحال دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" />}other{درحال دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">ناشناس</translation>
@@ -1635,6 +1636,7 @@
 <translation id="2410754283952462441">انتخاب حساب</translation>
 <translation id="241082044617551207">افزایه ناشناس</translation>
 <translation id="2410940059315936967">سایتی که بازدید می‌کنید می‌تواند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کند. کوکی‌های تنظیم‌شده توسط سایت‌های دیگر کوکی‌های شخص ثالث نامیده می‌شوند.</translation>
+<translation id="2411666601450687801">هیچ «ماشین مجازی‌ای» در این دستگاه مجاز نیست</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">کلیدهای عملکرد صفحه‌کلید</translation>
 <translation id="2418307627282545839">روشن و دلباز</translation>
@@ -1896,6 +1898,7 @@
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="265390580714150011">مقدار قسمت</translation>
 <translation id="2654553774144920065">درخواست چاپ</translation>
+<translation id="265748523151262387">اتصال با تلفن را حفظ کنید</translation>
 <translation id="2657612187216250073">تنظیمات دسترس‌پذیری اشاره‌گر</translation>
 <translation id="2658941648214598230">محتوای اصلی نشان داده شود؟</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ویژگی‌ها براساس دستگاه متفاوت است</translation>
@@ -4442,7 +4445,7 @@
 <translation id="4980805016576257426">این افزونه بدافزار دارد.</translation>
 <translation id="4981449534399733132">‏برای اینکه داده‌های محصول مرور را از همه دستگاه‌های همگام‌سازی‌شده و حساب Google خود پاک کنید، <ph name="BEGIN_LINK" />به سیستم وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="4982111327868342436">در هر دستگاهی کار را از جایی که متوقف کرده‌اید ادامه دهید</translation>
-<translation id="4986706507552097681">‏هرزمان بخواهید می‌توانید موارد مدنظرتان را برای همگام‌سازی در تنظیمات انتخاب کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی کند.</translation>
+<translation id="4986706507552097681">‏هرزمان بخواهید می‌توانید موارد مدنظرتان را برای همگام‌سازی در تنظیمات انتخاب کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="4986728572522335985">با این کار، همه داده‌های موجود در کلید امنیتی، ازجمله پین آن، پاک می‌شود</translation>
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="49896407730300355">چرخاندن خلاف جهت ع&amp;قربه‌های ساعت</translation>
@@ -5312,6 +5315,7 @@
 <translation id="5801051031414037185">راه‌اندازی تلفن</translation>
 <translation id="5801568494490449797">اولویت‌ها</translation>
 <translation id="5804241973901381774">مجوزها</translation>
+<translation id="5804259315582798390">بازیابی داده محلی فعال نشد</translation>
 <translation id="5805268472388605531">برای دیدن نشانه‌های تکیه و نویسه‌های خاص، کلیدهای صفحه‌کلید را فشار دهید و نگه دارید</translation>
 <translation id="5805697420284793859">مدیر پنجره</translation>
 <translation id="5806447147478173900">مجموع فضای ذخیره‌سازی که سایت‌های نشان‌داده‌شده استفاده کرده‌اند: <ph name="TOTAL_USAGE" /></translation>
@@ -5853,7 +5857,6 @@
 <translation id="6295158916970320988">همه سایت‌ها</translation>
 <translation id="6295855836753816081">در حال ذخیره کردن...</translation>
 <translation id="6298962879096096191">‏برای نصب برنامه‌های Android از Google Play‌ استفاده کنید</translation>
-<translation id="6300125580697461004">ارسال بازخورد درباره بهینه‌سازی انرژی</translation>
 <translation id="6300177430812514606">اجازه ندارد ارسال و دریافت داده را به‌پایان برساند</translation>
 <translation id="630065524203833229">&amp;خروج</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> به‌طور خودکار پیکربندی نشد. لطفاً جزئیات پیشرفته چاپگر را مشخص کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -6058,7 +6061,6 @@
 <translation id="6491376743066338510">مجوز صادر نشد</translation>
 <translation id="6494327278868541139">نمایش جزئیات محافظت بهبودیافته</translation>
 <translation id="6494445798847293442">یک ارائه‌دهنده مجوز نیست</translation>
-<translation id="6497548114956205206">درباره بهینه‌سازی انرژی بیشتر بدانید</translation>
 <translation id="6497784818439587832">تغییر اندازه نمایش برای کوچک‌تر کردن یا بزرگ‌تر کردن موارد روی صفحه‌نمایش</translation>
 <translation id="6497789971060331894">پیمایش معکوس موشواره</translation>
 <translation id="6498249116389603658">&amp;همه زبان‌های شما</translation>
@@ -6697,6 +6699,7 @@
 <translation id="7047059339731138197">انتخاب پس‌زمینه</translation>
 <translation id="7049293980323620022">فایل حفظ شود؟</translation>
 <translation id="7050037487872780845">پیکربندی نقطه اتصال نامعتبر است</translation>
+<translation id="7051551856857948729">‏پنهان کردن شماره IBAN</translation>
 <translation id="7052237160939977163">ارسال داده‌های ردیابی عملکرد</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7055152154916055070">هدایت کردن مسدود شده است:</translation>
@@ -7676,7 +7679,6 @@
 <translation id="7955177647836564772">‏اگر Smart Lock روشن باشد و قفل تلفنتان باز باشد، لازم نیست گذرواژه یا پین را وارد کنید</translation>
 <translation id="7956373551960864128">چاپگرهای ذخیره‌شده شما</translation>
 <translation id="7957074856830851026">دیدن اطلاعات دستگاه، مانند شماره سریال یا شناسه دارایی آن</translation>
-<translation id="7957186326898555886">ارسال بازخورد درباره بهینه‌سازی حافظه</translation>
 <translation id="7959074893852789871">این فایل دارای چندین مجوز است، برخی از آن‌ها وارد نشده‌اند:</translation>
 <translation id="7959665254555683862">برگه ناشناس جدید</translation>
 <translation id="7961015016161918242">هرگز</translation>
@@ -8106,7 +8108,6 @@
 <translation id="8340547030807793004">کنش‌های بیشتر برای <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{مرور <ph name="BEGIN_BOLD" />سایتی<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده است}one{مرور <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده است}other{مرور <ph name="BEGIN_BOLD" />{NUM_SITES} سایت<ph name="END_BOLD" /> که اخیراً تعداد زیادی اعلان ارسال کرده‌اند}}</translation>
 <translation id="8342221978608739536">امتحان نکرده‌ام</translation>
-<translation id="8342399870062010251">درباره بهینه‌سازی حافظه بیشتر بدانید</translation>
 <translation id="8342861492835240085">انتخاب مجموعه</translation>
 <translation id="8345848587667658367">اکنون می‌توانید عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
@@ -8126,6 +8127,7 @@
 <translation id="8358912028636606457">ارسال محتوای صوتی برگه در این دستگاه پشتیبانی نمی‌شود.</translation>
 <translation id="835951711479681002">‏ذخیره در «حساب Google»</translation>
 <translation id="8360140320636871023">شخصی‌سازی زمینه نمایشگر</translation>
+<translation id="8360267485906769442">دکمه ارسال بازخورد</translation>
 <translation id="8363095875018065315">پایدار</translation>
 <translation id="8363142353806532503">میکروفون مسدود شده است</translation>
 <translation id="8366396658833131068">اتصالتان به شبکه بازیابی شد. لطفاً شبکه دیگری را انتخاب کنید یا دکمه «ادامه» را در زیر فشار دهید تا برنامه کیوسکتان را راه‌اندازی کنید.</translation>
@@ -8403,6 +8405,7 @@
 <translation id="8634348081024879304">‏دیگر نمی‌توانید از کارت مجازی‌تان در Google Pay استفاده کنید. <ph name="BEGIN_LINK" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">درحال بارگیری...</translation>
 <translation id="8636284842992792762">درحال دادن مقدار اولیه به افزونه‌ها…</translation>
+<translation id="8636323803535540285">برای اینکه سریع‌تر به اینجا دسترسی پیدا کنید، میان‌بری به <ph name="BRAND" /> اضافه کنید</translation>
 <translation id="8636500887554457830">به سایت‌ها اجازه داده نشود بالاپر ارسال کنند یا از هدایت استفاده کنند</translation>
 <translation id="8637688295594795546">به‌روزرسانی سیستم موجود است. در حال آماده سازی برای بارگیری...</translation>
 <translation id="8639047128869322042">درحال بررسی وجود نرم‌افزار مضر...</translation>
@@ -8417,7 +8420,6 @@
 <translation id="8645354835496065562">دسترسی به حسگر همچنان مجاز باشد</translation>
 <translation id="8645920082661222035">رویدادهای خطرناک را پیش از اینکه اتفاق بیفتند پیش‌بینی می‌کند و درباره آن‌ها به شما هشدار می‌دهد</translation>
 <translation id="8646209145740351125">غیر فعال کردن همگام‌سازی</translation>
-<translation id="8646340610303779673">‏PPD بازیابی نشد.</translation>
 <translation id="864637694230589560">سایت‌ها معمولاً اعلان ارسال می‌کنند تا شما را از اخبار فوری و پیام‌های گپ مطلع کنند</translation>
 <translation id="8646467750715887511">صفحات فقط بعداز باز شدن بارگیری می‌شوند.</translation>
 <translation id="8647385344110255847">‏فرزندتان می‌تواند با اجازه شما از Google Play برای نصب برنامه استفاده کند</translation>
@@ -8562,6 +8564,7 @@
 <translation id="8767621466733104912">‏به‌روزرسانی‌ خودکار Chrome برای همه کاربران</translation>
 <translation id="8770406935328356739">دایرکتوری ریشه افزونه:</translation>
 <translation id="8771300903067484968">پس‌زمینه صفحه شروع روی پس‌زمینه پیش‌فرض بازنشانی شده است.</translation>
+<translation id="8773280816776735812">‏نمایش شماره IBAN</translation>
 <translation id="8773302562181397928">ذخیره <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">تأیید بازیابی</translation>
 <translation id="8774934320277480003">حاشیه بالا</translation>

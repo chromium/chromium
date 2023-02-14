@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Selecciona l'àlbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Ratolí tàctil USB</translation>
 <translation id="4117637339509843559">Mode fosc</translation>
+<translation id="4130035430755296270">Mantén el cursor a sobre per veure més opcions de disseny</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="4145784616224233563">Tallafoc HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) Resolució de DNS</translation>
 <translation id="4848429997038228357">EN EXECUCIÓ</translation>
 <translation id="4854586501323951986">Pantalla tàctil integrada</translation>
+<translation id="4855250849489639581">Llisca cap avall per veure més opcions de disseny</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
 <translation id="4873827928179867585">Algoritme d'autenticació</translation>
 <translation id="4880328057631981605">Nom del punt d'accés</translation>

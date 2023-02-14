@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Para verificar se as suas palavras-passe estão protegidas contra violação de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />inicie sessão no Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1203500561924088507">Agradecemos a instalação. Tem de reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1231839967188101156">Quando está ativado, o Chromium liberta memória dos separadores inativos. Isto permite que os separadores ativos e outras apps tenham mais recursos do computador e mantém o Chromium rápido. Os seus separadores inativos ficam novamente ativos de forma automática quando regressa aos mesmos. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">A Poupança de memória tornou o Chromium mais rápido</translation>
 <translation id="1315551408014407711">Configure o seu novo perfil do Chromium</translation>
 <translation id="1396446129537741364">O Chromium está a tentar mostrar palavras-passe.</translation>
@@ -351,7 +350,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8550334526674375523">Este perfil de trabalho está completamente separado do seu perfil pessoal.</translation>
 <translation id="8558383651099478961">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chromium. Não é permitido adicionar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
-<translation id="8574036838419011058">Quando esta definição está ativada, o Chromium poupa a energia da bateria ao limitar a atividade em segundo plano e os efeitos visuais, como o deslocamento suave e as velocidades de frames do vídeo. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> os sites podem armazenar informações no Chromium sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>
 <translation id="8619360774459241877">A iniciar o Chromium…</translation>

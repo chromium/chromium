@@ -302,6 +302,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3181825792072797598">Troi Cysoni ymlaen</translation>
 <translation id="3181954750937456830">Pori'n Ddiogel (yn eich amddiffyn chi a'ch dyfais rhag gwefannau peryglus)</translation>
 <translation id="3184767182050912705">Datgloi Gyda <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Dadolrhain</translation>
 <translation id="3214379938835224220">Cawsoch eich allgofnodi fel rhan o'ch ailosodiad iPad. Tapiwch parhau isod i fewngofnodi.</translation>
 <translation id="3224641773458703735">I allforio cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="3227137524299004712">Meicroffon</translation>
@@ -866,7 +867,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="734758817008927353">Dewisiadau i Gadw Cerdyn</translation>
 <translation id="7351537303876921605">Tapiwch Creu Dolen yn y Ddewislen Cyd-destunol</translation>
 <translation id="7353432112255316844">Cadarnhewch Mai Chi Sydd Yno</translation>
-<translation id="7356359962760467032">Stopio olrhain prisiau</translation>
 <translation id="7383797227493018512">Rhestr Ddarllen</translation>
 <translation id="7398893703713203428">Creu Dolen</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1114,6 +1114,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="952704832371081537">Canslo</translation>
 <translation id="953008885340860025">Mae Chrome wedi'i Allgofnodi</translation>
 <translation id="959066944189734975">Rydych yn dilyn <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">G</translation>
 <translation id="981498610235328462">Mae eich sefydliad yn caniatáu i chi fewngofnodi gyda rhai cyfrifon yn unig Mae cyfrifon na chaniateir yn cael eu cuddio.</translation>
 <translation id="984509647832111802">Nid yw Cysoni'n Gweithio.</translation>
 <translation id="988141524645182168">Dyfeisiau Eraill</translation>

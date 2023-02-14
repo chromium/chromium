@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Để kiểm tra xem mật khẩu của bạn có bị ảnh hưởng bởi các vụ rò rỉ dữ liệu và sự cố bảo mật khác hay không, hãy <ph name="BEGIN_LINK" />đăng nhập vào Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Giới thiệu về Chromium</translation>
 <translation id="1203500561924088507">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại trình duyệt trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1231839967188101156">Khi bạn bật chế độ này, Chromium sẽ giải phóng bộ nhớ khỏi các thẻ không hoạt động. Nhờ đó, các thẻ đang hoạt động và ứng dụng khác sẽ được sử dụng nhiều tài nguyên máy tính hơn, còn Chromium thì hoạt động nhanh chóng. Các thẻ không hoạt động sẽ tự động hoạt động trở lại khi bạn quay lại các thẻ đó. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Trình tiết kiệm bộ nhớ giúp Chromium hoạt động nhanh hơn</translation>
 <translation id="1315551408014407711">Thiết lập hồ sơ Chromium mới</translation>
 <translation id="1396446129537741364">Chromium đang cố gắng hiển thị mật khẩu.</translation>
@@ -351,7 +350,6 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8550334526674375523">Hồ sơ công việc này hoàn toàn riêng biệt với hồ sơ cá nhân của bạn.</translation>
 <translation id="8558383651099478961">Cha mẹ bạn đã tắt tùy chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chromium. Bạn không được phép thêm <ph name="EXTENSION_TYPE_PARAMETER" /> này.</translation>
 <translation id="8568283329061645092">Chromium có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình</translation>
-<translation id="8574036838419011058">Khi chế độ này bật, Chromium sẽ tiết kiệm pin bằng cách hạn chế hoạt động trong nền và hiệu ứng hình ảnh, chẳng hạn như hiệu ứng cuộn mượt và tốc độ khung hình của video. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cách chúng tôi sử dụng dữ liệu này:<ph name="END_BOLD" /> Các trang web có thể lưu trữ thông tin trên Chromium về mối quan tâm của bạn. Ví dụ: sau khi bạn truy cập một trang web bán giày chạy marathon, trang web đó có thể sẽ xác định rằng bạn quan tâm đến chạy marathon. Sau đó, nếu bạn truy cập một trang web khác để đăng ký thi chạy, thì trang web đó sẽ hiện quảng cáo giày chạy dựa trên mối quan tâm của bạn.</translation>
 <translation id="8619360774459241877">Đang khởi động Chromium...</translation>

@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Redémarrer Linux ?</translation>
 <translation id="1047431265488717055">Copier le te&amp;xte du lien</translation>
 <translation id="1048286738600630630">Affichage</translation>
+<translation id="1048770690598418849">Vous pouvez ignorer cette étape pour le moment, nous réessayerons automatiquement une fois la configuration terminée</translation>
 <translation id="1048986595386481879">Allouée dynamiquement</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}one{Réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}other{Réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
@@ -1624,6 +1625,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2410754283952462441">Sélectionner un compte</translation>
 <translation id="241082044617551207">Plug-in inconnu</translation>
 <translation id="2410940059315936967">Un site que vous consultez peut intégrer des contenus provenant d'autres sites, par exemple des images, des annonces et du texte. Les cookies définis par ces autres sites sont appelés cookies tiers.</translation>
+<translation id="2411666601450687801">Aucune machine virtuelle n'est autorisée sur cet appareil</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Touches de fonction du clavier</translation>
 <translation id="2418307627282545839">Adapté en cas de bonne luminosité</translation>
@@ -1885,6 +1887,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="265390580714150011">Valeur du champ</translation>
 <translation id="2654553774144920065">Requête d'impression</translation>
+<translation id="265748523151262387">Restez connecté avec votre téléphone</translation>
 <translation id="2657612187216250073">Paramètres d'accessibilité du pointeur</translation>
 <translation id="2658941648214598230">Afficher le contenu original ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> Les fonctionnalités varient d'un appareil à l'autre</translation>
@@ -5301,6 +5304,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5801051031414037185">Configurer le téléphone</translation>
 <translation id="5801568494490449797">Préférences</translation>
 <translation id="5804241973901381774">Autorisations</translation>
+<translation id="5804259315582798390">Échec de l'activation de la récupération des données locales</translation>
 <translation id="5805268472388605531">Appuyez de manière prolongée sur les touches du clavier pour afficher les accents et les caractères spéciaux</translation>
 <translation id="5805697420284793859">Gestionnaire de fenêtres</translation>
 <translation id="5806447147478173900">Espace de stockage total utilisé par les sites affichés : <ph name="TOTAL_USAGE" /></translation>
@@ -5842,7 +5846,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6295855836753816081">Enregistrement…</translation>
 <translation id="6298962879096096191">Utilise Google Play pour installer des applications Android</translation>
-<translation id="6300125580697461004">Envoyer des commentaires sur l'économiseur d'énergie</translation>
 <translation id="6300177430812514606">Non autorisé à terminer l'envoi ou la réception de données</translation>
 <translation id="630065524203833229">&amp;Quitter</translation>
 <translation id="6300718114348072351">Impossible de configurer automatiquement <ph name="PRINTER_NAME" />. Veuillez définir des paramètres avancés pour cette imprimante. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -6047,7 +6050,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6491376743066338510">Échec de l'autorisation</translation>
 <translation id="6494327278868541139">Afficher les détails de la protection renforcée</translation>
 <translation id="6494445798847293442">N'est pas une autorité de certification</translation>
-<translation id="6497548114956205206">En savoir plus sur l'économiseur d'énergie</translation>
 <translation id="6497784818439587832">Agrandissez ou réduisez la taille des éléments à l'écran</translation>
 <translation id="6497789971060331894">Défilement inversé avec la souris</translation>
 <translation id="6498249116389603658">&amp;Toutes vos langues</translation>
@@ -6686,6 +6688,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7047059339731138197">Choisissez un arrière-plan</translation>
 <translation id="7049293980323620022">Conserver le fichier ?</translation>
 <translation id="7050037487872780845">Configuration de point d'accès non valide</translation>
+<translation id="7051551856857948729">Masquer la valeur de l'IBAN</translation>
 <translation id="7052237160939977163">Envoyer des informations relatives au suivi des performances</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
@@ -7666,7 +7669,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7955177647836564772">Si Smart Lock est activé et que votre téléphone est déverrouillé, vous n'avez pas besoin de saisir de mot de passe ni de code</translation>
 <translation id="7956373551960864128">Vos imprimantes enregistrées</translation>
 <translation id="7957074856830851026">Voir les informations sur l'appareil telles que son numéro de série ou son identifiant</translation>
-<translation id="7957186326898555886">Envoyer des commentaires sur l'économiseur de mémoire</translation>
 <translation id="7959074893852789871">Le fichier contenait plusieurs certificats, dont certains n'ont pas été importés :</translation>
 <translation id="7959665254555683862">Nouvel ongle&amp;t de navigation privée</translation>
 <translation id="7961015016161918242">Jamais</translation>
@@ -8096,7 +8098,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8340547030807793004">Plus d'actions pour <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Examiner <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> qui a envoyé beaucoup de notifications récemment}one{Examiner <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> qui a envoyé beaucoup de notifications récemment}other{Examiner <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> qui ont envoyé beaucoup de notifications récemment}}</translation>
 <translation id="8342221978608739536">Je n'ai pas essayé.</translation>
-<translation id="8342399870062010251">En savoir plus sur l'économiseur de mémoire</translation>
 <translation id="8342861492835240085">Sélectionner une collection</translation>
 <translation id="8345848587667658367">Vous pouvez désormais afficher les photos, notifications, applis et contenus multimédias récents de votre téléphone</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
@@ -8408,7 +8409,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8645354835496065562">Continuer d'autoriser l'accès aux capteurs</translation>
 <translation id="8645920082661222035">Prédit les événements dangereux et vous en informe avant qu'ils ne surviennent</translation>
 <translation id="8646209145740351125">Désactiver la synchronisation</translation>
-<translation id="8646340610303779673">Impossible de récupérer le PPD.</translation>
 <translation id="864637694230589560">Les sites envoient généralement des notifications pour vous informer que vous avez reçu des alertes infos ou des messages instantanés</translation>
 <translation id="8646467750715887511">Les pages ne se chargent qu'une fois que vous les avez ouvertes.</translation>
 <translation id="8647385344110255847">Si vous l'y autorisez, votre enfant peut utiliser Google Play pour installer des applis</translation>
@@ -8553,6 +8553,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8767621466733104912">Mettre à jour Chrome automatiquement pour tous les utilisateurs</translation>
 <translation id="8770406935328356739">Répertoire racine de l'extension</translation>
 <translation id="8771300903067484968">L'arrière-plan par défaut de la page d'accueil a été rétabli.</translation>
+<translation id="8773280816776735812">Afficher la valeur de l'IBAN</translation>
 <translation id="8773302562181397928">Enregistrer l'imprimante <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirmer la restauration</translation>
 <translation id="8774934320277480003">Marge supérieure</translation>

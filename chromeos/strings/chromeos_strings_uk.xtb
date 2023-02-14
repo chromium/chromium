@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Вибрати альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
 <translation id="4111761024568264522">Сенсорна панель USB</translation>
 <translation id="4117637339509843559">Темний режим</translation>
+<translation id="4130035430755296270">Продовжуйте наводити курсор на варіанти макета</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
 <translation id="4145784616224233563">Брандмауер HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">Перетворення DNS (Android)</translation>
 <translation id="4848429997038228357">ТРИВАЄ</translation>
 <translation id="4854586501323951986">Вбудований сенсорний екран</translation>
+<translation id="4855250849489639581">Проведіть пальцем по екрану вниз, щоб переглянути інші варіанти макета</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Залишилися {0} спроби}many{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроби}}</translation>
 <translation id="4873827928179867585">Алгоритм автентифікації</translation>
 <translation id="4880328057631981605">Ім’я точки доступу</translation>

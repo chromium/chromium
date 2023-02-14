@@ -892,7 +892,6 @@
 <translation id="3218181027817787318">मिलते-जुलते</translation>
 <translation id="3223287115535306850">ऐप्लिकेशन लॉन्च होने की जानकारी देने वाला लोडिंग आइकॉन</translation>
 <translation id="3223425961342298674">जगह की जानकारी ऐक्सेस करने की अनुमति नहीं है</translation>
-<translation id="3225347164936328585">ताली बजाते हुए</translation>
 <translation id="3225919329040284222">सर्वर द्वारा कोई प्रमाणपत्र प्रस्‍तुत किया गया, जो बिल्‍ट-इन अपेक्षाओं से मिलान नहीं करता. इन अपेक्षाओं को आपकी सुरक्षा करने के लिए कुछ, उच्‍च-सुरक्षा वेबसाइटों के लिए शामिल किया गया है.</translation>
 <translation id="3226128629678568754">पेज को लोड करने के लिए ज़रूरी डेटा फिर सबमिट करने के लिए 'फिर लोड करें' बटन दबाएं.</translation>
 <translation id="3226387218769101247">थंबनेल</translation>
@@ -949,7 +948,6 @@
 <translation id="3340978935015468852">सेटिंग</translation>
 <translation id="3342018947887487892">बाद में, आपकी विज़िट की गई कोई साइट, आपकी पसंद के विषयों के बारे में जानकारी मांग सकती है — फिर चाहे वह जानकारी विज्ञापन के विषयों के बारे में हो या आपने जिन जिन साइटों पर आपने विज़िट किया है  उनकी ओर से सुझाए गए विज्ञापन के बारे में हो.</translation>
 <translation id="3342366525167526994">बॉडी आर्ट</translation>
-<translation id="3345782426586609320">आंखें</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग बदलें...</translation>
 <translation id="3359565626472459400">शादी</translation>
@@ -1317,6 +1315,7 @@
 <translation id="4223404254440398437">माइक्रोफ़ोन ऐक्सेस करने की अनुमति नहीं है</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />नेटवर्क निदान चलाकर देखें<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">साइट, आपके कैमरे का इस्तेमाल करने और उसे घुमाने की अनुमति मांग सकती है</translation>
+<translation id="4231448684371260244">8 x 13 इंच</translation>
 <translation id="4235360514405112390">मान्य</translation>
 <translation id="4250431568374086873">इस साइट से आपका कनेक्शन पूरी तरह से सुरक्षित नहीं है</translation>
 <translation id="4250680216510889253">नहीं</translation>
@@ -1389,7 +1388,6 @@
 <translation id="4393632246160856858">नाखूनों की देखभाल से जुड़े प्रॉडक्ट</translation>
 <translation id="4406883609789734330">लाइव कैप्शन</translation>
 <translation id="4406896451731180161">खोज नतीजे</translation>
-<translation id="4407755609041463909">आग</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> कुकी</translation>
 <translation id="4411435778612100394">उपभोक्ता इलेक्ट्रॉनिक्स</translation>
 <translation id="4412074349188076601">इस कॉन्फ़िगरेशन को 'इंस्टॉल किया जा सकता है' के तौर पर मार्क किया गया है, लेकिन इस आर्किटेक्चर के लिए कोई इमेज नहीं दी गई है. इसलिए, इसे इंस्टॉल नहीं किया जा सकता.</translation>
@@ -1775,7 +1773,6 @@
 <translation id="5333022057423422993">Chrome के मुताबिक, आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. आपके खातों को सुरक्षित रखने के लिए, हमारा सुझाव है कि आप अपने सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="5334013548165032829">सिस्टम लॉग की ज़्यादा जानकारी</translation>
 <translation id="5334145288572353250">क्या आप पता सेव करना चाहते हैं?</translation>
-<translation id="5335920952954443287">धड़कता दिल</translation>
 <translation id="5337569431717511221">'Chrome को डिफ़ॉल्ट ब्राउज़र के रूप में सेट करें' बटन, Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करने के लिए Enter दबाएं</translation>
 <translation id="5340250774223869109">ऐप्लिकेशन को ब्लॉक किया गया है</translation>
 <translation id="534295439873310000">एनएफ़सी डिवाइस</translation>
@@ -1783,7 +1780,6 @@
 <translation id="5344579389779391559">यह पेज आपसे शुल्क लेने की कोशिश कर सकता है</translation>
 <translation id="5347645913823149105">Chrome बटन में फ़ॉन्ट को पसंद के मुताबिक बनाएं, Chrome में फ़ॉन्ट साइज़ और टाइपफ़ेस को पसंद के मुताबिक बनाने के लिए, Enter दबाएं</translation>
 <translation id="5355557959165512791">आप इस समय <ph name="SITE" /> पर नहीं जा सकते हैं क्योंकि उसका प्रमाणपत्र रद्द कर दिया गया है. नेटवर्क की गड़बड़ी और हमले आमतौर पर कुछ देर के लिए होते हैं, इसलिए मुमकिन है कि यह पेज बाद में काम करे.</translation>
-<translation id="5356837363448394805">उत्तेजित</translation>
 <translation id="5357848622083956825">विज़ुअल आर्ट और डिज़ाइन</translation>
 <translation id="536296301121032821">नीति सेटिंग संग्रहित करने में विफल</translation>
 <translation id="5363309033720083897">ऐसा सीरियल पोर्ट जिसकी अनुमति आपके एडमिन ने दी है</translation>
@@ -2114,7 +2110,6 @@
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="6229649258872345286">परिवार के साथ यात्रा</translation>
 <translation id="6232271601416750929">प्राकृतिक प्रॉडक्ट</translation>
-<translation id="6233160458685643793">मुस्कुराता हुआ</translation>
 <translation id="6234122620015464377">हर दस्तावेज़ के बाद ट्रिम करें</translation>
 <translation id="6236290670123303279">सेटिंग प्रबंधित करें</translation>
 <translation id="6240447795304464094">Google Pay का लोगो</translation>
@@ -2182,7 +2177,6 @@
 <translation id="6391700400718590966">मेल नहीं खाने वाले पेमेंट क्रेडेंशियल की शीट बंद है</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> से इस जगह पर टेक्स्ट चिपकाने की सुविधा को आपके एडमिन ने ब्लॉक कर दिया है</translation>
 <translation id="6394852772105848029">यह साइट, <ph name="APP_NAME" /> ऐप्लिकेशन को खोलना चाहती है</translation>
-<translation id="6398277657359595425">ज़ोर से रोते हुए</translation>
 <translation id="6398765197997659313">फ़ुल स्क्रीन से बाहर निकलें</translation>
 <translation id="6401136357288658127">यह नीति हटा दी गई है. आपको इसके बजाय, इस <ph name="NEW_POLICY" /> नीति का इस्तेमाल करना चाहिए.</translation>
 <translation id="6404511346730675251">बुकमार्क में बदलाव करें</translation>
@@ -2282,7 +2276,6 @@
 <translation id="6660413144148052430">जगह की जानकारी</translation>
 <translation id="6662457027866368246">पहला रोल</translation>
 <translation id="666259744093848177">(x86_64 का अनुवाद किया गया)</translation>
-<translation id="6663846344464066639">हाथ जोड़े हुए</translation>
 <translation id="6665553082534466207">दाईं ओर ट्रिपल पंच</translation>
 <translation id="6668389483194953109">पेपर साइज़ का नाम "custom" मिला, लेकिन "custom_size" प्रॉपर्टी खाली या अमान्य है.</translation>
 <translation id="6671697161687535275">क्रोमियम से फ़ॉर्म सुझाव निकालें?</translation>
@@ -2383,7 +2376,6 @@
 <translation id="6939469646605424232">टीवी ड्रामा</translation>
 <translation id="6944692733090228304">आपने एक ऐसी साइट पर अपना पासवर्ड डाला है जिसे <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> प्रबंधित नहीं करता है. अपने खाते को सुरक्षित रखने के लिए, दूसरे ऐप्लिकेशन और साइटों पर अपने पासवर्ड का दोबारा इस्तेमाल न करें.</translation>
 <translation id="6945221475159498467">चुनें</translation>
-<translation id="6946722113367118030">सोचते हुए</translation>
 <translation id="6948051842255602737">गेम ओवर, आपका स्कोर <ph name="SCORE" /> है.</translation>
 <translation id="6948701128805548767">पिकअप के तरीके और ज़रूरतें देखने के लिए, कोई पता चुनें</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2707,7 +2699,6 @@
 <translation id="765676359832457558">बेहतर सेटिंग छिपाएं...</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7659327900411729175">काकू 8 साइज़ का लिफ़ाफ़ा</translation>
-<translation id="7659878911471462949">खुशी के आंसू</translation>
 <translation id="766014026101194726">{0,plural, =1{एडमिन नीति के तहत, इस फ़ाइल को अपलोड करने की अनुमति नहीं है}one{एडमिन नीति के तहत, # फ़ाइल को अपलोड करने की अनुमति नहीं है}other{एडमिन नीति के तहत, # फ़ाइलों को अपलोड करने की अनुमति नहीं है}}</translation>
 <translation id="7662298039739062396">सेटिंग किसी एक्सटेंशन से नियंत्रित है</translation>
 <translation id="7663736086183791259">प्रमाणपत्र <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -3197,6 +3188,7 @@
 <translation id="8899807382908246773">तंग करने वाले विज्ञापन</translation>
 <translation id="8903921497873541725">ज़ूम इन करें</translation>
 <translation id="890493561996401738">सुझाव बटन हटाएं, हटाने के लिए Enter दबाएं, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="8910898109640902752">8 x 10 इंच</translation>
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8913778647360618320">'पैसे चुकाने के तरीके प्रबंधित करें' बटन, Chrome की सेटिंग में पैसे चुकाने से जुड़ी जानकारी और क्रेडिट कार्ड की जानकारी प्रबंधित करने के लिए, Enter दबाएं</translation>
 <translation id="8922013791253848639">इस साइट पर विज्ञापनों की हमेशा अनुमति दें</translation>

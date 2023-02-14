@@ -892,7 +892,6 @@
 <translation id="3218181027817787318">Відносна</translation>
 <translation id="3223287115535306850">Тробер запуску додатка</translation>
 <translation id="3223425961342298674">Доступ до геоданих заборонено</translation>
-<translation id="3225347164936328585">Аплодує</translation>
 <translation id="3225919329040284222">Сервер надав сертифікат, який не відповідає очікуваним вбудованим параметрам. Ці очікувані параметри встановлено для певних веб-сайтів із високим рівнем безпеки, щоб захистити вас.</translation>
 <translation id="3226128629678568754">Натисніть кнопку перезавантаження, щоб повторно надіслати дані, потрібні для завантаження сторінки.</translation>
 <translation id="3226387218769101247">Ескізи</translation>
@@ -949,7 +948,6 @@
 <translation id="3340978935015468852">налаштування</translation>
 <translation id="3342018947887487892">Пізніше сайт, який ви відвідаєте, може запитати ваші теми оголошень або рекламу, пропоновану сайтами, які ви відкривали.</translation>
 <translation id="3342366525167526994">Боді-арт</translation>
-<translation id="3345782426586609320">Очі</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Змінити налаштування проксі...</translation>
 <translation id="3359565626472459400">Шлюб</translation>
@@ -1389,7 +1387,6 @@
 <translation id="4393632246160856858">Товари для догляду за нігтями</translation>
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4406896451731180161">результати пошуку</translation>
-<translation id="4407755609041463909">Вогник</translation>
 <translation id="4408413947728134509">Файли cookie: <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Побутова електроніка</translation>
 <translation id="4412074349188076601">Цю конфігурацію позначено як встановлювану, однак оскільки для цієї архітектури не надано образ, її не можна встановити.</translation>
@@ -1775,7 +1772,6 @@
 <translation id="5333022057423422993">Веб-переглядач Chrome виявив, що введений пароль розкрито через порушення безпеки даних. Щоб захистити свої облікові записи, радимо перевірити надійність збережених паролів.</translation>
 <translation id="5334013548165032829">Докладні журнали системи</translation>
 <translation id="5334145288572353250">Зберегти адресу?</translation>
-<translation id="5335920952954443287">Пульсуюче серце</translation>
 <translation id="5337569431717511221">Кнопка "Зробити Chrome веб-переглядачем за умовчанням": натисніть Enter, щоб зробити Chrome веб-переглядачем системи за умовчанням</translation>
 <translation id="5340250774223869109">Додаток заблоковано</translation>
 <translation id="534295439873310000">Пристрої NFC</translation>
@@ -1783,7 +1779,6 @@
 <translation id="5344579389779391559">Ця сторінка може спробувати стягнути плату</translation>
 <translation id="5347645913823149105">Кнопка "Налаштувати шрифти в Chrome"; натисніть Enter, щоб налаштувати розміри та гарнітури шрифтів у Chrome.</translation>
 <translation id="5355557959165512791">Зараз не можна перейти на сторінку <ph name="SITE" />, оскільки цей сертифікат відкликано. Помилки мережі й атаки зазвичай тимчасові, тому ця сторінка, скоріш за все, запрацює пізніше.</translation>
-<translation id="5356837363448394805">Шаріється</translation>
 <translation id="5357848622083956825">Образотворче мистецтво та дизайн</translation>
 <translation id="536296301121032821">Помилка збереження налаштувань правила</translation>
 <translation id="5363309033720083897">Адміністратор дозволив цей послідовний порт</translation>
@@ -2114,7 +2109,6 @@
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях Chrome</translation>
 <translation id="6229649258872345286">Сімейні подорожі</translation>
 <translation id="6232271601416750929">Свідома краса</translation>
-<translation id="6233160458685643793">Сміється</translation>
 <translation id="6234122620015464377">Обрізати після кожного документа</translation>
 <translation id="6236290670123303279">Керувати налаштуваннями</translation>
 <translation id="6240447795304464094">Логотип Google Pay</translation>
@@ -2182,7 +2176,6 @@
 <translation id="6391700400718590966">Закрито нижній екран невідповідності облікових даних для безпечних платежів</translation>
 <translation id="6393956493820063117">Адміністратор заблокував можливість вставляти сюди контент зі сторінки <ph name="ORIGIN_NAME" /></translation>
 <translation id="6394852772105848029">Сайт хоче відкрити додаток <ph name="APP_NAME" /></translation>
-<translation id="6398277657359595425">Гірко ридає</translation>
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
 <translation id="6401136357288658127">Це правило не підтримується. Натомість потрібно застосувати правило <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Редагувати закладку</translation>
@@ -2282,7 +2275,6 @@
 <translation id="6660413144148052430">геодані</translation>
 <translation id="6662457027866368246">Перший рулон</translation>
 <translation id="666259744093848177">(x86_64 перекладено)</translation>
-<translation id="6663846344464066639">Складені руки</translation>
 <translation id="6665553082534466207">Пробити три отвори праворуч</translation>
 <translation id="6668389483194953109">Знайдено назву розміру паперу "custom", але властивість "custom_size" порожня або недійсна.</translation>
 <translation id="6671697161687535275">Видалити пропозицію автозаповнення форм із Chromium?</translation>
@@ -2383,7 +2375,6 @@
 <translation id="6939469646605424232">Телевізійні драми</translation>
 <translation id="6944692733090228304">Ви ввели пароль на сайті, яким не керує <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
 <translation id="6945221475159498467">Вибрати</translation>
-<translation id="6946722113367118030">Думає</translation>
 <translation id="6948051842255602737">Гру закінчено, ваш результат – <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Укажіть адресу, щоб переглянути способи отримання та вимоги.</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2706,7 +2697,6 @@
 <translation id="765676359832457558">Сховати розширені налаштування...</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7659327900411729175">Конверт Kaku 8</translation>
-<translation id="7659878911471462949">Сльози радості</translation>
 <translation id="766014026101194726">{0,plural, =1{Адміністратор заборонив завантажувати цей файл}one{Адміністратор заборонив завантажувати # файл}few{Адміністратор заборонив завантажувати # файли}many{Адміністратор заборонив завантажувати # файлів}other{Адміністратор заборонив завантажувати # файлу}}</translation>
 <translation id="7662298039739062396">Налаштуванням керує розширення</translation>
 <translation id="7663736086183791259">Сертифікат <ph name="CERTIFICATE_VALIDITY" /></translation>

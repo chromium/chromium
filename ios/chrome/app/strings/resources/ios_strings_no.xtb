@@ -302,6 +302,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3181825792072797598">Slå på synkronisering</translation>
 <translation id="3181954750937456830">Safe Browsing (beskytter deg og enheten din mot farlige nettsteder)</translation>
 <translation id="3184767182050912705">Lås opp med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Slutt å spore</translation>
 <translation id="3214379938835224220">Du ble logget av som en del av tilbakestillingen av iPad. Trykk på Fortsett under for å logge på.</translation>
 <translation id="3224641773458703735">For å eksportere passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -812,7 +813,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6869389390665537774">Du kan se sidene du har besøkt, eller fjerne dem fra loggen</translation>
 <translation id="687135068089457384">Vis Innstillinger</translation>
 <translation id="6873263987691478642">Delt visning</translation>
-<translation id="6873366418270195926">Du får varsler hvis prisen settes ned på noe nettsted. Denne siden er lagret i <ph name="BEGIN_LINK" />Bokmerker<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige.</translation>
 <translation id="6888009575607455378">Er du sikker på at du vil forkaste endringene?</translation>
 <translation id="6896758677409633944">Kopiér</translation>
@@ -867,7 +867,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="734758817008927353">Alternativer for lagring av kort</translation>
 <translation id="7351537303876921605">Trykk på Opprett link på den kontekstuelle menyen</translation>
 <translation id="7353432112255316844">Bekreft at det er deg</translation>
-<translation id="7356359962760467032">Stopp prissporing</translation>
 <translation id="7383797227493018512">Leseliste</translation>
 <translation id="7398893703713203428">Opprett link</translation>
 <translation id="7400418766976504921">Nettadresse</translation>

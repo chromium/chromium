@@ -576,7 +576,6 @@
 <translation id="4123259114412175274">Chromebook-ն ապակողպելու համար հեռախոսում միացրեք Bluetooth-ը</translation>
 <translation id="4125970834901680537">Պլանշետի ռեժիմում հնարավոր չէ հավելվածներ հեռարձակել։ Փորձեք անել դա նոթբուքի ռեժիմում։</translation>
 <translation id="4129129681837227511">Ծանուցումները կողպէկրանին տեսնելու համար ապակողպեք սարքը և փոխեք կարգավորումները:</translation>
-<translation id="4130035430755296270">Մկնիկի նշորդը շարունակեք պահել վրան՝ դասավորության այլ տարբերակներ տեսնելու համար</translation>
 <translation id="4136724716305260864">Միացված է մինչև մայրամուտ</translation>
 <translation id="4146833061457621061">Միացնել երաժշտություն</translation>
 <translation id="4150201353443180367">Էկրան</translation>
@@ -717,7 +716,6 @@
 <translation id="481455355267255546">Հաջորդիվ</translation>
 <translation id="4831034276697007977">Իսկապե՞ս ուզում եք անջատել ավտոմատ սեղմումները:</translation>
 <translation id="4849058404725798627">Ընդգծել ստեղնաշարի միջոցով ընտրված օբյեկտները</translation>
-<translation id="4855250849489639581">Սահեցրեք ներքև՝ դասավորության այլ տարբերակներ տեսնելու համար</translation>
 <translation id="485592688953820832">Ոչ մի գործողություն (դադար)</translation>
 <translation id="485634149294284819">Բացել ստեղնաշարի պատուհանը</translation>
 <translation id="4860284199500934869">Ստուգեք կապը՝ <ph name="FILENAME" /> ֆայլը ներբեռնելու համար</translation>
@@ -732,6 +730,7 @@
 <translation id="4895488851634969361">Մարտկոցը լիցքավորված է:</translation>
 <translation id="490375751687810070">Ուղղաձիգ</translation>
 <translation id="490788395437447240">Մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="491504982845934899">Ակտիվացրեք <ph name="NETWORK_NAME" /> ցանցը սարքի կարգավորումից հետո</translation>
 <translation id="4917385247580444890">Ուժեղ</translation>
 <translation id="4918086044614829423">Ընդունել</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> հավելվածը ներկայումս օգտագործում է ձեր տեսախցիկը</translation>
@@ -1327,6 +1326,7 @@
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8131994907636310308">Փակել տեսակավորման մասին ծանուցումը</translation>
 <translation id="8132793192354020517">Միացված է <ph name="NAME" />-ին</translation>
+<translation id="8138705869659070104">Ակտիվացրեք սարքի կարգավ․ հետո</translation>
 <translation id="813913629614996137">Նախապատրաստվում է...</translation>
 <translation id="8142441511840089262">Կրկնակի սեղմում</translation>
 <translation id="8142699993796781067">Մասնավոր ցանց</translation>

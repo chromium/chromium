@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">Увімкнути синхронізацію</translation>
 <translation id="3181954750937456830">Безпечний перегляд (захищає вас і ваш пристрій від небезпечних сайтів)</translation>
 <translation id="3184767182050912705">Розблокувати, використовуючи <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Скасувати відстеження</translation>
 <translation id="3214379938835224220">Ви вийшли з облікового запису, коли було скинуто налаштування iPad. Щоб увійти, натисніть "Продовжити" нижче.</translation>
 <translation id="3224641773458703735">Щоб експортувати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="3227137524299004712">Мікрофон</translation>
@@ -866,7 +867,6 @@
 <translation id="734758817008927353">Опції збереження картки</translation>
 <translation id="7351537303876921605">Натисніть "Створити посилання" в контекстному меню.</translation>
 <translation id="7353432112255316844">Підтвердьте свою особу</translation>
-<translation id="7356359962760467032">Вимкнути відстеження ціни</translation>
 <translation id="7383797227493018512">Список читання</translation>
 <translation id="7398893703713203428">Створити посилання</translation>
 <translation id="7400418766976504921">URL-адреса</translation>
@@ -1114,6 +1114,7 @@
 <translation id="952704832371081537">Скасувати</translation>
 <translation id="953008885340860025">Ви вийшли з облікового запису Chrome</translation>
 <translation id="959066944189734975">Ви підписалися на канал "<ph name="CHANNEL_NAME" />"</translation>
+<translation id="980712131080209571">Н</translation>
 <translation id="981498610235328462">Ваша організація дозволяє входити лише в певні облікові записи. Недозволені облікові записи приховано.</translation>
 <translation id="984509647832111802">Синхронізація не працює.</translation>
 <translation id="988141524645182168">Інші пристрої</translation>

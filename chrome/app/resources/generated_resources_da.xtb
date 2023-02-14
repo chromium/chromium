@@ -5861,7 +5861,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6295158916970320988">Alle websites</translation>
 <translation id="6295855836753816081">Gemmer...</translation>
 <translation id="6298962879096096191">Brug Google Play til at installere Android-apps</translation>
-<translation id="6300125580697461004">Send feedback om energisparefunktionen</translation>
 <translation id="6300177430812514606">Har ikke tilladelse til at sende eller modtage data</translation>
 <translation id="630065524203833229">Af&amp;slut</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kunne ikke konfigureres automatisk. Angiv avancerede indstillinger for printeren. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -6066,7 +6065,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6491376743066338510">Godkendelse mislykkedes</translation>
 <translation id="6494327278868541139">Vis oplysninger om forbedret beskyttelse</translation>
 <translation id="6494445798847293442">Ikke et nøglecenter</translation>
-<translation id="6497548114956205206">Få flere oplysninger om energisparefunktionen</translation>
 <translation id="6497784818439587832">Skift visningsstørrelse for at gøre elementer på skærmen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulning på mus</translation>
 <translation id="6498249116389603658">&amp;Alle dine sprog</translation>
@@ -7685,7 +7683,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7955177647836564772">Hvis Smart Lock er aktiveret, og din telefon er låst op, behøver du ikke at angive en adgangskode eller pinkode</translation>
 <translation id="7956373551960864128">Dine gemte printere</translation>
 <translation id="7957074856830851026">Se enhedsoplysninger som f.eks. serienummer eller aktiv-id</translation>
-<translation id="7957186326898555886">Send feedback om hukommelsessparefunktionen</translation>
 <translation id="7959074893852789871">Filen indeholdt flere certifikater, hvoraf nogle af dem ikke blev importeret:</translation>
 <translation id="7959665254555683862">Ny inkognitofane</translation>
 <translation id="7961015016161918242">Aldrig</translation>
@@ -8115,7 +8112,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8340547030807793004">Flere handlinger for <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Gennemgå <ph name="BEGIN_BOLD" />1 website<ph name="END_BOLD" />, som har sendt mange notifikationer for nylig}one{Gennemgå <ph name="BEGIN_BOLD" />{NUM_SITES} website<ph name="END_BOLD" />, som har sendt mange notifikationer for nylig}other{Gennemgå <ph name="BEGIN_BOLD" />{NUM_SITES} websites<ph name="END_BOLD" />, som har sendt mange notifikationer for nylig}}</translation>
 <translation id="8342221978608739536">Jeg prøvede ikke</translation>
-<translation id="8342399870062010251">Få flere oplysninger om hukommelsessparefunktionen</translation>
 <translation id="8342861492835240085">Vælg en samling</translation>
 <translation id="8345848587667658367">Du kan nu se din telefons seneste billeder, medier, notifikationer og apps</translation>
 <translation id="8347227221149377169">Udskriftsjobs</translation>
@@ -8135,6 +8131,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8358912028636606457">Det er ikke muligt at caste lyd fra faner på denne enhed.</translation>
 <translation id="835951711479681002">Gem på din Google-konto</translation>
 <translation id="8360140320636871023">Tilpas dit skærmtema</translation>
+<translation id="8360267485906769442">Knappen Send feedback</translation>
 <translation id="8363095875018065315">stabil</translation>
 <translation id="8363142353806532503">Der er blokeret for adgang til mikrofonen</translation>
 <translation id="8366396658833131068">Netværksforbindelsen er genoprettet. Vælg et andet netværk, eller tryk på knappen "Fortsæt" nedenfor for at åbne din terminalapp.</translation>
@@ -8427,7 +8424,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8645354835496065562">Fortsæt med at tillade adgang til sensorer</translation>
 <translation id="8645920082661222035">Forudser og advarer dig om skadelige hændelser, før de opstår</translation>
 <translation id="8646209145740351125">Deaktiver synkronisering</translation>
-<translation id="8646340610303779673">PPD-filen kunne ikke vises.</translation>
 <translation id="864637694230589560">Websites sender som regel notifikationer for at informere dig om breaking news eller chatbeskeder</translation>
 <translation id="8646467750715887511">Sider indlæses først, efter du har åbnet dem.</translation>
 <translation id="8647385344110255847">Med din tilladelse kan dit barn bruge Google Play til at installere apps</translation>

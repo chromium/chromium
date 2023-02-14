@@ -365,7 +365,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8286862437124483331">Prehliadač Google Chrome sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>
 <translation id="828798499196665338">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v Chrome. Povolenie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) je zakázané.</translation>
 <translation id="8290100596633877290">Google Chrome zlyhal. Chcete ho spustiť znova?</translation>
-<translation id="8341646175450781745">Keď je táto možnosť zapnutá, Chrome bude uvoľňovať pamäť z neaktívnych kariet. Aktívne karty a ďalšie aplikácie tak získajú viac zdrojov počítača a Chrome zostane rýchly. Neaktívne karty sa automaticky znova aktivujú, keď na ne prejdete. Môžete si prečítať <ph name="BEGIN_LINK" />ďalšie informácie<ph name="END_LINK" /> alebo <ph name="BEGIN_LINK_2" />odoslať spätnú väzbu<ph name="END_LINK_2" />.</translation>
 <translation id="8342675569599923794">Tento súbor je nebezpečný, a preto ho Chrome zablokoval.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Ako používame tieto údaje:<ph name="END_BOLD" /> weby môžu v Chrome ukladať údaje o vašich záujmoch. Ak napríklad navštívite web na nákup obuvi na maratón, daný web môže definovať váš záujem ako behanie maratónov. Ak neskôr navštívite iný, aby ste sa zaregistrovali na preteky, tento web vám môže zobraziť reklamu na bežeckú obuv na základe vašich záujmov.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
@@ -410,7 +409,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8986207147630327271">Do tohto prehliadača pridávate pracovný profil a svojmu správcovi udeľujete kontrolu iba nad ním.</translation>
 <translation id="8989968390305463310">Vaša história prehliadania ovplyvňuje zobrazované reklamy a záujmy, ktoré sú odhadnuté nižšie. Chrome priebežne automaticky odstraňuje vaše záujmy každý mesiac, aby tak chránil vaše súkromie. Záujmy sa môžu obnoviť, pokiaľ ich neodstránite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozícii aktualizácia Chromu}=1{Je k dispozícii aktualizácia Chromu}few{Aktualizácia Chromu je k dispozícii už # dni}many{Aktualizácia Chromu je k dispozícii už # dňa}other{Aktualizácia Chromu je k dispozícii už # dní}}</translation>
-<translation id="9003498785844995646">Keď je táto možnosť zapnutá, Chrome šetrí batériu tým, že obmedzí aktivitu na pozadí a vizuálne efekty, napríklad plynulé posúvanie a snímkové frekvencie videa. Môžete si prečítať <ph name="BEGIN_LINK" />ďalšie informácie<ph name="END_LINK" /> alebo <ph name="BEGIN_LINK_2" />odoslať spätnú väzbu<ph name="END_LINK_2" />.</translation>
 <translation id="9053892488859122171">Systém Chrome OS Flex</translation>
 <translation id="9067395829937117663">Google Chrome vyžaduje Windows 7 alebo vyšší.</translation>
 <translation id="911206726377975832">Chcete tiež odstrániť svoje údaje prehliadania?</translation>

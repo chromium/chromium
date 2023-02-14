@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Vill du starta om Linux?</translation>
 <translation id="1047431265488717055">Kopiera länktext</translation>
 <translation id="1048286738600630630">Skärmar</translation>
+<translation id="1048770690598418849">Du kan hoppa över detta tills vidare så försöker vi igen automatiskt när du har slutfört konfigurationen</translation>
 <translation id="1048986595386481879">Dynamiskt tilldelad</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Tar emot <ph name="ATTACHMENTS" /> från <ph name="DEVICE_NAME" />}other{Tar emot <ph name="ATTACHMENTS" /> från <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -1582,6 +1583,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Anteckningar på låsskärmen sparas automatiskt i <ph name="LOCK_SCREEN_APP_NAME" />. Den senaste anteckningen visas på låsskärmen.</translation>
 <translation id="2353297238722298836">Kamera och mikrofon är tillåtna</translation>
+<translation id="2353910600995338714">Exporten har slutförts</translation>
 <translation id="2355314311311231464">Administration misslyckades eftersom det inte gick att hämta dina kontouppgifter. Försök igen. Felkod: <ph name="ERROR_CODE" />.</translation>
 <translation id="2355477091455974894">Alternativ för energisparläge</translation>
 <translation id="2355604387869345912">Aktivera direktinternetdelning</translation>
@@ -1638,6 +1640,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2410754283952462441">Välj ett konto</translation>
 <translation id="241082044617551207">Okänt pluginprogram</translation>
 <translation id="2410940059315936967">En webbplats som du besöker kan bädda in innehåll från andra webbplatser, till exempel bilder, annonser och text. Cookies som sparas av dessa andra webbplatser kallas tredjepartscookies.</translation>
+<translation id="2411666601450687801">Inga virtuella datorer är tillåtna på den här enheten</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Funktionstangenter på tangentbordet</translation>
 <translation id="2418307627282545839">Låt det vara ljust och fräscht</translation>
@@ -1899,6 +1902,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="265390580714150011">Fältvärde</translation>
 <translation id="2654553774144920065">Utskriftsbegäran</translation>
+<translation id="265748523151262387">Håll kontakten med telefonen</translation>
 <translation id="2657612187216250073">Tillgänglighetsinställningar för pekare</translation>
 <translation id="2658941648214598230">Vill du visa originalinnehållet?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funktionerna varierar beroende på enhet</translation>
@@ -5315,6 +5319,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5801051031414037185">Konfigurera telefon</translation>
 <translation id="5801568494490449797">Inställningar</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
+<translation id="5804259315582798390">Det gick inte att aktivera lokal dataåterställning</translation>
 <translation id="5805268472388605531">Tryck länge på tangenterna för att se accenttecken och specialtecken</translation>
 <translation id="5805697420284793859">Fönsterhanterare</translation>
 <translation id="5806447147478173900">Totalt lagringsutrymme som används av visade webbplatser: <ph name="TOTAL_USAGE" /></translation>
@@ -5401,6 +5406,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5877064549588274448">Kanalen har ändrats. Starta om enheten om du vill tillämpa ändringarna.</translation>
 <translation id="5877584842898320529">Den valda skrivaren är inte tillgänglig eller har inte installerats korrekt. <ph name="BR" /> Kontrollera skrivaren eller välj en annan.</translation>
 <translation id="5878945009165002849">Blockera inloggningsmeddelanden från identitetstjänster</translation>
+<translation id="5881710783061958569">Om så är fallet ska du redigera det sparade lösenordet i <ph name="BRAND" /> så att det matchar det nya lösenordet.</translation>
 <translation id="5882449899683447569">Något gick fel. Dina lösenord importerades inte</translation>
 <translation id="5882919346125742463">Kända nätverk</translation>
 <translation id="5883356647197510494">Behörighet till <ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> har blockerats automatiskt</translation>
@@ -5856,7 +5862,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
 <translation id="6295855836753816081">Sparar ...</translation>
 <translation id="6298962879096096191">Installera appar med hjälp av Google Play</translation>
-<translation id="6300125580697461004">Skicka feedback om energisparläget</translation>
 <translation id="6300177430812514606">Får inte fortsätta att skicka och ta emot data</translation>
 <translation id="630065524203833229">&amp;Avsluta</translation>
 <translation id="6300718114348072351">Det gick inte att konfigurera <ph name="PRINTER_NAME" /> automatiskt. Ange avancerade utskriftsalternativ. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -6061,7 +6066,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6491376743066338510">Auktoriseringen misslyckades</translation>
 <translation id="6494327278868541139">Visa detaljer om förbättrat skydd</translation>
 <translation id="6494445798847293442">Inte från certifikatutfärdare</translation>
-<translation id="6497548114956205206">Läs mer om energisparläget</translation>
 <translation id="6497784818439587832">Ändra skärmstorlek för att göra objekt på skärmen större eller mindre</translation>
 <translation id="6497789971060331894">Omvänd scrollning på musen</translation>
 <translation id="6498249116389603658">&amp;Alla dina språk</translation>
@@ -6698,6 +6702,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7047059339731138197">Välj bakgrund</translation>
 <translation id="7049293980323620022">Vill du behålla filen?</translation>
 <translation id="7050037487872780845">Ogiltig surfzonskonfiguration</translation>
+<translation id="7051551856857948729">Dölj IBAN-värde</translation>
 <translation id="7052237160939977163">Skicka data från resultatspårning</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
@@ -7678,7 +7683,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7955177647836564772">Om Smart Lock är aktiverat och telefonen är upplåst behöver du inte ange lösenord eller pinkod</translation>
 <translation id="7956373551960864128">Dina sparade skrivare</translation>
 <translation id="7957074856830851026">Visa enhetsinformation, t.ex. serienummer eller tillgångs-id</translation>
-<translation id="7957186326898555886">Skicka feedback om minnessparläget</translation>
 <translation id="7959074893852789871">Filen innehöll flera certifikat och några av dem importerades inte:</translation>
 <translation id="7959665254555683862">Ny inkognitoflik</translation>
 <translation id="7961015016161918242">Aldrig</translation>
@@ -8108,7 +8112,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8340547030807793004">Fler åtgärder för <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Granska <ph name="BEGIN_BOLD" />1 webbplats<ph name="END_BOLD" /> som nyligen har skickat många aviseringar}other{Granska <ph name="BEGIN_BOLD" />{NUM_SITES} webbplatser<ph name="END_BOLD" /> som nyligen har skickat många aviseringar}}</translation>
 <translation id="8342221978608739536">Jag försökte inte</translation>
-<translation id="8342399870062010251">Läs mer om minnessparläget</translation>
 <translation id="8342861492835240085">Välj en samling</translation>
 <translation id="8345848587667658367">Nu kan du se de senaste bilderna, mediefilerna, aviseringarna och apparna från telefonen</translation>
 <translation id="8347227221149377169">Utskriftsjobb</translation>
@@ -8420,7 +8423,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8645354835496065562">Fortsätt att tillåta sensoråtkomst</translation>
 <translation id="8645920082661222035">Förutser och varnar dig om farliga händelser innan de inträffar</translation>
 <translation id="8646209145740351125">Inaktivera synkronisering</translation>
-<translation id="8646340610303779673">Det gick inte att hämta PPD-filen.</translation>
 <translation id="864637694230589560">Webbplatser skickar vanligen aviseringar om senaste nytt eller chattmeddelanden</translation>
 <translation id="8646467750715887511">Sidor läses endast in när du har öppnat dem.</translation>
 <translation id="8647385344110255847">Med ditt tillstånd kan ditt barn installera appar från Google Play</translation>
@@ -8565,6 +8567,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8767621466733104912">Uppdatera Chrome automatiskt för alla användare</translation>
 <translation id="8770406935328356739">Tilläggets rotkatalog</translation>
 <translation id="8771300903067484968">Startsidans bakgrund har återställts till standardbakgrunden.</translation>
+<translation id="8773280816776735812">Visa IBAN-värde</translation>
 <translation id="8773302562181397928">Spara <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Bekräfta återställning</translation>
 <translation id="8774934320277480003">Övre marginal</translation>

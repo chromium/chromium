@@ -302,6 +302,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3181825792072797598">Synchronisatie aanzetten</translation>
 <translation id="3181954750937456830">Safe Browsing (hiermee worden jij en je apparaat beschermd tegen gevaarlijke sites)</translation>
 <translation id="3184767182050912705">Ontgrendelen met <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Niet meer volgen</translation>
 <translation id="3214379938835224220">Je bent uitgelogd omdat je iPad wordt gereset. Tik hieronder op Doorgaan om in te loggen.</translation>
 <translation id="3224641773458703735">Als je wachtwoorden wilt exporteren, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="3227137524299004712">Microfoon</translation>
@@ -812,7 +813,6 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6869389390665537774">Je kunt de pagina's zien die je hebt bezocht en ze uit je geschiedenis verwijderen</translation>
 <translation id="687135068089457384">Instellingen tonen</translation>
 <translation id="6873263987691478642">Gesplitste weergave</translation>
-<translation id="6873366418270195926">Je krijgt een melding als de prijs op een site daalt. Deze pagina is opgeslagen in <ph name="BEGIN_LINK" />Bookmarks<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standaardbeveiliging tegen websites, downloads en extensies die als gevaarlijk zijn bestempeld.</translation>
 <translation id="6888009575607455378">Weet je zeker dat je de wijzigingen niet wilt opslaan?</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
@@ -867,7 +867,6 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="734758817008927353">Opties om een kaart op te slaan</translation>
 <translation id="7351537303876921605">Tik op Link maken in het contextmenu</translation>
 <translation id="7353432112255316844">Bevestigen dat jij het bent</translation>
-<translation id="7356359962760467032">Prijzen niet meer volgen</translation>
 <translation id="7383797227493018512">Leeslijst</translation>
 <translation id="7398893703713203428">Link maken</translation>
 <translation id="7400418766976504921">URL</translation>

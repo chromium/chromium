@@ -5851,7 +5851,6 @@
 <translation id="6295158916970320988">ሁሉም ጣቢያዎች</translation>
 <translation id="6295855836753816081">በማስቀመጥ ላይ...</translation>
 <translation id="6298962879096096191">የAndroid መተግበሪያዎችን ለመጫን Google Playን ይጠቀሙ</translation>
-<translation id="6300125580697461004">ስለ ኃይል ቆጣቢ ግብረመልስ ይላኩ</translation>
 <translation id="6300177430812514606">ውሂብ መላክ ወይም መቀበል ለማጠናቀቅ አልተፈቀደም</translation>
 <translation id="630065524203833229">ው&amp;ጣ</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> በራስ ሰር ሊዋቀር አልተቻለም። የላቀ አታሚ ዝርዝሮችን እባክዎ ይጥቀሱ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
@@ -6056,7 +6055,6 @@
 <translation id="6491376743066338510">ፈቀዳ አልተሳካም</translation>
 <translation id="6494327278868541139">የበለጸጉ የጥበቃ ዝርዝሮችን አሳይ</translation>
 <translation id="6494445798847293442">የእውቅና ማረጋገጫ ባለሥልጣን አይደለም</translation>
-<translation id="6497548114956205206">ስለ ኃይል ቆጣቢ የበለጠ ይወቁ</translation>
 <translation id="6497784818439587832">በማያ ገጽዎ ላይ ያሉ ንጥሎችን ለማሳነስ ወይም ለማተለቅ የማሳያ መጠንን ይቀንሱ</translation>
 <translation id="6497789971060331894">የመዳፊት ኋሊዮሽ በሽብለላ ላይ</translation>
 <translation id="6498249116389603658">&amp;ሁሉም የእርስዎ ቋንቋዎች</translation>
@@ -7676,7 +7674,6 @@
 <translation id="7955177647836564772">Smart Lock በርቶ ከሆነ እና የእርስዎ ስልክ የተከፈተ ከሆነ የይለፍ ቃል ወይም ፒን ማስገባት አያስፈልግዎትም</translation>
 <translation id="7956373551960864128">የእርስዎ የተቀመጡ አታሚዎች</translation>
 <translation id="7957074856830851026">እንደ የመለያ ቁጥሩ ወይም የእሴት መታወቂያ ያለ የመሣሪያ መረጃን ይመልከቱ</translation>
-<translation id="7957186326898555886">ስለ የማህደረ ትውስታ ቆጣቢ ግብረመልስ ይላኩ</translation>
 <translation id="7959074893852789871">ፋይሉ አንዳንዶቹ እንዲገቡ ያልተደረጉ በርካታ የእውቅና ማረጋገጫዎችን ይዟል፦</translation>
 <translation id="7959665254555683862">አዲስ ማንነት የማያሳውቅ እና ትር</translation>
 <translation id="7961015016161918242">በፍጹም</translation>
@@ -8111,7 +8108,6 @@ nil</translation>
 <translation id="8340547030807793004">ለ<ph name="DEVICE" /> ተጨማሪ እርምጃዎች</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{በቅርቡ ብዙ ማሳወቂያዎችን የላከ <ph name="BEGIN_BOLD" />1 ጣቢያ<ph name="END_BOLD" />ን ይገምግሙ}one{በቅርቡ ብዙ ማሳወቂያዎችን የላከ <ph name="BEGIN_BOLD" />{NUM_SITES} ጣቢያ<ph name="END_BOLD" />ን ይገምግሙ}other{በቅርቡ ብዙ ማሳወቂያዎችን የላኩ <ph name="BEGIN_BOLD" />{NUM_SITES} ጣቢያዎች<ph name="END_BOLD" />ን ይገምግሙ}}</translation>
 <translation id="8342221978608739536">አልሞከርኩትም</translation>
-<translation id="8342399870062010251">ስለ የማህደረ ትውስታ ቆጣቢ የበለጠ ይወቁ</translation>
 <translation id="8342861492835240085">አንድ ስብስብ ይምረጡ</translation>
 <translation id="8345848587667658367">አሁን የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና መተግበሪያዎች መመልከት ይችላሉ</translation>
 <translation id="8347227221149377169">የኅትመት ሥራዎች</translation>
@@ -8131,6 +8127,7 @@ nil</translation>
 <translation id="8358912028636606457">የትር ኦዲዮን Cast ማድረግ በዚህ መሣሪያ ላይ አይደገፍም።</translation>
 <translation id="835951711479681002">በGoogle መለያዎ ውስጥ ያስቀምጡ</translation>
 <translation id="8360140320636871023">የእርስዎን የማሳያ ገጽታ ግላዊነት ያላብሱ</translation>
+<translation id="8360267485906769442">የግብረመልስ ላክ አዝራር</translation>
 <translation id="8363095875018065315">የረጋ</translation>
 <translation id="8363142353806532503">ማይክሮፎን ታግዷል</translation>
 <translation id="8366396658833131068">የአውታረ መረብ ግንኙነትዎ ወደነበረበት ተመልሷል። እባክዎ የተለየ አውታረ መረብ ይምረጡ ወይም የኪዮስክ መተግበሪያዎን ለማስጀመር «ቀጥል»ን ይጫኑ።</translation>
@@ -8423,7 +8420,6 @@ nil</translation>
 <translation id="8645354835496065562">የዳሳሽ መዳረሻን መፍቀዱን ቀጥል</translation>
 <translation id="8645920082661222035">አደገኛ ክስተቶች ከመፈጠራቸው በፊት ይገምት እና እርስዎን ያስጠነቅቀዎታል</translation>
 <translation id="8646209145740351125">ስምረትን አሰናክል</translation>
-<translation id="8646340610303779673">PPDን ሰርስሮ ማውጣት አልተቻለም።</translation>
 <translation id="864637694230589560">ጣቢያዎች አብዛኛው ጊዜ ስለሰበር ዜና ወይም ስለውይይት መልዕክቶች እርስዎ ለማሳወቅ ማሳወቂያዎችን ይልካሉ</translation>
 <translation id="8646467750715887511">ገጾች የሚጫኑት እርስዎ ከከፈቷቸው በኋላ ብቻ ነው።</translation>
 <translation id="8647385344110255847">በእርስዎ ፈቃድ ልጅዎ መተግበሪያዎችን ለመጫን Google Playን መጠቀም ይችላል</translation>

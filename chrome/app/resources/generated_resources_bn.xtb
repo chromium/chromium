@@ -5864,7 +5864,6 @@
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
 <translation id="6295855836753816081">সংরক্ষণ করা হচ্ছে...</translation>
 <translation id="6298962879096096191">Android অ্যাপ ইনস্টল করতে Google Play ব্যবহার করুন</translation>
-<translation id="6300125580697461004">পাওয়ার সেভার সম্পর্কে মতামত পাঠান</translation>
 <translation id="6300177430812514606">ডেটা পাওয়া বা পাঠানো শেষ করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="630065524203833229">ব&amp;ন্ধ</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> অটোমেটিক কনফিগার করা যাচ্ছে না। প্রিন্টারের উন্নত বিবরণ উল্লেখ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -6069,7 +6068,6 @@
 <translation id="6491376743066338510">অনুমোদন ব্যর্থ হয়েছে</translation>
 <translation id="6494327278868541139">উন্নত সুরক্ষা সংক্রান্ত বিবরণ দেখুন</translation>
 <translation id="6494445798847293442">কোনো শংসাকরণ কর্তৃপক্ষ নয়</translation>
-<translation id="6497548114956205206">পাওয়ার সেভার সম্পর্কে আরও জানুন</translation>
 <translation id="6497784818439587832">স্ক্রিনে কোনও আইটেম বড় বা ছোট করে দেখার জন্য ডিসপ্লে সাইজ পরিবর্তন করা</translation>
 <translation id="6497789971060331894">মাউস উল্টো দিকে স্ক্রল করা</translation>
 <translation id="6498249116389603658">&amp;আপনার সব ভাষা</translation>
@@ -7688,7 +7686,6 @@
 <translation id="7955177647836564772">Smart Lock চালু থাকা অবস্থায় আপনার ফোন যদি আনলক থাকে, তাহলে আপনাকে পাসওয়ার্ড বা পিন লিখতে হবে না</translation>
 <translation id="7956373551960864128">আপনার সেভ করা প্রিন্টার</translation>
 <translation id="7957074856830851026">ডিভাইসের তথ্য দেখুন, যেমন এর সিরিয়াল নম্বর বা অ্যাসেট আইডি</translation>
-<translation id="7957186326898555886">মেমরি সেভার সম্পর্কে মতামত পাঠান</translation>
 <translation id="7959074893852789871">ফাইলটিতে একাধিক শংসাপত্র রয়েছে, এর মধ্যে কয়েকটি আমদানি করা হয়নি:</translation>
 <translation id="7959665254555683862">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="7961015016161918242">কখনই নয়</translation>
@@ -8118,7 +8115,6 @@
 <translation id="8340547030807793004"><ph name="DEVICE" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />১টি সাইট<ph name="END_BOLD" /> পর্যালোচনা করুন যেখান থেকে সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}one{<ph name="BEGIN_BOLD" />{NUM_SITES}টি সাইট<ph name="END_BOLD" /> পর্যালোচনা করুন যেখান থেকে সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}other{<ph name="BEGIN_BOLD" />{NUM_SITES}টি সাইট<ph name="END_BOLD" /> পর্যালোচনা করুন যেখান থেকে সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠানো হয়েছে}}</translation>
 <translation id="8342221978608739536">ব্যবহার করিনি</translation>
-<translation id="8342399870062010251">মেমরি সেভার সম্পর্কে আরও জানুন</translation>
 <translation id="8342861492835240085">একটি সংগ্রহ বেছে নিন</translation>
 <translation id="8345848587667658367">আপনি এখন আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া, বিজ্ঞপ্তি এবং অ্যাপ দেখতে পারেন</translation>
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>
@@ -8430,7 +8426,6 @@
 <translation id="8645354835496065562">সেন্সর অ্যাক্সেস করার অনুমতি চালু রাখুন</translation>
 <translation id="8645920082661222035">ক্ষতিকারক কিছু হতে পারে মনে হলে তা আগে থেকে অনুমান করে আপনাকে সতর্ক করে</translation>
 <translation id="8646209145740351125">সিঙ্ক করা বন্ধ করুন</translation>
-<translation id="8646340610303779673">PPD ফিরিয়ে আনা যায়নি।</translation>
 <translation id="864637694230589560">ব্রেকিং নিউজ বা চ্যাট মেসেজ সম্পর্কে আপনাকে জানাতে সাইট সাধারণত বিজ্ঞপ্তি পাঠিয়ে থাকে</translation>
 <translation id="8646467750715887511">আপনি কোনও পৃষ্ঠা খুললে তবেই সেটি লোড করা হয়।</translation>
 <translation id="8647385344110255847">আপনার সন্তান আপনার অনুমতি নিয়ে অ্যাপ ইনস্টল করতে Google Play ব্যবহার করতে পারবে</translation>

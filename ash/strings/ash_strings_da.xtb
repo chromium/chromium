@@ -133,6 +133,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="163517899691012366">Notifikationer ignoreres, når Forstyr ikke er slået til</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheder</translation>
 <translation id="1639239467298939599">Indlæser</translation>
+<translation id="1647986356840967552">Forrige side</translation>
 <translation id="1654477262762802994">Start en stemmeforespørgsel</translation>
 <translation id="1668469839109562275">Indbygget VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tilbage</translation>
@@ -555,6 +556,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="397726367135689299">Batteriopladningen er muligvis ikke pålidelig.</translation>
 <translation id="3977512764614765090">Batteriet er på <ph name="PERCENTAGE" /> % og oplader.</translation>
+<translation id="3984536049089846927">Næste side</translation>
 <translation id="3986082989454912832">Svar</translation>
 <translation id="3995138139523574647">USB-C-enhed (porten bagpå i højre side)</translation>
 <translation id="40062176907008878">Håndskrift</translation>
@@ -577,7 +579,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4123259114412175274">Bluetooth skal aktiveres, før du kan låse din Chromebook op</translation>
 <translation id="4125970834901680537">Apps kan ikke streames i tablettilstand. Prøv igen i computertilstand.</translation>
 <translation id="4129129681837227511">Du kan se notifikationer på din låseskærm ved at låse skærmen op og ændre indstillingen</translation>
-<translation id="4130035430755296270">Bliv ved med at holde markøren over menuen for at se flere layoutmuligheder</translation>
 <translation id="4136724716305260864">Aktiveret indtil solopgang</translation>
 <translation id="4146833061457621061">Spil musik</translation>
 <translation id="4150201353443180367">Skærm</translation>
@@ -718,7 +719,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="481455355267255546">Næste</translation>
 <translation id="4831034276697007977">Er du sikker på, at du vil deaktivere automatiske klik?</translation>
 <translation id="4849058404725798627">Fremhæv element med tastaturfokus</translation>
-<translation id="4855250849489639581">Stryg nedad for at se flere valgmuligheder for layout</translation>
 <translation id="485592688953820832">Ingen handling (pause)</translation>
 <translation id="485634149294284819">Åbn tastaturmenuen</translation>
 <translation id="4860284199500934869">Tjek din netværksforbindelse for at downloade <ph name="FILENAME" /></translation>

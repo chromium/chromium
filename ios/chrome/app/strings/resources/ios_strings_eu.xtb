@@ -302,6 +302,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3181825792072797598">Aktibatu sinkronizazioa</translation>
 <translation id="3181954750937456830">Arakatze segurua (webgune arriskutsuen aurka babesten zaituzte gailua eta zu)</translation>
 <translation id="3184767182050912705">Desblokeatu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
+<translation id="3190736958609431397">Utzi jarraipena egiteari</translation>
 <translation id="3214379938835224220">iPad-a berrezarri duzunez, saioa amaitu zaizu. Saioa hasteko, sakatu aurrera egiteko aukera.</translation>
 <translation id="3224641773458703735">Pasahitzak esportatzeko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
@@ -866,7 +867,6 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="734758817008927353">Txartela gordetzeko aukerak</translation>
 <translation id="7351537303876921605">Sakatu Create Link (sortu esteka bat) laster-menuan</translation>
 <translation id="7353432112255316844">Egiaztatu zeu zarela</translation>
-<translation id="7356359962760467032">Utzi prezioen jarraipena egiteari</translation>
 <translation id="7383797227493018512">Irakurketa-zerrenda</translation>
 <translation id="7398893703713203428">Sortu esteka bat</translation>
 <translation id="7400418766976504921">URLa</translation>
@@ -1114,6 +1114,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="952704832371081537">Utzi</translation>
 <translation id="953008885340860025">Amaitu egin da Chrome-ko saioa</translation>
 <translation id="959066944189734975">Hasi zara <ph name="CHANNEL_NAME" /> webguneari jarraitzen</translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Erakundeak kontu jakin batzuekin soilik uzten du saioa hasten. Onartuta ez dauden kontuak ezkutatuta daude.</translation>
 <translation id="984509647832111802">Sinkronizazioa ez dabil.</translation>
 <translation id="988141524645182168">Bestelakoak</translation>

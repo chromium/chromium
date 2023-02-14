@@ -359,7 +359,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8286862437124483331">Google Chrome yrittää näyttää salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="828798499196665338">Vanhempasi ovat laittaneet Chromen sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Käyttöönottoa (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
 <translation id="8290100596633877290">Hups! Google Chrome kaatui. Käynnistetäänkö uudelleen?</translation>
-<translation id="8341646175450781745">Kun tämä on päällä, Chrome vapauttaa muistia ei-aktiivisilta välilehdiltä. Näin aktiiviset välilehdet ja muut sovellukset voivat käyttää enemmän tietokoneen resursseja ja Chrome pysyy nopeana. Ei-aktiiviset välilehdet aktivoituvat automaattisesti, kun palaat niihin. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /> tai <ph name="BEGIN_LINK_2" />lähetä palautetta<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Tämä tiedosto on vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Miten käytämme tätä dataa:<ph name="END_BOLD" /> Sivustot voivat tallentaa Chromeen tietoja kiinnostuksen kohteistasi. Jos esimerkiksi käyt sivustolla, koska haluat ostaa kengät maratonia varten, sivusto voi määritellä maratonjuoksun sinua kiinnostavaksi aiheeksi. Jos myöhemmin käyt toisella sivustolla, jolla ilmoittaudut juoksukilpailuun, kyseinen sivusto voi näyttää sinulle mainoksen juoksukengistä kiinnostuksen kohteidesi perusteella.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
@@ -404,7 +403,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8986207147630327271">Olet lisäämässä työprofiilia tähän selaimeen ja antamassa järjestelmänvalvojalle oikeuden hallita pelkkää työprofiilia.</translation>
 <translation id="8989968390305463310">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyyden suojaamiseksi Chrome poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-päivitys on saatavilla}=1{Chrome-päivitys on saatavilla}other{Chrome-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
-<translation id="9003498785844995646">Kun se on päällä, Chrome säästää akkua rajoittamalla taustatoimintaa ja visuaalisia tehosteita, esim. sujuvaa vierittämistä ja videon kuvanopeutta. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /> tai <ph name="BEGIN_LINK_2" />lähetä palautetta<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flexin järjestelmä</translation>
 <translation id="9067395829937117663">Google Chrome edellyttää Windows 7:ää tai uudempaa versiota.</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>

@@ -133,6 +133,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="163517899691012366">Pranešimai nutildomi, kai įjungtas netrukdymo režimas</translation>
 <translation id="1637505162081889933">Įrenginių: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Įkeliama</translation>
+<translation id="1647986356840967552">Ankstesnis puslapis</translation>
 <translation id="1654477262762802994">Pradėti užklausą balsu</translation>
 <translation id="1668469839109562275">Įtaisytasis VPN</translation>
 <translation id="1677472565718498478">Liko <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="397105322502079400">Skaičiuojama...</translation>
 <translation id="397726367135689299">Akumuliatoriaus įkrovimas gali būti nepatikimas.</translation>
 <translation id="3977512764614765090">Aumuliatoriaus įkrova <ph name="PERCENTAGE" /> % ir jis įkraunamas.</translation>
+<translation id="3984536049089846927">Kitas puslapis</translation>
 <translation id="3986082989454912832">Atsakyti</translation>
 <translation id="3995138139523574647">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="40062176907008878">Rašymas ranka</translation>
@@ -577,7 +579,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4123259114412175274">Jei norite atrakinti „Chromebook“, įsitikinkite, kad įjungtas telefono „Bluetooth“ ryšys</translation>
 <translation id="4125970834901680537">Nepavyksta perduoti programų srautu planšetinio kompiuterio režimu. Bandykite dar kartą nešiojamojo kompiuterio režimu.</translation>
 <translation id="4129129681837227511">Jei norite matyti pranešimus užrakinimo ekrane, atrakinkite ir pakeiskite nustatymą</translation>
-<translation id="4130035430755296270">Laikykite pelės žymeklį, kad būtų parodyta daugiau išdėstymo parinkčių</translation>
 <translation id="4136724716305260864">Įjungta iki saulėtekio</translation>
 <translation id="4146833061457621061">„Play music“ (Leisk muziką)</translation>
 <translation id="4150201353443180367">Pateiktis</translation>
@@ -718,7 +719,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="481455355267255546">Toliau</translation>
 <translation id="4831034276697007977">Ar tikrai norite išjungti automatinius paspaudimus?</translation>
 <translation id="4849058404725798627">Paryškinti objektą jį suaktyvinus klaviatūra</translation>
-<translation id="4855250849489639581">Perbraukite žemyn, kad būtų rodoma daugiau išdėstymo parinkčių</translation>
 <translation id="485592688953820832">Nesiimti jokių veiksmų (pristabdyti)</translation>
 <translation id="485634149294284819">Klaviatūros pasirinkimo meniu</translation>
 <translation id="4860284199500934869">Patikrinkite tinklo ryšį, kad atsisiųstumėte failą „<ph name="FILENAME" />“</translation>

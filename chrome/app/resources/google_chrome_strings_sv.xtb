@@ -244,6 +244,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas}=1{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas. Inkognitofönstret öppnas inte igen.}other{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="5686916850681061684">Anpassa och styr Google Chrome. Någonting behöver ses över. Klicka här för mer information.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="570005089986962444">När det här alternativet är aktiverat frigörs minne från inaktiva flikar i Chrome. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chrome fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome startas om om en sekund}other{Google Chrome startas om om # sekunder}}</translation>
 <translation id="5727531838415286053">Om du slumpmässigt har valts ut för en aktiv provfunktion påverkar webbhistoriken vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen från Chrome löpande varje månad. Intressen förnyas om du inte tar bort dem.</translation>
 <translation id="5736850870166430177">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
@@ -367,7 +368,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8286862437124483331">Skriv ditt Windows-lösenord om du vill tillåta att lösenord visas i Google Chrome.</translation>
 <translation id="828798499196665338">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chrome. Det är inte tillåtet att aktivera denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Hoppsan! Google Chrome har kraschat. Vill du starta om nu?</translation>
-<translation id="8341646175450781745">När det här alternativet är aktiverat frigörs minne från inaktiva flikar i Chrome. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chrome fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> eller <ph name="BEGIN_LINK_2" />skicka feedback<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Filen är farlig och har blockerats av Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Webbplatser kan lagra information om dina intressen med Chrome. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
@@ -412,7 +412,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8986207147630327271">Du lägger till en jobbprofil i den här webbläsaren och ger administratören kontrollen enbart över jobbprofilen.</translation>
 <translation id="8989968390305463310">Webbhistoriken påverkar vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen automatiskt och löpande varje månad. Intressen kan förnyas om du inte tar bort dem.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Det finns en uppdatering för Chrome}=1{Det finns en uppdatering för Chrome}other{Det finns en uppdatering för Chrome sedan # dagar}}</translation>
-<translation id="9003498785844995646">När inställningen är aktiverad sparar Chrome batteri genom att begränsa aktivitet i bakgrunden och visuella effekter, till exempel jämnare scrollning och bildfrekvenser för video. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> eller <ph name="BEGIN_LINK_2" />skicka feedback<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex-system</translation>
 <translation id="9067395829937117663">För Google Chrome krävs Windows 7 eller senare.</translation>
 <translation id="911206726377975832">Vill du även ta bort din webbinformation?</translation>
@@ -423,6 +422,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="93760716455950538">Starta om ChromeOS Flex</translation>
 <translation id="940313311831216333">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chrome på olika enheter.</translation>
 <translation id="943390475793766444">Den här filen bör genomsökas eftersom den kan vara farlig.</translation>
+<translation id="963650557422347554">När inställningen är aktiverad sparar Chrome batteri genom att begränsa aktivitet i bakgrunden och visuella effekter, till exempel jämnare scrollning och bildfrekvenser för video.</translation>
 <translation id="989369509083708165">Google Chrome är din standardwebbläsare</translation>
 <translation id="989816563149873169">Du kan använda <ph name="SHORTCUT" /> för att byta mellan Chrome-profiler</translation>
 </translationbundle>

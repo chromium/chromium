@@ -302,6 +302,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3181825792072797598">Activează sincronizarea</translation>
 <translation id="3181954750937456830">Navigare sigură (protecție împotriva site-urilor periculoase)</translation>
 <translation id="3184767182050912705">Deblochează cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Anulează urmărirea</translation>
 <translation id="3214379938835224220">Te-ai deconectat în cadrul resetării dispozitivului iPad. Atinge Continuă pentru a te conecta.</translation>
 <translation id="3224641773458703735">Pentru a exporta parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="3227137524299004712">Microfon</translation>
@@ -812,7 +813,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6869389390665537774">Vezi paginile pe care le-ai accesat sau șterge-le din istoric</translation>
 <translation id="687135068089457384">Afișează Setările</translation>
 <translation id="6873263987691478642">Vizualizare împărțită</translation>
-<translation id="6873366418270195926">Vei primi o alertă dacă prețul scade pe orice site. Pagina se salvează în <ph name="BEGIN_LINK" />Marcaje<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Protecție standard împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase.</translation>
 <translation id="6888009575607455378">Sigur vrei să renunți la modificări?</translation>
 <translation id="6896758677409633944">Copiază</translation>
@@ -867,7 +867,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="734758817008927353">Opțiuni pentru a salva cardul</translation>
 <translation id="7351537303876921605">Atinge Creează un link în meniul contextual</translation>
 <translation id="7353432112255316844">Confirmă-ți identitatea</translation>
-<translation id="7356359962760467032">Nu mai urmări prețurile</translation>
 <translation id="7383797227493018512">Listă de lectură</translation>
 <translation id="7398893703713203428">Creează un link</translation>
 <translation id="7400418766976504921">Adresă URL</translation>

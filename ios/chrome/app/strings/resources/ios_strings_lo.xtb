@@ -40,6 +40,7 @@
 <translation id="1207113853726624428">ການຊອກຫາໃໝ່</translation>
 <translation id="1209206284964581585">ເຊື່ອງສຳລັບຕອນນີ້</translation>
 <translation id="1219674500290482172">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້.</translation>
+<translation id="1226238226094914652">ລະຫັດຜ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="122699739164161391">ປິດແຖບທັງໝົດ</translation>
 <translation id="1229222343402087523">ຊອກຫາ ${searchPhrase} ໃນ Chrome</translation>
 <translation id="1242044645101871359">ເຂົ້າສູ່ລະບົບອີກເທື່ອໜຶ່ງ</translation>
@@ -205,6 +206,7 @@
 <translation id="2529021024822217800">ເປີດທັງຫມົດ</translation>
 <translation id="2556092377360758201">ບໍ່ມີການປົກປ້ອງ (ບໍ່ແນະນຳ)</translation>
 <translation id="2562041823070056534">ກຳລັງສົ່ງໃຫ້ <ph name="DEVICE_NAME" />...</translation>
+<translation id="2576499762020411840">ນຳໃຊ້ ແລະ ບັນທຶກລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="2578571896248130439">ສົ່ງໜ້າເວັບ</translation>
 <translation id="2584132361465095047">ເພີ່ມບັນຊີ...</translation>
 <translation id="2600682495497606169">ລຶບລ້າງຄຸກກີ້ເວັບໄຊ</translation>
@@ -302,6 +304,7 @@
 <translation id="3181825792072797598">ເປີດ Sync</translation>
 <translation id="3181954750937456830">Safe Browsing (ປົກປ້ອງທ່ານ ແລະ ອຸປະກອນຂອງທ່ານຈາກເວັບໄຊອັນຕະລາຍ)</translation>
 <translation id="3184767182050912705">ປົດລັອກດ້ວຍ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">ເຊົາຕິດຕາມ</translation>
 <translation id="3214379938835224220">ທ່ານອອກຈາກລະບົບເປັນສ່ວນໜຶ່ງຂອງການຣີເຊັດ iPad ທ່ານແລ້ວ. ແຕະສືບຕໍ່ທາງລຸ່ມເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3224641773458703735">ເພື່ອສົ່ງອອກລະຫັດຜ່ານ, ທ່ານຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານກ່ອນ.</translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
@@ -409,6 +412,7 @@
 <translation id="4063300985191096908">ໄປຫາຟີດ</translation>
 <translation id="408404951701638773">ດຽວນີ້ເຂົ້າຫາແຖບຊອກຫາໄດ້ງ່າຍກວ່າ</translation>
 <translation id="4092655288299341041">ສະແດງຂໍ້ມູນຊ່ວຍເຫຼືອ</translation>
+<translation id="4101942614374785540">ຕອນນີ້ລະຫັດຜ່ານໄດ້ຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານແລ້ວ (<ph name="ACCOUNT" />). ທ່ານສາມາດໃຊ້ພວກມັນໄດ້ທຸກບ່ອນທີ່ທ່ານເຂົ້າສູ່ລະບົບ. ເພື່ອປິດສິ່ງນີ້, ໃຫ້ໄປທີ່ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="4108998448622696017">ກວດຫາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍເມື່ອພວກມັນເກີດຂຶ້ນ.</translation>
 <translation id="411254640334432676">ດາວ​ໂຫລດ​ບໍ່​ສໍາ​ເລັດ​.</translation>
 <translation id="4112644173421521737">ຊອກຫາ</translation>
@@ -692,6 +696,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6184086493125982861">ສະ​ແດງ​ແຖບ</translation>
 <translation id="6187302354554850004">ຊິ້ງຂໍ້ມູນຫຼ້າສຸດ: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">ຍັງບໍ່ໄດ້ອ່ານ</translation>
+<translation id="6193424046394092997">{count,plural, =1{ໄດ້ບຸກມາກໃສ່ {title} ແລ້ວ}other{ໄດ້ບຸກມາກໃສ່ {title} ແລ້ວ}}</translation>
 <translation id="6196207969502475924">​ການຄົ້ນຫາ​ສຽງ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{ປິດ {COUNT} ແຖບ}other{ປິດ {COUNT} ແຖບ}}</translation>
 <translation id="6219550825416862075">ຍິນດີຕ້ອນຮັບກັບມາ</translation>
@@ -837,6 +842,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7053983685419859001">ບລັອກ</translation>
 <translation id="7062545763355031412">ຍອມຮັບ ແລະ ປ່ຽນບັນຊີ</translation>
 <translation id="7080806333218412752">ສົ່ງ URL ໄປໃຫ້ Safe Browsing ກວດເບິ່ງພວກມັນ. ນອກນັ້ນຍັງສົ່ງຕົວຢ່າງນ້ອຍໆຂອງໜ້າ, ການດາວໂຫຼດ, ການເຄື່ອນໄຫວຂອງສ່ວນຂະຫຍາຍ ແລະ ຂໍ້ມູນລະບົບເພື່ອຊ່ວຍຄົ້ນຫາອັນຕະລາຍໃໝ່ໆ. ເຊື່ອມໂຍງຂໍ້ມູນນີ້ຊົ່ວຄາວກັບບັນຊີ Google ຂອງທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບ ເພື່ອປົກປ້ອງທ່ານໃນທົ່ວແອັບຕ່າງໆຂອງ Google.</translation>
+<translation id="7083860864742905105">ເມື່ອເປີດໄວ້, ລະຫັດຜ່ານຈະຖືກບັນທຶກໃນ <ph name="ACCOUNT" />. ເມື່ອປິດໄວ້, ລະບົບຈະບັນທຶກລະຫັດຜ່ານຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ.</translation>
 <translation id="7095110968493193530">ຫາຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" /></translation>
 <translation id="7099761977003084116">ແຖບຫຼ້າສຸດ</translation>
 <translation id="7102005569666697658">ກຳລັງດາວໂຫຼດ… <ph name="FILE_SIZE" /></translation>
@@ -866,7 +872,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="734758817008927353">ຕົວເລືອກໃນການບັນທຶກບັດ</translation>
 <translation id="7351537303876921605">ແຕະສ້າງລິ້ງໃນເມນູບໍລິບົດ</translation>
 <translation id="7353432112255316844">ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
-<translation id="7356359962760467032">ຢຸດການຕິດຕາມລາຄາ</translation>
 <translation id="7383797227493018512">ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="7398893703713203428">ສ້າງລິ້ງ</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -913,6 +918,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7756478488453921771">ເມນູ → ການຕັ້ງຄ່າ → ວິທີການຈ່າຍເງິນ</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7772032839648071052">ຢືນ​ຢັນວະລີຜ່ານ</translation>
+<translation id="777572173400717978">{count,plural, =1{ໃສ່ບຸກມາກແລ້ວ}other{ໃສ່ບຸກມາກແລ້ວ}}</translation>
 <translation id="7781011649027948662">ແປໜ້າບໍ?</translation>
 <translation id="7781069478569868053">ໜ້າແຖບໃໝ່</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
@@ -1114,6 +1120,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="952704832371081537">ຍົກເລີກ</translation>
 <translation id="953008885340860025">ອອກຈາກລະບົບ Chrome ແລ້ວ</translation>
 <translation id="959066944189734975">ທ່ານກຳລັງຕິດຕາມ <ph name="CHANNEL_NAME" /> ຢູ່</translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">ອົງການຂອງທ່ານອະນຸຍາດໃຫ້ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີບາງຢ່າງເທົ່ານັ້ນ. ບັນຊີທີ່ບໍ່ໄດ້ຮັບອະນຸຍາດແມ່ນຖືກເຊື່ອງໄວ້.</translation>
 <translation id="984509647832111802">ການຊິ້ງຂໍ້ມູນບໍ່ເຮັດວຽກ.</translation>
 <translation id="988141524645182168">ອຸ​ປະ​ກອນ​ອື່ນໆ</translation>

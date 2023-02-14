@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux жүйесі қайта қосылсын ба?</translation>
 <translation id="1047431265488717055">Сілтеме мә&amp;тінін көшіру</translation>
 <translation id="1048286738600630630">Дисплейлер</translation>
+<translation id="1048770690598418849">Әзірге өткізіп жіберуге болады, орнатуды аяқтағаннан кейін автоматты түрде қайталаймыз</translation>
 <translation id="1048986595386481879">Динамикалық түрде бөлінген</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> құрылғысынан <ph name="ATTACHMENTS" /> алынуда.}other{<ph name="DEVICE_NAME" /> құрылғысынан <ph name="ATTACHMENTS" /> алынуда.}}</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
@@ -1620,6 +1621,7 @@
 <translation id="2410754283952462441">Аккаунт таңдау</translation>
 <translation id="241082044617551207">Белгісіз плагин</translation>
 <translation id="2410940059315936967">Сіз кірген сайт басқа сайттардан алынған контентті (мысалы, суреттерді, жарнамаларды және мәтінді) ендіре алады. Осындай басқа сайттар орнатқан cookie файлдары үшінші тарап cookie файлдары деп аталады.</translation>
+<translation id="2411666601450687801">Бұл құрылғыда виртуалды машиналарға рұқсат етілмейді</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Пернетақтаның функциялық пернелері</translation>
 <translation id="2418307627282545839">Нәрселерді ашық әрі мөлдір етіп көрсетеді.</translation>
@@ -1881,6 +1883,7 @@
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="265390580714150011">Өріс мәні</translation>
 <translation id="2654553774144920065">Басып шығару туралы сұрау</translation>
+<translation id="265748523151262387">Телефонмен байланыста болу</translation>
 <translation id="2657612187216250073">Меңзерге арналған арнайы мүмкіндіктер параметрлері</translation>
 <translation id="2658941648214598230">Бастапқы контент көрсетілсін бе?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Мүмкіндіктер әр құрылғыда әр түрлі болады</translation>
@@ -5294,6 +5297,7 @@
 <translation id="5801051031414037185">Телефонды реттеу</translation>
 <translation id="5801568494490449797">Параметрлер</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
+<translation id="5804259315582798390">Жергілікті деректерді қалпына келтіруді қосу сәтсіз болды</translation>
 <translation id="5805268472388605531">Екпін белгілері мен арнайы таңбаларды көру үшін пернетақта пернелерін басып тұрыңыз.</translation>
 <translation id="5805697420284793859">Терезе менеджері</translation>
 <translation id="5806447147478173900">Көрсетілген сайттар пайдаланатын жалпы жад көлемі: <ph name="TOTAL_USAGE" /></translation>
@@ -5834,7 +5838,6 @@
 <translation id="6295158916970320988">Барлық сайттар</translation>
 <translation id="6295855836753816081">Сақталуда…</translation>
 <translation id="6298962879096096191">Android қолданбаларын Google Play арқылы орнату</translation>
-<translation id="6300125580697461004">Қуат үнемдеу режимі туралы пікір жіберу</translation>
 <translation id="6300177430812514606">Дерек жіберуге не алуға рұқсаты жоқтар</translation>
 <translation id="630065524203833229">Ш&amp;ығу</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> принтері автоматты түрде конфигурацияланбады. Принтердің қосымша мәліметтерін көрсетіңіз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
@@ -6039,7 +6042,6 @@
 <translation id="6491376743066338510">Авторизация сәтсіз</translation>
 <translation id="6494327278868541139">Жақсартылған қорғаныс туралы мәліметтерді көрсету</translation>
 <translation id="6494445798847293442">Сертификат беру органы емес</translation>
-<translation id="6497548114956205206">Қуат үнемдеу режимі туралы толық ақпарат</translation>
 <translation id="6497784818439587832">Экрандағы элементтерді кішірейту не ұлғайту үшін дисплей өлшемін өзгертіңіз.</translation>
 <translation id="6497789971060331894">Тінтуірмен кері айналдыру</translation>
 <translation id="6498249116389603658">&amp;Барлық тілдер</translation>
@@ -6676,6 +6678,7 @@
 <translation id="7047059339731138197">Фонды таңдау</translation>
 <translation id="7049293980323620022">Файл сақталсын ба?</translation>
 <translation id="7050037487872780845">Хотспот конфигурациясы жарамсыз</translation>
+<translation id="7051551856857948729">IBAN мәнін жасыру</translation>
 <translation id="7052237160939977163">Өнімділікті бақылау деректерін жіберу</translation>
 <translation id="7053983685419859001">Бөгеу</translation>
 <translation id="7055152154916055070">Бағыттау функциясына тыйым салынды.</translation>
@@ -7656,7 +7659,6 @@
 <translation id="7955177647836564772">Smart Lock қосулы және телефоныңыздың құлпы ашық болса, құпия сөзді немесе PIN кодын енгізудің қажеті жоқ.</translation>
 <translation id="7956373551960864128">Сақталған принтерлер</translation>
 <translation id="7957074856830851026">Сериялық нөмір және актив идентификаторы сияқты құрылғы ақпаратын көру</translation>
-<translation id="7957186326898555886">Жад үнемдеу режимі туралы пікір жіберу</translation>
 <translation id="7959074893852789871">Файлда кейбіреулері импортталмаған көптеген сертификаттар бар:</translation>
 <translation id="7959665254555683862">Жаңа инкогнито қойындысы</translation>
 <translation id="7961015016161918242">Ешқашан</translation>
@@ -8085,7 +8087,6 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> құрылғысына қатысты басқа әрекеттер</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Жақында көп хабарландыру жіберген <ph name="BEGIN_BOLD" />1 сайтты<ph name="END_BOLD" /> тексеріңіз}other{Жақында көп хабарландыру жіберген <ph name="BEGIN_BOLD" />{NUM_SITES} сайтты<ph name="END_BOLD" /> тексеріңіз}}</translation>
 <translation id="8342221978608739536">Қолданып көрмедім</translation>
-<translation id="8342399870062010251">Жад үнемдеу режимі туралы толық ақпарат</translation>
 <translation id="8342861492835240085">Жинақ таңдау</translation>
 <translation id="8345848587667658367">Енді телефондағы соңғы фотосуреттерді, медиафайлдарды, хабарландырулар мен қолданбаларды көре аласыз</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
@@ -8105,6 +8106,7 @@
 <translation id="8358912028636606457">Бұл құрылғыда қойынды аудиосының дыбысы шықпайды.</translation>
 <translation id="835951711479681002">Google аккаунтында сақтау</translation>
 <translation id="8360140320636871023">Дисплей режимін жекелендіру</translation>
+<translation id="8360267485906769442">Пікір жіберу түймесі</translation>
 <translation id="8363095875018065315">тұрақты</translation>
 <translation id="8363142353806532503">Микрофонға тыйым салынған</translation>
 <translation id="8366396658833131068">Желіге қосылу мүмкіндігіңіз қалпына келтірілді. Киоск қолданбасын іске қосу үшін басқа желіні пайдаланыңыз не төмендегі "Жалғастыру" түймесін басыңыз.</translation>
@@ -8382,6 +8384,7 @@
 <translation id="8634348081024879304">Бұдан былай виртуалдық картаны Google Pay қызметінде пайдалана алмайтын боласыз. <ph name="BEGIN_LINK" />Виртуалдық карта туралы толығырақ<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Қайта жүктелуде…</translation>
 <translation id="8636284842992792762">Кеңейтімдер дайындалуда…</translation>
+<translation id="8636323803535540285">Бұл жерге жылдамырақ кіру үшін <ph name="BRAND" /> ішіне таңбашаны қосу</translation>
 <translation id="8636500887554457830">Сайттардың қалқымалы терезелерді жіберуіне немесе бағытты ауыстыру тәсілдерін пайдалануына рұқсат бермеу</translation>
 <translation id="8637688295594795546">Жүйе жаңартулары қолжетімді. Жүктеуге дайындалуда…</translation>
 <translation id="8639047128869322042">Зиянды бағдарламалар ізделуде...</translation>
@@ -8396,7 +8399,6 @@
 <translation id="8645354835496065562">Датчиктерді пайдалану рұқсатын беруді тоқтатпау</translation>
 <translation id="8645920082661222035">Қауіпті іс-шараларды алдын ала болжайды және олар туралы хабарлайды.</translation>
 <translation id="8646209145740351125">Синхрондауды өшіру</translation>
-<translation id="8646340610303779673">PPD шығарып алу мүмкін болмады.</translation>
 <translation id="864637694230589560">Сайттар әдетте шұғыл жаңалықтар немесе чат хабарламалары туралы хабарландырулар жібереді.</translation>
 <translation id="8646467750715887511">Беттер ашылған кезде ғана жүктеледі.</translation>
 <translation id="8647385344110255847">Сіздің рұқсатыңыз арқылы балаңыз қолданбалар орнату үшін Google Play қызметін пайдалана алады.</translation>
@@ -8541,6 +8543,7 @@
 <translation id="8767621466733104912">Chrome браузерін барлық пайдаланушылар үшін автоматты жаңарту</translation>
 <translation id="8770406935328356739">Кеңейтімнің түбір каталогы:</translation>
 <translation id="8771300903067484968">Бастау бетінің фондық режимі әдепкі фонға қайтарылды.</translation>
+<translation id="8773280816776735812">IBAN мәнін көрсету</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> сақтау</translation>
 <translation id="8774379074441005279">Қалпына келтіруді растау</translation>
 <translation id="8774934320277480003">Жоғарғы шек</translation>

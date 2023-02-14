@@ -302,6 +302,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3181825792072797598">Aktivér synkronisering</translation>
 <translation id="3181954750937456830">Beskyttet browsing (beskytter dig og din enhed mod farlige websites)</translation>
 <translation id="3184767182050912705">Lås op med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Hold ikke længere øje</translation>
 <translation id="3214379938835224220">Du blev logget ud som en del af nulstillingen af din iPad. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="3224641773458703735">Angiv en adgangskode på din enhed, før du kan eksportere adgangskoder.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -812,7 +813,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6869389390665537774">Du kan se de sider, du har besøgt, eller rydde dem fra din historik</translation>
 <translation id="687135068089457384">Vis indstillingerne</translation>
 <translation id="6873263987691478642">Opdelt visning</translation>
-<translation id="6873366418270195926">Du får en underretning, hvis prisen falder på et website. Denne side er gemt i <ph name="BEGIN_LINK" />Bogmærker<ph name="END_LINK" /></translation>
 <translation id="6882836635272038266">Standardbeskyttelse mod websites, downloads og udvidelser, som er registreret som skadelige.</translation>
 <translation id="6888009575607455378">Er du sikker på, at du vil kassere dine ændringer?</translation>
 <translation id="6896758677409633944">Kopiér</translation>
@@ -867,7 +867,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="734758817008927353">Valgmuligheder for at gemme kort</translation>
 <translation id="7351537303876921605">Tryk på Opret link i genvejsmenuen</translation>
 <translation id="7353432112255316844">Bekræft din identitet</translation>
-<translation id="7356359962760467032">Stop prisovervågning</translation>
 <translation id="7383797227493018512">Læseliste</translation>
 <translation id="7398893703713203428">Opret link</translation>
 <translation id="7400418766976504921">Webadresse</translation>

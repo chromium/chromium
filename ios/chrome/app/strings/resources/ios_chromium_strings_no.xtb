@@ -6,7 +6,6 @@
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">For å lagre bilder, trykk på Innstillinger for å la Chromium legge dem til i bildene dine</translation>
 <translation id="1289216811211435351">Bytt til Chromium</translation>
-<translation id="1352919863522755794">Google Passordlagring kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
 <translation id="1361748954329991663">Chromium er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chromium lenger.</translation>
 <translation id="1431818719585918472">La Chromium låse inkognitofanene dine.</translation>
 <translation id="1472013873724362412">Kontoen din fungerer ikke i Chromium. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
@@ -36,7 +35,6 @@
 <translation id="2650312721222849884">For å se fanene dine overalt hvor du bruker Chromium, slå på synkronisering</translation>
 <translation id="2684230048001240293">Angi Chromium som standard for å synkronisere fanene, passordene og betalingsopplysningene dine på alle enhetene dine</translation>
 <translation id="2730884209570016437">Chromium kan ikke bruke kameraet fordi det brukes av en annen app</translation>
-<translation id="2767464022270041271">Ingen lagrede passord. Google Passordlagring kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="2915596697727466327">Chromium bruker Face ID til å sikre at bare godkjente personer får tilgang til passordene dine.</translation>
 <translation id="2918709798697875261">Organisasjonen din krever at du forblir logget av Chromium.</translation>
 <translation id="2942241131342758843">Bruk Chromium som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
@@ -59,7 +57,6 @@
 <translation id="4681781466797808448">Slå på Chromium-skanneren</translation>
 <translation id="4736424910885271643">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chromium-dataene dine blir slettet fra denne enheten</translation>
 <translation id="4828317641996116749">Chromium kunne ikke sjekke alle passordene. Prøv på nytt senere.</translation>
-<translation id="4840404732697892756">Google Passordlagring kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="4985291216379576555">Uten nett – Chromium kan ikke se etter oppdateringer</translation>
 <translation id="4996471330284142407">Få mer gjort med Chromium-nettleseren, som er enkel, sikker og raskere enn noensinne.</translation>
 <translation id="4999538639245140991">Fordi du logger av en konto som er administrert av <ph name="SIGNOUT_MANAGED_DOMAIN" />, blir Chromium-dataene dine slettet fra denne enheten, men de blir værende i Google-kontoen din.</translation>
@@ -71,7 +68,6 @@
 <translation id="5521125884468363740">For å se fanene dine overalt hvor du bruker Chromium, logg på og slå på synkronisering</translation>
 <translation id="5522297504975449419">Enkelte Chromium-funksjoner kommer ikke til å være tilgjengelige lenger.</translation>
 <translation id="5573014823074921752">Chromium-tips. For flere fanealternativer, trykk og hold inne Vis faner-knappen på verktøylinjen, som du finner nederst eller øverst på skjermen.</translation>
-<translation id="5661521615548540542">Google Passordlagring kunne ikke sjekke alle passordene. Prøv igjen senere.</translation>
 <translation id="5700709190537129682">Chromium kan ikke sjekke passordene dine</translation>
 <translation id="5777187867430702742">Chromium-side</translation>
 <translation id="5945387852661427312">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir dermed administratoren for dette domenet kontroll over Chromium-dataene dine. Dataene dine blir knyttet til denne kontoen permanent. Når du logger av Chromium, slettes dataene dine fra denne enheten, men de er fortsatt lagret i Google-kontoen din.</translation>
@@ -121,7 +117,6 @@
 <translation id="8460301378281140593">I iPhone-innstillingene åpner du «Passordalternativer» og velger «Chromium»</translation>
 <translation id="858114650497379505">Du kan bruke passordene du har lagret i Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
-<translation id="8603022514504485810">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="8663480472502753423">Hold Chromium oppdatert</translation>
 <translation id="8685813584220679697">Logg på dette nettstedet og Chromium.</translation>
@@ -135,7 +130,6 @@ Dette bør du tenke over:
 
   • Hvis du slår på synkronisering, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chromium.</translation>
-<translation id="8857676124663337448">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
 <translation id="894437814105052438">Når du logger av, synkroniserer ikke Chromium nye data med Google-kontoen din. Tidligere synkroniserte data blir værende på kontoen.</translation>
 <translation id="9022552996538154597">Logg på Chromium</translation>
 <translation id="9059693977935746710">Du trenger ikke å huske dette passordet. Det blir lagret i Passordlagring for <ph name="EMAIL" /></translation>

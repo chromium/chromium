@@ -302,6 +302,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3181825792072797598">Activar sincronización</translation>
 <translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Deixar de facer seguimento</translation>
 <translation id="3214379938835224220">Pechouse sesión como parte do restablecemento do iPad. Para iniciar sesión, toca debaixo a opción de continuar.</translation>
 <translation id="3224641773458703735">Para exportar os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -812,7 +813,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6869389390665537774">Podes ver as páxinas que visitaches ou borralas do teu historial</translation>
 <translation id="687135068089457384">Mostrar configuración</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
-<translation id="6873366418270195926">Recibirás unha alerta se baixa o prezo en calquera sitio. Esta páxina gardouse en <ph name="BEGIN_LINK" />Marcadores<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Protección estándar contra os sitios web, as descargas e as extensións que se consideren perigosos.</translation>
 <translation id="6888009575607455378">Seguro que queres descartar os cambios que fixeches?</translation>
 <translation id="6896758677409633944">Copiar</translation>
@@ -867,7 +867,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="734758817008927353">Opcións para gardar unha tarxeta</translation>
 <translation id="7351537303876921605">Toca Create Link (Crear ligazón) no menú contextual</translation>
 <translation id="7353432112255316844">Verificar a túa identidade</translation>
-<translation id="7356359962760467032">Deixar de facer seguimento do prezo</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
 <translation id="7398893703713203428">Crear ligazón</translation>
 <translation id="7400418766976504921">URL</translation>

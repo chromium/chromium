@@ -302,6 +302,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3181825792072797598">Kveikja á samstillingu</translation>
 <translation id="3181954750937456830">Örugg vefnotkun (verndar þig og tækið þitt fyrir hættulegum vefsvæðum)</translation>
 <translation id="3184767182050912705">Taka úr lás með „<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />“</translation>
+<translation id="3190736958609431397">Hætta að vakta</translation>
 <translation id="3214379938835224220">Þú varst skráð(ur) út í tengslum við endurstillingu iPad. Ýttu á „Halda áfram“ hér fyrir neðan til að skrá þig inn.</translation>
 <translation id="3224641773458703735">Til að flytja út aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
@@ -866,7 +867,6 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="734758817008927353">Valkostir fyrir vistun korts</translation>
 <translation id="7351537303876921605">Ýttu á „Búa til tengil“ á efnisvalmyndinni</translation>
 <translation id="7353432112255316844">Staðfestu hver þú ert</translation>
-<translation id="7356359962760467032">Hætta verðvöktun</translation>
 <translation id="7383797227493018512">Leslisti</translation>
 <translation id="7398893703713203428">Búa til tengil</translation>
 <translation id="7400418766976504921">Vefslóð</translation>
@@ -1114,6 +1114,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="952704832371081537">Hætta við</translation>
 <translation id="953008885340860025">Chrome er útskráður</translation>
 <translation id="959066944189734975">Þú fylgir <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Fyrirtækið þitt leyfir þér eingöngu að skrá þig inn með tilteknum reikningum. Bannaðir reikningar eru faldir.</translation>
 <translation id="984509647832111802">Samstilling virkar ekki.</translation>
 <translation id="988141524645182168">Önnur tæki</translation>

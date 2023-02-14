@@ -302,6 +302,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3181825792072797598">Włącz synchronizację</translation>
 <translation id="3181954750937456830">Bezpieczne przeglądanie (chroni Ciebie i Twoje urządzenie przed niebezpiecznymi witrynami)</translation>
 <translation id="3184767182050912705">Odblokuj za pomocą <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Wyłącz śledzenie</translation>
 <translation id="3214379938835224220">W ramach resetowania iPada nastąpiło wylogowanie. Aby się zalogować, poniżej kliknij Dalej.</translation>
 <translation id="3224641773458703735">Aby wyeksportować hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -812,7 +813,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6869389390665537774">Możesz przejrzeć odwiedzone strony lub usunąć je z historii</translation>
 <translation id="687135068089457384">Pokaż ustawienia</translation>
 <translation id="6873263987691478642">Widok dzielony</translation>
-<translation id="6873366418270195926">Otrzymasz alert, jeśli cena w którejkolwiek witrynie spadnie. Ta strona jest zapisana w <ph name="BEGIN_LINK" />Zakładkach<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne.</translation>
 <translation id="6888009575607455378">Czy na pewno chcesz odrzucić zmiany?</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
@@ -867,7 +867,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="734758817008927353">Opcje zapisania karty</translation>
 <translation id="7351537303876921605">Kliknij Utwórz link w menu kontekstowym</translation>
 <translation id="7353432112255316844">Potwierdź, że to Ty</translation>
-<translation id="7356359962760467032">Zatrzymaj monitorowanie cen</translation>
 <translation id="7383797227493018512">Do przeczytania</translation>
 <translation id="7398893703713203428">Utwórz link</translation>
 <translation id="7400418766976504921">Adres URL</translation>

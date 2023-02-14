@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Изберете го албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Подлога за допир со USB</translation>
 <translation id="4117637339509843559">Темен режим</translation>
+<translation id="4130035430755296270">Наместете го курсорот за повеќе опции за распоред</translation>
 <translation id="4131410914670010031">Црно и бело</translation>
 <translation id="4145784616224233563">Заштитен ѕид со HTTP</translation>
 <translation id="4147897805161313378">Фотографии на Google</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) Одредување со DNS</translation>
 <translation id="4848429997038228357">СЕ ИЗВРШУВА</translation>
 <translation id="4854586501323951986">Вграден допирен екран</translation>
+<translation id="4855250849489639581">Повлечете надолу за повеќе опции за распоред</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Уште {0} обид}one{<ph name="ERROR_MESSAGE" /> Уште {0} обид}other{<ph name="ERROR_MESSAGE" /> Уште {0} обиди}}</translation>
 <translation id="4873827928179867585">Алгоритам за проверка</translation>
 <translation id="4880328057631981605">Име на пристапна точка</translation>

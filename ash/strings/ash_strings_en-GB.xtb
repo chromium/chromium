@@ -139,6 +139,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is not connected.</translation>
 <translation id="1677582821739292812">Someone is looking at your screen</translation>
+<translation id="1683399938733266832">CPU current usage: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> timer · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 address: <ph name="ADDRESS" /></translation>
@@ -381,6 +382,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3051189971848907985">Renaming profile. Wait a few minutes.</translation>
 <translation id="3055162170959710888">You used this device for <ph name="USED_TIME" /> today</translation>
 <translation id="3062298103034426069">Not supported</translation>
+<translation id="3068622547379332530">Version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Shelf on left</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Expand menu</translation>
@@ -579,7 +581,7 @@ Connect your device to power.</translation>
 <translation id="4123259114412175274">To unlock your Chromebook, make sure that your phone's Bluetooth is on</translation>
 <translation id="4125970834901680537">Can't stream apps in tablet mode. Try again in laptop mode.</translation>
 <translation id="4129129681837227511">To see notifications on your lock screen, unlock to change the setting</translation>
-<translation id="4130035430755296270">Keep hovering for more layout options</translation>
+<translation id="4131973331381812765">Temperature: <ph name="TEMPERATURE" />°C – Current speed: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">On until sunrise</translation>
 <translation id="4146833061457621061">Play music</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -720,7 +722,6 @@ Connect your device to power.</translation>
 <translation id="481455355267255546">Up next</translation>
 <translation id="4831034276697007977">Are you sure that you want to turn off automatic clicks?</translation>
 <translation id="4849058404725798627">Highlight object with keyboard focus</translation>
-<translation id="4855250849489639581">Swipe down for more layout options</translation>
 <translation id="485592688953820832">No action (pause)</translation>
 <translation id="485634149294284819">Enter keyboard menu</translation>
 <translation id="4860284199500934869">Check your network connection to download <ph name="FILENAME" /></translation>

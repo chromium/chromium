@@ -5851,7 +5851,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6295158916970320988">Svi sajtovi</translation>
 <translation id="6295855836753816081">Čuva se…</translation>
 <translation id="6298962879096096191">Koristite Google Play da biste instalirali Android aplikacije</translation>
-<translation id="6300125580697461004">Pošaljite povratne informacije o uštedi energije</translation>
 <translation id="6300177430812514606">Nije im dozvoljeno da dovršavaju slanje ili primanje podataka</translation>
 <translation id="630065524203833229">I&amp;zađi</translation>
 <translation id="6300718114348072351">Štampač <ph name="PRINTER_NAME" /> ne može da se konfiguriše automatski. Navedite podatke o naprednom podešavanju štampača. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -6056,7 +6055,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6491376743066338510">Provera ovlašćenja nije uspela</translation>
 <translation id="6494327278868541139">Prikaži detalje o naprednoj zaštiti</translation>
 <translation id="6494445798847293442">Nije autoritet za izdavanje sertifikata</translation>
-<translation id="6497548114956205206">Saznajte više o uštedi energije</translation>
 <translation id="6497784818439587832">Promenite veličinu prikaza da biste umanjili ili uvećali stavke na ekranu</translation>
 <translation id="6497789971060331894">Obrnuto pomeranje mišem</translation>
 <translation id="6498249116389603658">&amp;Svi vaši jezici</translation>
@@ -6984,6 +6982,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7352651011704765696">Nešto nije u redu</translation>
 <translation id="7353261921908507769">Kontakti mogu da dele sa vama kada su u blizini. Prenosi neće započeti dok ne prihvatite.</translation>
 <translation id="735361434055555355">Instalira se Linux...</translation>
+<translation id="7354120289251608189">Sada možete da pređete na nov izgledu u bilo kom trenutku.</translation>
 <translation id="7356908624372060336">Evidencija mreže</translation>
 <translation id="735745346212279324">Veza sa VPN-om je prekinuta</translation>
 <translation id="7358324924540718595">Uspomene su sakrivene za danas</translation>
@@ -7678,7 +7677,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7955177647836564772">Ako je Smart Lock uključen i telefon je otključan, ne morate da unosite lozinku ili PIN</translation>
 <translation id="7956373551960864128">Sačuvani štampači</translation>
 <translation id="7957074856830851026">Pregled informacija o uređaju, kao što je serijski broj ili ID dela</translation>
-<translation id="7957186326898555886">Pošaljite povratne informacije o uštedi memorije</translation>
 <translation id="7959074893852789871">Datoteka sadrži više sertifikata, od kojih neki nisu uvezeni:</translation>
 <translation id="7959665254555683862">Nova kartica bez arhiviranja</translation>
 <translation id="7961015016161918242">Nikad</translation>
@@ -8108,7 +8106,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8340547030807793004">Još radnji za <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Pregledajte <ph name="BEGIN_BOLD" />1 sajt<ph name="END_BOLD" /> koji je nedavno poslao mnogo obaveštenja}one{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} sajt<ph name="END_BOLD" /> koji je nedavno poslao mnogo obaveštenja}few{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} sajta<ph name="END_BOLD" /> koja su nedavno poslala mnogo obaveštenja}other{Pregledajte <ph name="BEGIN_BOLD" />{NUM_SITES} sajtova<ph name="END_BOLD" /> koji su nedavno poslali mnogo obaveštenja}}</translation>
 <translation id="8342221978608739536">Nisam pokušao/la</translation>
-<translation id="8342399870062010251">Saznajte više o uštedi memorije</translation>
 <translation id="8342861492835240085">Izaberite kolekciju</translation>
 <translation id="8345848587667658367">Sada možete da pregledate nedavne slike, medije, obaveštenja i aplikacije na telefonu</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
@@ -8422,7 +8419,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8645354835496065562">Nastavi da dozvoljavaš pristup senzorima</translation>
 <translation id="8645920082661222035">Otkriva opasne događaje pre nego što se dogode i upozorava vas na njih</translation>
 <translation id="8646209145740351125">Onemogućite sinhronizaciju</translation>
-<translation id="8646340610303779673">Preuzimanje PPD-a nije uspelo.</translation>
 <translation id="864637694230589560">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama ćaskanja</translation>
 <translation id="8646467750715887511">Stranice se učitavaju tek kada ih otvorite.</translation>
 <translation id="8647385344110255847">Uz vašu dozvolu, dete može da koristi Google Play za instaliranje aplikacija</translation>

@@ -133,11 +133,13 @@
 <translation id="163517899691012366">ปิดเสียงการแจ้งเตือนเมื่อฟีเจอร์ห้ามรบกวนเปิดอยู่</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> อุปกรณ์</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
+<translation id="1647986356840967552">หน้าที่แล้ว</translation>
 <translation id="1654477262762802994">เริ่มการค้นหาด้วยเสียง</translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ไม่เชื่อมต่อ</translation>
 <translation id="1677582821739292812">มีคนกำลังดูหน้าจอของคุณอยู่</translation>
+<translation id="1683399938733266832">การใช้งานปัจจุบันของ CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">ตัวจับเวลา <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">ที่อยู่ IPv6: <ph name="ADDRESS" /></translation>
@@ -380,6 +382,7 @@
 <translation id="3051189971848907985">กำลังเปลี่ยนชื่อโปรไฟล์ รอสักครู่</translation>
 <translation id="3055162170959710888">วันนี้คุณใช้อุปกรณ์เครื่องนี้ไป <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">ไม่รองรับ</translation>
+<translation id="3068622547379332530">เวอร์ชัน <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">ชั้นวางอยู่ทางซ้าย</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">ขยายเมนู</translation>
@@ -555,6 +558,7 @@
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="397726367135689299">การชาร์จแบตเตอรี่อาจไม่ทำงานอย่างที่ควร</translation>
 <translation id="3977512764614765090">แบตเตอรี่เหลือ <ph name="PERCENTAGE" />% และกำลังชาร์จ</translation>
+<translation id="3984536049089846927">หน้าถัดไป</translation>
 <translation id="3986082989454912832">ตอบ</translation>
 <translation id="3995138139523574647">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="40062176907008878">การเขียนด้วยลายมือ</translation>
@@ -577,7 +581,7 @@
 <translation id="4123259114412175274">หากต้องการปลดล็อก Chromebook ให้ตรวจสอบว่าบลูทูธของโทรศัพท์เปิดอยู่</translation>
 <translation id="4125970834901680537">สตรีมแอปในโหมดแท็บเล็ตไม่ได้ โปรดลองอีกครั้งในโหมดแล็ปท็อป</translation>
 <translation id="4129129681837227511">หากต้องการดูการแจ้งเตือนในหน้าจอล็อก ให้ปลดล็อกเพื่อเปลี่ยนการตั้งค่า</translation>
-<translation id="4130035430755296270">ลากเมาส์ไปเรื่อยๆ เพื่อดูตัวเลือกเลย์เอาต์เพิ่มเติม</translation>
+<translation id="4131973331381812765">อุณหภูมิ: <ph name="TEMPERATURE" />°C - ความเร็วในปัจจุบัน: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">เปิดจนถึงพระอาทิตย์ขึ้น</translation>
 <translation id="4146833061457621061">เปิดเพลง</translation>
 <translation id="4150201353443180367">การแสดงผล</translation>
@@ -718,7 +722,6 @@
 <translation id="481455355267255546">กิจกรรมถัดไป</translation>
 <translation id="4831034276697007977">แน่ใจไหมว่าต้องการปิดการคลิกอัตโนมัติ</translation>
 <translation id="4849058404725798627">ไฮไลต์วัตถุที่มีโฟกัสแป้นพิมพ์</translation>
-<translation id="4855250849489639581">ปัดลงเพื่อดูตัวเลือกเลย์เอาต์เพิ่มเติม</translation>
 <translation id="485592688953820832">ไม่มีการดำเนินการ (หยุดชั่วคราว)</translation>
 <translation id="485634149294284819">ป้อนเมนูแป้นพิมพ์</translation>
 <translation id="4860284199500934869">ตรวจสอบการเชื่อมต่อเครือข่ายเพื่อดาวน์โหลด <ph name="FILENAME" /></translation>

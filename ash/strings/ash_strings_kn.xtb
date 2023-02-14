@@ -133,6 +133,7 @@
 <translation id="163517899691012366">ಅಡಚಣೆ ಮಾಡಬೇಡಿ ಆನ್ ಆಗಿರುವಾಗ ಅಧಿಸೂಚನೆಗಳನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ಸಾಧನಗಳು</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
+<translation id="1647986356840967552">ಹಿಂದಿನ ಪುಟ</translation>
 <translation id="1654477262762802994">ಧ್ವನಿ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಲು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1668469839109562275">ಬಿಲ್ಟ್-ಇನ್ VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="397726367135689299">ಬ್ಯಾಟರಿ ಚಾರ್ಜಿಂಗ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲ.</translation>
 <translation id="3977512764614765090">ಬ್ಯಾಟರಿ <ph name="PERCENTAGE" />% ಇದೆ ಮತ್ತು ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ.</translation>
+<translation id="3984536049089846927">ಮುಂದಿನ ಪುಟ</translation>
 <translation id="3986082989454912832">ಉತ್ತರ</translation>
 <translation id="3995138139523574647">USB-C ಸಾಧನ (ಬಲ ಭಾಗದ ಹಿಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="40062176907008878">ಕೈಬರಹ</translation>
@@ -577,7 +579,6 @@
 <translation id="4123259114412175274">ನಿಮ್ಮ Chromebook ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ನಿಮ್ಮ ಫೋನ್‌ನ ಬ್ಲೂಟೂತ್ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4125970834901680537">ಟ್ಯಾಬ್ಲೆಟ್ ಮೋಡ್‌ನಲ್ಲಿ ಆ್ಯಪ್‌ಗಳನ್ನು ಸ್ಟ್ರೀಮ್ ಮಾಡಲಾಗದು. ಲ್ಯಾಪ್‌ಟಾಪ್ ಮೋಡ್‌ ನಲ್ಲಿ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4129129681837227511">ನಿಮ್ಮ ಲಾಕ್ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡಲು, ಸೆಟ್ಟಿಂಗ್ ಬದಲಾಯಿಸಲು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
-<translation id="4130035430755296270">ಇನ್ನಷ್ಟು ಲೇಔಟ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ ಹೋವರ್ ಮಾಡುತ್ತಿರಿ</translation>
 <translation id="4136724716305260864">ಸೂರ್ಯೋದಯದವರೆಗೆ ಆನ್</translation>
 <translation id="4146833061457621061">ಸಂಗೀತ ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="4150201353443180367">ಡಿಸ್‌ಪ್ಲೇ</translation>
@@ -718,7 +719,6 @@
 <translation id="481455355267255546">ಮುಂದಿನದು</translation>
 <translation id="4831034276697007977">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳನ್ನು ಖಚಿತವಾಗಿಯೂ ಆಫ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="4849058404725798627">ಕೀಬೋರ್ಡ್‌ ಫೋಕಸ್‌ ಮೂಲಕ ವಿಷಯವನ್ನು ಎದ್ದುಗಾಣಿಸಿ</translation>
-<translation id="4855250849489639581">ಇನ್ನಷ್ಟು ಲೇಔಟ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ ಕೆಳಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="485592688953820832">ಯಾವುದೇ ಕ್ರಮ ಕೈಗೊಳ್ಳಬೇಡಿ (ವಿರಾಮಗೊಳಿಸಿ)</translation>
 <translation id="485634149294284819">ಕೀಬೋರ್ಡ್ ಮೆನುವನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>

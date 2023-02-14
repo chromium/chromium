@@ -133,6 +133,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="163517899691012366">Notifikasi dibisukan saat Jangan ganggu aktif</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> perangkat</translation>
 <translation id="1639239467298939599">Memuat</translation>
+<translation id="1647986356840967552">Halaman sebelumnya</translation>
 <translation id="1654477262762802994">Mulai kueri suara</translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
 <translation id="1677472565718498478">Sisa waktu <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="397726367135689299">Pengisian daya baterai mungkin tidak stabil.</translation>
 <translation id="3977512764614765090">Baterai <ph name="PERCENTAGE" />% dan masih mengisi.</translation>
+<translation id="3984536049089846927">Halaman berikutnya</translation>
 <translation id="3986082989454912832">Jawab</translation>
 <translation id="3995138139523574647">Perangkat USB-C (port belakang sebelah kanan)</translation>
 <translation id="40062176907008878">Tulis tangan</translation>
@@ -577,7 +579,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4123259114412175274">Untuk membuka kunci Chromebook, pastikan Bluetooth ponsel Anda aktif</translation>
 <translation id="4125970834901680537">Mode tablet tidak mendukung streaming aplikasi. Coba lagi dengan mode laptop.</translation>
 <translation id="4129129681837227511">Untuk melihat notifikasi di layar kunci, buka kunci untuk mengubah setelan</translation>
-<translation id="4130035430755296270">Terus gerakkan kursor untuk melihat opsi tata letak lainnya</translation>
 <translation id="4136724716305260864">Aktif sampai matahari terbit</translation>
 <translation id="4146833061457621061">Putar musik</translation>
 <translation id="4150201353443180367">Tampilan</translation>
@@ -718,7 +719,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="481455355267255546">Berikutnya</translation>
 <translation id="4831034276697007977">Yakin ingin menonaktifkan klik otomatis?</translation>
 <translation id="4849058404725798627">Sorot objek dengan fokus keyboard</translation>
-<translation id="4855250849489639581">Geser ke bawah untuk melihat opsi tata letak lainnya</translation>
 <translation id="485592688953820832">Tidak ada tindakan (jeda)</translation>
 <translation id="485634149294284819">Buka menu keyboard</translation>
 <translation id="4860284199500934869">Periksa koneksi jaringan Anda untuk mendownload <ph name="FILENAME" /></translation>

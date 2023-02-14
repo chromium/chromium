@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Pasirinkti albumą „<ph name="TITLE" />“ (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB jutiklinė dalis</translation>
 <translation id="4117637339509843559">Tamsus režimas</translation>
+<translation id="4130035430755296270">Laikykite pelės žymeklį, kad būtų parodyta daugiau išdėstymo parinkčių</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
 <translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4147897805161313378">„Google“ nuotraukos</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(„Android“) DNS pavadinimų konvertavimas</translation>
 <translation id="4848429997038228357">VYKDOMA</translation>
 <translation id="4854586501323951986">Įtaisytas jutiklinis ekranas</translation>
+<translation id="4855250849489639581">Perbraukite žemyn, kad būtų rodoma daugiau išdėstymo parinkčių</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}one{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}few{<ph name="ERROR_MESSAGE" /> Liko {0} bandymai}many{<ph name="ERROR_MESSAGE" /> Liko {0} bandymo}other{<ph name="ERROR_MESSAGE" /> Liko {0} bandymų}}</translation>
 <translation id="4873827928179867585">Autentifikavimo algoritmas</translation>
 <translation id="4880328057631981605">Prieigos taško pavadinimas</translation>

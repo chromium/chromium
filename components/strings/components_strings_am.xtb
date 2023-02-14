@@ -891,7 +891,6 @@
 <translation id="3218181027817787318">አንጻራዊ</translation>
 <translation id="3223287115535306850">የመተግበሪያ ማስጀመሪያ የጭነት አዶ</translation>
 <translation id="3223425961342298674">አካባቢ አይፈቀድም</translation>
-<translation id="3225347164936328585">ጭብጨባ</translation>
 <translation id="3225919329040284222">አገልጋዩ አብረው የተሰሩ የሚጠበቁ ማሟያዎችን የማያሟላ የእውቅና ማረጋገጫ ነው ያቀረበው። እነዚህ የሚጠበቁ ማሟያዎች እርስዎን ለመጠበቅ ለተረጋገጡ ከፍተኛ ደህንነት ላላቸው ድር ጣቢያዎች ተካትተዋል።</translation>
 <translation id="3226128629678568754">ገጹን ለመጫን የሚያስፈልገው ውሂብ ዳግም ለማስገባት የዳግም ጫን አዝራሩን ይጫኑ።</translation>
 <translation id="3226387218769101247">ድንክዬዎች</translation>
@@ -948,7 +947,6 @@
 <translation id="3340978935015468852">ቅንብሮች</translation>
 <translation id="3342018947887487892">በኋላ ላይ እርስዎ የሚጎበኙት ጣቢያ ይህን መረጃ ሊጠይቅ ይችላል — የእርስዎ የማስታወቂያ ርዕሶች ወይም እርስዎ በጎበኟቸው ጣቢያዎች የተጠቆሙ ማስታወቂያዎች።</translation>
 <translation id="3342366525167526994">የሰውነት ስነ ጥበብ</translation>
-<translation id="3345782426586609320">አይኖች</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">የተኪ ቅንብሮችን በመቀየር ላይ...</translation>
 <translation id="3359565626472459400">ትዳር</translation>
@@ -1388,7 +1386,6 @@
 <translation id="4393632246160856858">የጥፍር እንክብካቤ ምርቶች</translation>
 <translation id="4406883609789734330">የቀጥታ ስርጭት መግለጫ ጽሁፍ</translation>
 <translation id="4406896451731180161">የፍለጋ ውጤቶች</translation>
-<translation id="4407755609041463909">እሳት</translation>
 <translation id="4408413947728134509">ኩኪዎች <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">የሸማች ኤሌክትሮኒክስ</translation>
 <translation id="4412074349188076601">ይህ ውቅረት እንደ ሊጫን የሚችል ምልክት ተደርጎበታል ነገር ግን ለዚህ አርኪቴክቸር ምንም ምስል አልቀረበም ስለዚህ ሊጫን አይችልም።</translation>
@@ -1774,7 +1771,6 @@
 <translation id="5333022057423422993">Chrome እርስዎ አሁን የተጠቀሙበትን የይለፍ ቃል በውሂብ ጥሰት ውስጥ አግኝቷል። የመለያዎችዎን ደህንነት ለማስጠበቅ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ እንመክራለን።</translation>
 <translation id="5334013548165032829">ዝርዝር የስርዓት ምዝግብ ማስታወሻዎች</translation>
 <translation id="5334145288572353250">አድራሻ ይቀመጥ?</translation>
-<translation id="5335920952954443287">የሚመታ ልብ</translation>
 <translation id="5337569431717511221">Chromeን እንደ ነባሪ የአሳሽ አዝራር ያቀናብሩ፣ Chromeን እንደ የሥርዓቱ ነባር አሳሽ ለማቀናበር አስገባን ይጫኑ</translation>
 <translation id="5340250774223869109">መተግበሪያ ታግዷል</translation>
 <translation id="534295439873310000">የNFC መሣሪያዎች</translation>
@@ -1782,7 +1778,6 @@
 <translation id="5344579389779391559">ይህ ገጽ እርስዎን ገንዘብ ለማስከፈል ሊሞክር ይችላል</translation>
 <translation id="5347645913823149105">በChrome አዝራር ውስጥ ቅርጸ-ቁምፊዎችን ያብጁ፣ በChrome ውስጥ የቅርጸ-ቁምፊ መጠኖችን እና መልከ ቁምፊዎችን ለማበጀት አስገባን ይጫኑ</translation>
 <translation id="5355557959165512791">የዕውቅና ማረጋገጫው ስለተሻረ <ph name="SITE" />ን መጎብኘት አይችሉም። የአውታረ መረብ ስህተቶች እና ጥቃቶች አብዛኛው ጊዜ ጊዜያዊ ብቻ ናቸው፣ ስለዚህ ይህ ገጽ በኋላ ላይ ሊሠራ ይችላል።</translation>
-<translation id="5356837363448394805">ፊቱ የቀላ</translation>
 <translation id="5357848622083956825">የምስል ስነ ጥበብ እና ንድፍ</translation>
 <translation id="536296301121032821">የመምሪያ ቅንብሮችን ማከማቸት አልተሳካም</translation>
 <translation id="5363309033720083897">በአስተዳዳሪዎ የተፈቀደ ተከታታይ ወደብ</translation>
@@ -2113,7 +2108,6 @@
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ቅንብሮች ውስጥ የተደራሽነት መሣሪያዎችዎን ግላዊነት ለማላበስ ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="6229649258872345286">የቤተሰብ ጉዞ</translation>
 <translation id="6232271601416750929">ንጹህ ውበት</translation>
-<translation id="6233160458685643793">ትልቅ ፈገግታ</translation>
 <translation id="6234122620015464377">ከእያንዳንዱ ሰነድ በኋላ ከርክም</translation>
 <translation id="6236290670123303279">ቅንብሮችን ያቀናብሩ</translation>
 <translation id="6240447795304464094">የGoogle Pay ዓርማ</translation>
@@ -2181,7 +2175,6 @@
 <translation id="6391700400718590966">ደህንነቱ የተጠበቀ የመግቢያ ማስረጃ ምንም ተዛማጅ የመግቢያ ማስረጃ ሉህ አልተዘጋም</translation>
 <translation id="6393956493820063117">ከ<ph name="ORIGIN_NAME" /> ወደዚህ አካባቢ መለጠፍ በአስተዳዳሪ መመሪያ ታግዷል</translation>
 <translation id="6394852772105848029">ይህ ጣቢያ የ<ph name="APP_NAME" /> መተግበሪያውን መክፈት ይፈልጋል</translation>
-<translation id="6398277657359595425">ጮክ ብሎ ማልቀስ</translation>
 <translation id="6398765197997659313">ከሙሉ ማሳያ መስኮት ይውጡ</translation>
 <translation id="6401136357288658127">ይህ መመሪያ ተቋርጧል። በምትኩ የ<ph name="NEW_POLICY" /> መመሪያውን መጠቀም አለብዎት።</translation>
 <translation id="6404511346730675251">ዕልባት አርትዕ</translation>
@@ -2281,7 +2274,6 @@
 <translation id="6660413144148052430">አካባቢ</translation>
 <translation id="6662457027866368246">አንደኛ ጥቅልል</translation>
 <translation id="666259744093848177">(x86_64 የተተረጎመ)</translation>
-<translation id="6663846344464066639">እጅ ተጣጥፎ</translation>
 <translation id="6665553082534466207">ሦስቴ ብስ ቀኝ</translation>
 <translation id="6668389483194953109">«ብጁ» የሚል ስም ያለው የወረቀት መጠን ተገኝቷል ነገር ግን የ«custom_size» ባህሪ ባዶ ወይም ልክ ያልኾነ ነው።</translation>
 <translation id="6671697161687535275">የአስተያየት ጥቆማ ከChromium ይወገድ?</translation>
@@ -2382,7 +2374,6 @@
 <translation id="6939469646605424232">የቲቪ ድራማዎች</translation>
 <translation id="6944692733090228304">በ<ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ወደ የማይተዳደር ጣቢያ ላይ የእርስዎን የይለፍ ቃል አስገብተዋል። ለእርስዎ መለያ ጥበቃ ለማድረግ፣ በሌሎች መተግበሪያዎች እና ጣቢያዎች ላይ የእርስዎን የይለፍ ቃል ዳግም አይጠቀሙ።</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
-<translation id="6946722113367118030">በማሰብ ላይ</translation>
 <translation id="6948051842255602737">ጨዋታ አልቋል፣ የእርስዎ ውጤት <ph name="SCORE" /> ነው።</translation>
 <translation id="6948701128805548767">የመውሰጃ ዘዴዎችን እና መስፈርቶችን ለመመልከት አድራሻ ይምረጡ</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2574,6 +2565,7 @@
 <translation id="7388594495505979117">{0,plural, =1{መሣሪያዎ በ1 ደቂቃ ውስጥ ዳግም ይነሳል}one{መሣሪያዎ በ# ደቂቃዎች ውስጥ ዳግም ይነሳል}other{መሣሪያዎ በ# ደቂቃዎች ውስጥ ዳግም ይነሳል}}</translation>
 <translation id="7390545607259442187">ካርድ ያረጋግጡ</translation>
 <translation id="7392089738299859607">አድራሻን ያዘምኑ</translation>
+<translation id="739728382607845710">የክፍያ መያዣ አዶ</translation>
 <translation id="7399802613464275309">የደህንነት ፍተሻ</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">አገናኙን በማጋራት፣ የQR ኮድ በመፍጠር፣ ካስት እና ሌሎችንም በማድረግ ይህን ትር ያጋሩ</translation>
@@ -2705,7 +2697,6 @@
 <translation id="765676359832457558">የላቁ ቅንብሮችን ደብቅ...</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7659327900411729175">ካኩ 8 ፖስታ</translation>
-<translation id="7659878911471462949">የደስታ እንባ</translation>
 <translation id="766014026101194726">{0,plural, =1{ይህን ፋይል መስቀል በአስተዳዳሪ መመሪያ ታግዷል}one{# ፋይል መስቀል በአስተዳዳሪ መመሪያ ታግዷል}other{# ፋይሎችን መስቀል በአስተዳዳሪ መመሪያ ታግዷል}}</translation>
 <translation id="7662298039739062396">ቅንብር በቅጥያ ቁጥጥር ይደረግበታል</translation>
 <translation id="7663736086183791259">የእውቅና ማረጋገጫ <ph name="CERTIFICATE_VALIDITY" /></translation>

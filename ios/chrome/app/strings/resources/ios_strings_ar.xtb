@@ -304,6 +304,7 @@
 <translation id="3181825792072797598">تفعيل المزامنة</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
 <translation id="3184767182050912705">الفتح باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">إيقاف التتبُّع</translation>
 <translation id="3214379938835224220">‏تم تسجيل خروجك كجزء من عملية إعادة ضبط جهاز iPad. انقر على زر المتابعة أدناه لتسجيل الدخول.</translation>
 <translation id="3224641773458703735">لتصدير كلمات المرور، يلزمك أولاً تعيين رمز مرور على جهازك.</translation>
 <translation id="3227137524299004712">الميكروفون</translation>
@@ -815,7 +816,6 @@
 <translation id="6869389390665537774">يمكنك الاطّلاع على الصفحات التي زرتها أو يمكنك محوها من السجلّ.</translation>
 <translation id="687135068089457384">عرض الإعدادات</translation>
 <translation id="6873263987691478642">وضع تقسيم العرض</translation>
-<translation id="6873366418270195926">ستتلقَّى تنبيهًا في حال انخفاض السعر على أي موقع إلكتروني. تم حفظ هذه الصفحة في قائمة <ph name="BEGIN_LINK" />الإشارات المرجعية<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">يوفّر لك حماية عادية من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة.</translation>
 <translation id="6888009575607455378">هل تريد فعلاً تجاهل التغييرات؟</translation>
 <translation id="6896758677409633944">نسخ</translation>
@@ -870,7 +870,6 @@
 <translation id="734758817008927353">خيارات حفظ البطاقة</translation>
 <translation id="7351537303876921605">انقر على "إنشاء رابط" في قائمة السياقات.</translation>
 <translation id="7353432112255316844">إثبات هويّتك</translation>
-<translation id="7356359962760467032">إيقاف عملية تتبُّع السعر</translation>
 <translation id="7383797227493018512">قائمة القراءة</translation>
 <translation id="7398893703713203428">إنشاء رابط</translation>
 <translation id="7400418766976504921">‏عنوان URL</translation>

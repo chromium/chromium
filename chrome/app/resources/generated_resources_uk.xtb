@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Перезапустити Linux?</translation>
 <translation id="1047431265488717055">Копіювати те&amp;кст посилання</translation>
 <translation id="1048286738600630630">Дисплеї</translation>
+<translation id="1048770690598418849">Ви можете пропустити цей крок зараз, і ми автоматично повторимо спробу, коли ви завершите налаштування</translation>
 <translation id="1048986595386481879">Розміщено динамічно</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Вхідні дані: <ph name="ATTACHMENTS" /> з пристрою "<ph name="DEVICE_NAME" />"}one{Вхідні дані: <ph name="ATTACHMENTS" /> з пристрою "<ph name="DEVICE_NAME" />"}few{Вхідні дані: <ph name="ATTACHMENTS" /> з пристрою "<ph name="DEVICE_NAME" />"}many{Вхідні дані: <ph name="ATTACHMENTS" /> з пристрою "<ph name="DEVICE_NAME" />"}other{Вхідні дані: <ph name="ATTACHMENTS" /> з пристрою "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="1049743911850919806">Анонімний перегляд</translation>
@@ -1641,6 +1642,7 @@
 <translation id="2410754283952462441">Виберіть обліковий запис</translation>
 <translation id="241082044617551207">Невідомий плагін</translation>
 <translation id="2410940059315936967">Сайт, який ви відвідали, може включати контент з інших сайтів, наприклад зображення, оголошення й текст. Файли cookie, створені іншими сайтами, називаються сторонніми.</translation>
+<translation id="2411666601450687801">На цьому пристрої не можна використовувати віртуальні машини</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Функціональні клавіші клавіатури</translation>
 <translation id="2418307627282545839">Зберігає яскраві та прозорі кольори</translation>
@@ -1902,6 +1904,7 @@
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="265390580714150011">Значення поля</translation>
 <translation id="2654553774144920065">Запит на друк</translation>
+<translation id="265748523151262387">Не від’єднуйте телефон</translation>
 <translation id="2657612187216250073">Налаштування спеціальних можливостей курсора</translation>
 <translation id="2658941648214598230">Показати оригінальний контент?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />На різних пристроях функції можуть бути іншими</translation>
@@ -5316,6 +5319,7 @@
 <translation id="5801051031414037185">Налаштувати телефон</translation>
 <translation id="5801568494490449797">Налаштування</translation>
 <translation id="5804241973901381774">Дозволи</translation>
+<translation id="5804259315582798390">Не вдалося ввімкнути відновлення локальних даних</translation>
 <translation id="5805268472388605531">Утримуйте комбінації клавіш, щоб переглянути діакритичні знаки та спеціальні символи</translation>
 <translation id="5805697420284793859">Диспетчер вікон</translation>
 <translation id="5806447147478173900">Загальний обсяг пам’яті, який використовують показані сайти: <ph name="TOTAL_USAGE" /></translation>
@@ -5856,7 +5860,6 @@
 <translation id="6295158916970320988">Усі сайти</translation>
 <translation id="6295855836753816081">Зберігання…</translation>
 <translation id="6298962879096096191">Установлювати додатки Android із Google Play</translation>
-<translation id="6300125580697461004">Надіслати відгук про режим енергозбереження</translation>
 <translation id="6300177430812514606">Заборонено завершувати надсилання чи отримання даних</translation>
 <translation id="630065524203833229">В&amp;ийти</translation>
 <translation id="6300718114348072351">Не вдалось автоматично налаштувати принтер <ph name="PRINTER_NAME" />. Укажіть додаткову інформацію про нього. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -6061,7 +6064,6 @@
 <translation id="6491376743066338510">Не авторизовано</translation>
 <translation id="6494327278868541139">Показати детальний опис покращеного захисту</translation>
 <translation id="6494445798847293442">Не є Центром сертифікації</translation>
-<translation id="6497548114956205206">Докладніше про режим енергозбереження</translation>
 <translation id="6497784818439587832">Зменшуйте або збільшуйте розмір елементів на екрані</translation>
 <translation id="6497789971060331894">Зворотне прокручування мишею</translation>
 <translation id="6498249116389603658">&amp;Усі мови</translation>
@@ -6704,6 +6706,7 @@
 <translation id="7047059339731138197">Виберіть фон</translation>
 <translation id="7049293980323620022">Завантажити файл?</translation>
 <translation id="7050037487872780845">Недійсна конфігурація точки доступу</translation>
+<translation id="7051551856857948729">Сховати номер IBAN</translation>
 <translation id="7052237160939977163">Надсилати дані відстеження ефективності</translation>
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7055152154916055070">Переадресацію заблоковано:</translation>
@@ -7684,7 +7687,6 @@
 <translation id="7955177647836564772">Якщо Smart Lock увімкнено й телефон розблоковано, PIN-код або пароль вводити не потрібно</translation>
 <translation id="7956373551960864128">Збережені принтери</translation>
 <translation id="7957074856830851026">Переглядати інформацію з пристрою, наприклад серійний номер або ідентифікатор об'єкта</translation>
-<translation id="7957186326898555886">Надіслати відгук про режим заощадження пам’яті</translation>
 <translation id="7959074893852789871">Файл містив декілька сертифікатів, деякі з яких не було імпортовано:</translation>
 <translation id="7959665254555683862">Нова анонімна вкладка</translation>
 <translation id="7961015016161918242">Ніколи</translation>
@@ -8114,7 +8116,6 @@
 <translation id="8340547030807793004">Інші дії для пристрою "<ph name="DEVICE" />"</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Перегляньте <ph name="BEGIN_BOLD" />1 сайт<ph name="END_BOLD" />, який останнім часом надсилав багато сповіщень}one{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайт<ph name="END_BOLD" />, який останнім часом надсилав багато сповіщень}few{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайти<ph name="END_BOLD" />, які останнім часом надсилали багато сповіщень}many{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайтів<ph name="END_BOLD" />, які останнім часом надсилали багато сповіщень}other{Перегляньте <ph name="BEGIN_BOLD" />{NUM_SITES} сайту<ph name="END_BOLD" />, які останнім часом надсилали багато сповіщень}}</translation>
 <translation id="8342221978608739536">Не доводилося перевіряти</translation>
-<translation id="8342399870062010251">Докладніше про режим заощадження пам’яті</translation>
 <translation id="8342861492835240085">Виберіть колекцію</translation>
 <translation id="8345848587667658367">Тепер ви можете переглядати нещодавні фотографії, медіафайли, сповіщення й додатки з телефона</translation>
 <translation id="8347227221149377169">Завдання друку</translation>
@@ -8411,6 +8412,7 @@
 <translation id="8634348081024879304">Ви більше не зможете використовувати цю віртуальну картку в Google Pay. <ph name="BEGIN_LINK" />Докладніше про віртуальні картки<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Оновлення…</translation>
 <translation id="8636284842992792762">Ініціалізація розширень…</translation>
+<translation id="8636323803535540285">Щоб швидше відкривати <ph name="BRAND" />, створіть для нього ярлик</translation>
 <translation id="8636500887554457830">Заборонити сайтам надсилати спливаючі вікна або використовувати переспрямування</translation>
 <translation id="8637688295594795546">Доступне оновлення системи. Підготовка до завантаження…</translation>
 <translation id="8639047128869322042">Пошук шкідливих програм…</translation>
@@ -8425,7 +8427,6 @@
 <translation id="8645354835496065562">Дозволяти доступ до датчиків</translation>
 <translation id="8645920082661222035">Передбачає небезпечні події та повідомляє про них ще до того, як вони відбудуться</translation>
 <translation id="8646209145740351125">Вимкнути синхронізацію</translation>
-<translation id="8646340610303779673">Не вдалось отримати файл PPD.</translation>
 <translation id="864637694230589560">Зазвичай сайти надсилають сповіщення, щоб повідомити про важливі новини або повідомлення в чаті</translation>
 <translation id="8646467750715887511">Сторінки завантажуються лише після того, як ви їх відкриєте.</translation>
 <translation id="8647385344110255847">З вашого дозволу дитина може встановлювати додатки через Google Play</translation>
@@ -8570,6 +8571,7 @@
 <translation id="8767621466733104912">Автоматично оновлювати Chrome для всіх користувачів</translation>
 <translation id="8770406935328356739">Кореневий каталог розширення</translation>
 <translation id="8771300903067484968">Фон початкової сторінки було скинуто. Тепер це фон за умовчанням.</translation>
+<translation id="8773280816776735812">Показати номер IBAN</translation>
 <translation id="8773302562181397928">Зберегти принтер <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Підтвердити відновлення</translation>
 <translation id="8774934320277480003">Верхнє поле</translation>

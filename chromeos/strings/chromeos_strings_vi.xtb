@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Chọn album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Bàn di chuột USB</translation>
 <translation id="4117637339509843559">Chế độ tối</translation>
+<translation id="4130035430755296270">Tiếp tục di chuột để xem thêm tuỳ chọn bố cục</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
 <translation id="4145784616224233563">Tường lửa HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) Quá trình phân giải DNS</translation>
 <translation id="4848429997038228357">ĐANG CHẠY</translation>
 <translation id="4854586501323951986">Màn hình cảm ứng tích hợp sẵn</translation>
+<translation id="4855250849489639581">Vuốt xuống để xem thêm tuỳ chọn bố cục</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}other{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}}</translation>
 <translation id="4873827928179867585">Thuật toán xác thực</translation>
 <translation id="4880328057631981605">Tên điểm truy cập</translation>

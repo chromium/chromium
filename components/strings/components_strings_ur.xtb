@@ -894,7 +894,6 @@
 <translation id="3218181027817787318">متعلقہ</translation>
 <translation id="3223287115535306850">ایپ لانچنگ تھروبر</translation>
 <translation id="3223425961342298674">مقام کی اجازت نہیں ہے</translation>
-<translation id="3225347164936328585">تالیاں بجاتا ہوا</translation>
 <translation id="3225919329040284222">سرور نے ایک سرٹیفکیٹ پیش کیا ہے جو پہلے سے موجود توقعات سے مماثل نہیں ہے۔ آپ کے تحفظ کیلئے یہ توقعات مخصوص، انتہائی سیکیورٹی والی ویب سائٹس کیلئے شامل کی جاتی ہیں۔</translation>
 <translation id="3226128629678568754">صفحہ کو لوڈ کرنے کیلئے درکار ڈیٹا دوبارہ جمع کرانے کیلئے دوبارہ لوڈ کریں بٹن دبائیں۔</translation>
 <translation id="3226387218769101247">تھمب نیلز</translation>
@@ -951,7 +950,6 @@
 <translation id="3340978935015468852">ترتیبات</translation>
 <translation id="3342018947887487892">بعد میں، آپ کی ملاحظہ کی جانے والی سائٹ اس معلومات کا مطالبہ کر سکتی ہے — یا آپ کے اشتہار کے موضوعات یا آپ کی ملاحظہ کردہ سائٹس کے ذریعہ تجویز کردہ اشتہارات۔</translation>
 <translation id="3342366525167526994">باڈی آرٹ</translation>
-<translation id="3345782426586609320">آنکھیں</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">پراکسی ترتیبات تبدیل کریں…</translation>
 <translation id="3359565626472459400">شادی</translation>
@@ -1391,7 +1389,6 @@
 <translation id="4393632246160856858">ناخن کی نگہداشت کے پروڈکٹس</translation>
 <translation id="4406883609789734330">لائیو کیپشن</translation>
 <translation id="4406896451731180161">تلاش کے نتائج</translation>
-<translation id="4407755609041463909">آگ</translation>
 <translation id="4408413947728134509">کوکیز <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">صارف الیکٹرانکس</translation>
 <translation id="4412074349188076601">اس کنفیگریشن کو قابل انسٹال کے طور پر نشان زد کیا جاتا ہے لیکن اس فن تعمیر کے لیے کوئی تصویر فراہم نہیں کی جاتی ہے، لہذا اسے انسٹال نہیں کیا جا سکتا۔</translation>
@@ -1777,7 +1774,6 @@
 <translation id="5333022057423422993">‏Chrome کو وہ پاس ورڈ مل گیا جو آپ نے ابھی ڈیٹا کی خلاف ورزی میں استعمال کیا ہے۔ اپنے اکاؤنٹس کو محفوظ کرنے کے لیے ہم آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتے ہیں۔</translation>
 <translation id="5334013548165032829">مفصل سسٹم لاگز</translation>
 <translation id="5334145288572353250">پتہ محفوظ کریں؟</translation>
-<translation id="5335920952954443287">دھڑکتا دل</translation>
 <translation id="5337569431717511221">‏Chrome کو بطور ڈیفالٹ براؤزر بٹن سیٹ کریں، Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کرنے کے لیے Enter دبائیں</translation>
 <translation id="5340250774223869109">ایپلیکیشن مسدود ہے</translation>
 <translation id="534295439873310000">‏NFC آلات</translation>
@@ -1785,7 +1781,6 @@
 <translation id="5344579389779391559">یہ صفحہ آپ سے رقم چارج کرنے کی کوشش کر سکتا ہے</translation>
 <translation id="5347645913823149105">‏Chrome بٹن میں فونٹس کو حسب ضرورت بنائیں، Chrome میں فونٹ کے سائز کو اور ٹائپ فیسز کو حسب ضرورت بنانے کے لیے اینٹر دبائیں</translation>
 <translation id="5355557959165512791">آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے کیونکہ اس کے سرٹیفکیٹ کو کالعدم قرار دے دیا گیا ہے۔ نیٹ ورک کی خرابیاں اور حملے عام طور پر عارضی ہوتے ہیں، لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
-<translation id="5356837363448394805">سرخ چہرہ</translation>
 <translation id="5357848622083956825">ویژوئل آرٹ اور ڈیزائن</translation>
 <translation id="536296301121032821">پالیسی کی ترتیبات کو اسٹور کرنے میں ناکام</translation>
 <translation id="5363309033720083897">آپ کے منتظم کی جانب سے اجازت یافتہ سیریل پورٹ</translation>
@@ -2117,7 +2112,6 @@
 <translation id="6226163402662242066">‏<ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے ٹیب پھر Enter دبائیں</translation>
 <translation id="6229649258872345286">فیملی کے ساتھ سفر</translation>
 <translation id="6232271601416750929">بے داغ حسن</translation>
-<translation id="6233160458685643793">ہنستا ہوا</translation>
 <translation id="6234122620015464377">ہر دستاویز کے بعد تراشیں</translation>
 <translation id="6236290670123303279">ترتیبات کا نظم کریں</translation>
 <translation id="6240447795304464094">‏Google pay کا لوگو</translation>
@@ -2185,7 +2179,6 @@
 <translation id="6391700400718590966">ادائیگی کی اسناد محفوظ کریں کوئی مماثل اسناد نہیں کی شیٹ بند ہے</translation>
 <translation id="6393956493820063117">منتظم کی پالیسی کے ذریعے <ph name="ORIGIN_NAME" /> سے اس مقام پر پیسٹ کرنا مسدود کر دیا گیا ہے</translation>
 <translation id="6394852772105848029">یہ سائٹ <ph name="APP_NAME" /> ایپ کو کھولنا چاہتی ہے</translation>
-<translation id="6398277657359595425">تیز آواز میں روتا ہوا</translation>
 <translation id="6398765197997659313">پوری سکرین سے خارج ہوں</translation>
 <translation id="6401136357288658127">یہ پالیسی فرسودہ ہے۔ اس کی بجائے، آپ کو <ph name="NEW_POLICY" /> پالیسی کا استعمال کرنا چاہیے۔</translation>
 <translation id="6404511346730675251">بک مارک میں ترمیم کریں</translation>
@@ -2285,7 +2278,6 @@
 <translation id="6660413144148052430">مقام</translation>
 <translation id="6662457027866368246">پہلا رول</translation>
 <translation id="666259744093848177">‏(x86_64 ترجمہ کردہ)</translation>
-<translation id="6663846344464066639">فولڈ کیے ہوئے ہاتھ</translation>
 <translation id="6665553082534466207">دائیں طرف تین سوراخ</translation>
 <translation id="6668389483194953109">‏کاغذ کے سائز کا نام "حسب ضرورت" ملا، لیکن "custom_size" پراپرٹی خالی یا غلط ہے۔</translation>
 <translation id="6671697161687535275">‏Chromium سے فارم کی تجویز ہٹائیں؟</translation>
@@ -2386,7 +2378,6 @@
 <translation id="6939469646605424232">‏TV ڈرامے</translation>
 <translation id="6944692733090228304">آپ نے اپنا پاس ورڈ ایک ایسی سائٹ پر درج کیا ہے جو <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> کے زیر انتظام نہیں ہے۔ اپنے اکاؤنٹ کے تحفظ کے لیے، دیگر ایپس اور سائٹس پر اپنا پاس ورڈ دوبارہ استعمال نہ کریں۔</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
-<translation id="6946722113367118030">فکر میں ڈوبا ہوا</translation>
 <translation id="6948051842255602737">گیم ختم، آپ کا اسکور <ph name="SCORE" /> ہے۔</translation>
 <translation id="6948701128805548767">پِک اپ کے طریقے اور ضروریات دیکھنے کیلئے، ایک پتہ منتخب کریں</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2578,6 +2569,7 @@
 <translation id="7388594495505979117">{0,plural, =1{آپ کا آلہ 1 منٹ میں ری اسٹارٹ ہوگا}other{آپ کا آلہ # منٹ میں ری اسٹارٹ ہوگا}}</translation>
 <translation id="7390545607259442187">کارڈ کی توثیق کریں</translation>
 <translation id="7392089738299859607">پتہ اپ ڈیٹ کریں</translation>
+<translation id="739728382607845710">ادائیگی ہینڈلر کا آئیکن</translation>
 <translation id="7399802613464275309">سیفٹی چیک</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">‏لنک کا اشتراک، QR کوڈ تخلیق، کاسٹ اور بہت کچھ کر کے اس ٹیب کا اشتراک کریں</translation>
@@ -2709,7 +2701,6 @@
 <translation id="765676359832457558">اعلی ترتیبات چھپائیں…</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7659327900411729175">‏Kaku 8 لفافہ</translation>
-<translation id="7659878911471462949">خوشی کے آنسو</translation>
 <translation id="766014026101194726">{0,plural, =1{منتظم کی پالیسی کے تحت اس فائل کو اپ لوڈ کرنا مسدود ہے}other{منتظم کی پالیسی کے تحت، # فائلز کو اپ لوڈ کرنا مسدود ہے}}</translation>
 <translation id="7662298039739062396">ترتیب کو ایک ایکسٹینشن سے کنٹرول کیا جاتا ہے</translation>
 <translation id="7663736086183791259">سرٹیفیکیٹ <ph name="CERTIFICATE_VALIDITY" /></translation>

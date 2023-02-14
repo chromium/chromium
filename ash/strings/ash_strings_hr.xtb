@@ -139,6 +139,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1677472565718498478">Još <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Značajka <ph name="FEATURE_NAME" /> nije povezana.</translation>
 <translation id="1677582821739292812">Netko gleda vaš zaslon</translation>
+<translation id="1683399938733266832">Trenutačna upotreba procesora: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Odbrojavanje: <ph name="TOTAL_TIME" />· <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresa: <ph name="ADDRESS" /></translation>
@@ -381,6 +382,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3051189971848907985">U tijeku je preimenovanje profila. Pričekajte nekoliko minuta.</translation>
 <translation id="3055162170959710888">Uređaj je danas korišten <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Nije podržano</translation>
+<translation id="3068622547379332530">Verzija <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Polica na lijevoj strani</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Proširi izbornik</translation>
@@ -578,7 +580,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4123259114412175274">Da biste otključali Chromebook, provjerite je li na telefonu uključen Bluetooth</translation>
 <translation id="4125970834901680537">Aplikacije se ne mogu streamati u načinu rada tableta. Pokušajte u načinu prijenosnog računala.</translation>
 <translation id="4129129681837227511">Za prikaz obavijesti na zaključanom zaslonu otključajte zaslon da biste promijenili postavku</translation>
-<translation id="4130035430755296270">Zadržite pokazivač miša za više opcija izgleda</translation>
+<translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C – trenutačna brzina: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Uključeno do izlaska sunca</translation>
 <translation id="4146833061457621061">Pusti glazbu</translation>
 <translation id="4150201353443180367">Zaslon</translation>
@@ -719,7 +721,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="481455355267255546">Slijedi</translation>
 <translation id="4831034276697007977">Jeste li sigurni da želite isključiti automatske klikove?</translation>
 <translation id="4849058404725798627">Istakni objekt fokusom na tipkovnici</translation>
-<translation id="4855250849489639581">Za više opcija izgleda prijeđite prstom prema dolje</translation>
 <translation id="485592688953820832">Nema radnje (pauza)</translation>
 <translation id="485634149294284819">Otvorite izbornik tipkovnice</translation>
 <translation id="4860284199500934869">Provjerite mrežnu vezu da biste preuzeli datoteku <ph name="FILENAME" /></translation>

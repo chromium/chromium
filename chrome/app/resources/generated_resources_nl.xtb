@@ -5838,7 +5838,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6295158916970320988">Alle sites</translation>
 <translation id="6295855836753816081">Opslaan...</translation>
 <translation id="6298962879096096191">Gebruik Google Play om Android-apps te installeren</translation>
-<translation id="6300125580697461004">Feedback over energiebesparing sturen</translation>
 <translation id="6300177430812514606">Geen toestemming om het sturen of ontvangen van gegevens te voltooien</translation>
 <translation id="630065524203833229">&amp;Sluiten</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kan niet automatisch worden ingesteld. Geef geavanceerde printergegevens op. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -6043,7 +6042,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6491376743066338510">Autorisatie mislukt</translation>
 <translation id="6494327278868541139">Details van geoptimaliseerde beveiliging bekijken</translation>
 <translation id="6494445798847293442">Geen certificeringsinstantie</translation>
-<translation id="6497548114956205206">Meer informatie over energiebesparing</translation>
 <translation id="6497784818439587832">Wijzig de weergavegrootte om items op het scherm kleiner of groter te maken.</translation>
 <translation id="6497789971060331894">Omgekeerd scrollen muis</translation>
 <translation id="6498249116389603658">&amp;Al je talen</translation>
@@ -7658,7 +7656,6 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7955177647836564772">Als Smart Lock aanstaat en je telefoon is ontgrendeld, hoef je geen wachtwoord of pincode in te vullen.</translation>
 <translation id="7956373551960864128">Je opgeslagen printers</translation>
 <translation id="7957074856830851026">Apparaatgegevens bekijken, zoals serienummer of item-ID</translation>
-<translation id="7957186326898555886">Feedback over geheugenbesparing sturen</translation>
 <translation id="7959074893852789871">Het bestand bevat meerdere certificaten. Sommige van deze certificaten zijn niet geïmporteerd:</translation>
 <translation id="7959665254555683862">Nieuw incognito&amp;tabblad</translation>
 <translation id="7961015016161918242">Nooit</translation>
@@ -8088,7 +8085,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8340547030807793004">Meer acties voor <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> bekijken die onlangs veel meldingen heeft gestuurd}other{<ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> bekijken die onlangs veel meldingen hebben gestuurd}}</translation>
 <translation id="8342221978608739536">Niet geprobeerd</translation>
-<translation id="8342399870062010251">Meer informatie over geheugenbesparing</translation>
 <translation id="8342861492835240085">Een verzameling selecteren</translation>
 <translation id="8345848587667658367">Je kunt nu de recente foto's, media, meldingen en apps van je telefoon bekijken</translation>
 <translation id="8347227221149377169">Afdruktaken</translation>
@@ -8401,7 +8397,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8645354835496065562">Toegang tot sensoren blijven toestaan</translation>
 <translation id="8645920082661222035">Voorspelt en waarschuwt je over gevaarlijke gebeurtenissen voordat deze plaatsvinden</translation>
 <translation id="8646209145740351125">Synchronisatie uitzetten</translation>
-<translation id="8646340610303779673">Kan PPD niet ophalen.</translation>
 <translation id="864637694230589560">Sites sturen meestal meldingen om je op de hoogte te houden van actueel nieuws of nieuwe chatberichten</translation>
 <translation id="8646467750715887511">Pagina's worden pas geladen nadat je ze opent.</translation>
 <translation id="8647385344110255847">Als je toestemming geeft, kan je kind Google Play gebruiken om apps te installeren</translation>

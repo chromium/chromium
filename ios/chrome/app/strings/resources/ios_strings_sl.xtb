@@ -302,6 +302,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3181825792072797598">Vklopi sinhronizacijo</translation>
 <translation id="3181954750937456830">Varno brskanje (ščiti vas in napravo pred nevarnimi spletnimi mesti)</translation>
 <translation id="3184767182050912705">Odklepanje s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Prekliči spremljanje</translation>
 <translation id="3214379938835224220">Bili ste odjavljeni zarad ponastavitve iPada. Spodaj se dotaknite gumba za nadaljevanje, če se želite prijaviti.</translation>
 <translation id="3224641773458703735">Če želite izvoziti gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -812,7 +813,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6869389390665537774">Ogledate si lahko strani, ki ste jih obiskali, ali jih izbrišete iz zgodovine</translation>
 <translation id="687135068089457384">Pokaži nastavitve</translation>
 <translation id="6873263987691478642">Razdeljeni pogled</translation>
-<translation id="6873366418270195926">Če se cena zniža na katerem koli spletnem mestu, boste prejeli opozorilo. Ta stran je shranjena v <ph name="BEGIN_LINK" />Zaznamkih<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardna zaščita proti spletnim mestom, prenosom in razširitvam, za katere vemo, da so nevarni.</translation>
 <translation id="6888009575607455378">Ali ste prepričani, da želite zavreči spremembe?</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
@@ -867,7 +867,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="734758817008927353">Možnosti za shranjevanje kartic</translation>
 <translation id="7351537303876921605">V kontekstnem meniju se dotaknite »Create Link« (Ustvari povezavo)</translation>
 <translation id="7353432112255316844">Potrditev identitete</translation>
-<translation id="7356359962760467032">Ustavi spremljanje cen</translation>
 <translation id="7383797227493018512">Seznam za branje</translation>
 <translation id="7398893703713203428">Ustvari povezavo</translation>
 <translation id="7400418766976504921">URL</translation>

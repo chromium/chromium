@@ -5851,7 +5851,6 @@
 <translation id="6295158916970320988">Сви сајтови</translation>
 <translation id="6295855836753816081">Чува се…</translation>
 <translation id="6298962879096096191">Користите Google Play да бисте инсталирали Android апликације</translation>
-<translation id="6300125580697461004">Пошаљите повратне информације о уштеди енергије</translation>
 <translation id="6300177430812514606">Није им дозвољено да довршавају слање или примање података</translation>
 <translation id="630065524203833229">И&amp;зађи</translation>
 <translation id="6300718114348072351">Штампач <ph name="PRINTER_NAME" /> не може да се конфигурише аутоматски. Наведите податке о напредном подешавању штампача. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -6056,7 +6055,6 @@
 <translation id="6491376743066338510">Провера овлашћења није успела</translation>
 <translation id="6494327278868541139">Прикажи детаље о напредној заштити</translation>
 <translation id="6494445798847293442">Није ауторитет за издавање сертификата</translation>
-<translation id="6497548114956205206">Сазнајте више о уштеди енергије</translation>
 <translation id="6497784818439587832">Промените величину приказа да бисте умањили или увећали ставке на екрану</translation>
 <translation id="6497789971060331894">Обрнуто померање мишем</translation>
 <translation id="6498249116389603658">&amp;Сви ваши језици</translation>
@@ -6984,6 +6982,7 @@
 <translation id="7352651011704765696">Нешто није у реду</translation>
 <translation id="7353261921908507769">Контакти могу да деле са вама када су у близини. Преноси неће започети док не прихватите.</translation>
 <translation id="735361434055555355">Инсталира се Linux...</translation>
+<translation id="7354120289251608189">Сада можете да пређете на нов изгледу у било ком тренутку.</translation>
 <translation id="7356908624372060336">Евиденција мреже</translation>
 <translation id="735745346212279324">Веза са VPN-ом је прекинута</translation>
 <translation id="7358324924540718595">Успомене су сакривене за данас</translation>
@@ -7678,7 +7677,6 @@
 <translation id="7955177647836564772">Ако је Smart Lock укључен и телефон је откључан, не морате да уносите лозинку или PIN</translation>
 <translation id="7956373551960864128">Сачувани штампачи</translation>
 <translation id="7957074856830851026">Преглед информација о уређају, као што је серијски број или ИД дела</translation>
-<translation id="7957186326898555886">Пошаљите повратне информације о уштеди меморије</translation>
 <translation id="7959074893852789871">Датотека садржи више сертификата, од којих неки нису увезени:</translation>
 <translation id="7959665254555683862">Нова картица без архивирања</translation>
 <translation id="7961015016161918242">Никад</translation>
@@ -8108,7 +8106,6 @@
 <translation id="8340547030807793004">Још радњи за <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Прегледајте <ph name="BEGIN_BOLD" />1 сајт<ph name="END_BOLD" /> који је недавно послао много обавештења}one{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајт<ph name="END_BOLD" /> који је недавно послао много обавештења}few{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајта<ph name="END_BOLD" /> која су недавно послала много обавештења}other{Прегледајте <ph name="BEGIN_BOLD" />{NUM_SITES} сајтова<ph name="END_BOLD" /> који су недавно послали много обавештења}}</translation>
 <translation id="8342221978608739536">Нисам покушао/ла</translation>
-<translation id="8342399870062010251">Сазнајте више о уштеди меморије</translation>
 <translation id="8342861492835240085">Изаберите колекцију</translation>
 <translation id="8345848587667658367">Сада можете да прегледате недавне слике, медије, обавештења и апликације на телефону</translation>
 <translation id="8347227221149377169">Задаци штампања</translation>
@@ -8422,7 +8419,6 @@
 <translation id="8645354835496065562">Настави да дозвољаваш приступ сензорима</translation>
 <translation id="8645920082661222035">Открива опасне догађаје пре него што се догоде и упозорава вас на њих</translation>
 <translation id="8646209145740351125">Онемогућите синхронизацију</translation>
-<translation id="8646340610303779673">Преузимање PPD-а није успело.</translation>
 <translation id="864637694230589560">Сајтови обично шаљу обавештења да би вас обавестили о ударним вестима или порукама ћаскања</translation>
 <translation id="8646467750715887511">Странице се учитавају тек када их отворите.</translation>
 <translation id="8647385344110255847">Уз вашу дозволу, дете може да користи Google Play за инсталирање апликација</translation>

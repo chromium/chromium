@@ -133,6 +133,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="163517899691012366">Se silencian las notificaciones cuando está activada la función No interrumpir.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">Cargando</translation>
+<translation id="1647986356840967552">Página anterior</translation>
 <translation id="1654477262762802994">Iniciar una búsqueda por voz</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
 <translation id="1677472565718498478">Tiempo restante <ph name="TIME" /></translation>
@@ -556,6 +557,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="397726367135689299">Es posible que la carga de la batería no sea confiable.</translation>
 <translation id="3977512764614765090">Nivel de la batería: <ph name="PERCENTAGE" />% y cargando</translation>
+<translation id="3984536049089846927">Página siguiente</translation>
 <translation id="3986082989454912832">Responder</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (puerto lateral derecho trasero)</translation>
 <translation id="40062176907008878">Escritura a mano</translation>
@@ -578,7 +580,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4123259114412175274">Para desbloquear tu Chromebook, asegúrate de que la conexión Bluetooth del teléfono esté activada</translation>
 <translation id="4125970834901680537">No se puede transmitir apps en el modo tablet. Inténtalo en el modo laptop.</translation>
 <translation id="4129129681837227511">Para ver notificaciones en la pantalla bloqueada, desbloquéala para cambiar la configuración</translation>
-<translation id="4130035430755296270">Sigue colocando el cursor sobre otras opciones de diseño</translation>
 <translation id="4136724716305260864">Activada hasta el amanecer</translation>
 <translation id="4146833061457621061">Reproducir música</translation>
 <translation id="4150201353443180367">Pantalla</translation>

@@ -366,7 +366,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8286862437124483331">Google Chrome er að reyna að sýna aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að heimila þetta.</translation>
 <translation id="828798499196665338">Foreldrar þínir hafa slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chrome. Ekki er leyfilegt að kveikja á þessu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Vóts! Google Chrome hrundi. Endurræsa núna?</translation>
-<translation id="8341646175450781745">Þegar kveikt er á þessu losar Chrome um minni úr óvirkum flipum. Þetta veitir virkum flipum og öðrum forritum meiri tölvugögn og heldur Chrome hröðum. Óvirkir flipar virkjast aftur sjálfkrafa þegar þú opnar þá. <ph name="BEGIN_LINK" />Kynntu þér þetta nánar<ph name="END_LINK" /> eða <ph name="BEGIN_LINK_2" />sendu ábendingu<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Þessi skrá er hættuleg og þess vegna útilokaði Chrome hana.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Svona notum við þessi gögn:<ph name="END_BOLD" /> Vefsvæði geta vistað upplýsingar um áhugasvið þín í Chrome. Ef þú heimsækir til dæmis vefsvæði til að kaupa skó fyrir maraþonhlaup kann vefsvæðið að skilgreina maraþonhlaup sem áhugasvið þitt. Ef þú heimsækir svo annað vefsvæði síðar meir til að skrá þig í hlaup getur viðkomandi vefsvæði birt þér auglýsingu um hlaupaskó í samræmi við áhugasvið þitt.</translation>
 <translation id="8370517070665726704">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
@@ -411,7 +410,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8986207147630327271">Þú ert að bæta vinnusniði við þennan vafra og veita stjórnanda þínum leyfi til að stjórna vinnusniðinu eingöngu.</translation>
 <translation id="8989968390305463310">Vafraferillinn þinn hefur áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chrome áhugamálunum þínum sjálfkrafa mánaðarlega. Áhugasvið verða hugsanlega endurnýjuð nema þú fjarlægir þau.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uppfærsla er í boði fyrir Chrome}=1{Uppfærsla er í boði fyrir Chrome}one{Uppfærsla hefur verið í boði fyrir Chrome í # dag}other{Uppfærsla hefur verið í boði fyrir Chrome í # daga}}</translation>
-<translation id="9003498785844995646">Þegar kveikt er á minnissparnaði dregur Chrome úr rafhlöðunotkun með því að takmarka bakgrunnsvirkni og myndáhrif á borð við mjúkflettingu og rammatíðni myndskeiða. <ph name="BEGIN_LINK" />Kynntu þér þetta nánar<ph name="END_LINK" /> eða <ph name="BEGIN_LINK_2" />sendu ábendingu<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex kerfi</translation>
 <translation id="9067395829937117663">Google Chrome krefst Windows 7 eða nýrri útgáfu.</translation>
 <translation id="911206726377975832">Eyða líka vafragögnum?</translation>

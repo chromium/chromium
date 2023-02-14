@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">同期を有効にする</translation>
 <translation id="3181954750937456830">セーフ ブラウジング（危険なサイトからユーザーとデバイスを保護します）</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でロックを解除</translation>
+<translation id="3190736958609431397">トラッキングを停止</translation>
 <translation id="3214379938835224220">iPad をリセットする途中でログアウトしました。下の [続行] をタップしてログインしてください。</translation>
 <translation id="3224641773458703735">パスワードをエクスポートするには、まずデバイスでパスコードを設定する必要があります。</translation>
 <translation id="3227137524299004712">マイク</translation>
@@ -314,7 +315,7 @@
 <translation id="3285962946108803577">ページを共有...</translation>
 <translation id="3289505634533552500">音声検索</translation>
 <translation id="3290875554372353449">アカウントの選択</translation>
-<translation id="3305294846493618482">その他</translation>
+<translation id="3305294846493618482">続き</translation>
 <translation id="3311748811247479259">オフ</translation>
 <translation id="3324193307694657476">住所2行目</translation>
 <translation id="3328801116991980348">サイト情報</translation>
@@ -812,7 +813,6 @@
 <translation id="6869389390665537774">アクセスしたページを確認したり履歴から消去したりできます</translation>
 <translation id="687135068089457384">設定を表示</translation>
 <translation id="6873263987691478642">分割表示</translation>
-<translation id="6873366418270195926">値下げしたサイトがある場合は、アラートが表示されます。このページは<ph name="BEGIN_LINK" />ブックマーク<ph name="END_LINK" />に保存されます。</translation>
 <translation id="6882836635272038266">危険だと認識されているウェブサイト、ダウンロード、拡張機能から標準的な方法で保護します。</translation>
 <translation id="6888009575607455378">変更を破棄してもよろしいですか？</translation>
 <translation id="6896758677409633944">コピー</translation>
@@ -867,7 +867,6 @@
 <translation id="734758817008927353">カードの保存オプション</translation>
 <translation id="7351537303876921605">コンテキスト メニューで [リンクを作成] をタップします</translation>
 <translation id="7353432112255316844">本人確認</translation>
-<translation id="7356359962760467032">価格のトラッキングを停止する</translation>
 <translation id="7383797227493018512">リーディング リスト</translation>
 <translation id="7398893703713203428">リンクを作成</translation>
 <translation id="7400418766976504921">URL</translation>

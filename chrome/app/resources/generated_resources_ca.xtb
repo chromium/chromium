@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Vols reiniciar Linux?</translation>
 <translation id="1047431265488717055">Copia el te&amp;xt de l'enllaç</translation>
 <translation id="1048286738600630630">Pantalles</translation>
+<translation id="1048770690598418849">De moment, pots ometre aquest pas, i ho tornarem a provar automàticament quan hagis finalitzat la configuració</translation>
 <translation id="1048986595386481879">Assignada de manera dinàmica</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{S'estan rebent <ph name="ATTACHMENTS" /> del dispositiu <ph name="DEVICE_NAME" />}other{S'estan rebent <ph name="ATTACHMENTS" /> del dispositiu <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incògnit</translation>
@@ -1623,6 +1624,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2410754283952462441">Tria un compte</translation>
 <translation id="241082044617551207">Connector desconegut</translation>
 <translation id="2410940059315936967">Els llocs web que visites poden inserir contingut d'altres llocs web, com ara imatges, anuncis i text. Les galetes establertes per aquests altres llocs web s'anomenen "galetes de tercers".</translation>
+<translation id="2411666601450687801">No es permeten màquines virtuals en aquest dispositiu</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Tecles de funció del teclat</translation>
 <translation id="2418307627282545839">Mostra una aparença vívida i etèria</translation>
@@ -1884,6 +1886,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2653659639078652383">Envia</translation>
 <translation id="265390580714150011">Valor del camp</translation>
 <translation id="2654553774144920065">Sol·licitud d'impressió</translation>
+<translation id="265748523151262387">Mantén la connexió amb el telèfon</translation>
 <translation id="2657612187216250073">Configuració d'accessibilitat del punter</translation>
 <translation id="2658941648214598230">Vols que es mostri el contingut original?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Les funcions varien segons el dispositiu</translation>
@@ -5298,6 +5301,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5801051031414037185">Configura el telèfon</translation>
 <translation id="5801568494490449797">Preferències</translation>
 <translation id="5804241973901381774">Permisos</translation>
+<translation id="5804259315582798390">No s'ha pogut activar la recuperació de dades locals</translation>
 <translation id="5805268472388605531">Mantén premuda qualsevol tecla del teclat per veure'n marques d'èmfasi i caràcters especials</translation>
 <translation id="5805697420284793859">Gestor de finestres</translation>
 <translation id="5806447147478173900">Emmagatzematge total utilitzat pels llocs web mostrats: <ph name="TOTAL_USAGE" /></translation>
@@ -5838,7 +5842,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
 <translation id="6295855836753816081">S'està desant…</translation>
 <translation id="6298962879096096191">Utilitza Google Play per instal·lar aplicacions per a Android</translation>
-<translation id="6300125580697461004">Envia suggeriments sobre l'estalvi d'energia</translation>
 <translation id="6300177430812514606">Sense permís per acabar d'enviar o de rebre dades</translation>
 <translation id="630065524203833229">S&amp;urt</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> no s'ha pogut configurar automàticament. Especifica els detalls avançats de la impressora. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -6043,7 +6046,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6491376743066338510">No s'ha pogut completar l'autorització</translation>
 <translation id="6494327278868541139">Mostra els detalls de la protecció millorada</translation>
 <translation id="6494445798847293442">No és una entitat emissora de certificats</translation>
-<translation id="6497548114956205206">Més informació sobre l'estalvi d'energia</translation>
 <translation id="6497784818439587832">Canvia la mida de visualització per ampliar o reduir els elements de la pantalla</translation>
 <translation id="6497789971060331894">Desplaçament invers del ratolí</translation>
 <translation id="6498249116389603658">&amp;Tots els vostres idiomes</translation>
@@ -6680,6 +6682,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7047059339731138197">Tria un fons</translation>
 <translation id="7049293980323620022">Vols desar el fitxer?</translation>
 <translation id="7050037487872780845">La configuració del punt d'accés Wi‐Fi no és vàlida</translation>
+<translation id="7051551856857948729">Amaga el valor d'IBAN</translation>
 <translation id="7052237160939977163">Envia dades de traça del rendiment</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
 <translation id="7055152154916055070">S'ha bloquejat la redirecció:</translation>
@@ -7660,7 +7663,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7955177647836564772">Si Smart Lock està activat i el telèfon està desbloquejat, no caldrà que introdueixis cap contrasenya ni cap PIN</translation>
 <translation id="7956373551960864128">Les teves impressores desades</translation>
 <translation id="7957074856830851026">Mostra la informació del dispositiu, com ara el número de sèrie o l'identificador de recurs</translation>
-<translation id="7957186326898555886">Envia suggeriments sobre l'estalvi de memòria</translation>
 <translation id="7959074893852789871">El fitxer contenia certificats múltiples, però alguns no s'han importat:</translation>
 <translation id="7959665254555683862">Pestanya &amp;d'incògnit nova</translation>
 <translation id="7961015016161918242">Mai</translation>
@@ -8091,7 +8093,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8340547030807793004">Més accions per a <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Revisa <ph name="BEGIN_BOLD" />1 lloc web<ph name="END_BOLD" /> que ha enviat moltes notificacions recentment}other{Revisa <ph name="BEGIN_BOLD" />{NUM_SITES} llocs web<ph name="END_BOLD" /> que han enviat moltes notificacions recentment}}</translation>
 <translation id="8342221978608739536">No ho he provat</translation>
-<translation id="8342399870062010251">Més informació sobre l'estalvi de memòria</translation>
 <translation id="8342861492835240085">Selecciona una col·lecció</translation>
 <translation id="8345848587667658367">Ara pots consultar les aplicacions, les notificacions, els fitxers multimèdia i les fotos recents del telèfon</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
@@ -8403,7 +8404,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8645354835496065562">Continua permetent l'accés als sensors</translation>
 <translation id="8645920082661222035">Prediu esdeveniments perillosos abans que es produeixin i t'avisa</translation>
 <translation id="8646209145740351125">Desactiva la sincronització</translation>
-<translation id="8646340610303779673">No es pot recuperar el fitxer PPD.</translation>
 <translation id="864637694230589560">Els llocs web acostumen a enviar notificacions per informar-te de notícies d'última hora o de missatges de xat</translation>
 <translation id="8646467750715887511">Les pàgines només es carreguen després d'obrir-les.</translation>
 <translation id="8647385344110255847">Amb el teu permís, el teu fill pot utilitzar Google Play per instal·lar aplicacions</translation>
@@ -8548,6 +8548,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8767621466733104912">Actualitza Chrome automàticament per a tots els usuaris</translation>
 <translation id="8770406935328356739">Directori arrel de l'extensió</translation>
 <translation id="8771300903067484968">El fons de la pàgina d'inici s'ha restablert al fons predeterminat.</translation>
+<translation id="8773280816776735812">Mostra el valor d'IBAN</translation>
 <translation id="8773302562181397928">Desa <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Confirma la restauració</translation>
 <translation id="8774934320277480003">Marge superior</translation>

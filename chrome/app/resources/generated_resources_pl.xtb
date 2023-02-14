@@ -5830,7 +5830,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6295158916970320988">Wszystkie witryny</translation>
 <translation id="6295855836753816081">Zapisuję…</translation>
 <translation id="6298962879096096191">Użyj Google Play, by zainstalować aplikacje na Androida</translation>
-<translation id="6300125580697461004">Prześlij opinię o oszczędzaniu energii</translation>
 <translation id="6300177430812514606">Nie zezwolono na kończenie wysyłania i otrzymywania danych</translation>
 <translation id="630065524203833229">Z&amp;akończ</translation>
 <translation id="6300718114348072351">Nie udało się automatycznie skonfigurować drukarki <ph name="PRINTER_NAME" />. Określ zaawansowane ustawienia drukarki. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -6035,7 +6034,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6491376743066338510">Nieudana autoryzacja</translation>
 <translation id="6494327278868541139">Pokaż szczegóły silniejszej ochrony</translation>
 <translation id="6494445798847293442">To nie jest urząd certyfikacji</translation>
-<translation id="6497548114956205206">Więcej informacji o oszczędzaniu energii</translation>
 <translation id="6497784818439587832">Umożliwia zmienianie rozmiaru wyświetlacza, aby elementy na ekranie były mniejsze lub większe</translation>
 <translation id="6497789971060331894">Odwrotne przewijanie myszą</translation>
 <translation id="6498249116389603658">&amp;Wszystkie Twoje języki</translation>
@@ -7655,7 +7653,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7955177647836564772">Jeśli funkcja Smart Lock jest włączona, a telefon odblokowany, nie musisz wpisywać hasła ani kodu PIN</translation>
 <translation id="7956373551960864128">Twoje zapisane drukarki</translation>
 <translation id="7957074856830851026">Sprawdzanie informacji z urządzenia, takich jak numer seryjny lub identyfikator zasobu</translation>
-<translation id="7957186326898555886">Prześlij opinię o oszczędzaniu pamięci</translation>
 <translation id="7959074893852789871">Plik zawierał wiele certyfikatów, z których niektóre nie zostały zaimportowane:</translation>
 <translation id="7959665254555683862">Nowa &amp;karta incognito</translation>
 <translation id="7961015016161918242">Nigdy</translation>
@@ -8085,7 +8082,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8340547030807793004">Więcej działań dotyczących: <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Sprawdź <ph name="BEGIN_BOLD" />1 witrynę<ph name="END_BOLD" />, która ostatnio wysłała wiele powiadomień}few{Sprawdź <ph name="BEGIN_BOLD" />{NUM_SITES} witryny<ph name="END_BOLD" />, które ostatnio wysłały wiele powiadomień}many{Sprawdź <ph name="BEGIN_BOLD" />{NUM_SITES} witryn<ph name="END_BOLD" />, które ostatnio wysłały wiele powiadomień}other{Sprawdź <ph name="BEGIN_BOLD" />{NUM_SITES} witryny<ph name="END_BOLD" />, która ostatnio wysłała wiele powiadomień}}</translation>
 <translation id="8342221978608739536">Nie wiem</translation>
-<translation id="8342399870062010251">Więcej informacji o oszczędzaniu pamięci</translation>
 <translation id="8342861492835240085">Wybierz kolekcję</translation>
 <translation id="8345848587667658367">Możesz teraz wyświetlać najnowsze zdjęcia, pliki multimedialne, powiadomienia i aplikacje z telefonu</translation>
 <translation id="8347227221149377169">Zadania drukowania</translation>
@@ -8105,6 +8101,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8358912028636606457">Na tym urządzeniu nie jest obsługiwane przesyłanie dźwięku z kart.</translation>
 <translation id="835951711479681002">Zapisz na koncie Google</translation>
 <translation id="8360140320636871023">Spersonalizuj motyw wyświetlacza</translation>
+<translation id="8360267485906769442">Przycisk przesyłania opinii</translation>
 <translation id="8363095875018065315">stabilna</translation>
 <translation id="8363142353806532503">Zablokowano dostęp do mikrofonu</translation>
 <translation id="8366396658833131068">Łączność z siecią została przywrócona. Wybierz inną sieć lub naciśnij przycisk „Dalej” poniżej, by uruchomić aplikację w trybie kiosku.</translation>
@@ -8397,7 +8394,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8645354835496065562">Nadal zezwalaj na dostęp do czujników</translation>
 <translation id="8645920082661222035">Przewiduje niebezpieczne zdarzenia i ostrzega Cię przed nimi, zanim nastąpią</translation>
 <translation id="8646209145740351125">Wyłączanie synchronizacji</translation>
-<translation id="8646340610303779673">Nie można pobrać pliku PPD.</translation>
 <translation id="864637694230589560">Strony zazwyczaj wysyłają powiadomienia o aktualnościach lub wiadomości czatu</translation>
 <translation id="8646467750715887511">Strony wczytują się po otwarciu.</translation>
 <translation id="8647385344110255847">Za Twoją zgodą dziecko może używać Google Play do instalowania aplikacji</translation>

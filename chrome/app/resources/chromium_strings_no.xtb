@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">For å sjekke om passordene dine er trygge mot databrudd og andre sikkerhetsproblemer, <ph name="BEGIN_LINK" />logg på Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1231839967188101156">Når dette er på, frigjør Chromium minne fra inaktive faner. Dette gir aktive faner og andre apper flere datamaskinressurser og holder Chromium rask. De inaktive fanene dine blir automatisk aktive igjen når du går tilbake til dem. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Minnesparing har gjort Chromium raskere</translation>
 <translation id="1315551408014407711">Konfigurer den nye Chromium-profilen din</translation>
 <translation id="1396446129537741364">Chromium prøver å vise passord.</translation>
@@ -350,7 +349,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8550334526674375523">Denne jobbprofilen er helt separat fra den personlige profilen din.</translation>
 <translation id="8558383651099478961">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium. Du har ikke tillatelse til å legge til denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din</translation>
-<translation id="8574036838419011058">Når dette er på, sparer Chromium batteristrøm ved å begrense bakgrunnsaktivitet og visuelle effekter, for eksempel jevn rulling og bildefrekvensen til videoer. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Slik bruker vi disse dataene:<ph name="END_BOLD" /> Nettsteder kan lagre informasjon om interessene dine i Chromium. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
 <translation id="8619360774459241877">Starter Chromium ...</translation>

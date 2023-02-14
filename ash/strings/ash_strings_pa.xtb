@@ -133,6 +133,7 @@
 <translation id="163517899691012366">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਚਾਲੂ ਹੋਣ 'ਤੇ ਸੂਚਨਾਵਾਂ ਮਿਊਟ ਹੁੰਦੀਆਂ ਹਨ</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ਡੀਵਾਈਸ</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="1647986356840967552">ਪਿਛਲਾ ਪੰਨਾ</translation>
 <translation id="1654477262762802994">ਅਵਾਜ਼ੀ ਪੁੱਛਗਿੱਛ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="1668469839109562275">ਅੰਦਰ-ਮੌਜੂਦ VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ਬਾਕੀ</translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="397726367135689299">ਸ਼ਾਇਦ ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਭਰੋਸੇਯੋਗ ਨਾ ਹੋਵੇ।</translation>
 <translation id="3977512764614765090">ਬੈਟਰੀ <ph name="PERCENTAGE" />% ਹੈ ਅਤੇ ਚਾਰਜ ਹੋ ਰਹੀ ਹੈ।</translation>
+<translation id="3984536049089846927">ਅਗਲਾ ਪੰਨਾ</translation>
 <translation id="3986082989454912832">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="3995138139523574647">USB-C ਡੀਵਾਈਸ (ਸੱਜੇ ਪਾਸੇ ਪਿਛਲਾ ਪੋਰਟ)</translation>
 <translation id="40062176907008878">ਲਿਖਾਈ</translation>
@@ -577,7 +579,6 @@
 <translation id="4123259114412175274">ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ</translation>
 <translation id="4125970834901680537">ਟੈਬਲੈੱਟ ਮੋਡ ਵਿੱਚ ਐਪਾਂ ਨੂੰ ਸਟ੍ਰੀਮ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਲੈਪਟਾਪ ਮੋਡ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4129129681837227511">ਆਪਣੀ ਲਾਕ ਸਕ੍ਰੀਨ 'ਤੇ ਸੂਚਨਾਵਾਂ ਦੇਖਣ ਲਈ, ਅਣਲਾਕ ਕਰਕੇ ਸੈਟਿੰਗ ਬਦਲੋ</translation>
-<translation id="4130035430755296270">ਖਾਕੇ ਸੰਬੰਧੀ ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਕਰਸਰ ਘੁਮਾਉਂਦੇ ਰਹੋ</translation>
 <translation id="4136724716305260864">ਸੂਰਜ ਚੜ੍ਹਨ ਤੱਕ ਚਾਲੂ ਰਹੇਗੀ</translation>
 <translation id="4146833061457621061">ਸੰਗੀਤ ਚਲਾਓ</translation>
 <translation id="4150201353443180367">ਡਿਸਪਲੇ</translation>
@@ -718,7 +719,6 @@
 <translation id="481455355267255546">ਇਸ ਤੋਂ ਬਾਅਦ</translation>
 <translation id="4831034276697007977">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਸਵੈਚਲਿਤ ਕਲਿੱਕਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="4849058404725798627">ਕੀ-ਬੋਰਡ ਫੋਕਸ ਨਾਲ ਵਸਤੂ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
-<translation id="4855250849489639581">ਖਾਕੇ ਸੰਬੰਧੀ ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਹੇਠਾਂ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="485592688953820832">ਕੋਈ ਕਾਰਵਾਈ ਨਹੀਂ (ਰੋਕੋ)</translation>
 <translation id="485634149294284819">ਕੀ-ਬੋਰਡ ਮੀਨੂ ਖੋਲ੍ਹੋ
 </translation>

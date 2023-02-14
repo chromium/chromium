@@ -1585,6 +1585,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Lock screen notes are automatically saved to <ph name="LOCK_SCREEN_APP_NAME" />. Your most recent note will remain on the lock screen.</translation>
 <translation id="2353297238722298836">Camera and microphone allowed</translation>
+<translation id="2353910600995338714">Export successful</translation>
 <translation id="2355314311311231464">Provisioning failed because your account details could not be retrieved. Try again. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="2355477091455974894">Energy saver options</translation>
 <translation id="2355604387869345912">Turn on Instant Tethering</translation>
@@ -5413,6 +5414,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5877064549588274448">Channel changed. Restart your device to apply changes.</translation>
 <translation id="5877584842898320529">The selected printer is not available or not installed correctly. <ph name="BR" /> Check your printer or try selecting another printer.</translation>
 <translation id="5878945009165002849">Block sign-in prompts from identity services</translation>
+<translation id="5881710783061958569">If so, please edit your saved password in <ph name="BRAND" /> so that it matches your new password.</translation>
 <translation id="5882449899683447569">Something went wrong and your passwords weren't imported</translation>
 <translation id="5882919346125742463">Known Networks</translation>
 <translation id="5883356647197510494">Automatically blocked <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
@@ -5868,7 +5870,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6295855836753816081">Saving...</translation>
 <translation id="6298962879096096191">Use Google Play to install Android apps</translation>
-<translation id="6300125580697461004">Send feedback about energy saver</translation>
 <translation id="6300177430812514606">Not allowed to finish sending or receiving data</translation>
 <translation id="630065524203833229">E&amp;xit</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> could not be configured automatically. Please specify advanced printer details. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -6073,7 +6074,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6491376743066338510">Authorisation failed</translation>
 <translation id="6494327278868541139">Show enhanced protection details</translation>
 <translation id="6494445798847293442">Not a Certification Authority</translation>
-<translation id="6497548114956205206">Learn more about energy saver</translation>
 <translation id="6497784818439587832">Change display size to make items on your screen smaller or larger</translation>
 <translation id="6497789971060331894">Mouse reverse scrolling</translation>
 <translation id="6498249116389603658">&amp;All your languages</translation>
@@ -6997,6 +6997,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7353261921908507769">Your contacts can share with you when they are nearby. Transfers won't start until you accept.</translation>
 <translation id="735361434055555355">Installing Linux...</translation>
+<translation id="7354120289251608189">You can now give your browser a new look at any time.</translation>
 <translation id="7356908624372060336">Network logs</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
 <translation id="7358324924540718595">Memories hidden for today</translation>
@@ -7691,7 +7692,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7955177647836564772">If Smart Lock is turned on and your phone is unlocked, you don't need to enter a password or PIN</translation>
 <translation id="7956373551960864128">Your saved printers</translation>
 <translation id="7957074856830851026">See device information, such as its serial number or asset ID</translation>
-<translation id="7957186326898555886">Send feedback about Memory Saver</translation>
 <translation id="7959074893852789871">The file contained multiple certificates, some of which were not imported:</translation>
 <translation id="7959665254555683862">New Incognito &amp;Tab</translation>
 <translation id="7961015016161918242">Never</translation>
@@ -8121,7 +8121,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8340547030807793004">More actions for <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Review <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> that recently sent a lot of notifications}other{Review <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> that recently sent a lot of notifications}}</translation>
 <translation id="8342221978608739536">Did not try</translation>
-<translation id="8342399870062010251">Learn more about Memory Saver</translation>
 <translation id="8342861492835240085">Select a collection</translation>
 <translation id="8345848587667658367">You can now view your phone's recent photos, media, notifications and apps</translation>
 <translation id="8347227221149377169">Print jobs</translation>
@@ -8435,7 +8434,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8645354835496065562">Continue allowing sensor access</translation>
 <translation id="8645920082661222035">Predicts and warns you about dangerous events before they happen</translation>
 <translation id="8646209145740351125">Disable sync</translation>
-<translation id="8646340610303779673">Unable to retrieve PPD.</translation>
 <translation id="864637694230589560">Sites usually send notifications to let you know about breaking news or chat messages</translation>
 <translation id="8646467750715887511">Pages load only after you open them.</translation>
 <translation id="8647385344110255847">With your permission, your child can use Google Play to install apps</translation>

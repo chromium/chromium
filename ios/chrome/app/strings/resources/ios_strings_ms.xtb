@@ -302,6 +302,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3181825792072797598">Hidupkan Penyegerakan</translation>
 <translation id="3181954750937456830">Penyemakan Imbas Selamat (melindungi anda dan peranti anda daripada tapak yang berbahaya)</translation>
 <translation id="3184767182050912705">Buka Kunci dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Nyahjejak</translation>
 <translation id="3214379938835224220">Anda telah dilog keluar sebagai sebahagian daripada tetapan semula iPad anda. Ketik teruskan di bawah untuk log masuk.</translation>
 <translation id="3224641773458703735">Untuk mengeksport kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -866,7 +867,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="734758817008927353">Pilihan untuk Simpan Kad</translation>
 <translation id="7351537303876921605">Ketik Cipta Pautan dalam Menu Konteks</translation>
 <translation id="7353432112255316844">Sahkan Orang Itu Ialah Anda</translation>
-<translation id="7356359962760467032">Hentikan penjejakan harga</translation>
 <translation id="7383797227493018512">Senarai Bacaan</translation>
 <translation id="7398893703713203428">Buat Pautan</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1114,6 +1114,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="952704832371081537">Batal</translation>
 <translation id="953008885340860025">Chrome sudah Dilog Keluar</translation>
 <translation id="959066944189734975">Anda mengikuti <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Organisasi anda membenarkan anda log masuk dengan akaun tertentu sahaja. Akaun yang tidak dibenarkan disembunyikan.</translation>
 <translation id="984509647832111802">Penyegerakan Tidak Berfungsi.</translation>
 <translation id="988141524645182168">Peranti Lain</translation>

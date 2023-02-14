@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">સિંક ચાલુ કરો</translation>
 <translation id="3181954750937456830">Safe Browsing (તમારું અને તમારા ડિવાઇસનું જોખમી સાઇટથી રક્ષણ કરે છે)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે અનલૉક કરો</translation>
+<translation id="3190736958609431397">ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="3214379938835224220">તમારા iPadની રીસેટ પ્રક્રિયાને કારણે તમને સાઇન આઉટ કરવામાં આવ્યા હતા. સાઇન ઇન કરવા માટે નીચે ચાલુ રાખો બટન પર ટૅપ કરો.</translation>
 <translation id="3224641773458703735">પાસવર્ડના નિકાસ માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
@@ -812,7 +813,6 @@
 <translation id="6869389390665537774">તમે જેની મુલાકાત લીધેલી હોય તેવા પેજ તમે તમારા ઇતિહાસમાં જોઈ શકો છો અથવા તેમાંથી તેને સાફ કરી શકો છો</translation>
 <translation id="687135068089457384">સેટિંગ બતાવો</translation>
 <translation id="6873263987691478642">વિભાજિત દૃશ્ય</translation>
-<translation id="6873366418270195926">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને અલર્ટ મળશે. આ પેજ <ph name="BEGIN_LINK" />Bookmarks<ph name="END_LINK" />માં સાચવવામાં આવ્યું છે.</translation>
 <translation id="6882836635272038266">જોખમકારક જણાતી હોય એવી વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેંશન સામે માનક સંરક્ષણ.</translation>
 <translation id="6888009575607455378">શું તમે ખરેખર તમારા ફેરફારો કાઢી નાખવા ઇચ્છો છો?</translation>
 <translation id="6896758677409633944">કૉપિ કરો</translation>
@@ -867,7 +867,6 @@
 <translation id="734758817008927353">કાર્ડ સાચવવા માટેના વિકલ્પો</translation>
 <translation id="7351537303876921605">સંદર્ભ મેનૂમાં લિંક બનાવો પર ટૅપ કરો</translation>
 <translation id="7353432112255316844">આ તમે જ છો તેની ચકાસણી કરો</translation>
-<translation id="7356359962760467032">કિંમત ટ્રૅક કરવાનું રોકો</translation>
 <translation id="7383797227493018512">વાંચન સૂચિ</translation>
 <translation id="7398893703713203428">લિંક બનાવો</translation>
 <translation id="7400418766976504921">URL</translation>

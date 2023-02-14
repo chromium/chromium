@@ -362,7 +362,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8286862437124483331">Google Chrome proovib kuvada paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="828798499196665338">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chrome'i puhul välja. Laienduse <ph name="EXTENSION_TYPE_PARAMETER" /> lubamine on keelatud.</translation>
 <translation id="8290100596633877290">Tohoh! Google Chrome jooksis kokku. Kas soovite kohe taaskäivitada?</translation>
-<translation id="8341646175450781745">Kui see on sisse lülitatud, vabastab Chrome inaktiivsete vahelehtede mälu. See annab aktiivsetele vahelehtedele ja muudele rakendustele rohkem arvutiressursse ja tagab Chrome'i kiiruse. Teie inaktiivsed vahelehed muutuvad automaatselt aktiivseks niipea, kui nendele naasete. <ph name="BEGIN_LINK" />Lugege lisateavet<ph name="END_LINK" /> või <ph name="BEGIN_LINK_2" />saatke tagasisidet<ph name="END_LINK_2" />.</translation>
 <translation id="8342675569599923794">Chrome blokeeris faili, kuna see on ohtlik.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Saidid võivad talletada Chrome'i teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
@@ -407,7 +406,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8986207147630327271">Lisate sellesse brauserisse tööprofiili ja annate administraatorile kontrolli vaid oma tööprofiili üle.</translation>
 <translation id="8989968390305463310">Teie sirvimisajalugu mõjutab kuvatavaid reklaame ja huvisid vastavalt allolevatele prognoosidele. Teie privaatsuse kaitsmiseks kustutab Chrome automaatselt teie huvisid jooksvalt iga kuu. Huvisid võidakse värskendada, kui te neid ei eemalda.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome'i värskendus on saadaval}=1{Chrome'i värskendus on saadaval}other{Chrome'i värskendus on # päeva saadaval olnud}}</translation>
-<translation id="9003498785844995646">Kui see on sisse lülitatud, säästab Chrome akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lugege lisateavet<ph name="END_LINK" /> või <ph name="BEGIN_LINK_2" />saatke tagasisidet<ph name="END_LINK_2" />.</translation>
 <translation id="9053892488859122171">Chrome OS Flexi süsteem</translation>
 <translation id="9067395829937117663">Google Chrome vajab operatsioonisüsteemi Windows 7 või uuemat versiooni.</translation>
 <translation id="911206726377975832">Kas kustutada ka teie sirvimisandmed?</translation>

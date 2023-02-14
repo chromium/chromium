@@ -327,6 +327,7 @@
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albümünü seçin</translation>
 <translation id="4111761024568264522">USB dokunmatik alan</translation>
 <translation id="4117637339509843559">Koyu mod</translation>
+<translation id="4130035430755296270">Fareyle üzerine gelmeye devam ederek düzenle ilgili daha fazla seçenek görün</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
 <translation id="4147897805161313378">Google Fotoğraflar</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) DNS çözümleme</translation>
 <translation id="4848429997038228357">ÇALIŞIYOR</translation>
 <translation id="4854586501323951986">Yerleşik dokunmatik ekran</translation>
+<translation id="4855250849489639581">Düzenle ilgili daha fazla seçenek için aşağı kaydırın</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}other{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}}</translation>
 <translation id="4873827928179867585">Kimlik doğrulama algoritması</translation>
 <translation id="4880328057631981605">Erişim noktası adı</translation>

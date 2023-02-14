@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Parollarni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun <ph name="BEGIN_LINK" />Chromium hisobingizga kiring<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Chromium haqida</translation>
 <translation id="1203500561924088507">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin brauzerni qayta ishga tushirishingiz lozim.</translation>
-<translation id="1231839967188101156">Yoniq boʻlsa, Chromium nofaol varaqlar orqali xotirani boʻshatadi. Bunda faol varaqlar va boshqa ilovalar kompyuter resurslarini oshiradi va Chromium ishlashi tezlashadi. Nofaol varaqlar ularga qaytilganda avtomatik faollashadi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Xotirani tejash funksiyasi Chromiumni tezlashtirdi</translation>
 <translation id="1315551408014407711">Yangi Chromium profilini sozlang</translation>
 <translation id="1396446129537741364">Kirtilgan parollar Chromium brauzerida ko‘rsatiladi.</translation>
@@ -349,7 +348,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8550334526674375523">Bu ish profili shaxsiy profilingizdan butunlay ajratilgan.</translation>
 <translation id="8558383651099478961">Chromiumdagi “Sayt, ilova va kengaytmalarga ruxsat” ota-onangiz tomonidan faolsizlantirilgan. <ph name="EXTENSION_TYPE_PARAMETER" /> kiritilishi taqiqlangan.</translation>
 <translation id="8568283329061645092">Google hisobingizga kirsangiz, Chromium parollaringizni tekshira oladi</translation>
-<translation id="8574036838419011058">Yoqilganda Chromium fondagi amallar hamda ravon varaqlash va video freyming kabi vizual effektlarni cheklash orqali batareya quvvatini tejashni boshlaydi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" />. Barcha huquqlar himoyalangan.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Bu axborotdan qanday foydalanamiz:<ph name="END_BOLD" /> Chromium orqali saytlar qiziqishlaringiz haqidagi axborotni saqlashi mumkin. Misol uchun marafonda yugurish uchun poyabzal sotib olish saytini ochsangiz, sayt marafonda yugurishni qiziqishingiz deb aniqlashi mumkin. Keyin yugurish uchun boshqa saytga kirganingizda sayt qiziqishingiz asosida yugurish uchun poyabzal reklamasini chiqarishi mumkin.</translation>
 <translation id="8619360774459241877">Chromium ishga tushmoqda...</translation>

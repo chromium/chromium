@@ -133,6 +133,7 @@
 <translation id="163517899691012366">Вы не будете получать уведомления.</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Загрузка…</translation>
+<translation id="1647986356840967552">Предыдущая страница</translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">Вычисление…</translation>
 <translation id="397726367135689299">Возможны проблемы при зарядке.</translation>
 <translation id="3977512764614765090">Батарея заряжена на <ph name="PERCENTAGE" /> % и подключена к источнику питания.</translation>
+<translation id="3984536049089846927">Следующая страница</translation>
 <translation id="3986082989454912832">Ответить</translation>
 <translation id="3995138139523574647">Устройство USB-C (дальний порт справа)</translation>
 <translation id="40062176907008878">Рукописный ввод</translation>
@@ -577,7 +579,6 @@
 <translation id="4123259114412175274">Чтобы разблокировать Chromebook, включите Bluetooth на телефоне</translation>
 <translation id="4125970834901680537">Приложения нельзя транслировать в режиме планшета. Повторите попытку в режиме ноутбука.</translation>
 <translation id="4129129681837227511">Чтобы разрешить показ уведомлений на заблокированном экране, разблокируйте устройство, а затем измените эту настройку.</translation>
-<translation id="4130035430755296270">Наведите указатель, чтобы увидеть больше вариантов показа</translation>
 <translation id="4136724716305260864">Вкл. до рассвета</translation>
 <translation id="4146833061457621061">Включить музыку</translation>
 <translation id="4150201353443180367">Экран</translation>

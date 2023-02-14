@@ -5845,7 +5845,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6295158916970320988">Toate site-urile</translation>
 <translation id="6295855836753816081">Se salvează...</translation>
 <translation id="6298962879096096191">Folosește Google Play pentru a instala aplicații Android</translation>
-<translation id="6300125580697461004">Trimite feedback despre Economisirea energiei</translation>
 <translation id="6300177430812514606">Nu au permisiunea de a finaliza trimiterea sau primirea datelor</translation>
 <translation id="630065524203833229">&amp;Ieși</translation>
 <translation id="6300718114348072351">Imprimanta <ph name="PRINTER_NAME" /> nu a putut fi configurată automat. Indică detaliile de printare avansate. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -6050,7 +6049,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6491376743066338510">Autorizarea nu a reușit</translation>
 <translation id="6494327278868541139">Afișează detalii despre protecția îmbunătățită</translation>
 <translation id="6494445798847293442">Nu este o Autoritate de certificare</translation>
-<translation id="6497548114956205206">Află mai multe despre Economisirea energiei</translation>
 <translation id="6497784818439587832">Modifică dimensiunea de afișare pentru a micșora sau a mări elementele de pe ecran</translation>
 <translation id="6497789971060331894">Derularea inversă cu mouse-ul</translation>
 <translation id="6498249116389603658">&amp;Toate limbile tale</translation>
@@ -7670,7 +7668,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7955177647836564772">Dacă Smart Lock este activat și telefonul este deblocat, nu este nevoie să introduci parola sau codul PIN</translation>
 <translation id="7956373551960864128">Imprimante salvate</translation>
 <translation id="7957074856830851026">Vezi informații despre dispozitiv, cum ar fi numărul de serie sau ID-ul de material</translation>
-<translation id="7957186326898555886">Trimite feedback despre Economisirea memoriei</translation>
 <translation id="7959074893852789871">Fișierul a conținut mai multe certificate, unele dintre acestea nefiind importate:</translation>
 <translation id="7959665254555683862">Filă incognito &amp;nouă</translation>
 <translation id="7961015016161918242">Niciodată</translation>
@@ -8100,7 +8097,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8340547030807793004">Mai multe acțiuni pentru <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Examinează <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> care a trimis recent multe notificări}few{Examinează <ph name="BEGIN_BOLD" />{NUM_SITES} site-uri<ph name="END_BOLD" /> care au trimis recent multe notificări}other{Examinează <ph name="BEGIN_BOLD" />{NUM_SITES} de site-uri<ph name="END_BOLD" /> care au trimis recent multe notificări}}</translation>
 <translation id="8342221978608739536">Nu am încercat</translation>
-<translation id="8342399870062010251">Află mai multe despre Economisirea memoriei</translation>
 <translation id="8342861492835240085">Selectează o colecție</translation>
 <translation id="8345848587667658367">Acum poți vedea fotografiile, conținutul media, notificările și aplicațiile recente ale telefonului</translation>
 <translation id="8347227221149377169">Sarcini de printare</translation>
@@ -8412,7 +8408,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8645354835496065562">Permite în continuare accesul la senzori</translation>
 <translation id="8645920082661222035">Anticipează și te avertizează cu privire la evenimente periculoase înainte să aibă loc</translation>
 <translation id="8646209145740351125">Dezactivează sincronizarea</translation>
-<translation id="8646340610303779673">Nu se poate prelua PPD-ul.</translation>
 <translation id="864637694230589560">De obicei, site-urile trimit notificări ca să te informeze cu privire la știri de ultimă oră sau mesaje de chat</translation>
 <translation id="8646467750715887511">Paginile se încarcă numai după ce le deschizi.</translation>
 <translation id="8647385344110255847">Cu permisiunea ta, copilul poate acum să folosească Google Play pentru a instala aplicații</translation>

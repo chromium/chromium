@@ -133,6 +133,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="163517899691012366">Po włączeniu trybu Nie przeszkadzać powiadomienia są wyciszone</translation>
 <translation id="1637505162081889933">Urządzenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Wczytuję</translation>
+<translation id="1647986356840967552">Poprzednia strona</translation>
 <translation id="1654477262762802994">Rozpocznij zapytanie głosowe</translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
 <translation id="1677472565718498478">Pozostało <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="397726367135689299">Ładowanie baterii może przebiegać nieprawidłowo.</translation>
 <translation id="3977512764614765090">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie.</translation>
+<translation id="3984536049089846927">Następna strona</translation>
 <translation id="3986082989454912832">Odpowiedz</translation>
 <translation id="3995138139523574647">Urządzenie USB-C (tylny port na prawym boku)</translation>
 <translation id="40062176907008878">Pismo odręczne</translation>
@@ -577,7 +579,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4123259114412175274">Aby odblokować Chromebooka, sprawdź, czy na telefonie jest włączony Bluetooth</translation>
 <translation id="4125970834901680537">W trybie tabletu nie można strumieniować aplikacji. Spróbuj ponownie w trybie laptopa.</translation>
 <translation id="4129129681837227511">Aby wyświetlać powiadomienia na ekranie blokady, odblokuj ekran i zmień ustawienie</translation>
-<translation id="4130035430755296270">Najedź kursorem, aby zobaczyć więcej opcji układu</translation>
 <translation id="4136724716305260864">Włączone do wschodu słońca</translation>
 <translation id="4146833061457621061">Włącz muzykę</translation>
 <translation id="4150201353443180367">Wyświetlacz</translation>
@@ -718,7 +719,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="481455355267255546">Następne</translation>
 <translation id="4831034276697007977">Czy na pewno chcesz wyłączyć automatyczne kliknięcia?</translation>
 <translation id="4849058404725798627">Podświetlaj obiekt wybrany za pomocą klawiatury</translation>
-<translation id="4855250849489639581">Aby zobaczyć więcej opcji układu, przesuń w dół</translation>
 <translation id="485592688953820832">Brak działania (wstrzymaj)</translation>
 <translation id="485634149294284819">Otwórz menu klawiatury</translation>
 <translation id="4860284199500934869">Aby pobrać plik <ph name="FILENAME" />, sprawdź połączenie sieciowe</translation>

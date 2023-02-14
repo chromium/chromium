@@ -302,6 +302,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3181825792072797598">Sinxronizasiyanı aktiv edin</translation>
 <translation id="3181954750937456830">Təhlükəsiz Axtarış (Sizi və cihazınızı təhlükəli saytlardan qoruyur)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ilə kiliddən çıxarın</translation>
+<translation id="3190736958609431397">İzləməyin</translation>
 <translation id="3214379938835224220">iPad sıfırlamasının bir hissəsi olaraq hesabınızdan çıxmısınız. Daxil olmaq üçün aşağıda "davam edin" seçiminə toxunun.</translation>
 <translation id="3224641773458703735">Parolları eksport etmək üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -812,7 +813,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6869389390665537774">Tarixçədə ziyarət etdiyiniz səhifələri görə və ya onları silə bilərsiniz</translation>
 <translation id="687135068089457384">Ayarları göstərin</translation>
 <translation id="6873263987691478642">Bölünmüş Görüntü</translation>
-<translation id="6873366418270195926">Hər hansı saytda qiymət düşərsə, xəbərdarlıq alacaqsınız. Bu səhifə <ph name="BEGIN_LINK" />Əlfəcinlər<ph name="END_LINK" /> bölməsində saxlanıldı.</translation>
 <translation id="6882836635272038266">Təhlükəli hesab edilən veb saytlar, endirmələr və artırmalara qarşı standart qoruma.</translation>
 <translation id="6888009575607455378">Dəyişiklikləri ləğv etmək istədiyinizə əminsiniz?</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
@@ -867,7 +867,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="734758817008927353">Kartı Yadda Saxlamaq seçimləri</translation>
 <translation id="7351537303876921605">Kontekst menyusunda "Keçid Yaradın" seçiminə toxunun</translation>
 <translation id="7353432112255316844">Kimliyinizi doğrulayın</translation>
-<translation id="7356359962760467032">Qiyməti izləməsini dayandırın</translation>
 <translation id="7383797227493018512">Oxu Siyahısı</translation>
 <translation id="7398893703713203428">Keçid yaradın</translation>
 <translation id="7400418766976504921">URL</translation>

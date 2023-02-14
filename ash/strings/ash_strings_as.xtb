@@ -138,6 +138,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> বাকী</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> সংযোগ হৈ থকা নাই।</translation>
 <translation id="1677582821739292812">কোনোবাই আপোনাৰ স্ক্ৰীনখনৰ ফালে চাই আছে</translation>
+<translation id="1683399938733266832">CPUৰ বৰ্তমান ব্যৱহাৰ: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />ৰ টাইমাৰ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ঠিকনা: <ph name="ADDRESS" /></translation>
@@ -380,6 +381,7 @@
 <translation id="3051189971848907985">প্ৰ’ফাইলটোৰ নতুন নাম দি থকা হৈছে। কেইমিনিটমান অপেক্ষা কৰক।</translation>
 <translation id="3055162170959710888">আপুনি আজি ডিভাইচটো <ph name="USED_TIME" /> সময় ব্যৱহাৰ কৰিলে</translation>
 <translation id="3062298103034426069">সমৰ্থিত নহয়</translation>
+<translation id="3068622547379332530">সংস্কৰণ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">শ্বেল্ফটো বাওঁফালে আছে</translation>
 <translation id="3077734595579995578">Shift+</translation>
 <translation id="3081696990447829002">মেনু বিস্তাৰ কৰক</translation>
@@ -577,7 +579,7 @@
 <translation id="4123259114412175274">আপোনাৰ Chromebook আনলক কৰিবলৈ আপোনাৰ ফ’নৰ ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক</translation>
 <translation id="4125970834901680537">টেবলেট ম’ডত এপৰ সমল ষ্ট্ৰীম কৰিব নোৱাৰি। লেপটপ ম’ডত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4129129681837227511">আপোনাৰ লক স্ক্রীণত জাননীসমূহ চাবলৈ ছেটিংটো সলনি কৰিবলৈ আনলক কৰক</translation>
-<translation id="4130035430755296270">লে’আউটৰ অধিক বিকল্পৰ বাবে মাউছৰ কাৰ্ছৰডাল ঘূৰাই থাকক</translation>
+<translation id="4131973331381812765">তাপমান: <ph name="TEMPERATURE" />°চে - বৰ্তমান গতিবেগ: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />গিগাহাৰ্টজ</translation>
 <translation id="4136724716305260864">সূৰ্যোদয় পৰ্যন্ত অন কৰি ৰাখক</translation>
 <translation id="4146833061457621061">সংগীত প্লে’ কৰক</translation>
 <translation id="4150201353443180367">ডিছপ্লে’</translation>
@@ -718,7 +720,6 @@
 <translation id="481455355267255546">পৰৱৰ্তী</translation>
 <translation id="4831034276697007977">আপুনি স্বয়ংক্ৰিয়ভাৱে ক্লিক অফ কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="4849058404725798627">কীব’ৰ্ডৰ ফ’কাছেৰে বস্তু হাইলাইট কৰক</translation>
-<translation id="4855250849489639581">লে’আউটৰ অধিক বিকল্পৰ বাবে তললৈ ছোৱাইপ কৰক</translation>
 <translation id="485592688953820832">কোনো কাৰ্য নাই (পজ)</translation>
 <translation id="485634149294284819">কীব'র্ডৰ মেনু খোলক</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> ডাউনল’ড কৰিবলৈ আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক</translation>
@@ -733,6 +734,7 @@
 <translation id="4895488851634969361">বেটাৰী চ্চার্জ সম্পূর্ণ হৈছে।</translation>
 <translation id="490375751687810070">উলম্ব</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% বেটাৰী</translation>
+<translation id="491504982845934899">ডিভাইচ ছেটআপ কৰাৰ পাছত সক্ৰিয় কৰক <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">শক্তিশালী</translation>
 <translation id="4918086044614829423">গ্ৰহণ কৰক</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" />এ বৰ্তমান আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে</translation>
@@ -1329,6 +1331,7 @@
 <translation id="8131740175452115882">নিশ্চিত কৰক</translation>
 <translation id="8131994907636310308">ট’ষ্ট সজোৱা বন্ধ কৰক</translation>
 <translation id="8132793192354020517"><ph name="NAME" />ৰ সৈতে সংযুক্ত</translation>
+<translation id="8138705869659070104">ডিভাইচ ছেটআপ কৰাৰ পাছত সক্ৰিয় কৰক</translation>
 <translation id="813913629614996137">আৰম্ভ কৰা হৈছে…</translation>
 <translation id="8142441511840089262">দুবাৰ ক্লিক</translation>
 <translation id="8142699993796781067">ব্যক্তিগত নেটৱর্ক</translation>

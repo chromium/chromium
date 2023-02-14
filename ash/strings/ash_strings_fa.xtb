@@ -133,6 +133,7 @@
 <translation id="163517899691012366">وقتی «مزاحم نشوید» روشن باشد، اعلان‌ها بی‌صدا هستند</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> دستگاه</translation>
 <translation id="1639239467298939599">در حال بارگیری</translation>
+<translation id="1647986356840967552">صفحه قبلی</translation>
 <translation id="1654477262762802994">شروع پُرسمان صوتی</translation>
 <translation id="1668469839109562275">‏VPN داخلی</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی‌مانده</translation>
@@ -554,6 +555,7 @@
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="397726367135689299">شارژ باتری ممکن است نامطمئن باشد.</translation>
 <translation id="3977512764614765090">شارژ باتری <ph name="PERCENTAGE" />٪ است و باتری درحال شارژ است.</translation>
+<translation id="3984536049089846927">صفحه بعدی</translation>
 <translation id="3986082989454912832">پاسخ</translation>
 <translation id="3995138139523574647">‏دستگاه USB-C (درگاه عقب سمت راست)</translation>
 <translation id="40062176907008878">دست‌نویسی</translation>
@@ -576,7 +578,6 @@
 <translation id="4123259114412175274">‏برای باز کردن قفل Chromebook، از روشن بودن بلوتوث تلفن مطمئن شوید</translation>
 <translation id="4125970834901680537">جاری‌سازی برنامه در حالت رایانه لوحی ممکن نیست. در حالت رایانه کیفی دوباره امتحان کنید.</translation>
 <translation id="4129129681837227511">برای دیدن اعلان‌ها در صفحه قفل، ابتدا قفل را باز کنید و تنظیمات را تغییر دهید</translation>
-<translation id="4130035430755296270">برای گزینه‌های طرح‌بندی بیشتر، همچنان نشانگر را نگه دارید</translation>
 <translation id="4136724716305260864">روشن تا طلوع آفتاب</translation>
 <translation id="4146833061457621061">‏Play music (موسیقی پخش کن)</translation>
 <translation id="4150201353443180367">صفحه‌نمایش</translation>

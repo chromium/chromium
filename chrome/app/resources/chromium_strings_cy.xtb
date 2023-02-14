@@ -12,7 +12,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1131805035311359397">I wirio a yw'ch cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Ynghylch Chromium</translation>
 <translation id="1203500561924088507">Diolch am osod. Rhaid i chi ailgychwyn eich porwr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1231839967188101156">Pan fydd ymlaen, mae Chromium yn rhyddhau cof o dabiau anweithredol. Mae hyn yn rhoi mwy o adnoddau cyfrifiadurol i dabiau gweithredol ac apiau eraill ac yn cadw Chromium yn gyflym. Mae eich tabiau anweithredol yn dod yn weithredol eto yn awtomatig pan fyddwch yn dychwelyd atynt. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Mae Arbedwr Cof wedi gwneud Chromium yn Gyflymach</translation>
 <translation id="1315551408014407711">Gosod eich proffil Chromium newydd</translation>
 <translation id="1396446129537741364">Mae Chromium yn ceisio dangos cyfrineiriau.</translation>
@@ -353,7 +352,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8550334526674375523">Mae'r proffil gwaith hwn yn hollol ar wahân i'ch proffil personol.</translation>
 <translation id="8558383651099478961">Mae dy riant wedi diffodd "Caniatadau ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chromium. Ni chaniateir ychwanegu'r <ph name="EXTENSION_TYPE_PARAMETER" /> hwn.</translation>
 <translation id="8568283329061645092">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google</translation>
-<translation id="8574036838419011058">Pan fydd ymlaen, mae Chromium yn arbed pŵer batri drwy gyfyngu ar weithgarwch cefndir ac effeithiau gweledol, megis sgrolio llyfn a chyfraddau ffrâm fideo. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Hawlfraint <ph name="YEAR" /> Awduron Chromium. Cedwir Pob Hawl.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Sut rydym yn defnyddio'r data hyn:<ph name="END_BOLD" /> Gall gwefannau storio gwybodaeth am eich diddordebau gyda Chromium. Er enghraifft, os ydych yn ymweld â gwefan i brynu esgidiau ar gyfer marathon, mae'n bosib y bydd y wefan yn diffinio'ch diddordeb fel rhedeg marathon. Yn ddiweddarach, os byddwch yn ymweld â gwefan wahanol i gofrestru ar gyfer ras, gall y wefan honno ddangos hysbyseb i chi ar gyfer esgidiau rhedeg yn seiliedig ar eich diddordebau.</translation>
 <translation id="8619360774459241877">Wrthi'n lansio Chromium...</translation>

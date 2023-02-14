@@ -133,6 +133,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="163517899691012366">Naka-mute ang mga notification kapag naka-on ang Huwag istorbohin</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> (na) device</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
+<translation id="1647986356840967552">Nakaraang page</translation>
 <translation id="1654477262762802994">Magsimula ng query gamit ang boses</translation>
 <translation id="1668469839109562275">Built-in na VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
@@ -555,6 +556,7 @@ Isaksak ang iyong device.</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="397726367135689299">Posibleng hindi maaasahan ang pag-charge ng baterya.</translation>
 <translation id="3977512764614765090">Nasa <ph name="PERCENTAGE" />% ang baterya at nagcha-charge.</translation>
+<translation id="3984536049089846927">Susunod na page</translation>
 <translation id="3986082989454912832">Sagutin</translation>
 <translation id="3995138139523574647">USB-C device (port sa kanang bahagi sa likod)</translation>
 <translation id="40062176907008878">Sulat-kamay</translation>
@@ -577,7 +579,6 @@ Isaksak ang iyong device.</translation>
 <translation id="4123259114412175274">Para i-unlock ang iyong Chromebook, tiyaking naka-on ang Bluetooth ng iyong telepono</translation>
 <translation id="4125970834901680537">Hindi maka-stream ng mga app sa tablet mode. Subukan ulit sa laptop mode.</translation>
 <translation id="4129129681837227511">Para makakita ng mga notification sa iyong screen ng lock, i-unlock para baguhin ang setting</translation>
-<translation id="4130035430755296270">Mag-hover lang para sa higit pang opsyon sa layout</translation>
 <translation id="4136724716305260864">Naka-on hanggang pagsikat ng araw</translation>
 <translation id="4146833061457621061">Mag-play ng musika</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -718,7 +719,6 @@ Isaksak ang iyong device.</translation>
 <translation id="481455355267255546">Susunod</translation>
 <translation id="4831034276697007977">Sigurado ka bang gusto mong i-off ang mga awtomatikong pag-click?</translation>
 <translation id="4849058404725798627">I-highlight ang bagay sa pamamagitan ng pag-focus ng keyboard</translation>
-<translation id="4855250849489639581">Mag-swipe pababa para sa higit pang opsyon sa layout</translation>
 <translation id="485592688953820832">Walang pagkilos (i-pause)</translation>
 <translation id="485634149294284819">Menu na maglagay ng keyboard</translation>
 <translation id="4860284199500934869">Suriin ang iyong koneksyon ng network para ma-download ang <ph name="FILENAME" /></translation>

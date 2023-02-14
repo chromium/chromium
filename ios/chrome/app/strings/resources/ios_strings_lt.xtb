@@ -302,6 +302,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3181825792072797598">Įjungti sinchronizavimą</translation>
 <translation id="3181954750937456830">Saugus naršymas (apsaugo jus ir jūsų įrenginį nuo pavojingų svetainių)</translation>
 <translation id="3184767182050912705">Atrakinti naudojant <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Nebestebėti</translation>
 <translation id="3214379938835224220">Buvote atjungti nustatant „iPad“ iš naujo. Toliau palieskite „Tęsti“, kad prisijungtumėte.</translation>
 <translation id="3224641773458703735">Jei norite eksportuoti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
@@ -812,7 +813,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6869389390665537774">Galite peržiūrėti puslapius, kuriuose lankėtės, arba išvalyti juos iš istorijos</translation>
 <translation id="687135068089457384">Rodyti nustatymus</translation>
 <translation id="6873263987691478642">Padalytas rodinys</translation>
-<translation id="6873366418270195926">Jei kurioje nors svetainėje sumažės kaina, gausite įspėjimą. Šis puslapis išsaugotas skiltyje <ph name="BEGIN_LINK" />Žymės<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Įprasta apsauga nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi.</translation>
 <translation id="6888009575607455378">Ar tikrai norite atmesti pakeitimus?</translation>
 <translation id="6896758677409633944">Kopijuoti</translation>
@@ -867,7 +867,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="734758817008927353">Kortelės išsaugojimo parinktys</translation>
 <translation id="7351537303876921605">Kontekstiniame meniu palieskite „Kurti nuorodą“</translation>
 <translation id="7353432112255316844">Tapatybės patvirtinimas</translation>
-<translation id="7356359962760467032">Stabdyti kainų stebėjimą</translation>
 <translation id="7383797227493018512">Skaitymo sąrašas</translation>
 <translation id="7398893703713203428">Kurti nuorodą</translation>
 <translation id="7400418766976504921">URL adresas</translation>

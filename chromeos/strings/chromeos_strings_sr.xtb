@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Изаберите албум <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB тачпед</translation>
 <translation id="4117637339509843559">Тамни режим</translation>
+<translation id="4130035430755296270">Наставите да прелазите курсором за још опција изгледа</translation>
 <translation id="4131410914670010031">Црно-бело</translation>
 <translation id="4145784616224233563">HTTP заштитни зид</translation>
 <translation id="4147897805161313378">Google слике</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) DNS разрешавање</translation>
 <translation id="4848429997038228357">У ТОКУ</translation>
 <translation id="4854586501323951986">Уграђени додирни екран</translation>
+<translation id="4855250849489639581">Превуците надоле за још опција изгледа</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}one{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушај}few{<ph name="ERROR_MESSAGE" /> Преостају {0} покушаја}other{<ph name="ERROR_MESSAGE" /> Преостаје {0} покушаја}}</translation>
 <translation id="4873827928179867585">Алгоритам потврде идентитета</translation>
 <translation id="4880328057631981605">Назив приступне тачке</translation>

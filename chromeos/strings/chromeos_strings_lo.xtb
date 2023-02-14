@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">ເລືອກອະລະບ້ຳ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">ແຜ່ນສໍາຜັດ USB</translation>
 <translation id="4117637339509843559">ໂໝດມືດ</translation>
+<translation id="4130035430755296270">ສືບຕໍ່ເລື່ອນເມົ້າສຳລັບຕົວເລືອກໂຄງຮ່າງເພີ່ມເຕີມ</translation>
 <translation id="4131410914670010031">ຂາວດໍາ</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google ຮູບພາບ</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) DNS resolution</translation>
 <translation id="4848429997038228357">ກຳລັງດຳເນີນຢູ່</translation>
 <translation id="4854586501323951986">ໜ້າຈໍສຳຜັດໃນຕົວ</translation>
+<translation id="4855250849489639581">ປັດລົງເພື່ອຕົວເລືອກໂຄງຮ່າງເພີ່ມເຕີມ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> {0} ຄັ້ງ}other{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> {0} ຄັ້ງ}}</translation>
 <translation id="4873827928179867585">ອະກໍຣິທຶມການພິສູດຢືນຢັນ</translation>
 <translation id="4880328057631981605">ຊື່​ຈຸດ​ເຂົ້າ​ເຖິງ</translation>

@@ -12,7 +12,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1131805035311359397">Pour vérifier si vos mots de passe sont en sécurité contre les violations de données et d'autres risques de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1203500561924088507">Merci pour l'installation. Vous devez redémarrer votre navigateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1231839967188101156">Lorsque ce mode est activé, Chromium libère de la mémoire à partir des onglets inactifs. Cela donne aux onglets actifs et aux autres applications plus de ressources informatiques, et assure la rapidité de Chromium. Vos onglets inactifs redeviennent automatiquement actifs lorsque vous y revenez. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">L'Économiseur de mémoire a rendu Chromium plus rapide</translation>
 <translation id="1315551408014407711">Configurer votre nouveau profil Chromium</translation>
 <translation id="1396446129537741364">Chromium essaie d'afficher les mots de passe.</translation>
@@ -352,7 +351,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8550334526674375523">Ce profil professionnel est distinct de votre profil personnel.</translation>
 <translation id="8558383651099478961">Ton parent a désactivé le paramètre « Autorisations pour les sites, les applications et les extensions » dans Chromium. L'activation de ce <ph name="EXTENSION_TYPE_PARAMETER" /> n'est pas autorisée.</translation>
 <translation id="8568283329061645092">Chromium peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google</translation>
-<translation id="8574036838419011058">Lorsque cette fonctionnalité est activée, Chromium économise l'énergie de la pile en limitant l'activité en arrière-plan et les effets visuels, tels que le défilement fluide et les fréquences d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">© <ph name="YEAR" /> Les auteurs de Chrome. Tous droits réservés.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chromium. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
 <translation id="8619360774459241877">Lancement de Chromium en cours…</translation>

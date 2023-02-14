@@ -304,6 +304,7 @@
 <translation id="3181825792072797598">開啟同步處理功能</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護您和裝置免受危險網站攻擊)</translation>
 <translation id="3184767182050912705">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖</translation>
+<translation id="3190736958609431397">取消追蹤</translation>
 <translation id="3214379938835224220">您已在重設 iPad 時登出，輕按下方的 [繼續] 即可登入。</translation>
 <translation id="3224641773458703735">如要匯出密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="3227137524299004712">麥克風</translation>
@@ -814,7 +815,6 @@
 <translation id="6869389390665537774">您可查看瀏覽過的網頁，或從記錄移除網頁</translation>
 <translation id="687135068089457384">顯示設定</translation>
 <translation id="6873263987691478642">分割檢視</translation>
-<translation id="6873366418270195926">如果產品在任何網站上降價，系統將通知您。此網頁已儲存在<ph name="BEGIN_LINK" />書籤<ph name="END_LINK" />中。</translation>
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>
 <translation id="6896758677409633944">複製</translation>
@@ -870,7 +870,6 @@
 <translation id="734758817008927353">付款卡儲存選項</translation>
 <translation id="7351537303876921605">輕按內容選單中的 [建立連結]</translation>
 <translation id="7353432112255316844">驗證身分</translation>
-<translation id="7356359962760467032">停止追蹤價格</translation>
 <translation id="7383797227493018512">閱讀清單</translation>
 <translation id="7398893703713203428">建立連結</translation>
 <translation id="7400418766976504921">網址</translation>

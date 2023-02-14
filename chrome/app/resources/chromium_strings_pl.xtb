@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Aby sprawdzić, czy Twoje hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Chromium – informacje</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
-<translation id="1231839967188101156">Gdy to ustawienie jest włączone, Chromium zwalnia pamięć z nieaktywnych kart. Dzięki temu aktywne karty i inne aplikacje mają więcej zasobów komputerowych, a Chromium działa szybciej. Nieaktywne karty zostaną automatycznie włączone, gdy ponownie je otworzysz. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Oszczędzanie pamięci przyspieszyło działanie Chromium</translation>
 <translation id="1315551408014407711">Skonfiguruj nowy profil w Chromium</translation>
 <translation id="1396446129537741364">Chromium próbuje pokazać hasła.</translation>
@@ -348,7 +347,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8550334526674375523">Ten profil służbowy jest całkowicie oddzielony od Twojego profilu osobistego.</translation>
 <translation id="8558383651099478961">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” dla Chromium. Dodanie elementu <ph name="EXTENSION_TYPE_PARAMETER" /> jest niedozwolone.</translation>
 <translation id="8568283329061645092">Chromium może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google</translation>
-<translation id="8574036838419011058">Gdy ta funkcja jest włączona, Chromium oszczędza baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie i liczba klatek w filmie. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> w Chromium witryny mogą przechowywać informacje o Twoich zainteresowaniach Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>
 <translation id="8619360774459241877">Uruchamiam Chromium…</translation>

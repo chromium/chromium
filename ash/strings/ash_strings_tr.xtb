@@ -133,6 +133,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="163517899691012366">Rahatsız Etmeyin modu açıkken bildirimler gösterilmez</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> cihaz</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
+<translation id="1647986356840967552">Önceki sayfa</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="397105322502079400">Hesaplanııyor...</translation>
 <translation id="397726367135689299">Pil şarjı güvenilir olmayabilir.</translation>
 <translation id="3977512764614765090">Pil %<ph name="PERCENTAGE" /> dolu ve şarj oluyor.</translation>
+<translation id="3984536049089846927">Sonraki sayfa</translation>
 <translation id="3986082989454912832">Cevapla</translation>
 <translation id="3995138139523574647">USB-C cihaz (sağ arka bağlantı noktası)</translation>
 <translation id="40062176907008878">El Yazısı</translation>
@@ -577,7 +579,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4123259114412175274">Chromebook'unuzun kilidini açmak için telefonunuzun Bluetooth'unun açık olduğundan emin olun</translation>
 <translation id="4125970834901680537">Tablet modunda uygulama yayınlanamaz. Dizüstü bilgisayar modunda tekrar deneyin.</translation>
 <translation id="4129129681837227511">Kilit ekranınızda bildirim göstermek için cihazın kilidini açarak ayarı değiştirin</translation>
-<translation id="4130035430755296270">Fareyle üzerine gelmeye devam ederek düzenle ilgili daha fazla seçenek görün</translation>
 <translation id="4136724716305260864">Gün doğumuna kadar açık</translation>
 <translation id="4146833061457621061">Müzik çal</translation>
 <translation id="4150201353443180367">Ekran</translation>

@@ -302,6 +302,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3181825792072797598">I-on ang I-sync</translation>
 <translation id="3181954750937456830">Ligtas na Pag-browse (pinoprotektahan ka at ang iyong device mula sa mga mapanganib na site)</translation>
 <translation id="3184767182050912705">I-unlock Gamit ang <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Huwag subaybayan</translation>
 <translation id="3214379938835224220">Na-sign out ka bilang bahagi ng pag-reset ng iyong iPad. I-tap ang magpatuloy sa ibaba para mag-sign in.</translation>
 <translation id="3224641773458703735">Upang makapag-export ng mga password, kinakailangan mo munang magtakda ng passcode sa iyong device.</translation>
 <translation id="3227137524299004712">Mikropono</translation>
@@ -866,7 +867,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="734758817008927353">Mga opsyon para Mag-save ng Card</translation>
 <translation id="7351537303876921605">I-tap ang Gumawa ng Link sa Menu ng Konteksto</translation>
 <translation id="7353432112255316844">I-verify na Ikaw Ito</translation>
-<translation id="7356359962760467032">Ihinto ang pagsubaybay sa presyo</translation>
 <translation id="7383797227493018512">Listahan ng Babasahin</translation>
 <translation id="7398893703713203428">Gumawa ng Link</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1114,6 +1114,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="952704832371081537">Kanselahin</translation>
 <translation id="953008885340860025">Naka-sign Out ang Chrome</translation>
 <translation id="959066944189734975">Sinusubaybayan mo ang <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Pinapayagan ka lang ng iyong organisasyon na mag-sign in gamit ang ilang partikular na account. Nakatago ang mga account na hindi pinapayagan.</translation>
 <translation id="984509647832111802">Hindi Gumagana ang Pag-sync.</translation>
 <translation id="988141524645182168">Iba Pang Device</translation>

@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Избиране на албум <ph name="TITLE" />, <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Сензорен панел с USB</translation>
 <translation id="4117637339509843559">Тъмен режим</translation>
+<translation id="4130035430755296270">Продължете да задържате курсора на мишката за още опции за оформление</translation>
 <translation id="4131410914670010031">Черно-бяло</translation>
 <translation id="4145784616224233563">Защитна стена за HTTP</translation>
 <translation id="4147897805161313378">Google Снимки</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) Преобразуване от DNS</translation>
 <translation id="4848429997038228357">ИЗПЪЛНЯВА СЕ</translation>
 <translation id="4854586501323951986">Вграден сензорен екран</translation>
+<translation id="4855250849489639581">Прекарайте пръст надолу за още опции за оформление</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Остава {0} опит}other{<ph name="ERROR_MESSAGE" /> Остават {0} опита}}</translation>
 <translation id="4873827928179867585">Алгоритъм за удостоверяване</translation>
 <translation id="4880328057631981605">Име на точката за достъп</translation>

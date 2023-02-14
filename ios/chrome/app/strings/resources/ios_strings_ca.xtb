@@ -302,6 +302,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3181825792072797598">Activa l'opció Sincronització</translation>
 <translation id="3181954750937456830">Navegació segura (us protegeix a tu i al teu dispositiu de llocs web perillosos)</translation>
 <translation id="3184767182050912705">Desbloqueja amb <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Deixa de fer el seguiment</translation>
 <translation id="3214379938835224220">Se t'ha tancat la sessió com a part del restabliment de l'iPad. Per iniciar-la, toca Continua, més avall.</translation>
 <translation id="3224641773458703735">Per exportar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
@@ -812,7 +813,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6869389390665537774">Pots veure les pàgines que has visitat o esborrar-les de l'historial</translation>
 <translation id="687135068089457384">Mostra la configuració</translation>
 <translation id="6873263987691478642">Visualització dividida</translation>
-<translation id="6873366418270195926">Rebràs una alerta si el preu baixa en qualsevol lloc web. Aquesta pàgina s'ha desat a <ph name="BEGIN_LINK" />Adreces d'interès<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
 <translation id="6888009575607455378">Confirmes que vols descartar els canvis?</translation>
 <translation id="6896758677409633944">Copia</translation>
@@ -867,7 +867,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="734758817008927353">Opcions per desar la targeta</translation>
 <translation id="7351537303876921605">Al menú contextual, toca Crea un enllaç</translation>
 <translation id="7353432112255316844">Verifica la teva identitat</translation>
-<translation id="7356359962760467032">Deixa de fer un seguiment dels preus</translation>
 <translation id="7383797227493018512">Llista de lectura</translation>
 <translation id="7398893703713203428">Crea un enllaç</translation>
 <translation id="7400418766976504921">URL</translation>

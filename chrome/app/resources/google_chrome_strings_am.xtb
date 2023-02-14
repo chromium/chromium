@@ -366,7 +366,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8286862437124483331">Google Chrome የይለፍ ቃሎችን ለማሳየት እየሞከረ ነው። ይህንን ለመፍቀድ የእርስዎን Windows የይለፍ ቃል ይተይቡ።</translation>
 <translation id="828798499196665338">የእርስዎ ወላጅ ለChrome «የጣቢያዎች፣ መተግበሪያዎች እና ቅጥያዎች ፈቃዶች»ን አጥፍተዋል። ይህን <ph name="EXTENSION_TYPE_PARAMETER" /> ማንቃት አይፈቀድም።</translation>
 <translation id="8290100596633877290">ኧረ ገዳይ! Google Chrome ተሰናክሏል። አሁን እንደገና ይጀመር?</translation>
-<translation id="8341646175450781745">ሲበራ፣ Chrome ገቢር ካልሆኑ ትሮች ማህደረ ትውስታን ነፃ ያደርጋል። ይህ ገቢር ለሆኑ ትሮች እና ለሌሎች መተግበሪያዎች ተጨማሪ የኮምፒውተር ግብዓቶችን ይሰጣቸዋል እና Chromeን ፈጣን አድርጎ ያቆየዋል። የእርስዎ ገቢር ያልሆኑ ትሮች ተመልሰው ወደ እነሱ ሲሄዱ በራስ-ሰር እንደገና ገቢር ይሆናሉ። <ph name="BEGIN_LINK" />የበለጠ ይወቁ<ph name="END_LINK" /> ወይም <ph name="BEGIN_LINK_2" />ግብረመልስ ይላኩ<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">ይህ ፋይል አደገኛ ስለሆነ Chrome አግዶታል።</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />ይህንን ውሂብ እንዴት እንደሚጠቀሙበት፦<ph name="END_BOLD" /> ጣቢያዎች በChrome አማካኝነት ስለዝንባሌዎችዎ መረጃን ማከማቸት ይችላሉ። ለምሳሌ፣ ለማራቶን ጫማ ለመግዛት ጣቢያን ከጎበኙ ጣቢያው ዝንባሌዎን እንደ ማራቶን መሮጥ ሊገልጽ ይችላል። በኋላ ላይ ለሩጫ ለመመዝገብ ሌላ ጣቢያ ከጎበኙ ይህ ጣቢያ በዝንባሌዎችዎ ላይ ተመስርቶ የመሮጫ ጫማ ማስታወቂያ ሊያሳየዎት ይችላል።</translation>
 <translation id="8370517070665726704">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>
@@ -411,7 +410,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8986207147630327271">የስራ መገለጫን ወደዚህ አሳሽ እያከሉ እና ለአስተዳዳሪዎ በስራ መገለጫው ላይ ብቻ ቁጥጥር እየሰጡ ነው።</translation>
 <translation id="8989968390305463310">የአሰሳ ታሪክዎ ከታች እንደተገመተው እርስዎ በሚያዩዋቸው ማስታወቂያዎች እና ዝንባሌዎች ላይ ተጽዕኖ ያሳድራል። የእርስዎን ግላዊነት ለመጠበቅ Chrome በየወሩ ዝንባሌዎችዎን በራስ-ሰር ይሰርዛል። እርስዎ ካላስወገዷቸው በስተቀር ዝንባሌዎችን ማደስ ይችላሉ።</translation>
 <translation id="8999208279178790196">{0,plural, =0{የChrome ዝማኔ አለ}=1{የChrome ዝማኔ አለ}one{አንድ የChrome ዝማኔ ለ# ቀኖች ነበር}other{አንድ የChrome ዝማኔ ለ# ቀኖች ነበር}}</translation>
-<translation id="9003498785844995646">ሲበራ፣ Chrome የዳራ እንቅስቃሴን እና እንደ ለስላሳ ሽብለላ እና የቪድዮ የክፈፍ ፍጥነቶች ያሉ ምስላዊ ተጽዕኖዎችን በመገደብ የባትሪ ኃይልን ይቆጥባል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /> ወይም <ph name="BEGIN_LINK_2" />ግብረመልስ ይላኩ<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">የChromeOS Flex ስርዓት</translation>
 <translation id="9067395829937117663">Google Chrome Windows 7 ወይም ከዚያ በላይ ያስፈልገዋል።</translation>
 <translation id="911206726377975832">የአሰሳ ውሂብዎም ይሰረዝ?</translation>

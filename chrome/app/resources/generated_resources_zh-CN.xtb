@@ -38,6 +38,7 @@
 <translation id="103279545524624934">请释放磁盘空间以启动 Android 应用。</translation>
 <translation id="1033780634303702874">访问您的串行设备</translation>
 <translation id="1034484273907870301">平板电脑模式下的缩略图标签页栏</translation>
+<translation id="1035875743511577452">点击“更改主题”即可探索取材自艺术家作品、大自然等来源的主题</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1036511912703768636">访问其中的任意 USB 设备</translation>
 <translation id="1038168778161626396">仅加密</translation>
@@ -1370,6 +1371,7 @@
 <translation id="2203088913459920044">名称可以使用字母、数字和特殊字符</translation>
 <translation id="220321590587754225">无法连接。请重试。</translation>
 <translation id="2203903197029773650">您需要先登录 Google 帐号，然后才能使用 <ph name="BRAND" />的密码检查功能</translation>
+<translation id="2204020417499639567">已填充电子邮件地址。</translation>
 <translation id="2204034823255629767">读取和更改您输入的任何内容</translation>
 <translation id="2204387456724731099">无法翻译所选内容</translation>
 <translation id="2210462644007531147">无法完成安装</translation>
@@ -1561,6 +1563,7 @@
 <translation id="2352662711729498748">&lt; 1MB</translation>
 <translation id="2352810082280059586">锁定屏幕记事会自动保存到 <ph name="LOCK_SCREEN_APP_NAME" /> 中。最近的记事将保留在锁定屏幕上。</translation>
 <translation id="2353297238722298836">已允许使用摄像头和麦克风</translation>
+<translation id="2353910600995338714">已成功导出</translation>
 <translation id="2355314311311231464">未能成功配置，因为检索不到您的帐号详情。请重试。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="2355477091455974894">节能模式选项</translation>
 <translation id="2355604387869345912">开启“即时网络共享”</translation>
@@ -1823,6 +1826,7 @@
 <translation id="2603355571917519942">Voice Match 已设置完毕</translation>
 <translation id="2604129989323098489">网站通常会询问您的显示屏的相关信息，以便智能地打开和放置窗口，例如并排显示文档或全屏内容</translation>
 <translation id="2604255671529671813">网络连接错误</translation>
+<translation id="2604805099836652105">已填充<ph name="ADDRESS_LABEL" />地址表单。</translation>
 <translation id="2605668923777146443">转到<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />即可查看您的 Better Together 选项。</translation>
 <translation id="2606246518223360146">关联数据</translation>
 <translation id="2606454609872547359">否，不启用 ChromeVox 并继续操作</translation>
@@ -2414,6 +2418,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">无法创建数据目录</translation>
 <translation id="3124111068741548686">USER处理函数</translation>
+<translation id="3124332159330678621">自定义您的 Chrome 浏览器，为它换上全新外观</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">为避免遇到充电/性能方面的问题，请使用兼容的戴尔或 USB C 型电源适配器。</translation>
 <translation id="3127862849166875294">调整为 Linux 分配的磁盘空间大小</translation>
@@ -3039,6 +3044,7 @@
 <translation id="3713091615825314967">已开启自动更新功能。</translation>
 <translation id="371370241367527062">前置麦克风</translation>
 <translation id="3714195043138862580">此演示设备目前处于“已取消配置”状态。</translation>
+<translation id="3719310907809321183">已填充<ph name="CARD_IDENTIFIER" />。</translation>
 <translation id="3719826155360621982">主页</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">您与 Google</translation>
@@ -3645,6 +3651,7 @@
 <translation id="426652736638196239">此 IBAN 将仅保存到这部设备上</translation>
 <translation id="4266679478228765574">移除文件夹会停止共享但不会删除其中的文件。</translation>
 <translation id="4267455501101322486">要添加帐号并访问教育资源，请让您的家长向您授予权限</translation>
+<translation id="4267792239557443927">{COUNT,plural, =0{找不到任何密码}=1{找到 1 个结果}other{找到 {COUNT} 个结果}}</translation>
 <translation id="4267924571297947682">请向家长申请权限</translation>
 <translation id="4267953847983678297">自动连接到移动网络</translation>
 <translation id="4268025649754414643">密钥加密</translation>
@@ -3923,6 +3930,7 @@
 <translation id="4522890784888918985">子帐号不受支持</translation>
 <translation id="4523876148417776526">尚未提取 XML 站点列表。</translation>
 <translation id="4524832533047962394">此版本的操作系统不支持所提供的注册模式。请确保您运行的是最新版本。</translation>
+<translation id="4526853756266614740">只需选择一张图片，便可立即将它作为主题付诸应用</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4527929807707405172">启用反向滚动。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">建议翻译</translation>
@@ -4222,6 +4230,7 @@
 <translation id="4800839971935185386">查看名称和图标的新变化</translation>
 <translation id="4801448226354548035">隐藏帐号</translation>
 <translation id="4801512016965057443">允许移动数据漫游</translation>
+<translation id="4804311503028830356">点击返回箭头即可探索其他选项</translation>
 <translation id="4804818685124855865">断开连接</translation>
 <translation id="4804827417948292437">牛油果</translation>
 <translation id="4806457879608775995">查看这些条款并控制您的数据</translation>
@@ -5376,6 +5385,7 @@
 <translation id="5877064549588274448">版本已更改。请重新启动设备来应用这些变更。</translation>
 <translation id="5877584842898320529">所选打印机不可用或未正确安装。<ph name="BR" />请检查打印机，或尝试另选一台打印机。</translation>
 <translation id="5878945009165002849">屏蔽来自身份服务的登录提示</translation>
+<translation id="5881710783061958569">如果是的话，请修改您在 <ph name="BRAND" />中保存的密码，使它与您的新密码保持一致。</translation>
 <translation id="5882449899683447569">出了点问题，您的密码未能成功导入</translation>
 <translation id="5882919346125742463">已知网络</translation>
 <translation id="5883356647197510494">已自动禁用“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
@@ -5830,7 +5840,6 @@
 <translation id="6295158916970320988">所有网站</translation>
 <translation id="6295855836753816081">正在保存…</translation>
 <translation id="6298962879096096191">使用 Google Play 安装 Android 应用</translation>
-<translation id="6300125580697461004">针对节能模式发送反馈</translation>
 <translation id="6300177430812514606">不允许完成数据收发操作</translation>
 <translation id="630065524203833229">退出(&amp;X)</translation>
 <translation id="6300718114348072351">无法自动配置<ph name="PRINTER_NAME" />。请指定高级打印机详细信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -6035,7 +6044,6 @@
 <translation id="6491376743066338510">授权失败</translation>
 <translation id="6494327278868541139">显示增强型保护详情</translation>
 <translation id="6494445798847293442">不是证书授权中心</translation>
-<translation id="6497548114956205206">详细了解节能模式</translation>
 <translation id="6497784818439587832">更改显示大小以缩小或放大屏幕上的内容</translation>
 <translation id="6497789971060331894">鼠标反向滚动</translation>
 <translation id="6498249116389603658">所选全部语言(&amp;A)</translation>
@@ -6959,6 +6967,7 @@
 <translation id="7352651011704765696">出了点问题</translation>
 <translation id="7353261921908507769">附近的所有联系人都可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="735361434055555355">正在安装 Linux…</translation>
+<translation id="7354120289251608189">您现在可以随时为浏览器换上全新外观了。</translation>
 <translation id="7356908624372060336">网络日志</translation>
 <translation id="735745346212279324">VPN 连接已断开</translation>
 <translation id="7358324924540718595">今天已隐藏回忆集锦</translation>
@@ -7653,7 +7662,6 @@
 <translation id="7955177647836564772">如果 Smart Lock 已开启且您的手机处于未锁定状态，您无需输入密码或 PIN 码</translation>
 <translation id="7956373551960864128">已保存的打印机</translation>
 <translation id="7957074856830851026">查看设备信息，例如设备的序列号或资产 ID</translation>
-<translation id="7957186326898555886">针对省内存模式发送反馈</translation>
 <translation id="7959074893852789871">该文件包含多个证书，其中部分证书未导入：</translation>
 <translation id="7959665254555683862">打开新的无痕式标签页(&amp;T)</translation>
 <translation id="7961015016161918242">一律不</translation>
@@ -8083,7 +8091,6 @@
 <translation id="8340547030807793004">显示可对“<ph name="DEVICE" />”执行的更多操作</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{查看最近发送了很多通知的 <ph name="BEGIN_BOLD" />1 个网站<ph name="END_BOLD" />}other{查看最近发送了很多通知的 <ph name="BEGIN_BOLD" />{NUM_SITES} 个网站<ph name="END_BOLD" />}}</translation>
 <translation id="8342221978608739536">没试过</translation>
-<translation id="8342399870062010251">详细了解省内存模式</translation>
 <translation id="8342861492835240085">选择一个集合</translation>
 <translation id="8345848587667658367">您现在可以查看手机中近期的照片、媒体、通知和应用</translation>
 <translation id="8347227221149377169">打印任务</translation>
@@ -8103,6 +8110,7 @@
 <translation id="8358912028636606457">此设备不支持投放标签页中的音频。</translation>
 <translation id="835951711479681002">保存到您的 Google 帐号中</translation>
 <translation id="8360140320636871023">打造个性化的显示屏主题</translation>
+<translation id="8360267485906769442">“发送反馈”按钮</translation>
 <translation id="8363095875018065315">稳定</translation>
 <translation id="8363142353806532503">已禁止使用麦克风</translation>
 <translation id="8366396658833131068">您的网络连接已恢复。要启动自助服务终端应用，请选择其他网络或按下方的“继续”按钮。</translation>
@@ -8249,6 +8257,7 @@
 <translation id="8498214519255567734">可让您更舒适地在黯淡的光线下查看屏幕或阅读文字</translation>
 <translation id="8498395510292172881">继续在 Chrome 中阅读</translation>
 <translation id="8499083585497694743">将麦克风取消静音</translation>
+<translation id="8499526927826495298">发送<ph name="BEGIN_LINK1" />自动填充元数据<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">要使用来自 Google Play 的应用，您必须先恢复自己的应用。某些数据可能已丢失。</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="850382998924680137">今天浏览过</translation>
@@ -8395,7 +8404,6 @@
 <translation id="8645354835496065562">继续允许使用传感器</translation>
 <translation id="8645920082661222035">预测危险事件并在此类事件发生前向您发出警告</translation>
 <translation id="8646209145740351125">停用同步</translation>
-<translation id="8646340610303779673">无法检索 PPD。</translation>
 <translation id="864637694230589560">网站通常会发送通知，以便您知悉重大新闻或聊天消息</translation>
 <translation id="8646467750715887511">仅当您打开网页后，它们才会加载。</translation>
 <translation id="8647385344110255847">经您授权后，您的孩子便可使用 Google Play 安装应用</translation>

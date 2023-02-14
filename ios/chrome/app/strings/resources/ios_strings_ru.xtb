@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">Включить</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
 <translation id="3184767182050912705">Разблокировать с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Перестать отслеживать</translation>
 <translation id="3214379938835224220">В результате сброса настроек iPad произошел выход из аккаунта. Нажмите "Продолжить" ниже, чтобы войти в него.</translation>
 <translation id="3224641773458703735">Чтобы экспортировать пароли, настройте на устройстве код доступа.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -866,7 +867,6 @@
 <translation id="734758817008927353">Параметры сохранения карты</translation>
 <translation id="7351537303876921605">Нажмите "Создать ссылку" в контекстном меню.</translation>
 <translation id="7353432112255316844">Подтвердить личность</translation>
-<translation id="7356359962760467032">Прекратить отслеживание цен</translation>
 <translation id="7383797227493018512">Список для чтения</translation>
 <translation id="7398893703713203428">Создать ссылку</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1114,6 +1114,7 @@
 <translation id="952704832371081537">Отмена</translation>
 <translation id="953008885340860025">Вход в Chrome не выполнен</translation>
 <translation id="959066944189734975">Вы подписались на сайт "<ph name="CHANNEL_NAME" />"</translation>
+<translation id="980712131080209571">Нов.</translation>
 <translation id="981498610235328462">Согласно правилам, установленным организацией, выполнить вход можно только с одобренным аккаунтом. Запрещенные аккаунты скрываются.</translation>
 <translation id="984509647832111802">Ошибка синхронизации.</translation>
 <translation id="988141524645182168">Другие устройства</translation>

@@ -302,6 +302,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3181825792072797598">Activar sincronización</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios peligrosos)</translation>
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Dejar de seguir</translation>
 <translation id="3214379938835224220">Se ha cerrado tu sesión al restablecer tu iPad. Toca Continuar abajo para iniciar sesión.</translation>
 <translation id="3224641773458703735">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder exportar las contraseñas.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -866,7 +867,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="734758817008927353">Opciones para guardar una tarjeta</translation>
 <translation id="7351537303876921605">Toca Crear enlace en el menú contextual</translation>
 <translation id="7353432112255316844">Verifica que eres tú</translation>
-<translation id="7356359962760467032">Detener seguimiento de precios</translation>
 <translation id="7383797227493018512">Lista de lectura</translation>
 <translation id="7398893703713203428">Crear enlace</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1114,6 +1114,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="953008885340860025">Se ha cerrado sesión en Chrome</translation>
 <translation id="959066944189734975">Estás siguiendo a <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Tu organización solo te permite iniciar sesión con determinadas cuentas. Las cuentas no permitidas están ocultas.</translation>
 <translation id="984509647832111802">La sincronización no funciona.</translation>
 <translation id="988141524645182168">Otros dispositivos</translation>

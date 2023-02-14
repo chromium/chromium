@@ -359,7 +359,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8286862437124483331">Google Chrome forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="828798499196665338">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chrome. Det er ikke tilladt at aktivere denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Hovsa! Google Chrome er gået ned. Vil du genstarte nu?</translation>
-<translation id="8341646175450781745">Når indstillingen er aktiveret, frigør Chrome hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chrome hurtig. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />, eller <ph name="BEGIN_LINK_2" />send feedback<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Denne fil er farlig, så Chrome har blokeret den.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Websites kan gemme oplysninger med Chrome om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
@@ -404,7 +403,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8986207147630327271">Du er ved at føje en arbejdsprofil til denne browser, og du giver kun din administrator kontrol over arbejdsprofilen.</translation>
 <translation id="8989968390305463310">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til beskyttelsen af dine personlige oplysninger sletter Chrome automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Der er en tilgængelig Chrome-opdatering}=1{Der er en tilgængelig Chrome-opdatering}one{En Chrome-opdatering har været tilgængelig i # dag}other{En Chrome-opdatering har været tilgængelig i # dage}}</translation>
-<translation id="9003498785844995646">Når denne indstilling er aktiveret, sparer Chrome på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. jævn rulning og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />, eller <ph name="BEGIN_LINK_2" />send feedback<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex-system</translation>
 <translation id="9067395829937117663">Google Chrome kræver Windows 7 eller nyere.</translation>
 <translation id="911206726377975832">Slet også dine browserdata?</translation>

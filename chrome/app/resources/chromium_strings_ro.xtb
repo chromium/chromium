@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Ca să verifici dacă parolele sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
-<translation id="1231839967188101156">Când opțiunea este activată, Chromium eliberează memorie din filele inactive. Astfel, filele active și alte aplicații beneficiază de mai multe resurse ale computerului și Chromium funcționează rapid. Filele inactive se reactivează automat când revii la ele. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Datorită Economisirii memoriei, Chromium este mai rapid</translation>
 <translation id="1315551408014407711">Configurează noul profil Chromium</translation>
 <translation id="1396446129537741364">Chromium încearcă să afișeze parolele.</translation>
@@ -350,7 +349,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8550334526674375523">Acest profil de serviciu este complet separat de profilul tău personal.</translation>
 <translation id="8558383651099478961">Părintele tău a dezactivat opțiunea „Permisiuni pentru site-uri, aplicații și extensii” în Chromium. Adăugarea acestei <ph name="EXTENSION_TYPE_PARAMETER" /> nu este permisă.</translation>
 <translation id="8568283329061645092">Chromium poate să îți verifice parolele atunci când te conectezi folosind Contul Google</translation>
-<translation id="8574036838419011058">Când opțiunea este activată, Chromium economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre ale videoclipurilor. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> site-urile pot stoca informații în Chromium despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
 <translation id="8619360774459241877">Se lansează Chromium...</translation>

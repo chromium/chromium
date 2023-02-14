@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="3181954750937456830">සුරක්ෂිත බ්‍රවුස් කිරීම (අනතුරුදායක අඩවිවලින් ඔබව සහ ඔබේ උපාංගය ආරක්ෂා කරයි)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> සමගින් අගුලු හරින්න</translation>
+<translation id="3190736958609431397">හඹා නොයන්න</translation>
 <translation id="3214379938835224220">ඔබේ iPad යළි පිහිටුවීමේ කොටසක් ලෙස ඔබ වරනය වී ඇත. පුරනය වීමට පහත ඉදිරියට යන්න තට්ටු කරන්න.</translation>
 <translation id="3224641773458703735">මුරපද නිර්යාත කිරීමට, ඔබ ප්‍රථමයෙන් ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
 <translation id="3227137524299004712">මයික්‍රෆෝනය:</translation>
@@ -866,7 +867,6 @@
 <translation id="734758817008927353">කාඩ්පත සුරැකීමට විකල්ප</translation>
 <translation id="7351537303876921605">සන්දර්භය මෙනුවේ සබැඳිය තනන්න තට්ටු කරන්න</translation>
 <translation id="7353432112255316844">ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
-<translation id="7356359962760467032">මිල ලුහුබැඳීම නවත්වන්න</translation>
 <translation id="7383797227493018512">කියවීම් ලැයිස්තුව</translation>
 <translation id="7398893703713203428">සබැඳියක් තනන්න</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1114,6 +1114,7 @@
 <translation id="952704832371081537">අවලංගු කරන්න</translation>
 <translation id="953008885340860025">Chrome වරනය වී ඇත</translation>
 <translation id="959066944189734975">ඔබ <ph name="CHANNEL_NAME" /> අනුගමනය කරයි</translation>
+<translation id="980712131080209571">න</translation>
 <translation id="981498610235328462">නිශ්චිත ගිණුම්වලින් පමණක් පිරීමට ඔබගේ සංවිධානය ඔබට ඉඩ ‍දෙයි. ඉඩ නොදෙන ගිණුම් සඟවා ඇත.</translation>
 <translation id="984509647832111802">සමමුහුර්තය ක්‍රියා නොකරයි.</translation>
 <translation id="988141524645182168">වෙනත් උපාංග</translation>

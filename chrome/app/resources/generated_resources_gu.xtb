@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux ફરી ચાલુ કરીએ?</translation>
 <translation id="1047431265488717055">લિંક ટે&amp;ક્સ્ટને કૉપિ કરો</translation>
 <translation id="1048286738600630630">પ્રદર્શન</translation>
+<translation id="1048770690598418849">તમે હાલ પૂરતું છોડી શકો છો અને તમે સેટઅપ પૂર્ણ કરી લો પછી અમે ઑટોમૅટિક રીતે ફરીથી પ્રયાસ કરીશું</translation>
 <translation id="1048986595386481879">ગતિશીલ રીતે ફાળવેલી</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> પરથી <ph name="ATTACHMENTS" /> મેળવી રહ્યાં છીએ}one{<ph name="DEVICE_NAME" /> પરથી <ph name="ATTACHMENTS" /> મેળવી રહ્યાં છીએ}other{<ph name="DEVICE_NAME" /> પરથી <ph name="ATTACHMENTS" /> મેળવી રહ્યાં છીએ}}</translation>
 <translation id="1049743911850919806">છૂપી</translation>
@@ -1621,6 +1622,7 @@
 <translation id="2410754283952462441">એકાઉન્ટ પસંદ કરો</translation>
 <translation id="241082044617551207">અજ્ઞાત પ્લગિન</translation>
 <translation id="2410940059315936967">તમે મુલાકાત લેતા હો એવી કોઈ સાઇટ અન્ય સાઇટમાંનું કન્ટેન્ટ શામેલ કરી શકે છે, ઉદાહરણ તરીકે છબીઓ, જાહેરાતો અને ટેક્સ્ટ. આવી અન્ય સાઇટ દ્વારા સેટ કરવામાં આવતી કુકીને ત્રીજા પક્ષની કુકી તરીકે ઓળખવામાં આવે છે.</translation>
+<translation id="2411666601450687801">આ ડિવાઇસ પર કોઈ વર્ચ્યુઅલ મશીનને મંજૂરી નથી</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">કીબોર્ડની ફંકશન કી</translation>
 <translation id="2418307627282545839">બ્રાઇટ અને આંખોને અનુકૂળ હોય એવી ડિસ્પ્લે થીમ</translation>
@@ -1882,6 +1884,7 @@
 <translation id="2653659639078652383">સબમિટ કરો</translation>
 <translation id="265390580714150011">ફીલ્ડ મૂલ્ય</translation>
 <translation id="2654553774144920065">પ્રિન્ટ કરવાની વિનંતી</translation>
+<translation id="265748523151262387">તમારા ફોન વડે કનેક્ટેડ રહો</translation>
 <translation id="2657612187216250073">પૉઇન્ટરના ઍક્સેસિબિલિટી સેટિંગ</translation>
 <translation id="2658941648214598230">ઑરિજિનલ કન્ટેન્ટ બતાવીએ?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ઉપકરણ અનુસાર સુવિધાઓ બદલાય છે</translation>
@@ -5298,6 +5301,7 @@
 <translation id="5801051031414037185">ફોનનું સેટઅપ કરો</translation>
 <translation id="5801568494490449797">પસંદગીઓ</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
+<translation id="5804259315582798390">સ્થાનિક ડેટા રિકવરી ચાલુ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="5805268472388605531">ઉચ્ચાર માટેના ચિહ્નો અને વિશેષ અક્ષરો જોવા માટે, કીબોર્ડની કીને દબાવી રાખો</translation>
 <translation id="5805697420284793859">વિન્ડો મેનેજર</translation>
 <translation id="5806447147478173900">પ્રદર્શિત થયેલી સાઇટ દ્વારા કરવામાં આવેલો સ્ટોરેજનો કુલ વપરાશ: <ph name="TOTAL_USAGE" /></translation>
@@ -5840,7 +5844,6 @@ USB ડિવાઇસ</translation>
 <translation id="6295158916970320988">બધી સાઇટ</translation>
 <translation id="6295855836753816081">સાચવી રહ્યું છે...</translation>
 <translation id="6298962879096096191">Android ઍપ્લિકેશનોને ઇન્સ્ટૉલ કરવા માટે Google Play નો ઉપયોગ કરો</translation>
-<translation id="6300125580697461004">એનર્જી સેવર મોડ વિશે પ્રતિસાદ મોકલો</translation>
 <translation id="6300177430812514606">ડેટા મોકલવા કે પ્રાપ્ત કરવાનું સમાપ્ત કરવાની મંજૂરી નથી</translation>
 <translation id="630065524203833229">&amp;બહાર નીકળો</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" />ને ઑટોમૅટિક રીતે ગોઠવી શકાતું નથી. કૃપા કરીને વિગતવાર પ્રિન્ટરની વિગતો જણાવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -6045,7 +6048,6 @@ USB ડિવાઇસ</translation>
 <translation id="6491376743066338510">પ્રમાણીકરણ નિષ્ફળ</translation>
 <translation id="6494327278868541139">વધારાની સુરક્ષાની વિગતો બતાવો</translation>
 <translation id="6494445798847293442">કોઈ પ્રમાણન અધિકારી નથી</translation>
-<translation id="6497548114956205206">એનર્જી સેવર મોડ વિશે વધુ જાણો</translation>
 <translation id="6497784818439587832">તમારી સ્ક્રીન પરની આઇટમને વધુ નાની અથવા વધુ મોટી કરવા માટે ડિસ્પ્લેનું કદ બદલો</translation>
 <translation id="6497789971060331894">માઉસનું રિવર્સ સ્ક્રોલિંગ</translation>
 <translation id="6498249116389603658">&amp;તમારી બધી ભાષાઓ</translation>
@@ -6684,6 +6686,7 @@ USB ડિવાઇસ</translation>
 <translation id="7047059339731138197">બૅકગ્રાઉન્ડ પસંદ કરો</translation>
 <translation id="7049293980323620022">ફાઇલ રાખીએ?</translation>
 <translation id="7050037487872780845">હૉટસ્પૉટનું અમાન્ય કન્ફિગ્યુરેશન</translation>
+<translation id="7051551856857948729">IBANનું મૂલ્ય છુપાવો</translation>
 <translation id="7052237160939977163">પ્રદર્શન ટ્રેસ ડેટા મોકલો</translation>
 <translation id="7053983685419859001">અવરોધિત કરો</translation>
 <translation id="7055152154916055070">રીડાયરેક્ટ કરવાનું બ્લૉક કરવામાં આવ્યું છે:</translation>
@@ -7663,7 +7666,6 @@ USB ડિવાઇસ</translation>
 <translation id="7955177647836564772">જો Smart Lock ચાલુ કરેલું હોય અને તમારો ફોન અનલૉક કરેલો હોય, તો તમારે પાસવર્ડ કે પિન દાખલ કરવાની જરૂર રહેતી નથી</translation>
 <translation id="7956373551960864128">તમે સાચવેલું પ્રિન્ટર</translation>
 <translation id="7957074856830851026">ડિવાઇસ વિશેની માહિતી જુઓ, જેમ કે તેનો અનુક્રમ નંબર અથવા અસેટ ID</translation>
-<translation id="7957186326898555886">મેમરી સેવર મોડ વિશે પ્રતિસાદ મોકલો</translation>
 <translation id="7959074893852789871">ફાઇલમાં બહુવિધ પ્રમાણપત્રો રહેલા છે, તેમાંનાં કેટલાક આયાત કરેલા નથી:</translation>
 <translation id="7959665254555683862">નવી છૂપી ટૅબ</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>
@@ -8088,7 +8090,6 @@ USB ડિવાઇસ</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> માટે વધુ ક્રિયાઓ</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{જે <ph name="BEGIN_BOLD" />1 સાઇટ<ph name="END_BOLD" /> દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}one{જે <ph name="BEGIN_BOLD" />{NUM_SITES} સાઇટ<ph name="END_BOLD" /> દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}other{જે <ph name="BEGIN_BOLD" />{NUM_SITES} સાઇટ<ph name="END_BOLD" /> દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}}</translation>
 <translation id="8342221978608739536">પ્રયાસ કર્યો ન હતો</translation>
-<translation id="8342399870062010251">મેમરી સેવર મોડ વિશે વધુ જાણો</translation>
 <translation id="8342861492835240085">સંગ્રહ પસંદ કરો</translation>
 <translation id="8345848587667658367">હવે તમે તમારા ફોનના તાજેતરના ફોટા, મીડિયા, નોટિફિકેશન અને ઍપ જોઈ શકો છો</translation>
 <translation id="8347227221149377169">પ્રિન્ટ કરવાના કામો</translation>
@@ -8400,7 +8401,6 @@ USB ડિવાઇસ</translation>
 <translation id="8645354835496065562">સેન્સરના ઍક્સેસની મંજૂરી ચાલુ રાખો</translation>
 <translation id="8645920082661222035">જોખમકારક ઇવેન્ટ થાય તે પહેલાં તેનું અનુમાન લગાવીને તેના વિશે તમને ચેતવણી આપે છે</translation>
 <translation id="8646209145740351125">સિંક કરવાનું ચાલુ કરો</translation>
-<translation id="8646340610303779673">PPD પાછી મેળવી શકાઈ નથી.</translation>
 <translation id="864637694230589560">તમને બ્રેકિંગ ન્યૂઝ અથવા ચૅટ મેસેજ વિશે જાણ કરવા માટે સામાન્ય રીતે સાઇટ નોટિફિકેશન મોકલે છે</translation>
 <translation id="8646467750715887511">તમે પેજને ખોલો, પછી જ તે લોડ થાય છે.</translation>
 <translation id="8647385344110255847">તમારી પરવાનગી સાથે, તમારું બાળક ઍપ ઇન્સ્ટૉલ કરવા માટે Google Playનો ઉપયોગ કરી શકે છે</translation>
@@ -8545,6 +8545,7 @@ USB ડિવાઇસ</translation>
 <translation id="8767621466733104912">Chrome ને તમામ વપરાશકર્તાઓ માટે ઑટોમૅટિક રીતે અપડેટ કરો</translation>
 <translation id="8770406935328356739">એક્સ્ટેન્શન રૂટ ડિરેક્ટરી</translation>
 <translation id="8771300903067484968">પ્રારંભ પેજના બૅકગ્રાઉન્ડને ડિફૉલ્ટ બૅકગ્રાઉન્ડ તરીકે સેટ કરવામાં આવ્યું છે.</translation>
+<translation id="8773280816776735812">IBANનું મૂલ્ય બતાવો</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" />ને સાચવો</translation>
 <translation id="8774379074441005279">પુનઃસ્થાપિત કરવાનું કન્ફર્મ કરો</translation>
 <translation id="8774934320277480003">ઉપરી હાંસિયો</translation>

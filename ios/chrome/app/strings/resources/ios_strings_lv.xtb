@@ -302,6 +302,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3181825792072797598">Ieslēgt sinhronizāciju</translation>
 <translation id="3181954750937456830">Droša pārlūkošana (aizsargā jūs un ierīci pret bīstamām vietnēm)</translation>
 <translation id="3184767182050912705">Atbloķēt, izmantojot šo autentifikācijas veidu: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Atcelt izsekošanu</translation>
 <translation id="3214379938835224220">Jūs tikāt izrakstīts, veicot iPad planšetdatora atiestatīšanu. Lai pierakstītos, pieskarieties vienumam Turpināt.</translation>
 <translation id="3224641773458703735">Lai eksportētu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="3227137524299004712">Mikrofons</translation>
@@ -866,7 +867,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="734758817008927353">Kartītes saglabāšanas opcijas</translation>
 <translation id="7351537303876921605">Kontekstizvēlnē pieskarieties pie Izveidot saiti.</translation>
 <translation id="7353432112255316844">Apstiprināt identitāti</translation>
-<translation id="7356359962760467032">Apturēt cenu izsekošanu</translation>
 <translation id="7383797227493018512">Lasīšanas saraksts</translation>
 <translation id="7398893703713203428">Izveidot saiti</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1114,6 +1114,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="952704832371081537">Atcelt</translation>
 <translation id="953008885340860025">Esat izrakstījies pārlūkā Chrome</translation>
 <translation id="959066944189734975">Jūs sekojat kanālam <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">Jaunums</translation>
 <translation id="981498610235328462">Jūsu organizācija ir atļāvusi pierakstīšanos tikai ar noteiktiem kontiem. Konti, kas nav atļauti, ir paslēpti.</translation>
 <translation id="984509647832111802">Sinhronizācija nedarbojas.</translation>
 <translation id="988141524645182168">Citas ierīces</translation>

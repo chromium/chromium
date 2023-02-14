@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Lai pārbaudītu, vai jūsu paroles ir aizsargātas pret datu pārkāpumiem un citām drošības problēmām, <ph name="BEGIN_LINK" />pierakstieties pārlūkā Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
-<translation id="1231839967188101156">Ja funkcija ir ieslēgta, pārlūkā Chromium neaktīvās cilnēs tiek atbrīvota atmiņa. Tādējādi aktīvajām cilnēm un citām lietotnēm tiek nodrošināts vairāk datora resursu un tiek uzlabots Chromium darbības ātrums. Neaktīvās cilnes atkal tiek automātiski aktivizētas, kad tās atverat. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="1261119230216066228">Atmiņas taupīšana nodrošināja ātrāku Chromium darbību</translation>
 <translation id="1315551408014407711">Jaunā Chromium profila iestatīšana</translation>
 <translation id="1396446129537741364">Chromium mēģina rādīt paroles.</translation>
@@ -348,7 +347,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8550334526674375523">Šis darba profils ir pilnīgi nesaistīts ar jūsu personīgo profilu.</translation>
 <translation id="8558383651099478961">Viens no jūsu vecākiem ir izslēdzis “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chromium. Nav atļauts pievienot šo: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8568283329061645092">Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja esat pierakstījies savā Google kontā.</translation>
-<translation id="8574036838419011058">Kad šis iestatījums ir ieslēgts, pārlūkā Chromium tiek taupīta akumulatora jauda, ierobežojot darbības fonā un vizuālos efektus, piemēram, vienmērīgu ritināšanu un video kadru nomaiņas ātrumu. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kā mēs izmantojam šos datus:<ph name="END_BOLD" /> vietnes pārlūkā Chromium var glabāt informāciju par jūsu interesēm. Piemēram, ja apmeklējat kādu vietni, lai iegādātos apavus maratona skriešanai, vietne var noteikt, ka interesējaties par maratonu skriešanu. Ja vēlāk apmeklēsiet citu vietni, lai reģistrētos sacensībām, šajā vietnē var tikt rādīta skriešanas apavu reklāma, pamatojoties uz jūsu interesēm.</translation>
 <translation id="8619360774459241877">Notiek Chromium palaišana...</translation>

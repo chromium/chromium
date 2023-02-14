@@ -304,6 +304,7 @@
 <translation id="3181825792072797598">เปิดการซิงค์</translation>
 <translation id="3181954750937456830">Google Safe Browsing (ปกป้องคุณและอุปกรณ์จากเว็บไซต์ที่เป็นอันตราย)</translation>
 <translation id="3184767182050912705">ปลดล็อกด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">ยกเลิกการติดตาม</translation>
 <translation id="3214379938835224220">คุณออกจากระบบในขั้นตอนการรีเซ็ต iPad แตะ "ต่อไป" ด้านล่างเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3224641773458703735">หากต้องการส่งออกรหัสผ่าน คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
@@ -816,7 +817,6 @@
 <translation id="6869389390665537774">คุณดูหน้าที่เคยเข้าชมหรือล้างหน้าออกจากประวัติการเข้าชมได้</translation>
 <translation id="687135068089457384">แสดงการตั้งค่า</translation>
 <translation id="6873263987691478642">Split View</translation>
-<translation id="6873366418270195926">คุณจะได้รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม บันทึกหน้านี้ใน<ph name="BEGIN_LINK" />บุ๊กมาร์ก<ph name="END_LINK" />แล้ว</translation>
 <translation id="6882836635272038266">การปกป้องแบบมาตรฐานจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย</translation>
 <translation id="6888009575607455378">คุณแน่ใจไหมว่าต้องการทิ้งการเปลี่ยนแปลง</translation>
 <translation id="6896758677409633944">คัดลอก</translation>
@@ -872,7 +872,6 @@
 <translation id="734758817008927353">ตัวเลือกในการบันทึกการ์ด</translation>
 <translation id="7351537303876921605">แตะ "สร้างลิงก์" ในเมนูตามบริบท</translation>
 <translation id="7353432112255316844">ยืนยันว่าเป็นคุณ</translation>
-<translation id="7356359962760467032">หยุดติดตามราคา</translation>
 <translation id="7383797227493018512">เรื่องรออ่าน</translation>
 <translation id="7398893703713203428">สร้างลิงก์</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -971,6 +970,7 @@
 <translation id="806745655614357130">เก็บข้อมูลของฉันแยกต่างหาก</translation>
 <translation id="8073670137947914548">ดาวน์โหลดเสร็จแล้ว</translation>
 <translation id="8073872304774253879">ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น</translation>
+<translation id="8077675488769462025">แท็บที่ไม่ได้ใช้งาน</translation>
 <translation id="8079602123447022758">การตั้งค่านี้ได้รับการจัดการ แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="8080028325999236607">ปิดแท็บทั้งหมด</translation>
 <translation id="8084285576995584326">ควบคุมข้อมูลในบัญชี Google ของคุณ</translation>
@@ -1005,6 +1005,7 @@
 <translation id="8343993175958086504">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8386068868580335421">รีเซ็ต</translation>
+<translation id="8393889347136007944">แท็บที่ไม่มีการใช้งานเป็นเวลา <ph name="THRESHOLD" /> วัน</translation>
 <translation id="8407669440184693619">ไม่พบรหัสผ่านสำหรับเว็บไซต์นี้</translation>
 <translation id="842017693807136194">ลงชื่อเข้าใช้ด้วย</translation>
 <translation id="8427613705947111202">เมนู → การตั้งค่า → รหัสผ่าน</translation>

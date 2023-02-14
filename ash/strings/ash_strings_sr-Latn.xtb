@@ -139,6 +139,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> je preostalo</translation>
 <translation id="1677507110654891115">Funkcija <ph name="FEATURE_NAME" /> nije povezana.</translation>
 <translation id="1677582821739292812">Neko gleda vaš ekran</translation>
+<translation id="1683399938733266832">Trenutna iskorišćenost procesora: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910">Tajmer za <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresa: <ph name="ADDRESS" /></translation>
@@ -381,6 +382,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3051189971848907985">Menja se ime profila. Sačekajte nekoliko minuta.</translation>
 <translation id="3055162170959710888">Danas koristite ovaj uređaj već <ph name="USED_TIME" /></translation>
 <translation id="3062298103034426069">Nije podržano</translation>
+<translation id="3068622547379332530">Verzija <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Polica na levoj strani</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">Proširi meni</translation>
@@ -580,7 +582,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="4125970834901680537">Ne možete da strimujete aplikacije u režimu tableta. 
 Probajte ponovo u režimu laptopa.</translation>
 <translation id="4129129681837227511">Da biste videli obaveštenja na zaključanom ekranu, otključajte ga kako biste promenili podešavanje</translation>
-<translation id="4130035430755296270">Nastavite da prelazite kursorom za još opcija izgleda</translation>
+<translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" />°C – Trenutna brzina: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Uključeno do svitanja</translation>
 <translation id="4146833061457621061">Pusti muziku</translation>
 <translation id="4150201353443180367">Ekran</translation>
@@ -721,7 +723,6 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="481455355267255546">Sledeće</translation>
 <translation id="4831034276697007977">Želite li stvarno da isključite automatske klikove?</translation>
 <translation id="4849058404725798627">Istakni objekat pomoću fokusa tastature</translation>
-<translation id="4855250849489639581">Prevucite nadole za još opcija izgleda</translation>
 <translation id="485592688953820832">Ništa se ne preduzima (pauziranje)</translation>
 <translation id="485634149294284819">Uđite u meni za tastaturu</translation>
 <translation id="4860284199500934869">Proverite mrežnu vezu da biste preuzeli <ph name="FILENAME" /></translation>
@@ -736,6 +737,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4895488851634969361">Baterija je puna.</translation>
 <translation id="490375751687810070">Vertikalno</translation>
 <translation id="490788395437447240">Nivo baterije je <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">Aktivirajte mrežu <ph name="NETWORK_NAME" /> posle podešavanja uređaja</translation>
 <translation id="4917385247580444890">Jak</translation>
 <translation id="4918086044614829423">Prihvati</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> trenutno koristi kameru</translation>
@@ -1332,6 +1334,7 @@ Novo instaliranje</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8131994907636310308">Zatvorite povratnu poruku za sortiranje</translation>
 <translation id="8132793192354020517">Uspostavljena je veza sa <ph name="NAME" /></translation>
+<translation id="8138705869659070104">Aktiviraj posle podešavanja</translation>
 <translation id="813913629614996137">Pokreće se…</translation>
 <translation id="8142441511840089262">Dvostruki klik</translation>
 <translation id="8142699993796781067">Privatna mreža</translation>

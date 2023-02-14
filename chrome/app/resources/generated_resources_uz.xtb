@@ -5855,7 +5855,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6295158916970320988">Barcha saytlar</translation>
 <translation id="6295855836753816081">Saqlanmoqda...</translation>
 <translation id="6298962879096096191">Android ilovalarini o‘rnatish uchun Google Play ishlatilsin</translation>
-<translation id="6300125580697461004">Energiya tejalishi haqida fikr-mulohaza yuborish</translation>
 <translation id="6300177430812514606">Maʼlumotlarni yuborish yoki qabul qilishni tugatish taqiqlangan</translation>
 <translation id="630065524203833229">&amp;Chiqish</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> printeri avtomatik sozlanmadi. Printer uchun batafsil axborotlarni kiriting. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -6060,7 +6059,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6491376743066338510">Tekshiruvda xatolik yuz berdi</translation>
 <translation id="6494327278868541139">Kuchaytirilgan himoya tafsilotlarini ochish</translation>
 <translation id="6494445798847293442">Sertifikatlashtirish markazi emas</translation>
-<translation id="6497548114956205206">Energiya tejalishi haqida batafsil</translation>
 <translation id="6497784818439587832">Ekrandagi elementlarni kichiklashtirish yoki kattalashtirish uchun ekran oʻlchamini oʻzgartiring</translation>
 <translation id="6497789971060331894">Sichqoncha bilan teskari aylantirish</translation>
 <translation id="6498249116389603658">Barcha tillar</translation>
@@ -6984,6 +6982,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7352651011704765696">Xatolik yuz berdi.</translation>
 <translation id="7353261921908507769">Kontaktlaringiz sizga yaqinligida sizga fayl ulasha oladi. Uzatmalar qabul qilinmaguncha boshlanmaydi.</translation>
 <translation id="735361434055555355">Linux o‘rnatilmoqda...</translation>
+<translation id="7354120289251608189">Endi istalgan vaqt brauzerni yangicha bezatish mumkin.</translation>
 <translation id="7356908624372060336">Tarmoq jurnallari</translation>
 <translation id="735745346212279324">VPN aloqasi uzildi</translation>
 <translation id="7358324924540718595">Xotiralar bugun chiqmaydi</translation>
@@ -7677,7 +7676,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7955177647836564772">Smart Lock yoqilgan va telefoningiz qulfdan chiqarilgan boʻlsa, parol yoki PIN kodni kiritishingiz shart emas</translation>
 <translation id="7956373551960864128">Saqlangan printerlar</translation>
 <translation id="7957074856830851026">Seriya raqami va obyekt identifikatori kabi qurilma axborotini koʻrish</translation>
-<translation id="7957186326898555886">Operativ xotira tejalishi haqida fikr-mulohaza yuborish</translation>
 <translation id="7959074893852789871">Faylda import qilinmagan bir necha sertifikatlar mavjud:</translation>
 <translation id="7959665254555683862">Yangi inkognito &amp;varaq</translation>
 <translation id="7961015016161918242">Hech qachon</translation>
@@ -8106,7 +8104,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8340547030807793004"><ph name="DEVICE" /> uchun boshqa amallar</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Yaqinda juda koʻp bildirishnomalar yuborgan <ph name="BEGIN_BOLD" />1 ta saytni<ph name="END_BOLD" /> tekshiring}other{Yaqinda juda koʻp bildirishnomalar yuborgan <ph name="BEGIN_BOLD" />{NUM_SITES} ta<ph name="END_BOLD" /> saytni tekshiring}}</translation>
 <translation id="8342221978608739536">Sinab koʻrmadim</translation>
-<translation id="8342399870062010251">Operativ xotira tejalishi haqida batafsil</translation>
 <translation id="8342861492835240085">To‘plamni tanlang</translation>
 <translation id="8345848587667658367">Endi siz telefoningizdagi oxirgi rasmlar, multimedia, bildirishnomalar va ilovalarni koʻra olasiz</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
@@ -8420,7 +8417,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8645354835496065562">Sensordan foydalanishga ruxsat berilsin</translation>
 <translation id="8645920082661222035">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi</translation>
 <translation id="8646209145740351125">Sinxronlashni faolsizlantirish</translation>
-<translation id="8646340610303779673">PPD ochilmadi.</translation>
 <translation id="864637694230589560">Odatda, saytlar muhim yangiliklar yoki chat xabarlari haqida sizga bildirish uchun bildirishnomalar yuboradi</translation>
 <translation id="8646467750715887511">Sahifalar ular ochilganidan keyingina yuklanadi.</translation>
 <translation id="8647385344110255847">Ruxsatingiz bilan farzandingiz Google Play orqali lovalar oʻrnatishi mumkin</translation>

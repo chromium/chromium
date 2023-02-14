@@ -5846,7 +5846,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
 <translation id="6295855836753816081">Enregistrement en cours...</translation>
 <translation id="6298962879096096191">Utilisez Google Play pour installer des applications Android</translation>
-<translation id="6300125580697461004">Envoyer des commentaires à propos de l'économiseur d'énergie</translation>
 <translation id="6300177430812514606">Non autorisés à terminer l'envoi ou la réception de données</translation>
 <translation id="630065524203833229">&amp;Quitter</translation>
 <translation id="6300718114348072351">Impossible de configurer automatiquement l'imprimante <ph name="PRINTER_NAME" />. Veuillez spécifier les détails avancés de l'imprimante. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -6051,7 +6050,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6491376743066338510">Échec de l'autorisation</translation>
 <translation id="6494327278868541139">Afficher les renseignements sur la protection renforcée</translation>
 <translation id="6494445798847293442">N'est pas une autorité de certification</translation>
-<translation id="6497548114956205206">En savoir plus à propos de l'économiseur d'énergie</translation>
 <translation id="6497784818439587832">Modifier la taille d'affichage pour rétrécir ou agrandir les éléments sur votre écran</translation>
 <translation id="6497789971060331894">Défilement inversé de la souris</translation>
 <translation id="6498249116389603658">&amp;Toutes vos langues</translation>
@@ -7671,7 +7669,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7955177647836564772">Lorsque Smart Lock est activé et que votre téléphone est déverrouillé, vous n'avez pas besoin d'entrer de mot de passe ni de NIP</translation>
 <translation id="7956373551960864128">Vos imprimantes enregistrées</translation>
 <translation id="7957074856830851026">Consulter des renseignements sur l'appareil, comme son numéro de série ou son identifiant d'appareil</translation>
-<translation id="7957186326898555886">Envoyer des commentaires à propos de l'économiseur de mémoire</translation>
 <translation id="7959074893852789871">Le fichier contenait plusieurs certificats, dont certains n'ont pas été importés :</translation>
 <translation id="7959665254555683862">&amp;Nouvel onglet de navigation privée</translation>
 <translation id="7961015016161918242">Jamais</translation>
@@ -8100,7 +8097,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8340547030807793004">Autres actions pour <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Examiner <ph name="BEGIN_BOLD" />un site<ph name="END_BOLD" /> qui a envoyé beaucoup de notifications récemment}one{Examiner <ph name="BEGIN_BOLD" />{NUM_SITES} site<ph name="END_BOLD" /> qui a envoyé beaucoup de notifications récemment}other{Examiner <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> qui ont envoyé beaucoup de notifications récemment}}</translation>
 <translation id="8342221978608739536">Je n'ai pas essayé</translation>
-<translation id="8342399870062010251">En savoir plus à propos de l'économiseur de mémoire</translation>
 <translation id="8342861492835240085">Sélectionner une collection</translation>
 <translation id="8345848587667658367">Vous pouvez maintenant afficher les photos, les notifications, les applications et les contenus multimédias récents de votre téléphone</translation>
 <translation id="8347227221149377169">Tâches d'impression</translation>
@@ -8120,6 +8116,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8358912028636606457">La diffusion de l'audio de l'onglet n'est pas prise en charge sur cet appareil.</translation>
 <translation id="835951711479681002">Enregistrer dans votre compte Google</translation>
 <translation id="8360140320636871023">Personnaliser votre thème d'affichage</translation>
+<translation id="8360267485906769442">Bouton Envoyer des commentaires</translation>
 <translation id="8363095875018065315">stable</translation>
 <translation id="8363142353806532503">Le microphone est bloqué</translation>
 <translation id="8366396658833131068">Votre connexion réseau est rétablie. Veuillez sélectionner un autre réseau ou appuyer sur « Continuer » ci-dessous pour lancer votre application de kiosque.</translation>
@@ -8412,7 +8409,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8645354835496065562">Continuer à autoriser l'accès aux capteurs</translation>
 <translation id="8645920082661222035">Il prédit les événements dangereux et vous en informe avant qu'ils ne surviennent</translation>
 <translation id="8646209145740351125">Désactiver la synchronisation</translation>
-<translation id="8646340610303779673">Impossible de récupérer le PPD.</translation>
 <translation id="864637694230589560">Les sites envoient généralement des notifications pour vous présenter des nouvelles de dernière heure ou des messages de clavardage</translation>
 <translation id="8646467750715887511">Les pages se chargent uniquement lorsque vous les ouvrez.</translation>
 <translation id="8647385344110255847">Avec votre autorisation, votre enfant peut utiliser Google Play pour installer des applications</translation>

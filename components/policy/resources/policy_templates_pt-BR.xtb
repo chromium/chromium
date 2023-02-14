@@ -1807,8 +1807,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2665422249821137126">Ativar o cursor grande na tela de login</translation>
 <translation id="2667894101494585925">Ativar a busca do guia de otimização</translation>
 <translation id="2669157090883237118">Não mudar a configuração recomendada do <ph name="PRODUCT_OS_NAME" />.</translation>
-<translation id="2671763491132059785">Esta política está disponível apenas pelo <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> e pode ser usada para ativar rotações automáticas de chaves no
-<ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /></translation>
 <translation id="2672012807430078509">Controles que ativam o NTLM como protocolo de autenticação para ativações de PMEs</translation>
 <translation id="2673363037046384711">O usuário final pode ativar ou desativar o modo de alta eficiência.</translation>
 <translation id="2678503605767349615">Certificados do cliente em todo o dispositivo obrigatórios</translation>
@@ -2167,6 +2165,7 @@ Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_ENABLED_P
 
         Esta política não afeta políticas já lançadas.</translation>
 <translation id="3002067315837777719">Não permitir que as notificações do recurso "Seu smartphone" sejam ativadas</translation>
+<translation id="3010907817113180883">Taxa de coleta do sinal de funcionamento de atividade do dispositivo em milissegundos.</translation>
 <translation id="3017578958356048910">O visualizador de PDF pode fazer anotações em PDFs</translation>
 <translation id="3020623128585817424">Desativar a verificação de navegador padrão na inicialização</translation>
 <translation id="3020953534071988875">Configurar esta política permitirá/proibirá a autenticação pelo SO para perfis anônimos e de visitante no <ph name="PRODUCT_NAME" />.
@@ -3781,7 +3780,6 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 <translation id="4557134566541205630">URL da página "Nova guia" do provedor de pesquisa padrão</translation>
 <translation id="4558166110367609724">Ignora os TOS automaticamente e carrega o navegador.</translation>
 <translation id="4559846397119102037">Permitir uso do <ph name="LACROS_NAME" /></translation>
-<translation id="4560035077317813825">Ativar rotações automáticas de chaves para o <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /></translation>
 <translation id="4561560385824323005">Permitir que os usuários selecionem um layout de área de trabalho pré-configurado para carregar</translation>
 <translation id="4561940244682063697">Não permitir que os sites peçam para o usuário compartilhar um stream de vídeo da tela</translation>
 <translation id="4562165737444703281">Permitir que os usuários [ativem/configurem] o encaminhamento de portas do Crostini</translation>
@@ -4496,6 +4494,10 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se a política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> em uma conta, ela vai ter permissão para fazer login apenas como conta principal, e não como secundária.</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
+<translation id="5235607513961923779">Informa o estado da atividade do dispositivo em dispositivos registrados para usuários afiliados.
+
+      Se a política for desativada ou deixada sem definição, o estado da atividade do dispositivo não vai ser informado.
+      Se a política for ativada e o usuário for afiliado, o estado será informado ao servidor, permitindo que ele detecte se o dispositivo está off-line.</translation>
 <translation id="5238275681097851753">Permitir que determinados conteúdos do <ph name="FLASH_PLUGIN_NAME" /> sejam bloqueados</translation>
 <translation id="5238976843489093540">Forçar a ativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
 <translation id="52393120393725840">Se a política for definida como "Ativada", os usuários poderão fazer com que o <ph name="PRODUCT_NAME" /> se lembre de senhas e as forneça na próxima vez em que eles fizerem login em um site.
@@ -7394,6 +7396,7 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
       Recomendação: ative o bloqueio de tela depois de um período de inatividade quando o dispositivo estiver suspenso e suspenda o <ph name="PRODUCT_OS_NAME" /> depois do intervalo de inatividade. Use esta política apenas quando o bloqueio de tela ocorrer muito antes da suspensão ou quando você não quiser a suspensão por inatividade.</translation>
 <translation id="7895553628261067384">Acesso remoto</translation>
+<translation id="7898807590879163195">Desativar sinal de funcionamento de atividade do dispositivo</translation>
 <translation id="789975630884141379">Permitir conteúdo sugerido</translation>
 <translation id="7899952578398457262">Pedir o consentimento de acesso aos usuários gerenciados para compartilhar indicadores em dispositivos não gerenciados</translation>
 <translation id="7900469325540540107">Manter os dados de navegação por padrão ao criar um perfil corporativo</translation>
@@ -7988,6 +7991,9 @@ vai ser definida como padrão durante o login do usuário.</translation>
       Se a política for desativada ou não for configurada, apenas os perfis locais normais serão usados.</translation>
 <translation id="8417305981081876834">Definir o tamanho máximo do PIN da tela de bloqueio</translation>
 <translation id="841977920223099909">Acionamento de aviso de proteção de senha</translation>
+<translation id="8419965165591256432">Taxa em que o estado da atividade do dispositivo é coletado em dispositivos registrados para usuários afiliados. O mínimo permitido é de 1 minuto.
+
+      Se deixada sem definição, a frequência padrão de 15 minutos é usada.</translation>
 <translation id="8420426128163801949">Permitir que os usuários ativem ou desativem o Bluetooth</translation>
 <translation id="8422658829373743789">Controlar o novo comportamento para envio de eventos em controles de formulário desativados</translation>
 <translation id="8422866312638683210">Se a política for definida, o <ph name="PRODUCT_NAME" /> tentará se registrar como <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. O valor desta política é um token de inscrição que pode ser recuperado pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
@@ -8695,6 +8701,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="9076477053438828079">Sempre mostrar nomes e fotos dos usuários</translation>
 <translation id="9077227880520270584">Timer do login automático da conta local do dispositivo</translation>
 <translation id="9079531125758468956">Desativar a importação de favoritos na primeira execução</translation>
+<translation id="9084038227968802480">Ativar relatórios de sinal de funcionamento de atividade do dispositivo</translation>
 <translation id="9084985621503260744">Especifica se a atividade de vídeo afeta o gerenciamento de energia</translation>
 <translation id="9087434639296483430">Informa eventos de login/logout de usuários em dispositivos registrados, incluindo falhas de login.
 
@@ -8902,6 +8909,7 @@ A configuração padrão é permitir que o navegador do host faça a renderizaç
       Se a política for definida como "Desativada", o modo de segundo plano será desativado.
 
       Se a política for definida, os usuários não poderão mudá-la nas configurações do navegador. Se ela for deixada sem definição, o modo de segundo plano ficará desativado, mas os usuários poderão ativá-lo.</translation>
+<translation id="981245424658084931">Ativar sinal de funcionamento da atividade do dispositivo</translation>
 <translation id="981346395360763138">Serviços de localização do Google desativados</translation>
 <translation id="982497069985795632">Ativar verificação ortográfica</translation>
 <translation id="983256325512298435">Define uma lista de protocolos que podem inicializar um aplicativo externo a partir de origens listadas sem notificar o usuário</translation>

@@ -579,7 +579,6 @@
 <translation id="4123259114412175274">നിങ്ങളുടെ Chromebook അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ ഫോണിന്റെ Bluetooth ഓണാണെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="4125970834901680537">ടാബ്‌ലെറ്റ് മോഡിൽ ആപ്പുകൾ സ്ട്രീം ചെയ്യാനാകില്ല. ലാപ്ടോപ്പ് മോഡിൽ വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="4129129681837227511">നിങ്ങളുടെ ലോക്ക് സ്‌ക്രീനിൽ അറിയിപ്പുകൾ കാണാൻ, ക്രമീകരണം മാറ്റാനായി അൺലോക്ക് ചെയ്യുക</translation>
-<translation id="4130035430755296270">കൂടുതൽ ലേഔട്ട് ഓപ്ഷനുകൾക്ക് ഹോവർ ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="4136724716305260864">സൂര്യോദയം വരെ ഓണാണ്</translation>
 <translation id="4146833061457621061">സംഗീതം പ്ലേ ചെയ്യുക</translation>
 <translation id="4150201353443180367">ഡിസ്‌പ്ലേ</translation>
@@ -720,7 +719,6 @@
 <translation id="481455355267255546">അടുത്തത്</translation>
 <translation id="4831034276697007977">സ്വയമേവയുള്ള ക്ലിക്കുകൾ ഓഫാക്കണമെന്ന് നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
 <translation id="4849058404725798627">കീബോർഡ് ഫോക്കസ് ഉപയോഗിച്ച് ഒബ്‌ജക്‌റ്റിനെ ഹൈലൈറ്റ് ചെയ്യുക</translation>
-<translation id="4855250849489639581">കൂടുതൽ ലേഔട്ട് ഓപ്ഷനുകൾക്ക് താഴേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="485592688953820832">പ്രവർത്തനമൊന്നും വേണ്ട (താൽക്കാലികമായി നിർത്തുക)</translation>
 <translation id="485634149294284819">കീബോർഡ് മെനുവിൽ പ്രവേശിക്കുക</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> ഡൗൺലോഡ് ചെയ്യാൻ നിങ്ങളുടെ കണക്ഷൻ പരിശോധിക്കുക</translation>
@@ -735,6 +733,7 @@
 <translation id="4895488851634969361">ബാറ്ററി ചാർജുചെയ്യൽ പൂർണ്ണമായി.</translation>
 <translation id="490375751687810070">ലംബം</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
+<translation id="491504982845934899">ഉപകരണം സജ്ജീകരിച്ച് <ph name="NETWORK_NAME" /> സജീവമാക്കൂ</translation>
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4918086044614829423">സ്വീകരിക്കുക</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> നിലവിൽ നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
@@ -1331,6 +1330,7 @@
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>
 <translation id="8131994907636310308">അടുക്കൽ ടോസ്റ്റ് അടയ്ക്കുക</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> എന്നതിലേക്ക് ബന്ധിപ്പിച്ചു</translation>
+<translation id="8138705869659070104">ഉപകരണം സജ്ജീകരിച്ച് സജീവമാക്കൂ</translation>
 <translation id="813913629614996137">ആരംഭിക്കുന്നു...</translation>
 <translation id="8142441511840089262">ഡബിൾ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8142699993796781067">സ്വകാര്യനെറ്റ്‌വര്‍ക്ക്</translation>

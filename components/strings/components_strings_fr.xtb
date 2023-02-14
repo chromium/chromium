@@ -892,7 +892,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3218181027817787318">Valeur relative</translation>
 <translation id="3223287115535306850">Indicateur de lancement de l'appli</translation>
 <translation id="3223425961342298674">Position non autorisée</translation>
-<translation id="3225347164936328585">Applaudissements</translation>
 <translation id="3225919329040284222">Le serveur dispose d'un certificat qui ne répond pas aux exigences intégrées. Celles-ci sont incluses dans certains sites Web très sécurisés afin de vous protéger.</translation>
 <translation id="3226128629678568754">Veuillez appuyer sur le bouton d'actualisation pour renvoyer les données nécessaires au chargement de la page.</translation>
 <translation id="3226387218769101247">Vignettes</translation>
@@ -949,7 +948,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3340978935015468852">paramètres</translation>
 <translation id="3342018947887487892">Par la suite, un site auquel vous accédez pourra demander ces informations : soit vos thèmes d'annonces, soit les annonces suggérées par les sites que vous avez consultés.</translation>
 <translation id="3342366525167526994">Tatouages, piercings</translation>
-<translation id="3345782426586609320">Yeux</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Modifier les paramètres du proxy...</translation>
 <translation id="3359565626472459400">Mariage</translation>
@@ -1389,7 +1387,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4393632246160856858">Produits de soin pour les ongles</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4406896451731180161">résultats de recherche</translation>
-<translation id="4407755609041463909">Feu</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Électronique grand public</translation>
 <translation id="4412074349188076601">Cette configuration est marquée comme installable, mais aucune image n'est fournie pour cette architecture. Vous ne pouvez donc pas l'installer.</translation>
@@ -1775,7 +1772,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5333022057423422993">Chrome a trouvé le mot de passe que vous venez d'utiliser lors d'une violation de données. Pour la sécurité de vos comptes, nous vous recommandons de vérifier immédiatement vos mots de passe enregistrés.</translation>
 <translation id="5334013548165032829">Journaux système détaillés</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse ?</translation>
-<translation id="5335920952954443287">Cœur qui bat</translation>
 <translation id="5337569431717511221">Bouton pour définir Chrome comme navigateur par défaut ; appuyez sur Entrée pour définir Chrome comme navigateur par défaut du système</translation>
 <translation id="5340250774223869109">Application bloquée</translation>
 <translation id="534295439873310000">Appareils NFC</translation>
@@ -1783,7 +1779,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5344579389779391559">L'accès à la page suivante peut engendrer des frais</translation>
 <translation id="5347645913823149105">Bouton "Personnaliser les polices dans Chrome", appuyez sur Entrée pour personnaliser la taille des polices et les polices de caractères dans Chrome</translation>
 <translation id="5355557959165512791">Le site <ph name="SITE" /> est actuellement inaccessible, car son certificat a été révoqué. Les erreurs réseau et les attaques sont généralement temporaires. Vous devriez donc pouvoir accéder à cette page plus tard.</translation>
-<translation id="5356837363448394805">Rougir</translation>
 <translation id="5357848622083956825">Design et arts visuels</translation>
 <translation id="536296301121032821">Échec du stockage des paramètres de la règle.</translation>
 <translation id="5363309033720083897">Port série autorisé par votre administrateur</translation>
@@ -2114,7 +2109,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, puis Tabulation, puis Entrée pour personnaliser vos outils d'accessibilité dans les paramètres Chrome</translation>
 <translation id="6229649258872345286">Voyage en famille</translation>
 <translation id="6232271601416750929">Beauté éthique</translation>
-<translation id="6233160458685643793">Très souriant</translation>
 <translation id="6234122620015464377">Couper après chaque document</translation>
 <translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
@@ -2182,7 +2176,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6391700400718590966">La bottom sheet indiquant qu'aucun identifiant ne correspond pour le paiement sécurisé est fermée</translation>
 <translation id="6393956493820063117">Le règlement de l'administrateur bloque le collage de contenus provenant de "<ph name="ORIGIN_NAME" />" à cet endroit</translation>
 <translation id="6394852772105848029">Ce site veut ouvrir l'appli <ph name="APP_NAME" /></translation>
-<translation id="6398277657359595425">Pleurer fort</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
 <translation id="6401136357288658127">Cette règle est obsolète. Vous devez utiliser la règle "<ph name="NEW_POLICY" />" à la place.</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
@@ -2282,7 +2275,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6660413144148052430">position</translation>
 <translation id="6662457027866368246">1er rouleau</translation>
 <translation id="666259744093848177">(x86_64, langage traduit)</translation>
-<translation id="6663846344464066639">Mains jointes</translation>
 <translation id="6665553082534466207">Triple perforation à droite</translation>
 <translation id="6668389483194953109">Le nom de la taille du papier est "custom", mais la propriété "custom_size" est vide ou non valide.</translation>
 <translation id="6671697161687535275">Supprimer la suggestion de saisie de formulaire de Chromium ?</translation>
@@ -2383,7 +2375,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6939469646605424232">Drames (films TV)</translation>
 <translation id="6944692733090228304">Vous avez saisi votre mot de passe sur un site qui n'est pas géré par <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Pour protéger votre compte, ne réutilisez pas ce mot de passe dans d'autres applications ni sur d'autres sites.</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
-<translation id="6946722113367118030">Penser</translation>
 <translation id="6948051842255602737">Partie terminée ! Votre score est de <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Sélectionnez une adresse pour consulter les modes et conditions d'enlèvement disponibles</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2707,7 +2698,6 @@ Informations supplémentaires :
 <translation id="765676359832457558">Masquer les paramètres avancés…</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7659327900411729175">Enveloppe Kaku 8</translation>
-<translation id="7659878911471462949">Larmes de joie</translation>
 <translation id="766014026101194726">{0,plural, =1{Une règle de l'administrateur a bloqué l'importation de ce fichier}one{Une règle de l'administrateur a bloqué l'importation de # fichier}other{Une règle de l'administrateur a bloqué l'importation de # fichiers}}</translation>
 <translation id="7662298039739062396">Paramètre contrôlé par une extension</translation>
 <translation id="7663736086183791259">Certificat <ph name="CERTIFICATE_VALIDITY" /></translation>

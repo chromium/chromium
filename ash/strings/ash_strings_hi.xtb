@@ -139,6 +139,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> बाकी</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> कनेक्ट नहीं है.</translation>
 <translation id="1677582821739292812">कोई व्यक्ति आपकी स्क्रीन देख रहा है</translation>
+<translation id="1683399938733266832">सीपीयू की कितनी मेमोरी इस्तेमाल हो चुकी है: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टाइमर · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 पता: <ph name="ADDRESS" /></translation>
@@ -381,6 +382,7 @@
 <translation id="3051189971848907985">प्रोफ़ाइल का नाम बदला जा रहा है. थोड़ा इंतज़ार करें.</translation>
 <translation id="3055162170959710888">आपने आज इस डिवाइस का <ph name="USED_TIME" /> तक इस्तेमाल कर लिया है</translation>
 <translation id="3062298103034426069">काम नहीं करता</translation>
+<translation id="3068622547379332530">वर्शन <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">शेल्फ़ बाईं ओर है</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">मेन्यू बड़ा करें</translation>
@@ -580,7 +582,7 @@
 <translation id="4123259114412175274">अपना Chromebook अनलॉक करने के लिए, पक्का करें कि आपके फ़ोन का ब्लूटूथ चालू है</translation>
 <translation id="4125970834901680537">टैबलेट मोड में ऐप्लिकेशन का कॉन्टेंट स्ट्रीम नहीं किया जा सकता. लैपटॉप मोड में फिर से कोशिश करें.</translation>
 <translation id="4129129681837227511">अपनी लॉक स्क्रीन पर सूचनाएं देखने की सेटिंग बदलने के लिए स्क्रीन अनलॉक करें</translation>
-<translation id="4130035430755296270">लेआउट के ज़्यादा विकल्प देखने के लिए कर्सर घुमाते रहें</translation>
+<translation id="4131973331381812765">तापमान: <ph name="TEMPERATURE" />°C - मौजूदा रफ़्तार: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> गीगाहर्ट्ज़</translation>
 <translation id="4136724716305260864">यह सुविधा सूरज उगने तक चालू रहेगी</translation>
 <translation id="4146833061457621061">गाने चलाओ</translation>
 <translation id="4150201353443180367">डिसप्ले</translation>
@@ -721,7 +723,6 @@
 <translation id="481455355267255546">आने वाले दिनों में होने वाले इवेंट</translation>
 <translation id="4831034276697007977">क्या आप वाकई अपने-आप क्लिक होने की सुविधा बंद करना चाहते हैं?</translation>
 <translation id="4849058404725798627">कीबोर्ड फ़ोकस वाला ऑब्जेक्ट हाइलाइट करें</translation>
-<translation id="4855250849489639581">लेआउट के ज़्यादा विकल्प देखने के लिए, नीचे की ओर स्वाइप करें</translation>
 <translation id="485592688953820832">कोई कार्रवाई नहीं (रोकें)</translation>
 <translation id="485634149294284819">कीबोर्ड का विकल्प चुनें</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> को डाउनलोड करने के लिए, अपना इंटरनेट कनेक्शन देखें</translation>

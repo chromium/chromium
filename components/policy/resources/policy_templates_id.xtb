@@ -1810,8 +1810,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2665422249821137126">Mengaktifkan kursor besar di layar login</translation>
 <translation id="2667894101494585925">Mengaktifkan Pengambilan Panduan Pengoptimalan</translation>
 <translation id="2669157090883237118">Jangan ubah konfigurasi <ph name="PRODUCT_OS_NAME" /> yang direkomendasikan.</translation>
-<translation id="2671763491132059785">Kebijakan ini hanya tersedia melalui <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> dan dapat digunakan untuk mengaktifkan rotasi kunci otomatis untuk
-<ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /></translation>
 <translation id="2672012807430078509">Kontrol yang mengaktifkan NTLM sebagai protokol autentikasi untuk pemasangan SMB</translation>
 <translation id="2673363037046384711">Pengguna akhir dapat mengaktifkan atau menonaktifkan Mode Efisiensi Tinggi.</translation>
 <translation id="2678503605767349615">Sertifikat Klien seluruh perangkat yang diperlukan</translation>
@@ -3790,7 +3788,6 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, li
 <translation id="4557134566541205630">URL halaman tab baru penyedia penelusuran default</translation>
 <translation id="4558166110367609724">Otomatis melewati ToS dan memuat browser.</translation>
 <translation id="4559846397119102037">Mengizinkan penggunaan <ph name="LACROS_NAME" /></translation>
-<translation id="4560035077317813825">Mengaktifkan rotasi kunci otomatis untuk <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /></translation>
 <translation id="4561560385824323005">Mengizinkan pengguna memilih tata letak desktop yang dikonfigurasi sebelumnya untuk dimuat</translation>
 <translation id="4561940244682063697">Jangan izinkan situs meminta pengguna untuk membagikan streaming video dari layar mereka</translation>
 <translation id="4562165737444703281">Mengizinkan pengguna untuk [mengaktifkan/mengonfigurasi] penerusan port Crostini</translation>

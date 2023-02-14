@@ -302,6 +302,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3181825792072797598">Uključi Sinkronizaciju</translation>
 <translation id="3181954750937456830">Sigurno pregledavanje (štiti vas i vaš uređaj od opasnih web-lokacija)</translation>
 <translation id="3184767182050912705">Otključaj pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Poništavanje praćenja</translation>
 <translation id="3214379938835224220">Odjavljeni ste pri vraćanju iPada na zadano. U nastavku dodirnite Nastavi da biste se prijavili.</translation>
 <translation id="3224641773458703735">Da biste izvezli zaporke, najprije morate postaviti šifru zaporke na uređaju.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -812,7 +813,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6869389390665537774">Možete pogledati stranice koje ste posjetili ili ih izbrisati iz povijesti</translation>
 <translation id="687135068089457384">Prikaži postavke</translation>
 <translation id="6873263987691478642">Podijeljeni prikaz</translation>
-<translation id="6873366418270195926">Dobit ćete upozorenje ako se cijena snizi na bilo kojoj web-lokaciji. Ova je stranica spremljena u <ph name="BEGIN_LINK" />Oznake<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Standardna zaštita od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasna.</translation>
 <translation id="6888009575607455378">Jeste li sigurni da želite odbaciti promjene?</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
@@ -867,7 +867,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="734758817008927353">Opcije spremanja kartice</translation>
 <translation id="7351537303876921605">Dodirnite Izradi vezu na kontekstnom izborniku</translation>
 <translation id="7353432112255316844">Potvrđivanje identiteta</translation>
-<translation id="7356359962760467032">Zaustavi praćenje cijene</translation>
 <translation id="7383797227493018512">Popis za čitanje</translation>
 <translation id="7398893703713203428">Izradi vezu</translation>
 <translation id="7400418766976504921">URL</translation>

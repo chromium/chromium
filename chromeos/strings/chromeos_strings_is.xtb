@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Velja albúm <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-snertiflötur</translation>
 <translation id="4117637339509843559">Dökk stilling</translation>
+<translation id="4130035430755296270">Haltu bendlinum lengur yfir til að sjá fleiri valkosti fyrir uppsetningu</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>
 <translation id="4145784616224233563">HTTP-eldveggur</translation>
 <translation id="4147897805161313378">Google-myndir</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) DNS-lausn</translation>
 <translation id="4848429997038228357">Í GANGI</translation>
 <translation id="4854586501323951986">Innbyggður snertiskjár</translation>
+<translation id="4855250849489639581">Strjúktu niður til að sjá fleiri uppsetningarvalkosti</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}one{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}other{<ph name="ERROR_MESSAGE" /> {0} tilraunir eftir}}</translation>
 <translation id="4873827928179867585">Auðkenningarreiknirit</translation>
 <translation id="4880328057631981605">Heiti aðgangsstaðar</translation>

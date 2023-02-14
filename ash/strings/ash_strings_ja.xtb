@@ -133,6 +133,7 @@
 <translation id="163517899691012366">サイレント モードがオンになっている場合、通知はミュートされます</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
+<translation id="1647986356840967552">前のページ</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="397726367135689299">バッテリーの充電が不安定になっている可能性があります</translation>
 <translation id="3977512764614765090">電池残量は <ph name="PERCENTAGE" />% です（現在充電中）。</translation>
+<translation id="3984536049089846927">次のページ</translation>
 <translation id="3986082989454912832">応答</translation>
 <translation id="3995138139523574647">USB-C デバイス（右奥のポート）</translation>
 <translation id="40062176907008878">手書き</translation>
@@ -577,7 +579,6 @@
 <translation id="4123259114412175274">Chromebook のロックを解除するには、スマートフォンの Bluetooth がオンになっていることをご確認ください</translation>
 <translation id="4125970834901680537">タブレット モードでアプリをストリーミングできません。ノートパソコン モードでもう一度お試しください。</translation>
 <translation id="4129129681837227511">ロック画面に通知を表示するには、ロックを解除して設定を変更してください</translation>
-<translation id="4130035430755296270">カーソルを合わせると他のレイアウト オプションが表示されます</translation>
 <translation id="4136724716305260864">日の出までオン</translation>
 <translation id="4146833061457621061">音楽を再生して</translation>
 <translation id="4150201353443180367">表示</translation>
@@ -718,7 +719,6 @@
 <translation id="481455355267255546">次の予定</translation>
 <translation id="4831034276697007977">自動クリックをオフにしてもよろしいですか？</translation>
 <translation id="4849058404725798627">キーボードのフォーカスがある項目をハイライト表示する</translation>
-<translation id="4855250849489639581">下にスワイプすると、他のレイアウト オプションが表示されます</translation>
 <translation id="485592688953820832">なし（一時停止）</translation>
 <translation id="485634149294284819">キーボード メニューを入力してください</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> をダウンロードするには、ネットワーク接続を確認してください</translation>

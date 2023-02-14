@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">Zgjidh albumin <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Blloku me prekje USB</translation>
 <translation id="4117637339509843559">Modaliteti i errët</translation>
+<translation id="4130035430755296270">Vazhdo të mbash kursorin mbi të për opsione të tjera të strukturës</translation>
 <translation id="4131410914670010031">Bardhezi</translation>
 <translation id="4145784616224233563">Mur mbrojtës HTTP</translation>
 <translation id="4147897805161313378">Fotografitë e Google</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">(Android) Zgjidhja e DNS-së</translation>
 <translation id="4848429997038228357">NË EKZEKUTIM</translation>
 <translation id="4854586501323951986">Ekrani me prekje i integruar</translation>
+<translation id="4855250849489639581">Rrëshqit shpejt poshtë për opsione të tjera të strukturës</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} përpjekje e mbetur}other{<ph name="ERROR_MESSAGE" /> {0} përpjekje të mbetura}}</translation>
 <translation id="4873827928179867585">Algoritmi i vërtetimit</translation>
 <translation id="4880328057631981605">Emri i pikës së qasjes</translation>

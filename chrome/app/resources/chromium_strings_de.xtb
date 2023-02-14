@@ -10,7 +10,6 @@
 <translation id="1131805035311359397">Wenn du prüfen möchtest, ob deine Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chromium an<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
-<translation id="1231839967188101156">Wenn diese Option aktiviert ist, gibt Chromium von inaktiven Tabs belegten Arbeitsspeicher frei. Dadurch können aktive Tabs und andere Apps auf mehr Ressourcen zugreifen und Chromium bleibt schnell. Deine inaktiven Tabs werden automatisch wieder aktiviert, sobald du sie aufrufst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1261119230216066228">Dank Arbeitsspeicher-Sparmodus ist Chromium jetzt noch schneller</translation>
 <translation id="1315551408014407711">Neues Chromium-Profil erstellen</translation>
 <translation id="1396446129537741364">Chromium versucht, Passwörter anzuzeigen.</translation>
@@ -350,7 +349,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8550334526674375523">Dieses Arbeitsprofil wird getrennt von deinem persönlichen Profil verwaltet.</translation>
 <translation id="8558383651099478961">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chromium deaktiviert. Das Hinzufügen dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>
 <translation id="8568283329061645092">Chromium kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest</translation>
-<translation id="8574036838419011058">Wenn die Option aktiviert ist, reduziert Chromium den Akkuverbrauch, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Websites können Daten zu deinen Interessen bei Chromium speichern. Wenn du beispielsweise im Internet Schuhe für einen Marathon kaufst, definiert die Website möglicherweise Marathons als eines deiner Interessen. Wenn du dann später eine andere Website besuchst, um dich für ein Wettrennen anzumelden, kann dir auf Grundlage deiner Interessen Werbung zu Laufschuhen angezeigt werden.</translation>
 <translation id="8619360774459241877">Chromium wird gestartet…</translation>

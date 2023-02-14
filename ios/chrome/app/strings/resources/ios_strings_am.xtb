@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">አስምርን አብራ</translation>
 <translation id="3181954750937456830">ደኅንነቱ የተጠበቀ አሰሳ (እርስዎን እና የእርስዎን መሣሪያ ከአደገኛ ጣቢያዎች ጥበቃ ያደርግላችኋል)</translation>
 <translation id="3184767182050912705">በ<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይክፈቱ</translation>
+<translation id="3190736958609431397">ክትትል ማድረግ አቁም</translation>
 <translation id="3214379938835224220">እንደ የእርስዎ iPad ዳግም ማስጀመር አንድ አካል ከመለያዎ ዘግተው እንዲወጡ ተደርገዋል። በመለያ ለመግባት ከታች ያለውን ቀጥልን መታ ያድርጉ።</translation>
 <translation id="3224641773458703735">የይለፍ ቃላትን ወደ ውጭ ለመላክ በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
 <translation id="3227137524299004712">ማይክሮፎን</translation>
@@ -812,7 +813,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6869389390665537774">የጎበኟቸዉን ገጾች ማየት ወይም ከታሪክዎ ውስጥ ማፅዳት ይችላሉ</translation>
 <translation id="687135068089457384">ቅንብሮችን አሳይ</translation>
 <translation id="6873263987691478642">የተከፈለ ዕይታ</translation>
-<translation id="6873366418270195926">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ ማንቂያ ያገኛሉ። ይህ ገጽ በ<ph name="BEGIN_LINK" />እልባቶች<ph name="END_LINK" /> ውስጥ ተቀምጧል።</translation>
 <translation id="6882836635272038266">አደገኛ መሆናቸው ከታወቁ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች መደበኛ ጥበቃ።</translation>
 <translation id="6888009575607455378">እርግጠኛ ነዎት ለውጦችዎን ማስወገድ ይፈልጋሉ?</translation>
 <translation id="6896758677409633944">ቅዳ</translation>
@@ -867,7 +867,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="734758817008927353">ካርድን ለማስቀመጥ አማራጮች</translation>
 <translation id="7351537303876921605">በተገቢ ሁኔታ ምናሌ ውስጥ አገናኝ ፍጠርን መታ ያድርጉ</translation>
 <translation id="7353432112255316844">እርስዎ መሆንዎን ያረጋግጡ</translation>
-<translation id="7356359962760467032">የዋጋ ክትትልን አቁም</translation>
 <translation id="7383797227493018512">የንባብ ዝርዝር</translation>
 <translation id="7398893703713203428">አገናኝ ፍጠር</translation>
 <translation id="7400418766976504921">URL</translation>

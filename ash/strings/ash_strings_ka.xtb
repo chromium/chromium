@@ -139,6 +139,7 @@
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> არ არის დაკავშირებული.</translation>
 <translation id="1677582821739292812">ვიღაც უყურებს თქვენს ეკრანს</translation>
+<translation id="1683399938733266832">CPU-ს მიმდინარე მოხმარება: <ph name="CPU_USEAGE" />%</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />-იანი ტაიმერი · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 მისამართი: <ph name="ADDRESS" /></translation>
@@ -381,6 +382,7 @@
 <translation id="3051189971848907985">მიმდინარეობს პროფილის გადარქმევა. მოითმინეთ რამდენიმე წუთი.</translation>
 <translation id="3055162170959710888">ამ მოწყობილობას დღეს <ph name="USED_TIME" /> იყენებდით</translation>
 <translation id="3062298103034426069">მხარდაუჭერელია</translation>
+<translation id="3068622547379332530">ვერსია <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">თარო მდებარეობს მარცხენა ნაწილში</translation>
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">მენიუს გაშლა</translation>
@@ -579,7 +581,7 @@
 <translation id="4123259114412175274">თქვენი Chromebook განსაბლოკად დარწმუნდით, რომ თქვენი ტელეფონის Bluetooth ჩართულია</translation>
 <translation id="4125970834901680537">აპების სტრიმინგი ვერ მოხერხდება ტაბლეტის რეჟიმში. ცადეთ ხელახლა ლეპტოპის რეჟიმის გამოყენებით.</translation>
 <translation id="4129129681837227511">ჩაკეტილ ეკრანზე შეტყობინებების სანახავად საჭიროა განბლოკვა და პარამეტრის შეცვლა</translation>
-<translation id="4130035430755296270">განლაგებების მეტი ვარიანტებისთვის გააგრძელეთ გადატარება</translation>
+<translation id="4131973331381812765">ტემპერატურა: <ph name="TEMPERATURE" />°C — მიმდინარე სიჩქარე: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> გჰც</translation>
 <translation id="4136724716305260864">ჩართულია მზის ამოსვლამდე</translation>
 <translation id="4146833061457621061">მუსიკის დაკვრა</translation>
 <translation id="4150201353443180367">ჩვენება</translation>
@@ -720,7 +722,6 @@
 <translation id="481455355267255546">მომავალი</translation>
 <translation id="4831034276697007977">ნამდვილად გსურთ, გამორთოთ ავტომატური დაწკაპუნებები?</translation>
 <translation id="4849058404725798627">კლავიატურის მეშვეობით არჩეული ობიექტის გამოყოფა</translation>
-<translation id="4855250849489639581">განლაგების მეტი ვარიანტისთვის გადაფურცლეთ ქვემოთ</translation>
 <translation id="485592688953820832">ქმედების გარეშე (პაუზა)</translation>
 <translation id="485634149294284819">კლავიატურის მენიუში შესვლა</translation>
 <translation id="4860284199500934869">შეამოწმეთ კავშირი ქსელთან, <ph name="FILENAME" /> რომ ჩამოტვირთოთ</translation>
@@ -735,6 +736,7 @@
 <translation id="4895488851634969361">ბატარეა სავსეა.</translation>
 <translation id="490375751687810070">ვერტიკალური</translation>
 <translation id="490788395437447240">ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="491504982845934899">გააქტიურება მოწყობილობის დაყენების შემდეგ <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">ძლიერი</translation>
 <translation id="4918086044614829423">მიღება</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> ამჟამად იყენებს თქვენს კამერას</translation>
@@ -1331,6 +1333,7 @@
 <translation id="8131740175452115882">დაადასტურება</translation>
 <translation id="8131994907636310308">დალაგების ამომხტარი ფანჯრის დახურვა</translation>
 <translation id="8132793192354020517">დაკავშირებულია <ph name="NAME" />-თან</translation>
+<translation id="8138705869659070104">გააქტიურება მოწყობილობის დაყენების შემდეგ</translation>
 <translation id="813913629614996137">მიმდინარეობს ინიცირება…</translation>
 <translation id="8142441511840089262">ორმაგი დაწკაპუნება</translation>
 <translation id="8142699993796781067">პირადი ქსელი</translation>

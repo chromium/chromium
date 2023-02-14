@@ -133,6 +133,7 @@
 <translation id="163517899691012366">ປິດສຽງການແຈ້ງເຕືອນເມື່ອຄຸນສົມບັດຫ້າມລົບກວນເປີດຢູ່</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ອຸປະກອນ</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
+<translation id="1647986356840967552">ໜ້າກ່ອນໜ້າ</translation>
 <translation id="1654477262762802994">ເລີ່ມຄຳຊອກຫາດ້ວຍສຽງ</translation>
 <translation id="1668469839109562275">VPN ໃນຕົວ</translation>
 <translation id="1677472565718498478">ຍັງເຫຼືອ <ph name="TIME" /></translation>
@@ -555,6 +556,7 @@
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
 <translation id="397726367135689299">ການສາກແບັດເຕີຣີອາດບໍ່ສະຖຽນ.</translation>
 <translation id="3977512764614765090">ແບັດເຕີຣີຢູ່ທີ່ <ph name="PERCENTAGE" />% ແລະ ກຳລັງສາກ.</translation>
+<translation id="3984536049089846927">ໜ້າຕໍ່ໄປ</translation>
 <translation id="3986082989454912832">ຮັບສາຍ</translation>
 <translation id="3995138139523574647">ອຸປະກອນ USB-C (ຊ່ອງທາງຫຼັງເບື້ອງຂວາ)</translation>
 <translation id="40062176907008878">ການຂຽນດ້ວຍມື</translation>
@@ -577,7 +579,6 @@
 <translation id="4123259114412175274">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ກວດສອບວ່າທ່ານເປີດ Bluetooth ຂອງໂທລະສັບທ່ານແລ້ວ</translation>
 <translation id="4125970834901680537">ບໍ່ສາມາດສະຕຣີມແອັບໃນໂໝດແທັບເລັດໄດ້. ກະລຸນາລອງໃໝ່ໃນໂໝດແລັບທັອບ.</translation>
 <translation id="4129129681837227511">ເພື່ອເບິ່ງການແຈ້ງເຕືອນໃນໜ້າຈໍລັອກຂອງທ່ານ, ກະລຸນາປົດລັອກເພື່ອປ່ຽນການຕັ້ງຄ່າ</translation>
-<translation id="4130035430755296270">ສືບຕໍ່ເລື່ອນເມົ້າສຳລັບຕົວເລືອກໂຄງຮ່າງເພີ່ມເຕີມ</translation>
 <translation id="4136724716305260864">ເປີດຈົນກວ່າຕາເວັນຂຶ້ນ</translation>
 <translation id="4146833061457621061">ຫຼິ້ນເພງ</translation>
 <translation id="4150201353443180367">ການສະແດງຜົນ</translation>
@@ -718,7 +719,6 @@
 <translation id="481455355267255546">ຕໍ່ໄປ</translation>
 <translation id="4831034276697007977">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການປິດການຄລິກອັດຕະໂນມັດ?</translation>
 <translation id="4849058404725798627">ໝາຍວັດຖຸດ້ວຍໂຟກັສແປ້ນພິມ</translation>
-<translation id="4855250849489639581">ປັດລົງເພື່ອຕົວເລືອກໂຄງຮ່າງເພີ່ມເຕີມ</translation>
 <translation id="485592688953820832">ບໍ່ດຳເນີນການ (ຢຸດຊົ່ວຄາວ)</translation>
 <translation id="485634149294284819">ລະບຸເມນູແປ້ນພິມ</translation>
 <translation id="4860284199500934869">ກວດສອບການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານເພື່ອດາວໂຫຼດ <ph name="FILENAME" /></translation>
@@ -733,6 +733,7 @@
 <translation id="4895488851634969361">ແບັດເຕີຣີເຕັມ.</translation>
 <translation id="490375751687810070">ລວງຕັ້ງ</translation>
 <translation id="490788395437447240">ລະດັບແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="491504982845934899">ເປີດໃຊ້ຫຼັງຈາກຕິດຕັ້ງອຸປະກອນ <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">ແຮງ</translation>
 <translation id="4918086044614829423">ຍອມ​ຮັບ</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> ກຳລັງໃຊ້ກ້ອງຂອງທ່ານຢູ່</translation>
@@ -1329,6 +1330,7 @@
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8131994907636310308">ປິດຂໍ້ຄວາມໂທສການຈັດຮຽງ</translation>
 <translation id="8132793192354020517">ເຊື່ອມຕໍ່ກັບ <ph name="NAME" /> ແລ້ວ</translation>
+<translation id="8138705869659070104">ເປີດໃຊ້ຫຼັງຈາກຕິດຕັ້ງອຸປະກອນ</translation>
 <translation id="813913629614996137">ກຳລັງລິເລີ່ມ...</translation>
 <translation id="8142441511840089262">ຄລິກສອງຄັ້ງ</translation>
 <translation id="8142699993796781067">ເຄືອ​ຂ່າຍ​ສ່ວນຕົວ</translation>

@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Viltu endurræsa Linux?</translation>
 <translation id="1047431265488717055">Afrita tenglate&amp;xta</translation>
 <translation id="1048286738600630630">Skjáir</translation>
+<translation id="1048770690598418849">Þú getur sleppt þessu núna og við reynum sjálfkrafa aftur þegar uppsetningu lýkur</translation>
 <translation id="1048986595386481879">Kvik úthlutun</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Móttekur <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}one{Móttekur <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}other{Móttekur <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Fara huldu höfðu</translation>
@@ -1639,6 +1640,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2410754283952462441">Veldu reikning</translation>
 <translation id="241082044617551207">Óþekkt viðbót</translation>
 <translation id="2410940059315936967">Vefsvæði sem þú skoðar getur fellt inn efni frá öðrum vefsvæðum, til dæmis myndir, auglýsingar og texta. Fótspor sem viðkomandi önnur vefsvæði nota kallast fótspor þriðju aðila.</translation>
+<translation id="2411666601450687801">Engar sýndarvélar eru leyfðar í þessu tæki</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">Aðgerðalyklar á lyklaborði</translation>
 <translation id="2418307627282545839">Hafa allt bjart og fínt</translation>
@@ -1900,6 +1902,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2653659639078652383">Senda</translation>
 <translation id="265390580714150011">Gildi reits</translation>
 <translation id="2654553774144920065">Prentbeiðni</translation>
+<translation id="265748523151262387">Haltu tengingu með símanum</translation>
 <translation id="2657612187216250073">Aðgengisstillingar bendils</translation>
 <translation id="2658941648214598230">Sýna upprunalegt innihald?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Eiginleikar geta verið mismunandi eftir tækjum</translation>
@@ -5316,6 +5319,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5801051031414037185">Setja upp síma</translation>
 <translation id="5801568494490449797">Kjörstillingar</translation>
 <translation id="5804241973901381774">Heimildir</translation>
+<translation id="5804259315582798390">Ekki tókst að virkja endurheimt staðbundinna gagna</translation>
 <translation id="5805268472388605531">Haltu lyklum á lyklaborðinu inni til að sjá áherslumerki og sérstafi</translation>
 <translation id="5805697420284793859">Gluggastjórnun</translation>
 <translation id="5806447147478173900">Heildargeymslurými sem birt vefsvæði nota: <ph name="TOTAL_USAGE" /></translation>
@@ -5857,7 +5861,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
 <translation id="6295855836753816081">Vistar...</translation>
 <translation id="6298962879096096191">Notaðu Google Play til að setja upp Android forrit</translation>
-<translation id="6300125580697461004">Senda ábendingu um orkusparnað</translation>
 <translation id="6300177430812514606">Mega ekki ljúka við að senda eða móttaka gögn</translation>
 <translation id="630065524203833229">Hætta</translation>
 <translation id="6300718114348072351">Ekki tókst að stilla <ph name="PRINTER_NAME" /> sjálfvirkt. Tilgreindu ítarlegar prentaraupplýsingar. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -6062,7 +6065,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6491376743066338510">Auðkenning mistókst</translation>
 <translation id="6494327278868541139">Sýna upplýsingar um aukna vernd</translation>
 <translation id="6494445798847293442">Ekki vottunarstöð</translation>
-<translation id="6497548114956205206">Nánar um orkusparnað</translation>
 <translation id="6497784818439587832">Breyta skjástærð til að minnka eða stækka atriði á skjánum</translation>
 <translation id="6497789971060331894">Öfug fletting músar</translation>
 <translation id="6498249116389603658">Öll &amp;tungumálin þín</translation>
@@ -6701,6 +6703,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7047059339731138197">Velja bakgrunn</translation>
 <translation id="7049293980323620022">Viltu halda skránni?</translation>
 <translation id="7050037487872780845">Ógild stilling fyrir heitan reit</translation>
+<translation id="7051551856857948729">Fela gildi IBAN</translation>
 <translation id="7052237160939977163">Senda rakningargögn um afköst</translation>
 <translation id="7053983685419859001">Setja á bannlista</translation>
 <translation id="7055152154916055070">Lokað á framsendingu:</translation>
@@ -7681,7 +7684,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7955177647836564772">Ef kveikt er á Smart Lock og síminn er ólæstur þarftu ekki að slá inn aðgangsorð eða PIN-númer</translation>
 <translation id="7956373551960864128">Vistaðir prentarar þínir</translation>
 <translation id="7957074856830851026">Sjá upplýsingar um tæki, svo sem raðnúmer eða eignarauðkenni</translation>
-<translation id="7957186326898555886">Senda ábendingu um minnissparnað</translation>
 <translation id="7959074893852789871">Skráin innihélt mörg vottorð en sum þeirra voru ekki flutt inn:</translation>
 <translation id="7959665254555683862">Nýr huliðsflipi</translation>
 <translation id="7961015016161918242">Aldrei</translation>
@@ -8110,7 +8112,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8340547030807793004">Fleiri aðgerðir fyrir <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Yfirfara <ph name="BEGIN_BOLD" />1 vefsvæði<ph name="END_BOLD" /> sem sendi margar tilkynningar undanfarið}one{Yfirfara <ph name="BEGIN_BOLD" />{NUM_SITES} vefsvæði<ph name="END_BOLD" /> sem sendi margar tilkynningar undanfarið}other{Yfirfara <ph name="BEGIN_BOLD" />{NUM_SITES} vefsvæði<ph name="END_BOLD" /> sem sendu margar tilkynningar undanfarið}}</translation>
 <translation id="8342221978608739536">Prófaði ekki</translation>
-<translation id="8342399870062010251">Nánar um minnissparnað</translation>
 <translation id="8342861492835240085">Velja safn</translation>
 <translation id="8345848587667658367">Nú geturðu séð nýlegar myndir, margmiðlunarefni, tilkynningar og forrit símans</translation>
 <translation id="8347227221149377169">Prentverk</translation>
@@ -8407,6 +8408,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8634348081024879304">Þú munt ekki lengur geta notað sýndarkortið þitt með Google Pay. <ph name="BEGIN_LINK" />Nánar um sýndarkort<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">Endurhleður...</translation>
 <translation id="8636284842992792762">Frumstillir viðbætur...</translation>
+<translation id="8636323803535540285">Bættu flýtileið við <ph name="BRAND" /> til að komast hingað hraðar</translation>
 <translation id="8636500887554457830">Ekki leyfa vefsvæðum að senda sprettiglugga eða nota framsendingu</translation>
 <translation id="8637688295594795546">Kerfisuppfærsla í boði. Undirbýr niðurhal…</translation>
 <translation id="8639047128869322042">Leitar að skaðlegum hugbúnaði...</translation>
@@ -8421,7 +8423,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8645354835496065562">Halda áfram að leyfa aðgang að skynjurum</translation>
 <translation id="8645920082661222035">Spáir fyrir um og varar þig við hættulegum atvikum áður en þau eiga sér stað</translation>
 <translation id="8646209145740351125">Slökkva á samstillingu</translation>
-<translation id="8646340610303779673">Ekki tekst að sækja PPD.</translation>
 <translation id="864637694230589560">Vefsvæði senda yfirleitt tilkynningar til að láta þig vita af nýjustu fréttum eða spjallskilaboðum</translation>
 <translation id="8646467750715887511">Síður hlaðast eingöngu eftir að þú opnar þær.</translation>
 <translation id="8647385344110255847">Barnið þitt má nota Google Play til að setja upp forrit með leyfi þínu</translation>
@@ -8566,6 +8567,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8767621466733104912">Uppfæra Chrome sjálfkrafa fyrir alla notendur</translation>
 <translation id="8770406935328356739">Rótarmappa viðbóta</translation>
 <translation id="8771300903067484968">Bakgrunnur upphafssíðu hefur verið endurstilltur á sjálfgefinn bakgrunn.</translation>
+<translation id="8773280816776735812">Sýna gildi IBAN</translation>
 <translation id="8773302562181397928">Vista <ph name="PRINTER_NAME" /></translation>
 <translation id="8774379074441005279">Staðfesta endurheimt</translation>
 <translation id="8774934320277480003">Efri spássía</translation>

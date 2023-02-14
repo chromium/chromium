@@ -359,7 +359,6 @@
 <translation id="8286862437124483331">Google Chrome està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="828798499196665338">Els teus pares han desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chrome. No es permet activar aquesta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome s'ha bloquejat. Voleu tornar-lo a iniciar?</translation>
-<translation id="8341646175450781745">Quan aquesta opció està activada, Chrome allibera memòria de les pestanyes inactives. Així, les pestanyes actives i altres aplicacions disposen de més recursos de l'ordinador i es manté l'agilitat de Chrome. Les pestanyes inactives s'activen de nou automàticament quan hi tornes. <ph name="BEGIN_LINK" />Obtén més informació<ph name="END_LINK" /> o <ph name="BEGIN_LINK_2" />envia suggeriments<ph name="END_LINK_2" />.</translation>
 <translation id="8342675569599923794">Chrome ha bloquejat aquest fitxer perquè és perillós.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chrome sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
@@ -404,7 +403,6 @@
 <translation id="8986207147630327271">Estàs afegint un perfil de treball a aquest navegador i donant control al teu administrador únicament sobre el perfil de treball.</translation>
 <translation id="8989968390305463310">El teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix automàticament els interessos de manera contínua cada mes, i es poden actualitzar tret que els suprimeixis.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>
-<translation id="9003498785844995646">Quan aquesta opció està activada, Chrome estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos. <ph name="BEGIN_LINK" />Obtén més informació<ph name="END_LINK" /> o <ph name="BEGIN_LINK_2" />envia suggeriments<ph name="END_LINK_2" />.</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
 <translation id="9067395829937117663">Google Chrome requereix Windows 7 o una versió posterior.</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>

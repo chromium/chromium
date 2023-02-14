@@ -302,6 +302,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3181825792072797598">Ota synkronointi käyttöön</translation>
 <translation id="3181954750937456830">Selaussuoja (suojaa sinua ja laitettasi vaarallisilta sivustoilta)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> avaa lukituksen</translation>
+<translation id="3190736958609431397">Lopeta seuraaminen</translation>
 <translation id="3214379938835224220">Sinut kirjattiin ulos, kun iPad nollattiin. Kirjaudu sisään valitsemalla alta "Jatka".</translation>
 <translation id="3224641773458703735">Jos haluat viedä salasanoja, sinun on ensin määritettävä laitteellesi tunnuskoodi.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
@@ -866,7 +867,6 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="734758817008927353">Kortin tallentamisvaihtoehdot</translation>
 <translation id="7351537303876921605">Valitse kontekstivalikosta "Luo linkki"</translation>
 <translation id="7353432112255316844">Todenna henkilöllisyytesi</translation>
-<translation id="7356359962760467032">Lopeta hintaseuranta</translation>
 <translation id="7383797227493018512">Lukulista</translation>
 <translation id="7398893703713203428">Luo linkki</translation>
 <translation id="7400418766976504921">URL-osoite</translation>
@@ -1114,6 +1114,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="952704832371081537">Peru</translation>
 <translation id="953008885340860025">Olet kirjautunut ulos Chromesta</translation>
 <translation id="959066944189734975">Seuraat tätä: <ph name="CHANNEL_NAME" /></translation>
+<translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Organisaatiosi sallii sinun kirjautua sisään vain tietyillä tileillä. Kielletyt tilit on piilotettu.</translation>
 <translation id="984509647832111802">Synkronointi ei toimi.</translation>
 <translation id="988141524645182168">Muut laitteet</translation>

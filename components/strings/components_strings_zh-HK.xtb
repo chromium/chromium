@@ -893,7 +893,6 @@
 <translation id="3218181027817787318">相對</translation>
 <translation id="3223287115535306850">應用程式啟動載入圖示</translation>
 <translation id="3223425961342298674">唔批准存取位置資料</translation>
-<translation id="3225347164936328585">拍掌</translation>
 <translation id="3225919329040284222">伺服器提供的憑證與內置的預期條件不符。我們在特定高安全性的網站內置了這些預期條件，以保護您的資料安全無虞。</translation>
 <translation id="3226128629678568754">按下重新載入按鈕，重新提交載入網頁所需的數據。</translation>
 <translation id="3226387218769101247">縮圖</translation>
@@ -950,7 +949,6 @@
 <translation id="3340978935015468852">設定</translation>
 <translation id="3342018947887487892">您日後瀏覽的網站可要求取得這些資料，包括廣告主題或曾瀏覽網站的廣告建議。</translation>
 <translation id="3342366525167526994">人體藝術</translation>
-<translation id="3345782426586609320">眼</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">變更 Proxy 設定…</translation>
 <translation id="3359565626472459400">婚姻</translation>
@@ -1389,7 +1387,6 @@
 <translation id="4393632246160856858">指甲護理產品</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4406896451731180161">搜尋結果</translation>
-<translation id="4407755609041463909">火</translation>
 <translation id="4408413947728134509">Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">消費電子產品</translation>
 <translation id="4412074349188076601">此設定已標記為可安裝，但沒有映像可供此架構使用，因此無法安裝。</translation>
@@ -1775,7 +1772,6 @@
 <translation id="5333022057423422993">Chrome 發現您剛才使用的密碼因資料外洩而被洩露。如要確保帳戶安全，建議您檢查已儲存的密碼。</translation>
 <translation id="5334013548165032829">詳細系統記錄</translation>
 <translation id="5334145288572353250">要儲存地址嗎？</translation>
-<translation id="5335920952954443287">跳緊嘅心</translation>
 <translation id="5337569431717511221">將 Chrome 設定做預設瀏覽器按鈕，㩒 Enter 鍵就可以將 Chrome 設定做系統嘅預設瀏覽器</translation>
 <translation id="5340250774223869109">已封鎖應用程式</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
@@ -1783,7 +1779,6 @@
 <translation id="5344579389779391559">此網頁可能會向您收取費用</translation>
 <translation id="5347645913823149105">自訂 Chrome 字型按鈕，㩒一下 Enter 鍵就可以自訂 Chrome 嘅字型大小同字體</translation>
 <translation id="5355557959165512791">您目前無法瀏覽 <ph name="SITE" />，因為此網站的憑證已被撤銷。網絡錯誤和攻擊行為通常是暫時性問題，所以此網頁可能稍後就能正常使用。</translation>
-<translation id="5356837363448394805">面紅</translation>
 <translation id="5357848622083956825">視覺藝術及設計</translation>
 <translation id="536296301121032821">無法儲存政策設定</translation>
 <translation id="5363309033720083897">管理員允許的序列連接埠</translation>
@@ -2115,7 +2110,6 @@
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度個人化您嘅無障礙工具</translation>
 <translation id="6229649258872345286">家庭旅遊</translation>
 <translation id="6232271601416750929">潔淨美容</translation>
-<translation id="6233160458685643793">露齒笑</translation>
 <translation id="6234122620015464377">完成每份文件後修剪</translation>
 <translation id="6236290670123303279">管理設定</translation>
 <translation id="6240447795304464094">Google Pay 標誌</translation>
@@ -2183,7 +2177,6 @@
 <translation id="6391700400718590966">閂咗冇相符安全付款憑證工作表</translation>
 <translation id="6393956493820063117">管理員政策已禁止將內容由 <ph name="ORIGIN_NAME" /> 貼到此位置</translation>
 <translation id="6394852772105848029">此網站要求開啟 <ph name="APP_NAME" /> 應用程式</translation>
-<translation id="6398277657359595425">大聲喊</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="6401136357288658127">此政策已被淘汰，請改用 <ph name="NEW_POLICY" /> 政策。</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
@@ -2283,7 +2276,6 @@
 <translation id="6660413144148052430">位置</translation>
 <translation id="6662457027866368246">第一卷</translation>
 <translation id="666259744093848177">(x86_64 已翻譯)</translation>
-<translation id="6663846344464066639">雙手合十</translation>
 <translation id="6665553082534466207">三孔 (右側)</translation>
 <translation id="6668389483194953109">系統偵測到紙張大小名稱為「自訂」，但「custom_size」屬性空白或無效。</translation>
 <translation id="6671697161687535275">要從 Chromium 移除表格建議嗎？</translation>
@@ -2384,7 +2376,6 @@
 <translation id="6939469646605424232">電視劇</translation>
 <translation id="6944692733090228304">您輸入密碼的網站並非由 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理。為保帳戶安全，請勿在其他應用程式和網站上使用相同的密碼。</translation>
 <translation id="6945221475159498467">選取</translation>
-<translation id="6946722113367118030">思考</translation>
 <translation id="6948051842255602737">遊戲結束，你嘅得分係 <ph name="SCORE" />。</translation>
 <translation id="6948701128805548767">如要查看取貨方式和要求，請選取一個地址</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2708,7 +2699,6 @@
 <translation id="765676359832457558">隱藏進階設定…</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659327900411729175">Kaku 8 信封</translation>
-<translation id="7659878911471462949">喜極而泣</translation>
 <translation id="766014026101194726">{0,plural, =1{管理員政策已禁止上載此檔案}other{管理員政策已禁止上載 # 個檔案}}</translation>
 <translation id="7662298039739062396">由擴充程式控制的設定</translation>
 <translation id="7663736086183791259">憑證 <ph name="CERTIFICATE_VALIDITY" /></translation>

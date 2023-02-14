@@ -6,7 +6,6 @@
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
 <translation id="1289216811211435351">Passa a Chromium</translation>
-<translation id="1352919863522755794">Gestore delle password di Google non ha potuto controllare le tue password. Verifica la tua connessione a internet.</translation>
 <translation id="1361748954329991663">Chromium non è aggiornato. Se non sono disponibili aggiornamenti nell'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, è possibile che il dispositivo non supporti più le nuove versioni di Chromium.</translation>
 <translation id="1431818719585918472">Consenti a Chromium di bloccare le schede di navigazione in incognito.</translation>
 <translation id="1472013873724362412">Il tuo account non funziona su Chromium. Contatta l'amministratore di dominio o utilizza un normale Account Google per accedere.</translation>
@@ -36,7 +35,6 @@
 <translation id="2650312721222849884">Per visualizzare le tue schede su tutti i dispositivi su cui utilizzi Chromium, attiva la sincronizzazione</translation>
 <translation id="2684230048001240293">Imposta Chromium come browser predefinito per la sincronizzazione di schede, password e dati di pagamento su tutti i tuoi dispositivi</translation>
 <translation id="2730884209570016437">Chromium non può utilizzare la videocamera perché è attualmente utilizzata da un'altra applicazione</translation>
-<translation id="2767464022270041271">Nessuna password salvata. Gestore delle password di Google può controllare le tue password quando le salvi.</translation>
 <translation id="2915596697727466327">Chromium utilizza Face ID per garantire accesso autorizzato alle tue password.</translation>
 <translation id="2918709798697875261">La tua organizzazione ti richiede di non effettuare l'accesso a Chromium.</translation>
 <translation id="2942241131342758843">Usa Chromium per impostazione predefinita per aprire link, eseguire ricerche dai widget e compilare automaticamente le password in altre app</translation>
@@ -59,7 +57,6 @@
 <translation id="4681781466797808448">Attiva lo scanner di Chromium</translation>
 <translation id="4736424910885271643">Il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, pertanto i tuoi dati di Chromium verranno cancellati da questo dispositivo</translation>
 <translation id="4828317641996116749">Chromium non ha potuto controllare tutte le password. Riprova più tardi.</translation>
-<translation id="4840404732697892756">Gestore delle password di Google può controllare le tue password quando accedi con il tuo Account Google.</translation>
 <translation id="4985291216379576555">Offline. Chromium non può controllare la disponibilità di aggiornamenti.</translation>
 <translation id="4996471330284142407">Aumenta la tua produttività grazie a Chromium, che ti offre semplicità, sicurezza e velocità senza precedenti.</translation>
 <translation id="4999538639245140991">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chromium verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
@@ -71,7 +68,6 @@
 <translation id="5521125884468363740">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chromium e attiva la sincronizzazione per visualizzare le tue schede</translation>
 <translation id="5522297504975449419">Alcune funzionalità di Chromium non saranno più disponibili.</translation>
 <translation id="5573014823074921752">Suggerimento per Chromium. Per vedere più opzioni sulla scheda, tocca e tieni premuto il pulsante Mostra schede della barra degli strumenti, che si trova nella parte inferiore o superiore della schermata.</translation>
-<translation id="5661521615548540542">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova più tardi.</translation>
 <translation id="5700709190537129682">Chromium non può controllare le tue password</translation>
 <translation id="5777187867430702742">Pagina di Chromium</translation>
 <translation id="5945387852661427312">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chromium. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chromium, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
@@ -121,7 +117,6 @@
 <translation id="8460301378281140593">Dalle Impostazioni dell'iPhone, apri "Opzioni password" e seleziona "Chromium"</translation>
 <translation id="858114650497379505">Puoi utilizzare le password salvate con Gestore delle password in altre app sull'iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
-<translation id="8603022514504485810">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Ti protegge su Chromium e potrebbe essere utilizzata per migliorare la tua sicurezza in altre app Google se hai eseguito l'accesso.</translation>
 <translation id="8663480472502753423">Mantieni Chromium aggiornato</translation>
 <translation id="8685813584220679697">Accedi a questo sito e a Chromium.</translation>
@@ -135,7 +130,6 @@ Aspetti da considerare:
 
   • Se attivi la sincronizzazione, le metriche potrebbero includere anche informazioni relative agli URL che visiti.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Questo account e gli eventuali dati non salvati verranno rimossi da Chromium.</translation>
-<translation id="8857676124663337448">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani.</translation>
 <translation id="894437814105052438">Se esci, Chromium non sincronizzerà gli eventuali nuovi dati con il tuo Account Google. I dati sincronizzati in precedenza rimangono memorizzati nell'account.</translation>
 <translation id="9022552996538154597">Accedi a Chromium</translation>
 <translation id="9059693977935746710">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password per <ph name="EMAIL" /></translation>

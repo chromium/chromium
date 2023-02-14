@@ -1789,7 +1789,6 @@ Voor een URL-patroon wordt deze indeling gehanteerd (https://support.google.com/
 <translation id="2665422249821137126">Grote muisaanwijzer op het inlogscherm gebruiken</translation>
 <translation id="2667894101494585925">Ophalen van optimalisatiegids aanzetten</translation>
 <translation id="2669157090883237118">De aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie niet wijzigen.</translation>
-<translation id="2671763491132059785">Dit beleid is alleen beschikbaar via <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> en kan worden gebruikt om geautomatiseerde sleutelroulatie aan te zetten voor de <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /></translation>
 <translation id="2672012807430078509">Bepaalt of NTLM is aangezet als verificatieprotocol voor SMB-activeringen</translation>
 <translation id="2673363037046384711">De eindgebruiker kan de modus voor hoge efficiëntie aan- of uitzetten.</translation>
 <translation id="2678503605767349615">Vereiste clientcertificaten voor het hele apparaat</translation>
@@ -3750,7 +3749,6 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
 <translation id="4557134566541205630">URL van standaard zoekprovider voor nieuwe tabbladpagina</translation>
 <translation id="4558166110367609724">De servicevoorwaarden worden automatisch overgeslagen en de browser wordt geladen.</translation>
 <translation id="4559846397119102037">Gebruik van <ph name="LACROS_NAME" /> toestaan</translation>
-<translation id="4560035077317813825">Geautomatiseerde sleutelroulatie aanzetten voor de <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /></translation>
 <translation id="4561560385824323005">Gebruikers toestaan een vooraf ingestelde bureaubladindeling te laden</translation>
 <translation id="4561940244682063697">Niet toestaan dat sites gebruikers vragen om een videostream van hun scherm te delen</translation>
 <translation id="4562165737444703281">Toestaan dat gebruikers Crostini-poortdoorschakeling [aanzetten/configureren]</translation>

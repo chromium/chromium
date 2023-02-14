@@ -133,6 +133,7 @@
 <translation id="163517899691012366">Звукот на известувањата е исклучен кога е вклучено „Не вознемирувај“</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> уреди</translation>
 <translation id="1639239467298939599">Се вчитува</translation>
+<translation id="1647986356840967552">Претходна страница</translation>
 <translation id="1654477262762802994">Започнете гласовно барање</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
@@ -556,6 +557,7 @@
 <translation id="397105322502079400">Се пресметува…</translation>
 <translation id="397726367135689299">Полнењето на батеријата може да е нестабилно.</translation>
 <translation id="3977512764614765090">Батеријата е на <ph name="PERCENTAGE" /> % и се полни.</translation>
+<translation id="3984536049089846927">Следна страница</translation>
 <translation id="3986082989454912832">Одговори</translation>
 <translation id="3995138139523574647">USB-Ц уред (задна порта од десна страна)</translation>
 <translation id="40062176907008878">Ракописно</translation>
@@ -578,7 +580,6 @@
 <translation id="4123259114412175274">За да го отклучите вашиот Chromebook, уверете се дека Bluetooth на телефонот е вклучен</translation>
 <translation id="4125970834901680537">Не може да се стримуваат апликации во режим на таблет. Обидете се повторно во режим на лаптоп.</translation>
 <translation id="4129129681837227511">За да гледате известувања на заклучениот екран, отклучете за да ја промените поставката</translation>
-<translation id="4130035430755296270">Наместете го курсорот за повеќе опции за распоред</translation>
 <translation id="4136724716305260864">Вклучено до изгрејсонце</translation>
 <translation id="4146833061457621061">Пушти музика</translation>
 <translation id="4150201353443180367">Екран</translation>
@@ -719,7 +720,6 @@
 <translation id="481455355267255546">Следни настани</translation>
 <translation id="4831034276697007977">Дали сигурно сакате да ги исклучите автоматските кликови?</translation>
 <translation id="4849058404725798627">Нагласи го предметот со фокус на тастатурата</translation>
-<translation id="4855250849489639581">Повлечете надолу за повеќе опции за распоред</translation>
 <translation id="485592688953820832">Нема дејство (пауза)</translation>
 <translation id="485634149294284819">Влезете во менито за тастатура</translation>
 <translation id="4860284199500934869">Проверете ја мрежната врска за да се преземе <ph name="FILENAME" /></translation>

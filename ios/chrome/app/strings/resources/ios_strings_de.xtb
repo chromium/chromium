@@ -302,6 +302,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3181825792072797598">Synchronisierung aktivieren</translation>
 <translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
 <translation id="3184767182050912705">Mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
+<translation id="3190736958609431397">Nicht mehr beobachten</translation>
 <translation id="3214379938835224220">Du wurdest beim Zurücksetzen deines iPads abgemeldet. Tippe unten auf „Weiter“, um dich anzumelden.</translation>
 <translation id="3224641773458703735">Um Passwörter zu exportieren, musst du zuerst einen Passcode auf deinem Gerät einrichten.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -812,7 +813,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6869389390665537774">Du kannst die von dir besuchten Seiten ansehen oder sie aus dem Verlauf löschen</translation>
 <translation id="687135068089457384">Einstellungen anzeigen</translation>
 <translation id="6873263987691478642">Geteilte Ansicht</translation>
-<translation id="6873366418270195926">Du wirst benachrichtigt, wenn der Preis auf einer Website sinkt. Diese Seite ist in den <ph name="BEGIN_LINK" />Lesezeichen<ph name="END_LINK" /> gespeichert.</translation>
 <translation id="6882836635272038266">Standardschutz vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind.</translation>
 <translation id="6888009575607455378">Möchtest du die Änderungen wirklich verwerfen?</translation>
 <translation id="6896758677409633944">Kopieren</translation>
@@ -867,7 +867,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="734758817008927353">Optionen zum Speichern von Karten</translation>
 <translation id="7351537303876921605">Tippe im Kontextmenü auf „Link erstellen“</translation>
 <translation id="7353432112255316844">Identität bestätigen</translation>
-<translation id="7356359962760467032">Preisbeobachtung beenden</translation>
 <translation id="7383797227493018512">Leseliste</translation>
 <translation id="7398893703713203428">Link erstellen</translation>
 <translation id="7400418766976504921">URL</translation>

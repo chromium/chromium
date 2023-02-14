@@ -52,6 +52,7 @@
 <translation id="1100782917270858593">Botão Retomar percurso, prima Enter para retomar o percurso e ver atividade relevante no seu Histórico do Chrome</translation>
 <translation id="1101672080107056897">Ação com erro.</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
+<translation id="1104409666019087579">Alguns campos obrigatórios estão vazios. Preencha-os antes de guardar.</translation>
 <translation id="1108464073729874771">A3x4</translation>
 <translation id="1110994991967754504">Selecionar autorização para <ph name="PERMISSION_NAME" /></translation>
 <translation id="1112828774174131240">Antiguidades e artigos colecionáveis</translation>
@@ -892,7 +893,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3218181027817787318">Relativa</translation>
 <translation id="3223287115535306850">Ícone de iniciação da app</translation>
 <translation id="3223425961342298674">Acesso à localização não permitido</translation>
-<translation id="3225347164936328585">Aplausos</translation>
 <translation id="3225919329040284222">O servidor apresentou um certificado que não corresponde às expectativas existentes. Estas expectativas são incluídas para determinados Web sites de alta segurança para sua proteção.</translation>
 <translation id="3226128629678568754">Prima o botão de atualização para enviar novamente os dados necessários para carregar a página.</translation>
 <translation id="3226387218769101247">Miniaturas</translation>
@@ -949,7 +949,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3340978935015468852">definições</translation>
 <translation id="3342018947887487892">Posteriormente, um site que visitar pode pedir estas informações, quer sejam os tópicos de anúncios ou os anúncios sugeridos por sites que visitou.</translation>
 <translation id="3342366525167526994">Arte corporal</translation>
-<translation id="3345782426586609320">Olhos</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Alterar definições de proxy...</translation>
 <translation id="3359565626472459400">Casamento</translation>
@@ -1389,7 +1388,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4393632246160856858">Produtos para cuidados das unhas</translation>
 <translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4406896451731180161">resultados da pesquisa</translation>
-<translation id="4407755609041463909">Fogo</translation>
 <translation id="4408413947728134509">Cookies <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">Eletrónica para o consumidor</translation>
 <translation id="4412074349188076601">Esta configuração está marcada como instalável, mas não é fornecida nenhuma imagem para esta arquitetura e, por isso, não pode ser instalada.</translation>
@@ -1775,7 +1773,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5333022057423422993">O Chrome encontrou a palavra-passe que acabou de utilizar numa violação de dados. Para proteger as suas contas, recomendamos que verifique as suas palavras-passe guardadas.</translation>
 <translation id="5334013548165032829">Registos de sistema detalhados</translation>
 <translation id="5334145288572353250">Pretende guardar o endereço?</translation>
-<translation id="5335920952954443287">Coração a bater</translation>
 <translation id="5337569431717511221">Botão Definir o Chrome como o navegador predefinido: prima Enter para definir o Chrome como o navegador predefinido do sistema</translation>
 <translation id="5340250774223869109">A app está bloqueada</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
@@ -1783,7 +1780,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5344579389779391559">Esta página pode tentar cobrar-lhe dinheiro</translation>
 <translation id="5347645913823149105">Botão Personalizar tipos de letra no Chrome, prima Enter para personalizar os tipos de letra e os respetivos tamanhos no Chrome</translation>
 <translation id="5355557959165512791">Não pode visitar <ph name="SITE" /> neste momento, porque o certificado foi revogado. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
-<translation id="5356837363448394805">Corado</translation>
 <translation id="5357848622083956825">Arte visual e design</translation>
 <translation id="536296301121032821">Falha ao armazenar as definições da política</translation>
 <translation id="5363309033720083897">Porta de série permitida pelo seu administrador</translation>
@@ -2021,6 +2017,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5992691462791905444">Dobra em Z vertical com margem superior</translation>
 <translation id="5992805036496113940">Veja as informações usadas para lhe mostrar anúncios</translation>
 <translation id="5995727681868049093">Faça a gestão das suas informações, privacidade e segurança na Conta Google</translation>
+<translation id="5996887213716993070">O campo <ph name="FIELD" /> não pode ficar vazio</translation>
 <translation id="5997247540087773573">A palavra-passe que acabou de usar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de Palavras-passe da Google recomenda que a altere agora e verifique as suas palavras-passe guardadas.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6005765687956866568">As informações preenchidas automaticamente foram limpas do formulário</translation>
@@ -2114,7 +2111,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para personalizar as ferramentas de acessibilidade nas definições do Chrome</translation>
 <translation id="6229649258872345286">Viagens familiares</translation>
 <translation id="6232271601416750929">Beleza consciente</translation>
-<translation id="6233160458685643793">Sorridente</translation>
 <translation id="6234122620015464377">Cortar no fim de cada documento</translation>
 <translation id="6236290670123303279">Gerir definições</translation>
 <translation id="6240447795304464094">Logótipo do Google Pay</translation>
@@ -2182,7 +2178,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6391700400718590966">A página de credenciais de pagamento seguro sem correspondência com as credenciais está fechada</translation>
 <translation id="6393956493820063117">A ação de colar a partir de <ph name="ORIGIN_NAME" /> nesta localização está bloqueada por uma política do administrador.</translation>
 <translation id="6394852772105848029">Este site quer abrir a app <ph name="APP_NAME" /></translation>
-<translation id="6398277657359595425">Choro alto</translation>
 <translation id="6398765197997659313">Sair do modo de ecrã inteiro</translation>
 <translation id="6401136357288658127">Esta política foi descontinuada. Deverá optar por utilizar a política <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
@@ -2282,7 +2277,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6660413144148052430">localização</translation>
 <translation id="6662457027866368246">Primeiro rolo</translation>
 <translation id="666259744093848177">(x86_64 traduzido)</translation>
-<translation id="6663846344464066639">Mãos cruzadas</translation>
 <translation id="6665553082534466207">Perfuração tripla à direita</translation>
 <translation id="6668389483194953109">Foi encontrado o nome do tamanho do papel "personalizado", mas a propriedade "custom_size" está vazia ou é inválida.</translation>
 <translation id="6671697161687535275">Remover a sugestão do formulário do Chromium?</translation>
@@ -2383,7 +2377,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6939469646605424232">Dramas televisivos</translation>
 <translation id="6944692733090228304">Introduziu a palavra-passe num site que não é gerido pela <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger a conta, não reutilize a sua palavra-passe noutras aplicações e sites.</translation>
 <translation id="6945221475159498467">Selecionar</translation>
-<translation id="6946722113367118030">Pensativo</translation>
 <translation id="6948051842255602737">Fim do jogo. A sua pontuação é <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Para ver os métodos de recolha e os requisitos, selecione um endereço</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2705,7 +2698,6 @@ Detalhes adicionais:
 <translation id="765676359832457558">Ocultar definições avançadas...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
-<translation id="7659878911471462949">Lágrimas de alegria</translation>
 <translation id="766014026101194726">{0,plural, =1{O carregamento deste ficheiro foi bloqueado pela política do administrador}other{O carregamento de # ficheiros foi bloqueado pela política do administrador}}</translation>
 <translation id="7662298039739062396">Definição controlada por uma extensão</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -2763,6 +2755,7 @@ Detalhes adicionais:
 <translation id="7766518757692125295">Skirt</translation>
 <translation id="7773005668374414287">Na mesma ordem, com orientação para cima</translation>
 <translation id="7785790577395078482">este tablet</translation>
+<translation id="7786368602962652765">Um campo obrigatório está vazio. Preencha-o antes de guardar.</translation>
 <translation id="7790488044432570133">Os sites que visitar podem pedir informações ao Chrome para os ajudar a medir o desempenho dos respetivos anúncios. O Chrome permite que os sites recolham tipos de dados limitados, como a hora do dia em que um anúncio lhe foi apresentado.</translation>
 <translation id="7791011319128895129">Não lançada</translation>
 <translation id="7791196057686275387">Empacotar</translation>

@@ -302,6 +302,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3181825792072797598">Washa kipengele cha Kusawazisha</translation>
 <translation id="3181954750937456830">Kuvinjari Salama (hukulinda wewe na kifaa chako dhidi ya tovuti hatari)</translation>
 <translation id="3184767182050912705">Fungua Ukitumia <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="3190736958609431397">Tendua ufuatiliaji</translation>
 <translation id="3214379938835224220">Uliondolewa kwenye akaunti ikiwa sehemu ya kuweka upya mipangilio ya iPad yako. Gusa "endelea" hapo chini ili uingie katika akaunti.</translation>
 <translation id="3224641773458703735">Ili utume manenosiri, ni lazima kwanza uweke nambari ya siri kwenye kifaa chako.</translation>
 <translation id="3227137524299004712">Maikrofoni</translation>
@@ -812,7 +813,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6869389390665537774">Unaweza kuona kurasa ambazo umetembelea au uzifute kwenye historia yako</translation>
 <translation id="687135068089457384">Onyesha Mipangilio</translation>
 <translation id="6873263987691478642">Mwonekano wa Madirisha Mawili</translation>
-<translation id="6873366418270195926">Utapata arifa iwapo bei itapunguzwa kwenye tovuti yoyote. Ukurasa huu umehifadhiwa kwenye <ph name="BEGIN_LINK" />Alamisho<ph name="END_LINK" />.</translation>
 <translation id="6882836635272038266">Ulinzi wa kawaida dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari.</translation>
 <translation id="6888009575607455378">Je, una uhakika unataka kufuta mabadiliko uliyofanya?</translation>
 <translation id="6896758677409633944">Nakili</translation>
@@ -867,7 +867,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="734758817008927353">Chaguo za Kuhifadhi Kadi</translation>
 <translation id="7351537303876921605">Gusa Unda Kiungo kwenye menyu</translation>
 <translation id="7353432112255316844">Thibitisha Kwamba Ni Wewe</translation>
-<translation id="7356359962760467032">Acha kufuatilia bei</translation>
 <translation id="7383797227493018512">Orodha ya Kusoma</translation>
 <translation id="7398893703713203428">Weka Kiungo</translation>
 <translation id="7400418766976504921">URL</translation>

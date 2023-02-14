@@ -6,7 +6,6 @@
 <translation id="1185134272377778587">O Chromiumu</translation>
 <translation id="1257458525759135959">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chromium dodaja fotografijam</translation>
 <translation id="1289216811211435351">Preklop na Chromium</translation>
-<translation id="1352919863522755794">Googlov upravitelj gesel ni mogel preveriti vaših gesel. Poskusite preveriti internetno povezavo.</translation>
 <translation id="1361748954329991663">Chromium je zastarel. Če v trgovini <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ni na voljo nobene posodobitve, vaša naprava morda ne podpira več novih različic Chromiuma.</translation>
 <translation id="1431818719585918472">Naj Chromium zaklene anonimne zavihke.</translation>
 <translation id="1472013873724362412">Vaš račun ne deluje v Chromiumu. Obrnite se na skrbnika domene ali za prijavo uporabite običajen Google Račun.</translation>
@@ -36,7 +35,6 @@
 <translation id="2650312721222849884">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chromium, vklopite sinhronizacijo</translation>
 <translation id="2684230048001240293">Nastavite Chromium kot privzeto možnost sinhroniziranja zavihkov, gesel in podatkov za plačilo v vseh napravah.</translation>
 <translation id="2730884209570016437">Chromium ne more uporabljati fotoaparata, ker ga uporablja druga aplikacija</translation>
-<translation id="2767464022270041271">Ni shranjenih gesel. Googlov upravitelj gesel lahko preveri gesla, če jih shranite.</translation>
 <translation id="2915596697727466327">Chromium uporablja funkcijo Face ID za zagotavljanje pooblaščenega dostopa do vaših gesel.</translation>
 <translation id="2918709798697875261">Vaša organizacija zahteva, da niste prijavljeni v Chromium.</translation>
 <translation id="2942241131342758843">Uporabljajte Chromium kot privzeto možnost odpiranja povezav, iskanja v pripomočkih in samodejnega izpolnjevanja gesel v drugih aplikacijah.</translation>
@@ -59,7 +57,6 @@
 <translation id="4681781466797808448">Vklopite optični bralnik Chromium</translation>
 <translation id="4736424910885271643">Vaš račun upravlja domena <ph name="HOSTED_DOMAIN" />, zato bodo podatki v Chromiumu izbrisani iz te naprave.</translation>
 <translation id="4828317641996116749">Chromiumu ni uspelo preveriti vseh gesel. Poskusite znova pozneje.</translation>
-<translation id="4840404732697892756">Googlov upravitelj gesel lahko preveri vaša gesla, ko se prijavite z računom Google.</translation>
 <translation id="4985291216379576555">Chromium brez povezave ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="4996471330284142407">Opravite več s preprostim in varnim Chromiumom, ki je hitrejši kot kdaj prej.</translation>
 <translation id="4999538639245140991">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromiumu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
@@ -71,7 +68,6 @@
 <translation id="5521125884468363740">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chromium, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="5522297504975449419">Nekatere funkcije Chromiuma ne bodo več na voljo.</translation>
 <translation id="5573014823074921752">Nasvet za Chromium. Če želite več možnosti za zavihke, pridržite gumb za prikaz zavihkov v orodni vrstici na dnu ali vrhu zaslona.</translation>
-<translation id="5661521615548540542">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova pozneje.</translation>
 <translation id="5700709190537129682">Chromium ne more preveriti vaših gesel</translation>
 <translation id="5777187867430702742">Stran Chromiuma</translation>
 <translation id="5945387852661427312">Prijavljate se z računom, ki ga upravlja <ph name="DOMAIN" />, in nadzor nad podatki v Chromiumu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chromiuma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
@@ -121,7 +117,6 @@
 <translation id="8460301378281140593">V nastavitvah iPhona odprite »Password Options« (Možnosti gesla) in izberite »Chromium«</translation>
 <translation id="858114650497379505">Gesla, ki ste jih shranili v upravitelju gesel, lahko uporabite v drugih aplikacijah v iPhonu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
-<translation id="8603022514504485810">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri ali <ph name="BEGIN_LINK" />preverite gesla v računu Google.<ph name="END_LINK" /></translation>
 <translation id="865600487977764604">Skrbi za vašo varnost v Chromiumu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="8663480472502753423">Posodobitev Chromiuma</translation>
 <translation id="8685813584220679697">Prijavite se na tem spletnem mestu in v Chromium.</translation>
@@ -135,7 +130,6 @@ Kaj je treba upoštevati:
 
   • Če vklopite sinhronizacijo, bodo meritve vključevale tudi podatke o URL-jih, ki jih obiščete.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Ta račun in neshranjeni podatki bodo odstranjeni iz Chromiuma.</translation>
-<translation id="8857676124663337448">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri.</translation>
 <translation id="894437814105052438">Če se odjavite, Chromium ne bo več sinhroniziral novih podatkov v račun Google. Predhodno sinhronizirani podatki ostanejo v računu.</translation>
 <translation id="9022552996538154597">Prijava v Chromium</translation>
 <translation id="9059693977935746710">Tega gesla si ne bo treba zapomniti. Shranjeno bo v Upravitelju gesel za račun <ph name="EMAIL" />.</translation>

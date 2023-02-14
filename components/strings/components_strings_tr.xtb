@@ -892,7 +892,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3218181027817787318">Akraba</translation>
 <translation id="3223287115535306850">Uygulama yükleme simgesi</translation>
 <translation id="3223425961342298674">Konuma izin verilmiyor</translation>
-<translation id="3225347164936328585">El Çırpma</translation>
 <translation id="3225919329040284222">Sunucu, yerleşik beklentilerle eşleşmeyen bir sertifika sundu. Bu beklentiler sizi korumak amacıyla bazı yüksek güvenlikli web sitelerinde bulunur.</translation>
 <translation id="3226128629678568754">Sayfayı yüklemek üzere gereken verileri tekrar göndermek için yeniden yükle düğmesine basın.</translation>
 <translation id="3226387218769101247">Küçük resimler</translation>
@@ -949,7 +948,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3340978935015468852">ayarlar</translation>
 <translation id="3342018947887487892">Daha sonra ziyaret ettiğiniz bir site, reklam konularınız veya ziyaret ettiğiniz siteler tarafından önerilen reklamlar gibi bilgileri isteyebilir.</translation>
 <translation id="3342366525167526994">Beden sanatı</translation>
-<translation id="3345782426586609320">Gözler</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Proxy ayarlarını değiştir...</translation>
 <translation id="3359565626472459400">Evlilik</translation>
@@ -1389,7 +1387,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4393632246160856858">Tırnak bakım ürünleri</translation>
 <translation id="4406883609789734330">Canlı Altyazı</translation>
 <translation id="4406896451731180161">arama sonuçları</translation>
-<translation id="4407755609041463909">Ateş</translation>
 <translation id="4408413947728134509"><ph name="NUM_COOKIES" /> çerez</translation>
 <translation id="4411435778612100394">Tüketici elektroniği</translation>
 <translation id="4412074349188076601">Bu yapılandırma yüklenebilir olarak işaretlenmiş olsa da bu mimariyle ilgili resim sağlanmadığı için yüklenemez.</translation>
@@ -1775,7 +1772,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5333022057423422993">Chrome, az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığını belirledi. Hesaplarınızın güvenliğini sağlamak için kayıtlı şifrelerinizi kontrol etmenizi öneririz.</translation>
 <translation id="5334013548165032829">Ayrıntılı sistem günlükleri</translation>
 <translation id="5334145288572353250">Adres Kaydedilsin mi?</translation>
-<translation id="5335920952954443287">Atan Kalp</translation>
 <translation id="5337569431717511221">Chrome'u varsayılan tarayıcı olarak ayarlama düğmesi, Chrome'u sistemin varsayılan tarayıcısı olarak ayarlamak için Enter'a basın</translation>
 <translation id="5340250774223869109">Uygulama engellendi</translation>
 <translation id="534295439873310000">NFC cihazları</translation>
@@ -1783,7 +1779,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5344579389779391559">Bu sayfa sizden para almaya çalışabilir</translation>
 <translation id="5347645913823149105">Chrome'daki yazı tiplerini özelleştirin düğmesi, Chrome'daki yazı tipi boyutlarını ve yazı tiplerini özelleştirmek için Enter'a basın</translation>
 <translation id="5355557959165512791">Sertifikası iptal edildiği için <ph name="SITE" /> sitesini şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici olduğundan, bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
-<translation id="5356837363448394805">Şaşırmış</translation>
 <translation id="5357848622083956825">Görsel sanatlar ve tasarım</translation>
 <translation id="536296301121032821">Politika ayarları saklanamadı</translation>
 <translation id="5363309033720083897">Yöneticiniz tarafından izin verilen seri bağlantı noktası</translation>
@@ -2114,7 +2109,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="6229649258872345286">Ailece seyahat</translation>
 <translation id="6232271601416750929">Temiz içeriğe sahip güzellik ürünleri</translation>
-<translation id="6233160458685643793">Sırıtma</translation>
 <translation id="6234122620015464377">Her dokümandan sonra kırp</translation>
 <translation id="6236290670123303279">Ayarları Yönet</translation>
 <translation id="6240447795304464094">Google Pay logosu</translation>
@@ -2182,7 +2176,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6391700400718590966">Eşleşmeyen güvenli ödeme kimlik bilgisi sayfası kapatıldı</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> sitesinden bu konuma yapıştırma işlevi, yönetici politikası tarafından engellendi</translation>
 <translation id="6394852772105848029">Bu site, <ph name="APP_NAME" /> uygulamasını açmak istiyor</translation>
-<translation id="6398277657359595425">Yüksek Sesle Ağlama</translation>
 <translation id="6398765197997659313">Tam ekrandan çık</translation>
 <translation id="6401136357288658127">Bu politika kullanımdan kaldırılmıştır. Onun yerine <ph name="NEW_POLICY" /> politikasını kullanmalısınız.</translation>
 <translation id="6404511346730675251">Yer işaretini düzenle</translation>
@@ -2282,7 +2275,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6660413144148052430">konum</translation>
 <translation id="6662457027866368246">Birinci Rulo</translation>
 <translation id="666259744093848177">(x86_64 çevrilmiş)</translation>
-<translation id="6663846344464066639">Birleşen Eller</translation>
 <translation id="6665553082534466207">Sağda üçlü delik</translation>
 <translation id="6668389483194953109">"custom" adlı kağıt boyutu bulundu, ancak "custom_size" özelliği boş veya geçersiz.</translation>
 <translation id="6671697161687535275">Form önerisi Chromium'dan kaldırılsın mı?</translation>
@@ -2383,7 +2375,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6939469646605424232">TV dizileri</translation>
 <translation id="6944692733090228304">Şifrenizi <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> tarafından yönetilmeyen bir sitede girdiniz. Hesabınızı korumak için şifrenizi başka uygulama ve sitelerde tekrar kullanmayın.</translation>
 <translation id="6945221475159498467">Seç</translation>
-<translation id="6946722113367118030">Düşünme</translation>
 <translation id="6948051842255602737">Oyun bitti, <ph name="SCORE" /> puan aldınız.</translation>
 <translation id="6948701128805548767">Alım yöntemlerini ve gereksinimlerini görmek için bir adres seçin</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2575,6 +2566,7 @@ Ek ayrıntılar:
 <translation id="7388594495505979117">{0,plural, =1{Cihazınız 1 dakika içinde yeniden başlatılacak}other{Cihazınız # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="7390545607259442187">Kartı Onayla</translation>
 <translation id="7392089738299859607">Adresi Güncelle</translation>
+<translation id="739728382607845710">Ödeme işleyici simgesi</translation>
 <translation id="7399802613464275309">Güvenlik Kontrolü</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Bağlantıyı paylaşarak, QR kodu oluşturarak, yayınlayarak ve başka seçenekleri kullanarak bu sekmeyi paylaşın</translation>
@@ -2706,7 +2698,6 @@ Ek ayrıntılar:
 <translation id="765676359832457558">Gelişmiş ayarları gizle...</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7659327900411729175">Zarf Kaku 8</translation>
-<translation id="7659878911471462949">Mutluluk Gözyaşları</translation>
 <translation id="766014026101194726">{0,plural, =1{Bu dosyanın yüklenmesi yönetici politikası tarafından engellendi}other{# dosyanın yüklenmesi yönetici politikası tarafından engellendi}}</translation>
 <translation id="7662298039739062396">Ayar bir uzantının kontrolü altında</translation>
 <translation id="7663736086183791259">Sertifika <ph name="CERTIFICATE_VALIDITY" /></translation>

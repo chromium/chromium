@@ -6,7 +6,6 @@
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1257458525759135959">To save images, tap on settings to let Chromium add to your photos</translation>
 <translation id="1289216811211435351">Switch to Chromium</translation>
-<translation id="1352919863522755794">Google Password Manager couldn't check your passwords. Try checking your Internet connection.</translation>
 <translation id="1361748954329991663">Chromium is out of date. If no update is available in the <ph name="BEGIN_LINK" />app store<ph name="END_LINK" />, it's possible that your device doesn't support new versions of Chromium anymore.</translation>
 <translation id="1431818719585918472">Let Chromium lock your incognito tabs.</translation>
 <translation id="1472013873724362412">Your account does not work on Chromium. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
@@ -36,7 +35,6 @@
 <translation id="2650312721222849884">To see your tabs from wherever you use Chromium, turn on sync</translation>
 <translation id="2684230048001240293">Set Chromium as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
-<translation id="2767464022270041271">No saved passwords. Google Password Manager can check your passwords when you save them.</translation>
 <translation id="2915596697727466327">Chromium uses Face ID to ensure authorised access to your passwords.</translation>
 <translation id="2918709798697875261">Your organisation requires you to stay signed out of Chromium.</translation>
 <translation id="2942241131342758843">Use Chromium by default to open links, search from widgets and auto-fill passwords in other apps</translation>
@@ -59,7 +57,6 @@
 <translation id="4681781466797808448">Turn on Chromium scanner</translation>
 <translation id="4736424910885271643">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chromium data will be cleared from this device</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
-<translation id="4840404732697892756">Google Password Manager can check your passwords when you sign in with your Google Account.</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
 <translation id="4996471330284142407">Get more done with a simple, secure and faster-than-ever Chromium.</translation>
 <translation id="4999538639245140991">Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN" />, your Chromium data will be deleted from this device. Your data will remain in your Google Account.</translation>
@@ -71,7 +68,6 @@
 <translation id="5521125884468363740">To see your tabs from wherever you use Chromium, sign in and turn on sync</translation>
 <translation id="5522297504975449419">Some Chromium features won’t be available anymore.</translation>
 <translation id="5573014823074921752">Chromium tip. For more tab options, touch and hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.</translation>
-<translation id="5661521615548540542">Google Password Manager couldn't check all passwords. Try again later.</translation>
 <translation id="5700709190537129682">Chromium can't check your passwords</translation>
 <translation id="5777187867430702742">Chromium page</translation>
 <translation id="5945387852661427312">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chromium data. Your data will become permanently tied to this account. Signing out of Chromium will delete your data from this device, but it will remain stored in your Google Account.</translation>
@@ -121,7 +117,6 @@
 <translation id="8460301378281140593">From your iPhone's settings, open 'Password options' and select 'Chromium'</translation>
 <translation id="858114650497379505">You can use the passwords that you saved to Password Manager in other apps on your iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
-<translation id="8603022514504485810">Google Password Manager couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK" />check passwords in your Google Account.<ph name="END_LINK" /></translation>
 <translation id="865600487977764604">Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="8663480472502753423">Keep Chromium up to date</translation>
 <translation id="8685813584220679697">Sign in to this site and Chromium.</translation>
@@ -135,7 +130,6 @@ Things to consider:
 
   • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">This account and any unsaved data will be removed from Chromium.</translation>
-<translation id="8857676124663337448">Google Password Manager couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="894437814105052438">When you sign out, Chromium won't sync any new data to your Google Account. Data previously synced stays in the account.</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
 <translation id="9059693977935746710">You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL" /></translation>

@@ -302,6 +302,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3181825792072797598">Senkronizasyonu aç</translation>
 <translation id="3181954750937456830">Gizli Göz Atma (sizi ve cihazınızı tehlikelerden korur)</translation>
 <translation id="3184767182050912705">Kilidi <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ile Aç</translation>
+<translation id="3190736958609431397">Takibi bırak</translation>
 <translation id="3214379938835224220">iPad sıfırlama işleminin bir parçası olarak oturumunuz kapatıldı. Oturum açmak için aşağıdaki devam et seçeneğine dokunun.</translation>
 <translation id="3224641773458703735">Şifreleri dışa aktarmak için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -866,7 +867,6 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="734758817008927353">Kartı Kaydetme seçenekleri</translation>
 <translation id="7351537303876921605">İçerik Menüsünde Bağlantı Oluştur'a Dokunun</translation>
 <translation id="7353432112255316844">Kimliğinizi Doğrulayın</translation>
-<translation id="7356359962760467032">Fiyat takibini durdurun</translation>
 <translation id="7383797227493018512">Okuma Listesi</translation>
 <translation id="7398893703713203428">Bağlantı Oluştur</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -1114,6 +1114,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="952704832371081537">İptal</translation>
 <translation id="953008885340860025">Chrome Oturumu Kapatıldı</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> kanalını takip ediyorsunuz</translation>
+<translation id="980712131080209571">Y</translation>
 <translation id="981498610235328462">Kuruluşunuz yalnızca belirli hesaplarla oturum açmanıza izin vermektedir. İzin verilmeyen hesaplar gösterilmez.</translation>
 <translation id="984509647832111802">Senkronizasyon Çalışmıyor.</translation>
 <translation id="988141524645182168">Diğer Cihazlar</translation>

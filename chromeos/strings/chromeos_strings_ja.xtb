@@ -327,6 +327,7 @@
 <translation id="4110686435123617899">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択</translation>
 <translation id="4111761024568264522">USB タッチパッド</translation>
 <translation id="4117637339509843559">ダークモード</translation>
+<translation id="4130035430755296270">カーソルを合わせると他のレイアウト オプションが表示されます</translation>
 <translation id="4131410914670010031">白黒</translation>
 <translation id="4145784616224233563">HTTP ファイアウォール</translation>
 <translation id="4147897805161313378">Google フォト</translation>
@@ -415,6 +416,7 @@
 <translation id="484790837831576105">（Android）DNS の解決</translation>
 <translation id="4848429997038228357">実行中</translation>
 <translation id="4854586501323951986">デバイス内蔵タッチスクリーン</translation>
+<translation id="4855250849489639581">下にスワイプすると、他のレイアウト オプションが表示されます</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}other{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}}</translation>
 <translation id="4873827928179867585">認証アルゴリズム</translation>
 <translation id="4880328057631981605">アクセス ポイント名</translation>

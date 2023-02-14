@@ -892,7 +892,6 @@
 <translation id="3218181027817787318">יחסי</translation>
 <translation id="3223287115535306850">סמל הפעלת האפליקציה</translation>
 <translation id="3223425961342298674">אין הרשאת גישה למיקום</translation>
-<translation id="3225347164936328585">מחיאות כפיים</translation>
 <translation id="3225919329040284222">השרת הציג אישור שאינו תואם את הציפיות המובנות. ציפיות אלה נכללות עבור אתרי אינטרנט מסוימים בעלי אבטחה גבוהה כדי להגן עליך.</translation>
 <translation id="3226128629678568754">יש ללחוץ על לחצן הטעינה מחדש כדי לשלוח מחדש את הנתונים הדרושים לטעינת הדף.</translation>
 <translation id="3226387218769101247">תמונות ממוזערות</translation>
@@ -949,7 +948,6 @@
 <translation id="3340978935015468852">הגדרות</translation>
 <translation id="3342018947887487892">לאחר מכן, אתר שבחרת לבקר בו יכול לשלוח בקשה לקבלת המידע הזה – נושאי המודעות שלך או המודעות שהציעו האתרים שבהם ביקרת.</translation>
 <translation id="3342366525167526994">אומנות גוף</translation>
-<translation id="3345782426586609320">עיניים</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">‏שינוי הגדרות שרת Proxy...</translation>
 <translation id="3359565626472459400">נישואים</translation>
@@ -1389,7 +1387,6 @@
 <translation id="4393632246160856858">מוצרי טיפוח לציפורניים</translation>
 <translation id="4406883609789734330">כתוביות מיידיות</translation>
 <translation id="4406896451731180161">תוצאות חיפוש</translation>
-<translation id="4407755609041463909">אש</translation>
 <translation id="4408413947728134509">‏קובצי Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4411435778612100394">אלקטרוניקה בידורית</translation>
 <translation id="4412074349188076601">ההגדרה הזו מסומנת כניתנת להתקנה, אבל אין תמונה לארכיטקטורה הזו, לכן לא ניתן להתקין אותה.</translation>
@@ -1779,7 +1776,6 @@ Del</translation>
 <translation id="5333022057423422993">‏Chrome איתר את הסיסמה שבה השתמשת עכשיו בפרצה באבטחת מידע. כדי לאבטח את החשבונות שלך, מומלץ לבדוק את הסיסמאות השמורות.</translation>
 <translation id="5334013548165032829">יומני מערכת מפורטים</translation>
 <translation id="5334145288572353250">לשמור את הכתובת?</translation>
-<translation id="5335920952954443287">לב פועם</translation>
 <translation id="5337569431717511221">‏לחצן להגדרת Chrome כדפדפן ברירת המחדל, יש ללחוץ על Enter כדי להגדיר את Chrome כדפדפן ברירת המחדל של המערכת.</translation>
 <translation id="5340250774223869109">האפליקציה חסומה</translation>
 <translation id="534295439873310000">‏מכשירי NFC</translation>
@@ -1787,7 +1783,6 @@ Del</translation>
 <translation id="5344579389779391559">ייתכן שהדף הזה ינסה לדרוש ממך תשלום</translation>
 <translation id="5347645913823149105">‏הלחצן להתאמה אישית של הגופנים ב-Chrome, מקישים על Enter כדי להתאים אישית את הגופנים וגודל הטקסט ב-Chrome</translation>
 <translation id="5355557959165512791">נכון לעכשיו אי אפשר לבקר באתר <ph name="SITE" /> מאחר שהאישור שלו בוטל. שגיאות רשת ומתקפות הן בדרך כלל זמניות, כך שהדף הזה יחזור כנראה לפעול מאוחר יותר.</translation>
-<translation id="5356837363448394805">הסמקה</translation>
 <translation id="5357848622083956825">אומנות חזותית ועיצוב</translation>
 <translation id="536296301121032821">אחסון הגדרות המדיניות נכשל</translation>
 <translation id="5363309033720083897">יציאה טורית שאושרה על ידי מנהל המערכת</translation>
@@ -2119,7 +2114,6 @@ Del</translation>
 <translation id="6226163402662242066">‏<ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי להתאים אישית את כלי הנגישות בהגדרות Chrome</translation>
 <translation id="6229649258872345286">נסיעות משפחתיות</translation>
 <translation id="6232271601416750929">קוסמטיקה ידידותית לסביבה</translation>
-<translation id="6233160458685643793">חיוך</translation>
 <translation id="6234122620015464377">חיתוך אחרי כל מסמך</translation>
 <translation id="6236290670123303279">ניהול ההגדרות</translation>
 <translation id="6240447795304464094">‏הלוגו של Google Pay</translation>
@@ -2187,7 +2181,6 @@ Del</translation>
 <translation id="6391700400718590966">הגיליון 'אין התאמה בין פרטי הכניסה לפרטי הכניסה לתשלום מאובטח' סגור</translation>
 <translation id="6393956493820063117">אפשרות ההדבקה מ-<ph name="ORIGIN_NAME" /> במיקום הזה חסומה בהתאם למדיניות של מנהל המערכת</translation>
 <translation id="6394852772105848029">האתר הזה מבקש לפתוח את האפליקציה <ph name="APP_NAME" /></translation>
-<translation id="6398277657359595425">בכי רם</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="6401136357288658127">המדיניות הזו הוצאה משימוש. במקומה יש להשתמש במדיניות <ph name="NEW_POLICY" />.</translation>
 <translation id="6404511346730675251">עריכת סימנייה</translation>
@@ -2287,7 +2280,6 @@ Del</translation>
 <translation id="6660413144148052430">מיקום</translation>
 <translation id="6662457027866368246">גליל ראשון</translation>
 <translation id="666259744093848177">‏(x86_64 מתורגם)</translation>
-<translation id="6663846344464066639">ידיים שלובות</translation>
 <translation id="6665553082534466207">3 ניקובים בצד ימין</translation>
 <translation id="6668389483194953109">‏השם של גודל הנייר הוגדר כ-'custom', אבל המאפיין 'custom_size' ריק או לא חוקי.</translation>
 <translation id="6671697161687535275">‏האם להסיר מ-Chromium הצעות לטפסים?</translation>
@@ -2388,7 +2380,6 @@ Del</translation>
 <translation id="6939469646605424232">סדרות דרמה</translation>
 <translation id="6944692733090228304">הזנת את הסיסמה שלך באתר שלא מנוהל על ידי <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. כדי להגן על החשבון, מומלץ לא להשתמש בסיסמה שלך באפליקציות ובאתרים אחרים.</translation>
 <translation id="6945221475159498467">בחירה</translation>
-<translation id="6946722113367118030">הרהור</translation>
 <translation id="6948051842255602737">המשחק נגמר, הניקוד שלך הוא <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">עליך לבחור כתובת כדי לראות שיטות איסוף ודרישות</translation>
 <translation id="6948874830249067134">A1x3</translation>
@@ -2712,7 +2703,6 @@ Del</translation>
 <translation id="765676359832457558">הסתרת הגדרות מתקדמות...</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7659327900411729175">‏מעטפה – Kaku 8</translation>
-<translation id="7659878911471462949">דמעות של שמחה</translation>
 <translation id="766014026101194726">{0,plural, =1{בהתאם למדיניות האדמין, העלאת הקובץ הזה נחסמה}one{בהתאם למדיניות האדמין, ההעלאה של # קבצים נחסמה}two{בהתאם למדיניות האדמין, ההעלאה של # קבצים נחסמה}other{בהתאם למדיניות האדמין, ההעלאה של # קבצים נחסמה}}</translation>
 <translation id="7662298039739062396">ההגדרה נשלטת על-ידי תוסף</translation>
 <translation id="7663736086183791259">אישור <ph name="CERTIFICATE_VALIDITY" /></translation>

@@ -52,6 +52,7 @@
 <translation id="104710386808485638">Linux पुनः सुरु गर्ने हो?</translation>
 <translation id="1047431265488717055">लिंक पाठ प्रतिलिपि गर्नुहोस्</translation>
 <translation id="1048286738600630630">प्रदर्शनहरू</translation>
+<translation id="1048770690598418849">तपाईं अहिले यो कार्य स्किप गर्न सक्नुहुन्छ र तपाईंले सेटअप गर्ने प्रक्रिया पूरा गरिसकेपछि हामी स्वतः पुनः प्रयास गर्ने छौँ</translation>
 <translation id="1048986595386481879">गतिशील रूपमा छुट्याइएको</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गरिँदै}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गरिँदै}}</translation>
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
@@ -1620,6 +1621,7 @@
 <translation id="2410754283952462441">कुनै खाता छान्नुहोस्</translation>
 <translation id="241082044617551207">अज्ञात प्लगइन</translation>
 <translation id="2410940059315936967">तपाईंले खोल्ने साइटले अन्य साइटका फोटो, विज्ञापन र टेक्स्टलगायतका सामग्री इम्बेड गर्न सक्छ। यी अन्य साइटहरूले सेट गरेका कुकीहरूलाई तेस्रो पक्षीय कुकीहरू भनिन्छ।</translation>
+<translation id="2411666601450687801">यो डिभाइसमा कुनै पनि भर्चुअल मेसिन प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2416435988630956212">किबोर्डका फङ्सन कुञ्जीहरू</translation>
 <translation id="2418307627282545839">स्क्रिनलाई चम्किलो र हेरौँ हेरौँ लाग्ने बनाउनुहोस्</translation>
@@ -1881,6 +1883,7 @@
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
 <translation id="265390580714150011">फाँट मान</translation>
 <translation id="2654553774144920065">छपाइका लागि अनुरोध</translation>
+<translation id="265748523151262387">आफ्नो फोनसँग कनेक्ट गरिराख्नुहोस्</translation>
 <translation id="2657612187216250073">पोइन्टरसम्बन्धी एस्सेसिबिलिटी सेटिङ</translation>
 <translation id="2658941648214598230">मूल सामग्री देखाउने हो?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />डिभाइसअनुसार सुविधा फरक हुन्छन्</translation>
@@ -5296,6 +5299,7 @@
 <translation id="5801051031414037185">फोन सेटअप गर्नुहोस्</translation>
 <translation id="5801568494490449797">प्राथमिकताहरू</translation>
 <translation id="5804241973901381774">अनुमतिहरू</translation>
+<translation id="5804259315582798390">लोकल डेटा रिकभर गर्ने सुविधा अन गर्न सकिएन</translation>
 <translation id="5805268472388605531">उच्चारणका चिन्ह र विशेष वर्णहरू हेर्न किबोर्डका कीहरू थिचिराख्नुहोस्</translation>
 <translation id="5805697420284793859">विन्डोको प्रबन्धक</translation>
 <translation id="5806447147478173900">देखाइएका साइटहरूले प्रयोग गरेको कुल भण्डारण: <ph name="TOTAL_USAGE" /></translation>
@@ -5836,7 +5840,6 @@
 <translation id="6295158916970320988">सबै साइटहरू</translation>
 <translation id="6295855836753816081">सुरक्षित गर्दै...</translation>
 <translation id="6298962879096096191">Android का अनुप्रयोगहरूको स्थापना गर्न Google Play को प्रयोग गर्नुहोस्</translation>
-<translation id="6300125580697461004">इनर्जी सेभर मोडका बारेमा प्रतिक्रिया पठाउनुहोस्</translation>
 <translation id="6300177430812514606">डेटा पठाउने वा प्राप्त गर्ने कार्य पूरा गर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="630065524203833229">बा&amp;हिर निस्कनुहोस्</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> स्वतः कन्फिगर गर्न सकिएन। कृपया प्रिन्टरका उन्नत विवरणहरू तोक्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -6041,7 +6044,6 @@
 <translation id="6491376743066338510">अनुमति दिन सकिएन</translation>
 <translation id="6494327278868541139">परिष्कृत सुरक्षासम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="6494445798847293442">प्रमाणीकरण अधिकारी होइन</translation>
-<translation id="6497548114956205206">इनर्जी सेभर मोडका बारेमा थप जान्नुहोस्</translation>
 <translation id="6497784818439587832">स्क्रिनमा भएका वस्तुहरूलाई अझ ठुलो वा सानो बनाउन डिस्प्लेको आकार परिवर्तन गर्नुहोस्</translation>
 <translation id="6497789971060331894">माउस विपरीत दिशामा स्क्रोल गर्ने कार्य</translation>
 <translation id="6498249116389603658">&amp;तपाईँका सबै भाषाहरू</translation>
@@ -6678,6 +6680,7 @@
 <translation id="7047059339731138197">पृष्ठभूमि छनौट गर्नुहोस्</translation>
 <translation id="7049293980323620022">फाइल राख्ने हो?</translation>
 <translation id="7050037487872780845">हटस्पटसम्बन्धी अवैध कन्फिगुरेसन</translation>
+<translation id="7051551856857948729">IBAN नम्बर लुकाइयोस्</translation>
 <translation id="7052237160939977163">प्रदर्शन ट्रेस लगत पठाउनुहोस्</translation>
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
 <translation id="7055152154916055070">रिडिरेक्ट नामक सुविधामाथि रोक लगाइयो:</translation>
@@ -7658,7 +7661,6 @@
 <translation id="7955177647836564772">Smart Lock अन छ र तपाईंको फोन अनलक गरिएको छ भने तपाईंले कुनै पनि पासवर्ड वा PIN हालिराख्नु पर्दैन</translation>
 <translation id="7956373551960864128">तपाईंले सुरक्षित गर्नुभएका प्रिन्टरहरू</translation>
 <translation id="7957074856830851026">क्रम सङ्ख्या वा एसेट ID जस्ता यन्त्रसम्बन्धी जानकारी हेर्नुहोस्</translation>
-<translation id="7957186326898555886">मेमोरी सेभर मोडका बारेमा प्रतिक्रिया पठाउनुहोस्</translation>
 <translation id="7959074893852789871">त्यस फाइलमा धेरै प्रमाणपत्रहरू सम्मिलित थिए:</translation>
 <translation id="7959665254555683862">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
@@ -8087,7 +8089,6 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{हालसालै थुप्रै सूचनाहरू पठाएको <ph name="BEGIN_BOLD" />१ साइट<ph name="END_BOLD" /> को समीक्षा गर्नुहोस्}other{हालसालै थुप्रै सूचनाहरू पठाएका <ph name="BEGIN_BOLD" />{NUM_SITES} वटा साइट<ph name="END_BOLD" /> को समीक्षा गर्नुहोस्}}</translation>
 <translation id="8342221978608739536">हेरेकै छुइनँ</translation>
-<translation id="8342399870062010251">मेमोरी सेभर मोडका बारेमा थप जान्नुहोस्</translation>
 <translation id="8342861492835240085">सङ्ग्रह चयन गर्नुहोस्</translation>
 <translation id="8345848587667658367">तपाईं अब आफ्नो फोनका हालसालैका फोटो, मिडिया, सूचना तथा एपहरू हेर्न सक्नुहुन्छ</translation>
 <translation id="8347227221149377169">प्रिन्टसम्बन्धी कार्यहरू</translation>
@@ -8400,7 +8401,6 @@
 <translation id="8645354835496065562">सेन्सरलाई पहुँच राख्ने अनुमति दिन जारी राख्नुहोस्</translation>
 <translation id="8645920082661222035">जोखिमपूर्ण घटनाहरू घट्नुअघि नै तिनको पूर्वानुमान गर्छ र तपाईंलाई त्यसबारे चेतावनी दिन्छ</translation>
 <translation id="8646209145740351125">सिंक गर्ने सुविधा असक्षम पार्नुहोस्</translation>
-<translation id="8646340610303779673">PPD फाइल देखाउन सकिएन।</translation>
 <translation id="864637694230589560">साइटहरूले सामान्यतया सनसनीपूर्ण समाचार वा च्याट सन्देशका बारेमा तपाईंलाई जानकारी गराउन सूचना पठाउँछन्</translation>
 <translation id="8646467750715887511">तपाईंले पेजहरू खोलेपछि मात्र ती पेज लोड हुन्छन्।</translation>
 <translation id="8647385344110255847">तपाईंले अनुमति दिनुभयो भने तपाईंका बच्चा Google Play प्रयोग गरी एपहरू इन्स्टल गर्न सक्छन्</translation>
@@ -8545,6 +8545,7 @@
 <translation id="8767621466733104912">सबै प्रयोगकर्ताहरूको Chrome स्वतः अपडेट गर्नुहोस्</translation>
 <translation id="8770406935328356739">विस्तारको मूल निर्देशिका</translation>
 <translation id="8771300903067484968">सुरुको पृष्ठको पृष्ठभूमिलाई डिफल्ट पृष्ठभूमिका रूपमा पुनः सेट गरिएको छ।</translation>
+<translation id="8773280816776735812">IBAN नम्बर देखाइयोस्</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> सेभ गर्नुहोस्</translation>
 <translation id="8774379074441005279">पुनर्स्थापना गर्ने कार्य पुष्टि गर्नुहोस्</translation>
 <translation id="8774934320277480003">शीर्ष सीमान्त</translation>

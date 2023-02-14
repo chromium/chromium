@@ -6,7 +6,6 @@
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1257458525759135959">Resimleri kaydetmek için Ayarlar'a dokunup Chromium'un resimlerinize eklemesine izin verin</translation>
 <translation id="1289216811211435351">Chromium'a geçin</translation>
-<translation id="1352919863522755794">Google Şifre Yöneticisi, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="1361748954329991663">Chromium sürümü eski. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />'da güncelleme yoksa cihazınız artık Chromium'un yeni sürümlerini desteklemiyor olabilir.</translation>
 <translation id="1431818719585918472">Chromium'un Gizli sekmelerinizi kapatmasına izin verin.</translation>
 <translation id="1472013873724362412">Hesabınız Chromium'da kullanılamıyor. Lütfen alan adı yöneticinizle iletişim kurun veya oturum açmak için normal bir Google Hesabı kullanın.</translation>
@@ -36,7 +35,6 @@
 <translation id="2650312721222849884">Chromium kullandığınız her yerde sekmelerinizi görmek için senkronizasyonu açın.</translation>
 <translation id="2684230048001240293">Tüm cihazlarınızdaki sekmelerinizi, parolalarınızı ve ödeme bilgilerinizi senkronize etmek için Chromium'u varsayılan olarak ayarlayın</translation>
 <translation id="2730884209570016437">Kameranız başka bir uygulama tarafından kullanıldığından Chromium, kameranızı kullanamıyor.</translation>
-<translation id="2767464022270041271">Kaydedilen şifre yok. Google Şifre Yöneticisi, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="2915596697727466327">Chromium, şifrelerinize yetkili erişim sağlanması için Face ID kullanır.</translation>
 <translation id="2918709798697875261">Kuruluşunuz, Chromium'da oturum kapatmış olarak kalmanızı zorunlu tutuyor.</translation>
 <translation id="2942241131342758843">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chromium'u kullanın</translation>
@@ -59,7 +57,6 @@
 <translation id="4681781466797808448">Chromium tarayıcıyı açın</translation>
 <translation id="4736424910885271643">Hesabınız, <ph name="HOSTED_DOMAIN" /> tarafından yönetildiği için Chromium verileri bu cihazdan silinecek</translation>
 <translation id="4828317641996116749">Chromium, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>
-<translation id="4840404732697892756">Google Şifre Yöneticisi, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir.</translation>
 <translation id="4985291216379576555">Çevrimdışı, Chromium güncellemeleri denetleyemiyor</translation>
 <translation id="4996471330284142407">Basit, güvenli ve her zamankinden daha hızlı Chromium ile daha fazlasını yapın.</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> tarafından yönetilen bir hesabın oturumunu kapattığınız için Chromium verileriniz bu cihazdan silinecek. Ancak verileriniz Google Hesabınızda kalmaya devam edecek.</translation>
@@ -71,7 +68,6 @@
 <translation id="5521125884468363740">Chromium kullandığınız her yerde sekmelerinizi görmek için oturum açın ve senkronizasyonu etkinleştirin</translation>
 <translation id="5522297504975449419">Bazı Chromium özellikleri artık kullanılamayacak.</translation>
 <translation id="5573014823074921752">Chromium için ipucu. Sekmelerle ilgili daha fazla seçenek görmek için ekranınızın altında veya üstünde görünen araç çubuğunda Sekmeleri Göster düğmesine dokunup basılı tutun.</translation>
-<translation id="5661521615548540542">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="5700709190537129682">Chromium, şifrelerinizi kontrol edemiyor</translation>
 <translation id="5777187867430702742">Chromium Sayfası</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> tarafından yönetilen bir hesapla oturum açıyor ve yöneticiye tüm Chromium verileriniz üzerinde denetim olanağı veriyorsunuz. Verileriniz kalıcı olarak bu hesaba bağlanacaktır. Chromium'da oturumu kapattığınızda verileriniz bu cihazdan silinir ancak Google Hesabınızda kalmaya devam eder.</translation>
@@ -121,7 +117,6 @@
 <translation id="8460301378281140593">iPhone'unuzun Ayarlar bölümünde "Şifre Seçenekleri"ni açıp "Chromium"u seçin</translation>
 <translation id="858114650497379505">Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPhone'unuzdaki diğer uygulamalarda kullanabilirsiniz.</translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
-<translation id="8603022514504485810">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Chromium'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarında güvenliğinizi artırmak için kullanılabilir.</translation>
 <translation id="8663480472502753423">Chromium'u güncel tutun</translation>
 <translation id="8685813584220679697">Bu sitede ve Chromium'da oturum açın.</translation>
@@ -135,7 +130,6 @@ Dikkate alınması gereken noktalar:
 
   • Senkronizasyonu açarsanız ziyaret ettiğiniz URL'ler hakkındaki bilgiler de metriklerde yer alabilir.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Bu hesap ve kaydedilmemiş tüm veriler Chromium'dan kaldırılacak.</translation>
-<translation id="8857676124663337448">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
 <translation id="894437814105052438">Oturumu kapattığınızda Chromium, hiçbir yeni veriyi Google Hesabınızla senkronize etmez. Önceden senkronize edilmiş veriler hesapta kalır.</translation>
 <translation id="9022552996538154597">Chromium'da oturum aç</translation>
 <translation id="9059693977935746710">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Şifre Yöneticisi'ne kaydedilir</translation>

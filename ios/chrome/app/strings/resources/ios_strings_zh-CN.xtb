@@ -302,6 +302,7 @@
 <translation id="3181825792072797598">开启同步功能</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
 <translation id="3184767182050912705">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁</translation>
+<translation id="3190736958609431397">取消跟踪</translation>
 <translation id="3214379938835224220">您在 iPad 重置过程中退出了帐号。点按下方的“继续”即可登录。</translation>
 <translation id="3224641773458703735">要想导出密码，您必须先在设备上设置屏幕锁定。</translation>
 <translation id="3227137524299004712">麦克风</translation>
@@ -812,7 +813,6 @@
 <translation id="6869389390665537774">您可以查看自己访问过的网页，也可将它们从历史记录中清除</translation>
 <translation id="687135068089457384">显示设置</translation>
 <translation id="6873263987691478642">拆分视图</translation>
-<translation id="6873366418270195926">当所跟踪的任何网站上的商品降价时，您会收到提醒。该网页已保存在<ph name="BEGIN_LINK" />书签<ph name="END_LINK" />中。</translation>
 <translation id="6882836635272038266">针对已知危险网站、下载内容和扩展程序提供标准保护。</translation>
 <translation id="6888009575607455378">确定要舍弃您所做的更改吗？</translation>
 <translation id="6896758677409633944">复制</translation>
@@ -867,7 +867,6 @@
 <translation id="734758817008927353">卡片信息保存选项</translation>
 <translation id="7351537303876921605">点按上下文菜单中的“创建链接”</translation>
 <translation id="7353432112255316844">请验证是您本人在操作</translation>
-<translation id="7356359962760467032">停止跟踪价格</translation>
 <translation id="7383797227493018512">阅读清单</translation>
 <translation id="7398893703713203428">创建链接</translation>
 <translation id="7400418766976504921">网址</translation>
@@ -965,6 +964,7 @@
 <translation id="806745655614357130">单独保存我的数据</translation>
 <translation id="8073670137947914548">已下载完毕</translation>
 <translation id="8073872304774253879">改善搜索和浏览体验</translation>
+<translation id="8077675488769462025">闲置标签页</translation>
 <translation id="8079602123447022758">此设置处于受管状态，点按两次可了解详情</translation>
 <translation id="8080028325999236607">关闭所有标签页</translation>
 <translation id="8084285576995584326">控制您的 Google 帐号数据</translation>
@@ -999,6 +999,7 @@
 <translation id="8343993175958086504">备份您的资料，以便在任意设备上使用。</translation>
 <translation id="8378714024927312812">由贵组织管理</translation>
 <translation id="8386068868580335421">重置</translation>
+<translation id="8393889347136007944"><ph name="THRESHOLD" /> 天未用过的标签页</translation>
 <translation id="8407669440184693619">未找到任何用于此网站的密码</translation>
 <translation id="842017693807136194">所用登录身份</translation>
 <translation id="8427613705947111202">菜单 → 设置 → 密码</translation>

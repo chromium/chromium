@@ -5845,7 +5845,6 @@
 <translation id="6295158916970320988">سبھی سائٹس</translation>
 <translation id="6295855836753816081">محفوظ کیا جا رہا ہے…</translation>
 <translation id="6298962879096096191">‏Android ایپس کو انسٹال کرنے کیلئے Google Play استعمال کریں</translation>
-<translation id="6300125580697461004">انرجی سیور کے بارے میں تاثرات بھیجیں</translation>
 <translation id="6300177430812514606">ڈیٹا بھیجنے یا موصول کرنے کو مکمل کرنے کی اجازت نہیں ہے</translation>
 <translation id="630065524203833229">&amp;خارج ہوں</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> کو خودکار طور پر کنفیگر نہیں کیا جا سکا۔ براہ کرم پرنٹر کی جدید ترین تفصیلات بیان کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
@@ -6050,7 +6049,6 @@
 <translation id="6491376743066338510">اجازت دہندگی ناکام ہو گئی</translation>
 <translation id="6494327278868541139">بہتر کردہ تحفظ کی تفصیلات دکھائیں</translation>
 <translation id="6494445798847293442">سرٹیفیکیشن ادارہ نہیں ہے</translation>
-<translation id="6497548114956205206">اپنے انرجی سیور کے بارے میں مزید جانیں</translation>
 <translation id="6497784818439587832">اپنی اسکرین پر موجود آئٹمز کو چھوٹا یا بڑا کرنے کے لیے ڈسپلے کا سائز تبدیل کریں</translation>
 <translation id="6497789971060331894">ماؤس کی معکوس اسکرولنگ</translation>
 <translation id="6498249116389603658">&amp;آپ کی سبھی زبانیں</translation>
@@ -7668,7 +7666,6 @@
 <translation id="7955177647836564772">‏Smart Lock کے آن ہونے اور آپ کے فون کے غیر مقفل ہونے پر آپ کو پاس ورڈ یا PIN درج کرنے کی ضرورت نہیں ہے</translation>
 <translation id="7956373551960864128">آپ کے محفوظ کردہ پرنٹرز</translation>
 <translation id="7957074856830851026">‏آلہ کی معلومات دیکھیں، جیسے اس کا نمبر شمار یا اثاثہ ID</translation>
-<translation id="7957186326898555886">میموری سیور کے بارے میں تاثرات بھیجیں</translation>
 <translation id="7959074893852789871">فائل میں متعدد سرٹیفیکیٹس شامل ہیں، ان میں سے کچھ کو درآمد نہیں کیا گیا:</translation>
 <translation id="7959665254555683862">نیا پوشیدگی ٹیب</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>
@@ -8097,7 +8094,6 @@
 <translation id="8340547030807793004"><ph name="DEVICE" /> کے لیے مزید کارروائیاں</translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{<ph name="BEGIN_BOLD" />1 سائٹ<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}other{<ph name="BEGIN_BOLD" />{NUM_SITES} سائٹس<ph name="END_BOLD" /> کا جائزہ لیں جس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں}}</translation>
 <translation id="8342221978608739536">کوشش نہیں کی</translation>
-<translation id="8342399870062010251">میموری سیور کے بارے میں مزید جانیں</translation>
 <translation id="8342861492835240085">ایک مجموعہ منتخب کریں</translation>
 <translation id="8345848587667658367">اب آپ اپنے فون کی حالیہ تصاویر، میڈیا، اطلاعات اور ایپس دیکھ سکتے ہیں</translation>
 <translation id="8347227221149377169">پرنٹ جابز</translation>
@@ -8117,6 +8113,7 @@
 <translation id="8358912028636606457">ٹیب آڈیو کاسٹ کرنا اس آلہ پر تعاون یافتہ نہیں ہے۔</translation>
 <translation id="835951711479681002">‏اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="8360140320636871023">اپنی ڈسپلے تھیم کو ذاتی نوعیت کا بنائیں</translation>
+<translation id="8360267485906769442">تاثرات بھیجنے کا بٹن</translation>
 <translation id="8363095875018065315">مستحکم</translation>
 <translation id="8363142353806532503">مائیکروفون مسدود ہے</translation>
 <translation id="8366396658833131068">آپ کے نیٹ ورک کی کنیکٹوٹی بحال ہوگئی ہے۔ براہ کرم اپنی کیوسک ایپ شروع کرنے کیلئے ایک مختلف نیٹ ورک منتخب کریں یا ذیل میں 'جاری رکھیں' بٹن دبائیں۔</translation>
@@ -8394,6 +8391,7 @@
 <translation id="8634348081024879304">‏اب آپ Google Pay کے ساتھ اپنا ورچوئل کارڈ استعمال نہیں کر سکیں گے۔ <ph name="BEGIN_LINK" />ورچوئل کارڈز کے بارے میں جانیں<ph name="END_LINK" /></translation>
 <translation id="8635628933471165173">دوبارہ لوڈ ہو رہی ہے...</translation>
 <translation id="8636284842992792762">ایکسٹینشنز کا آغاز ہو رہا ہے...</translation>
+<translation id="8636323803535540285">یہاں تیزی سے پہنچنے کے لیے، <ph name="BRAND" /> میں ایک شارٹ کٹ شامل کریں</translation>
 <translation id="8636500887554457830">سائٹس کو پاپ اپس بھیجنے یا ری ڈائریکٹس کا استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="8637688295594795546">سسٹم اپ ڈیٹ دستیاب ہے۔ ڈاؤن لوڈ کرنے کی تیاری ہو رہی ہے…</translation>
 <translation id="8639047128869322042">نقصان دہ سافٹ ویئر چیک کیا جا رہا ہے...</translation>
@@ -8408,7 +8406,6 @@
 <translation id="8645354835496065562">سینسر تک رسائی کی اجازت جاری رکھیں</translation>
 <translation id="8645920082661222035">خطرناک ایونٹس ہونے سے پہلے ان کی پیشین گوئی کرتی ہے اور آپ کو ان کے بارے میں متنبہ کرتی ہے</translation>
 <translation id="8646209145740351125">سِنک غیر فعال کریں</translation>
-<translation id="8646340610303779673">‏PPD بازیافت کرنے سے قاصر۔</translation>
 <translation id="864637694230589560">سائٹس عام طور پر اہم خبروں یا چیٹ پیغامات کے بارے میں آپ کو مطلع کرنے کے لیے اطلاعات بھیجتی ہیں</translation>
 <translation id="8646467750715887511">صفحات آپ کے کھولنے کے بعد ہی لوڈ ہوتے ہیں۔</translation>
 <translation id="8647385344110255847">‏آپ کی اجازت سے، آپ کا بچہ ایپس انسٹال کرنے کے لیے Google Play کا استعمال کر سکتا ہے</translation>
