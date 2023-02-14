@@ -18,6 +18,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -115,15 +116,63 @@ class PromotionalTabsEnabledPolicyWelcomeTest
       const PromotionalTabsEnabledPolicyWelcomeTest&) = delete;
 
  protected:
-  PromotionalTabsEnabledPolicyWelcomeTest() = default;
+  PromotionalTabsEnabledPolicyWelcomeTest() {
+    scoped_feature_list_.InitAndEnableFeature(kForYouFre);
+  }
   ~PromotionalTabsEnabledPolicyWelcomeTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kForceFirstRun);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeTest, RunTest) {
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ASSERT_GE(tab_strip->count(), 1);
+  const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
+
+  // Only the NTP should show, regardless of the policy state.
+  EXPECT_EQ(tab_strip->count(), 1);
+  if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL) {
+    EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PromotionalTabsEnabledPolicyWelcomeTest,
+    ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
+                      PolicyTest::BooleanPolicy::kFalse,
+                      PolicyTest::BooleanPolicy::kTrue));
+
+// Tests that the PromotionalTabsEnabled policy properly suppresses the welcome
+// page for browser first-runs.
+class PromotionalTabsEnabledPolicyWelcomeNoFreTest
+    : public PromotionalTabsEnabledPolicyTest {
+ public:
+  PromotionalTabsEnabledPolicyWelcomeNoFreTest(
+      const PromotionalTabsEnabledPolicyWelcomeNoFreTest&) = delete;
+  PromotionalTabsEnabledPolicyWelcomeNoFreTest& operator=(
+      const PromotionalTabsEnabledPolicyWelcomeNoFreTest&) = delete;
+
+ protected:
+  PromotionalTabsEnabledPolicyWelcomeNoFreTest() {
+    scoped_feature_list_.InitAndDisableFeature(kForYouFre);
+  }
+  ~PromotionalTabsEnabledPolicyWelcomeNoFreTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kForceFirstRun);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeNoFreTest, RunTest) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_GE(tab_strip->count(), 1);
   const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
@@ -147,7 +196,7 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeTest, RunTest) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    PromotionalTabsEnabledPolicyWelcomeTest,
+    PromotionalTabsEnabledPolicyWelcomeNoFreTest,
     ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
                       PolicyTest::BooleanPolicy::kFalse,
                       PolicyTest::BooleanPolicy::kTrue));

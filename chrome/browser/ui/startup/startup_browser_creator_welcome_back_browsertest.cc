@@ -15,10 +15,12 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -36,9 +38,17 @@ namespace {
 typedef absl::optional<policy::PolicyLevel> PolicyVariant;
 }
 
-class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
+class StartupBrowserCreatorWelcomeBackTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
  protected:
-  StartupBrowserCreatorWelcomeBackTest() = default;
+  StartupBrowserCreatorWelcomeBackTest() {
+    if (UsesForYouFre()) {
+      scoped_feature_list_.InitAndEnableFeature(kForYouFre);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(kForYouFre);
+    }
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
@@ -96,7 +106,13 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
     scoped_keep_alive_.reset();
   }
 
+  // Returns `true` when the "ForYouFre" feature is enabled, which does not use
+  // chrome://welcome, but instead runs the first run experience in a dedicated
+  // window.
+  bool UsesForYouFre() const { return GetParam(); }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> scoped_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> scoped_profile_keep_alive_;
@@ -104,23 +120,35 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorWelcomeBackTest,
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorWelcomeBackTest,
                        WelcomeBackStandardNoPolicy) {
   ASSERT_NO_FATAL_FAILURE(StartBrowser(PolicyVariant()));
-  ExpectUrlInBrowserAtPosition(StartupTabProviderImpl::GetWelcomePageUrl(false),
-                               0);
+  if (UsesForYouFre()) {
+    ExpectUrlInBrowserAtPosition(GURL(chrome::kChromeUINewTabURL), 0);
+  } else {
+    ExpectUrlInBrowserAtPosition(
+        StartupTabProviderImpl::GetWelcomePageUrl(false), 0);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorWelcomeBackTest,
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorWelcomeBackTest,
                        WelcomeBackStandardMandatoryPolicy) {
   ASSERT_NO_FATAL_FAILURE(
       StartBrowser(PolicyVariant(policy::POLICY_LEVEL_MANDATORY)));
   ExpectUrlInBrowserAtPosition(GURL("http://managed.site.com/"), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorWelcomeBackTest,
+IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorWelcomeBackTest,
                        WelcomeBackStandardRecommendedPolicy) {
   ASSERT_NO_FATAL_FAILURE(
       StartBrowser(PolicyVariant(policy::POLICY_LEVEL_RECOMMENDED)));
   ExpectUrlInBrowserAtPosition(GURL("http://managed.site.com/"), 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         StartupBrowserCreatorWelcomeBackTest,
+                         testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "UsingForYouFre"
+                                             : "NotUsingForYouFre";
+                         });
