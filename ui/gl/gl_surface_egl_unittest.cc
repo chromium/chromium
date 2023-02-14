@@ -32,7 +32,7 @@ namespace {
 class GLSurfaceEGLTest : public testing::Test {
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
     display_ = GLSurfaceTestSupport::InitializeOneOffImplementation(
         GLImplementationParts(kGLImplementationEGLANGLE), true);
 #else
