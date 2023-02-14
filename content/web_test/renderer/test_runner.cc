@@ -2938,10 +2938,7 @@ void TestRunner::SetMainWindowAndTestConfiguration(
   if (!test_config_.protocol_mode)
     SetShouldDumpAsLayout(true);
 
-  if (test_config_.wpt_print_mode) {
-    SetPrinting();
-    SetPrintingSize(kWPTPrintWidth, kWPTPrintHeight);
-  }
+  bool wpt_printing_test = test_config_.wpt_print_mode;
 
   // For http/tests/loading/, which is served via httpd and becomes /loading/.
   if (spec.find("/loading/") != std::string::npos)
@@ -2952,10 +2949,14 @@ void TestRunner::SetMainWindowAndTestConfiguration(
 
     if (spec.find("/print/") != std::string::npos ||
         spec.find("-print.html") != std::string::npos) {
-      // This is a WPT print test so set default format for convenience.
-      SetPrinting();
-      SetPrintingSize(kWPTPrintWidth, kWPTPrintHeight);
+      wpt_printing_test = true;
     }
+  }
+
+  if (wpt_printing_test) {
+    SetPrinting();
+    view->GetSettings()->SetShouldPrintBackgrounds(true);
+    SetPrintingSize(kWPTPrintWidth, kWPTPrintHeight);
   }
 
   view->GetSettings()->SetV8CacheOptions(
