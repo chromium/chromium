@@ -27,15 +27,15 @@ class EventLoggerTestClient : public OfflineEventLogger::Client {
 }  // namespace
 
 TEST(OfflineEventLoggerTest, SettingClientEnableLogging) {
-  OfflineEventLogger logger;
   EventLoggerTestClient client;
+  OfflineEventLogger logger;
   logger.SetClient(&client);
   EXPECT_TRUE(logger.GetIsLogging());
 }
 
 TEST(OfflineEventLoggerTest, SettingClientAndLog) {
-  OfflineEventLogger logger;
   EventLoggerTestClient client;
+  OfflineEventLogger logger;
   logger.SetClient(&client);
 
   logger.SetIsLogging(true);
