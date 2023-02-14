@@ -33,7 +33,8 @@ public class DeveloperSettings extends PreferenceFragmentCompat {
         // Chrome version in Settings>About multiple times.
         if (sIsEnabledForTests != null) return sIsEnabledForTests;
 
-        if (VersionConstants.CHANNEL <= Channel.DEV) return true;
+        //禁用开发者选项
+        //if (VersionConstants.CHANNEL <= Channel.DEV) return true;
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.SETTINGS_DEVELOPER_ENABLED, false);
     }
