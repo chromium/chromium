@@ -176,7 +176,6 @@ class NearbyShareControllerImpl;
 class NearbyShareDelegate;
 class NightLightControllerImpl;
 class OcclusionTrackerPauser;
-class OverlayEventFilter;
 class OverviewController;
 class ParentAccessController;
 class PartialMagnifierController;
@@ -589,7 +588,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   NightLightControllerImpl* night_light_controller() {
     return night_light_controller_.get();
   }
-  OverlayEventFilter* overlay_filter() { return overlay_filter_.get(); }
   ParentAccessController* parent_access_controller() {
     return parent_access_controller_.get();
   }
@@ -1010,10 +1008,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<SystemModalContainerEventFilter> modality_filter_;
   std::unique_ptr<EventClientImpl> event_client_;
   std::unique_ptr<EventTransformationHandler> event_transformation_handler_;
-
-  // An event filter that pre-handles key events while the partial
-  // screenshot UI or the keyboard overlay is active.
-  std::unique_ptr<OverlayEventFilter> overlay_filter_;
 
   // An event filter which handles swiping back from left side of the window.
   std::unique_ptr<BackGestureEventHandler> back_gesture_event_handler_;

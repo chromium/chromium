@@ -185,7 +185,6 @@
 #include "ash/wm/multi_display/persistent_window_controller.h"
 #include "ash/wm/multitask_menu_nudge_delegate_ash.h"
 #include "ash/wm/native_cursor_manager_ash.h"
-#include "ash/wm/overlay_event_filter.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -716,9 +715,6 @@ Shell::~Shell() {
 
   RemovePreTargetHandler(speech_feedback_handler_.get());
   speech_feedback_handler_.reset();
-
-  RemovePreTargetHandler(overlay_filter_.get());
-  overlay_filter_.reset();
 
   RemovePreTargetHandler(control_v_histogram_recorder_.get());
   RemovePreTargetHandler(accelerator_tracker_.get());
@@ -1330,9 +1326,6 @@ void Shell::Init(
   // ui::UserActivityDetector passes events to observers, so let them get
   // rewritten first.
   user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
-
-  overlay_filter_ = std::make_unique<OverlayEventFilter>();
-  AddPreTargetHandler(overlay_filter_.get());
 
   control_v_histogram_recorder_ = std::make_unique<ControlVHistogramRecorder>();
   AddPreTargetHandler(control_v_histogram_recorder_.get());
