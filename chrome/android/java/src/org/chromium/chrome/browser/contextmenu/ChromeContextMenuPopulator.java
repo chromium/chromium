@@ -719,8 +719,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_direct_share_image) {
             recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_IMAGE);
             mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.ORIGINAL, (Uri uri) -> {
-                ShareHelper.shareImage(
-                        getWindow(), getProfile(), ShareHelper.getLastShareComponentName(), uri);
+                ShareHelper.shareImage(getWindow(), getProfile(),
+                        ShareHelper.getLastShareComponentName(), uri, null);
             });
         } else if (itemId == R.id.contextmenu_open_in_chrome) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_CHROME);
@@ -802,7 +802,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.ORIGINAL, (Uri imageUri) -> {
             if (!mShareDelegateSupplier.get().isSharingHubEnabled()) {
                 ShareHelper.shareImage(getWindow(),
-                        Profile.fromWebContents(mItemDelegate.getWebContents()), null, imageUri);
+                        Profile.fromWebContents(mItemDelegate.getWebContents()), null, imageUri,
+                        mParams.getPageUrl().getSpec());
                 return;
             }
             ContentResolver contentResolver =
@@ -1031,7 +1032,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      */
     private static Pair<Drawable, CharSequence> createRecentShareAppInfo(boolean isLink) {
         Intent shareIntent = isLink ? ShareHelper.getShareLinkAppCompatibilityIntent()
-                                    : ShareHelper.getShareImageIntent(null);
+                                    : ShareHelper.getShareImageAppCompatibilityIntent();
         return ShareHelper.getShareableIconAndName(shareIntent);
     }
 

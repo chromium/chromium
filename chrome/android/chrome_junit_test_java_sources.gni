@@ -240,6 +240,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/settings/SettingsActivityUnitTest.java",
   "junit/src/org/chromium/chrome/browser/share/LensUtilsTest.java",
   "junit/src/org/chromium/chrome/browser/share/ShareButtonControllerUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/share/ShareHelperUnitTest.java",
   "junit/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/signin/SigninManagerImplTest.java",
