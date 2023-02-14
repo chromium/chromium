@@ -276,7 +276,7 @@ TEST_P(PingManagerTest, SendPing) {
     component.diff_error_category_ = ErrorCategory::kService;
     component.diff_error_code_ = 20;
     component.diff_extra_code1_ = -10;
-    component.crx_diffurls_.emplace_back("http://host/path");
+    component.crx_diffurls_.push_back(GURL("http://host/path"));
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
@@ -524,8 +524,7 @@ TEST_P(PingManagerTest, SendPing) {
       interceptor->Reset();
 
       ASSERT_TRUE(root);
-      EXPECT_EQ(is_managed,
-                root->GetDict().FindBoolByDottedPath("request.domainjoined"));
+      EXPECT_EQ(is_managed, root->FindBoolPath("request.domainjoined"));
     }
   }
   config_->SetIsMachineExternallyManaged(absl::nullopt);

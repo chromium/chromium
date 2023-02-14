@@ -619,7 +619,7 @@ bool Component::CanDoBackgroundDownload() const {
          update_context_->config->EnabledBackgroundDownloader();
 }
 
-void Component::AppendEvent(base::Value::Dict event) {
+void Component::AppendEvent(base::Value event) {
   events_.push_back(std::move(event));
 }
 
@@ -650,125 +650,112 @@ base::TimeDelta Component::GetUpdateDuration() const {
   return std::min(update_cost, max_update_delay);
 }
 
-base::Value::Dict Component::MakeEventUpdateComplete() const {
-  base::Value::Dict event;
-  event.Set("eventtype", update_context_->is_install ? 2 : 3);
-  event.Set("eventresult",
-            static_cast<int>(state() == ComponentState::kUpdated));
-  if (error_category() != ErrorCategory::kNone) {
-    event.Set("errorcat", static_cast<int>(error_category()));
-  }
-  if (error_code()) {
-    event.Set("errorcode", error_code());
-  }
-  if (extra_code1()) {
-    event.Set("extracode1", extra_code1());
-  }
+base::Value Component::MakeEventUpdateComplete() const {
+  base::Value event(base::Value::Type::DICT);
+  event.SetKey("eventtype", base::Value(update_context_->is_install ? 2 : 3));
+  event.SetKey(
+      "eventresult",
+      base::Value(static_cast<int>(state() == ComponentState::kUpdated)));
+  if (error_category() != ErrorCategory::kNone)
+    event.SetKey("errorcat", base::Value(static_cast<int>(error_category())));
+  if (error_code())
+    event.SetKey("errorcode", base::Value(error_code()));
+  if (extra_code1())
+    event.SetKey("extracode1", base::Value(extra_code1()));
   if (HasDiffUpdate(*this)) {
     const int diffresult = static_cast<int>(!diff_update_failed());
-    event.Set("diffresult", diffresult);
+    event.SetKey("diffresult", base::Value(diffresult));
   }
   if (diff_error_category() != ErrorCategory::kNone) {
     const int differrorcat = static_cast<int>(diff_error_category());
-    event.Set("differrorcat", differrorcat);
+    event.SetKey("differrorcat", base::Value(differrorcat));
   }
-  if (diff_error_code()) {
-    event.Set("differrorcode", diff_error_code());
-  }
-  if (diff_extra_code1()) {
-    event.Set("diffextracode1", diff_extra_code1());
-  }
-  if (!previous_fp().empty()) {
-    event.Set("previousfp", previous_fp());
-  }
-  if (!next_fp().empty()) {
-    event.Set("nextfp", next_fp());
-  }
+  if (diff_error_code())
+    event.SetKey("differrorcode", base::Value(diff_error_code()));
+  if (diff_extra_code1())
+    event.SetKey("diffextracode1", base::Value(diff_extra_code1()));
+  if (!previous_fp().empty())
+    event.SetKey("previousfp", base::Value(previous_fp()));
+  if (!next_fp().empty())
+    event.SetKey("nextfp", base::Value(next_fp()));
   DCHECK(previous_version().IsValid());
-  event.Set("previousversion", previous_version().GetString());
-  if (next_version().IsValid()) {
-    event.Set("nextversion", next_version().GetString());
-  }
+  event.SetKey("previousversion", base::Value(previous_version().GetString()));
+  if (next_version().IsValid())
+    event.SetKey("nextversion", base::Value(next_version().GetString()));
   return event;
 }
 
-base::Value::Dict Component::MakeEventDownloadMetrics(
+base::Value Component::MakeEventDownloadMetrics(
     const CrxDownloader::DownloadMetrics& dm) const {
-  base::Value::Dict event;
-  event.Set("eventtype", 14);
-  event.Set("eventresult", static_cast<int>(dm.error == 0));
-  event.Set("downloader", DownloaderToString(dm.downloader));
-  if (dm.error) {
-    event.Set("errorcode", dm.error);
-  }
-  event.Set("url", dm.url.spec());
+  base::Value event(base::Value::Type::DICT);
+  event.SetKey("eventtype", base::Value(14));
+  event.SetKey("eventresult", base::Value(static_cast<int>(dm.error == 0)));
+  event.SetKey("downloader", base::Value(DownloaderToString(dm.downloader)));
+  if (dm.error)
+    event.SetKey("errorcode", base::Value(dm.error));
+  event.SetKey("url", base::Value(dm.url.spec()));
 
   // -1 means that the  byte counts are not known.
-  if (dm.total_bytes != -1 && dm.total_bytes < kProtocolMaxInt) {
-    event.Set("total", static_cast<double>(dm.total_bytes));
-  }
+  if (dm.total_bytes != -1 && dm.total_bytes < kProtocolMaxInt)
+    event.SetKey("total", base::Value(static_cast<double>(dm.total_bytes)));
   if (dm.downloaded_bytes != -1 && dm.total_bytes < kProtocolMaxInt) {
-    event.Set("downloaded", static_cast<double>(dm.downloaded_bytes));
+    event.SetKey("downloaded",
+                 base::Value(static_cast<double>(dm.downloaded_bytes)));
   }
   if (dm.download_time_ms && dm.total_bytes < kProtocolMaxInt) {
-    event.Set("download_time_ms", static_cast<double>(dm.download_time_ms));
+    event.SetKey("download_time_ms",
+                 base::Value(static_cast<double>(dm.download_time_ms)));
   }
   DCHECK(previous_version().IsValid());
-  event.Set("previousversion", previous_version().GetString());
-  if (next_version().IsValid()) {
-    event.Set("nextversion", next_version().GetString());
-  }
+  event.SetKey("previousversion", base::Value(previous_version().GetString()));
+  if (next_version().IsValid())
+    event.SetKey("nextversion", base::Value(next_version().GetString()));
   return event;
 }
 
-base::Value::Dict Component::MakeEventUninstalled() const {
+base::Value Component::MakeEventUninstalled() const {
   DCHECK(state() == ComponentState::kUninstalled);
-  base::Value::Dict event;
-  event.Set("eventtype", 4);
-  event.Set("eventresult", 1);
-  if (extra_code1()) {
-    event.Set("extracode1", extra_code1());
-  }
+  base::Value event(base::Value::Type::DICT);
+  event.SetKey("eventtype", base::Value(4));
+  event.SetKey("eventresult", base::Value(1));
+  if (extra_code1())
+    event.SetKey("extracode1", base::Value(extra_code1()));
   DCHECK(previous_version().IsValid());
-  event.Set("previousversion", previous_version().GetString());
+  event.SetKey("previousversion", base::Value(previous_version().GetString()));
   DCHECK(next_version().IsValid());
-  event.Set("nextversion", next_version().GetString());
+  event.SetKey("nextversion", base::Value(next_version().GetString()));
   return event;
 }
 
-base::Value::Dict Component::MakeEventRegistration() const {
+base::Value Component::MakeEventRegistration() const {
   DCHECK(state() == ComponentState::kRegistration);
-  base::Value::Dict event;
-  event.Set("eventtype", 2);
-  event.Set("eventresult", 1);
-  if (error_code()) {
-    event.Set("errorcode", error_code());
-  }
-  if (extra_code1()) {
-    event.Set("extracode1", extra_code1());
-  }
+  base::Value event(base::Value::Type::DICT);
+  event.SetKey("eventtype", base::Value(2));
+  event.SetKey("eventresult", base::Value(1));
+  if (error_code())
+    event.SetKey("errorcode", base::Value(error_code()));
+  if (extra_code1())
+    event.SetKey("extracode1", base::Value(extra_code1()));
   DCHECK(next_version().IsValid());
-  event.Set("nextversion", next_version().GetString());
+  event.SetKey("nextversion", base::Value(next_version().GetString()));
   return event;
 }
 
-base::Value::Dict Component::MakeEventActionRun(bool succeeded,
-                                                int error_code,
-                                                int extra_code1) const {
-  base::Value::Dict event;
-  event.Set("eventtype", 42);
-  event.Set("eventresult", static_cast<int>(succeeded));
-  if (error_code) {
-    event.Set("errorcode", error_code);
-  }
-  if (extra_code1) {
-    event.Set("extracode1", extra_code1);
-  }
+base::Value Component::MakeEventActionRun(bool succeeded,
+                                          int error_code,
+                                          int extra_code1) const {
+  base::Value event(base::Value::Type::DICT);
+  event.SetKey("eventtype", base::Value(42));
+  event.SetKey("eventresult", base::Value(static_cast<int>(succeeded)));
+  if (error_code)
+    event.SetKey("errorcode", base::Value(error_code));
+  if (extra_code1)
+    event.SetKey("extracode1", base::Value(extra_code1));
   return event;
 }
 
-std::vector<base::Value::Dict> Component::GetEvents() const {
-  std::vector<base::Value::Dict> events;
+std::vector<base::Value> Component::GetEvents() const {
+  std::vector<base::Value> events;
   for (const auto& event : events_)
     events.push_back(event.Clone());
   return events;

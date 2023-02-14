@@ -1114,11 +1114,10 @@ TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
     const auto& request = post_interceptor->GetRequestBody(0);
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
-    const auto& app =
-        (*root->GetDict().FindListByDottedPath("request.app"))[0].GetDict();
-    EXPECT_STREQ(kUpdateItemId, app.FindString("appid")->c_str());
-    EXPECT_TRUE(app.FindDict("updatecheck"));
-    EXPECT_FALSE(app.FindByDottedPath("updatecheck.sameversionupdate"));
+    const auto& app = root->FindPath("request.app")->GetList()[0];
+    EXPECT_STREQ(kUpdateItemId, app.FindStringPath("appid")->c_str());
+    EXPECT_TRUE(app.FindDictKey("updatecheck"));
+    EXPECT_FALSE(app.FindPath("updatecheck.sameversionupdate"));
   }
   {
     // Tests that `same_version_update_allowed` is serialized when its
@@ -1138,10 +1137,9 @@ TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
     const auto& request = post_interceptor->GetRequestBody(0);
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
-    const auto& app =
-        (*root->GetDict().FindListByDottedPath("request.app"))[0].GetDict();
-    EXPECT_STREQ(kUpdateItemId, app.FindString("appid")->c_str());
-    EXPECT_EQ(app.FindBoolByDottedPath("updatecheck.sameversionupdate"), true);
+    const auto& app = root->FindPath("request.app")->GetList()[0];
+    EXPECT_STREQ(kUpdateItemId, app.FindStringPath("appid")->c_str());
+    EXPECT_EQ(app.FindBoolPath("updatecheck.sameversionupdate"), true);
   }
 }
 
@@ -1267,7 +1265,7 @@ TEST_P(UpdateCheckerTest, ParseErrorProtocolVersionMismatch) {
 }
 
 // The update response contains a status |error-unknownApplication| for the
-// app. The response is successfully parsed and a result is extracted to
+// app. The response is succesfully parsed and a result is extracted to
 // indicate this status.
 TEST_P(UpdateCheckerTest, ParseErrorAppStatusErrorUnknownApplication) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(

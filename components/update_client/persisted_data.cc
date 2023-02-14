@@ -35,44 +35,39 @@ PersistedData::~PersistedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-const base::Value::Dict* PersistedData::GetAppKey(const std::string& id) const {
+const base::Value* PersistedData::GetAppKey(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_) {
+  if (!pref_service_)
     return nullptr;
-  }
   const base::Value& dict = pref_service_->GetValue(kPersistedDataPreference);
-  if (!dict.is_dict()) {
+  if (dict.type() != base::Value::Type::DICT) {
     return nullptr;
   }
-  const base::Value::Dict* apps = dict.GetDict().FindDict("apps");
-  if (!apps) {
+  const base::Value* apps = dict.FindDictKey("apps");
+  if (!apps)
     return nullptr;
-  }
-  return apps->FindDict(base::ToLowerASCII(id));
+  return apps->FindDictKey(base::ToLowerASCII(id));
 }
 
 int PersistedData::GetInt(const std::string& id,
                           const std::string& key,
                           int fallback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value::Dict* app_key = GetAppKey(id);
-  if (!app_key) {
+  const base::Value* app_key = GetAppKey(id);
+  if (!app_key)
     return fallback;
-  }
-  return app_key->FindInt(key).value_or(fallback);
+  return app_key->FindIntKey(key).value_or(fallback);
 }
 
 std::string PersistedData::GetString(const std::string& id,
                                      const std::string& key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value::Dict* app_key = GetAppKey(id);
-  if (!app_key) {
+  const base::Value* app_key = GetAppKey(id);
+  if (!app_key)
     return {};
-  }
-  const std::string* value = app_key->FindString(key);
-  if (!value) {
+  const std::string* value = app_key->FindStringKey(key);
+  if (!value)
     return {};
-  }
   return *value;
 }
 

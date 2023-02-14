@@ -125,7 +125,7 @@ class PersistedData {
 
  private:
   // Returns nullptr if the app key does not exist.
-  const base::Value::Dict* GetAppKey(const std::string& id) const;
+  const base::Value* GetAppKey(const std::string& id) const;
 
   // Returns an existing or newly created app key under a root pref.
   base::Value::Dict* GetOrCreateAppKey(const std::string& id,

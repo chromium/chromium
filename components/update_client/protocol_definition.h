@@ -150,7 +150,7 @@ struct App {
   absl::optional<Ping> ping;
 
   // Progress/result pings.
-  absl::optional<std::vector<base::Value::Dict>> events;
+  absl::optional<std::vector<base::Value>> events;
 };
 
 struct Request {
