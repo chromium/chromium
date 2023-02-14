@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -25,6 +26,14 @@ using MethodDelegate =
     base::RepeatingCallback<void(dbus::MethodCall*,
                                  base::WeakPtr<T>,
                                  dbus::ExportedObject::ResponseSender)>;
+
+// A wrapper that runs the barrier closure |callback|.
+void OnMethodExported(base::RepeatingClosure callback,
+                      const std::string& interface,
+                      const std::string& method,
+                      bool success) {
+  callback.Run();
+}
 }
 
 // Private class helper.
@@ -180,7 +189,8 @@ class ExportedCallbackManager {
   //
   // |exported_callback| weak pointer has to be valid at time of invocation.
   bool ExportCallback(const dbus::ObjectPath& callback_path,
-                      base::WeakPtr<T> exported_callback) {
+                      base::WeakPtr<T> exported_callback,
+                      base::OnceCallback<void()> on_exported_callback) {
     CHECK(exported_callback) << "Callback ptr is not valid";
     CHECK(bus_) << "Called without Init";
 
@@ -201,6 +211,9 @@ class ExportedCallbackManager {
       return false;
     }
 
+    auto export_complete =
+        base::BarrierClosure(methods_.size(), std::move(on_exported_callback));
+
     // Catch all registered methods with OnMethodCall and it will handle the
     // forwarding to the callback.
     for (auto const& [name, method] : methods_) {
@@ -210,7 +223,7 @@ class ExportedCallbackManager {
           base::BindRepeating(&ExportedCallbackManager::OnMethodCall,
                               weak_ptr_factory_.GetWeakPtr(), name, method,
                               exported_callback),
-          base::DoNothing());
+          base::BindOnce(&OnMethodExported, export_complete));
     }
 
     return true;

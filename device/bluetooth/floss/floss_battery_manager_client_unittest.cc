@@ -17,6 +17,19 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+using testing::DoAll;
+
+void FakeExportMethod(
+    const std::string& interface_name,
+    const std::string& method_name,
+    const dbus::ExportedObject::MethodCallCallback& method_call_callback,
+    dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+  std::move(on_exported_callback)
+      .Run(interface_name, method_name, /*success=*/true);
+}
+}  // namespace
+
 namespace floss {
 
 class FlossBatteryManagerClientTest : public testing::Test,
@@ -98,6 +111,9 @@ class FlossBatteryManagerClientTest : public testing::Test,
 
   // Test defined here to access private members.
   void TestInitializesCorrectly() {
+    EXPECT_CALL(*exported_callbacks_.get(),
+                ExportMethod(testing::_, testing::_, testing::_, testing::_))
+        .WillRepeatedly(&FakeExportMethod);
     EXPECT_CALL(*battery_manager_object_proxy_.get(),
                 DoCallMethodWithErrorResponse)
         .Times(testing::AnyNumber());
@@ -126,7 +142,9 @@ class FlossBatteryManagerClientTest : public testing::Test,
                 ExportMethod(battery_manager::kCallbackInterface,
                              battery_manager::kOnBatteryInfoUpdated, testing::_,
                              testing::_))
-        .WillOnce(testing::SaveArg<2>(&method_handler_on_battery_info_updated));
+        .WillOnce(
+            DoAll(testing::SaveArg<2>(&method_handler_on_battery_info_updated),
+                  &FakeExportMethod));
     client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_);
     ASSERT_TRUE(!!method_handler_on_battery_info_updated);
 

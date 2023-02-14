@@ -589,19 +589,20 @@ void FlossGattManagerClient::Init(dbus::Bus* bus,
   // Export callbacks.
   if (!gatt_client_exported_callback_manager_.ExportCallback(
           dbus::ObjectPath(kExportedCallbacksPath),
-          weak_ptr_factory_.GetWeakPtr())) {
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&FlossGattManagerClient::RegisterClient,
+                         weak_ptr_factory_.GetWeakPtr()))) {
     LOG(ERROR) << "Unable to successfully export FlossGattClientObserver.";
     return;
   }
   if (!gatt_server_exported_callback_manager_.ExportCallback(
           dbus::ObjectPath(kExportedCallbacksPath),
-          weak_ptr_factory_.GetWeakPtr())) {
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&FlossGattManagerClient::RegisterServer,
+                         weak_ptr_factory_.GetWeakPtr()))) {
     LOG(ERROR) << "Unable to successfully export FlossGattServerObserver.";
     return;
   }
-
-  RegisterClient();
-  RegisterServer();
 }
 
 void FlossGattManagerClient::RegisterClient() {

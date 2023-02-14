@@ -130,12 +130,16 @@ void FlossBatteryManagerClient::Init(dbus::Bus* bus,
 
   if (!exported_callback_manager_.ExportCallback(
           dbus::ObjectPath(kExportedCallbacksPath),
-          weak_ptr_factory_.GetWeakPtr())) {
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&FlossBatteryManagerClient::OnMethodsExported,
+                         weak_ptr_factory_.GetWeakPtr()))) {
     LOG(ERROR)
         << "Unable to successfully export FlossBatteryManagerClientObserver.";
     return;
   }
+}
 
+void FlossBatteryManagerClient::OnMethodsExported() {
   CallBatteryManagerMethod<uint32_t>(
       base::BindOnce(&FlossBatteryManagerClient::BatteryCallbackRegistered,
                      weak_ptr_factory_.GetWeakPtr()),

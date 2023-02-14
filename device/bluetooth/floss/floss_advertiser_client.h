@@ -196,6 +196,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdvertiserClient
       ErrorCallback error_callback);
 
  protected:
+  // Registers callback to daemon after all callback methods are exported.
+  void OnMethodsExported();
+
   // Completes the method call for RegisterAdvertiserCallback.
   void CompleteRegisterCallback(dbus::Response* response,
                                 dbus::ErrorResponse* error_response);

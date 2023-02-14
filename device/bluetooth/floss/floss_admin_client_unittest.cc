@@ -32,6 +32,7 @@ namespace floss {
 namespace {
 
 using testing::_;
+using testing::DoAll;
 
 const uint32_t kTestCallbackId = 1000;
 constexpr size_t kUUIDSize = 16;
@@ -44,6 +45,15 @@ const std::vector<device::BluetoothUUID> kTestUuidStr = {
     device::BluetoothUUID("00010203-0405-0607-0809-0a0b0c0d0e0f"),
     device::BluetoothUUID("0f0e0d0c-0b0a-0908-0706-050403020100"),
 };
+
+void FakeExportMethod(
+    const std::string& interface_name,
+    const std::string& method_name,
+    const dbus::ExportedObject::MethodCallCallback& method_call_callback,
+    dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+  std::move(on_exported_callback)
+      .Run(interface_name, method_name, /*success=*/true);
+}
 
 }  // namespace
 
@@ -98,19 +108,19 @@ class FlossAdminClientTest : public testing::Test,
         method_handler_on_device_policy_effect_changed;
     EXPECT_CALL(*exported_callback.get(),
                 ExportMethod(admin::kCallbackInterface,
-                             admin::kOnDevicePolicyEffectChanged, testing::_,
-                             testing::_))
-        .WillOnce(testing::SaveArg<2>(
-            &method_handler_on_device_policy_effect_changed));
+                             admin::kOnDevicePolicyEffectChanged, _, _))
+        .WillOnce(DoAll(testing::SaveArg<2>(
+                            &method_handler_on_device_policy_effect_changed),
+                        &FakeExportMethod));
 
     dbus::ExportedObject::MethodCallCallback
         method_handler_on_service_allowlist_changed;
-    EXPECT_CALL(
-        *exported_callback.get(),
-        ExportMethod(admin::kCallbackInterface,
-                     admin::kOnServiceAllowlistChanged, testing::_, testing::_))
-        .WillOnce(
-            testing::SaveArg<2>(&method_handler_on_service_allowlist_changed));
+    EXPECT_CALL(*exported_callback.get(),
+                ExportMethod(admin::kCallbackInterface,
+                             admin::kOnServiceAllowlistChanged, _, _))
+        .WillOnce(DoAll(
+            testing::SaveArg<2>(&method_handler_on_service_allowlist_changed),
+            &FakeExportMethod));
 
     EXPECT_CALL(*bus_.get(), GetExportedObject(callback_path_))
         .WillRepeatedly(testing::Return(exported_callback.get()));

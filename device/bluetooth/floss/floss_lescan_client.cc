@@ -74,7 +74,15 @@ void FlossLEScanClient::Init(dbus::Bus* bus,
   exported_scanner_callback_manager_.AddMethod(
       adapter::kOnScanResultLost, &ScannerClientObserver::ScanResultLost);
 
-  RegisterScannerCallback();
+  dbus::ObjectPath callback_path(kScannerCallbackPath);
+
+  if (!exported_scanner_callback_manager_.ExportCallback(
+          callback_path, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&FlossLEScanClient::RegisterScannerCallback,
+                         weak_ptr_factory_.GetWeakPtr()))) {
+    LOG(ERROR) << "Failed exporting callback " + callback_path.value();
+    return;
+  }
 }
 
 void FlossLEScanClient::AddObserver(ScannerClientObserver* observer) {
@@ -86,25 +94,11 @@ void FlossLEScanClient::RemoveObserver(ScannerClientObserver* observer) {
 }
 
 void FlossLEScanClient::RegisterScannerCallback() {
-  dbus::ObjectPath callback_path(kScannerCallbackPath);
-
-  if (!exported_scanner_callback_manager_.ExportCallback(
-          callback_path, weak_ptr_factory_.GetWeakPtr())) {
-    LOG(ERROR) << "Failed exporting callback " + callback_path.value();
-    return;
-  }
-
   CallLEScanMethod<>(
       base::BindOnce(&FlossLEScanClient::OnRegisterScannerCallback,
                      weak_ptr_factory_.GetWeakPtr()),
-      adapter::kRegisterScannerCallback, callback_path);
-
-  dbus::ExportedObject* exported_callback =
-      bus_->GetExportedObject(callback_path);
-  if (!exported_callback) {
-    LOG(ERROR) << "FlossLEScanClient couldn't export client callbacks";
-    return;
-  }
+      adapter::kRegisterScannerCallback,
+      dbus::ObjectPath(kScannerCallbackPath));
 }
 
 void FlossLEScanClient::OnRegisterScannerCallback(DBusResult<uint32_t> ret) {

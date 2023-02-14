@@ -273,7 +273,9 @@ void FlossManagerClient::Init(dbus::Bus* bus,
       &FlossManagerClientCallbacks::OnDefaultAdapterChanged);
   if (!exported_callback_manager_.ExportCallback(
           dbus::ObjectPath(kExportedCallbacksPath),
-          weak_ptr_factory_.GetWeakPtr())) {
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&FlossManagerClient::RegisterWithManager,
+                         weak_ptr_factory_.GetWeakPtr()))) {
     LOG(ERROR) << "Unable to successfully export FlossManagerClientCallbacks.";
     return;
   }
@@ -282,9 +284,6 @@ void FlossManagerClient::Init(dbus::Bus* bus,
   object_manager_ = bus_->GetObjectManager(
       service_name, dbus::ObjectPath(kObjectManagerPath));
   object_manager_->RegisterInterface(kManagerInterface, this);
-
-  // Get manager ready.
-  RegisterWithManager();
 
   // Enable Floss and retry a few times until it is set.
   SetFlossEnabled(floss::features::IsFlossEnabled(), kSetFlossRetryCount,

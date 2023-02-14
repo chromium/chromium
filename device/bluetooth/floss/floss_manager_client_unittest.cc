@@ -25,8 +25,20 @@
 
 namespace floss {
 namespace {
+
+using testing::DoAll;
+
 const std::vector<std::pair<int, bool>> kMockAdaptersAvailable = {{0, false},
                                                                   {5, true}};
+
+void FakeExportMethod(
+    const std::string& interface_name,
+    const std::string& method_name,
+    const dbus::ExportedObject::MethodCallCallback& method_call_callback,
+    dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+  std::move(on_exported_callback)
+      .Run(interface_name, method_name, /*success=*/true);
+}
 
 class TestManagerObserver : public FlossManagerClient::Observer {
  public:
@@ -100,18 +112,22 @@ class FlossManagerClientTest : public testing::Test {
         .WillRepeatedly(::testing::Return(exported_callbacks_.get()));
 
     // Exported callback methods that we don't need to invoke.
-    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(1);
+    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod)
+        .Times(1)
+        .WillRepeatedly(&FakeExportMethod);
     // Save method handlers of exported callbacks that we need to invoke here.
     EXPECT_CALL(
         *exported_callbacks_.get(),
         ExportMethod(manager::kCallbackInterface, manager::kOnHciDeviceChanged,
                      testing::_, testing::_))
-        .WillOnce(testing::SaveArg<2>(&on_hci_device_changed_));
+        .WillOnce(DoAll(testing::SaveArg<2>(&on_hci_device_changed_),
+                        &FakeExportMethod));
     EXPECT_CALL(
         *exported_callbacks_.get(),
         ExportMethod(manager::kCallbackInterface, manager::kOnHciEnabledChanged,
                      testing::_, testing::_))
-        .WillOnce(testing::SaveArg<2>(&on_hci_enabled_changed_));
+        .WillOnce(DoAll(testing::SaveArg<2>(&on_hci_enabled_changed_),
+                        &FakeExportMethod));
 
     // Handle method calls on the object proxy
     ON_CALL(*manager_object_proxy_.get(), DoCallMethodWithErrorResponse)

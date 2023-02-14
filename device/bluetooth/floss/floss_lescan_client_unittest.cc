@@ -32,6 +32,7 @@ namespace floss {
 namespace {
 
 using testing::_;
+using testing::DoAll;
 
 const char kTestSender[] = ":0.1";
 const int kTestSerial = 1;
@@ -54,6 +55,15 @@ const uint16_t kTestPeriodicAdvInt = 9;
 const uint8_t kTestFlags = 10;
 const uint16_t kTestManufacturerId = 11;
 const std::vector<uint8_t> kTestAdvData = {0, 1, 2};
+
+void FakeExportMethod(
+    const std::string& interface_name,
+    const std::string& method_name,
+    const dbus::ExportedObject::MethodCallCallback& method_call_callback,
+    dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+  std::move(on_exported_callback)
+      .Run(interface_name, method_name, /*success=*/true);
+}
 
 }  // namespace
 
@@ -249,19 +259,23 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
       *exported_callback.get(),
       ExportMethod(kScannerCallbackInterfaceName, adapter::kOnScannerRegistered,
                    testing::_, testing::_))
-      .WillOnce(testing::SaveArg<2>(&method_handler_on_scanner_registered));
+      .WillOnce(
+          DoAll(testing::SaveArg<2>(&method_handler_on_scanner_registered),
+                &FakeExportMethod));
 
   dbus::ExportedObject::MethodCallCallback method_handler_on_scan_result;
   EXPECT_CALL(*exported_callback.get(),
               ExportMethod(kScannerCallbackInterfaceName,
                            adapter::kOnScanResult, testing::_, testing::_))
-      .WillOnce(testing::SaveArg<2>(&method_handler_on_scan_result));
+      .WillOnce(DoAll(testing::SaveArg<2>(&method_handler_on_scan_result),
+                      &FakeExportMethod));
 
   dbus::ExportedObject::MethodCallCallback method_handler_on_scan_result_lost;
   EXPECT_CALL(*exported_callback.get(),
               ExportMethod(kScannerCallbackInterfaceName,
                            adapter::kOnScanResultLost, testing::_, testing::_))
-      .WillOnce(testing::SaveArg<2>(&method_handler_on_scan_result_lost));
+      .WillOnce(DoAll(testing::SaveArg<2>(&method_handler_on_scan_result_lost),
+                      &FakeExportMethod));
 
   EXPECT_CALL(*bus_.get(), GetExportedObject(callback_path_))
       .WillRepeatedly(testing::Return(exported_callback.get()));

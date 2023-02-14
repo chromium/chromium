@@ -45,6 +45,13 @@ FlossAdminClient::~FlossAdminClient() {
   }
 }
 
+void FlossAdminClient::OnMethodsExported() {
+  CallAdminMethod<uint32_t>(
+      base::BindOnce(&FlossAdminClient::HandleCallbackRegistered,
+                     weak_ptr_factory_.GetWeakPtr()),
+      admin::kRegisterCallback, dbus::ObjectPath(kExportedCallbacksPath));
+}
+
 void FlossAdminClient::HandleCallbackRegistered(DBusResult<uint32_t> result) {
   client_registered_ = true;
   while (!initialized_callbacks_.empty()) {
@@ -98,15 +105,12 @@ void FlossAdminClient::Init(dbus::Bus* bus,
 
   if (!exported_callback_manager_.ExportCallback(
           dbus::ObjectPath(kExportedCallbacksPath),
-          weak_ptr_factory_.GetWeakPtr())) {
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&FlossAdminClient::OnMethodsExported,
+                         weak_ptr_factory_.GetWeakPtr()))) {
     LOG(ERROR) << "Unable to successfully export FlossAdminClientObserver.";
     return;
   }
-
-  CallAdminMethod<uint32_t>(
-      base::BindOnce(&FlossAdminClient::HandleCallbackRegistered,
-                     weak_ptr_factory_.GetWeakPtr()),
-      admin::kRegisterCallback, dbus::ObjectPath(kExportedCallbacksPath));
 }
 
 void FlossAdminClient::AddObserver(FlossAdminClientObserver* observer) {

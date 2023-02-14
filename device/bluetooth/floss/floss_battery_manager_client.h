@@ -90,6 +90,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossBatteryManagerClient
   void BatteryInfoUpdated(std::string remote_address,
                           BatterySet battery_set) override;
 
+  // Registers battery callback to daemon after callback methods are exported.
+  void OnMethodsExported();
+
   // Handle BatteryManager RegisterCallback result.
   void BatteryCallbackRegistered(DBusResult<uint32_t> result);
 

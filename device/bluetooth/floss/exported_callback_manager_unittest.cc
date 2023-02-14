@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/task_environment.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -23,11 +24,22 @@ namespace floss {
 
 namespace {
 
+using testing::DoAll;
+
 const char kExportedCallbackPath[] = "/org/chromium/some/callback";
 
 const char kTestSender[] = ":0.1";
 
 const int kTestSerial = 1;
+
+void FakeExportMethod(
+    const std::string& interface_name,
+    const std::string& method_name,
+    const dbus::ExportedObject::MethodCallCallback& method_call_callback,
+    dbus::ExportedObject::OnExportedCallback on_exported_callback) {
+  std::move(on_exported_callback)
+      .Run(interface_name, method_name, /*success=*/true);
+}
 
 class ISomeCallback {
  public:
@@ -181,6 +193,7 @@ class ExportedCallbackManagerTest : public testing::Test {
   }
 
   scoped_refptr<dbus::MockBus> bus_;
+  base::test::TaskEnvironment task_environment_;
   base::WeakPtrFactory<ExportedCallbackManagerTest> weak_ptr_factory_{this};
 };
 
@@ -199,13 +212,15 @@ TEST_F(ExportedCallbackManagerTest, TestMethodHandler) {
   EXPECT_CALL(*exported_callback.get(),
               ExportMethod("org.example.interface", "OnSomethingHappened",
                            testing::_, testing::_))
-      .WillOnce(testing::SaveArg<2>(&method_handler_something_happened));
+      .WillOnce(DoAll(testing::SaveArg<2>(&method_handler_something_happened),
+                      &FakeExportMethod));
 
   dbus::ExportedObject::MethodCallCallback method_handler_some_method;
   EXPECT_CALL(*exported_callback.get(),
               ExportMethod("org.example.interface", "SomeMethod", testing::_,
                            testing::_))
-      .WillOnce(testing::SaveArg<2>(&method_handler_some_method));
+      .WillOnce(DoAll(testing::SaveArg<2>(&method_handler_some_method),
+                      &FakeExportMethod));
 
   auto some_callback = std::make_unique<SomeCallback>();
 
@@ -214,7 +229,7 @@ TEST_F(ExportedCallbackManagerTest, TestMethodHandler) {
       .WillRepeatedly(testing::Return(exported_callback.get()));
 
   manager.ExportCallback(dbus::ObjectPath(kExportedCallbackPath),
-                         some_callback->GetWeakPtr());
+                         some_callback->GetWeakPtr(), base::DoNothing());
 
   ASSERT_TRUE(!!method_handler_something_happened);
   ASSERT_TRUE(!!method_handler_some_method);
