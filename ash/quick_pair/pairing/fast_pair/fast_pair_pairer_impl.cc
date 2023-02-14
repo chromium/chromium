@@ -266,9 +266,6 @@ void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kDeviceConnected,
                             *device_);
   RecordConnectDeviceResult(/*success=*/true);
-  // The device ID can change between device discovery and connection, so
-  // ensure that device images are mapped to the current device ID.
-  FastPairRepository::Get()->FetchDeviceImages(device_);
 }
 
 void FastPairPairerImpl::OnConnectError(const std::string& error_message) {
@@ -662,12 +659,24 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
     return;
   }
 
-  if (device->GetAddress() == device_->ble_address() ||
-      device->GetAddress() == device_->classic_address()) {
+  if ((device_->classic_address().has_value() &&
+       device->GetAddress() == device_->classic_address().value()) ||
+      device->GetAddress() == device_->ble_address()) {
     QP_LOG(INFO) << __func__ << ": Completing pairing procedure " << device_;
 
     RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPairingComplete,
                               *device_);
+
+    // V1 devices do not set the classic_address() field anywhere else, which is
+    // needed to map device addresses to persisted device images. Set the
+    // classic address here, which has to happen before paired_callback_ is
+    // fired. V2 devices can also set a missing classic address here, although
+    // that is not expected to happen.
+    if (!device_->classic_address() &&
+        device->GetAddressType() ==
+            device::BluetoothDevice::AddressType::ADDR_TYPE_PUBLIC) {
+      device_->set_classic_address(device->GetAddress());
+    }
 
     std::move(paired_callback_).Run(device_);
 
@@ -783,10 +792,6 @@ void FastPairPairerImpl::OnConnected(
 
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kDeviceConnected,
                             *device_);
-
-  // The device ID can change between device discovery and connection, so
-  // ensure that device images are mapped to the current device ID.
-  FastPairRepository::Get()->FetchDeviceImages(device_);
 
   QP_LOG(INFO) << __func__ << ": starting account key write for `Pair` flow";
   adapter_->RemovePairingDelegate(this);

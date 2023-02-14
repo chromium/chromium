@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     return classic_address_;
   }
 
-  void set_classic_address(const std::string& address) {
+  void set_classic_address(const absl::optional<std::string>& address) {
     classic_address_ = address;
   }
 

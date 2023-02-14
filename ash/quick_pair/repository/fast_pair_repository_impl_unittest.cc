@@ -864,7 +864,39 @@ TEST_F(FastPairRepositoryImplTest, FetchDeviceImages) {
                                              Protocol::kFastPairInitial);
   device->set_classic_address(kTestClassicAddress1);
   fast_pair_repository_->FetchDeviceImages(device);
-  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
+  ASSERT_TRUE(fast_pair_repository_->GetImagesForDevice(kTestClassicAddress1));
+}
+
+TEST_F(FastPairRepositoryImplTest, FetchDeviceImagesNoMacAddress) {
+  ASSERT_FALSE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
+  ASSERT_FALSE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
+
+  AccountKeyFilter filter(kFilterBytes1, {salt});
+  nearby::fastpair::GetObservedDeviceResponse response;
+  DeviceMetadata metadata(response, gfx::Image());
+
+  // Don't set the classic address of the device, which should result in the
+  // mac address to model ID record failin to save.
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairInitial);
+  fast_pair_repository_->FetchDeviceImages(device);
+
+  // We expect that FetchDeviceImages will first be called while the classic
+  // address of the device isn't set. Images should still be downloaded and
+  // linked to the corresponding model ID.
+  ASSERT_FALSE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
+  ASSERT_FALSE(fast_pair_repository_->GetImagesForDevice(kTestClassicAddress1));
+  ASSERT_TRUE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
+
+  // Mimic the device now completing pairing, which should set the classic
+  // address and attempt to FetchDeviceImages a second time.
+  device->set_classic_address(kTestClassicAddress1);
+  fast_pair_repository_->FetchDeviceImages(device);
 
   ASSERT_TRUE(
       device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
@@ -884,12 +916,55 @@ TEST_F(FastPairRepositoryImplTest, PersistDeviceImages) {
                                              Protocol::kFastPairInitial);
   device->set_classic_address(kTestClassicAddress1);
   fast_pair_repository_->FetchDeviceImages(device);
-  fast_pair_repository_->PersistDeviceImages(device);
-  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(
+      device_address_map_->HasPersistedRecordsForModelId(kValidModelId));
 
+  // Persisting should succeed, which allows the images to be found even after
+  // the local caches are cleared (i.e. on logout).
+  ASSERT_TRUE(fast_pair_repository_->PersistDeviceImages(device));
+
+  device_address_map_->RefreshCacheForTest();
+  device_image_store_->RefreshCacheForTest();
   ASSERT_TRUE(
       device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
   ASSERT_TRUE(fast_pair_repository_->GetImagesForDevice(kTestClassicAddress1));
+  ASSERT_TRUE(
+      device_address_map_->HasPersistedRecordsForModelId(kValidModelId));
+}
+
+TEST_F(FastPairRepositoryImplTest, PersistDeviceImagesNoMacAddress) {
+  ASSERT_FALSE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
+  ASSERT_FALSE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
+
+  AccountKeyFilter filter(kFilterBytes1, {salt});
+  nearby::fastpair::GetObservedDeviceResponse response;
+  DeviceMetadata metadata(response, gfx::Image());
+
+  // Don't set the classic address of the device, which should result in the
+  // mac address to model ID record failin to save.
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairInitial);
+  fast_pair_repository_->FetchDeviceImages(device);
+
+  // We expect that FetchDeviceImages will first be called while the classic
+  // address of the device isn't set. Images should still be downloaded and
+  // linked to the corresponding model ID.
+  ASSERT_FALSE(
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
+  ASSERT_FALSE(fast_pair_repository_->GetImagesForDevice(kTestClassicAddress1));
+  ASSERT_TRUE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
+
+  // Even though there are images saved that we could persist, we should not
+  // persist them since we lack the corresponding mac address to model ID
+  // mapping.
+  ASSERT_FALSE(fast_pair_repository_->PersistDeviceImages(device));
+
+  device_address_map_->RefreshCacheForTest();
+  device_image_store_->RefreshCacheForTest();
+  ASSERT_FALSE(
+      device_address_map_->HasPersistedRecordsForModelId(kValidModelId));
+  ASSERT_FALSE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
 }
 
 TEST_F(FastPairRepositoryImplTest, EvictDeviceImages) {
@@ -907,13 +982,18 @@ TEST_F(FastPairRepositoryImplTest, EvictDeviceImages) {
   ASSERT_TRUE(
       device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
   ASSERT_TRUE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
+  ASSERT_TRUE(
+      device_address_map_->HasPersistedRecordsForModelId(kValidModelId));
 
   fast_pair_repository_->EvictDeviceImages(kTestClassicAddress1);
-  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(
+      device_address_map_->HasPersistedRecordsForModelId(kValidModelId));
 
   device_address_map_->RefreshCacheForTest();
+  device_image_store_->RefreshCacheForTest();
   ASSERT_FALSE(
       device_address_map_->GetModelIdForMacAddress(kTestClassicAddress1));
+  ASSERT_FALSE(device_image_store_->GetImagesForDeviceModel(kValidModelId));
 }
 
 TEST_F(FastPairRepositoryImplTest, UpdateOptInStatus_OptedIn) {

@@ -157,6 +157,12 @@ class FakeBluetoothDevice
     std::move(callback).Run(absl::nullopt);
   }
 
+  // This method is called in DevicePairedChanged to ensure we are setting the
+  // classic address only if the device's address has the correct type (public).
+  device::BluetoothDevice::AddressType GetAddressType() const override {
+    return device::BluetoothDevice::AddressType::ADDR_TYPE_PUBLIC;
+  }
+
   void SetPairFailure() { pair_failure_ = true; }
 
   void SetPairTimeout() { pair_timeout_ = true; }
@@ -250,6 +256,8 @@ class FastPairPairerImplTest : public AshTestBase {
   void CreateMockDevice(DeviceFastPairVersion version, Protocol protocol) {
     device_ = base::MakeRefCounted<Device>(
         kMetadataId, kBluetoothCanonicalizedAddress, protocol);
+    // TODO(b/268722180): classic address should be set in the handshake, which
+    // is only for V2 devices. Should refactor that for unit tests.
     device_->set_classic_address(kBluetoothCanonicalizedAddress);
 
     device_->set_version(version);
@@ -2059,6 +2067,22 @@ TEST_F(FastPairPairerImplTest, FastPairVersionOne_DevicePaired) {
                 kInitializePairingProcessInitial,
                 FastPairInitializePairingProcessEvent::kPassedToPairingDialog),
             1);
+}
+
+TEST_F(FastPairPairerImplTest,
+       FastPairVersionOne_SetsClassicAddressAfterPairing) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  CreateDevice(DeviceFastPairVersion::kV1);
+  // V1 devices don't have classic addresses set during handshake.
+  device_->set_classic_address(absl::nullopt);
+  EXPECT_CALL(paired_callback_, Run);
+  EXPECT_CALL(pairing_procedure_complete_, Run);
+  EXPECT_EQ(DeviceFastPairVersion::kV1, device_->version().value());
+  DevicePaired();
+
+  // After pairing, classic address should be set.
+  EXPECT_TRUE(device_->classic_address());
+  EXPECT_EQ(device_->classic_address(), kBluetoothCanonicalizedAddress);
 }
 
 TEST_F(FastPairPairerImplTest, FastPairVersionOne_DeviceUnpaired) {

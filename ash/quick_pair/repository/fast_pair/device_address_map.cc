@@ -26,17 +26,8 @@ DeviceAddressMap::DeviceAddressMap() = default;
 DeviceAddressMap::~DeviceAddressMap() = default;
 
 bool DeviceAddressMap::SaveModelIdForDevice(scoped_refptr<Device> device) {
-  // In some cases, BLE and classic address can map to different devices (with
-  // the same model ID) so we want to capture both mac address -> model ID
-  // records.
-  bool did_save = false;
-  if (!device->ble_address().empty()) {
-    did_save = true;
-    mac_address_to_model_id_[device->ble_address()] = device->metadata_id();
-  }
-
   if (!device->classic_address()) {
-    return did_save;
+    return false;
   }
 
   mac_address_to_model_id_[device->classic_address().value()] =
@@ -45,21 +36,11 @@ bool DeviceAddressMap::SaveModelIdForDevice(scoped_refptr<Device> device) {
 }
 
 bool DeviceAddressMap::PersistRecordsForDevice(scoped_refptr<Device> device) {
-  // TODO(235117226): See if we really need to persist for both addresses.
-  // In some cases, BLE and classic address can map to different devices (with
-  // the same model ID) so we want to capture both mac address -> model ID
-  // records.
-  bool did_persist = false;
-  if (!device->ble_address().empty()) {
-    did_persist = PersistMacAddressRecord(device->ble_address());
-  }
-
   if (!device->classic_address()) {
-    return did_persist;
+    return false;
   }
 
-  return PersistMacAddressRecord(device->classic_address().value()) ||
-         did_persist;
+  return PersistMacAddressRecord(device->classic_address().value());
 }
 
 bool DeviceAddressMap::PersistMacAddressRecord(const std::string& mac_address) {

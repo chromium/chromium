@@ -217,5 +217,11 @@ void DeviceImageStore::SaveImageAsBase64(
       .Run(std::make_pair(image_type, FetchDeviceImagesResult::kSuccess));
 }
 
+void DeviceImageStore::RefreshCacheForTest() {
+  QP_LOG(INFO) << __func__;
+  model_id_to_images_.clear();
+  LoadPersistedImagesFromPrefs();
+}
+
 }  // namespace quick_pair
 }  // namespace ash

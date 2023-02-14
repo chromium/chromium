@@ -89,6 +89,11 @@ class DeviceImageStore {
       const std::string& model_id);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(FastPairRepositoryImplTest, PersistDeviceImages);
+  FRIEND_TEST_ALL_PREFIXES(FastPairRepositoryImplTest,
+                           PersistDeviceImagesNoMacAddress);
+  FRIEND_TEST_ALL_PREFIXES(FastPairRepositoryImplTest, EvictDeviceImages);
+
   // Loads device images stored in prefs to model_id_to_images_.
   void LoadPersistedImagesFromPrefs();
 
@@ -113,6 +118,9 @@ class DeviceImageStore {
                          DeviceImageType image_type,
                          FetchDeviceImagesCallback on_images_saved_callback,
                          gfx::Image image);
+
+  // Clears the in-memory map and reloads from prefs. Used by tests.
+  void RefreshCacheForTest();
 
   // Maps from model IDs to images stored in DeviceImageInfo.
   base::flat_map<std::string, bluetooth_config::DeviceImageInfo>

@@ -57,18 +57,24 @@ class DeviceAddressMap {
   // local state prefs, false otherwise.
   bool HasPersistedRecordsForModelId(const std::string& model_id);
 
-  // Clears the in-memory map and reloads from prefs.
-  void RefreshCacheForTest();
-
  private:
+  FRIEND_TEST_ALL_PREFIXES(FastPairRepositoryImplTest, PersistDeviceImages);
+  FRIEND_TEST_ALL_PREFIXES(FastPairRepositoryImplTest,
+                           PersistDeviceImagesNoMacAddress);
+  FRIEND_TEST_ALL_PREFIXES(FastPairRepositoryImplTest, EvictDeviceImages);
+
   // Persists the |mac_address| -> model ID record in mac_address_to_model_id_
   // to local state prefs. Returns true if the record was persisted, false
   // if no record exists for |mac_address| or there was an error when
   // persisting.
   bool PersistMacAddressRecord(const std::string& mac_address);
+
   // Loads mac address -> model ID records persisted in prefs to
   // mac_address_to_model_id_.
   void LoadPersistedRecordsFromPrefs();
+
+  // Clears the in-memory map and reloads from prefs. Used by tests.
+  void RefreshCacheForTest();
 
   // Used to lazily load saved records from prefs.
   bool loaded_records_from_prefs_ = false;

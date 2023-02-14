@@ -18,8 +18,8 @@
 namespace {
 
 constexpr char kTestModelId[] = "test_model_id";
-constexpr char kTestBLEAddress[] = "test_ble_address";
 constexpr char kTestClassicAddress[] = "test_classic_address";
+constexpr char kTestClassicAddress2[] = "test_classic_address_2";
 
 }  // namespace
 
@@ -35,17 +35,11 @@ class DeviceAddressMapTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    device_address_map_ = std::make_unique<DeviceAddressMap>();
-  }
-
-  void SetupDevice(const std::string& ble_address,
-                   const std::string& classic_address) {
-    device_ = base::MakeRefCounted<Device>(kTestModelId, ble_address,
+    // Initialize device_ with no classic address.
+    device_ = base::MakeRefCounted<Device>(kTestModelId, "address",
                                            Protocol::kFastPairInitial);
 
-    if (!classic_address.empty()) {
-      device_->set_classic_address(classic_address);
-    }
+    device_address_map_ = std::make_unique<DeviceAddressMap>();
   }
 
  protected:
@@ -54,64 +48,27 @@ class DeviceAddressMapTest : public AshTestBase {
 };
 
 TEST_F(DeviceAddressMapTest, SaveModelIdForDeviceValid) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
-  absl::optional<const std::string> ble_model_id =
-      device_address_map_->GetModelIdForMacAddress(kTestBLEAddress);
-  EXPECT_TRUE(ble_model_id);
-  EXPECT_EQ(ble_model_id.value(), kTestModelId);
-  absl::optional<const std::string> classic_model_id =
+  absl::optional<const std::string> model_id =
       device_address_map_->GetModelIdForMacAddress(kTestClassicAddress);
-  EXPECT_TRUE(classic_model_id);
-  EXPECT_EQ(classic_model_id.value(), kTestModelId);
-}
-
-TEST_F(DeviceAddressMapTest, SaveModelIdForDeviceValidOnlyClassicAddress) {
-  // Set the BLE address to empty.
-  SetupDevice("", kTestClassicAddress);
-
-  EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
-  absl::optional<const std::string> ble_model_id =
-      device_address_map_->GetModelIdForMacAddress(kTestBLEAddress);
-  EXPECT_FALSE(ble_model_id);
-  absl::optional<const std::string> classic_model_id =
-      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress);
-  EXPECT_TRUE(classic_model_id);
-  EXPECT_EQ(classic_model_id.value(), kTestModelId);
-}
-
-TEST_F(DeviceAddressMapTest, SaveModelIdForDeviceValidOnlyBLEAddress) {
-  // Set the Classic address to empty.
-  SetupDevice(kTestBLEAddress, "");
-
-  EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
-  absl::optional<const std::string> ble_model_id =
-      device_address_map_->GetModelIdForMacAddress(kTestBLEAddress);
-  EXPECT_TRUE(ble_model_id);
-  EXPECT_EQ(ble_model_id.value(), kTestModelId);
-  absl::optional<const std::string> classic_model_id =
-      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress);
-  EXPECT_FALSE(classic_model_id);
+  EXPECT_TRUE(model_id);
+  EXPECT_EQ(model_id.value(), kTestModelId);
 }
 
 TEST_F(DeviceAddressMapTest, SaveModelIdForDeviceInvalidDeviceNotFound) {
-  // Set both BLE and Classic address to empty.
-  SetupDevice("", "");
-
+  // Device has no classic address set.
   EXPECT_FALSE(device_address_map_->SaveModelIdForDevice(device_));
-  absl::optional<const std::string> ble_model_id =
-      device_address_map_->GetModelIdForMacAddress(kTestBLEAddress);
-  EXPECT_FALSE(ble_model_id);
-  absl::optional<const std::string> classic_model_id =
+  absl::optional<const std::string> model_id =
       device_address_map_->GetModelIdForMacAddress(kTestClassicAddress);
-  EXPECT_FALSE(classic_model_id);
+  EXPECT_FALSE(model_id);
 }
 
 TEST_F(DeviceAddressMapTest, PersistRecordsForDeviceValid) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   // First, save the mac address to model ID records to memory.
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
@@ -121,37 +78,15 @@ TEST_F(DeviceAddressMapTest, PersistRecordsForDeviceValid) {
   PrefService* local_state = Shell::Get()->local_state();
   const base::Value::Dict& device_address_map_dict =
       local_state->GetDict(DeviceAddressMap::kDeviceAddressMapPref);
-  const std::string* ble_model_id =
-      device_address_map_dict.FindString(kTestBLEAddress);
-  EXPECT_TRUE(ble_model_id);
-  EXPECT_EQ(*ble_model_id, kTestModelId);
-  const std::string* classic_model_id =
+  const std::string* model_id =
       device_address_map_dict.FindString(kTestClassicAddress);
-  EXPECT_TRUE(classic_model_id);
-  EXPECT_EQ(*classic_model_id, kTestModelId);
-}
-
-TEST_F(DeviceAddressMapTest, PersistRecordsForDeviceValidOnlyClassicAddress) {
-  // Set the BLE address to empty. A record should still be saved for the valid
-  // address.
-  SetupDevice("", kTestClassicAddress);
-
-  EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
-  EXPECT_TRUE(device_address_map_->PersistRecordsForDevice(device_));
-}
-
-TEST_F(DeviceAddressMapTest, PersistRecordsForDeviceValidOnlyBLEAddress) {
-  // Set the Classic address to empty. A record should still be saved for the
-  // valid address.
-  SetupDevice(kTestBLEAddress, "");
-
-  EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
-  EXPECT_TRUE(device_address_map_->PersistRecordsForDevice(device_));
+  EXPECT_TRUE(model_id);
+  EXPECT_EQ(*model_id, kTestModelId);
 }
 
 TEST_F(DeviceAddressMapTest, PersistRecordsForDeviceValidDoublePersist) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   // First, save the mac address records to memory.
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
@@ -163,57 +98,57 @@ TEST_F(DeviceAddressMapTest, PersistRecordsForDeviceValidDoublePersist) {
 }
 
 TEST_F(DeviceAddressMapTest, PersistRecordsForDeviceInvalidNotSaved) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   // Don't save the mac address record to memory.
   EXPECT_FALSE(device_address_map_->PersistRecordsForDevice(device_));
 }
 
 TEST_F(DeviceAddressMapTest, EvictMacAddressRecordValid) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   // First, persist the mac address record to disk.
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_address_map_->PersistRecordsForDevice(device_));
-  EXPECT_TRUE(device_address_map_->EvictMacAddressRecord(kTestBLEAddress));
+  EXPECT_TRUE(device_address_map_->EvictMacAddressRecord(kTestClassicAddress));
 
   // Validate that the ID records are evicted from prefs.
   PrefService* local_state = Shell::Get()->local_state();
   const base::Value::Dict& device_address_map_dict =
       local_state->GetDict(DeviceAddressMap::kDeviceAddressMapPref);
   const std::string* model_id =
-      device_address_map_dict.FindString(kTestBLEAddress);
+      device_address_map_dict.FindString(kTestClassicAddress);
   EXPECT_FALSE(model_id);
 }
 
 TEST_F(DeviceAddressMapTest, EvictMacAddressRecordInvalidDeviceAddress) {
   // Don't save the mac address records to disk.
-  EXPECT_FALSE(device_address_map_->EvictMacAddressRecord(kTestBLEAddress));
+  EXPECT_FALSE(device_address_map_->EvictMacAddressRecord(kTestClassicAddress));
 }
 
 TEST_F(DeviceAddressMapTest, EvictMacAddressRecordInvalidDoubleFree) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   // First, persist the mac address records to disk.
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_address_map_->PersistRecordsForDevice(device_));
-  EXPECT_TRUE(device_address_map_->EvictMacAddressRecord(kTestBLEAddress));
+  EXPECT_TRUE(device_address_map_->EvictMacAddressRecord(kTestClassicAddress));
 
   // The second evict should fail.
-  EXPECT_FALSE(device_address_map_->EvictMacAddressRecord(kTestBLEAddress));
+  EXPECT_FALSE(device_address_map_->EvictMacAddressRecord(kTestClassicAddress));
 }
 
 TEST_F(DeviceAddressMapTest, GetModelIdForMacAddressValid) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
 
   absl::optional<const std::string> model_id =
-      device_address_map_->GetModelIdForMacAddress(kTestBLEAddress);
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress);
   EXPECT_TRUE(model_id);
   EXPECT_EQ(model_id.value(), kTestModelId);
 }
@@ -221,13 +156,13 @@ TEST_F(DeviceAddressMapTest, GetModelIdForMacAddressValid) {
 TEST_F(DeviceAddressMapTest, GetModelIdForMacAddressInvalidUninitialized) {
   // Don't initialize the dictionary with any results.
   absl::optional<const std::string> model_id =
-      device_address_map_->GetModelIdForMacAddress(kTestBLEAddress);
+      device_address_map_->GetModelIdForMacAddress(kTestClassicAddress);
   EXPECT_FALSE(model_id);
 }
 
 TEST_F(DeviceAddressMapTest, GetModelIdForMacAddressInvalidNotAdded) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
 
@@ -237,8 +172,8 @@ TEST_F(DeviceAddressMapTest, GetModelIdForMacAddressInvalidNotAdded) {
 }
 
 TEST_F(DeviceAddressMapTest, HasPersistedRecordsForModelIdTrueAfterPersist) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   // First, persist the mac address records to disk.
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
@@ -248,35 +183,49 @@ TEST_F(DeviceAddressMapTest, HasPersistedRecordsForModelIdTrueAfterPersist) {
 
 TEST_F(DeviceAddressMapTest,
        HasPersistedRecordsForModelIdTrueAfterOneEviction) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
-
-  // First, persist the mac address records to disk.
+  // Set a valid classic address and persist the mac address records to disk.
+  device_->set_classic_address(kTestClassicAddress);
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_address_map_->PersistRecordsForDevice(device_));
+
+  // Set a different classic address, as if a second device with the samel model
+  // ID was paired, and persist the mac address records to disk.
+  device_->set_classic_address(kTestClassicAddress2);
+  EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
+  EXPECT_TRUE(device_address_map_->PersistRecordsForDevice(device_));
+
   // Evict one of the records that points to this model ID.
   EXPECT_TRUE(device_address_map_->EvictMacAddressRecord(kTestClassicAddress));
+
+  // There is still one mac address to model ID for record for this model ID.
   EXPECT_TRUE(device_address_map_->HasPersistedRecordsForModelId(kTestModelId));
 }
 
 TEST_F(DeviceAddressMapTest,
        HasPersistedRecordsForModelIdFalseAfterAllEvictions) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
-
-  // First, persist the mac address records to disk.
+  // Set a valid classic address and persist the mac address records to disk.
+  device_->set_classic_address(kTestClassicAddress);
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_address_map_->PersistRecordsForDevice(device_));
-  // Evict all of the records that points to this model ID.
+
+  // Set a different classic address, as if a second device with the samel model
+  // ID was paired, and persist the mac address records to disk.
+  device_->set_classic_address(kTestClassicAddress2);
+  EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
+  EXPECT_TRUE(device_address_map_->PersistRecordsForDevice(device_));
+
+  // Evict both of the records that point to this model ID.
   EXPECT_TRUE(device_address_map_->EvictMacAddressRecord(kTestClassicAddress));
-  EXPECT_TRUE(device_address_map_->EvictMacAddressRecord(kTestBLEAddress));
+  EXPECT_TRUE(device_address_map_->EvictMacAddressRecord(kTestClassicAddress2));
+
+  // There are no more mac address to model ID records for this model ID.
   EXPECT_FALSE(
       device_address_map_->HasPersistedRecordsForModelId(kTestModelId));
 }
 
 TEST_F(DeviceAddressMapTest, HasPersistedRecordsForModelIdFalseNoPersist) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   // Don't persist the mac address records to disk.
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
@@ -285,8 +234,8 @@ TEST_F(DeviceAddressMapTest, HasPersistedRecordsForModelIdFalseNoPersist) {
 }
 
 TEST_F(DeviceAddressMapTest, LoadPersistedIdRecordFromPrefs) {
-  // Populate both BLE address and Classic address.
-  SetupDevice(kTestBLEAddress, kTestClassicAddress);
+  // Set a valid classic address.
+  device_->set_classic_address(kTestClassicAddress);
 
   // First, persist the mac address records to disk.
   EXPECT_TRUE(device_address_map_->SaveModelIdForDevice(device_));
@@ -296,7 +245,7 @@ TEST_F(DeviceAddressMapTest, LoadPersistedIdRecordFromPrefs) {
   // from prefs.
   DeviceAddressMap new_device_address_map = DeviceAddressMap();
   absl::optional<const std::string> model_id =
-      new_device_address_map.GetModelIdForMacAddress(kTestBLEAddress);
+      new_device_address_map.GetModelIdForMacAddress(kTestClassicAddress);
   EXPECT_TRUE(model_id);
   EXPECT_EQ(model_id.value(), kTestModelId);
 }

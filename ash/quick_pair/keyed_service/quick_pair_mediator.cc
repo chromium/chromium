@@ -261,6 +261,14 @@ void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
   }
   device_currently_showing_notification_ = device;
   ui_broker_->ShowAssociateAccount(device);
+
+  // Try saving mac address to model ID mapping one more time.
+  // TODO(b/235117226): we aren't really fetching device images here,
+  // since the images are already saved. We just want to save the mapping
+  // from mac address to model ID, and for Retroactive Pair this is one
+  // of the first times we have mac address and model ID for a paired device.
+  fast_pair_repository_->FetchDeviceImages(device);
+  fast_pair_repository_->PersistDeviceImages(device);
 }
 
 void Mediator::SetFastPairState(bool is_enabled) {
@@ -290,6 +298,13 @@ void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
   ui_broker_->RemoveNotifications();
   device_currently_showing_notification_ = nullptr;
   scanner_broker_->OnDevicePaired(device);
+
+  // Try saving mac address to model ID mapping one more time.
+  // TODO(b/235117226): we aren't really fetching device images here,
+  // since the images are already saved. We just want to save the mapping
+  // from mac address to model ID, and for Initial/Subsequent Pair this is one
+  // of the first times we have mac address and model ID for a paired device.
+  fast_pair_repository_->FetchDeviceImages(device);
   fast_pair_repository_->PersistDeviceImages(device);
 }
 

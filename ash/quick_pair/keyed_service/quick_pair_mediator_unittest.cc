@@ -866,5 +866,43 @@ TEST_F(MediatorTest, DiscoveryBan_RetroactiveAvoidsBan) {
       retroactive_device_);
 }
 
+TEST_F(MediatorTest, PersistsDeviceImages_AfterRetroactivePairFound) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+
+  // We should save mac address to model ID mapping and persist images
+  // once Retroactive Pair is found--in other words, a device was just
+  // classic paired and we have images for that device we want to
+  // display in Bluetooth Settings, even if the user is offline/logged
+  // out/etc.
+  EXPECT_CALL(*mock_fast_pair_repository_, FetchDeviceImages).Times(1);
+  EXPECT_CALL(*mock_fast_pair_repository_, PersistDeviceImages).Times(1);
+  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+      retroactive_device_);
+}
+
+TEST_F(MediatorTest, PersistsDeviceImages_AfterDeviceInitialPaired) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+
+  // We should save mac address to model ID mapping and persist images
+  // once a device is paired. We have images for the paired device we want to
+  // display in Bluetooth Settings, even if the user is offline/logged
+  // out/etc.
+  EXPECT_CALL(*mock_fast_pair_repository_, FetchDeviceImages).Times(1);
+  EXPECT_CALL(*mock_fast_pair_repository_, PersistDeviceImages).Times(1);
+  mock_pairer_broker_->NotifyDevicePaired(initial_device_);
+}
+
+TEST_F(MediatorTest, PersistsDeviceImages_AfterDeviceSubsequentPaired) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+
+  // We should save mac address to model ID mapping and persist images
+  // once a device is paired. We have images for the paired device we want to
+  // display in Bluetooth Settings, even if the user is offline/logged
+  // out/etc.
+  EXPECT_CALL(*mock_fast_pair_repository_, FetchDeviceImages).Times(1);
+  EXPECT_CALL(*mock_fast_pair_repository_, PersistDeviceImages).Times(1);
+  mock_pairer_broker_->NotifyDevicePaired(subsequent_device_);
+}
+
 }  // namespace quick_pair
 }  // namespace ash
