@@ -478,10 +478,6 @@ void NativeWidgetMacNSWindowHost::InitWindow(
   GetNSWindowMojo()->SetInitialBounds(initial_bounds_in_screen,
                                       widget->GetMinimumSize());
 
-  // TODO(ccameron): Correctly set these based |in_process_ns_window_|.
-  window_bounds_in_screen_ = initial_bounds_in_screen;
-  content_bounds_in_screen_ = initial_bounds_in_screen;
-
   // Widgets for UI controls (usually layered above web contents) start visible.
   if (widget_type_ == Widget::InitParams::TYPE_CONTROL)
     GetNSWindowMojo()->SetVisibilityState(WindowVisibilityState::kShowInactive);
