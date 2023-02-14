@@ -43,8 +43,8 @@
 
 <div id="container">
     <template is="dom-repeat" items="[[apps_]]">
-        <app-item app-info="[[item]]" role="button"
-        aria-label="[[item.name]]" title="[[item.name]]">
+        <app-item id="[[item.id]]" app-info="[[item]]" role="button"
+        aria-label="[[item.name]]" title="[[item.name]]" tabindex="0">
     </app-item>
     </template>
 </div>

@@ -582,4 +582,39 @@ suite('AppListTest', () => {
     assertFalse(contextMenu.open);
   });
 
+  test('navigate with arrow keys', async () => {
+    appListElement.shadowRoot!.getElementById(
+                                  'container')!.style.gridTemplateColumns =
+        'repeat(2, max(100% / 2, 112px))';
+    callbackRouterRemote.addApp(testAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
+    assertEquals(
+        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
+    assertEquals(
+        apps.appList[1]!.id, appListElement.shadowRoot!.activeElement?.id);
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(
+        apps.appList[1]!.id, appListElement.shadowRoot!.activeElement?.id);
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
+    assertEquals(
+        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
+    assertEquals(
+        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(
+        apps.appList[2]!.id, appListElement.shadowRoot!.activeElement?.id);
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(
+        apps.appList[2]!.id, appListElement.shadowRoot!.activeElement?.id);
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
+    assertEquals(
+        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
+    assertEquals(
+        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+  });
 });

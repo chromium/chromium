@@ -25,6 +25,7 @@ type MenuHandleEvent = CustomEvent<ActionMenuModel>;
 export interface AppListElement {
   $: {
     menu: CrActionMenuElement,
+    container: HTMLElement,
   };
 }
 
@@ -46,7 +47,7 @@ export class AppListElement extends PolymerElement {
         },
       },
 
-      selectedAppItem: Object,
+      selectedAppItem_: Object,
     };
   }
 
@@ -54,7 +55,9 @@ export class AppListElement extends PolymerElement {
   private mojoEventTarget_: PageCallbackRouter;
   private listenerIds_: number[];
   // The app item that has the context menu click opened by user.
-  private selectedAppItem: AppItemElement|null = null;
+  private selectedAppItem_: AppItemElement|null = null;
+  private boundKeydownListener_: any;
+  private boundContextMenuListener_: any;
 
   constructor() {
     super();
@@ -64,6 +67,9 @@ export class AppListElement extends PolymerElement {
     BrowserProxy.getInstance().handler.getApps().then(result => {
       this.apps_ = result.appList;
     });
+
+    this.boundKeydownListener_ = this.handleNavigateWithArrows.bind(this);
+    this.boundContextMenuListener_ = this.closeCurrentAppMenu.bind(this);
   }
 
   override ready() {
@@ -80,8 +86,8 @@ export class AppListElement extends PolymerElement {
       this.mojoEventTarget_.addApp.addListener(this.addApp_.bind(this)),
       this.mojoEventTarget_.removeApp.addListener(this.removeApp_.bind(this)),
     ];
-    document.addEventListener(
-        'contextmenu', this.closeCurrentAppMenu.bind(this));
+    document.addEventListener('contextmenu', this.boundContextMenuListener_);
+    document.addEventListener('keydown', this.boundKeydownListener_);
   }
 
   override disconnectedCallback() {
@@ -90,8 +96,52 @@ export class AppListElement extends PolymerElement {
     this.listenerIds_.forEach(
         id => assert(this.mojoEventTarget_.removeListener(id)));
     this.listenerIds_ = [];
-    document.removeEventListener(
-        'contextmenu', this.closeCurrentAppMenu.bind(this));
+    document.removeEventListener('contextmenu', this.boundContextMenuListener_);
+    document.removeEventListener('keydown', this.boundKeydownListener_);
+  }
+
+  // Capture arrow key events to focus on apps and navigate the apps as a grid.
+  private handleNavigateWithArrows(e: KeyboardEvent) {
+    const numApps = this.apps_.length;
+    const numColumns: number =
+        window
+            .getComputedStyle(
+                this.$.container,
+                )!.getPropertyValue('grid-template-columns')!.split(' ')
+            .length;
+    const keyActions = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      ArrowUp: -numColumns,
+      ArrowDown: numColumns,
+    };
+
+    if (!(e.key in keyActions) || numApps === 0) {
+      return;
+    }
+
+    const activeElementId = this.shadowRoot!.activeElement?.id;
+    if (!activeElementId) {
+      (this.$.container.querySelector('#' + this.apps_[0].id) as
+       HTMLElement)!.focus();
+      return;
+    }
+
+    const currIndex = this.apps_.findIndex(app => activeElementId === app.id);
+
+    let nextIndex: number;
+    if (currIndex === -1) {
+      nextIndex = 0;
+    } else if (
+        currIndex + keyActions[e.key as keyof typeof keyActions] >= 0 &&
+        currIndex + keyActions[e.key as keyof typeof keyActions] < numApps) {
+      nextIndex = currIndex + keyActions[e.key as keyof typeof keyActions];
+    } else {
+      nextIndex = currIndex;
+    }
+
+    (this.$.container.querySelector('#' + this.apps_[nextIndex].id) as
+     HTMLElement)!.focus();
   }
 
   private addApp_(appInfo: AppInfo) {
@@ -118,20 +168,20 @@ export class AppListElement extends PolymerElement {
   }
 
   private closeCurrentAppMenu() {
-    if (!this.selectedAppItem) {
+    if (!this.selectedAppItem_) {
       return;
     }
-    this.selectedAppItem.closeContextMenu();
+    this.selectedAppItem_.closeContextMenu();
   }
 
   private clearActiveMenu_() {
-    this.selectedAppItem = null;
+    this.selectedAppItem_ = null;
   }
 
   // Close the menu on right click on a page.
   private switchActiveMenu_(event: MenuHandleEvent) {
     this.closeCurrentAppMenu();
-    this.selectedAppItem = event.detail.appItem;
+    this.selectedAppItem_ = event.detail.appItem;
   }
 }
 
