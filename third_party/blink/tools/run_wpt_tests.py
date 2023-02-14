@@ -6,12 +6,16 @@
 
 import argparse
 import contextlib
+import functools
 import glob
 import json
 import logging
+import multiprocessing
 import os
+import re
 import shutil
 import sys
+from typing import List, Optional
 
 from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
@@ -24,7 +28,9 @@ from blinkpy.web_tests.port.android import (
 
 path_finder.add_testing_dir_to_sys_path()
 path_finder.add_build_android_to_sys_path()
+path_finder.bootstrap_wpt_imports()
 
+from wptrunner import wptcommandline
 from scripts import common
 
 logger = logging.getLogger(__name__)
@@ -91,6 +97,7 @@ class WPTAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.fs = self.host.filesystem
         self.path_finder = PathFinder(self.fs)
         self.port = self.host.port_factory.get()
+        self.port.set_option_default('use_xvfb', True)
         super(WPTAdapter, self).__init__()
         self.wptreport = None
         self._include_filename = None
@@ -193,6 +200,26 @@ class WPTAdapter(common.BaseIsolatedScriptArgsAdapter):
             format='%(asctime)s [%(levelname)-8s] %(name)s: %(message)s',
             force=True)
 
+    def _parse_wptrunner_arguments(
+            self,
+            argv: Optional[List[str]] = None,
+    ) -> argparse.Namespace:
+        # TODO(crbug.com/1368679): Merge the two command-line parsers.
+        wptrunner_parser = wptcommandline.create_parser(
+            product_choices=sorted(_product_registry, key=len))
+        # Nightly installation is not supported, so just add defaults.
+        wptrunner_parser.set_defaults(
+            prompt=False,
+            install_browser=False,
+            install_webdriver=False,
+            channel='nightly',
+            affected=None,
+        )
+        options, unknown_args = wptrunner_parser.parse_known_intermixed_args(
+            argv)
+        options.binary_args.extend(unknown_args)
+        return options
+
     def _default_wpt_report(self):
         product = self.wpt_product_name()
         shard_index = os.environ.get('GTEST_SHARD_INDEX')
@@ -271,7 +298,6 @@ class WPTAdapter(common.BaseIsolatedScriptArgsAdapter):
                 '--webdriver-arg="--log-path=-"',
             ])
 
-        rest_args.append(self.wpt_product_name())
         rest_args = self.handle_unknown_args(rest_args)
         rest_args.extend([
             '--webdriver-arg=--enable-chrome-logs',
@@ -295,6 +321,7 @@ class WPTAdapter(common.BaseIsolatedScriptArgsAdapter):
             '--no-pause-after-test',
             '--no-capture-stdio',
             '--no-manifest-download',
+            '--product=%s' % self.wpt_product_name(),
             '--tests=%s' % self.wpt_root_dir,
             '--metadata=%s' % self.wpt_root_dir,
             '--mojojs-path=%s' % self.mojo_js_directory,
@@ -382,9 +409,27 @@ class WPTAdapter(common.BaseIsolatedScriptArgsAdapter):
                     '--depth=25'
                 ])
                 self._checkout_3h_epoch_commit()
+                tools_root = self._upstream_dir
+            else:
+                tools_root = path_finder.get_wpt_tools_wpt_dir()
 
             self._create_extra_run_info()
-            return super().run_test(self.path_finder.web_tests_dir())
+            env = os.environ.copy()
+            env['CHROME_HEADLESS'] = '1'
+            self.port.setup_test_run()  # Start Xvfb, if necessary.
+            stack.callback(self.port.clean_up_test_run)
+            self.fs.chdir(self.path_finder.web_tests_dir())
+
+            entry_point = _load_entry_point(tools_root)
+            self.parse_args()
+            cmd = self.generate_isolated_script_cmd()
+            # TODO(crbug.com/1368679): Will no longer be necessary after merging
+            # command line formats.
+            cmd = cmd[cmd.index('run') + 1:]
+            exit_code = entry_point(
+                **vars(self._parse_wptrunner_arguments(cmd)))
+            self.do_post_test_run_tasks()
+            return exit_code
 
     def _checkout_3h_epoch_commit(self):
         output = self.host.executive.run_command(
@@ -786,6 +831,38 @@ class WPTAdapter(common.BaseIsolatedScriptArgsAdapter):
         return product_cls.name
 
 
+def _load_entry_point(tools_root: str):
+    """Import and return a callable that runs wptrunner.
+
+    Arguments:
+        tests_root: Path to a directory whose structure corresponds to the WPT
+            repository. This will use the tools under `tools/`.
+
+    Returns:
+        Callable whose keyword arguments are the namespace corresponding to
+        command line options.
+    """
+    if tools_root not in sys.path:
+        sys.path.insert(0, tools_root)
+    # Remove current cached modules to force a reload.
+    module_pattern = re.compile(r'\bwpt(runner|serve)?\b')
+    for name in list(sys.modules):
+        if module_pattern.search(name):
+            del sys.modules[name]
+    from tools import localpaths
+    from tools.wpt import run
+    from tools.wpt.virtualenv import Virtualenv
+    import wptrunner
+    import wptserve
+    for module in (run, wptrunner, wptserve):
+        assert module.__file__.startswith(tools_root), module.__file__
+
+    # vpython, not virtualenv, vends third-party packages in chromium/src.
+    dummy_venv = Virtualenv(path_finder.get_source_dir(),
+                            skip_virtualenv_setup=True)
+    return functools.partial(run.run, dummy_venv)
+
+
 class Product:
     """A product (browser or browser component) that can run web platform tests.
 
@@ -1168,10 +1245,13 @@ def get_devices(args):
 
 
 def main():
-    # This environment fix is needed on windows as codec is trying
-    # to encode in cp1252 rather than utf-8 and throwing errors.
+    # Force log output in utf-8 instead of a locale-dependent encoding. On
+    # Windows, this can be cp1252. See: crbug.com/1371195.
+    if sys.version_info[:2] >= (3, 7):
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    # Also apply utf-8 mode to python subprocesses.
     os.environ['PYTHONUTF8'] = '1'
-
     try:
         adapter = WPTAdapter()
         return adapter.run_test()
@@ -1179,18 +1259,6 @@ def main():
         return exit_codes.INTERRUPTED_EXIT_STATUS
 
 
-# This is not really a "script test" so does not need to manually add
-# any additional compile targets.
-def main_compile_targets(args):
-    json.dump([], args.output)
-
-
 if __name__ == '__main__':
-    # Conform minimally to the protocol defined by ScriptTest.
-    if 'compile_targets' in sys.argv:
-        funcs = {
-            'run': None,
-            'compile_targets': main_compile_targets,
-        }
-        sys.exit(common.run_script(sys.argv[1:], funcs))
+    multiprocessing.set_start_method('spawn')
     sys.exit(main())
