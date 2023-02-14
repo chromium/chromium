@@ -6209,6 +6209,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.RedactionTool" enum="PIIType"
+    expires_after="2023-12-30">
+  <owner>nikj@google.com</owner>
+  <owner>dpchromeos-core-eng@google.com</owner>
+  <summary>
+    Records how many times PIIs are redacted by the Client side log redaction
+    tool.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ReportSending.Online" units="boolean"
     expires_after="2023-06-25">
   <owner>xiangdongkong@google.com</owner>

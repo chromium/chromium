@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -506,6 +507,8 @@ const char* const kUnredactedMacAddresses[] = {
 };
 constexpr size_t kNumUnredactedMacs = std::size(kUnredactedMacAddresses);
 
+constexpr char kFeedbackRedactionToolHistogramName[] = "Feedback.RedactionTool";
+
 }  // namespace
 
 RedactionTool::RedactionTool(const char* const* first_party_extension_ids)
@@ -638,6 +641,10 @@ std::string RedactionTool::RedactMACAddresses(
   }
 
   text.AppendToString(&result);
+
+  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
+                            PIIType::kMACAddress);
+
   return result;
 }
 
@@ -695,6 +702,10 @@ std::string RedactionTool::RedactHashes(
   }
 
   text.AppendToString(&result);
+
+  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
+                            PIIType::kStableIdentifier);
+
   return result;
 }
 
@@ -761,6 +772,10 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
   }
 
   text.AppendToString(&result);
+
+  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
+                            PIIType::kAndroidAppStoragePath);
+
   return result;
 #else
   return input;
@@ -833,6 +848,10 @@ std::string RedactionTool::RedactCustomPatternWithContext(
     post_matched_id.AppendToString(&result);
   }
   text.AppendToString(&result);
+
+  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
+                            pattern.pii_type);
+
   return result;
 }
 
@@ -951,6 +970,10 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
     result += replacement_id;
   }
   text.AppendToString(&result);
+
+  UMA_HISTOGRAM_ENUMERATION(kFeedbackRedactionToolHistogramName,
+                            pattern.pii_type);
+
   return result;
 }
 

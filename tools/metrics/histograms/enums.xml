@@ -81347,6 +81347,28 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="204" label="ERR_CHUNKED_TEXT_WITH_SINGLE_CHUNK"/>
 </enum>
 
+<enum name="PIIType">
+  <summary>
+    Personally identifiable information (PII) types declared in
+    components/feedback/redaction_tool/pii_types.h
+  </summary>
+  <int value="0" label="Indicates No PII. Mainly for testing"/>
+  <int value="1" label="Android App Storage Paths"/>
+  <int value="2" label="Email Addresses"/>
+  <int value="3" label="GAIA(Google Accounts and ID Administration) ID"/>
+  <int value="4" label="IPP (Internet Printing Protocol) Addresses"/>
+  <int value="5" label="IP (Internet Protocol) Addresses"/>
+  <int value="6" label="Location information used by ModemManager"/>
+  <int value="7" label="MAC (Media Access Control) Addresses"/>
+  <int value="8" label="Window titles that appear in UI hierarchy"/>
+  <int value="9" label="URL (Uniform Resource Locator) Addresses"/>
+  <int value="10" label="Serial numbers, which also includes PSM identifiers"/>
+  <int value="11" label="SSID (Serial Set Identifier)"/>
+  <int value="12" label="Stable identifiers"/>
+  <int value="13" label="Volume labels presented in the 'blkid' tool"/>
+  <int value="14" label="Extensible Authentication Protocol (EAP) properties"/>
+</enum>
+
 <enum name="PinAutosubmitBackfillEvent">
   <summary>
     The event generated when backfilling the user preferences for PIN auto
