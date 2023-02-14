@@ -244,6 +244,26 @@ NGBreakAppeal CalculateBreakAppealInside(
   return appeal;
 }
 
+LogicalSize FragmentainerLogicalCapacity(
+    const NGPhysicalBoxFragment& fragmentainer) {
+  DCHECK(fragmentainer.IsFragmentainerBox());
+  LogicalSize logical_size =
+      WritingModeConverter(fragmentainer.Style().GetWritingDirection())
+          .ToLogical(fragmentainer.Size());
+  // TODO(layout-dev): This should really be checking if there are any
+  // descendants that take up block space rather than if it has overflow. In
+  // other words, we would still want to clamp a zero height fragmentainer if
+  // it had content with zero inline size and non-zero block size. This would
+  // likely require us to store an extra flag on NGPhysicalBoxFragment.
+  if (fragmentainer.HasLayoutOverflow()) {
+    // Don't clamp the fragmentainer to a block size of 1 if it is truly a
+    // zero-height column.
+    logical_size.block_size =
+        ClampedToValidFragmentainerCapacity(logical_size.block_size);
+  }
+  return logical_size;
+}
+
 LogicalOffset GetFragmentainerProgression(const NGBoxFragmentBuilder& builder,
                                           NGFragmentationType type) {
   if (type == kFragmentColumn) {
