@@ -24,7 +24,7 @@ import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer
 import {Route, Router} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, ModifierKey} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, MetaKey, ModifierKey} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_remap_keys.html.js';
 
 const SettingsPerDeviceKeyboardRemapKeysElementBase =
@@ -137,6 +137,10 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
 
       /** Menu items for key mapping. */
       keyMapTargets: Object,
+
+      metaKeyLabel: {
+        type: String,
+      },
     };
   }
 
@@ -165,12 +169,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private fakeMetaPref: chrome.settingsPrivate.PrefObject;
   private hasAssistantKey: boolean;
   private hasCapsLockKey: boolean;
-
-  override ready() {
-    super.ready();
-
-    this.setUpKeyMapTargets_();
-  }
+  private metaKeyLabel: string;
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
@@ -202,6 +201,10 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     this.hasCapsLockKey =
         searchedKeyboard.modifierKeys.includes(ModifierKey.CAPS_LOCK);
 
+    // Get MetaKey label from keyboard settings.
+    this.metaKeyLabel = this.getMetaKeyLabel();
+    this.setUpKeyMapTargets();
+
     // Update Prefs according to keyboard modifierRemappings.
     Array.from(this.keyboard.settings.modifierRemappings.keys())
         .forEach(originalKey => {
@@ -212,12 +215,12 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   /**
    * Initializes the dropdown menu options for remapping keys.
    */
-  private setUpKeyMapTargets_() {
+  private setUpKeyMapTargets() {
     // Ordering is according to UX, but values match ModifierKey.
     this.keyMapTargets = [
       {
         value: ModifierKey.META,
-        name: 'Meta',
+        name: this.metaKeyLabel,
       },
       {
         value: ModifierKey.CONTROL,
@@ -298,6 +301,23 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private onSettingsChanged() {
     // TODO(yyhyyh@): Call update keyboard settings API when user changes
     // settings value.
+  }
+
+  private getMetaKeyLabel(): string {
+    switch (this.keyboard.metaKey) {
+      case MetaKey.COMMAND: {
+        return this.i18n('keyboardKeyCommand');
+      }
+      case MetaKey.EXTERNAL_META: {
+        return this.i18n('keyboardKeyExternalMeta');
+      }
+      case MetaKey.LAUNCHER: {
+        return this.i18n('keyboardKeyLauncher');
+      }
+      case MetaKey.SEARCH: {
+        return this.i18n('keyboardKeySearch');
+      }
+    }
   }
 }
 

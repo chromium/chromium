@@ -62,6 +62,13 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     assertEquals(
         ctrlKeyDropdown.shadowRoot.querySelector('select').value,
         ctrlKeyMappedTo);
+
+    // await flushTasks();
+    // Verify that the label for meta key is displayed as the
+    // the target key in keyboard remapping settings.
+    const metaKeyLabel = page.shadowRoot.querySelector('#metaKeyLabel');
+    assertTrue(!!metaKeyLabel);
+    assertEquals(metaKeyLabel.textContent, 'Command');
   });
 
   /**
@@ -99,5 +106,11 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     assertEquals(
         altKeyDrowDown.shadowRoot.querySelector('select').value,
         altKeyMappedTo);
+
+    // Verify that the label for meta key is displayed as the
+    // the target key in the new keyboard remapping settings.
+    const metaKeyLabel = page.shadowRoot.querySelector('#metaKeyLabel');
+    assertTrue(!!metaKeyLabel);
+    assertEquals(metaKeyLabel.textContent, 'Launcher');
   });
 });
