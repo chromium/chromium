@@ -778,7 +778,7 @@ deps = {
   },
 
   'src/ios/third_party/edo/src': {
-      'url': Var('chromium_git') + '/external/github.com/google/eDistantObject.git' + '@' + 'd4d6f7da76f34b87b7b953176ef9e08eda83afb1',
+      'url': Var('chromium_git') + '/external/github.com/google/eDistantObject.git' + '@' + '1e427ab89eeace93b519aaa7e4eb9edd08517bc2',
       'condition': 'checkout_ios',
   },
 
