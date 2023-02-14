@@ -2161,7 +2161,7 @@ fyi_ios_builder(
         category = "iOS",
         short_name = "wk",
     ),
-    xcode = xcode.x13wk,
+    xcode = xcode.x14wk,
 )
 
 fyi_ios_builder(

@@ -180,7 +180,7 @@ xcode = struct(
     # A newer Xcode 14 RC  used on beta bots.
     x14betabots = xcode_enum("14c18"),
     # in use by ios-webkit-tot
-    x13wk = xcode_enum("13a1030dwk"),
+    x14wk = xcode_enum("14c18wk"),
 )
 
 # Free disk space in a machine reserved for build tasks.
