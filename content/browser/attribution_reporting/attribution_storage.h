@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
@@ -20,6 +20,7 @@ namespace content {
 
 class AttributionTrigger;
 class CreateReportResult;
+class StorableSource;
 class StoredSource;
 
 // This class provides an interface for persisting attribution data to
@@ -30,7 +31,7 @@ class AttributionStorage {
  public:
   struct CONTENT_EXPORT StoreSourceResult {
     explicit StoreSourceResult(
-        StorableSource::Result status,
+        attribution_reporting::mojom::StoreSourceResult status,
         absl::optional<base::Time> min_fake_report_time = absl::nullopt,
         absl::optional<int> max_destinations_per_source_site_reporting_origin =
             absl::nullopt,
@@ -44,18 +45,18 @@ class AttributionStorage {
     StoreSourceResult& operator=(const StoreSourceResult&);
     StoreSourceResult& operator=(StoreSourceResult&&);
 
-    StorableSource::Result status;
+    attribution_reporting::mojom::StoreSourceResult status;
 
     // The earliest report time for any fake reports stored alongside the
     // source, if any.
     absl::optional<base::Time> min_fake_report_time;
 
     // Only populated in case of
-    // `StorableSource::Result::kInsufficientUniqueDestinationCapacity`.
+    // `attribution_reporting::mojom::StoreSourceResult::kInsufficientUniqueDestinationCapacity`.
     absl::optional<int> max_destinations_per_source_site_reporting_origin;
 
     // Only populated in case of
-    // `StorableSource::Result::kInsufficientSourceCapacity`.
+    // `attribution_reporting::mojom::StoreSourceResult::kInsufficientSourceCapacity`.
     absl::optional<int> max_sources_per_origin;
   };
 

@@ -1276,25 +1276,6 @@ std::ostream& operator<<(std::ostream& out, const SendResult& info) {
              << ",http_response_code=" << info.http_response_code << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {
-  switch (status) {
-    case StorableSource::Result::kSuccess:
-      return out << "success";
-    case StorableSource::Result::kInternalError:
-      return out << "internalError";
-    case StorableSource::Result::kInsufficientSourceCapacity:
-      return out << "insufficientSourceCapacity";
-    case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
-      return out << "insufficientUniqueDestinationCapacity";
-    case StorableSource::Result::kExcessiveReportingOrigins:
-      return out << "excessiveReportingOrigins";
-    case StorableSource::Result::kProhibitedByBrowserPolicy:
-      return out << "prohibitedByBrowserPolicy";
-    case StorableSource::Result::kSuccessNoised:
-      return out << "successNoised";
-  }
-}
-
 std::ostream& operator<<(std::ostream& out,
                          const AttributionDataModel::DataKey& key) {
   return out << "{reporting_origin=" << key.reporting_origin() << "}";

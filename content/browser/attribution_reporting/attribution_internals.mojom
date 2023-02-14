@@ -8,6 +8,7 @@ import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/source_registration_error.mojom";
 import "components/attribution_reporting/source_type.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
+import "content/browser/attribution_reporting/store_source_result.mojom";
 import "services/network/public/mojom/attribution.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
@@ -173,23 +174,15 @@ struct WebUITrigger {
   Status aggregatable_status;
 };
 
+union SourceStatus {
+  attribution_reporting.mojom.StoreSourceResult store_source_result;
+  attribution_reporting.mojom.SourceRegistrationError json_error;
+};
+
 struct WebUISourceRegistration {
   WebUIRegistration registration;
   attribution_reporting.mojom.SourceType type;
-
-  enum Status {
-    kSuccess,
-    kInvalidJson,
-    kInternalError,
-    kInsufficientSourceCapacity,
-    kInsufficientUniqueDestinationCapacity,
-    kExcessiveReportingOrigins,
-    kProhibitedByBrowserPolicy,
-  };
-
-  Status status;
-  // Only valid if status is `kInvalidJson`.
-  attribution_reporting.mojom.SourceRegistrationError json_error;
+  SourceStatus status;
 };
 
 // Observer for events relevant to the attribution internals WebUI.

@@ -75,9 +75,10 @@ class AttributionInternalsHandlerImpl
   // AttributionObserver:
   void OnSourcesChanged() override;
   void OnReportsChanged(AttributionReport::Type report_type) override;
-  void OnSourceHandled(const StorableSource& source,
-                       absl::optional<uint64_t> cleared_debug_key,
-                       StorableSource::Result result) override;
+  void OnSourceHandled(
+      const StorableSource& source,
+      absl::optional<uint64_t> cleared_debug_key,
+      attribution_reporting::mojom::StoreSourceResult) override;
   void OnReportSent(const AttributionReport& report,
                     bool is_debug_report,
                     const SendResult& info) override;

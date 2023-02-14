@@ -9,6 +9,7 @@
 
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/store_source_result.mojom.h"
 #include "content/common/content_export.h"
 
 namespace attribution_reporting {
@@ -26,20 +27,7 @@ namespace content {
 // Contains attributes specific to a source that hasn't been stored yet.
 class CONTENT_EXPORT StorableSource {
  public:
-  // Represents the potential outcomes from attempting to register a source.
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class Result {
-    kSuccess = 0,
-    kInternalError = 1,
-    kInsufficientSourceCapacity = 2,
-    kInsufficientUniqueDestinationCapacity = 3,
-    kExcessiveReportingOrigins = 4,
-    kProhibitedByBrowserPolicy = 5,
-    kSuccessNoised = 6,
-    kMaxValue = kSuccessNoised,
-  };
+  using Result = ::attribution_reporting::mojom::StoreSourceResult;
 
   // TODO(apaseltiner): Make this constructor test-only.
   StorableSource(CommonSourceInfo common_info,

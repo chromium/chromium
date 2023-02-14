@@ -9,11 +9,12 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {TriggerAttestation} from './attribution.mojom-webui.js';
-import {Handler, HandlerInterface, ObserverInterface, ObserverReceiver, ReportID, WebUIDebugReport, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUISourceRegistration_Status, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {Handler, HandlerInterface, ObserverInterface, ObserverReceiver, ReportID, SourceStatus, WebUIDebugReport, WebUIRegistration, WebUIReport, WebUISource, WebUISource_Attributability, WebUISourceRegistration, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {ReportType} from './attribution_reporting.mojom-webui.js';
 import {SourceRegistrationError} from './source_registration_error.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
+import {StoreSourceResult} from './store_source_result.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
 
 // If kAttributionAggregatableBudgetPerSource changes, update this value
@@ -435,7 +436,7 @@ class SourceRegistration extends Registration {
   constructor(mojo: WebUISourceRegistration) {
     super(mojo.registration);
     this.type = sourceTypeToText(mojo.type);
-    this.status = sourceRegistrationStatusToText(mojo.status, mojo.jsonError);
+    this.status = sourceRegistrationStatusToText(mojo.status);
   }
 }
 
@@ -857,27 +858,30 @@ function attributabilityToText(attributability: WebUISource_Attributability):
   }
 }
 
-function sourceRegistrationStatusToText(
-    status: WebUISourceRegistration_Status,
-    jsonError: SourceRegistrationError): string {
-  switch (status) {
-    case WebUISourceRegistration_Status.kSuccess:
-      return 'Success';
-    case WebUISourceRegistration_Status.kInvalidJson:
-      return `Rejected: invalid JSON: ${
-          sourceRegistrationErrorToText(jsonError)}`;
-    case WebUISourceRegistration_Status.kInternalError:
-      return 'Rejected: internal error';
-    case WebUISourceRegistration_Status.kInsufficientSourceCapacity:
-      return 'Rejected: insufficient source capacity';
-    case WebUISourceRegistration_Status.kInsufficientUniqueDestinationCapacity:
-      return 'Rejected: insufficient unique destination capacity';
-    case WebUISourceRegistration_Status.kExcessiveReportingOrigins:
-      return 'Rejected: excessive reporting origins';
-    case WebUISourceRegistration_Status.kProhibitedByBrowserPolicy:
-      return 'Rejected: prohibited by browser policy';
-    default:
-      return status.toString();
+function sourceRegistrationStatusToText(status: SourceStatus): string {
+  if (status.storeSourceResult !== undefined) {
+    switch (status.storeSourceResult) {
+      case StoreSourceResult.kSuccess:
+      case StoreSourceResult.kSuccessNoised:
+        return 'Success';
+      case StoreSourceResult.kInternalError:
+        return 'Rejected: internal error';
+      case StoreSourceResult.kInsufficientSourceCapacity:
+        return 'Rejected: insufficient source capacity';
+      case StoreSourceResult.kInsufficientUniqueDestinationCapacity:
+        return 'Rejected: insufficient unique destination capacity';
+      case StoreSourceResult.kExcessiveReportingOrigins:
+        return 'Rejected: excessive reporting origins';
+      case StoreSourceResult.kProhibitedByBrowserPolicy:
+        return 'Rejected: prohibited by browser policy';
+      default:
+        return status.toString();
+    }
+  } else if (status.jsonError !== undefined) {
+    return `Rejected: invalid JSON: ${
+        sourceRegistrationErrorToText(status.jsonError)}`;
+  } else {
+    return 'Unknown';
   }
 }
 

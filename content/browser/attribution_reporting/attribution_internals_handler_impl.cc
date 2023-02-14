@@ -37,6 +37,7 @@
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -314,28 +315,6 @@ namespace {
 
 using WebUISourceRegistration =
     ::attribution_internals::mojom::WebUISourceRegistration;
-using WebUISourceRegistrationStatus =
-    ::attribution_internals::mojom::WebUISourceRegistration::Status;
-
-WebUISourceRegistrationStatus GetSourceRegistrationStatus(
-    StorableSource::Result result) {
-  switch (result) {
-    case StorableSource::Result::kSuccess:
-    case StorableSource::Result::kSuccessNoised:
-      return WebUISourceRegistrationStatus::kSuccess;
-    case StorableSource::Result::kInternalError:
-      return WebUISourceRegistrationStatus::kInternalError;
-    case StorableSource::Result::kInsufficientSourceCapacity:
-      return WebUISourceRegistrationStatus::kInsufficientSourceCapacity;
-    case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
-      return WebUISourceRegistrationStatus::
-          kInsufficientUniqueDestinationCapacity;
-    case StorableSource::Result::kExcessiveReportingOrigins:
-      return WebUISourceRegistrationStatus::kExcessiveReportingOrigins;
-    case StorableSource::Result::kProhibitedByBrowserPolicy:
-      return WebUISourceRegistrationStatus::kProhibitedByBrowserPolicy;
-  }
-}
 
 attribution_internals::mojom::WebUIRegistrationPtr GetRegistration(
     base::Time time,
@@ -357,14 +336,15 @@ attribution_internals::mojom::WebUIRegistrationPtr GetRegistration(
 void AttributionInternalsHandlerImpl::OnSourceHandled(
     const StorableSource& source,
     absl::optional<uint64_t> cleared_debug_key,
-    StorableSource::Result result) {
+    attribution_reporting::mojom::StoreSourceResult result) {
   auto web_ui_source = WebUISourceRegistration::New();
   web_ui_source->registration = GetRegistration(
       source.common_info().source_time(), source.common_info().source_origin(),
       source.common_info().reporting_origin(), source.registration_json(),
       cleared_debug_key);
   web_ui_source->type = source.common_info().source_type();
-  web_ui_source->status = GetSourceRegistrationStatus(result);
+  web_ui_source->status =
+      attribution_internals::mojom::SourceStatus::NewStoreSourceResult(result);
 
   for (auto& observer : observers_) {
     observer->OnSourceHandled(web_ui_source.Clone());
@@ -437,8 +417,8 @@ void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
       source_time, source_origin, reporting_origin, header_value,
       /*cleared_debug_key=*/absl::nullopt);
   web_ui_source->type = source_type;
-  web_ui_source->status = WebUISourceRegistrationStatus::kInvalidJson;
-  web_ui_source->json_error = error;
+  web_ui_source->status =
+      attribution_internals::mojom::SourceStatus::NewJsonError(error);
 
   for (auto& observer : observers_) {
     observer->OnSourceHandled(web_ui_source.Clone());

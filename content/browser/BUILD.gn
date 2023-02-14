@@ -128,6 +128,7 @@ source_set("browser") {
     "//content/browser/attribution_reporting:attribution_reporting_proto",
     "//content/browser/attribution_reporting:internals_mojo_bindings",
     "//content/browser/attribution_reporting:mojo_bindings",
+    "//content/browser/attribution_reporting:store_source_result_mojom",
     "//content/browser/background_fetch:background_fetch_proto",
     "//content/browser/background_sync:background_sync_proto",
     "//content/browser/cache_storage:cache_storage_proto",

@@ -747,8 +747,6 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out,
                          StoredSource::ActiveState active_state);
 
-std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
-
 // TODO: Move to test-only public header to be reused by other test code
 // that rely on DataKey
 std::ostream& operator<<(std::ostream& out,
