@@ -87,18 +87,36 @@ NSString* const kTestFormHtml =
 // Tests autofill features in CWVWebViews.
 class WebViewAutofillTest : public WebViewInttestBase {
  protected:
-  WebViewAutofillTest() : autofill_controller_(web_view_.autofillController) {}
+  WebViewAutofillTest()
+      : autofill_controller_(web_view_.autofillController),
+        autofill_controller_delegate_(
+            OCMProtocolMock(@protocol(CWVAutofillControllerDelegate))) {
+    autofill_controller_.delegate = autofill_controller_delegate_;
+  }
 
+  // Loads a test page with a single form and waits until Autofill has parsed
+  // that form.
   [[nodiscard]] bool LoadTestPage() {
     std::string html = base::SysNSStringToUTF8(kTestFormHtml);
     main_frame_id_ = nil;
     GURL url = GetUrlForPageWithHtmlBody(html);
+    [[autofill_controller_delegate_ expect]
+        autofillController:autofill_controller_
+              didFindForms:[OCMArg any]
+                   frameID:[OCMArg any]];
     if (!test::LoadUrl(web_view_, net::NSURLWithGURL(url))) {
       return false;
     }
-    return WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-      return !!GetMainFrameId();
-    });
+    bool frame_appeared =
+        WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+          return !!GetMainFrameId();
+        });
+    if (!frame_appeared) {
+      return false;
+    }
+    [autofill_controller_delegate_
+        verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
+    return true;
   }
 
   [[nodiscard]] bool SubmitForm() {
@@ -160,6 +178,7 @@ class WebViewAutofillTest : public WebViewInttestBase {
   }
 
   CWVAutofillController* autofill_controller_;
+  id autofill_controller_delegate_ = nil;
   id<CWVNavigationDelegate> navigation_delegate_ = nil;
   NSString* main_frame_id_ = nil;
   UIView* dummy_super_view_ = nil;
@@ -172,31 +191,31 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   ASSERT_TRUE(LoadTestPage());
   ASSERT_TRUE(SetFormFieldValue(kTestAddressFieldID, kTestAddressFieldValue));
 
-  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
-  autofill_controller_.delegate = delegate;
-
-  [[delegate expect] autofillController:autofill_controller_
-          didFocusOnFieldWithIdentifier:kTestAddressFieldID
-                              fieldType:kTestFieldType
-                               formName:kTestFormName
-                                frameID:[OCMArg any]
-                                  value:kTestAddressFieldValue
-                          userInitiated:YES];
+  [[autofill_controller_delegate_ expect]
+                 autofillController:autofill_controller_
+      didFocusOnFieldWithIdentifier:kTestAddressFieldID
+                          fieldType:kTestFieldType
+                           formName:kTestFormName
+                            frameID:[OCMArg any]
+                              value:kTestAddressFieldValue
+                      userInitiated:YES];
   NSString* focus_script =
       [NSString stringWithFormat:@"document.getElementById('%@').focus();",
                                  kTestAddressFieldID];
   NSError* focus_error = nil;
   test::EvaluateJavaScript(web_view_, focus_script, &focus_error);
   ASSERT_FALSE(focus_error);
-  [delegate verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
+  [autofill_controller_delegate_
+      verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 
-  [[delegate expect] autofillController:autofill_controller_
-           didBlurOnFieldWithIdentifier:kTestAddressFieldID
-                              fieldType:kTestFieldType
-                               formName:kTestFormName
-                                frameID:[OCMArg any]
-                                  value:kTestAddressFieldValue
-                          userInitiated:NO];
+  [[autofill_controller_delegate_ expect]
+                autofillController:autofill_controller_
+      didBlurOnFieldWithIdentifier:kTestAddressFieldID
+                         fieldType:kTestFieldType
+                          formName:kTestFormName
+                           frameID:[OCMArg any]
+                             value:kTestAddressFieldValue
+                     userInitiated:NO];
   NSString* blur_script =
       [NSString stringWithFormat:
                     @"var event = new Event('blur', {bubbles:true});"
@@ -205,15 +224,17 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   NSError* blur_error = nil;
   test::EvaluateJavaScript(web_view_, blur_script, &blur_error);
   ASSERT_FALSE(blur_error);
-  [delegate verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
+  [autofill_controller_delegate_
+      verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 
-  [[delegate expect] autofillController:autofill_controller_
-          didInputInFieldWithIdentifier:kTestAddressFieldID
-                              fieldType:kTestFieldType
-                               formName:kTestFormName
-                                frameID:[OCMArg any]
-                                  value:kTestAddressFieldValue
-                          userInitiated:NO];
+  [[autofill_controller_delegate_ expect]
+                 autofillController:autofill_controller_
+      didInputInFieldWithIdentifier:kTestAddressFieldID
+                          fieldType:kTestFieldType
+                           formName:kTestFormName
+                            frameID:[OCMArg any]
+                              value:kTestAddressFieldValue
+                      userInitiated:NO];
   // The 'input' event listener defined in form.js is only called during the
   // bubbling phase.
   NSString* input_script =
@@ -224,12 +245,14 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   NSError* input_error = nil;
   test::EvaluateJavaScript(web_view_, input_script, &input_error);
   ASSERT_FALSE(input_error);
-  [delegate verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
+  [autofill_controller_delegate_
+      verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 
-  [[delegate expect] autofillController:autofill_controller_
-                  didSubmitFormWithName:kTestFormName
-                                frameID:[OCMArg any]
-                          userInitiated:NO];
+  [[autofill_controller_delegate_ expect]
+         autofillController:autofill_controller_
+      didSubmitFormWithName:kTestFormName
+                    frameID:[OCMArg any]
+              userInitiated:NO];
   // The 'submit' event listener defined in form.js is only called during the
   // bubbling phase.
   NSString* submit_script =
@@ -240,14 +263,12 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   NSError* submit_error = nil;
   test::EvaluateJavaScript(web_view_, submit_script, &submit_error);
   ASSERT_FALSE(submit_error);
-  [delegate verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
+  [autofill_controller_delegate_
+      verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 }
 
 // Tests that CWVAutofillController can fetch, fill, and clear suggestions.
 TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
-  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
-  autofill_controller_.delegate = delegate;
-
   ASSERT_TRUE(test_server_->Start());
   ASSERT_TRUE(LoadTestPage());
   ASSERT_TRUE(SetFormFieldValue(kTestNameFieldID, kTestNameFieldValue));
@@ -262,7 +283,7 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
     [invocation getArgument:&decision_handler atIndex:5];
     decision_handler(CWVAutofillProfileUserDecisionAccepted);
   };
-  [[[delegate stub] andDo:invocation_handler]
+  [[[autofill_controller_delegate_ stub] andDo:invocation_handler]
                     autofillController:autofill_controller_
       confirmSaveForNewAutofillProfile:[OCMArg any]
                             oldProfile:[OCMArg any]
@@ -275,20 +296,22 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
   ASSERT_TRUE(LoadTestPage());
 
   // The input element needs to be focused before suggestions can be fetched.
-  [[delegate expect] autofillController:autofill_controller_
-          didFocusOnFieldWithIdentifier:kTestAddressFieldID
-                              fieldType:kTestFieldType
-                               formName:kTestFormName
-                                frameID:[OCMArg any]
-                                  value:[OCMArg any]
-                          userInitiated:YES];
+  [[autofill_controller_delegate_ expect]
+                 autofillController:autofill_controller_
+      didFocusOnFieldWithIdentifier:kTestAddressFieldID
+                          fieldType:kTestFieldType
+                           formName:kTestFormName
+                            frameID:[OCMArg any]
+                              value:[OCMArg any]
+                      userInitiated:YES];
   NSString* focus_script =
       [NSString stringWithFormat:@"document.getElementById('%@').focus()",
                                  kTestAddressFieldID];
   NSError* focus_error = nil;
   test::EvaluateJavaScript(web_view_, focus_script, &focus_error);
   ASSERT_TRUE(!focus_error);
-  [delegate verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
+  [autofill_controller_delegate_
+      verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 
   NSArray<CWVAutofillSuggestion*>* fetched_suggestions = FetchSuggestions();
   ASSERT_EQ(1U, fetched_suggestions.count);
