@@ -687,6 +687,12 @@ const char kOptimizationGuideDebugLogsDescription[] =
     "Enables the optimization guide to log and save debug messages that can be "
     "shown in the internals page.";
 
+const char kOptimizationGuidePushNotificationClientName[] =
+    "Enable optimization guide push notification client";
+const char kOptimizationGuidePushNotificationClientDescription[] =
+    "Enables the client that handles incoming push notifications on behalf of "
+    "the optimization guide.";
+
 const char kOptimizationGuideModelDownloadingName[] =
     "Allow optimization guide model downloads";
 const char kOptimizationGuideModelDownloadingDescription[] =

@@ -606,6 +606,11 @@ extern const char kOptimizationGuideDebugLogsDescription[];
 extern const char kDownloadServiceForegroundSessionName[];
 extern const char kDownloadServiceForegroundSessionDescription[];
 
+// Title and description for the flag to enable optimization guide's push
+// notifications
+extern const char kOptimizationGuidePushNotificationClientName[];
+extern const char kOptimizationGuidePushNotificationClientDescription[];
+
 // Title and description for the flag to enable TFLite model downloading.
 extern const char kOptimizationGuideModelDownloadingName[];
 extern const char kOptimizationGuideModelDownloadingDescription[];
