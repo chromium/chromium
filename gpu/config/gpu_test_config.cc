@@ -107,7 +107,7 @@ GPUTestConfig::~GPUTestConfig() = default;
 
 void GPUTestConfig::set_os(int32_t os) {
   DCHECK_EQ(0, os & ~(kOsAndroid | kOsWin | kOsMac | kOsLinux | kOsChromeOS |
-                      kOsFuchsia));
+                      kOsFuchsia | kOsIOS));
   os_ = os;
 }
 
@@ -227,6 +227,7 @@ bool GPUTestBotConfig::IsValid() const {
     case kOsChromeOS:
     case kOsAndroid:
     case kOsFuchsia:
+    case kOsIOS:
       break;
     default:
       return false;
