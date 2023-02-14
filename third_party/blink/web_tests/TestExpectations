@@ -6959,3 +6959,4 @@ crbug.com/1415565 external/wpt/css/css-contain/content-visibility/content-visibi
 # Sheriff 2023-02-14
 crbug.com/1348835 virtual/threaded-no-composited-antialiasing/animations/sample-on-last-keyframe.html [ Failure Pass Timeout ]
 crbug.com/1414978 [ Win ] external/wpt/webrtc/RTCPeerConnection-GC.https.html [ Failure Pass ]
+crbug.com/1416271 [ Linux ] external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-nav.html [ Failure Pass ]
