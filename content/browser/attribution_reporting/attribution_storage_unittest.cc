@@ -3236,26 +3236,28 @@ TEST_F(
           StoredSource::ActiveState::kReachedEventLevelAttributionLimit)));
 }
 
-TEST_F(AttributionStorageTest, AggregatableReportFiltering) {
+TEST_F(AttributionStorageTest,
+       AggregatableTriggerDataOrValuesNotSet_Registered) {
   storage()->StoreSource(
       SourceBuilder()
-          .SetFilterData(*AttributionFilterData::Create({{"abc", {"123"}}}))
           .SetAggregationKeys(
               *attribution_reporting::AggregationKeys::FromKeys({{"0", 1}}))
           .Build());
 
-  EXPECT_EQ(
-      MaybeCreateAndStoreAggregatableReport(
-          TriggerBuilder()
-              .SetAggregatableTriggerData(
-                  {*attribution_reporting::AggregatableTriggerData::Create(
-                      absl::MakeUint128(/*high=*/1, /*low=*/0),
-                      /*source_keys=*/{"0"},
-                      /*filters=*/
-                      AttributionFilters(),
-                      /*not_filters=*/AttributionFilters())})
-              .Build()),
-      AttributionTrigger::AggregatableResult::kNoHistograms);
+  EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(
+                TriggerBuilder()
+                    .SetAggregatableTriggerData(
+                        {attribution_reporting::AggregatableTriggerData()})
+                    .Build()),
+            AttributionTrigger::AggregatableResult::kNoHistograms);
+
+  EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(
+                TriggerBuilder()
+                    .SetAggregatableValues(
+                        {*attribution_reporting::AggregatableValues::Create(
+                            {{"0", 123}})})
+                    .Build()),
+            AttributionTrigger::AggregatableResult::kSuccess);
 }
 
 TEST_F(AttributionStorageTest,
