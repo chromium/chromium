@@ -192,6 +192,10 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/settings/website/WebSiteRedirectFragment.java",
   "java/src/com/ark/browser/ui/fragment/settings/website/WebSiteSettingsFragment.java",
 
+  "java/src/com/ark/browser/ui/fragment/wallpaper/WallpaperManager.java",
+  "java/src/com/ark/browser/ui/fragment/wallpaper/WallpaperPreviewer.java",
+  "java/src/com/ark/browser/ui/fragment/wallpaper/WallpaperSelectFragment.java",
+
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
   "java/src/com/ark/browser/ui/drawable/CircleDrawable.java",
 

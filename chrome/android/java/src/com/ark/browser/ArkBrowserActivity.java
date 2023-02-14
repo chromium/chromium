@@ -7,11 +7,13 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,8 +29,11 @@ import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.fragment.ArkMainFragment;
+import com.ark.browser.ui.fragment.wallpaper.WallpaperManager;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.KeyguardUtil;
+import com.bumptech.glide.Glide;
+import com.zpj.bus.ZBus;
 import com.zpj.fragmentation.anim.DefaultHorizontalAnimator;
 import com.zpj.fragmentation.anim.FragmentAnimator;
 import com.zpj.skin.SkinEngine;
@@ -56,6 +61,7 @@ import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
+import java.io.File;
 import java.util.HashSet;
 
 public class ArkBrowserActivity extends AsyncInitializationActivity {
@@ -102,6 +108,13 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
     @Override
     protected void onPreCreate() {
         super.onPreCreate();
+
+        WallpaperManager.observer(this, new ZBus.SingleConsumer<String>() {
+            @Override
+            public void onAccept(String path) {
+                setWallpaper(path);
+            }
+        });
 
         // 加载广告规则
         AdBlock.loadHosts(this);
@@ -277,9 +290,21 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         try (TraceEvent te = TraceEvent.scoped("ChromeActivity.doLayoutInflation")) {
             setContentView(R.layout.activity_browser);
 
+            setWallpaper(WallpaperManager.getWallpaperPath());
+
             loadRootFragment(R.id.container_root, mFragment);
 
             onInitialLayoutInflationComplete();
+        }
+    }
+
+    public void setWallpaper(String path) {
+        if (TextUtils.isEmpty(path)) {
+            return;
+        }
+        File file = new File(path);
+        if (file.exists()) {
+            Glide.with(this).load(file).into(((ImageView) findViewById(R.id.wallpaper)));
         }
     }
 

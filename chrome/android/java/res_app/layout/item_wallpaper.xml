@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ark.browser.ui.widget.ShadowLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:orientation="horizontal"
+    app:hl_shadowLimit="4dp"
+    app:hl_cornerRadius="8dp"
+    app:hl_shadowColor="#80cccccc"
+    >
+
+    <ImageView
+        android:id="@+id/img_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        />
+
+<!--    <com.zyao89.view.zloading.ZLoadingView-->
+<!--        android:id="@+id/loading_view"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center"-->
+<!--        app:z_type="RotateCircleBuilder"-->
+<!--        app:z_color="@color/google_grey_400"-->
+<!--        android:visibility="gone"-->
+<!--        tools:visibility="visible"-->
+<!--        />-->
+
+
+</com.ark.browser.ui.widget.ShadowLayout >

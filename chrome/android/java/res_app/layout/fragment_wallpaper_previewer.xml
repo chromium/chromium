@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@drawable/bg_wallpaper"
+    >
+
+    <include layout="@layout/layout_search_bar"
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginHorizontal="14dp"
+        />
+
+    <!--    <include layout="@layout/layout_header"/>-->
+
+    <com.zpj.widget.toolbar.ZToolBar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:z_toolbar_fillStatusBar="true"
+        app:z_toolbar_showBottomLine="false"
+        app:z_toolbar_statusBarMode="light"
+        app:z_toolbar_leftType="imageButton"
+        app:z_toolbar_leftImageResource="@drawable/ic_arrow_back_white_24dp"
+        app:z_toolbar_centerType="textView"
+        app:z_toolbar_centerTextColor="@android:color/white"
+        app:z_toolbar_center_text_gravity="center"
+        app:z_toolbar_centerSubTextColor="#f8f8f8"
+        app:z_toolbar_rightType="imageButton"
+        app:z_toolbar_rightImageResource="@drawable/btn_back"
+        app:z_toolbar_background_fill_status_bar="true"
+        app:z_toolbar_background="@drawable/bg_wallpaper_viewer_toolbar_bar"
+        app:z_toolbar_isLightStyle="true"
+        />
+
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bg_wallpaper_viewer_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+
+        <TextView
+            android:id="@+id/btn_show_searchbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="切换搜索框"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingStart="20dp"
+            android:textColor="#fff"
+            />
+
+        <TextView
+            android:id="@+id/btn_delete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="删除"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#fff"
+            android:visibility="invisible"
+            />
+
+        <TextView
+            android:id="@+id/btn_sure"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="应用"
+            android:gravity="end|center_vertical"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingEnd="20dp"
+            android:textColor="#fff"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -12,5 +12,14 @@
     android:layout_height="match_parent"
     android:layout_weight="1" >
 
+    <ImageView
+        android:id="@+id/wallpaper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bg_wallpaper"
+        android:scaleType="centerCrop"
+        android:tint="?attr/wallpaperTintColor"
+        />
+
 </FrameLayout>
 

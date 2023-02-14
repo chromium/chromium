@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="@drawable/bg_wallpaper">
+
+    <ImageView
+        android:id="@+id/img_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_browser_engine_baidu_logo" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="4dp"
+        android:layout_margin="8dp"
+        android:background="@drawable/round_rect_search"
+        android:elevation="4dp"
+        >
+
+        <!--            android:background="@drawable/round_rect_search"-->
+
+        <ImageView
+            android:id="@+id/btn_qsb_search"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:background="?android:attr/actionBarItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_search_v2"
+            android:tint="?attr/backgroundColor"
+            android:layout_marginStart="6dp"
+            />
+
+        <TextView
+            android:id="@+id/btn_qsb_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            android:text="@string/search_widget_title"
+            android:paddingHorizontal="4dp"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="?attr/backgroundColor"
+            />
+
+        <!--            android:textColor="#b8b8b8"-->
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:background="?android:attr/actionBarItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="6dp"
+            android:src="@drawable/ic_qrcode"
+            android:tint="?attr/backgroundColor"/>
+
+        <ImageView
+            android:id="@+id/btn_qsb_icon"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"
+            android:background="?android:attr/actionBarItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="6dp"
+            android:layout_marginEnd="6dp"
+            android:src="@drawable/ic_browser_engine_baidu"
+            android:tint="?attr/backgroundColor"/>
+
+    </LinearLayout>
+
+</FrameLayout>

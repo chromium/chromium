@@ -8,6 +8,10 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
 import com.ark.browser.tab.TabListManager;
+import com.ark.browser.ui.fragment.wallpaper.WallpaperSelectFragment;
+import com.zpj.fragmentation.dialog.ZDialog;
+import com.zpj.fragmentation.dialog.impl.AttachListDialogFragment;
+import com.zpj.utils.ClickHelper;
 
 import org.chromium.chrome.R;
 
@@ -28,11 +32,30 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         mSwitcher.setAdapter(new ArkTabAdapter());
 
         // TODO
-        mLauncherLayout.setOnClickListener(v -> {
-            if (isInLauncher()) {
-                mSwitcher.open();
-            }
-        });
+        ClickHelper.with(mLauncherLayout)
+                .setOnClickListener((view1, x, y) -> {
+                    if (isInLauncher()) {
+                        mSwitcher.open();
+                    }
+                })
+                .setOnLongClickListener(new ClickHelper.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view, float x, float y) {
+                        ZDialog.attach()
+                                .addItem("壁纸")
+                                .setOnSelectListener((fragment, i, s) -> {
+                                    if (i == 0) {
+                                        fragment.start(new WallpaperSelectFragment());
+                                    }
+                                    fragment.dismiss();
+                                })
+                                .setTouchPoint(x, y)
+                                .show(view);
+                        return true;
+                    }
+                });
+
+
     }
 
     public SwitcherRecyclerLayout getSwitcher() {
@@ -155,8 +178,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         if (isInTabSwitcher()) {
             mSwitcher.close();
             return true;
-        }
-        else if (!isInLauncher()) {
+        } else if (!isInLauncher()) {
             goToLauncher();
             return true;
         }
@@ -215,7 +237,6 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         animator.setDuration(360);
         animator.start();
     }
-
 
 
 }

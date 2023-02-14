@@ -6,12 +6,15 @@ import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,14 +34,18 @@ import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.base.BaseFragment;
 import com.ark.browser.ui.fragment.dialog.DownloadDialog;
 import com.ark.browser.ui.fragment.dialog.ExitDialog;
+import com.ark.browser.ui.fragment.wallpaper.WallpaperManager;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
 import com.ark.browser.ui.widget.homepage.TabSwitcherManager;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
+import com.bumptech.glide.Glide;
 import com.zpj.bus.ZBus;
 import com.zpj.fragmentation.dialog.ZDialog;
+import com.zpj.utils.Callback;
 import com.zpj.utils.FileUtils;
+import com.zpj.utils.PrefsHelper;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -65,6 +72,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.PageTransition;
+
+import java.io.File;
 
 public class ArkMainFragment extends BaseFragment implements
         PauseResumeWithNativeObserver, StartStopWithNativeObserver, InsetObserverView.WindowInsetObserver {

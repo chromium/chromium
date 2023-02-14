@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    >
+
+    <include layout="@layout/layout_header"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_above="@id/line2"
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tool_bar"
+        >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <View
+        android:layout_above="@+id/bottom_bar"
+        android:id="@+id/line2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#80f5f5f5"
+        />
+
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <TextView
+            android:id="@+id/btn_select_all"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="全选"
+            android:gravity="center_vertical"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingStart="20dp"
+            android:textColor="?attr/textColorMajor"
+            android:visibility="invisible"
+            />
+
+        <TextView
+            android:id="@+id/btn_delete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="删除"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="?attr/textColorMajor"
+            android:visibility="invisible"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/btn_edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="编辑"
+            android:gravity="end|center_vertical"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingEnd="20dp"
+            android:textColor="?attr/textColorMajor"
+            android:drawableEnd="@drawable/ic_edit_24dp"
+            android:drawablePadding="4dp"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>

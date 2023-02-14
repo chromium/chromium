@@ -71,7 +71,13 @@ public class HttpUtils {
 //                    String body = charset.decode(buffer).toString();
                     Log.d("HttpUtils", "body=" + body);
 
-                    ThreadPool.runOnUIThread(() -> callback.onSuccess(body));
+                    ThreadPool.runOnUIThread(() -> {
+                        try {
+                            callback.onSuccess(body);
+                        } catch (Exception e) {
+                            callback.onFailed(e);
+                        }
+                    });
                     bodyStream.close();
                 } else {
                     throw new Exception(isToStream(connection.getErrorStream(), charset));
@@ -145,7 +151,7 @@ public class HttpUtils {
 
     public interface Callback {
         void onFailed(Exception e);
-        void onSuccess(String body);
+        void onSuccess(String body) throws Exception;
     }
 
 }
