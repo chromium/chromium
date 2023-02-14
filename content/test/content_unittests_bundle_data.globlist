@@ -6,6 +6,7 @@
 # files are used to update their .filelist counterparts.
 
 //content/test/data/**
+-//content/test/data/accessibility/**
 -//content/test/data/**/OWNERS
 -//content/test/data/**/DIR_METADATA
 -//content/test/data/**/README.md
