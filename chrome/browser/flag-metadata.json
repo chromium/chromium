@@ -1191,6 +1191,11 @@
     "expiry_milestone": 107
   },
   {
+    "name": "cras-split-alsa-usb-internal",
+    "owners": [ "whalechang@google.com", "chromeos-audio-sw@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "credential-provider-extension-promo",
     "owners": [ "huitingyu", "hiramahmood", "bling-flags@google.com" ],
     "expiry_milestone": 114
@@ -1942,11 +1947,6 @@
     "name": "enable-core-location-backend",
     "owners": [ "jameshollyer@google.com" ],
     "expiry_milestone": 100
-  },
-  {
-    "name": "enable-cras-split-alsa-usb-internal",
-    "owners": [ "whalechang@google.com", "chromeos-audio-sw@google.com" ],
-    "expiry_milestone": 125
   },
   {
     "name": "enable-critical-persisted-tab-data",

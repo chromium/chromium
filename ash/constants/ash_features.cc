@@ -179,10 +179,6 @@ BASE_FEATURE(kAudioPeripheralVolumeGranularity,
              "AudioPeripheralVolumeGranularity",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCrasSplitAlsaUsbInternal,
-             "CrasSplitAlsaUsbInternal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the AudioSourceFetcher resamples the audio for speech
 // recongnition.
 BASE_FEATURE(kAudioSourceFetcherResampling,

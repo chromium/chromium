@@ -60964,6 +60964,8 @@ from previous Chrome versions.
   <int value="-370876369" label="ContextualSearchLiteralTapSearch:enabled"/>
   <int value="-369565225" label="SkipServiceWorkerCheckInstallOnly:disabled"/>
   <int value="-369150124" label="SendTabToSelfV2:enabled"/>
+  <int value="-368106169"
+      label="CrOSLateBootCrasSplitAlsaUSBInternal:disabled"/>
   <int value="-367474066" label="DialogTouchBar:enabled"/>
   <int value="-366949535" label="KeyboardShortcutViewerApp:enabled"/>
   <int value="-365920680" label="ImageCaptureAPI:disabled"/>
@@ -62361,7 +62363,6 @@ from previous Chrome versions.
   <int value="420160748" label="CornerShortcuts:enabled"/>
   <int value="420356964" label="OobeJelly:enabled"/>
   <int value="420682005" label="AdaptiveButtonInTopToolbar:enabled"/>
-  <int value="421172666" label="CrasSplitAlsaUsbInternal:enabled"/>
   <int value="421986951" label="UseRealColorSpaceForAndroidVideo:disabled"/>
   <int value="422307097" label="PhysicalWeb:disabled"/>
   <int value="422670720" label="ContextualSearchLongpressPanelHelp:disabled"/>
@@ -64255,6 +64256,7 @@ from previous Chrome versions.
   <int value="1520181151" label="PrintServerScaling:disabled"/>
   <int value="1520754417" label="ConfirmationChip:enabled"/>
   <int value="1524178643" label="AppServiceExternalProtocol:enabled"/>
+  <int value="1524631783" label="CrOSLateBootCrasSplitAlsaUSBInternal:enabled"/>
   <int value="1526489044" label="NtpRealboxMatchSearchboxTheme:disabled"/>
   <int value="1526574513" label="HoldingSpaceRefresh:enabled"/>
   <int value="1526718531"
@@ -64345,7 +64347,6 @@ from previous Chrome versions.
   <int value="1586251544" label="VoiceButtonInTopToolbar:disabled"/>
   <int value="1586476635" label="LargeFaviconFromGoogle:enabled"/>
   <int value="1587521886" label="SSLCommittedInterstitials:enabled"/>
-  <int value="1588184545" label="CrasSplitAlsaUsbInternal:disabled"/>
   <int value="1588716465" label="CrostiniUseLxd4:disabled"/>
   <int value="1589341623" label="disable-easy-unlock"/>
   <int value="1590278995"
