@@ -46,6 +46,7 @@ namespace {
 
 const int kMinLargeCursorSize = 25;
 const int kMaxLargeCursorSize = 64;
+const int kWideDisplayThreshold = 2400;
 
 }  // namespace
 
@@ -179,6 +180,23 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
       display_manager->IsInUnifiedMode() ||
       display_manager->screen_capture_is_active()) {
     return true;
+  }
+
+  // On specific CrOS devices (e.g. herobrine), driving a wide display requires
+  // more display hardware resources than a lower-resolution panel. If a wide
+  // display is connected as an external monitor, we can run out of hardware
+  // planes to display a separate cursor. As a result, we need to force the
+  // software cursor in this scenario.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSwCursorOnWideDisplays) &&
+      display_manager->num_connected_displays() > 1) {
+    for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+      DCHECK(display.is_valid());
+      if (display.is_valid() &&
+          display.size().width() >= kWideDisplayThreshold) {
+        return true;
+      }
+    }
   }
 
   if (shell->fullscreen_magnifier_controller()->IsEnabled())

@@ -281,6 +281,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSkipForceOnlineSignInForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSkipReorderNudgeShowThresholdDurationForTest[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwCursorOnWideDisplays[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kStabilizeTimeDependentViewForTests[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

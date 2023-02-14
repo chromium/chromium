@@ -871,6 +871,11 @@ const char kSkipForceOnlineSignInForTesting[] =
 const char kSkipReorderNudgeShowThresholdDurationForTest[] =
     "skip-reorder-nudge-show-threshold-duration";
 
+// Used to force software cursors on specific devices that do not have enough
+// planes to display a hardware cursor when connected to displays with higher
+// widths in pixels.
+const char kSwCursorOnWideDisplays[] = "sw-cursor-on-wide-displays";
+
 // If set, the device will be forced to stay in clamshell UI mode but screen
 // auto rotation will be supported. E.g, chromebase device Dooly.
 const char kSupportsClamshellAutoRotation[] =
