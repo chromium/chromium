@@ -43,7 +43,8 @@ export class PermissionChecker {
       return true;
     }
 
-    return !CommandStore.denySignedOut(command);
+    return !CommandStore.COMMAND_DATA[command] ||
+        !CommandStore.COMMAND_DATA[command].denySignedOut;
   }
 
   /** @private */

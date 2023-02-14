@@ -12,7 +12,7 @@
  * If you are looking to add a user command, follow the below steps for best
  * integration with existing components:
  * 1. Add the command to the |Command| enum.
- * 2. Add a command below in COMMAND_DATA. Fill in each of the
+ * 2. Add a command below in CommandStore.COMMAND_DATA. Fill in each of the
  * relevant JSON keys.
  * Be sure to add a msg id and define it in chromevox/messages/messages.js which
  * describes the command. Please also add a category msg id so that the command
@@ -29,7 +29,7 @@ export class CommandStore {
    * @return {string|undefined} The message id, if any.
    */
   static messageForCommand(command) {
-    return (COMMAND_DATA[command] || {}).msgId;
+    return (CommandStore.COMMAND_DATA[command] || {}).msgId;
   }
 
   /**
@@ -38,7 +38,7 @@ export class CommandStore {
    * @return {string|undefined} The category, if any.
    */
   static categoryForCommand(command) {
-    return (COMMAND_DATA[command] || {}).category;
+    return (CommandStore.COMMAND_DATA[command] || {}).category;
   }
 
   /**
@@ -47,8 +47,8 @@ export class CommandStore {
    * @return {!Command|undefined} The command, if any.
    */
   static commandForMessage(msgId) {
-    for (const commandName in COMMAND_DATA) {
-      const command = COMMAND_DATA[commandName];
+    for (const commandName in CommandStore.COMMAND_DATA) {
+      const command = CommandStore.COMMAND_DATA[commandName];
       if (command.msgId === msgId) {
         return commandName;
       }
@@ -62,8 +62,8 @@ export class CommandStore {
    */
   static commandsForCategory(category) {
     const ret = [];
-    for (const cmd in COMMAND_DATA) {
-      const struct = COMMAND_DATA[cmd];
+    for (const cmd in CommandStore.COMMAND_DATA) {
+      const struct = CommandStore.COMMAND_DATA[cmd];
       if (category === struct.category) {
         ret.push(cmd);
       }
@@ -73,11 +73,13 @@ export class CommandStore {
 
   /**
    * @param {!Command} command The command to query.
-   * @return {boolean} Whether this command is denied in signed out contexts.
+   * @return {boolean} Whether or not this command is denied in the OOBE.
    */
   static denySignedOut(command) {
-    return Boolean(COMMAND_DATA[command]) &&
-        Boolean(COMMAND_DATA[command].denySignedOut);
+    if (!CommandStore.COMMAND_DATA[command]) {
+      return false;
+    }
+    return Boolean(CommandStore.COMMAND_DATA[command].denySignedOut);
   }
 }
 
@@ -302,7 +304,7 @@ export const CommandCategory = {
  *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
  *             other signed-out contexts. Defaults to false.
  */
-const COMMAND_DATA = {
+CommandStore.COMMAND_DATA = {
   [Command.TOGGLE_STICKY_MODE]: {
     announce: false,
     msgId: 'toggle_sticky_mode',
