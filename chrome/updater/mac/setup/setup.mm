@@ -233,6 +233,19 @@ int DoSetup(UpdaterScope scope) {
                "cause Gatekeeper to show a prompt to the user.";
   }
 
+  // If there is no --wake-all task, install one now.
+  if (!Launchd::GetInstance()->PlistExists(LaunchdDomain(scope),
+                                           ServiceLaunchdType(scope),
+                                           CopyWakeLaunchdName(scope))) {
+    absl::optional<base::FilePath> path = GetUpdaterExecutablePath(scope);
+    if (!path || !CreateWakeLaunchdJobPlist(scope, *path)) {
+      return kErrorFailedToCreateWakeLaunchdJobPlist;
+    }
+    if (!StartUpdateWakeVersionedLaunchdJob(scope)) {
+      return kErrorFailedToStartLaunchdWakeJob;
+    }
+  }
+
   return kErrorOk;
 }
 
