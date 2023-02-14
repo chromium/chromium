@@ -706,6 +706,28 @@ bool IsTokenAllowedForAnyValue(const CSSParserToken& token) {
   }
 }
 
+bool IsGeneratedImage(const CSSValueID id) {
+  switch (id) {
+    case CSSValueID::kLinearGradient:
+    case CSSValueID::kRadialGradient:
+    case CSSValueID::kConicGradient:
+    case CSSValueID::kRepeatingLinearGradient:
+    case CSSValueID::kRepeatingRadialGradient:
+    case CSSValueID::kRepeatingConicGradient:
+    case CSSValueID::kWebkitLinearGradient:
+    case CSSValueID::kWebkitRadialGradient:
+    case CSSValueID::kWebkitRepeatingLinearGradient:
+    case CSSValueID::kWebkitRepeatingRadialGradient:
+    case CSSValueID::kWebkitGradient:
+    case CSSValueID::kWebkitCrossFade:
+    case CSSValueID::kPaint:
+      return true;
+
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 void Complete4Sides(CSSValue* side[4]) {
@@ -3254,6 +3276,10 @@ static CSSValue* ConsumePaint(CSSParserTokenRange& args,
 static CSSValue* ConsumeGeneratedImage(CSSParserTokenRange& range,
                                        const CSSParserContext& context) {
   CSSValueID id = range.Peek().FunctionId();
+  if (!IsGeneratedImage(id)) {
+    return nullptr;
+  }
+
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
   CSSValue* result = nullptr;
@@ -3384,24 +3410,9 @@ static CSSValue* ConsumeImageSet(CSSParserTokenRange& range,
   return image_set;
 }
 
-static bool IsGeneratedImage(CSSValueID id) {
-  return id == CSSValueID::kLinearGradient ||
-         id == CSSValueID::kRadialGradient ||
-         id == CSSValueID::kConicGradient ||
-         id == CSSValueID::kRepeatingLinearGradient ||
-         id == CSSValueID::kRepeatingRadialGradient ||
-         id == CSSValueID::kRepeatingConicGradient ||
-         id == CSSValueID::kWebkitLinearGradient ||
-         id == CSSValueID::kWebkitRadialGradient ||
-         id == CSSValueID::kWebkitRepeatingLinearGradient ||
-         id == CSSValueID::kWebkitRepeatingRadialGradient ||
-         id == CSSValueID::kWebkitGradient ||
-         id == CSSValueID::kWebkitCrossFade || id == CSSValueID::kPaint;
-}
-
 CSSValue* ConsumeImage(CSSParserTokenRange& range,
                        const CSSParserContext& context,
-                       ConsumeGeneratedImagePolicy generated_image) {
+                       ConsumeGeneratedImagePolicy generated_image_policy) {
   AtomicString uri = ConsumeUrlAsStringView(range, context).ToAtomicString();
   if (!uri.IsNull()) {
     return CreateCSSImageValueWithReferrer(uri, context);
@@ -3413,7 +3424,7 @@ CSSValue* ConsumeImage(CSSParserTokenRange& range,
          RuntimeEnabledFeatures::CSSImageSetEnabled())) {
       return ConsumeImageSet(range, context);
     }
-    if (generated_image == ConsumeGeneratedImagePolicy::kAllow &&
+    if (generated_image_policy == ConsumeGeneratedImagePolicy::kAllow &&
         IsGeneratedImage(id)) {
       return ConsumeGeneratedImage(range, context);
     }
