@@ -40,6 +40,7 @@ class ScreenManager {
                            uint32_t connector,
                            gfx::Point origin,
                            std::unique_ptr<drmModeModeInfo> pmode,
+                           bool enable_vrr = false,
                            uint64_t base_connector_id = 0);
     ControllerConfigParams(const ControllerConfigParams& other);
     ControllerConfigParams(ControllerConfigParams&& other);
@@ -52,6 +53,7 @@ class ScreenManager {
     const uint64_t base_connector_id;
     const gfx::Point origin;
     std::unique_ptr<drmModeModeInfo> mode;
+    const bool enable_vrr;
   };
   using ControllerConfigsList = std::vector<ControllerConfigParams>;
 
@@ -148,7 +150,8 @@ class ScreenManager {
       uint32_t connector,
       const gfx::Point& origin,
       const drmModeModeInfo& mode,
-      const DrmOverlayPlaneList& modeset_planes);
+      const DrmOverlayPlaneList& modeset_planes,
+      bool enable_vrr);
 
   // Configures a display controller to be disabled. The display controller is
   // identified by |crtc|. Controller modeset props are added into
@@ -191,7 +194,8 @@ class ScreenManager {
                                  HardwareDisplayController* controller,
                                  const gfx::Point& origin,
                                  const drmModeModeInfo& mode,
-                                 const DrmOverlayPlaneList& modeset_planes);
+                                 const DrmOverlayPlaneList& modeset_planes,
+                                 bool enable_vrr);
   void GetEnableControllerProps(CommitRequest* commit_request,
                                 HardwareDisplayController* controller,
                                 const DrmOverlayPlaneList& modeset_planes);

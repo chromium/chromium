@@ -597,6 +597,44 @@ TEST_F(ScreenManagerTest, CheckChangingMode) {
   EXPECT_EQ(new_mode.hdisplay, mode.hdisplay);
 }
 
+TEST_F(ScreenManagerTest, CheckChangingVrrState) {
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
+
+  // Modeset with default VRR state.
+  {
+    ScreenManager::ControllerConfigsList controllers_to_enable;
+    controllers_to_enable.emplace_back(
+        kPrimaryDisplayId, drm_, crtc_id, connector_id,
+        GetPrimaryBounds().origin(),
+        std::make_unique<drmModeModeInfo>(kDefaultMode), /*enable_vrr=*/false);
+    screen_manager_->ConfigureDisplayControllers(
+        controllers_to_enable, display::kTestModeset | display::kCommitModeset);
+
+    const HardwareDisplayController* hdc =
+        screen_manager_->GetDisplayController(GetPrimaryBounds());
+    EXPECT_EQ(0U, hdc->crtc_controllers()[0]->vrr_enabled());
+  }
+
+  // Modeset with a changed VRR state.
+  {
+    ScreenManager::ControllerConfigsList controllers_to_enable;
+    controllers_to_enable.emplace_back(
+        kPrimaryDisplayId, drm_, crtc_id, connector_id,
+        GetPrimaryBounds().origin(),
+        std::make_unique<drmModeModeInfo>(kDefaultMode), /*enable_vrr=*/true);
+    screen_manager_->ConfigureDisplayControllers(
+        controllers_to_enable, display::kTestModeset | display::kCommitModeset);
+
+    const HardwareDisplayController* hdc =
+        screen_manager_->GetDisplayController(GetPrimaryBounds());
+    EXPECT_EQ(1U, hdc->crtc_controllers()[0]->vrr_enabled());
+  }
+}
+
 TEST_F(ScreenManagerTest, CheckForControllersInMirroredMode) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
   uint32_t primary_crtc_id = drm_->crtc_property(0).id;

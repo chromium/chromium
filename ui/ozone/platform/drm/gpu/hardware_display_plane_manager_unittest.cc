@@ -202,7 +202,8 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
 
       CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
           fake_drm_->crtc_property(i).id, fake_drm_->connector_property(i).id,
-          kDefaultMode, gfx::Point(), &state, std::move(overlays));
+          kDefaultMode, gfx::Point(), &state, std::move(overlays),
+          /*enable_vrr=*/false);
       commit_request.push_back(std::move(request));
     }
 
@@ -224,21 +225,21 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
       overlays.emplace_back(fake_buffer_, nullptr);
       commit_request.push_back(CrtcCommitRequest::EnableCrtcRequest(
           fake_drm_->crtc_property(0).id, kConnectorIdBase, kDefaultMode,
-          gfx::Point(), &state, std::move(overlays)));
+          gfx::Point(), &state, std::move(overlays), /*enable_vrr=*/false));
     }
     {
       DrmOverlayPlaneList overlays;
       overlays.emplace_back(fake_buffer_, nullptr);
       commit_request.push_back(CrtcCommitRequest::EnableCrtcRequest(
           fake_drm_->crtc_property(1).id, kConnectorIdBase + 1, kDefaultMode,
-          gfx::Point(), &state, std::move(overlays)));
+          gfx::Point(), &state, std::move(overlays), /*enable_vrr=*/false));
     }
     {
       DrmOverlayPlaneList overlays;
       overlays.emplace_back(fake_buffer_, nullptr);
       commit_request.push_back(CrtcCommitRequest::EnableCrtcRequest(
           fake_drm_->crtc_property(2).id, kConnectorIdBase + 3, kDefaultMode,
-          gfx::Point(), &state, std::move(overlays)));
+          gfx::Point(), &state, std::move(overlays), /*enable_vrr=*/false));
     }
 
     EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
@@ -301,7 +302,8 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, Modeset) {
   overlays.push_back(plane.Clone());
   commit_request.push_back(CrtcCommitRequest::EnableCrtcRequest(
       fake_drm_->crtc_property(0).id, fake_drm_->connector_property(0).id,
-      kDefaultMode, gfx::Point(), &state, std::move(overlays)));
+      kDefaultMode, gfx::Point(), &state, std::move(overlays),
+      /*enable_vrr=*/false));
   EXPECT_FALSE(fake_drm_->plane_manager()->Commit(
       std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
@@ -448,7 +450,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, Modeset) {
 
   commit_request.push_back(CrtcCommitRequest::EnableCrtcRequest(
       fake_drm_->crtc_property(0).id, fake_drm_->connector_property(0).id,
-      kDefaultMode, gfx::Point(), &state, std::move(overlays)));
+      kDefaultMode, gfx::Point(), &state, std::move(overlays),
+      /*enable_vrr=*/false));
   EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
       std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
@@ -482,7 +485,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterModeset) {
   overlays.emplace_back(fake_buffer_, nullptr);
   commit_request.push_back(CrtcCommitRequest::EnableCrtcRequest(
       fake_drm_->crtc_property(0).id, fake_drm_->connector_property(0).id,
-      kDefaultMode, gfx::Point(), &state, std::move(overlays)));
+      kDefaultMode, gfx::Point(), &state, std::move(overlays),
+      /*enable_vrr=*/false));
   EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
       std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
 
@@ -519,7 +523,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterDisable) {
     overlays.emplace_back(fake_buffer_, nullptr);
     commit_request.push_back(CrtcCommitRequest::EnableCrtcRequest(
         fake_drm_->crtc_property(0).id, fake_drm_->connector_property(0).id,
-        kDefaultMode, gfx::Point(), &state, std::move(overlays)));
+        kDefaultMode, gfx::Point(), &state, std::move(overlays),
+        /*enable_vrr=*/false));
     EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
         std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
   }
@@ -541,6 +546,68 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterDisable) {
                         &crtc_prop_for_name);
   EXPECT_EQ(kActivePropId, crtc_prop_for_name.id);
   EXPECT_EQ(0U, crtc_prop_for_name.value);
+}
+
+TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckVrrAfterModeset) {
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/2);
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kVrrEnabledPropId, .value = 0});
+  fake_drm_->InitializeState(drm_state, /*use_atomic=*/true);
+  HardwareDisplayPlaneList state;
+
+  // Check initial VRR_ENABLED state.
+  {
+    DrmDevice::Property crtc_prop_vrr_enabled;
+    ScopedDrmObjectPropertyPtr crtc_props =
+        fake_drm_->GetObjectProperties(kCrtcIdBase, DRM_MODE_OBJECT_CRTC);
+    GetDrmPropertyForName(fake_drm_.get(), crtc_props.get(), "VRR_ENABLED",
+                          &crtc_prop_vrr_enabled);
+    EXPECT_EQ(kVrrEnabledPropId, crtc_prop_vrr_enabled.id);
+    EXPECT_EQ(0U, crtc_prop_vrr_enabled.value);
+  }
+
+  // Check VRR_ENABLED state is set by modeset.
+  {
+    CommitRequest commit_request;
+    DrmOverlayPlaneList overlays;
+    overlays.emplace_back(fake_buffer_, nullptr);
+    commit_request.push_back(CrtcCommitRequest::EnableCrtcRequest(
+        fake_drm_->crtc_property(0).id, fake_drm_->connector_property(0).id,
+        kDefaultMode, gfx::Point(), &state, std::move(overlays),
+        /*enable_vrr=*/true));
+    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+        std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
+
+    DrmDevice::Property crtc_prop_vrr_enabled;
+    ScopedDrmObjectPropertyPtr crtc_props =
+        fake_drm_->GetObjectProperties(kCrtcIdBase, DRM_MODE_OBJECT_CRTC);
+    GetDrmPropertyForName(fake_drm_.get(), crtc_props.get(), "VRR_ENABLED",
+                          &crtc_prop_vrr_enabled);
+    EXPECT_EQ(kVrrEnabledPropId, crtc_prop_vrr_enabled.id);
+    EXPECT_EQ(1U, crtc_prop_vrr_enabled.value);
+  }
+
+  // Check VRR_ENABLED is reset by modeset.
+  {
+    CommitRequest commit_request;
+    DrmOverlayPlaneList overlays;
+    overlays.emplace_back(fake_buffer_, nullptr);
+    commit_request.push_back(CrtcCommitRequest::EnableCrtcRequest(
+        fake_drm_->crtc_property(0).id, fake_drm_->connector_property(0).id,
+        kDefaultMode, gfx::Point(), &state, std::move(overlays),
+        /*enable_vrr=*/false));
+    EXPECT_TRUE(fake_drm_->plane_manager()->Commit(
+        std::move(commit_request), DRM_MODE_ATOMIC_ALLOW_MODESET));
+
+    DrmDevice::Property crtc_prop_vrr_enabled;
+    ScopedDrmObjectPropertyPtr crtc_props =
+        fake_drm_->GetObjectProperties(kCrtcIdBase, DRM_MODE_OBJECT_CRTC);
+    GetDrmPropertyForName(fake_drm_.get(), crtc_props.get(), "VRR_ENABLED",
+                          &crtc_prop_vrr_enabled);
+    EXPECT_EQ(kVrrEnabledPropId, crtc_prop_vrr_enabled.id);
+    EXPECT_EQ(0U, crtc_prop_vrr_enabled.value);
+  }
 }
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultiplePlaneAssignment) {

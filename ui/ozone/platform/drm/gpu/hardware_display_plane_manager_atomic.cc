@@ -75,12 +75,14 @@ bool HardwareDisplayPlaneManagerAtomic::SetCrtcProps(
     drmModeAtomicReq* atomic_request,
     uint32_t crtc_id,
     bool set_active,
-    uint32_t mode_id) {
+    uint32_t mode_id,
+    bool enable_vrr) {
   // Only making a copy here to retrieve the the props IDs. The state will be
   // updated only after a successful modeset.
   CrtcProperties modeset_props = GetCrtcStateForCrtcId(crtc_id).properties;
   modeset_props.active.value = static_cast<uint64_t>(set_active);
   modeset_props.mode_id.value = mode_id;
+  modeset_props.vrr_enabled.value = enable_vrr;
 
   bool status =
       AddPropertyIfValid(atomic_request, crtc_id, modeset_props.active);
@@ -131,7 +133,7 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(CommitRequest commit_request,
       all_planes_lists.insert(crtc_request.plane_list());
 
     uint32_t mode_id = 0;
-    if (crtc_request.should_enable()) {
+    if (crtc_request.should_enable_crtc()) {
       auto mode_blob = drm_->CreatePropertyBlob(&crtc_request.mode(),
                                                 sizeof(crtc_request.mode()));
       status &= (mode_blob != nullptr);
@@ -144,12 +146,13 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(CommitRequest commit_request,
     uint32_t crtc_id = crtc_request.crtc_id();
 
     status &= SetCrtcProps(atomic_request.get(), crtc_id,
-                           crtc_request.should_enable(), mode_id);
+                           crtc_request.should_enable_crtc(), mode_id,
+                           crtc_request.enable_vrr());
     status &=
         SetConnectorProps(atomic_request.get(), crtc_request.connector_id(),
-                          crtc_request.should_enable() * crtc_id);
+                          crtc_request.should_enable_crtc() * crtc_id);
 
-    if (crtc_request.should_enable()) {
+    if (crtc_request.should_enable_crtc()) {
       DCHECK(crtc_request.plane_list());
       if (!AssignOverlayPlanes(crtc_request.plane_list(),
                                crtc_request.overlays(), crtc_id)) {

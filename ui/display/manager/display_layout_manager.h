@@ -40,6 +40,7 @@ class DisplayLayoutManager {
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       RefreshRateThrottleState new_throttle_state,
+      bool new_vrr_enabled_state,
       std::vector<DisplayConfigureRequest>* requests) const = 0;
 
   virtual std::vector<DisplaySnapshot*> GetDisplayStates() const = 0;

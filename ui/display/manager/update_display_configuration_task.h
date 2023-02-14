@@ -31,7 +31,8 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
       /*displays=*/const std::vector<DisplaySnapshot*>&,
       /*unassociated_displays=*/const std::vector<DisplaySnapshot*>&,
       /*new_display_state=*/MultipleDisplayState,
-      /*new_power_state=*/chromeos::DisplayPowerState)>;
+      /*new_power_state=*/chromeos::DisplayPowerState,
+      /*new_vrr_state=*/bool)>;
 
   UpdateDisplayConfigurationTask(
       NativeDisplayDelegate* delegate,
@@ -40,6 +41,7 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
       chromeos::DisplayPowerState new_power_state,
       int power_flags,
       RefreshRateThrottleState refresh_rate_throttle_state,
+      bool new_vrr_state,
       bool force_configure,
       ConfigurationType configuration_type,
       ResponseCallback callback);
@@ -103,6 +105,10 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   // Whether the configuration task should select a low refresh rate
   // for the internal display.
   RefreshRateThrottleState refresh_rate_throttle_state_;
+
+  // The requested VRR enabled state which the configuration task should apply
+  // to all capable displays.
+  bool new_vrr_state_;
 
   bool force_configure_;
 

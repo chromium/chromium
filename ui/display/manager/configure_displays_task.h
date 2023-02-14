@@ -28,11 +28,17 @@ class NativeDisplayDelegate;
 struct DISPLAY_MANAGER_EXPORT DisplayConfigureRequest {
   DisplayConfigureRequest(DisplaySnapshot* display,
                           const DisplayMode* mode,
+                          const gfx::Point& origin,
+                          bool enable_vrr);
+
+  DisplayConfigureRequest(DisplaySnapshot* display,
+                          const DisplayMode* mode,
                           const gfx::Point& origin);
 
   DisplaySnapshot* display;
   const DisplayMode* mode;
   gfx::Point origin;
+  bool enable_vrr;
 };
 
 using RequestAndStatusList = std::pair<const DisplayConfigureRequest*, bool>;
@@ -54,6 +60,10 @@ using RequestAndStatusList = std::pair<const DisplayConfigureRequest*, bool>;
 // If we're constrained by (1), reducing the resolution of any display will
 // relieve pressure. However if we're constrained by (2), only those displays on
 // the saturated link can relieve pressure.
+//
+// Note that the |enable_vrr| property is not modified in the event of a
+// downgrade, as it does not affect bandwidth and changing its value would not
+// cause a failing request to succeed.
 class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
     : public NativeDisplayObserver {
  public:

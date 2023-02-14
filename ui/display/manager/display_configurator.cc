@@ -23,6 +23,7 @@
 #include "ui/display/manager/display_manager_util.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/update_display_configuration_task.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
@@ -126,6 +127,7 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       RefreshRateThrottleState new_throttle_state,
+      bool new_vrr_enabled_state,
       std::vector<DisplayConfigureRequest>* requests) const override;
   DisplayStateList GetDisplayStates() const override;
   bool IsMirroring() const override;
@@ -258,6 +260,7 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
     RefreshRateThrottleState new_throttle_state,
+    bool new_vrr_enabled_state,
     std::vector<DisplayConfigureRequest>* requests) const {
   std::vector<DisplayState> states = ParseDisplays(displays);
   std::vector<bool> display_power;
@@ -270,9 +273,10 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
   // Framebuffer dimensions.
   gfx::Size size;
 
-  for (size_t i = 0; i < displays.size(); ++i) {
+  for (auto* display : displays) {
     requests->push_back(DisplayConfigureRequest(
-        displays[i], displays[i]->current_mode(), gfx::Point()));
+        display, display->current_mode(), gfx::Point(),
+        new_vrr_enabled_state && display->IsVrrCapable()));
   }
 
   switch (new_display_state) {
@@ -775,7 +779,7 @@ void DisplayConfigurator::ForceInitialConfigure() {
       native_display_delegate_.get(), layout_manager_.get(),
       requested_display_state_, GetRequestedPowerState(),
       kSetDisplayPowerForceProbe, kRefreshRateThrottleDisabled,
-      /*force_configure=*/true, kConfigurationTypeFull,
+      /*new_vrr_state=*/false, /*force_configure=*/true, kConfigurationTypeFull,
       base::BindOnce(&DisplayConfigurator::OnConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
   configuration_task_->Run();
@@ -1051,7 +1055,7 @@ void DisplayConfigurator::RunPendingConfiguration() {
       requested_display_state_, pending_power_state_, pending_power_flags_,
       pending_refresh_rate_throttle_state_.value_or(
           kRefreshRateThrottleDisabled),
-      force_configure_, configuration_type,
+      /*new_vrr_state=*/false, force_configure_, configuration_type,
       base::BindOnce(&DisplayConfigurator::OnConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -1074,7 +1078,8 @@ void DisplayConfigurator::OnConfigured(
     const std::vector<DisplaySnapshot*>& displays,
     const std::vector<DisplaySnapshot*>& unassociated_displays,
     MultipleDisplayState new_display_state,
-    chromeos::DisplayPowerState new_power_state) {
+    chromeos::DisplayPowerState new_power_state,
+    bool new_vrr_state_) {
   VLOG(1) << "OnConfigured: success=" << success << " new_display_state="
           << MultipleDisplayStateToString(new_display_state)
           << " new_power_state=" << DisplayPowerStateToString(new_power_state);

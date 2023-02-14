@@ -105,7 +105,8 @@ class HardwareDisplayController {
   // |commit_request|.
   void GetModesetProps(CommitRequest* commit_request,
                        const DrmOverlayPlaneList& modeset_planes,
-                       const drmModeModeInfo& mode);
+                       const drmModeModeInfo& mode,
+                       bool enable_vrr);
   // Gets the props required to enable/disable a CRTC onto |commit_request|.
   void GetEnableProps(CommitRequest* commit_request,
                       const DrmOverlayPlaneList& modeset_planes);
@@ -199,7 +200,8 @@ class HardwareDisplayController {
   void GetModesetPropsForCrtcs(CommitRequest* commit_request,
                                const DrmOverlayPlaneList& modeset_planes,
                                bool use_current_crtc_mode,
-                               const drmModeModeInfo& mode);
+                               const drmModeModeInfo& mode,
+                               absl::optional<bool> enable_vrr);
   void OnModesetComplete(const DrmOverlayPlaneList& modeset_planes);
   PageFlipResult ScheduleOrTestPageFlip(
       const DrmOverlayPlaneList& plane_list,

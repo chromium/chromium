@@ -118,6 +118,7 @@ void ParamsToTracedValue(
     param_dict.Add("crtc", param.crtc);
     param_dict.Add("connector", param.connector);
     param_dict.Add("origin", param.origin.ToString());
+    param_dict.Add("enable_vrr", param.enable_vrr);
 
     {
       auto drm_dict = param_dict.AddItem("drm");
@@ -206,6 +207,7 @@ ScreenManager::ControllerConfigParams::ControllerConfigParams(
     uint32_t connector,
     gfx::Point origin,
     std::unique_ptr<drmModeModeInfo> pmode,
+    bool enable_vrr,
     uint64_t base_connector)
     : display_id(display_id),
       drm(drm),
@@ -214,7 +216,8 @@ ScreenManager::ControllerConfigParams::ControllerConfigParams(
       base_connector_id(base_connector ? base_connector
                                        : static_cast<uint64_t>(connector)),
       origin(origin),
-      mode(std::move(pmode)) {}
+      mode(std::move(pmode)),
+      enable_vrr(enable_vrr) {}
 
 ScreenManager::ControllerConfigParams::ControllerConfigParams(
     const ControllerConfigParams& other)
@@ -223,7 +226,8 @@ ScreenManager::ControllerConfigParams::ControllerConfigParams(
       crtc(other.crtc),
       connector(other.connector),
       base_connector_id(other.base_connector_id),
-      origin(other.origin) {
+      origin(other.origin),
+      enable_vrr(other.enable_vrr) {
   if (other.mode) {
     drmModeModeInfo mode_obj = *other.mode.get();
     mode = std::make_unique<drmModeModeInfo>(mode_obj);
@@ -237,7 +241,8 @@ ScreenManager::ControllerConfigParams::ControllerConfigParams(
       crtc(other.crtc),
       connector(other.connector),
       base_connector_id(other.base_connector_id),
-      origin(other.origin) {
+      origin(other.origin),
+      enable_vrr(other.enable_vrr) {
   if (other.mode) {
     drmModeModeInfo mode_obj = *other.mode.get();
     mode = std::make_unique<drmModeModeInfo>(mode_obj);
@@ -421,7 +426,8 @@ bool ScreenManager::TestAndSetPreferredModifiers(
           std::make_pair(modifiers.empty(), primary_modifier);
 
       GetModesetControllerProps(&commit_request, controller, params.origin,
-                                *params.mode, modeset_planes);
+                                *params.mode, modeset_planes,
+                                params.enable_vrr);
     } else {
       controller->GetDisableProps(&commit_request);
     }
@@ -475,7 +481,8 @@ bool ScreenManager::TestAndSetLinearModifier(
         return false;
 
       GetModesetControllerProps(&commit_request, controller, params.origin,
-                                *params.mode, modeset_planes);
+                                *params.mode, modeset_planes,
+                                params.enable_vrr);
     } else {
       controller->GetDisableProps(&commit_request);
     }
@@ -542,7 +549,8 @@ bool ScreenManager::TestModesetWithOverlays(
       does_an_overlay_exist |= modeset_planes.size() > 1;
 
       GetModesetControllerProps(&commit_request, controller, params.origin,
-                                *params.mode, modeset_planes);
+                                *params.mode, modeset_planes,
+                                params.enable_vrr);
     } else {
       controller->GetDisableProps(&commit_request);
     }
@@ -586,7 +594,7 @@ bool ScreenManager::Modeset(const ControllerConfigsList& controllers_params,
 
       SetDisplayControllerForEnableAndGetProps(
           &commit_request, params.drm, params.crtc, params.connector,
-          params.origin, *params.mode, modeset_planes);
+          params.origin, *params.mode, modeset_planes, params.enable_vrr);
 
     } else {
       bool disable_set = SetDisableDisplayControllerForDisableAndGetProps(
@@ -611,7 +619,8 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
     uint32_t connector,
     const gfx::Point& origin,
     const drmModeModeInfo& mode,
-    const DrmOverlayPlaneList& modeset_planes) {
+    const DrmOverlayPlaneList& modeset_planes,
+    bool enable_vrr) {
   HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc);
   DCHECK(controllers_.end() != it)
       << "Display controller (crtc=" << crtc << ") doesn't exist.";
@@ -621,14 +630,16 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
   // If nothing changed just enable the controller. Note, we perform an exact
   // comparison on the mode since the refresh rate may have changed.
   if (SameMode(mode, crtc_controller->mode()) &&
-      origin == controller->origin()) {
+      origin == controller->origin() &&
+      enable_vrr == crtc_controller->vrr_enabled()) {
     if (!controller->IsEnabled()) {
       // Even if there is a mirrored display, Modeset the CRTC with its mode in
       // the original controller so that only this CRTC is affected by the mode.
       // Otherwise it could apply a mode with the same resolution and refresh
       // rate but with different timings to the other CRTC.
       GetModesetControllerProps(commit_request, controller,
-                                controller->origin(), mode, modeset_planes);
+                                controller->origin(), mode, modeset_planes,
+                                enable_vrr);
     } else {
       // Just get props to re-enable the controller re-using the current state.
       GetEnableControllerProps(commit_request, controller, modeset_planes);
@@ -648,7 +659,7 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
   }
 
   GetModesetControllerProps(commit_request, controller, origin, mode,
-                            modeset_planes);
+                            modeset_planes, enable_vrr);
 }
 
 bool ScreenManager::SetDisableDisplayControllerForDisableAndGetProps(
@@ -677,7 +688,7 @@ void ScreenManager::UpdateControllerStateAfterModeset(
     const CommitRequest& commit_request,
     bool did_succeed) {
   for (const CrtcCommitRequest& crtc_request : commit_request) {
-    bool was_enabled = (crtc_request.should_enable());
+    bool was_enabled = (crtc_request.should_enable_crtc());
 
     HardwareDisplayControllers::iterator it =
         FindDisplayController(drm, crtc_request.crtc_id());
@@ -928,11 +939,12 @@ void ScreenManager::GetModesetControllerProps(
     HardwareDisplayController* controller,
     const gfx::Point& origin,
     const drmModeModeInfo& mode,
-    const DrmOverlayPlaneList& modeset_planes) {
+    const DrmOverlayPlaneList& modeset_planes,
+    bool enable_vrr) {
   DCHECK(!controller->crtc_controllers().empty());
 
   controller->set_origin(origin);
-  controller->GetModesetProps(commit_request, modeset_planes, mode);
+  controller->GetModesetProps(commit_request, modeset_planes, mode, enable_vrr);
 }
 
 DrmWindow* ScreenManager::FindWindowAt(const gfx::Rect& bounds) const {

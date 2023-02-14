@@ -59,7 +59,8 @@ class HardwareDisplayPlaneManagerAtomic : public HardwareDisplayPlaneManager {
   bool SetCrtcProps(drmModeAtomicReq* atomic_request,
                     uint32_t crtc_id,
                     bool set_active,
-                    uint32_t mode_id);
+                    uint32_t mode_id,
+                    bool enable_vrr);
   bool SetConnectorProps(drmModeAtomicReq* atomic_request,
                          uint32_t connector_id,
                          uint32_t crtc_id);

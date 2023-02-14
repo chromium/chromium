@@ -95,9 +95,10 @@ HardwareDisplayController::~HardwareDisplayController() = default;
 void HardwareDisplayController::GetModesetProps(
     CommitRequest* commit_request,
     const DrmOverlayPlaneList& modeset_planes,
-    const drmModeModeInfo& mode) {
+    const drmModeModeInfo& mode,
+    bool enable_vrr) {
   GetModesetPropsForCrtcs(commit_request, modeset_planes,
-                          /*use_current_crtc_mode=*/false, mode);
+                          /*use_current_crtc_mode=*/false, mode, enable_vrr);
 }
 
 void HardwareDisplayController::GetEnableProps(
@@ -106,14 +107,16 @@ void HardwareDisplayController::GetEnableProps(
   // TODO(markyacoub): Simplify and remove the use of empty_mode.
   drmModeModeInfo empty_mode = {};
   GetModesetPropsForCrtcs(commit_request, modeset_planes,
-                          /*use_current_crtc_mode=*/true, empty_mode);
+                          /*use_current_crtc_mode=*/true, empty_mode,
+                          /*enable_vrr=*/absl::nullopt);
 }
 
 void HardwareDisplayController::GetModesetPropsForCrtcs(
     CommitRequest* commit_request,
     const DrmOverlayPlaneList& modeset_planes,
     bool use_current_crtc_mode,
-    const drmModeModeInfo& mode) {
+    const drmModeModeInfo& mode,
+    absl::optional<bool> enable_vrr) {
   DCHECK(commit_request);
 
   GetDrmDevice()->plane_manager()->BeginFrame(&owned_hardware_planes_);
@@ -126,7 +129,8 @@ void HardwareDisplayController::GetModesetPropsForCrtcs(
 
     CrtcCommitRequest request = CrtcCommitRequest::EnableCrtcRequest(
         controller->crtc(), controller->connector(), modeset_mode, origin_,
-        &owned_hardware_planes_, std::move(overlays));
+        &owned_hardware_planes_, std::move(overlays),
+        enable_vrr.value_or(controller->vrr_enabled()));
     commit_request->push_back(std::move(request));
   }
 }
@@ -144,7 +148,7 @@ void HardwareDisplayController::UpdateState(
   watchdog_.Disarm();
 
   // Verify that the current state matches the requested state.
-  if (crtc_request.should_enable() && IsEnabled()) {
+  if (crtc_request.should_enable_crtc() && IsEnabled()) {
     DCHECK(!crtc_request.overlays().empty());
     // TODO(markyacoub): This should be absorbed in the commit request.
     ResetCursor();

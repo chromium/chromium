@@ -334,7 +334,8 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
                     const std::vector<DisplaySnapshot*>& displays,
                     const std::vector<DisplaySnapshot*>& unassociated_displays,
                     MultipleDisplayState new_display_state,
-                    chromeos::DisplayPowerState new_power_state);
+                    chromeos::DisplayPowerState new_power_state,
+                    bool new_vrr_state);
 
   // Updates the current and pending power state and notifies observers.
   void UpdatePowerState(chromeos::DisplayPowerState new_power_state);

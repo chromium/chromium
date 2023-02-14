@@ -172,6 +172,8 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(bool use_atomic,
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc*/ 2, movable_planes);
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kVrrEnabledPropId, .value = 0});
   drm_->InitializeState(drm_state, use_atomic);
   primary_crtc_ = drm_->crtc_property(0).id;
   secondary_crtc_ = drm_->crtc_property(1).id;
@@ -187,7 +189,8 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(bool use_atomic,
 bool HardwareDisplayControllerTest::ModesetWithPlanes(
     const DrmOverlayPlaneList& modeset_planes) {
   CommitRequest commit_request;
-  controller_->GetModesetProps(&commit_request, modeset_planes, kDefaultMode);
+  controller_->GetModesetProps(&commit_request, modeset_planes, kDefaultMode,
+                               /*enable_vrr=*/false);
   CommitRequest request_for_update = commit_request;
   bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                               DRM_MODE_ATOMIC_ALLOW_MODESET);
@@ -270,6 +273,12 @@ TEST_F(HardwareDisplayControllerTest, CrtcPropsAfterModeset) {
     GetDrmPropertyForName(drm_.get(), crtc_props.get(), "MODE_ID", &prop);
     EXPECT_EQ(kModePropId, prop.id);
     EXPECT_GT(prop.value, 0U);
+  }
+  {
+    DrmDevice::Property prop = {};
+    GetDrmPropertyForName(drm_.get(), crtc_props.get(), "VRR_ENABLED", &prop);
+    EXPECT_EQ(kVrrEnabledPropId, prop.id);
+    EXPECT_EQ(0U, prop.value);
   }
 }
 
@@ -458,6 +467,12 @@ TEST_F(HardwareDisplayControllerTest, CheckDisableResetsProps) {
     DrmDevice::Property prop = {};
     GetDrmPropertyForName(drm_.get(), crtc_props.get(), "MODE_ID", &prop);
     EXPECT_EQ(kModePropId, prop.id);
+    EXPECT_EQ(0U, prop.value);
+  }
+  {
+    DrmDevice::Property prop = {};
+    GetDrmPropertyForName(drm_.get(), crtc_props.get(), "VRR_ENABLED", &prop);
+    EXPECT_EQ(kVrrEnabledPropId, prop.id);
     EXPECT_EQ(0U, prop.value);
   }
 

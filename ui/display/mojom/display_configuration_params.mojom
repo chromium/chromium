@@ -12,4 +12,5 @@ struct DisplayConfigurationParams {
   int64 id;
   gfx.mojom.Point origin;
   display.mojom.DisplayMode? mode;
+  bool enable_vrr;
 };

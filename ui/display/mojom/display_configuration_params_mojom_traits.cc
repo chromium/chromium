@@ -22,6 +22,7 @@ bool StructTraits<display::mojom::DisplayConfigurationParamsDataView,
   out->id = data.id();
   out->origin = origin;
   out->mode = std::move(mode);
+  out->enable_vrr = data.enable_vrr();
 
   return true;
 }

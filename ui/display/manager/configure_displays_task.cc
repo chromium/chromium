@@ -175,7 +175,8 @@ void UpdateAttemptSucceededUma(
     VLOG(2) << "Configured status=" << display_success
             << " display=" << request.display->display_id()
             << " origin=" << request.origin.ToString()
-            << " mode=" << (request.mode ? request.mode->ToString() : "null");
+            << " mode=" << (request.mode ? request.mode->ToString() : "null")
+            << " enable_vrr=" << request.enable_vrr;
   }
 }
 
@@ -225,8 +226,14 @@ void UpdateFinalStatusUma(
 
 DisplayConfigureRequest::DisplayConfigureRequest(DisplaySnapshot* display,
                                                  const DisplayMode* mode,
+                                                 const gfx::Point& origin,
+                                                 bool enable_vrr)
+    : display(display), mode(mode), origin(origin), enable_vrr(enable_vrr) {}
+
+DisplayConfigureRequest::DisplayConfigureRequest(DisplaySnapshot* display,
+                                                 const DisplayMode* mode,
                                                  const gfx::Point& origin)
-    : display(display), mode(mode), origin(origin) {}
+    : DisplayConfigureRequest(display, mode, origin, /*enable_vrr=*/false) {}
 
 ConfigureDisplaysTask::ConfigureDisplaysTask(
     NativeDisplayDelegate* delegate,
@@ -259,7 +266,7 @@ void ConfigureDisplaysTask::Run() {
     LogIfInvalidRequestForInternalDisplay(request);
 
     config_requests.emplace_back(request.display->display_id(), request.origin,
-                                 request.mode);
+                                 request.mode, request.enable_vrr);
 
     if (is_first_attempt) {
       const std::string uma_name_prefix = GetUmaNamePrefixForRequest(request);
@@ -315,7 +322,7 @@ void ConfigureDisplaysTask::OnFirstAttemptConfigured(bool config_success) {
     final_requests_status_.emplace_back(&request, true);
 
     config_requests.emplace_back(request.display->display_id(), request.origin,
-                                 request.mode);
+                                 request.mode, request.enable_vrr);
   }
 
   uint32_t modeset_flags = display::kCommitModeset;
@@ -353,7 +360,8 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
     last_successful_config_parameters_.clear();
     for (const auto& request : requests_) {
       last_successful_config_parameters_.emplace_back(
-          request.display->display_id(), request.origin, request.mode);
+          request.display->display_id(), request.origin, request.mode,
+          request.enable_vrr);
     }
   }
 
@@ -402,6 +410,10 @@ void ConfigureDisplaysTask::OnConfigured(bool config_success) {
     for (const DisplayConfigureRequest& request : requests_) {
       request.display->set_current_mode(request.mode);
       request.display->set_origin(request.origin);
+      if (request.display->IsVrrCapable()) {
+        request.display->set_variable_refresh_rate_state(
+            request.enable_vrr ? display::kVrrEnabled : display::kVrrDisabled);
+      }
     }
   }
 
