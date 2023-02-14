@@ -179,15 +179,11 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   using WriteBufferCallback = base::OnceCallback<void(void* buffer)>;
   // TODO(penghuang): Remove it when GrContext::updateBackendTexture() supports
   // compressed texture and callback.
-  bool WritePixelsWithCallback(size_t data_size,
-                               size_t stride,
-                               WriteBufferCallback callback);
-  using ReadBufferCallback = base::OnceCallback<void(const void* buffer)>;
-  bool ReadPixelsWithCallback(size_t data_size,
-                              size_t stride,
-                              ReadBufferCallback callback);
+  bool WritePixelsWithCallback(WriteBufferCallback callback);
+  using ReadBufferCallback = base::OnceCallback<void(const SkPixmap& pixmap)>;
+  bool ReadPixelsWithCallback(ReadBufferCallback callback);
   bool UploadToVkImage(const SkPixmap& pixmap);
-  void UploadToGLTexture(const SkPixmap& pixmap);
+  void UploadToGLTexture(int alignment, const SkPixmap& pixmap);
   void CopyPixelsFromGLTextureToVkImage();
   void CopyPixelsFromVkImageToGLTexture();
 
