@@ -74,7 +74,8 @@ uint32_t ConfigureFullscreen(uint32_t serial,
                              chromeos::WindowStateType state_type,
                              bool resizing,
                              bool activated,
-                             const gfx::Vector2d& origin_offset) {
+                             const gfx::Vector2d& origin_offset,
+                             float raster_scale) {
   EXPECT_EQ(chromeos::WindowStateType::kFullscreen, state_type);
   return serial;
 }
@@ -113,7 +114,8 @@ uint32_t Configure(ConfigureData* config_data,
                    chromeos::WindowStateType state_type,
                    bool resizing,
                    bool activated,
-                   const gfx::Vector2d& origin_offset) {
+                   const gfx::Vector2d& origin_offset,
+                   float raster_scale) {
   config_data->suggested_bounds = bounds;
   config_data->state_type = state_type;
   config_data->is_resizing = resizing;
@@ -756,7 +758,8 @@ TEST_F(ShellSurfaceTest, StartResizeAndDestroyShell) {
   auto configure_callback = base::BindRepeating(
       [](uint32_t* const serial_ptr, const gfx::Rect& bounds,
          chromeos::WindowStateType state_type, bool resizing, bool activated,
-         const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
+         const gfx::Vector2d& origin_offset,
+         float raster_scale) { return ++(*serial_ptr); },
       &serial);
 
   // Map shell surface.
@@ -775,7 +778,8 @@ TEST_F(ShellSurfaceTest, StartResizeAndDestroyShell) {
 
   shell_surface->set_configure_callback(base::BindRepeating(
       [](const gfx::Rect& bounds, chromeos::WindowStateType state_type,
-         bool resizing, bool activated, const gfx::Vector2d& origin_offset) {
+         bool resizing, bool activated, const gfx::Vector2d& origin_offset,
+         float raster_scale) {
         ADD_FAILURE() << "Configure Should not be called";
         return uint32_t{0};
       }));
@@ -1977,7 +1981,8 @@ TEST_F(ShellSurfaceTest, DragMaximizedWindow) {
       chromeos::WindowStateType::kDefault;
   shell_surface->set_configure_callback(base::BindLambdaForTesting(
       [&](const gfx::Rect& bounds, chromeos::WindowStateType state,
-          bool resizing, bool activated, const gfx::Vector2d& origin_offset) {
+          bool resizing, bool activated, const gfx::Vector2d& origin_offset,
+          float raster_scale) {
         configured_state = state;
         return uint32_t{0};
       }));
@@ -2198,7 +2203,8 @@ TEST_F(ShellSurfaceTest, ServerStartResizeComponent) {
   auto configure_callback = base::BindRepeating(
       [](uint32_t* const serial_ptr, const gfx::Rect& bounds,
          chromeos::WindowStateType state_type, bool resizing, bool activated,
-         const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
+         const gfx::Vector2d& origin_offset,
+         float raster_scale) { return ++(*serial_ptr); },
       &serial);
 
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -2330,7 +2336,8 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   auto configure_callback = base::BindRepeating(
       [](uint32_t* const serial_ptr, const gfx::Rect& bounds,
          chromeos::WindowStateType state_type, bool resizing, bool activated,
-         const gfx::Vector2d& origin_offset) { return ++(*serial_ptr); },
+         const gfx::Vector2d& origin_offset,
+         float raster_scale) { return ++(*serial_ptr); },
       &serial);
 
   shell_surface->set_configure_callback(configure_callback);
@@ -2779,7 +2786,8 @@ struct ShellSurfaceCallbacks {
                        chromeos::WindowStateType state_type,
                        bool resizing,
                        bool activated,
-                       const gfx::Vector2d& origin_offset) {
+                       const gfx::Vector2d& origin_offset,
+                       float raster_scale) {
     configure_state.emplace();
     *configure_state = {bounds, state_type, resizing, activated};
     return ++serial;
@@ -2997,8 +3005,8 @@ TEST_F(ShellSurfaceTest, PostWindowChangeCallback) {
   chromeos::WindowStateType state_type = chromeos::WindowStateType::kDefault;
   auto test_callback = base::BindRepeating(
       [](chromeos::WindowStateType* state_type, const gfx::Rect&,
-         chromeos::WindowStateType new_type, bool, bool,
-         const gfx::Vector2d&) -> uint32_t {
+         chromeos::WindowStateType new_type, bool, bool, const gfx::Vector2d&,
+         float) -> uint32_t {
         *state_type = new_type;
         return 0;
       },
@@ -3029,8 +3037,8 @@ TEST_F(ShellSurfaceTest, ConfigureOnlySentOnceForBoundsAndWindowStateChange) {
   int times_configured = 0;
   auto test_callback = base::BindRepeating(
       [](int* times_configured, const gfx::Rect&,
-         chromeos::WindowStateType new_type, bool, bool,
-         const gfx::Vector2d&) -> uint32_t {
+         chromeos::WindowStateType new_type, bool, bool, const gfx::Vector2d&,
+         float) -> uint32_t {
         ++(*times_configured);
         return 0;
       },
@@ -3062,8 +3070,8 @@ TEST_F(ShellSurfaceTest, SetImmersiveModeTriggersConfigure) {
   int times_configured = 0;
   auto test_callback = base::BindRepeating(
       [](int* times_configured, const gfx::Rect&,
-         chromeos::WindowStateType new_type, bool, bool,
-         const gfx::Vector2d&) -> uint32_t {
+         chromeos::WindowStateType new_type, bool, bool, const gfx::Vector2d&,
+         float) -> uint32_t {
         ++(*times_configured);
         return 0;
       },

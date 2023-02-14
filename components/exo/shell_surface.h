@@ -50,7 +50,8 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
                                        chromeos::WindowStateType state_type,
                                        bool resizing,
                                        bool activated,
-                                       const gfx::Vector2d& origin_offset)>;
+                                       const gfx::Vector2d& origin_offset,
+                                       float raster_scale)>;
   using OriginChangeCallback =
       base::RepeatingCallback<void(const gfx::Point& origin)>;
 
@@ -211,6 +212,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   ui::WindowShowState initial_show_state_ = ui::SHOW_STATE_DEFAULT;
   bool notify_bounds_changes_ = true;
   bool window_state_is_changing_ = false;
+  float pending_raster_scale_ = 1.0;
 
   base::ObserverList<ShellSurfaceObserver> observers_;
 };

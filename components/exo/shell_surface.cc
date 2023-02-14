@@ -697,16 +697,17 @@ void ShellSurface::Configure(bool ends_drag) {
 
   if (!configure_callback_.is_null()) {
     if (window_state) {
-      serial = configure_callback_.Run(
-          GetClientBoundsInScreen(widget_), window_state->GetStateType(),
-          IsResizing(), widget_->IsActive(), origin_offset);
+      serial = configure_callback_.Run(GetClientBoundsInScreen(widget_),
+                                       window_state->GetStateType(),
+                                       IsResizing(), widget_->IsActive(),
+                                       origin_offset, pending_raster_scale_);
     } else {
       gfx::Rect bounds;
       if (initial_bounds_)
         bounds.set_origin(initial_bounds_->origin());
-      serial =
-          configure_callback_.Run(bounds, chromeos::WindowStateType::kNormal,
-                                  false, false, origin_offset);
+      serial = configure_callback_.Run(
+          bounds, chromeos::WindowStateType::kNormal, false, false,
+          origin_offset, pending_raster_scale_);
     }
   }
 

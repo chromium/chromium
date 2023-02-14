@@ -153,7 +153,8 @@ uint32_t HandleXdgSurfaceConfigureCallback(
     chromeos::WindowStateType state_type,
     bool resizing,
     bool activated,
-    const gfx::Vector2d& origin_offset) {
+    const gfx::Vector2d& origin_offset,
+    float raster_scale) {
   uint32_t serial =
       serial_tracker->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
   callback.Run(bounds.size(), state_type, resizing, activated);
