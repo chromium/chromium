@@ -33,7 +33,7 @@ def CheckBundleData(input_api, output_api, base, globroot='//'):
 
     return [
         output_api.PresubmitError(
-            'Filelist needs to be re-generated. Please run %s %s %s %s and '
-            'include the changes in this CL' %
+            'Filelist needs to be re-generated. Please run \'python3 %s %s %s '
+            '%s\' and include the changes in this CL' %
             (script, filelist, globlist, globroot))
     ]
