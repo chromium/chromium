@@ -144,7 +144,8 @@ class WebAppBrowserController : public AppBrowserController,
 
   // Invoked when the icon is loaded.
   void OnLoadIcon(apps::IconValuePtr icon_value);
-  void OnReadHomeTabIcon(HomeTabIconBitmaps home_tab_icon_bitmaps) const;
+
+  void OnReadHomeTabIcon(SkBitmap home_tab_icon_bitmap) const;
   void OnReadIcon(IconPurpose purpose, SkBitmap bitmap);
   void PerformDigitalAssetLinkVerification(Browser* browser);
 

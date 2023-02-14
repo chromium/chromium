@@ -26,6 +26,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
+#include "web_app_install_info.h"
 
 class Profile;
 
@@ -80,6 +81,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
     SquareSizePx size_px = 0;
     IconPurpose purpose = IconPurpose::ANY;
   };
+
   // For each of |purposes|, in the given order, looks for an icon with size at
   // least |min_icon_size|. Returns information on the first icon found.
   absl::optional<IconSizeAndPurpose> FindIconMatchBigger(
@@ -136,14 +138,15 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                                  ReadShortcutsMenuIconsCallback callback);
 
   using ReadHomeTabIconsCallback =
-      base::OnceCallback<void(HomeTabIconBitmaps home_tab_icon_bitmaps)>;
+      base::OnceCallback<void(SkBitmap home_tab_icon_bitmap)>;
 
   // Reads bitmap for the home tab icon. Returns a SkBitmap
   // in |callback| if the icon exists. Otherwise, if it doesn't
   // exist, the SkBitmap is empty.
-  void ReadAllHomeTabIcons(
+  void ReadBestHomeTabIcon(
       const AppId& app_id,
       const std::vector<blink::Manifest::ImageResource>& icons,
+      const SquareSizePx min_home_tab_icon_size_px,
       ReadHomeTabIconsCallback callback);
 
   using ReadIconWithPurposeCallback =

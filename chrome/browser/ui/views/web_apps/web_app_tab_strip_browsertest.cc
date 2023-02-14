@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NoHomeTabIcons) {
   EXPECT_EQ(tab_strip->active_index(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabIcons) {
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, SelectingBestHomeTabIcon) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
 
