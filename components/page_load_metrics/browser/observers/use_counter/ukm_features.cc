@@ -275,6 +275,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kRequestFileSystem,
           WebFeature::kRequestFileSystemWorker,
           WebFeature::kRequestFileSystemSyncWorker,
+          WebFeature::
+              kHTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode,
       }));
   return *opt_in_features;
 }

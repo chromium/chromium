@@ -42196,6 +42196,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4460" label="TopicsAPIFetch"/>
   <int value="4461" label="TopicsAPIXhr"/>
   <int value="4462" label="ParseFromString"/>
+  <int value="4463"
+      label="HTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

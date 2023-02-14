@@ -3801,6 +3801,7 @@ enum WebFeature {
   kTopicsAPIFetch = 4460,
   kTopicsAPIXhr = 4461,
   kParseFromString = 4462,
+  kHTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode = 4463,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
