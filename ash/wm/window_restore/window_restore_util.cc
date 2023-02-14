@@ -69,10 +69,10 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   WindowState* window_state = WindowState::Get(window);
   if (override_bounds) {
     window_info->current_bounds = *override_bounds;
-    // Snapped state can be restored from tablet onto clamshell, so we do not
-    // use the restore override state here.
+    // Snapped and floated states can be restored from tablet onto clamshell, so
+    // we do not use the restore override state here.
     window_info->window_state_type =
-        window_state->IsSnapped()
+        window_state->IsSnapped() || window_state->IsFloated()
             ? window_state->GetStateType()
             : window->GetProperty(kRestoreWindowStateTypeOverrideKey);
   } else {

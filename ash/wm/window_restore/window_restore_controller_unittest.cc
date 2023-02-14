@@ -65,7 +65,8 @@ class WindowRestoreControllerTest : public AshTestBase,
     std::unique_ptr<app_restore::WindowInfo> info;
   };
 
-  WindowRestoreControllerTest() = default;
+  WindowRestoreControllerTest()
+      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
   WindowRestoreControllerTest(const WindowRestoreControllerTest&) = delete;
   WindowRestoreControllerTest& operator=(const WindowRestoreControllerTest&) =
       delete;
@@ -256,9 +257,6 @@ class WindowRestoreControllerTest : public AshTestBase,
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::wm::features::kWindowLayoutMenu},
-        /*disabled_features=*/{});
     AshTestBase::SetUp();
 
     WindowRestoreController::Get()->SetSaveWindowCallbackForTesting(
@@ -732,6 +730,25 @@ TEST_F(WindowRestoreControllerTest, ClamshellFloatWindow) {
   // saved into the fake file.
   floated_window_state->Restore();
   EXPECT_EQ(restored_bounds, floated_window->GetBoundsInScreen());
+}
+
+// Tests that windows floated in tablet mode get restored properly.
+TEST_F(WindowRestoreControllerTest, TabletFloatWindow) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  auto floated_window = CreateAppWindow(gfx::Rect(600, 600), AppType::BROWSER);
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  // Close the window and fake launching a window from full restore. Verify that
+  // is is floated.
+  const int32_t restore_window_id =
+      floated_window->GetProperty(app_restore::kRestoreWindowIdKey);
+  floated_window.reset();
+  aura::Window* restored_floated_window =
+      CreateTestWindowRestoredWidgetFromRestoreId(restore_window_id)
+          ->GetNativeWindow();
+  EXPECT_TRUE(WindowState::Get(restored_floated_window)->IsFloated());
 }
 
 // Tests window restore behavior when a display is disconnected before
