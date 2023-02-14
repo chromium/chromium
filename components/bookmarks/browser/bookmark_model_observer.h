@@ -78,11 +78,13 @@ class BookmarkModelObserver {
       const BookmarkNode* node,
       const std::set<GURL>& no_longer_bookmarked) = 0;
 
-  // Invoked before the title or url of a node is changed.
+  // Invoked before the title or url of a node is changed. Subsequent
+  // BookmarkNodeChanged call guaranteed to contain the same BookmarkNode.
   virtual void OnWillChangeBookmarkNode(BookmarkModel* model,
                                         const BookmarkNode* node) {}
 
-  // Invoked when the title or url of a node changes.
+  // Invoked when the title or url of a node changes. Guaranteed to contain the
+  // same BookmarkNode as the preceding OnWillChangeBookmark Node call.
   virtual void BookmarkNodeChanged(BookmarkModel* model,
                                    const BookmarkNode* node) = 0;
 
