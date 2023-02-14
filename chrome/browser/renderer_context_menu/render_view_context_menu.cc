@@ -1953,6 +1953,7 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
 void RenderViewContextMenu::AppendReadAnythingItem() {
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING,
                                   IDS_CONTENT_CONTEXT_READ_ANYTHING);
+  menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
 }
 
 void RenderViewContextMenu::AppendPdfOcrItems() {
