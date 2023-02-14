@@ -184,6 +184,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "linux-password-manager-captured-sites-rel",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.STANDARD_MILESTONE,
     builder = "linux-pgo",
 )
