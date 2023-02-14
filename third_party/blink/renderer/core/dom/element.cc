@@ -2998,6 +2998,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
 
   if (!performing_reattach) {
     UpdateCallbackSelectors(GetComputedStyle(), nullptr);
+    NotifyIfMatchedDocumentRulesSelectorsChanged(GetComputedStyle(), nullptr);
     SetComputedStyle(nullptr);
   }
 
@@ -4054,6 +4055,21 @@ void Element::NotifyIfMatchedDocumentRulesSelectorsChanged(
       !(HasTagName(html_names::kATag) || HasTagName(html_names::kAreaTag))) {
     return;
   }
+
+  HTMLAnchorElement* link = HasTagName(html_names::kATag)
+                                ? To<HTMLAnchorElement>(this)
+                                : To<HTMLAreaElement>(this);
+  auto* document_rules = DocumentSpeculationRules::FromIfExists(GetDocument());
+  if (!document_rules) {
+    return;
+  }
+
+  if (ComputedStyle::IsNullOrEnsured(old_style) !=
+      ComputedStyle::IsNullOrEnsured(new_style)) {
+    document_rules->LinkGainedOrLostComputedStyle(link);
+    return;
+  }
+
   auto get_selectors_from_computed_style = [](const ComputedStyle* style) {
     HeapHashSet<WeakMember<StyleRule>> empty_set;
     if (!style || !style->DocumentRulesSelectors()) {
@@ -4071,11 +4087,7 @@ void Element::NotifyIfMatchedDocumentRulesSelectorsChanged(
     return;
   }
   if (old_document_rules_selectors != new_document_rules_selectors) {
-    HTMLAnchorElement* link = HasTagName(html_names::kATag)
-                                  ? To<HTMLAnchorElement>(this)
-                                  : To<HTMLAreaElement>(this);
-    DocumentSpeculationRules::From(GetDocument())
-        .LinkMatchedSelectorsUpdated(link);
+    document_rules->LinkMatchedSelectorsUpdated(link);
   }
 }
 

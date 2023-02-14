@@ -227,12 +227,11 @@ class CSSSelectorPredicate : public DocumentRulePredicate {
 
   bool Matches(const HTMLAnchorElement& link) const override {
     DCHECK(!link.GetDocument().NeedsLayoutTreeUpdate());
-    // TODO(crbug.com/1371522): We need to deal with "display: none" elements,
-    // they will not have a ComputedStyle (even if style is clean).
     const ComputedStyle* computed_style = link.GetComputedStyle();
-    if (!computed_style) {
-      return false;
-    }
+    DCHECK(computed_style);
+    // TODO(crbug.com/1371522): If the link has a display-locked ancestor,
+    // it will have a ComputedStyle with a stale list of matched selectors
+    // (styling is skipped but the old ComputedStyle is still kept).
     const Persistent<HeapHashSet<WeakMember<StyleRule>>>& matched_selectors =
         computed_style->DocumentRulesSelectors();
     if (!matched_selectors) {

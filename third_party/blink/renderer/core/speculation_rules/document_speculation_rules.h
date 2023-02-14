@@ -56,6 +56,7 @@ class CORE_EXPORT DocumentSpeculationRules
   void DocumentReferrerPolicyChanged();
   void DocumentBaseURLChanged();
   void LinkMatchedSelectorsUpdated(HTMLAnchorElement* link);
+  void LinkGainedOrLostComputedStyle(HTMLAnchorElement* link);
   void DocumentStyleUpdated();
 
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
@@ -109,6 +110,11 @@ class CORE_EXPORT DocumentSpeculationRules
   };
   void SetPendingUpdateState(PendingUpdateState state);
 
+  // Checks the RuntimeEnabledFeature to see if the feature is enabled. If the
+  // feature is found to be enabled once, it is considered to be enabled for the
+  // rest of the document's lifetime.
+  bool SelectorMatchesEnabled();
+
   HeapVector<Member<SpeculationRuleSet>> rule_sets_;
   HeapMojoRemote<mojom::blink::SpeculationHost> host_;
   HeapHashSet<Member<SpeculationRuleLoader>> speculation_rule_loaders_;
@@ -134,6 +140,7 @@ class CORE_EXPORT DocumentSpeculationRules
 
   bool initialized_ = false;
   bool sent_is_part_of_no_vary_search_trial_ = false;
+  bool was_selector_matches_enabled_ = false;
   PendingUpdateState pending_update_state_ =
       PendingUpdateState::kNoUpdatePending;
 };
