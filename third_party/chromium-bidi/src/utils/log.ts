@@ -16,24 +16,15 @@
  */
 
 export enum LogType {
-  system = 'System',
   bidi = 'BiDi Messages',
   browsingContexts = 'Browsing Contexts',
   cdp = 'CDP',
   commandParser = 'Command parser',
+  system = 'System',
 }
 
 export function log(logType: LogType): (...message: unknown[]) => void {
   return (...messages: unknown[]) => {
     console.log(logType, ...messages);
-    // Add messages to the Mapper Tab Page, if exists.
-    // Dynamic lookup to avoid circlular dependency.
-    if ('MapperTabPage' in globalThis) {
-      (
-        globalThis as unknown as {
-          MapperTabPage: {log: (...message: unknown[]) => void};
-        }
-      )['MapperTabPage'].log(logType, ...messages);
-    }
   };
 }

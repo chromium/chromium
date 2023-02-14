@@ -57,10 +57,11 @@ export function generatePage() {
   }
   window.document.documentElement.innerHTML = mapperPageSource;
   // Create main log containers in proper order.
-  findOrCreateTypeLogContainer('System');
-  findOrCreateTypeLogContainer('BiDi Messages');
-  findOrCreateTypeLogContainer('Browsing Contexts');
-  findOrCreateTypeLogContainer('CDP');
+  findOrCreateTypeLogContainer(LogType.system);
+  findOrCreateTypeLogContainer(LogType.bidi);
+  findOrCreateTypeLogContainer(LogType.browsingContexts);
+  findOrCreateTypeLogContainer(LogType.cdp);
+  findOrCreateTypeLogContainer(LogType.commandParser);
 }
 
 export function log(logType: LogType, ...messages: unknown[]) {
