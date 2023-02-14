@@ -290,13 +290,20 @@ absl::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
     // arrive out-of-order), and therefore we can rely on
     // `frame->GetLastCommittedOrigin()` to return the origin of the IPC sender.
     const url::Origin& origin = frame->GetLastCommittedOrigin();
-    if (origin.scheme() != kExtensionScheme) {
+    // Sandboxed extension URLs have access to extension APIs (this is a bit
+    // unusual - typically an opaque origin has no capabilities associated with
+    // the original, precursor origin).  To avoid breaking such scenarios we
+    // need to look at the precursor origin.  See https://crbug.com/1407087 for
+    // an example of breakage avoided by GetTupleOrPrecursorTupleIfOpaque call.
+    const url::SchemeHostPort& scheme_host_port =
+        origin.GetTupleOrPrecursorTupleIfOpaque();
+    if (scheme_host_port.scheme() != kExtensionScheme) {
       bad_message::ReceivedBadMessage(
           &process, bad_message::EMF_NON_EXTENSION_SENDER_FRAME);
       return absl::nullopt;
     }
 
-    return origin.host();
+    return scheme_host_port.host();
   }
 
   DCHECK(source_context.is_for_native_host());
