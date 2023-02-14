@@ -632,7 +632,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
   ExportedCallbackManager<FlossGattClientObserver>
       gatt_client_exported_callback_manager_{gatt::kCallbackInterface};
   ExportedCallbackManager<FlossGattServerObserver>
-      gatt_server_exported_callback_manager_{gatt::kCallbackInterface};
+      gatt_server_exported_callback_manager_{gatt::kServerCallbackInterface};
 
   base::WeakPtrFactory<FlossGattManagerClient> weak_ptr_factory_{this};
 };

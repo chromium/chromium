@@ -158,6 +158,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kReadRemoteRssi[];
 extern DEVICE_BLUETOOTH_EXPORT const char kConfigureMtu[];
 extern DEVICE_BLUETOOTH_EXPORT const char kConnectionParameterUpdate[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kServerCallbackInterface[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnClientRegistered[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnClientConnectionState[];

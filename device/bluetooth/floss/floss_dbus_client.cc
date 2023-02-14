@@ -159,6 +159,8 @@ const char kConfigureMtu[] = "ConfigureMtu";
 const char kConnectionParameterUpdate[] = "ConnectionParameterUpdate";
 const char kCallbackInterface[] =
     "org.chromium.bluetooth.BluetoothGattCallback";
+const char kServerCallbackInterface[] =
+    "org.chromium.bluetooth.BluetoothGattServerCallback";
 
 const char kOnClientRegistered[] = "OnClientRegistered";
 const char kOnClientConnectionState[] = "OnClientConnectionState";
@@ -190,13 +192,12 @@ const char kServerSendNotification[] = "SendNotification";
 
 const char kOnServerRegistered[] = "OnServerRegistered";
 const char kOnServerConnectionState[] = "OnServerConnectionState";
-const char kOnServerServiceAdded[] = "OnServerServiceAdded";
-const char kOnServerCharacteristicReadRequest[] =
-    "OnServerCharacteristicReadRequest";
-const char kOnServerDescriptorReadRequest[] = "OnServerDescriptorReadRequest";
+const char kOnServerServiceAdded[] = "OnServiceAdded";
+const char kOnServerCharacteristicReadRequest[] = "OnCharacteristicReadRequest";
+const char kOnServerDescriptorReadRequest[] = "OnDescriptorReadRequest";
 const char kOnServerCharacteristicWriteRequest[] =
-    "OnServerCharacteristicWriteRequest";
-const char kOnServerDescriptorWriteRequest[] = "OnServerDescriptorWriteRequest";
+    "OnCharacteristicWriteRequest";
+const char kOnServerDescriptorWriteRequest[] = "OnDescriptorWriteRequest";
 const char kOnServerNotificationSent[] = "OnNotificationSent";
 const char kOnServerMtuChanged[] = "OnMtuChanged";
 const char kOnServerSubrateChange[] = "OnSubrateChange";

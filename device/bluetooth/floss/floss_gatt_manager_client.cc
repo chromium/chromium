@@ -573,10 +573,6 @@ void FlossGattManagerClient::Init(dbus::Bus* bus,
       gatt::kOnServerNotificationSent,
       &FlossGattServerObserver::GattServerNotificationSent);
   gatt_server_exported_callback_manager_.AddMethod(
-      gatt::kOnPhyUpdate, &FlossGattServerObserver::GattServerPhyUpdate);
-  gatt_server_exported_callback_manager_.AddMethod(
-      gatt::kOnPhyRead, &FlossGattServerObserver::GattServerPhyRead);
-  gatt_server_exported_callback_manager_.AddMethod(
       gatt::kOnServerMtuChanged,
       &FlossGattServerObserver::GattServerMtuChanged);
   gatt_server_exported_callback_manager_.AddMethod(
