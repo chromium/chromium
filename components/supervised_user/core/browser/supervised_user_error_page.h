@@ -7,16 +7,9 @@
 
 #include <string>
 
-namespace supervised_user {
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 
-enum FilteringBehaviorReason {
-  DEFAULT = 0,
-  ASYNC_CHECKER = 1,
-  DENYLIST = 2,
-  MANUAL = 3,
-  ALLOWLIST = 4,
-  NOT_SIGNED_IN = 5,
-};
+namespace supervised_user {
 
 int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent);
 

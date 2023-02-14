@@ -20,6 +20,8 @@ static_library("common") {
     "supervised_user_constants.h",
     "supervised_user_denylist.cc",
     "supervised_user_denylist.h",
+    "supervised_user_utils.cc",
+    "supervised_user_utils.h",
     "supervised_users.h",
   ]
 

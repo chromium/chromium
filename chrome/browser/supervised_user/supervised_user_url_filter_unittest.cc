@@ -46,22 +46,22 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
 
   void ExpectURLInDefaultAllowlist(const std::string& url) {
     ExpectURLCheckMatches(url, SupervisedUserURLFilter::ALLOW,
-                          supervised_user::DEFAULT);
+                          supervised_user::FilteringBehaviorReason::DEFAULT);
   }
 
   void ExpectURLInDefaultDenylist(const std::string& url) {
     ExpectURLCheckMatches(url, SupervisedUserURLFilter::BLOCK,
-                          supervised_user::DEFAULT);
+                          supervised_user::FilteringBehaviorReason::DEFAULT);
   }
 
   void ExpectURLInManualAllowlist(const std::string& url) {
     ExpectURLCheckMatches(url, SupervisedUserURLFilter::ALLOW,
-                          supervised_user::MANUAL);
+                          supervised_user::FilteringBehaviorReason::MANUAL);
   }
 
   void ExpectURLInManualDenylist(const std::string& url) {
     ExpectURLCheckMatches(url, SupervisedUserURLFilter::BLOCK,
-                          supervised_user::MANUAL);
+                          supervised_user::FilteringBehaviorReason::MANUAL);
   }
 
   base::test::TaskEnvironment task_environment_;

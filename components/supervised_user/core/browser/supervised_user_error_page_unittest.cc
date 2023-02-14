@@ -9,6 +9,7 @@
 #include "components/grit/components_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,7 +31,7 @@ TEST_P(SupervisedUserErrorPageTest_GetBlockMessageID, GetBlockMessageID) {
   BlockMessageIDTestParameter param = GetParam();
   EXPECT_EQ(param.expected_result,
             GetBlockMessageID(param.reason, param.single_parent))
-      << "reason = " << param.reason
+      << "reason = " << FilteringBehaviorReasonToString(param.reason)
       << " single parent = " << param.single_parent;
 }
 

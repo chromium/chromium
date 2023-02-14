@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -91,26 +92,6 @@ std::string FilteringBehaviorToString(
   if (uncertain)
     result += " (Uncertain)";
   return result;
-}
-
-std::string FilteringBehaviorReasonToString(
-    supervised_user::FilteringBehaviorReason reason) {
-  switch (reason) {
-    case supervised_user::FilteringBehaviorReason::DEFAULT:
-      return "Default";
-    case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
-      return "AsyncChecker";
-    case supervised_user::FilteringBehaviorReason::DENYLIST:
-      return "Denylist";
-    case supervised_user::FilteringBehaviorReason::MANUAL:
-      return "Manual";
-    case supervised_user::FilteringBehaviorReason::ALLOWLIST:
-      return "Allowlist";
-    case supervised_user::FilteringBehaviorReason::NOT_SIGNED_IN:
-      // Should never happen, only used for requests from WebView
-      NOTREACHED();
-  }
-  return "Unknown/invalid";
 }
 
 }  // namespace
