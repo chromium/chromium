@@ -847,8 +847,8 @@ bool NetworkingPrivateLinux::GetAccessPointInfo(
       return false;
     }
 
-    access_point_info->SetIntKey(kAccessPointInfoWifiSignalStrengthDotted,
-                                 strength);
+    access_point_info->SetIntPath(kAccessPointInfoWifiSignalStrengthDotted,
+                                  strength);
   }
 
   // Read the security type. This is from the WpaFlags and RsnFlags property
@@ -893,7 +893,8 @@ bool NetworkingPrivateLinux::GetAccessPointInfo(
 
   std::string security;
   MapSecurityFlagsToString(rsn_security_flags | wpa_security_flags, &security);
-  access_point_info->SetStringKey(kAccessPointInfoWifiSecurityDotted, security);
+  access_point_info->SetStringPath(kAccessPointInfoWifiSecurityDotted,
+                                   security);
   access_point_info->SetStringKey(kAccessPointInfoType,
                                   kAccessPointInfoTypeWifi);
   access_point_info->SetBoolKey(kAccessPointInfoConnectable, true);
