@@ -11,19 +11,19 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.android",
-    cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.android",
+    pool = ci.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    sheriff_rotations = sheriff_rotations.ANDROID,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     # TODO(tandrii): migrate to this gradually (current value of
     # goma.jobs.MANY_JOBS_FOR_CI is 500).
     # goma_jobs=goma.jobs.MANY_JOBS_FOR_CI
     goma_jobs = goma.jobs.J150,
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    sheriff_rotations = sheriff_rotations.ANDROID,
 )
 
 consoles.console_view(
@@ -42,6 +42,7 @@ consoles.console_view(
 
 ci.builder(
     name = "Android ASAN (dbg)",
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
         short_name = "san",
@@ -52,12 +53,12 @@ ci.builder(
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    tree_closing = True,
 )
 
 ci.builder(
     name = "Android WebView M (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -88,12 +89,12 @@ ci.builder(
         short_name = "M",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.builder(
     name = "Android WebView N (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -124,12 +125,12 @@ ci.builder(
         short_name = "N",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.builder(
     name = "Android WebView O (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -160,12 +161,12 @@ ci.builder(
         short_name = "O",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.builder(
     name = "Android WebView P (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -196,7 +197,6 @@ ci.builder(
         short_name = "P",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.builder(
@@ -224,6 +224,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
         short_name = "32",
@@ -233,7 +234,6 @@ ci.builder(
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
-    tree_closing = True,
 )
 
 ci.builder(
@@ -261,6 +261,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
         short_name = "64",
@@ -270,7 +271,6 @@ ci.builder(
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    tree_closing = True,
 )
 
 ci.builder(
@@ -364,53 +364,54 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
         short_name = "cst",
     ),
     cq_mirrors_console_view = "mirrors",
-    tree_closing = True,
     goma_backend = None,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "Deterministic Android",
+    executable = "recipe:swarming/deterministic_build",
+    cores = 32,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder|det",
         short_name = "rel",
     ),
-    cores = 32,
-    executable = "recipe:swarming/deterministic_build",
     execution_timeout = 7 * time.hour,
-    notifies = ["Deterministic Android"],
-    tree_closing = True,
     goma_backend = None,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    notifies = ["Deterministic Android"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "Deterministic Android (dbg)",
+    executable = "recipe:swarming/deterministic_build",
+    cores = 16,
+    ssd = True,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder|det",
         short_name = "dbg",
     ),
-    cores = 16,
-    executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
-    notifies = ["Deterministic Android"],
-    tree_closing = True,
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    notifies = ["Deterministic Android"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    ssd = True,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "Marshmallow 64 bit Tester",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -439,11 +440,11 @@ ci.builder(
         short_name = "M",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.builder(
     name = "Marshmallow Tablet Tester",
+    triggered_by = ["ci/Android arm Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -474,12 +475,12 @@ ci.builder(
     # We have limited tablet capacity and thus limited ability to run
     # tests in parallel, hence the high timeout.
     execution_timeout = 12 * time.hour,
-    triggered_by = ["ci/Android arm Builder (dbg)"],
 )
 
 ci.builder(
     name = "Nougat Phone Tester",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -507,12 +508,12 @@ ci.builder(
         short_name = "N",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.builder(
     name = "Oreo Phone Tester",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -535,13 +536,12 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",
         short_name = "O",
     ),
     cq_mirrors_console_view = "mirrors",
-    sheriff_rotations = args.ignore_default(None),
-    triggered_by = ["ci/Android arm64 Builder (dbg)"],
 )
 
 ci.builder(
@@ -580,14 +580,14 @@ ci.builder(
 
 ci.builder(
     name = "android-binary-size-generator",
+    executable = "recipe:binary_size_generator_tot",
     builderless = False,
     cores = 32,
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder|other",
         short_name = "size",
     ),
-    executable = "recipe:binary_size_generator_tot",
-    ssd = True,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
@@ -624,14 +624,15 @@ ci.builder(
         short_name = "dbg",
     ),
     cq_mirrors_console_view = "mirrors",
-    notifies = ["cronet"],
     goma_backend = None,
+    notifies = ["cronet"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "android-cronet-arm-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -655,14 +656,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
-    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm",
         short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
-    notifies = ["cronet"],
     goma_backend = None,
+    notifies = ["cronet"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -673,8 +673,8 @@ ci.builder(
         category = "cronet|arm64",
         short_name = "dbg",
     ),
-    notifies = ["cronet"],
     goma_backend = None,
+    notifies = ["cronet"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -685,8 +685,8 @@ ci.builder(
         category = "cronet|arm64",
         short_name = "rel",
     ),
-    notifies = ["cronet"],
     goma_backend = None,
+    notifies = ["cronet"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -696,8 +696,8 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",
     ),
-    notifies = ["cronet"],
     goma_backend = None,
+    notifies = ["cronet"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -705,16 +705,16 @@ ci.builder(
 # Runs on a specific machine with an attached phone
 ci.builder(
     name = "android-cronet-marshmallow-arm64-perf-rel",
+    executable = "recipe:cronet",
+    cores = None,
+    os = os.ANDROID,
+    cpu = None,
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test|perf",
         short_name = "m",
     ),
-    cores = None,
-    cpu = None,
-    executable = "recipe:cronet",
-    notifies = ["cronet"],
-    os = os.ANDROID,
     goma_backend = None,
+    notifies = ["cronet"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
@@ -749,14 +749,15 @@ ci.builder(
         category = "cronet|x86",
         short_name = "dbg",
     ),
-    notifies = ["cronet"],
     goma_backend = None,
+    notifies = ["cronet"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "android-cronet-x86-dbg-lollipop-tests",
+    triggered_by = ["ci/android-cronet-x86-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -786,11 +787,11 @@ ci.builder(
         short_name = "l",
     ),
     notifies = ["cronet"],
-    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.builder(
     name = "android-cronet-x86-dbg-marshmallow-tests",
+    triggered_by = ["ci/android-cronet-x86-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -820,11 +821,11 @@ ci.builder(
         short_name = "m",
     ),
     notifies = ["cronet"],
-    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.builder(
     name = "android-cronet-x86-dbg-oreo-tests",
+    triggered_by = ["ci/android-cronet-x86-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -854,11 +855,11 @@ ci.builder(
         short_name = "o",
     ),
     notifies = ["cronet"],
-    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.builder(
     name = "android-cronet-x86-dbg-pie-tests",
+    triggered_by = ["ci/android-cronet-x86-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -888,12 +889,12 @@ ci.builder(
         short_name = "p",
     ),
     notifies = ["cronet"],
-    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.builder(
     name = "android-cronet-x86-dbg-10-tests",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/android-cronet-x86-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -923,11 +924,11 @@ ci.builder(
         short_name = "10",
     ),
     notifies = ["cronet"],
-    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.builder(
     name = "android-cronet-x86-dbg-11-tests",
+    triggered_by = ["ci/android-cronet-x86-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -957,7 +958,6 @@ ci.builder(
         short_name = "11",
     ),
     notifies = ["cronet"],
-    triggered_by = ["ci/android-cronet-x86-dbg"],
 )
 
 ci.builder(
@@ -966,24 +966,25 @@ ci.builder(
         category = "cronet|x86",
         short_name = "rel",
     ),
-    notifies = ["cronet"],
     goma_backend = None,
+    notifies = ["cronet"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "android-cronet-x86-rel-kitkat-tests",
+    triggered_by = ["ci/android-cronet-x86-rel"],
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "k",
     ),
     notifies = ["cronet"],
-    triggered_by = ["ci/android-cronet-x86-rel"],
 )
 
 ci.builder(
     name = "android-marshmallow-arm64-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1007,7 +1008,7 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
-    branch_selector = branches.STANDARD_MILESTONE,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
         short_name = "M",
@@ -1017,7 +1018,6 @@ ci.builder(
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    tree_closing = True,
 )
 
 ci.builder(
@@ -1046,12 +1046,12 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq|x86",
         short_name = "M",
     ),
     cq_mirrors_console_view = "mirrors",
-    tree_closing = True,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
@@ -1071,6 +1071,7 @@ ci.builder(
 ci.builder(
     name = "android-pie-arm64-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Android arm64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -1098,7 +1099,6 @@ ci.builder(
         short_name = "P",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Android arm64 Builder (dbg)"],
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
@@ -1108,6 +1108,7 @@ ci.builder(
 # running on CQ.
 ci.builder(
     name = "android-pie-arm64-coverage-experimental-rel",
+    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
         short_name = "p-cov",
@@ -1115,7 +1116,6 @@ ci.builder(
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -1143,13 +1143,13 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq",
         short_name = "P",
     ),
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 4 * time.hour,
-    tree_closing = True,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
@@ -1169,11 +1169,11 @@ ci.builder(
 # TODO(crbug.com/1137474): Update the console view config once on CQ
 ci.builder(
     name = "android-11-x86-rel",
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x86",
         short_name = "11",
     ),
-    tree_closing = True,
     goma_backend = None,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
@@ -1193,41 +1193,41 @@ ci.builder(
 
 ci.builder(
     name = "android-weblayer-10-x86-rel-tests",
+    triggered_by = ["android-weblayer-with-aosp-webview-x86-rel"],
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
         short_name = "10",
     ),
-    triggered_by = ["android-weblayer-with-aosp-webview-x86-rel"],
     notifies = ["weblayer-sheriff"],
 )
 
 ci.builder(
     name = "android-weblayer-marshmallow-x86-rel-tests",
+    triggered_by = ["android-weblayer-with-aosp-webview-x86-rel"],
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
         short_name = "M",
     ),
-    triggered_by = ["android-weblayer-with-aosp-webview-x86-rel"],
     notifies = ["weblayer-sheriff"],
 )
 
 ci.builder(
     name = "android-weblayer-oreo-x86-rel-tests",
+    triggered_by = ["android-weblayer-x86-rel"],
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
         short_name = "O",
     ),
-    triggered_by = ["android-weblayer-x86-rel"],
     notifies = ["weblayer-sheriff"],
 )
 
 ci.builder(
     name = "android-weblayer-pie-x86-rel-tests",
+    triggered_by = ["android-weblayer-x86-rel"],
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
         short_name = "P",
     ),
-    triggered_by = ["android-weblayer-x86-rel"],
     notifies = ["weblayer-sheriff"],
 )
 

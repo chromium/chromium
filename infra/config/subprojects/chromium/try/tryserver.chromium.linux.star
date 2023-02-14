@@ -11,16 +11,16 @@ load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.linux",
-    cores = 8,
-    orchestrator_cores = 2,
-    compilator_cores = 16,
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.linux",
+    pool = try_.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    compilator_cores = 16,
+    compilator_goma_jobs = goma.jobs.J150,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    compilator_goma_jobs = goma.jobs.J150,
-    os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
+    orchestrator_cores = 2,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
@@ -64,20 +64,20 @@ try_.builder(
 try_.builder(
     name = "cast_shell_linux_arm64",
     branch_selector = branches.MAIN,
+    os = os.LINUX_BIONIC,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "chromecast/.+",
         ],
     ),
-    os = os.LINUX_BIONIC,
 )
 
 try_.builder(
     name = "fuchsia-binary-size",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = True,
     executable = "recipe:binary_size_fuchsia_trybot",
+    builderless = True,
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
@@ -102,32 +102,32 @@ try_.builder(
 try_.builder(
     name = "fuchsia-arm64-cast",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    mirrors = [
+        "ci/fuchsia-arm64-cast",
+    ],
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "chromecast/.+",
         ],
     ),
-    mirrors = [
-        "ci/fuchsia-arm64-cast",
-    ],
 )
 
 try_.builder(
     name = "fuchsia-compile-x64-dbg",
-    tryjob = try_.job(
-        location_filters = [
-            "base/fuchsia/.+",
-            "fuchsia/.+",
-            "media/fuchsia/.+",
-        ],
-    ),
     mirrors = [
         "ci/fuchsia-x64-dbg",
     ],
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
+    ),
+    tryjob = try_.job(
+        location_filters = [
+            "base/fuchsia/.+",
+            "fuchsia/.+",
+            "media/fuchsia/.+",
+        ],
     ),
 )
 
@@ -159,34 +159,34 @@ try_.builder(
 try_.builder(
     name = "fuchsia-x64-cast",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
     mirrors = [
         "ci/fuchsia-x64-cast",
     ],
+    builderless = not settings.is_main,
+    main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.builder(
     name = "fuchsia_arm64",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
     mirrors = [
         "ci/Fuchsia ARM64",
     ],
+    builderless = not settings.is_main,
+    main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.builder(
     name = "fuchsia_x64",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    builderless = not settings.is_main,
-    main_list_view = "try",
-    tryjob = try_.job(),
     mirrors = [
         "ci/Fuchsia x64",
     ],
+    builderless = not settings.is_main,
+    main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -208,14 +208,14 @@ try_.builder(
     ),
     builderless = False,
     goma_jobs = goma.jobs.J150,
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
     properties = {
         "bot_update_experiments": [
             "no_sync",
         ],
     },
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
 )
 
 try_.builder(
@@ -306,8 +306,8 @@ try_.builder(
 try_.builder(
     name = "linux-libfuzzer-asan-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
     executable = "recipe:chromium_libfuzzer_trybot",
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -328,7 +328,6 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "linux-rel",
-    compilator = "linux-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/Linux Builder",
@@ -341,13 +340,14 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    main_list_view = "try",
-    use_clang_coverage = True,
+    compilator = "linux-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(),
     experiments = {
         "remove_src_checkout_experiment": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(
@@ -359,7 +359,6 @@ try_.compilator_builder(
 # crbug.com/1270571: Experimental bot to test pre-warming
 try_.orchestrator_builder(
     name = "linux-rel-warmed",
-    compilator = "linux-rel-warmed-compilator",
     mirrors = [
         "ci/Linux Builder",
         "ci/Linux Tests",
@@ -371,16 +370,17 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
+    compilator = "linux-rel-warmed-compilator",
+    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
 )
 
 # crbug.com/1270571: Experimental bot to test pre-warming
 try_.compilator_builder(
     name = "linux-rel-warmed-compilator",
-    main_list_view = "try",
     builder_cache_name = "linux_rel_warmed_compilator_warmed_cache",
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -430,10 +430,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "linux_chromium_asan_rel_ng",
-    compilator = "linux_chromium_asan_rel_ng-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    tryjob = try_.job(),
     mirrors = [
         "ci/Linux ASan LSan Builder",
         "ci/Linux ASan LSan Tests (1)",
@@ -443,9 +440,12 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
+    compilator = "linux_chromium_asan_rel_ng-compilator",
     experiments = {
         "remove_src_checkout_experiment": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.compilator_builder(
@@ -463,10 +463,10 @@ try_.builder(
 
 try_.builder(
     name = "linux_chromium_chromeos_asan_rel_ng",
-    goma_jobs = goma.jobs.J150,
     # TODO(crbug/1144484): Remove this timeout once we figure out the
     # regression in compiler or toolchain.
     execution_timeout = 7 * time.hour,
+    goma_jobs = goma.jobs.J150,
 )
 
 try_.builder(
@@ -544,6 +544,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "linux_chromium_tsan_rel_ng",
+    branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/Linux TSan Builder",
         "ci/Linux TSan Tests",
@@ -554,12 +555,11 @@ try_.orchestrator_builder(
         ),
     ),
     compilator = "linux_chromium_tsan_rel_ng-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    tryjob = try_.job(),
     experiments = {
         "remove_src_checkout_experiment": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.compilator_builder(
@@ -607,16 +607,16 @@ try_.builder(
 
 try_.builder(
     name = "linux_upload_clang",
+    executable = "recipe:chromium_upload_clang",
     builderless = True,
     cores = 32,
-    executable = "recipe:chromium_upload_clang",
-    goma_backend = None,
     # This builder produces the clang binaries used on all builders. Since it
     # uses the system's sysroot when compiling, the builder needs to run on the
     # OS version that's the oldest used on any bot.
     # TODO(crbug.com/1199405): Move this to bionic once _all_ builders have
     # migrated.
     os = os.LINUX_TRUSTY,
+    goma_backend = None,
 )
 
 try_.builder(
@@ -655,6 +655,7 @@ try_.builder(
 
 try_.gpu.optional_tests_builder(
     name = "linux_optional_gpu_tests_rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -675,7 +676,6 @@ try_.gpu.optional_tests_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [

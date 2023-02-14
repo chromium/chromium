@@ -8,14 +8,14 @@ load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
+    executable = try_.DEFAULT_EXECUTABLE,
     builder_group = "tryserver.chromium.rust",
+    pool = try_.DEFAULT_POOL,
     builderless = False,
     cores = 8,
-    executable = try_.DEFAULT_EXECUTABLE,
+    os = os.LINUX_DEFAULT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 

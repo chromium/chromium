@@ -10,11 +10,11 @@ load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
-    builder_group = "tryserver.blink",
-    cores = 8,
     executable = try_.DEFAULT_EXECUTABLE,
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    builder_group = "tryserver.blink",
     pool = try_.DEFAULT_POOL,
+    cores = 8,
+    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
@@ -36,8 +36,8 @@ def blink_mac_builder(*, name, **kwargs):
 
 try_.builder(
     name = "linux-blink-optional-highdpi-rel",
-    goma_backend = goma.backend.RBE_PROD,
     os = os.LINUX_DEFAULT,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -59,9 +59,9 @@ try_.builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
+    os = os.LINUX_DEFAULT,
     goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
-    os = os.LINUX_DEFAULT,
     tryjob = try_.job(
         location_filters = [
             "cc/.+",
@@ -74,23 +74,23 @@ try_.builder(
 
 try_.builder(
     name = "win10.20h2-blink-rel",
-    goma_backend = goma.backend.RBE_PROD,
-    os = os.WINDOWS_ANY,
     builderless = True,
+    os = os.WINDOWS_ANY,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
     name = "win11-blink-rel",
-    goma_backend = goma.backend.RBE_PROD,
-    os = os.WINDOWS_ANY,
     builderless = True,
+    os = os.WINDOWS_ANY,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
     name = "win7-blink-rel",
-    goma_backend = goma.backend.RBE_PROD,
-    os = os.WINDOWS_ANY,
     builderless = True,
+    os = os.WINDOWS_ANY,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 blink_mac_builder(

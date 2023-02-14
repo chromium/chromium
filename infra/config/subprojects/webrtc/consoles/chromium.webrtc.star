@@ -6,8 +6,8 @@ load("//console-header.star", "HEADER")
 
 luci.console_view(
     name = "chromium.webrtc",
-    header = HEADER,
     repo = "https://chromium.googlesource.com/chromium/src",
+    header = HEADER,
     entries = [
         luci.console_view_entry(
             builder = "webrtc/WebRTC Chromium Android Builder",

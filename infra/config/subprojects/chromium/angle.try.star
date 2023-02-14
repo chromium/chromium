@@ -7,25 +7,25 @@ load("//lib/try.star", "try_")
 
 try_.defaults.set(
     bucket = "try",
-    build_numbers = True,
+    executable = "recipe:angle_chromium_trybot",
     builder_group = "tryserver.chromium.angle",
+    pool = "luci.chromium.try",
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    cpu = cpu.X86_64,
+    build_numbers = True,
     caches = [
         swarming.cache(
             name = "win_toolchain",
             path = "win_toolchain",
         ),
     ],
-    cores = 8,
-    cpu = cpu.X86_64,
     cq_group = "cq",
-    executable = "recipe:angle_chromium_trybot",
     execution_timeout = 2 * time.hour,
     # Max. pending time for builds. CQ considers builds pending >2h as timed
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
     expiration_timeout = 2 * time.hour,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_DEFAULT,
-    pool = "luci.chromium.try",
     service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     subproject_list_view = "luci.chromium.try",
     task_template_canary_percentage = 5,

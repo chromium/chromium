@@ -9,13 +9,13 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.android.fyi",
-    cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.android.fyi",
+    pool = ci.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
 )
 
@@ -28,6 +28,7 @@ consoles.console_view(
 
 ci.builder(
     name = "Android ASAN (dbg) (reclient)",
+    schedule = "triggered",  # triggered manually via Scheduler UI
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
         short_name = "san",
@@ -37,7 +38,6 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = 150,
-    schedule = "triggered",  # triggered manually via Scheduler UI
 )
 
 ci.builder(
@@ -47,8 +47,8 @@ ci.builder(
         short_name = "p-arm64",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -58,17 +58,17 @@ ci.builder(
         short_name = "p-x86",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "android-weblayer-11-x86-rel-tests",
+    triggered_by = ["android-weblayer-with-aosp-webview-x86-fyi-rel"],
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
         short_name = "11",
     ),
-    triggered_by = ["android-weblayer-with-aosp-webview-x86-fyi-rel"],
     notifies = ["weblayer-sheriff"],
 )
 
@@ -79,8 +79,8 @@ ci.builder(
         short_name = "p-x86",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -90,8 +90,8 @@ ci.builder(
         short_name = "p-x86",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -101,8 +101,8 @@ ci.builder(
         short_name = "p-x86",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -112,28 +112,29 @@ ci.builder(
         short_name = "x86",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "android-marshmallow-x86-fyi-rel-reviver",
+    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
+    # builds. Also we don't set any `schedule` since this builder is for
+    # reference only and should not run any new builds.
+    triggered_by = [],
     console_view_entry = consoles.console_view_entry(
         category = "reviver",
         short_name = "M",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
-    # builds. Also we don't set any `schedule` since this builder is for
-    # reference only and should not run any new builds.
-    triggered_by = [],
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "android-nougat-x86-rel",
     builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.COMPILE_AND_TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = ["android", "enable_reclient", "enable_wpr_tests"],
@@ -147,7 +148,6 @@ ci.builder(
         android_config = builder_config.android_config(
             config = "x86_builder_mb",
         ),
-        execution_mode = builder_config.execution_mode.COMPILE_AND_TEST,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x86|rel",
@@ -163,24 +163,24 @@ ci.builder(
 # disabled tests.
 ci.builder(
     name = "android-pie-x86-fyi-rel",
+    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
+    # builds. Also we don't set any `schedule` since this builder is for
+    # reference only and should not run any new builds.
+    triggered_by = [],
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x86|rel",
         short_name = "P",
     ),
     goma_jobs = goma.jobs.J150,
-    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
-    # builds. Also we don't set any `schedule` since this builder is for
-    # reference only and should not run any new builds.
-    triggered_by = [],
 )
 
 ci.builder(
     name = "android-10-x86-fyi-rel-tests",
+    triggered_by = ["android-x86-fyi-rel"],
     console_view_entry = consoles.console_view_entry(
         category = "tester|10",
         short_name = "10",
     ),
-    triggered_by = ["android-x86-fyi-rel"],
 )
 
 # TODO(crbug.com/1137474, crbug.com/1250464): Remove this builder once there are no associated
@@ -192,20 +192,20 @@ ci.builder(
         short_name = "11",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "android-12-x64-fyi-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "emulator|x64|rel",
-        short_name = "12",
-    ),
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
     # builds. Also we don't set any `schedule` since this builder is for
     # reference only and should not run any new builds.
     triggered_by = [],
+    console_view_entry = consoles.console_view_entry(
+        category = "emulator|x64|rel",
+        short_name = "12",
+    ),
 )
 
 ci.builder(
@@ -214,10 +214,10 @@ ci.builder(
         category = "network|traffic|annotations",
         short_name = "and",
     ),
-    notifies = ["annotator-rel"],
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    notifies = ["annotator-rel"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -227,13 +227,14 @@ ci.builder(
         short_name = "x86",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 # TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.
 ci.builder(
     name = "android-webview-12-x64-dbg-tests",
+    triggered_by = ["Android x64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -257,12 +258,12 @@ ci.builder(
         category = "tester|webview",
         short_name = "12",
     ),
-    triggered_by = ["Android x64 Builder (dbg)"],
 )
 
 # TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.
 ci.builder(
     name = "android-12-x64-dbg-tests",
+    triggered_by = ["Android x64 Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -286,12 +287,12 @@ ci.builder(
         category = "tester|phone",
         short_name = "12",
     ),
-    triggered_by = ["Android x64 Builder (dbg)"],
 )
 
 ci.builder(
     name = "android-cronet-asan-x86-rel",
     builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.COMPILE_AND_TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = ["android", "enable_reclient"],
@@ -306,7 +307,6 @@ ci.builder(
         android_config = builder_config.android_config(
             config = "x86_builder",
         ),
-        execution_mode = builder_config.execution_mode.COMPILE_AND_TEST,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",

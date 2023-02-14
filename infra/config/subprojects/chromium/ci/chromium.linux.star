@@ -11,19 +11,19 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
-    builder_group = "chromium.linux",
-    cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
+    builder_group = "chromium.linux",
+    pool = ci.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    sheriff_rotations = sheriff_rotations.CHROMIUM,
+    tree_closing = True,
+    main_console_view = "main",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    main_console_view = "main",
     notifies = ["chromium.linux"],
-    os = os.LINUX_DEFAULT,
-    pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
-    sheriff_rotations = sheriff_rotations.CHROMIUM,
-    tree_closing = True,
 )
 
 consoles.console_view(
@@ -38,14 +38,14 @@ consoles.console_view(
 
 ci.builder(
     name = "Cast Audio Linux",
+    ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "aud",
     ),
-    ssd = True,
     goma_backend = None,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -74,8 +74,8 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     goma_backend = None,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -98,36 +98,37 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    os = os.LINUX_BIONIC,
+    # TODO(crbug.com/1173333): Make it tree-closing.
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "dbg",
     ),
     cq_mirrors_console_view = "mirrors",
-    os = os.LINUX_BIONIC,
-    # TODO(crbug.com/1173333): Make it tree-closing.
-    tree_closing = False,
     goma_backend = None,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "Cast Linux ARM64",
     branch_selector = branches.MAIN,
+    os = os.LINUX_BIONIC,
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
         short_name = "arm64",
     ),
     cq_mirrors_console_view = "mirrors",
-    os = os.LINUX_BIONIC,
-    tree_closing = False,
     goma_backend = None,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
     name = "Deterministic Fuchsia (dbg)",
+    executable = "recipe:swarming/deterministic_build",
     console_view_entry = [
         consoles.console_view_entry(
             category = "fuchsia|x64",
@@ -140,60 +141,45 @@ ci.builder(
             short_name = "det",
         ),
     ],
-    executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
     goma_jobs = None,
 )
 
 ci.builder(
     name = "Deterministic Linux",
-    console_view_entry = consoles.console_view_entry(
-        category = "release",
-        short_name = "det",
-    ),
     executable = "recipe:swarming/deterministic_build",
-    execution_timeout = 6 * time.hour,
     # Set tree_closing to false to disable the defaualt tree closer, which
     # filters by step name, and instead enable tree closing for any step
     # failure.
     tree_closing = False,
-    notifies = ["Deterministic Linux", "close-on-any-step-failure"],
+    console_view_entry = consoles.console_view_entry(
+        category = "release",
+        short_name = "det",
+    ),
+    execution_timeout = 6 * time.hour,
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    notifies = ["Deterministic Linux", "close-on-any-step-failure"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "Deterministic Linux (dbg)",
+    executable = "recipe:swarming/deterministic_build",
+    cores = 32,
     console_view_entry = consoles.console_view_entry(
         category = "debug|builder",
         short_name = "det",
     ),
-    cores = 32,
-    executable = "recipe:swarming/deterministic_build",
     execution_timeout = 7 * time.hour,
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "Fuchsia ARM64",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|a64",
-            short_name = "rel",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "arm64",
-        ),
-    ],
-    cq_mirrors_console_view = "mirrors",
-    notifies = ["cr-fuchsia"],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -213,25 +199,25 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
-)
-
-ci.builder(
-    name = "Fuchsia x64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "fuchsia|x64",
+            category = "fuchsia|a64",
             short_name = "rel",
         ),
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
             category = "ci",
-            short_name = "x64",
+            short_name = "arm64",
         ),
     ],
     cq_mirrors_console_view = "mirrors",
     notifies = ["cr-fuchsia"],
+)
+
+ci.builder(
+    name = "Fuchsia x64",
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -250,22 +236,36 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|x64",
+            short_name = "rel",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "ci",
+            short_name = "x64",
+        ),
+    ],
+    cq_mirrors_console_view = "mirrors",
+    notifies = ["cr-fuchsia"],
 )
 
 ci.builder(
     name = "Leak Detection Linux",
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         console_view = "chromium.fyi",
         category = "linux",
         short_name = "lk",
     ),
     main_console_view = None,
-    notifies = args.ignore_default([]),
-    tree_closing = False,
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    notifies = args.ignore_default([]),
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    sheriff_rotations = args.ignore_default(None),
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -295,8 +295,8 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     goma_backend = None,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -321,8 +321,8 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -352,13 +352,14 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "Linux Tests",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Linux Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -383,7 +384,6 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     goma_backend = None,
-    triggered_by = ["ci/Linux Builder"],
     # TODO(crbug.com/1249968): Roll this out more broadly.
     resultdb_bigquery_exports = [
         resultdb.export_text_artifacts(
@@ -400,6 +400,7 @@ ci.builder(
 ci.builder(
     name = "Linux Tests (dbg)(1)",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Linux Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -419,15 +420,15 @@ ci.builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
-    triggered_by = ["ci/Linux Builder (dbg)"],
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "Linux Tests (Wayland)",
     branch_selector = branches.STANDARD_MILESTONE,
+    triggered_by = ["ci/Linux Builder (Wayland)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
@@ -453,30 +454,11 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     goma_backend = None,
-    triggered_by = ["ci/Linux Builder (Wayland)"],
 )
 
 ci.builder(
     name = "fuchsia-arm64-cast",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|cast",
-            short_name = "a64",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "arm64-cast",
-        ),
-    ],
-    cq_mirrors_console_view = "mirrors",
-    # Set tree_closing to false to disable the defaualt tree closer, which
-    # filters by step name, and instead enable tree closing for any step
-    # failure.
-    tree_closing = False,
-    notifies = ["cr-fuchsia", "close-on-any-step-failure"],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -495,6 +477,24 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    # Set tree_closing to false to disable the defaualt tree closer, which
+    # filters by step name, and instead enable tree closing for any step
+    # failure.
+    tree_closing = False,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|cast",
+            short_name = "a64",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "ci",
+            short_name = "arm64-cast",
+        ),
+    ],
+    cq_mirrors_console_view = "mirrors",
+    notifies = ["cr-fuchsia", "close-on-any-step-failure"],
 )
 
 ci.builder(
@@ -504,31 +504,13 @@ ci.builder(
         short_name = "nsl",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
     name = "fuchsia-x64-cast",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|cast",
-            short_name = "x64",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "ci",
-            short_name = "x64-cast",
-        ),
-    ],
-    cq_mirrors_console_view = "mirrors",
-    # Set tree_closing to false to disable the defaualt tree closer, which
-    # filters by step name, and instead enable tree closing for any step
-    # failure.
-    tree_closing = False,
-    notifies = ["cr-fuchsia", "close-on-any-step-failure"],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -547,26 +529,28 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
-)
-
-ci.builder(
-    name = "fuchsia-x64-dbg",
+    # Set tree_closing to false to disable the defaualt tree closer, which
+    # filters by step name, and instead enable tree closing for any step
+    # failure.
+    tree_closing = False,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "fuchsia|x64",
-            short_name = "dbg",
+            category = "fuchsia|cast",
+            short_name = "x64",
         ),
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
             category = "ci",
-            short_name = "x64-dbg",
+            short_name = "x64-cast",
         ),
     ],
-    notifies = ["cr-fuchsia"],
-    goma_backend = None,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    cq_mirrors_console_view = "mirrors",
+    notifies = ["cr-fuchsia", "close-on-any-step-failure"],
+)
+
+ci.builder(
+    name = "fuchsia-x64-dbg",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -586,6 +570,22 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-linux-archive",
     ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|x64",
+            short_name = "dbg",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "ci",
+            short_name = "x64-dbg",
+        ),
+    ],
+    goma_backend = None,
+    notifies = ["cr-fuchsia"],
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -595,8 +595,8 @@ ci.builder(
         short_name = "bfc",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -606,8 +606,8 @@ ci.builder(
         short_name = "trc",
     ),
     goma_backend = None,
-    reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(

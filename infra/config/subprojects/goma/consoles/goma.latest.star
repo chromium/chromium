@@ -6,8 +6,8 @@ load("//console-header.star", "HEADER")
 
 luci.console_view(
     name = "goma.latest",
-    header = HEADER,
     repo = "https://chromium.googlesource.com/chromium/src",
+    header = HEADER,
     entries = [
         luci.console_view_entry(
             builder = "goma/linux-archive-rel-goma-rbe-latest",

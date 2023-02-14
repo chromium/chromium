@@ -89,40 +89,40 @@ builder(
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder",
-    goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
     name = "WebRTC Chromium FYI Mac Builder (dbg)",
-    goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 builder(
     name = "WebRTC Chromium FYI Mac Tester",
-    os = os.MAC_ANY,
     triggered_by = ["WebRTC Chromium FYI Mac Builder"],
+    os = os.MAC_ANY,
 )
 
 builder(
     name = "WebRTC Chromium FYI Win Builder",
+    os = os.WINDOWS_DEFAULT,
     goma_backend = goma.backend.RBE_PROD,
     goma_enable_ats = True,
-    os = os.WINDOWS_DEFAULT,
 )
 
 builder(
     name = "WebRTC Chromium FYI Win Builder (dbg)",
+    os = os.WINDOWS_DEFAULT,
     goma_backend = goma.backend.RBE_PROD,
     goma_enable_ats = True,
-    os = os.WINDOWS_DEFAULT,
 )
 
 builder(
     name = "WebRTC Chromium FYI Win10 Tester",
-    os = os.WINDOWS_DEFAULT,
     triggered_by = ["WebRTC Chromium FYI Win Builder"],
+    os = os.WINDOWS_DEFAULT,
 )
 
 # Builders run on the default Win OS version offered
@@ -131,20 +131,20 @@ builder(
 # dimensions.
 builder(
     name = "WebRTC Chromium FYI Win7 Tester",
-    os = os.WINDOWS_DEFAULT,
     triggered_by = ["WebRTC Chromium FYI Win Builder"],
+    os = os.WINDOWS_DEFAULT,
 )
 
 builder(
     name = "WebRTC Chromium FYI ios-device",
-    goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
+    goma_backend = goma.backend.RBE_PROD,
     xcode = xcode.x13main,
 )
 
 builder(
     name = "WebRTC Chromium FYI ios-simulator",
-    goma_backend = goma.backend.RBE_PROD,
     os = os.MAC_ANY,
+    goma_backend = goma.backend.RBE_PROD,
     xcode = xcode.x13main,
 )

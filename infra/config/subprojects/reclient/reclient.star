@@ -29,26 +29,26 @@ luci.bucket(
 
 ci.defaults.set(
     bucket = "reclient",
-    build_numbers = True,
+    executable = "recipe:chromium",
+    triggered_by = ["chromium-gitiles-trigger"],
     builder_group = "chromium.reclient.fyi",
+    pool = "luci.chromium.ci",
     cores = 8,
     cpu = cpu.X86_64,
-    executable = "recipe:chromium",
+    free_space = builders.free_space.standard,
+    build_numbers = True,
     execution_timeout = 3 * time.hour,
     goma_backend = None,
-    pool = "luci.chromium.ci",
     service_account = (
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
     ),
-    triggered_by = ["chromium-gitiles-trigger"],
-    free_space = builders.free_space.standard,
 )
 
 consoles.console_view(
     name = "chromium.reclient.fyi",
+    repo = "https://chromium.googlesource.com/chromium/src",
     header = HEADER,
     include_experimental_builds = True,
-    repo = "https://chromium.googlesource.com/chromium/src",
 )
 
 def fyi_reclient_staging_builder(
@@ -94,8 +94,8 @@ fyi_reclient_staging_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    console_view_category = "linux",
     os = os.LINUX_DEFAULT,
+    console_view_category = "linux",
 )
 
 fyi_reclient_test_builder(
@@ -113,8 +113,8 @@ fyi_reclient_test_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    console_view_category = "linux",
     os = os.LINUX_DEFAULT,
+    console_view_category = "linux",
 )
 
 fyi_reclient_staging_builder(
@@ -134,10 +134,10 @@ fyi_reclient_staging_builder(
         ),
     ),
     builderless = True,
-    console_view_category = "win",
     cores = 32,
-    execution_timeout = 5 * time.hour,
     os = os.WINDOWS_ANY,
+    console_view_category = "win",
+    execution_timeout = 5 * time.hour,
 )
 
 fyi_reclient_test_builder(
@@ -157,38 +157,19 @@ fyi_reclient_test_builder(
         ),
     ),
     builderless = True,
-    console_view_category = "win",
     cores = 32,
-    execution_timeout = 5 * time.hour,
     os = os.WINDOWS_ANY,
+    console_view_category = "win",
+    execution_timeout = 5 * time.hour,
 )
 
 fyi_reclient_staging_builder(
     name = "Simple Chrome Builder reclient staging",
-    console_view_category = "linux",
-    os = os.LINUX_DEFAULT,
     builder_spec = builder_config.builder_spec(
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            cros_boards_with_qemu_images = "amd64-generic-vm",
-        ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = ["chromeos", "enable_reclient", "reclient_staging"],
         ),
-    ),
-)
-
-fyi_reclient_test_builder(
-    name = "Simple Chrome Builder reclient test",
-    console_view_category = "linux",
-    os = os.LINUX_DEFAULT,
-    builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
@@ -198,9 +179,28 @@ fyi_reclient_test_builder(
             target_platform = builder_config.target_platform.CHROMEOS,
             cros_boards_with_qemu_images = "amd64-generic-vm",
         ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_category = "linux",
+)
+
+fyi_reclient_test_builder(
+    name = "Simple Chrome Builder reclient test",
+    builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = ["chromeos", "enable_reclient", "reclient_test"],
         ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            cros_boards_with_qemu_images = "amd64-generic-vm",
+        ),
     ),
+    os = os.LINUX_DEFAULT,
+    console_view_category = "linux",
 )

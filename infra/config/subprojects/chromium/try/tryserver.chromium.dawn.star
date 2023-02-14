@@ -9,13 +9,13 @@ load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.dawn",
-    builderless = False,
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.dawn",
+    pool = try_.DEFAULT_POOL,
+    builderless = False,
+    os = os.LINUX_DEFAULT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
     service_account = try_.gpu.SERVICE_ACCOUNT,
 )
 
@@ -58,8 +58,8 @@ try_.builder(
         "ci/Dawn Mac x64 DEPS Release (AMD)",
         "ci/Dawn Mac x64 DEPS Release (Intel)",
     ],
-    main_list_view = "try",
     os = os.MAC_ANY,
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "content/test/gpu/.+",
@@ -85,8 +85,8 @@ try_.builder(
         "ci/Dawn Win10 x64 DEPS Release (Intel HD 630)",
         "ci/Dawn Win10 x64 DEPS Release (NVIDIA)",
     ],
-    main_list_view = "try",
     os = os.WINDOWS_ANY,
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "content/test/gpu/.+",
@@ -112,8 +112,8 @@ try_.builder(
         "ci/Dawn Win10 x86 DEPS Release (Intel HD 630)",
         "ci/Dawn Win10 x86 DEPS Release (NVIDIA)",
     ],
-    main_list_view = "try",
     os = os.WINDOWS_ANY,
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "content/test/gpu/.+",
@@ -150,16 +150,16 @@ try_.builder(
 
 try_.builder(
     name = "dawn-try-mac-amd-exp",
+    pool = "luci.chromium.gpu.mac.retina.amd.try",
     builderless = True,
     os = os.MAC_ANY,
-    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 try_.builder(
     name = "dawn-try-mac-intel-exp",
+    pool = "luci.chromium.gpu.mac.mini.intel.try",
     builderless = True,
     os = os.MAC_ANY,
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
 )
 
 try_.builder(

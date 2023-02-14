@@ -11,16 +11,16 @@ load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.android",
-    cores = 8,
-    compilator_cores = 32,
-    orchestrator_cores = 4,
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.android",
+    pool = try_.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    compilator_cores = 32,
+    compilator_goma_jobs = goma.jobs.J300,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    compilator_goma_jobs = goma.jobs.J300,
-    os = os.LINUX_DEFAULT,
-    pool = try_.DEFAULT_POOL,
+    orchestrator_cores = 4,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 
@@ -80,11 +80,12 @@ try_.builder(
 try_.builder(
     name = "android-binary-size",
     branch_selector = branches.STANDARD_MILESTONE,
+    executable = "recipe:binary_size_trybot",
     builderless = not settings.is_main,
     # TODO (kimstephanie): Change to cores = 16 and ssd = True once bots have
     # landed
     cores = 16,
-    executable = "recipe:binary_size_trybot",
+    ssd = True,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     properties = {
@@ -104,7 +105,6 @@ try_.builder(
         },
     },
     tryjob = try_.job(),
-    ssd = True,
 )
 
 try_.builder(
@@ -120,7 +120,7 @@ try_.builder(
             "components/grpc_support/.+",
             "build/android/.+",
             "build/config/android/.+",
-            cq.location_filter(path_regexp = "components/cronet/ios/.+", exclude = True),
+            cq.location_filter(exclude = True, path_regexp = "components/cronet/ios/.+"),
         ],
     ),
 )
@@ -163,7 +163,7 @@ try_.builder(
             "components/grpc_support/.+",
             "build/android/.+",
             "build/config/android/.+",
-            cq.location_filter(path_regexp = "components/cronet/ios/.+", exclude = True),
+            cq.location_filter(exclude = True, path_regexp = "components/cronet/ios/.+"),
         ],
     ),
 )
@@ -218,6 +218,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-marshmallow-arm64-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     # TODO(crbug.com/1313712): Re-enable check_for_flakiness when ResultDB RPCs
     # no longer timeout.
     #check_for_flakiness = True,
@@ -226,11 +227,10 @@ try_.orchestrator_builder(
         "ci/Android Release (Nexus 5X)",
     ],
     compilator = "android-marshmallow-arm64-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
+    main_list_view = "try",
     tryjob = try_.job(),
+    use_java_coverage = True,
 )
 
 try_.compilator_builder(
@@ -245,6 +245,7 @@ try_.compilator_builder(
 
 try_.orchestrator_builder(
     name = "android-marshmallow-x86-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/android-marshmallow-x86-rel",
     ],
@@ -255,11 +256,10 @@ try_.orchestrator_builder(
     ),
     check_for_flakiness = True,
     compilator = "android-marshmallow-x86-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
+    main_list_view = "try",
     tryjob = try_.job(),
+    use_java_coverage = True,
 )
 
 try_.compilator_builder(
@@ -298,9 +298,13 @@ try_.builder(
 try_.builder(
     name = "android-pie-arm64-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/Android arm64 Builder (dbg)",
+        "ci/android-pie-arm64-dbg",
+    ],
     builderless = False,
-    check_for_flakiness = True,
     cores = 16,
+    check_for_flakiness = True,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     tryjob = try_.job(
@@ -317,10 +321,6 @@ try_.builder(
             "third_party/arcore-android-sdk-client/.+",
         ],
     ),
-    mirrors = [
-        "ci/Android arm64 Builder (dbg)",
-        "ci/android-pie-arm64-dbg",
-    ],
 )
 
 # TODO(crbug/1182468) Remove when experiment is done.
@@ -328,17 +328,18 @@ try_.builder(
     name = "android-pie-arm64-coverage-experimental-rel",
     builderless = True,
     cores = 16,
-    goma_jobs = goma.jobs.J300,
     ssd = True,
+    goma_jobs = goma.jobs.J300,
     main_list_view = "try",
-    use_clang_coverage = True,
     tryjob = try_.job(
         experiment_percentage = 3,
     ),
+    use_clang_coverage = True,
 )
 
 try_.orchestrator_builder(
     name = "android-pie-arm64-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/android-pie-arm64-rel",
     ],
@@ -347,9 +348,8 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    compilator = "android-pie-arm64-rel-compilator",
     check_for_flakiness = True,
-    branch_selector = branches.STANDARD_MILESTONE,
+    compilator = "android-pie-arm64-rel-compilator",
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -370,8 +370,8 @@ try_.builder(
 try_.builder(
     name = "android-pie-arm64-coverage-rel",
     cores = 16,
-    goma_jobs = goma.jobs.J300,
     ssd = True,
+    goma_jobs = goma.jobs.J300,
     use_clang_coverage = True,
 )
 
@@ -465,7 +465,6 @@ try_.builder(
 
 try_.builder(
     name = "android_arm64_dbg_recipe",
-    goma_jobs = goma.jobs.J300,
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
     ],
@@ -473,6 +472,7 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
+    goma_jobs = goma.jobs.J300,
 )
 
 try_.builder(
@@ -551,13 +551,13 @@ try_.builder(
 
 try_.builder(
     name = "android_cronet",
+    branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/android-cronet-arm-rel",
     ],
     try_settings = builder_config.try_settings(
         is_compile_only = True,
     ),
-    branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),

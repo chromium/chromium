@@ -11,12 +11,12 @@ load("//project.star", "BRANCH_TYPES", "branch_type")
 load("../fallback-cq.star", "fallback_cq")
 
 try_.defaults.set(
-    cores = 8,
-    execution_timeout = 15 * time.minute,
-    list_view = "presubmit",
-    main_list_view = "try",
-    os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    list_view = "presubmit",
+    execution_timeout = 15 * time.minute,
+    main_list_view = "try",
     # Default priority for buildbucket is 30, see
     # https://chromium.googlesource.com/infra/infra/+/bb68e62b4380ede486f65cd32d9ff3f1bbe288e4/appengine/cr-buildbucket/creation.py#42
     # This will improve our turnaround time for landing infra/config changes
@@ -129,6 +129,12 @@ presubmit_builder(
     branch_selector = branches.ALL_BRANCHES,
     executable = "recipe:presubmit",
     execution_timeout = 40 * time.minute,
+    # TODO(crbug.com/1366979) Changes to remove py2 dependencies from presubmit
+    # scripts haven't been cherry-picked back, so this prevents failures in
+    # presubmit
+    experiments = {
+        "luci.buildbucket.omit_python2": 0,
+    },
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
@@ -137,18 +143,12 @@ presubmit_builder(
         "repo_name": "chromium",
     },
     tryjob = try_.job(),
-    # TODO(crbug.com/1366979) Changes to remove py2 dependencies from presubmit
-    # scripts haven't been cherry-picked back, so this prevents failures in
-    # presubmit
-    experiments = {
-        "luci.buildbucket.omit_python2": 0,
-    },
 )
 
 presubmit_builder(
     name = "requires-testing-checker",
-    cq_group = fallback_cq.GROUP,
     description_html = "prevents CLs that requires testing from landing on branches with no CQ",
     executable = "recipe:requires_testing_checker",
+    cq_group = fallback_cq.GROUP,
     tryjob = try_.job(),
 )

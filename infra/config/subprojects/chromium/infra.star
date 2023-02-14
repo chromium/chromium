@@ -7,9 +7,9 @@ load("//lib/consoles.star", "consoles")
 
 builders.defaults.set(
     bucket = "infra",
-    build_numbers = True,
     cores = 8,
     cpu = cpu.X86_64,
+    build_numbers = True,
 )
 
 consoles.console_view(
@@ -32,11 +32,13 @@ luci.bucket(
 
 builders.builder(
     name = "linux-rel-warmed-compilator-warmer",
+    executable = "recipe:chromium/builder_cache_prewarmer",
+    pool = "luci.chromium.try",
+    cores = None,
     console_view_entry = consoles.console_view_entry(
         console_view = "infra",
         category = "warmer",
     ),
-    override_builder_dimension = "linux-rel-warmed-compilator",
     caches = [
         swarming.cache(
             name = "linux_rel_warmed_compilator_warmed_cache",
@@ -44,10 +46,8 @@ builders.builder(
             wait_for_warm_cache = 4 * time.minute,
         ),
     ],
-    cores = None,
-    executable = "recipe:chromium/builder_cache_prewarmer",
     goma_jobs = goma.jobs.J150,
-    pool = "luci.chromium.try",
+    override_builder_dimension = "linux-rel-warmed-compilator",
     properties = {
         "builder_to_warm": {
             "builder_name": "linux-rel-warmed",

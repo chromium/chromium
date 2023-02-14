@@ -10,17 +10,17 @@ load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
 try_.defaults.set(
-    builder_group = "tryserver.chromium.mac",
-    builderless = True,
-    orchestrator_cores = 2,
     executable = try_.DEFAULT_EXECUTABLE,
+    builder_group = "tryserver.chromium.mac",
+    pool = try_.DEFAULT_POOL,
+    builderless = True,
+    os = os.MAC_ANY,
+    ssd = True,
+    compilator_goma_jobs = goma.jobs.J150,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-    compilator_goma_jobs = goma.jobs.J150,
-    os = os.MAC_ANY,
-    pool = try_.DEFAULT_POOL,
+    orchestrator_cores = 2,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
-    ssd = True,
 )
 
 def ios_builder(*, name, **kwargs):
@@ -38,8 +38,8 @@ consoles.list_view(
 try_.builder(
     name = "mac-arm64-on-arm64-rel",
     builderless = False,
-    cpu = cpu.ARM64,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
 )
 
 try_.builder(
@@ -66,8 +66,8 @@ try_.builder(
 
 try_.builder(
     name = "mac-fieldtrial-fyi-rel",
-    os = os.MAC_DEFAULT,
     mirrors = ["ci/mac-fieldtrial-rel"],
+    os = os.MAC_DEFAULT,
 )
 
 try_.builder(
@@ -83,7 +83,6 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "mac-rel",
-    compilator = "mac-rel-compilator",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     mirrors = [
         "ci/Mac Builder",
@@ -97,28 +96,29 @@ try_.orchestrator_builder(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
     ),
-    main_list_view = "try",
-    use_clang_coverage = True,
-    tryjob = try_.job(),
+    compilator = "mac-rel-compilator",
     experiments = {
         "remove_src_checkout_experiment": 100,
     },
+    main_list_view = "try",
+    tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 try_.compilator_builder(
     name = "mac-rel-compilator",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    main_list_view = "try",
     os = os.MAC_DEFAULT,
+    main_list_view = "try",
 )
 
 try_.orchestrator_builder(
     name = "mac11-arm64-rel",
-    compilator = "mac11-arm64-rel-compilator",
     mirrors = [
         "ci/mac-arm64-rel",
         "ci/mac11-arm64-rel-tests",
     ],
+    compilator = "mac11-arm64-rel-compilator",
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 100,
@@ -127,10 +127,10 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "mac11-arm64-rel-compilator",
-    main_list_view = "try",
     os = os.MAC_DEFAULT,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
+    main_list_view = "try",
 )
 
 # NOTE: the following trybots aren't sensitive to Mac version on which
@@ -204,8 +204,8 @@ try_.builder(
         include_all_triggered_testers = True,
         is_compile_only = True,
     ),
-    goma_jobs = goma.jobs.J150,
     os = os.MAC_DEFAULT,
+    goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -231,16 +231,16 @@ try_.builder(
 
 try_.builder(
     name = "mac_upload_clang",
-    builderless = False,
     executable = "recipe:chromium_upload_clang",
+    builderless = False,
     execution_timeout = 6 * time.hour,
     goma_backend = None,  # Does not use Goma.
 )
 
 try_.builder(
     name = "mac_upload_clang_arm",
-    builderless = False,
     executable = "recipe:chromium_upload_clang",
+    builderless = False,
     execution_timeout = 6 * time.hour,
     goma_backend = None,  # Does not use Goma.
 )
@@ -265,8 +265,8 @@ ios_builder(
 
 ios_builder(
     name = "ios-fieldtrial-fyi-rel",
-    builderless = True,
     mirrors = ["ci/ios-fieldtrial-rel"],
+    builderless = True,
 )
 
 ios_builder(
@@ -290,11 +290,11 @@ ios_builder(
         "ci/ios-simulator",
     ],
     check_for_flakiness = True,
-    main_list_view = "try",
-    use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    main_list_view = "try",
     tryjob = try_.job(),
+    use_clang_coverage = True,
 )
 
 ios_builder(
@@ -310,7 +310,7 @@ ios_builder(
             "components/cronet/.+",
             "components/grpc_support/.+",
             "ios/.+",
-            cq.location_filter(path_regexp = "components/cronet/android/.+", exclude = True),
+            cq.location_filter(exclude = True, path_regexp = "components/cronet/android/.+"),
         ],
     ),
 )
@@ -322,15 +322,15 @@ ios_builder(
         "ci/ios-simulator-full-configs",
     ],
     check_for_flakiness = True,
-    main_list_view = "try",
-    use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "ios/.+",
         ],
     ),
+    use_clang_coverage = True,
 )
 
 ios_builder(
@@ -344,12 +344,12 @@ ios_builder(
 
 ios_builder(
     name = "ios-simulator-noncq",
-    xcode = xcode.x13main,
     tryjob = try_.job(
         location_filters = [
             "third_party/crashpad/crashpad/.+",
         ],
     ),
+    xcode = xcode.x13main,
 )
 
 ios_builder(
@@ -368,8 +368,8 @@ ios_builder(
 
 ios_builder(
     name = "ios15-sdk-simulator",
-    xcode = xcode.x13betabots,
     os = os.MAC_12,
+    xcode = xcode.x13betabots,
 )
 
 try_.gpu.optional_tests_builder(
@@ -392,8 +392,8 @@ try_.gpu.optional_tests_builder(
         ),
         build_gs_bucket = "chromium-gpu-fyi-archive",
     ),
-    main_list_view = "try",
     ssd = None,
+    main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
             "chrome/browser/vr/.+",
@@ -433,7 +433,7 @@ ios_builder(
     ),
     builderless = False,
     check_for_flakiness = True,
-    use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    use_clang_coverage = True,
 )
