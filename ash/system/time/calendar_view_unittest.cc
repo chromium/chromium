@@ -2590,7 +2590,7 @@ TEST_F(
                     CreateMockEventListStartingFivePastMidnight());
 
   // Up next view should be shown.
-  EXPECT_TRUE(up_next_view());
+  ASSERT_TRUE(up_next_view());
 
   LeftClickOn(up_next_todays_events_button());
 

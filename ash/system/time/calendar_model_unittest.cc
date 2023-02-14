@@ -1306,7 +1306,7 @@ TEST_F(CalendarModelTest, FindEventsSplitByMultiDayAndSameDay) {
   EXPECT_EQ(same_day_events.back().id(), kSameDayId);
 }
 
-TEST_F(CalendarModelTest, FindUpcomingEvents) {
+TEST_F(CalendarModelTest, FindUpcomingEvents_SameDay) {
   // Set timezone and fake now.
   const char* kNow = "10 Nov 2022 13:00 GMT";
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -1378,6 +1378,77 @@ TEST_F(CalendarModelTest, FindUpcomingEvents) {
   EXPECT_FALSE(
       event_list_contains(events, kEventInProgressStartedMoreThanOneHourAgoId));
   EXPECT_FALSE(event_list_contains(events, kEventFinishedId));
+}
+
+// If time now is 23:55 and we have an upcoming event starting at 00:05 the
+// following day, then we should also get upcoming events from the next day
+// back.
+TEST_F(CalendarModelTest, FindUpcomingEvents_NextDay) {
+  // Set timezone and fake now.
+  const char* kNow = "10 Nov 2022 23:55 GMT";
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+  SetTodayFromStr(kNow);
+
+  const char* kSummary = "summary";
+  const char* kEventStartingInTenMinsTomorrowId =
+      "event_starting_in_ten_mins_tomorrow";
+
+  auto event_starting_in_ten_mins_tomorrow = calendar_test_utils::CreateEvent(
+      kEventStartingInTenMinsTomorrowId, kSummary, "11 Nov 2022 00:05 GMT",
+      "10 Nov 2022 15:00 GMT");
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->InjectItemForTesting(
+      std::move(event_starting_in_ten_mins_tomorrow));
+
+  MockOnEventsFetched(calendar_utils::GetStartOfMonthUTC(
+                          calendar_test_utils::GetTimeFromString(kNow)),
+                      google_apis::ApiErrorCode::HTTP_SUCCESS,
+                      event_list.get());
+
+  auto events = calendar_model_->FindUpcomingEvents(now_);
+
+  auto event_list_contains = [](auto& event_list, auto& id) {
+    return base::Contains(event_list, id, &CalendarEvent::id);
+  };
+
+  EXPECT_EQ(events.size(), size_t(1));
+  EXPECT_TRUE(event_list_contains(events, kEventStartingInTenMinsTomorrowId));
+}
+
+// If time now is 00:10 and we have an event that started <1 hour ago, then we
+// should get in progress events from the previous day back.
+TEST_F(CalendarModelTest, FindUpcomingEvents_PreviousDay) {
+  // Set timezone and fake now.
+  const char* kNow = "10 Nov 2022 00:10 GMT";
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+  SetTodayFromStr(kNow);
+
+  const char* kSummary = "summary";
+  const char* kEventInProgressStartedYesterdayId =
+      "event_in_progress_started_yesterday_id";
+
+  auto event_in_progress_started_yesterday = calendar_test_utils::CreateEvent(
+      kEventInProgressStartedYesterdayId, kSummary, "09 Nov 2022 23:15 GMT",
+      "10 Nov 2022 00:15 GMT");
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  event_list->InjectItemForTesting(
+      std::move(event_in_progress_started_yesterday));
+
+  MockOnEventsFetched(calendar_utils::GetStartOfMonthUTC(
+                          calendar_test_utils::GetTimeFromString(kNow)),
+                      google_apis::ApiErrorCode::HTTP_SUCCESS,
+                      event_list.get());
+
+  auto events = calendar_model_->FindUpcomingEvents(now_);
+
+  auto event_list_contains = [](auto& event_list, auto& id) {
+    return base::Contains(event_list, id, &CalendarEvent::id);
+  };
+
+  EXPECT_EQ(events.size(), size_t(1));
+  EXPECT_TRUE(event_list_contains(events, kEventInProgressStartedYesterdayId));
 }
 
 }  // namespace ash

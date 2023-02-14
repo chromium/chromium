@@ -121,8 +121,9 @@ auto FilterEventsStartingSoonOrRecentlyInProgress(
 
   for (const CalendarEvent& event : list) {
     if (EventStartsInTenMins(event, now_local) ||
-        EventStartedLessThanOneHourAgo(event, now_local))
+        EventStartedLessThanOneHourAgo(event, now_local)) {
       result.emplace_back(event);
+    }
   }
 
   return result;
@@ -498,15 +499,17 @@ SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
   // Early return if there are no events for this month.
   base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(day);
   auto it = event_months_.find(start_of_month);
-  if (it == event_months_.end())
+  if (it == event_months_.end()) {
     return event_list;
+  }
 
   // Early return if there are no events for this day.
   base::Time midnight = day.UTCMidnight();
   const SingleMonthEventMap& month = it->second;
   auto it2 = month.find(midnight);
-  if (it2 == month.end())
+  if (it2 == month.end()) {
     return event_list;
+  }
 
   auto events = it2->second;
   SortByDateAscending(events);
@@ -520,7 +523,16 @@ CalendarModel::FindEventsSplitByMultiDayAndSameDay(base::Time day) const {
 
 std::list<CalendarEvent> CalendarModel::FindUpcomingEvents(
     base::Time now_local) const {
-  return FilterEventsStartingSoonOrRecentlyInProgress(FindEvents(now_local),
+  // First get today's events for `now_local`.
+  auto upcoming_events = FindEvents(now_local);
+  const base::Time now_in_ten_mins = now_local + base::Minutes(10);
+  // If `now_in_ten_mins` is the subsequent day, include its events.
+  if (now_in_ten_mins.UTCMidnight() != now_local.UTCMidnight()) {
+    auto tomorrows_events = FindEvents(now_local + base::Days(1));
+    upcoming_events.splice(upcoming_events.end(), tomorrows_events);
+  }
+
+  return FilterEventsStartingSoonOrRecentlyInProgress(upcoming_events,
                                                       now_local);
 }
 
