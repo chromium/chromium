@@ -535,7 +535,7 @@
   {
     "name": "autofill-enable-upstream-save-card-offer-ui-experiment",
     "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-enable-virtual-card",
@@ -570,7 +570,7 @@
   {
     "name": "autofill-fill-merchant-promo-code-fields",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-highlight-only-changed-value-in-preview-mode",
@@ -633,12 +633,12 @@
   {
     "name": "autofill-upstream-allow-additional-email-domains",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-upstream-allow-all-email-domains",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "autofill-use-improved-label-disambiguation",
