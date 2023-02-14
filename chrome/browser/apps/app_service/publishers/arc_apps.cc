@@ -663,23 +663,6 @@ void ArcApps::Initialize() {
 void ArcApps::Shutdown() {
   // Disconnect the observee-observer connections that we made during the
   // constructor.
-  //
-  // This isn't entirely correct. The object returned by
-  // ArcAppListPrefs::Get(some_profile) can vary over the lifetime of that
-  // profile. If it changed, we'll try to disconnect from different
-  // ArcAppListPrefs-related objects than the ones we connected to, at the time
-  // of this object's construction.
-  //
-  // Even so, this is probably harmless, assuming that calling
-  // foo->RemoveObserver(bar) is a no-op (and e.g. does not crash) if bar
-  // wasn't observing foo in the first place, and assuming that the dangling
-  // observee-observer connection on the old foo's are never followed again.
-  //
-  // To fix this properly, we would probably need to add something like an
-  // OnArcAppListPrefsWillBeDestroyed method to ArcAppListPrefs::Observer, and
-  // in this class's implementation of that method, disconnect. Furthermore,
-  // when the new ArcAppListPrefs object is created, we'll have to somehow be
-  // notified so we can re-connect this object as an observer.
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (prefs) {
     prefs->RemoveObserver(this);
