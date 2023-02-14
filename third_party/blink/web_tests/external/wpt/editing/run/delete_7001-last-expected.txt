@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 536 tests; 521 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 590 tests; 575 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandState("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandValue("delete") after
@@ -536,5 +536,59 @@ PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255
 PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandIndeterm("foreColor") after
 PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandState("foreColor") after
 PASS [["styleWithCSS","false"],["delete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo<br></span><p><span style=\"color:rgb(255, 0, 0)\">[]bar</span></p>" queryCommandValue("foreColor") after
+PASS [["delete",""]] "<ul><li>[abc</li><li>def]</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li>[abc</li><li>def]</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li>[abc</li><li>def]</li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><ol><li>[abc</li></ol><li>def]</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><ol><li>[abc</li></ol><li>def]</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><ol><li>[abc</li></ol><li>def]</li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><ul><li>[abc</li></ul><li>def]</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><ul><li>[abc</li></ul><li>def]</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><ul><li>[abc</li></ul><li>def]</li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><li>[abc</li><ul><li>def]</li></ul></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li>[abc</li><ul><li>def]</li></ul></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li>[abc</li><ul><li>def]</li></ul></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><ul><li>[abc</li></ul><ul><li>def]</li></ul></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><ul><li>[abc</li></ul><ul><li>def]</li></ul></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><ul><li>[abc</li></ul><ul><li>def]</li></ul></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><ol><li>[abc</li></ol><ul><li>def]</li></ul></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><ol><li>[abc</li></ol><ul><li>def]</li></ul></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><ol><li>[abc</li></ol><ul><li>def]</li></ul></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><li><span>[abc</span></li><li>def]</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li><span>[abc</span></li><li>def]</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li><span>[abc</span></li><li>def]</li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><li>[abc</li><li><span>def]</span></li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li>[abc</li><li><span>def]</span></li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li>[abc</li><li><span>def]</span></li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><li><span>[abc</span></li><li><span>def]</span></li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li><span>[abc</span></li><li><span>def]</span></li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li><span>[abc</span></li><li><span>def]</span></li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><li> [abc</li><li>def]</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li> [abc</li><li>def]</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li> [abc</li><li>def]</li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><li>[abc</li><li>def] </li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li>[abc</li><li>def] </li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li>[abc</li><li>def] </li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><li> [abc</li><li>def] </li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li> [abc</li><li>def] </li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li> [abc</li><li>def] </li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul>\n<li>[abc</li><li>def]</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul>\n<li>[abc</li><li>def]</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul>\n<li>[abc</li><li>def]</li></ul>" compare innerHTML
+PASS [["delete",""]] "<ul><li>[abc</li><li>def]</li>\n</ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul><li>[abc</li><li>def]</li>\n</ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul><li>[abc</li><li>def]</li>\n</ul>" compare innerHTML
+PASS [["delete",""]] "<ul>\n<li>[abc</li><li>def]</li>\n</ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ul>\n<li>[abc</li><li>def]</li>\n</ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ul>\n<li>[abc</li><li>def]</li>\n</ul>" compare innerHTML
+PASS [["delete",""]] "<ol><li>[abc</li></ol><ul><li>def]</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ol><li>[abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ol><li>[abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
+PASS [["delete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
+PASS [["delete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
+PASS [["delete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
 Harness: the test ran to completion.
 
