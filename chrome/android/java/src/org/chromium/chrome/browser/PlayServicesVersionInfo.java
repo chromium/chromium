@@ -28,6 +28,8 @@ public class PlayServicesVersionInfo {
         final long installedGmsVersion = getApkVersionNumber();
 
         final String accessType;
+        accessType = "none";
+        /*
         ExternalAuthUtils externalAuthUtils = ExternalAuthUtils.getInstance();
         if (externalAuthUtils.canUseFirstPartyGooglePlayServices()) {
             accessType = "1p";
@@ -36,6 +38,7 @@ public class PlayServicesVersionInfo {
         } else {
             accessType = "none";
         }
+        */
 
         return String.format(Locale.US, "SDK=%s; Installed=%s; Access=%s", sdkVersion,
                 installedGmsVersion, accessType);

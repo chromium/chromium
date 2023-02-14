@@ -146,18 +146,16 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     /** Creates first page and sets up adapter. Should result UI being shown on the screen. */
     private void createFirstPage() {
         BooleanSupplier showWelcomePage = () -> !FirstRunStatus.shouldSkipWelcomePage();
-        if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
-            mPages.add(new FirstRunPage<>(SigninFirstRunFragment.class, showWelcomePage));
-        } else {
-            // TODO(crbug.com/1111490): Revisit during post-MVP.
-            // There's an edge case where we accept the welcome page in the main app, abort the FRE,
-            // then go through this CCT FRE again.
-            mPages.add(shouldCreateEnterpriseCctTosPage()
-                            ? new FirstRunPage<>(
-                                    TosAndUmaFirstRunFragmentWithEnterpriseSupport.class,
-                                    showWelcomePage)
-                            : new FirstRunPage<>(ToSAndUMAFirstRunFragment.class, showWelcomePage));
-        }
+        //BooleanSupplier showWelcomePage = () -> false;
+        //mPages.add(new FirstRunPage<>(SigninFirstRunFragment.class, showWelcomePage));
+        // if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
+        //     mPages.add(new FirstRunPage<>(SigninFirstRunFragment.class, showWelcomePage));
+        // } else {
+        //     // TODO(crbug.com/1111490): Revisit during post-MVP.
+        //     // There's an edge case where we accept the welcome page in the main app, abort the FRE,
+        //     // then go through this CCT FRE again.
+        mPages.add(new FirstRunPage<>(ToSAndUMAFirstRunFragment.class, showWelcomePage));
+        // }
         mFreProgressStates.add(MobileFreProgress.WELCOME_SHOWN);
         mPagerAdapter = new FirstRunPagerAdapter(FirstRunActivity.this, mPages);
         mPager.setAdapter(mPagerAdapter);
@@ -197,15 +195,15 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         BooleanSupplier showSyncConsent = () -> mFreProperties.getBoolean(SHOW_SYNC_CONSENT_PAGE);
 
         // An optional page to select a default search engine.
-        if (showSearchEnginePromo.getAsBoolean()) {
-            mPages.add(new FirstRunPage<>(
-                    DefaultSearchEngineFirstRunFragment.class, showSearchEnginePromo));
-            mFreProgressStates.add(MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN);
-        }
+        // if (showSearchEnginePromo.getAsBoolean()) {
+        //     mPages.add(new FirstRunPage<>(
+        //             DefaultSearchEngineFirstRunFragment.class, showSearchEnginePromo));
+        //     mFreProgressStates.add(MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN);
+        // }
 
         // An optional sync consent page, the visibility of this page will be decided on the fly
         // according to the situation.
-        mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, showSyncConsent));
+        //mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, showSyncConsent));
         mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
 
         if (mPagerAdapter != null) {

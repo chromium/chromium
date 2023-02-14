@@ -28,11 +28,13 @@ public final class ForcedSigninProcessor {
     // TODO(bauerb): Once external dependencies reliably use policy to force sign-in,
     // consider removing the child account.
     public static void checkCanSignIn(final Activity activity) {
+        /*
         if (IdentityServicesProvider.get()
                         .getSigninManager(Profile.getLastUsedRegularProfile())
                         .isForceSigninEnabled()) {
             ExternalAuthUtils.getInstance().canUseGooglePlayServices(
-                    new UserRecoverableErrorHandler.ModalDialog(activity, false));
+                    new UserRecoverableErrorHandler.Silent());
         }
+        */
     }
 }

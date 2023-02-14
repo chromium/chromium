@@ -49,9 +49,9 @@ public class SigninFirstRunFragment
 
     // Used as a view holder for the current orientation of the device.
     private FrameLayout mFragmentView;
-    private ModalDialogManager mModalDialogManager;
+    //private ModalDialogManager mModalDialogManager;
     private SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
-    private SigninFirstRunCoordinator mSigninFirstRunCoordinator;
+    // private SigninFirstRunCoordinator mSigninFirstRunCoordinator;
     private boolean mExitFirstRunCalled;
 
     public SigninFirstRunFragment() {}
@@ -59,9 +59,9 @@ public class SigninFirstRunFragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mModalDialogManager = ((ModalDialogManagerHolder) getActivity()).getModalDialogManager();
-        mSigninFirstRunCoordinator = new SigninFirstRunCoordinator(requireContext(),
-                mModalDialogManager, this, PrivacyPreferencesManagerImpl.getInstance());
+        // mModalDialogManager = ((ModalDialogManagerHolder) getActivity()).getModalDialogManager();
+        // mSigninFirstRunCoordinator = new SigninFirstRunCoordinator(requireContext(),
+        //         mModalDialogManager, this, PrivacyPreferencesManagerImpl.getInstance());
 
         if (getPageDelegate().isLaunchedFromCct()) {
             mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
@@ -80,7 +80,7 @@ public class SigninFirstRunFragment
             mSkipTosDialogPolicyListener.destroy();
             mSkipTosDialogPolicyListener = null;
         }
-        mSigninFirstRunCoordinator.destroy();
+        //mSigninFirstRunCoordinator.destroy();
     }
 
     @Override
@@ -107,9 +107,9 @@ public class SigninFirstRunFragment
         if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK
                 && data != null) {
             String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            if (addedAccountName != null) {
-                mSigninFirstRunCoordinator.onAccountSelected(addedAccountName);
-            }
+            // if (addedAccountName != null) {
+            //     mSigninFirstRunCoordinator.onAccountSelected(addedAccountName);
+            // }
         }
     }
 
@@ -126,7 +126,7 @@ public class SigninFirstRunFragment
     /** Implements {@link FirstRunFragment}. */
     @Override
     public void reset() {
-        mSigninFirstRunCoordinator.reset();
+        // mSigninFirstRunCoordinator.reset();
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
@@ -223,7 +223,7 @@ public class SigninFirstRunFragment
                         ? R.layout.signin_first_run_landscape_view
                         : R.layout.signin_first_run_portrait_view,
                 null, false);
-        mSigninFirstRunCoordinator.setView(view);
+        //mSigninFirstRunCoordinator.setView(view);
         return view;
     }
 }

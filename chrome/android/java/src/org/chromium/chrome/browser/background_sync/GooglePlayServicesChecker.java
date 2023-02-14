@@ -29,10 +29,13 @@ final class GooglePlayServicesChecker {
     @VisibleForTesting
     static boolean shouldDisableBackgroundSync() {
         boolean isAvailable = true;
+        /*
         if (!ExternalAuthUtils.getInstance().canUseGooglePlayServices()) {
             Log.i(TAG, "Disabling Background Sync because Play Services is not up to date.");
             isAvailable = false;
         }
+        */
+        isAvailable = false;
 
         RecordHistogram.recordBooleanHistogram(
                 "BackgroundSync.LaunchTask.PlayServicesAvailable", isAvailable);

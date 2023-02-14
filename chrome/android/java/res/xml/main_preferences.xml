@@ -11,21 +11,26 @@ found in the LICENSE file.
 
     <org.chromium.chrome.browser.sync.settings.SyncPromoPreference
         android:key="sync_promo"
+        app:isPreferenceVisible="false"
         android:order="0"/>
     <PreferenceCategory
+        app:isPreferenceVisible="false"
         android:key="account_and_google_services_section"
         android:order="1"
         android:title="@string/prefs_section_account_and_google_services"/>
     <org.chromium.chrome.browser.sync.settings.SignInPreference
+        app:isPreferenceVisible="false"
         android:key="sign_in"
         android:order="2"
         android:title="@string/sign_in_to_chrome"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        app:isPreferenceVisible="false"
         android:key="manage_sync"
         android:order="3"
         android:layout="@layout/account_management_account_row"
         android:title="@string/sync_category_title"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        app:isPreferenceVisible="false"
         android:key="google_services"
         android:order="4"
         android:layout="@layout/account_management_account_row"

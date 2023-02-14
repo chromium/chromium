@@ -50,11 +50,14 @@ public class ChromeGoogleApiClientImpl implements ChromeGoogleApiClient {
     @Override
     public boolean isGooglePlayServicesAvailable() {
         TraceEvent.begin("ChromeGoogleApiClientImpl:isGooglePlayServicesAvailable");
+        return false;
+        /*
         try {
             return mExternalAuthUtils.canUseGooglePlayServices();
         } finally {
             TraceEvent.end("ChromeGoogleApiClientImpl:isGooglePlayServicesAvailable");
         }
+        */
     }
 
     @Override
