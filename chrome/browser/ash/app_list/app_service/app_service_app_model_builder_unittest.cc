@@ -662,6 +662,7 @@ class WebAppBuilderDemoModeTest : public WebAppBuilderTest {
     CreateBuilder();
 
     // Fake Demo Mode.
+    cros_settings_test_helper().InstallAttributes()->SetDemoMode();
     demo_mode_test_helper_ = std::make_unique<ash::DemoModeTestHelper>();
     demo_mode_test_helper_->InitializeSession();
 

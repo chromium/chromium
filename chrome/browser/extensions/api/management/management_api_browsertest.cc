@@ -36,6 +36,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #endif
 
 namespace keys = extension_management_api_constants;
@@ -152,8 +153,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTestWithBackgroundType,
                        DemoModeAppLaunchSourceReported) {
-  ash::DemoSession::SetDemoConfigForTesting(
-      ash::DemoSession::DemoModeConfig::kOnline);
+  ash::test::LockDemoDeviceInstallAttributes();
   EXPECT_TRUE(ash::DemoSession::IsDeviceInDemoMode());
 
   base::HistogramTester histogram_tester;

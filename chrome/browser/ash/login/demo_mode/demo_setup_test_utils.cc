@@ -113,10 +113,8 @@ void OnEnterpriseDeviceLock(base::OnceClosure runner_quit_task,
 
 void LockDemoDeviceInstallAttributes() {
   base::RunLoop run_loop;
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   LOG(INFO) << "Locking demo mode install attributes";
-  connector->GetInstallAttributes()->LockDevice(
+  InstallAttributes::Get()->LockDevice(
       policy::DEVICE_MODE_DEMO, "domain.com",
       std::string(),  // realm
       "device-id",

@@ -226,6 +226,7 @@ TEST_F(UserSessionManagerTest, RespectLocale_WithoutProfileLocale) {
 TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithProfileLocale) {
   TestingProfile* profile = LoginTestUser();
   // Enable Demo Mode.
+  profile->ScopedCrosSettingsTestHelper()->InstallAttributes()->SetDemoMode();
   DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
 
   profile->GetPrefs()->SetString(language::prefs::kApplicationLocale, "fr-CA");
@@ -245,6 +246,7 @@ TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithProfileLocale) {
 TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithoutProfileLocale) {
   TestingProfile* profile = LoginTestUser();
   // Enable Demo Mode.
+  profile->ScopedCrosSettingsTestHelper()->InstallAttributes()->SetDemoMode();
   DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
 
   g_browser_process->SetApplicationLocale("fr");

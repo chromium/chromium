@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -1170,6 +1171,7 @@ class ArcRobotAccountAuthServiceTest : public ArcAuthServiceTest {
 IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest, GetDemoAccount) {
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kOnline);
+  ash::test::LockDemoDeviceInstallAttributes();
   ash::DemoSession::StartIfInDemoMode();
 
   SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
@@ -1196,6 +1198,7 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
                        GetDemoAccountOnAuthTokenFetchFailure) {
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kOnline);
+  ash::test::LockDemoDeviceInstallAttributes();
   ash::DemoSession::StartIfInDemoMode();
 
   SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
@@ -1227,6 +1230,7 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
 
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kOnline);
+  ash::test::LockDemoDeviceInstallAttributes();
   ash::DemoSession::StartIfInDemoMode();
 
   SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);

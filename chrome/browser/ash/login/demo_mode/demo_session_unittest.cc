@@ -57,7 +57,9 @@ class DemoSessionTest : public testing::Test {
             TestingBrowserProcess::GetGlobal())),
         browser_process_platform_part_test_api_(
             g_browser_process->platform_part()),
-        scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
+        scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {
+    cros_settings_test_helper_.InstallAttributes()->SetDemoMode();
+  }
 
   DemoSessionTest(const DemoSessionTest&) = delete;
   DemoSessionTest& operator=(const DemoSessionTest&) = delete;
@@ -137,11 +139,11 @@ class DemoSessionTest : public testing::Test {
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 
  private:
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
   user_manager::ScopedUserManager scoped_user_manager_;
-  ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 };
 
 TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {
@@ -153,7 +155,7 @@ TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {
 }
 
 TEST_F(DemoSessionTest, StartForDemoDeviceNotInDemoMode) {
-  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kNone);
+  cros_settings_test_helper_.InstallAttributes()->SetConsumerOwned();
   EXPECT_FALSE(DemoSession::Get());
   EXPECT_FALSE(DemoSession::StartIfInDemoMode());
   EXPECT_FALSE(DemoSession::Get());

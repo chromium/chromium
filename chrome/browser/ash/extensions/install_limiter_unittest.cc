@@ -61,9 +61,11 @@ class InstallLimiterShouldDeferInstallTest
 
   ~InstallLimiterShouldDeferInstallTest() override = default;
 
+ protected:
+  ash::ScopedStubInstallAttributes test_install_attributes_;
+
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ash::ScopedStubInstallAttributes test_install_attributes_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 
@@ -72,8 +74,10 @@ TEST_P(InstallLimiterShouldDeferInstallTest, ShouldDeferInstall) {
       extension_misc::kScreensaverAppId, extension_misc::kNewAttractLoopAppId};
 
   ash::DemoModeTestHelper demo_mode_test_helper;
-  if (GetParam() != ash::DemoSession::DemoModeConfig::kNone)
+  if (GetParam() != ash::DemoSession::DemoModeConfig::kNone) {
+    test_install_attributes_.Get()->SetDemoMode();
     demo_mode_test_helper.InitializeSession(GetParam());
+  }
 
   // In demo mode, all apps larger than 1MB except for the screensaver
   // should be deferred.

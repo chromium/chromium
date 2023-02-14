@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_policy_builder.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/status_collector/child_status_collector.h"
@@ -198,13 +197,6 @@ class ChildStatusCollectorTest : public testing::Test {
     // returns the same values on all machines.
     std::unique_ptr<base::Environment> env(base::Environment::Create());
     env->SetVar("TZ", "UTC");
-
-    // This pref registration is temporarily added because crrev/c/4076557 makes
-    // SystemWebAppManager (which is instantiated during creation of a
-    // TestProfile) dependent on the kDemoModeConfig pref.
-    // TODO(b/260117078): Delete this line after the DemoModeConfig pref is
-    // deprecated.
-    ash::DemoSetupController::RegisterLocalStatePrefs(local_state_.registry());
 
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
 

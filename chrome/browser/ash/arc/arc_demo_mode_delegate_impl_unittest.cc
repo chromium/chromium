@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +21,11 @@ namespace {
 class ArcDemoModeDelegateImplTest : public testing::Test {
  public:
   ArcDemoModeDelegateImplTest()
-      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
+      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {
+    stub_install_attributes_ =
+        std::make_unique<ash::ScopedStubInstallAttributes>(
+            ash::StubInstallAttributes::CreateDemoMode());
+  }
   ~ArcDemoModeDelegateImplTest() override = default;
   ArcDemoModeDelegateImplTest(const ArcDemoModeDelegateImplTest&) = delete;
   ArcDemoModeDelegateImplTest& operator=(const ArcDemoModeDelegateImplTest&) =
@@ -30,6 +35,7 @@ class ArcDemoModeDelegateImplTest : public testing::Test {
   ash::DemoModeTestHelper* demo_helper() { return &demo_helper_; }
 
   ArcDemoModeDelegateImpl* delegate() { return &delegate_; }
+  std::unique_ptr<ash::ScopedStubInstallAttributes> stub_install_attributes_;
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -43,6 +49,7 @@ class ArcDemoModeDelegateImplTest : public testing::Test {
 TEST_F(ArcDemoModeDelegateImplTest, EnsureResourcesLoaded_NotEnabled) {
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kNone);
+  stub_install_attributes_->Get()->SetConsumerOwned();
 
   bool was_called = false;
   base::OnceClosure callback =
@@ -70,6 +77,7 @@ TEST_F(ArcDemoModeDelegateImplTest, EnsureResourcesLoaded_Enabled) {
 TEST_F(ArcDemoModeDelegateImplTest, GetDemoAppsPath_NotEnabled) {
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kNone);
+  stub_install_attributes_->Get()->SetConsumerOwned();
 
   base::FilePath demo_session_apps_path = delegate()->GetDemoAppsPath();
   EXPECT_TRUE(demo_session_apps_path.empty());

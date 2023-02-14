@@ -47,10 +47,9 @@ StubInstallAttributes::CreateActiveDirectoryManaged(
 }
 
 // static
-std::unique_ptr<StubInstallAttributes> StubInstallAttributes::CreateDemoMode(
-    const std::string& device_id) {
+std::unique_ptr<StubInstallAttributes> StubInstallAttributes::CreateDemoMode() {
   auto result = std::make_unique<StubInstallAttributes>();
-  result->SetDemoMode(device_id);
+  result->SetDemoMode();
   return result;
 }
 
@@ -85,11 +84,11 @@ void StubInstallAttributes::SetActiveDirectoryManaged(
   registration_device_id_ = device_id;
 }
 
-void StubInstallAttributes::SetDemoMode(const std::string& device_id) {
+void StubInstallAttributes::SetDemoMode() {
   registration_mode_ = policy::DEVICE_MODE_DEMO;
   registration_domain_ = policy::kDemoModeDomain;
   registration_realm_.clear();
-  registration_device_id_ = device_id;
+  registration_device_id_ = "demo-device-id";
 }
 
 ScopedStubInstallAttributes::ScopedStubInstallAttributes()

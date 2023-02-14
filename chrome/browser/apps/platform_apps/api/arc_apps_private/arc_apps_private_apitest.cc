@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -179,8 +180,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest,
 
 IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, DemoModeAppLaunchSourceReported) {
   // Set Demo mode
-  ash::DemoSession::SetDemoConfigForTesting(
-      ash::DemoSession::DemoModeConfig::kOnline);
+  ash::test::LockDemoDeviceInstallAttributes();
   EXPECT_TRUE(ash::DemoSession::IsDeviceInDemoMode());
 
   base::HistogramTester histogram_tester;

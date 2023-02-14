@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -99,12 +100,13 @@ class DemoModeAppIntegrationTest : public DemoModeAppIntegrationTestBase {
     DemoModeAppIntegrationTestBase::SetUp();
   }
 
-  // ash::SystemWebAppIntegrationTest:
-  void SetUpOnMainThread() override {
-    // Need to set install attributes after browser process is created.
-    ash::test::LockDemoDeviceInstallAttributes();
-    DemoModeAppIntegrationTestBase::SetUpOnMainThread();
-  }
+ private:
+  // Use DeviceStateMixin here as we need to set InstallAttributes early
+  // enough that IsDeviceInDemoMode() returns true during SystemWebAppManager
+  // creation. Device ownership also needs to be established early in startup,
+  // and DeviceStateMixin also sets the owner key.
+  ash::DeviceStateMixin device_state_mixin_{
+      &mixin_host_, ash::DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
 };
 
 // Class that waits for, then asserts, that a widget has entered or exited

@@ -159,6 +159,9 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_shared_loader_factory_);
     profile_ = std::make_unique<TestingProfile>();
+    profile_->ScopedCrosSettingsTestHelper()
+        ->InstallAttributes()
+        ->SetDemoMode();
   }
 
   void TearDown() override {
@@ -562,29 +565,33 @@ class ShouldCreateDemoExtensionsExternalLoaderTest : public testing::Test {
 };
 
 TEST_F(ShouldCreateDemoExtensionsExternalLoaderTest, PrimaryDemoProfile) {
-  StartDemoSession(DemoSession::DemoModeConfig::kOnline);
-
   std::unique_ptr<TestingProfile> profile = AddTestUser(
       AccountId::FromUserEmailGaiaId("primary@test.com", "primary_user"));
+  profile->ScopedCrosSettingsTestHelper()->InstallAttributes()->SetDemoMode();
+  StartDemoSession(DemoSession::DemoModeConfig::kOnline);
 
   EXPECT_TRUE(DemoExtensionsExternalLoader::SupportedForProfile(profile.get()));
 }
 
 TEST_F(ShouldCreateDemoExtensionsExternalLoaderTest, ProfileWithNoUser) {
-  StartDemoSession(DemoSession::DemoModeConfig::kOnline);
   TestingProfile profile;
+  profile.ScopedCrosSettingsTestHelper()->InstallAttributes()->SetDemoMode();
+  StartDemoSession(DemoSession::DemoModeConfig::kOnline);
 
   EXPECT_FALSE(DemoExtensionsExternalLoader::SupportedForProfile(&profile));
 }
 
 TEST_F(ShouldCreateDemoExtensionsExternalLoaderTest, MultiProfile) {
-  StartDemoSession(DemoSession::DemoModeConfig::kOnline);
-
   std::unique_ptr<TestingProfile> primary_profile = AddTestUser(
       AccountId::FromUserEmailGaiaId("primary@test.com", "primary_user"));
+  primary_profile->ScopedCrosSettingsTestHelper()
+      ->InstallAttributes()
+      ->SetDemoMode();
 
   std::unique_ptr<TestingProfile> secondary_profile = AddTestUser(
       AccountId::FromUserEmailGaiaId("secondary@test.com", "secondary_user"));
+
+  StartDemoSession(DemoSession::DemoModeConfig::kOnline);
 
   EXPECT_TRUE(
       DemoExtensionsExternalLoader::SupportedForProfile(primary_profile.get()));

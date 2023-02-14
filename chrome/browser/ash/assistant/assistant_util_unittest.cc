@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -321,6 +322,7 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_Locale) {
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_DemoMode) {
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kOnline);
+  profile()->ScopedCrosSettingsTestHelper()->InstallAttributes()->SetDemoMode();
   ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
                     GetNonGaiaUserAccountId(profile()),
                     user_manager::USER_TYPE_PUBLIC_ACCOUNT);

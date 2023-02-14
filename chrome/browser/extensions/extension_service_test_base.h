@@ -164,6 +164,12 @@ class ExtensionServiceTestBase : public testing::Test {
   }
   policy::PolicyService* policy_service() { return policy_service_.get(); }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ScopedCrosSettingsTestHelper& cros_settings_test_helper() {
+    return cros_settings_test_helper_;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // If a test uses a feature list, it should be destroyed after
   // |task_environment_|, to avoid tsan data races between the ScopedFeatureList
   // destructor, and any tasks running on different threads that check if a

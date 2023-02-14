@@ -56,6 +56,7 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -1429,8 +1430,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, NoDemoModeAppLaunchSourceReported) {
 // launch stat.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DemoModeAppLaunchSourceReported) {
   // Set Demo mode
-  ash::DemoSession::SetDemoConfigForTesting(
-      ash::DemoSession::DemoModeConfig::kOnline);
+  ash::test::LockDemoDeviceInstallAttributes();
   EXPECT_TRUE(ash::DemoSession::IsDeviceInDemoMode());
 
   base::HistogramTester histogram_tester;

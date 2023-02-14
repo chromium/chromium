@@ -5255,6 +5255,7 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
 
     // Fake Demo Mode.
     demo_mode_test_helper_ = std::make_unique<ash::DemoModeTestHelper>();
+    GetInstallAttributes()->SetDemoMode();
     demo_mode_test_helper_->InitializeSession();
   }
 

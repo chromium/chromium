@@ -196,7 +196,7 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
 // Tests recording session length in demo sessions, which includes an additional
 // metric with tighter bucket spacing.
 TEST_F(EnterpriseUserSessionMetricsTest, RecordDemoSessionLength) {
-  DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
+  install_attributes_->Get()->SetDemoMode();
   {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;

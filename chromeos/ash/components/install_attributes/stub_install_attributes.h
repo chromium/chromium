@@ -33,8 +33,7 @@ class StubInstallAttributes : public InstallAttributes {
       const std::string& realm,
       const std::string& device_id);
   // Creates a StubInstallAttributes and calls SetDemoMode.
-  static std::unique_ptr<StubInstallAttributes> CreateDemoMode(
-      const std::string& device_id);
+  static std::unique_ptr<StubInstallAttributes> CreateDemoMode();
 
   // Setup as not-yet enrolled.
   void Clear();
@@ -47,9 +46,8 @@ class StubInstallAttributes : public InstallAttributes {
   void SetActiveDirectoryManaged(const std::string& realm,
                                  const std::string& device_id);
 
-  // Setup as demo mode device with specified |device_id|. Clears existing
-  // configuration.
-  void SetDemoMode(const std::string& device_id);
+  // Setup as demo mode device. Clears existing configuration.
+  void SetDemoMode();
 
   void set_device_locked(bool is_locked) { device_locked_ = is_locked; }
 };

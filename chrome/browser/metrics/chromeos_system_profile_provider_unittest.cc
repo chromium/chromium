@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -254,8 +255,9 @@ TEST_F(ChromeOSSystemProfileProviderTest, FullHardwareClass) {
 }
 
 TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
-  ash::DemoSession::SetDemoConfigForTesting(
-      ash::DemoSession::DemoModeConfig::kOnline);
+  testing_profile_->ScopedCrosSettingsTestHelper()
+      ->InstallAttributes()
+      ->SetDemoMode();
   const std::string expected_country = "CA";
   const std::string expected_retailer_id = "ABC";
   const std::string expected_store_id = "12345";

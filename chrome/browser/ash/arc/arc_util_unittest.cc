@@ -207,11 +207,13 @@ class ChromeArcUtilTest : public testing::Test {
     GetFakeUserManager()->LoginUser(account_id);
   }
 
+ protected:
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+
  private:
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   base::ScopedTempDir data_dir_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
@@ -688,8 +690,7 @@ TEST_F(ChromeArcUtilTest, ArcStartModeDefaultPublicSession) {
 TEST_F(ChromeArcUtilTest, ArcStartModeDefaultDemoMode) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--arc-availability=installed"});
-  ash::DemoSession::SetDemoConfigForTesting(
-      ash::DemoSession::DemoModeConfig::kOnline);
+  cros_settings_test_helper_.InstallAttributes()->SetDemoMode();
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail("public_user@gmail.com"),
                     user_manager::USER_TYPE_PUBLIC_ACCOUNT);
@@ -702,8 +703,7 @@ TEST_F(ChromeArcUtilTest, ArcStartModeDefaultDemoModeWithoutPlayStore) {
                                     false /* disabled */);
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--arc-availability=installed"});
-  ash::DemoSession::SetDemoConfigForTesting(
-      ash::DemoSession::DemoModeConfig::kOnline);
+  cros_settings_test_helper_.InstallAttributes()->SetDemoMode();
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmail("public_user@gmail.com"),
                     user_manager::USER_TYPE_PUBLIC_ACCOUNT);

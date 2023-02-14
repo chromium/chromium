@@ -223,7 +223,18 @@ std::string DemoSession::DemoConfigToString(
 
 // static
 bool DemoSession::IsDeviceInDemoMode() {
-  return GetDemoConfig() != DemoModeConfig::kNone;
+  if (!InstallAttributes::IsInitialized()) {
+    return false;
+  }
+  bool is_demo_device_mode = InstallAttributes::Get()->GetMode() ==
+                             policy::DeviceMode::DEVICE_MODE_DEMO;
+  bool is_demo_device_domain =
+      InstallAttributes::Get()->GetDomain() == policy::kDemoModeDomain;
+
+  // We check device mode and domain to allow for dev/test
+  // setup that is done by manual enrollment into demo domain. Device mode is
+  // not set to DeviceMode::DEVICE_MODE_DEMO then.
+  return is_demo_device_mode || is_demo_device_domain;
 }
 
 // static
@@ -232,22 +243,6 @@ DemoSession::DemoModeConfig DemoSession::GetDemoConfig() {
 
   if (g_force_demo_config.has_value())
     return *g_force_demo_config;
-
-  const policy::BrowserPolicyConnectorAsh* const connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  bool is_demo_device_mode = connector->GetInstallAttributes()->GetMode() ==
-                             policy::DeviceMode::DEVICE_MODE_DEMO;
-  bool is_demo_device_domain =
-      connector->GetInstallAttributes()->GetDomain() == policy::kDemoModeDomain;
-
-  // TODO(agawronska): We check device mode and domain to allow for dev/test
-  // setup that is done by manual enrollment into demo domain. Device mode is
-  // not set to DeviceMode::DEVICE_MODE_DEMO then. This extra condition
-  // can be removed when all following conditions are fulfilled:
-  // * DMServer is returning DeviceMode::DEVICE_MODE_DEMO for demo devices
-  // * Offline policies specify DeviceMode::DEVICE_MODE_DEMO
-  // * Demo mode setup flow is available to external developers
-  bool is_demo_mode = is_demo_device_mode || is_demo_device_domain;
 
   const PrefService* prefs = g_browser_process->local_state();
 
@@ -264,6 +259,7 @@ DemoSession::DemoModeConfig DemoSession::GetDemoConfig() {
     demo_config = static_cast<DemoModeConfig>(demo_config_pref);
   }
 
+  bool is_demo_mode = IsDeviceInDemoMode();
   if (is_demo_mode && demo_config == DemoModeConfig::kNone) {
     LOG(WARNING) << "Device mode is demo, but no demo mode config set";
   } else if (!is_demo_mode && demo_config != DemoModeConfig::kNone) {
