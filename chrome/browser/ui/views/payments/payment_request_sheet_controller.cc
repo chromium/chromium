@@ -185,9 +185,13 @@ class BorderedScrollView : public views::ScrollView {
     raw_ptr<BorderedScrollView> scroll_view_;
   };
 
-  BorderedScrollView() {
+  BorderedScrollView() : border_insets_(gfx::Insets::VH(1, 0)) {
     SetBackground(
         views::CreateThemedSolidBackground(ui::kColorDialogBackground));
+    // The border color will be set to the theme color in OnThemeChanged, but we
+    // need to initialize the view with an empty border so that the correct
+    // bounds are computed.
+    SetBorder(views::CreateEmptyBorder(border_insets_));
   }
 
   bool GetTopBorder() const { return GetVisibleRect().y() > 0; }
@@ -206,8 +210,11 @@ class BorderedScrollView : public views::ScrollView {
     SetBorder(views::CreateBorderPainter(
         std::make_unique<BorderedScrollViewBorderPainter>(
             GetColorProvider()->GetColor(ui::kColorSeparator), this),
-        gfx::Insets::VH(1, 0)));
+        border_insets_));
   }
+
+ private:
+  gfx::Insets border_insets_;
 };
 
 BEGIN_METADATA(BorderedScrollView, views::ScrollView)
@@ -295,14 +302,10 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
 
   // Add content view
   auto content_view_builder =
-      views::Builder<views::TableLayoutView>()
+      views::Builder<views::BoxLayoutView>()
           .CopyAddressTo(&pane_)
-          .AddColumn(
-              views::LayoutAlignment::kStretch, views::LayoutAlignment::kStart,
-              views::TableLayout::kFixedSize,
-              views::TableLayout::ColumnSize::kFixed,
-              dialog_->GetActualDialogWidth(), dialog_->GetActualDialogWidth())
-          .AddRows(1, views::TableLayout::kFixedSize, 0)
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetMinimumCrossAxisSize(dialog_->GetActualDialogWidth())
           .AddChild(views::Builder<views::View>()
                         .CopyAddressTo(&content_view_)
                         .SetID(static_cast<int>(DialogViewID::CONTENT_VIEW))

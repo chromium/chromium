@@ -33,23 +33,36 @@ namespace payments {
 
 namespace {
 
+// The vertical spacing for these rows is slightly different than the
+// spacing spacing for clickable rows, so don't use
+// kPaymentRequestRowVerticalInsets.
+constexpr int kLineItemRowVerticalInset = 4;
+
 class LineItemRow : public views::View {
  public:
   METADATA_HEADER(LineItemRow);
 
+  LineItemRow()
+      : row_insets_(
+            gfx::Insets::TLBR(kLineItemRowVerticalInset,
+                              payments::kPaymentRequestRowHorizontalInsets,
+                              kLineItemRowVerticalInset,
+                              payments::kPaymentRequestRowHorizontalInsets)) {
+    // The border color will be set to the theme color in OnThemeChanged, but we
+    // need to initialize the view with an empty border so that the correct
+    // bounds are computed.
+    SetBorder(views::CreateEmptyBorder(row_insets_));
+  }
+
   // views::View:
   void OnThemeChanged() override {
     View::OnThemeChanged();
-    // The vertical spacing for these rows is slightly different than the
-    // spacing spacing for clickable rows, so don't use
-    // kPaymentRequestRowVerticalInsets.
-    constexpr int kRowVerticalInset = 4;
-    const auto row_insets = gfx::Insets::TLBR(
-        kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets,
-        kRowVerticalInset, payments::kPaymentRequestRowHorizontalInsets);
     SetBorder(payments::CreatePaymentRequestRowBorder(
-        GetColorProvider()->GetColor(ui::kColorSeparator), row_insets));
+        GetColorProvider()->GetColor(ui::kColorSeparator), row_insets_));
   }
+
+ private:
+  gfx::Insets row_insets_;
 };
 
 BEGIN_METADATA(LineItemRow, views::View)
