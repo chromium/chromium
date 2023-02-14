@@ -491,7 +491,7 @@ class AudioManagerAndroid {
         boolean first = true;
         for (AudioDeviceInfo deviceInfo : getAudioDeviceInfo()) {
             int[] encodings = deviceInfo.getEncodings();
-            if (encodings.length > 0) {
+            if (deviceInfo.isSink() && deviceInfo.getType() == AudioDeviceInfo.TYPE_HDMI) {
                 int mask = 0; // bit mask for a single device
 
                 // Map AudioFormat values to C++ media/base/audio_parameters.h Format enum
