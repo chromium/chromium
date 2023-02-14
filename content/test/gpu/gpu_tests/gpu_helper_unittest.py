@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import unittest
 from unittest import mock
 
@@ -396,7 +396,134 @@ class ReplaceTagsUnittest(unittest.TestCase):
     self.assertEqual(gpu_helper.ReplaceTags(tags),
                      ['some_tag', 'google-vulkan', 'another_tag'])
 
-# TODO(crbug.com/1413867): Add EvaluateVersionComparison unittests.
+
+class EvaluateVersionComparisonUnittest(unittest.TestCase):
+  def testWindowsIntelUncomparableVersions(self) -> None:
+    """Tests Windows Intel comparison when versions cannot be compared."""
+    non_ne_operations = ('eq', 'ge', 'gt', 'le', 'lt')
+    # Versions should only be comparable with 4 elements.
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('1.2.3', 'ne', '1.2.3', 'win',
+                                             'intel'))
+    for op in non_ne_operations:
+      self.assertFalse(
+          gpu_helper.EvaluateVersionComparison('1.2.3', op, '1.2.3', 'win',
+                                               'intel'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('1.2.3.4.5', 'ne', '1.2.3.4.5',
+                                             'win', 'intel'))
+    for op in non_ne_operations:
+      self.assertFalse(
+          gpu_helper.EvaluateVersionComparison('1.2.3.4.5', op, '1.2.3.4.5',
+                                               'win', 'intel'))
+
+  def testWindowsIntelOnlyLastTwoPartsUsed(self) -> None:
+    """Tests that only the last two version parts are used on Windows Intel."""
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('1.2.3.4', 'eq', '2.3.3.4', 'win',
+                                             'intel'))
+    self.assertFalse(
+        gpu_helper.EvaluateVersionComparison('1.2.3.4', 'eq', '2.3.5.4', 'win',
+                                             'intel'))
+
+  def testInvalidOperation(self) -> None:
+    """Tests that an error is raised when using an invalid operation."""
+    with self.assertRaisesRegex(Exception, 'Invalid operation: foo'):
+      gpu_helper.EvaluateVersionComparison('1.2.3.4', 'foo', '2.3.4.5')
+
+  def testEqual(self) -> None:
+    """Tests that equality operations work as expected."""
+    eq_operations = ('eq', 'ge', 'le')
+    for op in eq_operations:
+      # Purely numerical.
+      self.assertTrue(
+          gpu_helper.EvaluateVersionComparison('1.2.3.4', op, '1.2.3.4'))
+
+      # Numerical + suffix.
+      self.assertTrue(
+          gpu_helper.EvaluateVersionComparison('1a.2b.3c.4a', op,
+                                               '1a.2b.3c.4a'))
+
+      # Mismatched length implies 0.
+      self.assertTrue(gpu_helper.EvaluateVersionComparison(
+          '1.2.0.0', op, '1.2'))
+      self.assertTrue(gpu_helper.EvaluateVersionComparison(
+          '1.2', op, '1.2.0.0'))
+
+      # Failure to parse gets skipped unless in the reference version.
+      self.assertTrue(
+          gpu_helper.EvaluateVersionComparison('1.2..4', op, '1.2.3.4'))
+      with self.assertRaises(AssertionError):
+        gpu_helper.EvaluateVersionComparison('1.2.3.4', op, '1.2..4')
+
+  def testNotEqual(self) -> None:
+    """Tests that the not equal operation works as expected."""
+    true_cases = (
+        # Purely numerical.
+        ('1.2.3.4', '1.2.3'),
+        ('1.2.3', '1.2.3.4'),
+        # Same suffix, different numerical.
+        ('2a.2b.3c.4d', '1a.2b.3c.4d'),
+        ('1a.3b.3c.4d', '1a.2b.3c.4d'),
+        ('1a.2b.4c.4d', '1a.2b.3c.4d'),
+        ('1a.2b.3c.5d', '1a.2b.3c.4d'),
+        # Same numerical, different suffix.
+        ('1b.2b.3c.4d', '1a.2b.3c.4d'),
+        ('1a.2c.3c.4d', '1a.2b.3c.4d'),
+        ('1a.2b.3d.4d', '1a.2b.3c.4d'),
+        ('1a.2b.3c.4e', '1a.2b.3c.4d'),
+    )
+    false_cases = (
+        # Numerical.
+        ('1.2.3.4', '1.2.3.4'),
+        # Numerical + suffix.
+        ('1a.2b.3c.4d', '1a.2b.3c.4d'),
+    )
+    for left, right in true_cases:
+      self.assertTrue(gpu_helper.EvaluateVersionComparison(left, 'ne', right))
+      self.assertTrue(gpu_helper.EvaluateVersionComparison(right, 'ne', left))
+    for left, right in false_cases:
+      self.assertFalse(gpu_helper.EvaluateVersionComparison(left, 'ne', right))
+      self.assertFalse(gpu_helper.EvaluateVersionComparison(right, 'ne', left))
+
+  def testGreater(self) -> None:
+    """Tests that greater operations work as expected."""
+    gt_operations = ('gt', 'ge')
+    for op in gt_operations:
+      for left, right in GetGreaterTestCases():
+        self.assertTrue(gpu_helper.EvaluateVersionComparison(left, op, right))
+        self.assertFalse(gpu_helper.EvaluateVersionComparison(right, op, left))
+
+  def testLess(self) -> None:
+    """Tests that less operations work as expected."""
+    lt_operations = ('lt', 'le')
+    for op in lt_operations:
+      # Less than test cases are simply the inverse of greater than test cases,
+      # so just reverse the order.
+      for right, left in GetGreaterTestCases():
+        self.assertTrue(gpu_helper.EvaluateVersionComparison(left, op, right))
+        self.assertFalse(gpu_helper.EvaluateVersionComparison(right, op, left))
+
+
+def GetGreaterTestCases() -> Tuple[Tuple[str, str], ...]:
+  return (
+      # Purely numerical.
+      ('2.2.3.4', '1.2.3.4'),
+      ('1.3.3.4', '1.2.3.4'),
+      ('1.2.4.4', '1.2.3.4'),
+      ('1.2.3.5', '1.2.3.4'),
+      # Same suffix, different numerical.
+      ('2a.2b.3c.4d', '1a.2b.3c.4d'),
+      ('1a.3b.3c.4d', '1a.2b.3c.4d'),
+      ('1a.2b.4c.4d', '1a.2b.3c.4d'),
+      ('1a.2b.3c.5d', '1a.2b.3c.4d'),
+      # Same numerical, different suffix.
+      ('1b.2b.3c.4d', '1a.2b.3c.4d'),
+      ('1a.2c.3c.4d', '1a.2b.3c.4d'),
+      ('1a.2b.3d.4d', '1a.2b.3c.4d'),
+      ('1a.2b.3c.4e', '1a.2b.3c.4d'),
+  )
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)
