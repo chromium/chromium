@@ -493,7 +493,7 @@ void MaybeRegisterChromeTutorials(
 
     // Completion of the tutorial.
     TutorialDescription::Step success_step(
-        IDS_TUTORIAL_TAB_GROUP_SUCCESS_TITLE,
+        IDS_TUTORIAL_GENERIC_SUCCESS_TITLE,
         IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION,
         ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
         std::string(), HelpBubbleArrow::kNone);

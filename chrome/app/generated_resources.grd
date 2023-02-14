@@ -8007,7 +8007,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <!-- User Education Tutorial Strings -->
       <message name="IDS_TUTORIAL_GENERIC_SUCCESS_TITLE" desc="The title of the generic success step in the user education tutorials">
-        Nicely Done!
+        Nicely done!
       </message>
 
       <!-- Tab Group Tutorial Strings -->
@@ -8039,9 +8039,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_TUTORIAL_TAB_GROUP_COLLAPSE" desc="The description of the expand collapse step in the tab group tutorial">
         Click the group name to expand or collapse it
-      </message>
-      <message name="IDS_TUTORIAL_TAB_GROUP_SUCCESS_TITLE" desc="The title of the success step in the tab group tutorial">
-        Nicely Done!
       </message>
       <message name="IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION" desc="The description of the success step in the tab group tutorial">
         Try using tab groups to organize tasks, for online shopping, and more
