@@ -6169,9 +6169,6 @@ crbug.com/1356118 [ Linux ] virtual/async-script-scheduling-finished-parsing/wpt
 
 # Sheriff 2022-08-30
 
-# TODO(crbug.com/1358147): Re-enable this test
-virtual/plz-dedicated-worker/external/wpt/resource-timing/no-entries-for-cross-origin-css-fetched-memory-cache.sub.html [ Crash Failure Pass Timeout ]
-
 # Disable step failure trigger flaky tests
 crbug.com/1351571 [ Mac12-arm64 ] http/tests/devtools/persistence/automapping-bind-committed-network-sourcecode.js [ Failure Pass Timeout ]
 crbug.com/1351571 [ Mac11-arm64 ] http/tests/devtools/persistence/automapping-bind-committed-network-sourcecode.js [ Failure Pass Timeout ]
