@@ -636,6 +636,11 @@ suite('ReadAnythingAppTest', () => {
     // selection.
     const expected = '<div><p>World</p><p>Friend</p></div>';
     assertContainerInnerHTML(expected);
+    const selection = readAnythingApp.shadowRoot!.getSelection();
+    assertEquals(selection!.anchorNode!.textContent, 'World');
+    assertEquals(selection!.focusNode!.textContent, 'Friend');
+    assertEquals(selection!.anchorOffset, 1);
+    assertEquals(selection!.focusOffset, 2);
   });
 
   test('updateContent selection backwards', () => {
@@ -708,6 +713,11 @@ suite('ReadAnythingAppTest', () => {
     // selection.
     const expected = '<div><p>Hello</p><p>World</p><p>Friend</p></div>';
     assertContainerInnerHTML(expected);
+    const selection = readAnythingApp.shadowRoot!.getSelection();
+    assertEquals(selection!.anchorNode!.textContent, 'Hello');
+    assertEquals(selection!.focusNode!.textContent, 'Friend');
+    assertEquals(selection!.anchorOffset, 1);
+    assertEquals(selection!.focusOffset, 2);
   });
 
   test('updateContent setSelectedText', async () => {

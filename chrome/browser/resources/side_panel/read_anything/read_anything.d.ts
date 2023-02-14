@@ -13,6 +13,16 @@ declare namespace chrome {
     // The root AXNodeID of the tree to be displayed.
     let rootId: number;
 
+    // Selection information. The selection must be a forward selection, with
+    // the start node and offset before the end node and offset. Through
+    // experimentation, it was observed that programmatically created backwards
+    // ranges are collapsed to the start node. A test was added in
+    // read_anything_app_test to confirm this assumption.
+    let startNodeId: number;
+    let startOffset: number;
+    let endNodeId: number;
+    let endOffset: number;
+
     // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
     let fontName: string;
     let fontSize: number;

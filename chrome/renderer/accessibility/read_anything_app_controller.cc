@@ -469,8 +469,10 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     const std::vector<ui::AXNodeID>& content_node_ids) {
   // Reset state.
   display_node_ids_.clear();
-  start_node_ = nullptr;
-  end_node_ = nullptr;
+  start_node_id_ = ui::kInvalidAXNodeID;
+  end_node_id_ = ui::kInvalidAXNodeID;
+  start_offset_ = -1;
+  end_offset_ = -1;
   content_node_ids_ = content_node_ids;
   distillation_in_progress_ = false;
 
@@ -527,22 +529,32 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection() {
   DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
   DCHECK(base::Contains(trees_, active_tree_id_));
   ui::AXSelection selection = trees_[active_tree_id_]->GetUnignoredSelection();
-  // Identify the start and end nodes and offsets. The start node comes earlier
-  // the end node in the tree order.
-  ui::AXNode* anchor_node = GetAXNode(selection.anchor_object_id);
-  DCHECK(anchor_node);
-  ui::AXNode* focus_node = GetAXNode(selection.focus_object_id);
-  DCHECK(focus_node);
-  start_node_ = selection.is_backward ? focus_node : anchor_node;
-  end_node_ = selection.is_backward ? anchor_node : focus_node;
+  // Identify the start and end node ids and offsets. The start node comes
+  // earlier the end node in the tree order.
+  start_node_id_ = selection.is_backward ? selection.focus_object_id
+                                         : selection.anchor_object_id;
+  end_node_id_ = selection.is_backward ? selection.anchor_object_id
+                                       : selection.focus_object_id;
+  start_offset_ =
+      selection.is_backward ? selection.focus_offset : selection.anchor_offset;
+  end_offset_ =
+      selection.is_backward ? selection.anchor_offset : selection.focus_offset;
+  ui::AXNode* start_node = GetAXNode(start_node_id_);
+  DCHECK(start_node);
+  ui::AXNode* end_node = GetAXNode(end_node_id_);
+  DCHECK(end_node);
 
   // If start node or end node is ignored, go to the nearest unignored node
   // within the selection.
-  if (start_node_->IsIgnored()) {
-    start_node_ = start_node_->GetNextUnignoredInTreeOrder();
+  if (start_node->IsIgnored()) {
+    start_node = start_node->GetNextUnignoredInTreeOrder();
+    start_node_id_ = start_node->id();
+    start_offset_ = 0;
   }
-  if (end_node_->IsIgnored()) {
-    end_node_ = end_node_->GetNextUnignoredInTreeOrder();
+  if (end_node->IsIgnored()) {
+    end_node = end_node->GetPreviousUnignoredInTreeOrder();
+    end_node_id_ = end_node->id();
+    end_offset_ = end_node->GetTextContentLengthUTF8();
   }
 
   // Display nodes are the nodes which will be displayed by the rendering
@@ -552,7 +564,7 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection() {
   // Add all ancestor ids of start node, including the start node itself. This
   // does a first walk down to start node.
   base::queue<ui::AXNode*> ancestors =
-      start_node_->GetAncestorsCrossingTreeBoundaryAsQueue();
+      start_node->GetAncestorsCrossingTreeBoundaryAsQueue();
   while (!ancestors.empty()) {
     ui::AXNodeID ancestor_id = ancestors.front()->id();
     display_node_ids_.insert(ancestor_id);
@@ -561,10 +573,10 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection() {
 
   // Do a pre-order walk of the tree from the start node to the end node and add
   // all nodes to the list of display node ids.
-  ui::AXNode* next_node = start_node_;
-  DCHECK(!start_node_->IsIgnored());
-  DCHECK(!end_node_->IsIgnored());
-  while (next_node != end_node_) {
+  ui::AXNode* next_node = start_node;
+  DCHECK(!start_node->IsIgnored());
+  DCHECK(!end_node->IsIgnored());
+  while (next_node != end_node) {
     next_node = next_node->GetNextUnignoredInTreeOrder();
     display_node_ids_.insert(next_node->id());
   }
@@ -643,9 +655,13 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<ReadAnythingAppController>::GetObjectTemplateBuilder(
              isolate)
+      .SetProperty("rootId", &ReadAnythingAppController::RootId)
+      .SetProperty("startNodeId", &ReadAnythingAppController::StartNodeId)
+      .SetProperty("startOffset", &ReadAnythingAppController::StartOffset)
+      .SetProperty("endNodeId", &ReadAnythingAppController::EndNodeId)
+      .SetProperty("endOffset", &ReadAnythingAppController::EndOffset)
       .SetProperty("backgroundColor",
                    &ReadAnythingAppController::BackgroundColor)
-      .SetProperty("rootId", &ReadAnythingAppController::RootId)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
       .SetProperty("foregroundColor",
@@ -676,6 +692,22 @@ ui::AXNodeID ReadAnythingAppController::RootId() const {
   DCHECK(base::Contains(trees_, active_tree_id_));
   ui::AXSerializableTree* tree = trees_.at(active_tree_id_).get();
   return tree->root()->id();
+}
+
+ui::AXNodeID ReadAnythingAppController::StartNodeId() const {
+  return start_node_id_;
+}
+
+int ReadAnythingAppController::StartOffset() const {
+  return start_offset_;
+}
+
+ui::AXNodeID ReadAnythingAppController::EndNodeId() const {
+  return end_node_id_;
+}
+
+int ReadAnythingAppController::EndOffset() const {
+  return end_offset_;
 }
 
 SkColor ReadAnythingAppController::BackgroundColor() const {
@@ -832,6 +864,16 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   if (distillation_in_progress_) {
     return;
   }
+
+  // If the selection change matches the tree's selection, this means it was
+  // set by the controller. Javascript selections set by the controller are
+  // always forward selections. This means the anchor node always comes before
+  // the focus node.
+  if (anchor_node_id == start_node_id_ && anchor_offset == start_offset_ &&
+      focus_node_id == end_node_id_ && focus_offset == end_offset_) {
+    return;
+  }
+
   page_handler_->OnSelectionChange(active_tree_id_, anchor_node_id,
                                    anchor_offset, focus_node_id, focus_offset);
 }

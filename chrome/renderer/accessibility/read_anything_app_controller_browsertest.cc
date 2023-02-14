@@ -147,6 +147,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   ui::AXNodeID RootId() { return controller_->RootId(); }
 
+  ui::AXNodeID StartNodeId() { return controller_->StartNodeId(); }
+
+  int StartOffset() { return controller_->StartOffset(); }
+
+  ui::AXNodeID EndNodeId() { return controller_->EndNodeId(); }
+
+  int EndOffset() { return controller_->EndOffset(); }
+
   bool DisplayNodeIdsContains(ui::AXNodeID ax_node_id) {
     return base::Contains(controller_->display_node_ids_, ax_node_id);
   }
@@ -966,4 +974,70 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
   OnSelectionChange(2, 0, 3, 1);
   page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest, Selection_Forward) {
+  // Create selection from node 3-4.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 3;
+  update.tree_data.sel_focus_object_id = 4;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 1;
+  update.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(3, StartNodeId());
+  EXPECT_EQ(4, EndNodeId());
+  EXPECT_EQ(0, StartOffset());
+  EXPECT_EQ(1, EndOffset());
+}
+
+TEST_F(ReadAnythingAppControllerTest, Selection_Backward) {
+  // Create backward selection from node 4-3.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 4;
+  update.tree_data.sel_focus_object_id = 3;
+  update.tree_data.sel_anchor_offset = 1;
+  update.tree_data.sel_focus_offset = 0;
+  update.tree_data.sel_is_backward = true;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(3, StartNodeId());
+  EXPECT_EQ(4, EndNodeId());
+  EXPECT_EQ(0, StartOffset());
+  EXPECT_EQ(1, EndOffset());
+}
+
+TEST_F(ReadAnythingAppControllerTest, Selection_IgnoredNode) {
+  // Make 4 ignored and give 3 some text content.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.root_id = 1;
+  update.nodes.resize(2);
+  update.nodes[0].id = 3;
+  update.nodes[1].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[0].SetName("Hello");
+  update.nodes[0].SetNameFrom(ax::mojom::NameFrom::kContents);
+  update.nodes[1].role = ax::mojom::Role::kNone;  // This node is ignored.
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+
+  // Create selection from node 2-4, where 4 is ignored.
+  ui::AXTreeUpdate update_2;
+  SetUpdateTreeID(&update_2);
+  update_2.tree_data.sel_anchor_object_id = 2;
+  update_2.tree_data.sel_focus_object_id = 4;
+  update_2.tree_data.sel_anchor_offset = 0;
+  update_2.tree_data.sel_focus_offset = 0;
+  update_2.tree_data.sel_is_backward = false;
+  AccessibilityEventReceived({update_2});
+  OnAXTreeDistilled({});
+
+  EXPECT_EQ(2, StartNodeId());
+  EXPECT_EQ(3, EndNodeId());
+  EXPECT_EQ(0, StartOffset());
+  EXPECT_EQ(5, EndOffset());  // The length of the word 'Hello'.
 }

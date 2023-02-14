@@ -30,6 +30,28 @@ const darkThemeLinkColors: LinkColor = {
   visited: 'var(--google-purple-100)',
 };
 
+// A two-way map where each key is unique and each value is unique. The keys are
+// DOM nodes and the values are numbers, representing AXNodeIDs.
+class TwoWayMap extends Map {
+  #reverseMap;
+  constructor() {
+    super();
+    this.#reverseMap = new Map();
+  }
+  override set(key: Node, value: number) {
+    super.set(key, value);
+    this.#reverseMap.set(value, key);
+    return this;
+  }
+  keyFrom(value: number) {
+    return this.#reverseMap.get(value);
+  }
+  override clear() {
+    super.clear();
+    this.#reverseMap.clear();
+  }
+}
+
 ////////////////////////////////////////////////////////////
 // Called by ReadAnythingPageHandler via callback router. //
 ////////////////////////////////////////////////////////////
@@ -76,8 +98,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     {name: 'Times New Roman', css: '"Times New Roman"'},
   ];
 
-  // Maps a DOM node to the AXNodeID that was used to create it.
-  private nodeToAXNodeIDMap_: WeakMap<Node, number> = new WeakMap();
+  // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and
+  // AXNodeIDs are unique, so this is a two way map where either DOM node or
+  // AXNodeID can be used to access the other.
+  private domNodeToAxNodeIdMap_: TwoWayMap = new TwoWayMap();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -94,8 +118,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (!anchorNode || !focusNode) {
         return;
       }
-      const anchorNodeId = this.nodeToAXNodeIDMap_.get(anchorNode);
-      const focusNodeId = this.nodeToAXNodeIDMap_.get(focusNode);
+      const anchorNodeId = this.domNodeToAxNodeIdMap_.get(anchorNode);
+      const focusNodeId = this.domNodeToAxNodeIdMap_.get(focusNode);
       assert(anchorNodeId && focusNodeId);
       chrome.readAnything.onSelectionChange(
           anchorNodeId, anchorOffset, focusNodeId, focusOffset);
@@ -117,7 +141,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     const element = document.createElement(htmlTag);
-    this.nodeToAXNodeIDMap_.set(element, nodeId);
+    this.domNodeToAxNodeIdMap_.set(element, nodeId);
     const direction = chrome.readAnything.getTextDirection(nodeId);
     if (direction) {
       element.setAttribute('dir', direction);
@@ -148,7 +172,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private createTextNode_(nodeId: number): Node {
     const textContent = chrome.readAnything.getTextContent(nodeId);
     const textNode = document.createTextNode(textContent);
-    this.nodeToAXNodeIDMap_.set(textNode, nodeId);
+    this.domNodeToAxNodeIdMap_.set(textNode, nodeId);
     const shouldBold = chrome.readAnything.shouldBold(nodeId);
     const isOverline = chrome.readAnything.isOverline(nodeId);
 
@@ -174,6 +198,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Remove all children from container. Use `replaceChildren` rather than
     // setting `innerHTML = ''` in order to remove all listeners, too.
     container.replaceChildren();
+    this.domNodeToAxNodeIdMap_.clear();
 
     // Construct a dom subtree starting with the display root and append it to
     // the container. The display root may be invalid if there are no content
@@ -188,6 +213,40 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
     const node = this.buildSubtree_(rootId);
     container.appendChild(node);
+
+    this.updateSelection_();
+  }
+
+  private updateSelection_() {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const selection = shadowRoot.getSelection();
+    assert(selection);
+    selection.removeAllRanges();
+
+    const range = new Range();
+    const startNodeId = chrome.readAnything.startNodeId;
+    const startOffset = chrome.readAnything.startOffset;
+    const endNodeId = chrome.readAnything.endNodeId;
+    const endOffset = chrome.readAnything.endOffset;
+    const startNode = this.domNodeToAxNodeIdMap_.keyFrom(startNodeId);
+    const endNode = this.domNodeToAxNodeIdMap_.keyFrom(endNodeId);
+    if (!startNode || !endNode) {
+      return;
+    }
+    range.setStart(startNode, startOffset);
+    range.setEnd(endNode, endOffset);
+    selection.addRange(range);
+
+    // Scroll the start node into view. ScrollIntoView is available on the
+    // Element class.
+    const startElement = startNode.nodeType === Node.ELEMENT_NODE ?
+        startNode as Element :
+        startNode.parentElement;
+    if (!startElement) {
+      return;
+    }
+    startElement.scrollIntoView();
   }
 
   private validatedFontName_(): string {
