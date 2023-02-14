@@ -1061,7 +1061,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
     // Hanging trailing spaces may resolve the overflow.
     if (item_result->has_only_trailing_spaces) {
       state_ = LineBreakState::kTrailing;
-      if (item_result->item->Style()->WhiteSpace() == EWhiteSpace::kPreWrap &&
+      if (!item_result->item->Style()->CollapseWhiteSpace() &&
           IsBreakableSpace(Text()[item_result->EndOffset() - 1])) {
         unsigned end_index = base::checked_cast<unsigned>(
             item_result - line_info->Results().begin());
@@ -1444,7 +1444,7 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
         break_iterator_.NextBreakOpportunity(end_offset, item.EndOffset());
 
     unsigned non_hangable_run_end = end_offset;
-    if (item.Style()->WhiteSpace() != EWhiteSpace::kBreakSpaces) {
+    if (item.Style()->ShouldWrapLineTrailingSpaces()) {
       while (non_hangable_run_end > start_offset &&
              IsBreakableSpace(text[non_hangable_run_end - 1])) {
         --non_hangable_run_end;
@@ -1665,7 +1665,7 @@ void NGLineBreaker::HandleTrailingSpaces(const NGInlineItem& item,
     NGInlineItemResults* item_results = line_info->MutableResults();
     DCHECK(!item_results->empty());
     item_results->back().can_break_after = true;
-  } else if (style.WhiteSpace() != EWhiteSpace::kBreakSpaces) {
+  } else if (style.ShouldWrapLineTrailingSpaces()) {
     // Find the end of the run of space characters in this item.
     // Other white space characters (e.g., tab) are not included in this item.
     DCHECK(style.BreakOnlyAfterWhiteSpace() ||
