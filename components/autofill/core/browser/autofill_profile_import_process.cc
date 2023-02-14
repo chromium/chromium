@@ -7,7 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -391,14 +391,14 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
 
   auto LogUkmMetrics = [&](int num_edited_fields = 0) {
-    AutofillMetrics::LogAddressProfileImportUkm(
+    autofill_metrics::LogAddressProfileImportUkm(
         ukm_recorder, source_id, import_type_, user_decision_, import_metadata_,
         num_edited_fields);
   };
 
   if (allow_only_silent_updates_) {
     // Record the import type for the silent updates.
-    AutofillMetrics::LogSilentUpdatesProfileImportType(import_type_);
+    autofill_metrics::LogSilentUpdatesProfileImportType(import_type_);
     if (import_type_ == AutofillProfileImportType::kSilentUpdate ||
         import_type_ ==
             AutofillProfileImportType::kSilentUpdateForIncompleteProfile)
@@ -407,7 +407,7 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
   }
 
   // For any finished import process record the type of the import.
-  AutofillMetrics::LogProfileImportType(import_type_);
+  autofill_metrics::LogProfileImportType(import_type_);
 
   // Tracks number of edited fields by the user in the storage prompt.
   int num_edited_fields = 0;
@@ -420,36 +420,36 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
             app_locale_);
     for (const auto& difference : edit_difference) {
       if (import_type_ == AutofillProfileImportType::kNewProfile) {
-        AutofillMetrics::LogNewProfileEditedType(difference.type);
+        autofill_metrics::LogNewProfileEditedType(difference.type);
       } else {
-        AutofillMetrics::LogProfileUpdateEditedType(difference.type);
+        autofill_metrics::LogProfileUpdateEditedType(difference.type);
       }
     }
     num_edited_fields = edit_difference.size();
     if (import_type_ == AutofillProfileImportType::kNewProfile) {
-      AutofillMetrics::LogNewProfileNumberOfEditedFields(num_edited_fields);
+      autofill_metrics::LogNewProfileNumberOfEditedFields(num_edited_fields);
     } else {
-      AutofillMetrics::LogUpdateProfileNumberOfEditedFields(num_edited_fields);
+      autofill_metrics::LogUpdateProfileNumberOfEditedFields(num_edited_fields);
     }
   }
 
   // For an import process that involves prompting the user, record the
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
-    AutofillMetrics::LogNewProfileImportDecision(user_decision_);
+    autofill_metrics::LogNewProfileImportDecision(user_decision_);
     if (import_metadata_.did_ignore_invalid_country) {
-      AutofillMetrics::LogNewProfileWithIgnoredCountryImportDecision(
+      autofill_metrics::LogNewProfileWithIgnoredCountryImportDecision(
           user_decision_);
     }
-    AutofillMetrics::LogNewProfileNumberOfAutocompleteUnrecognizedFields(
+    autofill_metrics::LogNewProfileNumberOfAutocompleteUnrecognizedFields(
         import_metadata_.num_autocomplete_unrecognized_fields);
 
     LogUkmMetrics(num_edited_fields);
   } else if (import_type_ == AutofillProfileImportType::kConfirmableMerge ||
              import_type_ ==
                  AutofillProfileImportType::kConfirmableMergeAndSilentUpdate) {
-    AutofillMetrics::LogProfileUpdateImportDecision(user_decision_);
-    AutofillMetrics::LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(
+    autofill_metrics::LogProfileUpdateImportDecision(user_decision_);
+    autofill_metrics::LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(
         import_metadata_.num_autocomplete_unrecognized_fields);
 
     DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
@@ -462,17 +462,17 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
             import_candidate_.value(), merge_candidate_.value(), app_locale_);
 
     for (const auto& difference : merge_difference) {
-      AutofillMetrics::LogProfileUpdateAffectedType(difference.type,
-                                                    user_decision_);
+      autofill_metrics::LogProfileUpdateAffectedType(difference.type,
+                                                     user_decision_);
     }
     // Ignoring an invalid country made the update possible, so this should be
     // logged in any case.
     if (import_metadata_.did_ignore_invalid_country) {
-      AutofillMetrics::LogProfileUpdateWithIgnoredCountryImportDecision(
+      autofill_metrics::LogProfileUpdateWithIgnoredCountryImportDecision(
           user_decision_);
     }
 
-    AutofillMetrics::LogUpdateProfileNumberOfAffectedFields(
+    autofill_metrics::LogUpdateProfileNumberOfAffectedFields(
         merge_difference.size(), user_decision_);
     LogUkmMetrics(num_edited_fields);
   } else if (import_type_ == AutofillProfileImportType::kSilentUpdate) {

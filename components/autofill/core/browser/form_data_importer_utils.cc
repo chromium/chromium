@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 
@@ -20,7 +20,7 @@ namespace autofill {
 namespace {
 
 using AddressImportRequirement =
-    AutofillMetrics::AddressProfileImportRequirementMetric;
+    autofill_metrics::AddressProfileImportRequirementMetric;
 
 bool IsOriginPartOfDeletionInfo(const absl::optional<url::Origin>& origin,
                                 const history::DeletionInfo& deletion_info) {
@@ -64,7 +64,7 @@ bool IsMinimumAddress(const AutofillProfile& profile,
               << "." << CTag{};
         }
         if (collect_metrics) {
-          AutofillMetrics::LogAddressFormImportRequirementMetric(
+          autofill_metrics::LogAddressFormImportRequirementMetric(
               is_valid ? valid : invalid);
         }
         return is_valid;
@@ -118,8 +118,10 @@ bool IsMinimumAddress(const AutofillProfile& profile,
         AddressImportRequirement::kNameRequirementViolated);
   }
   if (collect_metrics) {
-    AutofillMetrics::LogAddressFormImportCountrySpecificFieldRequirementsMetric(
-        is_zip_missing, is_state_missing, is_city_missing, is_line1_missing);
+    autofill_metrics::
+        LogAddressFormImportCountrySpecificFieldRequirementsMetric(
+            is_zip_missing, is_state_missing, is_city_missing,
+            is_line1_missing);
   }
   return is_minimum_address;
 }
@@ -131,13 +133,13 @@ bool IsValidLearnableProfile(const AutofillProfile& profile,
                             AddressImportRequirement valid,
                             AddressImportRequirement invalid) {
     if (profile.IsPresentButInvalid(type)) {
-      AutofillMetrics::LogAddressFormImportRequirementMetric(invalid);
+      autofill_metrics::LogAddressFormImportRequirementMetric(invalid);
       LOG_AF(import_log_buffer)
           << LogMessage::kImportAddressProfileFromFormFailed << "Invalid "
           << FieldTypeToStringPiece(type) << "." << CTag{};
       return false;
     } else {
-      AutofillMetrics::LogAddressFormImportRequirementMetric(valid);
+      autofill_metrics::LogAddressFormImportRequirementMetric(valid);
       return true;
     }
   };

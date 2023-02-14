@@ -19,7 +19,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -123,26 +122,6 @@ class AutofillMetrics {
     // number.
     HAS_EXPIRATION_DATE_ONLY,
     NUM_SUBMITTED_CARD_STATE_METRICS,
-  };
-
-  // These values are persisted to UMA logs. Entries should not be renumbered
-  // and numeric values should never be reused. This is the subset of field
-  // types that can be changed in a profile change/store dialog or are affected
-  // in a profile merge operation.
-  enum class SettingsVisibleFieldTypeForMetrics {
-    kUndefined = 0,
-    kName = 1,
-    kEmailAddress = 2,
-    kPhoneNumber = 3,
-    kCity = 4,
-    kCountry = 5,
-    kZip = 6,
-    kState = 7,
-    kStreetAddress = 8,
-    kDependentLocality = 9,
-    kHonorificPrefix = 10,
-    kCompany = 11,
-    kMaxValue = kCompany
   };
 
   // Metric to measure if a submitted card's expiration date matches the same
@@ -595,96 +574,11 @@ class AutofillMetrics {
   // To record whether the upload event was sent.
   enum class UploadEventStatus { kNotSent, kSent, kMaxValue = kSent };
 
-  // These values are persisted to UMA logs. Entries should not be renumbered
-  // and numeric values should never be reused. These values enumerates the
-  // status of the different requirements to successfully import an address
-  // profile from a form submission.
-  enum class AddressProfileImportRequirementMetric {
-    // The form must contain either no or only a single unique email address.
-    kEmailAddressUniqueRequirementFulfilled = 0,
-    kEmailAddressUniqueRequirementViolated = 1,
-    // The form is not allowed to contain invalid field types.
-    kNoInvalidFieldTypesRequirementFulfilled = 2,
-    kNoInvalidFieldTypesRequirementViolated = 3,
-    // If required by |CountryData|, the form must contain a city entry.
-    kCityRequirementFulfilled = 4,
-    kCityRequirementViolated = 5,
-    // If required by |CountryData|, the form must contain a state entry.
-    kStateRequirementFulfilled = 6,
-    kStateRequirementViolated = 7,
-    // If required by |CountryData|, the form must contain a ZIP entry.
-    kZipRequirementFulfilled = 8,
-    kZipRequirementViolated = 9,
-    // If present, the email address must be valid.
-    kEmailValidRequirementFulfilled = 10,
-    kEmailValidRequirementViolated = 11,
-    // If present, the country must be valid.
-    kCountryValidRequirementFulfilled = 12,
-    kCountryValidRequirementViolated = 13,
-    // If present, the state must be valid (if verifiable).
-    kStateValidRequirementFulfilled = 14,
-    kStateValidRequirementViolated = 15,
-    // If present, the ZIP must be valid (if verifiable).
-    kZipValidRequirementFulfilled = 16,
-    kZipValidRequirementViolated = 17,
-    // 18 and 19 are deprecated, as phone numbers are not a requirement anymore.
-    // Indicates the overall status of the import requirements check.
-    kOverallRequirementFulfilled = 20,
-    kOverallRequirementViolated = 21,
-    // If required by |CountryData|, the form must contain a line1 entry.
-    kLine1RequirementFulfilled = 22,
-    kLine1RequirementViolated = 23,
-    // If required by |CountryData|, the form must contain a either a zip or a
-    // state entry.
-    kZipOrStateRequirementFulfilled = 24,
-    kZipOrStateRequirementViolated = 25,
-    // If required by |CountryData|, the form must contain a either an address
-    // line 1 or a house number.
-    kLine1OrHouseNumberRequirementFulfilled = 26,
-    kLine1OrHouseNumberRequirementViolated = 27,
-    // If required by `kAutofillRequireNameForProfileImportsFromForms` feature,
-    // the form must contain a non-empty name.
-    kNameRequirementFulfilled = 28,
-    kNameRequirementViolated = 29,
-    // Must be set to the last entry.
-    kMaxValue = kNameRequirementViolated,
-  };
-
-  // Represents the status of the field type requirements that are specific to
-  // countries.
-  enum class AddressProfileImportCountrySpecificFieldRequirementsMetric {
-    ALL_GOOD = 0,
-    ZIP_REQUIREMENT_VIOLATED = 1,
-    STATE_REQUIREMENT_VIOLATED = 2,
-    ZIP_STATE_REQUIREMENT_VIOLATED = 3,
-    CITY_REQUIREMENT_VIOLATED = 4,
-    ZIP_CITY_REQUIREMENT_VIOLATED = 5,
-    STATE_CITY_REQUIREMENT_VIOLATED = 6,
-    ZIP_STATE_CITY_REQUIREMENT_VIOLATED = 7,
-    LINE1_REQUIREMENT_VIOLATED = 8,
-    LINE1_ZIP_REQUIREMENT_VIOLATED = 9,
-    LINE1_STATE_REQUIREMENT_VIOLATED = 10,
-    LINE1_ZIP_STATE_REQUIREMENT_VIOLATED = 11,
-    LINE1_CITY_REQUIREMENT_VIOLATED = 12,
-    LINE1_ZIP_CITY_REQUIREMENT_VIOLATED = 13,
-    LINE1_STATE_CITY_REQUIREMENT_VIOLATED = 14,
-    LINE1_ZIP_STATE_CITY_REQUIREMENT_VIOLATED = 15,
-    kMaxValue = LINE1_ZIP_STATE_CITY_REQUIREMENT_VIOLATED,
-  };
-
   // To record if the value in an autofilled field was edited by the user.
   enum class AutofilledFieldUserEditingStatusMetric {
     AUTOFILLED_FIELD_WAS_EDITED = 0,
     AUTOFILLED_FIELD_WAS_NOT_EDITED = 1,
     kMaxValue = AUTOFILLED_FIELD_WAS_NOT_EDITED,
-  };
-
-  // Represent the overall status of a profile import.
-  enum class AddressProfileImportStatusMetric {
-    NO_IMPORT = 0,
-    REGULAR_IMPORT = 1,
-    SECTION_UNION_IMPORT = 2,
-    kMaxValue = SECTION_UNION_IMPORT,
   };
 
   // The filling status of an autofilled field.
@@ -1267,19 +1161,6 @@ class AutofillMetrics {
                                         int developer_engagement_metrics,
                                         FormSignature form_signature);
 
-  // Logs the address profile import UKM after the form submission.
-  // `user_decision` is the user's decision based on the storage prompt, if
-  // presented. `num_edited_fields` is the number of fields that were edited by
-  // the user before acceptance of the storage prompt. `profile_import_metadata`
-  // stores metadata related to the import of the address profiles.
-  static void LogAddressProfileImportUkm(
-      ukm::UkmRecorder* ukm_recorder,
-      ukm::SourceId source_id,
-      AutofillProfileImportType import_type,
-      AutofillClient::SaveAddressProfileOfferUserDecision user_decision,
-      const ProfileImportMetadata& profile_import_metadata,
-      size_t num_edited_fields);
-
   // Log the number of hidden or presentational 'select' fields that were
   // autofilled to support synthetic fields.
   static void LogHiddenOrPresentationalSelectFieldsFilled();
@@ -1290,18 +1171,6 @@ class AutofillMetrics {
   // Records the fact that the server card link was clicked with information
   // about the current sync state.
   static void LogServerCardLinkClicked(AutofillSyncSigninState sync_state);
-
-  // Logs the status of an address import requirement defined by type.
-  static void LogAddressFormImportRequirementMetric(
-      AutofillMetrics::AddressProfileImportRequirementMetric metric);
-
-  // Logs the overall status of the country specific field requirements for
-  // importing an address profile from a submitted form.
-  static void LogAddressFormImportCountrySpecificFieldRequirementsMetric(
-      bool is_zip_missing,
-      bool is_state_missing,
-      bool is_city_missing,
-      bool is_line1_missing);
 
   // Records if an autofilled field of a specific type was edited by the user.
   // TODO(crbug.com/1368096): This metric is the successor of
@@ -1319,10 +1188,6 @@ class AutofillMetrics {
       FormInteractionsUkmLogger* form_interactions_ukm_logger,
       const FormStructure& form,
       const AutofillField& field);
-
-  // Logs the overall status of an address import upon form submission.
-  static void LogAddressFormImportStatusMetric(
-      AddressProfileImportStatusMetric metric);
 
   // Records if the page was translated upon form submission.
   static void LogFieldParsingPageTranslationStatusMetric(bool metric);
@@ -1351,77 +1216,6 @@ class AutofillMetrics {
   LogNumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission(
       size_t number_of_accepted_fields,
       size_t number_of_corrected_fields);
-
-  // Logs the type of a profile import.
-  static void LogProfileImportType(AutofillProfileImportType import_type);
-
-  // Logs the type of a profile import that are used for the silent updates.
-  static void LogSilentUpdatesProfileImportType(
-      AutofillProfileImportType import_type);
-
-  // Logs the user decision for importing a new profile.
-  static void LogNewProfileImportDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
-
-  // Logs the user decision for importing a new profile, which could only
-  // be imported after an invalid country was ignored.
-  static void LogNewProfileWithIgnoredCountryImportDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
-
-  // Logs the number of fields with an unrecognized autocomplete attributed that
-  // were considered for the import due to AutofillFillAndImportFromMoreFields.
-  static void LogNewProfileNumberOfAutocompleteUnrecognizedFields(int count);
-
-  // Logs that a specific type was edited in a save prompt.
-  static void LogNewProfileEditedType(ServerFieldType edited_type);
-
-  // Logs the number of edited fields for an accepted profile save.
-  static void LogNewProfileNumberOfEditedFields(int number_of_edited_fields);
-
-  // Logs the user decision for updating an exiting profile.
-  static void LogProfileUpdateImportDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
-
-  // Logs the user decision for updating an exiting profile, which could only
-  // be imported after an invalid country was ignored.
-  static void LogProfileUpdateWithIgnoredCountryImportDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
-
-  // Logs the number of fields with an unrecognized autocomplete attributed that
-  // were considered for the update due to AutofillFillAndImportFromMoreFields.
-  static void LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(int count);
-
-  // Logs that a specific type changed in a profile update that received the
-  // user |decision|. Note that additional manual edits in the update prompt are
-  // not accounted for in this metric.
-  static void LogProfileUpdateAffectedType(
-      ServerFieldType affected_type,
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
-
-  // Logs that a specific type was edited in an update prompt.
-  static void LogProfileUpdateEditedType(ServerFieldType edited_type);
-
-  // Logs the number of edited fields for an accepted profile update.
-  static void LogUpdateProfileNumberOfEditedFields(int number_of_edited_fields);
-
-  // Logs the number of changed fields for a profile update that received the
-  // user |decision|. Note that additional manual edits in the update prompt are
-  // not accounted for in this metric.
-  static void LogUpdateProfileNumberOfAffectedFields(
-      int number_of_affected_fields,
-      AutofillClient::SaveAddressProfileOfferUserDecision decision);
-
-  // Logs if at least one setting-inaccessible field was removed on import.
-  static void LogRemovedSettingInaccessibleFields(bool did_remove);
-
-  // Logs that `field` was removed from a profile on import, because it is
-  // setting-inaccessible in the profile's country.
-  static void LogRemovedSettingInaccessibleField(ServerFieldType field);
-
-  // Logs whether a phone number was parsed successfully on profile import.
-  // Contrary to the profile import requirement metrics, the parsing result is
-  // only emitted when a number is present.
-  static void LogPhoneNumberImportParsingResult(bool parsed_successfully);
 
   // Logs that local heuristics matched phone number fields using `grammar_id`.
   // `suffix_matched` indicates if the special case handling for phone number

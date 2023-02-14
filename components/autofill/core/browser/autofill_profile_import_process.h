@@ -25,7 +25,7 @@ enum class AutofillProfileImportType {
   // Type is unspecified.
   kImportTypeUnspecified,
   // The observed profile corresponds to a new profile because there are no
-  // mergeable or updateable profiles.
+  // mergeable or updatable profiles.
   kNewProfile,
   // The imported profile is a subset of an already existing profile.
   kDuplicateImport,
@@ -36,7 +36,7 @@ enum class AutofillProfileImportType {
   // after explicit user confirmation.
   kConfirmableMerge,
   // The observed profile corresponds to a new profile because there are no
-  // mergeable or updateable profiles but imports are suppressed for this
+  // mergeable or updatable profiles but imports are suppressed for this
   // domain.
   kSuppressedNewProfile,
   // The observed profile resulted both in a confirmable merge and in a silent
@@ -223,7 +223,7 @@ class ProfileImportProcess {
   // The profile as it has been observed on form submission.
   AutofillProfile observed_profile_;
 
-  // Profiles that are silently updateable with the observed profile.
+  // Profiles that are silently updatable with the observed profile.
   std::vector<AutofillProfile> updated_profiles_;
 
   // A profile in its original state that can be merged with the observed
@@ -248,7 +248,7 @@ class ProfileImportProcess {
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision_{
       AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined};
 
-  // The appplication locale used for this import process.
+  // The application locale used for this import process.
   std::string app_locale_;
 
   // The url of the form.

@@ -34,7 +34,7 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
@@ -49,7 +49,7 @@ namespace autofill {
 namespace {
 
 using AddressImportRequirement =
-    AutofillMetrics::AddressProfileImportRequirementMetric;
+    autofill_metrics::AddressProfileImportRequirementMetric;
 
 // Return true if the |field_type| and |value| are valid within the context
 // of importing a form.
@@ -248,7 +248,7 @@ bool FormDataImporter::SetPhoneNumber(
       profile.SetInfoWithVerificationStatus(PHONE_HOME_WHOLE_NUMBER,
                                             constructed_number, app_locale_,
                                             VerificationStatus::kObserved);
-  AutofillMetrics::LogPhoneNumberImportParsingResult(parsed_successfully);
+  autofill_metrics::LogPhoneNumberImportParsingResult(parsed_successfully);
   return parsed_successfully;
 }
 
@@ -257,10 +257,10 @@ void FormDataImporter::RemoveInaccessibleProfileValues(
   const ServerFieldTypeSet inaccessible_fields =
       profile.FindInaccessibleProfileValues();
   profile.ClearFields(inaccessible_fields);
-  AutofillMetrics::LogRemovedSettingInaccessibleFields(
+  autofill_metrics::LogRemovedSettingInaccessibleFields(
       !inaccessible_fields.empty());
   for (const ServerFieldType inaccessible_field : inaccessible_fields) {
-    AutofillMetrics::LogRemovedSettingInaccessibleField(inaccessible_field);
+    autofill_metrics::LogRemovedSettingInaccessibleField(inaccessible_field);
   }
 }
 
@@ -384,22 +384,22 @@ size_t FormDataImporter::ExtractAddressProfiles(
     // Run the extract on the union of the section if the import was not
     // successful and if there is more than one section.
     if (num_complete_profiles > 0) {
-      AutofillMetrics::LogAddressFormImportStatusMetric(
-          AutofillMetrics::AddressProfileImportStatusMetric::REGULAR_IMPORT);
+      autofill_metrics::LogAddressFormImportStatusMetric(
+          autofill_metrics::AddressProfileImportStatusMetric::REGULAR_IMPORT);
     } else if (sections.size() > 1) {
       // Try to extract by combining all sections.
       if (ExtractAddressProfileFromSection(form, absl::nullopt,
                                            address_profile_import_candidates,
                                            &import_log_buffer)) {
         num_complete_profiles++;
-        AutofillMetrics::LogAddressFormImportStatusMetric(
-            AutofillMetrics::AddressProfileImportStatusMetric::
+        autofill_metrics::LogAddressFormImportStatusMetric(
+            autofill_metrics::AddressProfileImportStatusMetric::
                 SECTION_UNION_IMPORT);
       }
     }
     if (num_complete_profiles == 0) {
-      AutofillMetrics::LogAddressFormImportStatusMetric(
-          AutofillMetrics::AddressProfileImportStatusMetric::NO_IMPORT);
+      autofill_metrics::LogAddressFormImportStatusMetric(
+          autofill_metrics::AddressProfileImportStatusMetric::NO_IMPORT);
     }
   }
   LOG_AF(import_log_buffer)
@@ -647,22 +647,22 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
       !has_invalid_information;
 
   // Collect metrics regarding the requirements for an address profile import.
-  AutofillMetrics::LogAddressFormImportRequirementMetric(
+  autofill_metrics::LogAddressFormImportRequirementMetric(
       has_multiple_distinct_email_addresses
           ? AddressImportRequirement::kEmailAddressUniqueRequirementViolated
           : AddressImportRequirement::kEmailAddressUniqueRequirementFulfilled);
 
-  AutofillMetrics::LogAddressFormImportRequirementMetric(
+  autofill_metrics::LogAddressFormImportRequirementMetric(
       has_invalid_field_types
           ? AddressImportRequirement::kNoInvalidFieldTypesRequirementViolated
           : AddressImportRequirement::kNoInvalidFieldTypesRequirementFulfilled);
 
-  AutofillMetrics::LogAddressFormImportRequirementMetric(
+  autofill_metrics::LogAddressFormImportRequirementMetric(
       has_invalid_country
           ? AddressImportRequirement::kCountryValidRequirementViolated
           : AddressImportRequirement::kCountryValidRequirementFulfilled);
 
-  AutofillMetrics::LogAddressFormImportRequirementMetric(
+  autofill_metrics::LogAddressFormImportRequirementMetric(
       all_fulfilled ? AddressImportRequirement::kOverallRequirementFulfilled
                     : AddressImportRequirement::kOverallRequirementViolated);
 
