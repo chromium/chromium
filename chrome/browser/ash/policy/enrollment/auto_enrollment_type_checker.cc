@@ -40,9 +40,9 @@ std::string FRERequirementToString(
     case FRERequirement::kNotRequired:
       return "Forced Re-Enrollment disabled: first setup.";
     case FRERequirement::kExplicitlyRequired:
-      return "Forced Re-Enrollment explicitly required.";
+      return "Forced Re-Enrollment required: flag in VPD.";
     case FRERequirement::kExplicitlyNotRequired:
-      return "Forced Re-Enrollment explicitly not required.";
+      return "Forced Re-Enrollment disabled: flag in VPD.";
   }
 }
 
@@ -109,12 +109,10 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
           ash::system::kCheckEnrollmentKey);
 
   if (check_enrollment_value) {
-    if (check_enrollment_value == "0") {
+    if (check_enrollment_value == "0")
       return FRERequirement::kExplicitlyNotRequired;
-    }
-    if (check_enrollment_value == "1") {
+    if (check_enrollment_value == "1")
       return FRERequirement::kExplicitlyRequired;
-    }
 
     LOG(ERROR) << "Unexpected value for " << ash::system::kCheckEnrollmentKey
                << ": " << check_enrollment_value.value();
@@ -170,13 +168,18 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
 // static
 AutoEnrollmentTypeChecker::FRERequirement
 AutoEnrollmentTypeChecker::GetFRERequirement(
-    ash::system::StatisticsProvider* statistics_provider,
-    bool dev_disable_boot) {
+    ash::system::StatisticsProvider* statistics_provider) {
   // Skip FRE check if it is not enabled by command-line switches.
   if (!IsFREEnabled()) {
     LOG(WARNING) << "FRE disabled.";
     return FRERequirement::kDisabled;
   }
+
+  const auto fre_vpd_requirement =
+      AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+          statistics_provider);
+  if (fre_vpd_requirement == FRERequirement::kExplicitlyNotRequired)
+    return fre_vpd_requirement;
 
   // Skip FRE check if modulus configuration is not present.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -188,15 +191,7 @@ AutoEnrollmentTypeChecker::GetFRERequirement(
     return FRERequirement::kNotRequired;
   }
 
-  // The FWMP flag DEVELOPER_DISABLE_BOOT indicates that FRE was configured
-  // in the previous OOBE. We need to force FRE checks to prevent enrollment
-  // escapes, see b/268267865.
-  if (dev_disable_boot) {
-    return FRERequirement::kExplicitlyRequired;
-  }
-
-  return AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-      statistics_provider);
+  return fre_vpd_requirement;
 }
 
 // static
@@ -264,8 +259,7 @@ AutoEnrollmentTypeChecker::GetInitialStateDeterminationRequirement(
 AutoEnrollmentTypeChecker::CheckType
 AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
     bool is_system_clock_synchronized,
-    ash::system::StatisticsProvider* statistics_provider,
-    bool dev_disable_boot) {
+    ash::system::StatisticsProvider* statistics_provider) {
   // Skip everything if neither FRE nor Initial Enrollment are enabled.
   if (!IsEnabled()) {
     LOG(WARNING) << "Auto-enrollment disabled.";
@@ -281,8 +275,7 @@ AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
 
   // Determine whether to do an FRE check or an initial state determination.
   // FRE has precedence since managed devices must go through an FRE check.
-  const FRERequirement fre_requirement =
-      GetFRERequirement(statistics_provider, dev_disable_boot);
+  FRERequirement fre_requirement = GetFRERequirement(statistics_provider);
   LOG(WARNING) << FRERequirementToString(fre_requirement);
 
   switch (fre_requirement) {

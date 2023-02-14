@@ -119,14 +119,6 @@ class InstallAttributesClientImpl : public InstallAttributesClient {
                     std::move(callback));
   }
 
-  void GetFirmwareManagementParameters(
-      const ::user_data_auth::GetFirmwareManagementParametersRequest& request,
-      GetFirmwareManagementParametersCallback callback) override {
-    CallProtoMethod(::user_data_auth::kGetFirmwareManagementParameters,
-                    ::user_data_auth::kInstallAttributesInterface, request,
-                    std::move(callback));
-  }
-
   absl::optional<::user_data_auth::InstallAttributesGetReply>
   BlockingInstallAttributesGet(
       const ::user_data_auth::InstallAttributesGetRequest& request) override {
