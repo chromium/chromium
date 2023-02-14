@@ -6522,6 +6522,25 @@
             ]
         }
     ],
+    "InteractiveGetAuthTokenCheckActivityStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InteractiveGetAuthTokenCheckActivity"
+                    ]
+                }
+            ]
+        }
+    ],
     "JourneysAndroidPreStable": [
         {
             "platforms": [

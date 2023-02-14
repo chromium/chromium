@@ -825,6 +825,10 @@ class GetAuthTokenFunctionTest
     : public IdentityTestWithSignin,
       public signin::IdentityManager::DiagnosticsObserver {
  public:
+  GetAuthTokenFunctionTest() { SetUserGestureEnabled(true); }
+
+  ~GetAuthTokenFunctionTest() override = default;
+
   std::string IssueLoginAccessTokenForAccount(const CoreAccountId& account_id) {
     std::string access_token = "access_token-" + account_id.ToString();
     identity_test_env()
@@ -846,8 +850,6 @@ class GetAuthTokenFunctionTest
     identity_test_env()->identity_manager()->RemoveDiagnosticsObserver(this);
     IdentityTestWithSignin::TearDownOnMainThread();
   }
-
-  ~GetAuthTokenFunctionTest() override {}
 
   // Helper to create an extension with specific OAuth2Info fields set.
   // |fields_to_set| should be computed by using fields of Oauth2Fields enum.
@@ -993,6 +995,17 @@ class GetAuthTokenFunctionTest
     *granted_scopes = std::move(granted_scopes_map);
   }
 
+  void SetUserGestureEnabled(bool enabled) {
+    if (enabled) {
+      if (!user_gesture_) {
+        user_gesture_ =
+            std::make_unique<ExtensionFunction::ScopedUserGestureForTests>();
+      }
+      return;
+    }
+    user_gesture_.reset();
+  }
+
  private:
   // signin::IdentityManager::DiagnosticsObserver:
   void OnAccessTokenRequested(const CoreAccountId& account_id,
@@ -1007,6 +1020,7 @@ class GetAuthTokenFunctionTest
   base::HistogramTester histogram_tester_;
   std::string extension_id_;
   std::set<std::string> oauth_scopes_;
+  std::unique_ptr<ExtensionFunction::ScopedUserGestureForTests> user_gesture_;
 };
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, NoClientId) {
@@ -1426,13 +1440,13 @@ class GetAuthTokenFunctionInteractivityTest
     switch (GetParam()) {
       case IdentityGetAuthTokenFunction::InteractivityStatus::
           kAllowedWithGesture:
-        user_gesture_ =
-            std::make_unique<ExtensionFunction::ScopedUserGestureForTests>();
+        SetUserGestureEnabled(true);
         break;
       case IdentityGetAuthTokenFunction::InteractivityStatus::
           kAllowedWithActivity:
         idle_state_ = std::make_unique<ui::ScopedSetIdleState>(
             ui::IdleState::IDLE_STATE_ACTIVE);
+        SetUserGestureEnabled(false);
         ASSERT_EQ(ui::CalculateIdleState(
                       kDefaultGetAuthTokenInactivityThreshold.InSeconds()),
                   ui::IDLE_STATE_ACTIVE);
@@ -1441,6 +1455,7 @@ class GetAuthTokenFunctionInteractivityTest
       case IdentityGetAuthTokenFunction::InteractivityStatus::kDisallowedIdle:
       case IdentityGetAuthTokenFunction::InteractivityStatus::
           kAllowedNoIdleCheck:
+        SetUserGestureEnabled(false);
         idle_state_ = std::make_unique<ui::ScopedSetIdleState>(
             ui::IdleState::IDLE_STATE_LOCKED);
         ASSERT_NE(ui::CalculateIdleState(
@@ -1457,7 +1472,6 @@ class GetAuthTokenFunctionInteractivityTest
   }
 
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<ExtensionFunction::ScopedUserGestureForTests> user_gesture_;
   std::unique_ptr<ui::ScopedSetIdleState> idle_state_;
 };
 
