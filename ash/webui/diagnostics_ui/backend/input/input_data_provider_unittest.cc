@@ -36,6 +36,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
@@ -772,6 +773,7 @@ class InputDataProviderTest : public AshTestBase {
                               std::move(sysfs_properties));
   }
 
+  ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
   std::unique_ptr<testing::FakeUdevLoader> fake_udev_;
   system::FakeStatisticsProvider statistics_provider_;
   std::unique_ptr<views::Widget> widget_;

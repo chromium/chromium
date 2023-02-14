@@ -9,6 +9,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "ash/webui/diagnostics_ui/backend/input/event_watcher_factory.h"
+#include "ash/webui/diagnostics_ui/backend/input/healthd_event_reporter.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_event_watcher.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider_touch.h"
@@ -232,6 +233,8 @@ class InputDataProvider : public mojom::InputDataProvider,
 
   raw_ptr<AcceleratorControllerImpl> accelerator_controller_;
   raw_ptr<ui::EventRewriterChromeOS::Delegate> event_rewriter_delegate_;
+
+  HealthdEventReporter healthd_event_reporter_;
 
   base::WeakPtrFactory<InputDataProvider> weak_factory_{this};
 };

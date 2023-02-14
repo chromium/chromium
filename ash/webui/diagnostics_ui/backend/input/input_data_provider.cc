@@ -375,6 +375,8 @@ void InputDataProvider::UnforwardKeyboardInput(uint32_t id) {
     keyboard_input_log_ptr_->CreateLogAndRemoveKeyboard(id);
   }
 
+  healthd_event_reporter_.ReportKeyboardDiagnosticEvent(id, keyboards_[id]);
+
   // If there are no more watchers, unblock shortcuts
   if (keyboard_watchers_.empty()) {
     BlockShortcuts(/*should_block=*/false);
@@ -608,6 +610,8 @@ void InputDataProvider::SendInputKeyEvent(uint32_t id,
   if (IsLoggingEnabled()) {
     keyboard_input_log_ptr_->RecordKeyPressForKeyboard(id, event.Clone());
   }
+
+  healthd_event_reporter_.AddKeyEventForNextReport(id, event);
 
   const auto& observers = *keyboard_observers_[id];
   for (const auto& observer : observers) {
