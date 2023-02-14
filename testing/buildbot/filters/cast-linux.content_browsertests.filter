@@ -1,5 +1,2 @@
 # crbug.com/503735: Some pepper font-related tests fail on cast_shell trybot
 -OutOfProcessPPAPITest.BrowserFont
-
-# KeyboardLock not supported on cast.
--KeyboardLockBrowserTest.*
