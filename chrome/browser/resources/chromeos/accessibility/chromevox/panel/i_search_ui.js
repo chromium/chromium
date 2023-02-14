@@ -19,8 +19,8 @@ export class ISearchUI {
     this.input_ = input;
     this.dir_ = Dir.FORWARD;
 
-    this.onKeyDown = this.onKeyDown.bind(this);
-    this.onTextInput = this.onTextInput.bind(this);
+    this.onKeyDown = event => this.onKeyDown_(event);
+    this.onTextInput = event => this.onTextInput_(event);
 
     input.addEventListener('keydown', this.onKeyDown, true);
     input.addEventListener('textInput', this.onTextInput, false);
@@ -46,8 +46,9 @@ export class ISearchUI {
    * Listens to key down events.
    * @param {Event} evt
    * @return {boolean}
+   * @private
    */
-  onKeyDown(evt) {
+  onKeyDown_(evt) {
     switch (evt.key) {
       case 'ArrowUp':
         this.dir_ = Dir.BACKWARD;
@@ -78,8 +79,9 @@ export class ISearchUI {
    * Listens to text input events.
    * @param {Event} evt
    * @return {boolean}
+   * @private
    */
-  onTextInput(evt) {
+  onTextInput_(evt) {
     const searchStr = evt.target.value + evt.data;
     BackgroundBridge.PanelBackground.incrementalSearch(searchStr, this.dir_);
     return true;
