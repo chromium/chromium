@@ -92,6 +92,14 @@ export class AmbientPreviewSmall extends AmbientPreviewBase {
         this.i18n('screenSaverPreviewDownloading') :
         this.i18n('screenSaverPreviewButton');
   }
+
+  private getScreenSaverPreviewAriaLabel_(): string {
+    if (!this.screenSaverPreviewActive_) {
+      return `${this.i18n('screensaverLabel')} ${
+          this.i18n('screenSaverPreviewButton')}`;
+    }
+    return this.i18n('screenSaverPreviewDownloading');
+  }
 }
 
 customElements.define(AmbientPreviewSmall.is, AmbientPreviewSmall);
