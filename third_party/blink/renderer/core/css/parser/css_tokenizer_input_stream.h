@@ -41,6 +41,9 @@ class CSSTokenizerInputStream {
     }
     return (*string_)[offset_ + lookahead_offset];
   }
+  StringView Peek() const {
+    return StringView(*string_, offset_, length() - offset_);
+  }
 
   void Advance(unsigned offset = 1) { offset_ += offset; }
   void PushBack(UChar cc) {
