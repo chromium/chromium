@@ -6337,16 +6337,6 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     return promise;
   }
 
-  if (CookiesEnabled()) {
-    FireRequestStorageAccessHistogram(
-        RequestStorageResult::APPROVED_EXISTING_ACCESS);
-
-    // If there is current access to storage we no longer need to make a request
-    // and can resolve the promise.
-    resolver->Resolve();
-    return promise;
-  }
-
   if (expressly_denied_storage_access_) {
     FireRequestStorageAccessHistogram(
         RequestStorageResult::REJECTED_EXISTING_DENIAL);
@@ -6368,13 +6358,14 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
               [](ScriptPromiseResolver* resolver, Document* document,
                  mojom::blink::PermissionStatus status) {
                 DCHECK(resolver);
-                DCHECK(document);
+                DCHECK(document->GetFrame());
 
                 switch (status) {
                   case mojom::blink::PermissionStatus::GRANTED:
                     document->expressly_denied_storage_access_ = false;
                     FireRequestStorageAccessHistogram(
                         RequestStorageResult::APPROVED_NEW_GRANT);
+                    document->dom_window_->SetHasStorageAccess();
                     resolver->Resolve();
                     break;
                   case mojom::blink::PermissionStatus::DENIED:
