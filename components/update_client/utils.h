@@ -11,13 +11,11 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/values.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
-
-namespace base {
-class Value;
-}
 
 namespace update_client {
 
@@ -81,9 +79,10 @@ CrxInstaller::Result InstallFunctionWrapper(
     base::OnceCallback<bool()> callback);
 
 // Deserializes the CRX manifest. The top level must be a dictionary.
-// Returns a base::Value object of type dictionary on success, or another type
+// Returns a base::Value::Dict object of type dictionary on success, or nullopt
 // on failure.
-base::Value ReadManifest(const base::FilePath& unpack_path);
+absl::optional<base::Value::Dict> ReadManifest(
+    const base::FilePath& unpack_path);
 
 // Converts a custom, specific installer error (and optionally extended error)
 // to an installer result.

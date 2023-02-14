@@ -180,9 +180,9 @@ void ParseData(const base::Value& data_node_val,
   }
   const base::Value::Dict& data_node = data_node_val.GetDict();
 
-  result->data.emplace_back(ProtocolParser::Result::Data(
+  result->data.emplace_back(
       GetValueString(data_node, "status"), GetValueString(data_node, "name"),
-      GetValueString(data_node, "index"), GetValueString(data_node, "#text")));
+      GetValueString(data_node, "index"), GetValueString(data_node, "#text"));
 }
 
 bool ParseUpdateCheck(const base::Value& updatecheck_node_val,
