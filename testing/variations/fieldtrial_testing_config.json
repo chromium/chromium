@@ -8237,27 +8237,6 @@
             ]
         }
     ],
-    "OverlayPrioritizationExtended": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableOverlayPrioritization"
-                    ]
-                }
-            ]
-        }
-    ],
     "OverrideThrottledFrameRateParams": [
         {
             "platforms": [

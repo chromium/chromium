@@ -4589,17 +4589,6 @@
       },
     },
 
-    # TODO(petermcneeley) : Remove once OverlayPrioritization has landed on
-    # all ozone platforms.
-    'overlay_prioritization_gtests': {
-      'overlay_prioritization_viz_unittests': {
-        'args': [
-          '--enable-features=EnableOverlayPrioritization'
-        ],
-        'test': 'viz_unittests',
-      },
-    },
-
     'perfetto_gtests': {
       'base_unittests': {},
       'browser_tests': {
@@ -5836,7 +5825,6 @@
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
-      'overlay_prioritization_gtests',
     ],
 
     # This is meant to be a superset of 'chromium_linux_and_gl_gtests'. Any
@@ -5918,7 +5906,6 @@
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
-      'overlay_prioritization_gtests',
     ],
 
     'chromium_linux_rel_isolated_scripts': [
