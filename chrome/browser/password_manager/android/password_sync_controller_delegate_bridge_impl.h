@@ -24,7 +24,8 @@ class PasswordSyncControllerDelegateBridgeImpl
 
   // PasswordSyncControllerDelegateBridge implementation.
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
-  void NotifyCredentialManagerWhenSyncing() override;
+  void NotifyCredentialManagerWhenSyncing(
+      const std::string& account_email) override;
   void NotifyCredentialManagerWhenNotSyncing() override;
 
   // Called via JNI.

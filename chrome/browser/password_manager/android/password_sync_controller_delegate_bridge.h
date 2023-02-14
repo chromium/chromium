@@ -40,8 +40,10 @@ class PasswordSyncControllerDelegateBridge {
 
   // Triggers an asynchronous request to notify credential manager of
   // the currently syncyng account. `OnCredentialManagerNotified` is called
-  // when the request succeeds.
-  virtual void NotifyCredentialManagerWhenSyncing() = 0;
+  // when the request succeeds. `account_email` is the email of the syncing
+  // account.
+  virtual void NotifyCredentialManagerWhenSyncing(
+      const std::string& account_email) = 0;
 
   // Triggers an asynchronous request to notify credential manager when
   // passwords are not synced. `OnCredentialManagerNotified` is called when the

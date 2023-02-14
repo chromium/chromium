@@ -14,7 +14,10 @@ class MockPasswordSyncControllerDelegateBridge
   MockPasswordSyncControllerDelegateBridge();
   ~MockPasswordSyncControllerDelegateBridge() override;
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
-  MOCK_METHOD(void, NotifyCredentialManagerWhenSyncing, (), (override));
+  MOCK_METHOD(void,
+              NotifyCredentialManagerWhenSyncing,
+              (const std::string&),
+              (override));
   MOCK_METHOD(void, NotifyCredentialManagerWhenNotSyncing, (), (override));
 };
 

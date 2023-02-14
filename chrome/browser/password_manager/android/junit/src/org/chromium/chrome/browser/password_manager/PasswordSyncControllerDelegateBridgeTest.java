@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -29,10 +28,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
  * Tests that bridge calls as invoked by the password sync controller delegate reach the delegate
@@ -64,13 +61,9 @@ public class PasswordSyncControllerDelegateBridgeTest {
 
     private PasswordSyncControllerDelegateBridgeImpl mDelegateBridge;
 
-    @Mock
-    private SyncService mSyncServiceMock;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        SyncService.overrideForTests(mSyncServiceMock);
         mJniMocker.mock(PasswordSyncControllerDelegateBridgeImplJni.TEST_HOOKS, mBridgeJniMock);
         mDelegateBridge =
                 new PasswordSyncControllerDelegateBridgeImpl(sDummyNativePointer, mDelegateMock);
@@ -78,10 +71,7 @@ public class PasswordSyncControllerDelegateBridgeTest {
 
     @Test
     public void testNotifyCredentialManagerWhenSyncingCallsBridgeOnSuccess() {
-        when(mSyncServiceMock.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
-
-        mDelegateBridge.notifyCredentialManagerWhenSyncing();
+        mDelegateBridge.notifyCredentialManagerWhenSyncing(TEST_EMAIL_ADDRESS);
         ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mDelegateMock)
                 .notifyCredentialManagerWhenSyncing(
@@ -94,10 +84,7 @@ public class PasswordSyncControllerDelegateBridgeTest {
 
     @Test
     public void testNotifyCredentialManagerWhenSyncingCallsBridgeOnFailure() {
-        when(mSyncServiceMock.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
-
-        mDelegateBridge.notifyCredentialManagerWhenSyncing();
+        mDelegateBridge.notifyCredentialManagerWhenSyncing(TEST_EMAIL_ADDRESS);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mDelegateMock)
@@ -113,10 +100,7 @@ public class PasswordSyncControllerDelegateBridgeTest {
 
     @Test
     public void testNotifyCredentialManagerWhenSyncingCallsBridgeOnAPIError() {
-        when(mSyncServiceMock.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
-
-        mDelegateBridge.notifyCredentialManagerWhenSyncing();
+        mDelegateBridge.notifyCredentialManagerWhenSyncing(TEST_EMAIL_ADDRESS);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mDelegateMock)

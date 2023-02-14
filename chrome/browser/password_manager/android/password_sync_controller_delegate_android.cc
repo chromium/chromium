@@ -9,7 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/sync/base/user_selectable_type.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -53,9 +53,9 @@ PasswordSyncControllerDelegateAndroid::CreateProxyModelControllerDelegate() {
 
 void PasswordSyncControllerDelegateAndroid::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
-  sync_service_ = sync_service;
   sync_observation_.Observe(sync_service);
-  is_sync_enabled_ = IsSyncEnabled(IsPasswordSyncEnabled(sync_service_));
+  is_sync_enabled_ = IsSyncEnabled(IsPasswordSyncEnabled(sync_service));
+  UpdateCredentialManagerSyncStatus(sync_service);
 }
 
 void PasswordSyncControllerDelegateAndroid::OnSyncStarting(
@@ -130,25 +130,12 @@ void PasswordSyncControllerDelegateAndroid::
 
 void PasswordSyncControllerDelegateAndroid::OnStateChanged(
     syncer::SyncService* sync) {
-  // Notify credential manager about current account on startup or if
-  // password sync setting has changed.
-  if (sync_util::IsPasswordSyncEnabled(sync) &&
-      (!credential_manager_sync_setting_.has_value() ||
-       credential_manager_sync_setting_ == IsSyncEnabled(false))) {
-    bridge_->NotifyCredentialManagerWhenSyncing();
-    credential_manager_sync_setting_ = IsSyncEnabled(true);
-  }
-  if (!sync_util::IsPasswordSyncEnabled(sync) &&
-      (!credential_manager_sync_setting_.has_value() ||
-       credential_manager_sync_setting_ == IsSyncEnabled(true))) {
-    bridge_->NotifyCredentialManagerWhenNotSyncing();
-    credential_manager_sync_setting_ = IsSyncEnabled(false);
-  }
+  UpdateCredentialManagerSyncStatus(sync);
 }
 
 void PasswordSyncControllerDelegateAndroid::OnSyncShutdown(
     syncer::SyncService* sync) {
-  sync_service_ = nullptr;
+  sync_observation_.Reset();
   if (!on_sync_shutdown_)
     return;
   std::move(on_sync_shutdown_).Run();
@@ -170,6 +157,22 @@ void PasswordSyncControllerDelegateAndroid::OnCredentialManagerError(
     base::UmaHistogramSparse(
         BuildCredentialManagerNotificationMetricName("APIErrorCode"),
         api_error_code);
+  }
+}
+
+void PasswordSyncControllerDelegateAndroid::UpdateCredentialManagerSyncStatus(
+    syncer::SyncService* sync_service) {
+  IsSyncEnabled is_enabled = IsSyncEnabled(IsPasswordSyncEnabled(sync_service));
+  if (credential_manager_sync_setting_.has_value() &&
+      credential_manager_sync_setting_ == is_enabled) {
+    return;
+  }
+  credential_manager_sync_setting_ = is_enabled;
+  if (is_enabled) {
+    bridge_->NotifyCredentialManagerWhenSyncing(
+        sync_service->GetAccountInfo().email);
+  } else {
+    bridge_->NotifyCredentialManagerWhenNotSyncing();
   }
 }
 
