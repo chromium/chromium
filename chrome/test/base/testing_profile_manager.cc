@@ -68,6 +68,10 @@ TestingProfileManager::TestingProfileManager(
 TestingProfileManager::~TestingProfileManager() {
   ProfileDestroyer::DestroyPendingProfilesForShutdown();
 
+  // Drop unowned references before destroying the object that owns them.
+  profile_manager_ = nullptr;
+  local_state_ = nullptr;
+
   // Destroying this class also destroys the LocalState, so make sure the
   // associated ProfileManager is also destroyed.
   browser_process_->SetProfileManager(nullptr);

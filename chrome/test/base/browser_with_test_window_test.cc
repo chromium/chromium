@@ -136,8 +136,8 @@ void BrowserWithTestWindowTest::TearDown() {
 
   // Calling DeleteAllTestingProfiles() first can cause issues in some tests, if
   // they're still holding a ScopedProfileKeepAlive.
-  profile_manager_.reset();
   profile_ = nullptr;
+  profile_manager_.reset();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   tablet_state_.reset();
