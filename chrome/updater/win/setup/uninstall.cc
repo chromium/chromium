@@ -63,10 +63,6 @@ void DeleteComService(bool uninstall_all) {
   }
 
   for (const bool is_internal_service : {true, false}) {
-    if (!uninstall_all && !is_internal_service) {
-      continue;
-    }
-
     const std::wstring service_name = GetServiceName(is_internal_service);
     if (!installer::InstallServiceWorkItem::DeleteService(
             service_name.c_str(), UPDATER_KEY, {}, {})) {
