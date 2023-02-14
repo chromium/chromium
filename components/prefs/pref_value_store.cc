@@ -133,8 +133,6 @@ void PrefValueStore::NotifyPrefChanged(
   // store is currently being overridden by a higher-priority store, the
   // effective value of the pref will not have changed.
   pref_notifier_->OnPreferenceChanged(path);
-  if (!pref_changed_callback_.is_null())
-    pref_changed_callback_.Run(path);
 }
 
 bool PrefValueStore::PrefValueInManagedStore(const std::string& name) const {

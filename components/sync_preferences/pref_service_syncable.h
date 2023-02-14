@@ -33,7 +33,8 @@ class SyncedPrefObserver;
 // A PrefService that can be synced. Users are forced to declare
 // whether preferences are syncable or not when registering them to
 // this PrefService.
-class PrefServiceSyncable : public PrefService {
+class PrefServiceSyncable : public PrefService,
+                            public PrefServiceForAssociator {
  public:
   // You may wish to use PrefServiceFactory or one of its subclasses
   // for simplified construction.
@@ -98,16 +99,12 @@ class PrefServiceSyncable : public PrefService {
                                 SyncedPrefObserver* observer);
 
  private:
-  friend class PrefModelAssociator;
-
   void AddRegisteredSyncablePreference(const std::string& path, uint32_t flags);
 
-  // Invoked internally when the syncing state changes for a type of pref.
-  void OnIsSyncingChanged();
-
-  // Process a local preference change. This can trigger new SyncChanges being
-  // sent to the syncer.
-  void ProcessPrefChange(const std::string& name);
+  // PrefServiceForAssociator:
+  base::Value::Type GetRegisteredPrefType(
+      const std::string& pref_name) const override;
+  void OnIsSyncingChanged() override;
 
   // Whether CreateIncognitoPrefService() has been called to create a
   // "forked" PrefService.

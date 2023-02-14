@@ -108,14 +108,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
       PrefStore* default_prefs,
       PrefNotifier* pref_notifier);
 
-  // A PrefValueStore can have exactly one callback that is directly
-  // notified of preferences changing in the store. This does not
-  // filter through the PrefNotifier mechanism, which may not forward
-  // certain changes (e.g. unregistered prefs).
-  void set_callback(PrefChangedCallback callback) {
-    pref_changed_callback_ = std::move(callback);
-  }
-
   // Gets the value for the given preference name that has the specified value
   // type. Values stored in a PrefStore that have the matching |name| but
   // a non-matching |type| are silently skipped. Returns true if a valid value
@@ -271,8 +263,6 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
 
   // Keeps the PrefStore references in order of precedence.
   PrefStoreKeeper pref_stores_[PREF_STORE_TYPE_MAX + 1];
-
-  PrefChangedCallback pref_changed_callback_;
 
   // Used for generating notifications. This is a weak reference,
   // since the notifier is owned by the corresponding PrefService.

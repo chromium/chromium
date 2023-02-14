@@ -27,12 +27,6 @@ class MockPrefNotifier : public PrefNotifier {
   MOCK_METHOD1(OnInitializationCompleted, void(bool));
 };
 
-// Allows to capture sync model associator interaction.
-class MockPrefModelAssociator {
- public:
-  MOCK_METHOD1(ProcessPrefChange, void(const std::string&));
-};
-
 }  // namespace
 
 // Names of the preferences used in this test.
@@ -121,7 +115,6 @@ class PrefValueStoreTest : public testing::Test {
     CreateUserPrefs();
     CreateRecommendedPrefs();
     CreateDefaultPrefs();
-    sync_associator_ = std::make_unique<MockPrefModelAssociator>();
 
     // Create a fresh PrefValueStore.
     pref_value_store_ = std::make_unique<PrefValueStore>(
@@ -130,10 +123,6 @@ class PrefValueStoreTest : public testing::Test {
         command_line_pref_store_.get(), user_pref_store_.get(),
         recommended_pref_store_.get(), default_pref_store_.get(),
         &pref_notifier_);
-
-    pref_value_store_->set_callback(
-        base::BindRepeating(&MockPrefModelAssociator::ProcessPrefChange,
-                            base::Unretained(sync_associator_.get())));
   }
 
   void CreateManagedPrefs() {
@@ -274,16 +263,13 @@ class PrefValueStoreTest : public testing::Test {
 
   void ExpectValueChangeNotifications(const std::string& name) {
     EXPECT_CALL(pref_notifier_, OnPreferenceChanged(name));
-    EXPECT_CALL(*sync_associator_, ProcessPrefChange(name));
   }
 
   void CheckAndClearValueChangeNotifications() {
     Mock::VerifyAndClearExpectations(&pref_notifier_);
-    Mock::VerifyAndClearExpectations(sync_associator_.get());
   }
 
   MockPrefNotifier pref_notifier_;
-  std::unique_ptr<MockPrefModelAssociator> sync_associator_;
   std::unique_ptr<PrefValueStore> pref_value_store_;
 
   scoped_refptr<TestingPrefStore> managed_pref_store_;

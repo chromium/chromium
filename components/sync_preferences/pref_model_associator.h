@@ -11,8 +11,12 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
+#include "components/prefs/writeable_pref_store.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync_preferences/synced_pref_observer.h"
@@ -29,14 +33,22 @@ class PreferenceSpecifics;
 namespace sync_preferences {
 
 class PrefModelAssociatorClient;
-class PrefServiceSyncable;
+
+class PrefServiceForAssociator {
+ public:
+  virtual base::Value::Type GetRegisteredPrefType(
+      const std::string& pref_name) const = 0;
+  virtual void OnIsSyncingChanged() = 0;
+};
 
 // Contains all preference sync related logic.
-class PrefModelAssociator : public syncer::SyncableService {
+class PrefModelAssociator : public syncer::SyncableService,
+                            public PrefStore::Observer {
  public:
-  // Constructs a PrefModelAssociator with the |client_| and |type_|. The
-  // |client| is not owned and must outlive this object.
+  // The |client| is not owned and must outlive this object.
+  // |user_prefs| is the PrefStore to be hooked up to Sync.
   PrefModelAssociator(const PrefModelAssociatorClient* client,
+                      scoped_refptr<WriteablePrefStore> user_prefs,
                       syncer::ModelType type);
 
   PrefModelAssociator(const PrefModelAssociator&) = delete;
@@ -45,7 +57,7 @@ class PrefModelAssociator : public syncer::SyncableService {
   ~PrefModelAssociator() override;
 
   // Must be called before anything else.
-  void SetPrefService(PrefServiceSyncable* pref_service);
+  void SetPrefService(PrefServiceForAssociator* pref_service);
 
   // See description above field for details.
   bool models_associated() const { return models_associated_; }
@@ -67,6 +79,10 @@ class PrefModelAssociator : public syncer::SyncableService {
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
+  // PrefStore::Observer implementation.
+  void OnPrefValueChanged(const std::string& key) override;
+  void OnInitializationCompleted(bool succeeded) override;
+
   // Register a preference with the specified name for syncing. We do not care
   // about the type at registration time, but when changes arrive from the
   // syncer, we check if they can be applied and if not drop them.
@@ -76,10 +92,6 @@ class PrefModelAssociator : public syncer::SyncableService {
 
   // See |legacy_model_type_preferences_|.
   void RegisterPrefWithLegacyModelType(const std::string& name);
-
-  // Process a local preference change. This can trigger new SyncChanges being
-  // sent to the syncer.
-  void ProcessPrefChange(const std::string& name);
 
   // Merges the local_value into the supplied server_value and returns
   // the result. If there is a conflict, the server value takes precedence. Note
@@ -149,8 +161,11 @@ class PrefModelAssociator : public syncer::SyncableService {
 
   const raw_ptr<const PrefModelAssociatorClient> client_;
 
-  // The PrefService we are syncing to.
-  raw_ptr<PrefServiceSyncable> pref_service_ = nullptr;
+  // The PrefStore we are syncing to.
+  scoped_refptr<WriteablePrefStore> user_prefs_;
+
+  // The interface to the PrefService.
+  raw_ptr<PrefServiceForAssociator> pref_service_ = nullptr;
 
   // Do we have an active association between the preferences and sync models?
   // Set when start syncing, reset in StopSyncing. While this is not set, we
@@ -166,10 +181,9 @@ class PrefModelAssociator : public syncer::SyncableService {
   std::set<std::string> registered_preferences_;
 
   // The preferences that are currently synced (excludes those preferences
-  // that have never had sync data and currently have default values or are
-  // policy controlled).
+  // that have never had sync data and currently have default values).
   // Note: this set never decreases, only grows to eventually match
-  // registered_preferences_ as more preferences are synced. It determines
+  // `registered_preferences_` as more preferences are synced. It determines
   // whether a preference change should update an existing sync node or create
   // a new sync node.
   std::set<std::string> synced_preferences_;

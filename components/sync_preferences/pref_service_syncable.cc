@@ -29,10 +29,6 @@
 
 namespace sync_preferences {
 
-// TODO(tschumann): Handing out pointers to this in the constructor is an
-// anti-pattern. Instead, introduce a factory method which first constructs
-// the PrefServiceSyncable instance and then the members which need a reference
-// to the PrefServiceSycnable instance.
 PrefServiceSyncable::PrefServiceSyncable(
     std::unique_ptr<PrefNotifierImpl> pref_notifier,
     std::unique_ptr<PrefValueStore> pref_value_store,
@@ -51,13 +47,18 @@ PrefServiceSyncable::PrefServiceSyncable(
                   std::move(read_error_callback),
                   async),
       pref_service_forked_(false),
-      pref_sync_associator_(pref_model_associator_client, syncer::PREFERENCES),
+      pref_sync_associator_(pref_model_associator_client,
+                            user_prefs,
+                            syncer::PREFERENCES),
       priority_pref_sync_associator_(pref_model_associator_client,
+                                     user_prefs,
                                      syncer::PRIORITY_PREFERENCES),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       os_pref_sync_associator_(pref_model_associator_client,
+                               user_prefs,
                                syncer::OS_PREFERENCES),
       os_priority_pref_sync_associator_(pref_model_associator_client,
+                                        user_prefs,
                                         syncer::OS_PRIORITY_PREFERENCES),
 #endif
       pref_registry_(std::move(pref_registry)) {
@@ -67,10 +68,6 @@ PrefServiceSyncable::PrefServiceSyncable(
   os_pref_sync_associator_.SetPrefService(this);
   os_priority_pref_sync_associator_.SetPrefService(this);
 #endif
-
-  // Let PrefModelAssociators know about changes to preference values.
-  pref_value_store_->set_callback(base::BindRepeating(
-      &PrefServiceSyncable::ProcessPrefChange, base::Unretained(this)));
 
   // Add already-registered syncable preferences to PrefModelAssociator.
   for (const auto& [path, value] : *pref_registry_) {
@@ -229,19 +226,17 @@ void PrefServiceSyncable::AddRegisteredSyncablePreference(
 #endif
 }
 
+base::Value::Type PrefServiceSyncable::GetRegisteredPrefType(
+    const std::string& pref_name) const {
+  const Preference* pref = FindPreference(pref_name);
+  DCHECK(pref);
+  return pref->GetType();
+}
+
 void PrefServiceSyncable::OnIsSyncingChanged() {
   for (auto& observer : observer_list_) {
     observer.OnIsSyncingChanged();
   }
-}
-
-void PrefServiceSyncable::ProcessPrefChange(const std::string& name) {
-  pref_sync_associator_.ProcessPrefChange(name);
-  priority_pref_sync_associator_.ProcessPrefChange(name);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  os_pref_sync_associator_.ProcessPrefChange(name);
-  os_priority_pref_sync_associator_.ProcessPrefChange(name);
-#endif
 }
 
 }  // namespace sync_preferences

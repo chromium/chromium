@@ -564,12 +564,14 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
   // Start sync and verify the synced value didn't get merged.
   EXPECT_FALSE(FindValue(kListPrefName, out).get());
 
-  // Changing the user's urls to restore on startup pref should not sync
-  // anything.
+  // Changing the user-controlled value should sync as usual.
   base::Value::List user_value;
   user_value.Append("http://chromium.org");
-  prefs_.SetList(kListPrefName, std::move(user_value));
-  EXPECT_FALSE(FindValue(kListPrefName, out).get());
+  prefs_.SetList(kListPrefName, user_value.Clone());
+  std::unique_ptr<base::Value> actual = FindValue(kListPrefName, out);
+  ASSERT_TRUE(actual);
+  // The user-controlled value should be synced, not the managed one!
+  EXPECT_EQ(*actual, user_value);
 
   // An incoming sync transaction should change the user value, not the managed
   // value.
@@ -753,10 +755,14 @@ TEST_F(PrefServiceSyncableTest, ManagedPreferences) {
   InitWithSyncDataTakeOutput(syncer::SyncDataList(), &out);
   out.clear();
 
-  // Changing the homepage preference should not sync anything.
-  base::Value user_value("http://chromium..com");
+  // Changing the user-controlled value of the preference should still sync as
+  // usual.
+  base::Value user_value("http://chromium.org");
   prefs_.SetUserPref(kStringPrefName, user_value.Clone());
-  EXPECT_TRUE(out.empty());
+  std::unique_ptr<base::Value> actual = FindValue(kStringPrefName, out);
+  ASSERT_TRUE(actual);
+  // The user-controlled value should be synced, not the managed one!
+  EXPECT_EQ(*actual, user_value);
 
   // An incoming sync transaction should change the user value, not the managed
   // value.
