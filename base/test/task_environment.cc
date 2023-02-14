@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/debug/stack_trace.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -212,8 +213,9 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
       AutoLock lock(now_ticks_lock_);
       now_ticks_ += delta;
     }
-    if (thread_pool_)
+    if (thread_pool_) {
       thread_pool_->ProcessRipeDelayedTasksForTesting();
+    }
   }
 
   void SetThreadPool(internal::ThreadPoolImpl* thread_pool,
@@ -232,8 +234,9 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
   bool MaybeFastForwardToWakeUp(
       absl::optional<sequence_manager::WakeUp> next_wake_up,
       bool quit_when_idle_requested) override {
-    if (quit_when_idle_requested)
+    if (quit_when_idle_requested) {
       return false;
+    }
 
     return FastForwardToNextTaskOrCap(next_wake_up, TimeTicks::Max()) ==
            NextTaskSource::kMainThreadHasWork;
@@ -309,8 +312,9 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
         now_ticks_ = std::max(now_ticks_, *next_task_time);
       }
 
-      if (next_task_time == next_thread_pool_task_time)
+      if (next_task_time == next_thread_pool_task_time) {
         thread_pool_->ProcessRipeDelayedTasksForTesting();
+      }
 
       if (next_main_thread_wake_up &&
           next_task_time == next_main_thread_wake_up->time) {
@@ -418,8 +422,9 @@ TaskEnvironment::TaskEnvironment(
             sequence_manager::QueueName::TASK_ENVIRONMENT_DEFAULT_TQ));
     task_runner_ = task_queue_->task_runner();
     sequence_manager_->SetDefaultTaskRunner(task_runner_);
-    if (mock_time_domain_)
+    if (mock_time_domain_) {
       sequence_manager_->SetTimeDomain(mock_time_domain_.get());
+    }
     simple_task_executor_ = std::make_unique<SimpleTaskExecutor>(task_runner_);
     CHECK(base::SingleThreadTaskRunner::HasCurrentDefault())
         << "SingleThreadTaskRunner::CurrentDefaultHandle should've been set "
@@ -427,8 +432,9 @@ TaskEnvironment::TaskEnvironment(
     CompleteInitialization();
   }
 
-  if (threading_mode_ != ThreadingMode::MAIN_THREAD_ONLY)
+  if (threading_mode_ != ThreadingMode::MAIN_THREAD_ONLY) {
     InitializeThreadPool();
+  }
 
   if (thread_pool_execution_mode_ == ThreadPoolExecutionMode::QUEUED &&
       task_tracker_) {
@@ -505,12 +511,14 @@ void TaskEnvironment::DestroyTaskEnvironment() {
 
   // If we've been moved or already destroyed (i.e. subclass invoked
   // DestroyTaskEnvironment() before ~TaskEnvironment()) then bail out.
-  if (!owns_instance_)
+  if (!owns_instance_) {
     return;
+  }
   owns_instance_.reset();
 
-  for (auto& observer : GetDestructionObservers())
+  for (auto& observer : GetDestructionObservers()) {
     observer.WillDestroyCurrentTaskEnvironment();
+  }
 
   DestroyThreadPool();
   task_queue_ = nullptr;
@@ -523,8 +531,9 @@ void TaskEnvironment::DestroyTaskEnvironment() {
 void TaskEnvironment::DestroyThreadPool() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
-  if (threading_mode_ == ThreadingMode::MAIN_THREAD_ONLY)
+  if (threading_mode_ == ThreadingMode::MAIN_THREAD_ONLY) {
     return;
+  }
   DCHECK(ThreadPoolInstance::Get());
 
   // Ideally this would RunLoop().RunUntilIdle() here to catch any errors or
@@ -586,6 +595,38 @@ bool TaskEnvironment::MainThreadIsIdle() const {
   return sequence_manager_impl->IsIdleForTesting();
 }
 
+RepeatingClosure TaskEnvironment::QuitClosure() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+
+  if (!run_until_quit_loop_) {
+    run_until_quit_loop_ =
+        std::make_unique<RunLoop>(RunLoop::Type::kNestableTasksAllowed);
+  }
+
+  return run_until_quit_loop_->QuitClosure();
+}
+
+void TaskEnvironment::RunUntilQuit() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  DCHECK(run_until_quit_loop_)
+      << "QuitClosure() not called before RunUntilQuit()";
+
+  const bool could_run_tasks = task_tracker_->AllowRunTasks();
+
+  run_until_quit_loop_->Run();
+  // Make the next call to RunUntilQuit() use a new RunLoop. This also
+  // invalidates all existing quit closures.
+  run_until_quit_loop_.reset();
+
+  if (!could_run_tasks) {
+    EXPECT_TRUE(
+        task_tracker_->DisallowRunTasks(TestTimeouts::action_max_timeout()))
+        << "Could not bring ThreadPool back to ThreadPoolExecutionMode::QUEUED "
+           "after Quit() because some tasks were long running:\n"
+        << task_tracker_->DescribeRunningTasks();
+  }
+}
+
 void TaskEnvironment::RunUntilIdle() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
@@ -639,8 +680,9 @@ void TaskEnvironment::RunUntilIdle() {
     // were ThreadPool tasks currently running. In that case, try again from
     // top when DisallowRunTasks() yields control back to this thread as they
     // may have posted main thread tasks.
-    if (!task_tracker_->DisallowRunTasks())
+    if (!task_tracker_->DisallowRunTasks()) {
       continue;
+    }
 
     // Once ThreadPool is halted. Run any remaining main thread tasks (which
     // may have been posted by ThreadPool tasks that completed between the
@@ -666,15 +708,17 @@ void TaskEnvironment::RunUntilIdle() {
     // verified which could result in HasIncompleteUndelayedTasksForTesting()
     // returning false and the loop erroneously exiting with a pending task on
     // the main thread.
-    if (!task_tracker_->HasIncompleteTaskSourcesForTesting())
+    if (!task_tracker_->HasIncompleteTaskSourcesForTesting()) {
       break;
+    }
   }
 
   // The above loop always ends with running tasks being disallowed. Re-enable
   // parallel execution before returning if it was allowed at the beginning of
   // this call.
-  if (could_run_tasks)
+  if (could_run_tasks) {
     task_tracker_->AllowRunTasks();
+  }
 }
 
 void TaskEnvironment::FastForwardBy(TimeDelta delta) {
@@ -694,8 +738,9 @@ void TaskEnvironment::FastForwardBy(TimeDelta delta) {
                sequence_manager_->GetNextDelayedWakeUp(), fast_forward_until) !=
            MockTimeDomain::NextTaskSource::kNone);
 
-  if (task_tracker_ && !could_run_tasks)
+  if (task_tracker_ && !could_run_tasks) {
     task_tracker_->DisallowRunTasks();
+  }
 }
 
 void TaskEnvironment::FastForwardUntilNoTasksRemain() {
@@ -741,8 +786,9 @@ TimeDelta TaskEnvironment::NextMainThreadPendingTaskDelay() const {
   sequence_manager_->ReclaimMemory();
   DCHECK(mock_time_domain_);
   LazyNow lazy_now(mock_time_domain_->NowTicks());
-  if (!sequence_manager_->IsIdleForTesting())
+  if (!sequence_manager_->IsIdleForTesting()) {
     return TimeDelta();
+  }
   absl::optional<sequence_manager::WakeUp> wake_up =
       sequence_manager_->GetNextDelayedWakeUp();
   return wake_up ? wake_up->time - lazy_now.Now() : TimeDelta::Max();
@@ -763,8 +809,9 @@ void TaskEnvironment::DescribeCurrentTasks() const {
 
 void TaskEnvironment::DetachFromThread() {
   DETACH_FROM_THREAD(main_thread_checker_);
-  if (task_tracker_)
+  if (task_tracker_) {
     task_tracker_->controller_thread_checker_.DetachFromThread();
+  }
 }
 
 // static
@@ -819,8 +866,9 @@ TaskEnvironment::ParallelExecutionFence::ParallelExecutionFence(
 }
 
 TaskEnvironment::ParallelExecutionFence::~ParallelExecutionFence() {
-  if (previously_allowed_to_run_)
+  if (previously_allowed_to_run_) {
     g_task_tracker->AllowRunTasks();
+  }
 }
 
 TaskEnvironment::TestTaskTracker::TestTaskTracker()
@@ -879,8 +927,9 @@ void TaskEnvironment::TestTaskTracker::RunTask(internal::Task task,
   {
     AutoLock auto_lock(lock_);
 
-    while (!can_run_tasks_)
+    while (!can_run_tasks_) {
       can_run_tasks_cv_.Wait();
+    }
 
     task_number = next_task_number_++;
     auto pair = running_tasks_.emplace(task_number, posted_from);
@@ -923,8 +972,9 @@ std::string TaskEnvironment::TestTaskTracker::DescribeRunningTasks() const {
   if (running_tasks_copy.empty()) {
     running_tasks_str += " none.";
   } else {
-    for (auto& pair : running_tasks_copy)
+    for (auto& pair : running_tasks_copy) {
       running_tasks_str += "\n  Task posted from: " + pair.second.ToString();
+    }
   }
   return running_tasks_str;
 }
@@ -932,8 +982,9 @@ std::string TaskEnvironment::TestTaskTracker::DescribeRunningTasks() const {
 void TaskEnvironment::TestTaskTracker::BeginCompleteShutdown(
     base::WaitableEvent& shutdown_event) {
   const TimeDelta kTimeout = TestTimeouts::action_max_timeout();
-  if (shutdown_event.TimedWait(kTimeout))
+  if (shutdown_event.TimedWait(kTimeout)) {
     return;  // All tasks completed in time, yay! Yield back to shutdown.
+  }
 
   // If we had to wait too long for the shutdown tasks to complete, then we
   // should fail the test and report which tasks are currently running.

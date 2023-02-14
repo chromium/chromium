@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_types.h"
+#include "base/run_loop.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/single_thread_task_runner.h"
@@ -50,7 +52,7 @@ namespace test {
 //
 // Tasks posted to the (SingleThread|Sequenced)TaskRunner::CurrentDefaultHandle
 // run synchronously when RunLoop::Run(UntilIdle) or
-// TaskEnvironment::RunUntilIdle is called on the main thread.
+// TaskEnvironment::RunUntil(Idle|Quit) is called on the main thread.
 //
 // The TaskEnvironment requires TestTimeouts::Initialize() to be called in order
 // to run posted tasks, so that it can watch for problematic long-running tasks.
@@ -59,7 +61,7 @@ namespace test {
 // manual control of RunLoop::Run() and TaskEnvironment::FastForward*() methods.
 //
 // If a TaskEnvironment's ThreadPoolExecutionMode is QUEUED, ThreadPool tasks
-// run when RunUntilIdle() or ~TaskEnvironment is called. If
+// run when RunUntilIdle(), RunUntilQuit(), or ~TaskEnvironment is called. If
 // ThreadPoolExecutionMode is ASYNC, they run as they are posted.
 //
 // All TaskEnvironment methods must be called from the main thread.
@@ -230,6 +232,18 @@ class TaskEnvironment {
   // Returns whether the main thread's TaskRunner has pending tasks. This will
   // always return true if called right after RunUntilIdle.
   bool MainThreadIsIdle() const;
+
+  // Returns a RepeatingClosure that ends the next call to RunUntilQuit(). The
+  // quit closures must be obtained from the thread owning the TaskEnvironment
+  // but may then be invoked from any thread. To avoid a potential race
+  // condition, do not call QuitClosure() while RunUntilQuit() is running.
+  RepeatingClosure QuitClosure();
+
+  // Runs tasks on both the main thread and the thread pool, until a quit
+  // closure is executed. When RunUntilQuit() returns, all previous quit
+  // closures are invalidated, and will have no effect on future calls. Be sure
+  // to create a new quit closure before calling RunUntilQuit() again.
+  void RunUntilQuit();
 
   // Runs tasks until both the
   // (SingleThread|Sequenced)TaskRunner::CurrentDefaultHandle and the
@@ -460,6 +474,8 @@ class TaskEnvironment {
 
   // To support base::CurrentThread().
   std::unique_ptr<SimpleTaskExecutor> simple_task_executor_;
+
+  std::unique_ptr<RunLoop> run_until_quit_loop_;
 
   // Used to verify thread-affinity of operations that must occur on the main
   // thread. This is the case for anything that modifies or drives the

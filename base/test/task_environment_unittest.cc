@@ -12,9 +12,11 @@
 #include "base/check.h"
 #include "base/debug/debugger.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
@@ -31,11 +33,13 @@
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/sequence_bound.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/win/com_init_util.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1427,25 +1431,30 @@ TEST_F(TaskEnvironmentTest, MAYBE_ParallelExecutionFence) {
   RepeatingClosure task = BindLambdaForTesting([&]() {
     int this_run = next_run.fetch_add(1, std::memory_order_relaxed);
 
-    if (this_run == 50)
+    if (this_run == 50) {
       resume_main_thread.Signal();
+    }
 
     // Sleep after signaling to increase the likelihood the main thread installs
     // the fence during this run and must wait on this task.
-    if (this_run >= 50 && this_run < 50 + kNumParallelTasks)
+    if (this_run >= 50 && this_run < 50 + kNumParallelTasks) {
       PlatformThread::Sleep(Milliseconds(5));
+    }
 
     // Repost self until the last kNumParallelTasks.
-    if (this_run <= 500 - kNumParallelTasks)
+    if (this_run <= 500 - kNumParallelTasks) {
       ThreadPool::PostTask(task);
+    }
 
     completed_runs.fetch_add(1, std::memory_order_relaxed);
 
-    if (this_run == 500)
+    if (this_run == 500) {
       all_runs_done.Signal();
+    }
   });
-  for (int i = 0; i < kNumParallelTasks; ++i)
+  for (int i = 0; i < kNumParallelTasks; ++i) {
     ThreadPool::PostTask(task);
+  }
 
   resume_main_thread.Wait();
   ASSERT_GE(next_run.load(std::memory_order_relaxed), 50);
@@ -1541,8 +1550,9 @@ TEST_F(TaskEnvironmentTest, DisallowRunTasksRetriesForFullTimeout) {
   // signaled a bunch and reproduces the bug's conditions
   // (TestTaskTracker::DisallowRunTasks gets early chances to quit).
   RepeatingClosure infinite_repost = BindLambdaForTesting([&]() {
-    if (!resume_worker_task.IsSignaled())
+    if (!resume_worker_task.IsSignaled()) {
       ThreadPool::PostTask(infinite_repost);
+    }
   });
   ThreadPool::PostTask(infinite_repost);
 
@@ -1567,6 +1577,160 @@ TEST_F(TaskEnvironmentTest, DisallowRunTasksRetriesForFullTimeout) {
   task_environment.RunUntilIdle();
 
   logging::SetLogMessageHandler(previous_handler);
+}
+
+TEST_F(TaskEnvironmentTest, RunUntilQuit_RunsMainThread) {
+  TaskEnvironment task_environment;
+  bool task_run = false;
+  auto quit = task_environment.QuitClosure();
+
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&]() {
+        task_run = true;
+        quit.Run();
+      }));
+  task_environment.RunUntilQuit();
+
+  ASSERT_TRUE(task_run);
+}
+
+TEST_F(TaskEnvironmentTest, RunUntilQuit_RunsThreadPool) {
+  TaskEnvironment task_environment;
+  bool task_run = false;
+  auto quit = task_environment.QuitClosure();
+
+  ThreadPool::PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+                         task_run = true;
+                         quit.Run();
+                       }));
+  task_environment.RunUntilQuit();
+
+  ASSERT_TRUE(task_run);
+}
+
+namespace {
+
+class TestLogger {
+ public:
+  std::vector<std::string> GetLog() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return log_;
+  }
+
+  void LogMessage(std::string s) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    log_.push_back(std::move(s));
+  }
+
+  // If n=0 then executes `done` and returns. Otherwise adds `n` to the log and
+  // reschedules itself with (n - 1).
+  void CountDown(int n, OnceClosure done) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (n == 0) {
+      std::move(done).Run();
+      return;
+    }
+
+    log_.push_back(NumberToString(n));
+
+    SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, BindOnce(&TestLogger::CountDown, Unretained(this), n - 1,
+                            std::move(done)));
+  }
+
+ private:
+  std::vector<std::string> log_ GUARDED_BY_CONTEXT(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+}  // namespace
+
+TEST_F(TaskEnvironmentTest, RunUntilQuit_QueuedExecution) {
+  TaskEnvironment task_environment(
+      TaskEnvironment::ThreadPoolExecutionMode::QUEUED);
+
+  SequenceBound<TestLogger> logger(ThreadPool::CreateSequencedTaskRunner({}));
+  logger.AsyncCall(&TestLogger::CountDown)
+      .WithArgs(5, task_environment.QuitClosure());
+  // Because `task_environment` was created with
+  // ThreadPoolExecutionMode::QUEUED, we are guaranteed that LogMessage() will
+  // be called after the first run on CountDown() and before the rest.
+  logger.AsyncCall(&TestLogger::LogMessage).WithArgs("Test");
+  task_environment.RunUntilQuit();
+
+  // Get the log and confirm that LogMessage() ran when expected.
+  std::vector<std::string> actual_log;
+  auto quit = task_environment.QuitClosure();
+  logger.AsyncCall(&TestLogger::GetLog)
+      .Then(BindLambdaForTesting([&](std::vector<std::string> log) {
+        actual_log = log;
+        quit.Run();
+      }));
+  task_environment.RunUntilQuit();
+
+  ASSERT_THAT(actual_log,
+              testing::ElementsAre("5", "Test", "4", "3", "2", "1"));
+}
+
+TEST_F(TaskEnvironmentTest, RunUntilQuit_ThreadPoolStaysQueued) {
+  TaskEnvironment task_environment(
+      TaskEnvironment::ThreadPoolExecutionMode::QUEUED);
+
+  ThreadPool::PostTask(FROM_HERE, task_environment.QuitClosure());
+  task_environment.RunUntilQuit();
+
+  // RunUntilQuit() let the thread pool execute until the quit closure was run.
+  // Verify that execution is now queued again.
+
+  bool task_run = false;
+  ThreadPool::PostTask(FROM_HERE,
+                       BindLambdaForTesting([&]() { task_run = true; }));
+  // Wait a little bit to let the task run if execution is not queued.
+  PlatformThread::Sleep(Milliseconds(10));
+
+  ASSERT_FALSE(task_run);
+
+  // Run the queued task now (if we don't, it'll run when `task_environment` is
+  // destroyed, and `task_run` is out of scope).
+  task_environment.RunUntilIdle();
+}
+
+TEST_F(TaskEnvironmentTest, RunUntilQuit_QuitClosureInvalidatedByRun) {
+  TaskEnvironment task_environment(
+      TaskEnvironment::ThreadPoolExecutionMode::QUEUED);
+
+  auto quit1 = task_environment.QuitClosure();
+  auto quit2 = task_environment.QuitClosure();
+  quit1.Run();
+  task_environment.RunUntilQuit();  // Invalidates `quit1` and `quit2`.
+  auto quit3 = task_environment.QuitClosure();
+
+  std::vector<std::string> log;
+  // Running `quit1` or `quit2` will have no effect.
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE, quit1);
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE, quit2);
+  // This line will be logged.
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&]() { log.push_back("after quit2"); }));
+  // `quit3` will terminate execution.
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE, quit3);
+  // This line will *not* be logged.
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&]() { log.push_back("after quit3"); }));
+  task_environment.RunUntilQuit();
+
+  ASSERT_THAT(log, testing::ElementsAre("after quit2"));
+
+  // Run the queued task now (if we don't, it might run when `task_environment`
+  // is destroyed, and `log` is out of scope).
+  task_environment.RunUntilIdle();
+}
+
+TEST_F(TaskEnvironmentTest, RunUntilQuit_MustCallQuitClosureFirst) {
+  TaskEnvironment task_environment;
+  EXPECT_DCHECK_DEATH_WITH(
+      task_environment.RunUntilQuit(),
+      R"(QuitClosure\(\) not called before RunUntilQuit\(\))");
 }
 
 }  // namespace test
