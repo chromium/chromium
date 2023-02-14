@@ -263,10 +263,11 @@ void MailboxVideoFrameConverter::ConvertFrame(scoped_refptr<VideoFrame> frame) {
 
   input_frame_queue_.emplace(frame, origin_frame_id);
 
-  // |frame| keeps a refptr of |origin_frame|. |origin_frame| is guaranteed
-  // alive by carrying |frame|. |origin_frame| owns the SharedImage, so as long
-  // as |frame| lives, |shared_image| is valid. Hence, it's safe to use
-  // base::Unretained here.
+  // Either |frame| keeps a refptr of |origin_frame| or |origin_frame| points to
+  // the same thing as |frame|. Therefore, |origin_frame| is guaranteed to be
+  // valid by carrying |frame|. Additionally, |origin_frame| owns the
+  // SharedImage, so as long as |frame| lives, |shared_image| is valid. Hence,
+  // it's safe to use base::Unretained here.
   gpu_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MailboxVideoFrameConverter::ConvertFrameOnGPUThread,
@@ -363,7 +364,7 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
   const gfx::ColorSpace src_color_space = frame->ColorSpace();
   const gfx::Rect visible_rect = frame->visible_rect();
 
-  // |origin_frame| is kept alive by |frame|.
+  // |origin_frame| is valid as long as |frame| is carried.
   auto wrap_mailbox_and_video_frame_and_output_cb = base::BindOnce(
       &MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput,
       parent_weak_this_, base::Unretained(origin_frame), std::move(frame));
@@ -402,7 +403,7 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
   DCHECK(new_shared_image->HasData());
 
   const gpu::Mailbox mailbox = new_shared_image->mailbox();
-  // |origin_frame| is kept alive by |frame| in
+  // |origin_frame| is valid as long as |frame| lives. |frame| is kept alive in
   // |wrap_mailbox_and_video_frame_and_output_cb|.
   parent_task_runner_->PostTask(
       FROM_HERE,

@@ -36,9 +36,9 @@ namespace media {
 
 class VideoFrame;
 
-// This class is used for converting DMA-buf backed VideoFrames to mailbox-based
-// VideoFrames. See ConvertFrame() for more details.
-// After conversion, the mailbox VideoFrame will retain a reference of the
+// This class is used for converting GpuMemoryBuffer-backed VideoFrames to
+// gpu::Mailbox-backed VideoFrames. See ConvertFrame() for more details. After
+// conversion, the gpu::Mailbox-backed VideoFrame will retain a reference of the
 // VideoFrame passed to ConvertFrame().
 class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
  public:
@@ -91,11 +91,12 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   MailboxVideoFrameConverter& operator=(const MailboxVideoFrameConverter&) =
       delete;
 
-  // Enqueues |frame| to be converted to a gpu::Mailbox backed VideoFrame.
-  // |frame| must wrap a DMA-buf backed VideoFrame that is retrieved via
-  // |unwrap_frame_cb_|. The generated gpu::Mailbox-based VideoFrame is kept
-  // alive until the original (i.e. the unwrapped) DMA-Buf based VideoFrame one
-  // goes out of scope.
+  // Enqueues |frame| to be converted to a gpu::Mailbox-backed VideoFrame. If
+  // the |unwrap_frame_cb| supplied in Create() is non-null, |frame| must wrap a
+  // GpuMemoryBuffer-backed VideoFrame that is retrieved via that callback.
+  // Otherwise, |frame| will be used directly and must be a
+  // GpuMemoryBuffer-backed VideoFrame. The generated gpu::Mailbox is kept alive
+  // until the GpuMemoryBuffer-backed VideoFrame is destroyed.
   void ConvertFrame(scoped_refptr<VideoFrame> frame) override;
   void AbortPendingFrames() override;
   bool HasPendingFrames() const override;
@@ -136,7 +137,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
                                scoped_refptr<VideoFrame> frame,
                                ScopedSharedImage* stored_shared_image);
 
-  // Populates a ScopedSharedImage from a DMA-buf backed |video_frame|.
+  // Populates a ScopedSharedImage from a GpuMemoryBuffer-backed |video_frame|.
   // |video_frame| must be kept alive for the duration of this method. This
   // method runs on |gpu_task_runner_|. Returns true if the SharedImage could be
   // created successfully; false otherwise (and OnError() is called).
@@ -145,11 +146,11 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
                                       const gfx::Rect& destination_visible_rect,
                                       ScopedSharedImage* shared_image);
 
-  // Registers the mapping between a DMA-buf VideoFrame and the SharedImage.
-  // |origin_frame| must be kept alive for the duration of this method. After
-  // this method returns, |scoped_shared_image| will be owned by |origin_frame|.
-  // This guarantees that the SharedImage lives as long as the associated
-  // DMA-buf even if MailboxVideoFrameConverter dies.
+  // Registers the mapping between a GpuMemoryBuffer-backed VideoFrame and the
+  // SharedImage. |origin_frame| must be kept alive for the duration of this
+  // method. After this method returns, |scoped_shared_image| will be owned by
+  // |origin_frame|. This guarantees that the SharedImage lives as long as the
+  // associated GpuMemoryBuffer even if MailboxVideoFrameConverter dies.
   void RegisterSharedImage(
       VideoFrame* origin_frame,
       std::unique_ptr<ScopedSharedImage> scoped_shared_image);
@@ -180,6 +181,11 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   // frame is returned each time, and we need a way to uniquely identify the
   // underlying frame to avoid converting the same frame multiple times.
   // |unwrap_frame_cb_| is used to get the origin frame.
+  //
+  // When |unwrap_frame_cb_| is null, we assume it's not necessary to unwrap
+  // incoming VideoFrames, and we just use them directly. This is the case for
+  // out-of-process video decoding in which the frames don't come from a
+  // DmabufVideoFramePool inside the GPU process.
   UnwrapFrameCB unwrap_frame_cb_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
@@ -187,9 +193,9 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
 
   // Mapping from the unique id of the frame to its corresponding SharedImage.
   // Accessed only on |parent_task_runner_|. The ScopedSharedImages are owned by
-  // the unwrapped DMA-buf VideoFrames so that they can be used even after
-  // MailboxVideoFrameConverter dies (e.g., there may still be compositing
-  // commands that need the shared images).
+  // the unwrapped GpuMemoryBuffer-backed VideoFrames so that they can be used
+  // even after MailboxVideoFrameConverter dies (e.g., there may still be
+  // compositing commands that need the shared images).
   base::small_map<std::map<UniqueID, ScopedSharedImage*>> shared_images_;
 
   // The queue of input frames and the unique_id of their origin frame.
