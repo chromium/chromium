@@ -1,0 +1,259 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
+
+#include <memory>
+#include <string>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
+#include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "components/reporting/proto/synced/upload_tracker.pb.h"
+#include "components/reporting/util/status.h"
+
+namespace reporting {
+
+// FileUploadJob implementation.
+
+FileUploadJob::FileUploadJob(const UploadSettings& settings,
+                             const UploadTracker& tracker,
+                             Delegate* delegate)  // not owned!
+    : delegate_(delegate), settings_(settings), tracker_(tracker) {
+  DCHECK(delegate_);
+}
+
+FileUploadJob::~FileUploadJob() = default;
+
+void FileUploadJob::Initiate(base::OnceClosure done_cb) {
+  base::ScopedClosureRunner done(std::move(done_cb));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
+  if (tracker_.has_status()) {
+    // Error detected earlier.
+    return;
+  }
+  if (in_action_) {
+    // The job is already executing some action, do nothing.
+    return;
+  }
+  if (!tracker_.session_token().empty()) {
+    Status{error::FAILED_PRECONDITION, "Job has already been initiated"}.SaveTo(
+        tracker_.mutable_status());
+    return;
+  }
+  if (settings_.retry_count() <= 0) {
+    Status{error::OUT_OF_RANGE, "Too many upload attempts"}.SaveTo(
+        tracker_.mutable_status());
+    return;
+  }
+  settings_.set_retry_count(settings_.retry_count() - 1);
+  in_action_ = true;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(
+          [](Delegate* delegate, base::StringPiece origin_path,
+             base::StringPiece upload_parameters,
+             base::OnceCallback<void(Status status, int64_t total,
+                                     std::string session_token)> result_cb) {
+            int64_t total = 0;
+            std::string session_token;
+            auto status = delegate->DoInitiate(origin_path, upload_parameters,
+                                               &total, &session_token);
+            std::move(result_cb).Run(status, total, std::move(session_token));
+          },
+          base::Unretained(delegate_), settings_.origin_path(),
+          settings_.upload_parameters(),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &FileUploadJob::DoneInitiate, weak_ptr_factory_.GetWeakPtr(),
+              std::move(done)))));
+}
+
+void FileUploadJob::DoneInitiate(base::ScopedClosureRunner done,
+                                 Status status,
+                                 int64_t total,
+                                 std::string session_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
+  in_action_ = false;
+  if (!status.ok()) {
+    status.SaveTo(tracker_.mutable_status());
+    return;
+  }
+  if (total <= 0L) {
+    Status{error::FAILED_PRECONDITION, "Empty upload"}.SaveTo(
+        tracker_.mutable_status());
+    return;
+  }
+  if (session_token.empty()) {
+    Status{error::FAILED_PRECONDITION, "Session token not created"}.SaveTo(
+        tracker_.mutable_status());
+    return;
+  }
+  tracker_.set_total(total);
+  tracker_.set_uploaded(0L);
+  tracker_.set_session_token(std::move(session_token));
+}
+
+void FileUploadJob::NextStep(base::OnceClosure done_cb) {
+  base::ScopedClosureRunner done(std::move(done_cb));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
+  if (tracker_.has_status()) {
+    // Error detected earlier.
+    return;
+  }
+  if (in_action_) {
+    // The job is already executing some action, do nothing.
+    return;
+  }
+  if (tracker_.session_token().empty()) {
+    Status{error::FAILED_PRECONDITION, "Job has not been initiated yet"}.SaveTo(
+        tracker_.mutable_status());
+    return;
+  }
+  if (tracker_.uploaded() < 0L || tracker_.uploaded() > tracker_.total()) {
+    Status{error::OUT_OF_RANGE,
+           base::StrCat({"Uploaded ", base::NumberToString(tracker_.uploaded()),
+                         " out of range"})}
+        .SaveTo(tracker_.mutable_status());
+    return;
+  }
+  if (tracker_.uploaded() == tracker_.total()) {
+    // All done, Status is OK.
+    return;
+  }
+  in_action_ = true;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(
+          [](Delegate* delegate, int64_t total, int64_t uploaded,
+             base::StringPiece session_token,
+             base::OnceCallback<void(Status status, int64_t uploaded,
+                                     std::string session_token)> result_cb) {
+            int64_t uploaded_to_update = uploaded;
+            std::string session_token_to_optionally_update(session_token);
+            const auto status =
+                delegate->DoNextStep(total, &uploaded_to_update,
+                                     &session_token_to_optionally_update);
+            std::move(result_cb).Run(
+                status, uploaded_to_update,
+                std::move(session_token_to_optionally_update));
+          },
+          base::Unretained(delegate_), tracker_.total(), tracker_.uploaded(),
+          tracker_.session_token(),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &FileUploadJob::DoneNextStep, weak_ptr_factory_.GetWeakPtr(),
+              std::move(done)))));
+}
+
+void FileUploadJob::DoneNextStep(base::ScopedClosureRunner done,
+                                 Status status,
+                                 int64_t uploaded,
+                                 std::string session_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
+  in_action_ = false;
+  if (!status.ok()) {
+    status.SaveTo(tracker_.mutable_status());
+    return;
+  }
+  if (session_token.empty()) {
+    Status{error::DATA_LOSS, "Job has lost session_token"}.SaveTo(
+        tracker_.mutable_status());
+    return;
+  }
+  if (uploaded < tracker_.uploaded()) {
+    Status{error::DATA_LOSS,
+           base::StrCat({"Job has backtracked from ",
+                         base::NumberToString(tracker_.uploaded()), " to ",
+                         base::NumberToString(uploaded)})}
+        .SaveTo(tracker_.mutable_status());
+    return;
+  }
+  tracker_.set_uploaded(uploaded);
+  tracker_.set_session_token(std::move(session_token));
+}
+
+void FileUploadJob::Finalize(base::OnceClosure done_cb) {
+  base::ScopedClosureRunner done(std::move(done_cb));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
+  if (tracker_.has_status()) {
+    // Error detected earlier.
+    return;
+  }
+  if (in_action_) {
+    // The job is already executing some action, do nothing.
+    return;
+  }
+  if (tracker_.session_token().empty()) {
+    Status{error::FAILED_PRECONDITION, "Job has not been initiated yet"}.SaveTo(
+        tracker_.mutable_status());
+    return;
+  }
+  if (tracker_.uploaded() < tracker_.total()) {
+    Status{error::DATA_LOSS,
+           base::StrCat({"Upload incomplete ",
+                         base::NumberToString(tracker_.uploaded()), " out of ",
+                         base::NumberToString(tracker_.total())})}
+        .SaveTo(tracker_.mutable_status());
+    return;
+  }
+  in_action_ = true;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(
+          [](Delegate* delegate, base::StringPiece session_token,
+             base::OnceCallback<void(Status, std::string)> result_cb) {
+            std::string access_parameters;
+            const auto status =
+                delegate->DoFinalize(session_token, &access_parameters);
+            std::move(result_cb).Run(status, std::move(access_parameters));
+          },
+          base::Unretained(delegate_), tracker_.session_token(),
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &FileUploadJob::DoneFinalize, weak_ptr_factory_.GetWeakPtr(),
+              std::move(done)))));
+}
+
+void FileUploadJob::DoneFinalize(base::ScopedClosureRunner done,
+                                 Status status,
+                                 std::string access_parameters) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
+  in_action_ = false;
+  if (!status.ok()) {
+    status.SaveTo(tracker_.mutable_status());
+    return;
+  }
+  if (access_parameters.empty()) {
+    Status{error::FAILED_PRECONDITION, "Access parameters not set"}.SaveTo(
+        tracker_.mutable_status());
+    return;
+  }
+  tracker_.clear_session_token();
+  tracker_.set_access_parameters(std::move(access_parameters));
+}
+
+const UploadSettings& FileUploadJob::settings() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
+  return settings_;
+}
+
+const UploadTracker& FileUploadJob::tracker() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
+  return tracker_;
+}
+
+base::WeakPtr<FileUploadJob> FileUploadJob::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+}  // namespace reporting
