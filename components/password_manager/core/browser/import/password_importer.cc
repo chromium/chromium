@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -16,6 +17,7 @@
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/ui/import_results.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
 #include "components/sync/base/bind_to_task_runner.h"
@@ -43,13 +45,15 @@ base::expected<std::string, ImportResults::Status> ReadFileToString(
 
   if (GetFileSize(path, &file_size)) {
     base::UmaHistogramCounts1M("PasswordManager.ImportFileSize", file_size);
-    if (file_size > kMaxFileSizeBytes)
+    if (file_size > kMaxFileSizeBytes) {
       return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
+    }
   }
 
   std::string contents;
-  if (!base::ReadFileToString(path, &contents))
+  if (!base::ReadFileToString(path, &contents)) {
     return base::unexpected(ImportResults::Status::IO_ERROR);
+  }
 
   return std::move(contents);
 }
@@ -96,6 +100,30 @@ ImportEntry CreateFailedImportEntry(
   return CreateFailedImportEntry(credential, ToImportEntryStatus(add_result));
 }
 
+bool IsDuplicate(const SavedPasswordsPresenter::AddResult& status) {
+  return status == SavedPasswordsPresenter::AddResult::kExactMatch;
+}
+
+bool IsConflict(const SavedPasswordsPresenter::AddResult& status) {
+  return status == SavedPasswordsPresenter::AddResult::
+                       kConflictInProfileAndAccountStore ||
+         status ==
+             SavedPasswordsPresenter::AddResult::kConflictInProfileStore ||
+         status == SavedPasswordsPresenter::AddResult::kConflictInAccountStore;
+}
+
+bool IsPasswordMissing(const ImportEntry& entry) {
+  return entry.status == ImportEntry::MISSING_PASSWORD;
+}
+
+bool IsUsernameMissing(const ImportEntry& entry) {
+  return entry.username.empty();
+}
+
+bool IsURLMissing(const ImportEntry& entry) {
+  return entry.url.empty();
+}
+
 base::expected<password_manager::CredentialUIEntry, ImportEntry>
 CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
                                password_manager::PasswordForm::Store store) {
@@ -114,31 +142,38 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
 
   base::expected<GURL, std::string> url = csv_password.GetURL();
 
-  if (csv_password.GetParseStatus() != CSVPassword::Status::kOK)
+  if (csv_password.GetParseStatus() != CSVPassword::Status::kOK) {
     return MakeError(ImportEntry::Status::UNKNOWN_ERROR);
+  }
 
-  if (csv_password.GetPassword().empty())
+  if (csv_password.GetPassword().empty()) {
     return MakeError(ImportEntry::Status::MISSING_PASSWORD);
+  }
 
-  if (!url.has_value() && url.error().empty())
+  if (!url.has_value() && url.error().empty()) {
     return MakeError(ImportEntry::Status::MISSING_URL);
+  }
 
-  if (url.has_value() && url.value().spec().length() > 2048)
+  if (url.has_value() && url.value().spec().length() > 2048) {
     return MakeError(ImportEntry::Status::LONG_URL);
+  }
 
-  if (!url.has_value() && !base::IsStringASCII(url.error()))
+  if (!url.has_value() && !base::IsStringASCII(url.error())) {
     return MakeError(ImportEntry::Status::NON_ASCII_URL);
+  }
 
   if (!url.has_value() ||
       !password_manager_util::IsValidPasswordURL(url.value())) {
     return MakeError(ImportEntry::Status::INVALID_URL);
   }
 
-  if (csv_password.GetPassword().length() > 1000)
+  if (csv_password.GetPassword().length() > 1000) {
     return MakeError(ImportEntry::Status::LONG_PASSWORD);
+  }
 
-  if (csv_password.GetUsername().length() > 1000)
+  if (csv_password.GetUsername().length() > 1000) {
     return MakeError(ImportEntry::Status::LONG_USERNAME);
+  }
 
   if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup) &&
       csv_password.GetNote().length() > 1000) {
@@ -158,7 +193,18 @@ void AddCredentialsCallback(
     password_manager::PasswordImporter::ImportResultsCallback
         import_results_callback,
     const std::vector<SavedPasswordsPresenter::AddResult>& add_results) {
+  size_t duplicates_count = 0;  // Number of duplicates per imported file.
+  size_t conflicts_count = 0;   // Number of conflict per imported file.
+  // Number of rows with missing password, but username and URL are non-empty.
+  size_t missing_only_password_rows = 0;
+  // Number of rows with missing password and username, but URL is non-empty.
+  size_t missing_password_and_username_rows = 0;
+  // Number of rows with all login fields (URL, username, password) empty.
+  size_t empty_all_login_fields = 0;
+
   for (size_t i = 0; i < add_results.size(); i++) {
+    duplicates_count += IsDuplicate(add_results[i]);
+    conflicts_count += IsConflict(add_results[i]);
     if (IsSuccessOrExactMatch(add_results[i])) {
       import_results.number_imported++;
     } else {
@@ -170,12 +216,46 @@ void AddCredentialsCallback(
   UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
                           import_results.number_imported);
   for (const ImportEntry& entry : import_results.failed_imports) {
+    missing_only_password_rows += IsPasswordMissing(entry) &&
+                                  !IsUsernameMissing(entry) &&
+                                  !IsURLMissing(entry);
+    missing_password_and_username_rows += IsPasswordMissing(entry) &&
+                                          IsUsernameMissing(entry) &&
+                                          !IsURLMissing(entry);
+    empty_all_login_fields += IsPasswordMissing(entry) &&
+                              IsUsernameMissing(entry) && IsURLMissing(entry);
+
     base::UmaHistogramEnumeration("PasswordManager.ImportEntryStatus",
                                   entry.status);
   }
 
   base::UmaHistogramLongTimes("PasswordManager.ImportDuration",
                               base::Time::Now() - start_time);
+
+  const size_t all_errors_count = import_results.failed_imports.size();
+
+  base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.AnyErrors",
+                             all_errors_count);
+  base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.Duplicates",
+                             duplicates_count);
+  base::UmaHistogramCounts1M("PasswordManager.Import.PerFile.Conflicts",
+                             conflicts_count);
+  base::UmaHistogramCounts1M(
+      "PasswordManager.Import.PerFile.OnlyPasswordMissing",
+      missing_only_password_rows);
+  base::UmaHistogramCounts1M(
+      "PasswordManager.Import.PerFile.PasswordAndUsernameMissing",
+      missing_password_and_username_rows);
+  base::UmaHistogramCounts1M(
+      "PasswordManager.Import.PerFile.AllLoginFieldsEmtpy",
+      empty_all_login_fields);
+
+  if (all_errors_count > 0) {
+    base::UmaHistogramBoolean("PasswordManager.Import.OnlyConflicts",
+                              all_errors_count == conflicts_count);
+    base::UmaHistogramBoolean("PasswordManager.Import.OnlyMissingPasswords",
+                              all_errors_count == missing_only_password_rows);
+  }
 
   import_results.status = password_manager::ImportResults::Status::SUCCESS;
 
