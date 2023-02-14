@@ -6960,3 +6960,5 @@ crbug.com/1415565 external/wpt/css/css-contain/content-visibility/content-visibi
 crbug.com/1348835 virtual/threaded-no-composited-antialiasing/animations/sample-on-last-keyframe.html [ Failure Pass Timeout ]
 crbug.com/1414978 [ Win ] external/wpt/webrtc/RTCPeerConnection-GC.https.html [ Failure Pass ]
 crbug.com/1416271 [ Linux ] external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-nav.html [ Failure Pass ]
+crbug.com/1416271 [ Linux ] external/wpt/js-self-profiling/iframe-context-filtration.https.html [ Failure Pass ]
+crbug.com/1416271 [ Linux ] external/wpt/js-self-profiling/time-domain.window.html [ Failure Pass ]
