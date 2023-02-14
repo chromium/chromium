@@ -74,6 +74,19 @@ bool ScreenAIComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   VLOG(1) << "Verifying Screen AI component in " << install_dir.value();
+
+  const base::Value* version_value = manifest.Find("version");
+  if (!version_value || !version_value->is_string()) {
+    VLOG(0) << "Cannot verify Screen AI library version.";
+    return false;
+  }
+  if (!screen_ai::ScreenAIInstallState::VerifyLibraryVersion(
+          version_value->GetString())) {
+    return false;
+  }
+
+  // Check the file iterator heuristic to find the library in the sandbox
+  // returns the same directory as `install_dir`.
   return screen_ai::GetLatestComponentBinaryPath().DirName() == install_dir;
 }
 

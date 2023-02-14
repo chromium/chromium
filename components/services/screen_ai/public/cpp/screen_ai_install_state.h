@@ -37,6 +37,11 @@ class ScreenAIInstallState {
 
   static ScreenAIInstallState* GetInstance();
 
+  // Verifies that the library version is compatible with current Chromium
+  // version. Will be used to avoid accepting the library if a newer version is
+  // expected.
+  static bool VerifyLibraryVersion(const std::string& version);
+
   // Returns true if the component is required. If the component is needed,
   // removes the timer to delete the component from |local_state|.
   static bool ShouldInstall(PrefService* local_state);

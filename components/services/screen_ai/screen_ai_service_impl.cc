@@ -102,12 +102,10 @@ void CallSetLoggerFunction(LibraryFunctions* library_functions) {
 #endif
 
 NO_SANITIZE("cfi-icall")
-bool CallInitLayoutExtractionFunction(LibraryFunctions* library_functions,
-                                      const base::FilePath& models_folder) {
+bool CallInitLayoutExtractionFunction(LibraryFunctions* library_functions) {
   DCHECK(library_functions);
   DCHECK(library_functions->init_layout_extraction_);
-  return library_functions->init_layout_extraction_(
-      models_folder.MaybeAsASCII().c_str());
+  return library_functions->init_layout_extraction_();
 }
 
 NO_SANITIZE("cfi-icall")
@@ -171,8 +169,7 @@ std::unique_ptr<LibraryFunctions> LoadAndInitializeLibrary(
   }
 
   if (init_ok && features::IsLayoutExtractionEnabled()) {
-    if (!CallInitLayoutExtractionFunction(library_functions.get(),
-                                          library_path.DirName())) {
+    if (!CallInitLayoutExtractionFunction(library_functions.get())) {
       init_ok = false;
       base::UmaHistogramEnumeration(
           "Accessibility.ScreenAI.LoadLibraryResult",
@@ -229,6 +226,13 @@ LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
   enable_debug_mode_ = reinterpret_cast<EnableDebugModeFn>(
       library_.GetFunctionPointer("EnableDebugMode"));
   DCHECK(enable_debug_mode_);
+  read_buffered_int32_array_ = reinterpret_cast<ReadBufferedInt32ArrayFn>(
+      library_.GetFunctionPointer("ReadBufferedInt32Array"));
+  DCHECK(read_buffered_int32_array_);
+  read_buffered_char_array_ = reinterpret_cast<ReadBufferedCharArrayFn>(
+      library_.GetFunctionPointer("ReadBufferedCharArray"));
+  DCHECK(read_buffered_char_array_);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   set_logger_ =
       reinterpret_cast<SetLoggerFn>(library_.GetFunctionPointer("SetLogger"));
@@ -367,27 +371,20 @@ void ScreenAIService::VisualAnnotationInternal(
   DCHECK_NE(run_ocr, run_layout_extraction);
   DCHECK(screen_ai_annotator_client_.is_bound());
 
-  char* annotation_proto = nullptr;
-  uint32_t annotation_proto_length = 0;
+  std::string proto_as_string;
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
   bool result = false;
   if (run_ocr) {
-    result = CallLibraryOcrFunction(image, annotation_proto,
-                                    annotation_proto_length);
+    result = CallLibraryOcrFunction(image, proto_as_string);
   } else /* if (run_layout_extraction) */ {
-    result = CallLibraryLayoutExtractionFunction(image, annotation_proto,
-                                                 annotation_proto_length);
+    result = CallLibraryLayoutExtractionFunction(image, proto_as_string);
   }
-  if (!result || !annotation_proto_length) {
+  if (!result || proto_as_string.empty()) {
     DCHECK_EQ(annotation->tree_data.tree_id, ui::AXTreeIDUnknown());
     VLOG(1) << "Screen AI library could not process snapshot or no OCR data.";
     return;
   }
-
-  std::string proto_as_string;
-  proto_as_string.assign(annotation_proto, annotation_proto_length);
-  delete annotation_proto;
 
   gfx::Rect image_rect(image.width(), image.height());
   *annotation = VisualAnnotationToAXTreeUpdate(proto_as_string, image_rect);
@@ -404,25 +401,30 @@ void ScreenAIService::VisualAnnotationInternal(
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAIService::CallLibraryOcrFunction(
-    const SkBitmap& image,
-    char*& annotation_proto,
-    uint32_t& annotation_proto_length) {
-  DCHECK(library_functions_);
-  DCHECK(library_functions_->perform_ocr_);
-  return library_functions_->perform_ocr_(image, annotation_proto,
-                                          annotation_proto_length);
+bool ScreenAIService::CallLibraryOcrFunction(const SkBitmap& image,
+                                             std::string& annotation_proto) {
+  uint32_t annotation_proto_length;
+  if (!library_functions_->perform_ocr_(image, annotation_proto_length)) {
+    return false;
+  }
+
+  annotation_proto.resize(annotation_proto_length);
+  return library_functions_->read_buffered_char_array_(annotation_proto.data(),
+                                                       annotation_proto_length);
 }
 
 NO_SANITIZE("cfi-icall")
 bool ScreenAIService::CallLibraryLayoutExtractionFunction(
     const SkBitmap& image,
-    char*& annotation_proto,
-    uint32_t& annotation_proto_length) {
-  DCHECK(library_functions_);
-  DCHECK(library_functions_->extract_layout_);
-  return library_functions_->extract_layout_(image, annotation_proto,
-                                             annotation_proto_length);
+    std::string& annotation_proto) {
+  uint32_t annotation_proto_length;
+  if (!library_functions_->extract_layout_(image, annotation_proto_length)) {
+    return false;
+  }
+
+  annotation_proto.resize(annotation_proto_length);
+  return library_functions_->read_buffered_char_array_(annotation_proto.data(),
+                                                       annotation_proto_length);
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
@@ -461,12 +463,9 @@ void ScreenAIService::ExtractMainContentInternal(
 
   std::string serialized_snapshot = SnapshotToViewHierarchy(snapshot);
 
-  int32_t* node_ids = nullptr;
-  uint32_t nodes_count = 0;
   base::TimeTicks start_time = base::TimeTicks::Now();
-  bool success = CallLibraryExtractMainContentFunction(
-      serialized_snapshot.c_str(), serialized_snapshot.length(), node_ids,
-      nodes_count);
+  bool success = CallLibraryExtractMainContentFunction(serialized_snapshot,
+                                                       *content_node_ids);
   base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
   if (!success) {
     VLOG(1) << "Screen2x did not return main content.";
@@ -474,11 +473,6 @@ void ScreenAIService::ExtractMainContentInternal(
                   /* success= */ false);
     return;
   }
-
-  content_node_ids->resize(nodes_count);
-  memcpy(content_node_ids->data(), node_ids, nodes_count * sizeof(int32_t));
-  delete[] node_ids;
-  node_ids = nullptr;
 
   VLOG(2) << "Screen2x returned " << content_node_ids->size() << " node ids.";
   RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time,
@@ -513,14 +507,21 @@ void ScreenAIService::RecordMetrics(ukm::SourceId ukm_source_id,
 
 NO_SANITIZE("cfi-icall")
 bool ScreenAIService::CallLibraryExtractMainContentFunction(
-    const char* serialized_snapshot,
-    const uint32_t serialized_snapshot_length,
-    int32_t*& node_ids,
-    uint32_t& nodes_count) {
-  DCHECK(library_functions_);
-  DCHECK(library_functions_->extract_main_content_);
-  return library_functions_->extract_main_content_(
-      serialized_snapshot, serialized_snapshot_length, node_ids, nodes_count);
+    const std::string& serialized_view_hierarchy,
+    std::vector<int32_t>& node_ids) {
+  uint32_t nodes_count;
+  if (!library_functions_->extract_main_content_(
+          serialized_view_hierarchy.data(), serialized_view_hierarchy.length(),
+          nodes_count)) {
+    return false;
+  }
+  node_ids.resize(nodes_count);
+  if (nodes_count == 0) {
+    return true;
+  }
+
+  return library_functions_->read_buffered_int32_array_(node_ids.data(),
+                                                        nodes_count);
 }
 
 }  // namespace screen_ai

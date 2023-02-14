@@ -19,6 +19,7 @@
 
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
+const char kMinExpectedVersion[] = "112.1";
 }
 
 namespace screen_ai {
@@ -27,6 +28,16 @@ namespace screen_ai {
 ScreenAIInstallState* ScreenAIInstallState::GetInstance() {
   static base::NoDestructor<ScreenAIInstallState> instance;
   return instance.get();
+}
+
+// static
+bool ScreenAIInstallState::VerifyLibraryVersion(const std::string& version) {
+  if (version >= kMinExpectedVersion) {
+    return true;
+  }
+  VLOG(0) << "Screen AI library version is expected to be at least "
+          << kMinExpectedVersion << ", but it is: " << version;
+  return false;
 }
 
 ScreenAIInstallState::ScreenAIInstallState() = default;
