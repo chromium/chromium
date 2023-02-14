@@ -9,24 +9,64 @@
 #include <Security/Authorization.h>
 
 #include "base/mac/authorization_util.h"
+#include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
+#include "base/mac/mac_logging.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+NSString* UserAuthenticationRightName() {
+  // The authentication right name is of the form
+  // `org.chromium.Chromium.access-passwords` or
+  // `com.google.Chrome.access-passwords`.
+  return [[base::mac::MainBundle() bundleIdentifier]
+      stringByAppendingString:@".access-passwords"];
+}
+
+bool EnsureAuthorizationRightExists() {
+  NSString* rightName = UserAuthenticationRightName();
+  // If the authorization right already exists there is nothing to do.
+  if (AuthorizationRightGet(rightName.UTF8String, nullptr) ==
+      errAuthorizationSuccess) {
+    return true;
+  }
+
+  // The authorization right does not exist so create it.
+  base::mac::ScopedAuthorizationRef authorization =
+      base::mac::CreateAuthorization();
+  if (authorization.get() == nullptr) {
+    return false;
+  }
+
+  // Create a right which requires that the user authenticate as the session
+  // owner. The prompt must be specified each time the right is requested.
+  OSStatus status =
+      AuthorizationRightSet(authorization, rightName.UTF8String,
+                            CFSTR(kAuthorizationRuleAuthenticateAsSessionUser),
+                            nullptr, nullptr, nullptr);
+  if (status != errAuthorizationSuccess) {
+    OSSTATUS_LOG(ERROR, status) << "AuthorizationRightSet";
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
+
 namespace password_manager_util_mac {
 
 bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
-  // Use the system-defined "system.login.screensaver" access right rather than
-  // creating our own. The screensaver does exactly the same check we need --
-  // verifying whether the legitimate session user is present. If we needed to
-  // create a separate access right, we would have to define it with the
-  // AuthorizationDB, using the flag
-  // kAuthorizationRuleAuthenticateAsSessionUser, to ensure that the session
-  // user password, as opposed to an admin's password, is required.
-  AuthorizationItem right_items[] = {
-      {"system.login.screensaver", 0, nullptr, 0}};
+  if (!EnsureAuthorizationRightExists()) {
+    return false;
+  }
+
+  NSString* rightName = UserAuthenticationRightName();
+  AuthorizationItem right_items[] = {{rightName.UTF8String, 0, nullptr, 0}};
   AuthorizationRights rights = {std::size(right_items), right_items};
 
   NSString* prompt;

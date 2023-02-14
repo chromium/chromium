@@ -33,48 +33,51 @@
 
 namespace base::mac {
 
+// Creates an authorization with empty environment and default flags. Returns
+// null on failure.
+BASE_EXPORT ScopedAuthorizationRef CreateAuthorization();
+
 // Obtains an AuthorizationRef for the rights indicated by |rights|.  If
 // necessary, prompts the user for authentication. If the user is prompted,
 // |prompt| will be used as the prompt string and an icon appropriate for the
 // application will be displayed in a prompt dialog. Note that the system
 // appends its own text to the prompt string. |extra_flags| will be ORed
 // together with the default flags. Returns null on failure.
-BASE_EXPORT
-ScopedAuthorizationRef GetAuthorizationRightsWithPrompt(
-    AuthorizationRights* rights,
-    CFStringRef prompt,
-    AuthorizationFlags extra_flags);
+BASE_EXPORT ScopedAuthorizationRef
+GetAuthorizationRightsWithPrompt(AuthorizationRights* rights,
+                                 CFStringRef prompt,
+                                 AuthorizationFlags extra_flags);
 
 // Obtains an AuthorizationRef (using |GetAuthorizationRightsWithPrompt|) that
 // can be used to run commands as root.
-BASE_EXPORT
-ScopedAuthorizationRef AuthorizationCreateToRunAsRoot(CFStringRef prompt);
+BASE_EXPORT ScopedAuthorizationRef
+AuthorizationCreateToRunAsRoot(CFStringRef prompt);
 
 // Calls straight through to AuthorizationExecuteWithPrivileges.  If that
 // call succeeds, |pid| will be set to the pid of the executed tool.  If the
 // pid can't be determined, |pid| will be set to -1.  |pid| must not be NULL.
 // |pipe| may be NULL, but the tool will always be executed with a pipe in
 // order to read the pid from its stdout.
-BASE_EXPORT
-OSStatus ExecuteWithPrivilegesAndGetPID(AuthorizationRef authorization,
-                                        const char* tool_path,
-                                        AuthorizationFlags options,
-                                        const char** arguments,
-                                        FILE** pipe,
-                                        pid_t* pid);
+BASE_EXPORT OSStatus
+ExecuteWithPrivilegesAndGetPID(AuthorizationRef authorization,
+                               const char* tool_path,
+                               AuthorizationFlags options,
+                               const char** arguments,
+                               FILE** pipe,
+                               pid_t* pid);
 
 // Calls ExecuteWithPrivilegesAndGetPID, and if that call succeeds, calls
 // waitpid() to wait for the process to exit.  If waitpid() succeeds, the
 // exit status is placed in |exit_status|, otherwise, -1 is stored.
 // |exit_status| may be NULL and this function will still wait for the process
 // to exit.
-BASE_EXPORT
-OSStatus ExecuteWithPrivilegesAndWait(AuthorizationRef authorization,
-                                      const char* tool_path,
-                                      AuthorizationFlags options,
-                                      const char** arguments,
-                                      FILE** pipe,
-                                      int* exit_status);
+BASE_EXPORT OSStatus
+ExecuteWithPrivilegesAndWait(AuthorizationRef authorization,
+                             const char* tool_path,
+                             AuthorizationFlags options,
+                             const char** arguments,
+                             FILE** pipe,
+                             int* exit_status);
 
 }  // namespace base::mac
 

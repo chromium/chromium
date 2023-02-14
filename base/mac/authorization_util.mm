@@ -22,11 +22,7 @@
 
 namespace base::mac {
 
-ScopedAuthorizationRef GetAuthorizationRightsWithPrompt(
-    AuthorizationRights* rights,
-    CFStringRef prompt,
-    AuthorizationFlags extra_flags) {
-  // Create an empty AuthorizationRef.
+ScopedAuthorizationRef CreateAuthorization() {
   ScopedAuthorizationRef authorization;
   OSStatus status = AuthorizationCreate(
       /*rights=*/nullptr, kAuthorizationEmptyEnvironment,
@@ -34,6 +30,18 @@ ScopedAuthorizationRef GetAuthorizationRightsWithPrompt(
   if (status != errAuthorizationSuccess) {
     OSSTATUS_LOG(ERROR, status) << "AuthorizationCreate";
     return ScopedAuthorizationRef();
+  }
+
+  return authorization;
+}
+
+ScopedAuthorizationRef GetAuthorizationRightsWithPrompt(
+    AuthorizationRights* rights,
+    CFStringRef prompt,
+    AuthorizationFlags extra_flags) {
+  ScopedAuthorizationRef authorization = CreateAuthorization();
+  if (authorization.get() == nullptr) {
+    return authorization;
   }
 
   // Never consider the current WatchHangsInScope as hung. There was most likely
@@ -71,8 +79,8 @@ ScopedAuthorizationRef GetAuthorizationRightsWithPrompt(
   AuthorizationEnvironment environment = {std::size(environment_items),
                                           environment_items};
 
-  status = AuthorizationCopyRights(authorization, rights, &environment, flags,
-                                   nullptr);
+  OSStatus status = AuthorizationCopyRights(authorization, rights, &environment,
+                                            flags, nullptr);
 
   if (status != errAuthorizationSuccess) {
     if (status != errAuthorizationCanceled) {
