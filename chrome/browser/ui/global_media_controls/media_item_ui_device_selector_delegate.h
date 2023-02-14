@@ -32,8 +32,7 @@ class MediaItemUIDeviceSelectorDelegate {
 
   // Used by `MediaItemUIDeviceSelectorView` to send commands to MediaController
   // to request starting a Remote Playback session.
-  // Return true when the request is sent to MediaController successfully.
-  virtual bool OnMediaRemotingRequested(const std::string& item_id) = 0;
+  virtual void OnMediaRemotingRequested(const std::string& item_id) = 0;
 
  protected:
   virtual ~MediaItemUIDeviceSelectorDelegate() = default;

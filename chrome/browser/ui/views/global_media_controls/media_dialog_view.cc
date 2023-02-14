@@ -37,6 +37,7 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/url_util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -244,22 +245,24 @@ global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
   active_sessions_view_->ShowItem(id, std::move(view));
   UpdateBubbleSize();
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnMediaSessionShown();
-
+  }
   return view_ptr;
 }
 
 void MediaDialogView::HideMediaItem(const std::string& id) {
   active_sessions_view_->HideItem(id);
 
-  if (active_sessions_view_->empty())
+  if (active_sessions_view_->empty()) {
     HideDialog();
-  else
+  } else {
     UpdateBubbleSize();
+  }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnMediaSessionHidden();
+  }
 }
 
 void MediaDialogView::RefreshMediaItem(
@@ -302,9 +305,9 @@ void MediaDialogView::AddedToWidget() {
 
 gfx::Size MediaDialogView::CalculatePreferredSize() const {
   // If we have active sessions, then fit to them.
-  if (!active_sessions_view_->empty())
+  if (!active_sessions_view_->empty()) {
     return views::BubbleDialogDelegateView::CalculatePreferredSize();
-
+  }
   // Otherwise, use a standard size for bubble dialogs.
   const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
@@ -313,9 +316,9 @@ gfx::Size MediaDialogView::CalculatePreferredSize() const {
 
 void MediaDialogView::UpdateBubbleSize() {
   SizeToContents();
-  if (!captions::IsLiveCaptionFeatureSupported())
+  if (!captions::IsLiveCaptionFeatureSupported()) {
     return;
-
+  }
   const int width = active_sessions_view_->GetPreferredSize().width();
   const int height = live_caption_container_->GetPreferredSize().height();
   live_caption_container_->SetPreferredSize(gfx::Size(width, height));
@@ -326,13 +329,15 @@ void MediaDialogView::OnMediaItemUISizeChanged() {
 }
 
 void MediaDialogView::OnMediaItemUIMetadataChanged() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnMediaSessionMetadataUpdated();
+  }
 }
 
 void MediaDialogView::OnMediaItemUIActionsChanged() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnMediaSessionActionsChanged();
+  }
 }
 
 void MediaDialogView::OnMediaItemUIDestroyed(const std::string& id) {
@@ -385,8 +390,9 @@ MediaDialogView::MediaDialogView(
 }
 
 MediaDialogView::~MediaDialogView() {
-  for (auto item_pair : observed_items_)
+  for (auto item_pair : observed_items_) {
     item_pair.second->RemoveObserver(this);
+  }
 }
 
 void MediaDialogView::Init() {
@@ -469,8 +475,10 @@ void MediaDialogView::ToggleLiveCaption(bool enabled) {
 }
 
 void MediaDialogView::OnSodaInstalled(speech::LanguageCode language_code) {
-  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_->GetPrefs()))
+  if (!prefs::IsLanguageCodeForLiveCaption(language_code,
+                                           profile_->GetPrefs())) {
     return;
+  }
   speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   SetLiveCaptionTitle(GetLiveCaptionTitle(profile_->GetPrefs()));
 }
@@ -588,16 +596,20 @@ MediaDialogView::BuildDeviceSelector(
       media_router::GlobalMediaControlsCastStartStopEnabled(profile_);
   const bool show_expand_button =
       !base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI);
-  std::unique_ptr<media_router::CastDialogController> cast_controller;
+  mojo::PendingRemote<global_media_controls::mojom::DeviceListHost> provider;
+  mojo::PendingRemote<global_media_controls::mojom::DeviceListClient> observer;
+  auto observer_receiver = observer.InitWithNewPipeAndPassReceiver();
   if (gmc_cast_start_stop_enabled) {
-    cast_controller =
-        is_local_media_session
-            ? service_->CreateCastDialogControllerForSession(id)
-            : service_->CreateCastDialogControllerForPresentationRequest();
+    if (is_local_media_session) {
+      service_->GetDeviceListHostForSession(
+          id, provider.InitWithNewPipeAndPassReceiver(), std::move(observer));
+    } else {
+      service_->GetDeviceListHostForPresentation(
+          provider.InitWithNewPipeAndPassReceiver(), std::move(observer));
+    }
   }
-
   return std::make_unique<MediaItemUIDeviceSelectorView>(
-      id, service_, std::move(cast_controller),
+      id, service_, std::move(provider), std::move(observer_receiver),
       /* has_audio_output */ is_local_media_session, entry_point_,
       show_expand_button);
 }

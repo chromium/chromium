@@ -52,9 +52,12 @@ class MediaRouterUiForTestBase {
 
   // These methods require that the dialog is shown, and the sink specified by
   // |sink_name| is in the dialog.
-  MediaRoute::Id GetRouteIdForSink(const std::string& sink_name) const;
-  std::string GetStatusTextForSink(const std::string& sink_name) const;
-  std::string GetIssueTextForSink(const std::string& sink_name) const;
+  virtual MediaRoute::Id GetRouteIdForSink(
+      const std::string& sink_name) const = 0;
+  virtual std::string GetStatusTextForSink(
+      const std::string& sink_name) const = 0;
+  virtual std::string GetIssueTextForSink(
+      const std::string& sink_name) const = 0;
 
   // Called by MediaRouterDialogControllerViews.
   virtual void OnDialogCreated();
@@ -76,15 +79,14 @@ class MediaRouterUiForTestBase {
   virtual ~MediaRouterUiForTestBase();
   void WaitForAnyDialogShown();
 
-  void StartCasting(CastDialogSinkButton* sink_button);
-  void StopCasting(CastDialogSinkButton* sink_button);
+  void StartCasting(views::View* sink_button);
+  void StopCasting(views::View* sink_button);
 
   static CastDialogSinkButton* GetSinkButtonWithName(
       const std::vector<CastDialogSinkButton*>& sink_buttons,
       const std::string& sink_name);
 
-  virtual CastDialogSinkButton* GetSinkButton(
-      const std::string& sink_name) const = 0;
+  virtual views::View* GetSinkButton(const std::string& sink_name) const = 0;
 
   // Registers itself as an observer to the dialog, and waits until an event
   // of |watch_type| is observed. |sink_name| should be set only if observing

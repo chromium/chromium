@@ -88,6 +88,34 @@ CastDialogView::SourceType MediaRouterCastUiForTest::GetChosenSourceType()
   return dialog_view->selected_source_;
 }
 
+MediaRoute::Id MediaRouterCastUiForTest::GetRouteIdForSink(
+    const std::string& sink_name) const {
+  CastDialogSinkButton* sink_button =
+      static_cast<CastDialogSinkButton*>(GetSinkButton(sink_name));
+  if (!sink_button->sink().route) {
+    return "";
+  }
+  return sink_button->sink().route->media_route_id();
+}
+
+std::string MediaRouterCastUiForTest::GetStatusTextForSink(
+    const std::string& sink_name) const {
+  CastDialogSinkButton* sink_button =
+      static_cast<CastDialogSinkButton*>(GetSinkButton(sink_name));
+  return base::UTF16ToUTF8(sink_button->sink().status_text);
+}
+
+std::string MediaRouterCastUiForTest::GetIssueTextForSink(
+    const std::string& sink_name) const {
+  CastDialogSinkButton* sink_button =
+      static_cast<CastDialogSinkButton*>(GetSinkButton(sink_name));
+  if (!sink_button->sink().issue) {
+    NOTREACHED() << "Issue not found for sink " << sink_name;
+    return "";
+  }
+  return sink_button->sink().issue->info().title;
+}
+
 void MediaRouterCastUiForTest::WaitForSink(const std::string& sink_name) {
   ObserveDialog(WatchType::kSink, sink_name);
 }

@@ -17,8 +17,11 @@
 #include "chrome/browser/ui/global_media_controls/presentation_request_notification_producer.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/media_session_item_producer_observer.h"
+#include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/presentation_observer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -39,7 +42,8 @@ class CastDialogController;
 class MediaNotificationService
     : public KeyedService,
       public MediaItemUIDeviceSelectorDelegate,
-      public global_media_controls::MediaSessionItemProducerObserver {
+      public global_media_controls::MediaSessionItemProducerObserver,
+      public global_media_controls::mojom::DeviceService {
  public:
   MediaNotificationService(Profile* profile, bool show_from_all_profiles);
   MediaNotificationService(const MediaNotificationService&) = delete;
@@ -63,7 +67,7 @@ class MediaNotificationService
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       const std::string& id,
       base::RepeatingCallback<void(bool)> callback) override;
-  bool OnMediaRemotingRequested(const std::string& item_id) override;
+  void OnMediaRemotingRequested(const std::string& item_id) override;
 
   // global_media_controls::MediaSessionItemProducerObserver:
   void OnMediaSessionActionButtonPressed(
@@ -85,6 +89,31 @@ class MediaNotificationService
   void OnStartPresentationContextCreated(
       std::unique_ptr<media_router::StartPresentationContext> context);
 
+  // global_media_controls::mojom::DeviceService:
+  void GetDeviceListHostForSession(
+      const std::string& session_id,
+      mojo::PendingReceiver<global_media_controls::mojom::DeviceListHost>
+          host_receiver,
+      mojo::PendingRemote<global_media_controls::mojom::DeviceListClient>
+          client_remote) override;
+  void GetDeviceListHostForPresentation(
+      mojo::PendingReceiver<global_media_controls::mojom::DeviceListHost>
+          host_receiver,
+      mojo::PendingRemote<global_media_controls::mojom::DeviceListClient>
+          client_remote) override;
+
+  void set_device_provider_for_testing(
+      std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
+
+ private:
+  friend class MediaNotificationProviderImplTest;
+  friend class MediaNotificationServiceTest;
+  friend class MediaNotificationServiceCastTest;
+  friend class MediaToolbarButtonControllerTest;
+  friend class PresentationRequestNotificationProducerTest;
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
+                           CreateCastDialogControllerWithRemotePlayback);
+
   // Instantiates a MediaRouterViewsUI object associated with the Session with
   // the given |session_id|.
   std::unique_ptr<media_router::CastDialogController>
@@ -96,15 +125,12 @@ class MediaNotificationService
   std::unique_ptr<media_router::CastDialogController>
   CreateCastDialogControllerForPresentationRequest();
 
-  void set_device_provider_for_testing(
-      std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
-
- private:
-  friend class MediaNotificationProviderImplTest;
-  friend class MediaNotificationServiceTest;
-  friend class MediaNotificationServiceCastTest;
-  friend class MediaToolbarButtonControllerTest;
-  friend class PresentationRequestNotificationProducerTest;
+  void CreateCastDeviceListHost(
+      std::unique_ptr<media_router::CastDialogController> dialog_controller,
+      mojo::PendingReceiver<global_media_controls::mojom::DeviceListHost>
+          host_receiver,
+      mojo::PendingRemote<global_media_controls::mojom::DeviceListClient>
+          client_remote);
 
   // True if there are cast notifications associated with |web_contents|.
   bool HasCastNotificationsForWebContents(

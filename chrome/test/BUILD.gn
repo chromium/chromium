@@ -7249,6 +7249,7 @@ test("unit_tests") {
       "//components/enterprise:test_support",
       "//components/feature_engagement/test:test_support",
       "//components/global_media_controls:test_support",
+      "//components/global_media_controls/public/mojom:device_service",
       "//components/lens:buildflags",
       "//components/lens:lens_mojo",
       "//components/media_message_center:test_support",

@@ -35,6 +35,9 @@ class MediaRouterCastUiForTest
   void HideDialog() override;
   void ChooseSourceType(CastDialogView::SourceType source_type) override;
   CastDialogView::SourceType GetChosenSourceType() const override;
+  std::string GetRouteIdForSink(const std::string& sink_name) const override;
+  std::string GetStatusTextForSink(const std::string& sink_name) const override;
+  std::string GetIssueTextForSink(const std::string& sink_name) const override;
   void WaitForSink(const std::string& sink_name) override;
   void WaitForSinkAvailable(const std::string& sink_name) override;
   void WaitForAnyIssue() override;

@@ -4,6 +4,8 @@
 
 #include "chrome/test/media_router/media_router_gmc_ui_for_test.h"
 
+#include "base/notreached.h"
+#include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
@@ -56,6 +58,26 @@ CastDialogView::SourceType MediaRouterGmcUiForTest::GetChosenSourceType()
   return CastDialogView::SourceType();
 }
 
+std::string MediaRouterGmcUiForTest::GetRouteIdForSink(
+    const std::string& sink_name) const {
+  NOTIMPLEMENTED();
+  return "";
+}
+
+std::string MediaRouterGmcUiForTest::GetStatusTextForSink(
+    const std::string& sink_name) const {
+  auto* device_view = GetDeviceView(sink_name);
+  if (!device_view) {
+    return "";
+  }
+  return device_view->GetStatusTextForTest();
+}
+
+std::string MediaRouterGmcUiForTest::GetIssueTextForSink(
+    const std::string& sink_name) const {
+  return GetStatusTextForSink(sink_name);
+}
+
 void MediaRouterGmcUiForTest::WaitForSink(const std::string& sink_name) {
   ObserveDialog(WatchType::kSink, sink_name);
 }
@@ -89,15 +111,25 @@ MediaRouterGmcUiForTest::MediaRouterGmcUiForTest(
   DCHECK(browser_);
 }
 
-CastDialogSinkButton* MediaRouterGmcUiForTest::GetSinkButton(
+views::View* MediaRouterGmcUiForTest::GetSinkButton(
     const std::string& sink_name) const {
+  return GetDeviceView(sink_name);
+}
+
+CastDeviceEntryView* MediaRouterGmcUiForTest::GetDeviceView(
+    const std::string& device_name) const {
   DCHECK(IsDialogShown());
   auto items = MediaDialogView::GetDialogViewForTesting()->GetItemsForTesting();
   global_media_controls::MediaItemUIView* view = items.begin()->second;
   auto* device_selector = static_cast<MediaItemUIDeviceSelectorView*>(
       view->device_selector_view_for_testing());
-  auto sink_buttons = device_selector->GetCastSinkButtonsForTesting();
-  return GetSinkButtonWithName(sink_buttons, sink_name);
+  auto device_views = device_selector->GetCastDeviceEntryViewsForTesting();
+  for (auto* device_view : device_views) {
+    if (device_view->device_name() == device_name) {
+      return device_view;
+    }
+  }
+  return nullptr;
 }
 
 void MediaRouterGmcUiForTest::ObserveDialog(
@@ -114,6 +146,7 @@ void MediaRouterGmcUiForTest::ObserveDialog(
   watch_callback_.reset();
   watch_sink_name_.reset();
   watch_type_ = WatchType::kNone;
+  base::RunLoop().RunUntilIdle();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterGmcUiForTest);

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_ui_for_test.h"
+#include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/test/media_router/media_router_ui_for_test_base.h"
@@ -40,6 +41,9 @@ class MediaRouterGmcUiForTest
   void HideDialog() override;
   void ChooseSourceType(CastDialogView::SourceType source_type) override;
   CastDialogView::SourceType GetChosenSourceType() const override;
+  std::string GetRouteIdForSink(const std::string& sink_name) const override;
+  std::string GetStatusTextForSink(const std::string& sink_name) const override;
+  std::string GetIssueTextForSink(const std::string& sink_name) const override;
   void WaitForSink(const std::string& sink_name) override;
   void WaitForSinkAvailable(const std::string& sink_name) override;
   void WaitForAnyIssue() override;
@@ -53,8 +57,9 @@ class MediaRouterGmcUiForTest
   explicit MediaRouterGmcUiForTest(content::WebContents* web_contents);
 
   // MediaRouterUiForTestBase:
-  CastDialogSinkButton* GetSinkButton(
-      const std::string& sink_name) const override;
+  views::View* GetSinkButton(const std::string& sink_name) const override;
+
+  CastDeviceEntryView* GetDeviceView(const std::string& device_name) const;
 
   void ObserveDialog(
       WatchType watch_type,

@@ -15,7 +15,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/global_media_controls/cast_device_list_host.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider_impl.h"
+#include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/global_media_controls/public/media_dialog_delegate.h"
@@ -30,9 +32,15 @@
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
 #include "media/remoting/device_capability_checker.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+
+namespace mojom {
+using global_media_controls::mojom::DeviceListClient;
+using global_media_controls::mojom::DeviceListHost;
+}  // namespace mojom
 
 namespace {
 
@@ -55,15 +63,15 @@ void CancelRequest(
 bool IsWebContentsFocused(content::WebContents* web_contents) {
   DCHECK(web_contents);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (!browser)
+  if (!browser) {
     return false;
-
+  }
   // If the given WebContents is not in the focused window, then it's not
   // focused. Note that we know a Browser is focused because otherwise the user
   // could not interact with the MediaDialogView.
-  if (BrowserList::GetInstance()->GetLastActive() != browser)
+  if (BrowserList::GetInstance()->GetLastActive() != browser) {
     return false;
-
+  }
   return browser->tab_strip_model()->GetActiveWebContents() == web_contents;
 }
 
@@ -126,9 +134,9 @@ void MediaNotificationService::Shutdown() {
   // |cast_notification_producer_| and
   // |presentation_request_notification_producer_| depend on MediaRouter,
   // which is another keyed service.
-  if (cast_notification_producer_)
+  if (cast_notification_producer_) {
     item_manager_->RemoveItemProducer(cast_notification_producer_.get());
-
+  }
   if (presentation_request_notification_producer_) {
     item_manager_->RemoveItemProducer(
         presentation_request_notification_producer_.get());
@@ -146,9 +154,10 @@ void MediaNotificationService::OnAudioSinkChosen(const std::string& item_id,
 base::CallbackListSubscription
 MediaNotificationService::RegisterAudioOutputDeviceDescriptionsCallback(
     MediaNotificationDeviceProvider::GetOutputDevicesCallback callback) {
-  if (!device_provider_)
+  if (!device_provider_) {
     device_provider_ = std::make_unique<MediaNotificationDeviceProviderImpl>(
         content::CreateAudioSystemForAudioService());
+  }
   return device_provider_->RegisterOutputDeviceDescriptionsCallback(
       std::move(callback));
 }
@@ -162,19 +171,21 @@ MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
           id, std::move(callback));
 }
 
-bool MediaNotificationService::OnMediaRemotingRequested(
+void MediaNotificationService::OnMediaRemotingRequested(
     const std::string& item_id) {
   auto item = media_session_item_producer_->GetMediaItem(item_id);
-  return item ? item->RequestMediaRemoting() : false;
+  if (item) {
+    item->RequestMediaRemoting();
+  }
 }
 
 void MediaNotificationService::OnMediaSessionActionButtonPressed(
     const std::string& id,
     media_session::mojom::MediaSessionAction action) {
   auto* web_contents = content::MediaSession::GetWebContentsFromRequestId(id);
-  if (!web_contents)
+  if (!web_contents) {
     return;
-
+  }
   base::UmaHistogramBoolean("Media.GlobalMediaControls.UserActionFocus",
                             IsWebContentsFocused(web_contents));
 
@@ -182,9 +193,9 @@ void MediaNotificationService::OnMediaSessionActionButtonPressed(
   ukm::SourceId source_id =
       web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 
-  if (++actions_recorded_to_ukm_[source_id] > kMaxActionsRecordedToUKM)
+  if (++actions_recorded_to_ukm_[source_id] > kMaxActionsRecordedToUKM) {
     return;
-
+  }
   ukm::builders::Media_GlobalMediaControls_ActionButtonPressed(source_id)
       .SetMediaSessionAction(static_cast<int64_t>(action))
       .Record(recorder);
@@ -274,18 +285,32 @@ void MediaNotificationService::OnStartPresentationContextCreated(
   }
 }
 
+void MediaNotificationService::GetDeviceListHostForSession(
+    const std::string& session_id,
+    mojo::PendingReceiver<mojom::DeviceListHost> host_receiver,
+    mojo::PendingRemote<mojom::DeviceListClient> client_remote) {
+  CreateCastDeviceListHost(CreateCastDialogControllerForSession(session_id),
+                           std::move(host_receiver), std::move(client_remote));
+}
+
+void MediaNotificationService::GetDeviceListHostForPresentation(
+    mojo::PendingReceiver<mojom::DeviceListHost> host_receiver,
+    mojo::PendingRemote<mojom::DeviceListClient> client_remote) {
+  CreateCastDeviceListHost(CreateCastDialogControllerForPresentationRequest(),
+                           std::move(host_receiver), std::move(client_remote));
+}
+
 std::unique_ptr<media_router::CastDialogController>
 MediaNotificationService::CreateCastDialogControllerForSession(
     const std::string& id) {
   auto* web_contents = content::MediaSession::GetWebContentsFromRequestId(id);
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
-
+  }
   if (context_) {
     return media_router::MediaRouterUI::CreateWithStartPresentationContext(
         web_contents, std::move(context_));
   }
-
   // Initialize MediaRouterUI with Remote Playback Media Source if there is no
   // default PresentationRequest associated with `web_contents`.
   if (base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen)) {
@@ -316,9 +341,9 @@ std::unique_ptr<media_router::CastDialogController>
 MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
   auto* web_contents =
       presentation_request_notification_producer_->GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
-
+  }
   if (!presentation_request_notification_producer_->GetNotificationItem()
            ->is_default_presentation_request()) {
     return media_router::MediaRouterUI::CreateWithStartPresentationContext(
@@ -328,6 +353,24 @@ MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
   }
   return media_router::MediaRouterUI::CreateWithDefaultMediaSource(
       web_contents);
+}
+
+void MediaNotificationService::CreateCastDeviceListHost(
+    std::unique_ptr<media_router::CastDialogController> dialog_controller,
+    mojo::PendingReceiver<mojom::DeviceListHost> host_receiver,
+    mojo::PendingRemote<mojom::DeviceListClient> client_remote) {
+  if (!dialog_controller) {
+    // We discard the PendingReceiver/Remote here, and if they have disconnect
+    // handlers set, those get called.
+    return;
+  }
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<CastDeviceListHost>(
+          std::move(dialog_controller), std::move(client_remote),
+          base::BindRepeating(
+              &MediaNotificationService::OnMediaRemotingRequested,
+              weak_ptr_factory_.GetWeakPtr())),
+      std::move(host_receiver));
 }
 
 void MediaNotificationService::set_device_provider_for_testing(

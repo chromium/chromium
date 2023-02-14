@@ -132,8 +132,6 @@ class MediaRouterIntegrationBrowserTest
 
   bool IsRouteCreatedOnUI();
 
-  bool IsRouteClosedOnUI();
-
   // Returns true if there is an issue showing in the UI.
   bool IsUIShowingIssue();
 

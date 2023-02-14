@@ -369,16 +369,6 @@ bool MediaRouterIntegrationBrowserTest::IsUIShowingIssue() {
   return !issue_text.empty();
 }
 
-bool MediaRouterIntegrationBrowserTest::IsRouteClosedOnUI() {
-  // After execute js script to close route on UI, the dialog will dispear
-  // after 3s. But sometimes it takes more than 3s to close the route, so
-  // we need to re-open the dialog if it is closed.
-  if (!test_ui_->IsDialogShown())
-    test_ui_->ShowDialog();
-  test_ui_->WaitForSink(receiver_);
-  return test_ui_->GetRouteIdForSink(receiver_).empty();
-}
-
 void MediaRouterIntegrationBrowserTest::ParseCommandLine() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 

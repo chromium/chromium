@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
@@ -25,6 +27,7 @@
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_session_item_producer.h"
 #include "components/global_media_controls/public/media_session_notification_item.h"
+#include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/global_media_controls/public/test/mock_media_dialog_delegate.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
@@ -39,6 +42,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace mojom {
+using global_media_controls::mojom::DeviceListClient;
+using global_media_controls::mojom::DeviceListHost;
+using global_media_controls::mojom::DevicePtr;
+}  // namespace mojom
+
 using media_router::MediaRoute;
 using media_router::StartPresentationContext;
 using media_session::mojom::AudioFocusRequestState;
@@ -50,6 +59,22 @@ using testing::AtLeast;
 using testing::Expectation;
 using testing::NiceMock;
 using testing::Return;
+
+namespace {
+
+class MockDeviceListClient : public mojom::DeviceListClient {
+ public:
+  MockDeviceListClient() : receiver_(this) {}
+
+  MOCK_METHOD(void, OnDevicesUpdated, (std::vector<mojom::DevicePtr> devices));
+
+  mojo::Receiver<mojom::DeviceListClient>& receiver() { return receiver_; }
+
+ private:
+  mojo::Receiver<mojom::DeviceListClient> receiver_;
+};
+
+}  // namespace
 
 class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -239,9 +264,55 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
         ->presentation_request_notification_producer_->GetNotificationItem();
   }
 
+  template <class T>
+  mojo::PendingRemote<T> TakeRemote(mojo::Receiver<T>& receiver,
+                                    int expected_disconnect_count) {
+    auto remote = receiver.BindNewPipeAndPassRemote();
+    receiver.set_disconnect_handler(receiver_disconnect_handler_.Get());
+    EXPECT_CALL(receiver_disconnect_handler_, Run())
+        .Times(expected_disconnect_count);
+    return remote;
+  }
+
+  template <class T>
+  mojo::PendingRemote<T> TakeRemoteAndExpectDisconnect(
+      mojo::Receiver<T>& receiver) {
+    return TakeRemote(receiver, /*expected_disconnect_count=*/1);
+  }
+
+  template <class T>
+  mojo::PendingRemote<T> TakeRemoteAndExpectNoDisconnect(
+      mojo::Receiver<T>& receiver) {
+    return TakeRemote(receiver, /*expected_disconnect_count=*/0);
+  }
+
+  template <class T>
+  mojo::PendingReceiver<T> TakeReceiver(mojo::Remote<T>& remote,
+                                        int expected_disconnect_count) {
+    auto receiver = remote.BindNewPipeAndPassReceiver();
+    remote.set_disconnect_handler(remote_disconnect_handler_.Get());
+    EXPECT_CALL(remote_disconnect_handler_, Run())
+        .Times(expected_disconnect_count);
+    return receiver;
+  }
+
+  template <class T>
+  mojo::PendingReceiver<T> TakeReceiverAndExpectDisconnect(
+      mojo::Remote<T>& remote) {
+    return TakeReceiver(remote, /*expected_disconnect_count=*/1);
+  }
+
+  template <class T>
+  mojo::PendingReceiver<T> TakeReceiverAndExpectNoDisconnect(
+      mojo::Remote<T>& remote) {
+    return TakeReceiver(remote, /*expected_disconnect_count=*/0);
+  }
+
  private:
   std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
   base::test::ScopedFeatureList feature_list_;
+  base::MockCallback<base::OnceClosure> remote_disconnect_handler_;
+  base::MockCallback<base::OnceClosure> receiver_disconnect_handler_;
 };
 
 TEST_F(MediaNotificationServiceCastTest,
@@ -448,6 +519,47 @@ TEST_F(MediaNotificationServiceCastTest,
   service()->OnStartPresentationContextCreated(std::move(context));
 }
 
+TEST_F(MediaNotificationServiceCastTest, GetDeviceListHostForSession) {
+  mojo::Remote<mojom::DeviceListHost> host_remote;
+  MockDeviceListClient client;
+  auto id = SimulatePlayingControllableMediaForWebContents(web_contents());
+  service()->GetDeviceListHostForSession(
+      id.ToString(), TakeReceiverAndExpectNoDisconnect(host_remote),
+      TakeRemoteAndExpectNoDisconnect(client.receiver()));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MediaNotificationServiceCastTest,
+       DisconnectOnGetDeviceListHostForInvalidSession) {
+  mojo::Remote<mojom::DeviceListHost> host_remote;
+  MockDeviceListClient client;
+  service()->GetDeviceListHostForSession(
+      "invalid_id", TakeReceiverAndExpectDisconnect(host_remote),
+      TakeRemoteAndExpectDisconnect(client.receiver()));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MediaNotificationServiceCastTest, GetDeviceListHostForPresentation) {
+  mojo::Remote<mojom::DeviceListHost> host_remote;
+  MockDeviceListClient client;
+  service()->OnStartPresentationContextCreated(
+      CreateStartPresentationContext(CreatePresentationRequest()));
+  service()->GetDeviceListHostForPresentation(
+      TakeReceiverAndExpectNoDisconnect(host_remote),
+      TakeRemoteAndExpectNoDisconnect(client.receiver()));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MediaNotificationServiceCastTest,
+       DisconnectOnGetDeviceListHostForNonexistentPresentation) {
+  mojo::Remote<mojom::DeviceListHost> host_remote;
+  MockDeviceListClient client;
+  service()->GetDeviceListHostForPresentation(
+      TakeReceiverAndExpectDisconnect(host_remote),
+      TakeRemoteAndExpectDisconnect(client.receiver()));
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(MediaNotificationServiceCastTest,
        CreateCastDialogControllerWithRemotePlayback) {
   base::test::ScopedFeatureList feature_list;
@@ -485,8 +597,9 @@ TEST_F(MediaNotificationServiceCastTest,
 }
 
 TEST_F(MediaNotificationServiceCastTest, RequestMediaRemoting) {
-  EXPECT_FALSE(service()->OnMediaRemotingRequested("invalid_item_id"));
+  service()->OnMediaRemotingRequested("invalid_item_id");
   auto id = base::UnguessableToken::Create();
   SimulatePlayingControllableMedia(id);
-  EXPECT_TRUE(service()->OnMediaRemotingRequested(id.ToString()));
+  // TODO(takumif): Confirm that this calls the MediaNotificationItem.
+  service()->OnMediaRemotingRequested(id.ToString());
 }

@@ -12,10 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
-#include "chrome/browser/ui/media_router/cast_dialog_model.h"
-#include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_observer.h"
-#include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -61,17 +58,6 @@ constexpr gfx::Insets kDropdownButtonBorderInsets{4};
 // chosen because it would be very unlikely to see a user with 30+ audio
 // devices.
 const int kAudioDevicesCountHistogramMax = 30;
-
-absl::optional<media_router::MediaCastMode> GetPreferredCastMode(
-    media_router::CastModeSet cast_mode) {
-  if (base::Contains(cast_mode, media_router::MediaCastMode::PRESENTATION)) {
-    return media_router::MediaCastMode::PRESENTATION;
-  } else if (base::Contains(cast_mode,
-                            media_router::MediaCastMode::REMOTE_PLAYBACK)) {
-    return media_router::MediaCastMode::REMOTE_PLAYBACK;
-  }
-  return absl::nullopt;
-}
 
 class ExpandDeviceSelectorLabel : public views::Label {
  public:
@@ -150,11 +136,18 @@ void ExpandDeviceSelectorButton::OnColorsChanged(SkColor foreground_color) {
 MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
     const std::string& item_id,
     MediaItemUIDeviceSelectorDelegate* delegate,
-    std::unique_ptr<media_router::CastDialogController> cast_controller,
+    mojo::PendingRemote<global_media_controls::mojom::DeviceListHost>
+        device_list_host,
+    mojo::PendingReceiver<global_media_controls::mojom::DeviceListClient>
+        receiver,
     bool has_audio_output,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     bool show_expand_button)
-    : item_id_(item_id), delegate_(delegate), entry_point_(entry_point) {
+    : item_id_(item_id),
+      delegate_(delegate),
+      entry_point_(entry_point),
+      device_list_host_(std::move(device_list_host)),
+      receiver_(this, std::move(receiver)) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
@@ -182,22 +175,13 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
                               media::kGlobalMediaControlsSeamlessTransfer)) {
     RegisterAudioDeviceCallbacks();
   }
-
-  if (cast_controller) {
-    cast_controller_ = std::move(cast_controller);
-    cast_controller_->AddObserver(this);
-    cast_controller_->RegisterDestructor(
-        base::BindOnce(&MediaItemUIDeviceSelectorView::DestroyCastController,
-                       // Unretained is safe: this callback is held by
-                       // cast_controller_, which is owned by this object.
-                       base::Unretained(this)));
-  }
 }
 
 void MediaItemUIDeviceSelectorView::UpdateCurrentAudioDevice(
     const std::string& current_device_id) {
-  if (current_audio_device_entry_view_)
+  if (current_audio_device_entry_view_) {
     current_audio_device_entry_view_->SetHighlighted(false);
+  }
 
   // Find DeviceEntryView* from |device_entry_ui_map_| with |current_device_id|.
   auto it = base::ranges::find(
@@ -248,10 +232,10 @@ void MediaItemUIDeviceSelectorView::UpdateAvailableAudioDevices(
     device_entry_ui_map_[device_entry_view->tag()] = device_entry_view.get();
     device_entry_views_container_->AddChildView(std::move(device_entry_view));
     if (!current_device_still_exists &&
-        description.unique_id == current_device_id_)
+        description.unique_id == current_device_id_) {
       current_device_still_exists = true;
+    }
   }
-
   // If the current device no longer exists, fallback to the default device
   UpdateCurrentAudioDevice(
       current_device_still_exists
@@ -259,8 +243,9 @@ void MediaItemUIDeviceSelectorView::UpdateAvailableAudioDevices(
           : media::AudioDeviceDescription::kDefaultDeviceId);
 
   UpdateVisibility();
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnMediaItemUIDeviceSelectorUpdated(device_entry_ui_map_);
+  }
 }
 
 void MediaItemUIDeviceSelectorView::SetMediaItemUIView(
@@ -279,8 +264,9 @@ void MediaItemUIDeviceSelectorView::OnColorsChanged(SkColor foreground_color,
   }
 
   expand_label_->OnColorsChanged(foreground_color_, background_color_);
-  if (dropdown_button_)
+  if (dropdown_button_) {
     dropdown_button_->OnColorsChanged(foreground_color_);
+  }
   SchedulePaint();
 }
 
@@ -334,15 +320,18 @@ void MediaItemUIDeviceSelectorView::UpdateVisibility() {
     has_expand_button_been_shown_ = true;
   }
 
-  if (media_item_ui_)
+  if (media_item_ui_) {
     media_item_ui_->OnDeviceSelectorViewSizeChanged();
+  }
 }
 
 bool MediaItemUIDeviceSelectorView::ShouldBeVisible() const {
-  if (has_cast_device_)
+  if (has_cast_device_) {
     return true;
-  if (!is_audio_device_switching_enabled_)
+  }
+  if (!is_audio_device_switching_enabled_) {
     return false;
+  }
   // The UI should be visible if there are more than one unique devices. That is
   // when:
   // * There are at least three devices
@@ -389,8 +378,9 @@ void MediaItemUIDeviceSelectorView::CreateExpandButtonStrip(
             foreground_color_));
   }
 
-  if (!show_expand_button)
+  if (!show_expand_button) {
     expand_button_strip_->SetVisible(false);
+  }
 }
 
 void MediaItemUIDeviceSelectorView::ShowOrHideDeviceList() {
@@ -401,15 +391,16 @@ void MediaItemUIDeviceSelectorView::ShowOrHideDeviceList() {
   }
   dropdown_button_->SetToggled(is_expanded_);
 
-  if (media_item_ui_)
+  if (media_item_ui_) {
     media_item_ui_->OnDeviceSelectorViewSizeChanged();
+  }
 }
 
 void MediaItemUIDeviceSelectorView::UpdateIsAudioDeviceSwitchingEnabled(
     bool enabled) {
-  if (enabled == is_audio_device_switching_enabled_)
+  if (enabled == is_audio_device_switching_enabled_) {
     return;
-
+  }
   is_audio_device_switching_enabled_ = enabled;
   UpdateVisibility();
 }
@@ -436,22 +427,17 @@ DeviceEntryUI* MediaItemUIDeviceSelectorView::GetDeviceEntryUI(
   return it->second;
 }
 
-void MediaItemUIDeviceSelectorView::OnModelUpdated(
-    const media_router::CastDialogModel& model) {
+void MediaItemUIDeviceSelectorView::OnDevicesUpdated(
+    std::vector<global_media_controls::mojom::DevicePtr> devices) {
   RemoveDevicesOfType(DeviceEntryUIType::kCast);
   has_cast_device_ = false;
-  for (auto sink : model.media_sinks()) {
-    if (!base::Contains(sink.cast_modes,
-                        media_router::MediaCastMode::PRESENTATION) &&
-        !base::Contains(sink.cast_modes,
-                        media_router::MediaCastMode::REMOTE_PLAYBACK)) {
-      continue;
-    }
+  for (const auto& device : devices) {
     has_cast_device_ = true;
     auto device_entry_view = std::make_unique<CastDeviceEntryView>(
-        base::BindRepeating(&MediaItemUIDeviceSelectorView::StartCastSession,
-                            base::Unretained(this)),
-        foreground_color_, background_color_, sink);
+        base::BindRepeating(
+            &MediaItemUIDeviceSelectorView::OnCastDeviceSelected,
+            base::Unretained(this), device->id),
+        foreground_color_, background_color_, device);
     device_entry_view->set_tag(next_tag_++);
     device_entry_ui_map_[device_entry_view->tag()] = device_entry_view.get();
     auto* entry = device_entry_views_container_->AddChildView(
@@ -463,18 +449,18 @@ void MediaItemUIDeviceSelectorView::OnModelUpdated(
   device_entry_views_container_->Layout();
 
   UpdateVisibility();
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnMediaItemUIDeviceSelectorUpdated(device_entry_ui_map_);
+  }
 }
 
 void MediaItemUIDeviceSelectorView::OnDeviceSelected(int tag) {
   auto it = device_entry_ui_map_.find(tag);
   DCHECK(it != device_entry_ui_map_.end());
 
-  if (it->second->GetType() == DeviceEntryUIType::kAudio)
+  if (it->second->GetType() == DeviceEntryUIType::kAudio) {
     delegate_->OnAudioSinkChosen(item_id_, it->second->raw_device_id());
-  else
-    StartCastSession(static_cast<CastDeviceEntryView*>(it->second));
+  }
 }
 
 void MediaItemUIDeviceSelectorView::OnDropdownButtonClicked() {
@@ -524,67 +510,22 @@ bool MediaItemUIDeviceSelectorView::GetDeviceEntryViewVisibilityForTesting() {
   return device_entry_views_container_->GetVisible();
 }
 
-std::vector<media_router::CastDialogSinkButton*>
-MediaItemUIDeviceSelectorView::GetCastSinkButtonsForTesting() {
-  std::vector<media_router::CastDialogSinkButton*> buttons;
+std::vector<CastDeviceEntryView*>
+MediaItemUIDeviceSelectorView::GetCastDeviceEntryViewsForTesting() {
+  std::vector<CastDeviceEntryView*> buttons;
   for (auto* view : device_entry_views_container_->children()) {
     if (GetDeviceEntryUI(view)->GetType() == DeviceEntryUIType::kCast) {
-      buttons.push_back(static_cast<media_router::CastDialogSinkButton*>(view));
+      buttons.push_back(static_cast<CastDeviceEntryView*>(view));
     }
   }
   return buttons;
 }
 
-void MediaItemUIDeviceSelectorView::StartCastSession(
-    CastDeviceEntryView* entry) {
-  if (!cast_controller_)
-    return;
-  const media_router::UIMediaSink& sink = entry->sink();
-  // Clicking on the device entry with an issue will clear the issue without
-  // starting casting.
-  if (sink.issue) {
-    cast_controller_->ClearIssue(sink.issue->id());
-    return;
+void MediaItemUIDeviceSelectorView::OnCastDeviceSelected(
+    const std::string& device_id) {
+  if (device_list_host_) {
+    device_list_host_->SelectDevice(device_id);
   }
-  // When users click on a CONNECTED sink,
-  // if it is a CAST sink, a new cast session will replace the existing cast
-  // session.
-  // if it is a DIAL sink, the existing session will be terminated and users
-  // need to click on the sink again to start a new session.
-  // TODO(crbug.com/1206830): implement "terminate existing route and start a
-  // new session" in DIAL MRP.
-  if (sink.state == media_router::UIMediaSinkState::AVAILABLE) {
-    DoStartCastSession(sink);
-  } else if (sink.state == media_router::UIMediaSinkState::CONNECTED) {
-    // We record stopping casting here even if we are starting casting, because
-    // the existing session is being stopped and replaced by a new session.
-    if (GetPreferredCastMode(sink.cast_modes)) {
-      MediaItemUIMetrics::RecordStopCastingMetrics(
-          GetPreferredCastMode(sink.cast_modes).value(), entry_point_);
-    }
-    if (sink.provider == MediaRouteProviderId::DIAL) {
-      DCHECK(sink.route);
-      cast_controller_->StopCasting(sink.route->media_route_id());
-    } else {
-      DoStartCastSession(sink);
-    }
-  }
-}
-
-void MediaItemUIDeviceSelectorView::DoStartCastSession(
-    media_router::UIMediaSink sink) {
-  auto cast_mode = GetPreferredCastMode(sink.cast_modes);
-  if (!cast_mode) {
-    NOTREACHED() << "Cast mode is not supported.";
-    return;
-  }
-  cast_controller_->StartCasting(sink.id, cast_mode.value());
-  if (cast_mode.value() == media_router::MediaCastMode::REMOTE_PLAYBACK) {
-    delegate_->OnMediaRemotingRequested(item_id_);
-  }
-
-  MediaItemUIMetrics::RecordStartCastingMetrics(
-      sink.icon_type, cast_mode.value(), entry_point_);
 }
 
 void MediaItemUIDeviceSelectorView::RegisterAudioDeviceCallbacks() {
