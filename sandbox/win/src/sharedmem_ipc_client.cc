@@ -49,9 +49,10 @@ DWORD WaitForSingleObjectWrapper(HANDLE handle, DWORD millis) {
 void* SharedMemIPCClient::GetBuffer() {
   bool failure = false;
   size_t ix = LockFreeChannel(&failure);
-  if (failure)
+  if (failure) {
     return nullptr;
-  return reinterpret_cast<char*>(control_.get()) +
+  }
+  return reinterpret_cast<char*>(control_) +
          control_->channels[ix].channel_base;
 }
 

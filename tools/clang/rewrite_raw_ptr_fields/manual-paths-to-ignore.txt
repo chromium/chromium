@@ -43,6 +43,9 @@ net/cert/pki
 # Exclude pocdll.dll as it doesn't depend on //base and only used for testing.
 sandbox/win/sandbox_poc/pocdll
 
+# Exclude internal definitions of undocumented Windows structures.
+sandbox/win/src/nt_internals.h
+
 # Exclude directories that don't depend on //base, because nothing there uses
 # anything from /base.
 sandbox/linux/system_headers/
