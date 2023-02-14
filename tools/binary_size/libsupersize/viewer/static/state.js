@@ -444,6 +444,15 @@ function _startListeners() {
     }
     g_el.frmOptions.dispatchEvent(new Event('change'));
   });
+
+  // Outside of input, make pressing "?" open FAQ page.
+  window.addEventListener('keydown', event => {
+    if (event.key === '?' &&
+        /** @type {HTMLElement} */ (event.target).tagName !== 'INPUT') {
+      // Open help when "?" is pressed.
+      g_el.linkFaq.click();
+    }
+  });
 }
 
 function _makeIconTemplateGetter() {
@@ -498,6 +507,17 @@ function _makeIconTemplateGetter() {
   }
 
   /**
+   * @param {string} type Symbol type character.
+   * @param {?string} fill If non-null, fill color of icon.
+   */
+  function getIconTemplateWithFill(type, fill) {
+    const icon = getIconTemplate(type);
+    if (fill)
+      icon.setAttribute('fill', fill);
+    return icon;
+  }
+
+  /**
    * Returns style info about SVG icon template element corresponding to the
    * given type.
    * @param {string} type Symbol type character.
@@ -543,7 +563,12 @@ function _makeIconTemplateGetter() {
     return statusIcons[key].cloneNode(true);
   }
 
-  return {getIconTemplate, getIconStyle, getDiffStatusTemplate};
+  return {
+    getIconTemplate,
+    getIconTemplateWithFill,
+    getIconStyle,
+    getDiffStatusTemplate
+  };
 }
 
 function _makeSizeTextGetter() {
@@ -632,7 +657,11 @@ const state = new MainState();
 state.init();
 
 /** Utilities for working with the state */
-const {getIconTemplate, getIconStyle, getDiffStatusTemplate} =
-    _makeIconTemplateGetter();
+const {
+  getIconTemplate,
+  getIconTemplateWithFill,
+  getIconStyle,
+  getDiffStatusTemplate
+} = _makeIconTemplateGetter();
 const {getSizeContents, setSizeClasses} = _makeSizeTextGetter();
 _startListeners();
