@@ -26,6 +26,7 @@ import android.os.ext.SdkExtensions;
 import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresOptIn;
 import androidx.annotation.RestrictTo;
 
 import java.util.Locale;
@@ -238,7 +239,8 @@ public class BuildCompat {
      * but they must not be shipped in beta or later libraries as they <strong>will be
      * removed</strong> after their respective SDKs are finalized for release.
      */
-    public @interface PrereleaseSdkCheck { }
+    @RequiresOptIn
+    public @interface PrereleaseSdkCheck {}
 
     /**
      * The value of {@code SdkExtensions.getExtensionVersion(R)}. This is a convenience constant

@@ -10,5 +10,8 @@ android_library("buildcompat_java") {
     "//third_party/androidx:*",
   ]
   sources = [ "java/androidx/core/os/BuildCompat.java" ]
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ]
+  deps = [
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
+    "//third_party/androidx:androidx_annotation_annotation_jvm_java",
+  ]
 }

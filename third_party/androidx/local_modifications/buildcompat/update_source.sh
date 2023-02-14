@@ -7,4 +7,4 @@ set -e
 set -x
 
 # Strip out a few lines that don't compile due to missing symbols.
-curl -s "$URL" | base64 -d | grep -Ev 'AD_SERVICES|RequiresOptIn' > "$this_dir/java/androidx/core/os/BuildCompat.java"
+curl -s "$URL" | base64 -d | grep -Ev 'AD_SERVICES' > "$this_dir/java/androidx/core/os/BuildCompat.java"
