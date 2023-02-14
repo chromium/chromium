@@ -372,51 +372,56 @@ void BrowserDataBackMigrator::OnDeleteAshItems(TaskResult result) {
     return;
   }
 
-  SetProgress(MigrationStep::kMoveLacrosItemsToTmpDir);
+  SetProgress(MigrationStep::kMoveLacrosItemsToAshDir);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&BrowserDataBackMigrator::MoveLacrosItemsToTmpDir,
+      base::BindOnce(&BrowserDataBackMigrator::MoveLacrosItemsToAshDir,
                      ash_profile_dir_),
-      base::BindOnce(&BrowserDataBackMigrator::OnMoveLacrosItemsToTmpDir,
+      base::BindOnce(&BrowserDataBackMigrator::OnMoveLacrosItemsToAshDir,
                      weak_factory_.GetWeakPtr()));
 }
 
 // static
 BrowserDataBackMigrator::TaskResult
-BrowserDataBackMigrator::MoveLacrosItemsToTmpDir(
+BrowserDataBackMigrator::MoveLacrosItemsToAshDir(
     const base::FilePath& ash_profile_dir) {
-  LOG(WARNING) << "Running MoveLacrosItemsToTmpDir()";
+  LOG(WARNING) << "Running MoveLacrosItemsToAshDir()";
 
   const base::FilePath lacros_profile_dir =
       ash_profile_dir.Append(browser_data_migrator_util::kLacrosDir)
           .Append(browser_data_migrator_util::kLacrosProfilePath);
-
-  const base::FilePath tmp_profile_dir =
-      ash_profile_dir.Append(browser_data_back_migrator::kTmpDir);
 
   browser_data_migrator_util::TargetItems lacros_items =
       browser_data_migrator_util::GetTargetItems(
           lacros_profile_dir, browser_data_migrator_util::ItemType::kLacros);
 
   for (const auto& item : lacros_items.items) {
-    // The corresponding items in Ash will be deleted in `DeleteAshItems` before
-    // they are overwritten by the Lacros items from the tmp directory.
-    if (!base::Move(item.path, tmp_profile_dir.Append(item.path.BaseName()))) {
+    // The corresponding items in Ash are deleted in `DeleteAshItems` before
+    // they are overwritten by the Lacros items here.
+    const base::FilePath destination_path =
+        ash_profile_dir.Append(item.path.BaseName());
+
+    if (base::PathExists(destination_path)) {
+      PLOG(ERROR) << "Path " << destination_path << " already exists.";
+      return {TaskStatus::kMoveLacrosItemsToAshDirFailed, errno};
+    }
+
+    if (!base::Move(item.path, destination_path)) {
       PLOG(ERROR) << "Failed to move item " << item.path.value() << " to "
-                  << tmp_profile_dir.Append(item.path.BaseName()) << ": ";
-      return {TaskStatus::kMoveLacrosItemsToTmpDirMoveFailed, errno};
+                  << destination_path << ": ";
+      return {TaskStatus::kMoveLacrosItemsToAshDirFailed, errno};
     }
   }
 
   return {TaskStatus::kSucceeded};
 }
 
-void BrowserDataBackMigrator::OnMoveLacrosItemsToTmpDir(
+void BrowserDataBackMigrator::OnMoveLacrosItemsToAshDir(
     BrowserDataBackMigrator::TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
-    LOG(ERROR) << "MoveLacrosItemsToTmpDir() failed.";
+    LOG(ERROR) << "MoveLacrosItemsToAshDir() failed.";
     std::move(finished_callback_).Run(ToResult(result));
     return;
   }
@@ -1096,7 +1101,7 @@ BrowserDataBackMigrator::Result BrowserDataBackMigrator::ToResult(
     case TaskStatus::kDeleteAshItemsDeleteLacrosItemFailed:
     case TaskStatus::kDeleteLacrosDirDeleteFailed:
     case TaskStatus::kDeleteTmpDirDeleteFailed:
-    case TaskStatus::kMoveLacrosItemsToTmpDirMoveFailed:
+    case TaskStatus::kMoveLacrosItemsToAshDirFailed:
     case TaskStatus::kMoveMergedItemsBackToAshCopyDirectoryFailed:
     case TaskStatus::kMoveMergedItemsBackToAshMoveFileFailed:
       return Result::kFailed;

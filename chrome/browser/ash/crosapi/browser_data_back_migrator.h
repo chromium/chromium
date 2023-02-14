@@ -93,6 +93,10 @@ class BrowserDataBackMigrator {
                            MergeLocalStorageLevelDB);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorFilesSetupTest,
                            MergeStateStoreLevelDB);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorFilesSetupTest,
+                           DeletesLacrosItemsFromAshDirCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorFilesSetupTest,
+                           MovesLacrosItemsToAshDirCorrectly);
 
   // A list of all the possible results of migration, including success and all
   // failure types in each step of the migration.
@@ -115,7 +119,7 @@ class BrowserDataBackMigrator {
     kDeleteAshItemsDeleteLacrosItemFailed = 12,
     kDeleteTmpDirDeleteFailed = 13,
     kDeleteLacrosDirDeleteFailed = 14,
-    kMoveLacrosItemsToTmpDirMoveFailed = 15,
+    kMoveLacrosItemsToAshDirFailed = 15,
     kMoveMergedItemsBackToAshMoveFileFailed = 16,
     kMoveMergedItemsBackToAshCopyDirectoryFailed = 17,
     kMaxValue = kMoveMergedItemsBackToAshCopyDirectoryFailed,
@@ -125,8 +129,8 @@ class BrowserDataBackMigrator {
     kStart = 0,
     kPreMigrationCleanUp = 1,
     kMergeSplitItems = 2,
-    kMoveLacrosItemsToTmpDir = 3,
-    kDeleteAshItems = 4,
+    kDeleteAshItems = 3,
+    kMoveLacrosItemsToAshDir = 4,
     kMoveMergedItemsBackToAsh = 5,
     kDeleteLacrosDir = 6,
     kDeleteTmpDir = 7,
@@ -167,18 +171,18 @@ class BrowserDataBackMigrator {
 
   // Deletes Ash items that will be overwritten by either Lacros items or items
   // merged in `MergeSplitItems()`. This prevents conflicts during the calls to
-  // `MoveLacrosItemsToTmpDir()` and `MoveMergedItemsBackToAsh()`.
+  // `MoveLacrosItemsToAshDir()` and `MoveMergedItemsBackToAsh()`.
   static TaskResult DeleteAshItems(const base::FilePath& ash_profile_dir);
 
   // Called as a reply to `DeleteAshItems()`.
   void OnDeleteAshItems(TaskResult result);
 
-  // Moves Lacros-only items back into the temporary directory.
-  static TaskResult MoveLacrosItemsToTmpDir(
+  // Moves Lacros-only items back into the Ash profile directory.
+  static TaskResult MoveLacrosItemsToAshDir(
       const base::FilePath& ash_profile_dir);
 
-  // Called as a reply to `MoveLacrosItemsToTmpDir()`.
-  void OnMoveLacrosItemsToTmpDir(TaskResult result);
+  // Called as a reply to `MoveLacrosItemsToAshDir()`.
+  void OnMoveLacrosItemsToAshDir(TaskResult result);
 
   // Moves the temporary directory into the Ash profile directory.
   static TaskResult MoveMergedItemsBackToAsh(

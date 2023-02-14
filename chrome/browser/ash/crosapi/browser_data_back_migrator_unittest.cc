@@ -66,7 +66,8 @@ void CreateDirectoryAndFile(const base::FilePath& directory_path,
 }
 
 void SetUpExtensions(const base::FilePath& ash_profile_dir,
-                     const base::FilePath& lacros_profile_dir) {
+                     const base::FilePath& lacros_profile_dir,
+                     FilesSetup setup) {
   // The extension test data should have the following structure:
   // |- user
   //   |- Extensions
@@ -87,21 +88,25 @@ void SetUpExtensions(const base::FilePath& ash_profile_dir,
   base::FilePath lacros_extensions_path = lacros_profile_dir.Append(
       browser_data_migrator_util::kExtensionsFilePath);
 
-  // Generate data for a Lacros-only extension.
-  CreateDirectoryAndFile(lacros_extensions_path.Append(kLacrosOnlyExtensionId),
-                         kLacrosDataFilePath, kLacrosDataContent,
-                         kLacrosDataSize);
+  if (setup != FilesSetup::kAshOnly) {
+    // Generate data for a Lacros-only extension.
+    CreateDirectoryAndFile(
+        lacros_extensions_path.Append(kLacrosOnlyExtensionId),
+        kLacrosDataFilePath, kLacrosDataContent, kLacrosDataSize);
+    // Generate Lacros data for an extension existing in both Chromes.
+    CreateDirectoryAndFile(lacros_extensions_path.Append(kBothExtensionId),
+                           kLacrosDataFilePath, kLacrosDataContent,
+                           kLacrosDataSize);
+  }
 
-  // Generate data for an Ash-only extension.
-  CreateDirectoryAndFile(ash_extensions_path.Append(kAshOnlyExtensionId),
-                         kAshDataFilePath, kAshDataContent, kAshDataSize);
-
-  // Generate data for an extension existing in both Chromes.
-  CreateDirectoryAndFile(ash_extensions_path.Append(kBothExtensionId),
-                         kAshDataFilePath, kAshDataContent, kAshDataSize);
-  CreateDirectoryAndFile(lacros_extensions_path.Append(kBothExtensionId),
-                         kLacrosDataFilePath, kLacrosDataContent,
-                         kLacrosDataSize);
+  if (setup != FilesSetup::kLacrosOnly) {
+    // Generate data for an Ash-only extension.
+    CreateDirectoryAndFile(ash_extensions_path.Append(kAshOnlyExtensionId),
+                           kAshDataFilePath, kAshDataContent, kAshDataSize);
+    // Generate Ash data for an extension existing in both Chromes.
+    CreateDirectoryAndFile(ash_extensions_path.Append(kBothExtensionId),
+                           kAshDataFilePath, kAshDataContent, kAshDataSize);
+  }
 }
 
 void SetUpIndexedDB(const base::FilePath& ash_profile_dir,
@@ -392,7 +397,8 @@ TEST_F(BrowserDataBackMigratorTest, PreMigrationCleanUp) {
 }
 
 TEST_F(BrowserDataBackMigratorTest, MergeCommonExtensionsDataFiles) {
-  SetUpExtensions(ash_profile_dir_, lacros_profile_dir_);
+  SetUpExtensions(ash_profile_dir_, lacros_profile_dir_,
+                  FilesSetup::kBothChromes);
 
   ASSERT_TRUE(BrowserDataBackMigrator::MergeCommonExtensionsDataFiles(
       ash_profile_dir_, lacros_profile_dir_, tmp_profile_dir_,
@@ -598,6 +604,42 @@ TEST_P(BrowserDataBackMigratorFilesSetupTest, MergeStateStoreLevelDB) {
           browser_data_migrator_util::LevelDBType::kStateStore));
     }
   }
+}
+
+TEST_P(BrowserDataBackMigratorFilesSetupTest,
+       DeletesLacrosItemsFromAshDirCorrectly) {
+  auto files_setup = GetParam();
+  SetUpExtensions(ash_profile_dir_, lacros_profile_dir_, files_setup);
+  SetupLocalStorageLevelDBFiles(ash_profile_dir_, lacros_profile_dir_,
+                                files_setup);
+  EXPECT_TRUE(base::WriteFile(ash_profile_dir_.Append("README"), ""));
+
+  auto result = BrowserDataBackMigrator::DeleteAshItems(ash_profile_dir_);
+
+  ASSERT_EQ(result.status, BrowserDataBackMigrator::TaskStatus::kSucceeded);
+  EXPECT_FALSE(base::PathExists(ash_profile_dir_.Append(
+      browser_data_migrator_util::kExtensionsFilePath)));
+  EXPECT_FALSE(base::PathExists(ash_profile_dir_.Append(
+      browser_data_migrator_util::kLocalStorageFilePath)));
+  EXPECT_TRUE(base::PathExists(ash_profile_dir_.Append("README")));
+}
+
+TEST_F(BrowserDataBackMigratorFilesSetupTest,
+       MovesLacrosItemsToAshDirCorrectly) {
+  SetUpExtensions(ash_profile_dir_, lacros_profile_dir_,
+                  FilesSetup::kLacrosOnly);
+
+  auto result =
+      BrowserDataBackMigrator::MoveLacrosItemsToAshDir(ash_profile_dir_);
+
+  ASSERT_EQ(result.status, BrowserDataBackMigrator::TaskStatus::kSucceeded);
+  EXPECT_TRUE(base::PathExists(ash_profile_dir_.Append(
+      browser_data_migrator_util::kExtensionsFilePath)));
+  EXPECT_TRUE(base::PathExists(
+      ash_profile_dir_.Append(browser_data_migrator_util::kExtensionsFilePath)
+          .Append(kLacrosOnlyExtensionId)));
+  EXPECT_FALSE(base::PathExists(lacros_profile_dir_.Append(
+      browser_data_migrator_util::kExtensionsFilePath)));
 }
 
 namespace {
