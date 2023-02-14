@@ -634,6 +634,7 @@ void MediaFoundationRenderer::SetOutputRect(const gfx::Rect& output_rect,
                                             SetOutputRectCB callback) {
   DVLOG_FUNC(2);
 
+  // Call SetWindowPos to reposition the video from output_rect.
   if (virtual_video_window_ &&
       !::SetWindowPos(virtual_video_window_, HWND_BOTTOM, output_rect.x(),
                       output_rect.y(), output_rect.width(),
@@ -644,7 +645,7 @@ void MediaFoundationRenderer::SetOutputRect(const gfx::Rect& output_rect,
     return;
   }
 
-  if (FAILED(UpdateVideoStream(output_rect))) {
+  if (FAILED(UpdateVideoStream(output_rect.size()))) {
     std::move(callback).Run(false);
     return;
   }
@@ -672,10 +673,24 @@ HRESULT MediaFoundationRenderer::InitializeTexturePool(const gfx::Size& size) {
   return S_OK;
 }
 
-HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Rect& rect) {
+HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Size rect_size) {
+  if (current_video_rect_size_ == rect_size) {
+    return S_OK;
+  }
+
+  current_video_rect_size_ = rect_size;
+
   ComPtr<IMFMediaEngineEx> mf_media_engine_ex;
   RETURN_IF_FAILED(mf_media_engine_.As(&mf_media_engine_ex));
-  RECT dest_rect = {0, 0, rect.width(), rect.height()};
+
+  RECT dest_rect = {0, 0, rect_size.width(), rect_size.height()};
+
+  // https://learn.microsoft.com/en-us/windows/win32/api/mfmediaengine/nf-mfmediaengine-imfmediaengineex-updatevideostream
+  // Updates the source rectangle, destination rectangle, and border color for
+  // the video. Source is set to Null so the entire frame is displayed.
+  // Position is not set because SetWindowPos sets the position already.
+  // Destination rectangle relative to the top-left corner of the window
+  // rect set in SetWindowPos.
   RETURN_IF_FAILED(mf_media_engine_ex->UpdateVideoStream(
       /*pSrc=*/nullptr, &dest_rect, /*pBorderClr=*/nullptr));
   if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
@@ -948,11 +963,11 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
 
   // TODO(frankli): Let test code to call `UpdateVideoStream()`.
   if (force_dcomp_mode_for_testing_) {
-    const gfx::Rect test_rect(/*x=*/0, /*y=*/0, /*width=*/640, /*height=*/320);
+    const gfx::Size test_size(/*width=*/640, /*height=*/320);
     // This invokes IMFMediaEngineEx::UpdateVideoStream() for video frames to
     // be presented. Otherwise, the Media Foundation video renderer will not
     // request video samples from our source.
-    std::ignore = UpdateVideoStream(test_rect);
+    std::ignore = UpdateVideoStream(test_size);
   }
 
   if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
