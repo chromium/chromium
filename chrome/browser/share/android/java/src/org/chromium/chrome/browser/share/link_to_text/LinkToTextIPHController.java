@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.share.link_to_text;
 
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -16,6 +14,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -89,8 +88,9 @@ public class LinkToTextIPHController {
                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.SHARED_HIGHLIGHTING)
                         .with(MessageBannerProperties.ICON,
-                                VectorDrawableCompat.create(tab.getContext().getResources(),
-                                        R.drawable.ink_highlighter, tab.getContext().getTheme()))
+                                TraceEventVectorDrawableCompat.create(
+                                        tab.getContext().getResources(), R.drawable.ink_highlighter,
+                                        tab.getContext().getTheme()))
                         .with(MessageBannerProperties.TITLE,
                                 tab.getContext().getResources().getString(
                                         R.string.iph_message_shared_highlighting_title))

@@ -10,12 +10,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /**
  * The base fragment class for Preload Pages settings fragments.
@@ -44,7 +44,7 @@ public abstract class PreloadPagesSettingsFragmentBase
         menu.clear();
         MenuItem help =
                 menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(VectorDrawableCompat.create(
+        help.setIcon(TraceEventVectorDrawableCompat.create(
                 getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
     }
 

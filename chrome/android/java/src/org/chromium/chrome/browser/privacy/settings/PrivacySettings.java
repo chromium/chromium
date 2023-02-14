@@ -15,7 +15,6 @@ import android.view.MenuItem;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -45,6 +44,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -290,7 +290,7 @@ public class PrivacySettings
         menu.clear();
         MenuItem help =
                 menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(VectorDrawableCompat.create(
+        help.setIcon(TraceEventVectorDrawableCompat.create(
                 getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
     }
 

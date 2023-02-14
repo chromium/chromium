@@ -21,13 +21,13 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
@@ -187,7 +187,7 @@ public class BluetoothChooserDialog
     private Drawable getIconWithRowIconColorStateList(int icon) {
         Resources res = mContext.getResources();
 
-        Drawable drawable = VectorDrawableCompat.create(res, icon, mContext.getTheme());
+        Drawable drawable = TraceEventVectorDrawableCompat.create(res, icon, mContext.getTheme());
         DrawableCompat.setTintList(drawable,
                 AppCompatResources.getColorStateList(
                         mContext, R.color.item_chooser_row_icon_color));

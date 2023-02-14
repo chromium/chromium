@@ -9,13 +9,12 @@ import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
-
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -123,7 +122,7 @@ public class AddToHomescreenIPHController {
                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.ADD_TO_HOMESCREEN_IPH)
                         .with(MessageBannerProperties.ICON,
-                                VectorDrawableCompat.create(mActivity.getResources(),
+                                TraceEventVectorDrawableCompat.create(mActivity.getResources(),
                                         R.drawable.ic_apps_blue_24dp, mActivity.getTheme()))
                         .with(MessageBannerProperties.TITLE,
                                 mActivity.getResources().getString(

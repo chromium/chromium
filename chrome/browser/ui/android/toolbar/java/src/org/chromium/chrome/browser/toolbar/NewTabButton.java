@@ -12,11 +12,11 @@ import android.view.View;
 import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.Toast;
@@ -45,7 +45,7 @@ public class NewTabButton
                 getContext(), R.color.default_icon_color_light_tint_list);
         mDarkModeTint = AppCompatResources.getColorStateList(
                 getContext(), R.color.default_icon_color_tint_list);
-        setImageDrawable(VectorDrawableCompat.create(
+        setImageDrawable(TraceEventVectorDrawableCompat.create(
                 getContext().getResources(), R.drawable.new_tab_icon, getContext().getTheme()));
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
         updateDrawableTint();

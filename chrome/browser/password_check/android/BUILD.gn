@@ -42,6 +42,7 @@ android_library("public_java") {
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/tab:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/ukm/android:java",

@@ -21,13 +21,13 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.DropdownKeyValue;
 import org.chromium.components.autofill.prefeditor.EditorFieldView;
 import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.util.ArrayList;
@@ -189,7 +189,7 @@ class EditorDropdownField implements EditorFieldView {
         View view = mDropdown.getSelectedView();
         if (view != null && view instanceof TextView) {
             if (showError) {
-                Drawable drawable = VectorDrawableCompat.create(
+                Drawable drawable = TraceEventVectorDrawableCompat.create(
                         mContext.getResources(), R.drawable.ic_error, mContext.getTheme());
                 drawable.setBounds(
                         0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());

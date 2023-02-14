@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 
 import java.util.ArrayList;
@@ -417,7 +418,7 @@ public class BookmarkFolderSelectActivity
                 iconDrawable = BookmarkUtils.getFolderIcon(view.getContext(), entry.mId.getType());
             } else {
                 // For new folder, start_icon is different.
-                VectorDrawableCompat vectorDrawable = VectorDrawableCompat.create(
+                VectorDrawableCompat vectorDrawable = TraceEventVectorDrawableCompat.create(
                         view.getResources(), R.drawable.ic_add, view.getContext().getTheme());
                 vectorDrawable.setTintList(AppCompatResources.getColorStateList(
                         view.getContext(), R.color.default_icon_color_tint_list));

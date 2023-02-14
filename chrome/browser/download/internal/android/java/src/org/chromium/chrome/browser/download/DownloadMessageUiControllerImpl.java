@@ -16,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -25,6 +24,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -857,7 +857,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             case IconType.DRAWABLE:
                 return AppCompatResources.getDrawable(getContext(), info.icon);
             case IconType.VECTOR_DRAWABLE:
-                return VectorDrawableCompat.create(
+                return TraceEventVectorDrawableCompat.create(
                         getContext().getResources(), info.icon, getContext().getTheme());
             case IconType.ANIMATED_VECTOR_DRAWABLE:
                 return AnimatedVectorDrawableCompat.create(getContext(), info.icon);

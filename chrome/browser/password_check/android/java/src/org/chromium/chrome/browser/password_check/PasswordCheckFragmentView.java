@@ -12,9 +12,9 @@ import android.view.MenuItem;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /**
  * This class is responsible for rendering the check passwords view in the settings menu.
@@ -49,7 +49,7 @@ public class PasswordCheckFragmentView extends PreferenceFragmentCompat {
         menu.clear();
         MenuItem help =
                 menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(VectorDrawableCompat.create(
+        help.setIcon(TraceEventVectorDrawableCompat.create(
                 getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
     }
 

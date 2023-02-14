@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
@@ -98,9 +99,9 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
         if (item.wasBlockedVisit()) {
             if (mBlockedVisitDrawable == null) {
-                mBlockedVisitDrawable = VectorDrawableCompat.create(
-                        getContext().getResources(), R.drawable.ic_block_red,
-                        getContext().getTheme());
+                mBlockedVisitDrawable =
+                        TraceEventVectorDrawableCompat.create(getContext().getResources(),
+                                R.drawable.ic_block_red, getContext().getTheme());
             }
             setStartIconDrawable(mBlockedVisitDrawable);
             mTitleView.setTextColor(getContext().getColor(R.color.default_red));

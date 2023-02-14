@@ -28,7 +28,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.UsedByReflection;
@@ -36,6 +35,7 @@ import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
@@ -263,7 +263,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
         if (getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
             MenuItem help = menu.add(
                     Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
-            help.setIcon(VectorDrawableCompat.create(
+            help.setIcon(TraceEventVectorDrawableCompat.create(
                     getResources(), R.drawable.ic_help_and_feedback, getContext().getTheme()));
         }
     }

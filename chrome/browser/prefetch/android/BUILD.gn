@@ -29,6 +29,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//third_party/android_deps:material_design_java",

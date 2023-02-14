@@ -151,6 +151,7 @@ android_library("java") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:java_resources",
     "//components/dom_distiller/core/android:dom_distiller_core_java",

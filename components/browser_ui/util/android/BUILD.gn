@@ -16,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/util/FirstDrawDetector.java",
     "java/src/org/chromium/components/browser_ui/util/GlobalDiscardableReferencePool.java",
     "java/src/org/chromium/components/browser_ui/util/ToolbarUtils.java",
+    "java/src/org/chromium/components/browser_ui/util/TraceEventVectorDrawableCompat.java",
     "java/src/org/chromium/components/browser_ui/util/date/CalendarFactory.java",
     "java/src/org/chromium/components/browser_ui/util/date/CalendarUtils.java",
     "java/src/org/chromium/components/browser_ui/util/date/StringUtils.java",
@@ -33,6 +34,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.components.browser_ui.util"

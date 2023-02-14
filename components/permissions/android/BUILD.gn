@@ -121,6 +121,7 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/omnibox/browser:browser_java",
     "//content/public/android:content_java",

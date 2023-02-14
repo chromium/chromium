@@ -41,7 +41,6 @@ import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager.OnPreferenceTreeClickListener;
 import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -64,6 +63,7 @@ import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDark
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.OnCookiesDetailsRequested;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -481,7 +481,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         if (getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
             MenuItem help = menu.add(
                     Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
-            help.setIcon(VectorDrawableCompat.create(
+            help.setIcon(TraceEventVectorDrawableCompat.create(
                     getResources(), R.drawable.ic_help_and_feedback, getContext().getTheme()));
         }
     }

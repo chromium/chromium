@@ -18,12 +18,12 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.build.BuildConfig;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -128,7 +128,7 @@ public class ChosenObjectSettings
         if (getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
             MenuItem help = menu.add(
                     Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
-            help.setIcon(VectorDrawableCompat.create(
+            help.setIcon(TraceEventVectorDrawableCompat.create(
                     getResources(), R.drawable.ic_help_and_feedback, getContext().getTheme()));
         }
     }

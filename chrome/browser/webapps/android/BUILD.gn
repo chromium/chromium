@@ -20,6 +20,7 @@ android_library("java") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/user_education:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
     "//components/messages/android:java",

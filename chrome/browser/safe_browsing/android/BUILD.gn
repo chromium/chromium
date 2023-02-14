@@ -55,6 +55,7 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",

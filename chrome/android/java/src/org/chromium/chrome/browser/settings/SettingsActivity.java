@@ -29,7 +29,6 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
@@ -78,6 +77,7 @@ import org.chromium.components.browser_ui.settings.PaddedDividerItemDecoration;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -370,7 +370,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // By default, every screen in Settings shows a "Help & feedback" menu item.
         MenuItem help = menu.add(
                 Menu.NONE, R.id.menu_id_general_help, Menu.CATEGORY_SECONDARY, R.string.menu_help);
-        help.setIcon(VectorDrawableCompat.create(
+        help.setIcon(TraceEventVectorDrawableCompat.create(
                 getResources(), R.drawable.ic_help_and_feedback, getTheme()));
         return super.onCreateOptionsMenu(menu);
     }

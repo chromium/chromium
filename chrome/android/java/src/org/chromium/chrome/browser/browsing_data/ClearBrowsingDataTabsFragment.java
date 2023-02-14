@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -28,6 +27,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 /**
  * Fragment with a {@link TabLayout} containing a basic and an advanced version of the CBD dialog.
@@ -160,7 +160,7 @@ public class ClearBrowsingDataTabsFragment extends Fragment {
         menu.clear();
         MenuItem help =
                 menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(VectorDrawableCompat.create(
+        help.setIcon(TraceEventVectorDrawableCompat.create(
                 getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
         help.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     }
