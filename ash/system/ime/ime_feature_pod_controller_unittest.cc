@@ -191,7 +191,13 @@ TEST_P(IMEFeaturePodControllerTest, ButtonVisibilityPolicy) {
   EXPECT_TRUE(IsButtonVisible());
 }
 
-TEST_P(IMEFeaturePodControllerTest, IconUMATracking) {
+// TODO(crbug.com/1416179): Test is failing on "Linux ChromiumOS MSan Tests".
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_IconUMATracking DISABLED_IconUMATracking
+#else
+#define MAYBE_IconUMATracking IconUMATracking
+#endif
+TEST_P(IMEFeaturePodControllerTest, MAYBE_IconUMATracking) {
   SetUpButton();
 
   // No metrics logged before clicking on any views.
