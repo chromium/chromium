@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.identity_disc;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -17,6 +18,7 @@ import static org.hamcrest.Matchers.not;
 
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
+import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
 import androidx.test.espresso.matcher.ViewMatchers;
@@ -33,10 +35,12 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.signin.SyncConsentActivity;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -126,6 +130,11 @@ public class IdentityDiscControllerTest {
         waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
                 withContentDescription(
                         R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+
+        // Clicking the signed-out avatar should lead to the sync consent screen.
+        ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
+                SyncConsentActivity.class,
+                () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
     }
 
     @Test
