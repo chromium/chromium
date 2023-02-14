@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
@@ -175,7 +176,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     EXPECT_EQ(webauthn_entry.icon, "globeIcon");
 
     // Click the credential.
-    popup_controller->AcceptSuggestion(suggestion_index);
+    popup_controller->AcceptSuggestion(suggestion_index,
+                                       /*show_threshold=*/base::TimeDelta());
     std::string result;
     ASSERT_TRUE(message_queue.WaitForMessage(&result));
     EXPECT_EQ(result, "\"webauthn: OK\"");

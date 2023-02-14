@@ -289,8 +289,10 @@ bool PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {
 void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
   DCHECK(FullPopupVisible());
 
-  if (controller_->password_selected())
-    NotifyAXSelection(this->password_view_);
+  if (controller_->password_selected()) {
+    DCHECK(this->password_view_);
+    NotifyAXSelection(*this->password_view_);
+  }
 
   if (!GetWidget())
     return;

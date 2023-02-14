@@ -8,8 +8,10 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -175,7 +177,7 @@ class PopupViewViewsTestWithClickablePopupItemId
 
 TEST_F(PopupViewViewsTest, ShowHideTest) {
   CreateAndShowView({0});
-  EXPECT_CALL(controller(), AcceptSuggestion(testing::_)).Times(0);
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   view().Hide();
 }
 
@@ -225,7 +227,7 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
 
   // Item 0.
   ui::AXNodeData node_data_0;
-  GetRowViewAt(0).GetAccessibleNodeData(&node_data_0);
+  GetPopupRowViewAt(0).content_view().GetAccessibleNodeData(&node_data_0);
   EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_0.role);
   EXPECT_EQ(1, node_data_0.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_0.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
@@ -243,7 +245,7 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
 
   // Item 2.
   ui::AXNodeData node_data_2;
-  GetRowViewAt(2).GetAccessibleNodeData(&node_data_2);
+  GetPopupRowViewAt(2).content_view().GetAccessibleNodeData(&node_data_2);
   EXPECT_EQ(2, node_data_2.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_2.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
   EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_2.role);
@@ -252,7 +254,7 @@ TEST_F(PopupViewViewsTest, AccessibilityTest) {
 
   // Item 3 (footer).
   ui::AXNodeData node_data_3;
-  GetRowViewAt(3).GetAccessibleNodeData(&node_data_3);
+  GetPopupRowViewAt(3).content_view().GetAccessibleNodeData(&node_data_3);
   EXPECT_EQ(3, node_data_3.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   EXPECT_EQ(3, node_data_3.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
   EXPECT_EQ(ax::mojom::Role::kListBoxOption, node_data_3.role);
@@ -269,21 +271,22 @@ TEST_F(PopupViewViewsTest, Gestures) {
       /*x=*/0, /*y=*/0, /*flags=*/0, ui::EventTimeForNow(),
       ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
   EXPECT_CALL(controller(), SetSelectedLine(testing::Eq(0)));
-  GetPopupRowViewAt(0).OnGestureEvent(&tap_down_event);
+  GetPopupRowViewAt(0).content_view().OnGestureEvent(&tap_down_event);
 
   // Tapping will accept the selection.
   ui::GestureEvent tap_event(/*x=*/0, /*y=*/0, /*flags=*/0,
                              ui::EventTimeForNow(),
                              ui::GestureEventDetails(ui::ET_GESTURE_TAP));
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
-  GetPopupRowViewAt(0).OnGestureEvent(&tap_event);
+  EXPECT_CALL(controller(),
+              AcceptSuggestion(0, /*show_threshold=*/base::Milliseconds(500)));
+  GetPopupRowViewAt(0).content_view().OnGestureEvent(&tap_event);
 
   // Canceling gesture clears any selection.
   ui::GestureEvent tap_cancel(
       /*x=*/0, /*y=*/0, /*flags=*/0, ui::EventTimeForNow(),
       ui::GestureEventDetails(ui::ET_GESTURE_TAP_CANCEL));
   EXPECT_CALL(controller(), SelectionCleared());
-  GetRowViewAt(2).OnGestureEvent(&tap_cancel);
+  GetPopupRowViewAt(2).content_view().OnGestureEvent(&tap_cancel);
 }
 
 TEST_F(PopupViewViewsTest, ClickDisabledEntry) {
@@ -319,7 +322,7 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
 
   // Verify that the accessibility layer gets the right string to read out.
   ui::AXNodeData node_data;
-  GetRowViewAt(0).GetAccessibleNodeData(&node_data);
+  GetPopupRowViewAt(0).content_view().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(voice_over_value,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
@@ -327,7 +330,8 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
 // Tests that (only) clickable items trigger an AcceptSuggestion event.
 TEST_P(PopupViewViewsTestWithAnyPopupItemId, ShowClickTest) {
   CreateAndShowView({popup_item_id()});
-  EXPECT_CALL(controller(), AcceptSuggestion)
+  EXPECT_CALL(controller(),
+              AcceptSuggestion(0, /*show_threshold=*/base::Milliseconds(500)))
       .Times(IsClickable(popup_item_id()));
   generator().MoveMouseTo(gfx::Point(1000, 1000));
   ASSERT_FALSE(view().IsMouseHovered());
@@ -342,7 +346,9 @@ TEST_P(PopupViewViewsTestWithAnyPopupItemId, ShowClickTest) {
 TEST_P(PopupViewViewsTestWithClickablePopupItemId,
        AcceptSuggestionIfUnfocusedAtPaint) {
   CreateAndShowView({popup_item_id()});
-  EXPECT_CALL(controller(), AcceptSuggestion).Times(1);
+  EXPECT_CALL(controller(),
+              AcceptSuggestion(0, /*show_threshold=*/base::Milliseconds(500)))
+      .Times(1);
   generator().MoveMouseTo(gfx::Point(1000, 1000));
   ASSERT_FALSE(view().IsMouseHovered());
   Paint();

@@ -13,6 +13,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
@@ -80,7 +81,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
 
   // AutofillPopupController implementation.
   // Hidden: void OnSuggestionsChanged() override;
-  void AcceptSuggestion(int index) override;
+  void AcceptSuggestion(int index, base::TimeDelta show_threshold) override;
   int GetLineCount() const override;
   const autofill::Suggestion& GetSuggestionAt(int row) const override;
   std::u16string GetSuggestionMainTextAt(int row) const override;

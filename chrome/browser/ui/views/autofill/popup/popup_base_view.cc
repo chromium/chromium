@@ -143,8 +143,6 @@ bool PopupBaseView::DoShow() {
     // The widget is destroyed by the corresponding NativeWidget, so we don't
     // have to worry about deletion.
     new PopupBaseView::Widget(this);
-
-    show_time_ = base::Time::Now();
   }
 
   GetWidget()->GetRootView()->SetBorder(CreateBorder());
@@ -204,8 +202,7 @@ void PopupBaseView::DoHide() {
   }
 }
 
-void PopupBaseView::NotifyAXSelection(View* selected_view) {
-  DCHECK(selected_view);
+void PopupBaseView::NotifyAXSelection(View& selected_view) {
   if (!is_ax_menu_start_event_fired_) {
     // Fire the menu start event once, right before the first item is selected.
     // By firing these and the matching kMenuEnd events, we are telling screen
@@ -217,21 +214,22 @@ void PopupBaseView::NotifyAXSelection(View* selected_view) {
 
     is_ax_menu_start_event_fired_ = true;
   }
-  selected_view->GetViewAccessibility().SetPopupFocusOverride();
+  selected_view.GetViewAccessibility().SetPopupFocusOverride();
 #if DCHECK_IS_ON()
   constexpr auto kDerivedClasses = base::MakeFixedFlatSet<base::StringPiece>(
       {"PopupSuggestionView", "PopupPasswordSuggestionView", "PopupFooterView",
        "PopupSeparatorView", "PopupWarningView", "PopupBaseView",
-       "PasswordGenerationPopupViewViews::GeneratedPasswordBox"});
-  DCHECK(kDerivedClasses.contains(selected_view->GetClassName()))
+       "PasswordGenerationPopupViewViews::GeneratedPasswordBox",
+       "PopupCellView"});
+  DCHECK(kDerivedClasses.contains(selected_view.GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "
          "here and to onSelection(evt) in "
          "chrome/browser/resources/chromeos/accessibility/chromevox/background/"
          "desktop_automation_handler.js to ensure that ChromeVox announces "
          "the item when selected. Missing class: "
-      << selected_view->GetClassName();
+      << selected_view.GetClassName();
 #endif
-  selected_view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+  selected_view.NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
 }
 
 void PopupBaseView::OnWidgetBoundsChanged(views::Widget* widget,

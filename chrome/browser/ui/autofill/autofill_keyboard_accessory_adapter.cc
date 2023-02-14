@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -104,9 +105,12 @@ absl::optional<int32_t> AutofillKeyboardAccessoryAdapter::GetAxUniqueId() {
 
 // AutofillPopupController implementation.
 
-void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {
-  if (controller_)
-    controller_->AcceptSuggestion(OffsetIndexFor(index));
+void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(
+    int index,
+    base::TimeDelta show_threshold) {
+  if (controller_) {
+    controller_->AcceptSuggestion(OffsetIndexFor(index), show_threshold);
+  }
 }
 
 int AutofillKeyboardAccessoryAdapter::GetLineCount() const {

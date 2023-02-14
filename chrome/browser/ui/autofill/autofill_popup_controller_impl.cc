@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -126,6 +127,8 @@ void AutofillPopupControllerImpl::Show(
 #endif
     if (!view_.Call(&AutofillPopupView::Show))
       return;
+
+    time_view_shown_ = base::TimeTicks::Now();
 
     // We only fire the event when a new popup shows. We do not fire the
     // event when suggestions changed.
@@ -298,7 +301,9 @@ void AutofillPopupControllerImpl::SelectionCleared() {
   SetSelectedLine(absl::nullopt);
 }
 
-void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
+void AutofillPopupControllerImpl::AcceptSuggestion(
+    int index,
+    base::TimeDelta show_threshold) {
   if (static_cast<size_t>(index) >= suggestions_.size()) {
     // Prevents crashes from crbug.com/521133. It seems that in rare cases or
     // races the suggestions_ and the user-selected index may be out of sync.
@@ -306,8 +311,16 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
     // ignoring the selection and wait for another signal from the user.
     return;
   }
+
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
+    return;
+  }
+
+  // Ignore clicks immediately after the popup was shown. This is to prevent
+  // users accidentally accepting suggestions (crbug.com/1279268).
+  DCHECK(!time_view_shown_.is_null());
+  if ((base::TimeTicks::Now() - time_view_shown_ < show_threshold)) {
     return;
   }
 
@@ -547,7 +560,9 @@ bool AutofillPopupControllerImpl::AcceptSelectedLine() {
   if (!CanAccept(suggestions_[*selected_line_].frontend_id))
     return false;
 
-  AcceptSuggestion(*selected_line_);
+  // AcceptSelectedLine is triggered by key presses for which early interactions
+  // are not ignored.
+  AcceptSuggestion(*selected_line_, base::TimeDelta());
   return true;
 }
 
@@ -619,6 +634,11 @@ AutofillPopupControllerImpl::GetDriver() {
     return static_cast<ContentPasswordManagerDriver*>(
         absl::get<PasswordManagerDriver*>(driver));
   }
+}
+
+void AutofillPopupControllerImpl::SetViewForTesting(AutofillPopupView* view) {
+  view_ = view;
+  time_view_shown_ = base::TimeTicks::Now();
 }
 
 void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {

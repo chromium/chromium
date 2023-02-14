@@ -17,6 +17,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
@@ -117,7 +118,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   // AutofillPopupController implementation.
   void OnSuggestionsChanged() override;
-  void AcceptSuggestion(int index) override;
+  void AcceptSuggestion(int index, base::TimeDelta show_threshold) override;
   int GetLineCount() const override;
   const Suggestion& GetSuggestionAt(int row) const override;
   std::u16string GetSuggestionMainTextAt(int row) const override;
@@ -229,12 +230,17 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   friend class AutofillPopupControllerUnitTest;
   friend class AutofillPopupControllerAccessibilityUnitTest;
-  void SetViewForTesting(AutofillPopupView* view) { view_ = view; }
+  void SetViewForTesting(AutofillPopupView* view);
 
   PopupControllerCommon controller_common_;
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
   AutofillPopupViewPtr view_;
   base::WeakPtr<AutofillPopupDelegate> delegate_;
+
+  // The time the view was shown the last time. It is used to safeguard against
+  // accepting suggestions too quickly after a the popup view was shown (see the
+  // `show_threshold` parameter of `AcceptSuggestion`).
+  base::TimeTicks time_view_shown_;
 
   // If set to true, the popup will never be hidden because of stale data or if
   // the user interacts with native UI.

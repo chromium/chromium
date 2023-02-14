@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
@@ -235,7 +237,9 @@ static constexpr absl::optional<int> kNoSelection;
 class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
  public:
   AutofillPopupControllerUnitTest()
-      : autofill_client_(std::make_unique<MockAutofillClient>()) {}
+      : ChromeRenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        autofill_client_(std::make_unique<MockAutofillClient>()) {}
   ~AutofillPopupControllerUnitTest() override = default;
 
   void SetUp() override {
@@ -943,7 +947,27 @@ TEST_F(AutofillPopupControllerUnitTest, SelectInvalidSuggestion) {
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
 
   // The following should not crash:
-  popup_controller()->AcceptSuggestion(1);  // Out of bounds!
+  popup_controller()->AcceptSuggestion(
+      1, /*show_threshold=*/base::Milliseconds(0));  // Out of bounds!
+}
+
+TEST_F(AutofillPopupControllerUnitTest, AcceptSuggestionRespectsTimeout) {
+  // Set up the popup.
+  std::vector<Suggestion> suggestions = {Suggestion("value", "", "", 1)};
+  popup_controller()->Show(suggestions, AutoselectFirstSuggestion(false));
+
+  // Calls before the threshold are ignored.
+  EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(0);
+  popup_controller()->AcceptSuggestion(
+      0, /*show_threshold=*/base::Milliseconds(500));
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  popup_controller()->AcceptSuggestion(
+      0, /*show_threshold=*/base::Milliseconds(500));
+
+  EXPECT_CALL(*delegate(), DidAcceptSuggestion);
+  task_environment()->FastForwardBy(base::Milliseconds(400));
+  popup_controller()->AcceptSuggestion(
+      0, /*show_threshold=*/base::Milliseconds(500));
 }
 
 }  // namespace autofill

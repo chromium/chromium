@@ -11,8 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-
 #include "chrome/android/features/keyboard_accessory/jni_headers/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/autofill_popup_controller_utils.h"
@@ -131,7 +131,8 @@ void AutofillKeyboardAccessoryView::SuggestionSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-  controller_->AcceptSuggestion(list_index);
+  controller_->AcceptSuggestion(list_index,
+                                /*show_threshold=*/base::TimeDelta());
 }
 
 void AutofillKeyboardAccessoryView::DeletionRequested(

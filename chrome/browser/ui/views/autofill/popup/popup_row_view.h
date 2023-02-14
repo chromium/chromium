@@ -11,11 +11,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
-#include "ui/events/event.h"
 #include "ui/gfx/font.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
@@ -51,20 +51,8 @@ class PopupRowView : public views::View {
   // factory function that calls `CreateContent` after creating the object.
   virtual void CreateContent();
 
-  // views::View:
-  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
-  // Drags and presses on any row should be a no-op; subclasses instead rely on
-  // entry/release events. Returns true to indicate that those events have been
-  // processed (i.e., intentionally ignored).
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnPaint(gfx::Canvas* canvas) override;
-  void OnThemeChanged() override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
+  // Returns the view representing the content area of the row.
+  PopupCellView& content_view() { return *content_view_; }
 
  protected:
   PopupRowView(PopupViewViews& popup_view, int line_number, int frontend_id);
@@ -74,8 +62,6 @@ class PopupRowView : public views::View {
   int GetFrontendId() const { return frontend_id_; }
   bool GetSelected() const { return selected_; }
   ui::ColorId GetBackgroundColorId() const;
-
-  virtual void RefreshStyle();
 
   virtual int GetPrimaryTextStyle() = 0;
   // Returns a main text label view. The label part is optional but allow caller
@@ -94,12 +80,6 @@ class PopupRowView : public views::View {
                          bool resize,
                          views::BoxLayout* layout);
 
-  void KeepLabel(views::Label* label) {
-    if (label) {
-      inner_labels_.push_back(label);
-    }
-  }
-
   // Returns the string to be set as the name of the ui::AXNodeData.
   std::u16string GetVoiceOverString();
 
@@ -111,28 +91,17 @@ class PopupRowView : public views::View {
   // GetSubtexts();
   void UpdateLayoutSize(views::BoxLayout* layout_manager, int64_t num_subtexts);
 
-  // Returns true if the mouse is within the bounds of this item. This is not
-  // affected by whether or not the item is overlaid by another popup.
-  bool IsMouseInsideItemBounds() const { return IsMouseHovered(); }
-
-  // We want a mouse click to accept a suggestion only if the user has made an
-  // explicit choice. Therefore, we shall ignore mouse clicks unless the mouse
-  // has been moved into the item's screen bounds. For example, if the item is
-  // hovered by the mouse at the time it's first shown, we want to ignore clicks
-  // until the mouse has left and re-entered the bounds of the item
-  // (crbug.com/1240472, crbug.com/1241585, crbug.com/1287364).
-  bool mouse_observed_outside_item_bounds_ = false;
-
   // The parent view containing this row.
   const raw_ref<PopupViewViews> popup_view_;
   const int line_number_;
   const int frontend_id_;
 
-  // All the labels inside this view.
-  std::vector<views::Label*> inner_labels_;
-
   // Whether this row is currently selected.
   bool selected_ = false;
+
+  // The cell wrapping the content area of the row.
+  raw_ptr<PopupCellView> content_view_ = nullptr;
+  // TODO(crbug.com/1411172): Add a control view.
 };
 
 // This represents a suggestion, i.e., a row containing data that will be filled

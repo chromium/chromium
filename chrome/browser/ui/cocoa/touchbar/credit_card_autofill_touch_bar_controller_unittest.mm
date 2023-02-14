@@ -7,6 +7,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
@@ -58,7 +59,7 @@ class MockAutofillPopupController : public autofill::AutofillPopupController {
 
   // AutofillPopupController
   MOCK_METHOD0(OnSuggestionsChanged, void());
-  MOCK_METHOD1(AcceptSuggestion, void(int index));
+  MOCK_METHOD2(AcceptSuggestion, void(int, base::TimeDelta));
 
   int GetLineCount() const override { return line_count_; }
 

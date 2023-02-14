@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -26,8 +27,10 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // suggestions change.
   virtual void OnSuggestionsChanged() = 0;
 
-  // Accepts the suggestion at |index|.
-  virtual void AcceptSuggestion(int index) = 0;
+  // Accepts the suggestion at `index`. The suggestion will only be accepted if
+  // the popup has been shown for at least `show_threshold` to allow
+  // ruling out accidental popup interactions (crbug.com/1279268).
+  virtual void AcceptSuggestion(int index, base::TimeDelta show_threshold) = 0;
 
   // Returns the number of lines of data that there are.
   virtual int GetLineCount() const = 0;

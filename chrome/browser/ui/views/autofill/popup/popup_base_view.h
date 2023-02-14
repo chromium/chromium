@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "chrome/browser/ui/browser.h"
@@ -54,11 +53,7 @@ class PopupBaseView : public views::WidgetDelegateView,
   static int GetHorizontalPadding();
 
   // Notify accessibility that an item has been selected.
-  void NotifyAXSelection(View*);
-
-  base::TimeDelta time_delta_since_popup_shown() const {
-    return base::Time::Now() - show_time_;
-  }
+  void NotifyAXSelection(View& view);
 
   Browser* browser() { return browser_; }
 
@@ -137,9 +132,6 @@ class PopupBaseView : public views::WidgetDelegateView,
 
   // The widget of the window that triggered this popup. Weak reference.
   raw_ptr<views::Widget> parent_widget_;
-
-  // The time when the popup was shown.
-  base::Time show_time_;
 
   // The browser this popup is shown in.
   raw_ptr<Browser> browser_;

@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/AutofillPopupBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/autofill_popup_controller_utils.h"
@@ -156,8 +157,10 @@ void AutofillPopupViewAndroid::SuggestionSelected(
     const JavaParamRef<jobject>& obj,
     jint list_index) {
   // Race: Hide() may have already run.
-  if (controller_)
-    controller_->AcceptSuggestion(list_index);
+  if (controller_) {
+    controller_->AcceptSuggestion(list_index,
+                                  /*show_threshold=*/base::TimeDelta());
+  }
 }
 
 void AutofillPopupViewAndroid::DeletionRequested(

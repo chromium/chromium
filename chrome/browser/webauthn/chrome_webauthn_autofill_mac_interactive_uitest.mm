@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
@@ -137,7 +138,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   EXPECT_EQ(webauthn_entry.icon, "globeIcon");
 
   // Click the credential.
-  popup_controller->AcceptSuggestion(suggestion_index);
+  popup_controller->AcceptSuggestion(suggestion_index,
+                                     /*show_threshold=*/base::TimeDelta());
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");

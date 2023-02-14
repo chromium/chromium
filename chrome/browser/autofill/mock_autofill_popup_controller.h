@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -43,7 +44,7 @@ class MockAutofillPopupController
 
   // AutofillPopupController:
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
-  MOCK_METHOD(void, AcceptSuggestion, (int), (override));
+  MOCK_METHOD(void, AcceptSuggestion, (int, base::TimeDelta), (override));
   std::vector<Suggestion> GetSuggestions() const override {
     return suggestions_;
   }

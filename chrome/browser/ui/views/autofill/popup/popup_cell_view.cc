@@ -1,0 +1,199 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+
+#include <string>
+
+#include "base/functional/callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/events/event.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/view.h"
+
+namespace autofill {
+
+PopupCellView::PopupCellView() {
+  SetNotifyEnterExitOnChild(true);
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  RefreshStyle();
+}
+
+PopupCellView::~PopupCellView() = default;
+
+void PopupCellView::SetSelected(bool selected) {
+  if (selected_ == selected) {
+    return;
+  }
+
+  selected_ = selected;
+  RefreshStyle();
+}
+
+void PopupCellView::SetVoiceOverString(std::u16string voice_over) {
+  voice_over_ = std::move(voice_over);
+}
+
+void PopupCellView::SetSetSizeForAccessibility(absl::optional<int> set_size) {
+  set_size_ = set_size;
+}
+
+void PopupCellView::SetSetIndexForAccessibility(absl::optional<int> set_index) {
+  set_index_ = set_index;
+}
+
+void PopupCellView::SetOnEnteredCallback(base::RepeatingClosure callback) {
+  on_entered_callback_ = std::move(callback);
+}
+
+void PopupCellView::SetOnExitedCallback(base::RepeatingClosure callback) {
+  on_exited_callback_ = std::move(callback);
+}
+
+void PopupCellView::SetOnAcceptedCallback(base::RepeatingClosure callback) {
+  on_accepted_callback_ = std::move(callback);
+}
+
+void PopupCellView::TrackLabel(views::Label* label) {
+  tracked_labels_.push_back(label);
+}
+
+bool PopupCellView::OnMouseDragged(const ui::MouseEvent& event) {
+  // Return `true` to be informed about subsequent `OnMouseReleased` events.
+  return true;
+}
+
+bool PopupCellView::OnMousePressed(const ui::MouseEvent& event) {
+  // Return `true` to be informed about subsequent `OnMouseReleased` events.
+  return true;
+}
+
+void PopupCellView::OnMouseEntered(const ui::MouseEvent& event) {
+  // `OnMouseEntered()` does not imply that the mouse had been outside of the
+  // item's bounds before: `OnMouseEntered()` fires if the mouse moves just
+  // a little bit on the item. We don't want to show a preview in such a case.
+  if (!mouse_observed_outside_item_bounds_) {
+    return;
+  }
+
+  if (on_entered_callback_) {
+    on_entered_callback_.Run();
+  }
+}
+
+void PopupCellView::OnMouseExited(const ui::MouseEvent& event) {
+  // `OnMouseExited()` does not imply that the mouse has left the item's screen
+  // bounds: `OnMouseExited()` fires (on Windows, at least) when another popup
+  // overlays this item and the mouse is above the new popup
+  // (crbug.com/1287364).
+  mouse_observed_outside_item_bounds_ |= !IsMouseInsideItemBounds();
+  if (on_exited_callback_) {
+    on_exited_callback_.Run();
+  }
+}
+
+void PopupCellView::OnMouseReleased(const ui::MouseEvent& event) {
+  // Ignore mouse clicks unless the user made the explicit choice to selected
+  // the current item.
+  if (!mouse_observed_outside_item_bounds_) {
+    return;
+  }
+
+  if (on_accepted_callback_ && event.IsOnlyLeftMouseButton() &&
+      HitTestPoint(event.location())) {
+    on_accepted_callback_.Run();
+  }
+}
+
+void PopupCellView::OnGestureEvent(ui::GestureEvent* event) {
+  switch (event->type()) {
+    case ui::ET_GESTURE_TAP_DOWN:
+      if (on_entered_callback_) {
+        on_entered_callback_.Run();
+      }
+      break;
+    case ui::ET_GESTURE_TAP:
+      if (on_accepted_callback_) {
+        on_accepted_callback_.Run();
+      }
+      break;
+    case ui::ET_GESTURE_TAP_CANCEL:
+    case ui::ET_GESTURE_END:
+      if (on_exited_callback_) {
+        on_exited_callback_.Run();
+      }
+      break;
+    default:
+      return;
+  }
+}
+
+bool PopupCellView::HandleAccessibleAction(
+    const ui::AXActionData& action_data) {
+  if (action_data.action == ax::mojom::Action::kFocus && on_entered_callback_) {
+    on_entered_callback_.Run();
+  }
+  return View::HandleAccessibleAction(action_data);
+}
+
+void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // Options are selectable.
+  node_data->role = ax::mojom::Role::kListBoxOption;
+  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
+                              GetSelected());
+  node_data->SetNameChecked(GetVoiceOverString());
+
+  if (set_size_) {
+    node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, *set_size_);
+  }
+  if (set_index_) {
+    node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, *set_index_);
+  }
+}
+
+void PopupCellView::OnPaint(gfx::Canvas* canvas) {
+  views::View::OnPaint(canvas);
+  mouse_observed_outside_item_bounds_ |= !IsMouseInsideItemBounds();
+}
+
+void PopupCellView::RefreshStyle() {
+  ui::ColorId kBackgroundColorId = GetSelected()
+                                       ? ui::kColorDropdownBackgroundSelected
+                                       : ui::kColorDropdownBackground;
+  SetBackground(views::CreateThemedSolidBackground(kBackgroundColorId));
+
+  // Set style for each label in this cell depending on its current selection
+  // state.
+  for (raw_ptr<views::Label>& label : tracked_labels_) {
+    label->SetAutoColorReadabilityEnabled(false);
+
+    // If the current suggestion is selected or the label is disabled, override
+    // the style. Otherwise, use the color that corresponds to the actual style
+    // of the label.
+    int style = label->GetEnabled()
+                    ? (GetSelected() ? views::style::STYLE_SELECTED
+                                     : label->GetTextStyle())
+                    : views::style::STYLE_DISABLED;
+    label->SetEnabledColorId(
+        views::style::GetColorId(label->GetTextContext(), style));
+  }
+
+  SchedulePaint();
+}
+
+BEGIN_METADATA(PopupCellView, views::View)
+ADD_PROPERTY_METADATA(bool, Selected)
+ADD_PROPERTY_METADATA(std::u16string, VoiceOverString)
+ADD_PROPERTY_METADATA(absl::optional<int>, SetSizeForAccessibility)
+ADD_PROPERTY_METADATA(absl::optional<int>, SetIndexForAccessibility)
+END_METADATA
+
+}  // namespace autofill
