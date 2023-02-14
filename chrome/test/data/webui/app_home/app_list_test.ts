@@ -117,19 +117,19 @@ suite('AppListTest', () => {
     assertEquals(apps.appList.length, appItems.length);
 
     assertEquals(
-        appItems[0]!.shadowRoot!.querySelector('.text-container')!.textContent,
+        appItems[0]!.shadowRoot!.querySelector('#textContainer')!.textContent,
         apps.appList[0]!.name);
     assertEquals(
         appItems[0]!.shadowRoot!
-            .querySelector<HTMLImageElement>('.icon-container img')!.src,
+            .querySelector<HTMLImageElement>('#iconContainer img')!.src,
         apps.appList[0]!.iconUrl.url);
 
     assertEquals(
-        appItems[1]!.shadowRoot!.querySelector('.text-container')!.textContent,
+        appItems[1]!.shadowRoot!.querySelector('#textContainer')!.textContent,
         apps.appList[1]!.name);
     assertEquals(
         appItems[1]!.shadowRoot!
-            .querySelector<HTMLImageElement>('.icon-container img')!.src,
+            .querySelector<HTMLImageElement>('#iconContainer img')!.src,
         apps.appList[1]!.iconUrl.url + '?grayscale=true');
   });
 
@@ -141,8 +141,8 @@ suite('AppListTest', () => {
     let appItemList =
         Array.from(appListElement.shadowRoot!.querySelectorAll('app-item'));
     assertTrue(!!appItemList.find(
-        appItem => appItem.shadowRoot!.querySelector(
-                                          '.text-container')!.textContent ===
+        appItem =>
+            appItem.shadowRoot!.querySelector('#textContainer')!.textContent ===
             testAppInfo.name));
 
     // Test removing an app
@@ -152,8 +152,8 @@ suite('AppListTest', () => {
     appItemList =
         Array.from(appListElement.shadowRoot!.querySelectorAll('app-item'));
     assertFalse(!!appItemList.find(
-        appItem => appItem.shadowRoot!.querySelector(
-                                          '.text-container')!.textContent ===
+        appItem =>
+            appItem.shadowRoot!.querySelector('#textContainer')!.textContent ===
             testAppInfo.name));
   });
 
@@ -177,7 +177,7 @@ suite('AppListTest', () => {
     const appInfo = apps.appList[0]!;
 
     const openInWindow =
-        contextMenu.querySelector<HTMLElement>('#open-in-window');
+        contextMenu.querySelector<HTMLElement>('#openInWindow');
     assertTrue(!!openInWindow);
     assertEquals(openInWindow.hidden, !appInfo.isLocallyInstalled);
     assertEquals(
@@ -185,7 +185,7 @@ suite('AppListTest', () => {
         appInfo.openInWindow);
 
     const launchOnStartup =
-        contextMenu.querySelector<HTMLElement>('#launch-on-startup');
+        contextMenu.querySelector<HTMLElement>('#launchOnStartup');
     assertTrue(!!launchOnStartup);
     assertEquals(launchOnStartup.hidden, !appInfo.mayShowRunOnOsLoginMode);
 
@@ -196,20 +196,19 @@ suite('AppListTest', () => {
         launchOnStartup.querySelector('cr-checkbox')!.disabled,
         !appInfo.mayToggleRunOnOsLoginMode);
 
-    assertTrue(!!contextMenu.querySelector('#create-shortcut'));
+    assertTrue(!!contextMenu.querySelector('#createShortcut'));
     assertTrue(!!contextMenu.querySelector('#uninstall'));
-    assertTrue(!!contextMenu.querySelector('#app-settings'));
-    assertTrue(!!contextMenu.querySelector('#install-locally'));
+    assertTrue(!!contextMenu.querySelector('#appSettings'));
+    assertTrue(!!contextMenu.querySelector('#installLocally'));
 
     assertFalse(
-        contextMenu.querySelector<HTMLElement>('#create-shortcut')!.hidden);
+        contextMenu.querySelector<HTMLElement>('#createShortcut')!.hidden);
     assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
     assertFalse(
         contextMenu.querySelector<HTMLButtonElement>('#uninstall')!.disabled);
-    assertFalse(
-        contextMenu.querySelector<HTMLElement>('#app-settings')!.hidden);
+    assertFalse(contextMenu.querySelector<HTMLElement>('#appSettings')!.hidden);
     assertTrue(
-        contextMenu.querySelector<HTMLElement>('#install-locally')!.hidden);
+        contextMenu.querySelector<HTMLElement>('#installLocally')!.hidden);
   });
 
   test('context menu not locally installed', () => {
@@ -230,18 +229,17 @@ suite('AppListTest', () => {
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
     assertTrue(contextMenu.open);
 
+    assertTrue(contextMenu.querySelector<HTMLElement>('#openInWindow')!.hidden);
     assertTrue(
-        contextMenu.querySelector<HTMLElement>('#open-in-window')!.hidden);
+        contextMenu.querySelector<HTMLElement>('#launchOnStartup')!.hidden);
     assertTrue(
-        contextMenu.querySelector<HTMLElement>('#launch-on-startup')!.hidden);
-    assertTrue(
-        contextMenu.querySelector<HTMLElement>('#create-shortcut')!.hidden);
-    assertTrue(contextMenu.querySelector<HTMLElement>('#app-settings')!.hidden);
+        contextMenu.querySelector<HTMLElement>('#createShortcut')!.hidden);
+    assertTrue(contextMenu.querySelector<HTMLElement>('#appSettings')!.hidden);
     assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
     assertTrue(
         contextMenu.querySelector<HTMLButtonElement>('#uninstall')!.disabled);
     assertFalse(
-        contextMenu.querySelector<HTMLElement>('#install-locally')!.hidden);
+        contextMenu.querySelector<HTMLElement>('#installLocally')!.hidden);
   });
 
   test('toggle open in window', async () => {
@@ -254,7 +252,7 @@ suite('AppListTest', () => {
     const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     const openInWindow =
-        contextMenu.querySelector<HTMLElement>('#open-in-window');
+        contextMenu.querySelector<HTMLElement>('#openInWindow');
     assertTrue(!!openInWindow);
     const checkbox = openInWindow.querySelector('cr-checkbox');
     assertTrue(!!checkbox);
@@ -313,7 +311,7 @@ suite('AppListTest', () => {
     const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     const launchOnStartup =
-        contextMenu.querySelector<HTMLElement>('#launch-on-startup');
+        contextMenu.querySelector<HTMLElement>('#launchOnStartup');
     assertTrue(!!launchOnStartup);
     const checkbox = launchOnStartup.querySelector('cr-checkbox');
     assertTrue(!!checkbox);
@@ -373,7 +371,7 @@ suite('AppListTest', () => {
     const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
     const launchOnStartup =
-        contextMenu.querySelector<HTMLElement>('#launch-on-startup');
+        contextMenu.querySelector<HTMLElement>('#launchOnStartup');
     assertTrue(!!launchOnStartup);
     const checkbox = launchOnStartup.querySelector('cr-checkbox');
     assertTrue(!!checkbox);
@@ -432,7 +430,7 @@ suite('AppListTest', () => {
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     const appSettings =
-        appItem.shadowRoot!.querySelector<HTMLElement>('#app-settings');
+        appItem.shadowRoot!.querySelector<HTMLElement>('#appSettings');
     assertTrue(!!appSettings);
 
     appSettings.click();
@@ -451,7 +449,7 @@ suite('AppListTest', () => {
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     const createShortcut =
-        appItem.shadowRoot!.querySelector<HTMLElement>('#create-shortcut');
+        appItem.shadowRoot!.querySelector<HTMLElement>('#createShortcut');
     assertTrue(!!createShortcut);
 
     createShortcut.click();
@@ -468,8 +466,7 @@ suite('AppListTest', () => {
     assertTrue(!!appItem);
 
     assertEquals(
-        appItem.shadowRoot!
-            .querySelector<HTMLImageElement>('.icon-container img')!.src,
+        appItem.shadowRoot!.querySelector<HTMLImageElement>('#iconImage')!.src,
         apps.appList[1]!.iconUrl.url + '?grayscale=true');
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
@@ -477,15 +474,14 @@ suite('AppListTest', () => {
     const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
 
+    assertTrue(contextMenu.querySelector<HTMLElement>('#openInWindow')!.hidden);
     assertTrue(
-        contextMenu.querySelector<HTMLElement>('#open-in-window')!.hidden);
-    assertTrue(
-        contextMenu.querySelector<HTMLElement>('#create-shortcut')!.hidden);
-    assertTrue(contextMenu.querySelector<HTMLElement>('#app-settings')!.hidden);
+        contextMenu.querySelector<HTMLElement>('#createShortcut')!.hidden);
+    assertTrue(contextMenu.querySelector<HTMLElement>('#appSettings')!.hidden);
     assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
 
     const installLocally =
-        appItem.shadowRoot!.querySelector<HTMLElement>('#install-locally');
+        appItem.shadowRoot!.querySelector<HTMLElement>('#installLocally');
     assertTrue(!!installLocally);
     assertFalse(installLocally.hidden);
 
@@ -496,21 +492,19 @@ suite('AppListTest', () => {
     await callbackRouterRemote.$.flushForTesting();
     flush();
     assertEquals(
-        appItem.shadowRoot!
-            .querySelector<HTMLImageElement>('.icon-container img')!.src,
+        appItem.shadowRoot!.querySelector<HTMLImageElement>('#iconImage')!.src,
         apps.appList[1]!.iconUrl.url);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     assertFalse(
-        contextMenu.querySelector<HTMLElement>('#open-in-window')!.hidden);
+        contextMenu.querySelector<HTMLElement>('#openInWindow')!.hidden);
     assertFalse(
-        contextMenu.querySelector<HTMLElement>('#create-shortcut')!.hidden);
-    assertFalse(
-        contextMenu.querySelector<HTMLElement>('#app-settings')!.hidden);
+        contextMenu.querySelector<HTMLElement>('#createShortcut')!.hidden);
+    assertFalse(contextMenu.querySelector<HTMLElement>('#appSettings')!.hidden);
     assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
     assertTrue(
-        contextMenu.querySelector<HTMLElement>('#install-locally')!.hidden);
+        contextMenu.querySelector<HTMLElement>('#installLocally')!.hidden);
     assertEquals(
         1,
         metricsPrivateMock.getUserActionCount(

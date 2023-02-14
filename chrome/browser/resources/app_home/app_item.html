@@ -12,7 +12,7 @@
   width: 96px;
 }
 
-.icon-container {
+#iconContainer {
   height: 64px;
   margin-inline-end: auto;
   margin-inline-start: auto;
@@ -21,11 +21,11 @@
   width: 64px;
 }
 
-.icon-container:active {
+#iconContainer:active {
   transform: scale(0.94);
 }
 
-.text-container {
+#textContainer {
   font-size: 13px;
   height: 20px;
   margin-top: 8px;
@@ -34,7 +34,7 @@
   white-space: nowrap;
 }
 
-.icon-image {
+#iconImage {
   height: 100%;
   width: 100%;
 }
@@ -57,14 +57,14 @@ cr-checkbox::part(label-container) {
 
 </style>
 
-<div class="icon-container" id="iconContainer">
-  <img src="[[getIconUrl_(appInfo)]]" class="icon-image"
+<div id="iconContainer">
+  <img src="[[getIconUrl_(appInfo)]]" id="iconImage"
   alt="[[appInfo.name]]" aria-hidden="true" draggable="false"></img>
 </div>
-<div class="text-container" aria-hidden="true">[[appInfo.name]]</div>
+<div id="textContainer" aria-hidden="true">[[appInfo.name]]</div>
 
 <cr-action-menu id="menu" on-mousedown="onMenuMousedown_">
-  <div id="open-in-window" tabindex="0" class="dropdown-item"
+  <div id="openInWindow" tabindex="0" class="dropdown-item"
       on-click="onOpenInWindowItemClick_"
       hidden="[[!isLocallyInstalled_(appInfo)]]">
     <div class="dropdown-item-label">
@@ -75,7 +75,7 @@ cr-checkbox::part(label-container) {
       $i18n{appWindowOpenCheckboxLabel}
     </cr-checkbox>
   </div>
-  <div id="launch-on-startup" tabindex="0" class="dropdown-item"
+  <div id="launchOnStartup" tabindex="0" class="dropdown-item"
       on-click="onLaunchOnStartupItemClick_"
       hidden="[[isLaunchOnStartupHidden_(appInfo)]]">
     <div class="dropdown-item-label">
@@ -89,12 +89,12 @@ cr-checkbox::part(label-container) {
       $i18n{appLaunchAtStartupCheckboxLabel}
     </cr-checkbox>
   </div>
-  <button id="create-shortcut" class="dropdown-item"
+  <button id="createShortcut" class="dropdown-item"
       on-click="onCreateShortcutItemClick_"
       hidden="[[!isLocallyInstalled_(appInfo)]]">
     $i18n{createShortcutForAppLabel}
   </button>
-  <button id="install-locally" class="dropdown-item"
+  <button id="installLocally" class="dropdown-item"
     on-click="onInstallLocallyItemClick_"
     hidden="[[isLocallyInstalled_(appInfo)]]">
   $i18n{installLocallyLabel}
@@ -105,7 +105,7 @@ cr-checkbox::part(label-container) {
     on-click="onUninstallItemClick_">
     $i18n{uninstallAppLabel}
   </button>
-  <button id="app-settings" class="dropdown-item"
+  <button id="appSettings" class="dropdown-item"
       on-click="onAppSettingsItemClick_"
       hidden="[[!isLocallyInstalled_(appInfo)]]">
     $i18n{appSettingsLabel}
