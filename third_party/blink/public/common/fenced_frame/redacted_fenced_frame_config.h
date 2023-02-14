@@ -48,16 +48,6 @@ enum DeprecatedFencedFrameMode {
   kOpaqueAds,
 };
 
-struct BLINK_COMMON_EXPORT FencedFrameReporting {
-  // If this is an "opaque-ads" mode fenced frame, there might be an associated
-  // reporting metadata. This is a map from destination type to reporting
-  // metadata which in turn is a map from the event type (registered by the
-  // associated worklet) to the reporting url.
-  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  base::flat_map<ReportingDestination, base::flat_map<std::string, GURL>>
-      metadata;
-};
-
 struct BLINK_COMMON_EXPORT AdAuctionData {
   url::Origin interest_group_owner;
   std::string interest_group_name;

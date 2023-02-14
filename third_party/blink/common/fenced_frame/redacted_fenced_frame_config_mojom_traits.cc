@@ -55,15 +55,6 @@ EnumTraits<blink::mojom::ReportingDestination,
 }
 
 // static
-const base::flat_map<blink::FencedFrame::ReportingDestination,
-                     base::flat_map<std::string, GURL>>&
-StructTraits<blink::mojom::FencedFrameReportingDataView,
-             blink::FencedFrame::FencedFrameReporting>::
-    metadata(const blink::FencedFrame::FencedFrameReporting& input) {
-  return input.metadata;
-}
-
-// static
 blink::mojom::DeprecatedFencedFrameMode
 EnumTraits<blink::mojom::DeprecatedFencedFrameMode,
            blink::FencedFrame::DeprecatedFencedFrameMode>::
@@ -93,17 +84,6 @@ bool EnumTraits<blink::mojom::DeprecatedFencedFrameMode,
   }
   NOTREACHED();
   return false;
-}
-
-// static
-bool StructTraits<blink::mojom::FencedFrameReportingDataView,
-                  blink::FencedFrame::FencedFrameReporting>::
-    Read(blink::mojom::FencedFrameReportingDataView data,
-         blink::FencedFrame::FencedFrameReporting* out) {
-  if (!data.ReadMetadata(&out->metadata)) {
-    return false;
-  }
-  return true;
 }
 
 // static

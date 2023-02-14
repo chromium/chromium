@@ -91,7 +91,6 @@ GURL CONTENT_EXPORT GenerateUrnUuid();
 
 using AdAuctionData = blink::FencedFrame::AdAuctionData;
 using DeprecatedFencedFrameMode = blink::FencedFrame::DeprecatedFencedFrameMode;
-using ReportingMetadata = blink::FencedFrame::FencedFrameReporting;
 using SharedStorageBudgetMetadata =
     blink::FencedFrame::SharedStorageBudgetMetadata;
 

@@ -18,15 +18,6 @@ enum ReportingDestination {
   kSharedStorageSelectUrl,
 };
 
-struct FencedFrameReporting {
-  // If this is an "opaque-ads" mode fenced frame, there might be an associated
-  // reporting metadata. This is a map from destination type to reporting
-  // metadata which in turn is a map from the event type (registered by the
-  // associated worklet) to the reporting url.
-  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  map<ReportingDestination, map<string, url.mojom.Url>> metadata;
-};
-
 // The fenced frame config's "mode" describes a set of functionalities that it
 // should have. (In the future, the concept of a "mode" will be removed, and
 // replaced with individual fields controlling each functionality.)

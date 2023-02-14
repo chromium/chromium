@@ -45,18 +45,6 @@ struct BLINK_COMMON_EXPORT
 };
 
 template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::FencedFrameReportingDataView,
-                 blink::FencedFrame::FencedFrameReporting> {
-  static const base::flat_map<blink::FencedFrame::ReportingDestination,
-                              base::flat_map<std::string, GURL>>&
-  metadata(const blink::FencedFrame::FencedFrameReporting& input);
-
-  static bool Read(blink::mojom::FencedFrameReportingDataView data,
-                   blink::FencedFrame::FencedFrameReporting* out);
-};
-
-template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::AdAuctionDataDataView,
                                         blink::FencedFrame::AdAuctionData> {
   static const url::Origin& interest_group_owner(

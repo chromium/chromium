@@ -566,10 +566,6 @@ mojom("mojom_platform") {
           cpp = "::blink::FencedFrame::ReportingDestination"
         },
         {
-          mojom = "blink.mojom.FencedFrameReporting"
-          cpp = "::blink::FencedFrame::FencedFrameReporting"
-        },
-        {
           mojom = "blink.mojom.DeprecatedFencedFrameMode"
           cpp = "::blink::FencedFrame::DeprecatedFencedFrameMode"
         },
@@ -596,10 +592,6 @@ mojom("mojom_platform") {
         {
           mojom = "blink.mojom.PotentiallyOpaqueSharedStorageBudgetMetadata"
           cpp = "::blink::FencedFrame::RedactedFencedFrameProperty<::blink::FencedFrame::SharedStorageBudgetMetadata>"
-        },
-        {
-          mojom = "blink.mojom.PotentiallyOpaqueReportingMetadata"
-          cpp = "::blink::FencedFrame::RedactedFencedFrameProperty<::blink::FencedFrame::FencedFrameReporting>"
         },
         {
           mojom = "blink.mojom.FencedFrameConfig"

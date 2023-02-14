@@ -83,7 +83,6 @@ blink_core_sources_html = [
   "fenced_frame/fenced_frame_config.h",
   "fenced_frame/fenced_frame_mparch_delegate.cc",
   "fenced_frame/fenced_frame_mparch_delegate.h",
-  "fenced_frame/fenced_frame_reporting.h",
   "fenced_frame/html_fenced_frame_element.cc",
   "fenced_frame/html_fenced_frame_element.h",
   "forms/base_button_input_type.cc",
