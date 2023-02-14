@@ -499,6 +499,29 @@ TEST_F(ChromePasswordProtectionServiceTest,
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
+  profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
+                                    PASSWORD_PROTECTION_OFF);
+  EXPECT_FALSE(service_->IsPingingEnabled(
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+      reused_password_type));
+
+  service_->ConfigService(true /*incognito*/, false /*SBER*/);
+  EXPECT_FALSE(service_->IsPingingEnabled(
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+      reused_password_type));
+
+  service_->ConfigService(false /*incognito*/, true /*SBER*/);
+  EXPECT_FALSE(service_->IsPingingEnabled(
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+      reused_password_type));
+
+  service_->ConfigService(false /*incognito*/, false /*SBER*/);
+  EXPECT_FALSE(service_->IsPingingEnabled(
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+      reused_password_type));
+  profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
+                                    PHISHING_REUSE);
+
   service_->ConfigService(false /*incognito*/, false /*SBER*/);
   reused_password_type.set_account_type(ReusedPasswordAccountType::UNKNOWN);
   EXPECT_FALSE(service_->IsPingingEnabled(
@@ -541,7 +564,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                     PASSWORD_PROTECTION_OFF);
   service_->ConfigService(false /*incognito*/, false /*SBER*/);
-  EXPECT_TRUE(service_->IsPingingEnabled(
+  EXPECT_FALSE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
@@ -1440,6 +1463,12 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
     reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
     profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                       PASSWORD_PROTECTION_OFF);
+    EXPECT_EQ(RequestOutcome::TURNED_OFF_BY_ADMIN,
+              service_->GetPingNotSentReason(
+                  LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                  GURL("about:blank"), reused_password_type));
+    reused_password_type.set_account_type(
+        ReusedPasswordAccountType::SAVED_PASSWORD);
     EXPECT_EQ(RequestOutcome::TURNED_OFF_BY_ADMIN,
               service_->GetPingNotSentReason(
                   LoginReputationClientRequest::PASSWORD_REUSE_EVENT,

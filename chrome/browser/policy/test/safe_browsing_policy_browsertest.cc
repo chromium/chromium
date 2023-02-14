@@ -335,8 +335,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   EXPECT_EQ(safe_browsing::PHISHING_REUSE,
             mock_service.GetPasswordProtectionWarningTriggerPref(account_type));
   // Sets the enterprise policy to 1 (a.k.a PASSWORD_REUSE). Gmail accounts
-  // should always return PHISHING_REUSE regardless of what the policy is set
-  // to.
+  // should always return PHISHING_REUSE if the policy is not set to 0.
   PolicyMap policies;
   policies.Set(key::kPasswordProtectionWarningTrigger, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
@@ -350,6 +349,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(2), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_EQ(safe_browsing::PHISHING_REUSE,
+            mock_service.GetPasswordProtectionWarningTriggerPref(account_type));
+  // Sets the enterprise policy to 0 (a.k.a PASSWORD_PROTECTION_OFF).
+  policies.Set(key::kPasswordProtectionWarningTrigger, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
+  UpdateProviderPolicy(policies);
+  EXPECT_EQ(safe_browsing::PASSWORD_PROTECTION_OFF,
             mock_service.GetPasswordProtectionWarningTriggerPref(account_type));
 }
 
