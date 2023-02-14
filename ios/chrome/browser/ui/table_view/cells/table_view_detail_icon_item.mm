@@ -366,6 +366,8 @@ constexpr NSString* kBlueDotColor = @"blue_600_color";
     [dotUIView.heightAnchor constraintEqualToConstant:kDotSize],
     [dotUIView.centerYAnchor
         constraintEqualToAnchor:self.textLabel.centerYAnchor],
+    [dotUIView.leadingAnchor
+        constraintEqualToAnchor:self.notificationDotUIView.leadingAnchor],
   ]];
 
   dotUIView.layer.cornerRadius = kDotSize / 2;
