@@ -235,6 +235,11 @@ bool PowerBookmarkDatabaseImpl::InitSchema() {
     db_.Raze();
   }
 
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
   // Create the meta table if it doesn't exist.
   if (!meta_table_.Init(&db_, kCurrentVersionNumber,
                         kCompatibleVersionNumber)) {
@@ -251,11 +256,15 @@ bool PowerBookmarkDatabaseImpl::InitSchema() {
   }
 
   return meta_table_.SetVersionNumber(kCurrentVersionNumber) &&
-         meta_table_.SetCompatibleVersionNumber(kCompatibleVersionNumber);
+         meta_table_.SetCompatibleVersionNumber(kCompatibleVersionNumber) &&
+         transaction.Commit();
 }
 
 bool PowerBookmarkDatabaseImpl::CreateSchema() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Ensure that the schema is created atomically.
+  DCHECK(db_.HasActiveTransactions());
 
   // `id` is the primary key of the table, corresponds to a base::GUID.
   // `url` The URL of the target page.
