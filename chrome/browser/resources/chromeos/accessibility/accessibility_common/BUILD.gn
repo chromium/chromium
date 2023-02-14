@@ -5,8 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import(
-    "//chrome/browser/resources/chromeos/accessibility/accessibility_common/dictation/buildflags.gni")
-import(
     "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//extensions/buildflags/buildflags.gni")
