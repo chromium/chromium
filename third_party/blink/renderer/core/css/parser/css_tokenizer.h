@@ -110,7 +110,7 @@ class CORE_EXPORT CSSTokenizer {
   CSSParserToken TokenizeSingleWithComments();
 
  private:
-  CSSParserToken NextToken();
+  ALWAYS_INLINE CSSParserToken NextToken();
 
   UChar Consume();
   void Reconsume(UChar);
@@ -171,9 +171,6 @@ class CORE_EXPORT CSSTokenizer {
   CSSParserToken EndOfFile(UChar);
 
   StringView RegisterString(const String&);
-
-  using CodePoint = CSSParserToken (CSSTokenizer::*)(UChar);
-  static const CodePoint kCodePoints[];
 
   CSSTokenizerInputStream input_;
   Vector<CSSParserTokenType, 8> block_stack_;

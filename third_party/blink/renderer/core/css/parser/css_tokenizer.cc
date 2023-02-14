@@ -3,11 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
-
-namespace blink {
-#include "third_party/blink/renderer/core/css/css_tokenizer_codepoints.cc"
-}
-
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -342,20 +337,116 @@ CSSParserToken CSSTokenizer::NextToken() {
   // incremental tokenization of partial sources.
   // However, for now we follow the spec exactly.
   UChar cc = Consume();
-  CodePoint code_point_func = nullptr;
-
-  if (IsASCII(cc)) {
-    SECURITY_DCHECK(cc < codePointsNumber);
-    code_point_func = kCodePoints[cc];
-  } else {
-    code_point_func = &CSSTokenizer::NameStart;
-  }
-
   ++token_count_;
-  if (code_point_func) {
-    return ((this)->*(code_point_func))(cc);
+
+  switch (cc) {
+    case 0:
+      return EndOfFile(cc);
+    case '\t':
+    case '\n':
+    case '\f':
+    case '\r':
+    case ' ':
+      return WhiteSpace(cc);
+    case '\'':
+    case '"':
+      return StringStart(cc);
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+      return AsciiDigit(cc);
+    case '(':
+      return LeftParenthesis(cc);
+    case ')':
+      return RightParenthesis(cc);
+    case '[':
+      return LeftBracket(cc);
+    case ']':
+      return RightBracket(cc);
+    case '{':
+      return LeftBrace(cc);
+    case '}':
+      return RightBrace(cc);
+    case '+':
+    case '.':
+      return PlusOrFullStop(cc);
+    case '-':
+      return HyphenMinus(cc);
+    case '*':
+      return Asterisk(cc);
+    case '<':
+      return LessThan(cc);
+    case ',':
+      return Comma(cc);
+    case '/':
+      return Solidus(cc);
+    case '\\':
+      return ReverseSolidus(cc);
+    case ':':
+      return Colon(cc);
+    case ';':
+      return SemiColon(cc);
+    case '#':
+      return Hash(cc);
+    case '^':
+      return CircumflexAccent(cc);
+    case '$':
+      return DollarSign(cc);
+    case '|':
+      return VerticalLine(cc);
+    case '~':
+      return Tilde(cc);
+    case '@':
+      return CommercialAt(cc);
+    case 'u':
+    case 'U':
+      return LetterU(cc);
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 11:
+    case 14:
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+    case 19:
+    case 20:
+    case 21:
+    case 22:
+    case 23:
+    case 24:
+    case 25:
+    case 26:
+    case 27:
+    case 28:
+    case 29:
+    case 30:
+    case 31:
+    case '!':
+    case '%':
+    case '&':
+    case '=':
+    case '>':
+    case '?':
+    case '`':
+    case 127:
+      return CSSParserToken(kDelimiterToken, cc);
+    default:
+      return NameStart(cc);
   }
-  return CSSParserToken(kDelimiterToken, cc);
 }
 
 // This method merges the following spec sections for efficiency
