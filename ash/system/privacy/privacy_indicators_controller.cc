@@ -154,6 +154,11 @@ void ModifyPrivacyIndicatorsNotification(
     bool is_camera_used,
     bool is_microphone_used,
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
+  // With `features::kVideoConference` enabled, the tray serves as this
+  // notifier, so do not show these notifications.
+  if (features::IsVideoConferenceEnabled()) {
+    return;
+  }
   auto* message_center = message_center::MessageCenter::Get();
   std::string id = GetPrivacyIndicatorsNotificationId(app_id);
   bool notification_exists = message_center->FindVisibleNotificationById(id);
@@ -181,9 +186,9 @@ void UpdatePrivacyIndicatorsView(const std::string& app_id,
       features::IsVideoConferenceEnabled()) {
     return;
   }
-  DCHECK(ash::Shell::HasInstance());
+  DCHECK(Shell::HasInstance());
   for (auto* root_window_controller :
-       ash::Shell::Get()->GetAllRootWindowControllers()) {
+       Shell::Get()->GetAllRootWindowControllers()) {
     DCHECK(root_window_controller);
     auto* status_area_widget = root_window_controller->GetStatusAreaWidget();
     DCHECK(status_area_widget);
@@ -205,9 +210,9 @@ void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {
   if (!features::IsPrivacyIndicatorsEnabled())
     return;
 
-  DCHECK(ash::Shell::HasInstance());
+  DCHECK(Shell::HasInstance());
   for (auto* root_window_controller :
-       ash::Shell::Get()->GetAllRootWindowControllers()) {
+       Shell::Get()->GetAllRootWindowControllers()) {
     DCHECK(root_window_controller);
     auto* status_area_widget = root_window_controller->GetStatusAreaWidget();
     DCHECK(status_area_widget);

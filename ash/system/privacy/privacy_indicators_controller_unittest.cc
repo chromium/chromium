@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
@@ -15,6 +17,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
@@ -241,6 +244,26 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationClickWithTwoButtons) {
   EXPECT_FALSE(delegate->launch_settings_called());
   ClickView(notification_view, 1);
   EXPECT_TRUE(delegate->launch_settings_called());
+}
+
+// Tests that a basic privacy indicator notification is disabled when the video
+// conference feature is enabled.
+TEST_F(PrivacyIndicatorsControllerTest,
+       DoNotShowNotificationWithVideoConferenceEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kVideoConference};
+
+  // Try to show a notification.
+  std::string app_id = "test_app_id";
+  std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
+  scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
+  ash::ModifyPrivacyIndicatorsNotification(
+      app_id, u"test_app_name", /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate);
+
+  // The notification should not exist.
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
 }
 
 }  // namespace ash
