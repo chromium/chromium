@@ -24,12 +24,10 @@ namespace gpu {
 namespace {
 
 bool IsUsageSupported(uint32_t usage) {
-  // Ignore for mipmap usage.
-  usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
   constexpr uint32_t kWrappedSkImageUsage =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
       SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
-      SHARED_IMAGE_USAGE_CPU_UPLOAD;
+      SHARED_IMAGE_USAGE_CPU_UPLOAD | SHARED_IMAGE_USAGE_MIPMAP;
   return (usage & kWrappedSkImageUsage) && !(usage & ~kWrappedSkImageUsage);
 }
 

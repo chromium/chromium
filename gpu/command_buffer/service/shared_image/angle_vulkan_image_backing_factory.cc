@@ -116,9 +116,6 @@ bool AngleVulkanImageBackingFactory::IsGMBSupported(
 bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
     uint32_t usage,
     gfx::GpuMemoryBufferType gmb_type) const {
-  // Ignore for mipmap usage.
-  usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
-
   // TODO(penghuang): verify the scanout is the right usage for video playback.
   // crbug.com/1280798
   constexpr auto kSupportedUsages =

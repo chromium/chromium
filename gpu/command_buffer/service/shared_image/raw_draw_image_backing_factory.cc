@@ -63,9 +63,6 @@ RawDrawImageBackingFactory::CreateSharedImage(
 bool RawDrawImageBackingFactory::CanUseRawDrawImageBacking(
     uint32_t usage,
     GrContextType gr_context_type) const {
-  // Ignore for mipmap usage.
-  usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
-
   auto kRawDrawImageBackingUsage =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER |
       SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_RAW_DRAW;
