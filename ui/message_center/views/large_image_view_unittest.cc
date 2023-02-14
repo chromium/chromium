@@ -5,6 +5,7 @@
 #include "ui/message_center/views/large_image_view.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace message_center {
 namespace {
@@ -16,6 +17,13 @@ struct TestCase {
   const gfx::Size input;
   const gfx::Size expected_output;
 };
+
+// Returns a test image of `image_size`.
+gfx::ImageSkia CreateTestImageForSize(const gfx::Size& image_size) {
+  SkBitmap icon_bitmap;
+  icon_bitmap.allocN32Pixels(image_size.width(), image_size.height());
+  return gfx::ImageSkia::CreateFrom1xBitmap(icon_bitmap);
+}
 
 }  // namespace
 
@@ -48,13 +56,31 @@ TEST_F(LargeImageViewTest, CheckPreferredSize) {
 
   LargeImageView view(/*max_size=*/{300, 500});
   for (const TestCase& test_case : kTestCases) {
-    SkBitmap icon_bitmap;
-    const gfx::Size& input_image_size = test_case.input;
-    icon_bitmap.allocN32Pixels(input_image_size.width(),
-                               input_image_size.height());
-    view.SetImage(gfx::ImageSkia::CreateFrom1xBitmap(icon_bitmap));
+    view.SetImage(CreateTestImageForSize(test_case.input));
     EXPECT_EQ(view.GetPreferredSize(), test_case.expected_output);
   }
+}
+
+TEST_F(LargeImageViewTest, VerifyDrawnImage) {
+  LargeImageView view(/*max_size=*/{150, 300});
+  view.SetBoundsRect(/*bounds=*/{200, 300});
+  view.SetImage(CreateTestImageForSize(/*image_size=*/{300, 400}));
+
+  // The original image is processed by the following steps:
+  // Step 1: Resize. The size of the resized image is gfx::Size{150, 200}.
+  // Step 2: Cap by the max size. gfx::Size{150, 200} is already smaller than
+  // the max size.
+  // Step 3: Cap by `view` contents size. After this step, the size is still
+  // gfx::Size{150, 200}.
+  EXPECT_EQ(view.drawn_image().size(), gfx::Size(150, 200));
+
+  // Set `view` with a smaller size.
+  view.SetBoundsRect(/*bounds=*/{100, 100});
+
+  // Because only view bounds change, the size of the image before Step 3 is
+  // gfx::Size{150, 200}. After being capped by `view` contents size, the final
+  // image size is gfx::Size{100, 100}.
+  EXPECT_EQ(view.drawn_image().size(), gfx::Size(100, 100));
 }
 
 }  // namespace message_center

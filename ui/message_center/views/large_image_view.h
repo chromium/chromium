@@ -27,18 +27,30 @@ class MESSAGE_CENTER_EXPORT LargeImageView : public views::View {
   ~LargeImageView() override;
 
   // views::View:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   void SetImage(const gfx::ImageSkia& image);
 
+  const gfx::ImageSkia& drawn_image() const { return drawn_image_; }
+
  private:
   // Calculates the resized image's size so that the resized image's width does
   // not exceed the threshold.
-  gfx::Size CalculateResizedImageSizeForWidth();
+  gfx::Size CalculateResizedImageSizeForWidth() const;
+
+  // Returns the image to draw as the notification large image.
+  gfx::ImageSkia CalculateDrawnImage() const;
 
   const gfx::Size max_size_;
   const gfx::Size min_size_;
-  gfx::ImageSkia image_;
+
+  // Caches the original image. Updates in `SetImage()`.
+  gfx::ImageSkia original_image_;
+
+  // Caches the image to draw in this view. Adapted from the original image.
+  // Updates when either `original_image_` or the view size changes.
+  gfx::ImageSkia drawn_image_;
 };
 
 }  // namespace message_center
