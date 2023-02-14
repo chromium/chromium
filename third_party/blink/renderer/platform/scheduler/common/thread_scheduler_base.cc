@@ -26,6 +26,10 @@ base::TimeTicks ThreadSchedulerBase::EnableVirtualTime(
     return virtual_time_domain_->InitialTicks();
   if (initial_time.is_null())
     initial_time = base::Time::Now();
+
+  // TODO(caseq): Considering we're not enabling override atomically with
+  // capturing current ticks, provide a safety margin to assure the emulated
+  // ticks never get behind real clock, while the override is being enabled.
   base::TimeTicks initial_ticks = GetTickClock()->NowTicks();
   virtual_time_domain_ = std::make_unique<AutoAdvancingVirtualTimeDomain>(
       initial_time, initial_ticks, &GetHelper());
@@ -36,7 +40,7 @@ base::TimeTicks ThreadSchedulerBase::EnableVirtualTime(
   DCHECK(!virtual_time_stopped_);
   virtual_time_domain_->SetCanAdvanceVirtualTime(true);
 
-  return initial_ticks;
+  return virtual_time_domain_->InitialTicks();
 }
 
 void ThreadSchedulerBase::DisableVirtualTimeForTesting() {

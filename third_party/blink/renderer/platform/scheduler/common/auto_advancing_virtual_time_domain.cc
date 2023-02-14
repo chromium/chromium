@@ -21,10 +21,13 @@ AutoAdvancingVirtualTimeDomain::AutoAdvancingVirtualTimeDomain(
       max_task_starvation_count_(0),
       can_advance_virtual_time_(true),
       helper_(helper),
-      now_ticks_(initial_time_ticks),
-      initial_time_ticks_(initial_time_ticks),
-      initial_time_(initial_time),
-      previous_time_(initial_time) {
+      time_override_(ProcessTimeOverrideCoordinator::CreateOverride(
+          initial_time,
+          initial_time_ticks,
+          base::BindRepeating(
+              &AutoAdvancingVirtualTimeDomain::NotifyPolicyChanged,
+              base::Unretained(this)))),
+      initial_time_ticks_(time_override_->NowTicks()) {
   helper_->AddTaskObserver(this);
 }
 
@@ -33,8 +36,7 @@ AutoAdvancingVirtualTimeDomain::~AutoAdvancingVirtualTimeDomain() {
 }
 
 base::TimeTicks AutoAdvancingVirtualTimeDomain::NowTicks() const {
-  base::AutoLock lock(now_ticks_lock_);
-  return now_ticks_;
+  return time_override_->NowTicks();
 }
 
 bool AutoAdvancingVirtualTimeDomain::MaybeFastForwardToWakeUp(
@@ -86,20 +88,14 @@ bool AutoAdvancingVirtualTimeDomain::MaybeAdvanceVirtualTime(
     requested_next_virtual_time_ = base::TimeTicks();
   }
 
-  if (new_virtual_time <= NowTicks())
+  // Currently, a virtual time pauser may try to advance time to
+  // a value from the past.
+  // TODO(caseq): make sure we don't try "advancing" to past values.
+  if (new_virtual_time <= NowTicks()) {
     return false;
-
-  {
-    base::AutoLock lock(now_ticks_lock_);
-    now_ticks_ = new_virtual_time;
   }
 
-  return true;
-}
-
-void AutoAdvancingVirtualTimeDomain::SetTimeSourceOverride(
-    std::unique_ptr<ScopedTimeSourceOverride> time_source_override) {
-  time_source_override_ = std::move(time_source_override);
+  return time_override_->TryAdvancingTime(new_virtual_time) == new_virtual_time;
 }
 
 const char* AutoAdvancingVirtualTimeDomain::GetName() const {
@@ -122,11 +118,6 @@ void AutoAdvancingVirtualTimeDomain::DidProcessTask(
   auto wake_up = helper_->GetNextWakeUp();
   if (wake_up && MaybeAdvanceVirtualTime(wake_up->time))
     task_starvation_count_ = 0;
-}
-
-base::Time AutoAdvancingVirtualTimeDomain::Date() const {
-  base::TimeDelta offset = NowTicks() - initial_time_ticks_;
-  return initial_time_ + offset;
 }
 
 }  // namespace scheduler

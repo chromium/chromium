@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/auto_advancing_virtual_time_domain.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
-#include "third_party/blink/renderer/platform/scheduler/common/scoped_time_source_override.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
@@ -1788,10 +1787,6 @@ void MainThreadSchedulerImpl::OnVirtualTimeEnabled() {
   virtual_time_control_task_queue_->SetQueuePriority(
       TaskQueue::kControlPriority);
 
-  auto* virtual_time_domain = GetVirtualTimeDomain();
-  DCHECK(virtual_time_domain);
-  virtual_time_domain->SetTimeSourceOverride(
-      ScopedTimeSourceOverride::CreateDefault(*virtual_time_domain));
   ForceUpdatePolicy();
 
   for (auto* page_scheduler : main_thread_only().page_schedulers) {
