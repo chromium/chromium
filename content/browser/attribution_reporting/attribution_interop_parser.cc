@@ -13,7 +13,9 @@
 #include <vector>
 
 #include "base/functional/function_ref.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/raw_ref.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -43,7 +45,6 @@ constexpr char kAttributionSrcUrlKey[] = "attribution_src_url";
 constexpr char kRegistrationRequestKey[] = "registration_request";
 constexpr char kResponseKey[] = "response";
 constexpr char kResponsesKey[] = "responses";
-constexpr char kTimestampKey[] = "timestamp";
 
 using Context = absl::variant<base::StringPiece, size_t>;
 using ContextPath = std::vector<Context>;
@@ -124,6 +125,7 @@ class AttributionInteropParser {
       return base::unexpected(error_stream_.str());
     }
 
+    base::ranges::sort(events_, /*comp=*/{}, &GetEventTime);
     return std::move(events_);
   }
 
@@ -285,7 +287,7 @@ class AttributionInteropParser {
   }
 
   void ParseSource(base::Value::Dict source_dict) {
-    base::Time source_time = ParseTime(source_dict, kTimestampKey);
+    base::Time source_time = ParseDistinctTime(source_dict);
 
     absl::optional<SuitableOrigin> source_origin;
     absl::optional<SuitableOrigin> reporting_origin;
@@ -343,7 +345,7 @@ class AttributionInteropParser {
   }
 
   void ParseTrigger(base::Value::Dict trigger_dict) {
-    base::Time trigger_time = ParseTime(trigger_dict, kTimestampKey);
+    base::Time trigger_time = ParseDistinctTime(trigger_dict);
 
     absl::optional<SuitableOrigin> destination_origin;
     absl::optional<SuitableOrigin> reporting_origin;
@@ -413,15 +415,20 @@ class AttributionInteropParser {
     return origin;
   }
 
-  base::Time ParseTime(const base::Value::Dict& dict, base::StringPiece key) {
-    auto context = PushContext(key);
+  base::Time ParseDistinctTime(const base::Value::Dict& dict) {
+    static constexpr char kTimestampKey[] = "timestamp";
 
-    const std::string* v = dict.FindString(key);
+    auto context = PushContext(kTimestampKey);
+
+    const std::string* v = dict.FindString(kTimestampKey);
     int64_t milliseconds;
 
     if (v && base::StringToInt64(*v, &milliseconds)) {
       base::Time time = offset_time_ + base::Milliseconds(milliseconds);
       if (!time.is_null() && !time.is_inf()) {
+        if (base::ranges::find(events_, time, &GetEventTime) != events_.end()) {
+          *Error() << "must be distinct from all others: " << milliseconds;
+        }
         return time;
       }
     }
@@ -608,6 +615,17 @@ std::string MergeAttributionConfig(const base::Value::Dict& dict,
                                    AttributionConfig& config) {
   return AttributionInteropParser().ParseConfig(dict, config,
                                                 /*required=*/false);
+}
+
+base::Time GetEventTime(const AttributionSimulationEvent& event) {
+  return absl::visit(
+      base::Overloaded{
+          [](const AttributionSource& source) {
+            return source.source.common_info().source_time();
+          },
+          [](const AttributionTriggerAndTime& trigger) { return trigger.time; },
+      },
+      event);
 }
 
 }  // namespace content

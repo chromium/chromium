@@ -17,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -60,17 +59,6 @@
 namespace content {
 
 namespace {
-
-base::Time GetEventTime(const AttributionSimulationEvent& event) {
-  return absl::visit(
-      base::Overloaded{
-          [](const AttributionSource& source) {
-            return source.source.common_info().source_time();
-          },
-          [](const AttributionTriggerAndTime& trigger) { return trigger.time; },
-      },
-      event);
-}
 
 struct AttributionReportJsonConverter {
   explicit AttributionReportJsonConverter(base::Time time_origin)
@@ -387,8 +375,14 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
     return base::Value::Dict();
   }
 
-  base::ranges::stable_sort(*events, /*comp=*/{}, &GetEventTime);
-  task_environment.FastForwardBy(GetEventTime(events->front()) - time_origin);
+  DCHECK(base::ranges::is_sorted(*events, /*comp=*/{}, &GetEventTime));
+  DCHECK(base::ranges::adjacent_find(*events, /*pred=*/{}, &GetEventTime) ==
+         events->end());
+
+  const base::Time min_event_time = GetEventTime(events->front());
+  const base::Time max_event_time = GetEventTime(events->back());
+
+  task_environment.FastForwardBy(min_event_time - time_origin);
 
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
@@ -421,8 +415,6 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
 
-  base::Time last_event_time = GetEventTime(events->back());
-
   for (auto& event : *events) {
     base::Time event_time = GetEventTime(event);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -432,7 +424,7 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
         event_time - base::Time::Now());
   }
 
-  task_environment.FastForwardBy(last_event_time - base::Time::Now());
+  task_environment.FastForwardBy(max_event_time - base::Time::Now());
 
   if (base::Time max_report_time = handler.max_report_time(),
       now = base::Time::Now();

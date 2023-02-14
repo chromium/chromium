@@ -123,7 +123,7 @@ TEST(AttributionInteropParserTest, EmptyInputParses) {
 TEST(AttributionInteropParserTest, ValidSourceParses) {
   constexpr char kJson[] = R"json({"sources": [
     {
-      "timestamp": "1643235574123",
+      "timestamp": "1643235573123",
       "registration_request": {
         "source_type": "navigation",
         "attribution_src_url": "https://a.r.test",
@@ -140,7 +140,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
       }]
     },
     {
-      "timestamp": "1643235573123",
+      "timestamp": "1643235574123",
       "registration_request": {
         "source_type": "event",
         "attribution_src_url": "https://b.r.test",
@@ -171,7 +171,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
   ASSERT_TRUE(source2);
 
   EXPECT_EQ(source1->source.common_info().source_time(),
-            kOffsetTime + base::Milliseconds(1643235574123));
+            kOffsetTime + base::Milliseconds(1643235573123));
   EXPECT_EQ(source1->source.common_info().source_type(),
             AttributionSourceType::kNavigation);
   EXPECT_EQ(source1->source.common_info().reporting_origin(),
@@ -184,7 +184,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
   EXPECT_TRUE(source1->debug_permission);
 
   EXPECT_EQ(source2->source.common_info().source_time(),
-            kOffsetTime + base::Milliseconds(1643235573123));
+            kOffsetTime + base::Milliseconds(1643235574123));
   EXPECT_EQ(source2->source.common_info().source_type(),
             AttributionSourceType::kEvent);
   EXPECT_EQ(source2->source.common_info().reporting_origin(),
@@ -537,6 +537,37 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             }
           }]
         }]})json",
+    },
+    {
+        R"(["triggers"][1]["timestamp"]: must be distinct from all others: 1643235576000)",
+        R"json({"triggers": [
+          {
+            "timestamp": "1643235576000",
+            "registration_request": {
+              "destination_origin": "https://a.d1.test",
+              "attribution_src_url": "https://a.r.test"
+            },
+            "responses": [{
+              "url": "https://a.r.test",
+              "response": {
+                "Attribution-Reporting-Register-Trigger": {}
+              }
+            }]
+          },
+          {
+            "timestamp": "1643235576000",
+            "registration_request": {
+              "destination_origin": "https://a.d1.test",
+              "attribution_src_url": "https://a.r.test"
+            },
+            "responses": [{
+              "url": "https://a.r.test",
+              "response": {
+                "Attribution-Reporting-Register-Trigger": {}
+              }
+            }]
+          },
+        ]})json",
     },
 };
 

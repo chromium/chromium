@@ -49,6 +49,8 @@ base::expected<AttributionConfig, std::string> ParseAttributionConfig(
 [[nodiscard]] std::string MergeAttributionConfig(const base::Value::Dict&,
                                                  AttributionConfig&);
 
+base::Time GetEventTime(const AttributionSimulationEvent&);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTEROP_PARSER_H_

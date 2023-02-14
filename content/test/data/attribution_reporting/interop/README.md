@@ -106,7 +106,8 @@ and optional in "api_config" field.
 
 # Test case format
 
-The JSON schema is as follows.
+The JSON schema is as follows. Timestamps must be distinct across all sources
+and triggers.
 
 ```jsonc
 {

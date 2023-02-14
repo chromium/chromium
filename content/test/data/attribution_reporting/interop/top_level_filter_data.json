@@ -24,7 +24,7 @@
         }]
       },
       {
-        "timestamp": "1643235573000",
+        "timestamp": "1643235573001",
         "registration_request": {
           "source_origin": "https://source.test",
           "attribution_src_url": "https://reporter.test/register-source",
@@ -163,7 +163,7 @@
         }]
       },
       {
-        "timestamp": "1643235578000",
+        "timestamp": "1643235578001",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -238,7 +238,7 @@
         }]
       },
       {
-        "timestamp": "1643235580000",
+        "timestamp": "1643235580001",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -355,7 +355,7 @@
            "source_type": "event",
            "trigger_data": "1"
         },
-        "report_time": "1645831173000",
+        "report_time": "1645831173001",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ],

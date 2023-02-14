@@ -176,7 +176,7 @@
       },
       // Should not result in an event-level report due to no matching source.
       {
-        "timestamp": "1643235585000",
+        "timestamp": "1643235585001",
         "registration_request": {
           "attribution_src_url": "https://reporter3.test/register-trigger",
           "destination_origin": "https://destination1.test"
