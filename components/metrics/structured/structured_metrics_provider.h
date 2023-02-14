@@ -68,6 +68,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   friend class Recorder;
   friend class StructuredMetricsProviderTest;
   friend class StructuredMetricsProviderHwidTest;
+  friend class TestStructuredMetricsProvider;
 
   // State machine for step 4 of initialization. These are stored in three files
   // that are asynchronously read from disk at startup. When all files have

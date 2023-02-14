@@ -48,3 +48,15 @@ static_library("structured") {
     deps += [ "//chromeos/lacros" ]
   }
 }
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test/structured_metrics_mixin.cc",
+    "test/structured_metrics_mixin.h",
+  ]
+  deps = [
+    "//chrome/test:test_support",
+    "//components/metrics/structured:test_support",
+  ]
+}

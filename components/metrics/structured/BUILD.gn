@@ -204,6 +204,20 @@ static_library("neutrino_logging_util") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test/test_structured_metrics_provider.cc",
+    "test/test_structured_metrics_provider.h",
+  ]
+  deps = [
+    ":structured",
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics:metrics",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
