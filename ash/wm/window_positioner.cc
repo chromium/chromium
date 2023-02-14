@@ -7,11 +7,13 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
@@ -280,6 +282,23 @@ bool WindowPositioner::DisableAutoPositioning(bool ignore) {
 void WindowPositioner::RearrangeVisibleWindowOnShow(
     aura::Window* added_window) {
   WindowState* added_window_state = WindowState::Get(added_window);
+  // TODO(b/267884882): Temporarily disable auto positioning if there is a
+  // floated window on the same desk, see b/265839238.
+  if (auto* float_controller = Shell::Get()->float_controller()) {
+    auto* floated_window = float_controller->FindFloatedWindowOfDesk(
+        Shell::Get()->desks_controller()->active_desk());
+    if (floated_window && floated_window != added_window) {
+      // Place newly added window to the center of the screen to reduce
+      // chances of being hidden behind the floated window. Note that minimized
+      // windows and other window types should not be auto placed.
+      if (!added_window_state->bounds_changed_by_user() &&
+          added_window->GetType() == aura::client::WINDOW_TYPE_NORMAL) {
+        AutoPlaceSingleWindow(added_window, /*animated=*/false);
+      }
+      return;
+    }
+  }
+
   if (!added_window->TargetVisibility() ||
       !UseAutoWindowManager(added_window) ||
       added_window_state->bounds_changed_by_user()) {
@@ -301,7 +320,6 @@ void WindowPositioner::RearrangeVisibleWindowOnShow(
     AutoPlaceSingleWindow(added_window, false);
     return;
   }
-
   gfx::Rect other_bounds = other_shown_window->bounds();
   gfx::Rect work_area =
       screen_util::GetDisplayWorkAreaBoundsInParent(added_window);
