@@ -58,7 +58,7 @@ int RemoteWebAuthnMain(int argc, char** argv) {
     return kInitializationFailed;
   }
 
-  mojo::core::Init();
+  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
   mojo::core::ScopedIPCSupport ipc_support(
       task_runner, mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
 

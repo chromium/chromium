@@ -60,6 +60,7 @@ component("system") {
 
   public_deps = [
     "//base",
+    "//mojo/core/embedder",
     "//mojo/public/c/system",
     "//mojo/public/cpp/platform",
   ]

@@ -65,35 +65,40 @@ SecurityKeyIpcServerImpl::~SecurityKeyIpcServerImpl() {
   CloseChannel();
 }
 
-bool SecurityKeyIpcServerImpl::CreateChannel(
-    const mojo::NamedPlatformChannel::ServerName& server_name,
-    base::TimeDelta request_timeout) {
+bool SecurityKeyIpcServerImpl::CreateChannel(ChannelEndpoint endpoint,
+                                             base::TimeDelta request_timeout) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!ipc_channel_);
   security_key_request_timeout_ = request_timeout;
 
-  mojo::NamedPlatformChannel::Options options;
-  options.server_name = server_name;
+  mojo::ScopedMessagePipeHandle pipe;
+  if (absl::holds_alternative<mojo::NamedPlatformChannel::ServerName>(
+          endpoint)) {
+    mojo::NamedPlatformChannel::Options options;
+    options.server_name =
+        absl::get<mojo::NamedPlatformChannel::ServerName>(endpoint);
 #if BUILDFLAG(IS_WIN)
-  options.enforce_uniqueness = false;
-  // Create a named pipe owned by the current user (the LocalService account
-  // (SID: S-1-5-19) when running in the network process) which is available to
-  // all authenticated users.
-  // presubmit: allow wstring
-  std::wstring user_sid;
-  if (!base::win::GetUserSidString(&user_sid)) {
-    return false;
-  }
-  options.security_descriptor = base::StringPrintf(
-      L"O:%lsG:%lsD:(A;;GA;;;AU)", user_sid.c_str(), user_sid.c_str());
+    options.enforce_uniqueness = false;
+    // Create a named pipe owned by the current user (the LocalService account
+    // (SID: S-1-5-19) when running in the network process) which is available
+    // to all authenticated users. presubmit: allow wstring
+    std::wstring user_sid;
+    if (!base::win::GetUserSidString(&user_sid)) {
+      return false;
+    }
+    options.security_descriptor = base::StringPrintf(
+        L"O:%lsG:%lsD:(A;;GA;;;AU)", user_sid.c_str(), user_sid.c_str());
 
 #endif  // BUILDFLAG(IS_WIN)
-  mojo::NamedPlatformChannel channel(options);
+    mojo::NamedPlatformChannel channel(options);
 
-  mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
+    mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
+    pipe = mojo_connection_->Connect(channel.TakeServerEndpoint());
+  } else {
+    pipe = std::move(absl::get<mojo::ScopedMessagePipeHandle>(endpoint));
+  }
   ipc_channel_ = IPC::Channel::CreateServer(
-      mojo_connection_->Connect(channel.TakeServerEndpoint()).release(), this,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      pipe.release(), this, base::SingleThreadTaskRunner::GetCurrentDefault());
 
   auto* associated_interface_support =
       ipc_channel_->GetAssociatedInterfaceSupport();

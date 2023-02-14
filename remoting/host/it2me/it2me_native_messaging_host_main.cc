@@ -120,7 +120,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   // Required to find the ICU data file, used by some file_util routines.
   base::i18n::InitializeICU();
 
-  mojo::core::Init();
+  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("It2Me");
 

@@ -12,7 +12,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace remoting {
 
@@ -23,7 +25,10 @@ class SecurityKeyIpcServerFactory;
 // network process (server) and the remote_security_key process (client).
 class SecurityKeyIpcServer {
  public:
-  virtual ~SecurityKeyIpcServer() {}
+  using ChannelEndpoint = absl::variant<mojo::NamedPlatformChannel::ServerName,
+                                        mojo::ScopedMessagePipeHandle>;
+
+  virtual ~SecurityKeyIpcServer() = default;
 
   // Creates a new SecurityKeyIpcServer instance.
   static std::unique_ptr<SecurityKeyIpcServer> Create(
@@ -39,9 +44,8 @@ class SecurityKeyIpcServer {
   static void SetFactoryForTest(SecurityKeyIpcServerFactory* factory);
 
   // Creates and starts listening on an IPC channel with the given name.
-  virtual bool CreateChannel(
-      const mojo::NamedPlatformChannel::ServerName& server_name,
-      base::TimeDelta request_timeout) = 0;
+  virtual bool CreateChannel(ChannelEndpoint endpoint,
+                             base::TimeDelta request_timeout) = 0;
 
   // Sends a security key response IPC message via the IPC channel.
   virtual bool SendResponse(const std::string& message_data) = 0;

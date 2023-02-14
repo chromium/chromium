@@ -64,7 +64,7 @@ int StartRemoteSecurityKey() {
 #error Not implemented.
 #endif
 
-  mojo::core::Init();
+  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
   mojo::core::ScopedIPCSupport ipc_support(
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);

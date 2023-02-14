@@ -21,8 +21,8 @@ int main(int argc, char** argv) {
 
   content::UnitTestTestSuite test_suite(
       new content::ContentTestSuite(argc, argv),
-      base::BindRepeating(
-          content::UnitTestTestSuite::CreateTestContentClients));
+      base::BindRepeating(content::UnitTestTestSuite::CreateTestContentClients),
+      /*child_mojo_config=*/absl::nullopt);
   return base::LaunchUnitTests(argc, argv,
                                base::BindOnce(&content::UnitTestTestSuite::Run,
                                               base::Unretained(&test_suite)));

@@ -160,7 +160,7 @@ int StartHostMain(int argc, char** argv) {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "RemotingHostSetup");
 
-  mojo::core::Init();
+  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
 
   std::string host_name = command_line->GetSwitchValueASCII("name");
   std::string host_pin = command_line->GetSwitchValueASCII("pin");

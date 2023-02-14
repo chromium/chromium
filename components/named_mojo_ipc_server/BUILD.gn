@@ -74,6 +74,7 @@ source_set("unit_tests") {
     ":testing_mojom",
     "//base",
     "//base/test:test_support",
+    "//components/test:test_support",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",

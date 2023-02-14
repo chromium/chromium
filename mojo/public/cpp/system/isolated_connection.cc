@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/system/isolated_connection.h"
 
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 
@@ -21,15 +22,26 @@ IsolatedConnection::~IsolatedConnection() {
   // terminating isolated connections, but this is a decision made to minimize
   // the API surface dedicated to isolated connections in anticipation of the
   // concept being deprecated eventually.
-  PlatformChannel channel;
-  OutgoingInvitation::SendIsolated(channel.TakeLocalEndpoint(),
-                                   token_.ToString());
+  //
+  // This is not done with MojoIpcz enabled, because with MojoIpcz, isolated
+  // connections are not transient and can outlive this object.
+  if (!mojo::core::IsMojoIpczEnabled()) {
+    PlatformChannel channel;
+    OutgoingInvitation::SendIsolated(channel.TakeLocalEndpoint(),
+                                     token_.ToString());
+  }
 }
 
 ScopedMessagePipeHandle IsolatedConnection::Connect(
     PlatformChannelEndpoint endpoint) {
+  return Connect(std::move(endpoint), base::Process{});
+}
+
+ScopedMessagePipeHandle IsolatedConnection::Connect(
+    PlatformChannelEndpoint endpoint,
+    base::Process process) {
   return OutgoingInvitation::SendIsolated(std::move(endpoint),
-                                          token_.ToString());
+                                          token_.ToString(), process.Handle());
 }
 
 ScopedMessagePipeHandle IsolatedConnection::Connect(

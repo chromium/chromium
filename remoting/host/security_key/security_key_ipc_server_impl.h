@@ -56,7 +56,7 @@ class SecurityKeyIpcServerImpl : public SecurityKeyIpcServer,
   ~SecurityKeyIpcServerImpl() override;
 
   // SecurityKeyIpcServer implementation.
-  bool CreateChannel(const mojo::NamedPlatformChannel::ServerName& server_name,
+  bool CreateChannel(ChannelEndpoint endpoint,
                      base::TimeDelta request_timeout) override;
   bool SendResponse(const std::string& message_data) override;
 

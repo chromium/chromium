@@ -97,7 +97,7 @@ int Me2MeNativeMessagingHostMain(int argc, char** argv) {
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Me2Me");
 
-  mojo::core::Init();
+  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
 
   // An IO thread is needed for the pairing registry and URL context getter.
   base::Thread io_thread("io_thread");

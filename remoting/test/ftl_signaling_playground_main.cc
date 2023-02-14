@@ -25,7 +25,7 @@ int main(int argc, char const* argv[]) {
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "FtlSignalingPlayground");
-  mojo::core::Init();
+  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
 
   playground.StartLoop();
 

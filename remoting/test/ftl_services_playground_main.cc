@@ -25,7 +25,7 @@ int main(int argc, char const* argv[]) {
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "FtlServicesPlayground");
-  mojo::core::Init();
+  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
 
   playground.StartAndAuthenticate();
 

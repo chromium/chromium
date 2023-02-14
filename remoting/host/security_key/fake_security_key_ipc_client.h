@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/mojom/remote_security_key.mojom.h"
 #include "remoting/host/security_key/security_key_ipc_client.h"
 
@@ -48,8 +49,12 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
                               ResponseCallback response_callback) override;
   void CloseIpcConnection() override;
 
+  // Connects as a client to an IPC Channel backed by |pipe|.
+  bool ConnectWithPipe(mojo::ScopedMessagePipeHandle pipe);
+
   // Connects as a client to the |server_name| IPC Channel.
-  bool ConnectViaIpc(const mojo::NamedPlatformChannel::ServerName& server_name);
+  bool ConnectToServerChannel(
+      const mojo::NamedPlatformChannel::ServerName& server_name);
 
   // Override of SendSecurityKeyRequest() interface method for tests which use
   // an IPC channel for testing.

@@ -22,6 +22,13 @@ struct Configuration {
   // relevant in multiprocess environments.
   bool is_broker_process = false;
 
+  // Forcibly disables the Mojo's ipcz-based implementation. This is an
+  // alternative to manual feature override for applications which don't use
+  // base::FeatureList.
+  //
+  // TODO(https://crbug.com/1299283): Remove this once dependents are gone.
+  bool disable_ipcz = false;
+
   // If |true|, this process will always attempt to allocate shared memory
   // directly rather than synchronously delegating to a broker process where
   // applicable.

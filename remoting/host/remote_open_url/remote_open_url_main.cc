@@ -50,7 +50,7 @@ int RemoteOpenUrlMain(int argc, char** argv) {
   base::i18n::InitializeICU();
   LoadResources("");
 
-  mojo::core::Init();
+  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
   mojo::core::ScopedIPCSupport ipc_support(
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);

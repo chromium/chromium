@@ -85,6 +85,12 @@ void EnableMojoIpcz() {
 
 void Init(const Configuration& configuration) {
   internal::g_configuration = configuration;
+
+  if (configuration.disable_ipcz) {
+    // Allow the caller to override MojoIpcz even when enabled as a Feature.
+    g_mojo_ipcz_enabled.store(false, std::memory_order_release);
+  }
+
   if (IsMojoIpczEnabled()) {
     CHECK(InitializeIpczNodeForProcess({
         .is_broker = configuration.is_broker_process,

@@ -35,7 +35,7 @@ int main(int argc, char const* argv[]) {
   remoting::It2MeCliHost cli_host;
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("It2MeCliHost");
-  mojo::core::Init();
+  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
   remoting::LoadResources("");
 
   cli_host.Start();

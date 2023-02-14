@@ -136,21 +136,6 @@ void NamedMojoIpcServerBase::OnClientConnected(
     return;
   }
 
-  if (!options_.message_pipe_id.has_value()) {
-    // Create isolated connection.
-    auto connection = std::make_unique<mojo::IsolatedConnection>();
-    mojo::ScopedMessagePipeHandle message_pipe =
-        connection->Connect(std::move(endpoint));
-    mojo::ReceiverId receiver_id =
-        TrackMessagePipe(std::move(message_pipe), impl, peer_pid);
-    active_connections_[receiver_id] = std::move(connection);
-    return;
-  }
-
-  // Create non-isolated connection.
-  mojo::OutgoingInvitation invitation;
-  mojo::ScopedMessagePipeHandle message_pipe =
-      invitation.AttachMessagePipe(*options_.message_pipe_id);
 #if BUILDFLAG(IS_WIN)
   // Open process with minimum permissions since the client process might have
   // restricted its access with DACL.
@@ -168,6 +153,22 @@ void NamedMojoIpcServerBase::OnClientConnected(
     return;
   }
 #undef INVALID_PROCESS_LOG
+
+  if (!options_.message_pipe_id.has_value()) {
+    // Create isolated connection.
+    auto connection = std::make_unique<mojo::IsolatedConnection>();
+    mojo::ScopedMessagePipeHandle message_pipe =
+        connection->Connect(std::move(endpoint), std::move(peer_process));
+    mojo::ReceiverId receiver_id =
+        TrackMessagePipe(std::move(message_pipe), impl, peer_pid);
+    active_connections_[receiver_id] = std::move(connection);
+    return;
+  }
+
+  // Create non-isolated connection.
+  mojo::OutgoingInvitation invitation;
+  mojo::ScopedMessagePipeHandle message_pipe =
+      invitation.AttachMessagePipe(*options_.message_pipe_id);
   mojo::OutgoingInvitation::Send(std::move(invitation), peer_process.Handle(),
                                  std::move(endpoint));
   TrackMessagePipe(std::move(message_pipe), impl, peer_pid);

@@ -11,6 +11,8 @@ source_set("test_support") {
   sources = [
     "components_test_suite.cc",
     "components_test_suite.h",
+    "test_switches.cc",
+    "test_switches.h",
   ]
 
   deps = [

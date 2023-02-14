@@ -120,7 +120,8 @@ UnitTestTestSuite::CreateTestContentClients() {
 
 UnitTestTestSuite::UnitTestTestSuite(
     base::TestSuite* test_suite,
-    base::RepeatingCallback<std::unique_ptr<ContentClients>()> create_clients)
+    base::RepeatingCallback<std::unique_ptr<ContentClients>()> create_clients,
+    absl::optional<mojo::core::Configuration> child_mojo_config)
     : test_suite_(test_suite), create_clients_(create_clients) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   std::string enabled =
@@ -138,11 +139,14 @@ UnitTestTestSuite::UnitTestTestSuite(
 
   scoped_feature_list_.InitFromCommandLine(enabled, disabled);
 
-  // Do this here even though TestBlinkWebUnitTestSupport calls it since a
-  // multi process unit test won't get to create TestBlinkWebUnitTestSupport.
-  // This is safe to call multiple times.
   mojo::core::InitFeatures();
-  InitializeMojo();
+  if (command_line->HasSwitch(switches::kTestChildProcess)) {
+    // Note that in the main test process, TestBlinkWebUnitTestSupport
+    // initializes Mojo; so we only do this in child processes.
+    mojo::core::Init(child_mojo_config.value_or(mojo::core::Configuration{}));
+  } else {
+    mojo::core::Init(mojo::core::Configuration{.is_broker_process = true});
+  }
 
   DCHECK(test_suite);
   test_host_resolver_ = std::make_unique<TestHostResolver>();

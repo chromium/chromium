@@ -22,7 +22,6 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "cc/trees/layer_tree_settings.h"
-#include "content/app/mojo/mojo_init.h"
 #include "content/child/child_process.h"
 #include "media/base/media.h"
 #include "media/media_buildflags.h"
@@ -116,9 +115,6 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     base::test::TaskEnvironment::CreateThreadPool();
     base::ThreadPoolInstance::Get()->StartWithDefaultParams();
   }
-
-  // Initialize mojo firstly to enable Blink initialization to use it.
-  InitializeMojo();
 
   // Set V8 flags.
   v8::V8::SetFlagsFromString(v8_flags.c_str(), v8_flags.size());

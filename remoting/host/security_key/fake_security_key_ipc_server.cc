@@ -84,20 +84,25 @@ void FakeSecurityKeyIpcServer::OnSecurityKeyRequest(
   send_message_callback_.Run(connection_id_, request_data);
 }
 
-bool FakeSecurityKeyIpcServer::CreateChannel(
-    const mojo::NamedPlatformChannel::ServerName& server_name,
-    base::TimeDelta request_timeout) {
-  mojo::NamedPlatformChannel::Options options;
-  options.server_name = server_name;
+bool FakeSecurityKeyIpcServer::CreateChannel(ChannelEndpoint endpoint,
+                                             base::TimeDelta request_timeout) {
+  mojo::ScopedMessagePipeHandle pipe;
+  if (absl::holds_alternative<mojo::ScopedMessagePipeHandle>(endpoint)) {
+    pipe = std::move(absl::get<mojo::ScopedMessagePipeHandle>(endpoint));
+  } else {
+    mojo::NamedPlatformChannel::Options options;
+    options.server_name =
+        absl::get<mojo::NamedPlatformChannel::ServerName>(endpoint);
 #if BUILDFLAG(IS_WIN)
-  options.enforce_uniqueness = false;
+    options.enforce_uniqueness = false;
 #endif
-  mojo::NamedPlatformChannel channel(options);
+    mojo::NamedPlatformChannel channel(options);
+    mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
+    pipe = mojo_connection_->Connect(channel.TakeServerEndpoint());
+  }
 
-  mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
   ipc_channel_ = IPC::Channel::CreateServer(
-      mojo_connection_->Connect(channel.TakeServerEndpoint()).release(), this,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      pipe.release(), this, base::SingleThreadTaskRunner::GetCurrentDefault());
   EXPECT_NE(nullptr, ipc_channel_);
 
   auto* associated_interface_support =

@@ -17,6 +17,7 @@
 #include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/test/test_blink_web_unit_test_support.h"
+#include "mojo/core/embedder/embedder.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/blink.h"
@@ -39,6 +40,10 @@ class TestEnvironment {
     base::DiscardableMemoryAllocator::SetInstance(
         &discardable_memory_allocator_);
     ContentTestSuiteBase::InitializeResourceBundle();
+
+    // TestBlinkWebUnitTestSupport construction needs Mojo to be initialized
+    // first.
+    mojo::core::Init(mojo::core::Configuration{.is_broker_process = true});
 
     // Depends on resource bundle initialization so has to happen after.
     blink_test_support_ = std::make_unique<TestBlinkWebUnitTestSupport>(

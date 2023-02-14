@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
   ipc_thread.StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 
-  mojo::core::Init();
+  mojo::core::Init(mojo::core::Configuration{.disable_ipcz = true});
   mojo::core::ScopedIPCSupport ipc_support(
       ipc_thread.task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);

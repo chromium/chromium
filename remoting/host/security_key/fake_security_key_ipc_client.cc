@@ -62,18 +62,14 @@ void FakeSecurityKeyIpcClient::CloseIpcConnection() {
   channel_event_callback_.Run();
 }
 
-bool FakeSecurityKeyIpcClient::ConnectViaIpc(
-    const mojo::NamedPlatformChannel::ServerName& server_name) {
-  mojo::PlatformChannelEndpoint endpoint =
-      mojo::NamedPlatformChannel::ConnectToServer(server_name);
-  if (!endpoint.is_valid()) {
+bool FakeSecurityKeyIpcClient::ConnectWithPipe(
+    mojo::ScopedMessagePipeHandle pipe) {
+  if (!pipe.is_valid()) {
     return false;
   }
 
-  mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
   client_channel_ = IPC::Channel::CreateClient(
-      mojo_connection_->Connect(std::move(endpoint)).release(), this,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
+      pipe.release(), this, base::SingleThreadTaskRunner::GetCurrentDefault());
   if (!client_channel_->Connect()) {
     ADD_FAILURE() << "Failed to connect to the IPC channel.";
     return false;
@@ -90,6 +86,18 @@ bool FakeSecurityKeyIpcClient::ConnectViaIpc(
       security_key_forwarder_.BindNewEndpointAndPassReceiver());
 
   return true;
+}
+
+bool FakeSecurityKeyIpcClient::ConnectToServerChannel(
+    const mojo::NamedPlatformChannel::ServerName& server_name) {
+  mojo::PlatformChannelEndpoint endpoint =
+      mojo::NamedPlatformChannel::ConnectToServer(server_name);
+  if (!endpoint.is_valid()) {
+    return false;
+  }
+
+  mojo_connection_ = std::make_unique<mojo::IsolatedConnection>();
+  return ConnectWithPipe(mojo_connection_->Connect(std::move(endpoint)));
 }
 
 void FakeSecurityKeyIpcClient::SendSecurityKeyRequestViaIpc(

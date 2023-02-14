@@ -161,7 +161,7 @@ void SecurityKeyAuthHandlerWinTest::EstablishIpcConnection(
       auth_handler_->GetActiveConnectionCountForTest() + 1;
 
   ASSERT_FALSE(auth_handler_->IsValidConnectionId(expected_connection_id));
-  ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
+  ASSERT_TRUE(fake_ipc_client.ConnectToServerChannel(server_name));
   WaitForOperationComplete();
 
   // Retrieve the IPC server instance created when the client connected.

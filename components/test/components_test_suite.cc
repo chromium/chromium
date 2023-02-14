@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -18,6 +19,7 @@
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/test/test_switches.h"
 #include "mojo/core/embedder/embedder.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,8 +54,6 @@ class ComponentsTestSuite : public base::TestSuite {
  private:
   void Initialize() override {
     base::TestSuite::Initialize();
-
-    mojo::core::Init();
 
     // These schemes need to be added globally to pass tests of
     // autocomplete_input_unittest.cc and content_settings_pattern*
@@ -139,13 +139,27 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
 }  // namespace
 
 base::RunTestSuiteCallback GetLaunchCallback(int argc, char** argv) {
+  auto components_test_suite =
+      std::make_unique<ComponentsTestSuite>(argc, argv);
+
+  // In the main test process, Mojo must be initialized as a broker. By
+  // default child processes are initialized as non-brokers, but tests may
+  // override this by passing kInitializeMojoAsBroker when launching children.
+  const auto& cmd = *base::CommandLine::ForCurrentProcess();
+  const bool is_test_child = cmd.HasSwitch(switches::kTestChildProcess);
+  const bool force_broker = mojo::core::IsMojoIpczEnabled() &&
+                            cmd.HasSwitch(switches::kInitializeMojoAsBroker);
+  const mojo::core::Configuration mojo_config{
+      .is_broker_process = !is_test_child || force_broker,
+  };
+
 #if !BUILDFLAG(IS_IOS)
   auto test_suite = std::make_unique<content::UnitTestTestSuite>(
-      new ComponentsTestSuite(argc, argv),
-      base::BindRepeating(
-          content::UnitTestTestSuite::CreateTestContentClients));
+      components_test_suite.release(),
+      base::BindRepeating(content::UnitTestTestSuite::CreateTestContentClients),
+      mojo_config);
 #else
-  auto test_suite = std::make_unique<ComponentsTestSuite>(argc, argv);
+  mojo::core::Init(mojo_config);
 #endif
 
   testing::TestEventListeners& listeners =
@@ -156,6 +170,7 @@ base::RunTestSuiteCallback GetLaunchCallback(int argc, char** argv) {
   return base::BindOnce(&content::UnitTestTestSuite::Run,
                         std::move(test_suite));
 #else
-  return base::BindOnce(&base::TestSuite::Run, std::move(test_suite));
+  return base::BindOnce(&base::TestSuite::Run,
+                        std::move(components_test_suite));
 #endif
 }

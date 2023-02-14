@@ -10,6 +10,8 @@
 #include "base/functional/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/configuration.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TestSuite;
@@ -47,9 +49,14 @@ class UnitTestTestSuite {
   static std::unique_ptr<UnitTestTestSuite::ContentClients>
   CreateTestContentClients();
 
-  UnitTestTestSuite(base::TestSuite* test_suite,
-                    base::RepeatingCallback<std::unique_ptr<ContentClients>()>
-                        create_clients);
+  // Constructs a new UnitTestTestSuite to wrap `test_suite`.
+  // `child_mojo_config`, if provided, is the Mojo configuration to use in any
+  // child process spawned by these tests.
+  UnitTestTestSuite(
+      base::TestSuite* test_suite,
+      base::RepeatingCallback<std::unique_ptr<ContentClients>()> create_clients,
+      absl::optional<mojo::core::Configuration> child_mojo_config =
+          absl::nullopt);
 
   UnitTestTestSuite(const UnitTestTestSuite&) = delete;
   UnitTestTestSuite& operator=(const UnitTestTestSuite&) = delete;

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/host/security_key/fake_security_key_ipc_server.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -180,11 +181,10 @@ void SecurityKeyIpcClientTest::EstablishConnection(bool expect_error) {
 
   // Start up the security key forwarding session IPC channel first, that way
   // we can provide the channel using the fake SecurityKeyAuthHandler later on.
-  mojo::NamedPlatformChannel::ServerName server_name =
-      GenerateUniqueTestChannelName();
-  security_key_ipc_client_.SetIpcChannelHandleForTest(server_name);
+  mojo::MessagePipe pipe;
+  security_key_ipc_client_.SetIpcChannelPipeForTest(std::move(pipe.handle0));
   ASSERT_TRUE(fake_ipc_server_.CreateChannel(
-      server_name,
+      std::move(pipe.handle1),
       /*request_timeout=*/base::Milliseconds(500)));
 
   ASSERT_TRUE(security_key_ipc_client_.CheckForSecurityKeyIpcServerChannel());
