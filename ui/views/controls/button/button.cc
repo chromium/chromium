@@ -189,7 +189,7 @@ void Button::SetState(ButtonState state) {
   if (state == state_)
     return;
 
-  if (animate_on_state_change_ && !hover_animation_.is_animating()) {
+  if (animate_on_state_change_) {
     if ((state_ == STATE_HOVERED) && (state == STATE_NORMAL)) {
       // For HOVERED -> NORMAL, animate from hovered (1) to not hovered (0).
       hover_animation_.Hide();
