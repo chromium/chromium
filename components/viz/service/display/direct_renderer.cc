@@ -1083,11 +1083,11 @@ ResourceFormat DirectRenderer::GetColorSpaceResourceFormat(
   // TODO(crbug.com/1317015): add support RGBA_F16 in LaCrOS.
   auto format = color_space.IsHDR()
                     ? RGBA_1010102
-                    : PlatformColor::BestSupportedTextureFormat(caps);
+                    : PlatformColor::BestSupportedTextureResourceFormat(caps);
 #else
   auto format = color_space.IsHDR()
                     ? RGBA_F16
-                    : PlatformColor::BestSupportedTextureFormat(caps);
+                    : PlatformColor::BestSupportedTextureResourceFormat(caps);
 #endif
   return format;
 }

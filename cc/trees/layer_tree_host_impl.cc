@@ -177,8 +177,8 @@ viz::ResourceFormat TileRasterBufferFormat(
   // vs uploading textures.
   const gpu::Capabilities& caps = context_provider->ContextCapabilities();
   if (use_gpu_rasterization)
-    return viz::PlatformColor::BestSupportedRenderBufferFormat(caps);
-  return viz::PlatformColor::BestSupportedTextureFormat(caps);
+    return viz::PlatformColor::BestSupportedRenderBufferResourceFormat(caps);
+  return viz::PlatformColor::BestSupportedTextureResourceFormat(caps);
 }
 
 void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
@@ -4573,7 +4573,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       if (layer_tree_frame_sink_->context_provider()) {
         const gpu::Capabilities& caps =
             layer_tree_frame_sink_->context_provider()->ContextCapabilities();
-        format = viz::PlatformColor::BestSupportedTextureFormat(caps);
+        format = viz::PlatformColor::BestSupportedTextureResourceFormat(caps);
       } else {
         format = viz::RGBA_8888;
       }

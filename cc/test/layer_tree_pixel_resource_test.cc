@@ -61,9 +61,10 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
     if (host_impl->settings().use_rgba_4444) {
       gpu_raster_format = sw_raster_format = viz::RGBA_4444;
     } else {
-      gpu_raster_format = viz::PlatformColor::BestSupportedRenderBufferFormat(
-          compositor_context_provider->ContextCapabilities());
-      sw_raster_format = viz::PlatformColor::BestSupportedTextureFormat(
+      gpu_raster_format =
+          viz::PlatformColor::BestSupportedRenderBufferResourceFormat(
+              compositor_context_provider->ContextCapabilities());
+      sw_raster_format = viz::PlatformColor::BestSupportedTextureResourceFormat(
           compositor_context_provider->ContextCapabilities());
     }
   }

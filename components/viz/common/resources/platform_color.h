@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_RESOURCES_PLATFORM_COLOR_H_
 
 #include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "third_party/skia/include/core/SkTypes.h"
 
@@ -14,12 +15,12 @@ namespace viz {
 class PlatformColor {
  private:
   // Returns the most efficient supported format.
-  static ResourceFormat BestSupportedFormat(bool supports_bgra) {
+  static SharedImageFormat BestSupportedFormat(bool supports_bgra) {
     if (supports_bgra && !SK_B32_SHIFT) {
-      return BGRA_8888;
+      return SinglePlaneFormat::kBGRA_8888;
     }
 
-    return RGBA_8888;
+    return SinglePlaneFormat::kRGBA_8888;
   }
 
  public:
@@ -29,16 +30,26 @@ class PlatformColor {
 
   // Returns the most efficient supported format for textures that will be
   // software-generated and uploaded via TexImage2D et al.
-  static ResourceFormat BestSupportedTextureFormat(
+  static SharedImageFormat BestSupportedTextureFormat(
       const gpu::Capabilities& caps) {
     return BestSupportedFormat(caps.texture_format_bgra8888);
   }
 
   // Returns the most efficient supported format for textures that will be
   // rastered in the gpu (bound as a framebuffer and drawn to).
-  static ResourceFormat BestSupportedRenderBufferFormat(
+  static SharedImageFormat BestSupportedRenderBufferFormat(
       const gpu::Capabilities& caps) {
     return BestSupportedFormat(caps.render_buffer_format_bgra8888);
+  }
+
+  // Versions of the above that return ResourceFormat.
+  static ResourceFormat BestSupportedTextureResourceFormat(
+      const gpu::Capabilities& caps) {
+    return BestSupportedTextureFormat(caps).resource_format();
+  }
+  static ResourceFormat BestSupportedRenderBufferResourceFormat(
+      const gpu::Capabilities& caps) {
+    return BestSupportedRenderBufferFormat(caps).resource_format();
   }
 };
 

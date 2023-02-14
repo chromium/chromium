@@ -117,7 +117,7 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   viz::ResourceFormat format = viz::ResourceFormat::RGBA_8888;
   switch (resource_bitmap.GetFormat()) {
     case cc::UIResourceBitmap::RGBA8:
-      format = viz::PlatformColor::BestSupportedTextureFormat(caps);
+      format = viz::PlatformColor::BestSupportedTextureResourceFormat(caps);
       break;
     case cc::UIResourceBitmap::ALPHA_8:
       format = viz::ALPHA_8;
