@@ -711,6 +711,7 @@ export class Video extends ModeBase {
 
           if (this.stopped) {
             this.mediaRecorder.stop();
+            window.removeEventListener('beforeunload', beforeUnloadListener);
             return;
           }
           state.set(state.State.RECORDING, true);
