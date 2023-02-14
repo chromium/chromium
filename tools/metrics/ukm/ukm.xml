@@ -19952,6 +19952,78 @@ be describing additional metrics about the same event.
       Predicted result from executing the ML model. This is normally a score for
       determining whether to show a particular feature. The value is a floating
       number between 0 to 1 and encoded into IEEE 754 double precision here.
+      This is being deprecated. Use PredictionResult1 instead. Will add
+      deprecated flag once all the code are start using PredictionResult1.
+    </summary>
+  </metric>
+  <metric name="PredictionResult1">
+    <summary>
+      The 1st output when inferencing the ML model with input data. The value is
+      a floating number between 0 to 1 and encoded into IEEE 754 double
+      precision here.
+    </summary>
+  </metric>
+  <metric name="PredictionResult10">
+    <summary>
+      The 10th output when inferencing the ML model with input data. The value
+      is a floating number between 0 to 1 and encoded into IEEE 754 double
+      precision here.
+    </summary>
+  </metric>
+  <metric name="PredictionResult2">
+    <summary>
+      The 2nd output when inferencing the ML model with input data. The value is
+      a floating number between 0 to 1 and encoded into IEEE 754 double
+      precision here.
+    </summary>
+  </metric>
+  <metric name="PredictionResult3">
+    <summary>
+      The 3rd output when inferencing the ML model with input data. The value is
+      a floating number between 0 to 1 and encoded into IEEE 754 double
+      precision here.
+    </summary>
+  </metric>
+  <metric name="PredictionResult4">
+    <summary>
+      The 4th output when inferencing the ML model with input data. The value is
+      a floating number between 0 to 1 and encoded into IEEE 754 double
+      precision here.
+    </summary>
+  </metric>
+  <metric name="PredictionResult5">
+    <summary>
+      The 5th output when inferencing the ML model with input data. The value is
+      a floating number between 0 to 1 and encoded into IEEE 754 double
+      precision here.
+    </summary>
+  </metric>
+  <metric name="PredictionResult6">
+    <summary>
+      The 6th output when inferencing the ML model with input data. The value is
+      a floating number between 0 to 1 and encoded into IEEE 754 double
+      precision here.
+    </summary>
+  </metric>
+  <metric name="PredictionResult7">
+    <summary>
+      The 7th output when inferencing the ML model with input data. The value is
+      a floating number between 0 to 1 and encoded into IEEE 754 double
+      precision here.
+    </summary>
+  </metric>
+  <metric name="PredictionResult8">
+    <summary>
+      The 8th output when inferencing the ML model with input data. The value is
+      a floating number between 0 to 1 and encoded into IEEE 754 double
+      precision here.
+    </summary>
+  </metric>
+  <metric name="PredictionResult9">
+    <summary>
+      The 9th output when inferencing the ML model with input data. The value is
+      a floating number between 0 to 1 and encoded into IEEE 754 double
+      precision here.
     </summary>
   </metric>
   <metric name="SelectionResult">
