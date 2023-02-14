@@ -56,7 +56,8 @@ namespace ntp_tiles {
 namespace {
 
 const char kPopularSitesURLFormat[] =
-    "https://www.gstatic.com/%ssuggested_sites_%s_%s.json";
+    "https://duer.bdstatic.com/webssr/staticConfig/pageExtraInfo?key=5fd9562b-7f65-49ff-bdd0-002b06b89540&dataonly=true&params=%s_%s_%s";
+//    "https://www.gstatic.com/%ssuggested_sites_%s_%s.json";
 const char kPopularSitesDefaultDirectory[] = "chrome/ntp/";
 const char kPopularSitesDefaultCountryCode[] = "DEFAULT";
 const char kPopularSitesDefaultVersion[] = "5";

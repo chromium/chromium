@@ -154,7 +154,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         //     // TODO(crbug.com/1111490): Revisit during post-MVP.
         //     // There's an edge case where we accept the welcome page in the main app, abort the FRE,
         //     // then go through this CCT FRE again.
-        FREMobileIdentityConsistencyFieldTrial.isEnabled();
+        //FREMobileIdentityConsistencyFieldTrial.isEnabled();
         mPages.add(new FirstRunPage<>(ToSAndUMAFirstRunFragment.class, showWelcomePage));
         // }
         mFreProgressStates.add(MobileFreProgress.WELCOME_SHOWN);

@@ -1,42 +1,42 @@
 [
     {
-        "large_icon_url": "https://www.chromium.org/_/rsrc/1484148948583/apple-touch-icon.png",
-        "title": "The Chromium Projects `",
-        "url": "https://www.chromium.org/"
+        "favicon_url": "https://www.hao123.com/favicon.ico",
+        "title": "hao123导航",
+        "url": "https://www.hao123.com/"
     },
     {
-        "favicon_url": "https://codereview.chromium.org/static/favicon.ico",
-        "title": "Chromium Code Reviews",
-        "url": "https://codereview.chromium.org/"
+        "favicon_url": "https://mat1.gtimg.com/www/icon/favicon2.ico",
+        "title": "腾讯网",
+        "url": "https://www.qq.com/"
     },
     {
-        "large_icon_url": "https://www.chromium.org/_/rsrc/1484148948583/apple-touch-icon.png",
-        "title": "Git Repositories on chromium",
-        "url": "https://chromium.googlesource.com/"
+        "favicon_url": "https://dumall.baidu.com/favicon.ico",
+        "title": "小度商城",
+        "url": "https://dumall.baidu.com/"
     },
     {
-        "large_icon_url": "https://developers.google.com/_static/9bce7b6017/images/touch-icon.png",
-        "title": "Google Open Source Programs Office",
-        "url": "https://developers.google.com/open-source/"
+        "favicon_url": "https://www.baidu.com/favicon.ico",
+        "title": "百度",
+        "url": "https://www.baidu.com/"
     },
     {
-        "large_icon_url": "https://freenode.net/static/img/logos/coloured-alphabg-sq-120.png",
-        "title": "freenode",
-        "url": "https://freenode.net/"
+        "favicon_url": "https://mat1.gtimg.com/www/icon/favicon2.ico",
+        "title": "网易",
+        "url": "https://www.163.com/"
     },
     {
-        "large_icon_url": "https://assets-cdn.github.com/pinned-octocat.svg",
-        "title": "Github Page of the Chromium Project",
-        "url": "https://github.com/chromium/"
+        "favicon_url": "https://www.bilibili.com/favicon.ico",
+        "title": "哔哩哔哩",
+        "url": "https://www.bilibili.com/"
     },
     {
-        "large_icon_url": "https://cdn2.iconfinder.com/data/icons/minimalism/512/Chromium.png",
-        "title": "Chrome Flags",
-        "url": "chrome://flags"
+        "favicon_url": "https://www.jd.com/favicon.ico",
+        "title": "京东",
+        "url": "https://www.jd.com/"
     },
     {
-        "large_icon_url": "https://cdn2.iconfinder.com/data/icons/minimalism/512/Chromium.png",
-        "title": "Chrome Version",
-        "url": "chrome://version/"
+        "favicon_url": "https://map.baidu.com/favicon.ico",
+        "title": "百度地图",
+        "url": "https://map.baidu.com/"
     }
 ]
