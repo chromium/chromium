@@ -93,12 +93,28 @@ class RealtimeReportingClient : public KeyedService,
       const enterprise_connectors::ReportingSettings& settings,
       base::Value::Dict event);
 
+  // Report safe browsing events that have occurred in the past but has not yet
+  // been reported. This is currently used for browser crash events, which are
+  // polled at a fixed time interval. Declared as virtual for tests.
+  virtual void ReportPastEvent(
+      const std::string&,
+      const enterprise_connectors::ReportingSettings& settings,
+      base::Value::Dict event,
+      const base::Time& time);
+
  private:
   // Initialize a real-time report client if needed.  This client is used only
   // if real-time reporting is enabled, the machine is properly reigistered
   // with CBCM and the appropriate policies are enabled.
   void InitRealtimeReportingClient(
       const enterprise_connectors::ReportingSettings& settings);
+
+  // Helper function that uploads security events, parametrized with the time.
+  void ReportEventWithTimestamp(
+      const std::string& name,
+      const enterprise_connectors::ReportingSettings& settings,
+      base::Value::Dict event,
+      const base::Time& time);
 
   // Sub-methods called by InitRealtimeReportingClient to make appropriate
   // verifications and initialize the corresponding client. Returns a policy

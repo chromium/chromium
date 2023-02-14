@@ -209,9 +209,9 @@ void BrowserCrashEventRouter::UploadToReportingServer(
     event.Set(kKeyReportId, report.id);
     event.Set(kKeyPlatform, platform);
     event.Set(kKeyProfileUserName, reporting_client->GetProfileUserName());
-    reporting_client->ReportRealtimeEvent(
+    reporting_client->ReportPastEvent(
         ReportingServiceSettings::kBrowserCrashEvent, settings,
-        std::move(event));
+        std::move(event), base::Time::FromTimeT(report.creation_time));
     if (report.creation_time > latest_creation_time) {
       latest_creation_time = report.creation_time;
     }

@@ -322,6 +322,22 @@ void RealtimeReportingClient::ReportRealtimeEvent(
     const std::string& name,
     const enterprise_connectors::ReportingSettings& settings,
     base::Value::Dict event) {
+  ReportEventWithTimestamp(name, settings, std::move(event), base::Time::Now());
+}
+
+void RealtimeReportingClient::ReportPastEvent(
+    const std::string& name,
+    const enterprise_connectors::ReportingSettings& settings,
+    base::Value::Dict event,
+    const base::Time& time) {
+  ReportEventWithTimestamp(name, settings, std::move(event), time);
+}
+
+void RealtimeReportingClient::ReportEventWithTimestamp(
+    const std::string& name,
+    const enterprise_connectors::ReportingSettings& settings,
+    base::Value::Dict event,
+    const base::Time& time) {
   if (rejected_dm_token_timers_.contains(settings.dm_token)) {
     return;
   }
@@ -347,17 +363,17 @@ void RealtimeReportingClient::ReportRealtimeEvent(
   }
 
   // Format the current time (UTC) in RFC3339 format.
-  base::Time::Exploded now_exploded;
-  base::Time::Now().UTCExplode(&now_exploded);
-  std::string now_str = base::StringPrintf(
-      "%d-%02d-%02dT%02d:%02d:%02d.%03dZ", now_exploded.year,
-      now_exploded.month, now_exploded.day_of_month, now_exploded.hour,
-      now_exploded.minute, now_exploded.second, now_exploded.millisecond);
+  base::Time::Exploded exploded_time;
+  time.UTCExplode(&exploded_time);
+  std::string time_str = base::StringPrintf(
+      "%d-%02d-%02dT%02d:%02d:%02d.%03dZ", exploded_time.year,
+      exploded_time.month, exploded_time.day_of_month, exploded_time.hour,
+      exploded_time.minute, exploded_time.second, exploded_time.millisecond);
 
   policy::CloudPolicyClient* client =
       settings.per_profile ? profile_client_.get() : browser_client_.get();
   base::Value::Dict wrapper;
-  wrapper.Set("time", now_str);
+  wrapper.Set("time", time_str);
   wrapper.Set(name, std::move(event));
 
   auto upload_callback = base::BindOnce(
