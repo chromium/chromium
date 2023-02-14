@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD)
 namespace net {
 
 // Call on the network thread before calling DnsReloaderMaybeReload() anywhere.
@@ -18,6 +17,5 @@ void EnsureDnsReloaderInit();
 void DnsReloaderMaybeReload();
 
 }  // namespace net
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD)
 
 #endif  // NET_DNS_DNS_RELOADER_H_

@@ -6,10 +6,37 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD) && \
-    !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+// If we're not on a POSIX system, it's not even safe to try to include resolv.h
+// - there's not guarantee it exists at all. :(
+#if BUILDFLAG(IS_POSIX)
 
 #include <resolv.h>
+
+// This code only works on systems where the C library provides res_ninit(3) and
+// res_nclose(3), which requires __RES >= 19991006 (most libcs at this point,
+// but not all).
+//
+// Historically, this code was also not used on Apple platforms - /etc/hosts
+// can't change on iOS, but on macOS the situation is less clear.
+// TODO(https://crbug.com/1414923): Why is this not used on macOS?
+//
+// It *also* is not used on Android, because Android handles nameserver changes
+// for us and has no /etc/resolv.conf. Despite that, Bionic does export these
+// interfaces, so we need to not use them.
+//
+// It is also also not used on Fuchsia. Regrettably, Fuchsia's resolv.h has
+// __RES set to 19991006, but does not actually provide res_ninit(3). This was
+// an old musl bug that was fixed by musl c8fdcfe5, but Fuchsia's SDK doesn't
+// have that change.
+#if defined(__RES) && __RES >= 19991006 && !BUILDFLAG(IS_APPLE) && \
+    !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+// We define this so we don't need to restate the complex condition here twice
+// below - it would be easy for the copies below to get out of sync.
+#define USE_RES_NINIT
+#endif  // defined(_RES) && ...
+#endif  // BUILDFLAG(IS_POSIX)
+
+#if defined(USE_RES_NINIT)
 
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
@@ -33,11 +60,6 @@ namespace {
 // To fix this, on systems with FilePathWatcher support, we use
 // NetworkChangeNotifier::DNSObserver to monitor /etc/resolv.conf to
 // enable us to respond to DNS changes and reload the resolver state.
-//
-// OpenBSD does not have thread-safe res_ninit/res_nclose so we can't do
-// the same trick there and most *BSD's don't yet have support for
-// FilePathWatcher (but perhaps the new kqueue mac code just needs to be
-// ported to *BSD to support that).
 //
 // Android does not have /etc/resolv.conf. The system takes care of nameserver
 // changes, so none of this is needed.
@@ -113,5 +135,14 @@ void DnsReloaderMaybeReload() {
 
 }  // namespace net
 
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD)
-        // && !BUILDFLAG(IS_ANDROID)
+#else  // !USE_RES_NINIT
+
+namespace net {
+
+void EnsureDnsReloaderInit() {}
+
+void DnsReloaderMaybeReload() {}
+
+}  // namespace net
+
+#endif  // defined(USE_RES_NINIT)

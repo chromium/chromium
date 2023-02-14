@@ -353,10 +353,8 @@ void HostResolverSystemTask::OnLookupComplete(const uint32_t attempt_number,
 }
 
 void EnsureSystemHostResolverCallReady() {
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD) && \
-    !BUILDFLAG(IS_ANDROID)
   EnsureDnsReloaderInit();
-#elif BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
   EnsureWinsockInit();
 #endif
 }
@@ -438,11 +436,8 @@ int SystemHostResolverCall(const std::string& host,
   // current process during that time.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-
-#if BUILDFLAG(IS_POSIX) && \
-    !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_ANDROID))
   DnsReloaderMaybeReload();
-#endif
+
   auto [ai, err, os_error] = AddressInfo::Get(host, hints, nullptr, network);
   bool should_retry = false;
   // If the lookup was restricted (either by address family, or address
