@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -39,7 +41,7 @@ class ChromeClientSideDetectionHostDelegateTest
     navigation_observer_manager_ =
         SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
             profile);
-    navigation_observer_ = new SafeBrowsingNavigationObserver(
+    navigation_observer_ = std::make_unique<SafeBrowsingNavigationObserver>(
         browser()->tab_strip_model()->GetWebContentsAt(0),
         HostContentSettingsMapFactory::GetForProfile(profile),
         navigation_observer_manager_);
@@ -48,7 +50,7 @@ class ChromeClientSideDetectionHostDelegateTest
   }
 
   void TearDown() override {
-    delete navigation_observer_;
+    navigation_observer_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -58,7 +60,7 @@ class ChromeClientSideDetectionHostDelegateTest
 
  protected:
   raw_ptr<SafeBrowsingNavigationObserverManager> navigation_observer_manager_;
-  raw_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
+  std::unique_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

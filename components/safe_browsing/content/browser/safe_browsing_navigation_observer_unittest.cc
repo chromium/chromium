@@ -51,12 +51,12 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
     navigation_observer_manager_ =
         std::make_unique<SafeBrowsingNavigationObserverManager>(&pref_service_);
 
-    navigation_observer_ =
-        new SafeBrowsingNavigationObserver(web_contents(), settings_map_.get(),
-                                           navigation_observer_manager_.get());
+    navigation_observer_ = std::make_unique<SafeBrowsingNavigationObserver>(
+        web_contents(), settings_map_.get(),
+        navigation_observer_manager_.get());
   }
   void TearDown() override {
-    delete navigation_observer_;
+    navigation_observer_.reset();
     settings_map_->ShutdownOnUIThread();
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -185,7 +185,7 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
   scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<SafeBrowsingNavigationObserverManager>
       navigation_observer_manager_;
-  raw_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
+  std::unique_ptr<SafeBrowsingNavigationObserver> navigation_observer_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
