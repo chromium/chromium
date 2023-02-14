@@ -333,7 +333,23 @@ suite('DynamicColorElementTest', function() {
     assertEquals(button.getAttribute('aria-checked'), 'true');
   });
 
-  test('store previous color scheme selection locally', async () => {
+  test('selects default color scheme on initial load', async () => {
+    await initDynamicColorElement();
+
+    const colorSchemeButtons = getColorSchemeButtons();
+    assertEquals('true', colorSchemeButtons[0]!.ariaChecked);
+  });
+
+  test('selects default static color when static color is null', async () => {
+    // Setting the color scheme to kStatic also sets the static color to null.
+    themeProvider.setColorScheme(ColorScheme.kStatic);
+    await initDynamicColorElement();
+
+    const staticColorButtons = getStaticColorButtons();
+    assertEquals('true', staticColorButtons[0]!.ariaChecked);
+  });
+
+  test('stores previous color scheme selection locally', async () => {
     const colorScheme = ColorScheme.kExpressive;
     themeProvider.setColorScheme(colorScheme);
     await initDynamicColorElement();
@@ -348,7 +364,7 @@ suite('DynamicColorElementTest', function() {
         colorScheme, personalizationStore.data.theme.colorSchemeSelected);
   });
 
-  test('store previous static color selection locally', async () => {
+  test('stores previous static color selection locally', async () => {
     const staticColorHex = '#edd0e4';
     themeProvider.setStaticColor(hexColorToSkColor(staticColorHex));
     await initDynamicColorElement();

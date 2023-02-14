@@ -148,19 +148,15 @@ export class DynamicColorElement extends WithPersonalizationStore {
   }
 
   private getColorSchemeAriaChecked_(
-      colorScheme: string, colorSchemeSelected: string): 'true'|'false' {
-    if (!colorSchemeSelected) {
-      return 'false';
-    }
-    return colorSchemeSelected === colorScheme ? 'true' : 'false';
+      colorScheme: number, colorSchemeSelected: number|null): 'true'|'false' {
+    const checkedColorScheme = colorSchemeSelected || DEFAULT_COLOR_SCHEME;
+    return checkedColorScheme === colorScheme ? 'true' : 'false';
   }
 
   private getStaticColorAriaChecked_(
       staticColor: string, staticColorSelected: SkColor|null): 'true'|'false' {
-    if (!staticColorSelected) {
-      return 'false';
-    }
-    return staticColor === convertToRgbHexStr(staticColorSelected.value) ?
+    const checkedStaticColor = staticColorSelected || DEFAULT_STATIC_COLOR;
+    return staticColor === convertToRgbHexStr(checkedStaticColor.value) ?
         'true' :
         'false';
   }
