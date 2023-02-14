@@ -178,6 +178,11 @@ AutocompleteProviderClientImpl::GetOmniboxTriggeredFeatureService() const {
   return omnibox_triggered_feature_service_.get();
 }
 
+AutocompleteScoringModelService*
+AutocompleteProviderClientImpl::GetAutocompleteScoringModelService() const {
+  return nullptr;
+}
+
 std::string AutocompleteProviderClientImpl::GetAcceptLanguages() const {
   return browser_state_->GetPrefs()->GetString(
       language::prefs::kAcceptLanguages);

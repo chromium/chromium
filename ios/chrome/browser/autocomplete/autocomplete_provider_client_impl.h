@@ -11,6 +11,7 @@
 #include "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
 
 class ChromeBrowserState;
+class AutocompleteScoringModelService;
 
 namespace unified_consent {
 class UrlKeyedDataCollectionConsentHelper;
@@ -60,6 +61,8 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       KeywordProvider* keyword_provider) override;
   query_tiles::TileService* GetQueryTileService() const override;
   OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
+      const override;
+  AutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const override;
   std::string GetAcceptLanguages() const override;
   std::string GetEmbedderRepresentationOfAboutScheme() const override;

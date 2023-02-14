@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 struct AutocompleteMatch;
@@ -30,6 +31,7 @@ class PrefService;
 class ShortcutsBackend;
 class TabMatcher;
 class ZeroSuggestCacheService;
+class AutocompleteScoringModelService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -95,6 +97,8 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   GetKeywordExtensionsDelegate(KeywordProvider* keyword_provider) = 0;
   virtual query_tiles::TileService* GetQueryTileService() const = 0;
   virtual OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
+      const = 0;
+  virtual AutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const = 0;
 
   // The value to use for Accept-Languages HTTP header when making an HTTP

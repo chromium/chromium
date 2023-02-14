@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
+#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/document_suggestions_service.h"
 #include "components/omnibox/browser/keyword_extensions_delegate.h"
 #include "components/omnibox/browser/mock_tab_matcher.h"
@@ -26,6 +27,8 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+class AutocompleteScoringModelService;
 
 struct AutocompleteMatch;
 
@@ -108,6 +111,11 @@ class MockAutocompleteProviderClient
 
   signin::IdentityManager* GetIdentityManager() const override {
     return identity_manager_;
+  }
+
+  AutocompleteScoringModelService* GetAutocompleteScoringModelService()
+      const override {
+    return nullptr;
   }
 
   MOCK_CONST_METHOD0(GetAcceptLanguages, std::string());

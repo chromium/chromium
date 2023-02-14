@@ -87,6 +87,11 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #endif
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
+#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -313,6 +318,16 @@ ChromeAutocompleteProviderClient::GetOmniboxTriggeredFeatureService() const {
 signin::IdentityManager* ChromeAutocompleteProviderClient::GetIdentityManager()
     const {
   return IdentityManagerFactory::GetForProfile(profile_);
+}
+
+AutocompleteScoringModelService*
+ChromeAutocompleteProviderClient::GetAutocompleteScoringModelService() const {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  return AutocompleteScoringModelServiceFactory::GetInstance()->GetForProfile(
+      profile_);
+#else
+  return nullptr;
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 bool ChromeAutocompleteProviderClient::IsOffTheRecord() const {
