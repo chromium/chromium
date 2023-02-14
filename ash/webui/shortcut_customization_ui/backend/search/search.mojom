@@ -1,0 +1,41 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.shortcut_customization.mojom;
+
+import "ash/public/mojom/accelerator_info.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+// Search result metadata. Used by clients (e.g. the Shortcuts app) to render
+// an individual search result in the UI.
+struct SearchResult {
+  // The shortcut's AcceleratorLayoutInfo contains the description and other
+  // fields that are necessary to display the shortcuts correctly + route to the
+  // shortcuts on selection.
+  ash.mojom.AcceleratorLayoutInfo accelerator_layout_info;
+  // A list of all accelerator_infos for this shortcut.
+  array<ash.mojom.AcceleratorInfo> accelerator_infos;
+  // Relevance score, in the range [0, 1]. A score of 1 indicates a perfect
+  // string match.
+  double relevance_score;
+};
+
+// Provides search results. Implemented in the browser process;
+// intended to be called from the Shortcuts app TS and Launcher C++.
+interface SearchHandler {
+  // Searches for the given query and returns a list of results, sorted
+  // from most relevant to least relevant. An empty array indicates no relevant
+  // results.
+  //
+  // The search query will match against shortcut descriptions and shortcut
+  // keys. For example, searching for "tab" might show results for both
+  // "New Tab [Ctrl+T]" and "Switch windows [Ctrl+Tab]".
+  //
+  // This function returns an array with a maximum size of |max_num_results|,
+  // but the array may contain fewer elements if there are fewer results.
+  // Clients should never pass a value of 0 for |max_num_results|, since that
+  // would return an empty result array.
+  Search(mojo_base.mojom.String16 query,
+         uint32 max_num_results) => (array<SearchResult> results);
+};

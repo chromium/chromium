@@ -10,6 +10,8 @@
 #include "ash/webui/grit/ash_shortcut_customization_app_resources.h"
 #include "ash/webui/grit/ash_shortcut_customization_app_resources_map.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -190,6 +192,7 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
   AddFeatureFlags(source);
 
   provider_ = std::make_unique<shortcut_ui::AcceleratorConfigurationProvider>();
+  search_handler_ = std::make_unique<shortcut_ui::SearchHandler>();
 }
 
 ShortcutCustomizationAppUI::~ShortcutCustomizationAppUI() = default;
@@ -199,6 +202,12 @@ void ShortcutCustomizationAppUI::BindInterface(
         shortcut_customization::mojom::AcceleratorConfigurationProvider>
         receiver) {
   provider_->BindInterface(std::move(receiver));
+}
+
+void ShortcutCustomizationAppUI::BindInterface(
+    mojo::PendingReceiver<shortcut_customization::mojom::SearchHandler>
+        receiver) {
+  search_handler_->BindInterface(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ShortcutCustomizationAppUI)

@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
@@ -44,8 +46,13 @@ class ShortcutCustomizationAppUI : public ui::MojoWebUIController {
           shortcut_customization::mojom::AcceleratorConfigurationProvider>
           receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<shortcut_customization::mojom::SearchHandler>
+          receiver);
+
  private:
   std::unique_ptr<shortcut_ui::AcceleratorConfigurationProvider> provider_;
+  std::unique_ptr<shortcut_ui::SearchHandler> search_handler_;
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
