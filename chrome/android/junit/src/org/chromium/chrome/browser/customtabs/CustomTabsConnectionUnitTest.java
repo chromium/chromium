@@ -6,8 +6,17 @@ package org.chromium.chrome.browser.customtabs;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Bundle;
+
+import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,11 +24,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.task.TaskTraits;
+import org.chromium.base.task.test.ShadowPostTask;
+import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
+import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.test.util.browser.Features;
@@ -31,10 +47,15 @@ import java.util.List;
 
 /** Tests for some parts of {@link CustomTabsConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {CustomTabsConnectionUnitTest.ShadowUmaSessionStats.class})
+@Config(shadows = {CustomTabsConnectionUnitTest.ShadowUmaSessionStats.class, ShadowPostTask.class})
 public class CustomTabsConnectionUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Mock
+    private SessionHandler mSessionHandler;
+    @Mock
+    private CustomTabsSessionToken mSession;
 
     private static final ArrayList<String> REALTIME_SIGNALS_AND_BRANDING =
             new ArrayList<String>(List.of(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS,
@@ -56,13 +77,26 @@ public class CustomTabsConnectionUnitTest {
 
     @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
+        ShadowPostTask.setTestImpl(new TestImpl() {
+            @Override
+            public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
+                task.run();
+            }
+        });
         mConnection = CustomTabsConnection.getInstance();
         mConnection.setIsDynamicFeaturesEnabled(true);
+        when(mSessionHandler.getSession()).thenReturn(mSession);
+        ChromeApplicationImpl.getComponent().resolveSessionDataHolder().setActiveHandler(
+                mSessionHandler);
     }
 
     @After
     public void tearDown() {
         CustomTabsConnection.setInstanceForTesting(null);
+        ChromeApplicationImpl.getComponent().resolveSessionDataHolder().removeActiveHandler(
+                mSessionHandler);
+        ShadowPostTask.reset();
     }
 
     @Test
@@ -178,6 +212,28 @@ public class CustomTabsConnectionUnitTest {
     public void areExperimentsSupported_AgaInputs() {
         assertTrue(mConnection.areExperimentsSupported(REALTIME_SIGNALS_AND_BRANDING, null));
         assertTrue(mConnection.areExperimentsSupported(null, REALTIME_SIGNALS_AND_BRANDING));
+    }
+
+    @Test
+    public void updateVisuals_BottomBarSwipeUpGesture() {
+        var bundle = new Bundle();
+        var pendingIntent = mock(PendingIntent.class);
+        bundle.putParcelable(
+                CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION, pendingIntent);
+        mConnection.updateVisuals(mSession, bundle);
+        verify(mSessionHandler).updateSecondaryToolbarSwipeUpPendingIntent(eq(pendingIntent));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.CCT_BOTTOM_BAR_SWIPE_UP_GESTURE})
+    public void updateVisuals_BottomBarSwipeUpGesture_FeatureDisabled() {
+        var bundle = new Bundle();
+        var pendingIntent = mock(PendingIntent.class);
+        bundle.putParcelable(
+                CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION, pendingIntent);
+        mConnection.updateVisuals(mSession, bundle);
+        verify(mSessionHandler, never())
+                .updateSecondaryToolbarSwipeUpPendingIntent(eq(pendingIntent));
     }
 
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.

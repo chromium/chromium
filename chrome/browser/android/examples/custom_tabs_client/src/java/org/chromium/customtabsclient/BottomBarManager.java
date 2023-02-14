@@ -21,6 +21,16 @@ import java.lang.ref.WeakReference;
  * A {@link BroadcastReceiver} that manages the interaction with the active Custom Tab.
  */
 public class BottomBarManager extends BroadcastReceiver {
+    /**
+     * A {@link BroadcastReceiver} that receives the swipe-up gesture on the Custom Tab bottom bar.
+     */
+    public static class SwipeUpReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "Swiped up!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private static WeakReference<MediaPlayer> sMediaPlayerWeakRef;
 
     @Override

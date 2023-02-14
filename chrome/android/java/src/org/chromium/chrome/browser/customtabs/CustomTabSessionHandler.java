@@ -119,6 +119,11 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     }
 
     @Override
+    public boolean updateSecondaryToolbarSwipeUpPendingIntent(PendingIntent pendingIntent) {
+        return mBottomBarDelegate.get().updateSwipeUpPendingIntent(pendingIntent);
+    }
+
+    @Override
     @Nullable
     public String getCurrentUrl() {
         Tab tab = mTabProvider.getTab();

@@ -51,6 +51,7 @@
             android:name=".shared.KeepAliveService"
             android:exported="true"/>
         <receiver android:name=".BottomBarManager"/>
+        <receiver android:name=".BottomBarManager$SwipeUpReceiver"/>
 
 
         <service

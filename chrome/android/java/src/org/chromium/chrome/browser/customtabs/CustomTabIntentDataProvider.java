@@ -285,6 +285,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             new StringCachedFieldTrialParameter(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
                     ALLOWLIST_ENTRIES_PARAM_NAME, "");
 
+    /**
+     * Extra that specifies the {@link PendingIntent} to be sent when the user swipes up from the
+     * secondary (bottom) toolbar.
+     */
+    public static final String EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION =
+            "androidx.browser.customtabs.extra.SECONDARY_TOOLBAR_SWIPE_UP_ACTION";
+
     private final Intent mIntent;
     private final CustomTabsSessionToken mSession;
     private final boolean mIsTrustedIntent;
@@ -317,6 +324,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private RemoteViews mRemoteViews;
     private int[] mClickableViewIds;
     private PendingIntent mRemoteViewsPendingIntent;
+    private PendingIntent mSecondaryToolbarSwipeUpPendingIntent;
     // OnFinished listener for PendingIntents. Used for testing only.
     private PendingIntent.OnFinished mOnFinished;
 
@@ -504,6 +512,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 intent, CustomTabsIntent.EXTRA_REMOTEVIEWS_VIEW_IDS);
         mRemoteViewsPendingIntent = IntentUtils.safeGetParcelableExtra(
                 intent, CustomTabsIntent.EXTRA_REMOTEVIEWS_PENDINGINTENT);
+        if (ChromeFeatureList.sCctBottomBarSwipeUpGesture.isEnabled()) {
+            mSecondaryToolbarSwipeUpPendingIntent = IntentUtils.safeGetParcelableExtra(
+                    intent, EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION);
+        }
         mMediaViewerUrl = isMediaViewer()
                 ? IntentUtils.safeGetStringExtra(intent, EXTRA_MEDIA_VIEWER_URL)
                 : null;
@@ -896,6 +908,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (showSideSheetMaximizeButton()) {
             featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION);
         }
+        if (mSecondaryToolbarSwipeUpPendingIntent != null) {
+            featureUsage.log(CustomTabsFeature.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION);
+        }
     }
 
     @Override
@@ -1039,6 +1054,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Nullable
     public PendingIntent getRemoteViewsPendingIntent() {
         return mRemoteViewsPendingIntent;
+    }
+
+    @Nullable
+    @Override
+    public PendingIntent getSecondaryToolbarSwipeUpPendingIntent() {
+        return mSecondaryToolbarSwipeUpPendingIntent;
     }
 
     @Override

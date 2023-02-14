@@ -764,6 +764,15 @@ public class CustomTabsConnection {
             result &= PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT,
                     () -> handler.updateRemoteViews(remoteViews, clickableIDs, pendingIntent));
         }
+
+        if (ChromeFeatureList.sCctBottomBarSwipeUpGesture.isEnabled()
+                && bundle.containsKey(
+                        CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION)) {
+            PendingIntent pendingIntent = IntentUtils.safeGetParcelable(
+                    bundle, CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION);
+            result &= PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT,
+                    () -> handler.updateSecondaryToolbarSwipeUpPendingIntent(pendingIntent));
+        }
         logCall("updateVisuals()", result);
         return result;
     }

@@ -728,6 +728,13 @@ public class MainActivity
                         mCctType.equals("Incognito CCT") ? "Incognito CCT" : "CCT");
                 if (session != null && mBottomToolbarCheckbox.isChecked()) {
                     prepareBottombar(builder);
+                    Intent broadcastIntent =
+                            new Intent(this, BottomBarManager.SwipeUpReceiver.class);
+                    PendingIntent pi = PendingIntent.getBroadcast(
+                            this, 0, broadcastIntent, PendingIntent.FLAG_MUTABLE);
+                    customTabsIntent.intent.putExtra(
+                            "androidx.browser.customtabs.extra.SECONDARY_TOOLBAR_SWIPE_UP_ACTION",
+                            pi);
                 }
                 // NOTE: opening in incognito may be restricted. This assumes it is not.
                 customTabsIntent.intent.putExtra(

@@ -1220,6 +1220,11 @@ if (current_toolchain == default_toolchain) {
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
+  android_resources("chrome_unit_test_java_resources") {
+    testonly = true
+    sources = [ "//chrome/android/javatests/res/layout/bottombar_stub.xml" ]
+  }
+
   android_library("chrome_unit_test_java") {
     testonly = true
     resources_package = "org.chromium.chrome.test"
@@ -1243,6 +1248,7 @@ if (current_toolchain == default_toolchain) {
       "javatests/src/org/chromium/chrome/browser/crash/LogcatExtractionRunnableTest.java",
       "javatests/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceTest.java",
       "javatests/src/org/chromium/chrome/browser/crypto/CipherFactoryTest.java",
+      "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabBottomBarViewUnitTest.java",
       "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabLaunchCauseMetricsTest.java",
       "javatests/src/org/chromium/chrome/browser/download/DownloadForegroundServiceManagerTest.java",
       "javatests/src/org/chromium/chrome/browser/download/DownloadForegroundServiceTest.java",
@@ -1272,6 +1278,8 @@ if (current_toolchain == default_toolchain) {
       "javatests/src/org/chromium/chrome/browser/webapps/WebappLaunchCauseMetricsTest.java",
     ]
     deps = [
+      ":chrome_app_java_resources",
+      ":chrome_unit_test_java_resources",
       ":chrome_unit_test_util_java",
       "//base:base_java",
       "//base:base_java_test_support",

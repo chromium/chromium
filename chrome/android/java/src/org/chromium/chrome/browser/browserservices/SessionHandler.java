@@ -39,6 +39,14 @@ public interface SessionHandler {
             RemoteViews remoteViews, int[] clickableIDs, PendingIntent pendingIntent);
 
     /**
+     * Updates the {@link PendingIntent} to be sent when the user swipes up from the secondary
+     * (bottom) toolbar.
+     * @param pendingIntent The {@link PendingIntent}.
+     * @return Whether this update is successful.
+     */
+    boolean updateSecondaryToolbarSwipeUpPendingIntent(PendingIntent pendingIntent);
+
+    /**
      * @return The current url being displayed to the user.
      */
     @Nullable String getCurrentUrl();

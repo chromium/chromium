@@ -180,6 +180,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCriticalPersistedTabData,
     &kCommerceCoupons,
     &kCCTBackgroundTab,
+    &kCCTBottomBarSwipeUpGesture,
     &kCCTBrandTransparency,
     &kCCTClientDataHeader,
     &kCCTFeatureUsage,
@@ -511,6 +512,10 @@ BASE_FEATURE(kCriticalPersistedTabData,
 BASE_FEATURE(kCommerceCoupons,
              "CommerceCoupons",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTBottomBarSwipeUpGesture,
+             "CCTBottomBarSwipeUpGesture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTBackgroundTab,
              "CCTBackgroundTab",

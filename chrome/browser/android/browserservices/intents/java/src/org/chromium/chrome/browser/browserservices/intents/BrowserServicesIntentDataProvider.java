@@ -235,6 +235,15 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * @return The {@link PendingIntent} that is sent when the user swipes up from the secondary
+     *         (bottom) toolbar.
+     */
+    @Nullable
+    public PendingIntent getSecondaryToolbarSwipeUpPendingIntent() {
+        return null;
+    }
+
+    /**
      * Gets params for all custom buttons, which is the combination of
      * {@link #getCustomButtonsOnBottombar()} and {@link #getCustomButtonsOnToolbar()}.
      */
