@@ -6,7 +6,8 @@ var verbose = 0;
 
 // Aliexpress uses 'US $12.34' format in the price.
 // Macy's uses "$12.34 to 56.78" format.
-var priceCleanupPrefix = 'price|sale|with offer|only|our price|now|starting at';
+var priceCleanupPrefix =
+  'sale price|price|sale|with offer|only|our price|now|starting at';
 var priceCleanupPostfix = '(/(each|set))';
 var priceRegexTemplate = '((reg|regular|orig|from|' + priceCleanupPrefix +
     ')\\s+)?' +
@@ -225,7 +226,8 @@ function extractUrl(item) {
   // instead of <a>.
   if (document.URL.includes("ae.com")
       || document.URL.includes("kiehls.com")
-      || document.URL.includes("discounttiredirect.com")) {
+      || document.URL.includes("discounttiredirect.com")
+      || document.URL.includes("shutterfly.com")) {
     return "";
   }
   let anchors;
@@ -978,6 +980,8 @@ async function extractAllItems(root) {
     items = root.querySelectorAll("[role=\"listitem\"]");
   } else if (document.URL.includes("discounttiredirect.com")) {
     items = root.querySelectorAll(".cart-item");
+  } else if (document.URL.includes("shutterfly.com")){
+    items = root.querySelectorAll(".cartitem");
   } else {
     skipFiltering = false;
     // Generic pattern
