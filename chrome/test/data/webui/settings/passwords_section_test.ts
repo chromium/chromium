@@ -1050,16 +1050,25 @@ suite('PasswordsSection', function() {
   });
 
   test(
-      'importPasswordsButtonShownOnlyWhenPasswordsImportFeatureEnabled',
+      'importPasswordsButtonShownOnlyWhenPasswordManagerNotDisabledByPolicy',
       async function() {
         loadTimeData.overrideValues({showImportPasswords: false});
         const passwordsSectionImportPasswordsDisabled =
             await createPasswordsSection(
                 elementFactory, passwordManager, [], []);
+        passwordsSectionImportPasswordsDisabled.set(
+            'prefs.credentials_enable_service', {
+              enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+              value: false,
+            });
+        flush();
         assertTrue(
             passwordsSectionImportPasswordsDisabled.shadowRoot!
                 .querySelector<HTMLElement>('#menuImportPassword')!.hidden);
         loadTimeData.overrideValues({showImportPasswords: true});
+        passwordsSectionImportPasswordsDisabled.set(
+            'prefs.credentials_enable_service.value', true);
+        flush();
         const passwordsSectionImportPasswordsEnabled =
             await createPasswordsSection(
                 elementFactory, passwordManager, [], []);
