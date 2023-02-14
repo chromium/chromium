@@ -1769,7 +1769,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       return !([self.regularTabsViewController isGridEmpty] &&
                [self.pinnedTabsViewController isCollectionEmpty]);
     case TabGridPageIncognitoTabs:
-      return [self.incognitoTabsViewController isGridEmpty];
+      return ![self.incognitoTabsViewController isGridEmpty];
   }
 }
 
