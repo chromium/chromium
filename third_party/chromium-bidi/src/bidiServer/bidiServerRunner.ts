@@ -18,9 +18,11 @@ import {ITransport} from '../utils/transport.js';
 import debug from 'debug';
 import http from 'http';
 import websocket from 'websocket';
-const debugInternal = debug('bidiServer:internal');
-const debugSend = debug('bidiServer:SEND ►');
-const debugRecv = debug('bidiServer:RECV ◀');
+
+const log = debug('bidiServerRunner:log');
+const debugInternal = debug('bidiServerRunner:internal');
+const debugSend = debug('bidiServerRunner:SEND ►');
+const debugRecv = debug('bidiServerRunner:RECV ◀');
 
 async function getHttpRequestPayload(
   request: http.IncomingMessage
@@ -111,7 +113,7 @@ export class BidiServerRunner {
       }
     );
     server.listen(bidiPort, () => {
-      console.log(`Server is listening on port ${bidiPort}`);
+      log(`Server is listening on port ${bidiPort}`);
     });
 
     const wsServer: websocket.server = new websocket.server({

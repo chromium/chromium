@@ -19,8 +19,11 @@ import {BidiServerRunner} from './bidiServerRunner.js';
 import {ITransport} from '../utils/transport.js';
 import {MapperServer} from './mapperServer.js';
 import argparse from 'argparse';
+import debug from 'debug';
 import mapperReader from './mapperReader.js';
 import puppeteer from 'puppeteer';
+
+const log = debug('bidiServer:log');
 
 function parseArguments() {
   const parser = new argparse.ArgumentParser({
@@ -57,7 +60,7 @@ function parseArguments() {
 
 (() => {
   try {
-    console.log('Launching BiDi server.');
+    log('Launching BiDi server');
 
     const args = parseArguments();
     const bidiPort = args.port;
@@ -67,9 +70,9 @@ function parseArguments() {
     new BidiServerRunner().run(bidiPort, (bidiServer) => {
       return _onNewBidiConnectionOpen(headless, chromeChannel, bidiServer);
     });
-    console.log('BiDi server launched.');
+    log('BiDi server launched');
   } catch (e) {
-    console.log('Error', e);
+    log('Error', e);
   }
 })();
 
