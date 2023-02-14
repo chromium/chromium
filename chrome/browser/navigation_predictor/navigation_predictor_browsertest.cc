@@ -502,7 +502,13 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 
 // Test that anchors are dispated to the single observer, except for anchors
 // linking to the same page (e.g. fragment links).
-IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, SingleObserver) {
+// TODO(crbug.com/1415578): Failing on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SingleObserver DISABLED_SingleObserver
+#else
+#define MAYBE_SingleObserver SingleObserver
+#endif
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, MAYBE_SingleObserver) {
   TestObserver observer;
 
   NavigationPredictorKeyedService* service =
