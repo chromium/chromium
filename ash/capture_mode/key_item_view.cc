@@ -19,6 +19,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -46,7 +47,10 @@ void KeyItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   SetBackground(views::CreateRoundedRectBackground(
       GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated),
-      kKeyItemHeight / 2));
+      height() / 2));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      height() / 2.f, views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
 }
 
 void KeyItemView::Layout() {

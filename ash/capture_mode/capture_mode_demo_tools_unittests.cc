@@ -221,7 +221,10 @@ class CaptureModeDemoToolsTest : public AshTestBase {
         event_generator->current_screen_location()};
     const auto expected_touch_highlight_layer_bounds =
         capture_mode_util::CalculateHighlightLayerBounds(
-            updated_event_location, capture_mode::kHighlightLayerRadius);
+            updated_event_location,
+            capture_mode::kHighlightLayerRadius +
+                capture_mode::kInnerHightlightBorderThickness +
+                capture_mode::kOuterHightlightBorderThickness);
     auto actual_touch_highlight_layer_bounds = original_touch_highlight_bounds;
     actual_touch_highlight_layer_bounds.Offset(drag_offset.x(),
                                                drag_offset.y());

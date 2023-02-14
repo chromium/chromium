@@ -10,6 +10,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash::capture_mode {
 
@@ -113,6 +114,13 @@ constexpr base::TimeDelta kRefreshKeyComboWidgetShortDelay =
 // The radius of the highlight layer generated on mouse or touch event when the
 // demo tools feature is enabled.
 constexpr int kHighlightLayerRadius = 36;
+
+// The thickness of the highlight border that will be applied to the
+// `PointerHighlightLayer`.
+constexpr float kInnerHightlightBorderThickness =
+    0.5 * views::kHighlightBorderThickness;
+constexpr float kOuterHightlightBorderThickness =
+    1.5 * views::kHighlightBorderThickness;
 
 }  // namespace ash::capture_mode
 

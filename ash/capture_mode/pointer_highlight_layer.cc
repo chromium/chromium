@@ -13,10 +13,12 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -27,10 +29,26 @@ const int kHighlightStrokeWidth = 2;
 constexpr int kFillsRadius =
     capture_mode::kHighlightLayerRadius - kHighlightStrokeWidth;
 
+int CalculateRadiusWithHighlightBorder() {
+  return capture_mode::kHighlightLayerRadius +
+         capture_mode::kInnerHightlightBorderThickness +
+         capture_mode::kOuterHightlightBorderThickness;
+}
+
 // Returns the color used for the highlight layer affordance and border.
 SkColor GetColor() {
   return capture_mode_util::GetColorProviderForNativeTheme()->GetColor(
       cros_tokens::kCrosSysOnSurface);
+}
+
+SkColor GetHighlightBorderInnerColor() {
+  return capture_mode_util::GetColorProviderForNativeTheme()->GetColor(
+      ui::kColorHighlightBorderHighlight1);
+}
+
+SkColor GetHighlightBorderOuterColor() {
+  return capture_mode_util::GetColorProviderForNativeTheme()->GetColor(
+      ui::kColorHighlightBorderBorder1);
 }
 
 }  // namespace
@@ -56,37 +74,54 @@ PointerHighlightLayer::~PointerHighlightLayer() = default;
 void PointerHighlightLayer::CenterAroundPoint(
     const gfx::PointF& event_location_in_window) {
   layer()->SetBounds(capture_mode_util::CalculateHighlightLayerBounds(
-      event_location_in_window, capture_mode::kHighlightLayerRadius));
+      event_location_in_window, (CalculateRadiusWithHighlightBorder())));
 }
 
 void PointerHighlightLayer::OnPaintLayer(const ui::PaintContext& context) {
   ui::PaintRecorder recorder(context, layer()->size());
-  gfx::ScopedCanvas scoped_canvas(recorder.canvas());
-  const float dsf = recorder.canvas()->UndoDeviceScaleFactor();
+  gfx::Canvas* canvas = recorder.canvas();
+  gfx::ScopedCanvas scoped_canvas(canvas);
+  const float dsf = canvas->UndoDeviceScaleFactor();
   const float scaled_highlight_radius =
       dsf * capture_mode::kHighlightLayerRadius;
   const float scaled_fills_radius = dsf * kFillsRadius;
   const gfx::PointF scaled_highlight_center = gfx::ConvertPointToPixels(
       capture_mode_util::GetLocalCenterPoint(layer()), dsf);
-
   cc::PaintFlags flags;
   const SkColor color = GetColor();
 
+  // Draw the fills inside for the pointer highlight layer.
   // 50% opacity.
   flags.setColor(SkColorSetA(color, 128));
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  recorder.canvas()->DrawCircle(scaled_highlight_center,
-                                scaled_highlight_radius, flags);
+  canvas->DrawCircle(scaled_highlight_center, scaled_highlight_radius, flags);
 
+  // Draw the border outside of the pointer highlight layer.
   flags.setColor(
       SkColorSetA(color, DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
                              ? 255
                              : 255 * kLightModeBorderOpacityScaleFactor));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kHighlightStrokeWidth);
-  recorder.canvas()->DrawCircle(scaled_highlight_center, scaled_fills_radius,
-                                flags);
+  canvas->DrawCircle(scaled_highlight_center, scaled_fills_radius, flags);
+
+  // Draw circle highlight borders attached to the pointer highlight layer for
+  // better visibility when the color of the pointer highlight has a low
+  // contrast with the background.
+  flags.setStrokeWidth(views::kHighlightBorderThickness);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setAntiAlias(true);
+  flags.setColor(GetHighlightBorderInnerColor());
+  const float scaled_inner_radius =
+      dsf * (capture_mode::kHighlightLayerRadius +
+             capture_mode::kInnerHightlightBorderThickness);
+  canvas->DrawCircle(scaled_highlight_center, scaled_inner_radius, flags);
+
+  flags.setColor(GetHighlightBorderOuterColor());
+  const float scaled_outer_radius =
+      dsf * (CalculateRadiusWithHighlightBorder());
+  canvas->DrawCircle(scaled_highlight_center, scaled_outer_radius, flags);
 }
 
 }  // namespace ash
