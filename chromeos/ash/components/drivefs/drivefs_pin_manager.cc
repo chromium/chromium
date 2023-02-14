@@ -284,7 +284,8 @@ std::ostream& operator<<(std::ostream& out, const Stage stage) {
 }
 
 std::ostream& PinManager::File::PrintTo(std::ostream& out) const {
-  return out << "{transferred: " << HumanReadableSize(transferred)
+  return out << "{path: " << Quote(path)
+             << ", transferred: " << HumanReadableSize(transferred)
              << ", total: " << HumanReadableSize(total)
              << ", pinned: " << pinned << ", in_progress: " << in_progress
              << "}";

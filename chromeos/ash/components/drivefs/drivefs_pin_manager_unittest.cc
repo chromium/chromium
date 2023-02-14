@@ -824,6 +824,64 @@ TEST_F(DriveFsPinManagerTest, Remove) {
   }
 }
 
+// Tests PinManager::OnFileCreated().
+TEST_F(DriveFsPinManagerTest, OnFileCreated) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kNotStarted);
+
+  const DriveItem item{.size = 2487};
+  mojom::FileChange event;
+  event.type = mojom::FileChange::Type::kCreate;
+  event.stable_id = item.stable_id;
+  event.path = Path("/root/Path 1");
+
+  // Should not have any effect since the Pin manager is in kNotStarted stage.
+  EXPECT_CALL(drivefs_, GetMetadataByStableId(_, _)).Times(0);
+  manager.OnFileCreated(std::as_const(event));
+
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 0);
+  EXPECT_EQ(manager.progress_.required_space, 0);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  // Switch to kListingFiles stage.
+  manager.progress_.stage = Stage::kListingFiles;
+  EXPECT_CALL(drivefs_, GetMetadataByStableId(item.stable_id, _))
+      .Times(1)
+      .WillOnce(
+          RunOnceCallback<1>(FileError::FILE_ERROR_OK, MakeMetadata(item)));
+  manager.OnFileCreated(std::as_const(event));
+
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 2487);
+  EXPECT_EQ(manager.progress_.required_space, 4096);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(Id(item.stable_id)));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  // Calling OnFileCreated again with an already tracked ID should not have any
+  // effect.
+  EXPECT_CALL(drivefs_, GetMetadataByStableId(_, _)).Times(0);
+  event.path = Path("/root/Path 2");
+  manager.OnFileCreated(std::as_const(event));
+
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 2487);
+  EXPECT_EQ(manager.progress_.required_space, 4096);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(Id(item.stable_id)));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
+  manager.progress_.stage = Stage::kStopped;
+}
+
 // Tests PinManager::OnSyncingEvent().
 TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
