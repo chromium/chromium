@@ -70059,6 +70059,14 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Navigation not intercepted"/>
 </enum>
 
+<enum name="NavigationInterceptScheme">
+  <int value="0" label="Not intercepted"/>
+  <int value="1" label="Unknown scheme"/>
+  <int value="2" label="Accepted scheme (eg. https)"/>
+  <int value="3" label="Intent scheme"/>
+  <int value="4" label="MDoc scheme"/>
+</enum>
+
 <enum name="NavigationIsGuest">
   <int value="0" label="Not a guest navigation"/>
   <int value="1" label="Guest navigation"/>

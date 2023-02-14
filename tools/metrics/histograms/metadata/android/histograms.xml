@@ -3640,6 +3640,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabNavigationIntercept.Scheme"
+    enum="NavigationInterceptScheme" expires_after="2023-05-15">
+  <owner>rbyers@chromium.org</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <summary>
+    When a navigation is intercepted, the scheme of the URL being intercepted.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabNavigationInterceptResult.For{ProtocolType}"
     enum="NavigationInterceptResult" expires_after="2024-03-24">
   <owner>blundell@chromium.org</owner>

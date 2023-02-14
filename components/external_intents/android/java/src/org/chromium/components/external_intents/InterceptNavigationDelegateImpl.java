@@ -35,6 +35,9 @@ import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class that controls navigations and allows to intercept them. It is used on Android to 'convert'
@@ -77,6 +80,25 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
         int NUM_ENTRIES = 6;
     }
+
+    /**
+     * Histogram for the scheme of an overridden navigation.
+     * This enum is used in UMA, do not reorder values.
+     */
+    @IntDef({InterceptScheme.NOT_INTERCEPTED, InterceptScheme.UNKNOWN_SCHEME,
+            InterceptScheme.ACCEPTED_SCHEME, InterceptScheme.INTENT_SCHEME,
+            InterceptScheme.MDOC_SCHEME, InterceptScheme.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface InterceptScheme {
+        int NOT_INTERCEPTED = 0;
+        int UNKNOWN_SCHEME = 1;
+        int ACCEPTED_SCHEME = 2;
+        int INTENT_SCHEME = 3;
+        int MDOC_SCHEME = 4;
+        int NUM_ENTRIES = 5;
+    }
+    private static final List<String> MDOC_SCHEMES =
+            new ArrayList<String>(Arrays.asList("mdoc", "mdl-openid4vp", "mdoc-openid4vp"));
 
     private static final String MAIN_FRAME_INTENT_LAUNCH_NAME =
             "Android.Intent.MainFrameIntentLaunch";
@@ -252,6 +274,19 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.TabNavigationInterceptResult.For" + protocolType, result.getResultType(),
                 OverrideUrlLoadingResultType.NUM_ENTRIES);
+
+        int scheme = InterceptScheme.UNKNOWN_SCHEME;
+        if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
+            scheme = InterceptScheme.NOT_INTERCEPTED;
+        } else if (UrlUtilities.isAcceptedScheme(escapedUrl)) {
+            scheme = InterceptScheme.ACCEPTED_SCHEME;
+        } else if (UrlUtilities.hasIntentScheme(escapedUrl)) {
+            scheme = InterceptScheme.INTENT_SCHEME;
+        } else if (MDOC_SCHEMES.contains(escapedUrl.getScheme())) {
+            scheme = InterceptScheme.MDOC_SCHEME;
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.TabNavigationIntercept.Scheme", scheme, InterceptScheme.NUM_ENTRIES);
         return result;
     }
 
