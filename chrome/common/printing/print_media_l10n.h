@@ -21,6 +21,7 @@ enum class MediaSizeGroup {
 struct MediaSizeInfo {
   std::u16string name;
   MediaSizeGroup sort_group;
+  bool registered_size;
 };
 
 struct PaperWithSizeInfo {
