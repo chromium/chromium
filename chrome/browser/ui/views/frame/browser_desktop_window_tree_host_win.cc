@@ -6,9 +6,6 @@
 
 #include <windows.h>
 
-#include <dwmapi.h>
-#include <uxtheme.h>
-
 #include <memory>
 #include <utility>
 

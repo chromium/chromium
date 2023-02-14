@@ -7,7 +7,6 @@
 #include <windows.h>  // Must come before other Windows system headers.
 
 #include <Vssym32.h>
-#include <uxtheme.h>
 
 #include "base/check.h"
 #include "base/feature_list.h"

@@ -6,9 +6,6 @@
 
 #include <windows.h>
 
-#include <dwmapi.h>
-#include <uxtheme.h>
-
 #include "base/win/windows_version.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_win.h"
 #include "chrome/browser/ui/views/apps/glass_app_window_frame_view_win.h"
