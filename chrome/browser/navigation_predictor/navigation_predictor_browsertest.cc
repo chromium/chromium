@@ -472,8 +472,15 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 }
 
 // Tests that the browser counts anchors from anywhere on the page.
+// TODO(crbug.com/1415981): Flaky on Windows ASAN.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ViewportOnlyAndUrlIncrementByOne \
+  DISABLED_ViewportOnlyAndUrlIncrementByOne
+#else
+#define MAYBE_ViewportOnlyAndUrlIncrementByOne ViewportOnlyAndUrlIncrementByOne
+#endif
 IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
-                       ViewportOnlyAndUrlIncrementByOne) {
+                       MAYBE_ViewportOnlyAndUrlIncrementByOne) {
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
