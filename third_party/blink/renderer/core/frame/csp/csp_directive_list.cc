@@ -688,7 +688,7 @@ bool CSPDirectiveListAllowInline(
         break;
 
       case ContentSecurityPolicy::InlineType::kScriptSpeculationRules:
-        message = "assert inline speculation-rules";
+        message = "apply inline speculation rules";
         break;
 
       case ContentSecurityPolicy::InlineType::kScriptAttribute:
