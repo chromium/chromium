@@ -262,9 +262,11 @@ void FakeCWS::SetNoUpdate(const std::string& app_id) {
 
 void FakeCWS::SetAppDetails(const std::string& app_id,
                             std::string localized_name,
+                            std::string icon_url,
                             std::string manifest_json) {
   id_to_details_map_[app_id] =
       AppDetails{.localized_name = std::move(localized_name),
+                 .icon_url = std::move(icon_url),
                  .manifest_json = std::move(manifest_json)};
 }
 
@@ -359,7 +361,7 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
       std::string details =
           extensions::DictionaryBuilder()
               .Set("id", *details_id)
-              .Set("icon_url", "")
+              .Set("icon_url", it->second.icon_url)
               .Set("localized_name", it->second.localized_name)
               .Set("manifest", it->second.manifest_json)
               .ToJSON();

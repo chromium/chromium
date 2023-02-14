@@ -12,6 +12,7 @@
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
@@ -105,6 +106,9 @@ const char kFakeUsbMountPathLowerCrxVersion[] =
     "chromeos/app_mode/external_update/lower_crx_version";
 const char kFakeUsbMountPathBadCrx[] =
     "chromeos/app_mode/external_update/bad_crx";
+
+// Placeholder for an icon, as the icon is required by the kiosk app manager.
+const char kFakeIconURL[] = "/chromeos/app_mode/red16x16.png";
 
 bool IsAppInstalled(const std::string& app_id, const std::string& version) {
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
@@ -295,7 +299,7 @@ class KioskUpdateTest : public KioskBaseTest {
 
     // Launch the primary app.
     SimulateNetworkOnline();
-    EXPECT_TRUE(LaunchApp(test_app_id()));
+    ASSERT_TRUE(LaunchApp(test_app_id()));
     WaitForAppLaunchWithOptions(false, true);
 
     // Verify the primary app and the secondary apps are all installed.
@@ -392,10 +396,16 @@ class KioskUpdateTest : public KioskBaseTest {
   }
 
   void SetupAppDetailInFakeCws(const TestAppInfo& app) {
-    // In these tests we need to provide any app detail, not necessary correct
+    TestKioskExtensionBuilder app_builder(
+        extensions::Manifest::TYPE_PLATFORM_APP, app.id);
+    app_builder.set_version(app.version);
+    std::string manifest_json;
+    base::JSONWriter::Write(*app_builder.Build()->manifest()->value(),
+                            &manifest_json);
+    // In these tests we need to provide basic app detail, not necessary correct
     // one, just to prevent KioskAppData to remove the app.
-    fake_cws()->SetAppDetails(app.id, /*localized_name*/ "Test App",
-                              /*manifest_json*/ "");
+    fake_cws()->SetAppDetails(app.id, /*localized_name=*/"Test App",
+                              /*icon_url=*/kFakeIconURL, manifest_json);
   }
 
  private:
@@ -843,9 +853,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_UpdateMultiAppKioskRemoveOneApp) {
 
 // Update the primary app to version 2 which removes one of the secondary app
 // from its manifest.
-// TODO(https://crbug.com/1413090): test is flaky.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       DISABLED_UpdateMultiAppKioskRemoveOneApp) {
+IN_PROC_BROWSER_TEST_F(KioskUpdateTest, UpdateMultiAppKioskRemoveOneApp) {
   TestAppInfo primary_app(kTestPrimaryKioskApp, "2.0.0",
                           std::string(kTestPrimaryKioskApp) + "-2.0.0.crx",
                           extensions::Manifest::TYPE_PLATFORM_APP);
@@ -939,9 +947,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
 
 // This simulates the stand-alone ARC kiosk app case. The primary app has a
 // shared ARC runtime but no secondary apps.
-// TODO(https://crbug.com/1413090): Fix flake and re-enable test.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
-                       DISABLED_LaunchAppWithSharedModuleNoSecondary) {
+IN_PROC_BROWSER_TEST_F(KioskUpdateTest, LaunchAppWithSharedModuleNoSecondary) {
   LaunchAppWithSharedModule();
 }
 
@@ -953,8 +959,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchAppWithUpdatedModule) {
 
 // This simulates the case the shared module is updated to a newer version.
 // See crbug.com/555083.
-// TODO(https://crbug.com/1413090): Fix flake and re-enable test.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, DISABLED_LaunchAppWithUpdatedModule) {
+IN_PROC_BROWSER_TEST_F(KioskUpdateTest, LaunchAppWithUpdatedModule) {
   // No update for primary app, while the shared module is set up to a new
   // version on cws.
   set_test_app_id(kTestSharedModulePrimaryApp);

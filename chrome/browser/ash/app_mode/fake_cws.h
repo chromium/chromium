@@ -50,6 +50,7 @@ class FakeCWS {
   // Set the details to be returned via Chrome Web Store details query.
   void SetAppDetails(const std::string& app_id,
                      std::string localized_name,
+                     std::string icon_url,
                      std::string manifest_json);
 
   // Returns the current |update_check_count_| and resets it.
@@ -63,6 +64,7 @@ class FakeCWS {
 
   struct AppDetails {
     std::string localized_name;
+    std::string icon_url;
     std::string manifest_json;
   };
 
