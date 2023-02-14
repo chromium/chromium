@@ -300,16 +300,16 @@ struct MTECheckedPtrImpl {
   // Wraps a pointer, and returns its uintptr_t representation.
   template <typename T>
   static PA_ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
+    // Return a raw `T*` if protection is disabled, e.g. when `ptr` is
+    // `nullptr` or `uintptr_t{-1ull}`.
+    if (!PartitionAllocSupport::EnabledForPtr(ptr)) {
+      return ptr;
+    }
+
     // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
     // function is responsible for adding the software MTE tag.
     uintptr_t addr = partition_alloc::UntagPtr(ptr);
     PA_BASE_DCHECK(ExtractTag(addr) == 0ull);
-
-    // Return a not-wrapped |addr|, if it's either nullptr or if the protection
-    // for this pointer is disabled.
-    if (!PartitionAllocSupport::EnabledForPtr(ptr)) {
-      return ptr;
-    }
 
     // Read the tag and place it in the top bits of the address.
     // Even if PartitionAlloc's tag has less than kTagBits, we'll read
