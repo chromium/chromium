@@ -1397,6 +1397,8 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     self.discoverFeedService->RemoveFeedViewController(self.feedViewController);
   }
 
+  [self.feedTopSectionCoordinator stop];
+
   self.NTPViewController.feedWrapperViewController = nil;
   self.NTPViewController.feedTopSectionViewController = nil;
   self.feedWrapperViewController = nil;
