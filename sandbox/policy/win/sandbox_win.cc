@@ -1167,6 +1167,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
       return "Icon Reader";
     case Sandbox::kWindowsSystemProxyResolver:
       return "Windows System Proxy Resolver";
+    case Sandbox::kFileUtil:
+      return "File Util";
   }
 }
 

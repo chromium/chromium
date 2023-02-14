@@ -15,9 +15,16 @@ import "chrome/services/file_util/public/mojom/zip_file_creator.mojom";
 [EnableIf=extractors]
 import "chrome/services/file_util/public/mojom/single_file_extractor.mojom";
 
+// On Windows we need specific extra DLLs that are provided by the kFileUtil
+// sandbox.
+[EnableIf=is_win]
+const sandbox.mojom.Sandbox kFileUtilSandbox = sandbox.mojom.Sandbox.kFileUtil;
+[EnableIfNot=is_win]
+const sandbox.mojom.Sandbox kFileUtilSandbox = sandbox.mojom.Sandbox.kService;
+
 // The main interface to the file utility service. Binds any of various
 // specific utility receivers.
-[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+[ServiceSandbox=kFileUtilSandbox]
 interface FileUtilService {
   // Binds an instance of the ZipFileCreator interface.
   [EnableIf=is_chromeos_ash]
