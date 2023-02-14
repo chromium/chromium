@@ -438,12 +438,12 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
         continue;
       }
 
-      if (!base::GetFieldTrialParamByFeatureAsBool(
-              kUkmFeature, "KeepNonAllowlistedSourcesThatMatch", false)) {
-        // Non-allowlisted Source types will not be kept after entries are
-        // logged.
-        MarkSourceForDeletion(kv.first);
-      }
+      // Non-allowlisted Source types will not be kept after entries are
+      // logged.
+      // We experimented with this in early 2023 and we found keeping sources
+      // longer didn't decrease the percentage of sources with null url. See
+      // crbug/1358334.
+      MarkSourceForDeletion(kv.first);
     }
     // Minimal validations before serializing into a proto message.
     // See crbug/1274876.

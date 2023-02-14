@@ -1030,99 +1030,84 @@ TEST_P(UkmServiceTest, SourceURLLength) {
 }
 
 TEST_P(UkmServiceTest, UnreferencedNonAllowlistedSources) {
-  // We will be testing with KeepNonAllowlistedSourcesThatMatch both off and on.
-  for (bool keep_non_allowlisted_sources_that_match : {true, false}) {
-    const GURL kURL("https://google.com/foobar");
+  const GURL kURL("https://google.com/foobar");
 
-    // Set the 'MaxKeptSources' value to 3 so it is easier to test.
-    ScopedUkmFeatureParams params(
-        {{"MaxKeptSources", "3"},
-         {"KeepNonAllowlistedSourcesThatMatch",
-          keep_non_allowlisted_sources_that_match ? "true" : "false"}});
+  ClearPrefs();
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  TestRecordingHelper recorder(&service);
+  EXPECT_EQ(0, GetPersistedLogCount());
+  service.Initialize();
+  task_runner_->RunUntilIdle();
+  service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
+  service.EnableReporting();
 
-    ClearPrefs();
-    UkmService service(&prefs_, &client_,
-                       std::make_unique<MockDemographicMetricsProvider>());
-    TestRecordingHelper recorder(&service);
-    EXPECT_EQ(0, GetPersistedLogCount());
-    service.Initialize();
-    task_runner_->RunUntilIdle();
-    service.UpdateRecording(UkmConsentState(UkmConsentType::MSBB));
-    service.EnableReporting();
+  // Record with Allowlisted ID to allowlist the URL.
+  // Use a larger ID to make it last in the proto.
+  SourceId allowlisted_id = GetAllowlistedSourceId(100);
+  recorder.UpdateSourceURL(allowlisted_id, kURL);
 
-    // Record with Allowlisted ID to allowlist the URL.
-    // Use a larger ID to make it last in the proto.
-    SourceId allowlisted_id = GetAllowlistedSourceId(100);
-    recorder.UpdateSourceURL(allowlisted_id, kURL);
-
-    std::vector<SourceId> ids;
-    base::TimeTicks last_time = base::TimeTicks::Now();
-    for (int i = 1; i < 7; ++i) {
-      // Wait until base::TimeTicks::Now() no longer equals |last_time|. This
-      // ensures each source has a unique timestamp to avoid flakes. Should take
-      // between 1-15ms per documented resolution of base::TimeTicks.
-      while (base::TimeTicks::Now() == last_time) {
-        base::PlatformThread::Sleep(base::Milliseconds(1));
-      }
-
-      ids.push_back(GetNonAllowlistedSourceId(i));
-      recorder.UpdateSourceURL(ids.back(), kURL);
-      last_time = base::TimeTicks::Now();
+  std::vector<SourceId> ids;
+  base::TimeTicks last_time = base::TimeTicks::Now();
+  for (int i = 1; i < 7; ++i) {
+    // Wait until base::TimeTicks::Now() no longer equals |last_time|. This
+    // ensures each source has a unique timestamp to avoid flakes. Should take
+    // between 1-15ms per documented resolution of base::TimeTicks.
+    while (base::TimeTicks::Now() == last_time) {
+      base::PlatformThread::Sleep(base::Milliseconds(1));
     }
 
-    // Record a non-allowlisted source with a URL that does not match any
-    // allowlisted source.
-    ids.push_back(GetNonAllowlistedSourceId(7));
-    recorder.UpdateSourceURL(ids.back(), GURL("https://google.com/foobar1"));
-
-    TestEvent1(ids[0]).Record(&service);
-    TestEvent2(ids[2]).Record(&service);
-    TestEvent3(ids[2]).Record(&service);
-    TestEvent3(ids[3]).Record(&service);
-
-    service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-    EXPECT_EQ(1, GetPersistedLogCount());
-    auto proto_report = GetPersistedReport();
-
-    // 1 allowlisted source and 7 non-allowlisted source.
-    EXPECT_EQ(8, proto_report.source_counts().observed());
-    // The one allowlisted source is of navigation type.
-    EXPECT_EQ(1, proto_report.source_counts().navigation_sources());
-    EXPECT_EQ(1, proto_report.source_counts().unmatched_sources());
-
-    EXPECT_EQ(3, proto_report.source_counts().deferred_sources());
-    EXPECT_EQ(0, proto_report.source_counts().carryover_sources());
-
-    ASSERT_EQ(4, proto_report.sources_size());
-    EXPECT_EQ(ids[0], proto_report.sources(0).id());
-    EXPECT_EQ(kURL.spec(), proto_report.sources(0).urls(0).url());
-    EXPECT_EQ(ids[2], proto_report.sources(1).id());
-    EXPECT_EQ(kURL.spec(), proto_report.sources(1).urls(0).url());
-    // Since MaxKeptSources is 3, only Sources 5, 4, 3 should be retained.
-    // Log entries under 0, 1, 3 and 4. Log them in reverse order - which
-    // shouldn't affect source ordering in the output.
-    //  - Source 0 should not be re-transmitted since it was sent before.
-    //  - Source 1 should not be transmitted due to MaxKeptSources param.
-    //  - Sources 3 and 4 should be transmitted since they were not sent before.
-    TestEvent1(ids[4]).Record(&service);
-    TestEvent1(ids[3]).Record(&service);
-    TestEvent1(ids[1]).Record(&service);
-    TestEvent1(ids[0]).Record(&service);
-
-    service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-    EXPECT_EQ(2, GetPersistedLogCount());
-    proto_report = GetPersistedReport();
-
-    EXPECT_EQ(0, proto_report.source_counts().observed());
-    EXPECT_EQ(0, proto_report.source_counts().navigation_sources());
-    EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
-
-    EXPECT_EQ(keep_non_allowlisted_sources_that_match ? 3 : 1,
-              proto_report.source_counts().deferred_sources());
-
-    EXPECT_EQ(3, proto_report.source_counts().carryover_sources());
-    ASSERT_EQ(2, proto_report.sources_size());
+    ids.push_back(GetNonAllowlistedSourceId(i));
+    recorder.UpdateSourceURL(ids.back(), kURL);
+    last_time = base::TimeTicks::Now();
   }
+
+  TestEvent1(ids[0]).Record(&service);
+  TestEvent2(ids[2]).Record(&service);
+  TestEvent3(ids[2]).Record(&service);
+  TestEvent3(ids[3]).Record(&service);
+
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(1, GetPersistedLogCount());
+  auto proto_report = GetPersistedReport();
+
+  // 1 allowlisted source and 6 non-allowlisted source.
+  EXPECT_EQ(7, proto_report.source_counts().observed());
+  // The one allowlisted source is of navigation type.
+  EXPECT_EQ(1, proto_report.source_counts().navigation_sources());
+  EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
+
+  EXPECT_EQ(4, proto_report.source_counts().deferred_sources());
+  EXPECT_EQ(0, proto_report.source_counts().carryover_sources());
+
+  ASSERT_EQ(4, proto_report.sources_size());
+  EXPECT_EQ(ids[0], proto_report.sources(0).id());
+  EXPECT_EQ(kURL.spec(), proto_report.sources(0).urls(0).url());
+  EXPECT_EQ(ids[2], proto_report.sources(1).id());
+  EXPECT_EQ(kURL.spec(), proto_report.sources(1).urls(0).url());
+  // Since MaxKeptSources is 3, only Sources 5, 4, 3 should be retained.
+  // Log entries under 0, 1, 3 and 4. Log them in reverse order - which
+  // shouldn't affect source ordering in the output.
+  //  - Source 0 should not be re-transmitted since it was sent before.
+  //  - Source 1 should not be transmitted due to MaxKeptSources param.
+  //  - Sources 3 and 4 should be transmitted since they were not sent before.
+  TestEvent1(ids[4]).Record(&service);
+  TestEvent1(ids[3]).Record(&service);
+  TestEvent1(ids[1]).Record(&service);
+  TestEvent1(ids[0]).Record(&service);
+
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  EXPECT_EQ(2, GetPersistedLogCount());
+  proto_report = GetPersistedReport();
+
+  EXPECT_EQ(0, proto_report.source_counts().observed());
+  EXPECT_EQ(0, proto_report.source_counts().navigation_sources());
+  EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
+
+  EXPECT_EQ(2, proto_report.source_counts().deferred_sources());
+
+  EXPECT_EQ(4, proto_report.source_counts().carryover_sources());
+  ASSERT_EQ(3, proto_report.sources_size());
 }
 
 TEST_P(UkmServiceTest, NonAllowlistedUrls) {
