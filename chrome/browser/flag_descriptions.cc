@@ -3367,6 +3367,12 @@ const char kUsePassthroughCommandDecoderDescription[] =
     "Use chrome passthrough command decoder instead of validating command "
     "decoder.";
 
+const char kPassthroughYuvRgbConversionName[] =
+    "Enable video YUV <-> RGB conversion through passthrough command decoder";
+const char kPassthroughYuvRgbConversionDescription[] =
+    "Enable YUV to RGB and RGB to YUV conversion for media clients through "
+    "passthrough command decoder";
+
 const char kDurableClientHintsCacheName[] = "Persistent client hints";
 const char kDurableClientHintsCacheDescription[] =
     "Persist the client hints cache beyond browser restarts.";
