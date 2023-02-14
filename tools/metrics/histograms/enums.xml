@@ -76697,6 +76697,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Prerender Activation Navigation"/>
 </enum>
 
+<enum name="PageLoadPrerenderForegroundCheckResult">
+  <int value="0" label="Activated in background"/>
+  <int value="1" label="No event time"/>
+  <int value="2" label="Backgrounded before the event"/>
+  <int value="3" label="Passed the check"/>
+</enum>
+
 <enum name="PageLoadPrerenderObserverEvent">
   <int value="0" label="OnPrerenderStart"/>
   <int value="1" label="DidActivatePrerenderedPage"/>
@@ -76708,6 +76715,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="RecordSessionEndHistograms"/>
   <int value="8" label="RecordLayoutShiftScoreMetrics"/>
   <int value="9" label="RecordNormalizedResponsivenessMetrics"/>
+</enum>
+
+<enum name="PageLoadPrerenderVisibilityAtActivation">
+  <int value="0" label="Hidden"/>
+  <int value="1" label="Occluded"/>
+  <int value="2" label="Visible"/>
 </enum>
 
 <enum name="PageLoadTimingStatus">

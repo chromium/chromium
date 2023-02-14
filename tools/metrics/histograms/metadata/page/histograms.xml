@@ -2393,6 +2393,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.Internal.Prerender2.ForegroundCheckResult.{PageLoadPrerenderForegroundCheckEvent}"
+    enum="PageLoadPrerenderForegroundCheckResult" expires_after="2023-07-26">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
+  <summary>
+    Records results of the foreground check per event type in
+    PrerenderPageLoadMetricsObserver.
+  </summary>
+  <token key="PageLoadPrerenderForegroundCheckEvent">
+    <variant name="FirstContentfulPaint"/>
+    <variant name="FirstInputDelay"/>
+    <variant name="FirstPaint"/>
+    <variant name="LargestContentfulPaint"/>
+  </token>
+</histogram>
+
 <histogram name="PageLoad.Internal.Prerender2.ObserverEvent"
     enum="PageLoadPrerenderObserverEvent" expires_after="2023-07-26">
   <owner>nhiroki@chromium.org</owner>
@@ -2401,6 +2418,16 @@ chromium-metrics-reviews@google.com.
     Counts page load observer events related to Prerender2, like
     FirstContentfulPaint. Recorded when those events are observed in
     PrerenderPageLoaderMetricsObserver.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Internal.Prerender2.VisibilityAtActivation"
+    enum="PageLoadPrerenderVisibilityAtActivation" expires_after="2023-07-26">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>src/content/browser/preloading/prerender/OWNERS</owner>
+  <summary>
+    Records the visibility of an initiator page in PageLoadTracker when a
+    prerendered page gets activated.
   </summary>
 </histogram>
 
