@@ -19,7 +19,13 @@
 {{ super() }}
 android:multiArch="true"
 android:extractNativeLibs="false"
-{{use32bitAbi|default('')}}
+{% if force_32_bit is defined and force_32_bit == 'true' %}
+android:use32bitAbi="true"
+{% endif %}
+{# TODO(crbug.com/1411557): Remove #}
+{% if force_32_bit is not defined %}
+{{ use32bitAbi|default('') }}
+{% endif %}
 {% endblock %}
 
 {% block extra_keyset_definitions %}

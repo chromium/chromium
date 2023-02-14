@@ -15,8 +15,7 @@
       android:hasCode="false"
       android:icon="@drawable/icon_webview"
       android:label="Trichrome Library"
-      android:multiArch="true"
-      android:use32bitAbi="true">
+      android:multiArch="true">
     <static-library android:name="$PACKAGE" android:version="OFFSET=30"/>
   </application>
 </manifest>

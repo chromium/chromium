@@ -64,13 +64,19 @@ template("system_webview_apk_or_module_tmpl") {
     jinja_template(_android_manifest_target_name) {
       input = "//android_webview/nonembedded/java/AndroidManifest.xml"
       output = _android_manifest
-      variables =
-          webview_jinja_variables + [ "manifest_package=$_manifest_package" ]
+      _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
+                      (!_is_trichrome || !_is_64_bit_browser)
+      variables = webview_jinja_variables + [
+                    "force_32_bit=$_force_32_bit",
+                    "manifest_package=$_manifest_package",
+                  ]
       if (_is_trichrome) {
         variables +=
             trichrome_jinja_variables + [ "trichrome_version=$_version_code" ]
         if (_is_64_bit_browser) {
           variables += [ "library=libmonochrome_64.so" ]
+
+          # TODO(crbug.com/1411557): Remove.
           variables -= [ use_32bit_abi_jinja_variable ]
         } else {
           variables += [ "library=libmonochrome.so" ]
