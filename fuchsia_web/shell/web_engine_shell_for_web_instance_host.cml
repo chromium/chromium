@@ -27,7 +27,12 @@
   use: [
     // Required if not run with --headless.
     {
-      protocol: "fuchsia.ui.policy.Presenter",
+      protocol: [
+        "fuchsia.element.GraphicalPresenter",
+
+        // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
+        "fuchsia.ui.policy.Presenter",
+      ],
       availability: "optional",
     },
 

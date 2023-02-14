@@ -164,9 +164,12 @@
     {
       protocol: [
         "fuchsia.accessibility.semantics.SemanticsManager",
+        "fuchsia.element.GraphicalPresenter",
         "fuchsia.tracing.provider.Registry",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
+
+        // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
         "fuchsia.ui.policy.Presenter",
         "fuchsia.ui.scenic.Scenic",
         "fuchsia.vulkan.loader.Loader",
