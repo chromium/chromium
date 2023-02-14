@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_NUDGE_CONTROLLER_H_
 #define CHROMEOS_UI_FRAME_MULTITASK_MENU_MULTITASK_MENU_NUDGE_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
@@ -20,6 +22,10 @@ namespace ash {
 class MultitaskMenuNudgeControllerTest;
 }
 
+namespace aura {
+class WindowTracker;
+}
+
 namespace ui {
 class Layer;
 }
@@ -32,8 +38,25 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
       public ::wm::ActivationChangeObserver,
       public display::DisplayObserver {
  public:
-  // TODO(sammiequon): Get this from `::ash::TabletModeMultitaskCue`.
-  static constexpr int kTabletNudgeYOffset = 16;
+  // `tablet_mode` refers to the tablet state when the prefs are fetched. If
+  // the state changes while fetching prefs, we do not show the nudge.
+  // `shown_count` and `last_shown_time` are the values fetched from the pref
+  // service regarding how many times the nudge has been shown, and when it was
+  // last shown.
+  using GetPreferencesCallback = base::OnceCallback<
+      void(bool tablet_mode, int shown_count, base::Time last_shown_time)>;
+
+  // A delegate to provide platform specific implementation (ash, lacros).
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual int GetTabletNudgeYOffset() const = 0;
+    virtual void GetNudgePreferences(bool tablet_mode,
+                                     GetPreferencesCallback callback) = 0;
+    virtual void SetNudgePreferences(bool tablet_mode,
+                                     int count,
+                                     base::Time time) = 0;
+  };
 
   // The name of an integer pref that counts the number of times we have shown
   // the multitask menu education nudge.
@@ -49,17 +72,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   static constexpr char kTabletLastShownPrefName[] =
       "cros.wm_nudge.tablet_multitask_nudge_last_shown";
 
-  // A delegate to provide platform specific implementation (ash, lacros).
-  class Delegate {
-   public:
-    virtual ~Delegate() = default;
-    virtual bool IsRegularUser() const = 0;
-    virtual int GetShowCount(bool tablet_mode) const = 0;
-    virtual void SetShowCount(int count, bool tablet_mode) = 0;
-    virtual base::Time GetLastShownTime(bool tablet_mode) const = 0;
-    virtual void SetLastShownTime(base::Time time, bool tablet_mode) = 0;
-  };
-
   MultitaskMenuNudgeController(aura::Window* root_window,
                                std::unique_ptr<Delegate> delegate);
   MultitaskMenuNudgeController(const MultitaskMenuNudgeController&) = delete;
@@ -69,8 +81,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Shows the nudge if it can be shown. The nudge can be shown if it hasn't
-  // been shown 3 times already, or shown in the last 24 hours.
+  // Attempts to show the nudge. Reads preferences and then calls
+  // `OnGetPreferences()`.
   void MaybeShowNudge(aura::Window* window);
 
   // Closes the widget and cleans up all pointers in this class.
@@ -105,6 +117,15 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   // Used to control the clock in a test setting.
   static void SetOverrideClockForTesting(base::Clock* test_clock);
 
+  // Callback function after fetching preferences. Shows the nudge if it can be
+  // shown. The nudge can be shown if it hasn't been shown 3 times already, or
+  // shown in the last 24 hours. `candidate_tracker` tracks our candidate
+  // window; it may be destroyed during the async pref fetching in lacros.
+  void OnGetPreferences(std::unique_ptr<aura::WindowTracker> candidate_tracker,
+                        bool tablet_mode,
+                        int shown_count,
+                        base::Time last_shown_time);
+
   // Runs when the nudge dismiss timer expires. Dismisses the nudge if it is
   // being shown.
   void OnDismissTimerEnded();
@@ -125,11 +146,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   views::UniqueWidgetPtr nudge_widget_;
   std::unique_ptr<ui::Layer> pulse_layer_;
 
-  // The app window that the nudge is associated with. It is expected to have a
-  // header with a maximize/restore button.
+  // The app window that the nudge is associated with.
   aura::Window* window_ = nullptr;
+
   // The view that the nudge will be anchored to. It is the maximize or resize
-  // button on `window_`'s frame.
+  // button on `window_`'s frame. Null in tablet mode.
   views::View* anchor_view_ = nullptr;
 
   aura::Window* root_window_ = nullptr;
@@ -140,6 +161,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
       window_observation_{this};
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       root_window_observation_{this};
+
+  base::WeakPtrFactory<MultitaskMenuNudgeController> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos

@@ -14,6 +14,11 @@ namespace ash {
 class MultitaskMenuNudgeDelegateAsh
     : public chromeos::MultitaskMenuNudgeController::Delegate {
  public:
+  using GetPreferencesCallback =
+      chromeos::MultitaskMenuNudgeController::GetPreferencesCallback;
+
+  static constexpr int kTabletNudgeAdditionalYOffset = 6;
+
   MultitaskMenuNudgeDelegateAsh();
   MultitaskMenuNudgeDelegateAsh(const MultitaskMenuNudgeDelegateAsh&) = delete;
   MultitaskMenuNudgeDelegateAsh& operator=(
@@ -21,11 +26,12 @@ class MultitaskMenuNudgeDelegateAsh
   ~MultitaskMenuNudgeDelegateAsh() override;
 
   // chromeos::MultitaskMenuNudgeController::Delegate:
-  bool IsRegularUser() const override;
-  int GetShowCount(bool tablet_mode) const override;
-  void SetShowCount(int count, bool tablet_mode) override;
-  base::Time GetLastShownTime(bool tablet_mode) const override;
-  void SetLastShownTime(base::Time time, bool tablet_mode) override;
+  int GetTabletNudgeYOffset() const override;
+  void GetNudgePreferences(bool tablet_mode,
+                           GetPreferencesCallback callback) override;
+  void SetNudgePreferences(bool tablet_mode,
+                           int count,
+                           base::Time time) override;
 };
 
 }  // namespace ash

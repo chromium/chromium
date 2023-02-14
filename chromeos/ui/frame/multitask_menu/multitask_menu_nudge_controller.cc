@@ -12,6 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -137,107 +138,24 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
     return;
   }
 
-  if (!delegate_->IsRegularUser()) {
-    return;
-  }
-
-  const bool tablet_mode = TabletState::Get()->InTabletMode();
-  const int shown_count = delegate_->GetShowCount(tablet_mode);
-  const base::Time last_shown_time = delegate_->GetLastShownTime(tablet_mode);
-
-  // TODO(b/267787811): When the multitask menu has been opened in tablet
-  // mode, don't show the tablet nudge anymore.
-  // TODO(sammiequon|hewer): When the multitask menu has been opened in
-  // clamshell mode, don't show the clamshell nudge anymore.
-
-  // Nudge has already been shown three times. No need to educate anymore.
-  if (shown_count >= kNudgeMaxShownCount) {
-    return;
-  }
-
-  // Nudge has been shown within the last 24 hours already.
-  if ((GetTime() - last_shown_time) < kNudgeTimeBetweenShown) {
-    return;
-  }
-
-  // The anchor is the button on the header that serves as the maximize or
-  // restore button (depending on the window state). Not used in tablet
-  // mode.
-  views::FrameCaptionButton* anchor_view = nullptr;
-
-  if (!tablet_mode) {
-    // Some tests create windows without a backing widget
-    // (`CreateTestWindow()`), and some widgets may not have a header, test or
-    // custom header.
-    auto* widget = views::Widget::GetWidgetForNativeWindow(window);
-    if (!widget) {
-      CHECK_IS_TEST();
-      return;
-    }
-
-    auto* frame_header = chromeos::FrameHeader::Get(widget);
-    if (!frame_header) {
-      return;
-    }
-
-    anchor_view = frame_header->caption_button_container()->size_button();
-    DCHECK(anchor_view);
-
-    // If the anchor is not visible, do not show the nudge.
-    if (!anchor_view->IsDrawn()) {
-      return;
-    }
-  }
-
-  window_ = window;
-  window_observation_.Observe(window_);
-
-  nudge_widget_ = CreateWidget(window_);
-  nudge_widget_->Show();
-
-  anchor_view_ = anchor_view;
-
-  if (!tablet_mode) {
-    // Create the layer which pulses on the maximize/restore button.
-    pulse_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
-    // TODO(b/267646118): Update the color to match the theme.
-    pulse_layer_->SetColor(SK_ColorGRAY);
-    window_->parent()->layer()->Add(pulse_layer_.get());
-  }
-
-  UpdateWidgetAndPulse();
-  DCHECK(nudge_widget_);
-
-  // Fade the education nudge in.
-  ui::Layer* layer = nudge_widget_->GetLayer();
-  layer->SetOpacity(0.0f);
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(kFadeDuration)
-      .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR);
-
-  // Update the preferences.
-  delegate_->SetShowCount(shown_count + 1, tablet_mode);
-  delegate_->SetLastShownTime(GetTime(), tablet_mode);
-
-  // No need to update pulse or start timer in tablet mode.
-  if (tablet_mode) {
-    return;
-  }
-
-  PerformPulseAnimation(/*pulse_count=*/0);
-
-  clamshell_nudge_dismiss_timer_.Start(
-      FROM_HERE, kNudgeDismissTimeout, this,
-      &MultitaskMenuNudgeController::OnDismissTimerEnded);
+  // Tracks `window` in case it gets destroyed during the async pref fetching in
+  // lacros.
+  auto window_tracker = std::make_unique<aura::WindowTracker>();
+  window_tracker->Add(window);
+  delegate_->GetNudgePreferences(
+      TabletState::Get()->InTabletMode(),
+      base::BindOnce(&MultitaskMenuNudgeController::OnGetPreferences,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(window_tracker)));
 }
 
 void MultitaskMenuNudgeController::DismissNudge() {
   clamshell_nudge_dismiss_timer_.Stop();
-  window_observation_.Reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   window_ = nullptr;
+  window_observation_.Reset();
+
   anchor_view_ = nullptr;
   pulse_layer_.reset();
   if (nudge_widget_ && !nudge_widget_->IsClosed()) {
@@ -296,12 +214,13 @@ void MultitaskMenuNudgeController::OnWindowStackingChanged(
 }
 
 void MultitaskMenuNudgeController::OnWindowDestroying(aura::Window* window) {
-  if (root_window_ == window) {
+  if (window == root_window_) {
     ::wm::GetActivationClient(root_window_)->RemoveObserver(this);
     root_window_ = nullptr;
     root_window_observation_.Reset();
     return;
   }
+
   DCHECK_EQ(window_, window);
   DismissNudge();
 }
@@ -346,6 +265,110 @@ void MultitaskMenuNudgeController::SetSuppressNudgeForTesting(bool val) {
 void MultitaskMenuNudgeController::SetOverrideClockForTesting(
     base::Clock* test_clock) {
   g_clock_override = test_clock;
+}
+
+void MultitaskMenuNudgeController::OnGetPreferences(
+    std::unique_ptr<aura::WindowTracker> candidate_tracker,
+    bool tablet_mode,
+    int shown_count,
+    base::Time last_shown_time) {
+  // Candidate window was destroyed during the async fetch preferences.
+  if (candidate_tracker->windows().empty()) {
+    return;
+  }
+
+  DCHECK_EQ(1u, candidate_tracker->windows().size());
+  aura::Window* candidate_window = candidate_tracker->windows()[0];
+
+  // Tablet state has changed since we fetched preferences.
+  if (tablet_mode != TabletState::Get()->InTabletMode()) {
+    return;
+  }
+
+  // TODO(b/267787811): When the multitask menu has been opened in tablet
+  // mode, don't show the tablet nudge anymore.
+  // TODO(sammiequon|hewer): When the multitask menu has been opened in
+  // clamshell mode, don't show the clamshell nudge anymore.
+
+  // Nudge has already been shown three times. No need to educate anymore.
+  if (shown_count >= kNudgeMaxShownCount) {
+    return;
+  }
+
+  // Nudge has been shown within the last 24 hours already.
+  if ((GetTime() - last_shown_time) < kNudgeTimeBetweenShown) {
+    return;
+  }
+
+  // The anchor is the button on the header that serves as the maximize or
+  // restore button (depending on the window state). Not used in tablet
+  // mode.
+  views::FrameCaptionButton* anchor_view = nullptr;
+
+  if (!tablet_mode) {
+    // Some tests create windows without a backing widget
+    // (`CreateTestWindow()`), and some widgets may not have a header, test or
+    // custom header.
+    auto* widget = views::Widget::GetWidgetForNativeWindow(candidate_window);
+    if (!widget) {
+      CHECK_IS_TEST();
+      return;
+    }
+
+    auto* frame_header = chromeos::FrameHeader::Get(widget);
+    if (!frame_header) {
+      return;
+    }
+
+    anchor_view = frame_header->caption_button_container()->size_button();
+    DCHECK(anchor_view);
+
+    // If the anchor is not visible, do not show the nudge.
+    if (!anchor_view->IsDrawn()) {
+      return;
+    }
+  }
+
+  window_ = candidate_window;
+  window_observation_.Observe(window_);
+
+  nudge_widget_ = CreateWidget(window_);
+  nudge_widget_->Show();
+
+  anchor_view_ = anchor_view;
+
+  if (!tablet_mode) {
+    // Create the layer which pulses on the maximize/restore button.
+    pulse_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+    // TODO(b/267646118): Update the color to match the theme.
+    pulse_layer_->SetColor(SK_ColorGRAY);
+    window_->parent()->layer()->Add(pulse_layer_.get());
+  }
+
+  UpdateWidgetAndPulse();
+  DCHECK(nudge_widget_);
+
+  // Fade the education nudge in.
+  ui::Layer* layer = nudge_widget_->GetLayer();
+  layer->SetOpacity(0.0f);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kFadeDuration)
+      .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR);
+
+  // Update the preferences.
+  delegate_->SetNudgePreferences(tablet_mode, shown_count + 1, GetTime());
+
+  // No need to update pulse or start timer in tablet mode.
+  if (!tablet_mode) {
+    PerformPulseAnimation(/*pulse_count=*/0);
+
+    clamshell_nudge_dismiss_timer_.Start(
+        FROM_HERE, kNudgeDismissTimeout, this,
+        &MultitaskMenuNudgeController::OnDismissTimerEnded);
+  }
 }
 
 void MultitaskMenuNudgeController::OnDismissTimerEnded() {
@@ -397,9 +420,10 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
 
   if (tablet_mode) {
     // The nudge is placed in the top center of the window, just below the cue.
+    const int tablet_nudge_y_offset = delegate_->GetTabletNudgeYOffset();
     nudge_widget_->SetBounds(gfx::Rect(
         (window_->bounds().width() - size.width()) / 2 + window_->bounds().x(),
-        kTabletNudgeYOffset + window_->bounds().y(), size.width(),
+        tablet_nudge_y_offset + window_->bounds().y(), size.width(),
         size.height()));
     return;
   }

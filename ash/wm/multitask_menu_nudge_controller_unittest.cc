@@ -9,8 +9,10 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/multitask_menu_nudge_delegate_ash.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
@@ -71,12 +73,15 @@ class MultitaskMenuNudgeControllerTest : public AshTestBase {
   void ExpectCorrectTabletNudgeBounds(aura::Window* window) {
     const gfx::Size size = GetWidget()->GetContentsView()->GetPreferredSize();
     const auto window_screen_bounds = window->GetBoundsInScreen();
+    const int tablet_nudge_y_offset =
+        MultitaskMenuNudgeDelegateAsh::kTabletNudgeAdditionalYOffset +
+        TabletModeMultitaskCue::kCueHeight +
+        TabletModeMultitaskCue::kCueYOffset;
     const gfx::Rect expected_bounds(
         (window_screen_bounds.width() - size.width()) / 2 +
             window_screen_bounds.x(),
-        chromeos::MultitaskMenuNudgeController::kTabletNudgeYOffset +
-            window_screen_bounds.y(),
-        size.width(), size.height());
+        tablet_nudge_y_offset + window_screen_bounds.y(), size.width(),
+        size.height());
     EXPECT_EQ(expected_bounds, GetWidget()->GetWindowBoundsInScreen());
   }
 

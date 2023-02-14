@@ -6,6 +6,7 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -36,28 +37,25 @@ MultitaskMenuNudgeDelegateAsh::MultitaskMenuNudgeDelegateAsh() = default;
 
 MultitaskMenuNudgeDelegateAsh::~MultitaskMenuNudgeDelegateAsh() = default;
 
-bool MultitaskMenuNudgeDelegateAsh::IsRegularUser() const {
-  auto* session_controller = Shell::Get()->session_controller();
-  const absl::optional<user_manager::UserType> user_type =
-      session_controller->GetUserType();
-  return user_type == user_manager::USER_TYPE_REGULAR;
+int MultitaskMenuNudgeDelegateAsh::GetTabletNudgeYOffset() const {
+  return kTabletNudgeAdditionalYOffset + TabletModeMultitaskCue::kCueHeight +
+         TabletModeMultitaskCue::kCueYOffset;
 }
 
-int MultitaskMenuNudgeDelegateAsh::GetShowCount(bool tablet_mode) const {
-  return GetPrefService()->GetInteger(GetShowCountPrefName(tablet_mode));
+void MultitaskMenuNudgeDelegateAsh::GetNudgePreferences(
+    bool tablet_mode,
+    GetPreferencesCallback callback) {
+  const int shown_count =
+      GetPrefService()->GetInteger(GetShowCountPrefName(tablet_mode));
+  const base::Time last_shown_time =
+      GetPrefService()->GetTime(GetLastShownPrefName(tablet_mode));
+  std::move(callback).Run(tablet_mode, shown_count, last_shown_time);
 }
 
-void MultitaskMenuNudgeDelegateAsh::SetShowCount(int count, bool tablet_mode) {
+void MultitaskMenuNudgeDelegateAsh::SetNudgePreferences(bool tablet_mode,
+                                                        int count,
+                                                        base::Time time) {
   GetPrefService()->SetInteger(GetShowCountPrefName(tablet_mode), count);
-}
-
-base::Time MultitaskMenuNudgeDelegateAsh::GetLastShownTime(
-    bool tablet_mode) const {
-  return GetPrefService()->GetTime(GetLastShownPrefName(tablet_mode));
-}
-
-void MultitaskMenuNudgeDelegateAsh::SetLastShownTime(base::Time time,
-                                                     bool tablet_mode) {
   GetPrefService()->SetTime(GetLastShownPrefName(tablet_mode), time);
 }
 
