@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,9 +22,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -48,13 +49,20 @@ public class SyncConsentActivityLauncherImplTest {
     @Mock
     private Profile mProfile;
 
-    private final Context mContext = RuntimeEnvironment.application.getApplicationContext();
+    private final Context mContext = ContextUtils.getApplicationContext();
 
     @Before
     public void setUp() {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
+    }
+
+    @After
+    public void tearDown() {
+        SyncConsentActivityLauncherImpl.setLauncherForTest(null);
+        Profile.setLastUsedProfileForTesting(null);
+        IdentityServicesProvider.setInstanceForTests(null);
     }
 
     @Test
