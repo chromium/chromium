@@ -106,12 +106,12 @@ export class AppElement extends PolymerElement {
     switch (this.page_) {
       case CustomizeChromePage.CATEGORIES:
         this.page_ = CustomizeChromePage.OVERVIEW;
+        this.$.appearanceElement.focusOnThemeButton();
         break;
       case CustomizeChromePage.THEMES:
-        this.page_ = CustomizeChromePage.CATEGORIES;
-        break;
       case CustomizeChromePage.CHROME_COLORS:
         this.page_ = CustomizeChromePage.CATEGORIES;
+        this.$.categoriesPage.focusOnBackButton();
         break;
     }
   }

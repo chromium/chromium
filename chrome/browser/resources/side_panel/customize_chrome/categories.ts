@@ -102,6 +102,10 @@ export class CategoriesElement extends PolymerElement {
         this.setThemeListenerId_!);
   }
 
+  focusOnBackButton() {
+    this.$.backButton.focus();
+  }
+
   private computeSelectedCategory_() {
     if (!this.theme_ || this.theme_.thirdPartyThemeInfo) {
       return {type: CategoryType.NONE};
