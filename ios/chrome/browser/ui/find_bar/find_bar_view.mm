@@ -217,6 +217,9 @@ const CGFloat kButtonLength = 44;
       _inputField.font = [UIFont systemFontOfSize:kFontSize];
     }
     _inputField.accessibilityIdentifier = kFindInPageInputFieldId;
+    if (ios::provider::IsNativeFindInPageWithChromeFindBar()) {
+      _inputField.returnKeyType = UIReturnKeySearch;
+    }
   }
   return _inputField;
 }

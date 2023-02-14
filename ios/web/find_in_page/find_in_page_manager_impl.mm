@@ -106,17 +106,21 @@ void FindInPageManagerImpl::StartSearch(NSString* query)
   // Stop polling Find session in case search is already ongoing.
   StopPollingActiveFindSession();
 
-  // Reset latest reported Find session data.
-  current_query_ = [query copy];
-  current_result_count_ = -1;
-  current_highlighted_result_index_ = NSNotFound;
-
   if (use_find_interaction_) {
     id<CRWFindInteraction> find_interaction = GetOrCreateFindInteraction();
     // If a Find interaction should be used, prepopulate the Find navigator and
-    // present it.
-    find_interaction.searchText = query;
-    [find_interaction presentFindNavigatorShowingReplace:NO];
+    // present it. If it is already presented, only present it again if the
+    // query is different.
+    if (!find_interaction.isFindNavigatorVisible ||
+        ![query isEqualToString:current_query_]) {
+      // For some reason, in automated tests, presenting the Find navigator
+      // synchronously results in inability to type in the Find navigator input
+      // field. Presenting asynchronously instead solves this issue.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        find_interaction.searchText = query;
+        [find_interaction presentFindNavigatorShowingReplace:NO];
+      });
+    }
   } else {
     if (find_session_) {
       // If a Find session already exists internally, invalidate its found
@@ -131,6 +135,11 @@ void FindInPageManagerImpl::StartSearch(NSString* query)
         web::GetWebClient()->CreateFindSessionForWebState(web_state_);
     [find_session_ performSearchWithQuery:query options:nil];
   }
+
+  // Reset latest reported Find session data.
+  current_query_ = [query copy];
+  current_result_count_ = -1;
+  current_highlighted_result_index_ = NSNotFound;
 
   StartPollingActiveFindSession();
 }

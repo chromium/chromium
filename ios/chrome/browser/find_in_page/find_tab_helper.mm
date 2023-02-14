@@ -23,10 +23,6 @@ FindTabHelper::FindTabHelper(web::WebState* web_state) {
 FindTabHelper::~FindTabHelper() {}
 
 void FindTabHelper::DismissFindNavigator() {
-  if (!IsFindUIActive()) {
-    // If Find UI is not active then there is no Find session to stop.
-    return;
-  }
   // Same as `StopFinding()` except the UI is not marked as inactive so it can
   // be set back up if needed later.
   [controller_ disableFindInPage];

@@ -195,8 +195,10 @@ TEST_P(FindInPageManagerImplTest, DelegateNotSet) {
     SetFindSessionWithResultCountsForQueries(@{@"foo" : @3});
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
 
-    EXPECT_EQ(3, GetActiveFindSession().resultCount);
-    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForFindCompletionTimeout, ^{
+      base::RunLoop().RunUntilIdle();
+      return GetActiveFindSession().resultCount == 3;
+    }));
   }
 }
 
@@ -375,10 +377,16 @@ TEST_P(FindInPageManagerImplTest, FindNavigatorPresentedAndDismissed) {
     }
 
     GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
-    EXPECT_TRUE(fake_web_state_->GetFindInteraction().findNavigatorVisible);
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForFindCompletionTimeout, ^{
+      base::RunLoop().RunUntilIdle();
+      return fake_web_state_->GetFindInteraction().findNavigatorVisible;
+    }));
 
     GetFindInPageManager()->StopFinding();
-    EXPECT_FALSE(fake_web_state_->GetFindInteraction().findNavigatorVisible);
+    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForFindCompletionTimeout, ^{
+      base::RunLoop().RunUntilIdle();
+      return !fake_web_state_->GetFindInteraction().findNavigatorVisible;
+    }));
   }
 }
 
