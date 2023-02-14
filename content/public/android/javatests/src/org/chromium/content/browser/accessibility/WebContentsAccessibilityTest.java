@@ -589,6 +589,51 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(FOCUSING_ERROR, mNodeInfo.isAccessibilityFocused());
     }
 
+    /**
+     * Test restoring focus of the latest focused element with the {restoreFocus} method.
+     */
+    @Test
+    @SmallTest
+    public void testRestoreFocus() throws Throwable {
+        // Setup test page with example paragraphs.
+        setupTestWithHTML("<input id='id1'><input id='id2'>");
+
+        // Find the root node, and a paragraph node, then focus the paragraph.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
+
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, createAccessibilityNodeInfo(rootVvid));
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, createAccessibilityNodeInfo(vvid1));
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, createAccessibilityNodeInfo(vvid2));
+
+        Assert.assertFalse(
+                FOCUSING_ERROR, createAccessibilityNodeInfo(vvid1).isAccessibilityFocused());
+        focusNode(vvid1);
+
+        // Reset focus explicitly.
+        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.resetFocus());
+        CriteriaHelper.pollUiThread(
+                () -> !createAccessibilityNodeInfo(vvid1).isAccessibilityFocused());
+
+        // Restore focus, verify that it gets back.
+        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.restoreFocus());
+        CriteriaHelper.pollUiThread(
+                () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused());
+
+        focusNode(vvid1);
+        focusNode(vvid2);
+
+        // Reset focus by performing an action, it covers one more way of losing focus.
+        Assert.assertTrue(performActionOnUiThread(vvid2, ACTION_CLEAR_ACCESSIBILITY_FOCUS, null,
+                () -> !createAccessibilityNodeInfo(vvid2).isAccessibilityFocused()));
+
+        // Restore focus, verify that the second (latest focused) element gets focus.
+        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.mWcax.restoreFocus());
+        CriteriaHelper.pollUiThread(
+                () -> createAccessibilityNodeInfo(vvid2).isAccessibilityFocused());
+    }
+
     // ------------------ Tests of AccessibilityNodeInfo caching mechanism ------------------ //
 
     /**

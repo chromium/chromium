@@ -121,4 +121,10 @@ public interface WebContentsAccessibility {
      * Called to reset focus state to nothing.
      */
     void resetFocus();
+
+    /**
+     * Set the a11y focus to the DOM element that had it just before the focus
+     * gets out WebContents, e.g. by focusing a native view node.
+     */
+    void restoreFocus();
 }

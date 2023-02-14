@@ -152,6 +152,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private boolean mAccessibilityEnabledOverride;
     private int mSelectionGranularity;
     private int mAccessibilityFocusId;
+    private int mLastAccessibilityFocusId = View.NO_ID;
     private int mSelectionNodeId;
     private View mAutofillPopupView;
     private CaptioningController mCaptioningController;
@@ -390,6 +391,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     protected void onNativeInit() {
         TraceEvent.begin("WebContentsAccessibilityImpl.onNativeInit");
         mAccessibilityFocusId = View.NO_ID;
+        mLastAccessibilityFocusId = View.NO_ID;
         mSelectionNodeId = View.NO_ID;
         mIsHovering = false;
         mCurrentRootId = View.NO_ID;
@@ -1158,6 +1160,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mLastHoverId = View.NO_ID;
     }
 
+    @Override
+    public void restoreFocus() {
+        if (isAccessibilityEnabled() && mLastAccessibilityFocusId != View.NO_ID) {
+            moveAccessibilityFocusToId(mLastAccessibilityFocusId);
+            scrollToMakeNodeVisible(mLastAccessibilityFocusId);
+        }
+    }
+
     /**
      * Notify us when the frame info is initialized,
      * the first time, since until that point, we can't use AccessibilityCoordinates to transform
@@ -1402,6 +1412,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private boolean moveAccessibilityFocusToId(int newAccessibilityFocusId) {
         if (newAccessibilityFocusId == mAccessibilityFocusId) return false;
 
+        if (newAccessibilityFocusId != View.NO_ID) {
+            mLastAccessibilityFocusId = newAccessibilityFocusId;
+        }
+
         WebContentsAccessibilityImplJni.get().moveAccessibilityFocus(
                 mNativeObj, mAccessibilityFocusId, newAccessibilityFocusId);
 
@@ -1636,6 +1650,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     private void handleNavigate(int newRootId) {
         mAccessibilityFocusId = View.NO_ID;
+        mLastAccessibilityFocusId = View.NO_ID;
         mCurrentRootId = newRootId;
         // Invalidate the host, since its child is now gone.
         sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
