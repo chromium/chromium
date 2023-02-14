@@ -10,11 +10,9 @@
 // Protocol that provides tab strip context menus.
 @protocol TabStripContextMenuProvider
 
-// Returns a context menu configuration instance for the given
-// `identifier` and `pinnedState`.
-- (UIContextMenuConfiguration*)
-    contextMenuConfigurationForWebStateIdentifier:(NSString*)identifier
-                                      pinnedState:(BOOL)pinnedState;
+// Returns an UIMenu instance for the given `identifier` and `pinnedState`.
+- (UIMenu*)menuForWebStateIdentifier:(NSString*)identifier
+                         pinnedState:(BOOL)pinnedState;
 
 @end
 

@@ -124,6 +124,7 @@ UIImage* DefaultFaviconImage() {
 - (id)initWithEmptyView:(BOOL)emptyView selected:(BOOL)selected {
   if ((self = [super initWithFrame:CGRectZero])) {
     _pinned = NO;
+    self.isAccessibilityElement = NO;
     [self setOpaque:NO];
     [self createCommonViews];
     if (!emptyView)

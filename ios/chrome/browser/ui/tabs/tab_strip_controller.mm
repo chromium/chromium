@@ -91,7 +91,7 @@ const NSTimeInterval kTabAnimationDuration = 0.25;
 const NSTimeInterval kTabStripFadeAnimationDuration = 0.15;
 
 // Amount of time needed to trigger drag and drop mode when long pressing.
-const NSTimeInterval kDragAndDropLongPressDuration = 0.1;
+const NSTimeInterval kDragAndDropLongPressDuration = 0.08;
 const NSTimeInterval kDragAndDropLongPressLegacyDuration = 0.4;
 
 // Tab dimensions.
@@ -129,6 +129,9 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 
 // The minimum number of visible pinned tabs.
 const NSUInteger kMinimumVisiblePinnedTabs = 4;
+
+// Identifier of the action that displays the UIMenu.
+NSString* const kMenuActionIdentifier = @"kMenuActionIdentifier";
 
 // Returns the background color.
 UIColor* BackgroundColor() {
@@ -196,7 +199,6 @@ const CGFloat kSymbolSize = 18;
                                   ViewRevealingAnimatee,
                                   WebStateFaviconDriverObserver,
                                   WebStateListObserving,
-                                  UIContextMenuInteractionDelegate,
                                   UIGestureRecognizerDelegate,
                                   UIScrollViewDelegate,
                                   URLDropDelegate> {
@@ -681,10 +683,25 @@ const CGFloat kSymbolSize = 18;
                   action:@selector(handleLongPress:)];
 
   if (IsTabStripContextMenuEnabled()) {
-    [view addInteraction:[[UIContextMenuInteraction alloc]
-                             initWithDelegate:self]];
-    [longPress setMinimumPressDuration:kDragAndDropLongPressDuration];
+    // Adds an empty menu so the event triggers the first time.
+    view.menu = [UIMenu menuWithChildren:@[]];
+    [view removeActionForIdentifier:kMenuActionIdentifier
+                   forControlEvents:UIControlEventMenuActionTriggered];
 
+    // Configure an action that should be executed on each tap.
+    __weak UIButton* weakButton = view;
+    __weak __typeof(self) weakSelf = self;
+    UIAction* displayMenu = [UIAction
+        actionWithTitle:@""
+                  image:nil
+             identifier:kMenuActionIdentifier
+                handler:^(UIAction* uiAction) {
+                  weakButton.menu = [weakSelf menuForWebstate:webState];
+                }];
+    [view addAction:displayMenu
+        forControlEvents:UIControlEventMenuActionTriggered];
+
+    [longPress setMinimumPressDuration:kDragAndDropLongPressDuration];
   } else {
     [longPress setMinimumPressDuration:kDragAndDropLongPressLegacyDuration];
   }
@@ -702,6 +719,16 @@ const CGFloat kSymbolSize = 18;
   view.delegate = self;
 
   return view;
+}
+
+// Returns an UIMenu for the given `webState`.
+- (UIMenu*)menuForWebstate:(web::WebState*)webState {
+  int webStateIndex = _webStateList->GetIndexOfWebState(webState);
+  NSString* identifier = webState->GetStableIdentifier();
+  BOOL pinnedState = _webStateList->IsWebStatePinnedAt(webStateIndex);
+
+  return [self.contextMenuProvider menuForWebStateIdentifier:identifier
+                                                 pinnedState:pinnedState];
 }
 
 - (void)setHighlightsSelectedTab:(BOOL)highlightsSelectedTab {
@@ -888,35 +915,6 @@ const CGFloat kSymbolSize = 18;
       UrlLoadParams::InNewTab(newTabURL, base::checked_cast<int>(index));
   params.in_incognito = _browser->GetBrowserState()->IsOffTheRecord();
   UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
-}
-
-#pragma mark - UIContextMenuInteractionDelegate
-
-- (UIContextMenuConfiguration*)contextMenuInteraction:
-                                   (UIContextMenuInteraction*)interaction
-                       configurationForMenuAtLocation:(CGPoint)location {
-  DCHECK(IsTabStripContextMenuEnabled());
-
-  int webStateIndex = [self webStateListIndexForTabView:interaction.view];
-  NSString* identifier =
-      _webStateList->GetWebStateAt(webStateIndex)->GetStableIdentifier();
-  BOOL pinnedState = _webStateList->IsWebStatePinnedAt(webStateIndex);
-
-  return [self.contextMenuProvider
-      contextMenuConfigurationForWebStateIdentifier:identifier
-                                        pinnedState:pinnedState];
-}
-
-- (UITargetedPreview*)contextMenuInteraction:
-                          (UIContextMenuInteraction*)interaction
-                               configuration:
-                                   (UIContextMenuConfiguration*)configuration
-       highlightPreviewForItemWithIdentifier:(id<NSCopying>)identifier {
-  // TODO(crbug.com/1409893): Update the targeted preview.
-  UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
-  previewParameters.backgroundColor = UIColor.clearColor;
-  return [[UITargetedPreview alloc] initWithView:interaction.view
-                                      parameters:previewParameters];
 }
 
 #pragma mark - TabStripContextMenuDelegate

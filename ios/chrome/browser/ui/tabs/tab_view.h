@@ -12,7 +12,7 @@
 @protocol TabViewDelegate;
 
 // View class that draws a Chrome-style tab.
-@interface TabView : UIControl
+@interface TabView : UIButton
 
 @property(nonatomic, weak) id<TabViewDelegate> delegate;
 @property(nonatomic, readonly, strong) UILabel* titleLabel;

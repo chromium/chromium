@@ -62,29 +62,12 @@
 
 #pragma mark - TabStripContextMenuProvider
 
-- (UIContextMenuConfiguration*)
-    contextMenuConfigurationForWebStateIdentifier:(NSString*)identifier
-                                      pinnedState:(BOOL)pinnedState {
-  __weak __typeof(self) weakSelf = self;
-
-  UIContextMenuActionProvider actionProvider =
-      ^(NSArray<UIMenuElement*>* suggestedActions) {
-        TabStripContextMenuHelper* strongSelf = weakSelf;
-        if (!strongSelf) {
-          // Return an empty menu.
-          return [UIMenu menuWithTitle:@"" children:@[]];
-        }
-
-        NSArray<UIMenuElement*>* menuElements =
-            [strongSelf menuElementsForWebstateIdentifier:identifier
-                                              pinnedState:pinnedState];
-        return [UIMenu menuWithTitle:@"" children:menuElements];
-      };
-
-  return
-      [UIContextMenuConfiguration configurationWithIdentifier:nil
-                                              previewProvider:nil
-                                               actionProvider:actionProvider];
+- (UIMenu*)menuForWebStateIdentifier:(NSString*)identifier
+                         pinnedState:(BOOL)pinnedState {
+  NSArray<UIMenuElement*>* menuElements =
+      [self menuElementsForWebstateIdentifier:identifier
+                                  pinnedState:pinnedState];
+  return [UIMenu menuWithTitle:@"" children:menuElements];
 }
 
 #pragma mark - Private
