@@ -34,9 +34,6 @@ SkBitmap CreateTestBitmap(int width, int height) {
 TEST(WebCursorTest, DefaultConstructor) {
   WebCursor webcursor;
   EXPECT_EQ(ui::mojom::CursorType::kNull, webcursor.cursor().type());
-  EXPECT_TRUE(webcursor.cursor().custom_bitmap().isNull());
-  EXPECT_TRUE(webcursor.cursor().custom_hotspot().IsOrigin());
-  EXPECT_EQ(1.f, webcursor.cursor().image_scale_factor());
 }
 
 TEST(WebCursorTest, WebCursorCursorConstructor) {

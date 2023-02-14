@@ -208,9 +208,15 @@ namespace {
 // reduced.
 void LogCursorSizeCounter(LocalFrame* frame, const ui::Cursor& cursor) {
   DCHECK(frame);
-  SkBitmap bitmap = cursor.custom_bitmap();
-  if (cursor.type() != ui::mojom::blink::CursorType::kCustom || bitmap.isNull())
+  if (cursor.type() != ui::mojom::blink::CursorType::kCustom) {
     return;
+  }
+
+  const SkBitmap& bitmap = cursor.custom_bitmap();
+  if (bitmap.isNull()) {
+    return;
+  }
+
   // Should not overflow, this calculation is done elsewhere when determining
   // whether the cursor exceeds its maximum size (see event_handler.cc).
   auto scaled_size =
