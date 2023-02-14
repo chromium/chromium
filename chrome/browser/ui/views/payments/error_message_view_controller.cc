@@ -102,6 +102,11 @@ bool ErrorMessageViewController::ShouldAccelerateEnterKey() {
   return true;
 }
 
+bool ErrorMessageViewController::CanContentViewBeScrollable() {
+  // The error message is a single line of text that doesn't need a scroll view.
+  return false;
+}
+
 base::WeakPtr<PaymentRequestSheetController>
 ErrorMessageViewController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

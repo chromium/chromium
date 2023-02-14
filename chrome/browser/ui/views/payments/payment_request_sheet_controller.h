@@ -192,6 +192,11 @@ class PaymentRequestSheetController {
   // Returns the height of the active header view.
   int GetHeaderHeight();
 
+  // Returns true if the content view should be placed within a scrollable view
+  // that will show a vertical scrollbar if the content is taller than the
+  // payment sheet.
+  virtual bool CanContentViewBeScrollable();
+
   views::MdTextButton* primary_button() { return primary_button_; }
 
   views::View* header_content_separator_container() {

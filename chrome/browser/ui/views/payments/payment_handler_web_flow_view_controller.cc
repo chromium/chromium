@@ -432,6 +432,12 @@ bool PaymentHandlerWebFlowViewController::
   return false;
 }
 
+bool PaymentHandlerWebFlowViewController::CanContentViewBeScrollable() {
+  // The web contents is set to a constant size and will render its own
+  // scrollbar if necessary.
+  return false;
+}
+
 base::WeakPtr<PaymentRequestSheetController>
 PaymentHandlerWebFlowViewController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

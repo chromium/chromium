@@ -17,6 +17,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/mock_input_event_activation_protector.h"
 
 namespace payments {
@@ -130,6 +131,38 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest, EnterDoesNotContinue) {
       GetByDialogViewID(DialogViewID::PAYMENT_REQUEST_SHEET);
   EXPECT_FALSE(summary_sheet->AcceleratorPressed(
       ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE)));
+}
+
+// Test that the content view of the payment sheet view is contained by a
+// ScrollView.
+IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest, ContentViewScrollable) {
+  // Installs two apps so that the Payment Request UI will be shown.
+  std::string a_method_name;
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &a_method_name);
+  std::string b_method_name;
+  InstallPaymentApp("b.com", "/payment_request_success_responder.js",
+                    &b_method_name);
+
+  NavigateTo("/payment_request_no_shipping_test.html");
+  InvokePaymentRequestUIWithJs(content::JsReplace(
+      "buyWithMethods([{supportedMethods:$1}, {supportedMethods:$2}]);",
+      a_method_name, b_method_name));
+
+  views::View* sheet_view =
+      GetByDialogViewID(DialogViewID::PAYMENT_REQUEST_SHEET);
+  ASSERT_NE(nullptr, sheet_view);
+
+  // The scroll view should be contained by the root sheet view.
+  views::ScrollView* scroll_view =
+      static_cast<views::ScrollView*>(GetChildByDialogViewID(
+          sheet_view, DialogViewID::PAYMENT_SHEET_SCROLL_VIEW));
+  ASSERT_NE(nullptr, scroll_view);
+  ASSERT_NE(nullptr, scroll_view->contents());
+
+  // The content view should be contained by the scroll view.
+  EXPECT_NE(nullptr, GetChildByDialogViewID(scroll_view->contents(),
+                                            DialogViewID::CONTENT_VIEW));
 }
 
 using PaymentSheetViewControllerNoShippingTest = PaymentRequestBrowserTestBase;

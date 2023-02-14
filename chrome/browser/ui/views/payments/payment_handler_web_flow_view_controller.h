@@ -71,6 +71,7 @@ class PaymentHandlerWebFlowViewController
       views::View* header_view) override;
   bool GetSheetId(DialogViewID* sheet_id) override;
   bool DisplayDynamicBorderForHiddenContents() override;
+  bool CanContentViewBeScrollable() override;
   base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() override;
 
   // content::WebContentsDelegate:

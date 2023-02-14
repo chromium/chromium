@@ -72,4 +72,40 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,
   WaitForObservedEvent();
 }
 
+IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,
+                       ContentViewNotScrollable) {
+  std::string payment_method_name;
+  InstallPaymentApp("a.com", "/payment_request_success_responder.js",
+                    &payment_method_name);
+
+  NavigateTo("/payment_request_fail_complete_test.html");
+
+  InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
+                               payment_method_name + "'}]);");
+
+  // We are ready to pay.
+  ASSERT_TRUE(IsPayButtonEnabled());
+
+  // Once "Pay" is clicked, the page will call complete('fail') and the error
+  // message should be shown.
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::ERROR_MESSAGE_SHOWN});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+
+  // We always push the initial browser sheet to the stack, even if it isn't
+  // shown. Since it also defines a CONTENT_VIEW, we have to explicitly test the
+  // front PaymentHandler view here.
+  views::View* top_view = dialog_view()->view_stack_for_testing()->top();
+
+  views::View* sheet_view =
+      GetChildByDialogViewID(top_view, DialogViewID::ERROR_SHEET);
+  // The content view should be within the sheet view.
+  EXPECT_NE(nullptr,
+            GetChildByDialogViewID(sheet_view, DialogViewID::CONTENT_VIEW));
+
+  // There should be no scroll view.
+  EXPECT_EQ(nullptr, GetChildByDialogViewID(
+                         top_view, DialogViewID::PAYMENT_SHEET_SCROLL_VIEW));
+}
+
 }  // namespace payments

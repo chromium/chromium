@@ -95,6 +95,9 @@ enum class DialogViewID : int {
   // The header view of a payment app's window.
   PAYMENT_APP_HEADER,
 
+  // The scroll view of the payment sheet.
+  PAYMENT_SHEET_SCROLL_VIEW,
+
   // NOTE: Keep these values last.
   // Used to offset the IDs of input fields, which gets added to the Autofill
   // type value they represent.
