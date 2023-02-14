@@ -104,6 +104,7 @@ class ShellExtensionLoaderTest : public ExtensionsTest {
 
   void TearDown() override {
     EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
+    event_router_ = nullptr;
     ExtensionsTest::TearDown();
   }
 
