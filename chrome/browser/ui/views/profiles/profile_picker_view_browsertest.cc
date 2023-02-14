@@ -864,19 +864,19 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 // Tests dice-specific logic for keeping track of the new profile color.
-// Flaky on Mac, crbug.com/1363811.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CreateSignedInProfileDiceReenter DISABLED_CreateSignedInProfileDiceReenter
-#else
-#define MAYBE_CreateSignedInProfileDiceReenter CreateSignedInProfileDiceReenter
-#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       MAYBE_CreateSignedInProfileDiceReenter) {
+                       CreateSignedInProfileDiceReenter) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartDiceSignIn();
 
   // Navigate back from the sign in step.
+  // Use "Command [" for Mac and "Alt Left" for the other operating systems.
+#if BUILDFLAG(IS_MAC)
+  view()->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN));
+#else
   view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_LEFT, ui::EF_ALT_DOWN));
+#endif
 
   // Simulate the sign-in screen get re-entered with a different color
   // (configured on the local profile screen).
