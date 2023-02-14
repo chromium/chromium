@@ -293,6 +293,7 @@ absl::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
         break;
       }
       case PaintOpType::DrawSkottie:
+      case PaintOpType::DrawSlug:
       case PaintOpType::DrawTextBlob:
       // Anything that has to do a save layer is probably not solid. As it will
       // likely need more than one draw op.

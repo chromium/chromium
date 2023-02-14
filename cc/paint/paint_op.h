@@ -84,6 +84,7 @@ enum class PaintOpType : uint8_t {
   DrawRect,
   DrawRRect,
   DrawSkottie,
+  DrawSlug,
   DrawTextBlob,
   Noop,
   Restore,
@@ -786,8 +787,35 @@ class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
   DrawSkottieOp();
 };
 
-// TODO(penghuang): Replace DrawTextBlobOp with DrawSlugOp, when GrSlug can be
-// serialized.
+class CC_PAINT_EXPORT DrawSlugOp final : public PaintOpWithFlags {
+ public:
+  static constexpr PaintOpType kType = PaintOpType::DrawSlug;
+  static constexpr bool kIsDrawOp = true;
+  DrawSlugOp(sk_sp<GrSlug> slug, const PaintFlags& flags);
+  ~DrawSlugOp();
+  DrawSlugOp(const DrawSlugOp&);
+  DrawSlugOp& operator=(const DrawSlugOp&);
+  static void SerializeSlugs(const sk_sp<GrSlug>& slug,
+                             const std::vector<sk_sp<GrSlug>>& extra_slugs,
+                             PaintOpWriter& writer,
+                             const PaintFlags* flags_to_serialize,
+                             const SkM44& current_ctm);
+  static void RasterWithFlags(const DrawSlugOp* op,
+                              const PaintFlags* flags,
+                              SkCanvas* canvas,
+                              const PlaybackParams& params);
+  bool IsValid() const { return flags.IsValid(); }
+  bool HasDrawTextOps() const { return true; }
+  bool EqualsForTesting(const DrawSlugOp& other) const;
+  HAS_SERIALIZATION_FUNCTIONS();
+
+  sk_sp<GrSlug> slug;
+  std::vector<sk_sp<GrSlug>> extra_slugs;
+
+ private:
+  DrawSlugOp();
+};
+
 class CC_PAINT_EXPORT DrawTextBlobOp final : public PaintOpWithFlags {
  public:
   static constexpr PaintOpType kType = PaintOpType::DrawTextBlob;
@@ -814,8 +842,8 @@ class CC_PAINT_EXPORT DrawTextBlobOp final : public PaintOpWithFlags {
   HAS_SERIALIZATION_FUNCTIONS();
 
   sk_sp<SkTextBlob> blob;
-  sk_sp<GrSlug> slug;
-  std::vector<sk_sp<GrSlug>> extra_slugs;
+  mutable sk_sp<GrSlug> slug;
+  mutable std::vector<sk_sp<GrSlug>> extra_slugs;
   SkScalar x;
   SkScalar y;
   // This field isn't serialized.

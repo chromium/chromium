@@ -1282,7 +1282,11 @@ class SimpleSerializer {
       size_t bytes_to_read = 0;
       EXPECT_TRUE(
           ReadAndValidateOpHeader(current_, remaining_, &type, &bytes_to_read));
-      EXPECT_EQ(op.type, type);
+      if (op.GetType() == PaintOpType::DrawTextBlob) {
+        EXPECT_EQ(type, static_cast<int>(PaintOpType::DrawSlug));
+      } else {
+        EXPECT_EQ(op.type, type);
+      }
       EXPECT_EQ(bytes_written, bytes_to_read);
 
       bytes_written_[op_idx] = bytes_written;
@@ -1843,6 +1847,9 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
       case PaintOpType::DrawSkottie:
         PushDrawSkottieOps(&buffer_);
         break;
+      case PaintOpType::DrawSlug:
+        // TODO(crbug.com/1321150): fix the test for DrawSlug.
+        break;
       case PaintOpType::DrawTextBlob:
         // TODO(crbug.com/1321150): fix the test for DrawTextBlobs
         // PushDrawTextBlobOps(&buffer_);
@@ -1888,8 +1895,10 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
 
   bool IsTypeSupported() {
     // TODO(crbug.com/1321150): fix the test for DrawTextBlobs
-    if (GetParamType() == PaintOpType::DrawTextBlob)
+    if (GetParamType() == PaintOpType::DrawTextBlob ||
+        GetParamType() == PaintOpType::DrawSlug) {
       return false;
+    }
 
     // DrawRecordOps must be flattened and are not currently serialized. All
     // other types must push non-zero amounts of ops in PushTestOps.
@@ -2108,7 +2117,8 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
   }
 
   // See https://crbug.com/1321150#c3.
-  if (GetParamType() == PaintOpType::DrawTextBlob) {
+  if (GetParamType() == PaintOpType::DrawTextBlob ||
+      GetParamType() == PaintOpType::DrawSlug) {
     return;
   }
 
@@ -2219,6 +2229,52 @@ TEST(PaintOpSerializationTest, Preamble) {
                   DrawColorOp(SkColors::kBlue, SkBlendMode::kSrc),
                   // End restore:
                   RestoreOp())));
+}
+
+TEST(PaintOpSerializationTest,
+     ConvertToDrawSlugWhenSerializationAndRasterization) {
+  PaintOpBuffer buffer;
+  PushDrawTextBlobOps(&buffer);
+  EXPECT_TRUE(buffer.has_draw_text_ops());
+
+  PaintOpBuffer::Iterator iter(buffer);
+  const PaintOp* op = iter.get();
+  ASSERT_TRUE(op);
+  EXPECT_EQ(op->GetType(), PaintOpType::DrawTextBlob);
+
+  size_t output_size = kSerializedBytesPerOp * buffer.size();
+  std::unique_ptr<char, base::AlignedFreeDeleter> output =
+      AllocateSerializedBuffer(output_size);
+  SimpleSerializer serializer(output.get(), output_size);
+
+  auto canvas =
+      serializer.options_provider()->strike_server()->makeAnalysisCanvas(
+          1024, 768, {}, nullptr, true);
+  PlaybackParams params(nullptr, canvas->getLocalToDevice());
+  params.is_analyzing = true;
+  buffer.Playback(canvas.get(), params);
+
+  std::vector<uint8_t> strike_data;
+  serializer.options_provider()->strike_server()->writeStrikeData(&strike_data);
+
+  if (!strike_data.empty()) {
+    serializer.options_provider()->strike_client()->readStrikeData(
+        strike_data.data(), strike_data.size());
+  }
+
+  serializer.Serialize(buffer);
+
+  size_t i = 0;
+  for (const PaintOp& base_written : DeserializerIterator(
+           output.get(), serializer.TotalBytesWritten(),
+           serializer.options_provider()->deserialize_options())) {
+    ASSERT_TRUE(iter);
+    EXPECT_EQ(PaintOpType::DrawSlug, base_written.GetType());
+    ++iter;
+    ++i;
+  }
+
+  EXPECT_EQ(buffer.size(), i);
 }
 
 TEST(PaintOpSerializationTest, SerializesNestedRecords) {

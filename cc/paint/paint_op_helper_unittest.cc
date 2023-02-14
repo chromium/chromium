@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/effects/SkLumaColorFilter.h"
+#include "third_party/skia/include/private/chromium/GrSlug.h"
 
 namespace cc {
 namespace {
@@ -209,6 +210,21 @@ TEST(PaintOpHelper, DrawRRectToString) {
       "isDither=false, filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
       "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
       "colorFilter=(nil), maskFilter=(nil), shader=(nil), "
+      "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
+      "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
+      "isValid=true, hasDiscardableImages=false])");
+}
+
+TEST(PaintOpHelper, DrawSlugToString) {
+  DrawSlugOp op(nullptr, PaintFlags());
+  std::string str = PaintOpHelper::ToString(op);
+  EXPECT_EQ(
+      str,
+      "DrawSlugOp(flags=[color=rgba(0, 0, 0, 255), blendMode=kSrcOver, "
+      "isAntiAlias=false, isDither=false, filterQuality=kNone_SkFilterQuality, "
+      "strokeWidth=0.000, strokeMiter=4.000, strokeCap=kButt_Cap, "
+      "strokeJoin=kMiter_Join, colorFilter=(nil), maskFilter=(nil), "
+      "shader=(nil), "
       "hasShader=false, shaderIsOpaque=false, pathEffect=(nil), "
       "imageFilter=(nil), drawLooper=(nil), supportsFoldingAlpha=true, "
       "isValid=true, hasDiscardableImages=false])");

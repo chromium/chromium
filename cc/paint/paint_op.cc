@@ -151,6 +151,7 @@ void DrawImageRect(SkCanvas* canvas,
   M(DrawRectOp)       \
   M(DrawRRectOp)      \
   M(DrawSkottieOp)    \
+  M(DrawSlugOp)       \
   M(DrawTextBlobOp)   \
   M(NoopOp)           \
   M(RestoreOp)        \
@@ -384,6 +385,8 @@ std::string PaintOpTypeToString(PaintOpType type) {
       return "DrawRRect";
     case PaintOpType::DrawSkottie:
       return "DrawSkottie";
+    case PaintOpType::DrawSlug:
+      return "DrawSlug";
     case PaintOpType::DrawTextBlob:
       return "DrawTextBlob";
     case PaintOpType::Noop:
@@ -655,10 +658,11 @@ void DrawSkottieOp::Serialize(PaintOpWriter& writer,
       });
 }
 
-void DrawTextBlobOp::Serialize(PaintOpWriter& writer,
-                               const PaintFlags* flags_to_serialize,
-                               const SkM44& current_ctm,
-                               const SkM44& original_ctm) const {
+void DrawSlugOp::SerializeSlugs(const sk_sp<GrSlug>& slug,
+                                const std::vector<sk_sp<GrSlug>>& extra_slugs,
+                                PaintOpWriter& writer,
+                                const PaintFlags* flags_to_serialize,
+                                const SkM44& current_ctm) {
   writer.Write(*flags_to_serialize, current_ctm);
   unsigned int count = extra_slugs.size() + 1;
   writer.Write(count);
@@ -666,6 +670,22 @@ void DrawTextBlobOp::Serialize(PaintOpWriter& writer,
   for (const auto& extra_slug : extra_slugs) {
     writer.Write(extra_slug);
   }
+}
+
+void DrawSlugOp::Serialize(PaintOpWriter& writer,
+                           const PaintFlags* flags_to_serialize,
+                           const SkM44& current_ctm,
+                           const SkM44& original_ctm) const {
+  DrawSlugOp::SerializeSlugs(slug, extra_slugs, writer, flags_to_serialize,
+                             current_ctm);
+}
+
+void DrawTextBlobOp::Serialize(PaintOpWriter& writer,
+                               const PaintFlags* flags_to_serialize,
+                               const SkM44& current_ctm,
+                               const SkM44& original_ctm) const {
+  DrawSlugOp::SerializeSlugs(slug, extra_slugs, writer, flags_to_serialize,
+                             current_ctm);
 }
 
 void NoopOp::Serialize(PaintOpWriter& writer,
@@ -972,8 +992,8 @@ PaintOp* DrawSkottieOp::Deserialize(PaintOpReader& reader, void* output) {
   return op;
 }
 
-PaintOp* DrawTextBlobOp::Deserialize(PaintOpReader& reader, void* output) {
-  DrawTextBlobOp* op = new (output) DrawTextBlobOp;
+PaintOp* DrawSlugOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawSlugOp* op = new (output) DrawSlugOp;
   reader.Read(&op->flags);
   unsigned int count = 0;
   reader.Read(&count);
@@ -983,6 +1003,11 @@ PaintOp* DrawTextBlobOp::Deserialize(PaintOpReader& reader, void* output) {
     reader.Read(&extra_slug);
   }
   return op;
+}
+
+PaintOp* DrawTextBlobOp::Deserialize(PaintOpReader& reader, void* output) {
+  NOTREACHED();
+  return nullptr;
 }
 
 PaintOp* NoopOp::Deserialize(PaintOpReader& reader, void* output) {
@@ -1371,35 +1396,47 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
   // used for over scall on Android. So we cannot reuse slugs, they have to be
   // recreated.
   if (params.is_analyzing) {
-    const_cast<DrawTextBlobOp*>(op)->slug.reset();
-    const_cast<DrawTextBlobOp*>(op)->extra_slugs.clear();
+    op->slug.reset();
+    op->extra_slugs.clear();
   }
 
   // flags may contain SkDrawLooper for shadow effect, so we need to convert
   // SkTextBlob to slug for each run.
   size_t i = 0;
   flags->DrawToSk(canvas, [op, &params, &i](SkCanvas* c, const SkPaint& p) {
-    if (op->blob) {
-      c->drawTextBlob(op->blob.get(), op->x, op->y, p);
-      if (params.is_analyzing) {
-        auto s = GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
-        if (i == 0) {
-          const_cast<DrawTextBlobOp*>(op)->slug = std::move(s);
-        } else {
-          const_cast<DrawTextBlobOp*>(op)->extra_slugs.push_back(std::move(s));
-        }
+    DCHECK(op->blob);
+    c->drawTextBlob(op->blob.get(), op->x, op->y, p);
+    if (params.is_analyzing) {
+      auto s = GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
+      if (i == 0) {
+        op->slug = std::move(s);
+      } else {
+        op->extra_slugs.push_back(std::move(s));
       }
-    } else if (i < 1 + op->extra_slugs.size()) {
+    }
+    i++;
+  });
+
+  if (op->node_id) {
+    SkPDF::SetNodeId(canvas, 0);
+  }
+}
+
+void DrawSlugOp::RasterWithFlags(const DrawSlugOp* op,
+                                 const PaintFlags* flags,
+                                 SkCanvas* canvas,
+                                 const PlaybackParams& params) {
+  size_t i = 0;
+  flags->DrawToSk(canvas, [op, &params, &i](SkCanvas* c, const SkPaint& p) {
+    if (i < 1 + op->extra_slugs.size()) {
       DCHECK(!params.is_analyzing);
       const auto& draw_slug = i == 0 ? op->slug : op->extra_slugs[i - 1];
-      if (draw_slug)
+      if (draw_slug) {
         draw_slug->draw(c);
+      }
     }
     ++i;
   });
-
-  if (op->node_id)
-    SkPDF::SetNodeId(canvas, 0);
 }
 
 void RestoreOp::Raster(const RestoreOp* op,
@@ -1578,7 +1615,11 @@ bool DrawSkottieOp::EqualsForTesting(const DrawSkottieOp& other) const {
 
 bool DrawTextBlobOp::EqualsForTesting(const DrawTextBlobOp& other) const {
   return flags.EqualsForTesting(other.flags) &&  // IN-TEST
-         x == other.x && y == other.y && node_id == other.node_id &&
+         x == other.x && y == other.y && node_id == other.node_id;
+}
+
+bool DrawSlugOp::EqualsForTesting(const DrawSlugOp& other) const {
+  return flags.EqualsForTesting(other.flags) &&  // IN-TEST
          !slug == !other.slug &&
          (!slug || slug->serialize()->equals(other.slug->serialize().get()));
 }
@@ -1662,6 +1703,11 @@ size_t PaintOp::Serialize(void* memory,
   writer.ReserveOpHeader();
   g_serialize_functions[type](*this, writer, flags_to_serialize, current_ctm,
                               original_ctm);
+
+  // Convert DrawTextBlobOp to DrawSlugOp.
+  if (GetType() == PaintOpType::DrawTextBlob) {
+    return writer.FinishOp(static_cast<uint8_t>(PaintOpType::DrawSlug));
+  }
   return writer.FinishOp(type);
 }
 
@@ -1781,6 +1827,12 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
     case PaintOpType::DrawTextBlob: {
       const auto& text_op = static_cast<const DrawTextBlobOp&>(op);
       *rect = text_op.blob->bounds().makeOffset(text_op.x, text_op.y);
+      rect->sort();
+      return true;
+    }
+    case PaintOpType::DrawSlug: {
+      const auto& slug_op = static_cast<const DrawSlugOp&>(op);
+      *rect = slug_op.slug->sourceBoundsWithOrigin();
       rect->sort();
       return true;
     }
@@ -2102,5 +2154,14 @@ DrawTextBlobOp::DrawTextBlobOp(sk_sp<SkTextBlob> blob,
 DrawTextBlobOp::~DrawTextBlobOp() = default;
 DrawTextBlobOp::DrawTextBlobOp(const DrawTextBlobOp&) = default;
 DrawTextBlobOp& DrawTextBlobOp::operator=(const DrawTextBlobOp&) = default;
+
+DrawSlugOp::DrawSlugOp() : PaintOpWithFlags(kType) {}
+
+DrawSlugOp::DrawSlugOp(sk_sp<GrSlug> slug, const PaintFlags& flags)
+    : PaintOpWithFlags(kType, flags), slug(std::move(slug)) {}
+
+DrawSlugOp::~DrawSlugOp() = default;
+DrawSlugOp::DrawSlugOp(const DrawSlugOp&) = default;
+DrawSlugOp& DrawSlugOp::operator=(const DrawSlugOp&) = default;
 
 }  // namespace cc

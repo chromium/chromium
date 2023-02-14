@@ -171,6 +171,11 @@ class PaintOpHelper {
             << ", flags=" << ToString(op.flags) << ")";
         break;
       }
+      case PaintOpType::DrawSlug: {
+        const auto& op = static_cast<const DrawSlugOp&>(base_op);
+        str << "DrawSlugOp(flags=" << ToString(op.flags) << ")";
+        break;
+      }
       case PaintOpType::Noop: {
         str << "NoopOp()";
         break;
