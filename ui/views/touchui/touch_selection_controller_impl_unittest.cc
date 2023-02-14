@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/test/test_cursor_client.h"
 #include "ui/aura/window.h"
@@ -19,12 +20,14 @@
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
+#include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/test/views_test_base.h"
@@ -645,6 +648,48 @@ TEST_F(TouchSelectionControllerImplTest,
   generator.GestureTapAt(cursor_pos);
   EXPECT_TRUE(textfield_->HasSelection());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(TouchSelectionControllerImplTest, SelectCommands) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  CreateTextfield();
+  textfield_->SetText(u"some text");
+  ui::test::EventGenerator generator(
+      textfield_->GetWidget()->GetNativeView()->GetRootWindow());
+
+  // Tap the textfield to invoke touch selection.
+  generator.GestureTapAt(gfx::Point(10, 10));
+
+  // Select all and select word options should be enabled after initial tap.
+  ui::TouchSelectionMenuClient* menu_client = GetSelectionController();
+  ASSERT_TRUE(menu_client);
+  EXPECT_TRUE(menu_client->IsCommandIdEnabled(ui::TouchEditable::kSelectAll));
+  EXPECT_TRUE(menu_client->IsCommandIdEnabled(ui::TouchEditable::kSelectWord));
+
+  // Select word at current position. Select word command should now be disabled
+  // since there is already a selection.
+  menu_client->ExecuteCommand(ui::TouchEditable::kSelectWord,
+                              ui::EF_FROM_TOUCH);
+  EXPECT_EQ("some", UTF16ToUTF8(textfield_->GetSelectedText()));
+  menu_client = GetSelectionController();
+  ASSERT_TRUE(menu_client);
+  EXPECT_TRUE(menu_client->IsCommandIdEnabled(ui::TouchEditable::kSelectAll));
+  EXPECT_FALSE(menu_client->IsCommandIdEnabled(ui::TouchEditable::kSelectWord));
+
+  // Select all text. Select all and select word commands should now be
+  // disabled.
+  menu_client->ExecuteCommand(ui::TouchEditable::kSelectAll, ui::EF_FROM_TOUCH);
+  EXPECT_EQ("some text", UTF16ToUTF8(textfield_->GetSelectedText()));
+  menu_client = GetSelectionController();
+  ASSERT_TRUE(menu_client);
+  EXPECT_FALSE(menu_client->IsCommandIdEnabled(ui::TouchEditable::kSelectAll));
+  EXPECT_FALSE(menu_client->IsCommandIdEnabled(ui::TouchEditable::kSelectWord));
+}
+#endif
 
 // A simple implementation of TouchEditable that allows faking cursor position
 // inside its boundaries.

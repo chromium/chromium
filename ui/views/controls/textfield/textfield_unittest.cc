@@ -2817,6 +2817,7 @@ TEST_F(TextfieldTest, SelectCommands) {
   textfield_->SetEditableSelectionRange(gfx::Range(8));
   EXPECT_TRUE(textfield_->IsCommandIdEnabled(Textfield::kSelectAll));
   EXPECT_TRUE(textfield_->IsCommandIdEnabled(Textfield::kSelectWord));
+  EXPECT_FALSE(test_api_->touch_selection_controller());
 
   // Select word at current position. Select word command should now be disabled
   // since there is already a selection.
@@ -2825,6 +2826,7 @@ TEST_F(TextfieldTest, SelectCommands) {
   EXPECT_EQ(gfx::Range(6, 12), textfield_->GetSelectedRange());
   EXPECT_TRUE(textfield_->IsCommandIdEnabled(Textfield::kSelectAll));
   EXPECT_FALSE(textfield_->IsCommandIdEnabled(Textfield::kSelectWord));
+  EXPECT_FALSE(test_api_->touch_selection_controller());
 
   // Select all text. Select all and select word commands should now both be
   // disabled.
@@ -2833,7 +2835,45 @@ TEST_F(TextfieldTest, SelectCommands) {
   EXPECT_EQ(gfx::Range(0, 18), textfield_->GetSelectedRange());
   EXPECT_FALSE(textfield_->IsCommandIdEnabled(Textfield::kSelectAll));
   EXPECT_FALSE(textfield_->IsCommandIdEnabled(Textfield::kSelectWord));
+  EXPECT_FALSE(test_api_->touch_selection_controller());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(TextfieldTest, SelectCommandsFromTouchEvent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"hello string world");
+
+  // Select all and select word commands should both be enabled when there is no
+  // selection.
+  textfield_->SetEditableSelectionRange(gfx::Range(8));
+  EXPECT_TRUE(textfield_->IsCommandIdEnabled(Textfield::kSelectAll));
+  EXPECT_TRUE(textfield_->IsCommandIdEnabled(Textfield::kSelectWord));
+  EXPECT_FALSE(test_api_->touch_selection_controller());
+
+  // Select word at current position. Select word command should now be disabled
+  // since there is already a selection.
+  textfield_->ExecuteCommand(Textfield::kSelectWord, ui::EF_FROM_TOUCH);
+  EXPECT_EQ(u"string", textfield_->GetSelectedText());
+  EXPECT_EQ(gfx::Range(6, 12), textfield_->GetSelectedRange());
+  EXPECT_TRUE(textfield_->IsCommandIdEnabled(Textfield::kSelectAll));
+  EXPECT_FALSE(textfield_->IsCommandIdEnabled(Textfield::kSelectWord));
+  EXPECT_TRUE(test_api_->touch_selection_controller());
+
+  // Select all text. Select all and select word commands should now both be
+  // disabled.
+  textfield_->ExecuteCommand(Textfield::kSelectAll, ui::EF_FROM_TOUCH);
+  EXPECT_EQ(u"hello string world", textfield_->GetSelectedText());
+  EXPECT_EQ(gfx::Range(0, 18), textfield_->GetSelectedRange());
+  EXPECT_FALSE(textfield_->IsCommandIdEnabled(Textfield::kSelectAll));
+  EXPECT_FALSE(textfield_->IsCommandIdEnabled(Textfield::kSelectWord));
+  EXPECT_TRUE(test_api_->touch_selection_controller());
+}
+#endif
 
 TEST_F(TextfieldTest, OvertypeMode) {
   InitTextfield();

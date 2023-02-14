@@ -45,6 +45,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
@@ -1427,6 +1428,15 @@ void Textfield::ExecuteCommand(int command_id, int event_flags) {
 
   Textfield::ExecuteTextEditCommand(
       GetTextEditCommandFromMenuCommand(command_id, HasSelection()));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (::features::IsTouchTextEditingRedesignEnabled() &&
+      (event_flags & ui::EF_FROM_TOUCH) &&
+      (command_id == Textfield::kSelectAll ||
+       command_id == Textfield::kSelectWord)) {
+    CreateTouchSelectionControllerAndNotifyIt();
+  }
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
