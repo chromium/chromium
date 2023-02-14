@@ -97,11 +97,6 @@ class DEVICE_GAMEPAD_EXPORT XInputDataFetcherWin : public GamepadDataFetcher {
   static void OverrideXInputGetStateExFuncForTesting(
       XInputGetStateExFunctionCallback callback);
 
-  using XInputEnableFunctionCallback =
-      base::RepeatingCallback<XInputEnableFunc()>;
-  static void OverrideXInputEnableFuncForTesting(
-      XInputEnableFunctionCallback callback);
-
   void InitializeForWgiDataFetcher();
 
   bool IsAnyMetaButtonPressed();
@@ -125,8 +120,6 @@ class DEVICE_GAMEPAD_EXPORT XInputDataFetcherWin : public GamepadDataFetcher {
 
   static XInputGetStateExFunctionCallback&
   GetXInputGetStateExFunctionCallback();
-
-  static XInputEnableFunctionCallback& GetXInputEnableCallback();
 
   base::ScopedNativeLibrary xinput_dll_;
   bool xinput_available_;

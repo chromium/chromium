@@ -4,6 +4,9 @@
 
 #include "device/gamepad/wgi_data_fetcher_win.h"
 
+#include <utility>
+#include <vector>
+
 #include <Windows.Gaming.Input.h>
 #include <XInput.h>
 #include <winerror.h>
@@ -168,12 +171,6 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
             []() { return &MockXInputGetCapabilitiesFunc; }));
     XInputDataFetcherWin::OverrideXInputGetStateExFuncForTesting(
         base::BindLambdaForTesting([]() { return &MockXInputGetStateExFunc; }));
-    // Given that the XInputEnable function has been deprecated in Win10, let's
-    // make it return a nullptr.
-    XInputDataFetcherWin::OverrideXInputEnableFuncForTesting(
-        base::BindLambdaForTesting(
-            []() { return (XInputDataFetcherWin::XInputEnableFunc) nullptr; }));
-
     // The callbacks should return a nullptr for each point of failure.
     switch (error_code) {
       case WgiTestErrorCode::kNullXInputGetCapabilitiesPointer:
