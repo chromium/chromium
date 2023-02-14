@@ -105,8 +105,9 @@ std::unique_ptr<views::View> CreateDetailsRow(
 
   detail_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kUnbounded));
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithWeight(1));
   row->AddChildView(std::move(detail_view));
 
   std::unique_ptr<views::ImageButton> action_button =
