@@ -26,8 +26,8 @@ type Mapping = {
 
 export class CdpClient extends EventEmitter<Mapping> {
   constructor(
-    private _cdpConnection: CdpConnection,
-    private _sessionId: string | null
+    private cdpConnection: CdpConnection,
+    private sessionId: string | null
   ) {
     super();
   }
@@ -42,7 +42,7 @@ export class CdpClient extends EventEmitter<Mapping> {
     ...params: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     const param = params[0];
-    return this._cdpConnection.sendCommand(method, param, this._sessionId);
+    return this.cdpConnection.sendCommand(method, param, this.sessionId);
   }
 }
 

@@ -33,6 +33,7 @@ module.exports = {
     'no-implicit-coercion': 'error',
     'no-negated-condition': 'error',
     'no-undef': 'error',
+    'no-underscore-dangle': 'error',
     'prefer-promise-reject-errors': 'error',
     'prefer-template': 'error',
     'sort-imports': 'error',

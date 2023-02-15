@@ -24,15 +24,15 @@ const debugInternal = debug('bidiMapper:internal');
 const debugLog = debug('bidiMapper:log');
 
 export class MapperServer {
-  private _handlers: ((message: string) => void)[] = [];
+  private handlers: ((message: string) => void)[] = [];
 
   static async create(
     cdpUrl: string,
     mapperContent: string
   ): Promise<MapperServer> {
-    const cdpConnection = await this._establishCdpConnection(cdpUrl);
+    const cdpConnection = await this.establishCdpConnection(cdpUrl);
     try {
-      const mapperCdpClient = await this._initMapper(
+      const mapperCdpClient = await this.initMapper(
         cdpConnection,
         mapperContent
       );
@@ -44,27 +44,27 @@ export class MapperServer {
   }
 
   private constructor(
-    private _cdpConnection: CdpConnection,
-    private _mapperCdpClient: CdpClient
+    private cdpConnection: CdpConnection,
+    private mapperCdpClient: CdpClient
   ) {
-    this._mapperCdpClient.on('Runtime.bindingCalled', this._onBindingCalled);
-    this._mapperCdpClient.on(
+    this.mapperCdpClient.on('Runtime.bindingCalled', this.onBindingCalled);
+    this.mapperCdpClient.on(
       'Runtime.consoleAPICalled',
-      this._onConsoleAPICalled
+      this.onConsoleAPICalled
     );
   }
 
   setOnMessage(handler: (message: string) => void): void {
-    this._handlers.push(handler);
+    this.handlers.push(handler);
   }
   sendMessage(messageJson: string): Promise<void> {
-    return this._sendBidiMessage(messageJson);
+    return this.sendBidiMessage(messageJson);
   }
   close() {
-    this._cdpConnection.close();
+    this.cdpConnection.close();
   }
 
-  private static async _establishCdpConnection(
+  private static async establishCdpConnection(
     cdpUrl: string
   ): Promise<CdpConnection> {
     return new Promise((resolve, reject) => {
@@ -84,25 +84,25 @@ export class MapperServer {
     });
   }
 
-  private async _sendBidiMessage(bidiMessageJson: string): Promise<void> {
-    await this._mapperCdpClient.sendCommand('Runtime.evaluate', {
+  private async sendBidiMessage(bidiMessageJson: string): Promise<void> {
+    await this.mapperCdpClient.sendCommand('Runtime.evaluate', {
       expression: `onBidiMessage(${JSON.stringify(bidiMessageJson)})`,
     });
   }
 
-  private _onBidiMessage(bidiMessage: string): void {
-    for (const handler of this._handlers) handler(bidiMessage);
+  private onBidiMessage(bidiMessage: string): void {
+    for (const handler of this.handlers) handler(bidiMessage);
   }
 
-  private _onBindingCalled = async (
+  private onBindingCalled = async (
     params: Protocol.Runtime.BindingCalledEvent
   ) => {
     if (params.name === 'sendBidiResponse') {
-      this._onBidiMessage(params.payload);
+      this.onBidiMessage(params.payload);
     }
   };
 
-  private _onConsoleAPICalled = async (
+  private onConsoleAPICalled = async (
     params: Protocol.Runtime.ConsoleAPICalledEvent
   ) => {
     debugLog(
@@ -112,7 +112,7 @@ export class MapperServer {
     );
   };
 
-  private static async _initMapper(
+  private static async initMapper(
     cdpConnection: CdpConnection,
     mapperContent: string
   ): Promise<CdpClient> {

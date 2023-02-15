@@ -68,7 +68,7 @@ function parseArguments() {
     const chromeChannel = args.channel;
 
     new BidiServerRunner().run(bidiPort, (bidiServer) => {
-      return _onNewBidiConnectionOpen(headless, chromeChannel, bidiServer);
+      return onNewBidiConnectionOpen(headless, chromeChannel, bidiServer);
     });
     log('BiDi server launched');
   } catch (e) {
@@ -85,7 +85,7 @@ function parseArguments() {
  *
  * @returns delegate to be called when the connection is closed
  */
-async function _onNewBidiConnectionOpen(
+async function onNewBidiConnectionOpen(
   headless: boolean,
   chromeChannel: string,
   bidiTransport: ITransport

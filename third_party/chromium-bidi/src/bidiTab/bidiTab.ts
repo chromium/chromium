@@ -55,15 +55,15 @@ declare global {
 }
 
 // Initiate `setSelfTargetId` as soon as possible to prevent race condition.
-const _waitSelfTargetIdPromise = _waitSelfTargetId();
+const waitSelfTargetIdPromise = waitSelfTargetId();
 
 (async () => {
   generatePage();
 
   // Needed to filter out info related to BiDi target.
-  const selfTargetId = await _waitSelfTargetIdPromise;
+  const selfTargetId = await waitSelfTargetIdPromise;
 
-  const bidiServer = await _createBidiServer(selfTargetId);
+  const bidiServer = await createBidiServer(selfTargetId);
 
   log(LogType.system, 'Launched');
 
@@ -76,18 +76,18 @@ function createCdpConnection() {
   // A CdpTransport implementation that uses the window.cdp bindings
   // injected by Target.exposeDevToolsProtocol.
   class WindowCdpTransport implements ITransport {
-    private _onMessage: ((message: string) => void) | null = null;
+    private onMessage: ((message: string) => void) | null = null;
 
     constructor() {
       window.cdp.onmessage = (message: string) => {
-        if (this._onMessage) {
-          this._onMessage.call(null, message);
+        if (this.onMessage) {
+          this.onMessage.call(null, message);
         }
       };
     }
 
     setOnMessage(onMessage: (message: string) => Promise<void>): void {
-      this._onMessage = onMessage;
+      this.onMessage = onMessage;
     }
 
     async sendMessage(message: string): Promise<void> {
@@ -95,7 +95,7 @@ function createCdpConnection() {
     }
 
     close() {
-      this._onMessage = null;
+      this.onMessage = null;
       window.cdp.onmessage = null;
     }
   }
@@ -108,9 +108,9 @@ function createCdpConnection() {
   );
 }
 
-async function _createBidiServer(selfTargetId: string) {
+async function createBidiServer(selfTargetId: string) {
   class WindowBidiTransport implements BidiTransport {
-    private _onMessage: ((message: Message.RawCommandRequest) => void) | null =
+    private onMessage: ((message: Message.RawCommandRequest) => void) | null =
       null;
 
     constructor() {
@@ -129,8 +129,8 @@ async function _createBidiServer(selfTargetId: string) {
           );
           return;
         }
-        if (this._onMessage) {
-          this._onMessage.call(null, messageObj);
+        if (this.onMessage) {
+          this.onMessage.call(null, messageObj);
         }
       };
     }
@@ -138,7 +138,7 @@ async function _createBidiServer(selfTargetId: string) {
     setOnMessage(
       onMessage: (message: Message.RawCommandRequest) => Promise<void>
     ): void {
-      this._onMessage = onMessage;
+      this.onMessage = onMessage;
     }
 
     async sendMessage(message: Message.OutgoingMessage): Promise<void> {
@@ -148,7 +148,7 @@ async function _createBidiServer(selfTargetId: string) {
     }
 
     close() {
-      this._onMessage = null;
+      this.onMessage = null;
       window.onBidiMessage = null;
     }
 
@@ -306,7 +306,7 @@ class BidiParserImpl implements BidiParser {
 }
 
 // Needed to filter out info related to BiDi target.
-async function _waitSelfTargetId(): Promise<string> {
+async function waitSelfTargetId(): Promise<string> {
   return await new Promise((resolve) => {
     window.setSelfTargetId = (targetId) => {
       log(LogType.system, 'Current target ID:', targetId);
