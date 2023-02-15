@@ -16,10 +16,16 @@ class Parameters():
   # The max number of pixels in an image that can differ and still allow the
   # fuzzy comparison to pass.
   MAX_DIFFERENT_PIXELS = 'fuzzy_max_different_pixels'
-  # The max RGBA difference between two pixels that is still considered valid.
-  # For example, if a pixel differs by (1, 2, 3, 0), then the threshold would
-  # need to be 6 or higher in order for the fuzzy comparison to pass.
+  # The max RGBA sum difference between two pixels that is still considered
+  # valid. For example, if a pixel differs by (1, 2, 3, 0), then the threshold
+  # would need to be 6 or higher in order for the fuzzy comparison to pass.
+  # Mutually exclusive with PIXEL_PER_CHANNEL_DELTA_THRESHOLD.
   PIXEL_DELTA_THRESHOLD = 'fuzzy_pixel_delta_threshold'
+  # The max per-channel RGBA difference between two pixels that is still
+  # considered valid. For example, if a pixel differs by (1, 2, 3, 0), then the
+  # threshold would need to be 3 or higher in order for the fuzzy comparison to
+  # pass. Mutually exclusive with PIXEL_DELTA_THRESHOLD.
+  PIXEL_PER_CHANNEL_DELTA_THRESHOLD = 'fuzzy_pixel_per_channel_delta_threshold'
   # How many pixels along the border of the image to ignore. 0 is typical for
   # most tests. 1 is useful for tests that have edges that go all the way to the
   # borders of the image, as Sobel filters do not get applied to pixels that are
@@ -81,14 +87,19 @@ class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
 
   def __init__(self,
                max_different_pixels: int,
-               pixel_delta_threshold: int,
+               pixel_delta_threshold: int = 0,
+               pixel_per_channel_delta_threshold: int = 0,
                ignored_border_thickness: int = 0):
     super().__init__()
-    assert int(max_different_pixels) >= 0
-    assert int(pixel_delta_threshold) >= 0
-    assert int(ignored_border_thickness) >= 0
+    assert max_different_pixels >= 0
+    assert pixel_delta_threshold >= 0
+    assert pixel_per_channel_delta_threshold >= 0
+    assert not (pixel_delta_threshold > 0
+                and pixel_per_channel_delta_threshold > 0)
+    assert ignored_border_thickness >= 0
     self._max_different_pixels = max_different_pixels
     self._pixel_delta_threshold = pixel_delta_threshold
+    self._pixel_per_channel_delta_threshold = pixel_per_channel_delta_threshold
     self._ignored_border_thickness = ignored_border_thickness
 
   def GetCmdline(self) -> List[str]:
@@ -96,9 +107,14 @@ class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
     retval.extend(
         _GenerateOptionalKey(Parameters.MAX_DIFFERENT_PIXELS,
                              self._max_different_pixels))
-    retval.extend(
-        _GenerateOptionalKey(Parameters.PIXEL_DELTA_THRESHOLD,
-                             self._pixel_delta_threshold))
+    if self._pixel_delta_threshold:
+      retval.extend(
+          _GenerateOptionalKey(Parameters.PIXEL_DELTA_THRESHOLD,
+                               self._pixel_delta_threshold))
+    if self._pixel_per_channel_delta_threshold:
+      retval.extend(
+          _GenerateOptionalKey(Parameters.PIXEL_PER_CHANNEL_DELTA_THRESHOLD,
+                               self._pixel_per_channel_delta_threshold))
     retval.extend(
         _GenerateOptionalKey(Parameters.IGNORED_BORDER_THICKNESS,
                              self._ignored_border_thickness))
@@ -114,13 +130,8 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
   Technically a superset of the fuzzy matching algorithm.
   """
 
-  def __init__(self,
-               max_different_pixels: int,
-               pixel_delta_threshold: int,
-               edge_threshold: int,
-               ignored_border_thickness: int = 0):
-    super().__init__(max_different_pixels, pixel_delta_threshold,
-                     ignored_border_thickness)
+  def __init__(self, edge_threshold: int, *args, **kwargs):
+    super().__init__(*args, **kwargs)
     assert int(edge_threshold) >= 0
     assert int(edge_threshold) <= 255
     if edge_threshold == 255:

@@ -16,7 +16,9 @@ class ExactMatchingAlgorithmTest(unittest.TestCase):
 
 class FuzzyMatchingAlgorithmTest(unittest.TestCase):
   def testGetCmdline(self) -> None:
-    a = algo.FuzzyMatchingAlgorithm(1, 2, 3)
+    a = algo.FuzzyMatchingAlgorithm(max_different_pixels=1,
+                                    pixel_delta_threshold=2,
+                                    ignored_border_thickness=3)
     cmdline = a.GetCmdline()
     self.assertEqual(cmdline, [
         '--add-test-optional-key',
@@ -29,18 +31,47 @@ class FuzzyMatchingAlgorithmTest(unittest.TestCase):
         'fuzzy_ignored_border_thickness:3',
     ])
 
+    a = algo.FuzzyMatchingAlgorithm(max_different_pixels=1,
+                                    pixel_per_channel_delta_threshold=2,
+                                    ignored_border_thickness=3)
+    cmdline = a.GetCmdline()
+    self.assertEqual(cmdline, [
+        '--add-test-optional-key',
+        'image_matching_algorithm:fuzzy',
+        '--add-test-optional-key',
+        'fuzzy_max_different_pixels:1',
+        '--add-test-optional-key',
+        'fuzzy_pixel_per_channel_delta_threshold:2',
+        '--add-test-optional-key',
+        'fuzzy_ignored_border_thickness:3',
+    ])
+
   def testInvalidArgs(self) -> None:
     with self.assertRaises(AssertionError):
-      algo.FuzzyMatchingAlgorithm(-1, 0)
+      algo.FuzzyMatchingAlgorithm(max_different_pixels=-1,
+                                  pixel_delta_threshold=0)
     with self.assertRaises(AssertionError):
-      algo.FuzzyMatchingAlgorithm(0, -1)
+      algo.FuzzyMatchingAlgorithm(max_different_pixels=0,
+                                  pixel_delta_threshold=-1)
     with self.assertRaises(AssertionError):
-      algo.FuzzyMatchingAlgorithm(0, 0, -1)
+      algo.FuzzyMatchingAlgorithm(max_different_pixels=0,
+                                  pixel_per_channel_delta_threshold=-1)
+    with self.assertRaises(AssertionError):
+      algo.FuzzyMatchingAlgorithm(max_different_pixels=0,
+                                  pixel_delta_threshold=1,
+                                  pixel_per_channel_delta_threshold=1)
+    with self.assertRaises(AssertionError):
+      algo.FuzzyMatchingAlgorithm(max_different_pixels=0,
+                                  pixel_delta_threshold=0,
+                                  ignored_border_thickness=-1)
 
 
 class SobelMatchingAlgorithmTest(unittest.TestCase):
   def testGetCmdline(self) -> None:
-    a = algo.SobelMatchingAlgorithm(1, 2, 3, 4)
+    a = algo.SobelMatchingAlgorithm(max_different_pixels=1,
+                                    pixel_delta_threshold=2,
+                                    edge_threshold=3,
+                                    ignored_border_thickness=4)
     cmdline = a.GetCmdline()
     self.assertEqual(cmdline, [
         '--add-test-optional-key',
@@ -57,11 +88,11 @@ class SobelMatchingAlgorithmTest(unittest.TestCase):
 
   def testInvalidArgs(self) -> None:
     with self.assertRaises(AssertionError):
-      algo.SobelMatchingAlgorithm(1, 2, -1)
+      algo.SobelMatchingAlgorithm(max_different_pixels=1, edge_threshold=-1)
     with self.assertRaises(AssertionError):
-      algo.SobelMatchingAlgorithm(1, 2, 256)
+      algo.SobelMatchingAlgorithm(max_different_pixels=1, edge_threshold=256)
     with self.assertRaises(RuntimeError):
-      algo.SobelMatchingAlgorithm(1, 2, 255)
+      algo.SobelMatchingAlgorithm(max_different_pixels=1, edge_threshold=255)
 
 
 class SampleAreaMatchingAlgorithmTest(unittest.TestCase):
