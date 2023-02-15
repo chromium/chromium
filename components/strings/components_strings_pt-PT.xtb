@@ -83,7 +83,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1178821169867863726">12 x 16 pol.</translation>
 <translation id="1181037720776840403">Remover</translation>
-<translation id="1186201132766001848">Verificar palavras-passe</translation>
+<translation id="1186201132766001848">Rever palavras-passe</translation>
 <translation id="1195558154361252544">As notificações são bloqueadas automaticamente para todos os sites, exceto os que autorizar</translation>
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -446,7 +446,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2025186561304664664">O proxy está definido para configuração automática.</translation>
 <translation id="2025891858974379949">Conteúdo inseguro</translation>
-<translation id="2032962459168915086"><ph name="BEGIN_LINK" />Verificar o proxy e a firewall<ph name="END_LINK" /></translation>
+<translation id="2032962459168915086"><ph name="BEGIN_LINK" />Rever o proxy e a firewall<ph name="END_LINK" /></translation>
 <translation id="2034971124472263449">Guardar mesmo assim</translation>
 <translation id="2035400064145347639">Guias e documentários de viagens</translation>
 <translation id="2036514476578229158">Pediste para visitar este site. Os teus adultos responsáveis podem responder no Family Link.</translation>
@@ -629,7 +629,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2509167091171468975">Retalhistas de produtos alimentares e mercearia</translation>
 <translation id="2512101340618156538">Não permitidos (predefinição)</translation>
 <translation id="2512413427717747692">Botão para definir o Chrome como o navegador predefinido, prima Enter para definir o Chrome como o navegador predefinido do sistema nas definições do iOS</translation>
-<translation id="2515629240566999685">Verificar o sinal na área</translation>
+<translation id="2515629240566999685">Rever o sinal na área</translation>
 <translation id="2515761554693942801">Optou por validar com o Touch ID em Websites que usam o fornecedor <ph name="PROVIDER_ORIGIN" />. Este fornecedor pode ter armazenado informações sobre o seu método de pagamento, que pode <ph name="LINK_TEXT" />.</translation>
 <translation id="2521385132275182522">Agrafar parte inferior direita</translation>
 <translation id="2521736961081452453">Criar formulário</translation>
@@ -817,7 +817,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2991571918955627853">Não pode visitar <ph name="SITE" /> neste momento, porque o Website utiliza HSTS. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
 <translation id="2995517112308048736">Tamanho do ficheiro:</translation>
 <translation id="299990983510665749">Veículos de dois volumes</translation>
-<translation id="3002501248619246229">Verificar o suporte do tabuleiro de entrada</translation>
+<translation id="3002501248619246229">Rever o suporte do tabuleiro de entrada</translation>
 <translation id="3005723025932146533">Mostrar cópia guardada</translation>
 <translation id="3013291976881901233">Dispositivos MIDI</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
@@ -844,7 +844,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3096195745018397576">Vestuário para criança</translation>
 <translation id="3098513225387949945">Ignorada porque a lista de desativação contém um padrão igual a "*", que é equivalente a desativar a política.</translation>
 <translation id="3105172416063519923">ID de recurso:</translation>
-<translation id="3107591622054137333"><ph name="BEGIN_LINK" />Verificar a configuração segura de DNS<ph name="END_LINK" /></translation>
+<translation id="3107591622054137333"><ph name="BEGIN_LINK" />Rever a configuração segura de DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Tabuleiro central</translation>
 <translation id="3109728660330352905">Não tem autorização para ver esta página.</translation>
 <translation id="3113284927548439113">Terceiro turno</translation>
@@ -1110,7 +1110,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3714633008798122362">calendário Web</translation>
 <translation id="3714780639079136834">Ativar os dados móveis ou o Wi-Fi</translation>
 <translation id="3715597595485130451">Estabelecer ligação a redes Wi-Fi</translation>
-<translation id="3717027428350673159"><ph name="BEGIN_LINK" />Verificar a configuração do proxy, da firewall e de DNS<ph name="END_LINK" /></translation>
+<translation id="3717027428350673159"><ph name="BEGIN_LINK" />Rever a configuração do proxy, da firewall e de DNS<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">As aplicações que podem causar este erro incluem antivírus, firewalls e software de filtragem Web ou proxy.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente uma nova apresentação do Google no Slides</translation>
 <translation id="3733139489341305600">Veículos autónomos</translation>
@@ -1262,7 +1262,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4123572138124678573">Perfuração tripla na parte inferior</translation>
 <translation id="4127575959421463246">Está à procura das sinalizações do Chrome OS? Visite</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 outro}other{# outros}}</translation>
-<translation id="4130226655945681476">Verificar os cabos de rede, o modem e o router</translation>
+<translation id="4130226655945681476">Rever os cabos de rede, o modem e o router</translation>
 <translation id="4132448310531350254">Controladores duplicados para a file_extension "<ph name="FILE_EXTENSION" />" referenciada pelas apps "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Criar documento</translation>
 <translation id="413544239732274901">Saiba mais</translation>
@@ -1291,7 +1291,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4202218894997543208">Tópicos que bloqueou</translation>
 <translation id="4202554117186904723">Quinto rolo</translation>
 <translation id="4203769790323223880">Acesso à câmara não permitido</translation>
-<translation id="4203896806696719780"><ph name="BEGIN_LINK" />Verificar as configurações da firewall e de antivírus<ph name="END_LINK" /></translation>
+<translation id="4203896806696719780"><ph name="BEGIN_LINK" />Rever as configurações da firewall e de antivírus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4210602799576081649">Código de validação expirado, solicite um novo código</translation>
 <translation id="421066178035138955">Utilizar dados e dispositivos de realidade virtual</translation>
@@ -1641,7 +1641,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5019198164206649151">Armazenamento de segurança em mau estado</translation>
 <translation id="5020776957610079374">Música do mundo</translation>
 <translation id="5021557570875267742">Acompanhe os preços com o Chrome</translation>
-<translation id="5023310440958281426">Verificar as políticas do gestor</translation>
+<translation id="5023310440958281426">Rever as políticas do gestor</translation>
 <translation id="5029568752722684782">Limpar cópia</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">É necessário um certificado de raiz para o "<ph name="SOFTWARE_NAME" />", que não está instalado. O gestor de TI deve consultar as instruções de configuração do "<ph name="SOFTWARE_NAME" />" para corrigir este problema. <ph name="FURTHER_EXPLANATION" /></translation>
@@ -1663,7 +1663,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5068234115460527047">Fundos especulativos</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 em utilização)}other{(# em utilização)}}</translation>
-<translation id="5070335125961472645"><ph name="BEGIN_LINK" />Verificar o endereço proxy<ph name="END_LINK" /></translation>
+<translation id="5070335125961472645"><ph name="BEGIN_LINK" />Rever o endereço proxy<ph name="END_LINK" /></translation>
 <translation id="5070838744279127212">Décimo rolo</translation>
 <translation id="507130231501693183">Caixa de correio 4</translation>
 <translation id="5078060223219502807">A palavra-passe que acabou de usar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de Palavras-passe recomenda que a altere agora e, de seguida, verifique as suas palavras-passe guardadas.</translation>
@@ -1883,7 +1883,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="560412284261940334">Gestão não suportada</translation>
 <translation id="5605670050355397069">Ledger</translation>
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> o Chrome apaga automaticamente os sites com mais de 4 semanas. Se voltar a visitar um site, este pode reaparecer na lista. Também pode impedir que um site lhe sugira anúncios e desativar os anúncios sugeridos por sites em qualquer altura nas definições do Chrome.</translation>
-<translation id="5610142619324316209">Verificar a ligação</translation>
+<translation id="5610142619324316209">Rever a ligação</translation>
 <translation id="5610807607761827392">Pode gerir cartões e endereços nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Traduza esta página com o Google Tradutor</translation>
 <translation id="5612720917913232150"><ph name="URL" /> pretende utilizar a localização do seu computador.</translation>
@@ -2016,7 +2016,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5968793460449681917">Em cada visita</translation>
 <translation id="5974052231147553524">Sexto rolo</translation>
 <translation id="5975083100439434680">Reduzir</translation>
-<translation id="5979084224081478209">Verificar palavras-passe</translation>
+<translation id="5979084224081478209">Rever palavras-passe</translation>
 <translation id="5984570616552610254">Humidade da câmara</translation>
 <translation id="5984712050237025014">Realidade aumentada e virtual</translation>
 <translation id="598637245381783098">Não é possível abrir a aplicação de pagamento</translation>
@@ -2108,7 +2108,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
-<translation id="6203231073485539293">Verificar a ligação à Internet</translation>
+<translation id="6203231073485539293">Rever a ligação à Internet</translation>
 <translation id="6205314730813004066">Privacidade de anúncios</translation>
 <translation id="6212314149070368045">Fanfold dos EUA</translation>
 <translation id="6218753634732582820">Remover o endereço do Chromium?</translation>
@@ -2152,7 +2152,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6316226860534107313">Scooters e motorizadas</translation>
 <translation id="63172326633386613">Gerir definições de acessibilidade</translation>
 <translation id="6319249456820053699">Câmaras e câmaras de vídeo</translation>
-<translation id="6321917430147971392">Verificar as definições do DNS</translation>
+<translation id="6321917430147971392">Rever as definições do DNS</translation>
 <translation id="6322182122604171028">Não foi possível utilizar o Windows Hello</translation>
 <translation id="6326947323444967009">Defina o Chrome como o navegador predefinido do sistema nas definições do iOS</translation>
 <translation id="6328639280570009161">Tente desativar a previsão de rede</translation>
@@ -2169,7 +2169,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6355392890578844978">Este navegador não é gerido por uma empresa ou outra entidade. A atividade neste dispositivo pode ser gerida fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6358450015545214790">O que significam?</translation>
 <translation id="6361757823711327522">B7</translation>
-<translation id="6364095313648930329"><ph name="BEGIN_LINK" />Verificar a configuração do proxy, da firewall e do DNS seguro<ph name="END_LINK" /></translation>
+<translation id="6364095313648930329"><ph name="BEGIN_LINK" />Rever a configuração do proxy, da firewall e do DNS seguro<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Agrafo duplo à esquerda</translation>
 <translation id="6370022303958842211">Ações de acesso ao dispositivo, como inícios de sessão (incluindo motivos de início de sessão falhados), fins de sessão, bloqueios e desbloqueios</translation>
 <translation id="6374865374745447009">gestão de janelas</translation>
@@ -2235,7 +2235,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6508722015517270189">Reiniciar o Chrome</translation>
 <translation id="6513005815064132016">Pode solicitar a monitorização da posição da câmara</translation>
 <translation id="6517596291481585650">Aviso: esta política não foi unida como lista, conforme especificado pela política, porque não é uma lista.</translation>
-<translation id="6518133107902771759">Verificar</translation>
+<translation id="6518133107902771759">Rever</translation>
 <translation id="6521745193039995384">Não ativa</translation>
 <translation id="6529173248185917884">Sétimo rolo</translation>
 <translation id="6529602333819889595">&amp;Refazer eliminação</translation>

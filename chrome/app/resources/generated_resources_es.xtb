@@ -314,7 +314,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="127946606521051357">Un dispositivo cercano está compartiendo datos</translation>
 <translation id="1280965841156951489">Editar archivos</translation>
 <translation id="1282465000333679776">Compartir audio del sistema</translation>
-<translation id="1284277788676816155">No permitir guardar datos</translation>
+<translation id="1284277788676816155">No permitir que guarde datos</translation>
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
 <translation id="1285484354230578868">Almacenar datos en tu cuenta de Google Drive</translation>
 <translation id="1285625592773741684">La configuración actual de uso de datos es Datos móviles</translation>
@@ -786,7 +786,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="169675691788639886">El dispositivo tiene configurado un servidor SSH. No inicies sesión con cuentas sensibles.</translation>
 <translation id="1697150536837697295">Arte</translation>
 <translation id="1697686431566694143">Editar archivo</translation>
-<translation id="1700079447639026019">Sitios web que no pueden usar cookies nunca</translation>
+<translation id="1700079447639026019">Sitios que no pueden usar cookies nunca</translation>
 <translation id="1700201317341192482">Quitar tu tarjeta virtual</translation>
 <translation id="1703331064825191675">No vuelvas a preocuparte por tus contraseñas</translation>
 <translation id="1703666494654169921">No permitir que los sitios usen datos ni dispositivos de realidad virtual</translation>
@@ -5411,7 +5411,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 
 Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <ph name="EXPONENT_HEX_DUMP" /></translation>
-<translation id="5915207966717429886">Permitir guardar datos</translation>
+<translation id="5915207966717429886">Permitir que guarde datos</translation>
 <translation id="5916655001090539219">Lectura automática</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="59174027418879706">Habilitado</translation>
