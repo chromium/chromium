@@ -111,7 +111,7 @@ uint128 MakeUint128FromFloat(T v) {
   return MakeUint128(0, static_cast<uint64_t>(v));
 }
 
-#if defined(__clang__) && !defined(__SSE3__)
+#if defined(__clang__) && (__clang_major__ < 9) && !defined(__SSE3__)
 // Workaround for clang bug: https://bugs.llvm.org/show_bug.cgi?id=38289
 // Casting from long double to uint64_t is miscompiled and drops bits.
 // It is more work, so only use when we need the workaround.
@@ -131,7 +131,7 @@ uint128 MakeUint128FromFloat(long double v) {
   return (static_cast<uint128>(w0) << 100) | (static_cast<uint128>(w1) << 50) |
          static_cast<uint128>(w2);
 }
-#endif  // __clang__ && !__SSE3__
+#endif  // __clang__ && (__clang_major__ < 9) && !__SSE3__
 }  // namespace
 
 uint128::uint128(float v) : uint128(MakeUint128FromFloat(v)) {}

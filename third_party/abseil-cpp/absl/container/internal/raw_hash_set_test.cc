@@ -2060,22 +2060,17 @@ TEST(TableDeathTest, InvalidIteratorAsserts) {
 
   IntTable t;
   // Extra simple "regexp" as regexp support is highly varied across platforms.
-  EXPECT_DEATH_IF_SUPPORTED(
-      t.erase(t.end()),
-      "erase.* called on invalid iterator. The iterator might be an "
-      "end.*iterator or may have been default constructed.");
+  EXPECT_DEATH_IF_SUPPORTED(t.erase(t.end()),
+                            "erase.* called on end.. iterator.");
   typename IntTable::iterator iter;
   EXPECT_DEATH_IF_SUPPORTED(
-      ++iter,
-      "operator.* called on invalid iterator. The iterator might be an "
-      "end.*iterator or may have been default constructed.");
+      ++iter, "operator.* called on default-constructed iterator.");
   t.insert(0);
   iter = t.begin();
   t.erase(iter);
-  EXPECT_DEATH_IF_SUPPORTED(
-      ++iter,
-      "operator.* called on invalid iterator. The element might have been "
-      "erased or .*the table might have rehashed.");
+  EXPECT_DEATH_IF_SUPPORTED(++iter,
+                            "operator.* called on invalid iterator. The "
+                            "element might have been erased");
 }
 
 // Invalid iterator use can trigger heap-use-after-free in asan,
@@ -2363,8 +2358,8 @@ TEST(Iterator, InvalidComparisonDifferentTables) {
   // from control bytes, then we could do so.
   // EXPECT_DEATH_IF_SUPPORTED(void(t1.end() == t2.end()),
   //                           "Invalid iterator comparison.*empty hashtable");
-  // EXPECT_DEATH_IF_SUPPORTED(void(t1.end() == default_constructed_iter),
-  //                           "Invalid iterator comparison.*default-const...");
+  EXPECT_DEATH_IF_SUPPORTED(void(t1.end() == default_constructed_iter),
+                            "Invalid iterator comparison.*default-constructed");
   t1.insert(0);
   EXPECT_DEATH_IF_SUPPORTED(void(t1.begin() == t2.end()),
                             "Invalid iterator comparison.*empty hashtable");

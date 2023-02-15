@@ -175,10 +175,6 @@ inline void PrefetchToLocalCacheNta(const void* addr) {
 inline void PrefetchToLocalCacheForWrite(const void* addr) {
 #if defined(_MM_HINT_ET0)
   _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_ET0);
-#elif defined(_MSC_VER) && _MSC_VER >= 1900 && \
-    (defined(_M_X64) || defined(_M_IX86))
-  // MSVC 2015 and up on x86/x64 supports prefetchw (feature listed as 3DNOW)
-  _m_prefetchw(const_cast<void*>(addr));
 #elif !defined(_MSC_VER) && defined(__x86_64__)
   // _MM_HINT_ET0 is not universally supported. As we commented further
   // up, PREFETCHW is recognized as a no-op on older Intel processors
