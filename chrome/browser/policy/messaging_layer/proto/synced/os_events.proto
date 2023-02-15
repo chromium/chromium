@@ -34,7 +34,7 @@ message RollbackEvent {
 
 // Chrome OS powerwash event.
 message PowerwashEvent {
-  optional bool user_requested = 1;
+  optional bool remote_request = 1;
 }
 
 message OsEventsRecord {
