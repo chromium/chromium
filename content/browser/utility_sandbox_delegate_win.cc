@@ -15,7 +15,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "printing/buildflags/buildflags.h"
-#include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/app_container.h"
@@ -65,15 +64,13 @@ bool AudioPreSpawnTarget(sandbox::TargetConfig* config) {
   if (result != sandbox::SBOX_ALL_OK)
     return false;
 
-  if (base::FeatureList::IsEnabled(
-          sandbox::policy::features::kChromePipeLockdown)) {
-    // The Audio Service process uses a base::SyncSocket for transmitting audio
-    // data.
-    result = config->AddRule(sandbox::SubSystem::kNamedPipes,
-                             sandbox::Semantics::kNamedPipesAllowAny,
-                             L"\\\\.\\pipe\\chrome.sync.*");
-    if (result != sandbox::SBOX_ALL_OK)
-      return false;
+  // The Audio Service process uses a base::SyncSocket for transmitting audio
+  // data.
+  result = config->AddRule(sandbox::SubSystem::kNamedPipes,
+                           sandbox::Semantics::kNamedPipesAllowAny,
+                           L"\\\\.\\pipe\\chrome.sync.*");
+  if (result != sandbox::SBOX_ALL_OK) {
+    return false;
   }
 
   config->SetDesktop(sandbox::Desktop::kAlternateWinstation);
