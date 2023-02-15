@@ -15,6 +15,10 @@ ResourceContext::ResourceContext() {}
 ResourceContext::~ResourceContext() {
 }
 
+base::WeakPtr<ResourceContext> ResourceContext::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void InitializeResourceContext(BrowserContext* browser_context) {
   ResourceContext* resource_context = browser_context->GetResourceContext();
 

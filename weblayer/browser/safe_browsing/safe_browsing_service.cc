@@ -54,7 +54,7 @@ network::mojom::NetworkContextParamsPtr CreateDefaultNetworkContextParams(
 // IO thread.
 void MaybeCreateSafeBrowsing(
     int rph_id,
-    content::ResourceContext* resource_context,
+    base::WeakPtr<content::ResourceContext> resource_context,
     base::RepeatingCallback<scoped_refptr<safe_browsing::UrlCheckerDelegate>()>
         get_checker_delegate,
     mojo::PendingReceiver<safe_browsing::mojom::SafeBrowsing> receiver) {
@@ -77,11 +77,9 @@ void MaybeCreateSafeBrowsing(
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &safe_browsing::MojoSafeBrowsingImpl::MaybeCreate, rph_id,
-          // TODO(https://crbug.com/1407653) Fix this dangling pointer.
-          base::UnsafeDanglingUntriaged(resource_context),
-          std::move(get_checker_delegate), std::move(receiver)));
+      base::BindOnce(&safe_browsing::MojoSafeBrowsingImpl::MaybeCreate, rph_id,
+                     std::move(resource_context),
+                     std::move(get_checker_delegate), std::move(receiver)));
 }
 
 }  // namespace
@@ -260,7 +258,7 @@ void SafeBrowsingService::AddInterface(
   registry->AddInterface(
       base::BindRepeating(
           &MaybeCreateSafeBrowsing, render_process_host->GetID(),
-          resource_context,
+          resource_context->GetWeakPtr(),
           base::BindRepeating(
               &SafeBrowsingService::GetSafeBrowsingUrlCheckerDelegate,
               base::Unretained(this))),

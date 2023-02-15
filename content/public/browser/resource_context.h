@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_RESOURCE_CONTEXT_H_
 #define CONTENT_PUBLIC_BROWSER_RESOURCE_CONTEXT_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 
@@ -18,6 +19,10 @@ class CONTENT_EXPORT ResourceContext : public base::SupportsUserData {
  public:
   ResourceContext();
   ~ResourceContext() override;
+  base::WeakPtr<ResourceContext> GetWeakPtr();
+
+ private:
+  base::WeakPtrFactory<ResourceContext> weak_factory_{this};
 };
 
 }  // namespace content

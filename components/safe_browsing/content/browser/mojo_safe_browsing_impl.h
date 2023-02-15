@@ -34,15 +34,16 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
 
   static void MaybeCreate(
       int render_process_id,
-      content::ResourceContext* resource_context,
+      base::WeakPtr<content::ResourceContext> resource_context,
       const base::RepeatingCallback<scoped_refptr<UrlCheckerDelegate>()>&
           delegate_getter,
       mojo::PendingReceiver<mojom::SafeBrowsing> receiver);
 
  private:
-  MojoSafeBrowsingImpl(scoped_refptr<UrlCheckerDelegate> delegate,
-                       int render_process_id,
-                       content::ResourceContext* resource_context);
+  MojoSafeBrowsingImpl(
+      scoped_refptr<UrlCheckerDelegate> delegate,
+      int render_process_id,
+      base::WeakPtr<content::ResourceContext> resource_context);
 
   // mojom::SafeBrowsing implementation.
   void CreateCheckerAndCheck(
@@ -68,9 +69,8 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
   scoped_refptr<UrlCheckerDelegate> delegate_;
   int render_process_id_ = MSG_ROUTING_NONE;
 
-  // Not owned by this object. It is always valid during the lifetime of this
-  // object.
-  raw_ptr<content::ResourceContext> resource_context_;
+  // Not owned by this object.
+  base::WeakPtr<content::ResourceContext> resource_context_;
 };
 
 }  // namespace safe_browsing

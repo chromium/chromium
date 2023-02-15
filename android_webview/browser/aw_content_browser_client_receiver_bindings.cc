@@ -76,7 +76,7 @@ void CreateMediaDrmStorage(
 // over to the IO thread.
 void MaybeCreateSafeBrowsing(
     int rph_id,
-    content::ResourceContext* resource_context,
+    base::WeakPtr<content::ResourceContext> resource_context,
     base::RepeatingCallback<scoped_refptr<safe_browsing::UrlCheckerDelegate>()>
         get_checker_delegate,
     mojo::PendingReceiver<safe_browsing::mojom::SafeBrowsing> receiver) {
@@ -90,8 +90,8 @@ void MaybeCreateSafeBrowsing(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&safe_browsing::MojoSafeBrowsingImpl::MaybeCreate, rph_id,
-                     resource_context, std::move(get_checker_delegate),
-                     std::move(receiver)));
+                     std::move(resource_context),
+                     std::move(get_checker_delegate), std::move(receiver)));
 }
 
 void BindNetworkHintsHandler(
@@ -182,7 +182,7 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
   registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
       base::BindRepeating(
           &MaybeCreateSafeBrowsing, render_process_host->GetID(),
-          resource_context,
+          resource_context->GetWeakPtr(),
           base::BindRepeating(
               &AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
               base::Unretained(this))),

@@ -90,10 +90,10 @@ class SafeBrowserUserData : public base::SupportsUserData::Data {
 MojoSafeBrowsingImpl::MojoSafeBrowsingImpl(
     scoped_refptr<UrlCheckerDelegate> delegate,
     int render_process_id,
-    content::ResourceContext* resource_context)
+    base::WeakPtr<content::ResourceContext> resource_context)
     : delegate_(std::move(delegate)),
       render_process_id_(render_process_id),
-      resource_context_(resource_context) {
+      resource_context_(std::move(resource_context)) {
   DCHECK(resource_context_);
 
   // It is safe to bind |this| as Unretained because |receivers_| is owned by
@@ -109,7 +109,7 @@ MojoSafeBrowsingImpl::~MojoSafeBrowsingImpl() {
 // static
 void MojoSafeBrowsingImpl::MaybeCreate(
     int render_process_id,
-    content::ResourceContext* resource_context,
+    base::WeakPtr<content::ResourceContext> resource_context,
     const base::RepeatingCallback<scoped_refptr<UrlCheckerDelegate>()>&
         delegate_getter,
     mojo::PendingReceiver<mojom::SafeBrowsing> receiver) {
@@ -198,7 +198,7 @@ void MojoSafeBrowsingImpl::Clone(
 }
 
 void MojoSafeBrowsingImpl::OnMojoDisconnect() {
-  if (receivers_.empty()) {
+  if (receivers_.empty() && resource_context_) {
     resource_context_->RemoveUserData(user_data_key_);
     // This object is destroyed.
   }
