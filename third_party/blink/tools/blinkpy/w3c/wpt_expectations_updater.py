@@ -13,12 +13,14 @@ import copy
 import logging
 import re
 from collections import defaultdict, namedtuple
-from typing import ClassVar, List, Optional
+from typing import ClassVar, List, Optional, Set
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.git_cl import GitCL
-from blinkpy.common.net.rpc import Build
-from blinkpy.common.net.web_test_results import WebTestResults
+from blinkpy.common.net.web_test_results import (
+    WebTestResult,
+    WebTestResults,
+)
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_utils import configure_logging
@@ -29,15 +31,19 @@ from blinkpy.web_tests.models.typ_types import ResultType
 _log = logging.getLogger(__name__)
 
 
-# TODO(robertma): Investigate reusing web_tests.models.test_expectations and
-# alike in this module.
+# TODO(crbug.com/1149035): Investigate reusing
+# `web_tests.models.test_expectations` and alike in this module.
+#
+# That module has functionality to update existing lines, or group lines
+# affecting the same test. Neither is possible currently; only new lines can be
+# added.
 
 SimpleTestResult = namedtuple('SimpleTestResult', ['expected', 'actual', 'bug'])
 
 DesktopConfig = namedtuple('DesktopConfig', ['port_name'])
 
 
-class WPTExpectationsUpdater(object):
+class WPTExpectationsUpdater:
     MARKER_COMMENT = '# ====== New tests from wpt-importer added here ======'
     UMBRELLA_BUG = 'crbug.com/626703'
     WEBDRIVER_SUITE: ClassVar[str] = 'webdriver_tests_suite'
@@ -48,7 +54,6 @@ class WPTExpectationsUpdater(object):
         self.finder = PathFinder(self.host.filesystem)
         self.git_cl = GitCL(host)
         self.git = self.host.git(self.finder.chromium_base())
-        self.configs_with_no_results = []
         self.patchset = None
         self.wpt_manifests = (
             wpt_manifests or
@@ -173,8 +178,7 @@ class WPTExpectationsUpdater(object):
             raise ScriptError('No try job information was collected.')
 
         fetcher = self.host.results_fetcher
-        # Here we build up a dict of failing test results for all platforms.
-        test_expectations = {}
+        results = []
         for build, job_status in build_to_status.items():
             if (job_status.result == 'SUCCESS' and
                     not self.options.include_unexpected_pass):
@@ -187,10 +191,14 @@ class WPTExpectationsUpdater(object):
                     'Builder %s does not run flag-specific suite %s, skipping',
                     build.builder_name, flag_specific or '(generic)')
                 continue
-            results_by_suite = {
-                wpt_tests_suite:
-                self.get_failing_results_dict(build, wpt_tests_suite),
-            }
+            suite_results = self.host.results_fetcher.gather_results(
+                build,
+                wpt_tests_suite,
+                # `exclude_exonerations=(not include_unexpected_pass)` will leave
+                # out unexpected passes as well as other kinds of exonerations
+                # (e.g., experimental build). This is good enough in practice.
+                not self.options.include_unexpected_pass)
+            results.append(suite_results)
             # TODO(crbug.com/1412527): After switching `webdriver_tests_suite`
             # to ResultDB, use `get_failing_results_dict` instead with
             # `min_attempts_for_update=1` to get failing webdriver results.
@@ -199,24 +207,19 @@ class WPTExpectationsUpdater(object):
                 main = self.host.builders.main_for_builder(build.builder_name)
                 webdriver_results = fetcher.fetch_webdriver_test_results(
                     build, main)
-                if webdriver_results:
-                    results_by_suite[self.WEBDRIVER_SUITE] = (
-                        self.generate_failing_results_dict(
-                            build, webdriver_results))
-                else:
-                    results_by_suite[self.WEBDRIVER_SUITE] = {}
-            for suite, results_dict in results_by_suite.items():
-                # Temporary logging for https://crbug.com/1154650
-                if results_dict:
-                    _log.info('Merging failing results dict for %s, %s', build,
-                              suite)
-                    test_expectations = self.merge_dicts(
-                        test_expectations, results_dict)
-                else:
-                    _log.warning('No results for build %s, suite %s', build,
-                                 suite)
-                    self.configs_with_no_results.extend(
-                        self.get_builder_configs(build))
+                if not webdriver_results:
+                    webdriver_results = WebTestResults(
+                        [],
+                        step_name=self.WEBDRIVER_SUITE,
+                        builder_name=build.builder_name)
+                results.append(webdriver_results)
+
+        results = self._make_results_for_update(results)
+        test_expectations = {}
+        for suite_results in results:
+            test_expectations = self.merge_dicts(
+                test_expectations,
+                self.generate_failing_results_dict(suite_results))
 
         # At this point, test_expectations looks like: {
         #     'test-with-failing-result': {
@@ -225,9 +228,6 @@ class WPTExpectationsUpdater(object):
         #         config3: AnotherSimpleTestResult
         #     }
         # }
-
-        self.add_results_for_configs_without_results(
-            test_expectations, self.configs_with_no_results)
 
         # And then we merge results for different platforms that had the same results.
         for test_name, platform_result in test_expectations.items():
@@ -249,120 +249,143 @@ class WPTExpectationsUpdater(object):
             test_expectations, flag_specific)
         return tests_to_rebaseline, exp_lines_dict
 
-    def add_results_for_configs_without_results(self, test_expectations,
-                                                configs_with_no_results):
-        # Handle any platforms with missing results.
-        def os_name(port_name):
-            # Port names are typically "os-os_version". So we can grab the os by
-            # taking everything up to the '-'
-            if '-' not in port_name:
-                return port_name
-            return port_name[:port_name.rfind('-')]
+    def _make_results_for_update(
+            self,
+            results: List[WebTestResults],
+    ) -> List[WebTestResults]:
+        completed_results, missing_results = [], []
+        for suite_results in results:
+            if len(suite_results) == 0:
+                missing_results.append(suite_results)
+            else:
+                min_results = 3
+                if suite_results.step_name().startswith(self.WEBDRIVER_SUITE):
+                    min_results = 1
+                suite_results = self.filter_results_for_update(
+                    suite_results, min_results)
+                completed_results.append(suite_results)
+        filled_results = [
+            self.fill_missing_results(results, completed_results)
+            for results in missing_results
+        ]
+        return completed_results + filled_results
 
+    def fill_missing_results(
+            self,
+            missing_results: WebTestResults,
+            completed_results: List[WebTestResults],
+    ) -> WebTestResults:
+        # Handle any platforms with missing results.
+        @memoized
+        def os_name(port_name):
+            return self.host.port_factory.get(port_name).operating_system()
+
+        missing_port = self.host.builders.port_name_for_builder_name(
+            missing_results.builder_name)
         # When a config has no results, we try to guess at what its results are
         # based on other results. We prefer to use results from other builds on
         # the same OS, but fallback to all other builders otherwise (eg: there
         # is usually only one Linux).
         # In both cases, we union the results across the other builders (whether
         # same OS or all builders), so we are usually over-expecting.
-        for config_no_result in configs_with_no_results:
-            _log.warning("No results for %s, inheriting from other builds" %
-                         str(config_no_result))
-            for test_name in test_expectations:
-                # The union of all other actual statuses is used when there is
-                # no similar OS to inherit from (eg: no results on Linux, and
-                # inheriting from Mac and Win).
-                union_actual_all = set()
-                # The union of statuses on the same OS is used when there are
-                # multiple versions of the same OS with results (eg: no results
-                # on Mac10.12, and inheriting from Mac10.15 and Mac11)
-                union_actual_sameos = set()
-                config_result_dict = test_expectations[test_name]
-                for config in config_result_dict.keys():
-                    result = config_result_dict[config]
-                    union_actual_all.add(result.actual)
-                    if os_name(config.port_name) == os_name(
-                            config_no_result.port_name):
-                        union_actual_sameos.add(result.actual)
+        filled_results = []
+        _log.warning('No results for %s on %s, inheriting from other builds',
+                     missing_results.step_name(), missing_results.builder_name)
+        for test_name in self._tests(completed_results):
+            # The union of all other actual statuses is used when there is
+            # no similar OS to inherit from (eg: no results on Linux, and
+            # inheriting from Mac and Win).
+            union_actual_all = set()
+            # The union of statuses on the same OS is used when there are
+            # multiple versions of the same OS with results (eg: no results
+            # on Mac10.12, and inheriting from Mac10.15 and Mac11)
+            union_actual_sameos = set()
+            for completed_suite_results in completed_results:
+                completed_suite = completed_suite_results.step_name()
+                if completed_suite != missing_results.step_name():
+                    continue
+                result = completed_suite_results.result_for_test(test_name)
+                union_actual_all.update(result.actual_results())
+                completed_port = self.host.builders.port_name_for_builder_name(
+                    completed_suite_results.builder_name)
+                if os_name(completed_port) == os_name(missing_port):
+                    union_actual_sameos.update(result.actual_results())
 
-                statuses = union_actual_sameos or union_actual_all
-                union_result = SimpleTestResult(expected="",
-                                                actual=" ".join(sorted(statuses)),
-                                                bug=self.UMBRELLA_BUG)
-                _log.debug("Inheriting result for test %s on config %s. "
-                           "Same-os? %s Result: %s." %
-                           (test_name, config_no_result,
-                            len(union_actual_sameos) > 0, union_result))
-                test_expectations[test_name][config_no_result] = union_result
+            statuses = union_actual_sameos or union_actual_all
+            _log.debug(
+                'Inheriting %s result for test %s on %s from %s builders.',
+                ', '.join(sorted(statuses)), test_name,
+                missing_results.builder_name,
+                'same OS' if union_actual_sameos else 'all')
+            filled_result = WebTestResult(test_name, {
+                'actual': ' '.join(sorted(statuses)),
+                'is_unexpected': True,
+            })
+            filled_results.append(filled_result)
+
+        return WebTestResults(filled_results,
+                              builder_name=missing_results.builder_name,
+                              step_name=missing_results.step_name())
+
+    def _tests(self, results: List[WebTestResults]) -> Set[str]:
+        tests = set()
+        for builder_results in results:
+            tests.update(result.test_name() for result in builder_results)
+        return tests
 
     def get_issue_number(self):
         """Returns current CL number. Can be replaced in unit tests."""
         return self.git_cl.get_issue_number()
 
-    def get_failing_results_dict(self,
-                                 build: Build,
-                                 test_suite: str,
-                                 min_attempts_for_update: int = 3):
+    def filter_results_for_update(
+            self,
+            test_results: WebTestResults,
+            min_attempts_for_update: int = 3,
+    ) -> WebTestResults:
         """Returns a nested dict of failing test results.
 
         Collects the builder name, platform and a list of tests that did not
         run as expected.
 
         Args:
-            build: A Build object.
             min_attempts_for_update: Threshold for the number of attempts at
                 which a test's expectations are updated. This prevents excessive
                 expectation creation due to infrastructure issues or flakiness.
                 Note that this threshold is necessary for updating without
                 `--include-unexpected-pass`, but sufficient otherwise.
-
-        Returns:
-            A dictionary that has the following structure:
-
-            {
-                'test-with-failing-result': {
-                    config: SimpleTestResult
-                }
-            }
         """
-        test_results = self.host.results_fetcher.gather_results(
-            build,
-            test_suite,
-            # `exclude_exonerations=(not include_unexpected_pass)` will leave
-            # out unexpected passes as well as other kinds of exonerations
-            # (e.g., experimental build). This is good enough in practice.
-            not self.options.include_unexpected_pass)
         tests_to_update = []
         if not self.options.include_unexpected_pass:
-            for result in test_results:
+            # TODO(crbug.com/1149035): Consider suppressing flaky passes.
+            for result in test_results.didnt_run_as_expected_results():
                 if (result.attempts >= min_attempts_for_update
                         and not result.did_pass()):
                     tests_to_update.append(result)
         else:
-            for result in test_results:
+            for result in test_results.didnt_run_as_expected_results():
                 if (result.attempts >= min_attempts_for_update
                         or result.did_pass()):
                     tests_to_update.append(result)
 
-        test_results = WebTestResults(tests_to_update,
-                                      step_name=test_results.step_name(),
-                                      interrupted=test_results.interrupted,
-                                      builder_name=test_results.builder_name)
-        return self.generate_failing_results_dict(build, test_results)
+        tests_to_update = [
+            result for result in tests_to_update
+            if 'SKIP' not in result.actual_results()
+        ]
+        # TODO(crbug.com/1149035): Extract or make this check configurable
+        # to allow updating expectations for non-WPT tests.
+        tests_to_update = [
+            result for result in tests_to_update
+            if self._is_wpt_test(result.test_name())
+        ]
+        return WebTestResults(tests_to_update,
+                              step_name=test_results.step_name(),
+                              interrupted=test_results.interrupted,
+                              builder_name=test_results.builder_name)
 
-    def get_builder_configs(self, build, *_):
-        return [DesktopConfig(port_name=self.port_name(build))]
-
-    @memoized
-    def port_name(self, build):
-        return self.host.builders.port_name_for_builder_name(
-            build.builder_name)
-
-    def generate_failing_results_dict(self, build, web_test_results):
+    def generate_failing_results_dict(self, web_test_results):
         """Makes a dict with results for one platform.
 
         Args:
-            build: Build instance containing builder information.
             web_test_results: A list of WebTestResult objects.
 
         Returns:
@@ -373,40 +396,12 @@ class WPTExpectationsUpdater(object):
             }
         """
         test_dict = {}
-        configs = self.get_builder_configs(build, web_test_results)
-        _log.debug(
-            'Getting failing results dictionary for %s step in latest %s build',
-            web_test_results.step_name(), build.builder_name)
-
-        if len(configs) > 1:
-            raise ScriptError('More than one configs were produced for'
-                              ' builder and web tests step combination')
-        if not configs:
-            raise ScriptError('No configuration was found for builder and web test'
-                              ' step combination ')
-        config = configs[0]
+        port_name = self.host.builders.port_name_for_builder_name(
+            web_test_results.builder_name)
+        config = DesktopConfig(port_name=port_name)
         for result in web_test_results.didnt_run_as_expected_results():
-            # TODO(rmhasan) If a test fails unexpectedly then it runs multiple
-            # times until, it passes or a retry limit is reached. Even though
-            # it passed we there are still flaky failures that we are not
-            # creating test expectations for. Maybe we should add a mode
-            # which creates expectations for tests that are flaky but still
-            # pass in a web test step.
-
-            # Create flaky expectations for flaky tests on Android. In order to
-            # do this we should add 'Pass' to all tests with failing
-            # expectations that pass in the patchset's try job.
-            if result.did_pass() and not self.options.include_unexpected_pass:
-                continue
-
             test_name = result.test_name()
-            # TODO(crbug.com/1149035): Extract or make this check configurable
-            # to allow updating expectations for non-WPT tests.
-            if not self._is_wpt_test(test_name):
-                continue
             statuses = set(result.actual_results())
-            if 'SKIP' in statuses:
-                continue
             test_dict[test_name] = {
                 config:
                 # Note: we omit `expected` so that existing expectation lines

@@ -211,6 +211,9 @@ class WebTestResults:
     def __iter__(self):
         yield from self._results_by_name.values()
 
+    def __len__(self):
+        return len(self._results_by_name)
+
     def step_name(self):
         return self._step_name
 
