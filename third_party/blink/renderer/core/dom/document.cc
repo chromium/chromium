@@ -383,7 +383,8 @@ enum class RequestStorageResult {
   REJECTED_GRANT_DENIED = 7,
   REJECTED_INCORRECT_FRAME = 8,
   REJECTED_INSECURE_CONTEXT = 9,
-  kMaxValue = REJECTED_INSECURE_CONTEXT,
+  APPROVED_PRIMARY_FRAME = 10,
+  kMaxValue = APPROVED_PRIMARY_FRAME,
 };
 void FireRequestStorageAccessHistogram(RequestStorageResult result) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestStorageAccess",
@@ -6090,7 +6091,8 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
   const bool has_access =
       TopFrameOrigin() && GetExecutionContext() &&
       !GetExecutionContext()->GetSecurityOrigin()->IsOpaque() &&
-      dom_window_->isSecureContext() && CookiesEnabled();
+      dom_window_->isSecureContext() &&
+      (IsInOutermostMainFrame() || CookiesEnabled());
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
@@ -6282,6 +6284,17 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
         "requestStorageAccess not allowed"));
+    return promise;
+  }
+
+  if (IsInOutermostMainFrame()) {
+    FireRequestStorageAccessHistogram(
+        RequestStorageResult::APPROVED_PRIMARY_FRAME);
+
+    // If this is the outermost frame we no longer need to make a request and
+    // can resolve the promise.
+    resolver->Resolve();
+    dom_window_->SetHasStorageAccess();
     return promise;
   }
 
