@@ -9,6 +9,7 @@
 </style>
 
 <div id="container">
+  <search-box hidden="[[shouldHideSearchBox()]]"></search-box>
   <template id="subsections" is="dom-repeat" items="[[subcategories]]">
     <accelerator-subsection category="[[initialData.category]]"
         subcategory="[[item]]">

@@ -31,6 +31,7 @@ ts_library("build_ts") {
     "shortcut_customization_test_util.ts",
     "shortcut_utils_test.ts",
     "text_accelerator_test.ts",
+    "search_box_test.ts",
   ]
   deps = [
     "../..:build_ts",

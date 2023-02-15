@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {Accelerator, Modifier, MojoAccelerator, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, isCustomizationDisabled, isStandardAcceleratorInfo, isTextAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {areAcceleratorsEqual, getAccelerator, getAcceleratorId, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createStandardAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
@@ -21,6 +21,16 @@ suite('shortcutUtilsTest', function() {
   test('CustomizationEnabled', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: true});
     assertFalse(isCustomizationDisabled());
+  });
+
+  test('SearchDisabled', async () => {
+    loadTimeData.overrideValues({isSearchEnabled: false});
+    assertFalse(isSearchEnabled());
+  });
+
+  test('SearchEnabled', async () => {
+    loadTimeData.overrideValues({isSearchEnabled: true});
+    assertTrue(isSearchEnabled());
   });
 
   test('AreAcceleratorsEqual', async () => {

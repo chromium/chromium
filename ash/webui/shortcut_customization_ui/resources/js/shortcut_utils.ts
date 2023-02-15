@@ -14,6 +14,11 @@ export const isCustomizationDisabled = (): boolean => {
   return !loadTimeData.getBoolean('isCustomizationEnabled');
 };
 
+// Returns true if search is enabled via the feature flag.
+export const isSearchEnabled = (): boolean => {
+  return loadTimeData.getBoolean('isSearchEnabled');
+};
+
 export const areAcceleratorsEqual =
     (accelA: Accelerator, accelB: Accelerator): boolean => {
       // This picking of types is necessary because Accelerators are a subset

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_shortcut_customization_app_resources.h"
 #include "ash/webui/grit/ash_shortcut_customization_app_resources_map.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_configuration_provider.h"
@@ -163,7 +164,9 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
 
 void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isCustomizationEnabled",
-                          features::IsShortcutCustomizationEnabled());
+                          ::features::IsShortcutCustomizationEnabled());
+  html_source->AddBoolean("isSearchEnabled",
+                          features::IsSearchInShortcutsAppEnabled());
 }
 
 }  // namespace
