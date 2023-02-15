@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/cdm/fuchsia_cdm_factory.h"
+#include "media/cdm/fuchsia/fuchsia_cdm_factory.h"
 
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
 #include "media/base/cdm_config.h"
 #include "media/base/key_systems.h"
 #include "media/cdm/aes_decryptor.h"
-#include "media/fuchsia/cdm/fuchsia_cdm.h"
-#include "media/fuchsia/cdm/fuchsia_cdm_provider.h"
-#include "url/origin.h"
+#include "media/cdm/fuchsia/fuchsia_cdm.h"
+#include "media/cdm/fuchsia/fuchsia_cdm_provider.h"
 
 namespace media {
 

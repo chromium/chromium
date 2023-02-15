@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_CDM_FUCHSIA_DECRYPTOR_H_
-#define MEDIA_FUCHSIA_CDM_FUCHSIA_DECRYPTOR_H_
+#ifndef MEDIA_CDM_FUCHSIA_FUCHSIA_DECRYPTOR_H_
+#define MEDIA_CDM_FUCHSIA_FUCHSIA_DECRYPTOR_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "media/base/decryptor.h"
-#include "media/fuchsia/cdm/fuchsia_stream_decryptor.h"
+#include "media/cdm/fuchsia/fuchsia_stream_decryptor.h"
 
 namespace media {
 
@@ -52,4 +52,4 @@ class FuchsiaDecryptor : public Decryptor {
 
 }  // namespace media
 
-#endif  // MEDIA_FUCHSIA_CDM_FUCHSIA_DECRYPTOR_H_
+#endif  // MEDIA_CDM_FUCHSIA_FUCHSIA_DECRYPTOR_H_

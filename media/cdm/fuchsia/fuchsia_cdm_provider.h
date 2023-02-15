@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_PROVIDER_H_
-#define MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_PROVIDER_H_
+#ifndef MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_PROVIDER_H_
+#define MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_PROVIDER_H_
 
 #include <fuchsia/media/drm/cpp/fidl.h>
 #include <string>
@@ -25,4 +25,4 @@ class MEDIA_EXPORT FuchsiaCdmProvider {
 
 }  // namespace media
 
-#endif  // MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_PROVIDER_H_
+#endif  // MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_PROVIDER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/cdm/fuchsia_stream_decryptor.h"
+#include "media/cdm/fuchsia/fuchsia_stream_decryptor.h"
 
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/media/drm/cpp/fidl.h>
@@ -18,7 +18,6 @@
 
 namespace media {
 namespace {
-
 
 std::string GetEncryptionScheme(EncryptionScheme mode) {
   switch (mode) {

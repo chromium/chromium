@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_H_
-#define MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_H_
+#ifndef MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_H_
+#define MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_H_
 
 #include <fuchsia/media/drm/cpp/fidl.h>
 
@@ -13,8 +13,8 @@
 #include "media/base/cdm_context.h"
 #include "media/base/cdm_promise_adapter.h"
 #include "media/base/content_decryption_module.h"
-#include "media/fuchsia/cdm/fuchsia_cdm_context.h"
-#include "media/fuchsia/cdm/fuchsia_decryptor.h"
+#include "media/cdm/fuchsia/fuchsia_cdm_context.h"
+#include "media/cdm/fuchsia/fuchsia_decryptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
@@ -127,4 +127,4 @@ class FuchsiaCdm : public ContentDecryptionModule,
 
 }  // namespace media
 
-#endif  // MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_H_
+#endif  // MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_H_

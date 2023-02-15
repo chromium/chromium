@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_CONTEXT_H_
-#define MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_CONTEXT_H_
+#ifndef MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_CONTEXT_H_
+#define MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_CONTEXT_H_
 
 #include <memory>
 
@@ -26,4 +26,4 @@ class FuchsiaCdmContext {
 
 }  // namespace media
 
-#endif  // MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_CONTEXT_H_
+#endif  // MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_CONTEXT_H_

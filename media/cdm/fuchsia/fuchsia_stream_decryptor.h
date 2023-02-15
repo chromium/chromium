@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_CDM_FUCHSIA_STREAM_DECRYPTOR_H_
-#define MEDIA_FUCHSIA_CDM_FUCHSIA_STREAM_DECRYPTOR_H_
+#ifndef MEDIA_CDM_FUCHSIA_FUCHSIA_STREAM_DECRYPTOR_H_
+#define MEDIA_CDM_FUCHSIA_FUCHSIA_STREAM_DECRYPTOR_H_
 
 #include <fuchsia/media/drm/cpp/fidl.h>
 
@@ -114,4 +114,4 @@ class MEDIA_EXPORT FuchsiaStreamDecryptor
 
 }  // namespace media
 
-#endif  // MEDIA_FUCHSIA_CDM_FUCHSIA_STREAM_DECRYPTOR_H_
+#endif  // MEDIA_CDM_FUCHSIA_FUCHSIA_STREAM_DECRYPTOR_H_

@@ -14,7 +14,7 @@
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/renderer_client.h"
-#include "media/fuchsia/cdm/fuchsia_cdm_context.h"
+#include "media/cdm/fuchsia/fuchsia_cdm_context.h"
 #include "media/fuchsia/common/decrypting_sysmem_buffer_stream.h"
 #include "media/fuchsia/common/passthrough_sysmem_buffer_stream.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/cdm/fuchsia_decryptor.h"
+#include "media/cdm/fuchsia/fuchsia_decryptor.h"
 
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -10,8 +10,8 @@
 #include "base/notreached.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_frame.h"
-#include "media/fuchsia/cdm/fuchsia_cdm_context.h"
-#include "media/fuchsia/cdm/fuchsia_stream_decryptor.h"
+#include "media/cdm/fuchsia/fuchsia_cdm_context.h"
+#include "media/cdm/fuchsia/fuchsia_stream_decryptor.h"
 
 namespace media {
 
@@ -20,8 +20,7 @@ FuchsiaDecryptor::FuchsiaDecryptor(FuchsiaCdmContext* cdm_context)
   DCHECK(cdm_context_);
 }
 
-FuchsiaDecryptor::~FuchsiaDecryptor() {
-}
+FuchsiaDecryptor::~FuchsiaDecryptor() {}
 
 void FuchsiaDecryptor::Decrypt(StreamType stream_type,
                                scoped_refptr<DecoderBuffer> encrypted,

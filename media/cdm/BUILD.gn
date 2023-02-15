@@ -41,7 +41,6 @@ source_set("cdm") {
     # TODO(crbug.com/583067): These files should not be in //media/base.
     "//media/base/android",
     "//media/filters",
-    "//media/fuchsia/cdm",
   ]
 
   sources = [
@@ -152,6 +151,24 @@ source_set("cdm") {
       ":cdm_paths",
       "//media/base/win:media_foundation_util",
     ]
+  }
+
+  if (is_fuchsia) {
+    sources += [
+      "fuchsia/fuchsia_cdm.cc",
+      "fuchsia/fuchsia_cdm.h",
+      "fuchsia/fuchsia_cdm_context.h",
+      "fuchsia/fuchsia_cdm_factory.cc",
+      "fuchsia/fuchsia_cdm_factory.h",
+      "fuchsia/fuchsia_cdm_provider.h",
+      "fuchsia/fuchsia_decryptor.cc",
+      "fuchsia/fuchsia_decryptor.h",
+      "fuchsia/fuchsia_stream_decryptor.cc",
+      "fuchsia/fuchsia_stream_decryptor.h",
+    ]
+
+    public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm:fuchsia.media.drm_hlcpp" ]
+    deps += [ "//media/fuchsia/common" ]
   }
 }
 

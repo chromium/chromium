@@ -355,10 +355,7 @@ media_subcomponent_deps = [
 ]
 
 if (is_fuchsia) {
-  media_subcomponent_deps += [
-    "//media/fuchsia/cdm",
-    "//media/fuchsia/common",
-  ]
+  media_subcomponent_deps += [ "//media/fuchsia/common" ]
 }
 
 if (media_use_ffmpeg) {

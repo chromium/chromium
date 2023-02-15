@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/cdm/fuchsia_cdm.h"
+#include "media/cdm/fuchsia/fuchsia_cdm.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
@@ -237,18 +237,21 @@ class FuchsiaCdm::CdmSession {
     session_callbacks_->keys_change_cb.Run(
         session_id_, has_additional_usable_key, std::move(keys_info));
 
-    if (has_additional_usable_key)
+    if (has_additional_usable_key) {
       on_new_key_.Run();
+    }
   }
 
   void OnSessionError(zx_status_t status) {
     ZX_LOG(ERROR, status) << "Session error.";
 
-    if (session_ready_cb_)
+    if (session_ready_cb_) {
       std::move(session_ready_cb_).Run(false);
+    }
 
-    if (result_cb_)
+    if (result_cb_) {
       std::move(result_cb_).Run(CdmPromise::Exception::TYPE_ERROR);
+    }
   }
 
   template <typename T>
@@ -513,15 +516,17 @@ void FuchsiaCdm::OnProcessLicenseServerMessageStatus(
   promises_.ResolvePromise(promise_id);
 
   auto it = session_map_.find(session_id);
-  if (it == session_map_.end())
+  if (it == session_map_.end()) {
     return;
+  }
 
   // Close the session if the session is waiting for license release ack.
   CdmSession* session = it->second.get();
   DCHECK(session);
 
-  if (!session->pending_release())
+  if (!session->pending_release()) {
     return;
+  }
 
   session_map_.erase(it);
 }

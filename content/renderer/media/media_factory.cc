@@ -89,7 +89,7 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include "media/fuchsia/cdm/fuchsia_cdm_factory.h"
+#include "media/cdm/fuchsia/fuchsia_cdm_factory.h"
 #include "media/fuchsia/video/fuchsia_decoder_factory.h"
 #include "media/mojo/clients/mojo_fuchsia_cdm_provider.h"
 #elif BUILDFLAG(ENABLE_MOJO_CDM)

@@ -4,7 +4,7 @@
 
 // This shard routes the protocols needed by tests that use parts of //media
 // such as //media/fuchsia/camera:test_support, //media/capture:test_support,
-// //media/fuchsia/cdm, //media/fuchsia/video, etc.
+// //media/cdm/fuchsia, //media/fuchsia/video, etc.
 {
   use: [
     {

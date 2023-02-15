@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_FACTORY_H_
-#define MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_FACTORY_H_
+#ifndef MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_FACTORY_H_
+#define MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_FACTORY_H_
 
 #include <stdint.h>
 #include <memory>
@@ -14,7 +14,7 @@
 #include "media/base/cdm_factory.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_export.h"
-#include "media/fuchsia/cdm/fuchsia_cdm_provider.h"
+#include "media/cdm/fuchsia/fuchsia_cdm_provider.h"
 
 namespace media {
 
@@ -54,4 +54,4 @@ class MEDIA_EXPORT FuchsiaCdmFactory final : public CdmFactory {
 
 }  // namespace media
 
-#endif  // MEDIA_FUCHSIA_CDM_FUCHSIA_CDM_FACTORY_H_
+#endif  // MEDIA_CDM_FUCHSIA_FUCHSIA_CDM_FACTORY_H_
