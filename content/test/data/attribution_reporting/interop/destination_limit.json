@@ -38,7 +38,31 @@
             "Attribution-Reporting-Register-Source": {
               "debug_reporting": true,
               "destination": "https://destination2.test",
-              "source_event_id": "222"
+              "source_event_id": "222",
+              "debug_key": "12345"
+            }
+          }
+        }]
+      },
+      // Should be dropped due to destination limit regardless of source type.
+      // source_debug_key is included in the verbose debug report as
+      // debug_permission is set.
+      {
+        "timestamp": "1643235575001",
+        "registration_request": {
+          "source_origin": "https://source1.test",
+          "attribution_src_url": "https://reporter1.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://reporter1.test/register-source",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "debug_reporting": true,
+              "destination": "https://destination2.test",
+              "source_event_id": "123",
+              "debug_key": "54321"
             }
           }
         }]
@@ -318,6 +342,20 @@
         }],
         "report_time": "1643235575000",
         "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination2.test",
+             "limit": "1",
+             "source_debug_key": "54321",
+             "source_event_id": "123",
+             "source_site": "https://source1.test"
+          },
+          "type": "source-destination-limit"
+       } ],
+       "report_time": "1643235575001",
+       "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }
