@@ -274,7 +274,7 @@ excludes: Paths of files that are not bundled. Often used for large mojo files
 
 #### **Example**
 ```
-import("//chrome/browser/resources/tools/optimize_webui.gni")
+import("//ui/webui/resources/tools/optimize_webui.gni")
 import ("//chrome/common/features.gni")
 
 # optimize_webui should generally only be called when the optimize_webui

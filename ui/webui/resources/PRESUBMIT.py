@@ -105,6 +105,8 @@ def CheckNoDisallowedJS(input_api, output_api):
   return presubmit_support.DisallowNewJsFiles(input_api, output_api,
                                               lambda f: not allow_js(f))
 
+# TODO(https://crbug.com/1416240): Move CheckGenerateGrd() below to
+# //ui/webui/resources/tools/PRESUBMIT.py.
 def CheckGenerateGrd(input_api, output_api):
   affected = input_api.AffectedFiles()
   affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]

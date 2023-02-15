@@ -4,6 +4,7 @@
 
 USE_PYTHON3 = True
 
+
 def _CheckChangeOnUploadOrCommit(input_api, output_api):
   results = []
   webui_sources = set(['optimize_webui.py', 'rollup_plugin.js'])
@@ -28,4 +29,3 @@ def CheckChangeOnUpload(input_api, output_api):
 
 def CheckChangeOnCommit(input_api, output_api):
   return _CheckChangeOnUploadOrCommit(input_api, output_api)
-

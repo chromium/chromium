@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/node/node.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(!is_android && !is_ios)

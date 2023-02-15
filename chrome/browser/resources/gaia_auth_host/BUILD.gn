@@ -10,7 +10,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("../tools/optimize_webui.gni")
+import("//ui/webui/resources/tools/optimize_webui.gni")
 
 grd_prefix = "gaia_auth_host"
 manifest_existing_files = "gaia_auth_host_existing_manifest.json"

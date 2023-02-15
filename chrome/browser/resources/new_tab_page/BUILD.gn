@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/optimize_webui.gni")
 import("//ui/webui/webui_features.gni")
 import("./new_tab_page.gni")
 import("./preprocess_if_expr_sourcemaps.gni")

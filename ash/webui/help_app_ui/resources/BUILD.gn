@@ -4,8 +4,8 @@
 
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/optimize_webui.gni")
 
 assert(is_chromeos_ash, "Help App is ash-chrome only")
 
