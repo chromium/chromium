@@ -937,7 +937,6 @@ http/tests/devtools/tracing/timeline-paint/timeline-pre-paint.js
 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js
 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js
 http/tests/devtools/tracing/timeline-time/timeline-time.js
-http/tests/devtools/tracing/timeline-time/timeline-usertiming.js
 http/tests/dom/raf-throttling-out-of-view-cross-origin-page.html
 http/tests/html/validation-bubble-oopif-clip.html
 http/tests/images/document-policy-lossy-images-max-bpp.php
@@ -1895,7 +1894,6 @@ virtual/threaded/external/wpt/scroll-animations/scroll-timelines/current-time-na
 virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html
 virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js
 virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js
-virtual/threaded/http/tests/devtools/tracing/timeline-time/timeline-usertiming.js
 virtual/threaded/printing/absolute-position-headers-and-footers.html
 virtual/threaded/printing/fixed-positioned-headers-and-footers-inside-transform.html
 virtual/threaded/printing/iframe-print.html
