@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer.h"
@@ -16,6 +17,9 @@
 #include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
 
 namespace media {
+
+class DecoderBuffer;
+
 namespace remoting {
 
 class RendererController;
@@ -60,7 +64,7 @@ class End2EndTestRenderer final : public Renderer {
 
   // Called to send frame data to |receiver_|.
   void SendFrameToSink(uint32_t frame_count,
-                       const std::vector<uint8_t>& data,
+                       scoped_refptr<media::DecoderBuffer> decoder_buffer,
                        DemuxerStream::Type type);
 
   // Called when receives RPC messages from |receiver_|.

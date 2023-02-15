@@ -1,5 +1,7 @@
 include_rules = [
   "+media/base",
+  "+media/mojo",
+  "+mojo/public",
   "+third_party/openscreen/src/cast/common",
   "+third_party/openscreen/src/cast/streaming",
   "+ui/gfx/geometry",

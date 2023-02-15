@@ -5,6 +5,7 @@
 #ifndef MEDIA_REMOTING_FAKE_REMOTER_H_
 #define MEDIA_REMOTING_FAKE_REMOTER_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "media/base/decoder_buffer.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
 #include "media/mojo/mojom/remoting.mojom.h"
@@ -13,8 +14,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace media {
-namespace remoting {
+namespace cast_streaming {
+class DecoderBufferReader;
+}  // namespace cast_streaming
+
+namespace media::remoting {
 
 class RendererController;
 
@@ -41,18 +45,19 @@ class FakeRemotingDataStreamSender : public mojom::RemotingDataStreamSender {
 
  private:
   // mojom::RemotingDataStreamSender implementation.
-  void SendFrame(uint32_t frame_size) final;
+  void SendFrame(media::mojom::DecoderBufferPtr buffer,
+                 SendFrameCallback callback) final;
   void CancelInFlightData() final;
 
-  void OnFrameRead(bool success);
+  void OnFrameRead(scoped_refptr<media::DecoderBuffer> buffer);
 
   mojo::Receiver<RemotingDataStreamSender> receiver_;
-  MojoDataPipeReader data_pipe_reader_;
+  std::unique_ptr<cast_streaming::DecoderBufferReader> decoder_buffer_reader_;
+  SendFrameCallback send_frame_callback_;
 
-  std::vector<uint8_t> next_frame_data_;
-  std::vector<std::vector<uint8_t>> received_frame_list;
-  uint32_t send_frame_count_;
-  uint32_t cancel_in_flight_count_;
+  std::vector<scoped_refptr<media::DecoderBuffer>> received_frame_list_;
+  uint32_t send_frame_count_ = 0;
+  uint32_t cancel_in_flight_count_ = 0;
 };
 
 class FakeRemoter final : public mojom::Remoter {
@@ -115,7 +120,6 @@ class FakeRemoterFactory final : public mojom::RemoterFactory {
   bool start_will_fail_;
 };
 
-}  // namespace remoting
-}  // namespace media
+}  // namespace media::remoting
 
 #endif  // MEDIA_REMOTING_FAKE_REMOTER_H_

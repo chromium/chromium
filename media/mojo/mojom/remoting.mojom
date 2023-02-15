@@ -20,9 +20,13 @@ interface RemoterFactory {
 // from a data pipe and then sent to the remote endpoint. There is one
 // RemotingDataStreamSender per data pipe.
 interface RemotingDataStreamSender {
-  // Enqueues another frame for transmission to the remote endpoint, whose
-  // payload is |frame_size| bytes, to be read from the data pipe.
-  SendFrame(uint32 frame_size);
+  // Enqueues a frame for transmission to the remote endpoint, with payload to
+  // be read from the data pipe. The callback will be invoked once the receiver
+  // is ready to read another frame, immediately following the writing of the
+  // sent |frame| to the underlying Openscreen sender.
+  //
+  // Only one such call may be in flight at a time.
+  SendFrame(media.mojom.DecoderBuffer frame) => ();
 
   // Cancels the transmission of all in-flight data to the remote, up to and
   // including the last SendFrame() call; and also discard any data chunks

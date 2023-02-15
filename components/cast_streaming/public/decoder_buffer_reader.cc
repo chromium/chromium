@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/renderer/decoder_buffer_reader.h"
+#include "components/cast_streaming/public/decoder_buffer_reader.h"
 
 #include "base/functional/bind.h"
 
@@ -50,22 +50,25 @@ void DecoderBufferReader::ReadBufferAsync() {
 void DecoderBufferReader::CompletePendingRead() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_read_pending_ || !current_buffer_)
+  if (!is_read_pending_ || !current_buffer_) {
     return;
+  }
 
   is_read_pending_ = false;
   const bool is_eos = current_buffer_->end_of_stream();
   new_buffer_cb_.Run(std::move(current_buffer_));
-  if (!is_eos)
+  if (!is_eos) {
     TryGetNextBuffer();
+  }
 }
 
 void DecoderBufferReader::TryGetNextBuffer() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (current_buffer_ || pending_buffer_metadata_.empty())
+  if (current_buffer_ || pending_buffer_metadata_.empty()) {
     return;
+  }
 
   media::mojom::DecoderBufferPtr buffer =
       std::move(pending_buffer_metadata_.front());

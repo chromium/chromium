@@ -104,6 +104,7 @@ source_set("media_remoting_tests") {
     ":remoting_sender",
     "//base",
     "//base/test:test_support",
+    "//components/cast_streaming/public:decoder_buffer_reader",
     "//components/cast_streaming/public:remoting_utils",
     "//media:test_support",
     "//media/mojo/common",

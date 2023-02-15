@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_RENDERER_DECODER_BUFFER_READER_H_
-#define COMPONENTS_CAST_STREAMING_RENDERER_DECODER_BUFFER_READER_H_
+#ifndef COMPONENTS_CAST_STREAMING_PUBLIC_DECODER_BUFFER_READER_H_
+#define COMPONENTS_CAST_STREAMING_PUBLIC_DECODER_BUFFER_READER_H_
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
@@ -17,7 +17,13 @@
 namespace cast_streaming {
 
 // This class wraps functionality around reading a media::DecoderBuffer from
-// a mojo pipe.
+// a mojo pipe, while providing synchronization around the following three
+// operations:
+// - Providing the media::mojom::DecoderBufferPtr for a pending DecoderBuffer
+//   read.
+// - Reading the data for a DecoderBuffer from a |data_pipe| provided to the
+//   ctor.
+// - Requesting a new buffer callback by the embedding class.
 class DecoderBufferReader {
  public:
   using NewBufferCb =
@@ -41,7 +47,8 @@ class DecoderBufferReader {
   // call to |new_buffer_cb_| is expected.
   void ClearReadPending();
 
-  bool is_queue_empty() { return pending_buffer_metadata_.empty(); }
+  bool is_queue_empty() const { return pending_buffer_metadata_.empty(); }
+  bool is_read_pending() const { return is_read_pending_; }
 
  private:
   void TryGetNextBuffer();
@@ -63,4 +70,4 @@ class DecoderBufferReader {
 
 }  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_RENDERER_DECODER_BUFFER_READER_H_
+#endif  // COMPONENTS_CAST_STREAMING_PUBLIC_DECODER_BUFFER_READER_H_

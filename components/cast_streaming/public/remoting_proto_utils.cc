@@ -153,7 +153,6 @@ std::vector<uint8_t> DecoderBufferToByteArray(
     return buffer;
   }
 
-  NOTREACHED();
   // Reset buffer since serialization of the data failed.
   buffer.clear();
   return buffer;
