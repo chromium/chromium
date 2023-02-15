@@ -10,6 +10,7 @@
 
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_mutator.h"
 
+@protocol BookmarksCommands;
 @protocol PriceNotificationsCommands;
 @protocol PriceNotificationsConsumer;
 
@@ -42,6 +43,8 @@ class WebState;
                    webState:(web::WebState*)webState NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+// The handler that is responsible for navigating the user to the Bookmarks UI.
+@property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 
 @property(nonatomic, weak) id<PriceNotificationsConsumer> consumer;
 

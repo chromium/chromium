@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
@@ -65,6 +66,8 @@
   self.mediator.consumer = self.tableViewController;
   self.mediator.handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PriceNotificationsCommands);
+  self.mediator.bookmarksHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BookmarksCommands);
   self.tableViewController.mutator = self.mediator;
   self.tableViewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);

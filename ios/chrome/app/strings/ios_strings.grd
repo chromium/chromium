@@ -1781,10 +1781,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         The products you track will show up here.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION" desc="A table header element that describes the effect of a user choosing to price-track an item.">
-        Get an alert if the price drops on any site.
+        You'll get an alert if the price drops on any site.
+      </message>
+      <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_EMPTY_STATE" desc="A table header element that describes the effect of a user choosing to price-track an item. This appears when the user does not have any tracked items.">
+        Track the price of a product across online stores. You’ll get alerts when the price drops.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_DESCRIPTION_FOR_TRACKED_ITEM" desc="A table header element that describes that this price-tracked item can be managed in bookmarks.">
-        You'll get an alert if the price drops on any site. This page is saved in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Mobile Bookmarks<ph name="END_LINK">END_LINK</ph>.
+        You're already tracking this product. This page is saved in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Mobile Bookmarks<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON" desc="The title for a button that adds the price-trackable item to the user's stored price tracking list.">
         Track

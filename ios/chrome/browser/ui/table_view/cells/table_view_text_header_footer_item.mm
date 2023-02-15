@@ -4,62 +4,95 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 
-#import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "base/check_op.h"
+#import "base/containers/contains.h"
+#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/util/text_view_util.h"
+#import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-
 @implementation TableViewTextHeaderFooterItem
-@synthesize subtitleText = _subtitleText;
-@synthesize text = _text;
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [TableViewTextHeaderFooterView class];
-    self.accessibilityTraits |= UIAccessibilityTraitHeader;
   }
   return self;
 }
 
-- (void)configureHeaderFooterView:(UITableViewHeaderFooterView*)headerFooter
+#pragma mark Properties
+
+- (void)setURLs:(NSArray<CrURL*>*)URLs {
+  for (CrURL* URL in URLs) {
+    DCHECK(URL.gurl.is_valid());
+  }
+  _URLs = URLs;
+}
+
+#pragma mark CollectionViewItem
+
+- (void)configureHeaderFooterView:(TableViewTextHeaderFooterView*)headerFooter
                        withStyler:(ChromeTableViewStyler*)styler {
   [super configureHeaderFooterView:headerFooter withStyler:styler];
-  TableViewTextHeaderFooterView* header =
-      base::mac::ObjCCastStrict<TableViewTextHeaderFooterView>(headerFooter);
-  header.textLabel.text = self.text;
-  header.subtitleLabel.text = self.subtitleText;
-  header.accessibilityLabel = self.text;
-  header.isAccessibilityElement = YES;
+
+  if ([self.URLs count] != 0) {
+    headerFooter.URLs = self.URLs;
+  }
+  [headerFooter setSubtitle:self.subtitle];
+  headerFooter.textLabel.text = self.text;
+  headerFooter.accessibilityLabel = self.text;
+  headerFooter.isAccessibilityElement = YES;
 }
 
 @end
 
-#pragma mark - TableViewTextHeaderFooter
+@interface TableViewTextHeaderFooterView () <UITextViewDelegate>
+
+// UITextView corresponding to `subtitle` from the item.
+@property(nonatomic, readonly, strong) UITextView* subtitleView;
+
+@end
 
 @implementation TableViewTextHeaderFooterView
-@synthesize subtitleLabel = _subtitleLabel;
+@synthesize subtitleView = _subtitleView;
 @synthesize textLabel = _textLabel;
 
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithReuseIdentifier:reuseIdentifier];
   if (self) {
+    _URLs = @[];
+    _subtitleView = CreateUITextViewWithTextKit1();
+    _subtitleView.scrollEnabled = NO;
+    _subtitleView.editable = NO;
+    _subtitleView.delegate = self;
+    _subtitleView.backgroundColor = UIColor.clearColor;
+    _subtitleView.font =
+        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
+    _subtitleView.adjustsFontForContentSizeCategory = YES;
+    _subtitleView.translatesAutoresizingMaskIntoConstraints = NO;
+    _subtitleView.linkTextAttributes =
+        @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
+    _subtitleView.textAlignment = NSTextAlignmentLeft;
+    _subtitleView.textContainer.lineFragmentPadding = 0;
+    _subtitleView.textContainerInset = UIEdgeInsetsZero;
+
     // Labels, set font sizes using dynamic type.
     _textLabel = [[UILabel alloc] init];
     _textLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    _subtitleLabel = [[UILabel alloc] init];
-    _subtitleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
 
     // Vertical StackView.
     UIStackView* verticalStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ _textLabel, _subtitleLabel ]];
+        initWithArrangedSubviews:@[ _textLabel, _subtitleView ]];
     verticalStack.axis = UILayoutConstraintAxisVertical;
     verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -119,6 +152,66 @@
     ]];
   }
   return self;
+}
+
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  self.subtitleView.text = nil;
+  self.delegate = nil;
+  self.URLs = @[];
+}
+
+#pragma mark - Properties
+
+- (void)setSubtitle:(NSString*)subtitle {
+  if (!subtitle) {
+    return;
+  }
+
+  StringWithTags parsedString = ParseStringWithLinks(subtitle);
+
+  NSDictionary* textAttributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor]
+  };
+
+  NSMutableAttributedString* attributedText =
+      [[NSMutableAttributedString alloc] initWithString:parsedString.string
+                                             attributes:textAttributes];
+
+  DCHECK_EQ(parsedString.ranges.size(), [self.URLs count]);
+  size_t index = 0;
+  for (CrURL* URL in self.URLs) {
+    [attributedText addAttribute:NSLinkAttributeName
+                           value:URL.nsurl
+                           range:parsedString.ranges[index]];
+    index += 1;
+  }
+
+  self.subtitleView.attributedText = attributedText;
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  DCHECK(self.subtitleView == textView);
+  CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
+  DCHECK(crurl.gurl.is_valid());
+
+  [self.delegate view:self didTapLinkURL:crurl];
+  // Returns NO as the app is handling the opening of the URL.
+  return NO;
+}
+
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Always force the `selectedTextRange` to `nil` to prevent users from
+  // selecting text. Setting the `selectable` property to `NO` doesn't help
+  // since it makes links inside the text view untappable.
+  textView.selectedTextRange = nil;
 }
 
 @end

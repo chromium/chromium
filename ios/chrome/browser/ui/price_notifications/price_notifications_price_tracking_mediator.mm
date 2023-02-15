@@ -13,6 +13,8 @@
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/payments/core/currency_formatter.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
@@ -129,6 +131,14 @@ using PriceNotificationItems =
       item.entryURL, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));
   [self.handler hidePriceNotifications];
+}
+
+- (void)navigateToBookmarks {
+  [self.handler hidePriceNotifications];
+  BookmarkAddCommand* command =
+      [[BookmarkAddCommand alloc] initWithWebState:self.webState
+                              presentFolderChooser:NO];
+  [self.bookmarksHandler openToExternalBookmark:command];
 }
 
 #pragma mark - Private

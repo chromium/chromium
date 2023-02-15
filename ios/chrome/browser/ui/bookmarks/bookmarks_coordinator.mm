@@ -246,29 +246,8 @@ enum class PresentedState {
 }
 
 - (void)presentBookmarks {
-  DCHECK_EQ(PresentedState::NONE, self.currentPresentedState);
-  DCHECK(!self.bookmarkNavigationController);
-
-  self.bookmarkBrowser =
-      [[BookmarksHomeViewController alloc] initWithBrowser:_browser];
-  self.bookmarkBrowser.homeDelegate = self;
-  self.bookmarkBrowser.applicationCommandsHandler =
-      self.applicationCommandsHandler;
-  self.bookmarkBrowser.snackbarCommandsHandler = self.snackbarCommandsHandler;
-
-  NSArray<BookmarksHomeViewController*>* replacementViewControllers = nil;
-  if (self.bookmarkModel->loaded()) {
-    // Set the root node if the model has been loaded. If the model has not been
-    // loaded yet, the root node will be set in BookmarksHomeViewController
-    // after the model is finished loading.
-    [self.bookmarkBrowser setRootNode:self.bookmarkModel->root_node()];
-    replacementViewControllers =
-        [self.bookmarkBrowser cachedViewControllerStack];
-  }
-
-  [self presentTableViewController:self.bookmarkBrowser
-      withReplacementViewControllers:replacementViewControllers];
-  self.currentPresentedState = PresentedState::BOOKMARK_BROWSER;
+  [self presentBookmarksAtRootNode:self.bookmarkModel->root_node()
+                 selectingBookmark:nil];
 }
 
 - (void)presentFolderChooser {
@@ -599,6 +578,19 @@ enum class PresentedState {
   [self presentFolderChooser];
 }
 
+- (void)openToExternalBookmark:(BookmarkAddCommand*)command {
+  if (!self.bookmarkModel->loaded() || command.URLs.count != 1 ||
+      command.presentFolderChooser) {
+    return;
+  }
+
+  const BookmarkNode* existingBookmark =
+      self.bookmarkModel->GetMostRecentlyAddedUserNodeForURL(
+          command.URLs.firstObject.URL);
+  [self presentBookmarksAtRootNode:self.bookmarkModel->mobile_node()
+                 selectingBookmark:existingBookmark];
+}
+
 #pragma mark - Private
 
 // Presents `viewController` using the appropriate presentation and styling,
@@ -647,6 +639,39 @@ enum class PresentedState {
   params.SetInBackground(inBackground);
   params.in_incognito = inIncognito;
   UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
+}
+
+// Presents the bookmarks browser modally. If `selectingBookmark` is non-nil,
+// then the bookmarks modal is changed to edit mode and `selectingBookmark` is
+// identified in the list of bookmarks and selected.
+- (void)presentBookmarksAtRootNode:(const BookmarkNode*)rootNode
+                 selectingBookmark:(const BookmarkNode*)bookmarkNode {
+  DCHECK_EQ(PresentedState::NONE, self.currentPresentedState);
+  DCHECK(!self.bookmarkNavigationController);
+
+  self.bookmarkBrowser =
+      [[BookmarksHomeViewController alloc] initWithBrowser:_browser];
+  self.bookmarkBrowser.homeDelegate = self;
+  self.bookmarkBrowser.applicationCommandsHandler =
+      self.applicationCommandsHandler;
+  self.bookmarkBrowser.snackbarCommandsHandler = self.snackbarCommandsHandler;
+
+  NSArray<BookmarksHomeViewController*>* replacementViewControllers = nil;
+  if (self.bookmarkModel->loaded()) {
+    // Set the root node if the model has been loaded. If the model has not been
+    // loaded yet, the root node will be set in BookmarksHomeViewController
+    // after the model is finished loading.
+    [self.bookmarkBrowser setRootNode:rootNode];
+    [self.bookmarkBrowser setExternalBookmark:bookmarkNode];
+    if (rootNode == self.bookmarkModel->root_node()) {
+      replacementViewControllers =
+          [self.bookmarkBrowser cachedViewControllerStack];
+    }
+  }
+
+  [self presentTableViewController:self.bookmarkBrowser
+      withReplacementViewControllers:replacementViewControllers];
+  self.currentPresentedState = PresentedState::BOOKMARK_BROWSER;
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

@@ -136,13 +136,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     UISearchControllerDelegate,
     UISearchResultsUpdating,
     UITableViewDataSource,
-    UITableViewDelegate> {
-  // Bridge to register for bookmark changes.
-  std::unique_ptr<BookmarkModelBridge> _bridge;
-
-  // The root node, whose child nodes are shown in the bookmark table view.
-  const bookmarks::BookmarkNode* _rootNode;
-}
+    UITableViewDelegate>
 
 // Shared state between BookmarksHome classes.  Used as a temporary refactoring
 // aid.
@@ -219,7 +213,16 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 @end
 
-@implementation BookmarksHomeViewController
+@implementation BookmarksHomeViewController {
+  // Bridge to register for bookmark changes.
+  std::unique_ptr<BookmarkModelBridge> _bridge;
+
+  // The root node, whose child nodes are shown in the bookmark table view.
+  const bookmarks::BookmarkNode* _rootNode;
+  // The bookmark node that was choosen by an entity outside of the Bookmarks UI
+  // and is selected when the view is loaded.
+  const bookmarks::BookmarkNode* _externalBookmark;
+}
 
 #pragma mark - Initializer
 
@@ -261,6 +264,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)setRootNode:(const bookmarks::BookmarkNode*)rootNode {
   _rootNode = rootNode;
+}
+
+- (void)setExternalBookmark:(const bookmarks::BookmarkNode*)node {
+  _externalBookmark = node;
 }
 
 - (BOOL)canDismiss {
@@ -505,6 +512,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   }
 
   self.searchController.searchBar.userInteractionEnabled = YES;
+
+  [self editExternalBookmarkIfSet];
 
   DCHECK(self.bookmarks->loaded());
   DCHECK([self isViewLoaded]);
@@ -1625,6 +1634,30 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   }
   // Toggle edit mode.
   [self setTableViewEditing:!self.sharedState.currentlyInEditMode];
+}
+
+// Displays the UITableView edit mode and selects the row containing the
+// `_externalBookmark`.
+- (void)editExternalBookmarkIfSet {
+  if (!_externalBookmark) {
+    return;
+  }
+
+  [self setTableViewEditing:YES];
+  NSArray<NSIndexPath*>* paths = [self.tableViewModel
+      indexPathsForItemType:BookmarksHomeItemTypeBookmark
+          sectionIdentifier:BookmarksHomeSectionIdentifierBookmarks];
+  for (id path in paths) {
+    BookmarksHomeNodeItem* node =
+        base::mac::ObjCCastStrict<BookmarksHomeNodeItem>(
+            [self.tableViewModel itemAtIndexPath:path]);
+    if (node.bookmarkNode == _externalBookmark) {
+      [self.tableView selectRowAtIndexPath:path
+                                  animated:NO
+                            scrollPosition:UITableViewScrollPositionMiddle];
+      break;
+    }
+  }
 }
 
 #pragma mark - ContextBarStates
