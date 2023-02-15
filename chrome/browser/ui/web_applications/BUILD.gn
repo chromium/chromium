@@ -10,7 +10,6 @@ source_set("unit_tests") {
   sources = [
     "app_browser_controller_unittest.cc",
     "share_target_utils_unittest.cc",
-    "web_app_launch_manager_unittest.cc",
     "web_app_launch_utils_unittest.cc",
   ]
 
