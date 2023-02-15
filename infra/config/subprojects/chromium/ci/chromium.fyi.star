@@ -24,7 +24,10 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.fyi",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = [
+        branches.selector.IOS_BRANCHES,
+        branches.selector.LINUX_BRANCHES,
+    ],
     ordering = {
         None: [
             "code_coverage",
@@ -93,7 +96,7 @@ ci.builder(
 
 ci.builder(
     name = "VR Linux",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -171,7 +174,7 @@ ci.builder(
             short_name = "cfv2",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "fyi|x64",
             short_name = "cfv2",
@@ -209,7 +212,7 @@ ci.builder(
             short_name = "cfv2",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "fyi|arm64",
             short_name = "cfv2",
@@ -1711,7 +1714,7 @@ fyi_coverage_builder(
             short_name = "fx",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "fyi|x64",
             short_name = "cov",
@@ -1858,7 +1861,7 @@ fyi_ios_builder(
 
 fyi_ios_builder(
     name = "ios-simulator-cronet",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.IOS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",
