@@ -560,11 +560,14 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
     return nullptr;
   }
 
-  // When running in single app mode or not in an active user session, we
-  // should not create window resizer.
+  // When running in single app mode and open a resizable window or not in an
+  // active user session, we should not create window resizer.
+  // Note: a resizable window in single app mode means a kiosk
+  // troubleshooting tool window, it should be movable and resizable.
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
-  if (session_controller->IsRunningInAppMode() ||
+  if ((session_controller->IsRunningInAppMode() &&
+       !window_state->CanResize()) ||
       session_controller->GetSessionState() !=
           session_manager::SessionState::ACTIVE) {
     return nullptr;

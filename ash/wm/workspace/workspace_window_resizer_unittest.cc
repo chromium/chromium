@@ -2121,7 +2121,12 @@ TEST_F(WorkspaceWindowResizerTest, DragToMaximizeValidMetric) {
 // Makes sure that we are not creating any resizer in kiosk mode.
 TEST_F(WorkspaceWindowResizerTest, DoesNotWorkInAppMode) {
   GetSessionControllerClient()->SetIsRunningInAppMode(true);
+  window_->SetProperty(aura::client::kResizeBehaviorKey,
+                       aura::client::kResizeBehaviorNone);
   EXPECT_FALSE(CreateResizerForTest(window_.get()));
+  window_->SetProperty(aura::client::kResizeBehaviorKey,
+                       aura::client::kResizeBehaviorCanResize);
+  EXPECT_TRUE(CreateResizerForTest(window_.get()));
 }
 
 TEST_F(WorkspaceWindowResizerTest, DoNotCreateResizerIfNotActiveSession) {
