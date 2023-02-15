@@ -7,11 +7,24 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
-#include "chrome/browser/ssl/https_only_mode_upgrade_url_loader.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/request_priority.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+
+namespace blink {
+class ThrottlingURLLoader;
+}  // namespace blink
 
 namespace content {
 class BrowserContext;
@@ -19,10 +32,23 @@ class WebContents;
 }  // namespace content
 
 // A class that attempts to intercept HTTP navigation requests and redirect them
-// to HTTPS. Its lifetime matches that of the content/ navigation loader code.
-class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor {
+// to HTTPS, and then if the upgraded requests fail redirect them back to HTTP.
+// Its lifetime matches that of the content/ navigation loader code.
+//
+// (Aside: An alternate implementation of this class would be as a
+// NavigationLoaderInterceptor in content/, which could have a slightly simpler
+// implementation, but by having this in chrome/ we don't need a Delegate
+// interface for the embedder logic. If we move this into content/ in the future
+// -- for example, in order to have a default HTTPS Upgrades implementation in
+// the content/ platform -- then we can make that switch.)
+class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
+                                 public network::mojom::URLLoader {
  public:
-  explicit HttpsUpgradesInterceptor(int frame_tree_node_id);
+  static std::unique_ptr<HttpsUpgradesInterceptor> MaybeCreateInterceptor(
+      int frame_tree_node_id);
+
+  HttpsUpgradesInterceptor(int frame_tree_node_id,
+                           bool http_interstitial_enabled);
   ~HttpsUpgradesInterceptor() override;
 
   HttpsUpgradesInterceptor(const HttpsUpgradesInterceptor&) = delete;
@@ -33,6 +59,16 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor {
       const network::ResourceRequest& tentative_resource_request,
       content::BrowserContext* browser_context,
       content::URLLoaderRequestInterceptor::LoaderCallback callback) override;
+  bool MaybeCreateLoaderForResponse(
+      const network::URLLoaderCompletionStatus& status,
+      const network::ResourceRequest& request,
+      network::mojom::URLResponseHeadPtr* response_head,
+      mojo::ScopedDataPipeConsumerHandle* response_body,
+      mojo::PendingRemote<network::mojom::URLLoader>* loader,
+      mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
+      blink::ThrottlingURLLoader* url_loader,
+      bool* skip_other_interceptors,
+      bool* will_return_unsafe_redirect) override;
 
   // Continuation of MaybeCreateLoader() after querying the network service for
   // the HSTS status for the hostname in the request.
@@ -50,22 +86,46 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor {
   static int GetHttpPortForTesting();
 
  private:
-  // Creates a URL loader that immediately serves a redirect to the HTTPS
-  // version of the URL.
-  void CreateHttpsRedirectLoader(
-      const network::ResourceRequest& tentative_resource_request,
-      content::URLLoaderRequestInterceptor::LoaderCallback callback);
+  // network::mojom::URLLoader:
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const absl::optional<GURL>& new_url) override {}
+  void SetPriority(net::RequestPriority priority,
+                   int intra_priority_value) override {}
+  void PauseReadingBodyFromNet() override {}
+  void ResumeReadingBodyFromNet() override {}
 
-  // Runs `callback` with `handler`.
-  void HandleRedirectLoader(
-      content::URLLoaderRequestInterceptor::LoaderCallback callback,
-      RequestHandler handler);
+  // Returns a RequestHandler callback that can be passed to the underlying
+  // LoaderCallback to serve an artificial redirect to `new_url`.
+  RequestHandler CreateRedirectHandler(const GURL& new_url);
 
-  // URLLoader that serves redirects.
-  std::unique_ptr<HttpsOnlyModeUpgradeURLLoader> redirect_url_loader_;
+  // Passed to the LoaderCallback as the ResponseHandler with `new_url` bound,
+  // this method receives the receiver and client_remote from the
+  // NavigationLoader, to bind against. Triggers a redirect to `new_url` using
+  // `client`.
+  void RedirectHandler(
+      const GURL& new_url,
+      const network::ResourceRequest& request,
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+
+  // Mojo error handling. Resets `receiver_` and `client_`.
+  void OnConnectionClosed();
 
   // Used to access the WebContents for the navigation.
   int frame_tree_node_id_;
+
+  // Controls whether we are upgrading and falling back with an interstitial
+  // before proceeding with the HTTP navigation.
+  bool http_interstitial_enabled_ = false;
+
+  // Receiver for the URLLoader interface.
+  mojo::Receiver<network::mojom::URLLoader> receiver_{this};
+
+  // The owning client. Used for serving redirects.
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

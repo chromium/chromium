@@ -77,6 +77,7 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
 }
 
 bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
+    const network::URLLoaderCompletionStatus& status,
     const network::ResourceRequest& request,
     network::mojom::URLResponseHeadPtr* response_head,
     mojo::ScopedDataPipeConsumerHandle* response_body,

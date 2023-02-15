@@ -5,26 +5,37 @@
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
-#include "chrome/browser/ssl/https_only_mode_upgrade_url_loader.h"
-#include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
+#include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
-#include "url/url_util.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_base.h"
@@ -36,6 +47,33 @@ namespace {
 // uses random ports.
 int g_https_port_for_testing = 0;
 int g_http_port_for_testing = 0;
+
+// Updates a URL to HTTPS. URLs with the default port will result in the HTTPS
+// URL using the default port 443. URLs with non-default ports won't have the
+// port changed. For tests, the HTTPS port used can be overridden with
+// HttpsUpgradesInterceptor::SetHttpsPortForTesting().
+GURL UpgradeUrlToHttps(const GURL& url) {
+  DCHECK(!url.SchemeIsCryptographic());
+
+  // Replace scheme with HTTPS.
+  GURL::Replacements upgrade_url;
+  upgrade_url.SetSchemeStr(url::kHttpsScheme);
+
+  // For tests that use the EmbeddedTestServer, the server's port needs to be
+  // specified as it can't use the default ports.
+  int https_port_for_testing =
+      HttpsUpgradesInterceptor::GetHttpsPortForTesting();
+  // `port_str` must be in scope for the call to ReplaceComponents() below.
+  const std::string port_str = base::NumberToString(https_port_for_testing);
+  if (https_port_for_testing) {
+    // Only reached in testing, where the original URL will always have a
+    // non-default port.
+    DCHECK(!url.port().empty());
+    upgrade_url.SetPortStr(port_str);
+  }
+
+  return url.ReplaceComponents(upgrade_url);
+}
 
 // Only serve upgrade redirects for main frame, GET requests to HTTP URLs. This
 // excludes "localhost" (and loopback addresses) as they do not expose traffic
@@ -54,10 +92,86 @@ bool ShouldCreateLoader(const network::ResourceRequest& resource_request,
   return false;
 }
 
+// Helper to record an HTTPS-First Mode navigation event.
+// TODO(crbug.com/1394910): Rename these metrics now that they apply to both
+// HTTPS-First Mode and HTTPS Upgrades.
+void RecordHttpsFirstModeNavigation(
+    security_interstitials::https_only_mode::Event event) {
+  base::UmaHistogramEnumeration(
+      security_interstitials::https_only_mode::kEventHistogram, event);
+}
+
+// Helper to configure an artificial redirect to `new_url`. This configures
+// `response_head` and returns a computed RedirectInfo so both can be passed to
+// URLLoaderClient::OnReceiveRedirect() to trigger the redirect.
+net::RedirectInfo SetupRedirect(
+    const network::ResourceRequest& request,
+    const GURL& new_url,
+    network::mojom::URLResponseHead* response_head) {
+  response_head->encoded_data_length = 0;
+  response_head->request_start = base::TimeTicks::Now();
+  response_head->response_start = response_head->request_start;
+  std::string header_string = base::StringPrintf(
+      "HTTP/1.1 %i Temporary Redirect\n"
+      "Location: %s\n",
+      net::HTTP_TEMPORARY_REDIRECT, new_url.spec().c_str());
+  response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(header_string));
+  net::RedirectInfo redirect_info = net::RedirectInfo::ComputeRedirectInfo(
+      request.method, request.url, request.site_for_cookies,
+      request.update_first_party_url_on_redirect
+          ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
+          : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL,
+      request.referrer_policy, request.referrer.spec(),
+      net::HTTP_TEMPORARY_REDIRECT, new_url,
+      /*referrer_policy_header=*/absl::nullopt,
+      /*insecure_scheme_was_upgraded=*/false);
+  return redirect_info;
+}
+
 }  // namespace
 
-HttpsUpgradesInterceptor::HttpsUpgradesInterceptor(int frame_tree_node_id)
-    : frame_tree_node_id_(frame_tree_node_id) {}
+using RequestHandler = HttpsUpgradesInterceptor::RequestHandler;
+using security_interstitials::https_only_mode::Event;
+
+// static
+std::unique_ptr<HttpsUpgradesInterceptor>
+HttpsUpgradesInterceptor::MaybeCreateInterceptor(int frame_tree_node_id) {
+  auto* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  // Could be null if the FrameTreeNode's RenderFrameHost is shutting down.
+  if (!web_contents) {
+    return nullptr;
+  }
+  // If there isn't a BrowserContext/Profile for this, then just allow it.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile ||
+      !g_browser_process->profile_manager()->IsValidProfile(profile)) {
+    return nullptr;
+  }
+  PrefService* prefs = profile->GetPrefs();
+  // Both HTTPS-First Mode and HTTPS-Upgrades are forms of upgrading all HTTP
+  // navigations to HTTPS, with HTTPS-First Mode additionally enabling the
+  // HTTP interstitial on fallback.
+  bool https_first_mode_enabled =
+      base::FeatureList::IsEnabled(features::kHttpsFirstModeV2) && prefs &&
+      prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+  bool https_upgrades_enabled =
+      https_first_mode_enabled ||
+      base::FeatureList::IsEnabled(features::kHttpsUpgrades);
+  if (!https_upgrades_enabled) {
+    return nullptr;
+  }
+  return std::make_unique<HttpsUpgradesInterceptor>(frame_tree_node_id,
+                                                    https_first_mode_enabled);
+}
+
+HttpsUpgradesInterceptor::HttpsUpgradesInterceptor(
+    int frame_tree_node_id,
+    bool http_interstitial_enabled)
+    : frame_tree_node_id_(frame_tree_node_id),
+      http_interstitial_enabled_(http_interstitial_enabled) {}
 
 HttpsUpgradesInterceptor::~HttpsUpgradesInterceptor() = default;
 
@@ -66,6 +180,9 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     content::BrowserContext* browser_context,
     content::URLLoaderRequestInterceptor::LoaderCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Note: Redirects cause a restarted request with a new call to
+  // MaybeCreateLoader().
 
   // If there isn't a BrowserContext/Profile for this, then just allow it.
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -118,6 +235,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   // TODO(crbug.com/1394910): Distinguish HTTPS-First Mode and HTTPS-Upgrades
   // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
   // downgrade Page Info.
+  // TODO(crbug.com/1394910): Move this to a helper function `IsAllowlisted()`,
+  // especially once this gets more complicated for HFM vs. Upgrades.
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
           profile->GetSSLHostStateDelegate());
@@ -149,6 +268,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   // MaybeCreateLoaderOnHstsQueryCompleted(). If the Mojo call fails, this will
   // default to passing `false` and continuing as though the host does not have
   // HSTS (i.e., it will proceed with the HTTPS-First Mode logic).
+  // TODO(crbug.com/1394910): Consider caching this result, at least within the
+  // same navigation.
   auto query_complete_callback = base::BindOnce(
       &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
       weak_factory_.GetWeakPtr(), tentative_resource_request,
@@ -178,9 +299,98 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // Mark navigation as upgraded.
   tab_helper->set_is_navigation_upgraded(true);
   tab_helper->set_fallback_url(tentative_resource_request.url);
-  CreateHttpsRedirectLoader(tentative_resource_request, std::move(callback));
-  // `redirect_url_loader_` can be null after this call.
-  redirect_url_loader_->StartRedirectToHttps(frame_tree_node_id_);
+
+  GURL https_url = UpgradeUrlToHttps(tentative_resource_request.url);
+  std::move(callback).Run(CreateRedirectHandler(https_url));
+}
+
+bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
+    const network::URLLoaderCompletionStatus& status,
+    const network::ResourceRequest& request,
+    network::mojom::URLResponseHeadPtr* response_head,
+    mojo::ScopedDataPipeConsumerHandle* response_body,
+    mojo::PendingRemote<network::mojom::URLLoader>* loader,
+    mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
+    blink::ThrottlingURLLoader* url_loader,
+    bool* skip_other_interceptors,
+    bool* will_return_unsafe_redirect) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // When an upgraded navigation fails, this method creates a loader to trigger
+  // the fallback to HTTP.
+  //
+  // Note: MaybeCreateLoaderForResponse() is called for all navigation
+  // responses and failures, but not for things like a NavigationThrottle
+  // cancelling or blocking the navigation.
+
+  // Only intercept if the navigation failed.
+  if (status.error_code == net::OK) {
+    return false;
+  }
+
+  auto* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  if (!web_contents) {
+    // `web_contents` can be null if the tab is being closed. Skip handling
+    // failure in that case since the page is going away anyway.
+    return false;
+  }
+
+  auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
+  if (!tab_helper->is_navigation_upgraded()) {
+    return false;
+  }
+
+  // Record failure type metrics for upgraded navigations.
+  RecordHttpsFirstModeNavigation(Event::kUpgradeFailed);
+  if (net::IsCertificateError(status.error_code)) {
+    RecordHttpsFirstModeNavigation(Event::kUpgradeCertError);
+  } else if (status.error_code == net::ERR_TIMED_OUT) {
+    RecordHttpsFirstModeNavigation(Event::kUpgradeTimedOut);
+  } else {
+    RecordHttpsFirstModeNavigation(Event::kUpgradeNetError);
+  }
+
+  // If HTTPS-First Mode is not enabled (so no interstitial will be shown),
+  // add the hostname to the allowlist now before triggering fallback.
+  // HTTPS-First Mode handles this on the user proceeding through the
+  // interstitial only.
+  // TODO(crbug.com/1394910): Distinguish HTTPS-First Mode and HTTPS-Upgrades
+  // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
+  // downgrade Page Info.
+  // TODO(crbug.com/1394910): Move this to a helper function
+  // `AddUrlToAllowlist()`, especially once this gets more complicated for
+  // HFM vs. Upgrades.
+  if (!http_interstitial_enabled_) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    StatefulSSLHostStateDelegate* state =
+        static_cast<StatefulSSLHostStateDelegate*>(
+            profile->GetSSLHostStateDelegate());
+    // StatefulSSLHostStateDelegate can be null during tests.
+    if (state) {
+      state->AllowHttpForHost(
+          request.url.host(),
+          web_contents->GetPrimaryMainFrame()->GetStoragePartition());
+    }
+  }
+
+  tab_helper->set_is_navigation_upgraded(false);
+  tab_helper->set_is_navigation_fallback(true);
+
+  // `client_` may have been previously boudn from handling the initial upgrade
+  // in MaybeCreateLoader(), so reset it before re-binding it to handle this
+  // response.
+  client_.reset();
+  *client_receiver = client_.BindNewPipeAndPassReceiver();
+
+  // Create an artificial redirect back to the fallback URL.
+  auto new_response_head = network::mojom::URLResponseHead::New();
+  net::RedirectInfo redirect_info = SetupRedirect(
+      request, tab_helper->fallback_url(), new_response_head.get());
+
+  client_->OnReceiveRedirect(redirect_info, std::move(new_response_head));
+  return true;
 }
 
 // static
@@ -203,36 +413,39 @@ int HttpsUpgradesInterceptor::GetHttpPortForTesting() {
   return g_http_port_for_testing;
 }
 
-// Creates a redirect URL loader that immediately serves a redirect to the
-// upgraded HTTPS version of the URL.
-void HttpsUpgradesInterceptor::CreateHttpsRedirectLoader(
-    const network::ResourceRequest& tentative_resource_request,
-    content::URLLoaderRequestInterceptor::LoaderCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  redirect_url_loader_ = std::make_unique<HttpsOnlyModeUpgradeURLLoader>(
-      tentative_resource_request,
-      base::BindOnce(&HttpsUpgradesInterceptor::HandleRedirectLoader,
-                     base::Unretained(this), std::move(callback)));
+RequestHandler HttpsUpgradesInterceptor::CreateRedirectHandler(
+    const GURL& new_url) {
+  return base::BindOnce(&HttpsUpgradesInterceptor::RedirectHandler,
+                        weak_factory_.GetWeakPtr(), new_url);
 }
 
-// Runs `callback` with `handler`.
-void HttpsUpgradesInterceptor::HandleRedirectLoader(
-    content::URLLoaderRequestInterceptor::LoaderCallback callback,
-    RequestHandler handler) {
+void HttpsUpgradesInterceptor::RedirectHandler(
+    const GURL& new_url,
+    const network::ResourceRequest& request,
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!receiver_.is_bound());
+  DCHECK(!client_.is_bound());
 
-  // Handle any failure by using default loader.
-  if (handler.is_null()) {
-    redirect_url_loader_.reset();
-    // PROCEED.
-    std::move(callback).Run({});
-    return;
-  }
+  // Set up Mojo connection and initiate the redirect.
+  receiver_.Bind(std::move(receiver));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&HttpsUpgradesInterceptor::OnConnectionClosed,
+                     weak_factory_.GetWeakPtr()));
+  client_.Bind(std::move(client));
 
-  // `redirect_url_loader_` now manages its own lifetime via a mojo channel.
-  // `handler` is guaranteed to be called. It will complete by serving the
-  // artificial redirect.
-  redirect_url_loader_.release();
-  std::move(callback).Run(std::move(handler));
+  // Create redirect.
+  auto response_head = network::mojom::URLResponseHead::New();
+  net::RedirectInfo redirect_info =
+      SetupRedirect(request, new_url, response_head.get());
+
+  client_->OnReceiveRedirect(redirect_info, std::move(response_head));
+}
+
+void HttpsUpgradesInterceptor::OnConnectionClosed() {
+  // This happens when content cancels the navigation. Reset the receiver and
+  // client handle.
+  receiver_.reset();
+  client_.reset();
 }

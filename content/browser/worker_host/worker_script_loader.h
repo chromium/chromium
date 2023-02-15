@@ -20,6 +20,7 @@
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -113,6 +114,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   // Returns a URLLoader client endpoint if an interceptor wants to handle the
   // response, i.e. return a different response.  For example, service workers.
   bool MaybeCreateLoaderForResponse(
+      const network::URLLoaderCompletionStatus& status,
       network::mojom::URLResponseHeadPtr* response_head,
       mojo::ScopedDataPipeConsumerHandle* response_body,
       mojo::PendingRemote<network::mojom::URLLoader>* response_url_loader,

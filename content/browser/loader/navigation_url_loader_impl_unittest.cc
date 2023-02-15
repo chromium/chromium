@@ -47,6 +47,7 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/test/url_loader_context_for_tests.h"
@@ -128,6 +129,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
   }
 
   bool MaybeCreateLoaderForResponse(
+      const network::URLLoaderCompletionStatus& status,
       const network::ResourceRequest& request,
       network::mojom::URLResponseHeadPtr* response,
       mojo::ScopedDataPipeConsumerHandle* response_body,

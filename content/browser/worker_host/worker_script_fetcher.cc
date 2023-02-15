@@ -635,12 +635,15 @@ void WorkerScriptFetcher::OnReceiveResponse(
   if (script_loader && script_loader->default_loader_used_) {
     // If the default network loader was used to handle the URL load request we
     // need to see if the request interceptors want to potentially create a new
-    // loader for the response, e.g. SXG or WebBundles.
+    // loader for the response, e.g. SXG or WebBundles. Since the response has
+    // already been received, this means the loader completed without any
+    // network errors, so we pass a URLLoaderCompletionStatus of `net::OK`.
     DCHECK(!response_url_loader_);
     mojo::PendingReceiver<network::mojom::URLLoaderClient>
         response_client_receiver;
+    auto status = network::URLLoaderCompletionStatus(net::OK);
     if (script_loader->MaybeCreateLoaderForResponse(
-            &response_head_, &body, &response_url_loader_,
+            status, &response_head_, &body, &response_url_loader_,
             &response_client_receiver, url_loader_.get())) {
       DCHECK(response_url_loader_);
       response_url_loader_receiver_.Bind(std::move(response_client_receiver));

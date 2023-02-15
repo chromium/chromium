@@ -57,6 +57,7 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
       LoaderCallback callback,
       FallbackCallback fallback_callback) override;
   bool MaybeCreateLoaderForResponse(
+      const network::URLLoaderCompletionStatus& status,
       const network::ResourceRequest& request,
       network::mojom::URLResponseHeadPtr* response_head,
       mojo::ScopedDataPipeConsumerHandle* response_body,

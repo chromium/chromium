@@ -97,6 +97,11 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   // downloaded.  The URLLoader remote is returned in the `loader` parameter.
   // The mojo::PendingReceiver for the URLLoaderClient is returned in the
   // `client_receiver` parameter.
+  // `status` is the loader completion status, allowing the interceptor to
+  // handle failed loads differently from successful loads. For requests that
+  // successfully received a response, this will be a URLLoaderCompletionStatus
+  // with an error code of `net::OK`. For requests that failed, this will be a
+  // URLLoaderCompletionStatus with the underlying net error.
   // The `url_loader` points to the ThrottlingURLLoader that currently controls
   // the request. It can be optionally consumed to get the current
   // URLLoaderClient and URLLoader so that the implementation can rebind them to
@@ -113,6 +118,7 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   // therefore regular safety check should be exempted for the redirect.
   // Nullptr is not allowed.
   virtual bool MaybeCreateLoaderForResponse(
+      const network::URLLoaderCompletionStatus& status,
       const network::ResourceRequest& request,
       network::mojom::URLResponseHeadPtr* response_head,
       mojo::ScopedDataPipeConsumerHandle* response_body,

@@ -158,6 +158,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       bool is_download);
 
   bool MaybeCreateLoaderForResponse(
+      const network::URLLoaderCompletionStatus& status,
       network::mojom::URLResponseHeadPtr* response);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>>

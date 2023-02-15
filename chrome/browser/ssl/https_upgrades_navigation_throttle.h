@@ -14,8 +14,8 @@ class PrefService;
 
 // HttpsUpgradesNavigationThrottle is responsible for observing HTTPS-First Mode
 // navigations that have been upgraded by HttpsUpgradesInterceptor, timing them
-// out if they take too long, and handling failure by triggering fallback
-// navigations to HTTP and triggering the HTTPS-First Mode interstitial.
+// out if they take too long, and catching fallback navigations to HTTP and
+// triggering the HTTPS-First Mode interstitial.
 //
 // Metadata about the navigation state (as it pertains to HTTPS-First Mode)
 // shared between HttpsUpgradesInterceptor and HttpsUpgradesNavigationThrottle

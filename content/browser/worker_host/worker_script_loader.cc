@@ -13,6 +13,7 @@
 #include "net/url_request/redirect_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 
 namespace content {
@@ -279,6 +280,7 @@ void WorkerScriptLoader::OnComplete(
 // URLLoaderClient end ---------------------------------------------------------
 
 bool WorkerScriptLoader::MaybeCreateLoaderForResponse(
+    const network::URLLoaderCompletionStatus& status,
     network::mojom::URLResponseHeadPtr* response_head,
     mojo::ScopedDataPipeConsumerHandle* response_body,
     mojo::PendingRemote<network::mojom::URLLoader>* response_url_loader,
@@ -298,7 +300,7 @@ bool WorkerScriptLoader::MaybeCreateLoaderForResponse(
     bool skip_other_interceptors = false;
     bool will_return_unsafe_redirect = false;
     if (interceptor->MaybeCreateLoaderForResponse(
-            resource_request_, response_head, response_body,
+            status, resource_request_, response_head, response_body,
             response_url_loader, response_client_receiver, url_loader,
             &skip_other_interceptors, &will_return_unsafe_redirect)) {
       // ServiceWorkerMainResourceLoaderInterceptor doesn't set

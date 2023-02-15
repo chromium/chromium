@@ -408,6 +408,7 @@ source_set("browser_sources") {
     "tts_utterance.h",
     "url_data_source.cc",
     "url_data_source.h",
+    "url_loader_request_interceptor.cc",
     "url_loader_request_interceptor.h",
     "url_loader_throttles.h",
     "usb_chooser.cc",

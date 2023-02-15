@@ -104,10 +104,16 @@ SecurityStateTabHelper::GetVisibleSecurityState() {
     state->should_treat_displayed_mixed_forms_as_secure = true;
   }
 
+  // TODO(crbug.com/1394910): Track upgrade/fallback state per-navigation.
+  // Currently HTTPS Upgrades state is tracked via a TabHelper attached to the
+  // current WebContents (i.e., per tab), which can cause this state to "leak"
+  // across multiple different navigations, potentially causing the wrong
+  // security state to be computed.
   auto* https_only_mode_tab_helper =
       HttpsOnlyModeTabHelper::FromWebContents(web_contents());
   if (https_only_mode_tab_helper &&
-      https_only_mode_tab_helper->is_navigation_upgraded()) {
+      (https_only_mode_tab_helper->is_navigation_upgraded() ||
+       https_only_mode_tab_helper->is_navigation_fallback())) {
     state->is_https_only_mode_upgraded = true;
   }
 
