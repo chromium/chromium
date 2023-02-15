@@ -585,6 +585,10 @@ void NavigationEarlyHintsManager::OnPreloadComplete(
 // TODO(crbug.com/671310): This is almost the same as GetRequestPriority() in
 // loading_predictor_tab_helper.cc and the purpose is the same. Consider merging
 // them if the logic starts to be more mature.
+// platform/loader/fetch/README.md in blink contains more details on
+// prioritization as well as links to all of the relevant places in the code
+// where priority is determined. If the priority logic is updated here, be sure
+// to update the other code as needed.
 net::RequestPriority NavigationEarlyHintsManager::CalculateRequestPriority(
     const network::mojom::LinkHeaderPtr& link) {
   // When fetchPriority is explicitly specified for preload, independent of
@@ -594,7 +598,6 @@ net::RequestPriority NavigationEarlyHintsManager::CalculateRequestPriority(
   switch (link->fetch_priority) {
     case network::mojom::FetchPriorityAttribute::kHigh:
       switch (link->as) {
-        case network::mojom::LinkAsAttribute::kFont:
         case network::mojom::LinkAsAttribute::kStyleSheet:
           return net::HIGHEST;
         default:
@@ -604,9 +607,9 @@ net::RequestPriority NavigationEarlyHintsManager::CalculateRequestPriority(
       return net::LOWEST;
     case network::mojom::FetchPriorityAttribute::kAuto:
       switch (link->as) {
-        case network::mojom::LinkAsAttribute::kFont:
         case network::mojom::LinkAsAttribute::kStyleSheet:
           return net::HIGHEST;
+        case network::mojom::LinkAsAttribute::kFont:
         case network::mojom::LinkAsAttribute::kScript:
           return net::MEDIUM;
         case network::mojom::LinkAsAttribute::kImage:

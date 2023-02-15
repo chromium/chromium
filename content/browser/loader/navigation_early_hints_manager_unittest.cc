@@ -380,7 +380,7 @@ TEST_F(NavigationEarlyHintsManagerTest, PreloadPriority) {
   EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
                 network::mojom::LinkAsAttribute::kFont,
                 network::mojom::FetchPriorityAttribute::kAuto)),
-            net::HIGHEST);
+            net::MEDIUM);
   EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
                 network::mojom::LinkAsAttribute::kScript,
                 network::mojom::FetchPriorityAttribute::kAuto)),
@@ -414,7 +414,11 @@ TEST_F(NavigationEarlyHintsManagerTest, PreloadPriority) {
   EXPECT_EQ(early_hints_manager().CalculateRequestPriority(CreateLinkHeader(
                 network::mojom::LinkAsAttribute::kFont,
                 network::mojom::FetchPriorityAttribute::kHigh)),
-            net::HIGHEST);
+            net::MEDIUM);
+  EXPECT_EQ(early_hints_manager().CalculateRequestPriority(
+                CreateLinkHeader(network::mojom::LinkAsAttribute::kFont,
+                                 network::mojom::FetchPriorityAttribute::kLow)),
+            net::LOWEST);
 }
 
 }  // namespace content

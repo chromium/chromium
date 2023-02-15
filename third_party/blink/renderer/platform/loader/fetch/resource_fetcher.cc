@@ -410,6 +410,10 @@ void ResourceFetcher::AddPriorityObserverForTesting(
 // a priority. It will not be called for ResourceRequests that already have a
 // pre-set priority (e.g., requests coming from a Service Worker) except for
 // images, which may need to be reprioritized.
+// platform/loader/fetch/README.md contains more details on prioritization
+// as well as links to all of the relevant places in the code where priority
+// is determined. If the priority logic is updated here, be sure to update
+// the other code as needed.
 ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
     ResourceType type,
     const ResourceRequestHead& resource_request,

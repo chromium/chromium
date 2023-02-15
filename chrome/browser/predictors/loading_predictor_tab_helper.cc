@@ -40,13 +40,17 @@ constexpr char kLoadingPredictorOptimizationHintsReceiveStatusHistogram[] =
     "LoadingPredictor.OptimizationHintsReceiveStatus";
 
 // Called only for subresources.
+// platform/loader/fetch/README.md in blink contains more details on
+// prioritization as well as links to all of the relevant places in the code
+// where priority is determined. If the priority logic is updated here, be sure
+// to update the other code as needed.
 net::RequestPriority GetRequestPriority(
     network::mojom::RequestDestination request_destination) {
   switch (request_destination) {
     case network::mojom::RequestDestination::kStyle:
-    case network::mojom::RequestDestination::kFont:
       return net::HIGHEST;
 
+    case network::mojom::RequestDestination::kFont:
     case network::mojom::RequestDestination::kScript:
       return net::MEDIUM;
 
