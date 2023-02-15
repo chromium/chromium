@@ -48,6 +48,14 @@ ContentAnalysisSdkManager::GetClient(
     return it->second;
 
   auto client = CreateClient(config);
+  // Temporary code(b/268532118): If the config name is "path_system" and the
+  // config is not user specific, try again with a different name.  The plan
+  // is to remove this in m115.
+  if (!client) {
+    if (config.name == "path_system" && !config.user_specific) {
+      client = CreateClient({"brcm_chrm_cas", config.user_specific});
+    }
+  }
   if (client) {
     auto wrapped = base::MakeRefCounted<WrappedClient>(std::move(client));
     clients_.insert(std::make_pair(std::move(config), wrapped));

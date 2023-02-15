@@ -32,5 +32,12 @@ source_set("test_support") {
     "fake_content_analysis_sdk_manager.h",
   ]
 
-  public_deps = [ ":sdk_manager" ]
+  # This data is needed so that the agent binary gets installed on test bots
+  # when it is not the same as the build bot.
+  data_deps = [ "//third_party/content_analysis_sdk:lca_agent" ]
+
+  public_deps = [
+    ":sdk_manager",
+    "//third_party/content_analysis_sdk:lca_agent",
+  ]
 }
