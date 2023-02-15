@@ -17,4 +17,11 @@ const char kChromeUISafeBrowsingMatchPhishingUrl[] =
 const char kChromeUISafeBrowsingMatchUnwantedUrl[] =
     "chrome://safe-browsing/match?type=unwanted";
 
+bool IsSafeBrowsingWebUIUrl(const GURL& url) {
+  return url == kChromeUISafeBrowsingMatchMalwareUrl ||
+         url == kChromeUISafeBrowsingMatchPhishingUrl ||
+         url == kChromeUISafeBrowsingMatchBillingUrl ||
+         url == kChromeUISafeBrowsingMatchUnwantedUrl;
+}
+
 }  // namespace safe_browsing

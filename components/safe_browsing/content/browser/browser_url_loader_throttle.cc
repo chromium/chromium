@@ -20,8 +20,10 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/load_flags.h"
 #include "net/log/net_log_event_type.h"
 #include "net/url_request/redirect_info.h"
@@ -59,6 +61,14 @@ void LogTotalDelay2MetricsWithResponseType(bool is_response_from_cache,
                     is_response_from_cache ? kFromCacheUmaSuffix
                                            : kFromNetworkUmaSuffix}),
       total_delay);
+}
+
+// Returns true if the URL is known to be safe. We also require that this URL
+// never redirects to a potentially unsafe URL, because the redirected URLs are
+// also skipped if this function returns true.
+bool KnownSafeUrl(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIScheme) &&
+         !safe_browsing::IsSafeBrowsingWebUIUrl(url);
 }
 
 }  // namespace
@@ -305,6 +315,11 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   base::UmaHistogramBoolean(
       "SafeBrowsing.BrowserThrottle.WillStartRequestAfterWillProcessResponse",
       will_process_response_count_ > 0);
+
+  if (KnownSafeUrl(request->url)) {
+    skip_checks_ = true;
+    return;
+  }
 
   original_url_ = request->url;
   pending_checks_++;

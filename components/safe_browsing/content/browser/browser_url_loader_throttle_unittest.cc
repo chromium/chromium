@@ -371,6 +371,27 @@ TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DoesNotDeferOnSkippedUrl) {
   EXPECT_FALSE(defer);
 }
 
+TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DoesNotDeferOnKnownSafeUrl) {
+  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                /*should_show_interstitial=*/false,
+                                /*should_delay_callback=*/true);
+  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                /*should_show_interstitial=*/false,
+                                /*should_delay_callback=*/true);
+
+  bool defer = false;
+  network::ResourceRequest request;
+  request.url = GURL("chrome://new-tab-page");
+  throttle_->WillStartRequest(&request, &defer);
+  task_environment_.RunUntilIdle();
+
+  CallWillRedirectRequest();
+
+  defer = CallWillProcessResponse();
+  // The loader is not deferred because the URL is known to be safe.
+  EXPECT_FALSE(defer);
+}
+
 TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnSlowCheck) {
   url_checker_->AddCallbackInfo(/*should_proceed=*/true,
                                 /*should_show_interstitial=*/false,

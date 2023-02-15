@@ -26,7 +26,8 @@ constexpr char kFromCacheUmaSuffix[] = ".FromCache";
 constexpr char kFromNetworkUmaSuffix[] = ".FromNetwork";
 
 // Returns true if the URL is known to be safe. We also require that this URL
-// never redirects to a potentially unsafe URL.
+// never redirects to a potentially unsafe URL, because the redirected URLs are
+// also skipped if this function returns true.
 bool KnownSafeUrl(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme);
 }
