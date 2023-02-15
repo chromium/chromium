@@ -103,9 +103,11 @@ BASE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls,
 // Feature to tweak how the default suggestion is preserved. Feature params
 // control which tweaks specifically are enabled. Enabling this feature without
 // params is a no-op.
+// TODO(manukh) Enabled by default 2/15/23 m112. Clean up feature code 4/4 when
+//   m112 reaches stable.
 BASE_FEATURE(kPreserveDefault,
              "OmniboxPreserveDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When disabled, when providers update their matches, the new set of matches
 // are sorted and culled, then merged with the old matches, then sorted and

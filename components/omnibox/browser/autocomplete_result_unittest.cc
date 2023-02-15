@@ -426,7 +426,7 @@ TEST_F(AutocompleteResultTest, TransferOldMatches) {
   };
   TestData result[] = {
       {2, 1, 400, true},
-      {1, 1, 399, true},
+      {1, 1, 399, false},  // transferred matches aren't allowed to be default.
   };
 
   ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
@@ -452,7 +452,7 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesAllowedToBeDefault) {
   TestData result[] = {
       {4, 1, 900, true},
       {3, 1, 1000, false},
-      {2, 1, 899, true},
+      {2, 1, 899, false},  // transferred matches aren't allowed to be default.
   };
 
   ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
@@ -608,7 +608,7 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesMultipleProviders) {
   // The expected results are out of relevance order because the top-scoring
   // allowed to be default match is always pulled to the top.
   TestData result[] = {
-      {6, 2, 800, true}, {5, 1, 1000, false}, {3, 2, 799, true},
+      {6, 2, 800, true}, {5, 1, 1000, false}, {3, 2, 799, false},
       {7, 1, 500, true}, {4, 1, 499, false},
   };
 
@@ -631,7 +631,7 @@ TEST_F(AutocompleteResultTest,
       {7, 1, 500, true},
   };
   TestData result[] = {
-      {5, 1, 1000, true}, {1, 2, 999, true}, {6, 2, 800, false},
+      {5, 1, 1000, true}, {1, 2, 999, false}, {6, 2, 800, false},
       {4, 1, 700, false}, {7, 1, 500, true},
   };
 
@@ -652,7 +652,7 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesSkipsSpecializedSuggestions) {
   };
   TestData result[] = {
       {3, 1, 600, true},
-      {2, 2, 500, true},
+      {2, 2, 500, false},
   };
 
   ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
