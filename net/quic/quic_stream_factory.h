@@ -172,6 +172,22 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
   // resolution completes asynchronously after Request().
   void OnHostResolutionComplete(int rv);
 
+  // This function must be called after Request() returns ERR_IO_PENDING.
+  // Returns true if no QUIC session has been created yet. If true is returned,
+  // `callback` will be run when the QUIC session has been created and will be
+  // called with the result of OnCreateSessionComplete. For example, if session
+  // creation returned OK but CryptoConnect returns ERR_IO_PENDING then
+  // `callback` will be run with ERR_IO_PENDING.
+  bool WaitForQuicSessionCreation(CompletionOnceCallback callback);
+
+  // Tells QuicStreamRequest it should expect OnQuicSessionCreationComplete()
+  // to be called in the future.
+  void ExpectQuicSessionCreation();
+
+  // Will be called by the associated QuicStreamFactory::Job when session
+  // creation completes asynchronously after Request().
+  void OnQuicSessionCreationComplete(int rv);
+
   void OnRequestComplete(int rv);
 
   // Called when the original connection created on the default network for
@@ -220,8 +236,12 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
   // Set in Request(). If true, then OnHostResolutionComplete() is expected to
   // be called in the future.
   bool expect_on_host_resolution_ = false;
+
+  bool expect_on_quic_session_creation_ = false;
   // Callback passed to WaitForHostResolution().
   CompletionOnceCallback host_resolution_callback_;
+
+  CompletionOnceCallback create_session_callback_;
 };
 
 // A factory for fetching QuicChromiumClientSessions.
@@ -344,10 +364,10 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // Helper method that configures a DatagramClientSocket once
   // DatagramClientSocket::ConnectAsync completes. Posts a task to run
   // `callback` with a net_error code.
-  void FinishConnectAndConfigureSocket(CompletionOnceCallback callback,
-                                       DatagramClientSocket* socket,
-                                       const SocketTag& socket_tag,
-                                       int rv);
+  virtual void FinishConnectAndConfigureSocket(CompletionOnceCallback callback,
+                                               DatagramClientSocket* socket,
+                                               const SocketTag& socket_tag,
+                                               int rv);
 
   void OnFinishConnectAndConfigureSocketError(CompletionOnceCallback callback,
                                               enum CreateSessionFailure error,
@@ -431,6 +451,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   class Job;
   class QuicCryptoClientConfigOwner;
   class CryptoClientConfigHandle;
+  friend class MockQuicStreamFactory;
   friend class test::QuicStreamFactoryPeer;
 
   using SessionMap = std::map<QuicSessionKey, QuicChromiumClientSession*>;
@@ -455,7 +476,8 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   void OnJobComplete(Job* job, int rv);
   bool HasActiveSession(const QuicSessionKey& session_key) const;
   bool HasActiveJob(const QuicSessionKey& session_key) const;
-  int CreateSession(const QuicSessionAliasKey& key,
+  int CreateSession(CompletionOnceCallback callback,
+                    const QuicSessionAliasKey& key,
                     quic::ParsedQuicVersion quic_version,
                     int cert_verify_flags,
                     bool require_confirmation,
@@ -465,6 +487,19 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                     const NetLogWithSource& net_log,
                     QuicChromiumClientSession** session,
                     handles::NetworkHandle* network);
+  void FinishCreateSession(CompletionOnceCallback callback,
+                           const QuicSessionAliasKey& key,
+                           quic::ParsedQuicVersion quic_version,
+                           int cert_verify_flags,
+                           bool require_confirmation,
+                           const AddressList& address_list,
+                           base::TimeTicks dns_resolution_start_time,
+                           base::TimeTicks dns_resolution_end_time,
+                           const NetLogWithSource& net_log,
+                           QuicChromiumClientSession** session,
+                           handles::NetworkHandle* network,
+                           std::unique_ptr<DatagramClientSocket> socket,
+                           int rv);
   void ActivateSession(const QuicSessionAliasKey& key,
                        QuicChromiumClientSession* session,
                        std::set<std::string> dns_aliases);

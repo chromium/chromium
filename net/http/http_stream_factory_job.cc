@@ -738,7 +738,7 @@ void HttpStreamFactory::Job::ResumeInitConnection() {
 int HttpStreamFactory::Job::DoInitConnection() {
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB_INIT_CONNECTION);
   int result = DoInitConnectionImpl();
-  if (!expect_on_quic_host_resolution_) {
+  if (!expect_on_quic_session_created_ && !expect_on_quic_host_resolution_) {
     delegate_->OnConnectionInitialized(this, result);
   }
   return result;
@@ -958,14 +958,24 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
         quic_request_.GetTimeDelayForWaitingJob());
     expect_on_quic_host_resolution_ = quic_request_.WaitForHostResolution(
         base::BindOnce(&Job::OnQuicHostResolution, base::Unretained(this)));
+    expect_on_quic_session_created_ = quic_request_.WaitForQuicSessionCreation(
+        base::BindOnce(&Job::OnQuicSessionCreated, ptr_factory_.GetWeakPtr()));
   }
   return rv;
+}
+
+void HttpStreamFactory::Job::OnQuicSessionCreated(int result) {
+  DCHECK(expect_on_quic_session_created_);
+  expect_on_quic_session_created_ = false;
+  delegate_->OnConnectionInitialized(this, result);
 }
 
 void HttpStreamFactory::Job::OnQuicHostResolution(int result) {
   DCHECK(expect_on_quic_host_resolution_);
   expect_on_quic_host_resolution_ = false;
-  delegate_->OnConnectionInitialized(this, result);
+  if (!expect_on_quic_session_created_) {
+    delegate_->OnConnectionInitialized(this, result);
+  }
 }
 
 void HttpStreamFactory::Job::OnFailedOnDefaultNetwork(int result) {
