@@ -4,10 +4,12 @@
 
 #include "ash/quick_pair/repository/fast_pair/proto_conversions.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -17,6 +19,7 @@ nearby::fastpair::FastPairInfo BuildFastPairInfo(
     const std::string& hex_model_id,
     const std::vector<uint8_t>& account_key,
     const std::string& mac_address,
+    const absl::optional<std::string>& display_name,
     DeviceMetadata* device_metadata) {
   nearby::fastpair::FastPairInfo proto;
   auto* device = proto.mutable_device();
@@ -33,7 +36,14 @@ nearby::fastpair::FastPairInfo BuildFastPairInfo(
   nearby::fastpair::StoredDiscoveryItem discovery_item;
   discovery_item.set_id(hex_model_id);
   discovery_item.set_trigger_id(hex_model_id);
-  discovery_item.set_title(details.name());
+
+  if (ash::features::IsFastPairSavedDevicesNicknamesEnabled() &&
+      display_name.has_value()) {
+    discovery_item.set_title(display_name.value());
+  } else {
+    discovery_item.set_title(details.name());
+  }
+
   discovery_item.set_description(strings.initial_notification_description());
   discovery_item.set_type(nearby::fastpair::NearbyType::NEARBY_DEVICE);
   discovery_item.set_action_url_type(nearby::fastpair::ResolvedUrlType::APP);

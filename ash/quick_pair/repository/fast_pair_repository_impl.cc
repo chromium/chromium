@@ -368,8 +368,8 @@ void FastPairRepositoryImpl::WriteAccountAssociationToFootprints(
       base::BindOnce(&FastPairRepositoryImpl::
                          WriteAccountAssociationToFootprintsWithMetadata,
                      weak_ptr_factory_.GetWeakPtr(), device->metadata_id(),
-                     device->classic_address().value(), account_key,
-                     device->protocol()));
+                     device->classic_address().value(), device->display_name(),
+                     account_key, device->protocol()));
 }
 
 bool FastPairRepositoryImpl::WriteAccountAssociationToLocalRegistry(
@@ -400,6 +400,7 @@ bool FastPairRepositoryImpl::WriteAccountAssociationToLocalRegistry(
 void FastPairRepositoryImpl::WriteAccountAssociationToFootprintsWithMetadata(
     const std::string& hex_model_id,
     const std::string& mac_address,
+    const absl::optional<std::string>& display_name,
     const std::vector<uint8_t>& account_key,
     absl::optional<Protocol> device_protocol,
     DeviceMetadata* metadata,
@@ -409,8 +410,8 @@ void FastPairRepositoryImpl::WriteAccountAssociationToFootprintsWithMetadata(
     return;
   }
 
-  const nearby::fastpair::FastPairInfo fast_pair_info =
-      BuildFastPairInfo(hex_model_id, account_key, mac_address, metadata);
+  const nearby::fastpair::FastPairInfo fast_pair_info = BuildFastPairInfo(
+      hex_model_id, account_key, mac_address, display_name, metadata);
 
   pending_write_store_->WritePairedDevice(mac_address, fast_pair_info);
   footprints_fetcher_->AddUserFastPairInfo(

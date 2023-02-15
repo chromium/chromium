@@ -44,6 +44,8 @@ class FakeFastPairRepository : public FastPairRepository {
 
   bool HasKeyForDevice(const std::string& mac_address);
 
+  bool HasNameForDevice(const std::string& mac_address);
+
   void set_is_network_connected(bool is_connected) {
     is_network_connected_ = is_connected;
   }
@@ -106,8 +108,16 @@ class FakeFastPairRepository : public FastPairRepository {
   bool is_network_connected_ = true;
   bool is_account_key_paired_locally_ = true;
   base::flat_set<std::string> saved_mac_addresses_;
+
+  // The key for 'data_' is ASCII model ids.
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> data_;
+
+  // The key for 'saved_accout_keys_' is the device's classic address.
   base::flat_map<std::string, std::vector<uint8_t>> saved_account_keys_;
+
+  // The key for 'saved_display_names_' is the device's classic address.
+  base::flat_map<std::string, std::string> saved_display_names_;
+
   absl::optional<PairingMetadata> check_account_keys_result_;
   base::WeakPtrFactory<FakeFastPairRepository> weak_ptr_factory_{this};
 };

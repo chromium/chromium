@@ -125,6 +125,7 @@ class FastPairRepositoryImpl : public FastPairRepository,
   void WriteAccountAssociationToFootprintsWithMetadata(
       const std::string& hex_model_id,
       const std::string& mac_address,
+      const absl::optional<std::string>& display_name,
       const std::vector<uint8_t>& account_key,
       absl::optional<Protocol> device_protocol,
       DeviceMetadata* metadata,
@@ -134,7 +135,6 @@ class FastPairRepositoryImpl : public FastPairRepository,
       const std::vector<uint8_t>& account_key,
       absl::optional<Protocol> device_protocol,
       bool success);
-
   void OnCheckOptInStatus(
       CheckOptInStatusCallback callback,
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);

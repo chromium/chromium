@@ -243,6 +243,8 @@ BASE_DECLARE_FEATURE(kFastPairBleRotation);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairHandshakeRefactor);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kFastPairSavedDevicesNicknames);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairPreventNotificationsForRecentlyLostDevice);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double>
@@ -683,6 +685,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairBleRotationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairHandshakeRefactorEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesNicknamesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairLowPowerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled();

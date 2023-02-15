@@ -388,6 +388,11 @@ class FastPairPairerImplTest : public AshTestBase {
         fake_bluetooth_device_ptr_->GetAddress());
   }
 
+  bool IsDisplayNameSavedToFootprints() {
+    return fast_pair_repository_.HasNameForDevice(
+        fake_bluetooth_device_ptr_->GetAddress());
+  }
+
   void SetPublicKey() { data_encryptor_->public_key(kPublicKey); }
 
   void Login(user_manager::UserType user_type) {
@@ -1413,6 +1418,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagEnabled) {
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback();
   EXPECT_TRUE(IsAccountKeySavedToFootprints());
+  EXPECT_TRUE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -1456,6 +1462,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagDisabled) {
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback();
   EXPECT_TRUE(IsAccountKeySavedToFootprints());
+  EXPECT_TRUE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -1498,6 +1505,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_StrictFlagDisabled) {
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback();
   EXPECT_TRUE(IsAccountKeySavedToFootprints());
+  EXPECT_TRUE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -1659,6 +1667,9 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagEnabled) {
   // With Subsequent pairing, we expect to save the account key to the
   // Saved Device registry, but not upload the key to Footprints.
   EXPECT_TRUE(IsAccountKeySavedToFootprints());
+
+  // With Subsequent pairing, the display name is not saved to Footprints.
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
 }
@@ -1701,6 +1712,9 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagDisabled) {
   // With Subsequent pairing, we expect to save the account key to the
   // Saved Device registry, but not upload the key to Footprints.
   EXPECT_TRUE(IsAccountKeySavedToFootprints());
+
+  // With Subsequent pairing, the display name is not saved to Footprints.
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
 }
@@ -1742,6 +1756,9 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_StrictFlagDisabled) {
   // With Subsequent pairing, we expect to save the account key to the
   // Saved Device registry, but not upload the key to Footprints.
   EXPECT_TRUE(IsAccountKeySavedToFootprints());
+
+  // With Subsequent pairing, the display name is not saved to Footprints.
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
 }
@@ -1849,6 +1866,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorFailed);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -1874,6 +1892,7 @@ TEST_F(FastPairPairerImplTest,
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorUnknown);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -1899,6 +1918,7 @@ TEST_F(FastPairPairerImplTest,
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattInProgress);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -1924,6 +1944,7 @@ TEST_F(FastPairPairerImplTest,
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorInvalidLength);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -1949,6 +1970,7 @@ TEST_F(FastPairPairerImplTest,
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotPermitted);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -1974,6 +1996,7 @@ TEST_F(FastPairPairerImplTest,
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotAuthorized);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -1999,6 +2022,7 @@ TEST_F(FastPairPairerImplTest,
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotPaired);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
@@ -2024,6 +2048,7 @@ TEST_F(FastPairPairerImplTest,
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
   RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotSupported);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }

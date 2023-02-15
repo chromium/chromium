@@ -838,6 +838,11 @@ BASE_FEATURE(kFastPairHandshakeRefactor,
              "FastPairHandshakeRefactor",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Saved Devices nicknames logic for Fast Pair.
+BASE_FEATURE(kFastPairSavedDevicesNicknames,
+             "FastPairSavedDevicesNicknames",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The amount of minutes we should wait before allowing notifications for a
 // recently lost device.
 const base::FeatureParam<double> kFastPairDeviceLostNotificationTimeoutMinutes{
@@ -2521,6 +2526,10 @@ bool IsFastPairBleRotationEnabled() {
 
 bool IsFastPairHandshakeRefactorEnabled() {
   return base::FeatureList::IsEnabled(kFastPairHandshakeRefactor);
+}
+
+bool IsFastPairSavedDevicesNicknamesEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairSavedDevicesNicknames);
 }
 
 bool IsFastPairLowPowerEnabled() {

@@ -573,6 +573,13 @@ void FastPairPairerImpl::OnWriteAccountKey(
     return;
   }
 
+  if (ash::features::IsFastPairSavedDevicesNicknamesEnabled() &&
+      device_->classic_address().has_value() &&
+      adapter_->GetDevice(device_->classic_address().value())) {
+    device_->set_display_name(
+        (adapter_->GetDevice(device_->classic_address().value()))->GetName());
+  }
+
   const std::vector<uint8_t> account_key_vec(account_key.begin(),
                                              account_key.end());
 

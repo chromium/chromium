@@ -45,6 +45,7 @@ source_set("repository") {
   ]
 
   deps = [
+    "//ash/constants:constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
