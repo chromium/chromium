@@ -734,10 +734,10 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
             features::kFileSystemAccessPersistentPermissions)) {
       // PersistedPermissionOptions only applies to this grant's type. If the
       // other type is persisted, only revoke permission to this grant's type.
-      base::Value grant = AsValue();
-      if (grant.FindBoolKey(kPermissionWritableKey).value_or(false) ||
-          grant.FindBoolKey(kPermissionReadableKey).value_or(false)) {
-        context_->GrantObjectPermission(origin_, std::move(grant));
+      base::Value::Dict grant = AsValue();
+      if (grant.FindBool(kPermissionWritableKey).value_or(false) ||
+          grant.FindBool(kPermissionReadableKey).value_or(false)) {
+        context_->GrantObjectPermission(origin_, base::Value(std::move(grant)));
       } else {
         context_->RevokeObjectPermission(origin_, GetKey());
       }
@@ -867,14 +867,15 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return PathAsPermissionKey(path_);
   }
-  base::Value AsValue() const {
+
+  base::Value::Dict AsValue() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    base::Value value(base::Value::Type::DICT);
-    value.SetKey(kPermissionPathKey, base::FilePathToValue(path_));
-    value.SetBoolKey(kPermissionIsDirectoryKey,
-                     handle_type_ == HandleType::kDirectory);
-    value.SetBoolKey(GetGrantKeyFromGrantType(type_),
-                     status_ == PermissionStatus::GRANTED);
+    base::Value::Dict value;
+    value.Set(kPermissionPathKey, base::FilePathToValue(path_));
+    value.Set(kPermissionIsDirectoryKey,
+              handle_type_ == HandleType::kDirectory);
+    value.Set(GetGrantKeyFromGrantType(type_),
+              status_ == PermissionStatus::GRANTED);
     // Persisted permissions include both read and write information in one
     // object. Figure out if the other grant type is already persisted.
     auto opposite_type =
@@ -882,10 +883,10 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     if (context_->HasPersistedPermission(origin_, path_, handle_type_,
                                          opposite_type,
                                          MetricsOptions::kDoNotRecord)) {
-      value.SetBoolKey(GetGrantKeyFromGrantType(opposite_type), true);
+      value.Set(GetGrantKeyFromGrantType(opposite_type), true);
     }
-    value.SetKey(kPermissionLastUsedTimeKey,
-                 base::TimeToValue(context_->clock_->Now()));
+    value.Set(kPermissionLastUsedTimeKey,
+              base::TimeToValue(context_->clock_->Now()));
     return value;
   }
 
@@ -893,9 +894,10 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (HasPersistedPermission(MetricsOptions::kDoNotRecord)) {
-      const auto& grant_before = AsValue();
+      const auto& grant_before = base::Value(AsValue());
       path_ = new_path;
-      context_->UpdateObjectPermission(origin_, grant_before, AsValue());
+      context_->UpdateObjectPermission(origin_, grant_before,
+                                       base::Value(AsValue()));
     } else {
       path_ = new_path;
     }
@@ -1400,16 +1402,12 @@ void ChromeFileSystemAccessPermissionContext::DidCheckPathAgainstBlocklist(
 }
 
 void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
-    base::Value& value) {
+    base::Value::Dict& dict) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!value.is_dict()) {
-    value = base::Value(base::Value::Type::DICT);
-    return;
-  }
 
   std::vector<std::pair<base::Time, std::string>> entries;
-  entries.reserve(value.DictSize());
-  for (auto entry : value.GetDict()) {
+  entries.reserve(dict.size());
+  for (auto entry : dict) {
     // Don't evict the default ID.
     if (entry.first == kDefaultLastPickedDirectoryKey)
       continue;
@@ -1429,7 +1427,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
   base::ranges::sort(entries);
   size_t entries_to_remove = entries.size() - max_ids_per_origin_;
   for (size_t i = 0; i < entries_to_remove; ++i) {
-    bool did_remove_entry = value.RemoveKey(entries[i].second);
+    bool did_remove_entry = dict.Remove(entries[i].second);
     DCHECK(did_remove_entry);
   }
 }
@@ -1447,19 +1445,21 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
   if (!value.is_dict())
     value = base::Value(base::Value::Type::DICT);
 
+  base::Value::Dict& dict = value.GetDict();
   // Create an entry into the nested dictionary.
-  base::Value entry(base::Value::Type::DICT);
-  entry.SetKey(kPathKey, base::FilePathToValue(path));
-  entry.SetIntKey(kPathTypeKey, static_cast<int>(type));
-  entry.SetKey(kTimestampKey, base::TimeToValue(clock_->Now()));
+  base::Value::Dict entry;
+  entry.Set(kPathKey, base::FilePathToValue(path));
+  entry.Set(kPathTypeKey, static_cast<int>(type));
+  entry.Set(kTimestampKey, base::TimeToValue(clock_->Now()));
 
-  value.SetKey(GenerateLastPickedDirectoryKey(id), std::move(entry));
+  dict.Set(GenerateLastPickedDirectoryKey(id), std::move(entry));
 
-  MaybeEvictEntries(value);
+  MaybeEvictEntries(dict);
 
   content_settings_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, std::move(value));
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+      base::Value(std::move(dict)));
 }
 
 ChromeFileSystemAccessPermissionContext::PathInfo
@@ -1476,17 +1476,17 @@ ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
   if (!value.is_dict())
     return path_info;
 
-  auto* entry = value.FindDictKey(GenerateLastPickedDirectoryKey(id));
+  auto* entry = value.GetDict().FindDict(GenerateLastPickedDirectoryKey(id));
   if (!entry)
     return path_info;
 
-  auto type_int = entry->FindIntKey(kPathTypeKey)
-                      .value_or(static_cast<int>(PathType::kLocal));
+  auto type_int =
+      entry->FindInt(kPathTypeKey).value_or(static_cast<int>(PathType::kLocal));
   path_info.type = type_int == static_cast<int>(PathType::kExternal)
                        ? PathType::kExternal
                        : PathType::kLocal;
-  path_info.path = base::ValueToFilePath(entry->GetDict().Find(kPathKey))
-                       .value_or(base::FilePath());
+  path_info.path =
+      base::ValueToFilePath(entry->Find(kPathKey)).value_or(base::FilePath());
   return path_info;
 }
 
@@ -1598,21 +1598,19 @@ ChromeFileSystemAccessPermissionContext::GetPermissionGrants(
         GetGrantedObjects(origin);
 
     for (auto& persisted_grant_object : persisted_grant_objects) {
+      const base::Value::Dict& persisted_grant_dict =
+          persisted_grant_object->value.GetDict();
       const base::FilePath persisted_path =
-          base::ValueToFilePath(
-              persisted_grant_object->value.GetDict().Find(kPermissionPathKey))
+          base::ValueToFilePath(persisted_grant_dict.Find(kPermissionPathKey))
               .value();
       HandleType handle_type =
-          persisted_grant_object->value.FindBoolKey(kPermissionIsDirectoryKey)
-                  .value()
+          persisted_grant_dict.FindBool(kPermissionIsDirectoryKey).value()
               ? HandleType::kDirectory
               : HandleType::kFile;
       bool is_write_grant =
-          persisted_grant_object->value.FindBoolKey(kPermissionWritableKey)
-              .value_or(false);
+          persisted_grant_dict.FindBool(kPermissionWritableKey).value_or(false);
       bool is_read_grant =
-          persisted_grant_object->value.FindBoolKey(kPermissionReadableKey)
-              .value_or(false);
+          persisted_grant_dict.FindBool(kPermissionReadableKey).value_or(false);
 
       if (handle_type == HandleType::kDirectory) {
         if (is_write_grant &&
@@ -1688,11 +1686,12 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
           features::kFileSystemAccessPersistentPermissions)) {
     std::vector<std::unique_ptr<Object>> persisted_grant_objects =
         GetGrantedObjects(origin);
-    return base::ranges::any_of(
-        persisted_grant_objects, [&](const auto& grant) {
-          return grant->value.FindBoolKey(kPermissionReadableKey)
-              .value_or(false);
-        });
+    return base::ranges::any_of(persisted_grant_objects,
+                                [&](const auto& grant) {
+                                  return grant->value.GetDict()
+                                      .FindBool(kPermissionReadableKey)
+                                      .value_or(false);
+                                });
   }
   auto it = origins_.find(origin);
   if (it == origins_.end())
@@ -1714,11 +1713,12 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
           features::kFileSystemAccessPersistentPermissions)) {
     std::vector<std::unique_ptr<Object>> persisted_grant_objects =
         GetGrantedObjects(origin);
-    return base::ranges::any_of(
-        persisted_grant_objects, [&](const auto& grant) {
-          return grant->value.FindBoolKey(kPermissionWritableKey)
-              .value_or(false);
-        });
+    return base::ranges::any_of(persisted_grant_objects,
+                                [&](const auto& grant) {
+                                  return grant->value.GetDict()
+                                      .FindBool(kPermissionWritableKey)
+                                      .value_or(false);
+                                });
   }
   auto it = origins_.find(origin);
   if (it == origins_.end())
@@ -1904,8 +1904,8 @@ void ChromeFileSystemAccessPermissionContext::UpdatePersistedPermissions() {
       origin = url::Origin::Create(object->origin);
       has_extended_permissions = OriginHasExtendedPermissions(origin);
     }
-    MaybeRenewOrRevokePersistedPermission(origin, std::move(object->value),
-                                          has_extended_permissions);
+    MaybeRenewOrRevokePersistedPermission(
+        origin, std::move(object->value.GetDict()), has_extended_permissions);
   }
   base::UmaHistogramCounts1000(
       "Storage.FileSystemAccess.PersistedPermissions.Count", objects.size());
@@ -1921,29 +1921,29 @@ void ChromeFileSystemAccessPermissionContext::
   // this method to filter out expired grants.
   for (const auto& object :
        ObjectPermissionContextBase::GetGrantedObjects(origin)) {
-    MaybeRenewOrRevokePersistedPermission(origin, std::move(object->value),
-                                          has_extended_permissions);
+    MaybeRenewOrRevokePersistedPermission(
+        origin, std::move(object->value.GetDict()), has_extended_permissions);
   }
 }
 
 void ChromeFileSystemAccessPermissionContext::
     MaybeRenewOrRevokePersistedPermission(const url::Origin& origin,
-                                          base::Value value,
+                                          base::Value::Dict value,
                                           bool has_extended_permissions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = origins_.find(origin);
   // Look for active read or write grants.
   bool found = false;
+
   if (it != origins_.end()) {
     base::FilePath path =
-        base::ValueToFilePath(value.GetDict().Find(kPermissionPathKey)).value();
-    HandleType handle_type =
-        value.FindBoolKey(kPermissionIsDirectoryKey).value()
-            ? HandleType::kDirectory
-            : HandleType::kFile;
+        base::ValueToFilePath(value.Find(kPermissionPathKey)).value();
+    HandleType handle_type = value.FindBool(kPermissionIsDirectoryKey).value()
+                                 ? HandleType::kDirectory
+                                 : HandleType::kFile;
 
     const OriginState& origin_state = it->second;
-    if (value.FindBoolKey(kPermissionReadableKey).value_or(false)) {
+    if (value.FindBool(kPermissionReadableKey).value_or(false)) {
       found = base::ranges::any_of(
           origin_state.read_grants, [&path, &handle_type](auto& grant) {
             return grant.first == path &&
@@ -1951,7 +1951,7 @@ void ChromeFileSystemAccessPermissionContext::
                    grant.second->GetStatus() == PermissionStatus::GRANTED;
           });
     }
-    if (!found && value.FindBoolKey(kPermissionWritableKey).value_or(false)) {
+    if (!found && value.FindBool(kPermissionWritableKey).value_or(false)) {
       found = base::ranges::any_of(
           origin_state.write_grants, [&path, &handle_type](auto& grant) {
             return grant.first == path &&
@@ -1961,23 +1961,24 @@ void ChromeFileSystemAccessPermissionContext::
     }
   }
   if (found) {
-    value.SetKey(kPermissionLastUsedTimeKey, base::TimeToValue(clock_->Now()));
-    GrantObjectPermission(origin, std::move(value));
+    value.Set(kPermissionLastUsedTimeKey, base::TimeToValue(clock_->Now()));
+    GrantObjectPermission(origin, base::Value(std::move(value)));
   } else {
     auto last_activity_time =
-        base::ValueToTime(value.GetDict().Find(kPermissionLastUsedTimeKey))
+        base::ValueToTime(value.Find(kPermissionLastUsedTimeKey))
             .value_or(base::Time::Min());
     // Allow a grace period before revoking permissions to allow for better
     // metrics regarding permission timeouts.
     if (PersistentPermissionIsExpired(
             last_activity_time + kPersistentPermissionGracePeriod,
             has_extended_permissions)) {
-      RevokeObjectPermission(origin, GetKeyForObject(value));
+      RevokeObjectPermission(origin,
+                             GetKeyForObject(base::Value(std::move(value))));
     }
   }
 }
 
-absl::optional<base::Value>
+absl::optional<base::Value::Dict>
 ChromeFileSystemAccessPermissionContext::GetPersistedPermission(
     const url::Origin& origin,
     const base::FilePath& path) {
@@ -2002,7 +2003,7 @@ ChromeFileSystemAccessPermissionContext::GetPersistedPermission(
   if (!object)
     return absl::nullopt;
 
-  return std::move(object->value);
+  return std::move(object->value.GetDict());
 }
 
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>
@@ -2033,20 +2034,18 @@ bool ChromeFileSystemAccessPermissionContext::HasPersistedPermission(
   if (!grant.has_value())
     return false;
 
-  if (grant->FindBoolKey(kPermissionIsDirectoryKey).value() !=
+  if (grant->FindBool(kPermissionIsDirectoryKey).value() !=
       (handle_type == HandleType::kDirectory)) {
     return false;
   }
 
-  if (!grant->FindBoolKey(GetGrantKeyFromGrantType(grant_type))
-           .value_or(false)) {
+  if (!grant->FindBool(GetGrantKeyFromGrantType(grant_type)).value_or(false)) {
     return false;
   }
 
   auto has_extended_permissions = OriginHasExtendedPermissions(origin);
   auto last_activity_time =
-      base::ValueToTime(grant->GetDict().Find(kPermissionLastUsedTimeKey))
-          .value();
+      base::ValueToTime(grant->Find(kPermissionLastUsedTimeKey)).value();
 
   if (options == MetricsOptions::kRecord) {
     base::UmaHistogramCustomTimes(
