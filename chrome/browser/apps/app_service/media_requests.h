@@ -70,13 +70,11 @@ class MediaRequests {
       const content::WebContents* web_contents);
 
  private:
-  // Maps one web_contents to a set of MediaStreamType of the web_contents.
-  using WebContentsToStreamTypes =
-      std::map<const content::WebContents*,
-               std::set<blink::mojom::MediaStreamType>>;
+  // Web contents which are accessing the cemera or microphone.
+  using WebContents = std::set<const content::WebContents*>;
 
   // Maps one app id to a set of web contents.
-  using AppIdToWebContents = std::map<std::string, WebContentsToStreamTypes>;
+  using AppIdToWebContents = std::map<std::string, WebContents>;
 
   bool HasRequest(const std::string& app_id,
                   const content::WebContents* web_contents,
@@ -85,13 +83,6 @@ class MediaRequests {
   absl::optional<bool> MaybeAddRequest(
       const std::string& app_id,
       const content::WebContents* web_contents,
-      blink::mojom::MediaStreamType stream_type,
-      AppIdToWebContents& app_id_to_web_contents);
-
-  absl::optional<bool> MaybeRemoveRequest(
-      const std::string& app_id,
-      const content::WebContents* web_contents,
-      blink::mojom::MediaStreamType stream_type,
       AppIdToWebContents& app_id_to_web_contents);
 
   absl::optional<bool> MaybeRemoveRequest(
@@ -104,13 +95,11 @@ class MediaRequests {
       AppIdToWebContents& app_id_to_web_contents);
 
   // Maps one app id to a set of web contents which are accessing the cemera.
-  std::map<std::string, WebContentsToStreamTypes>
-      app_id_to_web_contents_for_camera_;
+  AppIdToWebContents app_id_to_web_contents_for_camera_;
 
   // Maps one app id to a set of web contents which are accessing the
   // microphone.
-  std::map<std::string, WebContentsToStreamTypes>
-      app_id_to_web_contents_for_microphone_;
+  AppIdToWebContents app_id_to_web_contents_for_microphone_;
 };
 
 }  // namespace apps

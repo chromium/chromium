@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest,
       web_contents, GetUrl1(),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       content::MEDIA_REQUEST_STATE_CLOSING);
-  EXPECT_TRUE(AccessingCamera(browser()->profile(), app_id));
+  EXPECT_FALSE(AccessingCamera(browser()->profile(), app_id));
 
   // Stop GUM_DESKTOP_VIDEO_CAPTURE accessing the camera for |app_id| in the
   // tab.

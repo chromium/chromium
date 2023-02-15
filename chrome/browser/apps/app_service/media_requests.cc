@@ -49,26 +49,24 @@ AccessingRequest MediaRequests::UpdateRequests(
   absl::optional<bool> accessing_camera;
   absl::optional<bool> accessing_microphone;
   if (state == content::MEDIA_REQUEST_STATE_DONE) {
-    if (blink::IsVideoInputMediaType(stream_type)) {
-      accessing_camera = MaybeAddRequest(app_id, web_contents, stream_type,
+    if (stream_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+      accessing_camera = MaybeAddRequest(app_id, web_contents,
                                          app_id_to_web_contents_for_camera_);
     }
-    if (blink::IsAudioInputMediaType(stream_type)) {
-      accessing_microphone =
-          MaybeAddRequest(app_id, web_contents, stream_type,
-                          app_id_to_web_contents_for_microphone_);
+    if (stream_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+      accessing_microphone = MaybeAddRequest(
+          app_id, web_contents, app_id_to_web_contents_for_microphone_);
     }
   }
 
   if (state == content::MEDIA_REQUEST_STATE_CLOSING) {
-    if (blink::IsVideoInputMediaType(stream_type)) {
-      accessing_camera = MaybeRemoveRequest(app_id, web_contents, stream_type,
+    if (stream_type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+      accessing_camera = MaybeRemoveRequest(app_id, web_contents,
                                             app_id_to_web_contents_for_camera_);
     }
-    if (blink::IsAudioInputMediaType(stream_type)) {
-      accessing_microphone =
-          MaybeRemoveRequest(app_id, web_contents, stream_type,
-                             app_id_to_web_contents_for_microphone_);
+    if (stream_type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+      accessing_microphone = MaybeRemoveRequest(
+          app_id, web_contents, app_id_to_web_contents_for_microphone_);
     }
   }
 
@@ -106,67 +104,24 @@ bool MediaRequests::HasRequest(
 absl::optional<bool> MediaRequests::MaybeAddRequest(
     const std::string& app_id,
     const content::WebContents* web_contents,
-    blink::mojom::MediaStreamType stream_type,
     AppIdToWebContents& app_id_to_web_contents) {
   auto it = app_id_to_web_contents.find(app_id);
   if (it == app_id_to_web_contents.end()) {
-    app_id_to_web_contents[app_id][web_contents].insert(stream_type);
+    app_id_to_web_contents[app_id].insert(web_contents);
     // New media request for `app_id` and `web_contents`.
     return true;
   }
 
   auto web_contents_it = it->second.find(web_contents);
   if (web_contents_it == it->second.end()) {
-    it->second[web_contents].insert(stream_type);
+    it->second.insert(web_contents);
     // New media request for `web_contents`, but not a new request for `app_id`.
     // So return nullopt, which means no change for `app_id`.
     return absl::nullopt;
   }
 
-  // New media request for `stream_type` for the given `web_contents`, but not a
-  // new request for `app_id`. So return nullopt, which means no change for
-  // `app_id`.
-  web_contents_it->second.insert(stream_type);
-  return absl::nullopt;
-}
-
-absl::optional<bool> MediaRequests::MaybeRemoveRequest(
-    const std::string& app_id,
-    const content::WebContents* web_contents,
-    blink::mojom::MediaStreamType stream_type,
-    AppIdToWebContents& app_id_to_web_contents) {
-  auto it = app_id_to_web_contents.find(app_id);
-  if (it == app_id_to_web_contents.end()) {
-    // No media request for `app_id`. So return nullopt, which means no change.
-    return absl::nullopt;
-  }
-
-  auto web_contents_it = it->second.find(web_contents);
-  if (web_contents_it == it->second.end()) {
-    // No media request for `web_contents`. So return nullopt, which means no
-    // change.
-    return absl::nullopt;
-  }
-
-  if (web_contents_it->second.find(stream_type) ==
-      web_contents_it->second.end()) {
-    // No media request for `stream_type`. So return nullopt, which means no
-    // change.
-    return absl::nullopt;
-  }
-
-  web_contents_it->second.erase(stream_type);
-  if (web_contents_it->second.empty()) {
-    it->second.erase(web_contents_it);
-    if (it->second.empty()) {
-      app_id_to_web_contents.erase(it);
-      // The media request for `stream_type` is removed for `app_id` and
-      // `web_contents`. Then there is no media request for `app_id`. Return
-      // false, which means no media request for `app_id`.
-      return false;
-    }
-  }
-
+  // Not a new request for `app_id`. So return nullopt, which means no change
+  // for`app_id`.
   return absl::nullopt;
 }
 
