@@ -320,6 +320,25 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         return audioDevice.displayName;
     }
   }
+
+  /**
+   * Returns the appropriate tooltip for output and input device mute buttons
+   * based on `muteState`.
+   */
+  private getMuteTooltip_(muteState: MuteState): string {
+    switch (muteState) {
+      case MuteState.kNotMuted:
+        return this.i18n('audioToggleToMuteTooltip');
+      case MuteState.kMutedByUser:
+        return this.i18n('audioToggleToUnmuteTooltip');
+      case MuteState.kMutedByPolicy:
+        return this.i18n('audioMutedByPolicyTooltip');
+      case MuteState.kMutedExternally:
+        return this.i18n('audioMutedExternallyTooltip');
+      default:
+        return '';
+    }
+  }
 }
 
 declare global {

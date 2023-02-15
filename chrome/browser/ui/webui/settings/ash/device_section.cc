@@ -835,9 +835,15 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
       {"audioInputNoiseCancellationTitle",
        IDS_SETTINGS_AUDIO_INPUT_NOISE_CANCELLATION_TITLE},
       {"audioInputTitle", IDS_SETTINGS_AUDIO_INPUT_TITLE},
+      {"audioMutedByPolicyTooltip", IDS_SETTINGS_AUDIO_MUTED_BY_POLICY_TOOLTIP},
+      {"audioMutedExternallyTooltip",
+       IDS_SETTINGS_AUDIO_MUTED_EXTERNALLY_TOOLTIP},
       {"audioOutputDeviceTitle", IDS_SETTINGS_AUDIO_OUTPUT_DEVICE_TITLE},
       {"audioOutputTitle", IDS_SETTINGS_AUDIO_OUTPUT_TITLE},
       {"audioTitle", IDS_SETTINGS_AUDIO_TITLE},
+      {"audioToggleToMuteTooltip", IDS_SETTINGS_AUDIO_TOGGLE_TO_MUTE_TOOLTIP},
+      {"audioToggleToUnmuteTooltip",
+       IDS_SETTINGS_AUDIO_TOGGLE_TO_UNMUTE_TOOLTIP},
       {"audioVolumeTitle", IDS_SETTINGS_AUDIO_VOLUME_TITLE},
   };
 

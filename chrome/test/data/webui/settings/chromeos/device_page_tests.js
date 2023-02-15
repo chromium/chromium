@@ -740,8 +740,13 @@ suite('SettingsDevicePage', function() {
         fakeCrosAudioConfig.defaultFakeMicJack,
       ],
 
+      /** @type {!MuteState} */
+      inputMuteState: crosAudioConfigMojom.MuteState.kMutedByUser,
+
       /** @type {!Array<!AudioDevice>} */
-      inputDevices: [],
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalMicActive,
+      ],
     };
 
     /** @type {!AudioSystemProperties} */
@@ -757,8 +762,35 @@ suite('SettingsDevicePage', function() {
         fakeCrosAudioConfig.defaultFakeMicJack,
       ],
 
+      /** @type {!MuteState} */
+      inputMuteState: crosAudioConfigMojom.MuteState.kMutedByPolicy,
+
       /** @type {!Array<!AudioDevice>} */
-      inputDevices: [],
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalMicActive,
+      ],
+    };
+
+    /** @type {!AudioSystemProperties} */
+    const mutedExternallyFakeAudioSystemProperties = {
+      outputVolumePercent: 75,
+
+      /** @type {!MuteState} */
+      outputMuteState: crosAudioConfigMojom.MuteState.kMutedExternally,
+
+      /** @type {!Array<!AudioDevice>} */
+      outputDevices: [
+        fakeCrosAudioConfig.defaultFakeSpeaker,
+        fakeCrosAudioConfig.defaultFakeMicJack,
+      ],
+
+      /** @type {!MuteState} */
+      inputMuteState: crosAudioConfigMojom.MuteState.kMutedExternally,
+
+      /** @type {!Array<!AudioDevice>} */
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalMicActive,
+      ],
     };
 
     /** @type {!AudioSystemProperties} */
@@ -1388,6 +1420,54 @@ suite('SettingsDevicePage', function() {
       assertEquals(90, inputVolumeSlider.value);
       pressArrowLeft(inputVolumeSlider);
       assertEquals(80, inputVolumeSlider.value);
+    });
+
+    test('mute state updates tooltips', async function() {
+      const outputMuteTooltip =
+          audioPage.shadowRoot.querySelector('#audioOutputMuteButtonTooltip');
+      const inputMuteTooltip =
+          audioPage.shadowRoot.querySelector('#audioInputMuteButtonTooltip');
+
+      // Default state should be unmuted so show the toggle mute tooltip.
+      assertEquals(
+          loadTimeData.getString('audioToggleToMuteTooltip'),
+          outputMuteTooltip.textContent.trim());
+      assertEquals(
+          loadTimeData.getString('audioToggleToMuteTooltip'),
+          inputMuteTooltip.textContent.trim());
+
+      // Test muted by user case.
+      crosAudioConfig.setAudioSystemProperties(
+          mutedByUserFakeAudioSystemProperties);
+      await flushTasks();
+      assertEquals(
+          loadTimeData.getString('audioToggleToUnmuteTooltip'),
+          outputMuteTooltip.textContent.trim());
+      assertEquals(
+          loadTimeData.getString('audioToggleToUnmuteTooltip'),
+          inputMuteTooltip.textContent.trim());
+
+      // Test muted by policy case.
+      crosAudioConfig.setAudioSystemProperties(
+          mutedByPolicyFakeAudioSystemProperties);
+      await flushTasks();
+      assertEquals(
+          loadTimeData.getString('audioMutedByPolicyTooltip'),
+          outputMuteTooltip.textContent.trim());
+      assertEquals(
+          loadTimeData.getString('audioMutedByPolicyTooltip'),
+          inputMuteTooltip.textContent.trim());
+
+      // Test muted externally case.
+      crosAudioConfig.setAudioSystemProperties(
+          mutedExternallyFakeAudioSystemProperties);
+      await flushTasks();
+      assertEquals(
+          loadTimeData.getString('audioMutedExternallyTooltip'),
+          outputMuteTooltip.textContent.trim());
+      assertEquals(
+          loadTimeData.getString('audioMutedExternallyTooltip'),
+          inputMuteTooltip.textContent.trim());
     });
   });
 

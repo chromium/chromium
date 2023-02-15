@@ -3,6 +3,12 @@
     margin-inline-end: 8px;
   }
 
+  /* Allows the mute button tooltips to be visible even when disabled. */
+  .audio-mute-button[disabled] {
+    background-color: transparent;
+    pointer-events: auto;
+  }
+
   .audio-options-container {
     align-items: center;
     display: flex;
@@ -103,6 +109,10 @@
                   audioSystemProperties_.outputMuteState
                 )]]">
           </cr-icon-button>
+          <paper-tooltip id="audioOutputMuteButtonTooltip"
+              for="audioOutputMuteButton">
+            [[getMuteTooltip_(audioSystemProperties_.outputMuteState)]]
+          </paper-tooltip>
           <cr-slider class="audio-slider"
               id ="outputVolumeSlider"
               min="0"
@@ -151,6 +161,10 @@
               class="audio-mute-button"
               disabled="[[shouldDisableInputGainControls(isInputMuted_)]]">
           </cr-icon-button>
+          <paper-tooltip id="audioInputMuteButtonTooltip"
+              for="audioInputGainMuteButton">
+            [[getMuteTooltip_(audioSystemProperties_.inputMuteState)]]
+          </paper-tooltip>
           <cr-slider id="audioInputGainVolumeSlider" min="0" max="100"
               key-press-slider-increment="10"
               iron-icon="[[getInputIcon_(isInputMuted_)]]"

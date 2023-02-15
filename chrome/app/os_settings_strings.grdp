@@ -2502,6 +2502,18 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_DEVICE_MIC_JACK_LABEL" desc="In Device Settings, the label used for the mic jack device.">
     Mic jack
   </message>
+  <message name="IDS_SETTINGS_AUDIO_TOGGLE_TO_MUTE_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is unmuted." translateable="false">
+    Toggle to mute
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_TOGGLE_TO_UNMUTE_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted." translateable="false">
+    Toggle to unmute
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_MUTED_BY_POLICY_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted by enterprise policy." translateable="false">
+    Muted by policy
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_MUTED_EXTERNALLY_TOOLTIP" desc="In Device Settings, the tooltip used for the input and output mute buttons shown when the device is muted by hardware/switch." translateable="false">
+    Muted by hardware/switch
+  </message>
 
   <!-- Device pointer page (OS settings) -->
   <message name="IDS_SETTINGS_MOUSE_TITLE" desc="In Device Settings, the title of the mouse settings subpage.">
