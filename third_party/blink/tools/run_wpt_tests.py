@@ -459,6 +459,10 @@ class WPTAdapter:
             default='content_shell',
             choices=sorted(_product_registry, key=len),
             help='Product (browser or browser component) to test.')
+        group.add_argument('--headless',
+                           action='store_true',
+                           default=True,
+                           help=argparse.SUPPRESS)
         group.add_argument('--webdriver-binary',
                            type=os.path.abspath,
                            help=('Path of the webdriver binary.'
