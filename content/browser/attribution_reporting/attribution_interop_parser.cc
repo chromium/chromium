@@ -22,13 +22,13 @@
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -320,22 +320,20 @@ class AttributionInteropParser {
             ParseDict(
                 response_dict, "Attribution-Reporting-Register-Source",
                 [&](base::Value::Dict registration_dict) {
-                  base::expected<
-                      StorableSource,
-                      attribution_reporting::mojom::SourceRegistrationError>
-                      storable_source = ParseSourceRegistration(
-                          std::move(registration_dict), source_time,
-                          std::move(*reporting_origin),
-                          std::move(*source_origin), *source_type,
-                          /*is_within_fenced_frame=*/false);
-
-                  if (!storable_source.has_value()) {
-                    *Error() << storable_source.error();
+                  auto registration =
+                      attribution_reporting::SourceRegistration::Parse(
+                          std::move(registration_dict));
+                  if (!registration.has_value()) {
+                    *Error() << registration.error();
                     return;
                   }
 
-                  events_.emplace_back(std::move(*storable_source),
-                                       debug_permission);
+                  events_.emplace_back(
+                      StorableSource(std::move(*reporting_origin),
+                                     std::move(*registration), source_time,
+                                     std::move(*source_origin), *source_type,
+                                     /*is_within_fenced_frame=*/false),
+                      debug_permission);
                 });
           });
         },

@@ -24,7 +24,6 @@
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
-#include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -846,9 +845,15 @@ AttributionDataHostManagerImpl::ParseStorableSource(
       base::unexpected(SourceRegistrationError::kInvalidJson);
   if (result.has_value()) {
     if (result->is_dict()) {
-      source = ParseSourceRegistration(
-          std::move(*result).TakeDict(), /*source_time=*/base::Time::Now(),
-          reporting_origin, source_origin, source_type, is_within_fenced_frame);
+      auto registration = attribution_reporting::SourceRegistration::Parse(
+          std::move(*result).TakeDict());
+      if (registration.has_value()) {
+        source.emplace(reporting_origin, std::move(*registration),
+                       /*source_time=*/base::Time::Now(), source_origin,
+                       source_type, is_within_fenced_frame);
+      } else {
+        source = base::unexpected(registration.error());
+      }
     } else {
       source = base::unexpected(SourceRegistrationError::kRootWrongType);
     }
