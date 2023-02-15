@@ -86,7 +86,8 @@ ScriptPromise DOMScheduler::postTask(
   // Always honor the priority and the task signal if given.
   DOMTaskQueue* task_queue;
   AbortSignal* signal = options->hasSignal() ? options->signal() : nullptr;
-  if (!options->hasPriority() && signal && IsA<DOMTaskSignal>(signal)) {
+  if (!options->hasPriority() && signal && IsA<DOMTaskSignal>(signal) &&
+      !To<DOMTaskSignal>(signal)->HasFixedPriority()) {
     // If only a signal is given, and it is a TaskSignal rather than an
     // basic AbortSignal, use it.
     DOMTaskSignal* task_signal = To<DOMTaskSignal>(signal);
@@ -98,10 +99,15 @@ ScriptPromise DOMScheduler::postTask(
   } else {
     // Otherwise, use the appropriate task queue from
     // |fixed_priority_task_queues_|.
-    WebSchedulingPriority priority =
-        options->hasPriority() ? WebSchedulingPriorityFromString(AtomicString(
-                                     IDLEnumAsString(options->priority())))
-                               : kDefaultPriority;
+    WebSchedulingPriority priority = kDefaultPriority;
+    if (options->hasPriority()) {
+      priority = WebSchedulingPriorityFromString(
+          AtomicString(IDLEnumAsString(options->priority())));
+    } else if (signal && IsA<DOMTaskSignal>(signal)) {
+      DCHECK(To<DOMTaskSignal>(signal)->HasFixedPriority());
+      priority = WebSchedulingPriorityFromString(
+          To<DOMTaskSignal>(signal)->priority());
+    }
     task_queue = fixed_priority_task_queues_[static_cast<int>(priority)];
   }
 
