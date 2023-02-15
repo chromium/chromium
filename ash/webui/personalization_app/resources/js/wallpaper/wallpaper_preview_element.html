@@ -18,7 +18,7 @@
       '. .     .'
       '. theme .'
       '. .     .';
-    grid-template-columns: 20px 1fr 20px;
+    grid-template-columns: 20px minmax(0, 1fr) 20px;
     grid-template-rows: auto minmax(158px, 220px) 20px 1fr 24px;
     height: 100%;
   }
@@ -70,11 +70,20 @@
   .photo-images-container img {
     flex: 1 1 0;
     height: 100%;
-    min-width: 50%;
     object-fit: cover;
     width: 100%;
   }
 
+  :host-context(body.jelly-enabled) #container {
+      grid-template-rows: auto auto 20px 1fr 24px;
+  }
+
+  :host-context(body.jelly-enabled) #imageContainer,
+  :host-context(body.jelly-enabled) #imagePlaceholder {
+    aspect-ratio: 460/274;
+    max-width: 460px;
+    min-width: 278px;
+  }
 </style>
 <div class="preview-container" id="container">
   <div id="wallpaperLabel">

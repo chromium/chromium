@@ -11,7 +11,7 @@
       '. mainpage-desc  .       collage .'
       '. .              .       .       .';
     grid-template-columns: 20px auto 192px auto 20px;
-    grid-template-rows: auto minmax(158px, 220px) 20px 192px auto 20px;
+    grid-template-rows: auto auto 20px 192px auto 20px;
     height: 100%;
   }
 
@@ -24,7 +24,7 @@
       '. mainpage-desc .'
       '. .             .';
     grid-template-columns: 20px minmax(0,1fr) 20px;
-    grid-template-rows: auto minmax(158px, 220px) 20px 130px auto 18px;
+    grid-template-rows: auto auto 20px 130px auto 18px;
   }
 
   #container.jelly-disabled {
@@ -122,6 +122,13 @@
     max-width: 360px;
     min-width: 252px;
     width: 100%;
+  }
+
+  :host-context(body.jelly-enabled) #imageContainer,
+  :host-context(body.jelly-enabled) #imagePlaceholder {
+    aspect-ratio: 460/274;
+    max-width: 460px;
+    min-width: 278px;
   }
 
   .album-info-mainpage,
