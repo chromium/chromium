@@ -933,6 +933,77 @@ TEST_F(DriveFsPinManagerTest, OnMetadataForCreatedFile) {
   manager.progress_.stage = Stage::kStopped;
 }
 
+// Tests PinManager::OnFileModified().
+TEST_F(DriveFsPinManagerTest, OnFileModified) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  EXPECT_EQ(manager.progress_.stage, Stage::kNotStarted);
+
+  const DriveItem item{.size = 2487};
+  const Id id = Id(item.stable_id);
+  const Path path1("/root/Path 1");
+  mojom::FileChange event;
+  event.type = mojom::FileChange::Type::kCreate;
+  event.stable_id = item.stable_id;
+  event.path = path1;
+
+  // Should not have any effect since this file is not tracked.
+  EXPECT_CALL(drivefs_, GetMetadataByStableId(_, _)).Times(0);
+  manager.OnFileModified(std::as_const(event));
+
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 0);
+  EXPECT_EQ(manager.progress_.required_space, 0);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  // Add a tracked file.
+  const Path path2("/root/Path 2");
+  ASSERT_TRUE(manager.Add(*MakeMetadata(item), path2));
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 2487);
+  EXPECT_EQ(manager.progress_.required_space, 4096);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  {
+    const auto it = manager.files_to_track_.find(id);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, file] = *it;
+    EXPECT_EQ(got_id, id);
+    EXPECT_EQ(file.path, path2);
+  }
+
+  // Should modify the path.
+  EXPECT_CALL(drivefs_, GetMetadataByStableId(event.stable_id, _))
+      .Times(1)
+      .WillOnce(RunOnceCallback<1>(kFileOk, MakeMetadata(item)));
+  manager.OnFileModified(std::as_const(event));
+
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.failed_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 2487);
+  EXPECT_EQ(manager.progress_.required_space, 4096);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  {
+    const auto it = manager.files_to_track_.find(id);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [got_id, file] = *it;
+    EXPECT_EQ(got_id, id);
+    EXPECT_EQ(file.path, path1);
+  }
+}
+
 // Tests PinManager::OnSyncingEvent().
 TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
