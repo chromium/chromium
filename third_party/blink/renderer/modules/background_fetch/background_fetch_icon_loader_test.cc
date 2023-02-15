@@ -16,8 +16,8 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -45,7 +45,7 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
       : loader_(MakeGarbageCollected<BackgroundFetchIconLoader>()) {}
   ~BackgroundFetchIconLoaderTest() override {
     loader_->Stop();
-    WebURLLoaderMockFactory::GetSingletonInstance()
+    URLLoaderMockFactory::GetSingletonInstance()
         ->UnregisterAllURLsAndClearMemoryCache();
   }
 
@@ -136,7 +136,7 @@ TEST_F(BackgroundFetchIconLoaderTest, SuccessTest) {
   LoadIcon(KURL(kBackgroundFetchImageLoaderIcon500x500FullPath), maximum_size,
            run_loop.QuitClosure());
 
-  WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
+  URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
 
   run_loop.Run();
 
@@ -196,7 +196,7 @@ TEST_F(BackgroundFetchIconLoaderTest, EmptySizes) {
   LoadIcon(KURL(kBackgroundFetchImageLoaderIcon500x500FullPath), maximum_size,
            run_loop.QuitClosure(), "", "ANY");
 
-  WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
+  URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
 
   run_loop.Run();
 
@@ -211,7 +211,7 @@ TEST_F(BackgroundFetchIconLoaderTest, EmptyPurpose) {
   LoadIcon(KURL(kBackgroundFetchImageLoaderIcon500x500FullPath), maximum_size,
            run_loop.QuitClosure(), "500X500", "");
 
-  WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
+  URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
 
   run_loop.Run();
 

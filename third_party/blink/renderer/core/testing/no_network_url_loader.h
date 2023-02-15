@@ -2,33 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_NO_NETWORK_WEB_URL_LOADER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_NO_NETWORK_WEB_URL_LOADER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_NO_NETWORK_URL_LOADER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_NO_NETWORK_URL_LOADER_H_
 
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 
 namespace blink {
 
-// A WebURLLoader simulating that requests time out forever due to no network.
+// A URLLoader simulating that requests time out forever due to no network.
 // Useful for perftests that don't really want to benchmark URL loading.
-class NoNetworkWebURLLoader : public WebURLLoader {
+class NoNetworkURLLoader : public URLLoader {
  public:
-  NoNetworkWebURLLoader() = default;
-  NoNetworkWebURLLoader(const NoNetworkWebURLLoader&) = delete;
-  NoNetworkWebURLLoader& operator=(const NoNetworkWebURLLoader&) = delete;
+  NoNetworkURLLoader() = default;
+  NoNetworkURLLoader(const NoNetworkURLLoader&) = delete;
+  NoNetworkURLLoader& operator=(const NoNetworkURLLoader&) = delete;
 
-  // WebURLLoader member functions:
+  // URLLoader member functions:
   void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
-      WebURLLoaderClient* client,
+      URLLoaderClient* client,
       WebURLResponse& response,
       absl::optional<WebURLError>&,
       WebData&,
@@ -46,7 +46,7 @@ class NoNetworkWebURLLoader : public WebURLLoader {
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
-      WebURLLoaderClient* client) override {
+      URLLoaderClient* client) override {
     // We simply never call back, simulating load times that are larger
     // than the test runtime.
   }
@@ -63,18 +63,18 @@ class NoNetworkWebURLLoader : public WebURLLoader {
   }
 };
 
-// A LocalFrameClient that uses NoNetworkWebURLLoader, so that nothing external
+// A LocalFrameClient that uses NoNetworkURLLoader, so that nothing external
 // is ever loaded.
 class NoNetworkLocalFrameClient : public EmptyLocalFrameClient {
  public:
   NoNetworkLocalFrameClient() = default;
 
  private:
-  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() override {
-    return std::make_unique<NoNetworkWebURLLoader>();
+  std::unique_ptr<URLLoader> CreateURLLoaderForTesting() override {
+    return std::make_unique<NoNetworkURLLoader>();
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_NO_NETWORK_WEB_URL_LOADER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_NO_NETWORK_URL_LOADER_H_

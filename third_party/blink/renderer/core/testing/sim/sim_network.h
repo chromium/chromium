@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_NETWORK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_NETWORK_H_
 
-#include "third_party/blink/renderer/platform/testing/web_url_loader_test_delegate.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_test_delegate.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -13,13 +13,13 @@
 namespace blink {
 
 class SimRequestBase;
-class WebURLLoaderClient;
+class URLLoaderClient;
 class WebURLResponse;
 
 // Simulates a network with precise flow control so you can make requests
 // return, write data, and finish in a specific order in a unit test. One of
 // these must be created before using the SimRequestBase to issue requests.
-class SimNetwork final : public WebURLLoaderTestDelegate {
+class SimNetwork final : public URLLoaderTestDelegate {
  public:
   SimNetwork();
   ~SimNetwork() override;
@@ -34,17 +34,17 @@ class SimNetwork final : public WebURLLoaderTestDelegate {
   void AddRequest(SimRequestBase&);
   void RemoveRequest(SimRequestBase&);
 
-  // WebURLLoaderTestDelegate
-  void DidReceiveResponse(WebURLLoaderClient*, const WebURLResponse&) override;
-  void DidReceiveData(WebURLLoaderClient*,
+  // URLLoaderTestDelegate
+  void DidReceiveResponse(URLLoaderClient*, const WebURLResponse&) override;
+  void DidReceiveData(URLLoaderClient*,
                       const char* data,
                       size_t data_length) override;
-  void DidFail(WebURLLoaderClient*,
+  void DidFail(URLLoaderClient*,
                const WebURLError&,
                int64_t total_encoded_data_length,
                int64_t total_encoded_body_length,
                int64_t total_decoded_body_length) override;
-  void DidFinishLoading(WebURLLoaderClient*,
+  void DidFinishLoading(URLLoaderClient*,
                         base::TimeTicks finish_time,
                         int64_t total_encoded_data_length,
                         int64_t total_encoded_body_length,

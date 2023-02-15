@@ -71,7 +71,7 @@ class MultiResolutionImageResourceFetcher {
   void SetSkipServiceWorker(bool skip_service_worker);
   void SetCacheMode(mojom::FetchCacheMode mode);
 
-  // Associate the corresponding WebURLLoaderOptions to the loader. Must be
+  // Associate the corresponding URLLoaderOptions to the loader. Must be
   // called before Start. Used if the LoaderType is FRAME_ASSOCIATED_LOADER.
   void SetLoaderOptions(const WebAssociatedURLLoaderOptions& options);
 

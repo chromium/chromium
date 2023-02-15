@@ -14,8 +14,8 @@
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -37,7 +37,7 @@ class ThreadedIconLoaderTest : public PageTestBase {
   }
 
   void TearDown() override {
-    WebURLLoaderMockFactory::GetSingletonInstance()
+    URLLoaderMockFactory::GetSingletonInstance()
         ->UnregisterAllURLsAndClearMemoryCache();
   }
 
@@ -68,8 +68,7 @@ class ThreadedIconLoaderTest : public PageTestBase {
         WTF::BindOnce(&ThreadedIconLoaderTest::DidGetIcon,
                       WTF::Unretained(this), run_loop.QuitClosure(),
                       WTF::Unretained(&icon), WTF::Unretained(&resize_scale)));
-    WebURLLoaderMockFactory::GetSingletonInstance()
-        ->ServeAsynchronousRequests();
+    URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
     run_loop.Run();
 
     return {icon, resize_scale};

@@ -229,7 +229,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   WebTextCheckClient* GetTextCheckerClient() const override;
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() override;
+  std::unique_ptr<URLLoader> CreateURLLoaderForTesting() override;
 
   blink::BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
 

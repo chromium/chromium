@@ -111,7 +111,7 @@ class WebRemotePlaybackClient;
 class WebServiceWorkerProvider;
 class WebSpellCheckPanelHostClient;
 class WebTextCheckClient;
-class WebURLLoader;
+class URLLoader;
 class ResourceLoadInfoNotifierWrapper;
 enum class SyncCondition;
 struct Impression;
@@ -368,7 +368,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
-  virtual std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() = 0;
+  virtual std::unique_ptr<URLLoader> CreateURLLoaderForTesting() = 0;
 
   virtual void AnnotatedRegionsChanged() = 0;
 

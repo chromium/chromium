@@ -53,8 +53,8 @@ bool VariationsHeaderKey::operator<(const VariationsHeaderKey& other) const {
 // implemented depends on the request type.
 // There are three cases:
 // 1. Subresources request in renderer, it is implemented by
-// WebURLLoaderImpl::Context::Start() by adding a VariationsURLLoaderThrottle
-// to a content::URLLoaderThrottle vector.
+// URLLoader::Context::Start() by adding a VariationsURLLoaderThrottle to a
+// content::URLLoaderThrottle vector.
 // 2. Navigations/Downloads request in browser, it is implemented in
 // ChromeContentBrowserClient::CreateURLLoaderThrottles() which calls
 // CreateContentBrowserURLLoaderThrottles which also adds a

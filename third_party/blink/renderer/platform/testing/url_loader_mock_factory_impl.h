@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_FACTORY_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_FACTORY_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_FACTORY_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_FACTORY_IMPL_H_
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
@@ -12,7 +12,7 @@
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -25,23 +25,22 @@ namespace blink {
 
 class TestingPlatformSupport;
 class WebData;
-class WebURLLoader;
-class WebURLLoaderMock;
-class WebURLLoaderTestDelegate;
+class URLLoader;
+class URLLoaderMock;
+class URLLoaderTestDelegate;
 
-// A factory that creates WebURLLoaderMock to simulate resource loading in
-// tests. Since there are restriction and rules to follow, please read comments
-// in WebURLLoaderMockFactory carefully to use this class correctly.
-class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
+// A factory that creates URLLoaderMock to simulate resource loading in tests.
+// Since there are restriction and rules to follow, please read comments in
+// URLLoaderMockFactory carefully to use this class correctly.
+class URLLoaderMockFactoryImpl : public URLLoaderMockFactory {
  public:
-  WebURLLoaderMockFactoryImpl(TestingPlatformSupport*);
-  WebURLLoaderMockFactoryImpl(const WebURLLoaderMockFactoryImpl&) = delete;
-  WebURLLoaderMockFactoryImpl& operator=(const WebURLLoaderMockFactoryImpl&) =
-      delete;
-  ~WebURLLoaderMockFactoryImpl() override;
+  URLLoaderMockFactoryImpl(TestingPlatformSupport*);
+  URLLoaderMockFactoryImpl(const URLLoaderMockFactoryImpl&) = delete;
+  URLLoaderMockFactoryImpl& operator=(const URLLoaderMockFactoryImpl&) = delete;
+  ~URLLoaderMockFactoryImpl() override;
 
-  // WebURLLoaderMockFactory:
-  std::unique_ptr<WebURLLoader> CreateURLLoader() override;
+  // URLLoaderMockFactory:
+  std::unique_ptr<URLLoader> CreateURLLoader() override;
   void RegisterURL(const WebURL& url,
                    const WebURLResponse& response,
                    const WebString& file_path = WebString()) override;
@@ -55,7 +54,7 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
   void UnregisterURLProtocol(const WebString& protocol) override;
   void UnregisterAllURLsAndClearMemoryCache() override;
   void ServeAsynchronousRequests() override;
-  void SetLoaderDelegate(WebURLLoaderTestDelegate* delegate) override {
+  void SetLoaderDelegate(URLLoaderTestDelegate* delegate) override {
     delegate_ = delegate;
   }
   void FillNavigationParamsResponse(WebNavigationParams*) override;
@@ -70,10 +69,10 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
                          WebData* data,
                          int64_t* encoded_data_length);
   void LoadAsynchronouly(std::unique_ptr<network::ResourceRequest> request,
-                         WebURLLoaderMock* loader);
+                         URLLoaderMock* loader);
 
   // Removes the loader from the list of pending loaders.
-  void CancelLoad(WebURLLoaderMock* loader);
+  void CancelLoad(URLLoaderMock* loader);
 
  private:
   struct ResponseInfo {
@@ -91,7 +90,7 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
                    WebData* data);
 
   // Checks if the loader is pending. Otherwise, it may have been deleted.
-  bool IsPending(base::WeakPtr<WebURLLoaderMock> loader);
+  bool IsPending(base::WeakPtr<URLLoaderMock> loader);
 
   // Looks up an URL in the mock URL table.
   //
@@ -104,11 +103,11 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
   // Returns true if it successfully read the file.
   static bool ReadFile(const base::FilePath& file_path, WebData* data);
 
-  WebURLLoaderTestDelegate* delegate_ = nullptr;
+  URLLoaderTestDelegate* delegate_ = nullptr;
 
   // The loaders that have not being served data yet.
   using LoaderToRequestMap =
-      HashMap<WebURLLoaderMock*, std::unique_ptr<network::ResourceRequest>>;
+      HashMap<URLLoaderMock*, std::unique_ptr<network::ResourceRequest>>;
   LoaderToRequestMap pending_loaders_;
 
   // All values must be valid, but we use Optional because HashMap requires
@@ -130,4 +129,4 @@ class WebURLLoaderMockFactoryImpl : public WebURLLoaderMockFactory {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEBURL_LOADER_MOCK_FACTORY_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_FACTORY_IMPL_H_

@@ -155,7 +155,7 @@ class WebContentSettingsClient;
 class WebInputEventAttribution;
 class WebPluginContainerImpl;
 class WebPrescientNetworking;
-class WebURLLoader;
+class URLLoader;
 struct BlinkTransferableMessage;
 struct WebScriptSource;
 
@@ -501,9 +501,9 @@ class CORE_EXPORT LocalFrame final
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
-  // For some tests, we use this method to create a WebURLLoader instead of
-  // using GetURLLoaderFactory().
-  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting();
+  // For some tests, we use this method to create a URLLoader instead of using
+  // GetURLLoaderFactory().
+  std::unique_ptr<URLLoader> CreateURLLoaderForTesting();
 
   bool IsInert() const { return is_inert_; }
 

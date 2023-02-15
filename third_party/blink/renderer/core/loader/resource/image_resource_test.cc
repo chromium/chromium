@@ -74,7 +74,7 @@
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
@@ -237,7 +237,7 @@ TEST_F(ImageResourceTest, MultipartImage) {
   ScopedMockedURLLoad scoped_mocked_url_load(test_url, GetTestFilePath());
 
   // Emulate starting a real load, but don't expect any "real"
-  // WebURLLoaderClient callbacks.
+  // URLLoaderClient callbacks.
   ImageResource* image_resource = ImageResource::CreateForTest(test_url);
   fetcher->StartLoad(image_resource);
 

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_MOCK_FACTORY_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_MOCK_FACTORY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_FACTORY_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_FACTORY_H_
 
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_test_delegate.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_test_delegate.h"
 
 #include <memory>
 
@@ -16,18 +16,18 @@ namespace blink {
 
 struct WebNavigationParams;
 class WebURL;
-class WebURLLoader;
+class URLLoader;
 class WebURLResponse;
 struct WebURLError;
 
-class WebURLLoaderMockFactory {
+class URLLoaderMockFactory {
  public:
-  static WebURLLoaderMockFactory* GetSingletonInstance();
+  static URLLoaderMockFactory* GetSingletonInstance();
 
-  virtual ~WebURLLoaderMockFactory() = default;
+  virtual ~URLLoaderMockFactory() = default;
 
-  // Create a WebURLLoader that takes care of mocked requests.
-  virtual std::unique_ptr<WebURLLoader> CreateURLLoader() = 0;
+  // Create a URLLoader that takes care of mocked requests.
+  virtual std::unique_ptr<URLLoader> CreateURLLoader() = 0;
 
   // Registers a response and the file to be served when the specified URL
   // is loaded. If no file is specified then the response content will be empty.
@@ -70,9 +70,9 @@ class WebURLLoaderMockFactory {
   // frame_test_helpers instead.
   virtual void ServeAsynchronousRequests() = 0;
 
-  // Set a delegate that allows callbacks for all WebURLLoaderClients to be
+  // Set a delegate that allows callbacks for all URLLoaderClients to be
   // intercepted.
-  virtual void SetLoaderDelegate(WebURLLoaderTestDelegate*) = 0;
+  virtual void SetLoaderDelegate(URLLoaderTestDelegate*) = 0;
 
   // Fills navigation params by loading a mocked response.
   virtual void FillNavigationParamsResponse(WebNavigationParams*) = 0;
@@ -80,4 +80,4 @@ class WebURLLoaderMockFactory {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_MOCK_FACTORY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_MOCK_FACTORY_H_

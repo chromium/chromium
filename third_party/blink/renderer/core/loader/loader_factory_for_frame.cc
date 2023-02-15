@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -68,7 +68,7 @@ void LoaderFactoryForFrame::Trace(Visitor* visitor) const {
   LoaderFactory::Trace(visitor);
 }
 
-std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
+std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
     const ResourceRequest& request,
     const ResourceLoaderOptions& options,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
@@ -113,7 +113,7 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
   DCHECK(frame_scheduler);
 
   if (url_loader_factory) {
-    return std::make_unique<WebURLLoaderFactory>(
+    return std::make_unique<URLLoaderFactory>(
                base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
                    CrossVariantMojoRemote<
                        network::mojom::URLLoaderFactoryInterfaceBase>(
@@ -135,7 +135,7 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
     if (loader_factory) {
       IssueKeepAliveHandleIfRequested(request, frame->GetLocalFrameHostRemote(),
                                       std::move(pending_receiver));
-      return std::make_unique<WebURLLoaderFactory>(
+      return std::make_unique<URLLoaderFactory>(
                  std::move(loader_factory), GetCorsExemptHeaderList(),
                  /*terminate_sync_load_event=*/nullptr)
           ->CreateURLLoader(webreq, freezable_task_runner,
@@ -161,7 +161,7 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForFrame::CreateURLLoader(
     return loader;
   }
 
-  return std::make_unique<WebURLLoaderFactory>(
+  return std::make_unique<URLLoaderFactory>(
              frame->GetURLLoaderFactory(), GetCorsExemptHeaderList(),
              /*terminate_sync_load_event=*/nullptr)
       ->CreateURLLoader(webreq, freezable_task_runner, unfreezable_task_runner,

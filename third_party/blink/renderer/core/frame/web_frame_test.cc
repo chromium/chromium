@@ -196,7 +196,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
@@ -206,8 +206,8 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -11966,13 +11966,13 @@ TEST_F(WebFrameTest, ScriptPriority) {
   client.VerifyAllRequests();
 }
 
-class MultipleDataChunkDelegate : public WebURLLoaderTestDelegate {
+class MultipleDataChunkDelegate : public URLLoaderTestDelegate {
  public:
   MultipleDataChunkDelegate() = default;
   ~MultipleDataChunkDelegate() override = default;
 
-  // WebURLLoaderTestDelegate:
-  void DidReceiveData(WebURLLoaderClient* original_client,
+  // URLLoaderTestDelegate:
+  void DidReceiveData(URLLoaderClient* original_client,
                       const char* data,
                       size_t data_length) override {
     EXPECT_GT(data_length, 16u);

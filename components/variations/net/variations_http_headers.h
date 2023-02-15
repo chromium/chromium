@@ -30,9 +30,9 @@ namespace variations {
 // Denotes whether the top frame of a request-initiating frame is a Google-
 // owned web property, e.g. YouTube.
 //
-// kUnknownFromRenderer is used only in WebURLLoaderImpl::Context::Start() on
-// the render thread and kUnknown is used elsewhere. This distinction allows us
-// to tell how many non-render-thread-initiated subframe requests, if any, lack
+// kUnknownFromRenderer is used only in URLLoader::Context::Start() on the
+// render thread and kUnknown is used elsewhere. This distinction allows us to
+// tell how many non-render-thread-initiated subframe requests, if any, lack
 // TrustedParams.
 //
 // This enum is used to record UMA histogram values, and should not be

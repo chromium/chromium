@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_TEST_DELEGATE_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_TEST_DELEGATE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_TEST_DELEGATE_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_TEST_DELEGATE_H_
 
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -12,29 +12,29 @@ namespace blink {
 
 struct WebNavigationParams;
 class WebURLResponse;
-class WebURLLoaderClient;
+class URLLoaderClient;
 struct WebURLError;
 
-// Use with WebURLLoaderMockFactory::SetLoaderDelegate to intercept calls to a
-// WebURLLoaderClient for controlling network responses in a test. Default
+// Use with URLLoaderMockFactory::SetLoaderDelegate to intercept calls to a
+// URLLoaderClient for controlling network responses in a test. Default
 // implementations of all methods just call the original method on the
-// WebURLLoaderClient.
-class WebURLLoaderTestDelegate {
+// URLLoaderClient.
+class URLLoaderTestDelegate {
  public:
-  WebURLLoaderTestDelegate();
-  virtual ~WebURLLoaderTestDelegate();
+  URLLoaderTestDelegate();
+  virtual ~URLLoaderTestDelegate();
 
-  virtual void DidReceiveResponse(WebURLLoaderClient* original_client,
+  virtual void DidReceiveResponse(URLLoaderClient* original_client,
                                   const WebURLResponse&);
-  virtual void DidReceiveData(WebURLLoaderClient* original_client,
+  virtual void DidReceiveData(URLLoaderClient* original_client,
                               const char* data,
                               size_t data_length);
-  virtual void DidFail(WebURLLoaderClient* original_client,
+  virtual void DidFail(URLLoaderClient* original_client,
                        const WebURLError&,
                        int64_t total_encoded_data_length,
                        int64_t total_encoded_body_length,
                        int64_t total_decoded_body_length);
-  virtual void DidFinishLoading(WebURLLoaderClient* original_client,
+  virtual void DidFinishLoading(URLLoaderClient* original_client,
                                 base::TimeTicks finish_time,
                                 int64_t total_encoded_data_length,
                                 int64_t total_encoded_body_length,
@@ -51,4 +51,4 @@ class WebURLLoaderTestDelegate {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_WEB_URL_LOADER_TEST_DELEGATE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_TEST_DELEGATE_H_

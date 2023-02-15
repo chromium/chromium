@@ -49,7 +49,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 
 namespace blink {
 
@@ -60,8 +60,8 @@ class DummyLocalFrameClient : public EmptyLocalFrameClient {
   DummyLocalFrameClient() = default;
 
  private:
-  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() override {
-    return WebURLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
+  std::unique_ptr<URLLoader> CreateURLLoaderForTesting() override {
+    return URLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
   }
 };
 

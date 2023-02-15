@@ -58,7 +58,7 @@ struct SyncLoadResponse;
 
 // This class creates a PendingRequestInfo object and handles sending a resource
 // request asynchronously or synchronously, and it's owned by
-// WebURLLoaderImpl::Context or SyncLoadContext.
+// URLLoader::Context or SyncLoadContext.
 class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
  public:
   WebResourceRequestSender();

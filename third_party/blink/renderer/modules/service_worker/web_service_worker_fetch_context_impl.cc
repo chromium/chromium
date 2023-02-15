@@ -13,8 +13,8 @@
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
-#include "third_party/blink/renderer/platform/loader/internet_disconnected_web_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/internet_disconnected_url_loader.h"
 
 namespace blink {
 
@@ -101,16 +101,16 @@ void WebServiceWorkerFetchContextImpl::InitializeOnWorkerThread(
   subresource_loader_updater_.Bind(
       std::move(pending_subresource_loader_updater_));
 
-  web_url_loader_factory_ = std::make_unique<WebURLLoaderFactory>(
+  url_loader_factory_ = std::make_unique<URLLoaderFactory>(
       network::SharedURLLoaderFactory::Create(
           std::move(pending_url_loader_factory_)),
       cors_exempt_header_list_, terminate_sync_load_event_);
 
-  internet_disconnected_web_url_loader_factory_ =
-      std::make_unique<InternetDisconnectedWebURLLoaderFactory>();
+  internet_disconnected_url_loader_factory_ =
+      std::make_unique<InternetDisconnectedURLLoaderFactory>();
 
   if (pending_script_loader_factory_) {
-    web_script_loader_factory_ = std::make_unique<WebURLLoaderFactory>(
+    web_script_loader_factory_ = std::make_unique<URLLoaderFactory>(
         network::SharedURLLoaderFactory::Create(
             std::move(pending_script_loader_factory_)),
         cors_exempt_header_list_, terminate_sync_load_event_);
@@ -119,24 +119,23 @@ void WebServiceWorkerFetchContextImpl::InitializeOnWorkerThread(
   accept_languages_watcher_ = watcher;
 }
 
-WebURLLoaderFactory* WebServiceWorkerFetchContextImpl::GetURLLoaderFactory() {
+URLLoaderFactory* WebServiceWorkerFetchContextImpl::GetURLLoaderFactory() {
   if (is_offline_mode_)
-    return internet_disconnected_web_url_loader_factory_.get();
-  return web_url_loader_factory_.get();
+    return internet_disconnected_url_loader_factory_.get();
+  return url_loader_factory_.get();
 }
 
-std::unique_ptr<WebURLLoaderFactory>
+std::unique_ptr<URLLoaderFactory>
 WebServiceWorkerFetchContextImpl::WrapURLLoaderFactory(
     CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
         url_loader_factory) {
-  return std::make_unique<WebURLLoaderFactory>(
+  return std::make_unique<URLLoaderFactory>(
       base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
           std::move(url_loader_factory)),
       cors_exempt_header_list_, terminate_sync_load_event_);
 }
 
-WebURLLoaderFactory*
-WebServiceWorkerFetchContextImpl::GetScriptLoaderFactory() {
+URLLoaderFactory* WebServiceWorkerFetchContextImpl::GetScriptLoaderFactory() {
   return web_script_loader_factory_.get();
 }
 
@@ -205,7 +204,7 @@ WebServiceWorkerFetchContextImpl::CreateWebSocketHandshakeThrottle(
 void WebServiceWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
     std::unique_ptr<PendingURLLoaderFactoryBundle>
         subresource_loader_factories) {
-  web_url_loader_factory_ = std::make_unique<WebURLLoaderFactory>(
+  url_loader_factory_ = std::make_unique<URLLoaderFactory>(
       network::SharedURLLoaderFactory::Create(
           std::move(subresource_loader_factories)),
       cors_exempt_header_list_, terminate_sync_load_event_);

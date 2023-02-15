@@ -27,8 +27,8 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "url/url_constants.h"
 
 namespace blink {
@@ -53,25 +53,25 @@ void CreateServiceWorkerSubresourceLoaderFactory(
 
 }  // namespace
 
-// An implementation of WebURLLoaderFactory that is aware of service workers. In
+// An implementation of URLLoaderFactory that is aware of service workers. In
 // the usual case, it creates a loader that uses |loader_factory_|. But if the
 // worker fetch context is controlled by a service worker, it creates a loader
 // that uses |service_worker_loader_factory_| for requests that should be
 // intercepted by the service worker.
 class DedicatedOrSharedWorkerFetchContextImpl::Factory
-    : public WebURLLoaderFactory {
+    : public URLLoaderFactory {
  public:
   Factory(scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
           const Vector<String>& cors_exempt_header_list,
           base::WaitableEvent* terminate_sync_load_event)
-      : WebURLLoaderFactory(std::move(loader_factory),
-                            cors_exempt_header_list,
-                            terminate_sync_load_event) {}
+      : URLLoaderFactory(std::move(loader_factory),
+                         cors_exempt_header_list,
+                         terminate_sync_load_event) {}
   Factory(const Factory&) = delete;
   Factory& operator=(const Factory&) = delete;
   ~Factory() override = default;
 
-  std::unique_ptr<WebURLLoader> CreateURLLoader(
+  std::unique_ptr<URLLoader> CreateURLLoader(
       const WebURLRequest& request,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
@@ -84,14 +84,14 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
     if (CanCreateServiceWorkerURLLoader(request)) {
       // Create our own URLLoader to route the request to the controller service
       // worker.
-      return std::make_unique<WebURLLoader>(
+      return std::make_unique<URLLoader>(
           cors_exempt_header_list_, terminate_sync_load_event_,
           std::move(freezable_task_runner), std::move(unfreezable_task_runner),
           service_worker_loader_factory_, std::move(keep_alive_handle),
           back_forward_cache_loader_helper);
     }
 
-    return std::make_unique<WebURLLoader>(
+    return std::make_unique<URLLoader>(
         cors_exempt_header_list_, terminate_sync_load_event_,
         std::move(freezable_task_runner), std::move(unfreezable_task_runner),
         loader_factory_, std::move(keep_alive_handle),
@@ -361,16 +361,16 @@ void DedicatedOrSharedWorkerFetchContextImpl::InitializeOnWorkerThread(
   ResetServiceWorkerURLLoaderFactory();
 }
 
-WebURLLoaderFactory*
+URLLoaderFactory*
 DedicatedOrSharedWorkerFetchContextImpl::GetURLLoaderFactory() {
   return web_loader_factory_.get();
 }
 
-std::unique_ptr<WebURLLoaderFactory>
+std::unique_ptr<URLLoaderFactory>
 DedicatedOrSharedWorkerFetchContextImpl::WrapURLLoaderFactory(
     CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
         url_loader_factory) {
-  return std::make_unique<WebURLLoaderFactory>(
+  return std::make_unique<URLLoaderFactory>(
       base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
           std::move(url_loader_factory)),
       cors_exempt_header_list_, terminate_sync_load_event_);

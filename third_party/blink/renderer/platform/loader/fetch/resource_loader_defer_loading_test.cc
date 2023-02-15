@@ -16,8 +16,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
@@ -54,12 +54,12 @@ class TestCodeCacheLoader : public WebCodeCacheLoader {
   ProcessCodeCacheRequestCallback process_request_;
 };
 
-// A mock WebURLLoader to know the status of defers flag.
-class TestWebURLLoader final : public WebURLLoader {
+// A mock URLLoader to know the status of defers flag.
+class TestURLLoader final : public URLLoader {
  public:
-  explicit TestWebURLLoader(WebLoaderFreezeMode* const freeze_mode_ptr)
+  explicit TestURLLoader(WebLoaderFreezeMode* const freeze_mode_ptr)
       : freeze_mode_ptr_(freeze_mode_ptr) {}
-  ~TestWebURLLoader() override = default;
+  ~TestURLLoader() override = default;
 
   void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
@@ -67,7 +67,7 @@ class TestWebURLLoader final : public WebURLLoader {
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
-      WebURLLoaderClient*,
+      URLLoaderClient*,
       WebURLResponse&,
       absl::optional<WebURLError>&,
       WebData&,
@@ -84,7 +84,7 @@ class TestWebURLLoader final : public WebURLLoader {
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
-      WebURLLoaderClient*) override {}
+      URLLoaderClient*) override {}
 
   void Freeze(WebLoaderFreezeMode mode) override { *freeze_mode_ptr_ = mode; }
   void DidChangePriority(WebURLRequest::Priority, int) override {
@@ -110,13 +110,13 @@ class DeferTestLoaderFactory final : public ResourceFetcher::LoaderFactory {
             process_code_cache_request_callback) {}
 
   // LoaderFactory implementations
-  std::unique_ptr<WebURLLoader> CreateURLLoader(
+  std::unique_ptr<URLLoader> CreateURLLoader(
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) override {
-    return std::make_unique<TestWebURLLoader>(freeze_mode_ptr_);
+    return std::make_unique<TestURLLoader>(freeze_mode_ptr_);
   }
 
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
@@ -165,8 +165,8 @@ class ResourceLoaderDefersLoadingTest : public testing::Test {
 
   ProcessCodeCacheRequestCallback process_code_cache_request_callback_;
   WebCodeCacheLoader::FetchCodeCacheCallback code_cache_response_callback_;
-  // Passed to TestWebURLLoader (via |platform_|) and updated when its
-  // Freeze method is called.
+  // Passed to TestURLLoader (via |platform_|) and updated when its Freeze
+  // method is called.
   WebLoaderFreezeMode freeze_mode_ = WebLoaderFreezeMode::kNone;
   const KURL test_url_ = KURL("http://example.com/");
 
@@ -188,7 +188,7 @@ TEST_F(ResourceLoaderDefersLoadingTest, CodeCacheFetchCheckDefers) {
 
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
 
-  // After code cache fetch it should have deferred WebURLLoader.
+  // After code cache fetch it should have deferred URLLoader.
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
   DCHECK(resource);
   std::move(code_cache_response_callback_).Run(base::Time(), {});
@@ -228,8 +228,8 @@ TEST_F(ResourceLoaderDefersLoadingTest, ChangeDefersToFalse) {
   Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);
 
-  // Change Defers loading to false. This should not be sent to
-  // WebURLLoader since a code cache request is still pending.
+  // Change Defers loading to false. This should not be sent to URLLoader since
+  // a code cache request is still pending.
   ResourceLoader* loader = resource->Loader();
   loader->SetDefersLoading(LoaderFreezeMode::kNone);
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kStrict);

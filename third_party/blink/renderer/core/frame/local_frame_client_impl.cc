@@ -1009,8 +1009,7 @@ LocalFrameClientImpl::GetURLLoaderFactory() {
   return web_frame_->Client()->GetURLLoaderFactory();
 }
 
-std::unique_ptr<WebURLLoader>
-LocalFrameClientImpl::CreateURLLoaderForTesting() {
+std::unique_ptr<URLLoader> LocalFrameClientImpl::CreateURLLoaderForTesting() {
   return web_frame_->Client()->CreateURLLoaderForTesting();
 }
 

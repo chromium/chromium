@@ -245,7 +245,7 @@ class ResourceLoader::CodeCacheRequest {
   ~CodeCacheRequest() = default;
 
   // Request data from code cache.
-  bool FetchFromCodeCache(WebURLLoader* url_loader,
+  bool FetchFromCodeCache(URLLoader* url_loader,
                           ResourceLoader* resource_loader);
 
   // Notifies about the response from webURLLoader. Stores the
@@ -280,7 +280,7 @@ class ResourceLoader::CodeCacheRequest {
                                 ResourceLoader* resource_loader);
 
   // Send |cache_code| if we got a response from code_cache_loader and the
-  // web_url_loader.
+  // url_loader.
   void MaybeSendCachedCode(mojo_base::BigBuffer data,
                            ResourceLoader* resource_loader);
 
@@ -304,7 +304,7 @@ class ResourceLoader::CodeCacheRequest {
 };
 
 bool ResourceLoader::CodeCacheRequest::FetchFromCodeCache(
-    WebURLLoader* url_loader,
+    URLLoader* url_loader,
     ResourceLoader* resource_loader) {
   if (!code_cache_loader_)
     return false;
@@ -313,8 +313,8 @@ bool ResourceLoader::CodeCacheRequest::FetchFromCodeCache(
 
   // Set defers loading before fetching data from code cache. This is to
   // ensure that the resource receives cached code before the response data.
-  // This directly calls the WebURLLoader's SetDefersLoading without going
-  // through ResourceLoader.
+  // This directly calls the URLLoader's SetDefersLoading without going through
+  // ResourceLoader.
   url_loader->Freeze(LoaderFreezeMode::kStrict);
 
   WebCodeCacheLoader::FetchCodeCacheCallback callback =
@@ -326,8 +326,8 @@ bool ResourceLoader::CodeCacheRequest::FetchFromCodeCache(
   return true;
 }
 
-// This is called when a response is received from the WebURLLoader. We buffer
-// the response_time if the response from code cache is not available yet.
+// This is called when a response is received from the URLLoader. We buffer the
+// response_time if the response from code cache is not available yet.
 void ResourceLoader::CodeCacheRequest::DidReceiveResponse(
     const base::Time& resource_response_time,
     bool use_isolated_code_cache,
@@ -1390,7 +1390,7 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   WebURLResponse response_out;
   absl::optional<WebURLError> error_out;
   WebData data_out;
-  int64_t encoded_data_length = WebURLLoaderClient::kUnknownEncodedDataLength;
+  int64_t encoded_data_length = URLLoaderClient::kUnknownEncodedDataLength;
   uint64_t encoded_body_length = 0;
   scoped_refptr<BlobDataHandle> downloaded_blob;
 

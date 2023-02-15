@@ -711,7 +711,7 @@ class PLATFORM_EXPORT ResourceRequestBody {
 // A ResourceRequest is a "request" object for ResourceLoader. Conceptually
 // it is https://fetch.spec.whatwg.org/#concept-request, but it contains
 // a lot of blink specific fields. WebURLRequest is the "public version"
-// of this class and WebURLLoader needs it. See WebURLRequest and
+// of this class and URLLoader needs it. See WebURLRequest and
 // WrappedResourceRequest.
 //
 // This class is thread-bound. Do not copy/pass an instance across threads.

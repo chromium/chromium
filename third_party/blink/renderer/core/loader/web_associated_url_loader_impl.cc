@@ -517,9 +517,8 @@ void WebAssociatedURLLoaderImpl::DisposeObserver() {
   // ThreadState::current() is null. However, the fact we reached here
   // without cancelling the loader means that it's possible there're some
   // non-Blink non-on-heap objects still facing on-heap Blink objects. E.g.
-  // there could be a WebURLLoader instance behind the
-  // ThreadableLoader instance. So, for safety, we chose to just
-  // crash here.
+  // there could be a URLLoader instance behind the ThreadableLoader instance.
+  // So, for safety, we chose to just crash here.
   CHECK(ThreadState::Current());
 
   observer_->Dispose();

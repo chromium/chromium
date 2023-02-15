@@ -34,7 +34,7 @@ class CORE_EXPORT LoaderFactoryForFrame final
   void Trace(Visitor*) const override;
 
   // LoaderFactory implementations
-  std::unique_ptr<WebURLLoader> CreateURLLoader(
+  std::unique_ptr<URLLoader> CreateURLLoader(
       const ResourceRequest&,
       const ResourceLoaderOptions&,
       scoped_refptr<base::SingleThreadTaskRunner>,

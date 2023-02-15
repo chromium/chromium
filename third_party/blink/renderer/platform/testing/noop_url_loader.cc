@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/testing/noop_web_url_loader.h"
+#include "third_party/blink/renderer/platform/testing/noop_url_loader.h"
 
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -10,13 +10,13 @@
 
 namespace blink {
 
-void NoopWebURLLoader::LoadSynchronously(
+void NoopURLLoader::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
-    WebURLLoaderClient*,
+    URLLoaderClient*,
     WebURLResponse&,
     absl::optional<WebURLError>&,
     WebData&,
@@ -28,12 +28,12 @@ void NoopWebURLLoader::LoadSynchronously(
   NOTREACHED();
 }
 
-void NoopWebURLLoader::LoadAsynchronously(
+void NoopURLLoader::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
-    WebURLLoaderClient*) {}
+    URLLoaderClient*) {}
 
 }  // namespace blink

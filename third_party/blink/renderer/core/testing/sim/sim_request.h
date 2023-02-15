@@ -19,7 +19,7 @@ namespace blink {
 
 class SimNetwork;
 class StaticDataNavigationBodyLoader;
-class WebURLLoaderClient;
+class URLLoaderClient;
 
 // Simulates a single request for a resource from the server. Requires a
 // SimNetwork to have been created first. Use the Write(), Finish() and
@@ -82,7 +82,7 @@ class SimRequestBase {
   void WriteInternal(base::span<const char>);
 
   // Used by SimNetwork.
-  void DidReceiveResponse(WebURLLoaderClient*, const WebURLResponse&);
+  void DidReceiveResponse(URLLoaderClient*, const WebURLResponse&);
   void DidFail(const WebURLError&);
   void UsedForNavigation(StaticDataNavigationBodyLoader*);
 
@@ -92,11 +92,11 @@ class SimRequestBase {
   String referrer_;
   WebSecurityOrigin requestor_origin_;
   const bool start_immediately_;
-  bool started_;
+  bool started_ = false;
   WebURLResponse response_;
   absl::optional<WebURLError> error_;
-  WebURLLoaderClient* client_;
-  unsigned total_encoded_data_length_;
+  URLLoaderClient* client_ = nullptr;
+  unsigned total_encoded_data_length_ = 0;
   WTF::HashMap<String, String> response_http_headers_;
   int response_http_status_;
   StaticDataNavigationBodyLoader* navigation_body_loader_ = nullptr;

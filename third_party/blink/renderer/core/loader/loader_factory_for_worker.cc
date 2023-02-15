@@ -18,8 +18,8 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 
 namespace blink {
 
@@ -28,7 +28,7 @@ void LoaderFactoryForWorker::Trace(Visitor* visitor) const {
   LoaderFactory::Trace(visitor);
 }
 
-std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
+std::unique_ptr<URLLoader> LoaderFactoryForWorker::CreateURLLoader(
     const ResourceRequest& request,
     const ResourceLoaderOptions& options,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,

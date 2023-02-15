@@ -48,8 +48,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader_client.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -78,12 +78,12 @@ struct CnameAliasMetricInfo {
 
 // A ResourceLoader is created for each Resource by the ResourceFetcher when it
 // needs to load the specified resource. A ResourceLoader creates a
-// WebURLLoader and loads the resource using it. Any per-load logic should be
+// URLLoader and loads the resource using it. Any per-load logic should be
 // implemented in this class basically.
 class PLATFORM_EXPORT ResourceLoader final
     : public GarbageCollected<ResourceLoader>,
       public ResourceLoadSchedulerClient,
-      protected WebURLLoaderClient,
+      protected URLLoaderClient,
       protected mojom::blink::ProgressClient,
       private ResponseBodyLoaderClient {
   USING_PRE_FINALIZER(ResourceLoader, Dispose);
@@ -120,7 +120,7 @@ class PLATFORM_EXPORT ResourceLoader final
 
   void AbortResponseBodyLoading();
 
-  // WebURLLoaderClient
+  // URLLoaderClient
   //
   // A succesful load will consist of:
   // 0+  WillFollowRedirect()
@@ -207,7 +207,7 @@ class PLATFORM_EXPORT ResourceLoader final
   FetchContext& Context() const;
 
   // Returns true during resource load is happening. Methods as
-  // a WebURLLoaderClient should not be invoked if this returns false.
+  // a URLLoaderClient should not be invoked if this returns false.
   bool IsLoading() const;
 
   void CancelForRedirectAccessCheckError(const KURL&,
@@ -243,7 +243,7 @@ class PLATFORM_EXPORT ResourceLoader final
       const ResourceRequest::RedirectInfo redirect_info,
       CnameAliasMetricInfo* out_metric_info);
 
-  std::unique_ptr<WebURLLoader> loader_;
+  std::unique_ptr<URLLoader> loader_;
   ResourceLoadScheduler::ClientId scheduler_client_id_;
   Member<ResourceFetcher> fetcher_;
   Member<ResourceLoadScheduler> scheduler_;

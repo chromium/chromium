@@ -114,8 +114,8 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   // WebWorkerFetchContext implementation:
   void SetTerminateSyncLoadEvent(base::WaitableEvent*) override;
   void InitializeOnWorkerThread(AcceptLanguagesWatcher*) override;
-  WebURLLoaderFactory* GetURLLoaderFactory() override;
-  std::unique_ptr<WebURLLoaderFactory> WrapURLLoaderFactory(
+  URLLoaderFactory* GetURLLoaderFactory() override;
+  std::unique_ptr<URLLoaderFactory> WrapURLLoaderFactory(
       CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
           url_loader_factory) override;
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader(
@@ -285,7 +285,7 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   // This is owned by ThreadedMessagingProxyBase on the main thread.
   base::WaitableEvent* terminate_sync_load_event_ = nullptr;
 
-  // The WebURLLoaderFactory which was created and passed to
+  // The URLLoaderFactory which was created and passed to
   // Blink by GetURLLoaderFactory().
   std::unique_ptr<Factory> web_loader_factory_;
 

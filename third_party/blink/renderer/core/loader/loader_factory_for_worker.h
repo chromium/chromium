@@ -25,7 +25,7 @@ class LoaderFactoryForWorker : public ResourceFetcher::LoaderFactory {
   void Trace(Visitor* visitor) const override;
 
   // LoaderFactory implementations
-  std::unique_ptr<WebURLLoader> CreateURLLoader(
+  std::unique_ptr<URLLoader> CreateURLLoader(
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,

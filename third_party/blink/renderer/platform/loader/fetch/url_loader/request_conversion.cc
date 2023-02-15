@@ -139,7 +139,7 @@ mojom::ResourceType RequestContextToResourceType(
     case mojom::blink::RequestContextType::XML_HTTP_REQUEST:
       return mojom::ResourceType::kXhr;
 
-    // Navigation requests should not go through WebURLLoader.
+    // Navigation requests should not go through URLLoader.
     case mojom::blink::RequestContextType::FORM:
     case mojom::blink::RequestContextType::HYPERLINK:
     case mojom::blink::RequestContextType::LOCATION:

@@ -19,7 +19,7 @@ namespace blink {
 
 class AlternateSignedExchangeResourceInfo;
 class LocalFrame;
-class WebURLLoader;
+class URLLoader;
 class WebURLRequest;
 
 // This class holds the prefetched signed exchange info and will returns
@@ -61,8 +61,7 @@ class PrefetchedSignedExchangeManager final
   //
   // The returned loader doesn't start loading until
   // StartPrefetchedLinkHeaderPreloads() will be called.
-  std::unique_ptr<WebURLLoader> MaybeCreateURLLoader(
-      const WebURLRequest& request);
+  std::unique_ptr<URLLoader> MaybeCreateURLLoader(const WebURLRequest& request);
 
   // If the all loaders which have been created by MaybeCreateURLLoader() have
   // a matching "alternate" link header in the outer response and the matching
@@ -83,9 +82,9 @@ class PrefetchedSignedExchangeManager final
   class PrefetchedSignedExchangeLoader;
 
   void TriggerLoad();
-  std::unique_ptr<WebURLLoader> CreateDefaultURLLoader(
+  std::unique_ptr<URLLoader> CreateDefaultURLLoader(
       const WebURLRequest& request);
-  std::unique_ptr<WebURLLoader> CreatePrefetchedSignedExchangeURLLoader(
+  std::unique_ptr<URLLoader> CreatePrefetchedSignedExchangeURLLoader(
       const WebURLRequest& request,
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
           loader_factory);

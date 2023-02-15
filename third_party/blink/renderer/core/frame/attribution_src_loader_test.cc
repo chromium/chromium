@@ -34,11 +34,11 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -57,8 +57,8 @@ class AttributionSrcLocalFrameClient : public EmptyLocalFrameClient {
  public:
   AttributionSrcLocalFrameClient() = default;
 
-  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() override {
-    return WebURLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
+  std::unique_ptr<URLLoader> CreateURLLoaderForTesting() override {
+    return URLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
   }
 
   void DispatchWillSendRequest(ResourceRequest& request) override {

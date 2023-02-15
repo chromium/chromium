@@ -1361,7 +1361,7 @@ void ResourceFetcher::InitializeRevalidation(
   resource->SetRevalidatingRequest(revalidating_request);
 }
 
-std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
+std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
     const ResourceRequestHead& request,
     const ResourceLoaderOptions& options) {
   DCHECK(!GetProperties().IsDetached());

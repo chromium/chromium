@@ -22,14 +22,14 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
-#include "third_party/blink/renderer/platform/testing/noop_web_url_loader.h"
+#include "third_party/blink/renderer/platform/testing/noop_url_loader.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -79,15 +79,14 @@ class ResourceLoaderTest : public testing::Test {
   const KURL bar_url_;
 
   class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
-    std::unique_ptr<WebURLLoader> CreateURLLoader(
+    std::unique_ptr<URLLoader> CreateURLLoader(
         const ResourceRequest& request,
         const ResourceLoaderOptions& options,
         scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
         BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
         override {
-      return std::make_unique<NoopWebURLLoader>(
-          std::move(freezable_task_runner));
+      return std::make_unique<NoopURLLoader>(std::move(freezable_task_runner));
     }
     std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader() override {
       return std::make_unique<CodeCacheLoaderMock>();

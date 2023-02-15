@@ -16,8 +16,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -44,7 +44,7 @@ class NotificationResourcesLoaderTest : public PageTestBase {
 
   ~NotificationResourcesLoaderTest() override {
     loader_->Stop();
-    WebURLLoaderMockFactory::GetSingletonInstance()
+    URLLoaderMockFactory::GetSingletonInstance()
         ->UnregisterAllURLsAndClearMemoryCache();
   }
 
@@ -71,8 +71,7 @@ class NotificationResourcesLoaderTest : public PageTestBase {
     base::RunLoop run_loop;
     resources_loaded_closure_ = run_loop.QuitClosure();
     Loader()->Start(GetExecutionContext(), notification_data);
-    WebURLLoaderMockFactory::GetSingletonInstance()
-        ->ServeAsynchronousRequests();
+    URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
     run_loop.Run();
   }
 
@@ -281,7 +280,7 @@ TEST_F(NotificationResourcesLoaderTest, StopYieldsNoResources) {
   // The loader would stop e.g. when the execution context is destroyed or
   // when the loader is about to be destroyed, as a pre-finalizer.
   Loader()->Stop();
-  WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
+  URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
 
   // Loading should have been cancelled when |stop| was called so no resources
   // should have been received by the test even though

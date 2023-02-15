@@ -25,8 +25,8 @@ Refer to README.md for content description and update process.
  <item id="backdrop_next_image_download" added_in_milestone="77" content_hash_code="05df91f2" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_background_service.cc" />
  <item id="background_fetch_context" added_in_milestone="62" content_hash_code="031d0caa" os_list="linux,windows,chromeos,android" file_path="content/browser/background_fetch/background_fetch_delegate_proxy.cc" />
  <item id="bidirectional_stream" added_in_milestone="67" content_hash_code="07c03a44" os_list="linux,windows,chromeos,android" file_path="net/http/bidirectional_stream.cc" />
- <item id="blink_extension_resource_loader" added_in_milestone="63" content_hash_code="03c97c39" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.cc" />
- <item id="blink_resource_loader" added_in_milestone="62" content_hash_code="047d7664" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.cc" />
+ <item id="blink_extension_resource_loader" added_in_milestone="63" content_hash_code="03c97c39" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.cc" />
+ <item id="blink_resource_loader" added_in_milestone="62" content_hash_code="047d7664" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.cc" />
  <item id="bluetooth_socket" added_in_milestone="65" content_hash_code="01d7fd7d" os_list="linux,windows,chromeos,android" file_path="device/bluetooth/bluetooth_socket_net.cc" />
  <item id="brandcode_config" added_in_milestone="62" content_hash_code="07ae0010" os_list="linux,windows,chromeos" file_path="chrome/browser/profile_resetter/brandcode_config_fetcher.cc" />
  <item id="browser_switcher_ieem_sitelist" added_in_milestone="72" content_hash_code="07b15836" os_list="linux,windows" file_path="chrome/browser/browser_switcher/browser_switcher_service.cc" />
@@ -83,7 +83,7 @@ Refer to README.md for content description and update process.
  <item id="extension_install_signer" added_in_milestone="62" content_hash_code="065c4bce" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/install_signer.cc" />
  <item id="extension_manifest_fetcher" added_in_milestone="62" content_hash_code="05983aa9" os_list="linux,windows,chromeos" file_path="extensions/browser/updater/extension_downloader.cc" />
  <item id="external_policy_fetcher" added_in_milestone="62" content_hash_code="03d48984" os_list="linux,windows,chromeos" file_path="components/policy/core/common/cloud/external_policy_data_fetcher.cc" />
- <item id="favicon_loader" added_in_milestone="63" content_hash_code="0437e97c" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.cc" />
+ <item id="favicon_loader" added_in_milestone="63" content_hash_code="0437e97c" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.cc" />
  <item id="ftl_messaging_client_ack_messages" added_in_milestone="86" content_hash_code="013f1ddb" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />
  <item id="ftl_messaging_client_receive_messages" added_in_milestone="86" content_hash_code="022e9c77" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />
  <item id="ftl_messaging_client_send_messages" added_in_milestone="86" content_hash_code="006864f3" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/ftl_messaging_client.cc" />

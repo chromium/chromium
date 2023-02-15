@@ -50,9 +50,9 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_resource_request_sender.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -159,10 +159,10 @@ class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
   }
 };
 
-class TestWebURLLoaderClient : public WebURLLoaderClient {
+class TestURLLoaderClient : public URLLoaderClient {
  public:
-  TestWebURLLoaderClient()
-      : loader_(new WebURLLoader(
+  TestURLLoaderClient()
+      : loader_(new URLLoader(
             /*cors_exempt_header_list=*/Vector<String>(),
             /*terminate_sync_load_event=*/nullptr,
             scheduler::GetSingleThreadTaskRunnerForTesting(),
@@ -180,22 +180,23 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
         did_receive_response_(false),
         did_finish_(false) {}
 
-  TestWebURLLoaderClient(const TestWebURLLoaderClient&) = delete;
-  TestWebURLLoaderClient& operator=(const TestWebURLLoaderClient&) = delete;
+  TestURLLoaderClient(const TestURLLoaderClient&) = delete;
+  TestURLLoaderClient& operator=(const TestURLLoaderClient&) = delete;
 
-  ~TestWebURLLoaderClient() override {
+  ~TestURLLoaderClient() override {
     // During the deconstruction of the `loader_`, the request context will be
     // released asynchronously and we must ensure that the request context has
     // been deleted practically before the test quits, thus, memory leak will
     // not be reported on the ASAN build. So, we call 'reset()' to trigger the
     // deconstruction, and then execute `RunUntilIdle()` to empty the task queue
     // to achieve that.
-    if (loader_)
+    if (loader_) {
       loader_.reset();
+    }
     base::RunLoop().RunUntilIdle();
   }
 
-  // WebURLLoaderClient implementation:
+  // URLLoaderClient implementation:
   bool WillFollowRedirect(const WebURL& new_url,
                           const net::SiteForCookies& new_site_for_cookies,
                           const WebString& new_referrer,
@@ -211,8 +212,9 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
     EXPECT_FALSE(did_receive_redirect_);
     did_receive_redirect_ = true;
 
-    if (delete_on_receive_redirect_)
+    if (delete_on_receive_redirect_) {
       loader_.reset();
+    }
 
     return true;
   }
@@ -227,8 +229,9 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
 
     did_receive_response_ = true;
     response_ = response;
-    if (delete_on_receive_response_)
+    if (delete_on_receive_response_) {
       loader_.reset();
+    }
   }
 
   void DidStartLoadingResponseBody(
@@ -254,8 +257,9 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
     EXPECT_FALSE(did_finish_);
     did_finish_ = true;
 
-    if (delete_on_finish_)
+    if (delete_on_finish_) {
       loader_.reset();
+    }
   }
 
   void DidFail(const WebURLError& error,
@@ -267,11 +271,12 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
     EXPECT_FALSE(did_finish_);
     error_ = error;
 
-    if (delete_on_fail_)
+    if (delete_on_fail_) {
       loader_.reset();
+    }
   }
 
-  WebURLLoader* loader() { return loader_.get(); }
+  URLLoader* loader() { return loader_.get(); }
   void DeleteLoader() { loader_.reset(); }
 
   void set_delete_on_receive_redirect() { delete_on_receive_redirect_ = true; }
@@ -289,7 +294,7 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
 
  private:
   FakeURLLoaderFactory fake_url_loader_factory_;
-  std::unique_ptr<WebURLLoader> loader_;
+  std::unique_ptr<URLLoader> loader_;
 
   bool delete_on_receive_redirect_;
   bool delete_on_receive_response_;
@@ -305,15 +310,15 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
   WebURLResponse response_;
 };
 
-class WebURLLoaderTest : public testing::Test {
+class URLLoaderTest : public testing::Test {
  public:
-  WebURLLoaderTest() : client_(std::make_unique<TestWebURLLoaderClient>()) {
+  URLLoaderTest() : client_(std::make_unique<TestURLLoaderClient>()) {
     auto sender = std::make_unique<MockResourceRequestSender>();
     sender_ = sender.get();
     client_->loader()->SetResourceRequestSenderForTesting(std::move(sender));
   }
 
-  ~WebURLLoaderTest() override = default;
+  ~URLLoaderTest() override = default;
 
   void DoStartAsyncRequest() {
     auto request = std::make_unique<network::ResourceRequest>();
@@ -400,18 +405,18 @@ class WebURLLoaderTest : public testing::Test {
     EXPECT_EQ(net::ERR_FAILED, client()->error()->reason());
   }
 
-  TestWebURLLoaderClient* client() { return client_.get(); }
+  TestURLLoaderClient* client() { return client_.get(); }
   MockResourceRequestSender* sender() { return sender_; }
   WebRequestPeer* peer() { return sender_->peer(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::ScopedDataPipeProducerHandle body_handle_;
-  std::unique_ptr<TestWebURLLoaderClient> client_;
+  std::unique_ptr<TestURLLoaderClient> client_;
   MockResourceRequestSender* sender_ = nullptr;
 };
 
-TEST_F(WebURLLoaderTest, Success) {
+TEST_F(URLLoaderTest, Success) {
   DoStartAsyncRequest();
   DoReceiveResponse();
   DoStartLoadingResponseBody();
@@ -420,7 +425,7 @@ TEST_F(WebURLLoaderTest, Success) {
   EXPECT_TRUE(client()->did_receive_response_body());
 }
 
-TEST_F(WebURLLoaderTest, Redirect) {
+TEST_F(URLLoaderTest, Redirect) {
   DoStartAsyncRequest();
   DoReceiveRedirect();
   DoReceiveResponse();
@@ -430,7 +435,7 @@ TEST_F(WebURLLoaderTest, Redirect) {
   EXPECT_TRUE(client()->did_receive_response_body());
 }
 
-TEST_F(WebURLLoaderTest, Failure) {
+TEST_F(URLLoaderTest, Failure) {
   DoStartAsyncRequest();
   DoReceiveResponse();
   DoStartLoadingResponseBody();
@@ -438,21 +443,21 @@ TEST_F(WebURLLoaderTest, Failure) {
   EXPECT_FALSE(sender()->canceled());
 }
 
-// The client may delete the WebURLLoader during any callback from the loader.
+// The client may delete the URLLoader during any callback from the loader.
 // These tests make sure that doesn't result in a crash.
-TEST_F(WebURLLoaderTest, DeleteOnReceiveRedirect) {
+TEST_F(URLLoaderTest, DeleteOnReceiveRedirect) {
   client()->set_delete_on_receive_redirect();
   DoStartAsyncRequest();
   DoReceiveRedirect();
 }
 
-TEST_F(WebURLLoaderTest, DeleteOnReceiveResponse) {
+TEST_F(URLLoaderTest, DeleteOnReceiveResponse) {
   client()->set_delete_on_receive_response();
   DoStartAsyncRequest();
   DoReceiveResponse();
 }
 
-TEST_F(WebURLLoaderTest, DeleteOnFinish) {
+TEST_F(URLLoaderTest, DeleteOnFinish) {
   client()->set_delete_on_finish();
   DoStartAsyncRequest();
   DoReceiveResponse();
@@ -460,7 +465,7 @@ TEST_F(WebURLLoaderTest, DeleteOnFinish) {
   DoCompleteRequest();
 }
 
-TEST_F(WebURLLoaderTest, DeleteOnFail) {
+TEST_F(URLLoaderTest, DeleteOnFail) {
   client()->set_delete_on_fail();
   DoStartAsyncRequest();
   DoReceiveResponse();
@@ -468,14 +473,14 @@ TEST_F(WebURLLoaderTest, DeleteOnFail) {
   DoFailRequest();
 }
 
-TEST_F(WebURLLoaderTest, DefersLoadingBeforeStart) {
+TEST_F(URLLoaderTest, DefersLoadingBeforeStart) {
   client()->loader()->Freeze(WebLoaderFreezeMode::kStrict);
   EXPECT_EQ(sender()->freeze_mode(), WebLoaderFreezeMode::kNone);
   DoStartAsyncRequest();
   EXPECT_EQ(sender()->freeze_mode(), WebLoaderFreezeMode::kStrict);
 }
 
-TEST_F(WebURLLoaderTest, ResponseIPEndpoint) {
+TEST_F(URLLoaderTest, ResponseIPEndpoint) {
   KURL url("http://example.test/");
 
   struct TestCase {
@@ -505,7 +510,7 @@ TEST_F(WebURLLoaderTest, ResponseIPEndpoint) {
   };
 }
 
-TEST_F(WebURLLoaderTest, ResponseAddressSpace) {
+TEST_F(URLLoaderTest, ResponseAddressSpace) {
   KURL url("http://foo.example");
 
   network::mojom::URLResponseHead head;
@@ -516,7 +521,7 @@ TEST_F(WebURLLoaderTest, ResponseAddressSpace) {
   EXPECT_EQ(network::mojom::IPAddressSpace::kPrivate, response.AddressSpace());
 }
 
-TEST_F(WebURLLoaderTest, ClientAddressSpace) {
+TEST_F(URLLoaderTest, ClientAddressSpace) {
   KURL url("http://foo.example");
 
   network::mojom::URLResponseHead head;
@@ -528,7 +533,7 @@ TEST_F(WebURLLoaderTest, ClientAddressSpace) {
             response.ClientAddressSpace());
 }
 
-TEST_F(WebURLLoaderTest, SSLInfo) {
+TEST_F(URLLoaderTest, SSLInfo) {
   KURL url("https://test.example/");
 
   net::CertificateList certs;
@@ -560,7 +565,7 @@ TEST_F(WebURLLoaderTest, SSLInfo) {
 
 // Verifies that the lengths used by the PerformanceResourceTiming API are
 // correctly assigned for sync XHR.
-TEST_F(WebURLLoaderTest, SyncLengths) {
+TEST_F(URLLoaderTest, SyncLengths) {
   static const char kBodyData[] = "Today is Thursday";
   const uint64_t kEncodedBodyLength = 30;
   const int kEncodedDataLength = 130;
@@ -604,7 +609,7 @@ TEST_F(WebURLLoaderTest, SyncLengths) {
 
 // Verifies that WebURLResponse::Create() copies AuthChallengeInfo to the
 // response.
-TEST_F(WebURLLoaderTest, AuthChallengeInfo) {
+TEST_F(URLLoaderTest, AuthChallengeInfo) {
   network::mojom::URLResponseHead head;
   net::AuthChallengeInfo auth_challenge_info;
   auth_challenge_info.is_proxy = true;

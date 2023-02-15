@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/testing/weburl_loader_mock.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock.h"
 
 #include <utility>
 
@@ -15,33 +15,34 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
-#include "third_party/blink/renderer/platform/testing/weburl_loader_mock_factory_impl.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
-WebURLLoaderMock::WebURLLoaderMock(WebURLLoaderMockFactoryImpl* factory)
+URLLoaderMock::URLLoaderMock(URLLoaderMockFactoryImpl* factory)
     : factory_(factory) {}
 
-WebURLLoaderMock::~WebURLLoaderMock() {
+URLLoaderMock::~URLLoaderMock() {
   Cancel();
 }
 
-void WebURLLoaderMock::ServeAsynchronousRequest(
-    WebURLLoaderTestDelegate* delegate,
+void URLLoaderMock::ServeAsynchronousRequest(
+    URLLoaderTestDelegate* delegate,
     const WebURLResponse& response,
     const WebData& data,
     const absl::optional<WebURLError>& error) {
-  if (!client_)
+  if (!client_) {
     return;
+  }
 
   // If no delegate is provided then create an empty one. The default behavior
   // will just proxy to the client.
-  std::unique_ptr<WebURLLoaderTestDelegate> default_delegate;
+  std::unique_ptr<URLLoaderTestDelegate> default_delegate;
   if (!delegate) {
-    default_delegate = std::make_unique<WebURLLoaderTestDelegate>();
+    default_delegate = std::make_unique<URLLoaderTestDelegate>();
     delegate = default_delegate.get();
   }
 
@@ -52,11 +53,12 @@ void WebURLLoaderMock::ServeAsynchronousRequest(
 
   // didReceiveResponse() and didReceiveData() might end up getting ::cancel()
   // to be called which will make the ResourceLoader to delete |this|.
-  base::WeakPtr<WebURLLoaderMock> self = weak_factory_.GetWeakPtr();
+  base::WeakPtr<URLLoaderMock> self = weak_factory_.GetWeakPtr();
 
   delegate->DidReceiveResponse(client_, response);
-  if (!self)
+  if (!self) {
     return;
+  }
 
   data.ForEachSegment([this, &delegate, &self](const char* segment,
                                                size_t segment_size,
@@ -68,19 +70,19 @@ void WebURLLoaderMock::ServeAsynchronousRequest(
     return self;
   });
 
-  if (!self)
+  if (!self) {
     return;
+  }
 
   delegate->DidFinishLoading(client_, base::TimeTicks(), data.size(),
                              data.size(), data.size());
 }
 
-WebURL WebURLLoaderMock::ServeRedirect(
-    const WebString& method,
-    const WebURLResponse& redirect_response) {
+WebURL URLLoaderMock::ServeRedirect(const WebString& method,
+                                    const WebURLResponse& redirect_response) {
   KURL redirect_url(redirect_response.HttpHeaderField("Location"));
 
-  base::WeakPtr<WebURLLoaderMock> self = weak_factory_.GetWeakPtr();
+  base::WeakPtr<URLLoaderMock> self = weak_factory_.GetWeakPtr();
 
   bool report_raw_headers = false;
   bool follow = client_->WillFollowRedirect(
@@ -89,22 +91,24 @@ WebURL WebURLLoaderMock::ServeRedirect(
       redirect_response, report_raw_headers, nullptr /* removed_headers */,
       false /* insecure_scheme_was_upgraded */);
   // |this| might be deleted in willFollowRedirect().
-  if (!self)
+  if (!self) {
     return redirect_url;
+  }
 
-  if (!follow)
+  if (!follow) {
     Cancel();
+  }
 
   return redirect_url;
 }
 
-void WebURLLoaderMock::LoadSynchronously(
+void URLLoaderMock::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
     bool pass_response_pipe_to_client,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
-    WebURLLoaderClient* client,
+    URLLoaderClient* client,
     WebURLResponse& response,
     absl::optional<WebURLError>& error,
     WebData& data,
@@ -118,44 +122,45 @@ void WebURLLoaderMock::LoadSynchronously(
                               &encoded_data_length);
 }
 
-void WebURLLoaderMock::LoadAsynchronously(
+void URLLoaderMock::LoadAsynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
-    WebURLLoaderClient* client) {
+    URLLoaderClient* client) {
   DCHECK(client);
   DCHECK(factory_->IsMockedURL(WebURL(KURL(request->url)))) << request->url;
   client_ = client;
   factory_->LoadAsynchronouly(std::move(request), this);
 }
 
-void WebURLLoaderMock::Cancel() {
+void URLLoaderMock::Cancel() {
   client_ = nullptr;
   factory_->CancelLoad(this);
 }
 
-void WebURLLoaderMock::Freeze(WebLoaderFreezeMode mode) {
+void URLLoaderMock::Freeze(WebLoaderFreezeMode mode) {
   is_deferred_ = (mode != WebLoaderFreezeMode::kNone);
   // Ignores setDefersLoading(false) safely.
-  if (!is_deferred_)
+  if (!is_deferred_) {
     return;
+  }
 
   // setDefersLoading(true) is not implemented.
   NOTIMPLEMENTED();
 }
 
-void WebURLLoaderMock::DidChangePriority(WebURLRequest::Priority new_priority,
-                                         int intra_priority_value) {}
+void URLLoaderMock::DidChangePriority(WebURLRequest::Priority new_priority,
+                                      int intra_priority_value) {}
 
 scoped_refptr<base::SingleThreadTaskRunner>
-WebURLLoaderMock::GetTaskRunnerForBodyLoader() {
+URLLoaderMock::GetTaskRunnerForBodyLoader() {
   return base::MakeRefCounted<scheduler::FakeTaskRunner>();
 }
 
-base::WeakPtr<WebURLLoaderMock> WebURLLoaderMock::GetWeakPtr() {
+base::WeakPtr<URLLoaderMock> URLLoaderMock::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-} // namespace blink
+}  // namespace blink

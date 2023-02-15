@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_FACTORY_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_FACTORY_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_URL_LOADER_FACTORY_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_URL_LOADER_FACTORY_H_
 
 #include <memory>
 #include <string>
@@ -29,28 +29,28 @@ class SharedURLLoaderFactory;
 namespace blink {
 
 class BackForwardCacheLoaderHelper;
-class WebURLLoader;
+class URLLoader;
 class WebURLRequest;
 
 // An abstract interface to create a URLLoader. It is expected that each
-// loading context holds its own per-context WebURLLoaderFactory.
-class BLINK_PLATFORM_EXPORT WebURLLoaderFactory {
+// loading context holds its own per-context URLLoaderFactory.
+class BLINK_PLATFORM_EXPORT URLLoaderFactory {
  public:
-  WebURLLoaderFactory(
+  URLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       const Vector<String>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event);
-  WebURLLoaderFactory();
-  WebURLLoaderFactory(const WebURLLoaderFactory&) = delete;
-  WebURLLoaderFactory& operator=(const WebURLLoaderFactory&) = delete;
-  virtual ~WebURLLoaderFactory();
+  URLLoaderFactory();
+  URLLoaderFactory(const URLLoaderFactory&) = delete;
+  URLLoaderFactory& operator=(const URLLoaderFactory&) = delete;
+  virtual ~URLLoaderFactory();
 
-  // Returns a new WebURLLoader instance. This should internally choose
+  // Returns a new URLLoader instance. This should internally choose
   // the most appropriate URLLoaderFactory implementation.
   // TODO(yuzus): Only take unfreezable task runner once both
   // URLLoaderClientImpl and ResponseBodyLoader use unfreezable task runner.
   // This currently takes two task runners: freezable and unfreezable one.
-  virtual std::unique_ptr<WebURLLoader> CreateURLLoader(
+  virtual std::unique_ptr<URLLoader> CreateURLLoader(
       const WebURLRequest& webreq,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
@@ -65,12 +65,12 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderFactory {
 
 // A test version of the above factory interface, which supports cloning the
 // factory.
-class WebURLLoaderFactoryForTest : public WebURLLoaderFactory {
+class URLLoaderFactoryForTest : public URLLoaderFactory {
  public:
   // Clones this factory.
-  virtual std::unique_ptr<WebURLLoaderFactoryForTest> Clone() = 0;
+  virtual std::unique_ptr<URLLoaderFactoryForTest> Clone() = 0;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_FACTORY_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_URL_LOADER_FACTORY_H_

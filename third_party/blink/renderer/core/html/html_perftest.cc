@@ -11,7 +11,7 @@
 #include "testing/perf/perf_test.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
-#include "third_party/blink/renderer/core/testing/no_network_web_url_loader.h"
+#include "third_party/blink/renderer/core/testing/no_network_url_loader.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 

@@ -131,7 +131,7 @@ class WebServiceWorkerProvider;
 class WebSocketHandshakeThrottle;
 class WebString;
 class WebURL;
-class WebURLLoader;
+class URLLoader;
 class WebURLRequest;
 class WebURLResponse;
 class WebView;
@@ -674,7 +674,7 @@ class BLINK_EXPORT WebLocalFrameClient {
     return nullptr;
   }
 
-  virtual std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() {
+  virtual std::unique_ptr<URLLoader> CreateURLLoaderForTesting() {
     return nullptr;
   }
 

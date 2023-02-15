@@ -40,7 +40,7 @@ namespace blink {
 namespace test {
 
 // Note: You may want to use TestingPlatformSupportWithMockScheduler to
-// provides runUntilIdle() method that can work with WebURLLoaderMockFactory.
+// provides runUntilIdle() method that can work with URLLoaderMockFactory.
 void RunPendingTasks();
 
 // Waits for delayed task to complete or timers to fire for |delay|.

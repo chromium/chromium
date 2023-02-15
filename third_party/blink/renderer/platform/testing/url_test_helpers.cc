@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 
 namespace blink {
 namespace url_test_helpers {
@@ -64,7 +64,7 @@ WebURL RegisterMockedURLLoadFromBase(const WebString& base_url,
 void RegisterMockedURLLoad(const WebURL& full_url,
                            const WebString& file_path,
                            const WebString& mime_type,
-                           WebURLLoaderMockFactory* mock_factory,
+                           URLLoaderMockFactory* mock_factory,
                            network::mojom::IPAddressSpace address_space) {
   network::mojom::LoadTimingInfoPtr timing =
       network::mojom::LoadTimingInfo::New();
@@ -80,7 +80,7 @@ void RegisterMockedURLLoad(const WebURL& full_url,
 }
 
 void RegisterMockedErrorURLLoad(const WebURL& full_url,
-                                WebURLLoaderMockFactory* mock_factory) {
+                                URLLoaderMockFactory* mock_factory) {
   network::mojom::LoadTimingInfoPtr timing =
       network::mojom::LoadTimingInfo::New();
 
@@ -97,25 +97,25 @@ void RegisterMockedErrorURLLoad(const WebURL& full_url,
 void RegisterMockedURLLoadWithCustomResponse(const WebURL& full_url,
                                              const WebString& file_path,
                                              WebURLResponse response) {
-  WebURLLoaderMockFactory::GetSingletonInstance()->RegisterURL(
-      full_url, response, file_path);
+  URLLoaderMockFactory::GetSingletonInstance()->RegisterURL(full_url, response,
+                                                            file_path);
 }
 
 void RegisterMockedURLUnregister(const WebURL& url) {
-  WebURLLoaderMockFactory::GetSingletonInstance()->UnregisterURL(url);
+  URLLoaderMockFactory::GetSingletonInstance()->UnregisterURL(url);
 }
 
 void UnregisterAllURLsAndClearMemoryCache() {
-  WebURLLoaderMockFactory::GetSingletonInstance()
+  URLLoaderMockFactory::GetSingletonInstance()
       ->UnregisterAllURLsAndClearMemoryCache();
 }
 
-void SetLoaderDelegate(WebURLLoaderTestDelegate* delegate) {
-  WebURLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(delegate);
+void SetLoaderDelegate(URLLoaderTestDelegate* delegate) {
+  URLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(delegate);
 }
 
 void ServeAsynchronousRequests() {
-  WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
+  URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
 }
 
 }  // namespace url_test_helpers

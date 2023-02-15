@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/testing/code_cache_loader_mock.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 
 namespace blink {
 
@@ -20,13 +20,13 @@ namespace blink {
 class TestLoaderFactory : public ResourceFetcher::LoaderFactory {
  public:
   TestLoaderFactory()
-      : TestLoaderFactory(WebURLLoaderMockFactory::GetSingletonInstance()) {}
+      : TestLoaderFactory(URLLoaderMockFactory::GetSingletonInstance()) {}
 
-  explicit TestLoaderFactory(WebURLLoaderMockFactory* mock_factory)
+  explicit TestLoaderFactory(URLLoaderMockFactory* mock_factory)
       : mock_factory_(mock_factory) {}
 
   // LoaderFactory implementations
-  std::unique_ptr<WebURLLoader> CreateURLLoader(
+  std::unique_ptr<URLLoader> CreateURLLoader(
       const ResourceRequest& request,
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
@@ -40,7 +40,7 @@ class TestLoaderFactory : public ResourceFetcher::LoaderFactory {
   }
 
  private:
-  WebURLLoaderMockFactory* mock_factory_;
+  URLLoaderMockFactory* mock_factory_;
 };
 
 }  // namespace blink

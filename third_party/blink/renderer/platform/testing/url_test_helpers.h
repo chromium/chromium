@@ -35,7 +35,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -74,8 +74,8 @@ void RegisterMockedURLLoad(
     const WebURL& full_url,
     const WebString& file_path,
     const WebString& mime_type = WebString::FromUTF8("text/html"),
-    WebURLLoaderMockFactory* mock_factory =
-        WebURLLoaderMockFactory::GetSingletonInstance(),
+    URLLoaderMockFactory* mock_factory =
+        URLLoaderMockFactory::GetSingletonInstance(),
     network::mojom::IPAddressSpace address_space =
         network::mojom::IPAddressSpace::kPublic);
 
@@ -91,12 +91,12 @@ void RegisterMockedURLLoadWithCustomResponse(const WebURL& full_url,
 // Registers a mock URL that returns a 404 error.
 void RegisterMockedErrorURLLoad(
     const WebURL& full_url,
-    WebURLLoaderMockFactory* mock_factory =
-        WebURLLoaderMockFactory::GetSingletonInstance());
+    URLLoaderMockFactory* mock_factory =
+        URLLoaderMockFactory::GetSingletonInstance());
 
 void UnregisterAllURLsAndClearMemoryCache();
 
-void SetLoaderDelegate(WebURLLoaderTestDelegate* delegate);
+void SetLoaderDelegate(URLLoaderTestDelegate* delegate);
 
 void ServeAsynchronousRequests();
 

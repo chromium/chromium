@@ -57,7 +57,7 @@ class CORE_EXPORT WebAssociatedURLLoaderImpl final
   WebAssociatedURLLoaderClient* client_;
   WebAssociatedURLLoaderOptions options_;
 
-  // Converts ThreadableLoaderClient method calls into WebURLLoaderClient method
+  // Converts ThreadableLoaderClient method calls into URLLoaderClient method
   // calls.
   Persistent<ClientAdapter> client_adapter_;
   Persistent<ThreadableLoader> loader_;

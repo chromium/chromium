@@ -22,13 +22,13 @@
 #include "third_party/blink/renderer/core/testing/scoped_fake_plugin_registry.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace blink {
@@ -78,14 +78,14 @@ class DecodedBodyLoader : public StaticDataNavigationBodyLoader {
   std::unique_ptr<DecodedDataPassthroughClient> client_;
 };
 
-class BodyLoaderTestDelegate : public WebURLLoaderTestDelegate {
+class BodyLoaderTestDelegate : public URLLoaderTestDelegate {
  public:
   explicit BodyLoaderTestDelegate(
       std::unique_ptr<StaticDataNavigationBodyLoader> body_loader)
       : body_loader_(std::move(body_loader)),
         body_loader_raw_(body_loader_.get()) {}
 
-  // WebURLLoaderTestDelegate overrides:
+  // URLLoaderTestDelegate overrides:
   bool FillNavigationParamsResponse(WebNavigationParams* params) override {
     params->response = WebURLResponse(params->url);
     params->response.SetMimeType("text/html");
@@ -127,17 +127,17 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("http://192.168.1.1/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
-        WebURLLoaderMockFactory::GetSingletonInstance(),
+        URLLoaderMockFactory::GetSingletonInstance(),
         network::mojom::IPAddressSpace::kPrivate);
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("https://192.168.1.1/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
-        WebURLLoaderMockFactory::GetSingletonInstance(),
+        URLLoaderMockFactory::GetSingletonInstance(),
         network::mojom::IPAddressSpace::kPrivate);
     url_test_helpers::RegisterMockedURLLoad(
         url_test_helpers::ToKURL("http://somethinglocal/foo.html"),
         test::CoreTestDataPath("foo.html"), WebString::FromUTF8("text/html"),
-        WebURLLoaderMockFactory::GetSingletonInstance(),
+        URLLoaderMockFactory::GetSingletonInstance(),
         network::mojom::IPAddressSpace::kLocal);
   }
 
@@ -149,7 +149,7 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
 
   class ScopedLoaderDelegate {
    public:
-    ScopedLoaderDelegate(WebURLLoaderTestDelegate* delegate) {
+    explicit ScopedLoaderDelegate(URLLoaderTestDelegate* delegate) {
       url_test_helpers::SetLoaderDelegate(delegate);
     }
     ~ScopedLoaderDelegate() { url_test_helpers::SetLoaderDelegate(nullptr); }
@@ -166,9 +166,9 @@ INSTANTIATE_TEST_SUITE_P(DocumentLoaderTest,
                          ::testing::Bool());
 
 TEST_P(DocumentLoaderTest, SingleChunk) {
-  class TestDelegate : public WebURLLoaderTestDelegate {
+  class TestDelegate : public URLLoaderTestDelegate {
    public:
-    void DidReceiveData(WebURLLoaderClient* original_client,
+    void DidReceiveData(URLLoaderClient* original_client,
                         const char* data,
                         size_t data_length) override {
       EXPECT_EQ(34u, data_length)
@@ -188,9 +188,9 @@ TEST_P(DocumentLoaderTest, SingleChunk) {
 // Test normal case of DocumentLoader::dataReceived(): data in multiple chunks,
 // with no reentrancy.
 TEST_P(DocumentLoaderTest, MultiChunkNoReentrancy) {
-  class TestDelegate : public WebURLLoaderTestDelegate {
+  class TestDelegate : public URLLoaderTestDelegate {
    public:
-    void DidReceiveData(WebURLLoaderClient* original_client,
+    void DidReceiveData(URLLoaderClient* original_client,
                         const char* data,
                         size_t data_length) override {
       EXPECT_EQ(34u, data_length)
@@ -214,10 +214,10 @@ TEST_P(DocumentLoaderTest, MultiChunkWithReentrancy) {
   // 2. The middle part of the response, which is dispatched to
   //    BodyDataReceived() reentrantly.
   // 3. The final chunk, which is dispatched normally at the top-level.
-  class MainFrameClient : public WebURLLoaderTestDelegate,
+  class MainFrameClient : public URLLoaderTestDelegate,
                           public frame_test_helpers::TestWebFrameClient {
    public:
-    // WebURLLoaderTestDelegate overrides:
+    // URLLoaderTestDelegate overrides:
     bool FillNavigationParamsResponse(WebNavigationParams* params) override {
       params->response = WebURLResponse(params->url);
       params->response.SetMimeType("application/x-webkit-test-webplugin");
@@ -235,9 +235,8 @@ TEST_P(DocumentLoaderTest, MultiChunkWithReentrancy) {
 
     void Serve() {
       {
-        // Serve the first byte to the real WebURLLoaderCLient, which
-        // should trigger frameDetach() due to committing a provisional
-        // load.
+        // Serve the first byte to the real URLLoaderClient, which should
+        // trigger frameDetach() due to committing a provisional load.
         base::AutoReset<bool> dispatching(&dispatching_did_receive_data_, true);
         DispatchOneByte();
       }

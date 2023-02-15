@@ -517,7 +517,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
   void DidStartLoading() override;
   void DidStopLoading() override;
   bool SwapIn(WebFrame* previous_frame) override;
-  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() override;
+  std::unique_ptr<URLLoader> CreateURLLoaderForTesting() override;
   void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override;
   WebEffectiveConnectionType GetEffectiveConnectionType() override;
   void SetEffectiveConnectionTypeForTesting(

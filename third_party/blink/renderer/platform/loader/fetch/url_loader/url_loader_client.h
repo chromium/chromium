@@ -28,8 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_CLIENT_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_CLIENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_URL_LOADER_CLIENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_URL_LOADER_CLIENT_H_
 
 #include <memory>
 #include "base/functional/callback.h"
@@ -52,7 +52,7 @@ class WebURL;
 class WebURLResponse;
 struct WebURLError;
 
-class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
+class BLINK_PLATFORM_EXPORT URLLoaderClient {
  public:
   // Called when following a redirect. |new_.*| arguments contain the
   // information about the received redirect. When |report_raw_headers| is
@@ -129,9 +129,9 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderClient {
   static const int64_t kUnknownEncodedDataLength = -1;
 
  protected:
-  virtual ~WebURLLoaderClient() = default;
+  virtual ~URLLoaderClient() = default;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_CLIENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_URL_LOADER_CLIENT_H_

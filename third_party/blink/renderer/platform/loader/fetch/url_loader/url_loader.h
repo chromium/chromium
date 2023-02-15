@@ -28,8 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_URL_LOADER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_URL_LOADER_H_
 
 #include <stdint.h>
 
@@ -66,15 +66,15 @@ class BlobDataHandle;
 class WebData;
 class WebResourceRequestSender;
 class WebURLRequestExtraData;
-class WebURLLoaderClient;
+class URLLoaderClient;
 class WebURLResponse;
 struct WebURLError;
 
-class BLINK_PLATFORM_EXPORT WebURLLoader {
+class BLINK_PLATFORM_EXPORT URLLoader {
  public:
   // When non-null |keep_alive_handle| is specified, this loader prolongs
   // this render process's lifetime.
-  WebURLLoader(
+  URLLoader(
       const Vector<String>& cors_exempt_header_list,
       base::WaitableEvent* terminate_sync_load_event,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
@@ -82,12 +82,12 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
       BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
-  WebURLLoader(const WebURLLoader&) = delete;
-  WebURLLoader& operator=(const WebURLLoader&) = delete;
-  WebURLLoader();
+  URLLoader(const URLLoader&) = delete;
+  URLLoader& operator=(const URLLoader&) = delete;
+  URLLoader();
 
-  // The WebURLLoader may be deleted in a call to its client.
-  virtual ~WebURLLoader();
+  // The URLLoader may be deleted in a call to its client.
+  virtual ~URLLoader();
 
   // Load the request synchronously, returning results directly to the
   // caller upon completion.  There is no mechanism to interrupt a
@@ -101,7 +101,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
-      WebURLLoaderClient* client,
+      URLLoaderClient* client,
       WebURLResponse& response,
       absl::optional<WebURLError>& error,
       WebData& data,
@@ -120,7 +120,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
       bool no_mime_sniffing,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
-      WebURLLoaderClient* client);
+      URLLoaderClient* client);
 
   // Freezes the loader. See blink/renderer/platform/loader/README.md for the
   // general concept of "freezing" in the loading module. See
@@ -151,4 +151,4 @@ class BLINK_PLATFORM_EXPORT WebURLLoader {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_WEB_URL_LOADER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_URL_LOADER_H_

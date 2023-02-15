@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 
 #include "third_party/blink/renderer/core/testing/sim/sim_network.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_client.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -22,9 +22,6 @@ SimRequestBase::SimRequestBase(KURL url,
       referrer_(params.referrer),
       requestor_origin_(params.requestor_origin),
       start_immediately_(start_immediately),
-      started_(false),
-      client_(nullptr),
-      total_encoded_data_length_(0),
       response_http_headers_(params.response_http_headers),
       response_http_status_(params.response_http_status) {
   SimNetwork::Current().AddRequest(*this);
@@ -35,7 +32,7 @@ SimRequestBase::~SimRequestBase() {
   DCHECK(!navigation_body_loader_);
 }
 
-void SimRequestBase::DidReceiveResponse(WebURLLoaderClient* client,
+void SimRequestBase::DidReceiveResponse(URLLoaderClient* client,
                                         const WebURLResponse& response) {
   DCHECK(!navigation_body_loader_);
   client_ = client;

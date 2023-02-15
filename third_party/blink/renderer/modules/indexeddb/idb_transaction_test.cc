@@ -57,7 +57,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "v8/include/v8.h"
 
@@ -68,7 +68,7 @@ class IDBTransactionTest : public testing::Test,
                            public ScopedMockOverlayScrollbars {
  protected:
   void SetUp() override {
-    url_loader_mock_factory_ = WebURLLoaderMockFactory::GetSingletonInstance();
+    url_loader_mock_factory_ = URLLoaderMockFactory::GetSingletonInstance();
     WebURLResponse response;
     response.SetCurrentRequestUrl(KURL("blob:"));
     url_loader_mock_factory_->RegisterURLProtocol(WebString("blob"), response,
@@ -107,7 +107,7 @@ class IDBTransactionTest : public testing::Test,
     store_ = MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction_);
   }
 
-  WebURLLoaderMockFactory* url_loader_mock_factory_;
+  URLLoaderMockFactory* url_loader_mock_factory_;
   Persistent<IDBDatabase> db_;
   Persistent<IDBTransaction> transaction_;
   Persistent<IDBObjectStore> store_;

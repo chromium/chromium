@@ -85,8 +85,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -119,7 +119,7 @@ namespace {
 void RunServeAsyncRequestsTask(scoped_refptr<base::TaskRunner> task_runner) {
   // TODO(kinuko,toyoshim): Create a mock factory and use it instead of
   // getting the platform's one. (crbug.com/751425)
-  WebURLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
+  URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
   if (TestWebFrameClient::IsLoading()) {
     task_runner->PostTask(
         FROM_HERE, WTF::BindOnce(&RunServeAsyncRequestsTask, task_runner));
@@ -259,7 +259,7 @@ void FillNavigationParamsResponse(WebNavigationParams* params) {
   // Empty documents and srcdoc will be handled by DocumentLoader.
   if (DocumentLoader::WillLoadUrlAsEmpty(kurl) || kurl.IsAboutSrcdocURL())
     return;
-  WebURLLoaderMockFactory::GetSingletonInstance()->FillNavigationParamsResponse(
+  URLLoaderMockFactory::GetSingletonInstance()->FillNavigationParamsResponse(
       params);
 
   // Parse Content Security Policy response headers into the policy container,
@@ -795,8 +795,8 @@ bool TestWebFrameClient::SwapIn(WebFrame* previous_frame) {
   return result;
 }
 
-std::unique_ptr<WebURLLoader> TestWebFrameClient::CreateURLLoaderForTesting() {
-  return WebURLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
+std::unique_ptr<URLLoader> TestWebFrameClient::CreateURLLoaderForTesting() {
+  return URLLoaderMockFactory::GetSingletonInstance()->CreateURLLoader();
 }
 
 void TestWebFrameClient::BeginNavigation(

@@ -60,7 +60,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 #include "third_party/blink/renderer/platform/loader/testing/fetch_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
@@ -73,10 +73,10 @@
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
+#include "third_party/blink/renderer/platform/testing/url_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/web_url_loader_mock_factory.h"
-#include "third_party/blink/renderer/platform/testing/weburl_loader_mock.h"
-#include "third_party/blink/renderer/platform/testing/weburl_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -629,11 +629,10 @@ class RequestSameResourceOnComplete
     : public GarbageCollected<RequestSameResourceOnComplete>,
       public RawResourceClient {
  public:
-  RequestSameResourceOnComplete(WebURLLoaderMockFactory* mock_factory,
+  RequestSameResourceOnComplete(URLLoaderMockFactory* mock_factory,
                                 FetchParameters& params,
                                 ResourceFetcher* fetcher)
       : mock_factory_(mock_factory),
-        notify_finished_called_(false),
         source_origin_(fetcher->GetProperties()
                            .GetFetchClientSettingsObject()
                            .GetSecurityOrigin()) {
@@ -670,8 +669,8 @@ class RequestSameResourceOnComplete
   String DebugName() const override { return "RequestSameResourceOnComplete"; }
 
  private:
-  WebURLLoaderMockFactory* mock_factory_;
-  bool notify_finished_called_;
+  URLLoaderMockFactory* mock_factory_;
+  bool notify_finished_called_ = false;
   scoped_refptr<const SecurityOrigin> source_origin_;
 };
 
@@ -724,7 +723,7 @@ class ServeRequestsOnCompleteClient final
     : public GarbageCollected<ServeRequestsOnCompleteClient>,
       public RawResourceClient {
  public:
-  explicit ServeRequestsOnCompleteClient(WebURLLoaderMockFactory* mock_factory)
+  explicit ServeRequestsOnCompleteClient(URLLoaderMockFactory* mock_factory)
       : mock_factory_(mock_factory) {}
 
   void NotifyFinished(Resource*) override {
@@ -759,14 +758,14 @@ class ServeRequestsOnCompleteClient final
   String DebugName() const override { return "ServeRequestsOnCompleteClient"; }
 
  private:
-  WebURLLoaderMockFactory* mock_factory_;
+  URLLoaderMockFactory* mock_factory_;
 };
 
 // Regression test for http://crbug.com/594072.
 // This emulates a modal dialog triggering a nested run loop inside
 // ResourceLoader::Cancel(). If the ResourceLoader doesn't promptly cancel its
-// WebURLLoader before notifying its clients, a nested run loop  may send a
-// network response, leading to an invalid state transition in ResourceLoader.
+// URLLoader before notifying its clients, a nested run loop  may send a network
+// response, leading to an invalid state transition in ResourceLoader.
 TEST_F(ResourceFetcherTest, ResponseOnCancel) {
   KURL url("http://127.0.0.1:8000/foo.png");
   RegisterMockedURLLoad(url);
@@ -789,7 +788,7 @@ class ScopedMockRedirectRequester {
 
  public:
   ScopedMockRedirectRequester(
-      WebURLLoaderMockFactory* mock_factory,
+      URLLoaderMockFactory* mock_factory,
       MockFetchContext* context,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : mock_factory_(mock_factory),
@@ -834,7 +833,7 @@ class ScopedMockRedirectRequester {
   }
 
  private:
-  WebURLLoaderMockFactory* mock_factory_;
+  URLLoaderMockFactory* mock_factory_;
   MockFetchContext* context_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

@@ -53,8 +53,8 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader_factory.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/base/cursor/cursor.h"
@@ -411,7 +411,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
     return nullptr;
   }
 
-  std::unique_ptr<WebURLLoader> CreateURLLoaderForTesting() override {
+  std::unique_ptr<URLLoader> CreateURLLoaderForTesting() override {
     return nullptr;
   }
 

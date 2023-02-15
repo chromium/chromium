@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_NOOP_WEB_URL_LOADER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_NOOP_WEB_URL_LOADER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_NOOP_URL_LOADER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_NOOP_URL_LOADER_H_
 
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/web_url_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 
 namespace blink {
 
-class NoopWebURLLoader final : public WebURLLoader {
+class NoopURLLoader final : public URLLoader {
  public:
-  explicit NoopWebURLLoader(
+  explicit NoopURLLoader(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner) {}
-  ~NoopWebURLLoader() override = default;
+  ~NoopURLLoader() override = default;
   void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<WebURLRequestExtraData> url_request_extra_data,
       bool pass_response_pipe_to_client,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
-      WebURLLoaderClient*,
+      URLLoaderClient*,
       WebURLResponse&,
       absl::optional<WebURLError>&,
       WebData&,
@@ -37,7 +37,7 @@ class NoopWebURLLoader final : public WebURLLoader {
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
-      WebURLLoaderClient*) override;
+      URLLoaderClient*) override;
 
   void Freeze(WebLoaderFreezeMode) override {}
   void DidChangePriority(WebURLRequest::Priority, int) override {
@@ -54,4 +54,4 @@ class NoopWebURLLoader final : public WebURLLoader {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_NOOP_WEB_URL_LOADER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_NOOP_URL_LOADER_H_

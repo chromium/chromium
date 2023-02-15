@@ -2047,7 +2047,7 @@ LocalFrame::GetURLLoaderFactory() {
   return Client()->GetURLLoaderFactory();
 }
 
-std::unique_ptr<WebURLLoader> LocalFrame::CreateURLLoaderForTesting() {
+std::unique_ptr<URLLoader> LocalFrame::CreateURLLoaderForTesting() {
   return Client()->CreateURLLoaderForTesting();
 }
 
