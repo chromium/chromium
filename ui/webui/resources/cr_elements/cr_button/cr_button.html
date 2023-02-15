@@ -106,6 +106,7 @@
         --disabled-bg-action: var(--color-button-background-prominent-disabled,
             rgba(var(--cr-fallback-color-on-surface-rgb), .12));
 
+        background: transparent;
         border-radius: 100px;
         line-height: 20px;
       }
@@ -150,6 +151,12 @@
         }
       }
 
+      :host-context([chrome-refresh-2023].focus-outline-visible):host(:focus) {
+        border-color: transparent;
+        box-shadow: none;
+        outline: 2px solid var(--cr-focus-outline-color);
+      }
+
       :host(:active) {
         background: var(--active-bg);
         box-shadow: var(--active-shadow,
@@ -167,6 +174,51 @@
         }
       }
 
+      #background {
+        border: 2px solid transparent;
+        border-radius: inherit;
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: -1;
+      }
+
+      :host-context([chrome-refresh-2023]):host(:hover) #background {
+        background-color: var(--hover-bg-color);
+      }
+
+      :host-context([chrome-refresh-2023].focus-outline-visible):host(:focus)
+          #background {
+        background-clip: padding-box;
+      }
+
+      :host-context([chrome-refresh-2023]):host(.action-button) #background {
+        background-color: var(--bg-action);
+      }
+
+      :host-context([chrome-refresh-2023]):host([disabled]) #background {
+        background-color: var(--disabled-bg);
+      }
+
+      :host-context([chrome-refresh-2023]):host(.action-button[disabled])
+          #background {
+        background-color: var(--disabled-bg-action);
+      }
+
+      :host-context([chrome-refresh-2023]):host(.tonal-button) #background,
+      :host-context([chrome-refresh-2023]):host(.floating-button) #background {
+        background-color: var(--color-button-background-tonal,
+            var(--cr-fallback-color-secondary-container));
+      }
+
+      :host-context([chrome-refresh-2023]):host([disabled].tonal-button)
+          #background,
+      :host-context([chrome-refresh-2023]):host([disabled].floating-button)
+          #background {
+        background-color: var(--color-button-background-tonal-disabled,
+            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+      }
+
       #hoverBackground {
         display: none;
       }
@@ -175,10 +227,9 @@
         background: var(--cr-hover-background-color);
         content: '';
         display: block;
-        height: 100%;
+        inset: 0;
         pointer-events: none;
         position: absolute;
-        width: 100%;
       }
 
       :host(.action-button) {
@@ -187,6 +238,10 @@
         background-color: var(--bg-action);
         border: none;
         color: var(--text-color-action);
+      }
+
+      :host-context([chrome-refresh-2023]):host(.action-button) {
+        background-color: transparent;
       }
 
       :host(.action-button:active) {
@@ -237,8 +292,6 @@
 
       :host-context([chrome-refresh-2023]):host(.tonal-button),
       :host-context([chrome-refresh-2023]):host(.floating-button) {
-        background-color: var(--color-button-background-tonal,
-            var(--cr-fallback-color-secondary-container));
         border: none;
         color: var(--color-button-foreground-tonal,
             var(--cr-fallback-color-on-secondary-container));
@@ -246,8 +299,6 @@
 
       :host-context([chrome-refresh-2023]):host(.tonal-button[disabled]),
       :host-context([chrome-refresh-2023]):host(.floating-button[disabled]) {
-        background-color: var(--color-button-background-tonal-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
         border: none;
         color: var(--disabled-text-color);
       }
@@ -268,6 +319,7 @@
       }
     </style>
 
+    <div id="background"></div>
     <slot id="prefixIcon" name="prefix-icon"
         on-slotchange="onPrefixIconSlotChanged_">
     </slot>
