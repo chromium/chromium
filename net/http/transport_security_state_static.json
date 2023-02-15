@@ -180098,7 +180098,6 @@
     { "name": "lombardiave.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "longevitywi.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "lonza.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "lonzagroup.net", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "loogo.be", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "lookathernow.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "looksmax.org", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
