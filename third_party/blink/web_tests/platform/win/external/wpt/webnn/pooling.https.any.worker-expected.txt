@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 136 tests; 0 PASS, 136 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 136 tests; 6 PASS, 130 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL averagePool2d float32 4D tensor default options / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.windowDimensions / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.padding / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
@@ -11,12 +11,12 @@ FAIL averagePool2d float32 4D tensor options.autoPad=same-lower / cpu / sync Fai
 FAIL averagePool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.layout=nchw / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-FAIL averagePool2d float32 4D tensor options.layout=nhwc / cpu / sync context.computeSync is not a function
+PASS averagePool2d float32 4D tensor options.layout=nhwc / cpu / sync
 FAIL averagePool2d float32 4D tensor options.roundingType=floor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.roundingType=ceil / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-FAIL averagePool2d float32 4D tensor options.dilations with options.strides / cpu / sync context.computeSync is not a function
+FAIL averagePool2d float32 4D tensor options.dilations with options.strides / cpu / sync assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual -0.2304840087890625 should be close enough to expected -0.23048464953899384 by the acceptable 11 ULP distance, but they have 43 ULP distance expected true got false
 FAIL averagePool2d float32 4D tensor default options / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.windowDimensions / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.padding / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
@@ -28,12 +28,12 @@ FAIL averagePool2d float32 4D tensor options.autoPad=same-lower / gpu / sync Fai
 FAIL averagePool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.layout=nchw / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-FAIL averagePool2d float32 4D tensor options.layout=nhwc / gpu / sync context.computeSync is not a function
+PASS averagePool2d float32 4D tensor options.layout=nhwc / gpu / sync
 FAIL averagePool2d float32 4D tensor options.roundingType=floor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.roundingType=ceil / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-FAIL averagePool2d float32 4D tensor options.dilations with options.strides / gpu / sync context.computeSync is not a function
+FAIL averagePool2d float32 4D tensor options.dilations with options.strides / gpu / sync assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual -0.2304840087890625 should be close enough to expected -0.23048464953899384 by the acceptable 11 ULP distance, but they have 43 ULP distance expected true got false
 FAIL maxPool2d float32 4D tensor default options / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.windowDimensions / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.padding / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
@@ -45,12 +45,12 @@ FAIL maxPool2d float32 4D tensor options.autoPad=same-lower / cpu / sync Failed 
 FAIL maxPool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.layout=nchw / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-FAIL maxPool2d float32 4D tensor options.layout=nhwc / cpu / sync context.computeSync is not a function
+PASS maxPool2d float32 4D tensor options.layout=nhwc / cpu / sync
 FAIL maxPool2d float32 4D tensor options.roundingType=floor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.roundingType=ceil / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-FAIL maxPool2d float32 4D tensor options.dilations with options.strides / cpu / sync context.computeSync is not a function
+PASS maxPool2d float32 4D tensor options.dilations with options.strides / cpu / sync
 FAIL maxPool2d float32 4D tensor default options / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.windowDimensions / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.padding / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
@@ -62,12 +62,12 @@ FAIL maxPool2d float32 4D tensor options.autoPad=same-lower / gpu / sync Failed 
 FAIL maxPool2d float32 4D tensor options.autoPad=same-upper ignores options.padding / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.autoPad=same-lower ignores options.padding / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.layout=nchw / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-FAIL maxPool2d float32 4D tensor options.layout=nhwc / gpu / sync context.computeSync is not a function
+PASS maxPool2d float32 4D tensor options.layout=nhwc / gpu / sync
 FAIL maxPool2d float32 4D tensor options.roundingType=floor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.roundingType=ceil / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
 FAIL maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The nchw input layout is not supported.
-FAIL maxPool2d float32 4D tensor options.dilations with options.strides / gpu / sync context.computeSync is not a function
+PASS maxPool2d float32 4D tensor options.dilations with options.strides / gpu / sync
 FAIL averagePool2d float32 4D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.windowDimensions / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -40,6 +41,12 @@ class MODULES_EXPORT MLContext final : public ScriptWrappable {
   ML* GetML();
 
   void Trace(Visitor* visitor) const override;
+
+  // IDL interface:
+  void computeSync(MLGraph* graph,
+                   const MLNamedArrayBufferViews& inputs,
+                   const MLNamedArrayBufferViews& outputs,
+                   ExceptionState& exception_state);
 
  private:
   V8MLDevicePreference device_preference_;

@@ -117,7 +117,6 @@ component("modules") {
     "//third_party/blink/renderer/modules/mediastream",
     "//third_party/blink/renderer/modules/media",
     "//third_party/blink/renderer/modules/ml",
-    "//third_party/blink/renderer/modules/ml/webnn",
     "//third_party/blink/renderer/modules/navigatorcontentutils",
     "//third_party/blink/renderer/modules/netinfo",
     "//third_party/blink/renderer/modules/nfc",

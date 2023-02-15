@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 409 tests; 229 PASS, 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 409 tests; 232 PASS, 177 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented"
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -158,13 +158,13 @@ PASS MLContext interface object name
 PASS MLContext interface: existence and properties of interface prototype object
 PASS MLContext interface: existence and properties of interface prototype object's "constructor" property
 PASS MLContext interface: existence and properties of interface prototype object's @@unscopables property
-FAIL MLContext interface: operation computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: interface prototype object missing non-static operation expected property "computeSync" missing
+PASS MLContext interface: operation computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)
 FAIL MLContext interface: operation compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: interface prototype object missing non-static operation expected property "compute" missing
 FAIL MLContext interface: operation createCommandEncoder() assert_own_property: interface prototype object missing non-static operation expected property "createCommandEncoder" missing
 PASS MLContext must be primary interface of context
 PASS Stringification of context
-FAIL MLContext interface: context must inherit property "computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_inherits: property "computeSync" not found in prototype chain
-FAIL MLContext interface: calling computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_inherits: property "computeSync" not found in prototype chain
+PASS MLContext interface: context must inherit property "computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type
+PASS MLContext interface: calling computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError
 FAIL MLContext interface: context must inherit property "compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_inherits: property "compute" not found in prototype chain
 FAIL MLContext interface: calling compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_inherits: property "compute" not found in prototype chain
 FAIL MLContext interface: context must inherit property "createCommandEncoder()" with the proper type assert_inherits: property "createCommandEncoder" not found in prototype chain

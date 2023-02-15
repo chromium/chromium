@@ -833,6 +833,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createContextSync
 [Worker] interface MLContext
 [Worker]     attribute @@toStringTag
+[Worker]     method computeSync
 [Worker]     method constructor
 [Worker] interface MLGraph
 [Worker]     attribute @@toStringTag

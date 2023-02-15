@@ -68,6 +68,8 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
                    const MLNamedArrayBufferViews& outputs,
                    ExceptionState& exception_state);
 
+  const MLContext* Context() const;
+
  protected:
   explicit MLGraph(MLContext* context);
 

@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-FAIL softmax float32 2D tensor / cpu / sync context.computeSync is not a function
-FAIL softmax float32 2D tensor / gpu / sync context.computeSync is not a function
+PASS softmax float32 2D tensor / cpu / sync
+PASS softmax float32 2D tensor / gpu / sync
 FAIL softmax float32 2D tensor / cpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
 FAIL softmax float32 2D tensor / gpu / async promise_test: Unhandled rejection with value: object "TypeError: context.compute is not a function"
 Harness: the test ran to completion.

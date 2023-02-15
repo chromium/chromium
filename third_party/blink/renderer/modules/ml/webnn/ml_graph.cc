@@ -233,4 +233,8 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
   return true;
 }
 
+const MLContext* MLGraph::Context() const {
+  return ml_context_.Get();
+}
+
 }  // namespace blink

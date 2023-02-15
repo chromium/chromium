@@ -2,44 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/blink/renderer/modules/ml/webnn/features.gni")
-import("//third_party/blink/renderer/modules/modules.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "BUILD_WEBNN_WITH_XNNPACK=$build_webnn_with_xnnpack" ]
-}
-
-blink_modules_sources("webnn") {
-  sources = [
-    "ml_graph.cc",
-    "ml_graph.h",
-    "ml_graph_builder.cc",
-    "ml_graph_builder.h",
-    "ml_operand.cc",
-    "ml_operand.h",
-    "ml_operator.cc",
-    "ml_operator.h",
-  ]
-
-  deps = [
-    ":buildflags",
-    "//third_party/blink/renderer/modules/ml",
-  ]
-
-  if (build_webnn_with_xnnpack) {
-    sources += [
-      "ml_graph_xnnpack.cc",
-      "ml_graph_xnnpack.h",
-    ]
-
-    deps += [ "//third_party/xnnpack" ]
-  }
-}
 
 if (use_libfuzzer) {
   fuzzable_proto_library("webnn_proto") {
