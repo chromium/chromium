@@ -336,7 +336,7 @@
     }, {
       "name": "isEnabled",
       "type": "function",
-      "description": "Retrieves the state of whether the extension action is enabled for a tab (or globally if no tab is provided).",
+      "description": "Indicates whether the extension action is enabled for a tab (or globally if no <code>tabId</code> is provided). Actions enabled using only $(ref:declarativeContent) always return false.",
       "parameters": [
         {
           "type": "integer",
