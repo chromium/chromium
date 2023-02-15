@@ -147,6 +147,8 @@ class WebTestPermissionManager
   DefaultPermissionStatusMap default_permission_status_ = {
       {blink::PermissionType::STORAGE_ACCESS_GRANT,
        blink::mojom::PermissionStatus::ASK},
+      {blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS,
+       blink::mojom::PermissionStatus::ASK},
   };
 
   // List of subscribers currently listening to permission changes.
