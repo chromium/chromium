@@ -10,7 +10,7 @@ package remote_commands;
 
 option go_package = "chromium/policy/enterprise_management_proto";
 
-import "components/policy/proto/device_management_backend.proto";
+import "device_management_backend.proto";
 
 message SendRemoteCommandRequest {
   optional enterprise_management.RemoteCommand remote_command = 1;

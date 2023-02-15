@@ -98,9 +98,9 @@ if (is_chromeos) {
     extra_configs =
         [ "//third_party/private_membership:private_membership_config" ]
     import_dirs = [
+      "//components/policy/proto",
       "//third_party/private_membership/src",
       "//third_party/shell-encryption/src",
-      ".",
     ]
   }
 
