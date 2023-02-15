@@ -187,13 +187,17 @@ using PriceNotificationItems =
     return;
   }
 
+  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
+
   PriceNotificationsTableViewItem* item =
       [self createPriceNotificationTableViewItem:NO
                                  fromProductInfo:productInfo
                                            atURL:URL];
-  [self.consumer setTrackableItem:item currentlyTracking:NO];
+  self.shoppingService->IsClusterIdTrackedByUser(
+      productInfo->product_cluster_id, base::BindOnce(^(bool isTracked) {
+        [weakSelf.consumer setTrackableItem:item currentlyTracking:isTracked];
+      }));
 
-  __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
   // Fetches the current item's trackable image.
   _imageFetcher->FetchImageData(
       productInfo->image_url,
