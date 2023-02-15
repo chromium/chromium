@@ -110,6 +110,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "allow-eap-default-cas-without-subject-verification",
+    "owners": [ "suprnet@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "allow-insecure-localhost",
     "owners": [ "security-dev" ],
     "expiry_milestone": 118

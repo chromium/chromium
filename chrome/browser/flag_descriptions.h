@@ -2671,6 +2671,9 @@ extern const char kAdaptiveChargingDescription[];
 extern const char kAdaptiveChargingForTestingName[];
 extern const char kAdaptiveChargingForTestingDescription[];
 
+extern const char kAllowEapDefaultCasWithoutSubjectVerificationName[];
+extern const char kAllowEapDefaultCasWithoutSubjectVerificationDescription[];
+
 extern const char kAllowRepeatedUpdatesName[];
 extern const char kAllowRepeatedUpdatesDescription[];
 
