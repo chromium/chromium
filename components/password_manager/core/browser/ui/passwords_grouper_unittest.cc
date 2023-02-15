@@ -7,7 +7,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
+#include "base/test/gmock_callback_support.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -34,7 +37,17 @@ PasswordForm CreateForm(std::string sinon_realm,
 
 }  // namespace
 
-TEST(PasswordsGrouperTest, GetAffiliatedGroupsWithGroupingInfo) {
+class PasswordsGrouperTest : public ::testing::Test {
+ protected:
+  PasswordsGrouper& grouper() { return grouper_; }
+  MockAffiliationService& affiliation_service() { return affiliation_service_; }
+
+ private:
+  MockAffiliationService affiliation_service_;
+  PasswordsGrouper grouper_{&affiliation_service_};
+};
+
+TEST_F(PasswordsGrouperTest, GetAffiliatedGroupsWithGroupingInfo) {
   PasswordForm form = CreateForm("https://test.com/");
 
   PasswordForm blocked_form;
@@ -47,23 +60,26 @@ TEST(PasswordsGrouperTest, GetAffiliatedGroupsWithGroupingInfo) {
   federated_form.federation_origin =
       url::Origin::Create(GURL(u"federatedOrigin.com"));
 
-  PasswordsGrouper grouper;
-  grouper.GroupPasswords(
-      {}, {std::make_pair("key1", form), std::make_pair("key2", federated_form),
-           std::make_pair("key3", blocked_form)});
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(
+          base::test::RunOnceCallback<0>(std::vector<GroupedFacets>()));
+  grouper().GroupPasswords(
+      {std::make_pair("key1", form), std::make_pair("key2", federated_form),
+       std::make_pair("key3", blocked_form)},
+      base::DoNothing());
 
   CredentialUIEntry credential1(form), credential2(federated_form);
   EXPECT_THAT(
-      grouper.GetAffiliatedGroupsWithGroupingInfo(),
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
       UnorderedElementsAre(
           AffiliatedGroup({credential1}, {GetShownOrigin(credential1)}),
           AffiliatedGroup({credential2}, {GetShownOrigin(credential2)})));
 
-  EXPECT_THAT(grouper.GetBlockedSites(),
+  EXPECT_THAT(grouper().GetBlockedSites(),
               ElementsAre(CredentialUIEntry(blocked_form)));
 }
 
-TEST(PasswordsGrouperTest, GroupPasswords) {
+TEST_F(PasswordsGrouperTest, GroupPasswords) {
   PasswordForm form1 = CreateForm("https://test.com/");
   PasswordForm form2 =
       CreateForm("https://affiliated-test.com/", u"username2", u"password2");
@@ -82,27 +98,30 @@ TEST(PasswordsGrouperTest, GroupPasswords) {
   group.facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec(form1.signon_realm)),
       Facet(FacetURI::FromPotentiallyInvalidSpec(form2.signon_realm))};
+  std::vector<password_manager::GroupedFacets> grouped_facets = {group};
 
-  PasswordsGrouper grouper;
-  grouper.GroupPasswords(
-      {group}, {std::make_pair("key1", form1), std::make_pair("key2", form2),
-                std::make_pair("key3", blocked_form),
-                std::make_pair("key4", federated_form)});
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+  grouper().GroupPasswords(
+      {std::make_pair("key1", form1), std::make_pair("key2", form2),
+       std::make_pair("key3", blocked_form),
+       std::make_pair("key4", federated_form)},
+      base::DoNothing());
 
   CredentialUIEntry credential1(form1), credential2(form2),
       credential3(federated_form);
   EXPECT_THAT(
-      grouper.GetAffiliatedGroupsWithGroupingInfo(),
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
       UnorderedElementsAre(
           AffiliatedGroup({credential1, credential2},
                           {GetShownOrigin(credential1)}),
           AffiliatedGroup({credential3}, {GetShownOrigin(credential3)})));
 
-  EXPECT_THAT(grouper.GetBlockedSites(),
+  EXPECT_THAT(grouper().GetBlockedSites(),
               ElementsAre(CredentialUIEntry(blocked_form)));
 }
 
-TEST(PasswordsGrouperTest, GroupPasswordsWithoutAffiliation) {
+TEST_F(PasswordsGrouperTest, GroupPasswordsWithoutAffiliation) {
   // Credentials saved for the same website should appear in the same group.
   PasswordForm form1 = CreateForm("https://test.com/");
   PasswordForm form2 =
@@ -118,38 +137,43 @@ TEST(PasswordsGrouperTest, GroupPasswordsWithoutAffiliation) {
   federated_form.federation_origin =
       url::Origin::Create(GURL(u"federatedOrigin.com"));
 
-  PasswordsGrouper grouper;
-  grouper.GroupPasswords(
-      {}, {std::make_pair("key1", form1), std::make_pair("key2", form2),
-           std::make_pair("key3", blocked_form),
-           std::make_pair("key4", federated_form)});
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(
+          base::test::RunOnceCallback<0>(std::vector<GroupedFacets>()));
+  grouper().GroupPasswords(
+      {std::make_pair("key1", form1), std::make_pair("key2", form2),
+       std::make_pair("key3", blocked_form),
+       std::make_pair("key4", federated_form)},
+      base::DoNothing());
 
   CredentialUIEntry credential1(form1), credential2(form2),
       credential3(federated_form);
   EXPECT_THAT(
-      grouper.GetAffiliatedGroupsWithGroupingInfo(),
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
       UnorderedElementsAre(
           AffiliatedGroup({credential1, credential2},
                           {GetShownOrigin(credential1)}),
           AffiliatedGroup({credential3}, {GetShownOrigin(credential3)})));
 
-  EXPECT_THAT(grouper.GetBlockedSites(),
+  EXPECT_THAT(grouper().GetBlockedSites(),
               ElementsAre(CredentialUIEntry(blocked_form)));
 }
 
-TEST(PasswordsGrouperTest, HttpCredentialsSupported) {
+TEST_F(PasswordsGrouperTest, HttpCredentialsSupported) {
   PasswordForm form = CreateForm("http://test.com/");
 
-  PasswordsGrouper grouper;
-  grouper.GroupPasswords({}, {std::make_pair("key1", form)});
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(
+          base::test::RunOnceCallback<0>(std::vector<GroupedFacets>()));
+  grouper().GroupPasswords({std::make_pair("key1", form)}, base::DoNothing());
 
   CredentialUIEntry credential(form);
   EXPECT_THAT(
-      grouper.GetAffiliatedGroupsWithGroupingInfo(),
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
       ElementsAre(AffiliatedGroup({credential}, {GetShownOrigin(credential)})));
 }
 
-TEST(PasswordsGrouperTest, FederatedCredentialsGroupedWithRegular) {
+TEST_F(PasswordsGrouperTest, FederatedCredentialsGroupedWithRegular) {
   PasswordForm form = CreateForm("https://test.com/");
 
   PasswordForm federated_form;
@@ -159,18 +183,21 @@ TEST(PasswordsGrouperTest, FederatedCredentialsGroupedWithRegular) {
   federated_form.federation_origin =
       url::Origin::Create(GURL("https://accounts.federation.com"));
 
-  PasswordsGrouper grouper;
-  grouper.GroupPasswords({}, {std::make_pair("key1", form),
-                              std::make_pair("key2", federated_form)});
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(
+          base::test::RunOnceCallback<0>(std::vector<GroupedFacets>()));
+  grouper().GroupPasswords(
+      {std::make_pair("key1", form), std::make_pair("key2", federated_form)},
+      base::DoNothing());
 
   CredentialUIEntry credential(form);
-  EXPECT_THAT(grouper.GetAffiliatedGroupsWithGroupingInfo(),
+  EXPECT_THAT(grouper().GetAffiliatedGroupsWithGroupingInfo(),
               ElementsAre(AffiliatedGroup(
                   {credential, CredentialUIEntry(federated_form)},
                   {GetShownOrigin(credential)})));
 }
 
-TEST(PasswordsGrouperTest, GroupsWithMatchingMainDomainsMerged) {
+TEST_F(PasswordsGrouperTest, GroupsWithMatchingMainDomainsMerged) {
   std::vector<PasswordForm> forms = {CreateForm("https://m.a.com/", u"test1"),
                                      CreateForm("https://a.com/", u"test2"),
                                      CreateForm("https://c.com/", u"test3"),
@@ -191,21 +218,25 @@ TEST(PasswordsGrouperTest, GroupsWithMatchingMainDomainsMerged) {
   GroupedFacets group3;
   group3.facets = {
       Facet(FacetURI::FromPotentiallyInvalidSpec("https://d.com"))};
+  std::vector<password_manager::GroupedFacets> grouped_facets = {group1, group2,
+                                                                 group3};
 
-  PasswordsGrouper grouper;
-  grouper.GroupPasswords({group1, group2, group3},
-                         {
-                             std::make_pair("key1", forms[0]),
-                             std::make_pair("key2", forms[1]),
-                             std::make_pair("key3", forms[2]),
-                             std::make_pair("key4", forms[3]),
-                         });
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
+  grouper().GroupPasswords(
+      {
+          std::make_pair("key1", forms[0]),
+          std::make_pair("key2", forms[1]),
+          std::make_pair("key3", forms[2]),
+          std::make_pair("key4", forms[3]),
+      },
+      base::DoNothing());
 
   CredentialUIEntry credential1(forms[0]), credential2(forms[1]),
       credential3(forms[2]), credential4(forms[3]);
 
   EXPECT_THAT(
-      grouper.GetAffiliatedGroupsWithGroupingInfo(),
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
       UnorderedElementsAre(
           AffiliatedGroup({credential1, credential2, credential3},
                           {GetShownOrigin(credential1)}),

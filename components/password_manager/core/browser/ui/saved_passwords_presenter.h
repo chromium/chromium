@@ -18,12 +18,12 @@
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/password_manager/core/browser/ui/passwords_grouper.h"
 
 namespace password_manager {
 
 class AffiliationService;
 class PasswordUndoHelper;
+class PasswordsGrouper;
 
 // This interface provides a way for clients to obtain a list of all saved
 // passwords and register themselves as observers for changes. In contrast to
@@ -194,9 +194,6 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
       PasswordStoreInterface* store,
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  // Handle groups results and perform grouping algorithm.
-  void OnGetAllGroupsResultsFrom(const std::vector<GroupedFacets>& results);
-
   // Notify observers about changes in the compromised credentials.
   void NotifyEdited(const CredentialUIEntry& password);
   void NotifySavedPasswordsChanged();
@@ -225,18 +222,17 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
 
-  raw_ptr<AffiliationService> affiliation_service_;
-
   // The number of stores from which no updates have been received yet.
   int pending_store_updates = 0;
 
   std::unique_ptr<PasswordUndoHelper> undo_helper_;
 
+  // Helper object which groups passwords based on information provided by the
+  // affiliation service.
+  std::unique_ptr<PasswordsGrouper> passwords_grouper_;
+
   // Structure used to deduplicate list of passwords.
   DuplicatePasswordsMap sort_key_to_password_forms_;
-
-  // Structure used to keep track of password grouping data structures.
-  PasswordsGrouper passwords_grouper_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 

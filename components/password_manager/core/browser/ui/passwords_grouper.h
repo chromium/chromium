@@ -5,25 +5,76 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORD_GROUPING_UTIL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORD_GROUPING_UTIL_H_
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 
 namespace password_manager {
 
-using SignonRealm = base::StrongAlias<class SignonRealmTag, std::string>;
-using GroupId = base::StrongAlias<class GroupIdTag, int>;
-using UsernamePasswordKey =
-    base::StrongAlias<class UsernamePasswordKeyTag, std::string>;
+class AffiliationService;
 
-// Structure used to store password grouping data structures used for the
-// grouping algorithm.
-struct PasswordGroupingInfo {
-  PasswordGroupingInfo();
-  ~PasswordGroupingInfo();
-  PasswordGroupingInfo(const PasswordGroupingInfo& other);
-  PasswordGroupingInfo(PasswordGroupingInfo&& other);
-  PasswordGroupingInfo& operator=(const PasswordGroupingInfo& other);
-  PasswordGroupingInfo& operator=(PasswordGroupingInfo&& other);
+// Helper objects which handles passwords grouping. There are two levels of
+// grouping: firstly passwords with affiliated |signon_realm| are grouped
+// together which corresponds to |AffiliatedGroup|. Withing these groups
+// passwords are grouped by username/password pair and are referred as
+// |CredentialUIEntry|. So PasswordForms with affiliated signon_realms and
+// matching username/password are considered a single credential. Blocked
+// websites aren't grouped at all.
+class PasswordsGrouper {
+ public:
+  explicit PasswordsGrouper(AffiliationService* affiliation_service);
+  ~PasswordsGrouper();
+
+  // Apply grouping algorithm to credentials. The grouping algorithm group
+  // together credentials with the same username and password within the same
+  // affiliated group. For example, we have credential from "facebook.com" and
+  // "m.facebook.com" that have the same username and password. These
+  // credentials are part of the same affiliated group so they will be grouped
+  // together.
+  // |sort_key_to_password_forms| is used by SavedPasswordsPresenter to keep
+  // track of current PasswordForms.
+  // |callback| is called after the grouping is finished.
+  // TODO(crbug.com/1354196): Pass vector of PasswordForms instead.
+  void GroupPasswords(const std::multimap<std::string, PasswordForm>&
+                          sort_key_to_password_forms,
+                      base::OnceClosure callback);
+
+  // Returns a list of affiliated groups created with the password grouping
+  // info.
+  std::vector<AffiliatedGroup> GetAffiliatedGroupsWithGroupingInfo() const;
+
+  // Returns all the credentials (excluding blocked sites) in a vector.
+  std::vector<CredentialUIEntry> GetAllCredentials() const;
+
+  // Returns blocked sites.
+  std::vector<CredentialUIEntry> GetBlockedSites() const;
+
+  // Returns PasswordForm corresponding to 'credential'.
+  std::vector<PasswordForm> GetPasswordFormsFor(
+      const CredentialUIEntry& credential) const;
+
+  void ClearCache();
+
+ private:
+  using SignonRealm = base::StrongAlias<class SignonRealmTag, std::string>;
+  using GroupId = base::StrongAlias<class GroupIdTag, int>;
+  using UsernamePasswordKey =
+      base::StrongAlias<class UsernamePasswordKeyTag, std::string>;
+
+  // Returns a map of facet URI to group id. Create missing group id with
+  // password's sign-on realm that are not present in the grouped facets
+  // received. Store branding information for the affiliated group by updating
+  // the password grouping info parameter.
+  std::map<std::string, GroupId> MapFacetsToGroupId(
+      const std::vector<GroupedFacets>& groups,
+      const std::vector<std::string>& signon_realms);
+
+  void GroupPasswordsImpl(const std::multimap<std::string, PasswordForm>&
+                              sort_key_to_password_forms,
+                          const std::vector<GroupedFacets>& groups);
+
+  raw_ptr<AffiliationService> affiliation_service_;
 
   // Structure used to keep track of the mapping between the credential's
   // sign-on realm and the group id.
@@ -42,50 +93,7 @@ struct PasswordGroupingInfo {
   // into affiliated groups.
   std::vector<PasswordForm> blocked_sites;
 
-  // Call clear method on all the variables in this struct.
-  void clear() {
-    map_signon_realm_to_group_id.clear();
-    map_group_id_to_branding_info.clear();
-    map_group_id_to_forms.clear();
-    blocked_sites.clear();
-  }
-};
-
-// Helper objects which handles passwords grouping. Passwords are grouped
-// together based on affiliation information.
-class PasswordsGrouper {
- public:
-  PasswordsGrouper();
-  ~PasswordsGrouper();
-
-  // Apply grouping algorithm to credentials. The grouping algorithm group
-  // together credentials with the same username and password under the same
-  // affiliated group. For example, we have credential from "facebook.com" and
-  // "m.facebook.com" that have the same username and password. These are
-  // credentials are part of the same affiliated group so they will be grouped
-  // together. This method will create the password grouping info which contains
-  // the data structures used to create the list of affiliated groups.
-  // TODO(crbug.com/1354196): Pass vector of PasswordForms instead.
-  void GroupPasswords(const std::vector<GroupedFacets>& groups,
-                      const std::multimap<std::string, PasswordForm>&
-                          sort_key_to_password_forms);
-
-  // Returns a list of affiliated groups created with the password grouping
-  // info.
-  std::vector<AffiliatedGroup> GetAffiliatedGroupsWithGroupingInfo() const;
-
-  // Returns all the credentials (excluding blocked sites) in a vector.
-  std::vector<CredentialUIEntry> GetAllCredentials() const;
-
-  // Returns blocked sites.
-  std::vector<CredentialUIEntry> GetBlockedSites() const;
-
-  // Returns PasswordForm corresponding to 'credential'.
-  std::vector<PasswordForm> GetPasswordFormsFor(
-      const CredentialUIEntry& credential) const;
-
- private:
-  PasswordGroupingInfo password_grouping_info_;
+  base::WeakPtrFactory<PasswordsGrouper> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager
