@@ -104,6 +104,12 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   // (the dbus client). In browser test this will not be called.
   static void Shutdown();
 
+  // Same as above but skip the steps which is not used in browser tests. These
+  // also skip mojo flushing to prevent changing the calling sequence when
+  // shutting down.
+  static void InitializeInBrowserTest();
+  static void ShutdownInBrowserTest();
+
   // Gets the global instance. A `nullptr` could be returned if it is not
   // initialized.
   static FakeCrosHealthd* Get();

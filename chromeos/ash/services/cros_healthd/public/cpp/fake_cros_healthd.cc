@@ -103,6 +103,28 @@ void FakeCrosHealthd::Shutdown() {
 }
 
 // static
+void FakeCrosHealthd::InitializeInBrowserTest() {
+  CHECK(!g_instance);
+  g_instance = new FakeCrosHealthd();
+
+  CHECK(mojo_service_manager::IsServiceManagerBound());
+  auto* proxy = mojo_service_manager::GetServiceManagerProxy();
+  proxy->Register(chromeos::mojo_services::kCrosHealthdDiagnostics,
+                  g_instance->diagnostics_provider_.BindNewPipeAndPassRemote());
+  proxy->Register(chromeos::mojo_services::kCrosHealthdEvent,
+                  g_instance->event_provider_.BindNewPipeAndPassRemote());
+  proxy->Register(chromeos::mojo_services::kCrosHealthdProbe,
+                  g_instance->probe_provider_.BindNewPipeAndPassRemote());
+}
+
+// static
+void FakeCrosHealthd::ShutdownInBrowserTest() {
+  CHECK(g_instance);
+  delete g_instance;
+  g_instance = nullptr;
+}
+
+// static
 FakeCrosHealthd* FakeCrosHealthd::Get() {
   return g_instance;
 }
@@ -160,8 +182,9 @@ void FakeCrosHealthd::EmitAcInsertedEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : power_observers_)
+  for (auto& observer : power_observers_) {
     observer->OnAcInserted();
+  }
 }
 
 void FakeCrosHealthd::EmitAcRemovedEventForTesting() {
@@ -174,8 +197,9 @@ void FakeCrosHealthd::EmitAcRemovedEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : power_observers_)
+  for (auto& observer : power_observers_) {
     observer->OnAcRemoved();
+  }
 }
 
 void FakeCrosHealthd::EmitOsSuspendEventForTesting() {
@@ -188,8 +212,9 @@ void FakeCrosHealthd::EmitOsSuspendEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : power_observers_)
+  for (auto& observer : power_observers_) {
     observer->OnOsSuspend();
+  }
 }
 
 void FakeCrosHealthd::EmitOsResumeEventForTesting() {
@@ -202,8 +227,9 @@ void FakeCrosHealthd::EmitOsResumeEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : power_observers_)
+  for (auto& observer : power_observers_) {
     observer->OnOsResume();
+  }
 }
 
 void FakeCrosHealthd::EmitAdapterAddedEventForTesting() {
@@ -216,8 +242,9 @@ void FakeCrosHealthd::EmitAdapterAddedEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : bluetooth_observers_)
+  for (auto& observer : bluetooth_observers_) {
     observer->OnAdapterAdded();
+  }
 }
 
 void FakeCrosHealthd::EmitAdapterRemovedEventForTesting() {
@@ -230,8 +257,9 @@ void FakeCrosHealthd::EmitAdapterRemovedEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : bluetooth_observers_)
+  for (auto& observer : bluetooth_observers_) {
     observer->OnAdapterRemoved();
+  }
 }
 
 void FakeCrosHealthd::EmitAdapterPropertyChangedEventForTesting() {
@@ -244,8 +272,9 @@ void FakeCrosHealthd::EmitAdapterPropertyChangedEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : bluetooth_observers_)
+  for (auto& observer : bluetooth_observers_) {
     observer->OnAdapterPropertyChanged();
+  }
 }
 
 void FakeCrosHealthd::EmitDeviceAddedEventForTesting() {
@@ -258,8 +287,9 @@ void FakeCrosHealthd::EmitDeviceAddedEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : bluetooth_observers_)
+  for (auto& observer : bluetooth_observers_) {
     observer->OnDeviceAdded();
+  }
 }
 
 void FakeCrosHealthd::EmitDeviceRemovedEventForTesting() {
@@ -272,8 +302,9 @@ void FakeCrosHealthd::EmitDeviceRemovedEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : bluetooth_observers_)
+  for (auto& observer : bluetooth_observers_) {
     observer->OnDeviceRemoved();
+  }
 }
 
 void FakeCrosHealthd::EmitDevicePropertyChangedEventForTesting() {
@@ -286,8 +317,9 @@ void FakeCrosHealthd::EmitDevicePropertyChangedEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : bluetooth_observers_)
+  for (auto& observer : bluetooth_observers_) {
     observer->OnDevicePropertyChanged();
+  }
 }
 
 void FakeCrosHealthd::EmitLidClosedEventForTesting() {
@@ -300,8 +332,9 @@ void FakeCrosHealthd::EmitLidClosedEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : lid_observers_)
+  for (auto& observer : lid_observers_) {
     observer->OnLidClosed();
+  }
 }
 
 void FakeCrosHealthd::EmitLidOpenedEventForTesting() {
@@ -314,8 +347,9 @@ void FakeCrosHealthd::EmitLidOpenedEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : lid_observers_)
+  for (auto& observer : lid_observers_) {
     observer->OnLidOpened();
+  }
 }
 
 void FakeCrosHealthd::EmitAudioUnderrunEventForTesting() {
@@ -328,8 +362,9 @@ void FakeCrosHealthd::EmitAudioUnderrunEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : audio_observers_)
+  for (auto& observer : audio_observers_) {
     observer->OnUnderrun();
+  }
 }
 
 void FakeCrosHealthd::EmitAudioSevereUnderrunEventForTesting() {
@@ -342,8 +377,9 @@ void FakeCrosHealthd::EmitAudioSevereUnderrunEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : audio_observers_)
+  for (auto& observer : audio_observers_) {
     observer->OnSevereUnderrun();
+  }
 }
 
 void FakeCrosHealthd::EmitThunderboltAddEventForTesting() {
@@ -356,8 +392,9 @@ void FakeCrosHealthd::EmitThunderboltAddEventForTesting() {
     event_provider_.FlushForTesting();
   }
 
-  for (auto& observer : thunderbolt_observers_)
+  for (auto& observer : thunderbolt_observers_) {
     observer->OnAdd();
+  }
 }
 
 void FakeCrosHealthd::EmitUsbAddEventForTesting() {
@@ -371,8 +408,9 @@ void FakeCrosHealthd::EmitUsbAddEventForTesting() {
   }
 
   mojom::UsbEventInfo info;
-  for (auto& observer : usb_observers_)
+  for (auto& observer : usb_observers_) {
     observer->OnAdd(info.Clone());
+  }
 }
 
 void FakeCrosHealthd::EmitEventForCategory(mojom::EventCategoryEnum category,
@@ -427,8 +465,9 @@ void FakeCrosHealthd::RequestNetworkHealthForTesting(
         GetHealthSnapshotCallback callback) {
   // Flush the receiver, so pending network interface are registered before it
   // is used.
-  if (healthd_receiver_.is_bound())
+  if (healthd_receiver_.is_bound()) {
     healthd_receiver_.FlushForTesting();
+  }
 
   network_health_remote_->GetHealthSnapshot(std::move(callback));
 }
@@ -438,8 +477,9 @@ void FakeCrosHealthd::RunLanConnectivityRoutineForTesting(
         RunLanConnectivityCallback callback) {
   // Flush the receiver, so pending network interface are registered before it
   // is used.
-  if (healthd_receiver_.is_bound())
+  if (healthd_receiver_.is_bound()) {
     healthd_receiver_.FlushForTesting();
+  }
 
   network_diagnostics_routines_->RunLanConnectivity(std::move(callback));
 }

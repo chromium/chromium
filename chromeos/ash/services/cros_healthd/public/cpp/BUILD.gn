@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//chromeos/dbus/config/use_real_dbus_clients.gni")
+import("//chromeos/features.gni")
 
 assert(is_chromeos_ash)
 
@@ -32,9 +32,7 @@ source_set("cpp") {
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//ui/events/ozone/evdev:event_device_info",
   ]
-  if (use_real_dbus_clients) {
-    defines += [ "USE_REAL_DBUS_CLIENTS" ]
-  } else {
+  if (!use_real_chromeos_services) {
     sources += [
       "fake_cros_healthd.cc",
       "fake_cros_healthd.h",

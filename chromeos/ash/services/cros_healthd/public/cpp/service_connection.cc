@@ -23,10 +23,6 @@
 #include "third_party/cros_system_api/mojo/service_constants.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
-#if !defined(USE_REAL_DBUS_CLIENTS)
-#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#endif
-
 namespace ash::cros_healthd {
 
 namespace {
@@ -322,20 +318,6 @@ void ServiceConnectionImpl::BindCrosHealthdProbeServiceIfNeeded() {
 ServiceConnectionImpl::ServiceConnectionImpl()
     : use_service_manager_(mojo_service_manager::IsServiceManagerBound()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-#if !defined(USE_REAL_DBUS_CLIENTS)
-  // Creates the fake mojo service if need. This is for browser test to do the
-  // initialized.
-  // TODO(b/230064284): Remove this after we migrate to mojo service manager.
-  if (!FakeCrosHealthd::Get()) {
-    CHECK(CrosHealthdClient::Get())
-        << "The dbus client is not initialized. This should not happen in "
-           "browser tests. In unit tests, use FakeCrosHealthd::Initialize() to "
-           "initialize the fake cros healthd service.";
-    // Only initialize the fake if fake dbus client is used.
-    if (FakeCrosHealthdClient::Get())
-      FakeCrosHealthd::Initialize();
-  }
-#endif  // defined(USE_REAL_DBUS_CLIENTS)
   if (!use_service_manager_)
     EnsureCrosHealthdServiceFactoryIsBound();
 }

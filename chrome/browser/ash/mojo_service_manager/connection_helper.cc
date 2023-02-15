@@ -14,6 +14,7 @@
 #if !BUILDFLAG(USE_REAL_CHROMEOS_SERVICES)
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #endif
 
 namespace {
@@ -38,6 +39,8 @@ base::ScopedClosureRunner CreateRealConnectionAndPassCloser() {
 void ResetFakeConnection(
     std::unique_ptr<service_manager::FakeMojoServiceManager>
         fake_service_manager) {
+  ::ash::cros_healthd::FakeCrosHealthd::ShutdownInBrowserTest();
+
   fake_service_manager.reset();
 }
 
@@ -47,6 +50,9 @@ base::ScopedClosureRunner CreateFakeConnectionAndPassCloser() {
       << "Mojo broker must be enabled in browser tests.";
   auto fake_service_manager =
       std::make_unique<service_manager::FakeMojoServiceManager>();
+
+  // Initialize fake services.
+  ::ash::cros_healthd::FakeCrosHealthd::InitializeInBrowserTest();
 
   return base::ScopedClosureRunner{
       base::BindOnce(&ResetFakeConnection, std::move(fake_service_manager))};
