@@ -60085,6 +60085,7 @@ from previous Chrome versions.
   <int value="-920483976" label="AccessCodeCastRememberDevices:disabled"/>
   <int value="-920204598" label="ScrollAnchorSerialization:enabled"/>
   <int value="-920001827" label="NearbySharingSelfShareAutoAccept:disabled"/>
+  <int value="-919300982" label="ArcSwitchToKeyMintOnT:disabled"/>
   <int value="-918900957" label="AutofillCreditCardAssist:disabled"/>
   <int value="-918899240" label="HistoryClustersOnDeviceClustering:disabled"/>
   <int value="-918618075" label="enable-service-worker"/>
@@ -64543,6 +64544,7 @@ from previous Chrome versions.
       label="InterestFeedV1ClickAndViewActionsConditionalUpload:disabled"/>
   <int value="1654445970" label="EphemeralTabUsingBottomSheet:enabled"/>
   <int value="1654543587" label="AutofillParseAsync:disabled"/>
+  <int value="1654949170" label="ArcSwitchToKeyMintOnT:enabled"/>
   <int value="1656768789" label="EnableGetDebugdLogsInParallel:enabled"/>
   <int value="1657713458" label="disable-virtual-keyboard-overscroll"/>
   <int value="1658644418" label="disable-app-list-voice-search"/>

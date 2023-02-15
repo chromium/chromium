@@ -2731,6 +2731,9 @@ extern const char kArcRtVcpuDualCoreDesc[];
 extern const char kArcRtVcpuQuadCoreName[];
 extern const char kArcRtVcpuQuadCoreDesc[];
 
+extern const char kArcSwitchToKeyMintOnTName[];
+extern const char kArcSwitchToKeyMintOnTDesc[];
+
 extern const char kArcUpdateO4CListViaA2C2Name[];
 extern const char kArcUpdateO4CListViaA2C2Desc[];
 
