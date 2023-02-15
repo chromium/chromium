@@ -33,6 +33,8 @@ source_set("mixers") {
     "tab_strip_color_mixer.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":color_headers",
     "//build:branding_buildflags",

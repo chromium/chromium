@@ -23,6 +23,9 @@ source_set("quick_answers") {
     "ui/user_consent_view.cc",
     "ui/user_consent_view.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/color:color_headers",

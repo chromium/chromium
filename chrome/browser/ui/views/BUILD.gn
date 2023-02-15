@@ -23,6 +23,8 @@ component("views") {
     "tabs/tab_strip_types.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   defines = [ "CHROME_VIEWS_IMPLEMENTATION" ]
 
   deps = [
