@@ -254,6 +254,10 @@ class ASH_EXPORT UnifiedSystemTray
     return slider_bubble_controller_.get();
   }
 
+  CameraMicTrayItemView* camera_view() { return camera_view_; }
+
+  CameraMicTrayItemView* mic_view() { return mic_view_; }
+
  private:
   static const base::TimeDelta kNotificationCountUpdateDelay;
 

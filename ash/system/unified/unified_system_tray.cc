@@ -232,7 +232,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   managed_device_view_ = AddTrayItemToContainer(
       std::make_unique<ManagedDeviceTrayItemView>(shelf));
 
-  if (!features::IsPrivacyIndicatorsEnabled()) {
+  if (!features::IsPrivacyIndicatorsEnabled() &&
+      !features::IsVideoConferenceEnabled()) {
     camera_view_ =
         AddTrayItemToContainer(std::make_unique<CameraMicTrayItemView>(
             shelf, CameraMicTrayItemView::Type::kCamera));

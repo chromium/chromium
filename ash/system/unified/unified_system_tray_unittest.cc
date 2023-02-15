@@ -868,6 +868,20 @@ TEST_P(UnifiedSystemTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
   EXPECT_FALSE(tray->privacy_indicators_view());
 }
 
+// Tests that no camera or microphone views are present with VideoConference
+// enabled.
+TEST_P(UnifiedSystemTrayTest, NoCamOrMicViewWhenVcEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kVideoConference},
+      /*disabled_features=*/{});
+
+  auto tray = std::make_unique<UnifiedSystemTray>(GetPrimaryShelf());
+
+  EXPECT_FALSE(tray->mic_view());
+  EXPECT_FALSE(tray->camera_view());
+}
+
 TEST_P(UnifiedSystemTrayTest, PrivacyIndicatorsVisibility) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
