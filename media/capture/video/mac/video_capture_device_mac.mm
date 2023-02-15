@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/mac/scoped_ioplugininterface.h"
@@ -238,10 +239,15 @@ static void SetAntiFlickerInVideoControlInterface(
   if (real_unit_id == -1)
     return;
 
-  if ((*control_interface)->USBInterfaceOpen(control_interface) !=
-      kIOReturnSuccess) {
+  IOReturn ret = (*control_interface)->USBInterfaceOpen(control_interface);
+  if (ret != kIOReturnSuccess) {
     VLOG(1) << "Unable to open control interface";
-    return;
+    // On macOS 12+, VDCAssistant takes ownership of USB devices. So, we should
+    // not bail out if kIOReturnExclusiveAccess is returned from
+    // USBInterfaceOpen().
+    if (!(base::mac::IsAtLeastOS12() && ret == kIOReturnExclusiveAccess)) {
+      return;
+    }
   }
 
   // Create the control request and launch it to the device's control interface.
@@ -262,8 +268,7 @@ static void SetAntiFlickerInVideoControlInterface(
       (frequency == PowerLineFrequency::FREQUENCY_50HZ) ? k50Hz : k60Hz;
   command.pData = &power_line_flag_value;
 
-  IOReturn ret =
-      (*control_interface)->ControlRequest(control_interface, 0, &command);
+  ret = (*control_interface)->ControlRequest(control_interface, 0, &command);
   VLOG_IF(1, ret != kIOReturnSuccess) << "Anti-flicker control request"
                                           << " failed (0x" << std::hex << ret
                                           << "), unit id: " << real_unit_id;
@@ -587,10 +592,15 @@ static ScopedIOUSBInterfaceInterface OpenPanTiltZoomControlInterface(
   if (*unit_id == -1)
     return ScopedIOUSBInterfaceInterface();
 
-  if ((*control_interface)->USBInterfaceOpen(control_interface) !=
-      kIOReturnSuccess) {
+  IOReturn ret = (*control_interface)->USBInterfaceOpen(control_interface);
+  if (ret != kIOReturnSuccess) {
     VLOG(1) << "Unable to open control interface";
-    return ScopedIOUSBInterfaceInterface();
+    // On macOS 12+, VDCAssistant takes ownership of USB devices. So, we should
+    // not bail out if kIOReturnExclusiveAccess is returned from
+    // USBInterfaceOpen().
+    if (!(base::mac::IsAtLeastOS12() && ret == kIOReturnExclusiveAccess)) {
+      return ScopedIOUSBInterfaceInterface();
+    }
   }
 
   return control_interface;
