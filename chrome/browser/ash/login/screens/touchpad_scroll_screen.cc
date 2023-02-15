@@ -79,7 +79,8 @@ bool TouchpadScrollScreen::GetUserSyncedPreferences() {
   // we need to know whether the prefs have been loaded.
   sync_preferences::PrefServiceSyncable* prefs =
       PrefServiceSyncableFromProfile(ProfileManager::GetActiveUserProfile());
-  const bool sync_complete = prefs->AreOsPriorityPrefsSyncing();
+  const bool sync_complete =
+      ignore_pref_sync_for_testing_ || prefs->AreOsPriorityPrefsSyncing();
 
   if (sync_complete) {
     is_reverse_scrolling = prefs->GetUserPrefValue(prefs::kNaturalScroll);

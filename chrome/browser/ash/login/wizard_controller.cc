@@ -2394,6 +2394,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowCryptohomeRecoverySetupScreen();
   } else if (screen_id == ArcVmDataMigrationScreenView::kScreenId) {
     ShowArcVmDataMigrationScreen();
+  } else if (screen_id == TouchpadScrollScreenView::kScreenId) {
+    ShowTouchpadScrollScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||

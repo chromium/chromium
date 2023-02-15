@@ -32,6 +32,18 @@ class TouchpadScrollScreen : public BaseScreen {
 
   ~TouchpadScrollScreen() override;
 
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
+  void set_ingore_pref_sync_for_testing(bool ignore_sync) {
+    ignore_pref_sync_for_testing_ = ignore_sync;
+  }
+
   static std::string GetResultString(Result result);
 
  private:
@@ -47,6 +59,8 @@ class TouchpadScrollScreen : public BaseScreen {
 
   // Get user synced preferences for touchpad scroll direction.
   bool GetUserSyncedPreferences();
+
+  bool ignore_pref_sync_for_testing_ = false;
 
   base::WeakPtr<TouchpadScrollScreenView> view_;
   ScreenExitCallback exit_callback_;
