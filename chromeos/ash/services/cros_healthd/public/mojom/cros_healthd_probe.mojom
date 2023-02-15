@@ -1184,7 +1184,7 @@ union BootPerformanceResult {
 
 // Boot performance information.
 //
-// NextMinVersion: 1, NextIndex: 5
+// NextMinVersion: 2, NextIndex: 6
 [Stable]
 struct BootPerformanceInfo {
   // Total time since power on to login screen prompt.
@@ -1199,6 +1199,8 @@ struct BootPerformanceInfo {
   double shutdown_timestamp@3;
   // The shutdown reason (including reboot).
   string shutdown_reason@4;
+  // TPM initialization time.
+  [MinVersion=1] NullableDouble? tpm_initialization_seconds@5;
 };
 
 // Bus probe result. Can either be populated with the BusDevice or an error
