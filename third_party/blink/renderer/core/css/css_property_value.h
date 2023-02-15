@@ -85,6 +85,10 @@ class CORE_EXPORT CSSPropertyValue {
         value_(value, decltype(value_)::AtomicInitializerTag{}) {}
 
   CSSPropertyID Id() const { return metadata_.PropertyID(); }
+  const AtomicString& CustomPropertyName() const {
+    DCHECK_EQ(Id(), CSSPropertyID::kVariable);
+    return metadata_.custom_name_;
+  }
   bool IsSetFromShorthand() const { return metadata_.is_set_from_shorthand_; }
   CSSPropertyID ShorthandID() const { return metadata_.ShorthandID(); }
   bool IsImportant() const { return metadata_.important_; }

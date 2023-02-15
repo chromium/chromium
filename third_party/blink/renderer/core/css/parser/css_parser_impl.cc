@@ -204,7 +204,7 @@ static inline void FilterProperties(
       continue;
     }
     if (property.Id() == CSSPropertyID::kVariable) {
-      AtomicString name = property.Name().ToAtomicString();
+      const AtomicString& name = property.CustomPropertyName();
       if (seen_custom_properties.Contains(name)) {
         continue;
       }
