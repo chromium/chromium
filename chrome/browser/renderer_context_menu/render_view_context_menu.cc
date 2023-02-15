@@ -121,6 +121,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_metrics.h"
 #include "components/live_caption/caption_util.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
@@ -2906,6 +2907,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR: {
+      RecordAmbientSearchQuery(
+          lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_WEB_FOR);
       if (side_search::IsSearchWebInSidePanelSupported(
               chrome::FindBrowserWithWebContents(embedder_web_contents_))) {
         ExecSearchWebInSidePanel(selection_navigation_url_);
@@ -3669,6 +3672,10 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (!render_frame_host)
     return;
+
+  lens::RecordAmbientSearchQuery(
+      lens::AmbientSearchEntryPoint::
+          CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS);
   core_tab_helper->SearchWithLens(
       render_frame_host, params().src_url,
       is_image_translate
@@ -3733,6 +3740,8 @@ void RenderViewContextMenu::ExecSearchWebForImage(bool is_image_translate) {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
   if (!render_frame_host)
     return;
+  lens::RecordAmbientSearchQuery(
+      lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_IMAGE_WITH_WEB);
   core_tab_helper->SearchByImage(render_frame_host, params().src_url,
                                  is_image_translate);
 }

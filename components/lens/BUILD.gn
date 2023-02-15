@@ -20,6 +20,8 @@ static_library("lens") {
     "lens_entrypoints.h",
     "lens_metadata.cc",
     "lens_metadata.h",
+    "lens_metrics.cc",
+    "lens_metrics.h",
     "lens_rendering_environment.h",
     "lens_testing_utils.cc",
     "lens_testing_utils.h",

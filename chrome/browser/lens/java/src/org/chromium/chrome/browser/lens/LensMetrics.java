@@ -16,6 +16,9 @@ import java.lang.annotation.RetentionPolicy;
  * Static utility methods to support user action logging for Lens entry points.
  */
 public class LensMetrics {
+    public static final String AMBIENT_SEARCH_QUERY_HISTOGRAM = "Search.Ambient.Query";
+    public static final String SEARCH_CAMERA_OPEN_HISTOGRAM = "Search.Image.Camera.Open";
+
     // Note: these values must match the LensSupportStatus enum in enums.xml.
     // Only add new values at the end, right before NUM_ENTRIES.
     @IntDef({LensSupportStatus.LENS_SEARCH_SUPPORTED, LensSupportStatus.NON_GOOGLE_SEARCH_ENGINE,
@@ -44,6 +47,61 @@ public class LensMetrics {
         int DISABLED_ON_TABLET = 13;
         int DISABLED_FOR_ENTERPRISE_USER = 14;
         int NUM_ENTRIES = 15;
+    }
+
+    // Note: These values must match the AmbientSearchEntryPoint enum in enums.xml.
+    // Only add new values at the end, right before NUM_ENTRIES.
+    @IntDef({AmbientSearchEntryPoint.CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS,
+            AmbientSearchEntryPoint.CONTEXT_MENU_SEARCH_IMAGE_WITH_WEB,
+            AmbientSearchEntryPoint.CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS,
+            AmbientSearchEntryPoint.CONTEXT_MENU_SEARCH_REGION_WITH_WEB,
+            AmbientSearchEntryPoint.CONTEXT_MENU_SEARCH_WEB_FOR, AmbientSearchEntryPoint.OMNIBOX,
+            AmbientSearchEntryPoint.NEW_TAB_PAGE,
+            AmbientSearchEntryPoint.QUICK_ACTION_SEARCH_WIDGET, AmbientSearchEntryPoint.KEYBOARD,
+            AmbientSearchEntryPoint.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public static @interface AmbientSearchEntryPoint {
+        int CONTEXT_MENU_SEARCH_IMAGE_WITH_GOOGLE_LENS = 0;
+        int CONTEXT_MENU_SEARCH_IMAGE_WITH_WEB = 1;
+        int CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS = 2;
+        int CONTEXT_MENU_SEARCH_REGION_WITH_WEB = 3;
+        int CONTEXT_MENU_SEARCH_WEB_FOR = 4;
+        int OMNIBOX = 5;
+        int NEW_TAB_PAGE = 6;
+        int QUICK_ACTION_SEARCH_WIDGET = 7;
+        int KEYBOARD = 8;
+        int NUM_ENTRIES = 9;
+    }
+
+    // Note: These values must match the CameraOpenEntryPoint enum in enums.xml.
+    // Only add new values at the end, right before NUM_ENTRIES.
+    @IntDef({CameraOpenEntryPoint.OMNIBOX, CameraOpenEntryPoint.NEW_TAB_PAGE,
+            CameraOpenEntryPoint.QUICK_ACTION_SEARCH_WIDGET, CameraOpenEntryPoint.TASKS_SURFACE,
+            CameraOpenEntryPoint.KEYBOARD, CameraOpenEntryPoint.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public static @interface CameraOpenEntryPoint {
+        int OMNIBOX = 0;
+        int NEW_TAB_PAGE = 1;
+        int QUICK_ACTION_SEARCH_WIDGET = 2;
+        int TASKS_SURFACE = 3;
+        int KEYBOARD = 4;
+        int NUM_ENTRIES = 5;
+    }
+
+    /**
+     *  Record an ambient search query along with the entry point that initiated.
+     */
+    public static void recordAmbientSearchQuery(@AmbientSearchEntryPoint int entryPoint) {
+        RecordHistogram.recordEnumeratedHistogram(
+                AMBIENT_SEARCH_QUERY_HISTOGRAM, entryPoint, AmbientSearchEntryPoint.NUM_ENTRIES);
+    }
+
+    /**
+     *  Record an intent sent to Lens to open the viewfinder with the entry point used.
+     */
+    public static void recordCameraOpen(@CameraOpenEntryPoint int entryPoint) {
+        RecordHistogram.recordEnumeratedHistogram(
+                SEARCH_CAMERA_OPEN_HISTOGRAM, entryPoint, CameraOpenEntryPoint.NUM_ENTRIES);
     }
 
     /**

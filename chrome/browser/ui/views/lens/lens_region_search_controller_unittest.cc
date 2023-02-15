@@ -5,11 +5,11 @@
 
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/lens/metrics/lens_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"

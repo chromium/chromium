@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
-#include "chrome/browser/lens/metrics/lens_metrics.h"
+#include "components/lens/lens_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/widget/widget.h"

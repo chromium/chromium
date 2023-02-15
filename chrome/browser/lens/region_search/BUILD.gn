@@ -7,7 +7,6 @@ assert(!is_android, "Lens Region Search is for desktop platforms only")
 
 static_library("region_search") {
   sources = [
-    "../metrics/lens_metrics.h",
     "lens_region_search_controller.cc",
     "lens_region_search_controller.h",
     "lens_region_search_helper.cc",

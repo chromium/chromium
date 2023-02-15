@@ -711,6 +711,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             prefManager.writeBoolean(
                     ChromePreferenceKeys.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS_CLICKED, true);
         } else if (itemId == R.id.contextmenu_search_by_image) {
+            LensMetrics.recordAmbientSearchQuery(
+                    LensMetrics.AmbientSearchEntryPoint.CONTEXT_MENU_SEARCH_IMAGE_WITH_WEB);
             recordContextMenuSelection(ContextMenuUma.Action.SEARCH_BY_IMAGE);
             mNativeDelegate.searchForImage();
         } else if (itemId == R.id.contextmenu_share_image) {

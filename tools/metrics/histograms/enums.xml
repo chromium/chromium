@@ -1814,6 +1814,24 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="Google Photos No Albums"/>
 </enum>
 
+<enum name="AmbientSearchEntryPoint">
+  <summary>
+    The entry point that initiated an ambient search query. (e.g. Context Menu
+    Item)
+  </summary>
+  <int value="0"
+      label="Context menu item for 'Search Image with Google Lens' (Image)"/>
+  <int value="1" label="Context menu item for 'Search Image with Web' (Image)"/>
+  <int value="2"
+      label="Context menu item for 'Search Images with Google Lens' (Region)"/>
+  <int value="3"
+      label="Context menu item for 'Search Images with Web' (Region)"/>
+  <int value="4" label="Omnibox (Camera)"/>
+  <int value="5" label="New Tab Page (Camera)"/>
+  <int value="6" label="Quick Action Search Widget (Camera)"/>
+  <int value="7" label="Keyboard (Camera)"/>
+</enum>
+
 <enum name="AmbientUiMode">
   <int value="0" label="Lock Screen"/>
   <int value="1" label="In Session Idle"/>
@@ -13958,6 +13976,14 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="kBlur"/>
   <int value="2" label="kRelight"/>
   <int value="3" label="kBlurAndRelight"/>
+</enum>
+
+<enum name="CameraOpenEntryPoint">
+  <int value="0" label="Omnibox"/>
+  <int value="1" label="New Tab Page (NTP)"/>
+  <int value="2" label="Widget"/>
+  <int value="3" label="Tasks Surface"/>
+  <int value="4" label="Keyboard"/>
 </enum>
 
 <enum name="CameraPreviewSnapPosition">
