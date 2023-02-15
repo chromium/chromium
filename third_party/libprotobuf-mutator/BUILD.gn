@@ -6,9 +6,12 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
-config("main_config") {
-  cflags = [ "-Wno-shadow" ]
+config("public_config") {
   include_dirs = [ "src/" ]
+}
+
+config("private_config") {
+  cflags = [ "-Wno-shadow" ]
 }
 
 source_set("libprotobuf-mutator") {
@@ -16,9 +19,13 @@ source_set("libprotobuf-mutator") {
 
   # Remove *San and coverage for a performance boost.
   configs -= not_fuzzed_remove_configs
-  configs += [ "//build/config/sanitizers:not_fuzzed" ]
+  configs += [
+    "//build/config/sanitizers:not_fuzzed",
+    ":private_config",
+  ]
 
-  public_configs = [ ":main_config" ]
+  public_configs = [ ":public_config" ]
+
   sources = [
     "src/src/binary_format.cc",
     "src/src/libfuzzer/libfuzzer_macro.cc",
