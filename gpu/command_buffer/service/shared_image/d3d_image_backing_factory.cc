@@ -67,10 +67,6 @@ absl::optional<DXGI_FORMAT> GetSupportedRGBAFormat(
       return DXGI_FORMAT_R8_UNORM;
     case viz::RG_88:
       return DXGI_FORMAT_R8G8_UNORM;
-    case viz::R16_EXT:
-      return DXGI_FORMAT_R16_UNORM;
-    case viz::RG16_EXT:
-      return DXGI_FORMAT_R16G16_UNORM;
     default:
       NOTREACHED();
       return {};
@@ -93,7 +89,7 @@ DXGI_FORMAT GetDXGIFormat(gfx::BufferFormat buffer_format) {
   }
 }
 
-// Typeless formats supported by CreateSharedImage(GMB) for XR.
+// Formats supported by CreateSharedImage(GMB).
 DXGI_FORMAT GetDXGITypelessFormat(gfx::BufferFormat buffer_format) {
   switch (buffer_format) {
     case gfx::BufferFormat::RGBA_8888:
@@ -516,9 +512,17 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
   }
 
   if (gmb_type == gfx::EMPTY_BUFFER) {
-    // We only support rendering or uploading to RGBA formats.
-    if (!GetSupportedRGBAFormat(format))
-      return false;
+    if (usage & SHARED_IMAGE_USAGE_CPU_UPLOAD) {
+      // Only allow single NV12 shared memory GMBs for now. This excludes
+      // dual shared memory GMBs used by software video decoder.
+      if (format.resource_format() != viz::YUV_420_BIPLANAR) {
+        return false;
+      }
+    } else {
+      if (!GetSupportedRGBAFormat(format)) {
+        return false;
+      }
+    }
   } else if (gmb_type == gfx::DXGI_SHARED_HANDLE) {
     if (GetDXGIFormat(ToBufferFormat(format)) == DXGI_FORMAT_UNKNOWN)
       return false;

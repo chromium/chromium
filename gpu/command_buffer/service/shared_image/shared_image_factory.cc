@@ -427,19 +427,10 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       !IsSharedBetweenThreads(usage)) {
     // Check if CompoundImageBacking can hold shared memory buffer plus
     // another GPU backing type to satisfy requirements.
-    if (CompoundImageBacking::IsValidSharedMemoryBufferFormat(size, format,
-                                                              plane)) {
-      // For shared memory backed compound backings, we need to check if the
-      // corresponding GPU backing can support the format and size for the given
-      // plane rather than the original GMB format and size.
-      const auto plane_format = viz::SharedImageFormat::SinglePlane(
-          viz::GetResourceFormat(GetPlaneBufferFormat(plane, format)));
-      const gfx::Size plane_size = GetPlaneSize(plane, size);
-      factory =
-          GetFactoryByUsage(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD, plane_format,
-                            plane_size, /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
-      use_compound = factory != nullptr;
-    }
+    use_compound = true;
+    factory = GetFactoryByUsage(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD,
+                                si_format, size,
+                                /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
   }
 
   if (!factory) {

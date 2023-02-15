@@ -47,10 +47,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   using CreateBackingCallback =
       base::OnceCallback<void(std::unique_ptr<SharedImageBacking>&)>;
 
-  static bool IsValidSharedMemoryBufferFormat(const gfx::Size& size,
-                                              gfx::BufferFormat buffer_format,
-                                              gfx::BufferPlane plane);
-
   // Creates a backing that contains a shared memory backing and GPU backing
   // provided by `gpu_backing_factory`.
   static std::unique_ptr<SharedImageBacking> CreateSharedMemory(
@@ -65,6 +61,18 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage);
+
+  CompoundImageBacking(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      bool allow_shm_overlays,
+      std::unique_ptr<SharedMemoryImageBacking> shm_backing,
+      base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory);
 
   ~CompoundImageBacking() override;
 
@@ -125,18 +133,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
     CreateBackingCallback create_callback;
     std::unique_ptr<SharedImageBacking> backing;
   };
-
-  CompoundImageBacking(
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      bool allow_shm_overlays,
-      std::unique_ptr<SharedMemoryImageBacking> shm_backing,
-      base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory);
 
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::MemoryAllocatorDumpGuid client_guid,
