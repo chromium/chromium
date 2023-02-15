@@ -178,9 +178,6 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, Guest) {
   profiles::SwitchToGuestProfile();
   Browser* guest_browser = ui_test_utils::WaitForBrowserToOpen();
   ASSERT_TRUE(guest_browser);
-
-  BrowserList::SetLastActive(guest_browser);
-
   ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
   // This should not crash.
   EXPECT_FALSE(menu()->ShouldShowEditProfileLink());
