@@ -44,6 +44,10 @@ suite('PerDeviceKeyboardSubsection', function() {
     return flushTasks();
   }
 
+  /**
+   * @param {!Object} keyboard
+   * @return {!Promise}
+   */
   function changeKeyboardState(keyboard) {
     subsection.keyboard = keyboard;
     return flushTasks();
@@ -55,15 +59,21 @@ suite('PerDeviceKeyboardSubsection', function() {
     let externalTopRowAreFunctionKeysButton =
         subsection.shadowRoot.querySelector(
             '#externalTopRowAreFunctionKeysButton');
+    assertTrue(isVisible(externalTopRowAreFunctionKeysButton));
     assertEquals(
         fakeKeyboards[0].settings.topRowAreFKeys,
         externalTopRowAreFunctionKeysButton.pref.value);
     let blockMetaFunctionKeyRewritesButton =
         subsection.shadowRoot.querySelector(
             '#blockMetaFunctionKeyRewritesButton');
+    assertTrue(isVisible(blockMetaFunctionKeyRewritesButton));
     assertEquals(
         fakeKeyboards[0].settings.suppressMetaFKeyRewrites,
         blockMetaFunctionKeyRewritesButton.pref.value);
+    let internalTopRowAreFunctionKeysButton =
+        subsection.shadowRoot.querySelector(
+            '#internalTopRowAreFunctionKeysButton');
+    assertFalse(isVisible(internalTopRowAreFunctionKeysButton));
     let enableAutoRepeatButton =
         subsection.shadowRoot.querySelector('#enableAutoRepeatButton');
     assertEquals(
@@ -82,14 +92,16 @@ suite('PerDeviceKeyboardSubsection', function() {
     changeKeyboardState(fakeKeyboards[1]);
     externalTopRowAreFunctionKeysButton = subsection.shadowRoot.querySelector(
         '#externalTopRowAreFunctionKeysButton');
-    assertEquals(
-        fakeKeyboards[1].settings.topRowAreFKeys,
-        externalTopRowAreFunctionKeysButton.pref.value);
+    assertFalse(isVisible(externalTopRowAreFunctionKeysButton));
     blockMetaFunctionKeyRewritesButton = subsection.shadowRoot.querySelector(
         '#blockMetaFunctionKeyRewritesButton');
+    assertFalse(isVisible(blockMetaFunctionKeyRewritesButton));
+    internalTopRowAreFunctionKeysButton = subsection.shadowRoot.querySelector(
+        '#internalTopRowAreFunctionKeysButton');
+    assertTrue(isVisible(internalTopRowAreFunctionKeysButton));
     assertEquals(
-        fakeKeyboards[1].settings.suppressMetaFKeyRewrites,
-        blockMetaFunctionKeyRewritesButton.pref.value);
+        fakeKeyboards[1].settings.topRowAreFKeys,
+        internalTopRowAreFunctionKeysButton.pref.value);
     enableAutoRepeatButton =
         subsection.shadowRoot.querySelector('#enableAutoRepeatButton');
     assertEquals(
