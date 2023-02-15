@@ -58,6 +58,9 @@ class AffiliationDatabase {
   // Retrieves all stored groups.
   std::vector<GroupedFacets> GetAllGroups() const;
 
+  // Retrieves psl extension list.
+  std::vector<std::string> GetPSLExtensions() const;
+
   // Removes the stored equivalence class and branding information, if any,
   // containing |facet_uri|.
   void DeleteAffiliationsAndBrandingForFacetURI(const FacetURI& facet_uri);
@@ -90,6 +93,9 @@ class AffiliationDatabase {
   // Exposes the version of the underlying database. Should only be used in
   // tests.
   int GetDatabaseVersionForTesting();
+
+  // Updates |psl_extensions| table with provided |domains|.
+  void UpdatePslExtensions(const std::vector<std::string>& domains);
 
  private:
   // Called when SQLite encounters an error.

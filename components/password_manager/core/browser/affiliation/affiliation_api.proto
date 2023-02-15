@@ -139,6 +139,12 @@ message LookupAffiliationMask {
   // Whether to include change password infos in the response. Can be set only
   // if grouping_info is set to true, as this is only populated for FacetGroups.
   optional bool change_password_info = 7;
+
+  // If true, the entire list of main domains will be populated in the response,
+  // the server uses the PSL for grouping purposes. This is relevant for
+  // properly computing main domain or ignoring PSL matches which shouldn't
+  // share credentials.
+  optional bool psl_extension_list = 8;
 }
 
 // Request message for AffiliationService.Lookup.
@@ -187,4 +193,8 @@ message LookupAffiliationByHashPrefixResponse {
   // Information required for grouping facets in the UI. Ordering and
   // deplication works the same as for affiliations.
   repeated FacetGroup groups = 2;
+
+  // The set of domains that the server uses as an extension to the PSL in the
+  // case the of non-hash-prefix lookups.
+  repeated string psl_extensions = 3;
 }

@@ -28,6 +28,7 @@ class AffiliationFetcherDelegate {
 
     std::vector<AffiliatedFacets> affiliations;
     std::vector<GroupedFacets> groupings;
+    std::vector<std::string> psl_extensions;
   };
 
   // Called when affiliation information has been successfully retrieved. The

@@ -18,11 +18,9 @@ class AffiliationFetcherInterface {
   struct RequestInfo {
     bool branding_info = false;
     bool change_password_info = false;
+    bool psl_extension_list = false;
 
-    bool operator==(const RequestInfo& other) const {
-      return branding_info == other.branding_info &&
-             change_password_info == other.change_password_info;
-    }
+    friend bool operator==(const RequestInfo&, const RequestInfo&);
   };
 
   AffiliationFetcherInterface() = default;

@@ -243,6 +243,10 @@ void AffiliationBackend::OnFetchSucceeded(
   fetcher_.reset();
   throttler_->InformOfNetworkRequestComplete(true);
 
+  if (!result->psl_extensions.empty()) {
+    cache_->UpdatePslExtensions(result->psl_extensions);
+  }
+
   std::map<std::string, const GroupedFacets*> map_facet_to_group;
   for (const GroupedFacets& grouped_facets : result->groupings) {
     for (const Facet& facet : grouped_facets.facets) {
@@ -334,7 +338,13 @@ bool AffiliationBackend::OnCanSendNetworkRequest() {
     return false;
 
   fetcher_ = fetcher_factory_->CreateInstance(url_loader_factory_, this);
-  fetcher_->StartRequest(requested_facet_uris, {.branding_info = true});
+  // TODO(crbug.com/1354196): There is no need to request psl extension every
+  // time, find a better way of caching it.
+  const bool psl_extension_list =
+      base::FeatureList::IsEnabled(features::kPasswordsGrouping);
+  fetcher_->StartRequest(
+      requested_facet_uris,
+      {.branding_info = true, .psl_extension_list = psl_extension_list});
   ReportStatistics(requested_facet_uris.size());
   return true;
 }

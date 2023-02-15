@@ -30,7 +30,7 @@ namespace password_manager {
 namespace {
 
 // The current version number of the affiliation database schema.
-const int kVersion = 4;
+const int kVersion = 5;
 
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
@@ -42,12 +42,13 @@ struct SQLTableBuilders {
   std::vector<raw_ptr<SQLTableBuilder>> AsVector() const {
     // It's important to keep builders in this order as tables are migrated one
     // by one.
-    return {eq_classes, eq_class_members, eq_class_groups};
+    return {eq_classes, eq_class_members, eq_class_groups, psl_extensions};
   }
 
   raw_ptr<SQLTableBuilder> eq_classes;
   raw_ptr<SQLTableBuilder> eq_class_members;
   raw_ptr<SQLTableBuilder> eq_class_groups;
+  raw_ptr<SQLTableBuilder> psl_extensions;
 };
 
 // Seals the version of the given builders. This is method should be always used
@@ -62,6 +63,9 @@ void SealVersion(SQLTableBuilders builders, unsigned expected_version) {
 
   unsigned eq_class_groups_version = builders.eq_class_groups->SealVersion();
   DCHECK_EQ(expected_version, eq_class_groups_version);
+
+  unsigned eq_psl_extensions_version = builders.psl_extensions->SealVersion();
+  DCHECK_EQ(expected_version, eq_psl_extensions_version);
 }
 
 // Initializes the passed in table builders and defines the structure of the
@@ -100,6 +104,9 @@ void InitializeTableBuilders(SQLTableBuilders builders) {
   // Version 4 of the affiliation database.
   builders.eq_class_groups->AddColumn("main_domain", "VARCHAR");
   SealVersion(builders, /*expected_version=*/4u);
+
+  builders.psl_extensions->AddColumnToUniqueKey("domain", "VARCHAR NOT NULL");
+  SealVersion(builders, /*expected_version=*/5u);
 }
 
 // Migrates from a given version or creates table depending if table exists or
@@ -149,8 +156,10 @@ bool AffiliationDatabase::Init(const base::FilePath& path) {
   SQLTableBuilder eq_classes_builder("eq_classes");
   SQLTableBuilder eq_class_members_builder("eq_class_members");
   SQLTableBuilder eq_class_groups_builder("eq_class_groups");
+  SQLTableBuilder psl_extensions_builder("psl_extensions");
   SQLTableBuilders builders = {&eq_classes_builder, &eq_class_members_builder,
-                               &eq_class_groups_builder};
+                               &eq_class_groups_builder,
+                               &psl_extensions_builder};
   InitializeTableBuilders(builders);
 
   int version = metatable.GetVersionNumber();
@@ -258,6 +267,18 @@ std::vector<GroupedFacets> AffiliationDatabase::GetAllGroups() const {
         statement.ColumnString(1));
   }
   return results;
+}
+
+std::vector<std::string> AffiliationDatabase::GetPSLExtensions() const {
+  std::vector<std::string> result;
+
+  sql::Statement statement(sql_connection_->GetCachedStatement(
+      SQL_FROM_HERE, "SELECT domain FROM psl_extensions"));
+  while (statement.Step()) {
+    result.push_back(statement.ColumnString(0));
+  }
+
+  return result;
 }
 
 void AffiliationDatabase::DeleteAffiliationsAndBrandingForFacetURI(
@@ -423,6 +444,33 @@ int AffiliationDatabase::GetDatabaseVersionForTesting() {
   bool ok = metatable.Init(sql_connection_.get(), 1, 1);
   DCHECK(ok);
   return metatable.GetVersionNumber();
+}
+
+void AffiliationDatabase::UpdatePslExtensions(
+    const std::vector<std::string>& domains) {
+  DCHECK(!domains.empty());
+
+  sql::Statement clear_table_statement(sql_connection_->GetUniqueStatement("DELETE FROM psl_extensions"));
+  sql::Statement statement(sql_connection_->GetUniqueStatement("INSERT INTO psl_extensions(domain) VALUES (?)"));
+  sql::Transaction transaction(sql_connection_.get());
+
+  if (!transaction.Begin()) {
+    return;
+  }
+
+  // Clear all the records first.
+  if(!clear_table_statement.Run()) {
+    return;
+  }
+
+  for (const auto& domain : domains) {
+    statement.Reset(true);
+    statement.BindString(0, domain);
+    if (!statement.Run()) {
+      return;
+    }
+  }
+  transaction.Commit();
 }
 
 void AffiliationDatabase::SQLErrorCallback(int error,

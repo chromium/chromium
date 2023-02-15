@@ -240,10 +240,10 @@ std::ostream& operator<<(std::ostream& os, const FacetURI& facet_uri);
 // Needed for testing.
 bool operator==(const FacetBrandingInfo& lhs, const FacetBrandingInfo& rhs);
 bool operator!=(const FacetBrandingInfo& lhs, const FacetBrandingInfo& rhs);
-
-// Needed for testing.
 bool operator==(const Facet& lhs, const Facet& rhs);
 bool operator!=(const Facet& lhs, const Facet& rhs);
+bool operator==(const GroupedFacets& lhs, const GroupedFacets& rhs);
+bool operator!=(const GroupedFacets& lhs, const GroupedFacets& rhs);
 
 struct FacetURIHash {
   size_t operator()(const FacetURI& facet_uri) const {

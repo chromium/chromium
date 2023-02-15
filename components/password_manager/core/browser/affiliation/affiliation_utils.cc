@@ -341,6 +341,17 @@ bool operator!=(const Facet& lhs, const Facet& rhs) {
   return !(lhs == rhs);
 }
 
+bool operator==(const GroupedFacets& lhs, const GroupedFacets& rhs) {
+  if (!base::ranges::is_permutation(lhs.facets, rhs.facets)) {
+    return false;
+  }
+  return lhs.branding_info == rhs.branding_info;
+}
+
+bool operator!=(const GroupedFacets& lhs, const GroupedFacets& rhs) {
+  return !(lhs == rhs);
+}
+
 bool AreEquivalenceClassesEqual(const AffiliatedFacets& a,
                                 const AffiliatedFacets& b) {
   return a.size() == b.size() &&

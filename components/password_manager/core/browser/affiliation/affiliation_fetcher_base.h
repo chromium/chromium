@@ -80,6 +80,9 @@ class AffiliationFetcherBase : public virtual AffiliationFetcherInterface {
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 };
 
+bool operator==(const AffiliationFetcherInterface::RequestInfo& lhs,
+                const AffiliationFetcherInterface::RequestInfo& rhs);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_AFFILIATION_AFFILIATION_FETCHER_BASE_H_

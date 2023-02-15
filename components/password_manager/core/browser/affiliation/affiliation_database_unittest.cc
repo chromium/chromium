@@ -325,7 +325,7 @@ TEST_F(AffiliationDatabaseTest, MigrateFromVersion1) {
   OpenDatabase();
 
   // Check that migration was successful and existing data was untouched.
-  EXPECT_EQ(4, db().GetDatabaseVersionForTesting());
+  EXPECT_EQ(5, db().GetDatabaseVersionForTesting());
   std::vector<AffiliatedFacetsWithUpdateTime> affiliations;
   db().GetAllAffiliationsAndBranding(&affiliations);
   ASSERT_EQ(3u, affiliations.size());
@@ -460,6 +460,49 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion4) {
   EXPECT_THAT(groupings[2].branding_info,
               testing::Eq(FacetBrandingInfo{kTestAndroidPlayName,
                                             GURL(kTestAndroidIconURL)}));
+}
+
+TEST_F(AffiliationDatabaseTest, InitializeFromVersion5) {
+  // Close and delete the current database and create it from scratch with the
+  // SQLite statement stored in affiliation_db_v3.sql.
+  CloseDatabase();
+  AffiliationDatabase::Delete(db_path());
+  base::FilePath src_root_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
+  base::FilePath sql_path_v5 = src_root_dir.AppendASCII("components")
+                                   .AppendASCII("test")
+                                   .AppendASCII("data")
+                                   .AppendASCII("password_manager")
+                                   .AppendASCII("affiliation_db_v5.sql");
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(db_path(), sql_path_v5));
+
+  // Expect the migration to be a no-op that does not modify the existing data.
+  OpenDatabase();
+
+  GroupedFacets group1;
+  group1.facets = {Facet(FacetURI::FromCanonicalSpec(kTestFacetURI1),
+                         FacetBrandingInfo(), GURL(), kTestMainDomain),
+                   Facet(FacetURI::FromCanonicalSpec(kTestFacetURI2),
+                         FacetBrandingInfo(), GURL(), kTestMainDomain),
+                   Facet(FacetURI::FromCanonicalSpec(kTestFacetURI3),
+                         FacetBrandingInfo(), GURL(), kTestMainDomain)};
+  group1.branding_info =
+      FacetBrandingInfo{kTestWebsiteName, GURL(kTestAndroidIconURL)};
+  GroupedFacets group2;
+  group2.facets = {Facet(FacetURI::FromCanonicalSpec(kTestFacetURI4)),
+                   Facet(FacetURI::FromCanonicalSpec(kTestFacetURI5)),
+                   Facet(FacetURI::FromCanonicalSpec(kTestFacetURI7))};
+  GroupedFacets group3;
+  group3.facets = {Facet(FacetURI::FromCanonicalSpec(kTestAndroidFacetURI))};
+  group3.branding_info =
+      FacetBrandingInfo{kTestAndroidPlayName, GURL(kTestAndroidIconURL)};
+
+  EXPECT_THAT(db().GetAllGroups(),
+              testing::UnorderedElementsAre(group1, group2, group3));
+
+  EXPECT_THAT(
+      db().GetPSLExtensions(),
+      testing::UnorderedElementsAre("app.com", "example.com", "news.com"));
 }
 
 TEST_F(AffiliationDatabaseTest, ClearUnusedCache) {

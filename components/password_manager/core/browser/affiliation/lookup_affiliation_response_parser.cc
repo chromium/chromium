@@ -124,6 +124,9 @@ bool ParseLookupAffiliationResponse(
     const std::vector<FacetURI>& requested_facet_uris,
     const affiliation_pb::LookupAffiliationByHashPrefixResponse& response,
     AffiliationFetcherDelegate::Result* result) {
+  for (const auto& domain : response.psl_extensions()) {
+    result->psl_extensions.push_back(domain);
+  }
   return ParseResponse(requested_facet_uris, response.affiliations(),
                        result->affiliations) &&
          ParseResponse(requested_facet_uris, response.groups(),

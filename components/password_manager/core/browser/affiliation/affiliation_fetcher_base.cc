@@ -72,7 +72,7 @@ affiliation_pb::LookupAffiliationMask CreateLookupMask(
   mask.set_grouping_info(request_info.change_password_info || grouping_enabled);
   mask.set_group_branding_info(grouping_enabled);
   mask.set_change_password_info(request_info.change_password_info);
-
+  mask.set_psl_extension_list(request_info.psl_extension_list);
   return mask;
 }
 
@@ -178,5 +178,8 @@ void AffiliationFetcherBase::OnSimpleLoaderComplete(
     delegate_->OnMalformedResponse(this);
   }
 }
+
+bool operator==(const AffiliationFetcherInterface::RequestInfo& lhs,
+                const AffiliationFetcherInterface::RequestInfo& rhs) = default;
 
 }  // namespace password_manager
