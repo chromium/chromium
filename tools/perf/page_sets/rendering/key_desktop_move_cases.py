@@ -56,7 +56,7 @@ class GmailMouseScroll2018Page(KeyDesktopMoveCasesPage):
 
   def RunNavigateSteps(self, action_runner):
     if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
-      self._url = google_login.GetLoginUrl(self.URL)
+      google_login.LoginWithLoginUrl(action_runner, self.URL)
     else:
       google_login.NewLoginGoogleAccount(action_runner, 'googletest')
     super(GmailMouseScroll2018Page, self).RunNavigateSteps(action_runner)

@@ -493,7 +493,7 @@ class LoadGmailStory2019(_LoadingStory):
 
   def _Login(self, action_runner):
     if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
-      self._url = google_login.GetLoginUrl(self.URL)
+      google_login.LoginWithLoginUrl(action_runner, self.URL)
     else:
       google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 
@@ -520,7 +520,7 @@ class LoadChatStory2020(_LoadingStory):
 
   def _Login(self, action_runner):
     if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
-      self._url = google_login.GetLoginUrl(self.URL)
+      google_login.LoginWithLoginUrl(action_runner, self.URL)
     else:
       google_login.NewLoginGoogleAccount(action_runner, 'chatfeature')
 
@@ -564,7 +564,7 @@ class LoadDriveStory2019(_LoadingStory):
 
   def _Login(self, action_runner):
     if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
-      self._url = google_login.GetLoginUrl(self.URL)
+      google_login.LoginWithLoginUrl(action_runner, self.URL)
     else:
       google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 

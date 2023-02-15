@@ -1521,7 +1521,7 @@ class _GmailBrowsingStory(system_health_story.SystemHealthStory):
     if self.USE_LOGINURL or self.wpr_mode in [
         wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD
     ]:
-      self._url = google_login.GetLoginUrl(self.URL)
+      google_login.LoginWithLoginUrl(action_runner, self.URL)
     else:
       google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 

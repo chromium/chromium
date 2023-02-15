@@ -75,7 +75,7 @@ class GmailPinchZoom2018Page(ToughPinchZoomPage):
   def RunNavigateSteps(self, action_runner):
     if self.wpr_mode != wpr_modes.WPR_REPLAY:
       if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
-        self._url = google_login.GetLoginUrl(self.URL)
+        google_login.LoginWithLoginUrl(action_runner, self.URL)
       else:
         google_login.NewLoginGoogleAccount(action_runner, 'googletest')
     super(GmailPinchZoom2018Page, self).RunNavigateSteps(action_runner)
@@ -96,7 +96,7 @@ class GoogleCalendarPinchZoom2018Page(ToughPinchZoomPage):
   def RunNavigateSteps(self, action_runner):
     if self.wpr_mode != wpr_modes.WPR_REPLAY:
       if self.wpr_mode in [wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD]:
-        self._url = google_login.GetLoginUrl(self.URL)
+        google_login.LoginWithLoginUrl(action_runner, self.URL)
       else:
         google_login.NewLoginGoogleAccount(action_runner, 'googletest')
     super(GoogleCalendarPinchZoom2018Page, self).RunNavigateSteps(

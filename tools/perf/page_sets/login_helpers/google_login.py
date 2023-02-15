@@ -96,7 +96,9 @@ def NewLoginGoogleAccount(action_runner,
   action_runner.WaitForElement(text='Google Account')
 
 
-def GetLoginUrl(target_url, test_account_email='browserperftester@gmail.com'):
+def LoginWithLoginUrl(action_runner,
+                      target_url,
+                      test_account_email='browserperftester@gmail.com'):
   """ Get a login url for the provided OTA account for the target url"""
 
   cmd = [
@@ -115,8 +117,9 @@ def GetLoginUrl(target_url, test_account_email='browserperftester@gmail.com'):
                              shell=True,
                              text=True,
                              check=True)
-    login_url = process.stdout
-    return login_url[1:-2]
+    stubby_output = process.stdout
+    login_url = stubby_output[1:-2]
+    action_runner.Navigate(login_url)
   except subprocess.CalledProcessError:
     # The stubby execution prints the error details during invocation itself
     print('Error while obtaining LoginUrl for test account.' +
