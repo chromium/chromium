@@ -4567,22 +4567,22 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     return;
   }
 
-  viz::ResourceFormat format;
+  viz::SharedImageFormat format;
   switch (bitmap.GetFormat()) {
     case UIResourceBitmap::RGBA8:
       if (layer_tree_frame_sink_->context_provider()) {
         const gpu::Capabilities& caps =
             layer_tree_frame_sink_->context_provider()->ContextCapabilities();
-        format = viz::PlatformColor::BestSupportedTextureResourceFormat(caps);
+        format = viz::PlatformColor::BestSupportedTextureFormat(caps);
       } else {
-        format = viz::RGBA_8888;
+        format = viz::SinglePlaneFormat::kRGBA_8888;
       }
       break;
     case UIResourceBitmap::ALPHA_8:
-      format = viz::ALPHA_8;
+      format = viz::SinglePlaneFormat::kALPHA_8;
       break;
     case UIResourceBitmap::ETC1:
-      format = viz::ETC1;
+      format = viz::SinglePlaneFormat::kETC1;
       break;
   }
 
@@ -4622,14 +4622,16 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     overlay_candidate =
         settings_.resource_settings.use_gpu_memory_buffer_resources &&
         caps.supports_scanout_shared_images &&
-        viz::IsGpuMemoryBufferFormatSupported(format);
+        viz::IsGpuMemoryBufferFormatSupported(format.resource_format());
     if (overlay_candidate) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      texture_target = gpu::GetBufferTextureTarget(gfx::BufferUsage::SCANOUT,
-                                                   BufferFormat(format), caps);
+      texture_target = gpu::GetBufferTextureTarget(
+          gfx::BufferUsage::SCANOUT, BufferFormat(format.resource_format()),
+          caps);
     }
   } else {
-    shm = viz::bitmap_allocation::AllocateSharedBitmap(upload_size, format);
+    shm = viz::bitmap_allocation::AllocateSharedBitmap(
+        upload_size, format.resource_format());
     shared_bitmap_id = viz::SharedBitmap::GenerateId();
   }
 
@@ -4641,8 +4643,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
       mailbox = sii->CreateSharedImage(
-          viz::SharedImageFormat::SinglePlane(format), upload_size, color_space,
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
+          format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, shared_image_usage,
           base::span<const uint8_t>(bitmap.GetPixels(), bitmap.SizeInBytes()));
     } else {
       DCHECK_EQ(bitmap.GetFormat(), UIResourceBitmap::RGBA8);
@@ -4706,8 +4708,8 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
       mailbox = sii->CreateSharedImage(
-          viz::SharedImageFormat::SinglePlane(format), upload_size, color_space,
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
+          format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, shared_image_usage,
           base::span<const uint8_t>(
               reinterpret_cast<const uint8_t*>(pixmap.addr()),
               pixmap.computeByteSize()));
@@ -4748,7 +4750,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
 
   UIResourceData data;
   data.opaque = bitmap.GetOpaque();
-  data.format = format;
+  data.format = format.resource_format();
   data.shared_bitmap_id = shared_bitmap_id;
   data.shared_mapping = std::move(shm.mapping);
   data.mailbox = mailbox;

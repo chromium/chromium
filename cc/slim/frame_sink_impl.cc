@@ -114,16 +114,16 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
     LOG(ERROR) << "Size exceeds max texture size";
     return;
   }
-  viz::ResourceFormat format = viz::ResourceFormat::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   switch (resource_bitmap.GetFormat()) {
     case cc::UIResourceBitmap::RGBA8:
-      format = viz::PlatformColor::BestSupportedTextureResourceFormat(caps);
+      format = viz::PlatformColor::BestSupportedTextureFormat(caps);
       break;
     case cc::UIResourceBitmap::ALPHA_8:
-      format = viz::ALPHA_8;
+      format = viz::SinglePlaneFormat::kALPHA_8;
       break;
     case cc::UIResourceBitmap::ETC1:
-      format = viz::ETC1;
+      format = viz::SinglePlaneFormat::kETC1;
       break;
   }
 
@@ -132,15 +132,14 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   constexpr gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   uploaded_resource.mailbox = sii->CreateSharedImage(
-      viz::SharedImageFormat::SinglePlane(format), resource_bitmap.GetSize(),
-      color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      shared_image_usage,
+      format, resource_bitmap.GetSize(), color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, shared_image_usage,
       base::span<const uint8_t>(resource_bitmap.GetPixels(),
                                 resource_bitmap.SizeInBytes()));
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
   GLenum texture_target = gpu::GetBufferTextureTarget(
-      gfx::BufferUsage::SCANOUT, BufferFormat(format), caps);
+      gfx::BufferUsage::SCANOUT, BufferFormat(format.resource_format()), caps);
   uploaded_resource.viz_resource_id = resource_provider_.ImportResource(
       viz::TransferableResource::MakeGpu(
           uploaded_resource.mailbox, GL_LINEAR, texture_target, sync_token,
