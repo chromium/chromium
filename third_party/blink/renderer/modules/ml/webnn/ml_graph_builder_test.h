@@ -68,40 +68,6 @@ MLOperand* BuildResample2d(
     const MLOperand* input,
     const MLResample2dOptions* options = MLResample2dOptions::Create());
 
-enum ExecutionMode { kAsync, kSync };
-
-std::string ExecutionModeParamToString(
-    const ::testing::TestParamInfo<ExecutionMode>& execution_mode);
-
-class MLGraphTestBase : public ::testing::Test,
-                        public ::testing::WithParamInterface<ExecutionMode> {
- public:
-  // BuildResult is returned by Build() method. Only one member of BuildResult
-  // is valid. If the graph building is successful, graph points to the MLGraph
-  // and exception is a nullptr. Otherwise, exception points to the DOMException
-  // and graph is a nullptr.
-  struct BuildResult {
-    Persistent<MLGraph> graph;
-    Persistent<DOMException> exception;
-  };
-
-  // Helper method for testing both BuildAsyncImpl() and BuildSyncImpl() with
-  // the same named operands and expected results.
-  BuildResult BuildGraph(V8TestingScope& scope,
-                         MLGraphBuilder* builder,
-                         const MLNamedOperands& named_operands);
-
-  // Helper method for testinh both ComputeAsync() and ComputeSync() with the
-  // same input/output buffers and expected results. If the graph computes
-  // successfully, it returns nullptr and the results are produced into the
-  // output buffers. Otherwise, it returns the pointer to the DOMException
-  // thrown by the graph computing.
-  DOMException* ComputeGraph(V8TestingScope& scope,
-                             MLGraph* graph,
-                             const MLNamedArrayBufferViews& inputs,
-                             const MLNamedArrayBufferViews& outputs);
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_TEST_H_
