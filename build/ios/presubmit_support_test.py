@@ -133,6 +133,15 @@ class BundleDataPresubmit(unittest.TestCase):
                                                   'untracked')
       self.assertEqual([], results)
 
+  def testExcludeDuplicates(self):
+    """
+        Checks that duplicate filenames are not added to a filelist.
+        """
+    results = presubmit_support.CheckBundleData(self.mock_input_api,
+                                                self.mock_output_api,
+                                                'test_data/duplicates', '.')
+    self.assertEqual([], results)
+
 
 if __name__ == '__main__':
   unittest.main()

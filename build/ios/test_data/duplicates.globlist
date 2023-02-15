@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This should cover every file in test_data/ and its subdirectories (including
-# test files).
-
-test_data/**
+test_data/subdirectory/*
+# This duplicate glob should have no effect on the resulting filelist.
+test_data/subdirectory/*

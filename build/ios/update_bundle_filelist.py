@@ -129,8 +129,9 @@ def parse_and_expand_globlist(globlist_name, glob_root):
       glob_root = glob_root[:-1]
 
     with open(globlist_name) as globlist:
-      # Paths in |files| must use unix separators.
-      files = []
+      # Paths in |files| must use unix separators. Using a set ensures no
+      # unwanted duplicates.
+      files = set()
       for g in globlist:
         g = g.strip()
 
@@ -166,12 +167,12 @@ def parse_and_expand_globlist(globlist_name, glob_root):
         # Since paths in |expansion| only use unix separators, it is safe to
         # compare for both the purpose of exclusion and addition.
         if is_exclusion:
-          files = [f for f in files if f not in expansion]
+          files = files.difference(expansion)
         else:
-          files += expansion
+          files = files.union(expansion)
 
-      files.sort()
-      return files
+      # Return a sorted list.
+      return sorted(files)
 
   except Exception as e:
     print_error(f'Could not read glob list: {globlist_name}', f'{type(e)}: {e}')
