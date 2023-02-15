@@ -102,9 +102,9 @@ class ASH_EXPORT VideoConferenceTray
   void HandleLocaleChange() override;
 
   // VideoConferenceTrayController::Observer:
-  void OnHasMediaAppStateChange(bool has_media_app) override;
-  void OnCameraPermissionStateChange(bool has_permission) override;
-  void OnMicrophonePermissionStateChange(bool has_permission) override;
+  void OnHasMediaAppStateChange() override;
+  void OnCameraPermissionStateChange() override;
+  void OnMicrophonePermissionStateChange() override;
   void OnCameraCapturingStateChange(bool is_capturing) override;
   void OnMicrophoneCapturingStateChange(bool is_capturing) override;
   void OnScreenSharingStateChange(bool is_capturing_screen) override;
@@ -113,6 +113,10 @@ class ASH_EXPORT VideoConferenceTray
   // to shelf alignment and whether the bubble is opened. This function will
   // calculate that rotation value.
   SkScalar GetRotationValueForToggleBubbleButton();
+
+  // Update the visibility and capturing state of the tray and icons according
+  // to the state in `VideoConferenceTrayController`.
+  void UpdateTrayAndIconsState();
 
  private:
   friend class video_conference::BubbleViewTest;
