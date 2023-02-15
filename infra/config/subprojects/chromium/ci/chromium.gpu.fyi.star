@@ -278,38 +278,6 @@ ci.gpu.linux_builder(
 )
 
 ci.gpu.linux_builder(
-    name = "gpu-fyi-chromeos-jacuzzi-exp",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "arm",
-                "chromeos",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = [
-                "jacuzzi",
-            ],
-        ),
-        run_tests_serially = True,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ChromeOS|ARM",
-        short_name = "jcz",
-    ),
-    list_view = "chromium.gpu.experimental",
-)
-
-ci.gpu.linux_builder(
     name = "ChromeOS FYI Release (kevin)",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -379,62 +347,6 @@ ci.gpu.linux_builder(
         short_name = "kvn",
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.gpu.linux_builder(
-    name = "gpu-fyi-chromeos-octopus-exp",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = [
-                "octopus",
-            ],
-        ),
-        run_tests_serially = True,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ChromeOS|Intel",
-        short_name = "oct",
-    ),
-    list_view = "chromium.gpu.experimental",
-)
-
-ci.gpu.linux_builder(
-    name = "gpu-fyi-chromeos-zork-exp",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = ["zork"],
-        ),
-        run_tests_serially = True,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ChromeOS|AMD",
-        short_name = "zrk",
-    ),
-    list_view = "chromium.gpu.experimental",
 )
 
 ci.gpu.linux_builder(

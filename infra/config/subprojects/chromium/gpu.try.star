@@ -125,33 +125,11 @@ gpu_chromeos_builder(
 )
 
 gpu_chromeos_builder(
-    name = "gpu-fyi-try-chromeos-jacuzzi-exp",
-    mirrors = [
-        "ci/gpu-fyi-chromeos-jacuzzi-exp",
-    ],
-    pool = "luci.chromium.gpu.chromeos.jacuzzi.try",
-)
-
-gpu_chromeos_builder(
     name = "gpu-fyi-try-chromeos-kevin",
     mirrors = [
         "ci/ChromeOS FYI Release (kevin)",
     ],
     pool = "luci.chromium.gpu.chromeos.kevin.try",
-)
-
-gpu_chromeos_builder(
-    name = "gpu-fyi-try-chromeos-octopus-exp",
-    mirrors = [
-        "ci/gpu-fyi-chromeos-octopus-exp",
-    ],
-    pool = "luci.chromium.gpu.chromeos.octopus.try",
-)
-
-gpu_chromeos_builder(
-    name = "gpu-fyi-try-chromeos-zork-exp",
-    mirrors = ["ci/gpu-fyi-chromeos-zork-exp"],
-    pool = "luci.chromium.gpu.chromeos.zork.try",
 )
 
 def gpu_linux_builder(*, name, **kwargs):
