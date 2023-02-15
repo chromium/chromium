@@ -608,6 +608,8 @@ class AutofillMetrics {
     kMaxValue = kLeftEmpty
   };
 
+  using FormEventSet = DenseSet<FormEvent, NUM_FORM_EVENTS>;
+
   // Utility class for determining the seamlessness of a credit card fill.
   class CreditCardSeamlessness {
    public:
@@ -704,6 +706,12 @@ class AutofillMetrics {
                       ServerFieldType actual_type);
     void LogAutofillFieldInfoAtFormRemove(const FormStructure& form,
                                           const AutofillField& field);
+    void LogAutofillFormSummaryAtFormRemove(
+        const FormStructure& form_structure,
+        FormEventSet form_events,
+        bool is_in_any_main_frame,
+        const base::TimeTicks& initial_interaction_timestamp,
+        const base::TimeTicks& form_submitted_timestamp);
     void LogFormSubmitted(bool is_for_credit_card,
                           bool has_upi_vpa_field,
                           const DenseSet<FormType>& form_types,
@@ -1090,7 +1098,7 @@ class AutofillMetrics {
   static void LogTouchToFillCreditCardPerfectFilling(bool perfect_filling);
 
   struct LogCreditCardSeamlessnessParam {
-    const raw_ref<const FormEventLoggerBase> event_logger;
+    const raw_ref<FormEventLoggerBase> event_logger;
     const raw_ref<const FormStructure> form;
     const raw_ref<const AutofillField> field;
     const raw_ref<const base::flat_set<FieldGlobalId>> newly_filled_fields;

@@ -87,7 +87,7 @@ class FormEventLoggerBase {
   void OnAutofilledFieldWasClearedByJavaScriptShortlyAfterFill(
       const FormStructure& form);
 
-  void Log(FormEvent event, const FormStructure& form) const;
+  void Log(FormEvent event, const FormStructure& form);
 
   void OnTextFieldDidChange(const FieldGlobalId& field_global_id);
 
@@ -96,6 +96,8 @@ class FormEventLoggerBase {
   }
 
   void SetFastCheckoutRunId(int64_t run_id) { fast_checkout_run_id_ = run_id; }
+
+  AutofillMetrics::FormEventSet GetFormEvents(FormGlobalId form_global_id);
 
   const FormInteractionsFlowId& form_interactions_flow_id_for_test() const {
     return flow_id_;
@@ -200,8 +202,11 @@ class FormEventLoggerBase {
   // Unique ID of a Fast Checkout run. Used for metrics.
   absl::optional<int64_t> fast_checkout_run_id_;
 
-  // Form types of the submitted form
+  // Form types of the submitted form.
   DenseSet<FormType> submitted_form_types_;
+
+  // A map of the form's global id and its form events.
+  std::map<FormGlobalId, AutofillMetrics::FormEventSet> form_events_set_;
 
   // Weak reference.
   raw_ptr<AutofillMetrics::FormInteractionsUkmLogger>
