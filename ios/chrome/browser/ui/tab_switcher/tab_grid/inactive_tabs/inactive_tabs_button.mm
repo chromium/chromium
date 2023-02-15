@@ -6,8 +6,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

@@ -25,20 +25,10 @@ source_set("inactive_tabs_ui") {
     "inactive_tabs_view_controller.mm",
   ]
   deps = [
-    ":features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
-}
-
-source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  public_deps = [ "//base" ]
-  deps = [ "//ui/base" ]
 }
