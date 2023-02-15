@@ -24,7 +24,10 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.fyi",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = [
+        branches.selector.IOS_BRANCHES,
+        branches.selector.LINUX_BRANCHES,
+    ],
     ordering = {
         None: [
             "code_coverage",
@@ -111,7 +114,7 @@ ci.builder(
 
 ci.builder(
     name = "VR Linux",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2091,7 +2094,7 @@ fyi_ios_builder(
 
 fyi_ios_builder(
     name = "ios-simulator-cronet",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.IOS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "ios",

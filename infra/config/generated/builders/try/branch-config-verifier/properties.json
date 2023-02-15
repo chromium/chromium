@@ -8,57 +8,71 @@
   },
   "branch_configs": [
     {
-      "branch_types": [
-        "standard"
-      ],
-      "name": "standard"
+      "name": "standard branch",
+      "platforms": [
+        "android",
+        "cros",
+        "fuchsia",
+        "ios",
+        "linux",
+        "mac",
+        "windows"
+      ]
     },
     {
-      "branch_types": [
+      "name": "desktop extended stable branch",
+      "platforms": [
+        "mac",
+        "windows"
+      ]
+    },
+    {
+      "name": "android",
+      "platforms": [
+        "android"
+      ]
+    },
+    {
+      "name": "cros",
+      "platforms": [
+        "cros"
+      ]
+    },
+    {
+      "name": "cros-lts",
+      "platforms": [
         "cros-lts"
-      ],
-      "name": "cros-lts"
+      ]
     },
     {
-      "branch_types": [
-        "desktop-extended-stable"
-      ],
-      "name": "desktop-extended-stable"
+      "name": "fuchsia",
+      "platforms": [
+        "fuchsia"
+      ]
     },
     {
-      "branch_types": [
-        "fuchsia-lts"
-      ],
-      "name": "fuchsia-lts"
+      "name": "ios",
+      "platforms": [
+        "ios"
+      ]
     },
     {
-      "branch_types": [
-        "cros-lts",
-        "desktop-extended-stable"
-      ],
-      "name": "cros-lts + desktop-extended-stable"
+      "name": "linux",
+      "platforms": [
+        "linux"
+      ]
     },
     {
-      "branch_types": [
-        "cros-lts",
-        "fuchsia-lts"
-      ],
-      "name": "cros-lts + fuchsia-lts"
+      "name": "mac",
+      "platforms": [
+        "mac"
+      ]
     },
     {
-      "branch_types": [
-        "desktop-extended-stable",
-        "fuchsia-lts"
-      ],
-      "name": "desktop-extended-stable + fuchsia-lts"
-    },
-    {
-      "branch_types": [
-        "cros-lts",
-        "desktop-extended-stable",
-        "fuchsia-lts"
-      ],
-      "name": "cros-lts + desktop-extended-stable + fuchsia-lts"
+      "name": "windows",
+      "platforms": [
+        "windows"
+      ]
     }
   ],
   "branch_script": "infra/config/scripts/branch.py",

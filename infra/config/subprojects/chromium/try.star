@@ -119,13 +119,13 @@ branches.cq_group(
 
 consoles.list_view(
     name = "try",
-    branch_selector = branches.ALL_BRANCHES,
+    branch_selector = branches.selector.ALL_BRANCHES,
     title = "{} CQ Console".format(settings.project_title),
 )
 
 consoles.list_view(
     name = "luci.chromium.try",
-    branch_selector = branches.ALL_BRANCHES,
+    branch_selector = branches.selector.ALL_BRANCHES,
 )
 
 exec("./try/presubmit.star")
