@@ -5,15 +5,18 @@
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '../../css/common.css.js';
 import '../../css/cros_button_style.css.js';
 
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {BacklightColor, BLUE_COLOR, GREEN_COLOR, INDIGO_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, YELLOW_COLOR} from '../../personalization_app.mojom-webui.js';
+import {isMultiZoneRgbKeyboardSupported} from '../load_time_booleans.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {convertToRgbHexStr, isSelectionEvent} from '../utils.js';
 
@@ -21,6 +24,7 @@ import {getShouldShowNudge, handleNudgeShown, setBacklightColor} from './keyboar
 import {getTemplate} from './keyboard_backlight_element.html.js';
 import {getKeyboardBacklightProvider} from './keyboard_backlight_interface_provider.js';
 import {KeyboardBacklightObserver} from './keyboard_backlight_observer.js';
+import {ZoneCustomizationElement} from './zone_customization_element.js';
 
 
 /**
@@ -33,6 +37,7 @@ export interface KeyboardBacklight {
   $: {
     keys: IronA11yKeysElement,
     selector: IronSelectorElement,
+    zoneCustomizationRender: CrLazyRenderElement<ZoneCustomizationElement>,
   };
 }
 
@@ -63,6 +68,13 @@ export class KeyboardBacklight extends WithPersonalizationStore {
 
   static get properties() {
     return {
+      isMultiZoneRgbKeyboardSupported_: {
+        type: Boolean,
+        value() {
+          return isMultiZoneRgbKeyboardSupported();
+        },
+      },
+
       presetColors_: {
         type: Object,
         computed: 'computePresetColors_()',
@@ -100,6 +112,7 @@ export class KeyboardBacklight extends WithPersonalizationStore {
     };
   }
 
+  private isMultiZoneRgbKeyboardSupported_: boolean;
   private presetColors_: Record<string, ColorInfo>;
   private presetColorIds_: string[];
   private rainbowColorId_: string;
@@ -340,6 +353,13 @@ export class KeyboardBacklight extends WithPersonalizationStore {
         handleNudgeShown(getKeyboardBacklightProvider(), this.getStore());
       }, 3000);
     }
+  }
+
+  private showZoneCustomizationDialog_() {
+    assert(
+        this.isMultiZoneRgbKeyboardSupported_,
+        'zone customization dialog only available if multi-zone is supported');
+    this.$.zoneCustomizationRender.get().showModal();
   }
 }
 

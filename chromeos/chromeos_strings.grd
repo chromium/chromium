@@ -2555,6 +2555,9 @@
         <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_NUDGE_TEXT" desc="The text of the educational nudge for keyboard backlight wallpaper-extracted color.">
           Your keyboard can automatically match your wallpaper
         </message>
+        <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_ZONE_CUSTOMIZATION_BUTTON" desc="The text of the button that allows users to customize rgb keyboard zone colors.">
+          Customize
+        </message>
 
         <!-- Personalization App Search Results -->
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE" desc="Text for search result item which, when clicked, navigates the user to personalization app.">

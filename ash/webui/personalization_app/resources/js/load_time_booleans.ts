@@ -38,3 +38,7 @@ export function isScreenSaverPreviewEnabled() {
 export function isPersonalizationJellyEnabled() {
   return loadTimeData.getBoolean('isPersonalizationJellyEnabled');
 }
+
+export function isMultiZoneRgbKeyboardSupported() {
+  return loadTimeData.getBoolean('isMultiZoneRgbKeyboardSupported');
+}

@@ -244,6 +244,8 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_RAINBOW_COLOR_LABEL},
       {"wallpaperColorNudgeText",
        IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_NUDGE_TEXT},
+      {"zoneCustomize",
+       IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_ZONE_CUSTOMIZATION_BUTTON},
 
       // Google Photos strings
       // TODO(b/229149314): Finalize error and retry strings.
@@ -380,6 +382,11 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isPersonalizationJellyEnabled",
                      features::IsPersonalizationJellyEnabled());
+
+  source->AddBoolean(
+      "isMultiZoneRgbKeyboardSupported",
+      features::IsMultiZoneRgbKeyboardEnabled() &&
+          Shell::Get()->rgb_keyboard_manager()->GetZoneCount() > 1);
 }
 
 void PersonalizationAppUI::HandleWebUIRequest(

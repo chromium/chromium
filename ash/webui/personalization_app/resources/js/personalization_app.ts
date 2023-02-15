@@ -23,6 +23,7 @@ import './ambient/topic_source_item_element.js';
 import './ambient/topic_source_list_element.js';
 import './ambient/zero_state_element.js';
 import './keyboard_backlight/keyboard_backlight_element.js';
+import './keyboard_backlight/zone_customization_element.js';
 import './personalization_router_element.js';
 import './personalization_test_api.js';
 import './personalization_toast_element.js';
@@ -70,6 +71,7 @@ export {KeyboardBacklightActionName, KeyboardBacklightActions, SetBacklightColor
 export {KeyboardBacklight} from './keyboard_backlight/keyboard_backlight_element.js';
 export {setKeyboardBacklightProviderForTesting} from './keyboard_backlight/keyboard_backlight_interface_provider.js';
 export {KeyboardBacklightObserver} from './keyboard_backlight/keyboard_backlight_observer.js';
+export {ZoneCustomizationElement} from './keyboard_backlight/zone_customization_element.js';
 export {Actions, DismissErrorAction, dismissErrorAction, PersonalizationActionName, SetErrorAction} from './personalization_actions.js';
 
 export * from './../personalization_app.mojom-webui.js';

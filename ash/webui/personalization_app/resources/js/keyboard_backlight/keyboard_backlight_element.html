@@ -33,7 +33,7 @@
 
   #selector {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
     grid-area: options;
     margin-top: 14px;
     position: relative;
@@ -120,6 +120,12 @@
     font: var(--cros-body-2-font);
     margin-inline-end: 14px;
   }
+
+  #zoneCustomizationButton {
+    align-self: center;
+    display: flex;
+    margin-inline-start: auto;
+  }
 </style>
 <div id="container" class="preview-container">
   <div id="keyboardBacklightLabel">
@@ -191,5 +197,15 @@
           style$="[[getColorInnerContainerStyle_(rainbowColorId_, presetColors_)]]">
       </div>
     </div>
+    <template is="dom-if" if="[[isMultiZoneRgbKeyboardSupported_]]">
+      <cr-button id="zoneCustomizationButton" on-click="showZoneCustomizationDialog_">
+        $i18n{zoneCustomize}
+      </cr-button>
+    </template>
   </iron-selector>
+  <cr-lazy-render id="zoneCustomizationRender">
+    <template>
+      <zone-customization></zone-customization>
+    </template>
+  </cr-lazy-render>
 </div>

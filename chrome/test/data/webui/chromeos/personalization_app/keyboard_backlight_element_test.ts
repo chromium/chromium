@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {KeyboardBacklight, KeyboardBacklightActionName, KeyboardBacklightObserver, SetBacklightColorAction, SetShouldShowNudgeAction, SetWallpaperColorAction} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -160,5 +161,36 @@ suite('KeyboardBacklightTest', function() {
                        KeyboardBacklightActionName.SET_SHOULD_SHOW_NUDGE) as
         SetShouldShowNudgeAction;
     assertFalse(action.shouldShowNudge);
+  });
+
+  test(
+      'shows customization button if multi-zone rgb keyboard is supported',
+      async () => {
+        loadTimeData.overrideValues({isMultiZoneRgbKeyboardSupported: true});
+        keyboardBacklightElement = initElement(KeyboardBacklight);
+        const customizationButton =
+            keyboardBacklightElement.shadowRoot!.getElementById(
+                'zoneCustomizationButton');
+        assertTrue(!!customizationButton);
+      });
+
+  test('clicking on customization button opens a dialog', async () => {
+    loadTimeData.overrideValues({isMultiZoneRgbKeyboardSupported: true});
+    keyboardBacklightElement = initElement(KeyboardBacklight);
+    const customizationButton =
+        keyboardBacklightElement.shadowRoot!.getElementById(
+            'zoneCustomizationButton');
+    assertTrue(!!customizationButton);
+    assertEquals(
+        null,
+        keyboardBacklightElement.shadowRoot!.querySelector(
+            'zone-customization'),
+        'no dialog until button clicked');
+    customizationButton.click();
+    await waitAfterNextRender(keyboardBacklightElement);
+    assertTrue(
+        !!keyboardBacklightElement.shadowRoot!.querySelector(
+            'zone-customization'),
+        'dialog exists after button is clicked');
   });
 });
