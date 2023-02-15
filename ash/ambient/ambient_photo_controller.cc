@@ -113,7 +113,9 @@ void AmbientPhotoController::Init(
   backup_retries_to_read_from_cache_ = GetBackupPhotoUrls().size();
   num_topics_prepared_ = 0;
   ambient_topic_queue_ = std::make_unique<AmbientTopicQueue>(
-      /*topic_fetch_limit=*/kMaxNumberOfCachedImages,
+      /*topic_fetch_limit=*/ambient_backend_model_.photo_config().IsEmpty()
+          ? 0
+          : kMaxNumberOfCachedImages,
       /*topic_fetch_size=*/kTopicsBatchSize, kTopicFetchInterval,
       ambient_backend_model_.photo_config().should_split_topics,
       std::move(topic_queue_delegate),
@@ -525,6 +527,14 @@ void AmbientPhotoController::FetchBackupImagesForTesting() {
 
 void AmbientPhotoController::StartPreparingNextTopic() {
   DCHECK_EQ(state_, State::kPreparingNextTopicSet);
+  if (ambient_backend_model_.photo_config().IsEmpty()) {
+    DVLOG(1) << "No photos should be written to model";
+    // This may not be necessary because a config like this probably doesn't
+    // have any photo refresh markers anyways. However, it's more technically
+    // correct to be in this state instead of |kPreparingNextTopicSet|.
+    state_ = State::kWaitingForNextMarker;
+    return;
+  }
   ambient_topic_queue_->WaitForTopicsAvailable(
       base::BindOnce(&AmbientPhotoController::OnTopicsAvailableInQueue,
                      weak_factory_.GetWeakPtr()));

@@ -25,6 +25,8 @@ struct ASH_EXPORT AmbientPhotoConfig {
     return num_topic_sets_to_buffer * topic_set_size;
   }
 
+  bool IsEmpty() const { return GetNumDecodedTopicsToBuffer() == 0; }
+
   // If true, topics from the IMAX server containing a primary and related image
   // are always split into two topics, where the second topic's primary image
   // is set to the "related" image from the original paired topic. The client
@@ -46,7 +48,7 @@ struct ASH_EXPORT AmbientPhotoConfig {
   // |num_topic_sets_to_buffer| is too difficult to reach for whatever reason
   // (network slowness, etc).
   //
-  // Must be > 0 && <= GetNumDecodedTopicsToBuffer().
+  // Must be <= GetNumDecodedTopicsToBuffer().
   std::size_t min_total_topics_required = 0;
 
   // A marker is any time point of interest in the UI. Note all Ambient UIs have

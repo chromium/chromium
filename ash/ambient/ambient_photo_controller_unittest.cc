@@ -51,6 +51,7 @@ namespace ash {
 using ::testing::AnyOf;
 using ::testing::Contains;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointwise;
 using ::testing::SizeIs;
@@ -204,6 +205,19 @@ class AmbientPhotoControllerAnimationTest : public AmbientPhotoControllerTest {
 
   const AmbientPhotoConfig& photo_config() {
     return photo_controller()->ambient_backend_model()->photo_config();
+  }
+};
+
+// No topics should be prepared at all; the screensaver doesn't have photos in
+// it. AmbientPhotoController should be completely idle and
+// AmbientBackendModel::ImagesReady() should be true immediately.
+class AmbientPhotoControllerEmptyConfigTest
+    : public AmbientPhotoControllerTest {
+ protected:
+  void SetUp() override {
+    AmbientAshTestBase::SetUp();
+    photo_controller()->ambient_backend_model()->SetPhotoConfig(
+        AmbientPhotoConfig());
   }
 };
 
@@ -855,6 +869,18 @@ TEST_F(AmbientPhotoControllerAnimationTest,
   base::circular_deque<PhotoWithDetails> photos_after =
       photo_controller()->ambient_backend_model()->all_decoded_topics();
   EXPECT_THAT(photos_after, Pointwise(BackedBySameImage(), photos_before));
+}
+
+TEST_F(AmbientPhotoControllerEmptyConfigTest, CallsOnImagesReadyImmediately) {
+  photo_controller()->StartScreenUpdate(
+      std::make_unique<AmbientTopicQueueTestDelegate>());
+  RunUntilImagesReady();
+  EXPECT_THAT(photo_controller()->ambient_backend_model()->all_decoded_topics(),
+              IsEmpty());
+  task_environment()->FastForwardBy(base::Minutes(1));
+  EXPECT_TRUE(photo_controller()->ambient_backend_model()->ImagesReady());
+  EXPECT_THAT(photo_controller()->ambient_backend_model()->all_decoded_topics(),
+              IsEmpty());
 }
 
 }  // namespace ash

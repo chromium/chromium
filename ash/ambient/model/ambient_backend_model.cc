@@ -94,6 +94,8 @@ void AmbientBackendModel::OnImagesReadyTimeoutFired() {
 void AmbientBackendModel::AddNextImage(
     const PhotoWithDetails& photo_with_details) {
   DCHECK(!photo_with_details.IsNull());
+  DCHECK(!photo_config_.IsEmpty())
+      << "Photos should not be getting added to the model";
 
   ResetImageFailures();
 
@@ -154,11 +156,8 @@ base::TimeDelta AmbientBackendModel::GetPhotoRefreshInterval() const {
 
 void AmbientBackendModel::SetPhotoConfig(AmbientPhotoConfig photo_config) {
   photo_config_ = std::move(photo_config);
-  DCHECK_GT(photo_config_.GetNumDecodedTopicsToBuffer(), 0u);
-  DCHECK_GT(photo_config_.min_total_topics_required, 0u);
   DCHECK_LE(photo_config_.min_total_topics_required,
             photo_config_.GetNumDecodedTopicsToBuffer());
-  DCHECK(!photo_config_.refresh_topic_markers.empty());
   Clear();
 }
 

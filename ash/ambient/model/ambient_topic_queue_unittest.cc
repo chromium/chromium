@@ -713,5 +713,21 @@ TEST_F(AmbientTopicQueueTest, HandlesManyRequestedTopicSizes) {
                   TopicUrlContainsSize(kSize1), TopicUrlContainsSize(kSize2)));
 }
 
+TEST_F(AmbientTopicQueueTest, ZeroTopicFetchLimit) {
+  AmbientTopicQueue queue(/*topic_fetch_limit=*/0, /*topic_fetch_size=*/5,
+                          kDefaultTopicFetchInterval,
+                          /*should_split_topics=*/false,
+                          std::make_unique<AmbientTopicQueueTestDelegate>(),
+                          backend_controller());
+
+  EXPECT_THAT(WaitForTopicsAvailable(queue),
+              Eq(AmbientTopicQueue::WaitResult::kTopicFetchLimitReached));
+  EXPECT_TRUE(queue.IsEmpty());
+  task_environment()->FastForwardBy(10 * kDefaultTopicFetchInterval);
+  EXPECT_THAT(WaitForTopicsAvailable(queue),
+              Eq(AmbientTopicQueue::WaitResult::kTopicFetchLimitReached));
+  EXPECT_TRUE(queue.IsEmpty());
+}
+
 }  // namespace
 }  // namespace ash

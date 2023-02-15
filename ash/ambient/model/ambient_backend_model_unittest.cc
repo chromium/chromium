@@ -165,6 +165,15 @@ class AmbientBackendModelTestWithAnimationConfig
   }
 };
 
+class AmbientBackendModelTestWithEmptyConfig : public AmbientBackendModelTest {
+ protected:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    ambient_backend_model_ =
+        std::make_unique<AmbientBackendModel>(AmbientPhotoConfig());
+  }
+};
+
 // Test adding the first image.
 TEST_F(AmbientBackendModelTest, AddFirstImage) {
   AddNTestImages(1);
@@ -403,6 +412,10 @@ TEST_F(AmbientBackendModelTestWithAnimationConfig, RotatesTopics) {
   EXPECT_THAT(ambient_backend_model_->all_decoded_topics(),
               ElementsAre(MatchesPhotosInTopic(topic_2),
                           MatchesPhotosInTopic(topic_3)));
+}
+
+TEST_F(AmbientBackendModelTestWithEmptyConfig, ImagesReadyImmediately) {
+  EXPECT_TRUE(ambient_backend_model_->ImagesReady());
 }
 
 }  // namespace ash

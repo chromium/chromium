@@ -135,7 +135,6 @@ AmbientTopicQueue::AmbientTopicQueue(
       delegate_(std::move(delegate)),
       backend_controller_(backend_controller),
       fetch_topic_retry_backoff_(&kFetchTopicRetryBackoffPolicy) {
-  DCHECK_GT(topic_fetch_limit_, 0);
   DCHECK_GT(topic_fetch_size_, 0);
   DCHECK(backend_controller_);
   FetchTopics();
