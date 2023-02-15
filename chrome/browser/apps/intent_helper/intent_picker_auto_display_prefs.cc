@@ -48,7 +48,8 @@ bool IntentPickerAutoDisplayPrefs::ShouldAutoDisplayUi(Profile* profile,
   base::Value pref_dict = GetAutoDisplayDictForSettings(
       HostContentSettingsMapFactory::GetForProfile(profile), url);
 
-  return pref_dict.FindIntKey(kAutoDisplayKey).value_or(0) < kDismissThreshold;
+  return pref_dict.GetDict().FindInt(kAutoDisplayKey).value_or(0) <
+         kDismissThreshold;
 }
 
 // static
@@ -57,8 +58,9 @@ void IntentPickerAutoDisplayPrefs::IncrementPickerUICounter(Profile* profile,
   auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
 
-  int dismissed_count = pref_dict.FindIntKey(kAutoDisplayKey).value_or(0);
-  pref_dict.SetIntKey(kAutoDisplayKey, dismissed_count + 1);
+  int dismissed_count =
+      pref_dict.GetDict().FindInt(kAutoDisplayKey).value_or(0);
+  pref_dict.GetDict().Set(kAutoDisplayKey, dismissed_count + 1);
 
   settings_map->SetWebsiteSettingDefaultScope(
       url, url, ContentSettingsType::INTENT_PICKER_DISPLAY,
@@ -72,13 +74,14 @@ IntentPickerAutoDisplayPrefs::GetChipStateAndIncrementCounter(Profile* profile,
   auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
 
-  int display_count = pref_dict.FindIntKey(kIntentChipCountKey).value_or(0);
+  int display_count =
+      pref_dict.GetDict().FindInt(kIntentChipCountKey).value_or(0);
   if (display_count >= kIntentChipCollapseThreshold) {
     // Exit before updating the counter so we don't keep counting indefinitely.
     return ChipState::kCollapsed;
   }
 
-  pref_dict.SetIntKey(kIntentChipCountKey, ++display_count);
+  pref_dict.GetDict().Set(kIntentChipCountKey, ++display_count);
   settings_map->SetWebsiteSettingDefaultScope(
       url, url, ContentSettingsType::INTENT_PICKER_DISPLAY,
       std::move(pref_dict));
@@ -92,7 +95,7 @@ void IntentPickerAutoDisplayPrefs::ResetIntentChipCounter(Profile* profile,
   auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
 
-  pref_dict.SetIntKey(kIntentChipCountKey, 0);
+  pref_dict.GetDict().Set(kIntentChipCountKey, 0);
 
   settings_map->SetWebsiteSettingDefaultScope(
       url, url, ContentSettingsType::INTENT_PICKER_DISPLAY,
@@ -105,7 +108,7 @@ IntentPickerAutoDisplayPrefs::GetLastUsedPlatformForTablets(Profile* profile,
                                                             const GURL& url) {
   base::Value pref_dict = GetAutoDisplayDictForSettings(
       HostContentSettingsMapFactory::GetForProfile(profile), url);
-  int platform = pref_dict.FindIntKey(kPlatformKey).value_or(0);
+  int platform = pref_dict.GetDict().FindInt(kPlatformKey).value_or(0);
 
   DCHECK_GE(platform, static_cast<int>(Platform::kNone));
   DCHECK_LE(platform, static_cast<int>(Platform::kMaxValue));
@@ -122,7 +125,7 @@ void IntentPickerAutoDisplayPrefs::UpdatePlatformForTablets(Profile* profile,
 
   DCHECK_GE(static_cast<int>(platform), static_cast<int>(Platform::kNone));
   DCHECK_LE(static_cast<int>(platform), static_cast<int>(Platform::kMaxValue));
-  pref_dict.SetIntKey(kPlatformKey, static_cast<int>(platform));
+  pref_dict.GetDict().Set(kPlatformKey, static_cast<int>(platform));
 
   settings_map->SetWebsiteSettingDefaultScope(
       url, url, ContentSettingsType::INTENT_PICKER_DISPLAY,
