@@ -22,9 +22,11 @@
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_default_layout_manager.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
+#include "ash/wm/workspace/workspace_layout_manager.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
@@ -73,6 +75,22 @@ void UpdateWindowBoundsForTablet(
     WindowState::BoundsChangeAnimationType animation_type) {
   WindowState* window_state = WindowState::Get(window);
   DCHECK(window_state);
+  // TODO(b/264962634): Remove this workaround.
+  // Currently `TabletModeWindowState::UpdateWindowPosition` uses
+  // `Window::SetBoundsDirect` which directly changes the bounds without waiting
+  // for the ack from clients (e.g. ARC++). So we need to ensure to emit
+  // `SetBoundsWMEvent` instead. Otherwise, the window bounds are updated only
+  // in Chrome-side whereas ARC++ doesn’t know the changes. (See comments in
+  // `TabletModeWindowState::UpdateWindowPosition`.)
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(AppType::ARC_APP)) {
+    const SetBoundsWMEvent event(
+        TabletModeWindowState::GetBoundsInTabletMode(window_state),
+        /*animate=*/animation_type !=
+            WindowState::BoundsChangeAnimationType::kNone);
+    window_state->OnWMEvent(&event);
+    return;
+  }
   TabletModeWindowState::UpdateWindowPosition(window_state, animation_type);
 }
 
@@ -97,6 +115,24 @@ void ShowFloatedWindow(aura::Window* floated_window) {
   ScopedAnimationDisabler disabler(floated_window);
   floated_window->Show();
 }
+
+class FloatLayoutManager : public WmDefaultLayoutManager {
+ public:
+  FloatLayoutManager() = default;
+  FloatLayoutManager(const FloatLayoutManager&) = delete;
+  FloatLayoutManager& operator=(const FloatLayoutManager&) = delete;
+  ~FloatLayoutManager() override = default;
+
+  // WmDefaultLayoutManager:
+  void SetChildBounds(aura::Window* child,
+                      const gfx::Rect& requested_bounds) override {
+    // This should result in sending a bounds change WMEvent to properly support
+    // client-controlled windows (e.g. ARC++).
+    WindowState* window_state = WindowState::Get(child);
+    SetBoundsWMEvent event(requested_bounds);
+    window_state->OnWMEvent(&event);
+  }
+};
 
 }  // namespace
 
@@ -670,6 +706,8 @@ void FloatController::OnRootWindowAdded(aura::Window* root_window) {
   workspace_event_handlers_[root_window] =
       std::make_unique<WorkspaceEventHandler>(
           root_window->GetChildById(kShellWindowId_FloatContainer));
+  root_window->GetChildById(kShellWindowId_FloatContainer)
+      ->SetLayoutManager(std::make_unique<FloatLayoutManager>());
 }
 
 void FloatController::OnRootWindowWillShutdown(aura::Window* root_window) {

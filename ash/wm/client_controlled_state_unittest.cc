@@ -5,6 +5,7 @@
 #include "ash/wm/client_controlled_state.h"
 
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
@@ -18,14 +19,19 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/header_view.h"
+#include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/features.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_util.h"
@@ -115,6 +121,11 @@ class TestWidgetDelegate : public views::WidgetDelegateView {
     SetCanResize(true);
     GetWidget()->OnSizeConstraintsChanged();
   }
+
+  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+      views::Widget* widget) override {
+    return std::make_unique<NonClientFrameViewAsh>(widget);
+  }
 };
 
 }  // namespace
@@ -172,6 +183,16 @@ class ClientControlledStateTest : public AshTestBase {
   views::Widget* widget() { return widget_.get(); }
   ScreenPinningController* GetScreenPinningController() {
     return Shell::Get()->screen_pinning_controller();
+  }
+  chromeos::HeaderView* GetHeaderView() {
+    auto* const frame = NonClientFrameViewAsh::Get(window());
+    DCHECK(frame);
+    return frame->GetHeaderView();
+  }
+  void ApplyPendingRequestedBounds() {
+    state()->set_bounds_locally(true);
+    widget()->SetBounds(delegate()->requested_bounds());
+    state()->set_bounds_locally(false);
   }
 
  private:
@@ -764,6 +785,58 @@ TEST_F(ClientControlledStateTest, ResizeSnappedWindowInTabletMode) {
   const gfx::Point resize_point(display_bounds.width() * 0.33f, 0);
   generator->DragMouseTo(resize_point);
   EXPECT_GT(initial_bounds.width(), delegate()->requested_bounds().width());
+}
+
+TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
+  // The AppType must be set to any except `AppType::NON_APP` (default value) to
+  // make it floatable.
+  window()->SetProperty(aura::client::kAppType,
+                        static_cast<int>(AppType::ARC_APP));
+  widget_delegate()->EnableFloat();
+  ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
+
+  // Float window.
+  const WMEvent float_event(WM_EVENT_FLOAT);
+  window_state()->OnWMEvent(&float_event);
+  ApplyPendingRequestedBounds();
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsFloated());
+  EXPECT_EQ(kShellWindowId_FloatContainer, window()->parent()->GetId());
+
+  // Start dragging in the center of the header.
+  auto* const header_view = GetHeaderView();
+  auto* const event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      header_view->GetBoundsInScreen().CenterPoint());
+  event_generator->PressLeftButton();
+
+  gfx::Rect expected_bounds = delegate()->requested_bounds();
+  // Drag to the top left with some interval points. Verify the window is
+  // aligned with the new cursor point.
+  for (const gfx::Vector2d& diff :
+       {gfx::Vector2d(-10, -10), gfx::Vector2d(-100, -10),
+        gfx::Vector2d(-400, -400)}) {
+    event_generator->MoveMouseBy(diff.x(), diff.y());
+    expected_bounds.Offset(diff);
+
+    EXPECT_EQ(delegate()->requested_bounds(), expected_bounds);
+
+    ApplyPendingRequestedBounds();
+  }
+
+  event_generator->ReleaseLeftButton();
+
+  if (InTabletMode()) {
+    // In tablet mode, we have magnetism so the drag-to-top-left operation
+    // should result in placing the window at the top left with padding.
+    const int padding = chromeos::wm::kFloatedWindowPaddingDp;
+    expected_bounds.set_origin(gfx::Point(padding, padding));
+    EXPECT_EQ(delegate()->requested_bounds(), expected_bounds);
+  } else {
+    // In clamshell mode, we don't have magnetism so the window bounds should
+    // persist after releasing the mouse button.
+    EXPECT_EQ(delegate()->requested_bounds(), expected_bounds);
+  }
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
