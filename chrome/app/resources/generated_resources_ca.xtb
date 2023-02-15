@@ -257,7 +257,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1225177025209879837">S'està processant la sol·licitud...</translation>
 <translation id="1227660082540388410">Edita la clau d'accés</translation>
 <translation id="1227993798763400520">No s'ha pogut emetre. Torna-ho a provar.</translation>
-<translation id="1230417814058465809">Està activada la protecció estàndard. Per augmentar la seguretat, utilitza la protecció millorada.</translation>
+<translation id="1230417814058465809">La protecció estàndard està activada. Per augmentar la seguretat, utilitza la protecció millorada.</translation>
 <translation id="1231733316453485619">Vols activar la sincronització?</translation>
 <translation id="1232569758102978740">Sense títol</translation>
 <translation id="1233497634904001272">Torna a tocar la clau de seguretat per completar la sol·licitud.</translation>
@@ -4738,7 +4738,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5352257124367865087">Gestiona els permisos dels llocs web</translation>
 <translation id="5353252989841766347">Exporteu contrasenyes de Chrome</translation>
 <translation id="5355099869024327351">Permet que l'Assistent et mostri notificacions</translation>
-<translation id="5355191726083956201">Està activada la protecció millorada</translation>
+<translation id="5355191726083956201">La protecció millorada està activada</translation>
 <translation id="5355501370336370394">Inscriu un dispositiu d'empresa</translation>
 <translation id="5355926466126177564">L'extensió <ph name="EXTENSION_NAME" /> ha canviat la pàgina que es mostra quan feu una cerca des de l'omnibox.</translation>
 <translation id="5356155057455921522">Aquesta actualització de l'administrador farà que les aplicacions de la teva organització s'obrin més de pressa. Aquest procés pot tardar uns minuts.</translation>
