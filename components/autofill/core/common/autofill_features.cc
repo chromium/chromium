@@ -441,7 +441,7 @@ BASE_FEATURE(kAutofillPageLanguageDetection,
 // TODO(crbug.com/1309848) Remove once launched.
 BASE_FEATURE(kAutofillParseAsync,
              "AutofillParseAsync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, local heuristics fall back to interpreting the fields' name as an
 // autocomplete type.
