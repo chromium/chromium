@@ -17,7 +17,7 @@ PASS public to private: missing CORS headers.
 PASS public to private: missing PNA header.
 FAIL public to private: success. assert_equals: expected "loaded" but got "timeout"
 PASS public to public: no preflight required.
-PASS treat-as-public-address to local: failed preflight.
+FAIL treat-as-public-address to local: failed preflight. assert_equals: expected "timeout" but got "loaded"
 PASS treat-as-public-address to local: missing CORS headers.
 PASS treat-as-public-address to local: missing PNA header.
 FAIL treat-as-public-address to local: success. assert_equals: expected "loaded" but got "timeout"
@@ -27,7 +27,7 @@ PASS treat-as-public-address to private: missing PNA header.
 FAIL treat-as-public-address to private: success. assert_equals: expected "loaded" but got "timeout"
 PASS treat-as-public-address to public: no preflight required.
 PASS treat-as-public-address to local: optional preflight
-FAIL local to local, grandparent navigates: no preflight required. assert_equals: expected "loaded" but got "timeout"
+PASS local to local, grandparent navigates: no preflight required.
 FAIL public to local, grandparent navigates: failure. timeout adding grandchild
 FAIL public to local, grandparent navigates: success. timeout adding grandchild
 Harness: the test ran to completion.

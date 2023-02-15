@@ -298,6 +298,11 @@ BASE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout,
              "PrivateNetworkAccessPreflightShortTimeout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allow secure same origin PNA requests without preflights.
+BASE_FEATURE(kPrivateNetworkAccessAllowSecureSameOrigin,
+             "PrivateNetworkAccessAllowSecureSameOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Handle the Link header DNS prefetches and preconnects in the network
 // service instead of through the renderer process.
 BASE_FEATURE(kPreconnectInNetworkService,

@@ -4,8 +4,10 @@
 
 #include "services/network/private_network_access_checker.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "net/base/transport_info.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
@@ -61,7 +63,10 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
                                     request_client_security_state_.get())),
       should_block_local_request_(url_load_options &
                                   mojom::kURLLoadOptionBlockLocalRequest),
-      target_address_space_(request.target_ip_address_space) {
+      target_address_space_(request.target_ip_address_space),
+      is_same_origin_(
+          request.request_initiator.has_value() &&
+          request.request_initiator.value().IsSameOriginWith(request.url)) {
   if (!client_security_state_ ||
       client_security_state_->private_network_request_policy ==
           mojom::PrivateNetworkRequestPolicy::kAllow) {
@@ -229,7 +234,11 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     case Policy::kPreflightWarn:
       return Result::kBlockedByPolicyPreflightWarn;
     case Policy::kPreflightBlock:
-      return Result::kBlockedByPolicyPreflightBlock;
+      return is_same_origin_ &&
+                     base::FeatureList::IsEnabled(
+                         features::kPrivateNetworkAccessAllowSecureSameOrigin)
+                 ? Result::kAllowedSecureSameOrigin
+                 : Result::kBlockedByPolicyPreflightBlock;
   }
 }
 

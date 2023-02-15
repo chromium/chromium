@@ -144,6 +144,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   //
   // Set by `Check()`, reset by `ResetForRedirect()`.
   absl::optional<mojom::IPAddressSpace> response_address_space_;
+
+  const bool is_same_origin_;
 };
 
 }  // namespace network

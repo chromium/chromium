@@ -61,8 +61,11 @@ enum class PrivateNetworkAccessCheckResult {
   // Request connected to two different IP address spaces for the same response.
   kBlockedByInconsistentIpAddressSpace = 11,
 
+  // Private network request: allowed because same origin.
+  kAllowedSecureSameOrigin = 12,
+
   // Required for UMA histogram logging.
-  kMaxValue = kBlockedByInconsistentIpAddressSpace,
+  kMaxValue = kAllowedSecureSameOrigin,
 };
 
 // Returns a human-readable string representing `result`, suitable for logging.

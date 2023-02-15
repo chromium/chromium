@@ -54,6 +54,13 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "pna-allow-secure-same-origin",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/fetch/private-network-access"],
+    "args": ["--enable-features=PrivateNetworkAccessAllowSecureSameOrigin"],
+    "expires": "Jul 1, 2023"
+  },
+  {
     "prefix": "reduce-accept-language",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/navigation/language",
