@@ -600,6 +600,9 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
                    bool has_description, const ui::Event& event) {
                   page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
                       has_description);
+                  view->presenter_->RecordPageInfoAction(
+                      PageInfo::PageInfoAction::
+                          PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
                   view->ui_delegate_->OpenMoreAboutThisPageUrl(more_info_url,
                                                                event);
                   view->GetWidget()->Close();
