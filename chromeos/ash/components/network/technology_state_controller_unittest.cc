@@ -6,10 +6,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
+#include "chromeos/ash/components/network/hotspot_controller.h"
+#include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,21 +24,40 @@ namespace ash {
 class TechnologyStateControllerTest : public ::testing::Test {
  public:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kHotspot);
+
+    hotspot_capabilities_provider_ =
+        std::make_unique<HotspotCapabilitiesProvider>();
+    hotspot_capabilities_provider_->Init(
+        network_state_test_helper_.network_state_handler());
     technology_state_controller_ =
         std::make_unique<TechnologyStateController>();
     technology_state_controller_->Init(
         network_state_test_helper_.network_state_handler());
+    hotspot_state_handler_ = std::make_unique<HotspotStateHandler>();
+    hotspot_state_handler_->Init();
+    hotspot_controller_ = std::make_unique<HotspotController>();
+    hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
+                              hotspot_state_handler_.get(),
+                              technology_state_controller_.get());
   }
 
   void TearDown() override {
     network_state_test_helper_.ClearDevices();
     network_state_test_helper_.ClearServices();
+    hotspot_controller_.reset();
+    hotspot_capabilities_provider_.reset();
+    hotspot_state_handler_.reset();
     technology_state_controller_.reset();
   }
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<HotspotController> hotspot_controller_;
+  std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
+  std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   std::unique_ptr<TechnologyStateController> technology_state_controller_;
   NetworkStateTestHelper network_state_test_helper_{
       /*use_default_devices_and_services=*/false};
@@ -141,6 +164,56 @@ TEST_F(TechnologyStateControllerTest, ChangePhysicalTechnologies) {
       NetworkStateHandler::TECHNOLOGY_ENABLED,
       network_state_test_helper_.network_state_handler()->GetTechnologyState(
           NetworkTypePattern::Ethernet()));
+}
+
+TEST_F(TechnologyStateControllerTest, EnableWifiWhenHotspotOn) {
+  base::RunLoop run_loop;
+  technology_state_controller_->SetTechnologiesEnabled(
+      NetworkTypePattern::WiFi(), /*enabled=*/false,
+      network_handler::ErrorCallback());
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(
+      NetworkStateHandler::TECHNOLOGY_AVAILABLE,
+      network_state_test_helper_.network_state_handler()->GetTechnologyState(
+          NetworkTypePattern::WiFi()));
+
+  // Simulate that there's an active hotspot
+  base::Value::Dict status_dict;
+  status_dict.Set(shill::kTetheringStatusStateProperty,
+                  shill::kTetheringStateActive);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  run_loop.RunUntilIdle();
+
+  // Simulate disable hotspot will fail.
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, "network_failure");
+
+  std::string error;
+  technology_state_controller_->SetTechnologiesEnabled(
+      NetworkTypePattern::WiFi(), /*enabled=*/true,
+      base::BindLambdaForTesting([&](const std::string& error_name) {
+        error = error_name;
+        run_loop.QuitClosure();
+      }));
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(TechnologyStateController::kErrorDisableHotspot, error);
+  EXPECT_EQ(
+      NetworkStateHandler::TECHNOLOGY_AVAILABLE,
+      network_state_test_helper_.network_state_handler()->GetTechnologyState(
+          NetworkTypePattern::WiFi()));
+
+  // Simulate disable hotspot will succeed.
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
+  technology_state_controller_->SetTechnologiesEnabled(
+      NetworkTypePattern::WiFi(), /*enabled=*/true,
+      network_handler::ErrorCallback());
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(
+      NetworkStateHandler::TECHNOLOGY_ENABLED,
+      network_state_test_helper_.network_state_handler()->GetTechnologyState(
+          NetworkTypePattern::WiFi()));
 }
 
 }  // namespace ash

@@ -36,11 +36,16 @@ class HotspotControllerTest : public ::testing::Test {
         std::make_unique<HotspotCapabilitiesProvider>();
     hotspot_capabilities_provider_->Init(
         network_state_test_helper_.network_state_handler());
+    technology_state_controller_ =
+        std::make_unique<TechnologyStateController>();
+    technology_state_controller_->Init(
+        network_state_test_helper_.network_state_handler());
     hotspot_state_handler_ = std::make_unique<HotspotStateHandler>();
     hotspot_state_handler_->Init();
     hotspot_controller_ = std::make_unique<HotspotController>();
     hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
-                              hotspot_state_handler_.get());
+                              hotspot_state_handler_.get(),
+                              technology_state_controller_.get());
     SetReadinessCheckResultReady();
   }
 
@@ -50,6 +55,7 @@ class HotspotControllerTest : public ::testing::Test {
     hotspot_controller_.reset();
     hotspot_capabilities_provider_.reset();
     hotspot_state_handler_.reset();
+    technology_state_controller_.reset();
   }
 
   void SetValidTetheringCapabilities() {
@@ -115,6 +121,18 @@ class HotspotControllerTest : public ::testing::Test {
     return return_result;
   }
 
+  bool PrepareEnableWifi() {
+    base::RunLoop run_loop;
+    bool prepare_success;
+    hotspot_controller_->PrepareEnableWifi(
+        base::BindLambdaForTesting([&](bool result) {
+          prepare_success = result;
+          run_loop.QuitClosure();
+        }));
+    run_loop.RunUntilIdle();
+    return prepare_success;
+  }
+
   void EnableAndDisableHotspot(
       hotspot_config::mojom::HotspotControlResult& enable_result,
       hotspot_config::mojom::HotspotControlResult& disable_result) {
@@ -138,6 +156,7 @@ class HotspotControllerTest : public ::testing::Test {
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
+  std::unique_ptr<TechnologyStateController> technology_state_controller_;
   NetworkStateTestHelper network_state_test_helper_{
       /*use_default_devices_and_services=*/false};
 };
@@ -216,6 +235,22 @@ TEST_F(HotspotControllerTest, QueuedRequests) {
             enable_result);
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
             disable_result);
+}
+
+TEST_F(HotspotControllerTest, PrepareEnableWifi) {
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
+  base::Value::Dict status_dict;
+  status_dict.Set(shill::kTetheringStatusStateProperty,
+                  shill::kTetheringStateActive);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(PrepareEnableWifi());
+
+  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, kShillNetworkingFailure);
+  EXPECT_FALSE(PrepareEnableWifi());
 }
 
 }  // namespace ash

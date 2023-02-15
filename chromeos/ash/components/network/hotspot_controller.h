@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
+#include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
 
 namespace ash {
@@ -25,15 +26,17 @@ namespace ash {
 //
 // Enable or disable requests are queued and executes one request at a time in
 // order.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController {
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
+    : public TechnologyStateController::HotspotOperationDelegate {
  public:
   HotspotController();
   HotspotController(const HotspotController&) = delete;
   HotspotController& operator=(const HotspotController&) = delete;
-  ~HotspotController();
+  virtual ~HotspotController();
 
   void Init(HotspotCapabilitiesProvider* hotspot_capabilities_provider,
-            HotspotStateHandler* hotspot_state_handler);
+            HotspotStateHandler* hotspot_state_handler,
+            TechnologyStateController* technolog_state_controller);
 
   // Return callback for the EnableHotspot or DisableHotspot method.
   using HotspotControlCallback = base::OnceCallback<void(
@@ -49,6 +52,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController {
   void SetPolicyAllowHotspot(bool allow_hotspot);
 
  private:
+  friend class HotspotControllerTest;
+
   // Represents hotspot enable or disable control request parameters. Requests
   // are queued and processed one at a time.
   struct HotspotControlRequest {
@@ -61,6 +66,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController {
     HotspotControlCallback callback;
   };
 
+  // TechnologyStateController::HotspotOperationDelegate:
+  void PrepareEnableWifi(
+      base::OnceCallback<void(bool prepare_success)> callback) override;
+
   void ProcessRequestQueue();
   void CheckTetheringReadiness();
   void OnCheckTetheringReadiness(
@@ -69,6 +78,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController {
   void OnSetTetheringEnabledSuccess(const std::string& result);
   void OnSetTetheringEnabledFailure(const std::string& error_name,
                                     const std::string& error_message);
+  void OnPrepareEnableWifiCompleted(
+      base::OnceCallback<void(bool success)> callback,
+      hotspot_config::mojom::HotspotControlResult control_result);
   void CompleteCurrentRequest(
       hotspot_config::mojom::HotspotControlResult result);
 
@@ -77,6 +89,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController {
   bool allow_hotspot_ = true;
   HotspotCapabilitiesProvider* hotspot_capabilities_provider_ = nullptr;
   HotspotStateHandler* hotspot_state_handler_ = nullptr;
+  TechnologyStateController* technology_state_controller_ = nullptr;
 
   base::WeakPtrFactory<HotspotController> weak_ptr_factory_{this};
 };

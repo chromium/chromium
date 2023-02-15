@@ -21,13 +21,20 @@ HotspotController::HotspotControlRequest::~HotspotControlRequest() = default;
 
 HotspotController::HotspotController() = default;
 
-HotspotController::~HotspotController() = default;
+HotspotController::~HotspotController() {
+  if (technology_state_controller_) {
+    technology_state_controller_->set_hotspot_operation_delegate(nullptr);
+  }
+}
 
 void HotspotController::Init(
     HotspotCapabilitiesProvider* hotspot_capabilities_provider,
-    HotspotStateHandler* hotspot_state_handler) {
+    HotspotStateHandler* hotspot_state_handler,
+    TechnologyStateController* technology_state_controller) {
   hotspot_capabilities_provider_ = hotspot_capabilities_provider;
   hotspot_state_handler_ = hotspot_state_handler;
+  technology_state_controller_ = technology_state_controller;
+  technology_state_controller_->set_hotspot_operation_delegate(this);
 }
 
 void HotspotController::EnableHotspot(HotspotControlCallback callback) {
@@ -135,6 +142,30 @@ void HotspotController::SetPolicyAllowHotspot(bool allow_hotspot) {
                             hotspot_config::mojom::HotspotState::kDisabled) {
     DisableHotspot(base::DoNothing());
   }
+}
+
+void HotspotController::PrepareEnableWifi(
+    base::OnceCallback<void(bool prepare_success)> callback) {
+  if (hotspot_state_handler_->GetHotspotState() ==
+          hotspot_config::mojom::HotspotState::kEnabled ||
+      hotspot_state_handler_->GetHotspotState() ==
+          hotspot_config::mojom::HotspotState::kEnabling) {
+    DisableHotspot(
+        base::BindOnce(&HotspotController::OnPrepareEnableWifiCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(/*prepare_success=*/true);
+}
+
+void HotspotController::OnPrepareEnableWifiCompleted(
+    base::OnceCallback<void(bool prepare_success)> callback,
+    hotspot_config::mojom::HotspotControlResult control_result) {
+  if (control_result == hotspot_config::mojom::HotspotControlResult::kSuccess) {
+    std::move(callback).Run(/*prepare_success=*/true);
+    return;
+  }
+  std::move(callback).Run(/*prepare_success=*/false);
 }
 
 }  //  namespace ash

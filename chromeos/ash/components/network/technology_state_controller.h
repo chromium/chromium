@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_TECHNOLOGY_STATE_CONTROLLER_H_
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
@@ -20,6 +21,18 @@ class NetworkStateHandler;
 // concurrency issues by disabling one before enabling the other.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) TechnologyStateController {
  public:
+  class HotspotOperationDelegate {
+   public:
+    // Prepare for enable Wifi technology by disabling hotspot if active.
+    // Calls |callback| when the preparation is completed.
+    virtual void PrepareEnableWifi(
+        base::OnceCallback<void(bool prepare_success)> callback) = 0;
+  };
+
+  // Constant for |error_name| from network_handler::ErrorCallback. This error
+  // name indicated failed to disable hotspot before enable Wifi.
+  static const char kErrorDisableHotspot[];
+
   TechnologyStateController();
   TechnologyStateController(const TechnologyStateController&) = delete;
   TechnologyStateController& operator=(const TechnologyStateController&) =
@@ -34,8 +47,21 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TechnologyStateController {
                               bool enabled,
                               network_handler::ErrorCallback error_callback);
 
+  void set_hotspot_operation_delegate(
+      HotspotOperationDelegate* hotspot_operation_delegate) {
+    hotspot_operation_delegate_ = hotspot_operation_delegate;
+  }
+
  private:
   NetworkStateHandler* network_state_handler_ = nullptr;
+  HotspotOperationDelegate* hotspot_operation_delegate_ = nullptr;
+
+  void OnPrepareEnableWifiCompleted(
+      const NetworkTypePattern& type,
+      network_handler::ErrorCallback error_callback,
+      bool success);
+
+  base::WeakPtrFactory<TechnologyStateController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
