@@ -61,7 +61,6 @@ using ::testing::Matcher;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::NotNull;
-using ::testing::Pointee;
 using ::testing::ResultOf;
 
 // An arbitrary size guaranteed to fit the size of any serialized op in this
@@ -153,9 +152,11 @@ class PaintOpAppendTest : public ::testing::Test {
   }
 
   void VerifyOps(PaintOpBuffer* buffer) {
-    EXPECT_THAT(*buffer,
-                PaintOpsAreEq(SaveLayerOp(rect_, flags_), SaveOp(),
-                              DrawColorOp(draw_color_, blend_), RestoreOp()));
+    EXPECT_THAT(
+        *buffer,
+        ElementsAre(PaintOpEq<SaveLayerOp>(rect_, flags_), PaintOpEq<SaveOp>(),
+                    PaintOpEq<DrawColorOp>(draw_color_, blend_),
+                    PaintOpEq<RestoreOp>()));
   }
 
   void CheckInitialState(PaintOpBuffer* buffer, bool expect_empty_buffer) {
@@ -1959,7 +1960,10 @@ TEST_P(PaintOpSerializationTest, SmokeTest) {
            output_.get(), serializer.TotalBytesWritten(),
            serializer.options_provider()->deserialize_options())) {
     ASSERT_TRUE(iter);
-    EXPECT_THAT(base_written, PaintOpEq(std::ref(*iter))) << "i: " << i;
+    EXPECT_TRUE(base_written.EqualsForTesting(*iter))
+        << "i: " << i
+        << "\n    Written:  " << PaintOpHelper::ToString(base_written)
+        << "\n    Original: " << PaintOpHelper::ToString(*iter);
     ++iter;
     ++i;
   }
@@ -2137,7 +2141,10 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
         output_.get(), bytes_written, deserialized, std::size(deserialized),
         &bytes_read, options_provider.deserialize_options());
     ASSERT_TRUE(written) << PaintOpTypeToString(GetParamType());
-    EXPECT_THAT(op, PaintOpEq<const PaintOp&>(*written));
+    EXPECT_TRUE(op.EqualsForTesting(*written))
+        << "\n    Written:  " << PaintOpHelper::ToString(*written)
+        << "\n    Original: " << PaintOpHelper::ToString(op);
+
     written->DestroyThis();
     written = nullptr;
 
@@ -2180,15 +2187,15 @@ TEST(PaintOpSerializationTest, CompleteBufferSerialization) {
                                     options_provider.deserialize_options());
   // The deserialized buffer has an extra pair of save/restores and a clear, for
   // the preamble and root buffer.
-  EXPECT_THAT(deserialized_buffer,
-              Pointee(ElementsAre(
+  EXPECT_THAT(*deserialized_buffer,
+              ElementsAre(
                   // Preamble:
-                  PaintOpEq(SaveOp()), PaintOpIs<DrawColorOp>(),
+                  PaintOpEq<SaveOp>(), PaintOpIs<DrawColorOp>(),
                   PaintOpIs<ClipRectOp>(),
                   // Serialized buffer:
-                  PaintOpEq(DrawColorOp(SkColors::kBlue, SkBlendMode::kSrc)),
+                  PaintOpEq<DrawColorOp>(SkColors::kBlue, SkBlendMode::kSrc),
                   // End restore:
-                  PaintOpEq(RestoreOp()))));
+                  PaintOpEq<RestoreOp>()));
 }
 
 TEST(PaintOpSerializationTest, Preamble) {
@@ -2213,22 +2220,23 @@ TEST(PaintOpSerializationTest, Preamble) {
   sk_sp<PaintOpBuffer> deserialized_buffer =
       PaintOpBuffer::MakeFromMemory(memory.get(), serializer.written(),
                                     options_provider.deserialize_options());
-  EXPECT_THAT(deserialized_buffer,
-              Pointee(PaintOpsAreEq(
-                  // Preamble:
-                  SaveOp(),
-                  TranslateOp(-preamble.full_raster_rect.x(),
-                              -preamble.full_raster_rect.y()),
-                  ClipRectOp(RectToSkRect(preamble.playback_rect),
-                             SkClipOp::kIntersect, /*antialias=*/false),
-                  TranslateOp(preamble.post_translation.x(),
-                              preamble.post_translation.y()),
-                  ScaleOp(preamble.post_scale.x(), preamble.post_scale.y()),
-                  DrawColorOp(SkColors::kTransparent, SkBlendMode::kSrc),
-                  // From the serialized buffer:
-                  DrawColorOp(SkColors::kBlue, SkBlendMode::kSrc),
-                  // End restore:
-                  RestoreOp())));
+  EXPECT_THAT(
+      *deserialized_buffer,
+      ElementsAre(
+          // Preamble:
+          PaintOpEq<SaveOp>(),
+          PaintOpEq<TranslateOp>(-preamble.full_raster_rect.x(),
+                                 -preamble.full_raster_rect.y()),
+          PaintOpEq<ClipRectOp>(RectToSkRect(preamble.playback_rect),
+                                SkClipOp::kIntersect, /*antialias=*/false),
+          PaintOpEq<TranslateOp>(preamble.post_translation.x(),
+                                 preamble.post_translation.y()),
+          PaintOpEq<ScaleOp>(preamble.post_scale.x(), preamble.post_scale.y()),
+          PaintOpEq<DrawColorOp>(SkColors::kTransparent, SkBlendMode::kSrc),
+          // From the serialized buffer:
+          PaintOpEq<DrawColorOp>(SkColors::kBlue, SkBlendMode::kSrc),
+          // End restore:
+          PaintOpEq<RestoreOp>()));
 }
 
 TEST(PaintOpSerializationTest,
@@ -2297,16 +2305,17 @@ TEST(PaintOpSerializationTest, SerializesNestedRecords) {
       PaintOpBuffer::MakeFromMemory(memory.get(), serializer.written(),
                                     options_provider.deserialize_options());
   EXPECT_THAT(
-      deserialized_buffer,
-      Pointee(PaintOpsAreEq(
+      *deserialized_buffer,
+      ElementsAre(
           // Preamble:
-          SaveOp(), DrawColorOp(SkColors::kTransparent, SkBlendMode::kSrc),
-          SaveOp(),
+          PaintOpEq<SaveOp>(),
+          PaintOpEq<DrawColorOp>(SkColors::kTransparent, SkBlendMode::kSrc),
+          PaintOpEq<SaveOp>(),
           // From the serialized buffer:
-          ScaleOp(0.5f, 0.75f),
-          DrawRectOp(SkRect::MakeWH(10.f, 20.f), PaintFlags()),
+          PaintOpEq<ScaleOp>(0.5f, 0.75f),
+          PaintOpEq<DrawRectOp>(SkRect::MakeWH(10.f, 20.f), PaintFlags()),
           // End restore:
-          RestoreOp(), RestoreOp())));
+          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(PaintOpBufferTest, ClipsImagesDuringSerialization) {
@@ -2357,7 +2366,7 @@ TEST(PaintOpBufferTest, ClipsImagesDuringSerialization) {
       matchers.push_back(PaintOpIs<DrawImageOp>());
     }
     matchers.push_back(PaintOpIs<RestoreOp>());
-    EXPECT_THAT(deserialized_buffer, Pointee(ElementsAreArray(matchers)));
+    EXPECT_THAT(*deserialized_buffer, ElementsAreArray(matchers));
   }
 }
 
@@ -2392,9 +2401,8 @@ TEST(PaintOpBufferSerializationTest, AlphaFoldingDuringSerialization) {
       PaintOpBuffer::MakeFromMemory(memory.get(), serializer.written(),
                                     options_provider.deserialize_options());
 
-  EXPECT_THAT(
-      deserialized_buffer,
-      Pointee(ElementsAre(PaintOpIs<SaveOp>(), PaintOpIs<ClipRectOp>(),
+  EXPECT_THAT(*deserialized_buffer,
+              ElementsAre(PaintOpIs<SaveOp>(), PaintOpIs<ClipRectOp>(),
                           AllOf(PaintOpIs<DrawRectOp>(),
                                 // Expect the alpha from the draw and the save
                                 // layer to be folded together.
@@ -2404,7 +2412,7 @@ TEST(PaintOpBufferSerializationTest, AlphaFoldingDuringSerialization) {
                                           .flags.getAlphaf();
                                     },
                                     FloatEq(alpha * draw_rect_alpha))),
-                          PaintOpIs<RestoreOp>())));
+                          PaintOpIs<RestoreOp>()));
 }
 
 // Test generic PaintOp deserializing failure cases.
@@ -3279,7 +3287,8 @@ TEST_P(PaintFilterSerializationTest, Basic) {
       // ScaleOp containing the extracted scale factors (if there's no
       // security constraints that disable record serialization)
       if (!GetParam()) {
-        EXPECT_THAT(actual.record(), PaintOpsAreEq(ScaleOp(scale_x, scale_y)));
+        EXPECT_THAT(actual.record(),
+                    ElementsAre(PaintOpEq<ScaleOp>(scale_x, scale_y)));
       }
     } else {
       EXPECT_TRUE(filter->EqualsForTesting(*deserialized_filter));
@@ -3340,9 +3349,8 @@ TEST(PaintOpBufferTest, PaintRecordShaderSerialization) {
   sk_sp<PaintOpBuffer> deserialized_buffer =
       PaintOpBuffer::MakeFromMemory(memory.get(), serializer.written(),
                                     options_provider.deserialize_options());
-  EXPECT_THAT(
-      deserialized_buffer,
-      Pointee(PaintOpsAreEq(DrawRectOp(SkRect::MakeXYWH(1, 2, 3, 4), flags))));
+  EXPECT_THAT(*deserialized_buffer, ElementsAre(PaintOpEq<DrawRectOp>(
+                                        SkRect::MakeXYWH(1, 2, 3, 4), flags)));
 }
 
 #if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
@@ -3554,8 +3562,7 @@ TEST(PaintOpBufferTest, CustomData) {
 
     PaintOpBuffer buffer2;
     buffer2.push<CustomDataOp>(1234u);
-    EXPECT_THAT(new_buffer.GetFirstOp(),
-                PaintOpEq(std::ref(buffer2.GetFirstOp())));
+    EXPECT_THAT(new_buffer, ElementsAre(PaintOpEq<CustomDataOp>(1234u)));
   }
 
   // Push and verify.
@@ -3565,8 +3572,9 @@ TEST(PaintOpBufferTest, CustomData) {
     buffer.push<CustomDataOp>(0xFFFFFFFF);
     buffer.push<RestoreOp>();
 
-    EXPECT_THAT(buffer,
-                PaintOpsAreEq(SaveOp(), CustomDataOp(0xFFFFFFFF), RestoreOp()));
+    EXPECT_THAT(buffer, ElementsAre(PaintOpEq<SaveOp>(),
+                                    PaintOpEq<CustomDataOp>(0xFFFFFFFF),
+                                    PaintOpEq<RestoreOp>()));
   }
 
   // Playback.
@@ -3865,8 +3873,8 @@ TEST(PaintOpBufferTest, NullImages) {
   sk_sp<PaintOpBuffer> deserialized_buffer =
       PaintOpBuffer::MakeFromMemory(memory.get(), serializer.written(),
                                     options_provider.deserialize_options());
-  EXPECT_THAT(deserialized_buffer,
-              Pointee(PaintOpsAreEq(DrawImageOp(PaintImage(), 0.f, 0.f))));
+  EXPECT_THAT(*deserialized_buffer,
+              ElementsAre(PaintOpEq<DrawImageOp>(PaintImage(), 0.f, 0.f)));
 }
 
 TEST(PaintOpBufferTest, HasDrawOpsAndHasDrawTextOps) {
@@ -4017,8 +4025,7 @@ TEST(PaintOpBufferTest, PathCaching) {
   sk_sp<PaintOpBuffer> deserialized_buffer =
       PaintOpBuffer::MakeFromMemory(memory.get(), serializer.written(),
                                     options_provider.deserialize_options());
-  EXPECT_THAT(deserialized_buffer,
-              Pointee(ElementsAre(PaintOpIs<DrawPathOp>())));
+  EXPECT_THAT(*deserialized_buffer, ElementsAre(PaintOpIs<DrawPathOp>()));
 
   SkPath cached_path;
   EXPECT_TRUE(options_provider.service_paint_cache()->GetPath(
@@ -4093,7 +4100,8 @@ TEST(IteratorTest, StlContainerLikeIterationTest) {
   PaintOpBuffer buffer;
   buffer.push<SaveOp>();
   buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
-  EXPECT_THAT(buffer, PaintOpsAreEq(SaveOp(), SetMatrixOp(SkM44::Scale(1, 2))));
+  EXPECT_THAT(buffer, ElementsAre(PaintOpEq<SaveOp>(),
+                                  PaintOpEq<SetMatrixOp>(SkM44::Scale(1, 2))));
 }
 
 TEST(IteratorTest, IterationTest) {
@@ -4101,7 +4109,8 @@ TEST(IteratorTest, IterationTest) {
   buffer.push<SaveOp>();
   buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
   EXPECT_THAT(PaintOpBuffer::Iterator(buffer),
-              PaintOpsAreEq(SaveOp(), SetMatrixOp(SkM44::Scale(1, 2))));
+              ElementsAre(PaintOpEq<SaveOp>(),
+                          PaintOpEq<SetMatrixOp>(SkM44::Scale(1, 2))));
 }
 
 TEST(IteratorTest, OffsetIterationTest) {
@@ -4113,7 +4122,8 @@ TEST(IteratorTest, OffsetIterationTest) {
   std::vector<size_t> offsets = {
       0, static_cast<size_t>(op1.aligned_size + op2.aligned_size)};
   EXPECT_THAT(PaintOpBuffer::OffsetIterator(buffer, offsets),
-              PaintOpsAreEq(SaveOp(), SetMatrixOp(SkM44::Scale(1, 2))));
+              ElementsAre(PaintOpEq<SaveOp>(),
+                          PaintOpEq<SetMatrixOp>(SkM44::Scale(1, 2))));
 }
 
 TEST(IteratorTest, CompositeIterationTest) {
@@ -4124,12 +4134,13 @@ TEST(IteratorTest, CompositeIterationTest) {
   std::vector<size_t> offsets = {
       0, static_cast<size_t>(op1.aligned_size + op2.aligned_size)};
 
-  EXPECT_THAT(
-      PaintOpBuffer::CompositeIterator(buffer, /*offsets=*/nullptr),
-      PaintOpsAreEq(SaveOp(), RestoreOp(), SetMatrixOp(SkM44::Scale(1, 2))));
+  EXPECT_THAT(PaintOpBuffer::CompositeIterator(buffer, /*offsets=*/nullptr),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<RestoreOp>(),
+                          PaintOpEq<SetMatrixOp>(SkM44::Scale(1, 2))));
 
   EXPECT_THAT(PaintOpBuffer::CompositeIterator(buffer, &offsets),
-              PaintOpsAreEq(SaveOp(), SetMatrixOp(SkM44::Scale(1, 2))));
+              ElementsAre(PaintOpEq<SaveOp>(),
+                          PaintOpEq<SetMatrixOp>(SkM44::Scale(1, 2))));
 }
 
 TEST(IteratorTest, EqualityTest) {

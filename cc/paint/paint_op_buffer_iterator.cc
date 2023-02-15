@@ -59,9 +59,6 @@ PaintOpBuffer::PlaybackFoldingIterator::PlaybackFoldingIterator(
   FindNextOp();
 }
 
-PaintOpBuffer::PlaybackFoldingIterator::PlaybackFoldingIterator(
-    const PlaybackFoldingIterator&) = default;
-
 PaintOpBuffer::PlaybackFoldingIterator::~PlaybackFoldingIterator() = default;
 
 void PaintOpBuffer::PlaybackFoldingIterator::FindNextOp() {

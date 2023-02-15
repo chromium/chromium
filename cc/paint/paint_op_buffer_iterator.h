@@ -209,7 +209,6 @@ class CC_PAINT_EXPORT PaintOpBuffer::PlaybackFoldingIterator
  public:
   PlaybackFoldingIterator(const PaintOpBuffer& buffer,
                           const std::vector<size_t>* offsets);
-  PlaybackFoldingIterator(const PlaybackFoldingIterator& other);
   ~PlaybackFoldingIterator();
 
   const PaintOp* get() const { return current_op_; }
@@ -219,11 +218,6 @@ class CC_PAINT_EXPORT PaintOpBuffer::PlaybackFoldingIterator
   PlaybackFoldingIterator& operator++() {
     FindNextOp();
     return *this;
-  }
-  PlaybackFoldingIterator operator++(int) {
-    PlaybackFoldingIterator original = *this;
-    operator++();
-    return original;
   }
 
   explicit operator bool() const { return !!current_op_; }

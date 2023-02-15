@@ -2030,8 +2030,6 @@ AnnotateOp::AnnotateOp(PaintCanvas::AnnotationType annotation_type,
       data(std::move(data)) {}
 
 AnnotateOp::~AnnotateOp() = default;
-AnnotateOp::AnnotateOp(const AnnotateOp&) = default;
-AnnotateOp& AnnotateOp::operator=(const AnnotateOp&) = default;
 
 DrawImageOp::DrawImageOp() : PaintOpWithFlags(kType) {}
 
@@ -2093,8 +2091,6 @@ DrawRecordOp::DrawRecordOp(PaintRecord record)
     : PaintOp(kType), record(std::move(record)) {}
 
 DrawRecordOp::~DrawRecordOp() = default;
-DrawRecordOp::DrawRecordOp(const DrawRecordOp&) = default;
-DrawRecordOp& DrawRecordOp::operator=(const DrawRecordOp&) = default;
 
 size_t DrawRecordOp::AdditionalBytesUsed() const {
   return record.bytes_used();
@@ -2121,8 +2117,6 @@ DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
 DrawSkottieOp::DrawSkottieOp() : PaintOp(kType) {}
 
 DrawSkottieOp::~DrawSkottieOp() = default;
-DrawSkottieOp::DrawSkottieOp(const DrawSkottieOp&) = default;
-DrawSkottieOp& DrawSkottieOp::operator=(const DrawSkottieOp&) = default;
 
 bool DrawSkottieOp::HasDiscardableImages() const {
   return !images.empty();
@@ -2152,8 +2146,6 @@ DrawTextBlobOp::DrawTextBlobOp(sk_sp<SkTextBlob> blob,
       node_id(node_id) {}
 
 DrawTextBlobOp::~DrawTextBlobOp() = default;
-DrawTextBlobOp::DrawTextBlobOp(const DrawTextBlobOp&) = default;
-DrawTextBlobOp& DrawTextBlobOp::operator=(const DrawTextBlobOp&) = default;
 
 DrawSlugOp::DrawSlugOp() : PaintOpWithFlags(kType) {}
 
@@ -2161,7 +2153,5 @@ DrawSlugOp::DrawSlugOp(sk_sp<GrSlug> slug, const PaintFlags& flags)
     : PaintOpWithFlags(kType, flags), slug(std::move(slug)) {}
 
 DrawSlugOp::~DrawSlugOp() = default;
-DrawSlugOp::DrawSlugOp(const DrawSlugOp&) = default;
-DrawSlugOp& DrawSlugOp::operator=(const DrawSlugOp&) = default;
 
 }  // namespace cc
