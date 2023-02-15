@@ -111,7 +111,7 @@ class UsbFindDevicesFunction : public UsbExtensionFunction {
       std::vector<device::mojom::UsbDeviceInfoPtr> devices);
   void OnDeviceOpened(const std::string& guid,
                       mojo::Remote<device::mojom::UsbDevice> device_ptr,
-                      device::mojom::UsbOpenDeviceError error);
+                      device::mojom::UsbOpenDeviceResultPtr result);
   void OpenComplete();
   void OnDisconnect();
 
@@ -215,7 +215,7 @@ class UsbOpenDeviceFunction : public UsbPermissionCheckingFunction {
 
   void OnDeviceOpened(std::string guid,
                       mojo::Remote<device::mojom::UsbDevice> device,
-                      device::mojom::UsbOpenDeviceError error);
+                      device::mojom::UsbOpenDeviceResultPtr result);
   void OnDisconnect();
 };
 

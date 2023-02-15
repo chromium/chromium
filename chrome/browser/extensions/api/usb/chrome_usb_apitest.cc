@@ -22,7 +22,6 @@ namespace extensions {
 namespace {
 
 using ::base::test::RunOnceCallback;
-using ::device::mojom::UsbOpenDeviceError;
 using ::testing::_;
 
 constexpr char kManifest[] =
@@ -178,7 +177,9 @@ IN_PROC_BROWSER_TEST_F(ChromeUsbApiTest, FindDevicesByPolicy) {
   const Extension* extension = LoadExtension(dir.UnpackedPath());
 
   EXPECT_CALL(mock_device_, Open)
-      .WillOnce(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+      .WillOnce(
+          RunOnceCallback<0>(device::mojom::UsbOpenDeviceResult::NewSuccess(
+              device::mojom::UsbOpenDeviceSuccess::OK)));
 
   // Run the test.
   SetUpPolicy(extension);

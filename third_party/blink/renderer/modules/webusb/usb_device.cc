@@ -875,21 +875,26 @@ void USBDevice::SetEndpointsForInterface(wtf_size_t interface_index, bool set) {
 }
 
 void USBDevice::AsyncOpen(ScriptPromiseResolver* resolver,
-                          UsbOpenDeviceError error) {
+                          device::mojom::blink::UsbOpenDeviceResultPtr result) {
   MarkRequestComplete(resolver);
 
-  switch (error) {
-    case UsbOpenDeviceError::ALREADY_OPEN:
-      NOTREACHED();
-      [[fallthrough]];
-    case UsbOpenDeviceError::OK:
-      OnDeviceOpenedOrClosed(true /* opened */);
-      resolver->Resolve();
-      return;
+  if (result->is_success()) {
+    OnDeviceOpenedOrClosed(/*opened=*/true);
+    resolver->Resolve();
+    return;
+  }
+
+  DCHECK(result->is_error());
+  switch (result->get_error()) {
     case UsbOpenDeviceError::ACCESS_DENIED:
       OnDeviceOpenedOrClosed(false /* not opened */);
       resolver->RejectWithSecurityError(kAccessDeniedError, kAccessDeniedError);
-      return;
+      break;
+    case UsbOpenDeviceError::ALREADY_OPEN:
+      // This class keeps track of open state and won't try to open a device
+      // that is already open.
+      NOTREACHED();
+      break;
   }
 }
 

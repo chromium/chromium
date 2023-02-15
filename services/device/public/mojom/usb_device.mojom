@@ -17,15 +17,21 @@ const uint8 kUsbVideoClass = 0x0E;
 const uint8 kUsbAudioVideoClass = 0x10;
 const uint8 kUsbWirelessClass = 0xE0;
 
-enum UsbOpenDeviceError {
-  // Opening the device succeeded.
-  OK,
+enum UsbOpenDeviceSuccess {
+  OK
+};
 
+enum UsbOpenDeviceError {
   // The operating system denied access to the device.
   ACCESS_DENIED,
 
   // The device is already open.
   ALREADY_OPEN,
+};
+
+union UsbOpenDeviceResult {
+  UsbOpenDeviceSuccess success;
+  UsbOpenDeviceError error;
 };
 
 enum UsbClaimInterfaceResult {
@@ -206,7 +212,7 @@ struct UsbIsochronousPacket {
 
 interface UsbDevice {
   // Opens the device. Methods below require the device be opened first.
-  Open() => (UsbOpenDeviceError error);
+  Open() => (UsbOpenDeviceResult result);
 
   // Closes the device.
   Close() => ();

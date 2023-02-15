@@ -65,6 +65,11 @@ MATCHER_P(HasGuid, matcher, "") {
   return ExplainMatchResult(matcher, arg->guid, result_listener);
 }
 
+device::mojom::UsbOpenDeviceResultPtr NewUsbOpenDeviceSuccess() {
+  return device::mojom::UsbOpenDeviceResult::NewSuccess(
+      device::mojom::UsbOpenDeviceSuccess::OK);
+}
+
 std::string ServiceCreationTypeToString(ServiceCreationType type) {
   switch (type) {
     case kCreateForFrame:
@@ -276,10 +281,10 @@ TEST_P(WebUsbServiceImplTest, OpenAndCloseDevice) {
   EXPECT_CALL(web_contents_observer, OnIsConnectedToUsbDeviceChanged(true))
       .Times(service_creation_type == kCreateForFrame ? 1 : 0);
   EXPECT_CALL(mock_device, Open)
-      .WillOnce(RunOnceCallback<0>(device::mojom::UsbOpenDeviceError::OK));
-  TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+      .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
   device->Open(open_future.GetCallback());
-  EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
+  EXPECT_TRUE(open_future.Get()->is_success());
   CheckIsConnected(true);
 
   EXPECT_CALL(web_contents_observer, OnIsConnectedToUsbDeviceChanged(false))
@@ -313,10 +318,10 @@ TEST_P(WebUsbServiceImplTest, OpenAndDisconnectDevice) {
   EXPECT_CALL(web_contents_observer, OnIsConnectedToUsbDeviceChanged(true))
       .Times(service_creation_type == kCreateForFrame ? 1 : 0);
   EXPECT_CALL(mock_device, Open)
-      .WillOnce(RunOnceCallback<0>(device::mojom::UsbOpenDeviceError::OK));
-  TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+      .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
   device->Open(open_future.GetCallback());
-  EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
+  EXPECT_TRUE(open_future.Get()->is_success());
   CheckIsConnected(true);
 
   base::RunLoop loop;
@@ -356,10 +361,10 @@ TEST_F(WebUsbServiceImplFrameTest, OpenAndNavigateCrossOrigin) {
 
   EXPECT_CALL(web_contents_observer, OnIsConnectedToUsbDeviceChanged(true));
   EXPECT_CALL(mock_device, Open)
-      .WillOnce(RunOnceCallback<0>(device::mojom::UsbOpenDeviceError::OK));
-  TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+      .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
   device->Open(open_future.GetCallback());
-  EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
+  EXPECT_TRUE(open_future.Get()->is_success());
   CheckIsConnected(true);
 
   base::RunLoop loop;
@@ -390,9 +395,9 @@ TEST_P(WebUsbServiceImplProtectedInterfaceTest, BlockProtectedInterface) {
   mojo::Remote<device::mojom::UsbDevice> device;
   service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
 
-  TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
   device->Open(open_future.GetCallback());
-  EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
+  EXPECT_TRUE(open_future.Get()->is_success());
 
   TestFuture<bool> set_configuration_future;
   device->SetConfiguration(1, set_configuration_future.GetCallback());

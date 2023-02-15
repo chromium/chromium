@@ -656,8 +656,8 @@ void UsbFindDevicesFunction::OnGetDevicesComplete(
 void UsbFindDevicesFunction::OnDeviceOpened(
     const std::string& guid,
     mojo::Remote<device::mojom::UsbDevice> device,
-    device::mojom::UsbOpenDeviceError error) {
-  if (error == device::mojom::UsbOpenDeviceError::OK && device) {
+    device::mojom::UsbOpenDeviceResultPtr result) {
+  if (result->is_success() && device) {
     ApiResourceManager<UsbDeviceResource>* manager =
         ApiResourceManager<UsbDeviceResource>::Get(browser_context());
     UsbDeviceResource* resource =
@@ -882,8 +882,8 @@ ExtensionFunction::ResponseAction UsbOpenDeviceFunction::Run() {
 void UsbOpenDeviceFunction::OnDeviceOpened(
     std::string guid,
     mojo::Remote<device::mojom::UsbDevice> device,
-    device::mojom::UsbOpenDeviceError error) {
-  if (error != device::mojom::UsbOpenDeviceError::OK || !device) {
+    device::mojom::UsbOpenDeviceResultPtr result) {
+  if (result->is_error() || !device) {
     Respond(Error(kErrorOpen));
     return;
   }

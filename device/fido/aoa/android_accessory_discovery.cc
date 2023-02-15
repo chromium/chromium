@@ -203,15 +203,16 @@ void AndroidAccessoryDiscovery::OnOpenAccessory(
     mojo::Remote<device::mojom::UsbDevice> device,
     device::mojom::UsbDeviceInfoPtr device_info,
     InterfaceInfo interface_info,
-    device::mojom::UsbOpenDeviceError error) {
-  switch (error) {
-    case mojom::UsbOpenDeviceError::OK:
-    case mojom::UsbOpenDeviceError::ALREADY_OPEN:
-      break;
-    default:
-      FIDO_LOG(DEBUG) << "Failed to open accessory device. Ignoring.";
-      RecordEvent(AOADiscoveryEvent::kAOAOpenFailed);
-      return;
+    device::mojom::UsbOpenDeviceResultPtr result) {
+  if (result->is_error()) {
+    switch (result->get_error()) {
+      case mojom::UsbOpenDeviceError::ALREADY_OPEN:
+        break;
+      default:
+        FIDO_LOG(DEBUG) << "Failed to open accessory device. Ignoring.";
+        RecordEvent(AOADiscoveryEvent::kAOAOpenFailed);
+        return;
+    }
   }
 
   FIDO_LOG(DEBUG) << "Accessory USB device opened";
@@ -339,15 +340,16 @@ void AndroidAccessoryDiscovery::OnReadComplete(
 
 void AndroidAccessoryDiscovery::OnOpen(
     mojo::Remote<device::mojom::UsbDevice> device,
-    device::mojom::UsbOpenDeviceError error) {
-  switch (error) {
-    case mojom::UsbOpenDeviceError::OK:
-    case mojom::UsbOpenDeviceError::ALREADY_OPEN:
-      break;
-    default:
-      FIDO_LOG(DEBUG) << "Failed to open USB device. Ignoring.";
-      RecordEvent(AOADiscoveryEvent::kOpenFailed);
-      return;
+    device::mojom::UsbOpenDeviceResultPtr result) {
+  if (result->is_error()) {
+    switch (result->get_error()) {
+      case mojom::UsbOpenDeviceError::ALREADY_OPEN:
+        break;
+      default:
+        FIDO_LOG(DEBUG) << "Failed to open USB device. Ignoring.";
+        RecordEvent(AOADiscoveryEvent::kOpenFailed);
+        return;
+    }
   }
 
   auto* device_ptr = device.get();

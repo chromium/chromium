@@ -32,7 +32,6 @@ using ::device::mojom::UsbControlTransferParams;
 using ::device::mojom::UsbControlTransferRecipient;
 using ::device::mojom::UsbControlTransferType;
 using ::device::mojom::UsbIsochronousPacket;
-using ::device::mojom::UsbOpenDeviceError;
 using ::device::mojom::UsbTransferDirection;
 using ::device::mojom::UsbTransferStatus;
 
@@ -67,6 +66,13 @@ MATCHER_P(BufferSizeIs, size, "") {
 MATCHER_P(UsbControlTransferParamsEquals, expected, "") {
   return arg->Equals(expected);
 }
+
+struct UsbOpenDeviceSuccess {
+  void operator()(device::mojom::UsbDevice::OpenCallback callback) {
+    std::move(callback).Run(device::mojom::UsbOpenDeviceResult::NewSuccess(
+        device::mojom::UsbOpenDeviceSuccess::OK));
+  }
+};
 
 class TestDevicePermissionsPrompt
     : public DevicePermissionsPrompt,
@@ -153,8 +159,8 @@ class UsbApiTest : public ShellApiTest {
 IN_PROC_BROWSER_TEST_F(UsbApiTest, DeviceHandling) {
   SetActiveConfigForFakeDevice(1);
   EXPECT_CALL(mock_device_, Open)
-      .WillOnce(RunOnceCallback<0>(UsbOpenDeviceError::OK))
-      .WillOnce(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+      .WillOnce(UsbOpenDeviceSuccess())
+      .WillOnce(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, Close)
       .WillOnce(RunOnceClosure<0>())
       .WillOnce(RunOnceClosure<0>());
@@ -162,8 +168,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, DeviceHandling) {
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, ResetDevice) {
-  EXPECT_CALL(mock_device_, Open)
-      .WillOnce(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+  EXPECT_CALL(mock_device_, Open).WillOnce(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, Close).WillOnce(RunOnceClosure<0>());
 
   EXPECT_CALL(mock_device_, Reset)
@@ -175,8 +180,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, ResetDevice) {
 }
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, SetConfiguration) {
-  EXPECT_CALL(mock_device_, Open)
-      .WillOnce(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+  EXPECT_CALL(mock_device_, Open).WillOnce(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, Close).WillOnce(RunOnceClosure<0>());
 
   EXPECT_CALL(mock_device_, SetConfiguration(1, _))
@@ -190,8 +194,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, SetConfiguration) {
 
 IN_PROC_BROWSER_TEST_F(UsbApiTest, ListInterfaces) {
   SetActiveConfigForFakeDevice(1);
-  EXPECT_CALL(mock_device_, Open)
-      .WillOnce(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+  EXPECT_CALL(mock_device_, Open).WillOnce(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, Close).WillOnce(RunOnceClosure<0>());
   ASSERT_TRUE(RunAppTest("api_test/usb/list_interfaces"));
 }
@@ -206,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferEvent) {
 
   EXPECT_CALL(mock_device_, Open)
       .Times(AnyNumber())
-      .WillRepeatedly(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+      .WillRepeatedly(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, ControlTransferOut(
                                 UsbControlTransferParamsEquals(*expectedParams),
                                 BufferSizeIs(1u), _, _))
@@ -226,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferEvent) {
 IN_PROC_BROWSER_TEST_F(UsbApiTest, ZeroLengthTransfer) {
   EXPECT_CALL(mock_device_, Open)
       .Times(AnyNumber())
-      .WillRepeatedly(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+      .WillRepeatedly(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, GenericTransferOut(_, BufferSizeIs(0u), _, _))
       .WillOnce(RunOnceCallback<3>(UsbTransferStatus::COMPLETED));
   EXPECT_CALL(mock_device_, Close)
@@ -238,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, ZeroLengthTransfer) {
 IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferFailure) {
   EXPECT_CALL(mock_device_, Open)
       .Times(AnyNumber())
-      .WillRepeatedly(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+      .WillRepeatedly(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, GenericTransferOut(1, _, _, _))
       .WillOnce(RunOnceCallback<3>(UsbTransferStatus::COMPLETED))
       .WillOnce(RunOnceCallback<3>(UsbTransferStatus::TRANSFER_ERROR))
@@ -255,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferFailure) {
 IN_PROC_BROWSER_TEST_F(UsbApiTest, InvalidLengthTransfer) {
   EXPECT_CALL(mock_device_, Open)
       .Times(AnyNumber())
-      .WillRepeatedly(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+      .WillRepeatedly(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, Close)
       .Times(AnyNumber())
       .WillRepeatedly(RunOnceClosure<0>());
@@ -265,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, InvalidLengthTransfer) {
 IN_PROC_BROWSER_TEST_F(UsbApiTest, InvalidTimeout) {
   EXPECT_CALL(mock_device_, Open)
       .Times(AnyNumber())
-      .WillRepeatedly(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+      .WillRepeatedly(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, Close)
       .Times(AnyNumber())
       .WillRepeatedly(RunOnceClosure<0>());
@@ -277,8 +280,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, CallsAfterDisconnect) {
   ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
-  EXPECT_CALL(mock_device_, Open)
-      .WillOnce(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+  EXPECT_CALL(mock_device_, Open).WillOnce(UsbOpenDeviceSuccess());
 
   ASSERT_TRUE(LoadApp("api_test/usb/calls_after_disconnect"));
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
@@ -292,8 +294,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, TransferFailureOnDisconnect) {
   ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
-  EXPECT_CALL(mock_device_, Open)
-      .WillOnce(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+  EXPECT_CALL(mock_device_, Open).WillOnce(UsbOpenDeviceSuccess());
 
   device::mojom::UsbDevice::GenericTransferInCallback saved_callback;
   EXPECT_CALL(mock_device_, GenericTransferIn)
@@ -337,8 +338,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, GetUserSelectedDevices) {
   ExtensionTestMessageListener result_listener("success");
   result_listener.set_failure_message("failure");
 
-  EXPECT_CALL(mock_device_, Open)
-      .WillOnce(RunOnceCallback<0>(UsbOpenDeviceError::OK));
+  EXPECT_CALL(mock_device_, Open).WillOnce(UsbOpenDeviceSuccess());
   EXPECT_CALL(mock_device_, Close).WillOnce(RunOnceClosure<0>());
 
   TestExtensionsAPIClient test_api_client;

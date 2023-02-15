@@ -178,9 +178,13 @@ void DeviceImpl::OnOpen(base::WeakPtr<DeviceImpl> self,
   if (self->device_handle_ && self->client_)
     self->client_->OnDeviceOpened();
 
-  std::move(callback).Run(self->device_handle_
-                              ? mojom::UsbOpenDeviceError::OK
-                              : mojom::UsbOpenDeviceError::ACCESS_DENIED);
+  if (self->device_handle_) {
+    std::move(callback).Run(mojom::UsbOpenDeviceResult::NewSuccess(
+        mojom::UsbOpenDeviceSuccess::OK));
+  } else {
+    std::move(callback).Run(mojom::UsbOpenDeviceResult::NewError(
+        mojom::UsbOpenDeviceError::ACCESS_DENIED));
+  }
 }
 
 void DeviceImpl::OnPermissionGrantedForOpen(OpenCallback callback,
@@ -190,13 +194,15 @@ void DeviceImpl::OnPermissionGrantedForOpen(OpenCallback callback,
         &DeviceImpl::OnOpen, weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
     opening_ = false;
-    std::move(callback).Run(mojom::UsbOpenDeviceError::ACCESS_DENIED);
+    std::move(callback).Run(mojom::UsbOpenDeviceResult::NewError(
+        mojom::UsbOpenDeviceError::ACCESS_DENIED));
   }
 }
 
 void DeviceImpl::Open(OpenCallback callback) {
   if (opening_ || device_handle_) {
-    std::move(callback).Run(mojom::UsbOpenDeviceError::ALREADY_OPEN);
+    std::move(callback).Run(mojom::UsbOpenDeviceResult::NewError(
+        mojom::UsbOpenDeviceError::ALREADY_OPEN));
     return;
   }
 

@@ -97,8 +97,8 @@ void OnClaimInterface(mojo::Remote<device::mojom::UsbDevice> device,
 // interface.
 void OnDeviceOpen(mojo::Remote<device::mojom::UsbDevice> device,
                   GetDeviceIdCallback cb,
-                  device::mojom::UsbOpenDeviceError error) {
-  if (error != device::mojom::UsbOpenDeviceError::OK || !device) {
+                  device::mojom::UsbOpenDeviceResultPtr result) {
+  if (result->is_error() || !device) {
     return std::move(cb).Run({});
   }
 

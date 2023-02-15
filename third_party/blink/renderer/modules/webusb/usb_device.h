@@ -142,7 +142,7 @@ class USBDevice : public ScriptWrappable,
   void SetEndpointsForInterface(wtf_size_t interface_index, bool set);
 
   void AsyncOpen(ScriptPromiseResolver*,
-                 device::mojom::blink::UsbOpenDeviceError);
+                 device::mojom::blink::UsbOpenDeviceResultPtr);
   void AsyncClose(ScriptPromiseResolver*);
   void AsyncForget(ScriptPromiseResolver*);
   void OnDeviceOpenedOrClosed(bool);

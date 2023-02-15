@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {setSetupFn} from 'chrome://usb-internals/app.js';
-import {UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceCallbackRouter, UsbDeviceRemote, UsbOpenDeviceError, UsbTransferStatus} from 'chrome://usb-internals/usb_device.mojom-webui.js';
+import {UsbControlTransferRecipient, UsbControlTransferType, UsbDeviceCallbackRouter, UsbDeviceRemote, UsbOpenDeviceSuccess, UsbTransferStatus} from 'chrome://usb-internals/usb_device.mojom-webui.js';
 import {UsbInternalsPageHandler, UsbInternalsPageHandlerReceiver, UsbInternalsPageHandlerRemote} from 'chrome://usb-internals/usb_internals.mojom-webui.js';
 import {UsbDeviceManagerReceiver, UsbDeviceManagerRemote} from 'chrome://usb-internals/usb_manager.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -110,7 +110,7 @@ class FakeUsbDeviceRemote extends TestBrowserProxy {
     // that have no listeners.
     this.router = new UsbDeviceCallbackRouter();
     this.router.open.addListener(async () => {
-      return {error: UsbOpenDeviceError.OK};
+      return {result: {success: UsbOpenDeviceSuccess.OK}};
     });
     this.router.controlTransferIn.addListener(
         (params, length, timeout) =>

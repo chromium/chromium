@@ -98,7 +98,7 @@ class FakeUsbDevice : public mojom::UsbDevice,
   mojo::SelfOwnedReceiverRef<mojom::UsbDevice> receiver_;
 
  private:
-  void FinishOpen(OpenCallback callback, mojom::UsbOpenDeviceError error);
+  void FinishOpen(OpenCallback callback, mojom::UsbOpenDeviceResultPtr result);
 
   const scoped_refptr<FakeUsbDeviceInfo> device_;
   const base::flat_set<uint8_t> blocked_interface_classes_;

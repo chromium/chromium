@@ -72,6 +72,11 @@ void GetDevicesBlocking(blink::mojom::WebUsbService* service,
   EXPECT_EQ(expected_guids, actual_guids);
 }
 
+device::mojom::UsbOpenDeviceResultPtr NewUsbOpenDeviceSuccess() {
+  return device::mojom::UsbOpenDeviceResult::NewSuccess(
+      device::mojom::UsbOpenDeviceSuccess::OK);
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Creates a FakeUsbDeviceInfo with HID class code.
 scoped_refptr<device::FakeUsbDeviceInfo> CreateFakeHidDeviceInfo() {
@@ -416,10 +421,10 @@ TEST_F(ChromeUsbDelegateTest, OpenAndCloseDevice) {
   // Open the device. Now the WebContents should indicate we are connected to a
   // USB device.
   EXPECT_CALL(mock_device, Open)
-      .WillOnce(RunOnceCallback<0>(device::mojom::UsbOpenDeviceError::OK));
-  TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+      .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
   device->Open(open_future.GetCallback());
-  EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
+  EXPECT_TRUE(open_future.Get()->is_success());
   EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
 
   // Close the device and check that the WebContents no longer indicates we are
@@ -457,10 +462,10 @@ TEST_F(ChromeUsbDelegateTest, OpenAndDisconnectDevice) {
   // Open the device. Now the WebContents should indicate we are connected to a
   // USB device.
   EXPECT_CALL(mock_device, Open)
-      .WillOnce(RunOnceCallback<0>(device::mojom::UsbOpenDeviceError::OK));
-  TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+      .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
   device->Open(open_future.GetCallback());
-  EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
+  EXPECT_TRUE(open_future.Get()->is_success());
   EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
 
   // Remove the device and check that the WebContents no longer indicates we are
@@ -497,10 +502,10 @@ TEST_F(ChromeUsbDelegateTest, OpenAndNavigateCrossOrigin) {
   // Open the device. Now the WebContents should indicate we are connected to a
   // USB device.
   EXPECT_CALL(mock_device, Open)
-      .WillOnce(RunOnceCallback<0>(device::mojom::UsbOpenDeviceError::OK));
-  TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+      .WillOnce(RunOnceCallback<0>(NewUsbOpenDeviceSuccess()));
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
   device->Open(open_future.GetCallback());
-  EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
+  EXPECT_TRUE(open_future.Get()->is_success());
   EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
 
   // Perform a cross-origin navigation. The WebContents should indicate we are
@@ -535,9 +540,9 @@ TEST_F(ChromeUsbDelegateTest, AllowlistedImprivataExtension) {
   service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
   EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
 
-  TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+  TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
   device->Open(open_future.GetCallback());
-  EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
+  EXPECT_TRUE(open_future.Get()->is_success());
   EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
 
   TestFuture<bool> set_configuration_future;
@@ -586,9 +591,9 @@ TEST_F(ChromeUsbDelegateTest, AllowlistedSmartCardConnectorExtension) {
                        device.BindNewPipeAndPassReceiver());
     EXPECT_FALSE(web_contents()->IsConnectedToUsbDevice());
 
-    TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+    TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
     device->Open(open_future.GetCallback());
-    EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
+    EXPECT_TRUE(open_future.Get()->is_success());
     EXPECT_TRUE(web_contents()->IsConnectedToUsbDevice());
 
     TestFuture<bool> set_configuration_future;
@@ -613,9 +618,9 @@ TEST_F(ChromeUsbDelegateTest, AllowlistedSmartCardConnectorExtension) {
     service->GetDevice(hid_device_info->guid,
                        device.BindNewPipeAndPassReceiver());
 
-    TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+    TestFuture<device::mojom::UsbOpenDeviceResultPtr> open_future;
     device->Open(open_future.GetCallback());
-    EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
+    EXPECT_TRUE(open_future.Get()->is_success());
 
     TestFuture<bool> set_configuration_future;
     device->SetConfiguration(1, set_configuration_future.GetCallback());
