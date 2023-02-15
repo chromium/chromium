@@ -548,6 +548,7 @@ extern const char kWebRTCUDPPortRange[];
 extern const char kWebRtcEventLogCollectionAllowed[];
 extern const char kWebRtcLocalIpsAllowedUrls[];
 extern const char kWebRTCAllowLegacyTLSProtocols[];
+extern const char kWebRtcTextLogCollectionAllowed[];
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
 extern const char kFirstRunFinished[];

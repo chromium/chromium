@@ -95,6 +95,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kWebRtcEventLogCollectionAllowed, false);
   registry->RegisterListPref(prefs::kWebRtcLocalIpsAllowedUrls);
   registry->RegisterBooleanPref(prefs::kWebRTCAllowLegacyTLSProtocols, false);
+  registry->RegisterBooleanPref(prefs::kWebRtcTextLogCollectionAllowed, true);
 
   // Dictionaries to keep track of default tasks in the file browser.
   registry->RegisterDictionaryPref(

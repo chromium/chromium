@@ -1665,6 +1665,9 @@ const char kWebRtcLocalIpsAllowedUrls[] = "webrtc.local_ips_allowed_urls";
 // and DTLS protocols.
 const char kWebRTCAllowLegacyTLSProtocols[] =
     "webrtc.allow_legacy_tls_protocols";
+// Whether WebRTC text log collection by Google domains is allowed.
+const char kWebRtcTextLogCollectionAllowed[] =
+    "webrtc.text_log_collection_allowed";
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Boolean that indicates that the first run experience has been finished (or
