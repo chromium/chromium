@@ -5,6 +5,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "build/build_config.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/utils.h"
@@ -387,8 +388,16 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
           HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId));
 }
 
+// TODO(crbug.com/1416372): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BubbleCorrectlyReportingMemorySaved \
+  DISABLED_BubbleCorrectlyReportingMemorySaved
+#else
+#define MAYBE_BubbleCorrectlyReportingMemorySaved \
+  BubbleCorrectlyReportingMemorySaved
+#endif
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
-                       BubbleCorrectlyReportingMemorySaved) {
+                       MAYBE_BubbleCorrectlyReportingMemorySaved) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateTab(test_url_, kFirstTabContents),
