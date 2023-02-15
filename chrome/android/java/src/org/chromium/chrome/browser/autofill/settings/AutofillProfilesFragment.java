@@ -207,7 +207,8 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             }
         };
 
-        return new EditorDialog(getActivity(), runnable, Profile.getLastUsedRegularProfile());
+        return new EditorDialog(
+                getActivity(), runnable, Profile.getLastUsedRegularProfile(), false);
     }
 
     private void editAddress(EditorDialog dialog, AutofillAddress autofillAddress) {

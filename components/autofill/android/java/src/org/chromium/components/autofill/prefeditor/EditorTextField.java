@@ -58,7 +58,8 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
 
     public EditorTextField(Context context, final EditorFieldModel fieldModel,
             OnEditorActionListener actionListener, @Nullable InputFilter filter,
-            @Nullable TextWatcher formatter, boolean focusAndShowKeyboard) {
+            @Nullable TextWatcher formatter, boolean focusAndShowKeyboard,
+            boolean hasRequiredIndicator) {
         super(context);
         assert fieldModel.getInputTypeHint() != EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN;
         mEditorFieldModel = fieldModel;
@@ -69,7 +70,9 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
 
         // Build up the label.  Required fields are indicated by appending a '*'.
         CharSequence label = fieldModel.getLabel();
-        if (fieldModel.isRequired()) label = label + REQUIRED_FIELD_INDICATOR;
+        if (fieldModel.isRequired() && hasRequiredIndicator) {
+            label = label + REQUIRED_FIELD_INDICATOR;
+        }
         mInputLayout.setHint(label);
 
         mInput = (AutoCompleteTextView) mInputLayout.findViewById(R.id.text_view);

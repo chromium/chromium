@@ -53,14 +53,16 @@ class EditorDropdownField implements EditorFieldView {
     /**
      * Builds a dropdown view.
      *
-     * @param context         The application context to use when creating widgets.
-     * @param root            The object that provides a set of LayoutParams values for the view.
-     * @param fieldModel      The data model of the dropdown.
-     * @param changedCallback The callback to invoke after user's dropdwn item selection has been
-     *                        processed.
+     * @param context              The application context to use when creating widgets.
+     * @param root                 The object that provides a set of LayoutParams values for
+     *                             the view.
+     * @param fieldModel           The data model of the dropdown.
+     * @param changedCallback      The callback to invoke after user's dropdwn item selection has
+     *                             been processed.
+     * @param hasRequiredIndicator Whether the required (*) indicator is visible.
      */
     public EditorDropdownField(Context context, ViewGroup root, final EditorFieldModel fieldModel,
-            final Runnable changedCallback) {
+            final Runnable changedCallback, boolean hasRequiredIndicator) {
         assert fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN;
         mContext = context;
         mFieldModel = fieldModel;
@@ -69,7 +71,7 @@ class EditorDropdownField implements EditorFieldView {
                 R.layout.payment_request_editor_dropdown, root, false);
 
         mLabel = (TextView) mLayout.findViewById(R.id.spinner_label);
-        mLabel.setText(mFieldModel.isRequired()
+        mLabel.setText(mFieldModel.isRequired() && hasRequiredIndicator
                         ? mFieldModel.getLabel() + EditorDialog.REQUIRED_FIELD_INDICATOR
                         : mFieldModel.getLabel());
 
