@@ -411,13 +411,13 @@ void AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
       distinctive_identifier_support));
 
 #if BUILDFLAG(IS_WIN)
-  // Register another WidevineKeySystemInfo on Windows only for
-  // `kWideVineExperimentKeySystem`. The default WidevineKeySystemInfo
-  // above requires clear lead to be supported. This is not required for
-  // the experimental key system because content providers using the
-  // experimental key system would not serve clear lead content.
   if (base::FeatureList::IsEnabled(
           media::kHardwareSecureDecryptionExperiment)) {
+    // Register another WidevineKeySystemInfo on Windows only for
+    // `kWidevineExperimentKeySystem`. The default WidevineKeySystemInfo
+    // above requires clear lead to be supported. This is not required for
+    // the experimental key system because content providers using the
+    // experimental key system would not serve clear lead content.
     auto experimental_key_system_info = std::make_unique<WidevineKeySystemInfo>(
         codecs, encryption_schemes, session_types,
         hw_secure_codecs_clear_lead_support_not_required,
@@ -427,6 +427,20 @@ void AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
     experimental_key_system_info->set_experimental();
 
     key_systems->emplace_back(std::move(experimental_key_system_info));
+
+    // Register another WidevineKeySystemInfo on Windows only for
+    // `kWidevineExperiment2KeySystem`. This key system is the same as the
+    // experimental key system above except clear lead support is required.
+    auto experimental_two_key_system_info =
+        std::make_unique<WidevineKeySystemInfo>(
+            codecs, encryption_schemes, session_types, hw_secure_codecs,
+            hw_secure_encryption_schemes, hw_secure_session_types,
+            max_experimental_audio_robustness,
+            max_experimental_video_robustness, persistent_state_support,
+            distinctive_identifier_support);
+    experimental_two_key_system_info->set_experimental_two();
+
+    key_systems->emplace_back(std::move(experimental_two_key_system_info));
   }
 #endif  // BUILDFLAG(IS_WIN)
 }

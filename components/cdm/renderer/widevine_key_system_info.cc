@@ -50,7 +50,8 @@ Robustness ConvertRobustness(const std::string& robustness) {
 bool IsHardwareSecurityEnabledForKeySystem(const std::string& key_system) {
   return (key_system == kWidevineKeySystem &&
           base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) ||
-         (key_system == kWidevineExperimentKeySystem &&
+         ((key_system == kWidevineExperimentKeySystem ||
+           key_system == kWidevineExperiment2KeySystem) &&
           base::FeatureList::IsEnabled(
               media::kHardwareSecureDecryptionExperiment));
 }
@@ -91,6 +92,9 @@ bool WidevineKeySystemInfo::IsSupportedKeySystem(
 #if BUILDFLAG(IS_WIN)
   if (is_experimental_) {
     return key_system == kWidevineExperimentKeySystem;
+  }
+  if (is_experimental_two_) {
+    return key_system == kWidevineExperiment2KeySystem;
   }
 #endif  // BUILDFLAG(IS_WIN)
 

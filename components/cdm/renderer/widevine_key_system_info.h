@@ -60,11 +60,16 @@ class WidevineKeySystemInfo : public media::KeySystemInfo {
   media::EmeFeatureSupport GetPersistentStateSupport() const override;
   media::EmeFeatureSupport GetDistinctiveIdentifierSupport() const override;
 
-// `is_experimental_` is used to differentiate between
-// `kWidevineExperimentKeySystem` and `kWidevineKeySystem`. Please refer to
-// b/219818166 for more information.
 #if BUILDFLAG(IS_WIN)
+  // `is_experimental_` is used to differentiate between
+  // `kWidevineExperimentKeySystem` and `kWidevineKeySystem`. Please refer to
+  // b/219818166 for more information.
   void set_experimental() { is_experimental_ = true; }
+
+  // `is_experimental_two_` is used to differentiate between
+  // `kWidevineExperiment2KeySystem` and `kWidevineKeySystem`. Please refer to
+  // b/268749229 for more information.
+  void set_experimental_two() { is_experimental_two_ = true; }
 #endif  // BUILDFLAG(IS_WIN)
 
  private:
@@ -80,6 +85,7 @@ class WidevineKeySystemInfo : public media::KeySystemInfo {
   const media::EmeFeatureSupport distinctive_identifier_support_;
 #if BUILDFLAG(IS_WIN)
   bool is_experimental_ = false;
+  bool is_experimental_two_ = false;
 #endif  // BUILDFLAG(IS_WIN)
 };
 
