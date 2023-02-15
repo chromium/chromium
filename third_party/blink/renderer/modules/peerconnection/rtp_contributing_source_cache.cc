@@ -103,6 +103,10 @@ RtpContributingSourceCache::RtpContributingSourceCache(
   DCHECK(worker_thread_runner_);
 }
 
+void RtpContributingSourceCache::Shutdown() {
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 HeapVector<Member<RTCRtpSynchronizationSource>>
 RtpContributingSourceCache::getSynchronizationSources(
     ScriptState* script_state,
