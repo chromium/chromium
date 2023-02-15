@@ -72,6 +72,7 @@ void UninstallOtherVersions(UpdaterScope scope) {
     }
   }
 }
+
 }  // namespace
 
 // AppUninstall uninstalls the updater.
@@ -84,6 +85,8 @@ class AppUninstall : public App {
   void Initialize() override;
   void Uninitialize() override;
   void FirstTaskRun() override;
+
+  void UninstallAll();
 
   // Conditionally set, if prefs must be acquired for some uninstall scenarios.
   // Creating the prefs instance may result in deadlocks. Therefore, the prefs
@@ -102,21 +105,25 @@ void AppUninstall::Uninitialize() {
   global_prefs_ = nullptr;
 }
 
+void AppUninstall::UninstallAll() {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](UpdaterScope scope) {
+            UninstallOtherVersions(scope);
+            return Uninstall(scope);
+          },
+          updater_scope()),
+      base::BindOnce(&AppUninstall::Shutdown, this));
+}
+
 void AppUninstall::FirstTaskRun() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
 
   if (command_line->HasSwitch(kUninstallSwitch)) {
     CHECK(!global_prefs_);
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(
-            [](UpdaterScope scope) {
-              UninstallOtherVersions(scope);
-              return Uninstall(scope);
-            },
-            updater_scope()),
-        base::BindOnce(&AppUninstall::Shutdown, this));
+    UninstallAll();
     return;
   }
 
@@ -138,10 +145,7 @@ void AppUninstall::FirstTaskRun() {
         persisted_data->GetHadApps());
     VLOG(1) << "ShouldUninstall returned: " << should_uninstall;
     if (should_uninstall) {
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock()},
-          base::BindOnce(&Uninstall, updater_scope()),
-          base::BindOnce(&AppUninstall::Shutdown, this));
+      UninstallAll();
     } else {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&AppUninstall::Shutdown, this, 0));
