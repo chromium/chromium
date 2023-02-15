@@ -229,12 +229,9 @@ public class ShareSheetPropertyModelBuilder {
             // the sheet is closed.
             params.setCallback(null);
         }
-        if (saveLastUsed) {
-            ShareHelper.setLastShareComponentName(mProfile, component);
-        }
         mBottomSheetController.hideContent(bottomSheet, true);
         // Fire intent through ShareHelper.
-        ShareHelper.shareDirectly(params, component);
+        ShareHelper.shareDirectly(params, component, mProfile, saveLastUsed);
     }
 
     /**
@@ -254,13 +251,13 @@ public class ShareSheetPropertyModelBuilder {
                     Arrays.asList(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.LINK_PAGE_VISIBLE,
                             ContentType.TEXT, ContentType.HIGHLIGHTED_TEXT))) {
             resolveInfoList.addAll(mPackageManager.queryIntentActivities(
-                    ShareHelper.getShareLinkAppCompatibilityIntent(), 0));
+                    ShareHelper.getShareTextAppCompatibilityIntent(), 0));
         }
         if (!Collections.disjoint(contentTypes,
                     Arrays.asList(ContentType.IMAGE, ContentType.IMAGE_AND_LINK,
                             ContentType.OTHER_FILE_TYPE))) {
             resolveInfoList.addAll(mPackageManager.queryIntentActivities(
-                    ShareHelper.createShareFileAppCompatibilityIntent(fileContentType), 0));
+                    ShareHelper.getShareFileAppCompatibilityIntent(fileContentType), 0));
         }
         return resolveInfoList;
     }

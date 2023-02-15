@@ -22,7 +22,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -39,7 +38,7 @@ import org.chromium.ui.base.WindowAndroid.IntentCallback;
  */
 public class ShareHelper {
     /** The task ID of the activity that triggered the share action. */
-    public static final String EXTRA_TASK_ID = "org.chromium.chrome.extra.TASK_ID";
+    private static final String EXTRA_TASK_ID = "org.chromium.chrome.extra.TASK_ID";
 
     private static final String EXTRA_SHARE_SCREENSHOT_AS_STREAM = "share_screenshot_as_stream";
 
@@ -63,9 +62,49 @@ public class ShareHelper {
         // target.
         int DIRECT_SHARE = 2;
         int COUNT = 3;
-    };
+    }
 
     protected ShareHelper() {}
+
+    /**
+     * Shares the params using the system share sheet. To skip the sheet and sharing directly, use
+     * {@link #shareDirectly(ShareParams, ComponentName)}.
+     *
+     * @param params The container holding the share parameters.
+     */
+    public static void shareWithSystemShareSheetUi(ShareParams params) {
+        recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
+        TargetChosenReceiver.sendChooserIntent(
+                params.getWindow(), getShareIntent(params), params.getCallback());
+    }
+
+    /**
+     * Loads the icon for the provided ResolveInfo.
+     * @param info The ResolveInfo to load the icon for.
+     * @param manager The package manager to use to load the icon.
+     */
+    public static Drawable loadIconForResolveInfo(ResolveInfo info, PackageManager manager) {
+        try {
+            final int iconRes = info.getIconResource();
+            if (iconRes != 0) {
+                Resources res = manager.getResourcesForApplication(info.activityInfo.packageName);
+                Drawable icon = ApiCompatibilityUtils.getDrawable(res, iconRes);
+                return icon;
+            }
+        } catch (NameNotFoundException | NotFoundException e) {
+            // Could not find the icon. loadIcon call below will return the default app icon.
+        }
+        return info.loadIcon(manager);
+    }
+
+    /**
+     * Log that a share happened through some means other than ShareHelper.
+     * @param source The share source.
+     */
+    public static void recordShareSource(int source) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ANY_SHARE_HISTOGRAM_NAME, source, ShareSourceAndroid.COUNT);
+    }
 
     /**
      * Fire the intent to share content with the target app.
@@ -80,15 +119,24 @@ public class ShareHelper {
         if (callback != null) {
             window.showIntent(intent, callback, null);
         } else {
-            // TODO(tedchoc): Allow startActivity w/o intent via Window.
+            // TODO(https://crbug.com/1414893): Allow startActivity w/o result via WindowAndroid.
             Activity activity = window.getActivity().get();
             activity.startActivity(intent);
         }
     }
 
     /**
+     * Exposed for browser to send callback without exposing TargetChosenReceiver.
+     */
+    protected static void sendChooserIntent(
+            WindowAndroid window, Intent sharingIntent, @Nullable TargetChosenCallback callback) {
+        TargetChosenReceiver.sendChooserIntent(window, sharingIntent, callback);
+    }
+
+    /**
      * Receiver to record the chosen component when sharing an Intent.
      */
+    @VisibleForTesting
     public static class TargetChosenReceiver extends BroadcastReceiver implements IntentCallback {
         private static final Object LOCK = new Object();
 
@@ -171,6 +219,19 @@ public class ShareHelper {
             }
         }
 
+        @VisibleForTesting
+        public static void resetForTesting() {
+            synchronized (LOCK) {
+                sTargetChosenReceiveAction = null;
+                if (sLastRegisteredReceiver != null) {
+                    ContextUtils.getApplicationContext().unregisterReceiver(
+                            sLastRegisteredReceiver);
+                    sLastRegisteredReceiver.cancel();
+                }
+                sLastRegisteredReceiver = null;
+            }
+        }
+
         private void cancel() {
             if (mCallback != null) {
                 mCallback.onCancel();
@@ -179,34 +240,8 @@ public class ShareHelper {
         }
     }
 
-    /**
-     * Shows a picker and allows the user to choose a share target.
-     *
-     * Shares the params using the system share sheet, or skipping the sheet and sharing directly if
-     * the target component is specified.
-     *
-     * @param params The container holding the share parameters.
-     */
-    public static void shareWithUi(ShareParams params) {
-        recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
-        TargetChosenReceiver.sendChooserIntent(
-                params.getWindow(), getShareLinkIntent(params), params.getCallback());
-    }
-
-    /**
-     * Share directly with the provied share target.
-     * @param params The container holding the share parameters.
-     * @param component The component to share to, bypassing any UI.
-     */
-    public static void shareDirectly(
-            @NonNull ShareParams params, @NonNull ComponentName component) {
-        Intent intent = getShareLinkIntent(params);
-        intent.setComponent(component);
-        fireIntent(params.getWindow(), intent, null);
-    }
-
-    @VisibleForTesting
-    public static Intent getShareLinkIntent(ShareParams params) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public static Intent getShareIntent(ShareParams params) {
         final boolean isFileShare = (params.getFileUris() != null);
         final boolean isMultipleFileShare = isFileShare && (params.getFileUris().size() > 1);
         final String action =
@@ -263,45 +298,5 @@ public class ShareHelper {
         }
 
         return intent;
-    }
-
-    /**
-     * Convenience method to create an Intent to retrieve all the apps support sharing text.
-     */
-    public static Intent getShareLinkAppCompatibilityIntent() {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        intent.putExtra(Intent.EXTRA_SUBJECT, "");
-        intent.putExtra(Intent.EXTRA_TEXT, "");
-        intent.setType("text/plain");
-        return intent;
-    }
-
-    /**
-     * Loads the icon for the provided ResolveInfo.
-     * @param info The ResolveInfo to load the icon for.
-     * @param manager The package manager to use to load the icon.
-     */
-    public static Drawable loadIconForResolveInfo(ResolveInfo info, PackageManager manager) {
-        try {
-            final int iconRes = info.getIconResource();
-            if (iconRes != 0) {
-                Resources res = manager.getResourcesForApplication(info.activityInfo.packageName);
-                Drawable icon = ApiCompatibilityUtils.getDrawable(res, iconRes);
-                return icon;
-            }
-        } catch (NameNotFoundException | NotFoundException e) {
-            // Could not find the icon. loadIcon call below will return the default app icon.
-        }
-        return info.loadIcon(manager);
-    }
-
-    /**
-     * Log that a share happened through some means other than ShareHelper.
-     * @param source The share source.
-     */
-    public static void recordShareSource(int source) {
-        RecordHistogram.recordEnumeratedHistogram(
-                ANY_SHARE_HISTOGRAM_NAME, source, ShareSourceAndroid.COUNT);
     }
 }

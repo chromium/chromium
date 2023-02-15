@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.app.appmenu;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -482,8 +484,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 .setVisible(isCurrentTabNotNull && mShareUtils.shouldEnableShare(currentTab));
 
         if (isCurrentTabNotNull) {
-            ShareHelper.configureDirectShareMenuItem(
-                    mContext, menu.findItem(R.id.direct_share_menu_id));
+            updateDirectShareMenuItem(menu.findItem(R.id.direct_share_menu_id));
         }
 
         menu.findItem(R.id.paint_preview_show_id)
@@ -1248,5 +1249,22 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             return R.color.default_icon_color_accent1_tint_list;
         }
         return R.color.default_icon_color_secondary_tint_list;
+    }
+
+    /**
+     * Set the icon and the title for the menu item used for direct share.
+     * @param item The menu item that is used for direct share.
+     */
+    protected void updateDirectShareMenuItem(MenuItem item) {
+        Intent shareIntent = ShareHelper.getShareTextAppCompatibilityIntent();
+        Pair<Drawable, CharSequence> directShare = ShareHelper.getShareableIconAndName(shareIntent);
+        Drawable directShareIcon = directShare.first;
+        CharSequence directShareTitle = directShare.second;
+
+        item.setIcon(directShareIcon);
+        if (directShareTitle != null) {
+            item.setTitle(
+                    mContext.getString(R.string.accessibility_menu_share_via, directShareTitle));
+        }
     }
 }

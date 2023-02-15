@@ -1033,7 +1033,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param isLink Whether the item is SHARE_LINK.
      */
     private static Pair<Drawable, CharSequence> createRecentShareAppInfo(boolean isLink) {
-        Intent shareIntent = isLink ? ShareHelper.getShareLinkAppCompatibilityIntent()
+        Intent shareIntent = isLink ? ShareHelper.getShareTextAppCompatibilityIntent()
                                     : ShareHelper.getShareImageAppCompatibilityIntent();
         return ShareHelper.getShareableIconAndName(shareIntent);
     }

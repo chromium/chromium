@@ -62,7 +62,7 @@ public class ShareUrlTest {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             ShareParams params =
                     new ShareParams.Builder(mWindow, "", sharedUrl).setText("").build();
-            Intent intent = ShareHelper.getShareLinkIntent(params);
+            Intent intent = ShareHelper.getShareIntent(params);
             Assert.assertTrue(intent.hasExtra(Intent.EXTRA_TEXT));
             String url = intent.getStringExtra(Intent.EXTRA_TEXT);
             Assert.assertEquals(originalUrl, url);

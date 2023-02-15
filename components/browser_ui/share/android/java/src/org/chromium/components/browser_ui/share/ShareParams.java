@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -234,6 +235,8 @@ public class ShareParams {
         private Boolean mLinkToTextSuccessful;
         private String mPreviewText;
         private String mPreviewTextFormat;
+        // TODO(https://crbug/1415082): Remove when DomDistillerUrlUtil is removed from below.
+        private boolean mBypassFixingDomDistillerUrl;
 
         public Builder(@NonNull WindowAndroid window, @NonNull String title, @NonNull String url) {
             mWindow = window;
@@ -322,9 +325,18 @@ public class ShareParams {
             return this;
         }
 
+        /**
+         * Sets whether the URL should be fixed to its original URL when it is a dom distiller URL.
+         */
+        @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+        public Builder setBypassFixingDomDistillerUrl(boolean bypassFixingDomDistillerUrl) {
+            mBypassFixingDomDistillerUrl = bypassFixingDomDistillerUrl;
+            return this;
+        }
+
         /** @return A fully constructed {@link ShareParams} object. */
         public ShareParams build() {
-            if (!TextUtils.isEmpty(mUrl)) {
+            if (!TextUtils.isEmpty(mUrl) && !mBypassFixingDomDistillerUrl) {
                 mUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(mUrl);
             }
             return new ShareParams(mWindow, mTitle, mText, mTextFormat, mUrl, mFileContentType,

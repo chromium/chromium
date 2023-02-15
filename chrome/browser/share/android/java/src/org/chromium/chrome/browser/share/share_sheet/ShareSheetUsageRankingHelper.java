@@ -117,9 +117,9 @@ public class ShareSheetUsageRankingHelper {
 
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
         List<ResolveInfo> availableResolveInfos =
-                pm.queryIntentActivities(ShareHelper.getShareLinkAppCompatibilityIntent(), 0);
+                pm.queryIntentActivities(ShareHelper.getShareTextAppCompatibilityIntent(), 0);
         availableResolveInfos.addAll(pm.queryIntentActivities(
-                ShareHelper.createShareFileAppCompatibilityIntent(params.getFileContentType()), 0));
+                ShareHelper.getShareFileAppCompatibilityIntent(params.getFileContentType()), 0));
 
         List<String> availableActivities = new ArrayList<String>();
         Map<String, ResolveInfo> resolveInfos = new HashMap<String, ResolveInfo>();
@@ -257,7 +257,7 @@ public class ShareSheetUsageRankingHelper {
                             mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails,
                             mShareStartTime, mProfile);
                     mBottomSheetController.hideContent(mBottomSheet, true);
-                    ShareHelper.showDefaultShareUi(params, mProfile, saveLastUsed);
+                    ShareHelper.shareWithSystemShareSheetUi(params, mProfile, saveLastUsed);
                     // Reset callback to prevent cancel() being called when the custom sheet is
                     // closed. The callback will be called by ShareHelper on actions from the
                     // default share UI.

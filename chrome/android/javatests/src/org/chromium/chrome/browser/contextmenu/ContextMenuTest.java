@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -294,7 +293,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Looper.prepare();
 
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
         hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
@@ -323,7 +321,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Looper.prepare();
 
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
         hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
@@ -399,7 +396,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Looper.prepare();
 
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
         hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
@@ -776,7 +772,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
 
         LensUtils.setFakePassableLensEnvironmentForTesting(true);
-        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
         hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
 
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
@@ -805,7 +800,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
 
         LensUtils.setFakePassableLensEnvironmentForTesting(true);
-        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
         hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
 
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
@@ -834,7 +828,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
 
         LensUtils.setFakePassableLensEnvironmentForTesting(true);
-        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
         hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
 
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");

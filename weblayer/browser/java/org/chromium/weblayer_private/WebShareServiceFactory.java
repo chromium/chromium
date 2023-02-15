@@ -31,7 +31,7 @@ public class WebShareServiceFactory implements InterfaceFactory<ShareService> {
 
             @Override
             public void share(ShareParams params) {
-                ShareHelper.shareWithUi(params);
+                ShareHelper.shareWithSystemShareSheetUi(params);
             }
         };
 

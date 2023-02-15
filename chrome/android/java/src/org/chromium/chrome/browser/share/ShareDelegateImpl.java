@@ -291,7 +291,8 @@ public class ShareDelegateImpl implements ShareDelegate {
                 RecordHistogram.recordEnumeratedHistogram(
                         "Sharing.DefaultSharesheetAndroid.Opened", shareOrigin, ShareOrigin.COUNT);
                 // Profile can be null here since it is checked later on before being used.
-                ShareHelper.showDefaultShareUi(params, profile, chromeShareExtras.saveLastUsed());
+                ShareHelper.shareWithSystemShareSheetUi(
+                        params, profile, chromeShareExtras.saveLastUsed());
             }
         }
     }

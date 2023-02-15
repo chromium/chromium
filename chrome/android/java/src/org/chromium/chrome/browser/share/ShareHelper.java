@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.share;
 import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -17,7 +16,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Pair;
-import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +25,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -42,64 +39,44 @@ import java.util.List;
  * A helper class that provides additional Chrome-specific share functionality.
  */
 public class ShareHelper extends org.chromium.components.browser_ui.share.ShareHelper {
-    private static boolean sIgnoreActivityNotFoundException;
-
     private ShareHelper() {}
 
-    /*
-     * If true, dont throw an ActivityNotFoundException if it is fired when attempting
-     * to intent into lens.
-     * @param shouldIgnore Whether to catch the exception.
+    /**
+     * Shares the params using the system share sheet.
+     * @param params The share parameters.
+     * @param profile The profile last shared component will be saved to, if |saveLastUsed| is set.
+     * @param saveLastUsed True if the chosen share component should be saved for future reuse.
      */
-    @VisibleForTesting
-    public static void setIgnoreActivityNotFoundExceptionForTesting(boolean shouldIgnore) {
-        sIgnoreActivityNotFoundException = shouldIgnore;
+    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
+    public static void shareWithSystemShareSheetUi(
+            ShareParams params, @Nullable Profile profile, boolean saveLastUsed) {
+        if (saveLastUsed) {
+            params.setCallback(new SaveComponentCallback(profile, params.getCallback()));
+        }
+        ShareHelper.shareWithSystemShareSheetUi(params);
     }
 
     /**
-     * Share directly with the provied share target.
+     * Share directly with the provided share target.
      * @param params The container holding the share parameters.
      * @param component The component to share to, bypassing any UI.
+     * @param profile The profile last shared component will be saved to, if |saveLastUsed| is set.
+     * @param saveLastUsed True if the chosen share component should be saved for future reuse.
      */
-    public static void shareDirectly(
-            @NonNull ShareParams params, @NonNull ComponentName component) {
-        Intent intent = getShareLinkIntent(params);
-
+    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
+    public static void shareDirectly(@NonNull ShareParams params, @NonNull ComponentName component,
+            @Nullable Profile profile, boolean saveLastUsed) {
+        // Save the component directly without using a SaveComponentCallback.
+        if (saveLastUsed) {
+            setLastShareComponentName(profile, component);
+        }
+        Intent intent = getShareIntent(params);
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_LAUNCH_ADJACENT)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
         intent.setComponent(component);
         fireIntent(params.getWindow(), intent, null);
-    }
-
-    /**
-     * Share directly with the last used share target.
-     * @param params The container holding the share parameters.
-     */
-    public static void shareWithLastUsedComponent(@NonNull ShareParams params) {
-        ComponentName component = getLastShareComponentName();
-        if (component == null) return;
-        assert params.getCallback() == null;
-        recordShareSource(ShareSourceAndroid.DIRECT_SHARE);
-        shareDirectly(params, component);
-    }
-
-    /**
-     * Share with a picker UI.
-     * On LMR1 (22) or later this is the Android system share sheet; on L (21) and below this is a
-     * custom share dialog.
-     * @param params The share parameters.
-     * @param saveLastUsed True if the chosen share component should be saved for future reuse.
-     */
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
-    public static void showDefaultShareUi(
-            ShareParams params, @Nullable Profile profile, boolean saveLastUsed) {
-        if (saveLastUsed) {
-            params.setCallback(new SaveComponentCallback(profile, params.getCallback()));
-        }
-
-        ShareHelper.shareWithUi(params);
     }
 
     /**
@@ -114,8 +91,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             final ComponentName name, Uri imageUri, @Nullable String contentUrl) {
         Intent shareIntent = getShareImageIntent(imageUri, contentUrl);
         if (name == null) {
-            TargetChosenReceiver.sendChooserIntent(
-                    window, shareIntent, new SaveComponentCallback(profile, null));
+            sendChooserIntent(window, shareIntent, new SaveComponentCallback(profile, null));
         } else {
             shareIntent.setComponent(name);
             fireIntent(window, shareIntent, null);
@@ -123,21 +99,47 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     }
 
     /**
-     * Set the icon and the title for the menu item used for direct share.
-     * @param context The activity context used to retrieve resources.
-     * @param item The menu item that is used for direct share
+     * Convenience method to create an Intent to retrieve all the apps that support sharing text.
      */
-    public static void configureDirectShareMenuItem(Context context, MenuItem item) {
-        Intent shareIntent = getShareLinkAppCompatibilityIntent();
-        Pair<Drawable, CharSequence> directShare = getShareableIconAndName(shareIntent);
-        Drawable directShareIcon = directShare.first;
-        CharSequence directShareTitle = directShare.second;
+    public static Intent getShareTextAppCompatibilityIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
+        intent.putExtra(Intent.EXTRA_TEXT, "");
+        intent.setType("text/plain");
+        return intent;
+    }
 
-        item.setIcon(directShareIcon);
-        if (directShareTitle != null) {
-            item.setTitle(
-                    context.getString(R.string.accessibility_menu_share_via, directShareTitle));
+    /**
+     * Convenience method to create an Intent to retrieve all the apps that support sharing image.
+     */
+    public static Intent getShareImageAppCompatibilityIntent() {
+        return getShareImageIntent(null, null);
+    }
+
+    /**
+     * Convenience method to create an Intent to retrieve all the apps that support sharing {@code
+     * fileContentType}.
+     */
+    public static Intent getShareFileAppCompatibilityIntent(String fileContentType) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        intent.setType(fileContentType);
+        return intent;
+    }
+
+    /**
+     * Gets the {@link ComponentName} of the app that was used to last share.
+     */
+    @Nullable
+    public static ComponentName getLastShareComponentName() {
+        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
+        String name = preferencesManager.readString(
+                ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME, null);
+        if (name == null) {
+            return null;
         }
+        return ComponentName.unflattenFromString(name);
     }
 
     /**
@@ -185,6 +187,18 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
     }
 
     /**
+     * Share directly with the last used share target, and record its share source.
+     * @param params The container holding the share parameters.
+     */
+    static void shareWithLastUsedComponent(@NonNull ShareParams params) {
+        ComponentName component = getLastShareComponentName();
+        if (component == null) return;
+        assert params.getCallback() == null;
+        recordShareSource(ShareSourceAndroid.DIRECT_SHARE);
+        shareDirectly(params, component, null, false);
+    }
+
+    /**
      * Stores the component selected for sharing last time share was called by certain app.
      *
      * This method is public since it is used in tests to avoid creating share dialog.
@@ -204,7 +218,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * A {@link TargetChosenCallback} that wraps another callback, forwarding calls to it, and
      * saving the chosen component.
      */
-    static class SaveComponentCallback implements TargetChosenCallback {
+    private static class SaveComponentCallback implements TargetChosenCallback {
         private TargetChosenCallback mOriginalCallback;
         private Profile mProfile;
 
@@ -226,23 +240,6 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         }
     }
 
-    /**
-     * Returns an Intent to retrieve all the apps that support sharing {@code fileContentType}.
-     */
-    public static Intent createShareFileAppCompatibilityIntent(String fileContentType) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        intent.setType(fileContentType);
-        return intent;
-    }
-
-    /**
-     * Convenience method to create an Intent to retrieve all the apps that support sharing image.
-     */
-    public static Intent getShareImageAppCompatibilityIntent() {
-        return getShareImageIntent(null, null);
-    }
-
     private static Intent getShareImageIntent(@Nullable Uri imageUri, @Nullable String contentUrl) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
@@ -262,19 +259,5 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             intent.putExtra(Intent.EXTRA_TEXT, contentUrl);
         }
         return intent;
-    }
-
-    /**
-     * Gets the {@link ComponentName} of the app that was used to last share.
-     */
-    @Nullable
-    public static ComponentName getLastShareComponentName() {
-        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
-        String name = preferencesManager.readString(
-                ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME, null);
-        if (name == null) {
-            return null;
-        }
-        return ComponentName.unflattenFromString(name);
     }
 }
