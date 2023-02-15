@@ -334,12 +334,10 @@ export class SettingsPasswordCheckElement extends
 
   private onEditPasswordClick_() {
     assert(this.activePassword_);
-    this.requestPlaintextPassword(
-            this.activePassword_.id,
-            chrome.passwordsPrivate.PlaintextReason.EDIT)
+    this.requestCredentialDetails(this.activePassword_.id)
         .then(
-            password => {
-              this.activePassword_!.password = password;
+            credential => {
+              this.activePassword_! = credential;
               this.showPasswordEditDialog_ = true;
               this.passwordManager!.recordPasswordCheckInteraction(
                   PasswordCheckInteraction.EDIT_PASSWORD);
