@@ -310,6 +310,8 @@ extern __typeof (FcNameRegisterConstants) FcNameRegisterConstants __attribute((a
 extern __typeof (FcNameUnregisterConstants) FcNameUnregisterConstants __attribute((alias("IA__FcNameUnregisterConstants"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcNameGetConstant
 extern __typeof (FcNameGetConstant) FcNameGetConstant __attribute((alias("IA__FcNameGetConstant"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
+# undef FcNameGetConstantFor
+extern __typeof (FcNameGetConstantFor) FcNameGetConstantFor __attribute((alias("IA__FcNameGetConstantFor"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcNameConstant
 extern __typeof (FcNameConstant) FcNameConstant __attribute((alias("IA__FcNameConstant"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcNameParse
