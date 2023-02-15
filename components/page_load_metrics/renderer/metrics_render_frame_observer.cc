@@ -643,6 +643,19 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
       timing->paint_timing->largest_contentful_paint
           ->image_request_priority_valid = false;
     }
+
+    // Set largest image load type
+    if (perf.LargestContentfulPaintImageLoadStart().has_value()) {
+      timing->paint_timing->largest_contentful_paint->largest_image_load_start =
+          ClampDelta(
+              (*perf.LargestContentfulPaintImageLoadStart()).InSecondsF(),
+              start);
+    }
+    if (perf.LargestContentfulPaintImageLoadEnd().has_value()) {
+      timing->paint_timing->largest_contentful_paint->largest_image_load_end =
+          ClampDelta((*perf.LargestContentfulPaintImageLoadEnd()).InSecondsF(),
+                     start);
+    }
   }
   if (perf.LargestTextPaintSizeForMetrics() > 0) {
     // LargestTextPaint and LargestTextPaintSize should be available at the

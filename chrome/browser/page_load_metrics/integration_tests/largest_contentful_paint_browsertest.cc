@@ -294,8 +294,9 @@ class IsAnimatedLCPTest : public MetricIntegrationTest {
             web_contents());
     waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                    TimingField::kLargestContentfulPaint);
-    if (entries)
+    if (entries) {
       waiter->AddMinimumCompleteResourcesExpectation(entries);
+    }
     Start();
     Load(html_name);
     EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), "run_test()").error,
@@ -833,4 +834,223 @@ IN_PROC_BROWSER_TEST_F(VideoLCPTypeTest, MAYBE_DataURIType_Video) {
                   blink::LargestContentfulPaintType::kDataURI;
 
   TestVideoDataURI(flag_set);
+}
+
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LCPBreakdownTimings) {
+  Start();
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kLargestContentfulPaint);
+  waiter->AddMinimumLargestContentfulPaintImageExpectation(1);
+
+  Load("/lcp_breakdown_timings.html");
+
+  std::string url = "/images/green-16x16.png";
+  std::string element_id = "image";
+  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                   content::JsReplace("addImage($1, $2)", url, element_id))
+                .error,
+            "");
+  double web_exposed_lcp = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                                  content::JsReplace("getLCP($1)", element_id))
+                               .ExtractDouble();
+
+  double request_start = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                                content::JsReplace("getRequestStart($1)", url))
+                             .ExtractDouble();
+
+  double response_end = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                               content::JsReplace("getResponseEnd($1)", url))
+                            .ExtractDouble();
+
+  waiter->Wait();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Verify breakdown timings of LCP are in correct order.
+  ExpectUKMPageLoadMetricsInAscendingOrder(
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadStartName,
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadEndName);
+
+  ExpectUKMPageLoadMetricsInAscendingOrder(
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadEndName,
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name);
+
+  // Verify breakdown timings recorded to UKM are correct. There's discrepancy
+  // between the web-exposed value and the UKM value. An epsilon of 2
+  // milliseconds is used to account for +-2 difference as this 2 is used
+  // elsewhere.
+  double epsilon = 2;
+
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadStartName,
+      request_start, epsilon);
+
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadEndName,
+      response_end, epsilon);
+
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
+      web_exposed_lcp, epsilon);
+}
+
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
+                       LCPBreakdownTimings_ImageAndLargerText) {
+  Start();
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kLargestContentfulPaint);
+  waiter->AddMinimumLargestContentfulPaintImageExpectation(1);
+
+  Load("/lcp_breakdown_timings.html");
+
+  const std::string url1 = "/images/green-16x16.png";
+  const std::string element_id1 = "image";
+
+  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                   content::JsReplace("addImage($1, $2)", url1, element_id1))
+                .error,
+            "");
+
+  waiter->Wait();
+
+  waiter->AddMinimumLargestContentfulPaintTextExpectation(1);
+
+  const std::string element_id2 = "text";
+
+  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                   content::JsReplace("addText($1, $2)", element_id2))
+                .error,
+            "");
+
+  waiter->Wait();
+
+  double text_element_lcp =
+      EvalJs(web_contents()->GetPrimaryMainFrame(),
+             content::JsReplace("getLCP($1)", element_id2))
+          .ExtractDouble();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Verify the LCP recorded in the UKM is the one of the text element.
+  double epsilon = 2;
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
+      text_element_lcp, epsilon);
+
+  // Verify the 2 breakdown timings of LCP are not set for text elements.
+  ExpectUKMPageLoadMetricNonExistence(
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadStartName);
+
+  ExpectUKMPageLoadMetricNonExistence(
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadEndName);
+}
+
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
+                       LCPBreakdownTimings_ImageAndLargerImage) {
+  Start();
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+
+  waiter->AddMinimumLargestContentfulPaintImageExpectation(1);
+
+  Load("/lcp_breakdown_timings.html");
+
+  // Load an image.
+  const std::string url1 = "/images/green-16x16.png";
+  const std::string element_id1 = "image";
+  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                   content::JsReplace("addImage($1, $2)", url1, element_id1))
+                .error,
+            "");
+
+  waiter->Wait();
+
+  // Load Larger image which becomes the LCP element.
+  waiter->AddMinimumLargestContentfulPaintImageExpectation(2);
+
+  // The UKM recorded LCP should be that of the second image, which should be
+  // larger than the LCP of first image.
+
+  const std::string url2 = "/images/green-256x256.png";
+  const std::string element_id2 = "larger_image";
+
+  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                   content::JsReplace("addImage($1, $2)", url2, element_id2))
+                .error,
+            "");
+
+  double web_exposed_lcp2 =
+      EvalJs(web_contents()->GetPrimaryMainFrame(),
+             content::JsReplace("getLCP($1)", element_id2))
+          .ExtractDouble();
+  double epsilon = 2;
+
+  // This is to reduce flakiness by waiting for an LCP larger than the value
+  // passed in so that by the time the test waiter exits from waiting the LCP of
+  // 2nd image has been updated. The value web_exposed_lcp2 - epsilon is roughly
+  // the LCP of 2nd image which is considerably larger than the LCP of 1st
+  // image. Having a negative epsilon is to count for rounding/conversion
+  // differences.
+  waiter->AddLargestContentfulPaintGreaterThanExpectation(web_exposed_lcp2 -
+                                                          epsilon);
+
+  double request_start = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                                content::JsReplace("getRequestStart($1)", url2))
+                             .ExtractDouble();
+
+  double response_end = EvalJs(web_contents()->GetPrimaryMainFrame(),
+                               content::JsReplace("getResponseEnd($1)", url2))
+                            .ExtractDouble();
+
+  waiter->Wait();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Verify breakdown timings of LCP are in correct order.
+  ExpectUKMPageLoadMetricsInAscendingOrder(
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadStartName,
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadEndName);
+
+  ExpectUKMPageLoadMetricsInAscendingOrder(
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadEndName,
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name);
+
+  // Verify breakdown timings recorded to UKM are the correct ones.
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadStartName,
+      request_start, epsilon);
+
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::kPaintTiming_LargestContentfulPaintImageLoadEndName,
+      response_end, epsilon);
+
+  ExpectUKMPageLoadMetricNear(
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
+      web_exposed_lcp2, epsilon);
+}
+
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
+                       LCPBreakdownTimings_DetachedWindow) {
+  Start();
+
+  Load("/lcp_detached_window.html");
+
+  EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), "runTest()").error,
+            "");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // There are 2 PageLoadMetrics instances, one for main window, one for the
+  // opened window.
+  ExpectUKMPageLoadMetricNonExistenceWithExpectedPageLoadMetricsNum(
+      2ul, PageLoad::kPaintTiming_LargestContentfulPaintImageLoadStartName);
+
+  ExpectUKMPageLoadMetricNonExistenceWithExpectedPageLoadMetricsNum(
+      2ul, PageLoad::kPaintTiming_LargestContentfulPaintImageLoadEndName);
 }

@@ -24,6 +24,12 @@ struct LargestContentfulPaintTiming {
   // Time when the page's largest image is painted.
   mojo_base.mojom.TimeDelta? largest_image_paint;
 
+  // Time when the page's largest image starts loading.
+  mojo_base.mojom.TimeDelta? largest_image_load_start;
+
+  // Time when the page's largest image finishes loading.
+  mojo_base.mojom.TimeDelta? largest_image_load_end;
+
   // Size of the largest image of the largest image paint, by
   // Size = Height * Width. Removed images are excluded.
   uint64 largest_image_paint_size;

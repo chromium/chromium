@@ -45,13 +45,20 @@ class ContentfulPaintTimingInfo {
       bool in_main_frame,
       blink::LargestContentfulPaintType type);
   ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
-  void Reset(
-      const absl::optional<base::TimeDelta>&,
-      const uint64_t& size,
-      blink::LargestContentfulPaintType type,
-      double image_bpp,
-      const absl::optional<net::RequestPriority>& image_request_priority);
+  void Reset(const absl::optional<base::TimeDelta>& time,
+             const uint64_t& size,
+             blink::LargestContentfulPaintType type,
+             double image_bpp,
+             const absl::optional<net::RequestPriority>& image_request_priority,
+             const absl::optional<base::TimeDelta>& image_load_start,
+             const absl::optional<base::TimeDelta>& image_load_end);
   absl::optional<base::TimeDelta> Time() const { return time_; }
+  absl::optional<base::TimeDelta> ImageLoadStart() const {
+    return image_load_start_;
+  }
+  absl::optional<base::TimeDelta> ImageLoadEnd() const {
+    return image_load_end_;
+  }
   bool InMainFrame() const { return in_main_frame_; }
   blink::LargestContentfulPaintType Type() const { return type_; }
   uint64_t Size() const { return size_; }
@@ -88,6 +95,8 @@ class ContentfulPaintTimingInfo {
   double image_bpp_ = 0.0;
   absl::optional<net::RequestPriority> image_request_priority_;
   bool in_main_frame_;
+  absl::optional<base::TimeDelta> image_load_start_;
+  absl::optional<base::TimeDelta> image_load_end_;
 };
 
 class ContentfulPaint {

@@ -136,8 +136,9 @@ class CORE_EXPORT ImageResourceContent final
   // Redirecting methods to Resource.
   const KURL& Url() const override;
   bool IsDataUrl() const override;
+  base::TimeTicks LoadStart() const override;
+  base::TimeTicks LoadEnd() const override;
   AtomicString MediaType() const override;
-  base::TimeTicks LoadResponseEnd() const;
   bool IsAccessAllowed() const;
   const ResourceResponse& GetResponse() const;
   absl::optional<ResourceError> GetResourceError() const;

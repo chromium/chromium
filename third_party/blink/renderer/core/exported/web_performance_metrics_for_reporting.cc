@@ -207,6 +207,17 @@ absl::optional<WebURLRequest::Priority> WebPerformanceMetricsForReporting::
       ->LargestContentfulPaintImageRequestPriorityForMetrics();
 }
 
+absl::optional<base::TimeDelta>
+WebPerformanceMetricsForReporting::LargestContentfulPaintImageLoadStart()
+    const {
+  return private_->timingForReporting()->LargestContentfulPaintImageLoadStart();
+}
+
+absl::optional<base::TimeDelta>
+WebPerformanceMetricsForReporting::LargestContentfulPaintImageLoadEnd() const {
+  return private_->timingForReporting()->LargestContentfulPaintImageLoadEnd();
+}
+
 double WebPerformanceMetricsForReporting::ExperimentalLargestTextPaint() const {
   return 0.0;
 }
