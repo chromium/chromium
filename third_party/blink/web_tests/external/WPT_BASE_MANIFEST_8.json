@@ -190524,6 +190524,32 @@
        {}
       ]
      ],
+     "text-decoration-propagation-02.html": [
+      "d618452b2d98d9d0b1fcb7fe326280093447e3ee",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-propagation-02-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-propagation-03.html": [
+      "b019c25e7754172d228fc69f1738fd634a9410c1",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-propagation-03-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-decoration-propagation-display-contents.html": [
       "33d3593b668f0d81aee48441639324a0abe34756",
       [
@@ -264097,16 +264123,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "fa12bd5afb9c8410f6a717436fb61bcf0b7f5289",
-     []
-    ],
-    "mtime.json": [
-     "6718fc7a82d3b75aa106442a4fe54d8b37f19e95",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -271342,7 +271358,7 @@
       []
      ],
      "expose-headers.py": [
-      "e9de401cf2a5fb88efa77905c95cef5aa474949d",
+      "4e568f4063542b090ca9625dd9a53fcb0d4870b2",
       []
      ],
      "image-tainting-checker.sub.html": [
@@ -322214,6 +322230,14 @@
        "fe5b2191c9713996e2b43d636815d4f475488716",
        []
       ],
+      "text-decoration-propagation-02-ref.html": [
+       "84ad43f88c30c503a38e7bedb913a4a0a34045f3",
+       []
+      ],
+      "text-decoration-propagation-03-ref.html": [
+       "84ad43f88c30c503a38e7bedb913a4a0a34045f3",
+       []
+      ],
       "text-decoration-propagation-display-contents-ref.html": [
        "c8381c64fdaa22cfc4c52fd63d3da6b7cc6dd4bd",
        []
@@ -345103,7 +345127,7 @@
      ],
      "resources": {
       "content-length.py": [
-       "b4583b8da37197874b7106555f06352d6cc256a5",
+       "92cfadeb06177b357aa5b7ff8ac70526a3ff9184",
        []
       ],
       "content-lengths.json": [
@@ -345123,7 +345147,7 @@
      ],
      "resources": {
       "content-type.py": [
-       "91fcd97a7cb67d8596c021d82bcce07ee85b3149",
+       "1f077b628996dcf53b7badc81b911b4bf48804b5",
        []
       ],
       "content-types.json": [
@@ -345933,7 +345957,7 @@
        []
       ],
       "record-header.py": [
-       "a6b52e1e4b992eec48c287bb6fc7fe020e81383b",
+       "29ff2ed7985cc131534b172e60097cb596f32a99",
        []
       ],
       "record-headers.py": [
@@ -346149,7 +346173,7 @@
        []
       ],
       "nosniff.py": [
-       "bc85ea0ec9837cdb71451f7237e46aea5ce6f231",
+       "159ecfbebd9a428bc67ce9663d96370f76117ea6",
        []
       ],
       "worker.py": [
@@ -381478,7 +381502,7 @@
       []
      ],
      "resource-timing-content-length.py": [
-      "6dbce047b72ef05976d5296ea38961e205a0f04e",
+      "687689e2726f456f39c32584a8dfd7f9b8bd36a2",
       []
      ],
      "resource_timing_test0.css": [
@@ -402482,7 +402506,7 @@
       []
      ],
      "bad-chunk-encoding.py": [
-      "c34c5fa1de20f45cd78436a670c12dd56ac5585f",
+      "7ed0ad4ae11a14f75b36ce22dde9b0b8d1316b5a",
       []
      ],
      "base.xml": [
@@ -402514,11 +402538,11 @@
       []
      ],
      "echo-content-type.py": [
-      "53e1de5b32ded36383c7f1447fbd3126a911c682",
+      "595c88f32a72c5d8fafbed4eaf00e456513bba6c",
       []
      ],
      "echo-headers.py": [
-      "1c5bd46709d4d781ff6da86c9ba04a017356853c",
+      "58a7ed5637f9d2b193f40380f0a6e4e96306b905",
       []
      ],
      "echo-method.py": [
