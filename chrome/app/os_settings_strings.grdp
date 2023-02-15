@@ -3972,6 +3972,20 @@ Press an assigned switch or key to remove assignment.
     Kerberos tickets
   </message>
 
+  <!-- Kerberos In-Browser dialog -->
+  <message name="IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_TITLE" desc="The title of the Kerberos In-Browser dialog">
+  Kerberos authentication failed
+  </message>
+  <message name="IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_DESCRIPTION" desc="The description of the Kerberos In-Browser dialog">
+  The page you are trying to visit couldn't verify your Kerberos tickets
+  </message>
+  <message name="IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_VISIT_WITHOUT_TICKET_BUTTON" desc="The text on the 'Visit without a ticket' button of the Kerberos In-Browser dialog">
+  Visit without a ticket
+  </message>
+  <message name="IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_MANAGE_TICKETS_BUTTON" desc="The text on the 'Manage tickets' button of the Kerberos In-Browser dialog">
+  Manage tickets
+  </message>
+
   <!-- Power -->
   <message name="IDS_SETTINGS_POWER_TITLE" desc="In Device Settings, the title for power management.">
     Power
