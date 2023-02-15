@@ -71,6 +71,12 @@ class FormEventLoggerBase {
   void OnTypedIntoNonFilledField();
   void OnEditedAutofilledField();
 
+  // Must be called right before the event logger is destroyed. It triggers the
+  // logging of funnel and key metrics.
+  // The function must not be called from the destructor, since this makes it
+  // impossible to dispatch virtual functions into the derived classes.
+  void OnDestoryed();
+
   // See BrowserAutofillManager::SuggestionContext for the definitions of the
   // AblationGroup parameters.
   void SetAblationStatus(AblationGroup ablation_group,
@@ -128,14 +134,15 @@ class FormEventLoggerBase {
                      FormEvent event,
                      const FormStructure& form) const {}
 
-  // Records UMA metrics on the funnel and key metrics. This is not virtual
-  // because it is called in the destructor.
-  void RecordFunnelAndKeyMetrics();
+  // Records UMA metrics on the funnel and key metrics, and writes logs to
+  // autofill-internals.
+  void RecordFunnelMetrics() const;
+  void RecordKeyMetrics() const;
 
   // Records UMA metrics if this form submission happened as part of an ablation
   // study or the corresponding control group. This is not virtual because it is
   // called in the destructor.
-  void RecordAblationMetrics();
+  void RecordAblationMetrics() const;
 
   void UpdateFlowId();
 
@@ -143,7 +150,7 @@ class FormEventLoggerBase {
   // suggestion method that was used (touch to fill for credit cards, keyboard
   // accessory, etc.) and the form type (credit card, address, etc.)
   void LogFillingCorrectnessByFillingMethod(AutofillSuggestionMethod method,
-                                            const std::string& form_type);
+                                            const std::string& form_type) const;
 
   // Constructor parameters.
   std::string form_type_name_;
@@ -166,6 +173,7 @@ class FormEventLoggerBase {
   bool has_logged_edited_autofilled_field_ = false;
   bool has_logged_autofilled_field_was_cleared_by_javascript_after_fill_ =
       false;
+  bool has_called_on_destoryed_ = false;
   AblationGroup ablation_group_ = AblationGroup::kDefault;
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
   AutofillSuggestionMethod autofill_suggestion_method_ =

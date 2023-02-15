@@ -8891,6 +8891,7 @@ TEST_F(AutofillMetricsTest, FormEventMetrics_BySyncState) {
     histogram_tester.ExpectBucketCount(
         "Autofill.FormEvents.Address.WithNoData.SignedOut",
         FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 1);
+    logger.OnDestoryed();
   }
   {
     base::HistogramTester histogram_tester;
@@ -8902,6 +8903,7 @@ TEST_F(AutofillMetricsTest, FormEventMetrics_BySyncState) {
     histogram_tester.ExpectBucketCount(
         "Autofill.FormEvents.Address.WithNoData.SignedIn",
         FORM_EVENT_DID_DYNAMIC_REFILL, 1);
+    logger.OnDestoryed();
   }
 }
 
