@@ -101,8 +101,12 @@ void ClipboardPortal::RequestClipboard() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   HOST_LOG << "Request clipboard for the remote desktop session.";
 
+  GVariantBuilder options_builder;
+  g_variant_builder_init(&options_builder, G_VARIANT_TYPE_VARDICT);
+
   g_dbus_proxy_call(
-      proxy_, "RequestClipboard", g_variant_new("(o)", session_handle_.c_str()),
+      proxy_, "RequestClipboard",
+      g_variant_new("(oa{sv})", session_handle_.c_str(), &options_builder),
       G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
       reinterpret_cast<GAsyncReadyCallback>(OnClipboardRequest), this);
 }

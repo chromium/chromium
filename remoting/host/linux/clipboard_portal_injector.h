@@ -7,6 +7,7 @@
 
 #include <gio/gio.h>
 
+#include <map>
 #include <unordered_set>
 
 #include "base/functional/callback.h"
@@ -44,7 +45,8 @@ class ClipboardPortalInjector {
  private:
   void SelectionRead(std::string mime_type);
   void SelectionWrite();
-  void SelectionWriteDone(gboolean success);
+  void SelectionWriteDone(
+      const std::unordered_map<int, gboolean>& request_successes);
   void SubscribeClipboardSignals();
   void UnsubscribeSignalHandlers();
 
@@ -89,7 +91,8 @@ class ClipboardPortalInjector {
   std::unordered_set<std::string> writable_mime_type_set_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::string write_data_ GUARDED_BY_CONTEXT(sequence_checker_);
-  guint write_serial_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unordered_set<guint> write_serials_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   std::unordered_set<std::string> readable_mime_type_set_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

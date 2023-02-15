@@ -156,13 +156,20 @@ void ClipboardPortalInjector::SelectionWrite() {
   DCHECK(proxy_);
   DCHECK(cancellable_);
   DCHECK(!session_handle_.empty());
-  DCHECK(write_serial_);
+  DCHECK(!write_serials_.empty());
   DCHECK(!write_data_.empty());
+
+  GVariantBuilder serials_builder;
+  g_variant_builder_init(&serials_builder, G_VARIANT_TYPE("au"));
+  for (auto serial : write_serials_) {
+    g_variant_builder_add(&serials_builder, "u", serial);
+  }
+  write_serials_.clear();
 
   Scoped<GError> error;
   g_dbus_proxy_call_with_unix_fd_list(
       proxy_, "SelectionWrite",
-      g_variant_new("(ou)", session_handle_.c_str(), write_serial_),
+      g_variant_new("(oau)", session_handle_.c_str(), &serials_builder),
       G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, nullptr, cancellable_,
       reinterpret_cast<GAsyncReadyCallback>(OnSelectionWriteCallback), this);
 }
@@ -178,6 +185,7 @@ void ClipboardPortalInjector::OnSelectionWriteCallback(GDBusProxy* proxy,
 
   Scoped<GError> error;
   Scoped<GUnixFDList> outlist;
+  std::unordered_map<int, gboolean> request_successes;
 
   Scoped<GVariant> variant(g_dbus_proxy_call_with_unix_fd_list_finish(
       proxy, outlist.receive(), result, error.receive()));
@@ -186,32 +194,45 @@ void ClipboardPortalInjector::OnSelectionWriteCallback(GDBusProxy* proxy,
     return;
   }
 
-  int32_t index;
-  g_variant_get(variant.get(), "(h)", &index);
+  int32_t fd_id;
+  guint serial;
+  GVariantIter iterator;
+  g_variant_iter_init(&iterator, g_variant_get_child_value(variant.get(), 0));
+  while (g_variant_iter_loop(&iterator, "{uh}", &serial, &fd_id)) {
+    base::ScopedFD fd(
+        g_unix_fd_list_get(outlist.get(), fd_id, error.receive()));
 
-  base::ScopedFD fd(g_unix_fd_list_get(outlist.get(), index, error.receive()));
-
-  gboolean write_succeeded = false;
-  if (!fd.is_valid()) {
-    LOG(ERROR) << "Failed to get file descriptor from the list: "
-               << error->message;
-  } else {
-    write_succeeded = base::WriteFileDescriptor(fd.get(), that->write_data_);
+    request_successes[serial] = false;
+    if (!fd.is_valid()) {
+      LOG(ERROR) << "Failed to get file descriptor from the list: "
+                 << error->message;
+    } else {
+      request_successes[serial] =
+          base::WriteFileDescriptor(fd.get(), that->write_data_);
+      LOG(ERROR) << "Failed to write clipboard data to file descriptor";
+    }
   }
 
-  that->SelectionWriteDone(write_succeeded);
+  that->SelectionWriteDone(request_successes);
 }
 
-void ClipboardPortalInjector::SelectionWriteDone(gboolean success) {
+void ClipboardPortalInjector::SelectionWriteDone(
+    const std::unordered_map<int, gboolean>& request_successes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(proxy_);
   DCHECK(cancellable_);
   DCHECK(!session_handle_.empty());
-  DCHECK(write_serial_);
+
+  GVariantBuilder request_successes_builder;
+  g_variant_builder_init(&request_successes_builder, G_VARIANT_TYPE("a{ub}"));
+  for (const auto& [serial, success] : request_successes) {
+    g_variant_builder_add(&request_successes_builder, "{ub}", serial, success);
+  }
 
   g_dbus_proxy_call(
       proxy_, "SelectionWriteDone",
-      g_variant_new("(oub)", session_handle_.c_str(), write_serial_, success),
+      g_variant_new("(oa{ub})", session_handle_.c_str(),
+                    &request_successes_builder),
       G_DBUS_CALL_FLAGS_NONE, /*timeout=*/-1, cancellable_,
       reinterpret_cast<GAsyncReadyCallback>(OnSelectionWriteDoneCallback),
       this);
@@ -332,7 +353,7 @@ void ClipboardPortalInjector::OnSelectionTransferSignal(
   g_variant_get(parameters, "(osu)", /*session_handle*/ nullptr,
                 /*mime_type*/ nullptr, &serial);
 
-  that->write_serial_ = serial;
+  that->write_serials_.insert(serial);
 
   that->SelectionWrite();
 }
