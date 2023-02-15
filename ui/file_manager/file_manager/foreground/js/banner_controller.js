@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
@@ -370,17 +371,17 @@ export class BannerController extends EventTarget {
       // ratio has been met.
       this.registerCustomBannerFilter_(DriveLowIndividualSpaceBanner, {
         shouldShow: () => this.driveQuotaMetadata_ &&
-            this.driveQuotaMetadata_.usedUserBytes <
-                this.driveQuotaMetadata_.totalUserBytes &&
-            this.driveQuotaMetadata_.totalUserBytes >= 0,  // not unlimited
+            this.driveQuotaMetadata_.usedBytes <
+                this.driveQuotaMetadata_.totalBytes &&
+            this.driveQuotaMetadata_.totalBytes >= 0,  // not unlimited
         context: () => this.driveQuotaMetadata_,
       });
 
       this.registerCustomBannerFilter_(DriveOutOfIndividualSpaceBanner, {
         shouldShow: () => this.driveQuotaMetadata_ &&
-            this.driveQuotaMetadata_.usedUserBytes >=
-                this.driveQuotaMetadata_.totalUserBytes &&
-            this.driveQuotaMetadata_.totalUserBytes >= 0,  // not unlimited
+            this.driveQuotaMetadata_.usedBytes >=
+                this.driveQuotaMetadata_.totalBytes &&
+            this.driveQuotaMetadata_.totalBytes >= 0,  // not unlimited
         context: () => ({}),
       });
 
@@ -915,12 +916,13 @@ export class BannerController extends EventTarget {
     for (const {volumeType, volumeId} of this.pendingVolumeSizeUpdates_) {
       if (volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
         try {
-          this.driveQuotaMetadata_ = await getDriveQuotaMetadata();
+          this.driveQuotaMetadata_ =
+              await getDriveQuotaMetadata(assert(this.currentEntry_));
           if (this.driveQuotaMetadata_) {
             this.volumeSizeStats_[volumeId] = {
-              totalSize: this.driveQuotaMetadata_.totalUserBytes,
-              remainingSize: this.driveQuotaMetadata_.totalUserBytes -
-                  this.driveQuotaMetadata_.usedUserBytes,
+              totalSize: this.driveQuotaMetadata_.totalBytes,
+              remainingSize: this.driveQuotaMetadata_.totalBytes -
+                  this.driveQuotaMetadata_.usedBytes,
             };
           }
         } catch (e) {

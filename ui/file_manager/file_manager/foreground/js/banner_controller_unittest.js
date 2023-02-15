@@ -5,6 +5,7 @@
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
+import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome, MockChromeFileManagerPrivateDirectoryChanged, MockChromeStorageAPI} from '../../common/js/mock_chrome.js';
 import {storage} from '../../common/js/storage.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
@@ -259,6 +260,11 @@ function changeCurrentVolume(volumeType, volumeId = null, rootType = null) {
     return VolumeManagerCommon.getRootTypeFromVolumeType(volumeType);
   };
 
+  directoryModel.getCurrentDirEntry = function() {
+    const rootType = directoryModel.getCurrentRootType();
+    return rootType ? new FakeEntryImpl('entry', rootType) : null;
+  };
+
   directoryModel.dispatchEvent(new Event('directory-changed'));
 }
 
@@ -280,8 +286,8 @@ function changeCurrentVolumeDiskSpace(newSizeStats, dispatchEvent = true) {
       mockChromeFileManagerPrivate.unsetDriveQuotaMetadata();
     } else {
       mockChromeFileManagerPrivate.setDriveQuotaMetadata({
-        totalUserBytes: newSizeStats.totalSize,
-        usedUserBytes: newSizeStats.totalSize - newSizeStats.remainingSize,
+        totalBytes: newSizeStats.totalSize,
+        usedBytes: newSizeStats.totalSize - newSizeStats.remainingSize,
         organizationLimitExceeded: false,
         organizationName: 'Test Org',
         userType: chrome.fileManagerPrivate.UserType.UNMANAGED,

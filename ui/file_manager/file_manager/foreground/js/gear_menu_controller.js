@@ -114,14 +114,15 @@ export class GearMenuController {
 
     if (currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.DRIVE) {
       this.gearMenu_.setSpaceInfo(
-          getDriveQuotaMetadata().then(
-              quota /* chrome.fileManagerPrivate.DriveQuotaMetadata */ => ({
-                totalSize: quota.totalUserBytes,
-                usedSize: quota.usedUserBytes,
-                warningMessage: quota.organizationLimitExceeded ?
-                    strf('DRIVE_ORGANIZATION_STORAGE_FULL') :
-                    null,
-              })),
+          getDriveQuotaMetadata(currentDirectory)
+              .then(
+                  quota /* chrome.fileManagerPrivate.DriveQuotaMetadata */ => ({
+                    totalSize: quota.totalBytes,
+                    usedSize: quota.usedBytes,
+                    warningMessage: quota.organizationLimitExceeded ?
+                        strf('DRIVE_ORGANIZATION_STORAGE_FULL') :
+                        null,
+                  })),
           true);
       return;
     }

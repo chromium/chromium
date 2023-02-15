@@ -249,6 +249,12 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
             sourceUrls, callback);
       });
 
+  apiFunctions.setHandleRequest('getDriveQuotaMetadata', function(
+        entry, callback) {
+    var url = getEntryURL(entry);
+    fileManagerPrivateInternal.getDriveQuotaMetadata(url, callback);
+  });
+
   apiFunctions.setHandleRequest(
       'zipSelection',
       (entries, parentEntry, destName, callback) =>

@@ -52,6 +52,8 @@ namespace fileManagerPrivateInternal {
       void(EntryDescription[] entries);
   callback GetDlpMetadataCallback =
       void(fileManagerPrivate.DlpMetadata[] entries);
+  callback GetDriveQuotaMetadataCallback =
+      void(optional fileManagerPrivate.DriveQuotaMetadata driveQuotaMetadata);
   callback IOTaskIdCallback = void(long taskId);
   callback ZipSelectionCallback = void(long zipId, double totalBytes);
   callback ValidatePathNameLengthCallback = void(boolean result);
@@ -118,6 +120,8 @@ namespace fileManagerPrivateInternal {
                                        GetDisallowedTransfersCallback callback);
     static void getDlpMetadata(DOMString[] entries,
                                GetDlpMetadataCallback callback);
+    static void getDriveQuotaMetadata(DOMString url,
+                                      GetDriveQuotaMetadataCallback callback);
     static void zipSelection(DOMString parentUrl,
                              DOMString[] urls,
                              DOMString destName,

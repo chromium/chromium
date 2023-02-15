@@ -85,11 +85,13 @@ export async function getSizeStats(volumeId) {
 /**
  * Wrap the chrome.fileManagerPrivate.getDriveQuotaMetadata function in an
  * async/await compatible style.
+ * @param {!Entry|FilesAppEntry} entry
  * @returns {!Promise<(
  * !chrome.fileManagerPrivate.DriveQuotaMetadata|undefined)>}
  */
-export async function getDriveQuotaMetadata() {
-  return promisify(chrome.fileManagerPrivate.getDriveQuotaMetadata);
+export async function getDriveQuotaMetadata(entry) {
+  return promisify(
+      chrome.fileManagerPrivate.getDriveQuotaMetadata, util.unwrapEntry(entry));
 }
 
 /**

@@ -714,43 +714,89 @@ void FileManagerPrivateGetSizeStatsFunction::OnGetSizeStats(
 }
 
 ExtensionFunction::ResponseAction
-FileManagerPrivateGetDriveQuotaMetadataFunction::Run() {
+FileManagerPrivateInternalGetDriveQuotaMetadataFunction::Run() {
+  using extensions::api::file_manager_private_internal::GetDriveQuotaMetadata::
+      Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
   Profile* const profile = Profile::FromBrowserContext(browser_context());
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          profile, render_frame_host());
+  const GURL url = GURL(params->url);
+  file_system_url_ = file_system_context->CrackURLInFirstPartyContext(url);
+
   drive::DriveIntegrationService* integration_service =
       drive::util::GetIntegrationServiceByProfile(profile);
   if (!integration_service) {
     return RespondNow(Error("Drive not available"));
   }
-  integration_service->GetPooledQuotaUsage(base::BindOnce(
-      &FileManagerPrivateGetDriveQuotaMetadataFunction::OnGetDriveQuotaMetadata,
-      this));
+  integration_service->GetPooledQuotaUsage(
+      base::BindOnce(&FileManagerPrivateInternalGetDriveQuotaMetadataFunction::
+                         OnGetPooledQuotaUsage,
+                     this));
 
   return RespondLater();
 }
 
-void FileManagerPrivateGetDriveQuotaMetadataFunction::OnGetDriveQuotaMetadata(
-    drive::FileError error,
-    drivefs::mojom::PooledQuotaUsagePtr usage) {
+void FileManagerPrivateInternalGetDriveQuotaMetadataFunction::
+    OnGetPooledQuotaUsage(drive::FileError error,
+                          drivefs::mojom::PooledQuotaUsagePtr usage) {
   if (error != drive::FileError::FILE_ERROR_OK) {
     Respond(WithArguments());
     return;
   }
 
-  api::file_manager_private::DriveQuotaMetadata quotaMetadata;
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  drive::DriveIntegrationService* integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile);
+  if (!integration_service) {
+    return Respond(Error("Drive not available"));
+  }
 
-  quotaMetadata.user_type =
+  quotaMetadata_.user_type =
       usage->user_type == drivefs::mojom::UserType::kUnmanaged
           ? api::file_manager_private::UserType::USER_TYPE_KUNMANAGED
           : api::file_manager_private::UserType::USER_TYPE_KORGANIZATION;
-  quotaMetadata.used_user_bytes = static_cast<double>(usage->used_user_bytes);
-  quotaMetadata.total_user_bytes = static_cast<double>(usage->total_user_bytes);
-  quotaMetadata.organization_limit_exceeded =
+  quotaMetadata_.used_bytes = static_cast<double>(usage->used_user_bytes);
+  quotaMetadata_.total_bytes = static_cast<double>(usage->total_user_bytes);
+  quotaMetadata_.organization_limit_exceeded =
       usage->organization_limit_exceeded;
-  quotaMetadata.organization_name = usage->organization_name;
+  quotaMetadata_.organization_name = usage->organization_name;
 
-  Respond(ArgumentList(
-      api::file_manager_private::GetDriveQuotaMetadata::Results::Create(
-          quotaMetadata)));
+  if (integration_service->IsSharedDrive(file_system_url_.path())) {
+    // Init quota to unlimited if no quota set.
+    quotaMetadata_.total_bytes = -1;
+    quotaMetadata_.used_bytes = 0;
+    integration_service->GetMetadata(
+        file_system_url_.path(),
+        base::BindOnce(
+            &FileManagerPrivateInternalGetDriveQuotaMetadataFunction::
+                OnGetMetadata,
+            this));
+    return;
+  }
+
+  Respond(
+      ArgumentList(api::file_manager_private_internal::GetDriveQuotaMetadata::
+                       Results::Create(quotaMetadata_)));
+}
+
+void FileManagerPrivateInternalGetDriveQuotaMetadataFunction::OnGetMetadata(
+    drive::FileError error,
+    drivefs::mojom::FileMetadataPtr metadata) {
+  if (error == drive::FileError::FILE_ERROR_OK &&
+      metadata->shared_drive_quota) {
+    quotaMetadata_.used_bytes =
+        metadata->shared_drive_quota->quota_bytes_used_in_drive;
+    quotaMetadata_.total_bytes =
+        metadata->shared_drive_quota->individual_quota_bytes_total;
+  }
+
+  Respond(
+      ArgumentList(api::file_manager_private_internal::GetDriveQuotaMetadata::
+                       Results::Create(quotaMetadata_)));
 }
 
 ExtensionFunction::ResponseAction

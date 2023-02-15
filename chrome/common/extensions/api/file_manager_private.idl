@@ -541,10 +541,10 @@ dictionary MountPointSizeStats {
 dictionary DriveQuotaMetadata {
   UserType userType;
 
-  // How much space the individual user has used.
-  double usedUserBytes;
-  // The individual limit of a user. -1 means infinite.
-  double totalUserBytes;
+  // How much space the individual user, or shared drive has used.
+  double usedBytes;
+  // The individual user, or shared drive limit. -1 means infinite.
+  double totalBytes;
 
   // The following two fields only have meaning if user_type is kOrganization.
   // Whether the organization has exceeded its storage limit.
@@ -1522,8 +1522,12 @@ interface Functions {
 
 
   // Retrieves metadata about the user's Drive volume's quota.
+  // |entry| If entry is within a Shared Drive, then the applicable shared
+  // drive quota is returned, else the overall Drive quota is returned.
   // |callback|
-  static void getDriveQuotaMetadata(GetDriveQuotaMetadataCallback callback);
+  [nocompile]
+  static void getDriveQuotaMetadata([instanceOf=Entry] object entry,
+                                    GetDriveQuotaMetadataCallback callback);
 
   // Formats a mounted volume.
   // |volumeId| ID of the volume to be formatted.

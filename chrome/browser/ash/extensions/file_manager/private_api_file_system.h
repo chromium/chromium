@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 #include "extensions/browser/extension_function.h"
@@ -215,22 +216,28 @@ class FileManagerPrivateGetSizeStatsFunction : public LoggedExtensionFunction {
                       const uint64_t* remaining_size);
 };
 
-// Implements the chrome.fileManagerPrivate.getDriveQuotaMetadata method.
-class FileManagerPrivateGetDriveQuotaMetadataFunction
+// Implements the chrome.fileManagerPrivateInternal.getDriveQuotaMetadata
+// method.
+class FileManagerPrivateInternalGetDriveQuotaMetadataFunction
     : public LoggedExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getDriveQuotaMetadata",
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.getDriveQuotaMetadata",
                              FILEMANAGERPRIVATE_GETDRIVEQUOTAMETADATA)
 
  protected:
-  ~FileManagerPrivateGetDriveQuotaMetadataFunction() override = default;
+  ~FileManagerPrivateInternalGetDriveQuotaMetadataFunction() override = default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
  private:
-  void OnGetDriveQuotaMetadata(drive::FileError error,
-                               drivefs::mojom::PooledQuotaUsagePtr usage);
+  void OnGetPooledQuotaUsage(drive::FileError error,
+                             drivefs::mojom::PooledQuotaUsagePtr usage);
+  void OnGetMetadata(drive::FileError error,
+                     drivefs::mojom::FileMetadataPtr metadata);
+
+  storage::FileSystemURL file_system_url_;
+  api::file_manager_private::DriveQuotaMetadata quotaMetadata_;
 };
 
 // Implements the chrome.fileManagerPrivate.validatePathNameLength method.

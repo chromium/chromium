@@ -425,8 +425,8 @@ chrome.fileManagerPrivate.MountPointSizeStats;
 /**
  * @typedef {{
  *   userType: !chrome.fileManagerPrivate.UserType,
- *   usedUserBytes: number,
- *   totalUserBytes: number,
+ *   usedBytes: number,
+ *   totalBytes: number,
  *   organizationLimitExceeded: boolean,
  *   organizationName: string
  * }}
@@ -1096,11 +1096,12 @@ chrome.fileManagerPrivate.getSizeStats = function(volumeId, callback) {};
 
 /**
  * Retrieves drive quota metadata.
+ * @param {!Entry} entry
  * @param {function((!chrome.fileManagerPrivate.DriveQuotaMetadata|undefined))}
  *     callback Name/value pairs of drive quota metadata. Will be undefined if
  *     quota metadata could not be determined.
  */
-chrome.fileManagerPrivate.getDriveQuotaMetadata = function(callback) {};
+chrome.fileManagerPrivate.getDriveQuotaMetadata = function(entry, callback) {};
 
 /**
  * Formats a mounted volume. |volumeId| ID of the volume to be formatted.

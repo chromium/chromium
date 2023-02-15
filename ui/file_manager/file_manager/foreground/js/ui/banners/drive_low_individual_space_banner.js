@@ -64,17 +64,16 @@ export class DriveLowIndividualSpaceBanner extends WarningBanner {
    * @param {!Object} context chrome.fileManagerPrivate.DriveQuotaMetadata
    */
   onFilteredContext(context) {
-    if (!context || context.totalUserBytes == null ||
-        context.usedUserBytes == null) {
+    if (!context || context.totalBytes == null || context.usedBytes == null) {
       console.warn('Context not supplied or missing data');
       return;
     }
     this.shadowRoot.querySelector('span[slot="text"]').innerText = strf(
         'DRIVE_INDIVIDUAL_QUOTA_LOW',
         Math.ceil(
-            (context.totalUserBytes - context.usedUserBytes) /
-            context.totalUserBytes * 100),
-        util.bytesToString(context.totalUserBytes));
+            (context.totalBytes - context.usedBytes) / context.totalBytes *
+            100),
+        util.bytesToString(context.totalBytes));
   }
 }
 
