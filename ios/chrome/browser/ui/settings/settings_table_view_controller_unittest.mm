@@ -27,9 +27,6 @@
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -68,9 +65,6 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
-        SyncSetupServiceFactory::GetInstance(),
-        base::BindRepeating(&SyncSetupServiceMock::CreateKeyedService));
-    builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -92,9 +86,6 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
-    sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
-        SyncSetupServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
 
@@ -165,12 +156,6 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   void SetupSyncServiceEnabledExpectations() {
-    ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
-        .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, IsInitialSetupOngoing())
-        .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
     ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
@@ -201,7 +186,6 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
   FakeSystemIdentity* fake_identity_ = nullptr;
   AuthenticationService* auth_service_ = nullptr;
   syncer::MockSyncService* sync_service_mock_ = nullptr;
-  SyncSetupServiceMock* sync_setup_service_mock_ = nullptr;
   scoped_refptr<password_manager::TestPasswordStore> password_store_mock_;
 
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
@@ -216,8 +200,6 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
 // on sync during sign-in.
 TEST_F(SettingsTableViewControllerTest, SyncOn) {
   SetupSyncServiceEnabledExpectations();
-  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
   auth_service_->SignIn(fake_identity_);
 
   CreateController();
@@ -243,8 +225,9 @@ TEST_F(SettingsTableViewControllerTest, SyncOn) {
 TEST_F(SettingsTableViewControllerTest, SyncPasswordError) {
   SetupSyncServiceEnabledExpectations();
   // Set missing password error in Sync service.
-  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kSyncServiceNeedsPassphrase));
+  ON_CALL(*sync_service_mock_, GetUserActionableError())
+      .WillByDefault(
+          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
   auth_service_->SignIn(fake_identity_);
 
   CreateController();
@@ -275,8 +258,7 @@ TEST_F(SettingsTableViewControllerTest, SyncPasswordError) {
 TEST_F(SettingsTableViewControllerTest, TurnsSyncOffAfterFirstSetup) {
   ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(true));
-  ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
-      .WillByDefault(Return(false));
+  ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(false));
   auth_service_->SignIn(fake_identity_);
 
   CreateController();
@@ -308,8 +290,7 @@ TEST_F(SettingsTableViewControllerTest,
       .WillByDefault(Return(syncer::UserSelectableTypeSet()));
   ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(true));
-  ON_CALL(*sync_setup_service_mock_, CanSyncFeatureStart())
-      .WillByDefault(Return(true));
+  ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(true));
   auth_service_->SignIn(fake_identity_);
 
   CreateController();

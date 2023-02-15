@@ -21,18 +21,6 @@ class SyncSetupInProgressHandle;
 // to allow the complex sync setup flow on iOS.
 class SyncSetupService : public KeyedService {
  public:
-  // TODO(crbug.com/1412320): Remove this API and migrate callers to
-  // SyncService.
-  using SyncServiceState = enum {
-    kNoSyncServiceError,
-    kSyncServiceSignInNeedsUpdate,
-    kSyncServiceNeedsPassphrase,
-    kSyncServiceNeedsTrustedVaultKey,
-    kSyncServiceTrustedVaultRecoverabilityDegraded,
-    kSyncServiceUnrecoverableError,
-    kLastSyncServiceError = kSyncServiceUnrecoverableError
-  };
-
   // The set of user-selectable datatypes handled by Chrome for iOS.
   // TODO(crbug.com/1067280): Use syncer::UserSelectableType instead.
   using SyncableDatatype = enum {
@@ -92,9 +80,6 @@ class SyncSetupService : public KeyedService {
   // Sets whether all datatypes should be synced or not. Changes won't take
   // effect before the next call to `CommitChanges`.
   virtual void SetSyncingAllDataTypes(bool sync_all);
-
-  // Returns the current sync service state.
-  virtual SyncServiceState GetSyncServiceState();
 
   // Returns whether all sync data is being encrypted.
   virtual bool IsEncryptEverythingEnabled() const;

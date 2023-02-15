@@ -21,8 +21,6 @@
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
@@ -93,20 +91,18 @@ SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
     : browser_state_(browser_state), presenter_(presenter) {
   DCHECK(!browser_state->IsOffTheRecord());
   icon_ = gfx::Image(GetIconConfigs(UseSymbols()).icon_image);
-  SyncSetupService* sync_setup_service =
-      SyncSetupServiceFactory::GetForBrowserState(browser_state);
-  DCHECK(sync_setup_service);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForBrowserState(browser_state_);
+  DCHECK(sync_service);
   // Set all of the UI based on the sync state at the same time to ensure
   // they all correspond to the same sync error.
-  error_state_ = sync_setup_service->GetSyncServiceState();
+  error_state_ = sync_service->GetUserActionableError();
   message_ = base::SysNSStringToUTF16(
       GetSyncErrorMessageForBrowserState(browser_state_));
   button_text_ = base::SysNSStringToUTF16(
       GetSyncErrorButtonTitleForBrowserState(browser_state_));
 
   // Register for sync status changes.
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state_);
   sync_service->AddObserver(this);
 }
 
@@ -152,23 +148,40 @@ UIColor* SyncErrorInfoBarDelegate::GetIconBackgroundColor() const {
 }
 
 bool SyncErrorInfoBarDelegate::Accept() {
-  if (error_state_ == SyncSetupService::kSyncServiceSignInNeedsUpdate) {
-    [presenter_ showReauthenticateSignin];
-  } else if (ShouldShowSyncSettings(error_state_)) {
-    [presenter_ showAccountSettings];
-  } else if (error_state_ == SyncSetupService::kSyncServiceNeedsPassphrase) {
-    [presenter_ showSyncPassphraseSettings];
-  } else if (error_state_ ==
-             SyncSetupService::kSyncServiceNeedsTrustedVaultKey) {
-    [presenter_
-        showTrustedVaultReauthForFetchKeysWithTrigger:
-            syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
-  } else if (error_state_ ==
-             SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded) {
-    [presenter_
-        showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
-            syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
+  switch (error_state_) {
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+      [presenter_ showReauthenticateSignin];
+      break;
+
+    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
+    case syncer::SyncService::UserActionableError::kNone:
+      DCHECK(ShouldShowSyncSettings(error_state_));
+      [presenter_ showAccountSettings];
+      break;
+
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+      [presenter_ showSyncPassphraseSettings];
+      break;
+
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+      [presenter_
+          showTrustedVaultReauthForFetchKeysWithTrigger:
+              syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
+      break;
+
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+      [presenter_
+          showTrustedVaultReauthForDegradedRecoverabilityWithTrigger:
+              syncer::TrustedVaultUserActionTriggerForUMA::kNewTabPageInfobar];
+      break;
   }
+
   return false;
 }
 
@@ -177,14 +190,14 @@ void SyncErrorInfoBarDelegate::OnStateChanged(syncer::SyncService* sync) {
   infobars::InfoBar* infobar = this->infobar();
   if (!infobar)
     return;
-  SyncSetupService* sync_setup_service =
-      SyncSetupServiceFactory::GetForBrowserState(browser_state_);
-  SyncSetupService::SyncServiceState new_error_state =
-      sync_setup_service->GetSyncServiceState();
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForBrowserState(browser_state_);
+  syncer::SyncService::UserActionableError new_error_state =
+      sync_service->GetUserActionableError();
   if (error_state_ == new_error_state)
     return;
   error_state_ = new_error_state;
-  if (new_error_state == SyncSetupService::kNoSyncServiceError) {
+  if (new_error_state == syncer::SyncService::UserActionableError::kNone) {
     infobar->RemoveSelf();
   } else {
     infobars::InfoBarManager* infobar_manager = infobar->owner();

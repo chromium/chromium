@@ -73,20 +73,33 @@ bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
   if (!CanSyncFeatureStart() || !IsDataTypePreferred(syncer::PROXY_TABS)) {
     return true;
   }
-  switch (this->GetSyncServiceState()) {
+
+  switch (sync_service_->GetUserActionableError()) {
     // No error.
-    case SyncSetupService::kNoSyncServiceError:
-    // This error doesn't actually stop sync.
-    case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
+    case syncer::SyncService::UserActionableError::kNone:
       return false;
-    // These errors effectively amount to disabled sync and require a signin.
-    case SyncSetupService::kSyncServiceSignInNeedsUpdate:
-    case SyncSetupService::kSyncServiceNeedsPassphrase:
-    case SyncSetupService::kSyncServiceUnrecoverableError:
+
+    // These errors effectively amount to disabled sync or effectively paused.
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
       return true;
-    case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
-      return IsEncryptEverythingEnabled();
+
+    // This error doesn't stop tab sync.
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+      return false;
+
+    // These errors don't actually stop sync.
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+      return false;
   }
+
   NOTREACHED() << "Unknown sync service state.";
   return true;
 }
@@ -121,32 +134,6 @@ void SyncSetupService::SetSyncEnabled(bool sync_enabled) {
 
   if (sync_enabled && GetPreferredDataTypes().Empty())
     SetSyncingAllDataTypes(true);
-}
-
-SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
-  switch (sync_service_->GetUserActionableError()) {
-    case syncer::SyncService::UserActionableError::kNone:
-      return kNoSyncServiceError;
-    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      return kSyncServiceSignInNeedsUpdate;
-    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-      return kSyncServiceNeedsPassphrase;
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForEverything:
-      return kSyncServiceNeedsTrustedVaultKey;
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForEverything:
-      return kSyncServiceTrustedVaultRecoverabilityDegraded;
-    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
-      return kSyncServiceUnrecoverableError;
-  }
-
-  NOTREACHED();
-  return kNoSyncServiceError;
 }
 
 bool SyncSetupService::IsEncryptEverythingEnabled() const {

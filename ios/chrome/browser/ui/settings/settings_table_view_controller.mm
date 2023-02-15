@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
@@ -176,18 +175,16 @@ enum SyncState {
 SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(browserState);
-  SyncSetupService::SyncServiceState errorState =
-      syncSetupService->GetSyncServiceState();
+  syncer::SyncService::UserActionableError errorState =
+      syncService->GetUserActionableError();
   if (syncService->GetDisableReasons().Has(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     // Sync is disabled by administrator policy.
     return kSyncDisabledByAdministrator;
-  } else if (!syncSetupService->IsFirstSetupComplete()) {
+  } else if (!syncService->GetUserSettings()->IsFirstSetupComplete()) {
     // User has not completed Sync setup in sign-in flow.
     return kSyncConsentOff;
-  } else if (!syncSetupService->CanSyncFeatureStart()) {
+  } else if (!syncService->CanSyncFeatureStart()) {
     // Sync engine is off.
     return kSyncOff;
   } else if (syncService->GetUserSettings()->GetSelectedTypes().Empty()) {
@@ -195,7 +192,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     // With pre-MICE, the sync status should be kSyncEnabled to show the same
     // value than the sync toggle.
     return kSyncEnabledWithNoSelectedTypes;
-  } else if (errorState != SyncSetupService::kNoSyncServiceError) {
+  } else if (errorState != syncer::SyncService::UserActionableError::kNone) {
     // Sync error.
     return kSyncEnabledWithError;
   }
@@ -683,8 +680,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   if ([self isSyncDisabledByPolicy])
     return false;
 
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(_browserState);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(_browserState);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   return [SigninPromoViewMediator
@@ -693,7 +690,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                                    authenticationService:authenticationService
                                              prefService:_browserState
                                                              ->GetPrefs()] &&
-         !syncSetupService->IsFirstSetupComplete();
+         !syncService->GetUserSettings()->IsFirstSetupComplete();
 }
 
 #pragma mark - Model Items
@@ -1951,10 +1948,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       break;
     }
     case kSyncEnabledWithError: {
-      SyncSetupService* syncSetupService =
-          SyncSetupServiceFactory::GetForBrowserState(_browserState);
+      syncer::SyncService* syncService =
+          SyncServiceFactory::GetForBrowserState(_browserState);
       googleSyncItem.detailText =
-          GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
+          GetSyncErrorDescriptionForSyncService(syncService);
       if (UseSymbols()) {
         googleSyncItem.iconImage = DefaultSettingsRootSymbol(kSyncErrorSymbol);
         googleSyncItem.iconBackgroundColor = [UIColor colorNamed:kRed500Color];

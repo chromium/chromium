@@ -8,11 +8,10 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_user_settings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,8 +43,8 @@ bool SyncedBookmarksObserverBridge::IsPerformingInitialSync() {
     return false;
   }
 
-  SyncSetupService* sync_setup_service =
-      SyncSetupServiceFactory::GetForBrowserState(browser_state_);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForBrowserState(browser_state_);
 
   PrefService* user_pref_service = browser_state_->GetPrefs();
   bool is_managed =
@@ -54,14 +53,14 @@ bool SyncedBookmarksObserverBridge::IsPerformingInitialSync() {
 
   // If bookmarks are enterprise managed (i.e. disabled) then an initial sync
   // never happens.
-  bool can_sync_start =
-      sync_setup_service->CanSyncFeatureStart() && !is_managed;
-  bool no_sync_error = sync_setup_service->IsFirstSetupComplete() &&
-                       sync_setup_service->GetSyncServiceState() ==
-                           SyncSetupService::kNoSyncServiceError;
+  bool can_sync_start = sync_service->CanSyncFeatureStart() && !is_managed;
+  bool no_sync_error =
+      sync_service->GetUserSettings()->IsFirstSetupComplete() &&
+      sync_service->GetUserActionableError() ==
+          syncer::SyncService::UserActionableError::kNone;
 
   return can_sync_start && no_sync_error &&
-         !sync_setup_service->IsDataTypeActive(syncer::BOOKMARKS);
+         !sync_service->GetActiveDataTypes().Has(syncer::BOOKMARKS);
 }
 
 }  // namespace sync_bookmarks

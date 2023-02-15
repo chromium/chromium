@@ -179,8 +179,6 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
         .WillByDefault(Return(syncEnabled));
     ON_CALL(*syncSetupService, IsDataTypePreferred(syncer::PROXY_TABS))
         .WillByDefault(Return(true));
-    ON_CALL(*syncSetupService, GetSyncServiceState())
-        .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
     if (syncCompleted) {
       ON_CALL(*session_sync_service, GetOpenTabsUIDelegate())

@@ -26,8 +26,6 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
@@ -145,15 +143,15 @@ const CGFloat kSpinnerButtonPadding = 18;
   if (_syncErrorMessage)
     return _syncErrorMessage;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  SyncSetupService* service =
-      SyncSetupServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* service =
+      SyncServiceFactory::GetForBrowserState(browserState);
   DCHECK(service);
-  SyncSetupService::SyncServiceState syncServiceState =
-      service->GetSyncServiceState();
 
   // Passphrase error directly set `_syncErrorMessage`.
-  if (syncServiceState == SyncSetupService::kSyncServiceNeedsPassphrase)
+  if (service->GetUserActionableError() ==
+      syncer::SyncService::UserActionableError::kNeedsPassphrase) {
     return nil;
+  }
 
   return GetSyncErrorMessageForBrowserState(browserState);
 }

@@ -10,8 +10,8 @@
 #include <string>
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
-#include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ui/gfx/image/image.h"
 
 class ChromeBrowserState;
@@ -63,7 +63,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
  private:
   gfx::Image icon_;
   ChromeBrowserState* browser_state_;
-  SyncSetupService::SyncServiceState error_state_;
+  syncer::SyncService::UserActionableError error_state_;
   std::u16string message_;
   std::u16string button_text_;
   id<SyncPresenter> presenter_;

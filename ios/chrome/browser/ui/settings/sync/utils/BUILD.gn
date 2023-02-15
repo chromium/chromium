@@ -45,6 +45,7 @@ source_set("unit_tests") {
     ":utils",
     "//base",
     "//base/test:test_support",
+    "//components/sync:test_support",
     "//components/sync/driver",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/infobars",

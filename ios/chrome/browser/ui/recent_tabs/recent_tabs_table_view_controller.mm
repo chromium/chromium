@@ -1801,13 +1801,18 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - Private Helpers
 
 - (void)updateSyncState {
-  SyncSetupService::SyncServiceState syncState =
-      GetSyncStateForBrowserState(_browserState);
-  if (syncState == SyncSetupService::kSyncServiceSignInNeedsUpdate) {
+  syncer::SyncService* const syncService = self.syncService;
+  if (!syncService) {
+    return;
+  }
+  syncer::SyncService::UserActionableError error =
+      syncService->GetUserActionableError();
+  if (error == syncer::SyncService::UserActionableError::kSignInNeedsUpdate) {
     [self showReauthenticateSignin];
-  } else if (ShouldShowSyncSettings(syncState)) {
+  } else if (ShouldShowSyncSettings(error)) {
     [self showSyncManagerSettings];
-  } else if (syncState == SyncSetupService::kSyncServiceNeedsPassphrase) {
+  } else if (error ==
+             syncer::SyncService::UserActionableError::kNeedsPassphrase) {
     [self showSyncPassphraseSettings];
   }
 }
