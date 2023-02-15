@@ -18,6 +18,7 @@ static_library("shortcut_customization_ui") {
     "//ash/constants",
     "//ash/webui/resources:shortcut_customization_app_resources",
     "//ash/webui/shortcut_customization_ui/backend",
+    "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
     "//ash/webui/shortcut_customization_ui/mojom",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//chromeos/strings",

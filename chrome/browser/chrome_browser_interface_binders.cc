@@ -250,6 +250,7 @@
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/system_extensions_internals_ui/mojom/system_extensions_internals_ui.mojom.h"
@@ -1288,6 +1289,12 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::shortcut_customization::mojom::AcceleratorConfigurationProvider,
         ash::ShortcutCustomizationAppUI>(map);
+
+    if (ash::features::IsSearchInShortcutsAppEnabled()) {
+      RegisterWebUIControllerInterfaceBinder<
+          ash::shortcut_customization::mojom::SearchHandler,
+          ash::ShortcutCustomizationAppUI>(map);
+    }
   }
 
   RegisterWebUIControllerInterfaceBinder<
