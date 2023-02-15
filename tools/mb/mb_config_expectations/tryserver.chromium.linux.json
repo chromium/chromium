@@ -151,7 +151,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "leak_detection_linux": {
@@ -178,7 +178,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-arm64-castos": {
@@ -190,7 +190,7 @@
       "is_debug": false,
       "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-bfcache-rel": {
@@ -256,7 +256,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-extended-tracing-rel": {
@@ -275,7 +275,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-gcc-rel": {
@@ -311,7 +311,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_dummy_lastchange": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-js-code-coverage": {
@@ -383,7 +383,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-libfuzzer-asan-rel": {
@@ -425,7 +425,7 @@
       "mbi_mode": "per_site_instance",
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-perfetto-rel": {
@@ -510,7 +510,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-wayland-rel": {
@@ -546,7 +546,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-wpt-content-shell-leak-detection": {
@@ -555,7 +555,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-wpt-fyi-rel": {
@@ -593,7 +593,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-x64-castos-audio": {
@@ -605,7 +605,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-x64-castos-dbg": {
@@ -615,7 +615,7 @@
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux_chromium_archive_rel_ng": {

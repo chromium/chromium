@@ -1170,48 +1170,48 @@
       'gpu-fyi-try-linux-nvidia-tsn': 'gpu_fyi_tests_release_trybot_tsan_reclient',
       'gpu-try-linux-nvidia-dbg': 'gpu_tests_debug_bot',
       'gpu-try-linux-nvidia-rel': 'gpu_tests_release_trybot',
-      'layout_test_leak_detection': 'release_trybot',
+      'layout_test_leak_detection': 'release_trybot_reclient',
       'leak_detection_linux': 'release_trybot_reclient',
       'linux-1mbu-compile-fyi-rel': 'release_trybot_reclient',
-      'linux-annotator-rel': 'release_trybot',
-      'linux-arm64-castos': 'cast_arm64_release_bot',
+      'linux-annotator-rel': 'release_trybot_reclient',
+      'linux-arm64-castos': 'cast_arm64_release_bot_reclient',
       'linux-bfcache-rel': 'release_bot_blink_reclient',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification_reclient',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage_reclient',
       'linux-code-coverage': 'clang_code_coverage_reclient',
-      'linux-dcheck-off-rel': 'release_trybot_dcheck_off',
+      'linux-dcheck-off-rel': 'release_trybot_dcheck_off_reclient',
       'linux-extended-tracing-rel': 'release_trybot_extended_tracing_reclient',
-      'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
+      'linux-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
       'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
-      'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials',
+      'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials_reclient',
       'linux-js-code-coverage': 'js_coverage_reclient',
       'linux-lacros-asan-lsan-rel': 'asan_lsan_lacros_release_bot_dcheck_always_on_reclient',
       'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage_reclient',
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot_reclient',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot_reclient',
-      'linux-layout-tests-edit-ng': 'release_trybot',
+      'linux-layout-tests-edit-ng': 'release_trybot_reclient',
       'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot_reclient',
       'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient',
-      'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance',
+      'linux-mbi-mode-per-site-instance-rel': 'gpu_tests_release_trybot_mbi_mode_per_site_instance_reclient',
       'linux-perfetto-rel': 'perfetto_release_trybot_reclient',
       'linux-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'linux-rel-inverse-fyi': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck',
       'linux-rel-ml': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_reclient',
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-ubsan-fyi-rel': 'ubsan_release_bot_reclient',
-      'linux-viz-rel': 'release_trybot',
+      'linux-viz-rel': 'release_trybot_reclient',
       'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       'linux-webkit-msan-rel': 'msan_release_bot_reclient',
-      'linux-wpt-content-shell-fyi-rel': 'release_trybot',
-      'linux-wpt-content-shell-leak-detection': 'release_trybot',
+      'linux-wpt-content-shell-fyi-rel': 'release_trybot_reclient',
+      'linux-wpt-content-shell-leak-detection': 'release_trybot_reclient',
       'linux-wpt-fyi-rel': 'release_trybot_reclient',
       'linux-wpt-identity-fyi-rel': 'release_trybot_reclient',
       'linux-wpt-input-fyi-rel': 'release_trybot_reclient',
-      'linux-x64-castos': 'cast_release_trybot',
-      'linux-x64-castos-audio': 'cast_audio_release_trybot',
-      'linux-x64-castos-dbg': 'cast_debug_bot',
+      'linux-x64-castos': 'cast_release_trybot_reclient',
+      'linux-x64-castos-audio': 'cast_audio_release_trybot_reclient',
+      'linux-x64-castos-dbg': 'cast_debug_bot_reclient',
       'linux_chromium_archive_rel_ng': 'release_bot_reclient',
       'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot_reclient',
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
@@ -1933,10 +1933,6 @@
       'asan', 'v8_heap', 'debug_bot_reclient', 'hybrid',
     ],
 
-    'cast_arm64_release_bot': [
-      'cast_receiver', 'cast_os', 'release_bot', 'arm64', 'minimal_symbols',
-    ],
-
     'cast_arm64_release_bot_reclient': [
       'cast_receiver', 'cast_os', 'release_bot_reclient', 'arm64', 'minimal_symbols',
     ],
@@ -1945,8 +1941,8 @@
       'cast_receiver', 'cast_os', 'cast_audio', 'release_bot_reclient', 'minimal_symbols',
     ],
 
-    'cast_audio_release_trybot': [
-      'cast_receiver', 'cast_os', 'cast_audio', 'release_trybot',
+    'cast_audio_release_trybot_reclient': [
+      'cast_receiver', 'cast_os', 'cast_audio', 'release_trybot_reclient',
     ],
 
     'cast_binary_size': [
@@ -1954,10 +1950,6 @@
     ],
     'cast_binary_size_reclient': [
       'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot_reclient',
-    ],
-
-    'cast_debug_bot': [
-      'cast_receiver', 'cast_os', 'debug_bot',
     ],
 
     'cast_debug_bot_reclient': [
@@ -1970,8 +1962,8 @@
       'cast_receiver', 'cast_os', 'release_bot_reclient', 'minimal_symbols',
     ],
 
-    'cast_release_trybot': [
-      'cast_receiver', 'cast_os', 'release_trybot',
+    'cast_release_trybot_reclient': [
+      'cast_receiver', 'cast_os', 'release_trybot_reclient',
     ],
 
     'cfi_full_cfi_icall_cfi_diag_recover_release_static_reclient': [
@@ -2775,8 +2767,8 @@
       'gpu_tests', 'release_trybot_reclient', 'mbi_mode_per_render_process_host'
     ],
 
-    'gpu_tests_release_trybot_mbi_mode_per_site_instance': [
-      'gpu_tests', 'release_trybot', 'mbi_mode_per_site_instance'
+    'gpu_tests_release_trybot_mbi_mode_per_site_instance_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'mbi_mode_per_site_instance'
     ],
 
     'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient': [
@@ -2836,8 +2828,8 @@
       'devtools_do_typecheck', 'no_goma', 'no_reclient',
     ],
 
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials': [
-      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
+    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'invert_fieldtrials',
     ],
 
@@ -3621,8 +3613,8 @@
       'release_trybot', 'force_cxx17'
     ],
 
-    'release_trybot_dcheck_off': [
-      'release_trybot_dcheck_off',
+    'release_trybot_dcheck_off_reclient': [
+      'release_trybot_dcheck_off_reclient',
     ],
 
     'release_trybot_enable_blink_heap_verification_reclient': [
@@ -4628,10 +4620,6 @@
 
     'release_trybot_blink_reclient': {
       'mixins': ['release_bot_blink_reclient', 'minimal_symbols', 'dcheck_always_on'],
-    },
-
-    'release_trybot_dcheck_off': {
-      'mixins': ['release_trybot', 'dcheck_off'],
     },
 
     'release_trybot_dcheck_off_reclient': {

@@ -35,7 +35,7 @@ try_.builder(
     mirrors = [
         "ci/WebKit Linux Leak",
     ],
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -67,7 +67,7 @@ try_.builder(
 try_.builder(
     name = "linux-annotator-rel",
     mirrors = ["ci/linux-annotator-rel"],
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -76,8 +76,8 @@ try_.builder(
         "ci/Cast Linux ARM64",
     ],
     os = os.LINUX_BIONIC,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
             "chromecast/.+",
@@ -102,7 +102,7 @@ try_.builder(
 try_.builder(
     name = "linux-dcheck-off-rel",
     mirrors = builder_config.copy_from("linux-rel"),
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -130,13 +130,13 @@ try_.builder(
 try_.builder(
     name = "linux-inverse-fieldtrials-fyi-rel",
     mirrors = builder_config.copy_from("linux-rel"),
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
     name = "linux-fieldtrial-rel",
     mirrors = ["ci/linux-fieldtrial-rel"],
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -148,7 +148,7 @@ try_.builder(
 try_.builder(
     name = "linux-mbi-mode-per-site-instance-rel",
     mirrors = builder_config.copy_from("linux-rel"),
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -175,7 +175,7 @@ try_.builder(
             target_bits = 64,
         ),
     ),
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -296,7 +296,7 @@ try_.compilator_builder(
 try_.builder(
     name = "linux-viz-rel",
     mirrors = ["ci/Linux Viz"],
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -313,7 +313,7 @@ try_.builder(
     mirrors = [
         "ci/linux-wpt-content-shell-fyi-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -321,7 +321,7 @@ try_.builder(
     mirrors = [
         "ci/linux-wpt-content-shell-leak-detection",
     ],
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -349,8 +349,8 @@ try_.builder(
         "ci/Cast Linux",
     ],
     builderless = not settings.is_main,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
 
@@ -359,7 +359,7 @@ try_.builder(
     mirrors = [
         "ci/Cast Audio Linux",
     ],
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -368,8 +368,8 @@ try_.builder(
     mirrors = [
         "ci/Cast Linux Debug",
     ],
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         location_filters = [
             "chromecast/.+",
