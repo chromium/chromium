@@ -7,13 +7,11 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/webrtc/thread_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "third_party/blink/renderer/platform/peerconnection/fake_connection_test_base.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_connection_matchers.h"
 
 #include "third_party/webrtc/p2p/base/ice_controller_interface.h"
@@ -131,31 +129,7 @@ class MockIceControllerObserver : public IceControllerObserverInterface {
               (override));
 };
 
-class BridgeIceControllerTest : public Test {
- protected:
-  BridgeIceControllerTest() {
-    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
-    EXPECT_NE(webrtc::ThreadWrapper::current(), nullptr);
-
-    base::WaitableEvent ready(base::WaitableEvent::ResetPolicy::MANUAL,
-                              base::WaitableEvent::InitialState::NOT_SIGNALED);
-    connection_factory_ = std::make_unique<FakeConnectionFactory>(
-        webrtc::ThreadWrapper::current(), &ready);
-    connection_factory_->Prepare();
-    ready.Wait();
-  }
-
-  const Connection* GetConnection(base::StringPiece remote_ip,
-                                  int remote_port) {
-    return connection_factory_->CreateConnection(
-        FakeConnectionFactory::CandidateType::LOCAL, remote_ip, remote_port);
-  }
-
-  SingleThreadTaskEnvironment env{TaskEnvironment::TimeSource::MOCK_TIME};
-
- private:
-  std::unique_ptr<FakeConnectionFactory> connection_factory_;
-};
+class BridgeIceControllerTest : public blink::FakeConnectionTestBase {};
 
 TEST_F(BridgeIceControllerTest, ObserverAttached) {
   MockIceAgent agent;
