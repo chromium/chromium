@@ -40,6 +40,9 @@ public interface BrowserControlsStateProvider {
          * Called when the height of the top controls are changed.
          */
         default void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {}
+
+        /** Called when the visibility of the controls container changes. */
+        default void onAndroidControlsVisibilityChanged(int visibility) {}
     }
 
     /**
@@ -120,4 +123,7 @@ public interface BrowserControlsStateProvider {
      * @return The visible offset of the content from the top of the screen.
      */
     float getTopVisibleContentOffset();
+
+    /** Returns the View visibility of the controls container. */
+    int getAndroidControlsVisibility();
 }

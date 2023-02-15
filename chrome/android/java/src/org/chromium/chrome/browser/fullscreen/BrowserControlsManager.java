@@ -138,6 +138,9 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             try (TraceEvent e = TraceEvent.scoped(
                          "BrowserControlsManager.onAndroidVisibilityChanged")) {
                 mControlContainer.getView().setVisibility(visibility);
+                for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+                    obs.onAndroidControlsVisibilityChanged(visibility);
+                }
                 if (!ToolbarFeatures.shouldSuppressCaptures()) {
                     // requestLayout is required to trigger a new gatherTransparentRegion(), which
                     // only occurs together with a layout and let's SurfaceFlinger trim overlays.
@@ -453,6 +456,12 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     @Override
     public float getTopVisibleContentOffset() {
         return getTopControlsHeight() + getTopControlOffset();
+    }
+
+    @Override
+    public int getAndroidControlsVisibility() {
+        return mControlContainer == null ? View.INVISIBLE
+                                         : mControlContainer.getView().getVisibility();
     }
 
     @Override

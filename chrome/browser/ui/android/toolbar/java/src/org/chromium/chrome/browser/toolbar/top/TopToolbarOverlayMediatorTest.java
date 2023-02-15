@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -26,12 +27,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for the top toolbar overlay's mediator (composited version of the top toolbar). */
@@ -153,6 +156,35 @@ public class TopToolbarOverlayMediatorTest {
 
         Assert.assertTrue(
                 "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testShadowVisibility_suppressToolbarCaptures() {
+        mBrowserControlsObserverCaptor.getValue().onAndroidControlsVisibilityChanged(View.VISIBLE);
+        Assert.assertFalse(
+                "Shadow should be invisible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
+
+        mBrowserControlsObserverCaptor.getValue().onAndroidControlsVisibilityChanged(
+                View.INVISIBLE);
+        Assert.assertTrue(
+                "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testShadowVisibility_suppressToolbarCaptures_initialState() {
+        when(mBrowserControlsProvider.getAndroidControlsVisibility()).thenReturn(View.VISIBLE);
+
+        mMediator = new TopToolbarOverlayMediator(mModel, mContext, mLayoutStateProvider,
+                (info)
+                        -> {},
+                mTabSupplier, mBrowserControlsProvider, mTopUiThemeColorProvider,
+                LayoutType.BROWSING, false);
+        mMediator.setIsAndroidViewVisible(true);
+
+        Assert.assertFalse(
+                "Shadow should be invisible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
     }
 
     @Test
