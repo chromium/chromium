@@ -9,6 +9,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/ios/browser/features.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
+#import "ios/chrome/browser/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
@@ -426,6 +428,56 @@ void DismissDefaultBrowserPromo() {
   DismissDefaultBrowserPromo();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:NO];
+}
+
+// Tests that the histogram is called when user taps on the instruction view
+// from the Tangible Sync screen.
+- (void)testHistogramCalledWhenTangibleSyncInstructionViewTapped {
+  // Setup histogram tester.
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  // Add identity.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Verify 2 step FRE.
+  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
+            FRESigninIntentRegular];
+  // Accept sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Wait for the sync screen.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          grey_accessibilityID(kTangibleSyncViewAccessibilityIdentifier)];
+  // Check that UMA is on.
+  GREYAssertTrue(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly false by default.");
+  // Tap on the instructions views and test histogram calls.
+  [self
+      verifyHistogramWhenInstructionTappedAtIndex:0
+                                 previousTapCount:0
+                                   expectedMetric:signin_metrics::
+                                                      SigninSyncConsentDataRow::
+                                                          kBookmarksRowTapped];
+  [self
+      verifyHistogramWhenInstructionTappedAtIndex:1
+                                 previousTapCount:1
+                                   expectedMetric:signin_metrics::
+                                                      SigninSyncConsentDataRow::
+                                                          kAutofillRowTapped];
+  [self
+      verifyHistogramWhenInstructionTappedAtIndex:2
+                                 previousTapCount:2
+                                   expectedMetric:signin_metrics::
+                                                      SigninSyncConsentDataRow::
+                                                          kHistoryRowTapped];
+  // Release histogram tester.
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
 }
 
 // Tests accepting sync with 2 datatype disabled.
@@ -1014,6 +1066,54 @@ void DismissDefaultBrowserPromo() {
   return [[EarlGrey selectElementWithMatcher:matcher]
          usingSearchAction:searchAction
       onElementWithMatcher:scrollViewMatcher];
+}
+
+// Tests that histogram is called with correct values when an instruction row
+// from the Tangible Sync screen is tapped at a given index.
+- (void)
+    verifyHistogramWhenInstructionTappedAtIndex:(int)index
+                               previousTapCount:(int)previousTapCount
+                                 expectedMetric:
+                                     (signin_metrics::SigninSyncConsentDataRow)
+                                         expectedMetric {
+  // Verify that histogram is not called yet.
+  NSError* error = [MetricsAppInterface
+      expectTotalCount:previousTapCount
+          forHistogram:@"Signin.SyncConsentScreen.DataRowClicked"];
+  GREYAssertNil(error,
+                @"Signin.SyncConsentScreen.DataRowClicked pre-tap total count "
+                @"failed, at row index %i",
+                index);
+  // Verify the histogram is not called with the expected bucket yet.
+  error = [MetricsAppInterface
+       expectCount:0
+         forBucket:static_cast<int>(expectedMetric)
+      forHistogram:@"Signin.SyncConsentScreen.DataRowClicked"];
+  GREYAssertNil(error,
+                @"Signin.SyncConsentScreen.DataRowClicked bucket already called"
+                @", at row index %i",
+                index);
+  // Tap on the data row.
+  NSString* identifier = InstructionViewRowAccessibilityIdentifier(index);
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(identifier)]
+      performAction:grey_tap()];
+  // Verify that histogram is called.
+  error = [MetricsAppInterface
+      expectTotalCount:previousTapCount + 1
+          forHistogram:@"Signin.SyncConsentScreen.DataRowClicked"];
+  GREYAssertNil(error,
+                @"Signin.SyncConsentScreen.DataRowClicked total count failed, "
+                @"at row index %i",
+                index);
+  // Verify the logged value of the histogram.
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(expectedMetric)
+      forHistogram:@"Signin.SyncConsentScreen.DataRowClicked"];
+  GREYAssertNil(error,
+                @"Wrong bucket for Signin.SyncConsentScreen.DataRowClicked, at "
+                @"row index %i",
+                index);
 }
 
 @end

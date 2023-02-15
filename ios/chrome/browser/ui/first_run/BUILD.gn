@@ -236,6 +236,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/authentication/views:views_constants",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/elements:constants",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/promo_style:constants",

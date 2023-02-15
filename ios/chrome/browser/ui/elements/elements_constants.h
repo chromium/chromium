@@ -8,5 +8,7 @@
 #import <UIKit/UIKit.h>
 
 extern NSString* const kActivityOverlayViewAccessibilityIdentifier;
+// Provides accessibility identifier for an instruction row at a given index.
+extern NSString* InstructionViewRowAccessibilityIdentifier(int index);
 
 #endif  // IOS_CHROME_BROWSER_UI_ELEMENTS_ELEMENTS_CONSTANTS_H_

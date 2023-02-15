@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/ui/elements/elements_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -232,6 +233,8 @@ UIView* CreateIconView(UIImage* icon) {
   ]];
 
   line.tag = index;
+  line.accessibilityIdentifier =
+      InstructionViewRowAccessibilityIdentifier(index);
   [line
       addGestureRecognizer:[[UITapGestureRecognizer alloc]
                                initWithTarget:self
