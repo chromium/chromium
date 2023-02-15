@@ -276,6 +276,9 @@ struct AppShimManager::ProfileState {
 
   // All browser instances for this (app, Profile) pair.
   std::set<Browser*> browsers;
+
+  // The current BadgeValue for this (app, Profile) pair.
+  absl::optional<badging::BadgeManager::BadgeValue> badge;
 };
 
 // The state for an individual app. This includes the state for all
@@ -396,6 +399,58 @@ AppShimHost* AppShimManager::FindHost(Profile* profile,
 
 bool AppShimManager::HasNonBookmarkAppWindowsOpen() {
   return delegate_->HasNonBookmarkAppWindowsOpen();
+}
+
+void AppShimManager::UpdateAppBadge(
+    Profile* profile,
+    const web_app::AppId& app_id,
+    const absl::optional<badging::BadgeManager::BadgeValue>& badge) {
+  // TODO(https://crbug.com/1199624): Support updating the app badge for apps
+  // that aren't currently running.
+  auto found_app = apps_.find(app_id);
+  if (found_app == apps_.end()) {
+    return;
+  }
+  AppState* app_state = found_app->second.get();
+  DCHECK(app_state);
+  auto found_profile = app_state->profiles.find(profile);
+  if (found_profile == app_state->profiles.end()) {
+    return;
+  }
+  ProfileState* profile_state = found_profile->second.get();
+  DCHECK(profile_state);
+
+  profile_state->badge = badge;
+  UpdateApplicationBadge(profile_state);
+}
+
+void AppShimManager::UpdateApplicationBadge(ProfileState* profile_state) {
+  if (profile_state->single_profile_host &&
+      profile_state->single_profile_host->GetAppShim()) {
+    profile_state->single_profile_host->GetAppShim()->SetBadgeLabel(
+        profile_state->badge
+            ? badging::GetBadgeString(profile_state->badge.value())
+            : "");
+  } else if (profile_state->app_state->multi_profile_host &&
+             profile_state->app_state->multi_profile_host->GetAppShim()) {
+    absl::optional<badging::BadgeManager::BadgeValue> combined_badge;
+    for (const auto& [profile, state] : profile_state->app_state->profiles) {
+      if (state->badge) {
+        if (!combined_badge) {
+          combined_badge.emplace();
+        }
+        if (state->badge->has_value()) {
+          // Number badge, add to combined badge.
+          if (!combined_badge->has_value()) {
+            combined_badge->emplace(0);
+          }
+          combined_badge->value() += state->badge->value();
+        }
+      }
+    }
+    profile_state->app_state->multi_profile_host->GetAppShim()->SetBadgeLabel(
+        combined_badge ? badging::GetBadgeString(combined_badge.value()) : "");
+  }
 }
 
 AppShimHost* AppShimManager::GetHostForRemoteCocoaBrowser(Browser* browser) {

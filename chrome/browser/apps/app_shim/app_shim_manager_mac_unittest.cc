@@ -249,7 +249,9 @@ class TestAppShim : public chrome::mojom::AppShim {
       mojo::PendingAssociatedReceiver<remote_cocoa::mojom::Application>
           receiver) override {}
   void CreateCommandDispatcherForWidget(uint64_t widget_id) override {}
-  void SetBadgeLabel(const std::string& badge_label) override {}
+  void SetBadgeLabel(const std::string& badge_label) override {
+    badge_label_ = badge_label;
+  }
   void SetUserAttention(
       chrome::mojom::AppShimAttentionType attention_type) override {}
   void UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>
@@ -264,6 +266,7 @@ class TestAppShim : public chrome::mojom::AppShim {
 
   std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items_;
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items_;
+  std::string badge_label_;
 };
 
 class TestHost : public AppShimHost {
@@ -1584,6 +1587,45 @@ TEST_F(AppShimManagerTest, FindProfileFromURL) {
   EXPECT_EQ(chrome::mojom::AppShimLaunchResult::kSuccess,
             *bootstrap_xa_result_);
   EXPECT_EQ(host_ba_.get(), manager_->FindHost(&profile_b_, kTestAppIdA));
+}
+
+TEST_F(AppShimManagerTest, UpdateAppBadge) {
+  // Set this app to be installed for profile A and B.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_b_);
+
+  // Activate the app for profile_a_ and profile_b_
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_EQ(nullptr, manager_->FindHost(&profile_a_, kTestAppIdA));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  manager_->SetHostForCreate(std::move(host_ba_unique_));
+  EXPECT_EQ(nullptr, manager_->FindHost(&profile_b_, kTestAppIdA));
+  manager_->OnAppActivated(&profile_b_, kTestAppIdA);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_b_, kTestAppIdA));
+
+  // And update the badge in either profile, verifying that the combined value
+  // is reflected.
+  EXPECT_EQ("", host_aa_->test_app_shim_->badge_label_);
+  manager_->UpdateAppBadge(&profile_a_, kTestAppIdA,
+                           badging::BadgeManager::BadgeValue(4));
+  EXPECT_EQ("4", host_aa_->test_app_shim_->badge_label_);
+  manager_->UpdateAppBadge(&profile_b_, kTestAppIdA,
+                           badging::BadgeManager::BadgeValue(3));
+  EXPECT_EQ("7", host_aa_->test_app_shim_->badge_label_);
+  manager_->UpdateAppBadge(&profile_a_, kTestAppIdA,
+                           badging::BadgeManager::BadgeValue());
+  EXPECT_EQ("3", host_aa_->test_app_shim_->badge_label_);
+  manager_->UpdateAppBadge(&profile_b_, kTestAppIdA,
+                           badging::BadgeManager::BadgeValue());
+  EXPECT_EQ("•", host_aa_->test_app_shim_->badge_label_);
+  manager_->UpdateAppBadge(&profile_a_, kTestAppIdA, absl::nullopt);
+  EXPECT_EQ("•", host_aa_->test_app_shim_->badge_label_);
+  manager_->UpdateAppBadge(&profile_b_, kTestAppIdA, absl::nullopt);
+  EXPECT_EQ("", host_aa_->test_app_shim_->badge_label_);
 }
 
 TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {

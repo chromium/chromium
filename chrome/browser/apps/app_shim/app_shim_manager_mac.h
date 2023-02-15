@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
+#include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -151,6 +152,11 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   // if the user clicks cancel during a protocol launch.
   void OnAppLaunchCancelled(content::BrowserContext* context,
                             const std::string& app_id);
+
+  void UpdateAppBadge(
+      Profile* profile,
+      const web_app::AppId& app_id,
+      const absl::optional<badging::BadgeManager::BadgeValue>& badge);
 
   // AppShimHostBootstrap::Client:
   void OnShimProcessConnected(
@@ -350,6 +356,9 @@ class AppShimManager : public AppShimHostBootstrap::Client,
 
   // Update the application dock menu for the specified host.
   void UpdateApplicationDockMenu(Profile* profile, ProfileState* profile_state);
+
+  // Updates the badge for the specified host.
+  void UpdateApplicationBadge(ProfileState* profile_state);
 
   // Retrieve the ProfileState for a given (Profile, AppId) pair. If one
   // does not exist, create one.
