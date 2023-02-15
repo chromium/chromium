@@ -905,7 +905,7 @@ class CommerceHintCacaoTest : public CommerceHintAgentTest {
 #endif
               optimization_guide::features::kOptimizationHints
         },
-        {});
+        {commerce::kChromeCartDomBasedHeuristics});
   }
 
  private:

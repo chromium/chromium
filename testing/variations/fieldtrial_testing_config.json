@@ -2525,6 +2525,25 @@
             ]
         }
     ],
+    "ChromeCartDomBasedHeuristics": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled_chrome_cart_dom_based_heuristics_20230214",
+                    "enable_features": [
+                        "ChromeCartDomBasedHeuristics"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeLabs": [
         {
             "platforms": [
