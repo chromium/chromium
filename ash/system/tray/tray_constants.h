@@ -30,11 +30,6 @@ constexpr int kTrayMenuWidth = 360;
 // The width of the revamped tray menu.
 constexpr int kRevampedTrayMenuWidth = 400;
 
-// TODO(b/258072559): Update this height once we have finalized UX specs for
-// tray height.
-// The maximum height of the revamped tray menu.
-constexpr int kRevampedTrayMenuMaxHeight = 508;
-
 constexpr int kTrayPopupAutoCloseDelayInSeconds = 2;
 constexpr int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback = 5;
 constexpr int kTrayPopupPaddingHorizontal = 18;

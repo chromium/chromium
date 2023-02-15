@@ -141,7 +141,9 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
       std::make_unique<FeatureTilesContainerView>(controller_));
   page_indicator_view_ =
       system_tray_container_->AddChildView(std::make_unique<PageIndicatorView>(
-          controller_, /*initially_expanded=*/false));
+          controller_, /*initially_expanded=*/controller_->model()
+                               ->pagination_model()
+                               ->total_pages() > 1));
 
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
     media_controls_container_ = system_tray_container_->AddChildView(
@@ -202,6 +204,9 @@ void QuickSettingsView::ShowMediaControls() {
   if (media_controls_container_->MaybeShowMediaControls()) {
     PreferredSizeChanged();
   }
+
+  feature_tiles_container_->SetRowsFromHeight(
+      CalculateHeightForFeatureTilesContainer());
 }
 
 void QuickSettingsView::SetDetailedView(
