@@ -125,10 +125,11 @@ void GetExtensionSettingsPoliciesFromParsedJson(
     const base::Value& settings_value = entry.second;
 
     if (settings_value.is_dict()) {
-      const base::Value* installation_mode =
-          settings_value.FindKey(kExtensionSettingsInstallationModeName);
-      if (installation_mode && installation_mode->GetString() ==
-                                   kExtensionSettingsForceInstalledValue) {
+      const std::string* installation_mode =
+          settings_value.GetDict().FindString(
+              kExtensionSettingsInstallationModeName);
+      if (installation_mode &&
+          *installation_mode == kExtensionSettingsForceInstalledValue) {
         policies->emplace_back(
             extension_id, registry_key.hkey, registry_key.path,
             kExtensionSettingsRegistryEntryName, type, saved_json);
