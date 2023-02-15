@@ -390,14 +390,24 @@ bool IsPathSafeToSetAclOn(const FilePath& path) {
   if (g_extra_allowed_path_for_no_execute) {
     valid_paths.push_back(g_extra_allowed_path_for_no_execute);
   }
+
+  // MakeLongFilePath is needed here because temp files can have an 8.3 path
+  // under certain conditions. See comments in base::MakeLongFilePath.
+  base::FilePath long_path = base::MakeLongFilePath(path);
+  DCHECK(!long_path.empty()) << "Cannot get long path for " << path;
+
   for (const auto path_type : valid_paths) {
     base::FilePath valid_path;
-    if (base::PathService::Get(path_type, &valid_path)) {
-      // Temp files can sometimes have an 8.3 path. See comments in
-      // base::MakeLongFilePath.
-      if (base::MakeLongFilePath(valid_path).IsParent(path)) {
-        return true;
-      }
+    if (!base::PathService::Get(path_type, &valid_path)) {
+      DLOG(FATAL) << "Cannot get path for pathservice key " << path_type;
+      continue;
+    }
+    // Temp files can sometimes have an 8.3 path. See comments in
+    // base::MakeLongFilePath.
+    base::FilePath full_path = base::MakeLongFilePath(valid_path);
+    DCHECK(!full_path.empty()) << "Cannot get long path for " << valid_path;
+    if (full_path.IsParent(long_path)) {
+      return true;
     }
   }
   return false;
@@ -1100,9 +1110,7 @@ bool PreventExecuteMapping(const FilePath& path) {
     return true;
   }
 
-  // MakeLongFilePath is needed here because temp files can have an 8.3 path
-  // under certain conditions. See comments in base::MakeLongFilePath.
-  bool is_path_safe = IsPathSafeToSetAclOn(base::MakeLongFilePath(path));
+  bool is_path_safe = IsPathSafeToSetAclOn(path);
 
   if (!is_path_safe) {
     // To mitigate the effect of past OS bugs where attackers are able to use
@@ -1137,7 +1145,7 @@ bool PreventExecuteMapping(const FilePath& path) {
     // dangerous path is being passed to a renderer, which is inherently unsafe.
     //
     // If this check hits, please do not ignore it but consult security team.
-    NOTREACHED() << "Unsafe to deny execute access to path : " << path;
+    DLOG(FATAL) << "Unsafe to deny execute access to path : " << path;
 
     return false;
   }
