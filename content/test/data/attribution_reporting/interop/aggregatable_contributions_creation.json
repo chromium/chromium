@@ -172,6 +172,47 @@
             }
           }
         }]
+      },
+      // Should not result in an aggregatable report due to no contributions.
+      {
+        "timestamp": "1643235577000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_values": {
+                "d": 987
+              },
+              "debug_reporting": true
+            }
+          }
+        }]
+      },
+       // Should not result in an aggregatable report due to no contributions
+       // and verbose debug report is not created as debug_reporting is not set.
+       {
+        "timestamp": "1643235578000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_trigger_data": [{
+                "source_keys": ["a"],
+                "key_piece": "0x1"
+              }]
+            }
+          }
+        }]
       }
     ]
   },
@@ -227,6 +268,20 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "1643239176000"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "source_event_id": "123",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-aggregate-no-contributions"
+       } ],
+       "report_time": "1643235577000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

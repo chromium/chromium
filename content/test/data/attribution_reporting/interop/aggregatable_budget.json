@@ -18,7 +18,9 @@
               "aggregation_keys": {
                 "a": "0x159",
                 "b": "0x5"
-              }
+              },
+              // Will be cleared as debug_permission is not set.
+              "source_debug_key": "12345"
             }
           }
         }]
@@ -33,14 +35,16 @@
         },
         "responses": [{
           "url": "https://reporter.test/register-source",
+          "debug_permission": true,
           "response": {
             "Attribution-Reporting-Register-Source": {
               "destination": "https://destination.test",
-              "source_event_id": "123",
+              "source_event_id": "456",
               "aggregation_keys": {
                 "a": "0x159",
                 "b": "0x5"
-              }
+              },
+              "debug_key": "54321"
             }
           }
         }]
@@ -56,6 +60,7 @@
         },
         "responses": [{
           "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
           "response": {
             "Attribution-Reporting-Register-Trigger": {
               "aggregatable_trigger_data": [
@@ -71,7 +76,9 @@
               "aggregatable_values": {
                 "a": 65530,
                 "b": 7
-              }
+              },
+              "debug_key": "6789",
+              "debug_reporting": true
             }
           }
         }]
@@ -101,7 +108,8 @@
           }
         }]
       },
-      // Should be dropped due to insufficient aggregatable budget.
+      // Should be dropped due to insufficient aggregatable budget and verbose
+      // debug report is not created as debug_permission is not set.
       {
         "timestamp": "1643235576000",
         "registration_request": {
@@ -120,7 +128,8 @@
               ],
               "aggregatable_values": {
                 "a": 2
-              }
+              },
+              "debug_reporting": true
             }
           }
         }]
@@ -174,6 +183,33 @@
             }
           }
         }]
+      },
+      // Should not result in an aggregatable report due to insufficient
+      // aggregatable budget.
+      {
+        "timestamp": "1643235585000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_trigger_data": [
+                {
+                  "source_keys": ["b"],
+                  "key_piece": "0xa81"
+                }
+              ],
+              "aggregatable_values": {
+                "b": 1
+              },
+              "debug_reporting": true
+            }
+          }
+        }]
       }
     ]
   },
@@ -213,10 +249,41 @@
               "key": "0xa85",
               "value": 65536
             }
-          ]
+          ],
+          "source_debug_key": "54321"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "1643239184000"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "limit": "65536",
+             "source_event_id": "123",
+             "source_site": "https://source.test",
+             "trigger_debug_key": "6789"
+          },
+          "type": "trigger-aggregate-insufficient-budget"
+       } ],
+       "report_time": "1643235574000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": "https://destination.test",
+             "limit": "65536",
+             "source_debug_key": "54321",
+             "source_event_id": "456",
+             "source_site": "https://source.test"
+          },
+          "type": "trigger-aggregate-insufficient-budget"
+       } ],
+       "report_time": "1643235585000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }
