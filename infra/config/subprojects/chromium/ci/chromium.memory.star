@@ -27,7 +27,7 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.memory",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     ordering = {
         None: ["win", "mac", "linux", "cros"],
         "*build-or-test*": consoles.ordering(short_names = ["bld", "tst"]),
@@ -46,7 +46,7 @@ def linux_memory_builder(*, name, **kwargs):
 
 linux_memory_builder(
     name = "Linux ASan LSan Builder",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -73,7 +73,7 @@ linux_memory_builder(
 
 linux_memory_builder(
     name = "Linux ASan LSan Tests (1)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Linux ASan LSan Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -102,7 +102,7 @@ linux_memory_builder(
 
 linux_memory_builder(
     name = "Linux ASan Tests (sandboxed)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Linux ASan LSan Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -129,7 +129,7 @@ linux_memory_builder(
 
 linux_memory_builder(
     name = "Linux TSan Builder",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -412,7 +412,7 @@ ci.builder(
 
 linux_memory_builder(
     name = "Linux TSan Tests",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Linux TSan Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,

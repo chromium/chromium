@@ -28,7 +28,7 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.linux",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     ordering = {
         None: ["release", "debug"],
         "release": consoles.ordering(short_names = ["bld", "tst", "nsl", "gcc"]),
@@ -63,7 +63,7 @@ ci.builder(
 
 ci.builder(
     name = "Cast Linux",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -89,7 +89,7 @@ ci.builder(
 
 ci.builder(
     name = "Cast Linux Debug",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -118,7 +118,6 @@ ci.builder(
 
 ci.builder(
     name = "Cast Linux ARM64",
-    branch_selector = branches.MAIN,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -202,7 +201,7 @@ ci.builder(
 
 ci.builder(
     name = "Linux Builder",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -229,7 +228,7 @@ ci.builder(
 
 ci.builder(
     name = "Linux Builder (dbg)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -252,7 +251,7 @@ ci.builder(
 
 ci.builder(
     name = "Linux Builder (Wayland)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -280,7 +279,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "Linux Tests",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Linux Builder"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -320,7 +319,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Linux Tests (dbg)(1)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Linux Builder (dbg)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -344,7 +343,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Linux Tests (Wayland)",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     triggered_by = ["ci/Linux Builder (Wayland)"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,

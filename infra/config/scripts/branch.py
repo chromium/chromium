@@ -21,6 +21,8 @@ import argparse
 import json
 import os
 
+from typing import Optional
+
 INFRA_CONFIG_DIR = os.path.abspath(os.path.join(__file__, '..', '..'))
 
 def parse_args(args=None, *, parser_type=None):
@@ -47,15 +49,19 @@ def parse_args(args=None, *, parser_type=None):
       required=True,
       help='The branch name, must correspond to a ref in refs/branch-heads')
 
-  set_type_parser = subparsers.add_parser(
-      'set-type', help='Change the branch type of the project')
-  set_type_parser.set_defaults(func=set_type_cmd)
-  set_type_parser.add_argument(
-      '--type',
+  enable_platform_parser = subparsers.add_parser(
+      'enable-platform', help='Enable builders for an additional platform')
+  enable_platform_parser.set_defaults(func=enable_platform_cmd)
+  enable_platform_parser.add_argument(
+      'platform', help='The platform to enable builders for')
+  enable_platform_parser.add_argument(
+      '--description',
       required=True,
-      choices=BRANCH_TYPES,
-      action='append',
-      help='The type of the branch to change the project config to')
+      help='A description of why the platform is enabled')
+  enable_platform_parser.add_argument(
+      '--sheriff-rotation',
+      help=
+      'A sheriff that builders associated with the platform should be added to')
 
   args = parser.parse_args(args)
   if args.func is None:
@@ -68,7 +74,22 @@ def initial_settings(milestone, branch):
       project_title=f'Chromium M{milestone}',
       ref=f'refs/branch-heads/{branch}',
       chrome_project=f'chrome-m{milestone}',
-      branch_types=['standard'],
+      is_main=False,
+      platforms={
+          p: {
+              "description": "beta/stable",
+              "sheriff_rotation": "chrome_browser_release"
+          }
+          for p in (
+              "android",
+              "cros",
+              "fuchsia",
+              "ios",
+              "linux",
+              "mac",
+              "windows",
+          )
+      },
   )
 
   return json.dumps(settings, indent=4) + '\n'
@@ -80,28 +101,33 @@ def initialize_cmd(args):
     f.write(settings)
 
 
-BRANCH_TYPES = (
-    'standard',
-    'desktop-extended-stable',
-    'cros-lts',
-    'fuchsia-lts',
-)
-
-
-def set_type(settings_json, branch_types):
-  for t in branch_types:
-    assert t in BRANCH_TYPES, 'Unknown branch_type {!r}'.format(t)
-
+def enable_platform(
+    settings_json: str,
+    platform: str,
+    description: str,
+    sheriff_rotation: Optional[str],
+) -> str:
   settings = json.loads(settings_json)
-  settings.update(branch_types=branch_types)
+  settings['is_main'] = False
+  platforms = settings.pop('platforms', {})
+  platform_settings = {'description': description}
+  if sheriff_rotation is not None:
+    platform_settings['sheriff_rotation'] = sheriff_rotation
+  platforms[platform] = platform_settings
+  settings['platforms'] = dict(sorted(platforms.items()))
   return json.dumps(settings, indent=4) + '\n'
 
 
-def set_type_cmd(args):
+def enable_platform_cmd(args):
   with open(args.settings_json) as f:
     settings = f.read()
 
-  settings = set_type(settings, args.type)
+  settings = enable_platform(
+      settings,
+      args.platform,
+      args.description,
+      args.sheriff_rotation,
+  )
 
   with open(args.settings_json, 'w') as f:
     f.write(settings)

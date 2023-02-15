@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.memory.fyi builder group."""
 
-load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
@@ -24,14 +23,12 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.memory.fyi",
-    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 # TODO(crbug.com/1394755): Remove this builder after burning down failures
 # and measuring performance to see if we can roll UBSan into ASan.
 ci.builder(
     name = "linux-ubsan-fyi-rel",
-    branch_selector = branches.MAIN,
     schedule = "with 12h interval",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

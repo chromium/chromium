@@ -29,7 +29,7 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.chromium.win",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
 )
 
 try_.builder(
@@ -61,7 +61,7 @@ try_.builder(
 
 try_.builder(
     name = "win-libfuzzer-asan-rel",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     executable = "recipe:chromium_libfuzzer_trybot",
     builderless = False,
     os = os.WINDOWS_ANY,
@@ -73,7 +73,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "win-rel",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
         "ci/Win x64 Builder",
         "ci/Win10 Tests x64",
@@ -101,7 +101,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "win-rel-compilator",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     check_for_flakiness = True,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
@@ -118,7 +118,7 @@ try_.builder(
 
 try_.builder(
     name = "win_chromium_compile_dbg_ng",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
         "ci/Win Builder (dbg)",
     ],
@@ -272,7 +272,7 @@ try_.builder(
 
 try_.gpu.optional_tests_builder(
     name = "win_optional_gpu_tests_rel",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

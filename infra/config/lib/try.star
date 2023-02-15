@@ -157,7 +157,7 @@ def tryjob(
 def try_builder(
         *,
         name,
-        branch_selector = branches.MAIN,
+        branch_selector = branches.selector.MAIN,
         check_for_flakiness = args.DEFAULT,
         cq_group = args.DEFAULT,
         list_view = args.DEFAULT,
