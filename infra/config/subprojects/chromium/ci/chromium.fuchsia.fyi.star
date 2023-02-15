@@ -74,7 +74,7 @@ ci.builder(
             short_name = "a64-chrome",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             # TODO(crbug.com/1372224): Move to "fuchsia ci|arm64" once green.
             category = "fyi|arm64",
@@ -114,7 +114,7 @@ ci.builder(
             short_name = "arm64",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "gardener|fuchsia ci|arm64",
             short_name = "dbg",
@@ -151,7 +151,7 @@ ci.builder(
             short_name = "x64",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "gardener|fuchsia ci|x64",
             short_name = "asan",
@@ -188,7 +188,7 @@ ci.builder(
             short_name = "x64",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "gardener|fuchsia ci|x64",
             short_name = "dbg",
@@ -226,7 +226,7 @@ ci.builder(
             short_name = "x64-chrome",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             # TODO(crbug.com/1372224): Move to "fuchsia ci|x64" once green.
             category = "fyi|x64",
@@ -265,7 +265,7 @@ ci.builder(
             short_name = "work",
         ),
         consoles.console_view_entry(
-            branch_selector = branches.MAIN,
+            branch_selector = branches.selector.MAIN,
             console_view = "sheriff.fuchsia",
             category = "fyi|x64",
             short_name = "work",

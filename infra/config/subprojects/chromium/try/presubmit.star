@@ -7,7 +7,7 @@ load("//lib/builders.star", "os")
 load("//lib/branches.star", "branches")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
-load("//project.star", "BRANCH_TYPES", "branch_type")
+load("//project.star", "PLATFORMS", "platform")
 load("../fallback-cq.star", "fallback_cq")
 
 try_.defaults.set(
@@ -30,7 +30,7 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "presubmit",
-    branch_selector = branches.ALL_BRANCHES,
+    branch_selector = branches.selector.ALL_BRANCHES,
     title = "presubmit builders",
 )
 
@@ -61,21 +61,19 @@ def branch_configs():
       A list of objects that can be used as the value of the "branch_configs"
       property for the branch_configuration/tester recipe. See
       https://chromium.googlesource.com/chromium/tools/build/+/refs/heads/main/recipes/recipes/branch_configuration/tester.proto
-      The returned configs will cover standard branches and every combination of
-      post-stable branches.
+      The returned configs will cover the common branch configurations and each
+      platform individually.
     """
-    type_combos = []
-    for t in BRANCH_TYPES:
-        # The standard branch type can only appear alone, so add it afterwards
-        if t == branch_type.STANDARD:
-            continue
-        type_combos = type_combos + [[t]] + [c + [t] for c in type_combos]
-
-    type_combos = [[branch_type.STANDARD]] + sorted(type_combos, key = lambda x: (len(x), x))
     return [{
-        "name": " + ".join(c),
-        "branch_types": c,
-    } for c in type_combos]
+        "name": "standard branch",
+        "platforms": [p for p in PLATFORMS if p != platform.CROS_LTS],
+    }, {
+        "name": "desktop extended stable branch",
+        "platforms": [platform.MAC, platform.WINDOWS],
+    }] + [{
+        "name": p,
+        "platforms": [p],
+    } for p in PLATFORMS]
 
 presubmit_builder(
     name = "branch-config-verifier",
@@ -129,7 +127,7 @@ presubmit_builder(
 
 presubmit_builder(
     name = "chromium_presubmit",
-    branch_selector = branches.ALL_BRANCHES,
+    branch_selector = branches.selector.ALL_BRANCHES,
     executable = "recipe:presubmit",
     execution_timeout = 40 * time.minute,
     properties = {

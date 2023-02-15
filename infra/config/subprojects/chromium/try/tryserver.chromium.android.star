@@ -29,7 +29,7 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.chromium.android",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
 )
 
 try_.builder(
@@ -61,7 +61,7 @@ try_.orchestrator_builder(
     ],
     compilator = "android-12-x64-rel-compilator",
     # TODO(crbug.com/1225851): Enable it on branch after running on CQ
-    # branch_selector = branches.STANDARD_MILESTONE,
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 60,
@@ -71,7 +71,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "android-12-x64-rel-compilator",
     # TODO(crbug.com/1225851): Enable it on branch after running on CQ
-    # branch_selector = branches.STANDARD_MILESTONE,
+    # branch_selector = branches.selector.ANDROID_BRANCHES,
     main_list_view = "try",
 )
 
@@ -96,7 +96,7 @@ try_.builder(
 
 try_.builder(
     name = "android-binary-size",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     executable = "recipe:binary_size_trybot",
     builderless = not settings.is_main,
     # TODO (kimstephanie): Change to cores = 16 and ssd = True once bots have
@@ -126,7 +126,7 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-arm-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-cronet-arm-dbg",
     ],
@@ -167,7 +167,7 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x86-dbg-10-tests",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-10-tests",
@@ -237,7 +237,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-nougat-x86-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-nougat-x86-rel",
     ],
@@ -260,7 +260,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "android-nougat-x86-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     check_for_flakiness = True,
     main_list_view = "try",
 )
@@ -301,7 +301,7 @@ try_.builder(
 
 try_.builder(
     name = "android-oreo-arm64-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
         "ci/Oreo Phone Tester",
@@ -317,7 +317,7 @@ try_.builder(
 
 try_.builder(
     name = "android-pie-arm64-dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
         "ci/android-pie-arm64-dbg",
@@ -359,7 +359,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-pie-arm64-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-pie-arm64-rel",
     ],
@@ -382,7 +382,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "android-pie-arm64-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     check_for_flakiness = True,
     main_list_view = "try",
 )
@@ -517,7 +517,7 @@ try_.builder(
 
 try_.builder(
     name = "android-x64-cast",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Cast Android (dbg)",
     ],
@@ -528,7 +528,7 @@ try_.builder(
 
 try_.builder(
     name = "android_compile_dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Android arm Builder (dbg)",
     ],
@@ -544,7 +544,7 @@ try_.builder(
 
 try_.builder(
     name = "android_compile_x64_dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     # Since we expect this builder to compile all, let it mirror
     # "Android x64 Builder All Targets (dbg)" rather than
     # "Android x64 Builder (dbg)"
@@ -574,7 +574,7 @@ try_.builder(
 
 try_.builder(
     name = "android_compile_x86_dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Android x86 Builder (dbg)",
     ],
@@ -601,7 +601,7 @@ try_.builder(
 
 try_.builder(
     name = "android_cronet",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-cronet-arm-rel",
     ],
@@ -635,7 +635,7 @@ try_.builder(
 
 try_.builder(
     name = "try-nougat-phone-tester",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Android arm64 Builder (dbg)",
         "ci/Nougat Phone Tester",
@@ -644,7 +644,7 @@ try_.builder(
 
 try_.gpu.optional_tests_builder(
     name = "android_optional_gpu_tests_rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

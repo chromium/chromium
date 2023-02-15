@@ -26,14 +26,15 @@ try_.defaults.set(
 consoles.list_view(
     name = "tryserver.chromium",
     branch_selector = [
-        branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-        branches.FUCHSIA_LTS_MILESTONE,
+        branches.selector.ANDROID_BRANCHES,
+        branches.selector.DESKTOP_BRANCHES,
+        branches.selector.FUCHSIA_BRANCHES,
     ],
 )
 
 try_.builder(
     name = "android-official",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-official",
     ],
@@ -41,7 +42,7 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-official",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-official",
     ],
@@ -49,7 +50,7 @@ try_.builder(
 
 try_.builder(
     name = "linux-official",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/linux-official",
     ],
@@ -57,7 +58,7 @@ try_.builder(
 
 try_.builder(
     name = "mac-official",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/mac-official",
     ],
@@ -70,7 +71,7 @@ try_.builder(
 
 try_.builder(
     name = "win-official",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
         "ci/win-official",
     ],
@@ -80,7 +81,7 @@ try_.builder(
 
 try_.builder(
     name = "win32-official",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
         "ci/win32-official",
     ],

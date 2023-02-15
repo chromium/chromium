@@ -29,13 +29,13 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.chromium.fuchsia",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
 )
 
 # TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
 try_.builder(
     name = "fuchsia-arm64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-arm64-cast-receiver-rel",
     ],
@@ -44,7 +44,7 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-arm64-cast-receiver-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-arm64-cast-receiver-rel",
     ],
@@ -67,7 +67,7 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-arm64-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-arm64-rel",
     ],
@@ -83,7 +83,7 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-binary-size",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     executable = "recipe:binary_size_fuchsia_trybot",
     builderless = not settings.is_main,
     cores = 16 if settings.is_main else 8,
@@ -137,7 +137,7 @@ try_.builder(
 # TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
 try_.builder(
     name = "fuchsia-x64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
@@ -152,7 +152,7 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-x64-cast-receiver-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
@@ -175,7 +175,7 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-x64-rel",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-x64-rel",
     ],
@@ -195,7 +195,7 @@ try_.builder(
 # TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
 try_.builder(
     name = "fuchsia_arm64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-arm64-rel",
     ],
@@ -211,7 +211,7 @@ try_.builder(
 # TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
 try_.builder(
     name = "fuchsia_x64",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    branch_selector = branches.selector.FUCHSIA_BRANCHES,
     mirrors = [
         "ci/fuchsia-x64-rel",
     ],

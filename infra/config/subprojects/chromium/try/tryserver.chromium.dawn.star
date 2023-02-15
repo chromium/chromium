@@ -24,12 +24,15 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.chromium.dawn",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = [
+        branches.selector.ANDROID_BRANCHES,
+        branches.selector.DESKTOP_BRANCHES,
+    ],
 )
 
 try_.builder(
     name = "dawn-android-arm-deps-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/Dawn Android arm DEPS Release (Pixel 4)",
     ],
@@ -56,7 +59,7 @@ try_.builder(
 
 try_.builder(
     name = "dawn-linux-x64-deps-rel",
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/Dawn Linux x64 DEPS Builder",
         "ci/Dawn Linux x64 DEPS Release (Intel UHD 630)",
@@ -85,7 +88,7 @@ try_.builder(
 
 try_.builder(
     name = "dawn-mac-x64-deps-rel",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Dawn Mac x64 DEPS Builder",
         "ci/Dawn Mac x64 DEPS Release (AMD)",
@@ -115,7 +118,7 @@ try_.builder(
 
 try_.builder(
     name = "dawn-win10-x64-deps-rel",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
         "ci/Dawn Win10 x64 DEPS Builder",
         "ci/Dawn Win10 x64 DEPS Release (Intel HD 630)",
@@ -145,7 +148,7 @@ try_.builder(
 
 try_.builder(
     name = "dawn-win10-x86-deps-rel",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
         "ci/Dawn Win10 x86 DEPS Builder",
         "ci/Dawn Win10 x86 DEPS Release (Intel HD 630)",

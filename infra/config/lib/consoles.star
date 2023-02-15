@@ -215,7 +215,7 @@ def ordering(*, short_names = None, categories = None):
         categories = categories or [],
     )
 
-def console_view(*, name, branch_selector = branches.MAIN, ordering = None, **kwargs):
+def console_view(*, name, branch_selector = branches.selector.MAIN, ordering = None, **kwargs):
     """Create a console view, optionally providing an entry ordering.
 
     Args:
@@ -303,7 +303,7 @@ def overview_console_view(*, name, top_level_ordering, **kwargs):
 
 def console_view_entry(
         *,
-        branch_selector = branches.ALL_BRANCHES,
+        branch_selector = branches.selector.ALL_BRANCHES,
         console_view = None,
         category = None,
         short_name = None):
@@ -356,7 +356,7 @@ def _sorted_list_view_impl(_ctx, *, console_name):
 
 _sorted_list_view = lucicfg.rule(impl = _sorted_list_view_impl)
 
-def list_view(*, name, branch_selector = branches.MAIN, **kwargs):
+def list_view(*, name, branch_selector = branches.selector.MAIN, **kwargs):
     """Create a sorted list view.
 
     The entries in the list view will be sorted by the builder's name.

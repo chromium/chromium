@@ -119,13 +119,13 @@ branches.cq_group(
 
 consoles.list_view(
     name = "try",
-    branch_selector = branches.ALL_BRANCHES,
+    branch_selector = branches.selector.ALL_BRANCHES,
     title = "{} CQ Console".format(settings.project_title),
 )
 
 consoles.list_view(
     name = "luci.chromium.try",
-    branch_selector = branches.ALL_BRANCHES,
+    branch_selector = branches.selector.ALL_BRANCHES,
 )
 
 exec("./try/presubmit.star")
@@ -246,7 +246,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.CROS_BRANCHES,
     builder = "lacros-amd64-generic-chrome-skylab",
 )
 
@@ -263,7 +263,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder = "linux-chrome",
 )
 
@@ -276,22 +276,22 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.LINUX_BRANCHES,
     builder = "linux-pgo",
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-chrome",
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-arm-pgo",
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-pgo",
 )
 
@@ -300,21 +300,21 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win-chrome",
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win32-pgo",
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win64-chrome",
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win64-pgo",
 )
