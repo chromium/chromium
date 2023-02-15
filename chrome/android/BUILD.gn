@@ -3446,6 +3446,13 @@ if (current_toolchain == default_toolchain) {
       }
     }
   }
+
+  if (enable_chrome_android_internal) {
+    private_code_test("libmonochrome_private_code_test") {
+      linker_inputs_dep =
+          ":libmonochrome_inputs($_monochrome_browser_toolchain)"
+    }
+  }
 }
 
 generate_jni("chrome_jni_headers") {
@@ -3862,13 +3869,6 @@ if (!android_64bit_target_cpu ||
   if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
     group("monochrome_64_secondary_abi_lib") {
       public_deps = [ ":libmonochrome_64($android_secondary_abi_toolchain)" ]
-    }
-  }
-
-  if (enable_chrome_android_internal) {
-    private_code_test("libmonochrome_private_code_test") {
-      linker_inputs_dep =
-          ":libmonochrome_inputs($_monochrome_browser_toolchain)"
     }
   }
 } else {
