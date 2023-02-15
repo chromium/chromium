@@ -180,7 +180,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
 
         // TODO(crbug.com/1377069): Add a JNI to get the follow status from CreatorBridge instead
         if (mWebFeedId != null) {
-            getIsFollowedStatus();
+            getWebFeedMetadata();
         }
         initBottomSheet();
 
@@ -316,7 +316,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         return model;
     }
 
-    private void getIsFollowedStatus() {
+    private void getWebFeedMetadata() {
         Callback<WebFeedMetadata> metadata_callback = result -> {
             @WebFeedSubscriptionStatus
             int subscriptionStatus =
@@ -326,6 +326,15 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                 mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, false);
             } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED) {
                 mCreatorModel.set(CreatorProperties.IS_FOLLOWED_KEY, true);
+            }
+            if (mCreatorModel.get(CreatorProperties.TITLE_KEY).isEmpty()) {
+                mCreatorModel.set(CreatorProperties.TITLE_KEY, result.title);
+            }
+            if (mCreatorModel.get(CreatorProperties.URL_KEY).isEmpty()) {
+                mCreatorModel.set(CreatorProperties.URL_KEY, result.visitUrl.getSpec());
+                mCreatorModel.set(CreatorProperties.FORMATTED_URL_KEY,
+                        UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+                                result.visitUrl));
             }
         };
         WebFeedBridge.getWebFeedMetadata(mWebFeedId, metadata_callback);
