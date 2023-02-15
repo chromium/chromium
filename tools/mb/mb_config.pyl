@@ -72,6 +72,7 @@
       'lacros64-archive-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'linux-archive-dbg': 'debug_bot_reclient',
       'linux-archive-rel': 'release_bot_reclient',
+      'linux-lacros-archive-rel': 'lacros_on_linux_release_not_build_ash_bot_reclient',
       'linux-official': 'official_optimize_reclient',
       'mac-archive-dbg': 'debug_bot_reclient',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols_reclient',

@@ -445,6 +445,14 @@
           'all',
         ],
       },
+      'linux-lacros-archive-rel': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'additional_compile_targets': [
+          'chrome',
+        ],
+      },
       'linux-official': {
         'additional_compile_targets': [
           'all',

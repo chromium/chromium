@@ -101,6 +101,16 @@
       "use_remoteexec": true
     }
   },
+  "linux-lacros-archive-rel": {
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "target_os": "chromeos",
+      "use_remoteexec": true
+    }
+  },
   "linux-official": {
     "gn_args": {
       "is_official_build": true,

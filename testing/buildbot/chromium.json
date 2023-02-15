@@ -51,6 +51,11 @@
       "all"
     ]
   },
+  "linux-lacros-archive-rel": {
+    "additional_compile_targets": [
+      "chrome"
+    ]
+  },
   "linux-official": {
     "additional_compile_targets": [
       "all"

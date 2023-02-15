@@ -240,6 +240,46 @@ ci.builder(
 )
 
 ci.builder(
+    name = "linux-lacros-archive-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    cores = 8,
+    # TODO(crbug.com/1362019): Turn on when stable.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros",
+        short_name = "lnx",
+    ),
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "source_side_spec_path": [
+                "src",
+                "infra",
+                "archive_config",
+                "linux-lacros-archive-rel.json",
+            ],
+        },
+    },
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.builder(
     name = "lacros64-archive-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
