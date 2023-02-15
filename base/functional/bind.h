@@ -176,23 +176,26 @@ inline auto Unretained(T* o) {
 
 template <typename T, RawPtrTraits Traits>
 inline auto Unretained(const raw_ptr<T, Traits>& o) {
-  return internal::UnretainedWrapper<T, unretained_traits::MayNotDangle>(o);
+  return internal::UnretainedWrapper<T, unretained_traits::MayNotDangle,
+                                     Traits>(o);
 }
 
 template <typename T, RawPtrTraits Traits>
 inline auto Unretained(raw_ptr<T, Traits>&& o) {
-  return internal::UnretainedWrapper<T, unretained_traits::MayNotDangle>(
-      std::move(o));
+  return internal::UnretainedWrapper<T, unretained_traits::MayNotDangle,
+                                     Traits>(std::move(o));
 }
 
 template <typename T, RawPtrTraits Traits>
 inline auto Unretained(const raw_ref<T, Traits>& o) {
-  return internal::UnretainedRefWrapper<T, unretained_traits::MayNotDangle>(o);
+  return internal::UnretainedRefWrapper<T, unretained_traits::MayNotDangle,
+                                        Traits>(o);
 }
 
 template <typename T, RawPtrTraits Traits>
 inline auto Unretained(raw_ref<T, Traits>&& o) {
-  return internal::UnretainedRefWrapper<T, unretained_traits::MayNotDangle>(o);
+  return internal::UnretainedRefWrapper<T, unretained_traits::MayNotDangle,
+                                        Traits>(o);
 }
 
 // Similar to `Unretained()`, but allows dangling pointers, e.g.:
@@ -238,23 +241,26 @@ inline auto UnsafeDangling(T* o) {
 
 template <typename T, RawPtrTraits Traits>
 auto UnsafeDangling(const raw_ptr<T, Traits>& o) {
-  return internal::UnretainedWrapper<T, unretained_traits::MayDangle>(o);
+  return internal::UnretainedWrapper<T, unretained_traits::MayDangle, Traits>(
+      o);
 }
 
 template <typename T, RawPtrTraits Traits>
 auto UnsafeDangling(raw_ptr<T, Traits>&& o) {
-  return internal::UnretainedWrapper<T, unretained_traits::MayDangle>(
+  return internal::UnretainedWrapper<T, unretained_traits::MayDangle, Traits>(
       std::move(o));
 }
 
 template <typename T, RawPtrTraits Traits>
 auto UnsafeDangling(const raw_ref<T, Traits>& o) {
-  return internal::UnretainedRefWrapper<T, unretained_traits::MayDangle>(o);
+  return internal::UnretainedRefWrapper<T, unretained_traits::MayDangle,
+                                        Traits>(o);
 }
 
 template <typename T, RawPtrTraits Traits>
 auto UnsafeDangling(raw_ref<T, Traits>&& o) {
-  return internal::UnretainedRefWrapper<T, unretained_traits::MayDangle>(o);
+  return internal::UnretainedRefWrapper<T, unretained_traits::MayDangle,
+                                        Traits>(o);
 }
 
 // Like `UnsafeDangling()`, but used to annotate places that still need to be
@@ -271,28 +277,26 @@ inline auto UnsafeDanglingUntriaged(T* o) {
 
 template <typename T, RawPtrTraits Traits>
 auto UnsafeDanglingUntriaged(const raw_ptr<T, Traits>& o) {
-  return internal::UnretainedWrapper<T, unretained_traits::MayDangleUntriaged>(
-      o);
+  return internal::UnretainedWrapper<T, unretained_traits::MayDangleUntriaged,
+                                     Traits>(o);
 }
 
 template <typename T, RawPtrTraits Traits>
 auto UnsafeDanglingUntriaged(raw_ptr<T, Traits>&& o) {
-  return internal::UnretainedWrapper<T, unretained_traits::MayDangleUntriaged>(
-      std::move(o));
+  return internal::UnretainedWrapper<T, unretained_traits::MayDangleUntriaged,
+                                     Traits>(std::move(o));
 }
 
 template <typename T, RawPtrTraits Traits>
 auto UnsafeDanglingUntriaged(const raw_ref<T, Traits>& o) {
-  return internal::UnretainedRefWrapper<T,
-                                        unretained_traits::MayDangleUntriaged>(
-      o);
+  return internal::UnretainedRefWrapper<
+      T, unretained_traits::MayDangleUntriaged, Traits>(o);
 }
 
 template <typename T, RawPtrTraits Traits>
 auto UnsafeDanglingUntriaged(raw_ref<T, Traits>&& o) {
-  return internal::UnretainedRefWrapper<T,
-                                        unretained_traits::MayDangleUntriaged>(
-      o);
+  return internal::UnretainedRefWrapper<
+      T, unretained_traits::MayDangleUntriaged, Traits>(o);
 }
 
 // RetainedRef() accepts a ref counted object and retains a reference to it.

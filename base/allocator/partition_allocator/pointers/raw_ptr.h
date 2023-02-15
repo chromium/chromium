@@ -1316,8 +1316,8 @@ constexpr auto DanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // might receive dangling pointers. In any other cases, please use one of:
 // - raw_ptr<T, DanglingUntriaged>
 // - raw_ptr<T, DisableDanglingPtrDetection>
-template <typename T>
-using MayBeDangling = base::raw_ptr<T, base::RawPtrTraits::kMayDangle>;
+template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+using MayBeDangling = base::raw_ptr<T, Traits | base::RawPtrTraits::kMayDangle>;
 
 // The following template parameters are only meaningful when `raw_ptr`
 // is `MTECheckedPtr` (never the case unless a particular GN arg is set
