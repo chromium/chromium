@@ -8,6 +8,8 @@ static_library("hash_realtime_service") {
     "hash_realtime_service.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":hash_realtime_utils",
     "//base:base",
@@ -29,6 +31,8 @@ static_library("hash_realtime_cache") {
     "hash_realtime_cache.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":hash_realtime_utils",
     "//base:base",
@@ -41,6 +45,8 @@ static_library("hash_realtime_utils") {
     "hash_realtime_utils.cc",
     "hash_realtime_utils.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base:base",

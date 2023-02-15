@@ -8,6 +8,7 @@ static_library("policy_engine") {
     "policy_engine.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     "//base:base",
     "//components/prefs",
@@ -27,6 +28,8 @@ static_library("url_lookup_service") {
     "url_lookup_service.cc",
     "url_lookup_service.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":policy_engine",
@@ -54,6 +57,8 @@ static_library("url_lookup_service_base") {
     "url_lookup_service_base.cc",
     "url_lookup_service_base.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base:base",

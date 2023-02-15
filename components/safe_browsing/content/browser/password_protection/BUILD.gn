@@ -18,6 +18,8 @@ source_set("password_protection") {
       "request_canceler_content.h",
     ]
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     public_deps = [ "//google_apis:google_apis" ]
 
     deps = [

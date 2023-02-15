@@ -10,6 +10,8 @@ source_set("utils") {
     "scheme_logger.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//url",

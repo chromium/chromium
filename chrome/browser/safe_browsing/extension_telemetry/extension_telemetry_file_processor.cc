@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_file_processor.h"
 
 #include "base/check.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,16 +20,16 @@ namespace {
 // Max number of files to read per extension.
 constexpr int64_t kMaxFilesToRead = 1000;
 
-const base::FilePath::CharType kManifestFilePath[] =
+constexpr base::FilePath::CharType kManifestFilePath[] =
     FILE_PATH_LITERAL("manifest.json");
-const base::FilePath::CharType kJSFileSuffix[] = FILE_PATH_LITERAL(".js");
-const base::FilePath::CharType kHTMLFileSuffix[] = FILE_PATH_LITERAL(".html");
-const base::FilePath::CharType kCSSFileSuffix[] = FILE_PATH_LITERAL(".css");
+constexpr base::FilePath::CharType kJSFileSuffix[] = FILE_PATH_LITERAL(".js");
+constexpr base::FilePath::CharType kHTMLFileSuffix[] =
+    FILE_PATH_LITERAL(".html");
+constexpr base::FilePath::CharType kCSSFileSuffix[] = FILE_PATH_LITERAL(".css");
 
-const base::flat_map<base::FilePath::StringType, int> kFileTypePriorityMap = {
-    {kJSFileSuffix, 3},
-    {kHTMLFileSuffix, 2},
-    {kCSSFileSuffix, 1}};
+constexpr auto kFileTypePriorityMap =
+    base::MakeFixedFlatMap<base::FilePath::StringPieceType, int>(
+        {{kJSFileSuffix, 3}, {kHTMLFileSuffix, 2}, {kCSSFileSuffix, 1}});
 
 void RecordLargestFileSizeObserved(size_t size) {
   base::UmaHistogramCounts1M(

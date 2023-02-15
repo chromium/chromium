@@ -10,6 +10,8 @@ source_set("download_stats") {
     "download_stats.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/download/public/common:public",

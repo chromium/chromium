@@ -42,6 +42,9 @@ static_library("database_manager") {
     "database_manager.cc",
     "database_manager.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":hit_report",
     ":util",
@@ -62,6 +65,9 @@ static_library("hit_report") {
     "hit_report.cc",
     "hit_report.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [ ":util" ]
   deps = [
     "//components/metrics",
@@ -93,6 +99,9 @@ static_library("util") {
     "util.cc",
     "util.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     ":v4_protocol_manager_util",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -112,6 +121,9 @@ static_library("v4_database") {
     "v4_database.cc",
     "v4_database.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [ ":safebrowsing_proto" ]
   deps = [
     ":v4_protocol_manager_util",
@@ -126,6 +138,9 @@ static_library("v4_get_hash_protocol_manager") {
     "v4_get_hash_protocol_manager.cc",
     "v4_get_hash_protocol_manager.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     ":safebrowsing_proto",
     ":util",
@@ -146,6 +161,9 @@ static_library("v4_local_database_manager") {
     "v4_local_database_manager.cc",
     "v4_local_database_manager.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":database_manager",
     ":hit_report",
@@ -171,6 +189,9 @@ source_set("v4_protocol_manager_util") {
     "v4_protocol_manager_util.cc",
     "v4_protocol_manager_util.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [ ":safebrowsing_proto" ]
   deps = [
     "//base",
@@ -187,6 +208,9 @@ source_set("prefix_iterator") {
     "prefix_iterator.cc",
     "prefix_iterator.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":v4_protocol_manager_util",
     "//base",
@@ -205,6 +229,9 @@ source_set("v4_rice") {
     "v4_rice.cc",
     "v4_rice.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//third_party/protobuf:protobuf_lite",
@@ -218,6 +245,9 @@ source_set("v4_store") {
     "v4_store.cc",
     "v4_store.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     ":safebrowsing_proto",
     ":v4_store_proto",
@@ -257,6 +287,9 @@ static_library("v4_update_protocol_manager") {
     "v4_update_protocol_manager.cc",
     "v4_update_protocol_manager.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":safebrowsing_proto",
     ":util",
@@ -339,6 +372,9 @@ static_library("allowlist_checker_client") {
     "allowlist_checker_client.cc",
     "allowlist_checker_client.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":database_manager",
     "//base:base",

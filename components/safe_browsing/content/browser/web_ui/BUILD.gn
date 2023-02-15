@@ -10,6 +10,8 @@ static_library("web_ui") {
     "safe_browsing_ui.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/enterprise/common/proto:connectors_proto",

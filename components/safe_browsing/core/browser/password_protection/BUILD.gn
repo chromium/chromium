@@ -12,6 +12,8 @@ source_set("password_protection") {
     "request_canceler.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":password_protection_metrics_util",
     "//base",
@@ -45,6 +47,8 @@ source_set("password_protection_metrics_util") {
     "metrics_util.cc",
     "metrics_util.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base",

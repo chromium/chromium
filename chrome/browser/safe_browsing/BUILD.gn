@@ -16,6 +16,8 @@ static_library("safe_browsing") {
     "url_checker_delegate_impl.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = []
 
   deps = [
@@ -447,6 +449,8 @@ source_set("verdict_cache_manager_factory") {
     "verdict_cache_manager_factory.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles",
@@ -470,6 +474,8 @@ static_library("advanced_protection") {
     "advanced_protection_status_manager_factory.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -487,6 +493,8 @@ source_set("metrics_collector") {
     "safe_browsing_metrics_collector_factory.cc",
     "safe_browsing_metrics_collector_factory.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//chrome/browser:browser_process",

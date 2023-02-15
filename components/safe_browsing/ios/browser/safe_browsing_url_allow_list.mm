@@ -4,6 +4,7 @@
 
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 
+#include "base/no_destructor.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -80,10 +81,10 @@ SafeBrowsingUrlAllowList::GetUnsafeNavigationDecisions(const GURL& url) {
 
 const SafeBrowsingUrlAllowList::UnsafeNavigationDecisions&
 SafeBrowsingUrlAllowList::GetUnsafeNavigationDecisions(const GURL& url) const {
-  static UnsafeNavigationDecisions kEmptyDecisions;
+  static const base::NoDestructor<UnsafeNavigationDecisions> kEmptyDecisions;
   const auto& it = decisions_.find(url.GetWithEmptyPath());
   if (it == decisions_.end())
-    return kEmptyDecisions;
+    return *kEmptyDecisions;
   return it->second;
 }
 

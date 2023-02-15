@@ -34,6 +34,9 @@ source_set("phishing_classifier") {
       "scorer.cc",
       "scorer.h",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     deps = [
       "//base",
       "//cc/paint",

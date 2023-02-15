@@ -18,6 +18,8 @@ source_set("public") {
     "sw_reporter_invocation_win.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//chrome/common:constants",
@@ -56,6 +58,8 @@ static_library("chrome_cleaner") {
     "srt_client_info_win.cc",
     "srt_client_info_win.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     # TODO(crbug.com/925153): Break dependency cycles with //chrome/browser

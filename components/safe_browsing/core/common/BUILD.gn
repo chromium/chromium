@@ -12,6 +12,8 @@ static_library("safe_browsing_prefs") {
     "safe_browsing_prefs.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":common",
     "//components/pref_registry:pref_registry",
@@ -27,6 +29,8 @@ source_set("safe_browsing_policy_handler") {
     "safe_browsing_policy_handler.cc",
     "safe_browsing_policy_handler.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":safe_browsing_prefs",
@@ -76,6 +80,8 @@ source_set("common") {
     "web_ui_constants.cc",
     "web_ui_constants.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base",

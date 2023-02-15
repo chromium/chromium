@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 source_set("password_protection") {
-  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "password_protection_request_ios.h",
     "password_protection_request_ios.mm",
@@ -11,6 +10,12 @@ source_set("password_protection") {
     "request_canceler_ios.h",
     "request_canceler_ios.mm",
   ]
+
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
+
   deps = [
     "//base",
     "//components/password_manager/core/browser",

@@ -17,6 +17,8 @@ source_set("safe_browsing_service") {
     "safe_browsing_service_interface.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base:base",
     "//components/safe_browsing/core/common/proto:csd_proto",
@@ -41,6 +43,8 @@ if (safe_browsing_mode > 0) {
       "ui_manager.cc",
       "ui_manager.h",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
       ":browser",
@@ -84,6 +88,9 @@ source_set("browser") {
     "web_api_handshake_checker.cc",
     "web_api_handshake_checker.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//base:i18n",
@@ -209,6 +216,9 @@ source_set("client_side_detection") {
     "safe_browsing_tab_observer.cc",
     "safe_browsing_tab_observer.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base:base",
     "//components/optimization_guide/core:core",

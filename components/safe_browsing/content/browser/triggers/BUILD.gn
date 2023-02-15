@@ -9,6 +9,9 @@ source_set("triggers") {
     "trigger_manager.cc",
     "trigger_manager.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
@@ -32,6 +35,9 @@ source_set("trigger_throttler") {
     "trigger_throttler.cc",
     "trigger_throttler.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/prefs",
@@ -45,6 +51,9 @@ source_set("trigger_util") {
     "trigger_util.cc",
     "trigger_util.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":triggers",
     "//content/public/browser",
@@ -56,6 +65,9 @@ source_set("ad_sampler_trigger") {
     "ad_sampler_trigger.cc",
     "ad_sampler_trigger.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":trigger_throttler",
     ":trigger_util",
@@ -72,6 +84,9 @@ source_set("suspicious_site_trigger") {
     "suspicious_site_trigger.cc",
     "suspicious_site_trigger.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":trigger_throttler",
     ":triggers",

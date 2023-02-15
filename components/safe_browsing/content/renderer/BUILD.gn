@@ -11,6 +11,9 @@ source_set("renderer") {
       "threat_dom_details.cc",
       "threat_dom_details.h",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     deps = [
       "//base",
       "//components/safe_browsing/content/common:interfaces",
@@ -30,6 +33,8 @@ source_set("throttles") {
     "websocket_sb_handshake_throttle.cc",
     "websocket_sb_handshake_throttle.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base:base",

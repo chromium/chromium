@@ -87,19 +87,18 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToJavaArray(
 // The map that holds the callback_id used to reference each pending request
 // sent to Java, and the corresponding callback to call on receiving the
 // response.
-typedef std::unordered_map<
+using PendingCallbacksMap = std::unordered_map<
     jlong,
-    std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback>>
-    PendingCallbacksMap;
+    std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback>>;
 
-static PendingCallbacksMap* GetPendingCallbacksMapOnIOThread() {
+PendingCallbacksMap& GetPendingCallbacksMapOnIOThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // Holds the list of callback objects that we are currently waiting to hear
   // the result of from GmsCore.
   // The key is a unique count-up integer.
-  static PendingCallbacksMap pending_callbacks;
-  return &pending_callbacks;
+  static base::NoDestructor<PendingCallbacksMap> pending_callbacks;
+  return *pending_callbacks;
 }
 
 bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type) {
@@ -134,15 +133,15 @@ void OnUrlCheckDoneOnIOThread(jlong callback_id,
                               const std::string metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  PendingCallbacksMap* pending_callbacks = GetPendingCallbacksMapOnIOThread();
-  bool found = base::Contains(*pending_callbacks, callback_id);
+  PendingCallbacksMap& pending_callbacks = GetPendingCallbacksMapOnIOThread();
+  bool found = base::Contains(pending_callbacks, callback_id);
   DCHECK(found) << "Not found in pending_callbacks: " << callback_id;
   if (!found)
     return;
 
   std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback =
-      std::move((*pending_callbacks)[callback_id]);
-  pending_callbacks->erase(callback_id);
+      std::move((pending_callbacks)[callback_id]);
+  pending_callbacks.erase(callback_id);
 
   if (result_status != RESULT_STATUS_SUCCESS) {
     if (result_status == RESULT_STATUS_TIMEOUT) {
@@ -226,8 +225,7 @@ void SafeBrowsingApiHandlerBridge::StartURLCheck(
   }
 
   jlong callback_id = next_callback_id_++;
-  GetPendingCallbacksMapOnIOThread()->insert(
-      {callback_id, std::move(callback)});
+  GetPendingCallbacksMapOnIOThread().insert({callback_id, std::move(callback)});
 
   DCHECK(!threat_types.empty());
 

@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -30,7 +31,6 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
-
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -38,7 +38,10 @@ namespace safe_browsing {
 
 namespace {
 
-using CommandLineSwitchAndThreatType = std::pair<std::string, ThreatType>;
+struct CommandLineSwitchAndThreatType {
+  const char* cmdline_switch;
+  ThreatType threat_type;
+};
 
 // The expiration time of the full hash stored in the artificial database.
 const int64_t kFullHashExpiryTimeInMinutes = 60;
@@ -126,15 +129,15 @@ ListInfos GetListInfos() {
   // for all Canary users.
 }
 
-std::vector<CommandLineSwitchAndThreatType> GetSwitchAndThreatTypes() {
-  static const std::vector<CommandLineSwitchAndThreatType>
-      command_line_switch_and_threat_type = {
+base::span<const CommandLineSwitchAndThreatType> GetSwitchAndThreatTypes() {
+  static constexpr CommandLineSwitchAndThreatType
+      kCommandLineSwitchAndThreatType[] = {
           {"mark_as_allowlisted_for_phish_guard", CSD_WHITELIST},
           {"mark_as_allowlisted_for_real_time", HIGH_CONFIDENCE_ALLOWLIST},
           {"mark_as_phishing", SOCIAL_ENGINEERING},
           {"mark_as_malware", MALWARE_THREAT},
           {"mark_as_uws", UNWANTED_SOFTWARE}};
-  return command_line_switch_and_threat_type;
+  return kCommandLineSwitchAndThreatType;
 }
 
 // Returns the severity information about a given SafeBrowsing list. The lowest
@@ -888,11 +891,11 @@ void V4LocalDatabaseManager::PopulateArtificialDatabase() {
   for (const auto& switch_and_threat_type : GetSwitchAndThreatTypes()) {
     const std::string raw_artificial_urls =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switch_and_threat_type.first);
+            switch_and_threat_type.cmdline_switch);
     base::StringTokenizer tokenizer(raw_artificial_urls, ",");
     while (tokenizer.GetNext()) {
       ListIdentifier artificial_list_id(GetCurrentPlatformType(), URL,
-                                        switch_and_threat_type.second);
+                                        switch_and_threat_type.threat_type);
       FullHashStr full_hash =
           V4ProtocolManagerUtil::GetFullHash(GURL(tokenizer.token_piece()));
       artificially_marked_store_and_hash_prefixes_.emplace_back(

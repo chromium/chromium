@@ -33,6 +33,8 @@ if (safe_browsing_mode != 0) {
       "file_type_policies_prefs.h",
     ]
 
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
     public_deps = [
       "//base",
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
@@ -90,6 +92,8 @@ if (safe_browsing_mode != 0) {
       "visual_utils.cc",
       "visual_utils.h",
     ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
       "//components/safe_browsing:buildflags",
