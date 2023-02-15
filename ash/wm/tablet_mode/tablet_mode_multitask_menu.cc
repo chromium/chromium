@@ -14,6 +14,7 @@
 #include "ash/wm/window_state.h"
 #include "base/cxx17_backports.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -259,8 +260,13 @@ TabletModeMultitaskMenu::~TabletModeMultitaskMenu() {
 
 void TabletModeMultitaskMenu::Animate(bool show) {
   ui::Layer* view_layer = menu_view_->layer();
-  if (view_layer->GetAnimator()->is_animating())
+  if (view_layer->GetAnimator()->is_animating()) {
     return;
+  }
+  if (show) {
+    RecordMultitaskMenuEntryType(
+        chromeos::MultitaskMenuEntryType::kGestureScroll);
+  }
   views::AnimationBuilder()
       .OnEnded(show ? base::DoNothing()
                     : base::BindOnce(&TabletModeMultitaskMenu::Reset,

@@ -13,7 +13,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
-#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
@@ -114,16 +113,16 @@ void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
       target_area.set_y(window_bounds.y());
       if (!multitask_menu_ && target_area.Contains(screen_location)) {
         // On the first touch, we don't know yet if this touch will turn into a
-        // drag, but mark `SetHandled()` to avoid showing the webui tabstrip.
-        initial_drag_data_ = InitialDragData{screen_location, /*can_open=*/true,
-                                             /*is_drag=*/false};
+        // drag, but mark `SetHandled()` to avoid turning into a long press.
+        initial_drag_data_ =
+            InitialDragData{screen_location, /*is_drag=*/false};
         event->SetHandled();
       }
       if (multitask_menu_ &&
           gfx::RectF(multitask_menu_->widget()->GetWindowBoundsInScreen())
               .Contains(screen_location)) {
-        initial_drag_data_ = InitialDragData{
-            screen_location, /*can_open=*/false, /*is_drag=*/false};
+        initial_drag_data_ =
+            InitialDragData{screen_location, /*is_drag=*/false};
         // Do not mark `SetHandled()` since the press may be on a button.
       }
       break;
@@ -148,14 +147,20 @@ void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
                                          &window_location);
 
       if (!multitask_menu_) {
-        if (initial_drag_data_->can_open && !down) {
-          // If the touch started in the target area but moved up, do nothing.
+        if (!down) {
+          // If no menu is shown and we drag up, do nothing.
           initial_drag_data_.reset();
           return;
         }
-        // Otherwise if the touch moved down, we should begin a drag.
         MaybeCreateMultitaskMenu(active_window);
-        multitask_menu_->BeginDrag(window_location.y(), down);
+      }
+      if (!initial_drag_data_->is_drag) {
+        // If this is the first move after the touch, begin a drag. Note that
+        // `initial_location` was saved in screen coordinates, so we must
+        // convert to window coordinates to pass to the menu.
+        gfx::PointF initial_location = initial_drag_data_->initial_location;
+        wm::ConvertPointFromScreen(target, &initial_location);
+        multitask_menu_->BeginDrag(initial_location.y(), down);
       }
       multitask_menu_->UpdateDrag(window_location.y(), down);
       event->SetHandled();

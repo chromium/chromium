@@ -46,12 +46,10 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
 
  private:
   // Drag data needed to process menu events. `initial_location` is the initial
-  // touch in screen coordinates, `can_open` indicates whether the drag was
-  // started from the target area, and `is_drag` indicates whether this was
-  // actually a drag, since the touch may have pressed and released on a button.
+  // touch in screen coordinates, and `is_drag` indicates whether this was
+  // actually a drag, since the touch may have pressed and released immediately.
   struct InitialDragData {
     gfx::PointF initial_location;
-    bool can_open;
     bool is_drag;
   };
 

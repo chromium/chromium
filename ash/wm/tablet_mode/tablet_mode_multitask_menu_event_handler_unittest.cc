@@ -41,7 +41,8 @@ constexpr int kMenuDragPoint = 110;
 
 class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
  public:
-  TabletModeMultitaskMenuEventHandlerTest() = default;
+  TabletModeMultitaskMenuEventHandlerTest()
+      : scoped_feature_list_(chromeos::wm::features::kWindowLayoutMenu) {}
   TabletModeMultitaskMenuEventHandlerTest(
       const TabletModeMultitaskMenuEventHandlerTest&) = delete;
   TabletModeMultitaskMenuEventHandlerTest& operator=(
@@ -50,12 +51,6 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            chromeos::wm::features::kWindowLayoutMenu,
-        },
-        {});
-
     // This allows us to snap to the bottom in portrait mode.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kUseFirstDisplayAsInternal);
@@ -117,6 +112,9 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
               multitask_menu_view->GetClassName());
     return static_cast<chromeos::MultitaskMenuView*>(multitask_menu_view);
   }
+
+ protected:
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -274,6 +272,11 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ScrollDownGestures) {
   // Scroll down from the top left. Verify that we do not show the menu.
   GenerateScroll(0, 1, kMenuDragPoint);
   ASSERT_FALSE(GetMultitaskMenu());
+
+  // Test that the entry metric is recorded once.
+  histogram_tester_.ExpectBucketCount(
+      chromeos::GetEntryTypeHistogramName(),
+      chromeos::MultitaskMenuEntryType::kGestureScroll, 1);
 }
 
 // Tests that scroll up closes the menu as expected.
@@ -332,14 +335,13 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HalfButtonFunctionality) {
   UpdateDisplay("1600x1000");
   auto window = CreateTestWindow();
   ShowMultitaskMenu(*window);
-  base::HistogramTester histogram_tester;
 
   // Press the primary half split button.
   auto* half_button =
       GetMultitaskMenuView(GetMultitaskMenu())->half_button_for_testing();
   GetEventGenerator()->GestureTapAt(
       half_button->GetBoundsInScreen().left_center());
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       chromeos::GetActionTypeHistogramName(),
       chromeos::MultitaskMenuActionType::kHalfSplitButton, 1);
 
@@ -372,7 +374,6 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HalfButtonFunctionality) {
 
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
   auto window = CreateTestWindow();
-  base::HistogramTester histogram_tester;
 
   // Test that primary button snaps to 0.67f screen ratio.
   PressPartialPrimary(*window);
@@ -388,7 +389,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
   ASSERT_NEAR(work_area_bounds.width() * 0.67f, window->bounds().width(),
               divider_bounds.width());
   ASSERT_FALSE(GetMultitaskMenu());
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       chromeos::GetActionTypeHistogramName(),
       chromeos::MultitaskMenuActionType::kPartialSplitButton, 1);
 
@@ -399,7 +400,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
   ASSERT_NEAR(work_area_bounds.width() * 0.33f, window->bounds().width(),
               divider_bounds.width());
   ASSERT_FALSE(GetMultitaskMenu());
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       chromeos::GetActionTypeHistogramName(),
       chromeos::MultitaskMenuActionType::kPartialSplitButton, 2);
 }
