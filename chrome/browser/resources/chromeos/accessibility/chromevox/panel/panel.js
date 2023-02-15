@@ -110,7 +110,7 @@ export class Panel extends PanelInterface {
     BridgeHelper.registerHandler(
         BridgeConstants.Panel.TARGET,
         BridgeConstants.Panel.Action.ADD_MENU_ITEM,
-        itemData => this.addNodeMenuItem_(itemData));
+        itemData => this.menuManager_.addNodeMenuItem(itemData));
     BridgeHelper.registerHandler(
         BridgeConstants.Panel.TARGET,
         BridgeConstants.Panel.Action.ON_CURRENT_RANGE_CHANGED,
@@ -479,7 +479,7 @@ export class Panel extends PanelInterface {
           async () => this.onClose_());
 
       for (const menuData of ALL_PANEL_MENU_NODE_DATA) {
-        this.addNodeMenu_(menuData);
+        this.menuManager_.addNodeMenu(menuData);
       }
       await BackgroundBridge.PanelBackground.createAllNodeMenuBackgrounds(
           opt_activateMenuTitle);
@@ -679,35 +679,6 @@ export class Panel extends PanelInterface {
         cellCount += groups[i][1].length;
       }
     }
-  }
-
-  /**
-   * Create a new node menu with the given name and add it to the menu bar.
-   * @param {!PanelNodeMenuData} menuData The title/predicate for the new menu.
-   * @private
-   */
-  addNodeMenu_(menuData) {
-    const menu = new PanelNodeMenu(menuData.titleId);
-    $('menu-bar').appendChild(menu.menuBarItemElement);
-    menu.menuBarItemElement.addEventListener(
-        'mouseover',
-        () =>
-            this.menuManager_.activateMenu(menu, true /* activateFirstItem */));
-    menu.menuBarItemElement.addEventListener(
-        'mouseup',
-        event => this.menuManager_.onMouseUpOnMenuTitle(menu, event));
-    $('menus_background').appendChild(menu.menuContainerElement);
-    this.menuManager_.menus.push(menu);
-    this.menuManager_.nodeMenuDictionary[menuData.menuId] = menu;
-  }
-
-  /**
-   * @param {!PanelNodeMenuItemData} itemData
-   * @private
-   */
-  addNodeMenuItem_(itemData) {
-    this.menuManager_.nodeMenuDictionary[itemData.menuId].addItemFromData(
-        itemData);
   }
 
   /**

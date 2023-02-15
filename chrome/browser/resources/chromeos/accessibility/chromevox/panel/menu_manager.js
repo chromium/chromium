@@ -6,7 +6,7 @@
  * @fileoverview Class to manage the ChromeVox menus.
  */
 import {Command, CommandStore} from '../common/command_store.js';
-import {PanelNodeMenuId} from '../common/panel_menu_data.js';
+import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
 import {PanelInterface} from './panel_interface.js';
 import {PanelMenu, PanelNodeMenu, PanelSearchMenu} from './panel_menu.js';
@@ -77,6 +77,28 @@ export class MenuManager {
     $('menus_background').appendChild(menu.menuContainerElement);
     this.menus_.push(menu);
     return menu;
+  }
+
+  /**
+   * Create a new node menu with the given name and add it to the menu bar.
+   * @param {!PanelNodeMenuData} menuData The title/predicate for the new menu.
+   */
+  addNodeMenu(menuData) {
+    const menu = new PanelNodeMenu(menuData.titleId);
+    $('menu-bar').appendChild(menu.menuBarItemElement);
+    menu.menuBarItemElement.addEventListener(
+        'mouseover',
+        () => this.activateMenu(menu, true /* activateFirstItem */));
+    menu.menuBarItemElement.addEventListener(
+        'mouseup', event => this.onMouseUpOnMenuTitle(menu, event));
+    $('menus_background').appendChild(menu.menuContainerElement);
+    this.menus_.push(menu);
+    this.nodeMenuDictionary_[menuData.menuId] = menu;
+  }
+
+  /** @param {!PanelNodeMenuItemData} itemData */
+  addNodeMenuItem(itemData) {
+    this.nodeMenuDictionary_[itemData.menuId].addItemFromData(itemData);
   }
 
   /**
