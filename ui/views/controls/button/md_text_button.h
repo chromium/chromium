@@ -53,8 +53,9 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   // Override the default corner radius of the round rect used for the
   // background and ink drop effects.
-  void SetCornerRadius(float radius);
-  float GetCornerRadius() const;
+  void SetCornerRadius(absl::optional<float> radius);
+  absl::optional<float> GetCornerRadius() const;
+  float GetCornerRadiusValue() const;
 
   // See |custom_padding_|.
   void SetCustomPadding(const absl::optional<gfx::Insets>& padding);
@@ -88,7 +89,8 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   // When set, this provides the background color.
   absl::optional<SkColor> bg_color_override_;
 
-  float corner_radius_ = 0.0f;
+  // Used to set the corner radius of the button.
+  absl::optional<float> corner_radius_;
 
   // Used to override default padding.
   absl::optional<gfx::Insets> custom_padding_;
@@ -96,7 +98,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)
 VIEW_BUILDER_PROPERTY(bool, Prominent)
-VIEW_BUILDER_PROPERTY(float, CornerRadius)
+VIEW_BUILDER_PROPERTY(absl::optional<float>, CornerRadius)
 VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, BgColorOverride)
 VIEW_BUILDER_PROPERTY(absl::optional<gfx::Insets>, CustomPadding)
 VIEW_BUILDER_PROPERTY(MdTextButton::Style, Style)

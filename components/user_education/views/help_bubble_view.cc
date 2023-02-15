@@ -148,7 +148,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
             : delegate_->GetHelpBubbleButtonBorderColorId());
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
-            background_color, stroke_color, GetCornerRadius())));
+            background_color, stroke_color, GetCornerRadiusValue())));
   }
 
   void OnThemeChanged() override {

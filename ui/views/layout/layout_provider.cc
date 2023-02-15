@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_list.h"
@@ -171,6 +172,47 @@ int LayoutProvider::GetCornerRadiusMetric(Emphasis emphasis,
       return 8;
     case Emphasis::kMaximum:
       return std::min(size.width(), size.height()) / 2;
+  }
+}
+
+ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
+  static constexpr auto shape_token_map =
+      base::MakeFixedFlatMap<ShapeContextTokens, ShapeSysTokens>(
+          {{ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
+           {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall}});
+  const auto* it = shape_token_map.find(id);
+  return it == shape_token_map.end() ? ShapeSysTokens::kDefault : it->second;
+}
+
+int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
+                                          const gfx::Size& size) const {
+  if (!features::IsChromeRefresh2023()) {
+    switch (id) {
+      case ShapeContextTokens::kButtonRadius:
+        return 4;
+      case ShapeContextTokens::kTextfieldRadius:
+        return 2;
+      default:
+        return 0;
+    }
+  }
+
+  ShapeSysTokens token = GetShapeSysToken(id);
+  DCHECK_NE(token, ShapeSysTokens::kDefault)
+      << "kDefault token means there is a missing mapping between shape tokens";
+  switch (token) {
+    case ShapeSysTokens::kXSmall:
+      return 4;
+    case ShapeSysTokens::kSmall:
+      return 8;
+    case ShapeSysTokens::kMedium:
+      return 16;
+    case ShapeSysTokens::kLarge:
+      return 24;
+    case ShapeSysTokens::kFull:
+      return std::min(size.width(), size.height()) / 2;
+    default:
+      return 0;
   }
 }
 

@@ -2820,9 +2820,8 @@ void Textfield::DropDraggedText(const ui::DropTargetEvent& event,
 }
 
 float Textfield::GetCornerRadius() {
-  return ::features::IsChromeRefresh2023()
-             ? LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kHigh)
-             : FocusRing::kDefaultCornerRadiusDp;
+  return LayoutProvider::Get()->GetCornerRadiusMetric(
+      ShapeContextTokens::kTextfieldRadius, size());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

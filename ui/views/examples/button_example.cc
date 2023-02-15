@@ -143,8 +143,8 @@ class FabButton : public views::MdTextButton {
         ExamplesColorIds::kColorButtonBackgroundFab);
     SetBackground(CreateBackgroundFromPainter(
         std::make_unique<SolidRoundRectPainterWithShadow>(
-            bg_color, SK_ColorTRANSPARENT, GetCornerRadius(), gfx::Insets(),
-            SkBlendMode::kSrcOver, true, use_shadow_)));
+            bg_color, SK_ColorTRANSPARENT, GetCornerRadiusValue(),
+            gfx::Insets(), SkBlendMode::kSrcOver, true, use_shadow_)));
   }
 
   void OnHoverChanged() {

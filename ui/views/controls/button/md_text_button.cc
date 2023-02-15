@@ -53,9 +53,6 @@ MdTextButton::MdTextButton(PressedCallback callback,
   if (features::IsChromeRefresh2023()) {
     constexpr int kImageSpacing = 8;
     SetImageLabelSpacing(kImageSpacing);
-  } else {
-    SetCornerRadius(
-        LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kLow));
   }
 
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -115,18 +112,22 @@ absl::optional<SkColor> MdTextButton::GetBgColorOverride() const {
   return bg_color_override_;
 }
 
-void MdTextButton::SetCornerRadius(float radius) {
+void MdTextButton::SetCornerRadius(absl::optional<float> radius) {
   if (corner_radius_ == radius)
     return;
   corner_radius_ = radius;
-  LabelButton::SetFocusRingCornerRadius(corner_radius_);
+  LabelButton::SetFocusRingCornerRadius(GetCornerRadiusValue());
   // UpdateColors also updates the background border radius.
   UpdateColors();
   OnPropertyChanged(&corner_radius_, kPropertyEffectsNone);
 }
 
-float MdTextButton::GetCornerRadius() const {
+absl::optional<float> MdTextButton::GetCornerRadius() const {
   return corner_radius_;
+}
+
+float MdTextButton::GetCornerRadiusValue() const {
+  return corner_radius_.value_or(0);
 }
 
 void MdTextButton::OnThemeChanged() {
@@ -158,9 +159,12 @@ void MdTextButton::OnBlur() {
 void MdTextButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   LabelButton::OnBoundsChanged(previous_bounds);
 
-  if (features::IsChromeRefresh2023()) {
+  // A fully rounded corner radius is calculated based on the size of the
+  // button. To avoid overriding a custom corner radius, make sure the default
+  // radius is only called once by checking if the value already exists.
+  if (!corner_radius_) {
     SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(
-        Emphasis::kMaximum, size()));
+        ShapeContextTokens::kButtonRadius, size()));
   }
 }
 
@@ -287,7 +291,7 @@ void MdTextButton::UpdateBackgroundColor() {
 
   SetBackground(
       CreateBackgroundFromPainter(Painter::CreateRoundRectWith1PxBorderPainter(
-          bg_color, stroke_color, corner_radius_)));
+          bg_color, stroke_color, GetCornerRadiusValue())));
 }
 
 void MdTextButton::UpdateColors() {
@@ -300,7 +304,7 @@ void MdTextButton::UpdateColors() {
 
 BEGIN_METADATA(MdTextButton, LabelButton)
 ADD_PROPERTY_METADATA(bool, Prominent)
-ADD_PROPERTY_METADATA(float, CornerRadius)
+ADD_PROPERTY_METADATA(absl::optional<float>, CornerRadius)
 ADD_PROPERTY_METADATA(absl::optional<SkColor>, BgColorOverride)
 ADD_PROPERTY_METADATA(absl::optional<gfx::Insets>, CustomPadding)
 END_METADATA

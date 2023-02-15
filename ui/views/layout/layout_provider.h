@@ -131,6 +131,30 @@ enum class Emphasis {
   kMaximum,
 };
 
+// ShapeContextTokens are enums specific to the context of a Views object.
+// This includes components such as Buttons, Labels, Textfields, Dropdowns, etc.
+// These context tokens are granular to the entire client and will map to
+// sys token values (see below).
+enum class ShapeContextTokens {
+  kButtonRadius,
+  kTextfieldRadius,
+};
+
+// ShapeSysTokens are tokens that map to a fixed value that aligns with UX/UI.
+// Different from context tokens that will expand, sys tokens are more selective
+// and are not used by the client. Context tokens will be mapped to a
+// Sys token which then will fetch the corresponding fixed value.
+enum class ShapeSysTokens {
+  // Default token should never be used and signals a missing shaping token
+  // mapping.
+  kDefault,
+  kXSmall,
+  kSmall,
+  kMedium,
+  kLarge,
+  kFull,
+};
+
 class VIEWS_EXPORT LayoutProvider {
  public:
   LayoutProvider();
@@ -181,6 +205,12 @@ class VIEWS_EXPORT LayoutProvider {
 
   // Returns the shadow elevation metric for the given emphasis.
   virtual int GetShadowElevationMetric(Emphasis emphasis) const;
+
+  // Returns the corner radius related to a specific context token.
+  // TODO(crbug.com/1412134): Replace GetCornerRadiusMetric(Emphasis...) with
+  // context tokens.
+  int GetCornerRadiusMetric(ShapeContextTokens token,
+                            const gfx::Size& size) const;
 
  protected:
   static constexpr int kSmallDialogWidth = 320;
