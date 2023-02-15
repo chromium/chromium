@@ -175,6 +175,11 @@ TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
 
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kSuccess,
             EnableHotspot());
+  // Verifies that Wifi technology will be turned off.
+  EXPECT_EQ(
+      NetworkStateHandler::TECHNOLOGY_AVAILABLE,
+      network_state_test_helper_.network_state_handler()->GetTechnologyState(
+          NetworkTypePattern::WiFi()));
 }
 
 TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
@@ -213,6 +218,11 @@ TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
 
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kNetworkSetupFailure,
             EnableHotspot());
+  // Verifies that Wifi technology will still be on if enable hotspot failed.
+  EXPECT_EQ(
+      NetworkStateHandler::TECHNOLOGY_ENABLED,
+      network_state_test_helper_.network_state_handler()->GetTechnologyState(
+          NetworkTypePattern::WiFi()));
 }
 
 TEST_F(HotspotControllerTest, DisableTetheringSuccess) {

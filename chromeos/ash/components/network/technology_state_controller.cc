@@ -23,6 +23,43 @@ void TechnologyStateController::Init(
   network_state_handler_ = network_state_handler;
 }
 
+void TechnologyStateController::PrepareEnableHotspot(
+    PrepareEnableHotspotCallback callback) {
+  NetworkStateHandler::TechnologyState wifi_state =
+      network_state_handler_->GetTechnologyState(NetworkTypePattern::WiFi());
+  if (wifi_state == NetworkStateHandler::TECHNOLOGY_ENABLED) {
+    auto callback_split = base::SplitOnceCallback(std::move(callback));
+    network_state_handler_->SetTechnologyEnabled(
+        NetworkTypePattern::WiFi(), /*enabled=*/false,
+        base::BindOnce(std::move(callback_split.first),
+                       /*prepare_success=*/true, /*wifi_turned_off=*/true),
+        base::BindOnce(
+            &TechnologyStateController::OnDisableWifiForHotspotFailed,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback_split.second)));
+    return;
+  }
+
+  // Wifi state shouldn't be 'enabling' when attempting to turn on hotspot, as
+  // the UI should prevent such actions.
+  if (wifi_state == NetworkStateHandler::TECHNOLOGY_ENABLING) {
+    NET_LOG(ERROR) << "Wifi technology is enabling when attempting to turn on "
+                   << "hotspot.";
+    std::move(callback).Run(/*prepare_success=*/false,
+                            /*wifi_turned_off=*/false);
+    return;
+  }
+
+  std::move(callback).Run(/*prepare_success=*/true, /*wifi_turned_off=*/false);
+}
+
+void TechnologyStateController::OnDisableWifiForHotspotFailed(
+    PrepareEnableHotspotCallback callback,
+    const std::string& error_name) {
+  NET_LOG(ERROR) << "Failed to disable Wifi during hotspot enable preparation, "
+                 << "error: " << error_name;
+  std::move(callback).Run(/*prepare_success=*/false, /*wifi_turned_off=*/false);
+}
+
 void TechnologyStateController::SetTechnologiesEnabled(
     const NetworkTypePattern& type,
     bool enabled,

@@ -51,6 +51,21 @@ class TechnologyStateControllerTest : public ::testing::Test {
     technology_state_controller_.reset();
   }
 
+  // Returns the pair of prepare_success and wifi_turned_off result of the
+  // TechnologStateHandler::PrepareEnableHotspot method.
+  std::pair<bool, bool> PrepareEnableHotspot() {
+    base::RunLoop run_loop;
+    bool prepare_success, wifi_turned_off;
+    technology_state_controller_->PrepareEnableHotspot(
+        base::BindLambdaForTesting([&](bool success, bool wifi_off) {
+          prepare_success = success;
+          wifi_turned_off = wifi_off;
+          run_loop.QuitClosure();
+        }));
+    run_loop.RunUntilIdle();
+    return std::make_pair(prepare_success, wifi_turned_off);
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -212,6 +227,33 @@ TEST_F(TechnologyStateControllerTest, EnableWifiWhenHotspotOn) {
   run_loop.RunUntilIdle();
   EXPECT_EQ(
       NetworkStateHandler::TECHNOLOGY_ENABLED,
+      network_state_test_helper_.network_state_handler()->GetTechnologyState(
+          NetworkTypePattern::WiFi()));
+}
+
+TEST_F(TechnologyStateControllerTest, PrepareEnableHotspot) {
+  EXPECT_EQ(
+      NetworkStateHandler::TECHNOLOGY_ENABLED,
+      network_state_test_helper_.network_state_handler()->GetTechnologyState(
+          NetworkTypePattern::WiFi()));
+
+  std::pair<bool, bool> result = PrepareEnableHotspot();
+  // Verifies that |prepare_success| will return true.
+  EXPECT_TRUE(result.first);
+  // Verifies that |wifi_turned_off| will return true since Wifi was on.
+  EXPECT_TRUE(result.second);
+  EXPECT_EQ(
+      NetworkStateHandler::TECHNOLOGY_AVAILABLE,
+      network_state_test_helper_.network_state_handler()->GetTechnologyState(
+          NetworkTypePattern::WiFi()));
+
+  result = PrepareEnableHotspot();
+  // Verifies that |prepare_success| will return true.
+  EXPECT_TRUE(result.first);
+  // Verifies that |wifi_turned_off| will return false since Wifi was off.
+  EXPECT_FALSE(result.second);
+  EXPECT_EQ(
+      NetworkStateHandler::TECHNOLOGY_AVAILABLE,
       network_state_test_helper_.network_state_handler()->GetTechnologyState(
           NetworkTypePattern::WiFi()));
 }

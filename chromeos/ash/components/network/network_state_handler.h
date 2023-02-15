@@ -560,6 +560,23 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
                               bool enabled,
                               network_handler::ErrorCallback error_callback);
 
+  // Sets the enabled property for a single technology for |type|. Only
+  // NetworkTypePattern::Primitive, namely: Ethernet, WiFi, Cellular or Tether
+  // are supported. Calls |success_callback| upon success and |error_callback|
+  // upon failure.
+  void SetTechnologyEnabled(const NetworkTypePattern& type,
+                            bool enabled,
+                            base::OnceClosure success_callback,
+                            network_handler::ErrorCallback error_callback);
+
+  // Perform set technology enabled property for |technology|. Runs
+  // |success_callback| upon success and |error_callback| upon failure.
+  void PerformSetTechnologyEnabled(
+      const std::string& technology,
+      bool enabled,
+      base::OnceClosure success_callback,
+      network_handler::ErrorCallback error_callback);
+
   // Implementation for GetNetworkListByType and GetActiveNetworkListByType.
   void GetNetworkListByTypeImpl(const NetworkTypePattern& type,
                                 bool configured_only,

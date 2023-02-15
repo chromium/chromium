@@ -80,6 +80,8 @@ enum HotspotControlResult {
   kNotAllowed,
   // Tethering readiness check failed.
   kReadinessCheckFailed,
+  // Couldn't disable Wifi before enabling hotspot.
+  kDisableWifiFailed,
   // Invalid tethering configuration.
   kInvalidConfiguration,
   // Upstream network is not available.

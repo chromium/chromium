@@ -157,7 +157,8 @@ bool ShillPropertyHandler::IsTechnologyUninitialized(
 void ShillPropertyHandler::SetTechnologyEnabled(
     const std::string& technology,
     bool enabled,
-    network_handler::ErrorCallback error_callback) {
+    network_handler::ErrorCallback error_callback,
+    base::OnceClosure success_callback) {
   if (enabled) {
     if (prohibited_technologies_.find(technology) !=
         prohibited_technologies_.end()) {
@@ -173,8 +174,8 @@ void ShillPropertyHandler::SetTechnologyEnabled(
     disabling_technologies_.erase(technology);
     shill_manager_->EnableTechnology(
         technology,
-        base::BindOnce(&NetworkMetricsHelper::LogEnableTechnologyResult,
-                       technology, /*success=*/true, absl::nullopt),
+        base::BindOnce(&ShillPropertyHandler::EnableTechnologySuccess,
+                       AsWeakPtr(), technology, std::move(success_callback)),
         base::BindOnce(&ShillPropertyHandler::EnableTechnologyFailed,
                        AsWeakPtr(), technology, std::move(error_callback)));
   } else {
@@ -183,8 +184,8 @@ void ShillPropertyHandler::SetTechnologyEnabled(
     disabling_technologies_.insert(technology);
     shill_manager_->DisableTechnology(
         technology,
-        base::BindOnce(&NetworkMetricsHelper::LogDisableTechnologyResult,
-                       technology, /*success=*/true, absl::nullopt),
+        base::BindOnce(&ShillPropertyHandler::DisableTechnologySuccess,
+                       AsWeakPtr(), technology, std::move(success_callback)),
         base::BindOnce(&ShillPropertyHandler::DisableTechnologyFailed,
                        AsWeakPtr(), technology, std::move(error_callback)));
   }
@@ -569,6 +570,13 @@ void ShillPropertyHandler::UpdateProhibitedTechnologies(
   listener_->TechnologyListChanged();
 }
 
+void ShillPropertyHandler::EnableTechnologySuccess(
+    const std::string& technology,
+    base::OnceClosure success_callback) {
+  NetworkMetricsHelper::LogEnableTechnologyResult(technology, /*success=*/true);
+  std::move(success_callback).Run();
+}
+
 void ShillPropertyHandler::EnableTechnologyFailed(
     const std::string& technology,
     network_handler::ErrorCallback error_callback,
@@ -582,6 +590,14 @@ void ShillPropertyHandler::EnableTechnologyFailed(
       "EnableTechnology Failed", technology, std::move(error_callback),
       dbus_error_name, dbus_error_message);
   listener_->TechnologyListChanged();
+}
+
+void ShillPropertyHandler::DisableTechnologySuccess(
+    const std::string& technology,
+    base::OnceClosure success_callback) {
+  NetworkMetricsHelper::LogDisableTechnologyResult(technology,
+                                                   /*success=*/true);
+  std::move(success_callback).Run();
 }
 
 void ShillPropertyHandler::DisableTechnologyFailed(

@@ -7,6 +7,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
 #include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -98,6 +99,21 @@ void HotspotController::OnCheckTetheringReadiness(
         hotspot_config::mojom::HotspotControlResult::kReadinessCheckFailed);
     return;
   }
+  technology_state_controller_->PrepareEnableHotspot(
+      base::BindOnce(&HotspotController::OnPrepareEnableHotspotCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void HotspotController::OnPrepareEnableHotspotCompleted(bool prepare_success,
+                                                        bool wifi_turned_off) {
+  NET_LOG(EVENT) << "Prepare enable hotspot completed, success: "
+                 << prepare_success << ", wifi turned off " << wifi_turned_off;
+  current_request_->wifi_turned_off = wifi_turned_off;
+  if (!prepare_success) {
+    CompleteCurrentRequest(
+        hotspot_config::mojom::HotspotControlResult::kDisableWifiFailed);
+    return;
+  }
   PerformSetTetheringEnabled(/*enabled=*/true);
 }
 
@@ -126,6 +142,13 @@ void HotspotController::OnSetTetheringEnabledFailure(
 
 void HotspotController::CompleteCurrentRequest(
     hotspot_config::mojom::HotspotControlResult result) {
+  if (current_request_->wifi_turned_off && current_request_->enabled &&
+      result != hotspot_config::mojom::HotspotControlResult::kSuccess) {
+    // Turn Wifi back on if failed to enable hotspot.
+    technology_state_controller_->SetTechnologiesEnabled(
+        NetworkTypePattern::WiFi(), /*enabled=*/true,
+        network_handler::ErrorCallback());
+  }
   std::move(current_request_->callback).Run(result);
   current_request_.reset();
 

@@ -63,6 +63,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
     ~HotspotControlRequest();
 
     bool enabled;
+    bool wifi_turned_off = false;
     HotspotControlCallback callback;
   };
 
@@ -78,6 +79,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
   void OnSetTetheringEnabledSuccess(const std::string& result);
   void OnSetTetheringEnabledFailure(const std::string& error_name,
                                     const std::string& error_message);
+  void OnPrepareEnableHotspotCompleted(bool prepare_success,
+                                       bool wifi_turned_off);
   void OnPrepareEnableWifiCompleted(
       base::OnceCallback<void(bool success)> callback,
       hotspot_config::mojom::HotspotControlResult control_result);

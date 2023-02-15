@@ -330,33 +330,58 @@ void NetworkStateHandler::SetTechnologiesEnabled(
     network_handler::ErrorCallback error_callback) {
   std::vector<std::string> technologies = GetTechnologiesForType(type);
   for (const std::string& technology : technologies) {
-    if (technology == kTypeTether) {
-      if (tether_technology_state_ != TECHNOLOGY_ENABLED &&
-          tether_technology_state_ != TECHNOLOGY_AVAILABLE) {
-        NET_LOG(ERROR) << "SetTechnologyEnabled() called for the Tether "
-                       << "DeviceState, but the current state was: "
-                       << tether_technology_state_;
-        network_handler::RunErrorCallback(
-            std::move(error_callback),
-            NetworkConnectionHandler::kErrorEnabledOrDisabledWhenNotAvailable);
-        continue;
-      }
-
-      // Tether does not exist in Shill, so set |tether_technology_state_| and
-      // skip the below interactions with |shill_property_handler_|.
-      tether_technology_state_ =
-          enabled ? TECHNOLOGY_ENABLED : TECHNOLOGY_AVAILABLE;
-      continue;
-    }
-
-    if (!shill_property_handler_->IsTechnologyAvailable(technology))
-      continue;
-    NET_LOG(USER) << "SetTechnologyEnabled " << technology << ":" << enabled;
-    shill_property_handler_->SetTechnologyEnabled(technology, enabled,
-                                                  std::move(error_callback));
+    PerformSetTechnologyEnabled(technology, enabled, base::DoNothing(),
+                                std::move(error_callback));
   }
+
   // Signal Device/Technology state changed.
   NotifyDeviceListChanged();
+}
+
+void NetworkStateHandler::SetTechnologyEnabled(
+    const NetworkTypePattern& type,
+    bool enabled,
+    base::OnceClosure success_callback,
+    network_handler::ErrorCallback error_callback) {
+  std::string technology = GetTechnologyForType(type);
+  PerformSetTechnologyEnabled(technology, enabled, std::move(success_callback),
+                              std::move(error_callback));
+
+  // Signal Device/Technology state changed.
+  NotifyDeviceListChanged();
+}
+
+void NetworkStateHandler::PerformSetTechnologyEnabled(
+    const std::string& technology,
+    bool enabled,
+    base::OnceClosure success_callback,
+    network_handler::ErrorCallback error_callback) {
+  if (technology == kTypeTether) {
+    if (tether_technology_state_ != TECHNOLOGY_ENABLED &&
+        tether_technology_state_ != TECHNOLOGY_AVAILABLE) {
+      NET_LOG(ERROR) << "SetTechnologyEnabled() called for the Tether "
+                     << "DeviceState, but the current state was: "
+                     << tether_technology_state_;
+      network_handler::RunErrorCallback(
+          std::move(error_callback),
+          NetworkConnectionHandler::kErrorEnabledOrDisabledWhenNotAvailable);
+      return;
+    }
+
+    // Tether does not exist in Shill, so set |tether_technology_state_| and
+    // skip the below interactions with |shill_property_handler_|.
+    tether_technology_state_ =
+        enabled ? TECHNOLOGY_ENABLED : TECHNOLOGY_AVAILABLE;
+    return;
+  }
+
+  if (!shill_property_handler_->IsTechnologyAvailable(technology)) {
+    return;
+  }
+  NET_LOG(USER) << "SetTechnologyEnabled " << technology << ":" << enabled;
+  shill_property_handler_->SetTechnologyEnabled(technology, enabled,
+                                                std::move(error_callback),
+                                                std::move(success_callback));
 }
 
 void NetworkStateHandler::SetTetherTechnologyState(

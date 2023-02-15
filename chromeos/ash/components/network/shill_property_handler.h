@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -122,9 +123,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
 
   // Asynchronously sets the enabled state for |technology|.
   // Note: Modifies Manager state. Calls |error_callback| on failure.
-  void SetTechnologyEnabled(const std::string& technology,
-                            bool enabled,
-                            network_handler::ErrorCallback error_callback);
+  void SetTechnologyEnabled(
+      const std::string& technology,
+      bool enabled,
+      network_handler::ErrorCallback error_callback,
+      base::OnceClosure success_callback = base::DoNothing());
 
   // Asynchronously sets the prohibited state for every network technology
   // listed in |technologies|. Note: Modifies Manager state.
@@ -204,10 +207,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
   void UpdateUninitializedTechnologies(const base::Value& technologies);
   void UpdateProhibitedTechnologies(const std::string& technologies);
 
+  void EnableTechnologySuccess(const std::string& technology,
+                               base::OnceClosure success_callback);
+
   void EnableTechnologyFailed(const std::string& technology,
                               network_handler::ErrorCallback error_callback,
                               const std::string& dbus_error_name,
                               const std::string& dbus_error_message);
+
+  void DisableTechnologySuccess(const std::string& technology,
+                                base::OnceClosure success_callback);
 
   void DisableTechnologyFailed(const std::string& technology,
                                network_handler::ErrorCallback error_callback,

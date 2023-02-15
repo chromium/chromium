@@ -47,6 +47,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TechnologyStateController {
                               bool enabled,
                               network_handler::ErrorCallback error_callback);
 
+  // Callback for the PrepareEnableHotspot method. |wifi_turned_off| indicates
+  // whether Wifi technology is turned off during the preparation.
+  // |prepare_success| indicates whether the preparation completes successfully.
+  using PrepareEnableHotspotCallback =
+      base::OnceCallback<void(bool prepare_success, bool wifi_turned_off)>;
+
+  // Prepare for enable hotspot by disabling Wifi technology if active. Calls
+  // |callback| when the preparation is completed.
+  void PrepareEnableHotspot(PrepareEnableHotspotCallback callback);
+
   void set_hotspot_operation_delegate(
       HotspotOperationDelegate* hotspot_operation_delegate) {
     hotspot_operation_delegate_ = hotspot_operation_delegate;
@@ -56,6 +66,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TechnologyStateController {
   NetworkStateHandler* network_state_handler_ = nullptr;
   HotspotOperationDelegate* hotspot_operation_delegate_ = nullptr;
 
+  void OnDisableWifiForHotspotFailed(PrepareEnableHotspotCallback callback,
+                                     const std::string& error_name);
   void OnPrepareEnableWifiCompleted(
       const NetworkTypePattern& type,
       network_handler::ErrorCallback error_callback,
