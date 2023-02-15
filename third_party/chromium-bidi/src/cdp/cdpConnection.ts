@@ -32,16 +32,16 @@ export class CdpConnection {
   readonly #browserCdpClient: CdpClient;
   readonly #sessionCdpClients: Map<string, CdpClient> = new Map();
   readonly #commandCallbacks: Map<number, CdpCallbacks> = new Map();
-  readonly #log: (...message: unknown[]) => void;
+  readonly #log: (...messages: unknown[]) => void;
 
   #nextId = 0;
 
   constructor(
     transport: ITransport,
-    logCdp: (...message: unknown[]) => void = () => {}
+    log: (...messages: unknown[]) => void = () => {}
   ) {
     this.#transport = transport;
-    this.#log = logCdp;
+    this.#log = log;
     this.#transport.setOnMessage(this._onMessage);
     this.#browserCdpClient = createClient(this, null);
   }
@@ -92,15 +92,16 @@ export class CdpConnection {
       }
 
       const messageStr = JSON.stringify(messageObj);
+      const messagePretty = JSON.stringify(messageObj, null, 2);
       this.#transport.sendMessage(messageStr);
-      this.#log(`sent > ${messageStr}`);
+      this.#log('sent ▸', messagePretty);
     });
   }
 
   private _onMessage = async (message: string) => {
-    this.#log(`received < ${message}`);
-
     const parsed = JSON.parse(message);
+    const messagePretty = JSON.stringify(parsed, null, 2);
+    this.#log('received ◂', messagePretty);
 
     // Update client map if a session is attached or detached.
     // Listen for these events on every session.

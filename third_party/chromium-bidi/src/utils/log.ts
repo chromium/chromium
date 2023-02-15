@@ -19,12 +19,7 @@ export enum LogType {
   bidi = 'BiDi Messages',
   browsingContexts = 'Browsing Contexts',
   cdp = 'CDP',
-  commandParser = 'Command parser',
   system = 'System',
 }
 
-export function log(logType: LogType): (...message: unknown[]) => void {
-  return (...messages: unknown[]) => {
-    console.log(logType, ...messages);
-  };
-}
+export type LoggerFn = (type: LogType, ...messages: unknown[]) => void;

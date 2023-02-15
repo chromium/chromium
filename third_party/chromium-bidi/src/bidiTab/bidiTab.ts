@@ -25,17 +25,14 @@ import type {
   Script,
   Session,
 } from '../protocol/protocol';
-import {LogType, log} from '../utils/log.js';
+import {generatePage, log} from './mapperTabPage.js';
 import {BidiParser} from '../bidiMapper/CommandProcessor.js';
 import {BidiServer} from '../bidiMapper/BidiServer.js';
 import {BidiTransport} from '../bidiMapper/bidiMapper.js';
 import {CdpConnection} from '../cdp/index.js';
 import {ITransport} from '../utils/transport.js';
+import {LogType} from '../utils/log.js';
 import {OutgoingBidiMessage} from '../bidiMapper/OutgoingBidiMessage.js';
-import {generatePage} from './mapperTabPage.js';
-
-const logSystem = log(LogType.system);
-const logBidi = log(LogType.bidi);
 
 declare global {
   interface Window {
@@ -68,14 +65,14 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   const bidiServer = await _createBidiServer(selfTargetId);
 
-  logSystem('launched');
+  log(LogType.system, 'Launched');
 
   bidiServer.emitOutgoingMessage(
     OutgoingBidiMessage.createResolved({launched: true}, null)
   );
 })();
 
-function _createCdpConnection() {
+function createCdpConnection() {
   // A CdpTransport implementation that uses the window.cdp bindings
   // injected by Target.exposeDevToolsProtocol.
   class WindowCdpTransport implements ITransport {
@@ -103,7 +100,12 @@ function _createCdpConnection() {
     }
   }
 
-  return new CdpConnection(new WindowCdpTransport(), log(LogType.cdp));
+  return new CdpConnection(
+    new WindowCdpTransport(),
+    (...messages: unknown[]) => {
+      log(LogType.cdp, ...messages);
+    }
+  );
 }
 
 async function _createBidiServer(selfTargetId: string) {
@@ -113,7 +115,7 @@ async function _createBidiServer(selfTargetId: string) {
 
     constructor() {
       window.onBidiMessage = (messageStr: string) => {
-        logBidi('received < ', messageStr);
+        log(LogType.bidi, 'received ◂', messageStr);
         let messageObj;
         try {
           messageObj = WindowBidiTransport.#parseBidiMessage(messageStr);
@@ -141,8 +143,8 @@ async function _createBidiServer(selfTargetId: string) {
 
     async sendMessage(message: Message.OutgoingMessage): Promise<void> {
       const messageStr = JSON.stringify(message);
-      logBidi('sent > ', messageStr);
       window.sendBidiResponse(messageStr);
+      log(LogType.bidi, 'sent ▸', messageStr);
     }
 
     close() {
@@ -260,9 +262,10 @@ async function _createBidiServer(selfTargetId: string) {
 
   return await BidiServer.createAndStart(
     new WindowBidiTransport(),
-    _createCdpConnection(),
+    createCdpConnection(),
     selfTargetId,
-    new BidiParserImpl()
+    new BidiParserImpl(),
+    log
   );
 }
 
@@ -306,7 +309,7 @@ class BidiParserImpl implements BidiParser {
 async function _waitSelfTargetId(): Promise<string> {
   return await new Promise((resolve) => {
     window.setSelfTargetId = (targetId) => {
-      logSystem(`current target ID: ${targetId}`);
+      log(LogType.system, 'Current target ID:', targetId);
       resolve(targetId);
     };
   });

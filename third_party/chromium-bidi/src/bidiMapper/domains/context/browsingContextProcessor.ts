@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
   BrowsingContext,
   CDP,
@@ -22,7 +21,7 @@ import {
   Script,
 } from '../../../protocol/protocol.js';
 import {CdpClient, CdpConnection} from '../../CdpConnection.js';
-import {LogType, log} from '../../../utils/log.js';
+import {LogType, LoggerFn} from '../../../utils/log.js';
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {BrowsingContextStorage} from './browsingContextStorage.js';
 import {IEventManager} from '../events/EventManager.js';
@@ -30,28 +29,30 @@ import Protocol from 'devtools-protocol';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
 
-const logContext = log(LogType.browsingContexts);
-
 export class BrowsingContextProcessor {
-  readonly sessions: Set<string> = new Set();
-  readonly #cdpConnection: CdpConnection;
-  readonly #selfTargetId: string;
-  readonly #eventManager: IEventManager;
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #cdpConnection: CdpConnection;
+  readonly #eventManager: IEventManager;
+  readonly #logger?: LoggerFn;
   readonly #realmStorage: RealmStorage;
+  readonly #selfTargetId: string;
+  readonly #sessions: Set<string>;
 
   constructor(
     realmStorage: RealmStorage,
     cdpConnection: CdpConnection,
     selfTargetId: string,
     eventManager: IEventManager,
-    browsingContextStorage: BrowsingContextStorage
+    browsingContextStorage: BrowsingContextStorage,
+    logger?: LoggerFn
   ) {
-    this.#cdpConnection = cdpConnection;
-    this.#selfTargetId = selfTargetId;
-    this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#cdpConnection = cdpConnection;
+    this.#eventManager = eventManager;
+    this.#logger = logger;
     this.#realmStorage = realmStorage;
+    this.#selfTargetId = selfTargetId;
+    this.#sessions = new Set();
 
     this.#setBrowserClientEventListeners(this.#cdpConnection.browserClient());
   }
@@ -70,10 +71,10 @@ export class BrowsingContextProcessor {
   }
 
   #setSessionEventListeners(sessionId: string) {
-    if (this.sessions.has(sessionId)) {
+    if (this.#sessions.has(sessionId)) {
       return;
     }
-    this.sessions.add(sessionId);
+    this.#sessions.add(sessionId);
 
     const sessionCdpClient = this.#cdpConnection.getCdpClient(sessionId);
 
@@ -129,7 +130,11 @@ export class BrowsingContextProcessor {
       return;
     }
 
-    logContext(`AttachedToTarget event received: ${JSON.stringify(params)}`);
+    this.#logger?.(
+      LogType.browsingContexts,
+      'AttachedToTarget event received:',
+      JSON.stringify(params, null, 2)
+    );
 
     this.#setSessionEventListeners(sessionId);
 

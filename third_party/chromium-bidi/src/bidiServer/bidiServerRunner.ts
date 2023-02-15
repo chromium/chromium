@@ -19,10 +19,10 @@ import debug from 'debug';
 import http from 'http';
 import websocket from 'websocket';
 
-const log = debug('bidiServerRunner:log');
-const debugInternal = debug('bidiServerRunner:internal');
-const debugSend = debug('bidiServerRunner:SEND ►');
-const debugRecv = debug('bidiServerRunner:RECV ◀');
+const log = debug('bidiServer:log');
+const debugInternal = debug('bidiServer:internal');
+const debugSend = debug('bidiServer:SEND ▸');
+const debugRecv = debug('bidiServer:RECV ◂');
 
 async function getHttpRequestPayload(
   request: http.IncomingMessage
@@ -79,12 +79,10 @@ export class BidiServerRunner {
           );
         } else if (request.url.startsWith('/session')) {
           debugInternal(
-            `Unknown session command ${JSON.stringify(
-              request.method
-            )} request for ${JSON.stringify(
+            `Unknown session command ${request.method} request for ${
               request.url
-            )} with payload ${JSON.stringify(
-              await getHttpRequestPayload(request)
+            } with payload ${await getHttpRequestPayload(
+              request
             )}. 200 returned.`
           );
 
@@ -113,7 +111,7 @@ export class BidiServerRunner {
       }
     );
     server.listen(bidiPort, () => {
-      log(`Server is listening on port ${bidiPort}`);
+      log('Server is listening on port', bidiPort);
     });
 
     const wsServer: websocket.server = new websocket.server({
@@ -122,9 +120,7 @@ export class BidiServerRunner {
     });
 
     wsServer.on('request', async (request: websocket.request) => {
-      debugInternal(
-        `new WS request received: ${JSON.stringify(request.resourceURL.path)}`
-      );
+      debugInternal('new WS request received:', request.resourceURL.path);
 
       const bidiServer = new BidiServer();
 

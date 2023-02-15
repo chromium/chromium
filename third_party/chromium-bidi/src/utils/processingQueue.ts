@@ -1,5 +1,3 @@
-import {LogType, log} from './log.js';
-
 /**
  * Copyright 2022 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -17,22 +15,25 @@ import {LogType, log} from './log.js';
  * limitations under the License.
  */
 
-const logSystem = log(LogType.system);
+import {LogType, LoggerFn} from './log.js';
 
 export class ProcessingQueue<T> {
-  readonly #queue: Promise<T>[] = [];
-  readonly #processor: (arg: T) => Promise<void>;
   readonly #catch: (error: unknown) => Promise<void>;
+  readonly #logger?: LoggerFn;
+  readonly #processor: (arg: T) => Promise<void>;
+  readonly #queue: Promise<T>[] = [];
 
   // Flag to keep only 1 active processor.
   #isProcessing = false;
 
   constructor(
     processor: (arg: T) => Promise<void>,
-    _catch: (error: unknown) => Promise<void> = () => Promise.resolve()
+    _catch: (error: unknown) => Promise<void> = () => Promise.resolve(),
+    logger?: LoggerFn
   ) {
     this.#catch = _catch;
     this.#processor = processor;
+    this.#logger = logger;
   }
 
   add(entry: Promise<T>) {
@@ -53,7 +54,7 @@ export class ProcessingQueue<T> {
         await entryPromise
           .then((entry) => this.#processor(entry))
           .catch((e) => {
-            logSystem(`Event was not processed:${e}`);
+            this.#logger?.(LogType.system, 'Event was not processed:', e);
             this.#catch(e);
           })
           .finally();

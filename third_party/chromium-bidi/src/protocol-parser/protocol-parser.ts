@@ -23,10 +23,7 @@
 const MAX_INT = 9007199254740991 as const;
 
 import {EventResponse, Message} from '../protocol/protocol.js';
-import {LogType, log} from '../utils/log.js';
 import {ZodType, z as zod} from 'zod';
-
-const logParser = log(LogType.commandParser);
 
 export function parseObject<T extends ZodType>(
   obj: unknown,
@@ -36,12 +33,6 @@ export function parseObject<T extends ZodType>(
   if (parseResult.success) {
     return parseResult.data;
   }
-  logParser(
-    `Command ${JSON.stringify(obj)} parse failed: ${JSON.stringify(
-      parseResult
-    )}.`
-  );
-
   const errorMessage = parseResult.error.errors
     .map(
       (e) =>

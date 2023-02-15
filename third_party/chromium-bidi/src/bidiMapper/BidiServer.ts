@@ -21,6 +21,7 @@ import {BrowsingContextStorage} from './domains/context/browsingContextStorage.j
 import {CdpConnection} from './CdpConnection.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {EventManager} from './domains/events/EventManager.js';
+import {LoggerFn} from '../utils/log.js';
 import type {Message} from '../protocol/protocol.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
@@ -36,18 +37,23 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #commandProcessor: CommandProcessor;
   #browsingContextStorage: BrowsingContextStorage;
   #realmStorage: RealmStorage;
+  #logger?: LoggerFn;
 
   private constructor(
     bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
     selfTargetId: string,
-    parser?: BidiParser
+    parser?: BidiParser,
+    logger?: LoggerFn
   ) {
     super();
+    this.#logger = logger;
     this.#browsingContextStorage = new BrowsingContextStorage();
     this.#realmStorage = new RealmStorage();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
-      this.#processOutgoingMessage
+      this.#processOutgoingMessage,
+      undefined,
+      this.#logger
     );
     this.#transport = bidiTransport;
     this.#transport.setOnMessage(this.#handleIncomingMessage);
@@ -57,7 +63,8 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
       new EventManager(this),
       selfTargetId,
       parser,
-      this.#browsingContextStorage
+      this.#browsingContextStorage,
+      this.#logger
     );
     this.#commandProcessor.on(
       'response',
@@ -71,13 +78,15 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
     selfTargetId: string,
-    parser?: BidiParser
+    parser?: BidiParser,
+    logger?: LoggerFn
   ): Promise<BidiServer> {
     const server = new BidiServer(
       bidiTransport,
       cdpConnection,
       selfTargetId,
-      parser
+      parser,
+      logger
     );
     const cdpClient = cdpConnection.browserClient();
 
