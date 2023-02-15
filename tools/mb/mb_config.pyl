@@ -651,6 +651,7 @@
       'android_arm64-builder-perf': 'official_reclient_minimal_symbols_android_arm64',
       'android_arm64-builder-perf-pgo': 'official_reclient_minimal_symbols_android_arm64_pgo',
       'android_arm64_high_end-builder-perf': 'official_reclient_minimal_symbols_android_arm64_high_end',
+      'android_arm64_high_end-builder-perf-pgo': 'official_reclient_minimal_symbols_android_arm64_high_end_pgo',
       'chromecast-linux-builder-perf': 'cast_binary_size_reclient',
       'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official_reclient',
       'chromeos-arm-generic-lacros-builder-perf': 'chromeos_arm-generic_lacros_official_reclient',
@@ -1311,6 +1312,7 @@
       'Android arm64 Compile Perf': 'official_goma_minimal_symbols_android_arm64',
       'Android arm64 Compile Perf PGO': 'official_goma_minimal_symbols_android_arm64_pgo',
       'Android arm64 High End Compile Perf': 'official_goma_minimal_symbols_android_arm64_high_end',
+      'Android arm64 High End Compile Perf PGO': 'official_goma_minimal_symbols_android_arm64_high_end_pgo',
       'Chromeos Amd64 Generic Lacros Builder Perf': 'chromeos_amd64-generic_lacros_official',
       'Fuchsia Builder Perf': 'official_goma_fuchsia_arm64_perf',
       'Fuchsia Builder Perf x64': 'official_goma_fuchsia_x64_perf',
@@ -3254,6 +3256,10 @@
       'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'android_high_end'
     ],
 
+    'official_goma_minimal_symbols_android_arm64_high_end_pgo': [
+      'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo', 'android_high_end'
+    ],
+
     'official_goma_minimal_symbols_android_arm64_pgo': [
       'official', 'goma', 'minimal_symbols', 'android', 'arm64'
     ],
@@ -3372,15 +3378,22 @@
     'official_reclient_minimal_symbols_android': [
       'official', 'reclient', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo'
     ],
+
     'official_reclient_minimal_symbols_android_arm64': [
       'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo'
     ],
+
     'official_reclient_minimal_symbols_android_arm64_high_end': [
       'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'android_high_end'
     ],
+    'official_reclient_minimal_symbols_android_arm64_high_end_pgo': [
+      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo', 'android_high_end'
+    ],
+
     'official_reclient_minimal_symbols_android_arm64_pgo': [
       'official', 'reclient', 'minimal_symbols', 'android', 'arm64'
     ],
+
     'official_reclient_minimal_symbols_android_pgo': [
       'official', 'reclient', 'minimal_symbols', 'android'
     ],

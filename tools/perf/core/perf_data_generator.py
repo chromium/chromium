@@ -916,7 +916,37 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-pixel6-perf-pgo': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_clank_trichrome_bundle',
+        }],
+        'platform':
+        'android-trichrome-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'oriole',
+            'device_os': 'TP1A.220624.021',
+            'device_os_flavor': 'google',
+        },
+    },
     'android-pixel6-pro-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_clank_trichrome_bundle',
+        }],
+        'platform':
+        'android-trichrome-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'raven',
+            'device_os': 'TP1A.220624.021',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel6-pro-perf-pgo': {
         'tests': [{
             'isolate':
             'performance_test_suite_android_clank_trichrome_bundle',
