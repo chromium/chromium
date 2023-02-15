@@ -1,5 +1,6 @@
 source_set("feed_ios_public") {
   sources = [
+    "experiments_translator.h",
     "notice_card_tracker.cc",
     "notice_card_tracker.h",
     "pref_names.cc",

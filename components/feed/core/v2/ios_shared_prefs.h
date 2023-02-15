@@ -5,17 +5,13 @@
 #ifndef COMPONENTS_FEED_CORE_V2_IOS_SHARED_PREFS_H_
 #define COMPONENTS_FEED_CORE_V2_IOS_SHARED_PREFS_H_
 
-#include <map>
-#include <string>
-#include <vector>
+#include "components/feed/core/v2/ios_shared_experiments_translator.h"
 
 class PrefService;
 
 namespace feed {
 
-// A map of trial names (key) and list of group names/IDs (value)
-// sent from the server.
-typedef std::map<std::string, std::vector<std::string>> Experiments;
+using ::feed::Experiments;
 
 namespace prefs {
 void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value);

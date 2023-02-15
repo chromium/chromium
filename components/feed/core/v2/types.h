@@ -19,7 +19,7 @@
 #include "components/feed/core/proto/v2/wire/info_card.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/ios_shared_prefs.h"
+#include "components/feed/core/v2/ios_shared_experiments_translator.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/types.h"
 

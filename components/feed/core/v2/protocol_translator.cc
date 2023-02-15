@@ -19,6 +19,7 @@
 #include "components/feed/core/proto/v2/wire/stream_structure.pb.h"
 #include "components/feed/core/proto/v2/wire/token.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/ios_shared_experiments_translator.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/feed_feature_list.h"
@@ -363,36 +364,8 @@ RefreshResponseData TranslateWireResponse(
     session_id = chrome_response_metadata.session_id();
   }
 
-  absl::optional<Experiments> experiments = absl::nullopt;
-  if (chrome_response_metadata.experiments_size() > 0) {
-    // Set up the Experiments map that contains the trial -> list of groups.
-    Experiments e;
-    for (feedwire::Experiment exp : chrome_response_metadata.experiments()) {
-      if (exp.has_trial_name() && exp.has_group_name()) {
-        // Extract experiment in response that contains both trial and
-        // group names.
-        if (e.find(exp.trial_name()) != e.end()) {
-          e[exp.trial_name()].push_back(exp.group_name());
-        } else {
-          std::vector<std::string> v{exp.group_name()};
-          e[exp.trial_name()] = v;
-        }
-      } else if (exp.has_experiment_id() &&
-                 base::FeatureList::IsEnabled(kFeedExperimentIDTagging)) {
-        // Extract experiment in response that contains an experiment ID.
-        std::string trial_name =
-            exp.has_trial_name() ? exp.trial_name() : kDiscoverFeedExperiments;
-        if (e.find(trial_name) != e.end()) {
-          e[trial_name].push_back(exp.experiment_id());
-        } else {
-          std::vector<std::string> v{exp.experiment_id()};
-          e[trial_name] = v;
-        }
-      }
-    }
-    if (!e.empty())
-      experiments = std::move(e);
-  }
+  absl::optional<Experiments> experiments =
+      TranslateExperiments(chrome_response_metadata.experiments());
 
   MetricsReporter::ActivityLoggingEnabled(
       chrome_response_metadata.logging_enabled());

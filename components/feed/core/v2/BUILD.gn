@@ -179,12 +179,15 @@ source_set("feed_core_v2") {
 # This smaller source set is used by Chrome for iOS.
 source_set("ios_shared") {
   sources = [
+    "ios_shared_experiments_translator.cc",
+    "ios_shared_experiments_translator.h",
     "ios_shared_prefs.cc",
     "ios_shared_prefs.h",
   ]
   deps = [
     "//base",
     "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/proto:proto_v2",
     "//components/prefs",
   ]
 }
@@ -216,6 +219,7 @@ source_set("core_unit_tests") {
     "feed_store_unittest.cc",
     "feedstore_util_unittest.cc",
     "image_fetcher_unittest.cc",
+    "ios_shared_experiments_translator_unittest.cc",
     "ios_shared_prefs_unittest.cc",
     "metrics_reporter_unittest.cc",
     "operation_token_unittest.cc",

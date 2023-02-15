@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/feed_response.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
+#include "components/feed/core/v2/ios_shared_experiments_translator.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/feed_feature_list.h"
