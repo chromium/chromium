@@ -28,10 +28,8 @@ using FeedbackPrivateHooksDelegateTest = NativeExtensionBindingsSystemUnittest;
 #endif
 TEST_F(FeedbackPrivateHooksDelegateTest, MAYBE_SendFeedback) {
   // Initialize bindings system.
-  bindings_system()
-      ->api_system()
-      ->GetHooksForAPI("feedbackPrivate")
-      ->SetDelegate(std::make_unique<FeedbackPrivateHooksDelegate>());
+  bindings_system()->api_system()->RegisterHooksDelegate(
+      "feedbackPrivate", std::make_unique<FeedbackPrivateHooksDelegate>());
 
   // The feedbackPrivate API is restricted to allowlisted extensions and WebUI,
   // so create a WebUI context to test on.

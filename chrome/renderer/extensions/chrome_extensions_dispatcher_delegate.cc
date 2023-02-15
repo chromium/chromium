@@ -235,25 +235,25 @@ void ChromeExtensionsDispatcherDelegate::InitializeBindingsSystem(
     extensions::Dispatcher* dispatcher,
     extensions::NativeExtensionBindingsSystem* bindings_system) {
   extensions::APIBindingsSystem* bindings = bindings_system->api_system();
-  bindings->GetHooksForAPI("app")->SetDelegate(
-      std::make_unique<extensions::AppHooksDelegate>(
-          dispatcher, bindings->request_handler(),
-          bindings_system->GetIPCMessageSender()));
-  bindings->GetHooksForAPI("extension")
-      ->SetDelegate(std::make_unique<extensions::ExtensionHooksDelegate>(
-          bindings_system->messaging_service()));
-  bindings->GetHooksForAPI("tabs")->SetDelegate(
-      std::make_unique<extensions::TabsHooksDelegate>(
-          bindings_system->messaging_service()));
-  bindings->GetHooksForAPI("identity")
-      ->SetDelegate(std::make_unique<extensions::IdentityHooksDelegate>());
+  bindings->RegisterHooksDelegate(
+      "app", std::make_unique<extensions::AppHooksDelegate>(
+                 dispatcher, bindings->request_handler(),
+                 bindings_system->GetIPCMessageSender()));
+  bindings->RegisterHooksDelegate(
+      "extension", std::make_unique<extensions::ExtensionHooksDelegate>(
+                       bindings_system->messaging_service()));
+  bindings->RegisterHooksDelegate(
+      "tabs", std::make_unique<extensions::TabsHooksDelegate>(
+                  bindings_system->messaging_service()));
+  bindings->RegisterHooksDelegate(
+      "identity", std::make_unique<extensions::IdentityHooksDelegate>());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  bindings->GetHooksForAPI("accessibilityPrivate")
-      ->SetDelegate(
-          std::make_unique<extensions::AccessibilityPrivateHooksDelegate>());
+  bindings->RegisterHooksDelegate(
+      "accessibilityPrivate",
+      std::make_unique<extensions::AccessibilityPrivateHooksDelegate>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
-  bindings->GetHooksForAPI("printing")
-      ->SetDelegate(std::make_unique<extensions::PrintingHooksDelegate>());
+  bindings->RegisterHooksDelegate(
+      "printing", std::make_unique<extensions::PrintingHooksDelegate>());
 #endif
 }

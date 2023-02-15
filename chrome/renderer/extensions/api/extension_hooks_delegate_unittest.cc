@@ -41,12 +41,11 @@ class ExtensionHooksDelegateTest
     messaging_service_ =
         std::make_unique<NativeRendererMessagingService>(bindings_system());
 
-    bindings_system()
-        ->api_system()
-        ->GetHooksForAPI("extension")
-        ->SetDelegate(
-            std::make_unique<ExtensionHooksDelegate>(messaging_service_.get()));
-    bindings_system()->api_system()->GetHooksForAPI("runtime")->SetDelegate(
+    bindings_system()->api_system()->RegisterHooksDelegate(
+        "extension",
+        std::make_unique<ExtensionHooksDelegate>(messaging_service_.get()));
+    bindings_system()->api_system()->RegisterHooksDelegate(
+        "runtime",
         std::make_unique<RuntimeHooksDelegate>(messaging_service_.get()));
 
     scoped_refptr<const Extension> mutable_extension = BuildExtension();

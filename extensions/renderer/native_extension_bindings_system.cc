@@ -422,18 +422,19 @@ NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
                                  base::BindRepeating(&ChromeSetting::Create));
   api_system_.RegisterCustomType("contentSettings.ContentSetting",
                                  base::BindRepeating(&ContentSetting::Create));
-  api_system_.GetHooksForAPI("webRequest")
-      ->SetDelegate(std::make_unique<WebRequestHooks>());
-  api_system_.GetHooksForAPI("declarativeContent")
-      ->SetDelegate(std::make_unique<DeclarativeContentHooksDelegate>());
-  api_system_.GetHooksForAPI("dom")->SetDelegate(
-      std::make_unique<DOMHooksDelegate>());
-  api_system_.GetHooksForAPI("i18n")->SetDelegate(
-      std::make_unique<I18nHooksDelegate>());
-  api_system_.GetHooksForAPI("runtime")->SetDelegate(
-      std::make_unique<RuntimeHooksDelegate>(&messaging_service_));
-  api_system_.GetHooksForAPI("feedbackPrivate")
-      ->SetDelegate(std::make_unique<FeedbackPrivateHooksDelegate>());
+  api_system_.RegisterHooksDelegate("webRequest",
+                                    std::make_unique<WebRequestHooks>());
+  api_system_.RegisterHooksDelegate(
+      "declarativeContent",
+      std::make_unique<DeclarativeContentHooksDelegate>());
+  api_system_.RegisterHooksDelegate("dom",
+                                    std::make_unique<DOMHooksDelegate>());
+  api_system_.RegisterHooksDelegate("i18n",
+                                    std::make_unique<I18nHooksDelegate>());
+  api_system_.RegisterHooksDelegate(
+      "runtime", std::make_unique<RuntimeHooksDelegate>(&messaging_service_));
+  api_system_.RegisterHooksDelegate(
+      "feedbackPrivate", std::make_unique<FeedbackPrivateHooksDelegate>());
 }
 
 NativeExtensionBindingsSystem::~NativeExtensionBindingsSystem() {}

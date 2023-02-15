@@ -20,10 +20,9 @@ using AccessibilityPrivateHooksDelegateTest =
 
 TEST_F(AccessibilityPrivateHooksDelegateTest, TestGetDisplayNameForLocale) {
   // Initialize bindings system.
-  bindings_system()
-      ->api_system()
-      ->GetHooksForAPI("accessibilityPrivate")
-      ->SetDelegate(std::make_unique<AccessibilityPrivateHooksDelegate>());
+  bindings_system()->api_system()->RegisterHooksDelegate(
+      "accessibilityPrivate",
+      std::make_unique<AccessibilityPrivateHooksDelegate>());
   // Register extension.
   // Ensure that the extension has access to the accessibilityPrivate API by
   // setting the extension ID to the ChromeVox extension ID, as well as giving

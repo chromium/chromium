@@ -21,10 +21,8 @@ using IdentityHooksDelegateTest = NativeExtensionBindingsSystemUnittest;
 // and promise-based calls getting a response with a single object.
 TEST_F(IdentityHooksDelegateTest, GetAuthToken) {
   // Initialize bindings system.
-  bindings_system()
-      ->api_system()
-      ->GetHooksForAPI("identity")
-      ->SetDelegate(std::make_unique<IdentityHooksDelegate>());
+  bindings_system()->api_system()->RegisterHooksDelegate(
+      "identity", std::make_unique<IdentityHooksDelegate>());
   // Register extension.
   scoped_refptr<const Extension> extension = ExtensionBuilder("testExtension")
                                                  .SetManifestVersion(3)

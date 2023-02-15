@@ -56,8 +56,8 @@ class TabsHooksDelegateTest : public NativeExtensionBindingsSystemUnittest {
     messaging_service_ =
         std::make_unique<NativeRendererMessagingService>(bindings_system());
 
-    bindings_system()->api_system()->GetHooksForAPI("tabs")->SetDelegate(
-        std::make_unique<TabsHooksDelegate>(messaging_service_.get()));
+    bindings_system()->api_system()->RegisterHooksDelegate(
+        "tabs", std::make_unique<TabsHooksDelegate>(messaging_service_.get()));
 
     scoped_refptr<const Extension> mutable_extension = BuildExtension();
     RegisterExtension(mutable_extension);
