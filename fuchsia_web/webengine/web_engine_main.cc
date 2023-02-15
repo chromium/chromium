@@ -21,16 +21,16 @@ static void LoadConfigAndUpdateCommandLine(base::CommandLine* command_line) {
   if (!is_browser_process)
     return;
 
+  CHECK(fuchsia_component_support::AppendArgumentsFromFile(
+      base::FilePath(FILE_PATH_LITERAL("/config/command-line/argv.json")),
+      *command_line))
+      << "Malformed argv.json file.";
+
   if (const auto& config = fuchsia_component_support::LoadPackageConfig();
       config.has_value()) {
     CHECK(UpdateCommandLineFromConfigFile(config.value(), command_line))
         << "WebEngine config is invalid.";
   }
-
-  CHECK(fuchsia_component_support::AppendArgumentsFromFile(
-      base::FilePath(FILE_PATH_LITERAL("/config/command-line/argv.json")),
-      *command_line))
-      << "Malformed argv.json file.";
 }
 
 int main(int argc, const char** argv) {
