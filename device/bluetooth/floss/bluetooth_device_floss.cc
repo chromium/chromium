@@ -753,6 +753,13 @@ void BluetoothDeviceFloss::GattSearchComplete(
     gatt_services_[remote_service_ptr->GetIdentifier()] =
         std::move(remote_service);
     DCHECK(remote_service_ptr->GetUUID().IsValid());
+
+    // GattDiscoveryCompleteForService is deprecated. Currently only Fast Pair
+    // needs to listen to this.
+    //
+    // TODO(b/269478974): We should remove this once all callers migrate to
+    // GattServicesDiscovered.
+    adapter()->NotifyGattDiscoveryComplete(remote_service_ptr);
   }
 
   adapter()->NotifyGattServicesDiscovered(this);
