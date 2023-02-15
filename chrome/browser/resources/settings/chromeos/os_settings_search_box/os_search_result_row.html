@@ -7,8 +7,21 @@
     background-color: var(--cros-highlight-color);
   }
 
+  :host-context(body.jelly-enabled):host([selected]) [focus-row-container] {
+    background-color: var(--cros-sys-highlight_shape);
+  }
+
   :host(:not([selected])) [focus-row-container]:hover {
     background-color: var(--cros-highlight-color-hover);
+  }
+
+  :host-context(body.jelly-enabled):host(:not([selected]))
+      [focus-row-container]:hover {
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  :host-context(body.jelly-enabled) [focus-row-control][selectable]:focus {
+    background-color: var(--cros-sys-ripple_neutral_on_subtle);
   }
 
   :host-context([dir=rtl]) #actionTypeIcon {
@@ -39,6 +52,10 @@
   /* Bolding occurs in the JS. */
   b {
     color: var(--cros-text-color-primary);
+  }
+
+  :host-context(body.jelly-enabled) b {
+    color: var(--cros-sys-on_surface);
   }
 </style>
 <div focus-row-container>

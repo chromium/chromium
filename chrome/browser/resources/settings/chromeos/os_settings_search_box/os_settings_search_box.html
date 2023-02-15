@@ -19,6 +19,10 @@
     width: var(--cr-toolbar-field-width);
   }
 
+  :host-context(body.jelly-enabled):host {
+    --cr-toolbar-search-field-background: var(--cros-sys-input_field_dark);
+  }
+
   @media (prefers-color-scheme: dark) {
     :host {
       --cr-toolbar-search-field-narrow-mode-prompt-opacity: 1;
@@ -145,6 +149,10 @@
     margin-inline-end: 0;
     margin-inline-start: 0;
     margin-top: -9px;
+  }
+
+  :host-context(body.jelly-enabled) .separator {
+    border-color: var(--cros-sys-separator);
   }
 </style>
 <cr-toolbar-search-field id="search" narrow="[[narrow]]"
