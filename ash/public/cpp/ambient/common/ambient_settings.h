@@ -59,9 +59,6 @@ struct ASH_PUBLIC_EXPORT ArtSetting {
   std::string description;
 
   std::string preview_image_url;
-
-  // Image blob in PNG format used on Settings UI.
-  std::string png_data_url;
 };
 
 enum class AmbientModeTemperatureUnit {
@@ -122,9 +119,6 @@ struct ASH_PUBLIC_EXPORT PersonalAlbum {
 
   // Preview images if this album is Recent highlights.
   std::vector<std::string> preview_image_urls;
-
-  // Image blob in PNG format used on Settings UI.
-  std::string png_data_url;
 };
 
 struct ASH_PUBLIC_EXPORT PersonalAlbums {
