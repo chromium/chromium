@@ -416,7 +416,8 @@ rules described earlier.
 
 Under the cover, build_webui() defines the following targets
 
-preprocess_if_expr("preprocess")
+preprocess_if_expr("preprocess_ts_files")
+preprocess_if_expr("preprocess_html_css_files")
 html_to_wrapper("html_wrapper_files")
 css_to_wrapper("css_wrapper_files")
 copy("copy_mojo")
