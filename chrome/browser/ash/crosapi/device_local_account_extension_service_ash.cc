@@ -12,7 +12,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "components/account_id/account_id.h"
-#include "components/crash/core/app/crashpad.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -58,7 +57,7 @@ void DeviceLocalAccountExtensionServiceAsh::BindExtensionInstaller(
         broker->GetCachedExtensions());
   } else {
     LOG(ERROR) << "Missing broker for DeviceLocalAccount";
-    crash_reporter::DumpWithoutCrashing();
+    base::debug::DumpWithoutCrashing();
   }
 }
 
