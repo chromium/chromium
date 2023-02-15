@@ -30,6 +30,8 @@ constexpr const int kPinInputTotalHeightDp = 37;
 // Default length
 constexpr const int kPinAutosubmitMinLength = 6;
 constexpr const int kPinAutosubmitMaxLength = 12;
+
+constexpr const char kLoginPinInputViewClassName[] = "LoginPinInputView";
 }  // namespace
 
 // A FixedLengthCodeInput that is always obscured and
@@ -272,6 +274,10 @@ bool LoginPinInputView::OnKeyPressed(const ui::KeyEvent& event) {
   }
 
   return false;
+}
+
+const char* LoginPinInputView::GetClassName() const {
+  return kLoginPinInputViewClassName;
 }
 
 void LoginPinInputView::OnChanged(bool is_empty) {

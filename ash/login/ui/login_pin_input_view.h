@@ -84,6 +84,7 @@ class ASH_EXPORT LoginPinInputView
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  const char* GetClassName() const override;
 
  private:
   // The code input will call this when all digits are in.
